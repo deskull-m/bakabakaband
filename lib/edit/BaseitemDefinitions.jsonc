@@ -13942,7 +13942,7 @@
       "subtype_value": 3
     },
     "parameter_value": 0,
-    "level": 100,
+    "level": 90,
     "weight": 30,
     "cost": 100000,
     "base_ac": 0,
@@ -13952,7 +13952,7 @@
     "ac_bonus": 0,
     "allocations": [
       {
-        "depth": 100,
+        "depth": 90,
         "rarity": 1
       }
     ],
@@ -22506,7 +22506,7 @@
       "subtype_value": 3
     },
     "parameter_value": 0,
-    "level": 95,
+    "level": 90,
     "weight": 30,
     "cost": 100000,
     "base_ac": 0,
@@ -22516,7 +22516,7 @@
     "ac_bonus": 0,
     "allocations": [
       {
-        "depth": 95,
+        "depth": 90,
         "rarity": 1
       }
     ],
