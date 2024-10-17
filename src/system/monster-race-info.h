@@ -175,6 +175,9 @@ public:
     void make_lore_treasure(int num_item, int num_drop);
     void emplace_reinforce(MonsterRaceId monrace_id, const Dice &dice);
 
+    //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
+    void reset_current_numbers();
+
 private:
     std::vector<Reinforce> reinforces; //!< 指定護衛リスト
 
