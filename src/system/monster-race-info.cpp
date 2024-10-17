@@ -4,6 +4,7 @@
 #include "monster/horror-descriptions.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/lore-tracker.h"
+#include "util/enum-converter.h"
 #include "util/probability-table.h"
 #include "world/world.h"
 #include <algorithm>
@@ -287,6 +288,23 @@ bool MonsterRaceInfo::has_reinforce() const
 const std::vector<Reinforce> &MonsterRaceInfo::get_reinforces() const
 {
     return this->reinforces;
+}
+
+bool MonsterRaceInfo::can_generate() const
+{
+    auto can_generate = this->kind_flags.has(MonsterKindType::UNIQUE) || this->population_flags.has(MonsterPopulationType::NAZGUL);
+    can_generate &= this->cur_num >= this->mob_num;
+    return can_generate;
+}
+
+void MonsterRaceInfo::init_sex(uint32_t value)
+{
+    const auto sex_tmp = i2enum<MonsterSex>(value);
+    if ((sex_tmp < MonsterSex::NONE) || (sex_tmp >= MonsterSex::MAX)) {
+        THROW_EXCEPTION(std::logic_error, "Invalid monrace sex is specified!");
+    }
+
+    this->sex = sex_tmp;
 }
 
 std::optional<std::string> MonsterRaceInfo::probe_lore()
