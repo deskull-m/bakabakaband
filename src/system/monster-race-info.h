@@ -178,6 +178,7 @@ public:
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
     void reset_current_numbers();
     void increment_current_numbers();
+    void decrement_current_numbers();
 
 private:
     std::vector<Reinforce> reinforces; //!< 指定護衛リスト
