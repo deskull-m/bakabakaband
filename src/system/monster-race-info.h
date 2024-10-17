@@ -176,6 +176,8 @@ public:
     void emplace_reinforce(MonsterRaceId monrace_id, const Dice &dice);
 
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
+    bool has_entity() const;
+
     void reset_current_numbers();
     void increment_current_numbers();
     void decrement_current_numbers();
