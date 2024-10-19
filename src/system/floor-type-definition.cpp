@@ -12,8 +12,15 @@
 #include "util/enum-range.h"
 
 FloorType::FloorType()
-    : quest_number(QuestId::NONE)
+    : grid_array(MAX_HGT, std::vector<Grid>(MAX_WID))
+    , o_list(MAX_FLOOR_ITEMS)
+    , m_list(MAX_FLOOR_MONSTERS)
+    , quest_number(QuestId::NONE)
 {
+    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+        this->mproc_list[mte] = std::vector<short>(MAX_FLOOR_MONSTERS, {});
+        this->mproc_max[mte] = 0;
+    }
 }
 
 Grid &FloorType::get_grid(const Pos2D pos)
