@@ -3,7 +3,7 @@
 #include "alliance/alliance.h"
 #include "dungeon/quest.h"
 #include "floor/floor-base-definitions.h"
-#include "monster/monster-timed-effect-types.h"
+#include "monster/monster-timed-effects.h"
 #include "room/vault-builder.h"
 #include "system/angband.h"
 #include "util/point-2d.h"
