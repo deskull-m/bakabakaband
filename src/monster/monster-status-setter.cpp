@@ -62,7 +62,7 @@ void anger_monster(PlayerType *player_ptr, MonsterEntity *m_ptr)
 
 /*!
  * @brief モンスターの睡眠状態値をセットする。0で起きる。 /
- * Set "m_ptr->mtimed[MTIMED_CSLEEP]", notice observable changes
+ * Set "m_ptr->mtimed[MonsterTimedEffect::CSLEEP]", notice observable changes
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx モンスター参照ID
  * @param v セットする値
@@ -77,17 +77,17 @@ bool set_monster_csleep(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
                                       : v;
     if (v) {
         if (!monster.is_asleep()) {
-            floor.add_mproc(m_idx, MTIMED_CSLEEP);
+            floor.add_mproc(m_idx, MonsterTimedEffect::CSLEEP);
             notice = true;
         }
     } else {
         if (monster.is_asleep()) {
-            floor.remove_mproc(m_idx, MTIMED_CSLEEP);
+            floor.remove_mproc(m_idx, MonsterTimedEffect::CSLEEP);
             notice = true;
         }
     }
 
-    monster.mtimed[MTIMED_CSLEEP] = (int16_t)v;
+    monster.mtimed[MonsterTimedEffect::CSLEEP] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -109,7 +109,7 @@ bool set_monster_csleep(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
 
 /*!
  * @brief モンスターの加速状態値をセット /
- * Set "m_ptr->mtimed[MTIMED_FAST]", notice observable changes
+ * Set "m_ptr->mtimed[MonsterTimedEffect::FAST]", notice observable changes
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx モンスター参照ID
  * @param v セットする値
@@ -124,17 +124,17 @@ bool set_monster_fast(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_accelerated()) {
-            floor.add_mproc(m_idx, MTIMED_FAST);
+            floor.add_mproc(m_idx, MonsterTimedEffect::FAST);
             notice = true;
         }
     } else {
         if (monster.is_accelerated()) {
-            floor.remove_mproc(m_idx, MTIMED_FAST);
+            floor.remove_mproc(m_idx, MonsterTimedEffect::FAST);
             notice = true;
         }
     }
 
-    monster.mtimed[MTIMED_FAST] = (int16_t)v;
+    monster.mtimed[MonsterTimedEffect::FAST] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -147,7 +147,7 @@ bool set_monster_fast(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
 }
 
 /*
- * Set "m_ptr->mtimed[MTIMED_SLOW]", notice observable changes
+ * Set "m_ptr->mtimed[MonsterTimedEffect::SLOW]", notice observable changes
  */
 bool set_monster_slow(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
 {
@@ -158,17 +158,17 @@ bool set_monster_slow(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_decelerated()) {
-            floor.add_mproc(m_idx, MTIMED_SLOW);
+            floor.add_mproc(m_idx, MonsterTimedEffect::SLOW);
             notice = true;
         }
     } else {
         if (monster.is_decelerated()) {
-            floor.remove_mproc(m_idx, MTIMED_SLOW);
+            floor.remove_mproc(m_idx, MonsterTimedEffect::SLOW);
             notice = true;
         }
     }
 
-    monster.mtimed[MTIMED_SLOW] = (int16_t)v;
+    monster.mtimed[MonsterTimedEffect::SLOW] = (int16_t)v;
     if (!notice) {
         return false;
     }
@@ -182,7 +182,7 @@ bool set_monster_slow(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
 
 /*!
  * @brief モンスターの朦朧状態値をセット /
- * Set "m_ptr->mtimed[MTIMED_STUNNED]", notice observable changes
+ * Set "m_ptr->mtimed[MonsterTimedEffect::STUNNED]", notice observable changes
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx モンスター参照ID
  * @param v セットする値
@@ -197,23 +197,23 @@ bool set_monster_stunned(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_stunned()) {
-            floor.add_mproc(m_idx, MTIMED_STUNNED);
+            floor.add_mproc(m_idx, MonsterTimedEffect::STUNNED);
             notice = true;
         }
     } else {
         if (monster.is_stunned()) {
-            floor.remove_mproc(m_idx, MTIMED_STUNNED);
+            floor.remove_mproc(m_idx, MonsterTimedEffect::STUNNED);
             notice = true;
         }
     }
 
-    monster.mtimed[MTIMED_STUNNED] = (int16_t)v;
+    monster.mtimed[MonsterTimedEffect::STUNNED] = (int16_t)v;
     return notice;
 }
 
 /*!
  * @brief モンスターの混乱状態値をセット /
- * Set "m_ptr->mtimed[MTIMED_CONFUSED]", notice observable changes
+ * Set "m_ptr->mtimed[MonsterTimedEffect::CONFUSED]", notice observable changes
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx モンスター参照ID
  * @param v セットする値
@@ -228,23 +228,23 @@ bool set_monster_confused(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_confused()) {
-            floor.add_mproc(m_idx, MTIMED_CONFUSED);
+            floor.add_mproc(m_idx, MonsterTimedEffect::CONFUSED);
             notice = true;
         }
     } else {
         if (monster.is_confused()) {
-            floor.remove_mproc(m_idx, MTIMED_CONFUSED);
+            floor.remove_mproc(m_idx, MonsterTimedEffect::CONFUSED);
             notice = true;
         }
     }
 
-    monster.mtimed[MTIMED_CONFUSED] = (int16_t)v;
+    monster.mtimed[MonsterTimedEffect::CONFUSED] = (int16_t)v;
     return notice;
 }
 
 /*!
  * @brief モンスターの恐慌状態値をセット /
- * Set "m_ptr->mtimed[MTIMED_MONFEAR]", notice observable changes
+ * Set "m_ptr->mtimed[MonsterTimedEffect::MONFEAR]", notice observable changes
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx モンスター参照ID
  * @param v セットする値
@@ -259,17 +259,17 @@ bool set_monster_monfear(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
                                   : v;
     if (v) {
         if (!monster.is_fearful()) {
-            floor.add_mproc(m_idx, MTIMED_MONFEAR);
+            floor.add_mproc(m_idx, MonsterTimedEffect::MONFEAR);
             notice = true;
         }
     } else {
         if (monster.is_fearful()) {
-            floor.remove_mproc(m_idx, MTIMED_MONFEAR);
+            floor.remove_mproc(m_idx, MonsterTimedEffect::MONFEAR);
             notice = true;
         }
     }
 
-    monster.mtimed[MTIMED_MONFEAR] = (int16_t)v;
+    monster.mtimed[MonsterTimedEffect::MONFEAR] = (int16_t)v;
 
     if (!notice) {
         return false;
@@ -287,7 +287,7 @@ bool set_monster_monfear(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
 
 /*!
  * @brief モンスターの無敵状態値をセット /
- * Set "m_ptr->mtimed[MTIMED_INVULNER]", notice observable changes
+ * Set "m_ptr->mtimed[MonsterTimedEffect::INVULNER]", notice observable changes
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx モンスター参照ID
  * @param v セットする値
@@ -303,12 +303,12 @@ bool set_monster_invulner(PlayerType *player_ptr, MONSTER_IDX m_idx, int v, bool
                                   : v;
     if (v) {
         if (!monster.is_invulnerable()) {
-            floor.add_mproc(m_idx, MTIMED_INVULNER);
+            floor.add_mproc(m_idx, MonsterTimedEffect::INVULNER);
             notice = true;
         }
     } else {
         if (monster.is_invulnerable()) {
-            floor.remove_mproc(m_idx, MTIMED_INVULNER);
+            floor.remove_mproc(m_idx, MonsterTimedEffect::INVULNER);
             if (energy_need && !AngbandWorld::get_instance().is_wild_mode()) {
                 monster.energy_need += ENERGY_NEED();
             }
@@ -316,7 +316,7 @@ bool set_monster_invulner(PlayerType *player_ptr, MONSTER_IDX m_idx, int v, bool
         }
     }
 
-    monster.mtimed[MTIMED_INVULNER] = (int16_t)v;
+    monster.mtimed[MonsterTimedEffect::INVULNER] = (int16_t)v;
     if (!notice) {
         return false;
     }
