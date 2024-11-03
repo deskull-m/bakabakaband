@@ -181,17 +181,14 @@ static SpoilerOutputResultType spoil_player_spell()
 
     PlayerType dummy_p;
     dummy_p.lev = 1;
-    const auto &baseitems = BaseitemList::get_instance();
     for (const auto pclass : EnumRange(PlayerClassType::WARRIOR, PlayerClassType::MAX)) {
         spoil_out(format("[[Class: %s]]\n", class_info.at(pclass).title.data()));
 
         const auto *magic_ptr = &class_magics_info[enum2i(pclass)];
         std::string book_name = _("なし", "None");
         if (magic_ptr->spell_book != ItemKindType::NONE) {
-            ItemEntity book;
-            auto o_ptr = &book;
-            o_ptr->generate(baseitems.lookup_baseitem_id({ magic_ptr->spell_book, 0 }));
-            book_name = describe_flavor(&dummy_p, o_ptr, OD_NAME_ONLY);
+            ItemEntity item({ magic_ptr->spell_book, 0 });
+            book_name = describe_flavor(&dummy_p, item, OD_NAME_ONLY);
             auto *s = angband_strchr(book_name.data(), '[');
             if (s != nullptr) {
                 book_name.erase(s - book_name.data());
