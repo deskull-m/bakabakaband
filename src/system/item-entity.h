@@ -169,6 +169,7 @@ public:
     std::string build_activation_description() const;
 
     bool try_become_artifact(int dungeon_level);
+    void absorb(ItemEntity &other);
 
 private:
     int get_baseitem_price() const;
