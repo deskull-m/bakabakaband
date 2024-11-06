@@ -16,7 +16,6 @@
  */
 enum class FixedArtifactId : short;
 enum class RandomArtActType : short;
-class ItemEntity;
 class ArtifactType {
 public:
     ArtifactType();
@@ -42,13 +41,16 @@ public:
     PERCENTAGE broken_rate; /*!< 発動破損率 */
 
     bool can_generate(const BaseitemKey &bi_key) const;
-    std::optional<ItemEntity> try_make_instant_artifact(int making_level, FixedArtifactId fa_id) const;
+    std::optional<BaseitemKey> try_make_instant_artifact(int making_level) const;
+
+private:
     bool can_make_instant_artifact() const;
     bool evaluate_shallow_instant_artifact(int making_level) const;
     bool evaluate_rarity() const;
     bool evaluate_shallow_baseitem(int making_level) const;
 };
 
+class ItemEntity;
 class ArtifactList {
 public:
     ArtifactList(const ArtifactList &) = delete;
@@ -72,6 +74,7 @@ public:
     bool order(const FixedArtifactId id1, const FixedArtifactId id2) const;
     void emplace(const FixedArtifactId fa_id, const ArtifactType &artifact);
     void reset_generated_flags();
+    std::optional<ItemEntity> try_make_instant_artifact(int making_level) const;
 
 private:
     ArtifactList() = default;
