@@ -267,7 +267,7 @@ void reorder_pack(PlayerType *player_ptr)
         }
 
         for (j = 0; j < INVEN_PACK; j++) {
-            if (object_sort_comp(player_ptr, o_ptr, &player_ptr->inventory_list[j])) {
+            if (object_sort_comp(player_ptr, *o_ptr, player_ptr->inventory_list[j])) {
                 break;
             }
         }
@@ -338,7 +338,7 @@ int16_t store_item_to_inventory(PlayerType *player_ptr, ItemEntity *o_ptr)
     i = j;
     if (i < INVEN_PACK) {
         for (j = 0; j < INVEN_PACK; j++) {
-            if (object_sort_comp(player_ptr, o_ptr, &player_ptr->inventory_list[j])) {
+            if (object_sort_comp(player_ptr, *o_ptr, player_ptr->inventory_list[j])) {
                 break;
             }
         }
