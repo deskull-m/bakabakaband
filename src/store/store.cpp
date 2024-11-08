@@ -313,11 +313,11 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
         }
 
         if (store_num == StoreSaleType::BLACK) {
-            if (black_market_crap(player_ptr, q_ptr) || (q_ptr->get_price() < 10)) {
+            if (black_market_crap(player_ptr, q_ptr) || (q_ptr->calc_price() < 10)) {
                 continue;
             }
         } else {
-            if (q_ptr->get_price() <= 0) {
+            if (q_ptr->calc_price() <= 0) {
                 continue;
             }
         }
