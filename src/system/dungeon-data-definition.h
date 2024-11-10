@@ -9,11 +9,14 @@
 /*
  * Bounds on some arrays used in the DungeonData.
  * These bounds are checked, though usually this is a formality.
+ * The "size" of a "generation block" in grids
  */
 #define CENT_MAX 300 //!< 「部屋の中心」最大数/巨大マップを作るバリアントにするほど大きめにとっておかないといけないと思われる。
 #define DOOR_MAX 200
 #define WALL_MAX 500
 #define TUNN_MAX 900
+#define BLOCK_HGT 11
+#define BLOCK_WID 11
 
 /*
  * Maximum numbers of rooms along each axis (currently 6x6)
@@ -28,16 +31,16 @@ class DungeonData {
 public:
     DungeonData();
 
-    int cent_n = 0;
+    size_t cent_n = 0;
     std::vector<Pos2D> centers;
 
-    int door_n = 0;
+    size_t door_n = 0;
     std::vector<Pos2D> doors;
 
-    int wall_n = 0;
+    size_t wall_n = 0;
     std::vector<Pos2D> walls;
 
-    int tunn_n = 0;
+    size_t tunn_n = 0;
     std::vector<Pos2D> tunnels;
 
     /* Number of blocks along each axis */
