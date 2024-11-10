@@ -1,6 +1,5 @@
 #pragma once
 
-#include "floor/floor-base-definitions.h"
 #include "util/point-2d.h"
 #include <optional>
 #include <string>
@@ -15,18 +14,7 @@
 #define DOOR_MAX 200
 #define WALL_MAX 500
 #define TUNN_MAX 900
-#define BLOCK_HGT 11
-#define BLOCK_WID 11
 
-/*
- * Maximum numbers of rooms along each axis (currently 6x6)
- */
-constexpr int MAX_ROOMS_ROW = (MAX_HGT / BLOCK_HGT);
-constexpr int MAX_ROOMS_COL = (MAX_WID / BLOCK_WID);
-
-/*
- * Structure to hold all "dungeon generation" data
- */
 class DungeonData {
 public:
     DungeonData();
