@@ -4,7 +4,7 @@
 #include "system/angband.h"
 
 /*
- * Bounds on some arrays used in the "dun_data_type" structure.
+ * Bounds on some arrays used in the DungeonData.
  * These bounds are checked, though usually this is a formality.
  */
 #define CENT_MAX 300 //!< 「部屋の中心」最大数/巨大マップを作るバリアントにするほど大きめにとっておかないといけないと思われる。
@@ -29,7 +29,8 @@ struct coord {
 /*
  * Structure to hold all "dungeon generation" data
  */
-struct dun_data_type {
+class DungeonData {
+public:
     /* Array of centers of rooms */
     int cent_n;
     coord cent[CENT_MAX];
