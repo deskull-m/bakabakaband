@@ -74,8 +74,6 @@ bool kawarimi(PlayerType *player_ptr, bool success)
         return false;
     }
 
-    ItemEntity forge;
-    auto *q_ptr = &forge;
     if (player_ptr->is_dead) {
         return false;
     }
@@ -101,16 +99,12 @@ bool kawarimi(PlayerType *player_ptr, bool success)
         return false;
     }
 
-    POSITION y = player_ptr->y;
-    POSITION x = player_ptr->x;
-
+    const auto p_pos_orig = player_ptr->get_position(); //!< @details 元の位置に変わり身を置く.
     teleport_player(player_ptr, 10 + randint1(90), TELEPORT_SPONTANEOUS);
-    q_ptr->wipe();
-    const int sv_wooden_statue = 0;
-    q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::STATUE, sv_wooden_statue }));
-
-    q_ptr->pval = enum2i(MonraceId::NINJA);
-    (void)drop_near(player_ptr, q_ptr, -1, y, x);
+    constexpr auto sv_wooden_statue = 0;
+    ItemEntity item({ ItemKindType::STATUE, sv_wooden_statue });
+    item.pval = enum2i(MonraceId::NINJA);
+    (void)drop_near(player_ptr, &item, p_pos_orig);
 
     if (success) {
         msg_print(_("攻撃を受ける前に素早く身をひるがえした。", "You have turned around just before the attack hit you."));
