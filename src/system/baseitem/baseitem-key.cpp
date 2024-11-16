@@ -17,6 +17,8 @@
 #include "sv-definition/sv-staff-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/angband-exceptions.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include <set>
 #include <unordered_map>
 
@@ -565,6 +567,13 @@ bool BaseitemKey::is_monster() const
     default:
         return false;
     }
+}
+
+bool BaseitemKey::is_never_move() const
+{
+    auto &baseitems = BaseitemList::get_instance();
+    const auto ba_id = baseitems.lookup_baseitem_id({ this->tval(), this->sval() });
+    return baseitems.get_baseitem(ba_id).flags.has(TR_NEVER_MOVE);
 }
 
 /*!

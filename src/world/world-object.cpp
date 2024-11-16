@@ -82,6 +82,7 @@ OBJECT_IDX get_obj_index(const FloorType *floor_ptr, DEPTH level, BIT_FLAGS mode
     ProbabilityTable<int> prob_table;
     for (auto i = 0U; i < alloc_kind_table.size(); i++) {
         const auto &entry = alloc_kind_table[i];
+        const auto &baseitem = entry.get_bi_key();
         if (entry.level > level) {
             break;
         }
@@ -90,7 +91,7 @@ OBJECT_IDX get_obj_index(const FloorType *floor_ptr, DEPTH level, BIT_FLAGS mode
             continue;
         }
 
-        if ((mode & AM_NO_NEVER_MOVE) && baseitem.flags.has(TR_NEVER_MOVE)) {
+        if ((mode & AM_NO_NEVER_MOVE) && entry.get_bi_key().is_ammo()) {
             continue;
         }
 
