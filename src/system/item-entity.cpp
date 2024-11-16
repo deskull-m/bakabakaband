@@ -1261,7 +1261,7 @@ void ItemEntity::mark_as_known()
  */
 void ItemEntity::mark_as_tried() const
 {
-    this->get_baseitem().mark_as_tried();
+    this->get_baseitem().mark_trial(true);
 }
 
 /*!

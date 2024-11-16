@@ -68,6 +68,7 @@ public:
     bool tried{}; /*!< ベースアイテムを未鑑定のまま試したことがあるか /  The player has "tried" one of the items */
 
     PERCENTAGE broken_rate; /*!< 発動破損率 */
-    void mark_as_tried();
-    void mark_as_aware();
+    void mark_trial(bool state);
+    void mark_awareness(bool state);
+    void reset_visual();
 };
