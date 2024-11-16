@@ -22,6 +22,7 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
+#include "view/display-symbol.h"
 
 /*!
  * @brief プレイヤーのパラメータ基礎値 (腕力等)を18以下になるようにして返す
