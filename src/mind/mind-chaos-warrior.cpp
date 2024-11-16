@@ -3,7 +3,6 @@
 #include "object-enchant/object-boost.h"
 #include "object-enchant/object-ego.h"
 #include "sv-definition/sv-weapon-types.h"
-#include "system/baseitem-info.h"
 #include "system/floor-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"

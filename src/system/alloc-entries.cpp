@@ -1,5 +1,5 @@
 #include "system/alloc-entries.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
 #include "system/monster-race-info.h"
 #include "world/world-collapsion.h"
 

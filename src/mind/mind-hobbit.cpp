@@ -1,7 +1,6 @@
 #include "mind/mind-hobbit.h"
 #include "floor/floor-object.h"
 #include "sv-definition/sv-food-types.h"
-#include "system/baseitem-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
