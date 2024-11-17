@@ -3,6 +3,7 @@
 #include "object-enchant/item-apply-magic.h"
 #include "system/alloc-entries.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/dungeon-info.h"
 #include "system/floor-type-definition.h"
 #include "system/item-entity.h"
@@ -90,7 +91,9 @@ OBJECT_IDX get_obj_index(const FloorType *floor_ptr, DEPTH level, BIT_FLAGS mode
             continue;
         }
 
-        if ((mode & AM_NO_NEVER_MOVE) && entry.get_bi_key().is_ammo()) {
+        const auto &baseitems = BaseitemList::get_instance();
+        const auto &baseitem = baseitems.get_baseitem(i);
+        if ((mode & AM_NO_NEVER_MOVE) && baseitem.flags.has(TR_NEVER_MOVE)) {
             continue;
         }
 
