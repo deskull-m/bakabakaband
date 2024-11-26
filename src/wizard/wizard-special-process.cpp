@@ -541,9 +541,8 @@ void wiz_learn_items_all(PlayerType *player_ptr)
 {
     for (const auto &baseitem : BaseitemList::get_instance()) {
         if (baseitem.is_valid() && baseitem.level <= command_arg) {
-            ItemEntity item;
-            item.generate(baseitem.idx);
-            object_aware(player_ptr, &item);
+            ItemEntity item(baseitem.idx);
+            object_aware(player_ptr, item);
         }
     }
 }
