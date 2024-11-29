@@ -13,15 +13,14 @@ jobs:
     name: Publish Release Page
     runs-on: windows-2022
     steps:
-      - name: Checkout Repository
-        uses: nschloe/action-cached-lfs-checkout@v1
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
       - name: Extract version from configure.ac
         id: get_version
         run: |
-          $version = Select-String -Path configure.ac -Pattern 'AC_INIT\(hengband, (.+?)\)' | ForEach-Object { $_.Matches.Groups[1].Value }
+          $version = Select-String -Path configure.ac -Pattern 'AC_INIT\(bakabakaband, (.+?)\)' | ForEach-Object { $_.Matches.Groups[1].Value }
           echo "version=$version" >> $Env:GITHUB_OUTPUT
 
       - name: Setup MSBuild
@@ -32,7 +31,7 @@ jobs:
 
       - name: Restore Nuget Packages
         run: |
-          NuGet restore .\Hengband\Hengband.sln
+          NuGet restore .\VisualStudio\Bakabakaband.sln
 
       - name: Build Windows Release Package
         run: |
@@ -41,7 +40,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: Hengband-*.zip
+          files: Bakabakaband-*.zip
           name: ${{ steps.get_version.outputs.version }}
           tag_name: ${{ steps.get_version.outputs.version }}
           generate_release_notes: true

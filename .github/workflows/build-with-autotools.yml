@@ -15,6 +15,9 @@ on:
       configure-opts:
         type: string
         required: false
+      distcheck:
+        type: boolean
+        required: false
       use-ccache:
         type: boolean
         required: false
@@ -64,5 +67,10 @@ jobs:
           CXX: ${{ inputs.cxx }}
           CXXFLAGS: ${{ inputs.cxx-flags }}
 
+      - name: Build with distcheck
+        if: ${{ inputs.distcheck }}
+        run: make DISTCHECK_CONFIGURE_FLAGS="CXX=\"${{ inputs.cxx }}\" CXXFLAGS=\"${{ inputs.cxx-flags }}\" ${{ inputs.configure-opts }}" -j$(nproc) distcheck >/dev/null
+
       - name: Build
+        if: ${{ !inputs.distcheck }}
         run: make -j$(nproc) >/dev/null
