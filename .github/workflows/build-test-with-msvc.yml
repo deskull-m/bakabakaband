@@ -10,8 +10,9 @@ jobs:
     runs-on: windows-2022
 
     steps:
-      - name: Checkout Repository
-        uses: nschloe/action-cached-lfs-checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
@@ -21,8 +22,8 @@ jobs:
 
       - name: Restore Nuget Packages
         run: |
-          NuGet restore .\Hengband\Hengband.sln
+          NuGet restore .\VisualStudio\Bakabakaband.sln
 
       - name: Run build test
         run: |
-          MSBuild -warnAsError .\Hengband\Hengband.sln /t:Rebuild /p:Configuration=Debug
+          MSBuild -warnAsError .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration=Debug
