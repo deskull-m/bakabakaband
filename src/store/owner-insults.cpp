@@ -1,4 +1,4 @@
-﻿#include "store/owner-insults.h"
+#include "store/owner-insults.h"
 #include "core/asking-player.h"
 #include "game-option/birth-options.h"
 #include "store/say-comments.h"
