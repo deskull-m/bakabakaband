@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # ./VisualStudio/ 以下のファイルはVisual StudioがCRLFで上書きするため除外
-CHECK_FILES=$(find . -type f -not -path './.git/*' -and -not -path './VisualStudio/*' -and -not -name \*.wav -and -not -name \*.mp3)
+CHECK_FILES=$(find . -type f -not -path './.git/*' -and -not -path './VisualStudio/*' -and -not -name \*.wav -and -not -name \*.mp3 -and -not -path './lib/*' -not -path './Bakabakaband/*' )
 
 STATUS=0
 
