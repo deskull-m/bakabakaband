@@ -29,7 +29,7 @@
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "system/angband-system.h"
-#include "system/dungeon-info.h"
+#include "system/dungeon/dungeon-definition.h"
 #include "system/floor-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
