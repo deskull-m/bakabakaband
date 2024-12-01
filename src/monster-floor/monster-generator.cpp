@@ -155,11 +155,10 @@ std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX 
  * @param r_idx 生成モンスター種族
  * @param mode 生成オプション
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
- * @return 成功したらtrue
  */
-static bool place_monster_group(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
+static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center, MonraceId monrace_id, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto *r_ptr = &monraces_info[r_idx];
+    auto *r_ptr = &monraces_info[monrace_id];
     int total = randint1(10);
 
     auto *floor_ptr = player_ptr->current_floor_ptr;
@@ -187,29 +186,28 @@ static bool place_monster_group(PlayerType *player_ptr, POSITION y, POSITION x, 
 
     int hack_n = 1;
     POSITION hack_x[GROUP_MAX];
-    hack_x[0] = x;
+    hack_x[0] = pos_center.x;
     POSITION hack_y[GROUP_MAX];
-    hack_y[0] = y;
-
-    for (int n = 0; (n < hack_n) && (hack_n < total); n++) {
-        POSITION hx = hack_x[n];
-        POSITION hy = hack_y[n];
-        for (int i = 0; (i < 8) && (hack_n < total); i++) {
-            POSITION mx, my;
-            scatter(player_ptr, &my, &mx, hy, hx, 4, PROJECT_NONE);
+    hack_y[0] = pos_center.y;
+    std::vector<Pos2D> positions;
+    positions.push_back(pos_center);
+    for (size_t n = 0; (n < positions.size()) && (positions.size() < total); n++) {
+        for (auto i = 0; (i < 8) && (positions.size() < total); i++) {
+            //!< @details 要素数が変わると参照がダングリング状態になるので毎回取得する必要がある.
+            const auto &pos_neighbor = positions.at(n);
+            int mx, my;
+            scatter(player_ptr, &my, &mx, pos_neighbor.y, pos_neighbor.x, 4, PROJECT_NONE);
             if (!is_cave_empty_bold2(player_ptr, my, mx)) {
                 continue;
             }
 
-            if (place_monster_one(player_ptr, my, mx, r_idx, mode, summoner_m_idx)) {
+            if (place_monster_one(player_ptr, my, mx, monrace_id, mode, summoner_m_idx)) {
                 hack_y[hack_n] = my;
                 hack_x[hack_n] = mx;
                 hack_n++;
             }
         }
     }
-
-    return true;
 }
 
 /*!
@@ -313,7 +311,7 @@ std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITI
     }
 
     if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS)) {
-        (void)place_monster_group(player_ptr, y, x, r_idx, mode, summoner_m_idx);
+        place_monster_group(player_ptr, { y, x }, r_idx, mode, summoner_m_idx);
     }
 
     if (monrace.misc_flags.has_not(MonsterMiscType::ESCORT)) {
@@ -337,8 +335,8 @@ std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITI
         }
 
         (void)place_monster_one(player_ptr, ny, nx, monrace_id, mode, *m_idx);
-        if (monraces_info[monrace_id].misc_flags.has(MonsterMiscType::HAS_FRIENDS) || monrace.misc_flags.has(MonsterMiscType::MORE_ESCORT)) {
-            (void)place_monster_group(player_ptr, ny, nx, monrace_id, mode, *m_idx);
+        if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS) || monrace.misc_flags.has(MonsterMiscType::MORE_ESCORT)) {
+            place_monster_group(player_ptr, { ny, nx }, monrace_id, mode, *m_idx);
         }
     }
 
