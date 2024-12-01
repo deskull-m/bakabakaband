@@ -143,7 +143,6 @@ struct dungeon_type {
     bool is_open(short terrain_id) const;
 };
 
-extern std::vector<int> max_dlv;
 extern std::vector<dungeon_type> dungeons_info;
 
 class PlayerType;
