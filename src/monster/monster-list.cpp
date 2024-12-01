@@ -30,6 +30,7 @@
 #include "player/player-status.h"
 #include "system/alloc-entries.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor-type-definition.h"
 #include "system/grid-type-definition.h"

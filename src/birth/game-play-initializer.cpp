@@ -18,6 +18,7 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/floor-type-definition.h"
 #include "system/inner-game-data.h"
