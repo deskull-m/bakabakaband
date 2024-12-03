@@ -2538,6 +2538,9 @@
     <ClCompile Include="..\..\src\system\dungeon\dungeon-list.cpp">
       <Filter>system\dungeon</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-allocation.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5493,6 +5496,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\system\dungeon\dungeon-list.h">
       <Filter>system\dungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-allocation.h">
+      <Filter>system\baseitem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
