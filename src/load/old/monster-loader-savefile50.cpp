@@ -4,6 +4,7 @@
 #include "load/old/monster-flag-types-savefile50.h"
 #include "system/monster-entity.h"
 #include "system/monster-race-info.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"

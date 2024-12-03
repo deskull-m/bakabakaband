@@ -10,6 +10,7 @@
 #include "monster-race/race-flags1.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monster-race-info.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"

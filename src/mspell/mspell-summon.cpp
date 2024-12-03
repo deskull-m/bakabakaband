@@ -1,3 +1,4 @@
+#include "alliance/alliance.h"
 #include "mspell/mspell-summon.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
@@ -19,6 +20,7 @@
 #include "spell/summon-types.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor-type-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "system/monster-race-info.h"
 #include "system/player-type-definition.h"

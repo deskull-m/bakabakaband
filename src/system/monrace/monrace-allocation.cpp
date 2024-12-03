@@ -5,6 +5,7 @@
  */
 
 #include "system/monrace/monrace-allocation.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-race-info.h"
 #include "world/world-collapsion.h"
 #include <array>
