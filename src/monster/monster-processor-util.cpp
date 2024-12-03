@@ -10,9 +10,9 @@
 #include "monster/monster-processor-util.h"
 #include "game-option/birth-options.h"
 #include "monster/monster-status.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/redrawing-flags-updater.h"
 
 /*!

@@ -2,8 +2,8 @@
 #include "game-option/birth-options.h"
 #include "locale/language-switcher.h"
 #include "monster-attack/monster-attack-table.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-race-info.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 
