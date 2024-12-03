@@ -1,4 +1,10 @@
-#include "system/alloc-entries.h"
+/*!
+ * @brief モンスター種族の確率分布及び選択処理実装
+ * @author Hourier
+ * @date 2024/12/03
+ */
+
+#include "system/monrace/monrace-allocation.h"
 #include "system/monster-race-info.h"
 #include "world/world-collapsion.h"
 #include <array>
