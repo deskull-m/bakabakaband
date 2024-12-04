@@ -22,7 +22,7 @@
 #include "mspell/mspell-status.h"
 #include "mspell/mspell-summon.h"
 #include "mspell/mspell-util.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
