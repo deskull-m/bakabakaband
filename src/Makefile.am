@@ -954,6 +954,7 @@ hengband_SOURCES = \
 	system/enums/grid-count-kind.h \
 	\
 	system/floor/floor-info.cpp system/floor/floor-info.h \
+	system/floor/floor-list.cpp system/floor/floor-list.h \
 	\
 	system/monrace/monrace-allocation.cpp system/monrace/monrace-allocation.h \
 	system/monrace/monrace-definition.cpp system/monrace/monrace-definition.h \
