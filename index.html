@@ -82,6 +82,24 @@
   <div id="popup-bg"></div>
 
   <div id="app">
+
+    <div class="modal fade" id="melkorLetterModal" tabindex="-1" aria-labelledby="melkorLetterModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="melkorLetterModalLabel">aaaaaa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+          </div>
+          <div class="modal-body">
+            AAAAAA
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <h1 class="copy">{{text}}</h1>
 
     <div class="popup-contents" id="malkor-message">
@@ -117,6 +135,11 @@
       <div id="top-message" v-html="updateList">
       </div>
       <div id="menu-block">
+        <div class="container mt-5" style="z-index:100;">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#melkorLetterModal">
+            冥王の書簡
+          </button>
+        </div>
 
         <a class="button-link" href="#Melkor">
           <div class="button">
@@ -228,6 +251,7 @@
         return self.updateText;
       },
       updateMelkorLetter() {
+        /*
         var self = this;
         axios.get("./document/melkor.html")
           .then(function (response) {
@@ -237,6 +261,7 @@
             self.melkorLetter = "[ERROR]"
           });
         return self.melkorLetter;
+        */
       }
     }
   }
