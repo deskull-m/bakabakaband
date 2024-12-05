@@ -218,6 +218,6 @@ void precalc_cur_num_of_pet()
             continue;
         }
 
-        monster.get_real_monrace().cur_num++;
+        monster.get_real_monrace().increment_current_numbers();
     }
 }

@@ -124,7 +124,7 @@ static bool check_unique_placeable(const FloorType &floor, MonsterRaceId r_idx, 
         return false;
     }
 
-    if (r_ptr->population_flags.has(MonsterPopulationType::ONLY_ONE) && (r_ptr->cur_num >= 1)) {
+    if (r_ptr->population_flags.has(MonsterPopulationType::ONLY_ONE) && r_ptr->has_entity()) {
         return false;
     }
 
@@ -441,8 +441,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     }
 
     update_monster(player_ptr, g_ptr->m_idx, true);
-
-    m_ptr->get_real_monrace().cur_num++;
+    m_ptr->get_real_monrace().increment_current_numbers();
 
     if (any_bits(mode, PM_AMBUSH)) {
         auto m_name = monster_desc(player_ptr, m_ptr, 0);
