@@ -90,7 +90,7 @@ SpoilerOutputResultType spoil_mon_desc(concptr fname, std::function<bool(const M
     std::vector<MonsterRaceId> monrace_ids = monraces.get_valid_monrace_ids();
     std::stable_sort(monrace_ids.begin(), monrace_ids.end(), [&monraces](auto x, auto y) { return monraces.order(x, y); });
     for (auto monrace_id : monrace_ids) {
-        const auto &monrace = monraces_info[monrace_id];
+        const auto &monrace = monraces.get_monrace(monrace_id);
         if (filter_monster && !filter_monster(&monrace)) {
             continue;
         }
@@ -169,7 +169,7 @@ SpoilerOutputResultType spoil_mon_info()
     std::vector<MonsterRaceId> monrace_ids = monraces.get_valid_monrace_ids();
     std::stable_sort(monrace_ids.begin(), monrace_ids.end(), [&monraces](auto x, auto y) { return monraces.order(x, y); });
     for (auto monrace_id : monrace_ids) {
-        const auto &monrace = monraces_info[monrace_id];
+        const auto &monrace = monraces.get_monrace(monrace_id);
         if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
             spoil_out("[U] ");
         } else if (monrace.population_flags.has(MonsterPopulationType::NAZGUL)) {
