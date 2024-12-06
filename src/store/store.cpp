@@ -262,7 +262,6 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
     }
 
     const owner_type *ow_ptr = &owners.at(store_num)[st_ptr->owner];
-
     for (int tries = 0; tries < 4; tries++) {
         short bi_id;
         DEPTH level;
@@ -314,7 +313,7 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
         }
 
         if (store_num == StoreSaleType::BLACK) {
-            if (black_market_crap(player_ptr, q_ptr) || (q_ptr->calc_price() < 10)) {
+            if (black_market_crap(player_ptr->town_num, *q_ptr) || (q_ptr->calc_price() < 10)) {
                 continue;
             }
         } else {
@@ -324,7 +323,7 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
         }
 
         mass_produce(q_ptr, store_num);
-        (void)store_carry(q_ptr);
+        (void)st_ptr->carry(*q_ptr);
         break;
     }
 }
@@ -349,7 +348,7 @@ void store_maintenance(PlayerType *player_ptr, int town_num, StoreSaleType store
     if (store_num == StoreSaleType::BLACK) {
         for (INVENTORY_IDX j = st_ptr->stock_num - 1; j >= 0; j--) {
             auto &item = *st_ptr->stock[j];
-            if (black_market_crap(player_ptr, &item)) {
+            if (black_market_crap(player_ptr->town_num, item)) {
                 st_ptr->increase_item(j, 0 - item.number);
                 st_ptr->optimize_item(j);
             }
