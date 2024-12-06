@@ -6,6 +6,7 @@ enum class MonsterSex {
     NONE = 0,
     MALE = 1,
     FEMALE = 2,
+    MAX = 3,
 };
 
 bool is_male(const MonsterSex sex);
