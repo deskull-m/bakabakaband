@@ -426,9 +426,9 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     }
 
     if (!ironman_nightmare) {
-        m_ptr->energy_need = ENERGY_NEED() - (int16_t)randint0(100);
+        m_ptr->energy_need = ENERGY_NEED() - randnum0<short>(100);
     } else {
-        m_ptr->energy_need = ENERGY_NEED() - (int16_t)randint0(100) * 2;
+        m_ptr->energy_need = ENERGY_NEED() - randnum0<short>(100) * 2;
     }
 
     if (!ironman_nightmare) {
