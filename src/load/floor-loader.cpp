@@ -46,13 +46,13 @@
  */
 errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     clear_cave(player_ptr);
     player_ptr->x = player_ptr->y = 0;
 
     if (!sf_ptr) {
-        floor_ptr->dun_level = rd_s16b();
-        floor_ptr->base_level = floor_ptr->dun_level;
+        floor.dun_level = rd_s16b();
+        floor.base_level = floor.dun_level;
     } else {
         if (rd_s16b() != sf_ptr->floor_id) {
             return 171;
@@ -65,7 +65,7 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         if (rd_s16b() != sf_ptr->dun_level) {
             return 171;
         }
-        floor_ptr->dun_level = sf_ptr->dun_level;
+        floor.dun_level = sf_ptr->dun_level;
 
         if (rd_s32b() != sf_ptr->last_visit) {
             return 171;
@@ -84,14 +84,14 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         }
     }
 
-    floor_ptr->base_level = rd_s16b();
-    floor_ptr->num_repro = rd_s16b();
+    floor.base_level = rd_s16b();
+    floor.num_repro = rd_s16b();
 
     player_ptr->y = rd_u16b();
     player_ptr->x = rd_u16b();
 
-    floor_ptr->height = rd_s16b();
-    floor_ptr->width = rd_s16b();
+    floor.height = rd_s16b();
+    floor.width = rd_s16b();
 
     player_ptr->feeling = rd_byte();
 
@@ -105,8 +105,8 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         ct_ref.special = rd_s16b();
     }
 
-    POSITION ymax = floor_ptr->height;
-    POSITION xmax = floor_ptr->width;
+    POSITION ymax = floor.height;
+    POSITION xmax = floor.width;
     for (POSITION x = 0, y = 0; y < ymax;) {
         auto count = rd_byte();
 
@@ -118,7 +118,7 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         } while (tmp8u == MAX_UCHAR);
 
         for (int i = count; i > 0; i--) {
-            auto *g_ptr = &floor_ptr->grid_array[y][x];
+            auto *g_ptr = &floor.grid_array[y][x];
             g_ptr->info = templates[id].info;
             g_ptr->feat = templates[id].feat;
             g_ptr->mimic = templates[id].mimic;
@@ -140,15 +140,15 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
     auto item_loader = ItemLoaderFactory::create_loader();
     for (int i = 1; i < limit; i++) {
-        auto o_idx = o_pop(floor_ptr);
+        auto o_idx = o_pop(&floor);
         if (i != o_idx) {
             return 152;
         }
 
-        auto &item = floor_ptr->o_list[o_idx];
+        auto &item = floor.o_list[o_idx];
         item_loader->rd_item(&item);
-        auto &list = get_o_idx_list_contains(floor_ptr, o_idx);
-        list.add(floor_ptr, o_idx, item.stack_idx);
+        auto &list = get_o_idx_list_contains(&floor, o_idx);
+        list.add(&floor, o_idx, item.stack_idx);
     }
 
     limit = rd_u16b();
@@ -158,16 +158,16 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
     auto monster_loader = MonsterLoaderFactory::create_loader();
     for (auto i = 1; i < limit; i++) {
-        const auto m_idx = floor_ptr->pop_empty_index_monster();
+        const auto m_idx = floor.pop_empty_index_monster();
         if (i != m_idx) {
             return 162;
         }
 
-        auto *m_ptr = &floor_ptr->m_list[m_idx];
-        monster_loader->rd_monster(m_ptr);
-        auto *g_ptr = &floor_ptr->grid_array[m_ptr->fy][m_ptr->fx];
-        g_ptr->m_idx = m_idx;
-        m_ptr->get_real_monrace().increment_current_numbers();
+        auto &monster = floor.m_list[m_idx];
+        monster_loader->rd_monster(&monster);
+        auto &grid = floor.get_grid(monster.get_position());
+        grid.m_idx = m_idx;
+        monster.get_real_monrace().increment_current_numbers();
     }
 
     return 0;
