@@ -11,7 +11,6 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
-#include "monster/monster-status.h"
 #include "monster/monster-util.h"
 #include "player/player-sex.h"
 #include "system/angband-system.h"
@@ -126,7 +125,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
         m_idx = place_specific_monster(player_ptr, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
         if (m_idx) {
             floor_ptr->m_list[*m_idx] = back_m;
-            mproc_init(floor_ptr);
+            floor_ptr->reset_mproc();
         } else {
             preserve_hold_objects = false;
         }

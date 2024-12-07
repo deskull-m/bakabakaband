@@ -49,9 +49,6 @@ void init_other(PlayerType *player_ptr)
     auto *floor_ptr = player_ptr->current_floor_ptr;
     floor_ptr->o_list.assign(MAX_FLOOR_ITEMS, {});
     floor_ptr->m_list.assign(MAX_FLOOR_MONSTERS, {});
-    for (auto &list : floor_ptr->mproc_list) {
-        list.assign(MAX_FLOOR_MONSTERS, {});
-    }
 
     max_dlv.assign(dungeons_info.size(), {});
     floor_ptr->grid_array.assign(MAX_HGT, std::vector<Grid>(MAX_WID));
