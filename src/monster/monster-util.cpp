@@ -264,8 +264,8 @@ static errr do_get_mon_num_prep(PlayerType *player_ptr, const monsterrace_hook_t
                 continue;
             }
 
-            // 時空崩壊度が一定数到達していないモンスターを禁止
-            if (r_ptr->collapse_over > wc_ptr->collapse_degree) {
+            // 時空崩壊度が一定度到達していないモンスターを禁止
+            if (!entry.is_collapse_exceeded()) {
                 continue;
             }
         }
@@ -293,13 +293,14 @@ static errr do_get_mon_num_prep(PlayerType *player_ptr, const monsterrace_hook_t
             }
         }
 
+        //フロアの現在所属アライアンスに応じた生成率修正
         if (player_ptr->current_floor_ptr->allianceID != AllianceType::NONE) {
-            if (r_ptr->alliance_idx == player_ptr->current_floor_ptr->allianceID) {
-                entry->prob2 *= ALLIANCE_GENERATE_RATE;
+            if (entry.is_same_alliance(player_ptr->current_floor_ptr->allianceID)) {
+                entry.prob2 *= ALLIANCE_GENERATE_RATE;
             } else {
-                entry->prob2 /= ALLIANCE_GENERATE_RATE;
-                if (entry->prob2 < 0) {
-                    entry->prob2 = 1;
+                entry.prob2 /= ALLIANCE_GENERATE_RATE;
+                if (entry.prob2 < 0) {
+                    entry.prob2 = 1;
                 }
             }
         }
