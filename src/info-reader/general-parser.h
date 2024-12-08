@@ -8,9 +8,9 @@
 #include <string_view>
 #include <tuple>
 
-enum class FixedArtifactId : short;
 enum parse_error_type : int;
-
+enum class FixedArtifactId : short;
+enum class TerrainTag;
 struct dungeon_grid {
     FEAT_IDX feature; /* Terrain feature */
     MONSTER_IDX monster; /* Monster */
@@ -22,6 +22,9 @@ struct dungeon_grid {
     int16_t special; /* Reserved for special terrain info */
     int random; /* Number of the random effect */
     bool force_monster_place; /*!< モンスターの強制配置 */
+
+    void set_terrain_id(TerrainTag tag);
+    void set_trap_id(TerrainTag tag);
 };
 
 extern dungeon_grid letter[255];
