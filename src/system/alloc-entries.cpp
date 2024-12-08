@@ -1,6 +1,7 @@
 #include "system/alloc-entries.h"
 #include "system/baseitem-info.h"
 #include "system/monster-race-info.h"
+#include "world/world-collapsion.h"
 
 MonraceAllocationEntry::MonraceAllocationEntry(MonsterRaceId index, int level, short prob1, short prob2)
     : index(index)
@@ -47,6 +48,18 @@ bool MonraceAllocationEntry::is_defeatable(int threshold_level) const
     const auto can_diminish = monrace.special_flags.has(MonsterSpecialType::DIMINISH_MAX_DAMAGE);
     const auto is_shallow = monrace.level > threshold_level;
     return !has_resist_all && !(can_diminish && is_shallow);
+}
+
+bool MonraceAllocationEntry::is_collapse_exceeded() const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.collapse_over <= world_collapsion.collapse_degree;
+}
+
+bool MonraceAllocationEntry::is_same_alliance(AllianceType alliance_id) const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.alliance_idx == alliance_id;
 }
 
 const MonsterRaceInfo &MonraceAllocationEntry::get_monrace() const

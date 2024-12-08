@@ -10,6 +10,7 @@
 
 #include <vector>
 
+enum class AllianceType : int;
 enum class MonsterRaceId : short;
 class MonsterRaceInfo;
 class MonraceAllocationEntry {
@@ -22,6 +23,8 @@ public:
     short prob2; /* Probability, pass 2 */
     bool is_permitted(int threshold_level) const;
     bool is_defeatable(int threshold_level) const;
+    bool is_collapse_exceeded() const;
+    bool is_same_alliance(AllianceType alliance_id) const;
 
 private:
     const MonsterRaceInfo &get_monrace() const;
