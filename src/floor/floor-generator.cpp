@@ -15,7 +15,6 @@
 #include "floor/cave-generator.h"
 #include "floor/floor-base-definitions.h"
 #include "floor/floor-events.h"
-#include "floor/floor-generator.h"
 #include "floor/floor-save.h" //!< @todo precalc_cur_num_of_pet() が依存している、違和感.
 #include "floor/floor-util.h"
 #include "floor/wild.h"
@@ -49,6 +48,7 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
