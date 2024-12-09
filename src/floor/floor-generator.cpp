@@ -40,6 +40,7 @@
 #include "system/building-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
+#include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -147,7 +148,7 @@ static void generate_challenge_arena(PlayerType *player_ptr)
     int x;
     for (y = 1; y < SCREEN_HGT - 1; y++) {
         for (x = 1; x < SCREEN_WID - 1; x++) {
-            floor.get_grid({ y, x }).feat = feat_floor;
+            floor.get_grid({ y, x }).set_terrain_id(TerrainTag::FLOOR);
         }
     }
 
@@ -245,9 +246,10 @@ static void generate_gambling_arena(PlayerType *player_ptr)
             floor_ptr->grid_array[y][x].info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
+
     for (y = qy + 1; y < qy + ARENA_HGT - 1; y++) {
         for (x = qx + 1; x < qx + ARENA_WID - 1; x++) {
-            floor_ptr->grid_array[y][x].feat = feat_floor;
+            floor_ptr->grid_array[y][x].set_terrain_id(TerrainTag::FLOOR);
         }
     }
 
