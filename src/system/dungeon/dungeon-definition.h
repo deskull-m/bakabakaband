@@ -74,7 +74,7 @@ enum class TerrainCharacteristics;
 class MonraceDefinition;
 class DungeonDefinition {
 public:
-    DUNGEON_IDX idx{};
+    int idx{};
 
     std::string name; /* Name */
     std::string text; /* Description */
