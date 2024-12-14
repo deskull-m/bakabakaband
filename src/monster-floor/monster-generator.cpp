@@ -126,9 +126,9 @@ std::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, c
  */
 std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MonraceId r_idx, bool clone, BIT_FLAGS mode)
 {
-    auto &floor = player_ptr->current_floor_ptr;
-    auto &monster = floor->m_list[m_idx];
-    const auto pos = mon_scatter(player_ptr, r_idx, monster.get_position(), 1);
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &monster = floor.m_list[m_idx];
+    const auto pos = mon_scatter(player_ptr, monster.r_idx, monster.get_position(), 1);
     if (!pos) {
         return std::nullopt;
     }
@@ -137,13 +137,13 @@ std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX 
         mode |= PM_NO_PET;
     }
 
-    const auto multiplied_m_idx = place_specific_monster(player_ptr, pos->y, pos->x, monster.r_idx, (mode | PM_NO_KAGE | PM_MULTIPLY), m_idx);
+    const auto multiplied_m_idx = place_specific_monster(player_ptr, pos->y, pos->x, r_idx, (mode | PM_NO_KAGE | PM_MULTIPLY), m_idx);
     if (!multiplied_m_idx) {
         return std::nullopt;
     }
 
     if (clone || monster.mflag2.has(MonsterConstantFlagType::CLONED)) {
-        floor->m_list[*multiplied_m_idx].mflag2.set({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
+        floor.m_list[*multiplied_m_idx].mflag2.set({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
     }
 
     return multiplied_m_idx;
