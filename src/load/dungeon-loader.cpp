@@ -7,7 +7,6 @@
 #include "load/load-util.h"
 #include "load/old/load-v1-5-0.h"
 #include "save/floor-writer.h"
-#include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
