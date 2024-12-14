@@ -346,6 +346,7 @@ std::optional<MONSTER_IDX> place_random_monster(PlayerType *player_ptr, POSITION
 {
     get_mon_num_prep(player_ptr, get_monster_hook(player_ptr), get_monster_hook2(player_ptr, y, x));
     const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     do {
         monrace_id = get_mon_num(player_ptr, 0, floor.monster_level, PM_NONE);
@@ -354,9 +355,10 @@ std::optional<MONSTER_IDX> place_random_monster(PlayerType *player_ptr, POSITION
         return std::nullopt;
     }
 
-    auto try_become_jural = one_in_(5) || !floor.is_in_underground();
-    try_become_jural &= monraces_info[monrace_id].kind_flags.has_not(MonsterKindType::UNIQUE);
-    try_become_jural &= monraces_info[monrace_id].symbol_char_is_any_of("hkoptuyAHLOPTUVY");
+    auto try_become_jural = one_in_(5) || !floor.is_underground();
+    const auto &monrace = monraces.get_monrace(monrace_id);
+    try_become_jural &= monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
+    try_become_jural &= monrace.symbol_char_is_any_of("hkoptuyAHLOPTUVY");
     if (try_become_jural) {
         mode |= PM_JURAL;
     }
@@ -502,7 +504,7 @@ bool alloc_monster(PlayerType *player_ptr, int min_dis, BIT_FLAGS mode, summon_s
         y = randint0(floor.height);
         x = randint0(floor.width);
 
-        if (floor.is_in_underground()) {
+        if (floor.is_underground()) {
             if (!is_cave_empty_bold2(player_ptr, y, x)) {
                 continue;
             }

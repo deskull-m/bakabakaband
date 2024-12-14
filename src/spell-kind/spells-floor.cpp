@@ -281,7 +281,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
 
     /* Prevent destruction of quest levels and town */
     auto &floor = *player_ptr->current_floor_ptr;
-    if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_in_underground()) {
+    if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         if (!in_generate) {
             msg_print(_("破壊の力はかき消された…", "The power of destruction has been drowned out ..."));
         }

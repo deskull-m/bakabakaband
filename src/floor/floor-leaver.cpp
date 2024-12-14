@@ -346,7 +346,7 @@ static void jump_floors(PlayerType *player_ptr)
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (fcms->has(FloorChangeMode::DOWN)) {
-        if (!floor.is_in_underground()) {
+        if (!floor.is_underground()) {
             move_num = dungeon.mindepth;
         }
     } else if (fcms->has(FloorChangeMode::UP)) {
@@ -362,7 +362,7 @@ static void jump_floors(PlayerType *player_ptr)
 static void exit_to_wilderness(PlayerType *player_ptr)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    if (floor.is_in_underground() || (floor.dungeon_idx == DungeonId::WILDERNESS)) {
+    if (floor.is_underground() || (floor.dungeon_idx == DungeonId::WILDERNESS)) {
         return;
     }
 
@@ -485,13 +485,13 @@ void jump_floor(PlayerType *player_ptr, DungeonId dun_idx, DEPTH depth)
     floor.dun_level = depth;
     auto &fcms = FloorChangeModesStore::get_instace();
     fcms->set(FloorChangeMode::RANDOM_PLACE);
-    if (!floor.is_in_underground()) {
+    if (!floor.is_underground()) {
         floor.reset_dungeon_index();
     }
 
     floor.inside_arena = false;
     leave_quest_check(player_ptr);
-    auto to = !floor.is_in_underground()
+    auto to = !floor.is_underground()
                   ? _("地上", "the surface")
                   : format(_("%d階(%s)", "level %d of %s"), floor.dun_level, floor.get_dungeon_definition().name.data());
     constexpr auto mes = _("%sへとウィザード・テレポートで移動した。\n", "You wizard-teleported to %s.\n");

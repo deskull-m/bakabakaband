@@ -510,7 +510,7 @@ static std::optional<int> select_debugging_floor(const FloorType &floor, Dungeon
 void wiz_jump_to_dungeon(PlayerType *player_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
-    const auto is_in_dungeon = floor.is_in_underground();
+    const auto is_in_dungeon = floor.is_underground();
     const auto dungeon_idx = is_in_dungeon ? floor.dungeon_idx : DungeonId::ANGBAND;
     const auto dungeon_id = select_debugging_dungeon(dungeon_idx);
     if (!dungeon_id) {
