@@ -78,7 +78,7 @@ void execute_recall(PlayerType *player_ptr)
 
     disturb(player_ptr, false, true);
     auto &floor = *player_ptr->current_floor_ptr;
-    if (floor.dun_level || floor.is_in_quest() || player_ptr->enter_dungeon) {
+    if (floor.is_in_underground() || floor.is_in_quest() || player_ptr->enter_dungeon) {
         msg_print(_("上に引っ張りあげられる感じがする！", "You feel yourself yanked upwards!"));
         if (floor.dungeon_idx > DungeonId::WILDERNESS) {
             player_ptr->recall_dungeon = floor.dungeon_idx;
@@ -104,7 +104,7 @@ void execute_recall(PlayerType *player_ptr)
     }
 
     floor.dun_level = DungeonRecords::get_instance().get_record(floor.dungeon_idx).get_max_level();
-    if (floor.dun_level < 1) {
+    if (!floor.is_in_underground()) {
         floor.dun_level = 1;
     }
     if (ironman_nightmare && !randint0(666) && (floor.dungeon_idx == DungeonId::ANGBAND)) {
@@ -162,7 +162,7 @@ void execute_floor_reset(PlayerType *player_ptr)
     }
 
     disturb(player_ptr, false, true);
-    if (!inside_quest(floor.get_quest_id()) && floor.dun_level) {
+    if (!inside_quest(floor.get_quest_id()) && floor.is_in_underground()) {
         msg_print(_("世界が変わった！", "The world changes!"));
 
         /* 時空崩壊度進行 */
