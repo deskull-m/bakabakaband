@@ -154,7 +154,7 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
 
-        dungeon.name = tokens[1];
+        dungeon->name = tokens[1];
 #endif
         return PARSE_ERROR_NONE;
     }
@@ -170,7 +170,7 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             return PARSE_ERROR_NONE;
         }
 
-        dungeon.text.append(buf.substr(2));
+        dungeon->text.append(buf.substr(2));
 #else
         if (buf[2] != '$') {
             return PARSE_ERROR_NONE;
@@ -179,7 +179,7 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
         if (buf.length() == 3) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
-        append_english_text(dungeon.text, buf.substr(3));
+        append_english_text(dungeon->text, buf.substr(3));
 #endif
         return PARSE_ERROR_NONE;
     }
@@ -195,16 +195,16 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
 
-        info_set_value(dungeon.mindepth, tokens[1]);
-        info_set_value(dungeon.maxdepth, tokens[2]);
-        info_set_value(dungeon.min_plev, tokens[3]);
-        info_set_value(dungeon.mode, tokens[4]);
-        info_set_value(dungeon.min_m_alloc_level, tokens[5]);
-        info_set_value(dungeon.max_m_alloc_chance, tokens[6]);
-        info_set_value(dungeon.obj_good, tokens[7]);
-        info_set_value(dungeon.obj_great, tokens[8]);
-        info_set_value(dungeon.pit, tokens[9], 16);
-        info_set_value(dungeon.nest, tokens[10], 16);
+        info_set_value(dungeon->mindepth, tokens[1]);
+        info_set_value(dungeon->maxdepth, tokens[2]);
+        info_set_value(dungeon->min_plev, tokens[3]);
+        info_set_value(dungeon->mode, tokens[4]);
+        info_set_value(dungeon->min_m_alloc_level, tokens[5]);
+        info_set_value(dungeon->max_m_alloc_chance, tokens[6]);
+        info_set_value(dungeon->obj_good, tokens[7]);
+        info_set_value(dungeon->obj_great, tokens[8]);
+        info_set_value(dungeon->pit, tokens[9], 16);
+        info_set_value(dungeon->nest, tokens[10], 16);
         return PARSE_ERROR_NONE;
     }
 
@@ -214,8 +214,8 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
 
-        info_set_value(dungeon.dy, tokens[1]);
-        info_set_value(dungeon.dx, tokens[2]);
+        info_set_value(dungeon->dy, tokens[1]);
+        info_set_value(dungeon->dx, tokens[2]);
         return PARSE_ERROR_NONE;
     }
 
@@ -229,16 +229,16 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             auto feat_idx = i * 2 + 1;
             auto per_idx = feat_idx + 1;
             try {
-                dungeon.floor[i].feat = terrains.get_terrain_id_by_tag(tokens[feat_idx]);
+                dungeon->floor[i].feat = terrains.get_terrain_id_by_tag(tokens[feat_idx]);
             } catch (const std::exception &) {
                 return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
             }
 
-            info_set_value(dungeon.floor[i].percent, tokens[per_idx]);
+            info_set_value(dungeon->floor[i].percent, tokens[per_idx]);
         }
 
         auto tunnel_idx = DUNGEON_FEAT_PROB_NUM * 2 + 1;
-        info_set_value(dungeon.tunnel_percent, tokens[tunnel_idx]);
+        info_set_value(dungeon->tunnel_percent, tokens[tunnel_idx]);
         return PARSE_ERROR_NONE;
     }
 
@@ -252,20 +252,20 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             auto feat_idx = i * 2 + 1;
             auto prob_idx = feat_idx + 1;
             try {
-                dungeon.fill[i].feat = terrains.get_terrain_id_by_tag(tokens[feat_idx]);
+                dungeon->fill[i].feat = terrains.get_terrain_id_by_tag(tokens[feat_idx]);
             } catch (const std::exception &) {
                 return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
             }
 
-            info_set_value(dungeon.fill[i].percent, tokens[prob_idx]);
+            info_set_value(dungeon->fill[i].percent, tokens[prob_idx]);
         }
 
         try {
             const std::span tags(tokens.begin() + DUNGEON_FEAT_PROB_NUM * 2 + 1, 4);
-            dungeon.outer_wall = terrains.get_terrain_id_by_tag(tags[0]);
-            dungeon.inner_wall = terrains.get_terrain_id_by_tag(tags[1]);
-            dungeon.stream1 = terrains.get_terrain_id_by_tag(tags[2]);
-            dungeon.stream2 = terrains.get_terrain_id_by_tag(tags[3]);
+            dungeon->outer_wall = terrains.get_terrain_id_by_tag(tags[0]);
+            dungeon->inner_wall = terrains.get_terrain_id_by_tag(tags[1]);
+            dungeon->stream1 = terrains.get_terrain_id_by_tag(tags[2]);
+            dungeon->stream2 = terrains.get_terrain_id_by_tag(tags[3]);
             return PARSE_ERROR_NONE;
         } catch (const std::exception &) {
             return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
@@ -287,27 +287,27 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
             const auto &f_tokens = str_split(f, '_');
             if (f_tokens.size() == 3) {
                 if (f_tokens[0] == "FINAL" && f_tokens[1] == "ARTIFACT") {
-                    info_set_value(dungeon.final_artifact, f_tokens[2]);
+                    info_set_value(dungeon->final_artifact, f_tokens[2]);
                     continue;
                 }
                 if (f_tokens[0] == "FINAL" && f_tokens[1] == "OBJECT") {
-                    info_set_value(dungeon.final_object, f_tokens[2]);
+                    info_set_value(dungeon->final_object, f_tokens[2]);
                     continue;
                 }
                 if (f_tokens[0] == "FINAL" && f_tokens[1] == "GUARDIAN") {
-                    info_set_value(dungeon.final_guardian, f_tokens[2]);
+                    info_set_value(dungeon->final_guardian, f_tokens[2]);
                     continue;
                 }
                 if (f_tokens[0] == "MONSTER" && f_tokens[1] == "DIV") {
-                    info_set_value(dungeon.special_div, f_tokens[2]);
+                    info_set_value(dungeon->special_div, f_tokens[2]);
                     continue;
                 }
                 if (f_tokens[0] == "MONSTER" && f_tokens[1] == "RATE") {
-                    info_set_value(dungeon.monster_rate, f_tokens[2]);
+                    info_set_value(dungeon->monster_rate, f_tokens[2]);
                     continue;
                 }
                 if (f_tokens[0] == "TRAP" && f_tokens[1] == "RATE") {
-                    info_set_value(dungeon.trap_rate, f_tokens[2]);
+                    info_set_value(dungeon->trap_rate, f_tokens[2]);
                     continue;
                 }
             }
@@ -317,20 +317,20 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
                 info_set_value(depth, f_tokens[2]);
                 info_set_value(id, f_tokens[3]);
                 info_set_value(percentage, f_tokens[4]);
-                dungeon.fixed_room_list.push_back(std::make_tuple(depth, id, percentage));
+                dungeon->fixed_room_list.push_back(std::make_tuple(depth, id, percentage));
                 continue;
             }
 
             if (f_tokens.size() == 2 && f_tokens[0] == "ALLIANCE") {
                 for (auto a : alliance_list) {
                     if (a.second->tag == f_tokens[1]) {
-                        dungeon.alliance_idx = static_cast<AllianceType>(a.second->id);
+                        dungeon->alliance_idx = static_cast<AllianceType>(a.second->id);
                     }
                 }
                 continue;
             }
 
-            if (!grab_one_dungeon_flag(dungeon, f)) {
+            if (!grab_one_dungeon_flag(*dungeon, f)) {
                 return PARSE_ERROR_INVALID_FLAG;
             }
         }
@@ -350,7 +350,7 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
                 return PARSE_ERROR_INVALID_FLAG;
             }
 
-            dungeon.mon_sex = static_cast<MonsterSex>(sex);
+            dungeon->mon_sex = static_cast<MonsterSex>(sex);
             return 0;
         }
 
@@ -366,16 +366,17 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
 
             const auto &m_tokens = str_split(f, '_');
             if (m_tokens[0] == "R" && m_tokens[1] == "CHAR") {
-                dungeon.r_chars.insert(dungeon.r_chars.end(), m_tokens[2].begin(), m_tokens[2].end());
-                continue;
-            }
-
-            if (grab_one_basic_monster_flag(dungeon, f)) {
+                dungeon->r_chars.insert(dungeon->r_chars.end(), m_tokens[2].begin(), m_tokens[2].end());
                 continue;
             }
 
             uint32_t sex;
-            if (!info_grab_one_const(sex, r_info_sex, f)) {
+            if (info_grab_one_const(sex, r_info_sex, f)) {
+                continue;
+            }
+
+
+            if (!grab_one_basic_monster_flag(*dungeon, f)) {
                 return PARSE_ERROR_INVALID_FLAG;
             }
         }
@@ -404,7 +405,7 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
                 continue; //!< @details MonsterRaceDefinitions.jsonc からのコピペ対策
             }
 
-            if (!grab_one_spell_monster_flag(dungeon, f)) {
+            if (!grab_one_spell_monster_flag(*dungeon, f)) {
                 return PARSE_ERROR_INVALID_FLAG;
             }
         }
@@ -418,7 +419,7 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
         }
         info_set_value(r_type, tokens[1]);
         info_set_value(r_rate, tokens[2]);
-        dungeon.room_rate[i2enum<RoomType>(r_type)] = r_rate;
+        dungeon->room_rate[i2enum<RoomType>(r_type)] = r_rate;
         return PARSE_ERROR_NONE;
     }
 
