@@ -1021,11 +1021,6 @@ struct term_data {
 }
 
 /*
- * The number of term data structures
- */
-#define MAX_TERM_DATA 8
-
-/*
  * The array of term data structures
  */
 static term_data data[MAX_TERM_DATA];
