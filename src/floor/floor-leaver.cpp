@@ -30,6 +30,7 @@
 #include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -359,7 +360,7 @@ static void jump_floors(PlayerType *player_ptr)
 static void exit_to_wilderness(PlayerType *player_ptr)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    if (floor.is_in_underground() || (floor.dungeon_idx == 0)) {
+    if (floor.is_in_underground() || (floor.dungeon_idx == DungeonId::WILDERNESS)) {
         return;
     }
 
@@ -475,7 +476,7 @@ void leave_floor(PlayerType *player_ptr)
  * @brief 任意のダンジョン及び階層に飛ぶ
  * Go to any level
  */
-void jump_floor(PlayerType *player_ptr, int dun_idx, DEPTH depth)
+void jump_floor(PlayerType *player_ptr, DungeonId dun_idx, DEPTH depth)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     floor.set_dungeon_index(dun_idx);

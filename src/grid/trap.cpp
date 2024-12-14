@@ -674,7 +674,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
 
     case TrapType::JUMP_VOID: {
         msg_print(_("なんてこった！あなたは猿空間に送られた！", "What a hell! You were sent to the SARU space!"));
-        jump_floor(player_ptr, DUNGEON_VOID_TERRITORY, player_ptr->current_floor_ptr->dun_level);
+        jump_floor(player_ptr, DungeonId::VOID_TERRITORY, player_ptr->current_floor_ptr->dun_level);
         break;
     }
     default:

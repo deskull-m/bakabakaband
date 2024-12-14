@@ -9,6 +9,7 @@
 #include "player/player-personality-types.h"
 #include "player/player-sex.h"
 #include "system/angband.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
@@ -39,13 +40,12 @@ enum class INCIDENT {
 };
 
 enum class ItemKindType : short;
-enum class PlayerSkillKindType;
 enum class MimicKindType;
+enum class MonraceId : short;
 enum class MonsterAbilityType;
-enum class MonraceId : int16_t;
-enum class Virtue : short;
+enum class PlayerSkillKindType;
 enum class RealmType;
-
+enum class Virtue : short;
 class FloorType;
 class ItemEntity;
 class TimedEffects;
@@ -174,7 +174,7 @@ public:
 
     TIME_EFFECT word_recall{}; /* Word of recall counter */
     TIME_EFFECT alter_reality{}; /* Alter reality counter */
-    int recall_dungeon{}; /* Dungeon set to be recalled */
+    DungeonId recall_dungeon{}; /* Dungeon set to be recalled */
 
     ENERGY energy_need{}; /* Energy needed for next move */
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */

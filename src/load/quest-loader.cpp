@@ -113,7 +113,8 @@ void analyze_quests(PlayerType *player_ptr, const uint16_t max_quests_load, cons
         }
 
         load_quest_details(player_ptr, &quest, quest_id);
-        quest.dungeon = rd_byte();
+
+        quest.dungeon = i2enum<DungeonId>(rd_byte());
 
         if (quest.status == QuestStatusType::TAKEN || quest.status == QuestStatusType::UNTAKEN) {
             auto &monrace = quest.get_bounty();
