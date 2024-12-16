@@ -194,7 +194,7 @@ static void migrate_old_no_debuff_flags(MonsterRaceInfo &monrace, BIT_FLAGS old_
     }
 }
 
-static void migrate_old_resistance_and_ability_flags(MonsterRaceInfo &monrace, BIT_FLAGS f3, const MonsterRaceId r_idx)
+static void migrate_old_resistance_and_ability_flags(MonsterRaceInfo &monrace)
 {
     if (loading_savefile_version_is_older_than(3)) {
         BIT_FLAGS r_flagsr = 0;
@@ -323,7 +323,7 @@ static void migrate_old_behavior_flags(MonsterRaceInfo &monrace, BIT_FLAGS old_f
  * @param r_ptr 読み込み先モンスター種族情報へのポインタ
  * @param r_idx 読み込み先モンスターID(種族特定用)
  */
-static void rd_lore(MonsterRaceInfo &monrace, const MonsterRaceId r_idx)
+static void rd_lore(MonsterRaceInfo &monrace)
 {
     monrace.r_sights = rd_s16b();
     monrace.r_deaths = rd_s16b();
@@ -357,7 +357,7 @@ static void rd_lore(MonsterRaceInfo &monrace, const MonsterRaceId r_idx)
         auto r_flags3 = rd_u32b();
 
         migrate_old_no_debuff_flags(monrace, r_flags3);
-        migrate_old_resistance_and_ability_flags(monrace, r_flags3, r_idx);
+        migrate_old_resistance_and_ability_flags(monrace);
         migrate_old_aura_flags(monrace, r_flags2, r_flags3);
         migrate_old_behavior_flags(monrace, r_flags1, r_flags2);
         migrate_old_kind_flags(monrace, r_flags1, r_flags2, r_flags3);
@@ -418,7 +418,7 @@ void load_lore()
     for (size_t i = 0; i < loading_max_monrace_id; i++) {
         const auto monrace_id = static_cast<MonsterRaceId>(i);
         auto &monrace = i < monraces_size ? monraces.get_monrace(monrace_id) : dummy;
-        rd_lore(monrace, monrace_id);
+        rd_lore(monrace);
     }
 
     for (size_t i = loading_max_monrace_id; i < monraces_size; i++) {
