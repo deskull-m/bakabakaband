@@ -57,7 +57,6 @@ jobs:
       cxx: g++-13
       cxx-flags: "-pipe -O3 -Werror -Wall -Wextra"
       configure-opts: "--disable-pch --disable-japanese"
-      distcheck: true
       use-ccache: true
 
   build_test_with_msvc:
