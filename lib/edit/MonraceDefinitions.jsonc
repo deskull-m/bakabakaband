@@ -68,7 +68,7 @@
       "AURA_HOLINESS", "AURA_NETHER", "AURA_DISENCHANT", "AURA_NEXUS", "AURA_TIME", "AURA_GRAVITY", "AURA_VOIDS",
       "AURA_ABYSS"
 
-      "NEVER_BLOW", "NEVER_MOVE", "OPEN_DOOR", "BASH_DOOR", "MOVE_BODY", "KILL_BODY", "TAKE_ITEM", "KILL_ITEM",
+      "NEVER_MOVE", "OPEN_DOOR", "BASH_DOOR", "MOVE_BODY", "KILL_BODY", "TAKE_ITEM", "KILL_ITEM",
       "RAND_25", "RAND_50", "STUPID", "SMART", "FRIENDLY",
       "CHAR_CLEAR", "SHAPECHANGER", "ATTR_CLEAR", "ATTR_MULTI", "ATTR_SEMIRAND", "ATTR_ANY"
       "UNIQUE", "HUMAN", "QUANTUM", "ORC", "TROLL", "GIANT", "DRAGON", "DEMON", "UNDEAD", "EVIL",
@@ -1984,7 +1984,6 @@
       "exp": 3,
       "flags": [
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
@@ -13177,7 +13176,6 @@
       "exp": 10,
       "flags": [
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "FRIENDS",
         "STUPID",
         "RES_TELE",
@@ -15932,7 +15930,6 @@
       "rarity": 1,
       "exp": 70,
       "flags": [
-        "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
         "CAN_FLY",
@@ -16024,7 +16021,6 @@
       "rarity": 2,
       "exp": 68,
       "flags": [
-        "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
         "WEIRD_MIND",
@@ -17095,7 +17091,6 @@
       "exp": 250,
       "flags": [
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "EMPTY_MIND",
         "INVISIBLE",
         "STUPID",
@@ -25106,7 +25101,6 @@
       "exp": 300,
       "flags": [
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "STUPID",
         "INVISIBLE",
         "EMPTY_MIND",
@@ -29960,7 +29954,6 @@
       "exp": 1500,
       "flags": [
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "NONLIVING",
         "EVIL",
         "COLD_BLOOD",
@@ -31633,8 +31626,7 @@
         "EVIL",
         "NO_SLEEP",
         "NO_CONF",
-        "CAN_FLY",
-        "NEVER_BLOW"
+        "CAN_FLY"
       ],
       "skill": {
         "probability": "1_IN_2",
@@ -32724,7 +32716,6 @@
         "ATTR_MULTI",
         "SELF_LITE_1",
         "SELF_LITE_2",
-        "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
         "CAN_FLY",
@@ -34947,7 +34938,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "ANIMAL",
@@ -41609,7 +41599,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "ANIMAL",
@@ -43280,7 +43269,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "RES_TELE",
         "SMART",
         "COLD_BLOOD",
@@ -43482,7 +43470,6 @@
       "flags": [
         "ATTR_MULTI",
         "ATTR_ANY",
-        "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
         "CAN_FLY",
@@ -44134,7 +44121,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "ANIMAL",
@@ -47701,7 +47687,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "STUPID",
@@ -47750,7 +47735,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "STUPID",
@@ -47793,7 +47777,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "STUPID",
@@ -49430,7 +49413,6 @@
         "RES_TELE",
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "ONLY_ITEM",
         "DROP_4D2",
         "INVISIBLE",
@@ -49476,7 +49458,6 @@
         "RES_TELE",
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "ONLY_ITEM",
         "DROP_4D2",
         "DROP_2D2",
@@ -53539,7 +53520,11 @@
       "rarity": 2,
       "exp": 25,
       "odds_correction_ratio": 300,
-      "flags": ["NEVER_BLOW", "RAND_25", "ANIMAL", "WILD_WOOD"],
+      "flags": [
+        "RAND_25",
+        "ANIMAL",
+        "WILD_WOOD"
+      ],
       "skill": {
         "probability": "1_IN_1",
         "shoot": "4d6"
@@ -56344,7 +56329,6 @@
       "rarity": 2,
       "exp": 50,
       "flags": [
-        "NEVER_BLOW",
         "NEVER_MOVE",
         "NO_SLEEP",
         "NO_FEAR",
@@ -56386,7 +56370,6 @@
       "rarity": 4,
       "exp": 75,
       "flags": [
-        "NEVER_BLOW",
         "ATTR_MULTI",
         "AQUATIC",
         "INVISIBLE",
@@ -56695,7 +56678,6 @@
       "rarity": 4,
       "exp": 60,
       "flags": [
-        "NEVER_BLOW",
         "ATTR_MULTI",
         "AQUATIC",
         "NO_CONF",
@@ -63423,7 +63405,6 @@
         "FORCE_MAXHP",
         "RAND_25",
         "RAND_50",
-        "NEVER_BLOW",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "NONLIVING",
@@ -64241,7 +64222,6 @@
       "exp": 240,
       "sex": "MALE",
       "flags": [
-        "NEVER_BLOW",
         "HUMAN",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -64720,7 +64700,6 @@
       "rarity": 6,
       "exp": 5000,
       "flags": [
-        "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
         "CAN_FLY",
@@ -67727,8 +67706,7 @@
         "NO_CONF",
         "ONLY_ITEM",
         "DROP_90",
-        "DROP_GREAT",
-        "NEVER_BLOW"
+        "DROP_GREAT"
       ],
       "skill": {
         "probability": "1_IN_2",
@@ -68325,7 +68303,6 @@
         "HURT_COLD",
         "HURT_LITE",
         "HURT_ROCK",
-        "NEVER_BLOW",
         "ATTR_CLEAR",
         "NEVER_MOVE",
         "MULTIPLY",
@@ -71684,8 +71661,7 @@
         "NO_STUN",
         "NO_SLEEP",
         "NO_FEAR",
-        "NEVER_MOVE",
-        "NEVER_BLOW"
+        "NEVER_MOVE"
       ],
       "skill": {
         "probability": "1_IN_2",
@@ -71727,8 +71703,7 @@
         "NO_STUN",
         "NO_SLEEP",
         "NO_FEAR",
-        "NEVER_MOVE",
-        "NEVER_BLOW"
+        "NEVER_MOVE"
       ],
       "skill": {
         "probability": "1_IN_2",
@@ -78205,7 +78180,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "ANIMAL",
@@ -78245,7 +78219,6 @@
       "flags": [
         "FORCE_MAXHP",
         "NEVER_MOVE",
-        "NEVER_BLOW",
         "INVISIBLE",
         "EMPTY_MIND",
         "STUPID",
@@ -78346,8 +78319,7 @@
         "RES_SHAR",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR",
-        "NEVER_BLOW"
+        "NO_FEAR"
       ],
       "skill": {
         "probability": "1_IN_6",
@@ -82537,7 +82509,6 @@
         "FORCE_MAXHP",
         "RAND_25",
         "RAND_50",
-        "NEVER_BLOW",
         "DROP_60",
         "DROP_90",
         "DROP_GREAT",
@@ -82598,7 +82569,6 @@
         "DROP_2D2",
         "DROP_4D2",
         "DROP_GREAT",
-        "NEVER_BLOW",
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -83886,7 +83856,6 @@
         "DROP_CORPSE",
         "EVIL",
         "DEMON",
-        "NEVER_BLOW",
         "FORCE_MAXHP",
         "POWERFUL",
         "IM_FIRE",
@@ -83932,7 +83901,6 @@
         "DROP_CORPSE",
         "EVIL",
         "DEMON",
-        "NEVER_BLOW",
         "FORCE_MAXHP",
         "NO_FEAR",
         "RES_PLAS",
@@ -83970,7 +83938,6 @@
       "flags": [
         "ATTR_MULTI",
         "ATTR_ANY",
-        "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
         "CAN_FLY",
@@ -84016,7 +83983,6 @@
       "flags": [
         "ATTR_MULTI",
         "ATTR_ANY",
-        "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
         "CAN_FLY",
@@ -84396,7 +84362,6 @@
         "SMART",
         "CAN_FLY",
         "RAND_25",
-        "NEVER_BLOW",
         "HURT_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -84502,7 +84467,6 @@
         "EVIL",
         "ANIMAL",
         "DROP_CORPSE",
-        "NEVER_BLOW",
         "FORCE_MAXHP",
         "ONLY_ONE",
         "HURT_FIRE",
@@ -84541,7 +84505,6 @@
         "EVIL",
         "ANIMAL",
         "DROP_CORPSE",
-        "NEVER_BLOW",
         "FORCE_MAXHP",
         "ONLY_ONE",
         "HURT_FIRE",
