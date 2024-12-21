@@ -1107,7 +1107,6 @@ bool has_element_resist(PlayerType *player_ptr, ElementRealmType realm, PLAYER_L
  */
 static void display_realm_cursor(int i, int n, term_color_type color)
 {
-    char cur[80];
     char sym;
     std::string name;
     if (i == n) {
@@ -1117,7 +1116,6 @@ static void display_realm_cursor(int i, int n, term_color_type color)
         sym = I2A(i);
         name = element_types.at(i2enum<ElementRealmType>(i + 1)).title.data();
     }
-    sprintf(cur, "%c) %s", sym, name);
 
     c_put_str(color, format("%c) %s", sym, name.data()), 12 + (i / 5), 2 + 15 * (i % 5));
 }
