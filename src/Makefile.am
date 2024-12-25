@@ -532,10 +532,6 @@ hengband_SOURCES = \
 	monster-race/race-drop-flags.h \
 	monster-race/race-feature-flags.h \
 	monster-race/race-flags-resistance.h \
-	monster-race/race-flags1.h monster-race/race-flags2.h \
-	monster-race/race-flags3.h \
-	monster-race/race-flags7.h monster-race/race-flags8.h \
-	monster-race/race-indice-types.h \
 	monster-race/race-kind-flags.h \
 	monster-race/race-misc-flags.h \
 	monster-race/race-population-flags.h \
@@ -950,6 +946,7 @@ hengband_SOURCES = \
 	\
 	system/enums/game-option-page.h \
 	system/enums/grid-flow.h \
+	system/enums/monrace/monrace-id.h \
 	\
 	target/grid-selector.cpp target/grid-selector.h \
 	target/projection-path-calculator.cpp target/projection-path-calculator.h \
