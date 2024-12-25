@@ -4,7 +4,7 @@
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-race/race-flags1.h"
-#include "monster-race/race-indice-types.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"

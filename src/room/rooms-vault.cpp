@@ -21,7 +21,6 @@
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
-#include "monster-race/race-indice-types.h"
 #include "object-enchant/item-apply-magic.h"
 #include "room/cave-filler.h"
 #include "room/door-definition.h"
