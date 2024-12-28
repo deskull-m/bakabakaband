@@ -54,7 +54,7 @@
  * @return 選択されたモンスター生成種族
  * @details nasty生成 (ゲーム内経過日数に応じて、現在フロアより深いフロアのモンスターを出現させる仕様)は
  */
-MonraceId get_mon_num(PlayerType *player_ptr, DEPTH min_level, DEPTH max_level, BIT_FLAGS mode)
+MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint32_t mode)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
     if (max_level > MAX_DEPTH - 1) {
@@ -136,12 +136,12 @@ MonraceId get_mon_num(PlayerType *player_ptr, DEPTH min_level, DEPTH max_level, 
     return table.get_entry(*it).index;
 }
 
-static std::optional<MonraceId> polymorph_of_chameleon(PlayerType *player_ptr, MONSTER_IDX m_idx, const Grid &grid, const std::optional<MONSTER_IDX> summoner_m_idx)
+static std::optional<MonraceId> polymorph_of_chameleon(PlayerType *player_ptr, short m_idx, short terrain_id, const std::optional<short> summoner_m_idx)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     const auto old_unique = monster.get_monrace().kind_flags.has(MonsterKindType::UNIQUE);
-    get_mon_num_prep_chameleon(player_ptr, m_idx, grid, summoner_m_idx, old_unique);
+    get_mon_num_prep_chameleon(player_ptr, m_idx, terrain_id, summoner_m_idx, old_unique);
 
     int level;
     if (old_unique) {
@@ -171,12 +171,11 @@ static std::optional<MonraceId> polymorph_of_chameleon(PlayerType *player_ptr, M
  * @param grid カメレオンの足元の地形
  * @param summoner_m_idx モンスターの召喚による場合、召喚者のモンスターID
  */
-void choose_chameleon_polymorph(PlayerType *player_ptr, MONSTER_IDX m_idx, const Grid &grid, std::optional<MONSTER_IDX> summoner_m_idx)
+void choose_chameleon_polymorph(PlayerType *player_ptr, short m_idx, short terrain_id, std::optional<short> summoner_m_idx)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
-
-    auto new_monrace_id = polymorph_of_chameleon(player_ptr, m_idx, grid, summoner_m_idx);
+    auto new_monrace_id = polymorph_of_chameleon(player_ptr, m_idx, terrain_id, summoner_m_idx);
     if (!new_monrace_id) {
         return;
     }
@@ -192,7 +191,7 @@ void choose_chameleon_polymorph(PlayerType *player_ptr, MONSTER_IDX m_idx, const
  * @param m_idx 隣接数を調べたいモンスターのID
  * @return 隣接しているモンスターの数
  */
-int get_monster_crowd_number(const FloorType *floor_ptr, MONSTER_IDX m_idx)
+int get_monster_crowd_number(const FloorType *floor_ptr, short m_idx)
 {
     auto *m_ptr = &floor_ptr->m_list[m_idx];
     POSITION my = m_ptr->fy;
