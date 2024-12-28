@@ -394,9 +394,9 @@ void AllianceLegendOfSavior::panishment(PlayerType &player_ptr)
     }
 
     if (one_in_(30)) {
-        int cy, cx;
-        scatter(&player_ptr, &cy, &cx, player_ptr.y, player_ptr.x, 6, PROJECT_NONE);
-        if (summon_named_creature(&player_ptr, 0, cy, cx, MonraceId::KENSHIROU, 0)) {
+        Pos2D m_pos(0, 0);
+        m_pos = scatter(&player_ptr, m_pos, 6, PROJECT_NONE);
+        if (summon_named_creature(&player_ptr, 0, m_pos.y, m_pos.x, MonraceId::KENSHIROU, 0)) {
             msg_print(_("「てめえに今日を生きる資格はねえ！」", "You don't deserve to live today!"));
             msg_print(_("ケンシロウはあなたがミスミ老人を殺したことに義憤を覚えて襲ってきた！", "Kenshiro attacked you because you killed old man Misumi!"));
         }
