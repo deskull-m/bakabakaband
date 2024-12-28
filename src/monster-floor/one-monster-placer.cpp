@@ -89,9 +89,10 @@ static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, B
         return r_idx;
     }
 
-    get_mon_num_prep(player_ptr, monster_hook_tanuki, nullptr);
-    int attempts = 1000;
-    DEPTH min = std::min(floor_ptr->base_level - 5, 50);
+    get_mon_num_prep(player_ptr, monster_hook_tanuki);
+    auto attempts = 1000;
+    const auto &floor = *player_ptr->current_floor_ptr;
+    auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
         auto ap_r_idx = get_mon_num(player_ptr, 0, floor_ptr->base_level + 10, PM_NONE);
         if (monraces_info[ap_r_idx].level >= min) {
