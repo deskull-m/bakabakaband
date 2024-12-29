@@ -202,6 +202,7 @@ public:
     bool is_suitable_for_glass() const;
     bool is_suitable_for_town() const;
     bool is_suitable_for_ocean() const;
+    bool is_suitable_for_shore() const;
 
     void init_sex(uint32_t value);
 
