@@ -203,56 +203,6 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
     }
 }
 /*!
- * @brief モンスター種族が護衛となれるかどうかをチェックする
- * @param monrace_id チェックするモンスターの種族ID
- * @param escorted_monrace_id 護衛されるモンスターの種族ID
- * @param escorted_m_idx 護衛されるモンスターのモンスターID
- * @return 護衛にできるならばtrue
- */
-static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_id, MonraceId escorted_monrace_id, MONSTER_IDX escorted_m_idx)
-{
-    auto *r_ptr = &monraces_info[escorted_monrace_id];
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[escorted_m_idx];
-    MonraceDefinition *z_ptr = &monraces_info[monrace_id];
-
-    if (mon_hook_dungeon(player_ptr, escorted_monrace_id) != mon_hook_dungeon(player_ptr, monrace_id)) {
-        return false;
-    }
-
-    if (z_ptr->symbol_definition.character != r_ptr->symbol_definition.character) {
-        return false;
-    }
-
-    if (z_ptr->level > r_ptr->level) {
-        return false;
-    }
-
-    if (z_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-        return false;
-    }
-
-    if (escorted_monrace_id == monrace_id) {
-        return false;
-    }
-
-    if (monster_has_hostile_align(player_ptr, m_ptr, 0, 0, z_ptr)) {
-        return false;
-    }
-
-    if (r_ptr->behavior_flags.has(MonsterBehaviorType::FRIENDLY)) {
-        if (monster_has_hostile_align(player_ptr, nullptr, 1, -1, z_ptr)) {
-            return false;
-        }
-    }
-
-    if (r_ptr->misc_flags.has(MonsterMiscType::CHAMELEON) && z_ptr->misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
-        return false;
-    }
-
-    return true;
-}
-
-/*!
  * @brief 特定モンスターを生成する
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param src_idx 召喚主のモンスター情報ID
@@ -317,10 +267,7 @@ std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITI
             continue;
         }
 
-        auto hook = [place_monster_monrace_id = r_idx, place_monster_m_idx = *m_idx](PlayerType *player_ptr, MonraceId escort_monrace_id) {
-            return place_monster_can_escort(player_ptr, escort_monrace_id, place_monster_monrace_id, place_monster_m_idx);
-        };
-        get_mon_num_prep(player_ptr, std::move(hook), get_monster_hook2(player_ptr, ny, nx));
+        get_mon_num_prep_escort(player_ptr, r_idx, *m_idx, get_monster_hook2(player_ptr, ny, nx));
         const auto monrace_id = get_mon_num(player_ptr, 0, monrace.level, 0);
         if (!MonraceList::is_valid(monrace_id)) {
             break;
