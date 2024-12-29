@@ -197,6 +197,7 @@ public:
     bool is_suitable_for_shallow_water() const;
     bool is_suitable_for_deep_water() const;
     bool is_suitable_for_lava() const;
+    bool is_suitable_for_trapped_pit() const;
 
     void init_sex(uint32_t value);
 
