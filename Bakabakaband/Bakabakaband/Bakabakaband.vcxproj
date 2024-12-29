@@ -303,6 +303,7 @@
     <ClCompile Include="..\..\src\core\score-util.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-incident.cpp" />
+    <ClCompile Include="..\..\src\system\services\dungeon-monrace-service.cpp" />
     <ClCompile Include="..\..\src\system\services\dungeon-service.cpp" />
     <ClCompile Include="..\..\src\system\floor\floor-list.cpp" />
     <ClCompile Include="..\..\src\item-info\flavor-initializer.cpp" />
@@ -1027,6 +1028,7 @@
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
     <ClInclude Include="..\..\src\external-lib\include-json.h" />
     <ClInclude Include="..\..\src\external-lib\json.hpp" />
+    <ClInclude Include="..\..\src\system\services\dungeon-monrace-service.h" />
     <ClInclude Include="..\..\src\system\services\dungeon-service.h" />
     <ClInclude Include="..\..\src\system\enums\dungeon\dungeon-id.h" />
     <ClInclude Include="..\..\src\system\enums\monrace\monrace-hook-types.h" />

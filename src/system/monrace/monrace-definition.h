@@ -84,6 +84,7 @@ private:
  * monster recall (no knowledge of spells, etc).  All of the "recall"
  * fields have a special prefix to aid in searching for them.
  */
+enum class DungeonId;
 enum class GridFlow : int;
 class MonraceDefinition {
 public:
