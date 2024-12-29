@@ -5376,6 +5376,9 @@
     <ClInclude Include="..\..\src\alliance\alliance-megadeth.h">
       <Filter>alliance</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\util\abstract-map-wrapper.h">
+      <Filter>util</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\util\abstract-vector-wrapper.h">
       <Filter>util</Filter>
     </ClInclude>
