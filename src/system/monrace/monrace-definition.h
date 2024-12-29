@@ -192,6 +192,7 @@ public:
     const std::vector<Reinforce> &get_reinforces() const;
     bool can_generate() const;
     GridFlow get_grid_flow_type() const;
+    bool is_suitable_for_random_quest() const;
 
     void init_sex(uint32_t value);
 
