@@ -50,29 +50,6 @@
 #include <time.h>
 
 /*!
- * @brief たぬきの変身対象となるモンスターかどうか判定する / Hook for Tanuki
- * @param r_idx モンスター種族ID
- * @return 対象にできるならtrueを返す
- * @todo グローバル変数対策の上 monster_hook.cへ移す。
- */
-static bool monster_hook_tanuki(PlayerType *player_ptr, MonraceId r_idx)
-{
-    const auto &monrace = monraces_info[r_idx];
-    bool unselectable = monrace.kind_flags.has(MonsterKindType::UNIQUE);
-    unselectable |= monrace.misc_flags.has(MonsterMiscType::MULTIPLY);
-    unselectable |= monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY);
-    unselectable |= monrace.feature_flags.has(MonsterFeatureType::AQUATIC);
-    unselectable |= monrace.misc_flags.has(MonsterMiscType::CHAMELEON);
-    unselectable |= monrace.is_explodable();
-    if (unselectable) {
-        return false;
-    }
-
-    auto hook_pf = get_monster_hook(player_ptr);
-    return hook_pf(player_ptr, r_idx);
-}
-
-/*!
  * @param player_ptr プレイヤーへの参照ポインタ
  * @brief モンスターの表層IDを設定する / Set initial racial appearance of a monster
  * @param r_idx モンスター種族ID
@@ -89,7 +66,7 @@ static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, B
         return r_idx;
     }
 
-    get_mon_num_prep(player_ptr, monster_hook_tanuki);
+    get_mon_num_prep_enum(player_ptr, MonraceHook::TANUKI);
     auto attempts = 1000;
     const auto &floor = *player_ptr->current_floor_ptr;
     auto min = std::min(floor.base_level - 5, 50);

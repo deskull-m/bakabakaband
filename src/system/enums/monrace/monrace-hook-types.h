@@ -24,25 +24,6 @@ enum class MonraceHook {
     GLASS, // ガラス (取り違え注意)
     SHARDS,
     TANUKI,
-    FISHING,
-    QUEST,
-    VAULT,
-    CLONE,
-    JELLY,
-    GOOD,
-    EVIL,
-    MIMIC,
-    HORROR,
-    KENNEL,
-    ANIMAL,
-    CHAPEL,
-    UNDEAD,
-    ORC,
-    TROLL,
-    GIANT,
-    DRAGON,
-    DEMON,
-    DARK_ELF,
 };
 
 enum class MonraceHookTerrain {
