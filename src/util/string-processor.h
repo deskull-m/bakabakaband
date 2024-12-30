@@ -41,3 +41,5 @@ std::string trim_kanji(const std::string &str, std::optional<int> count = std::n
 std::string str_substr(std::string_view sv, size_t pos = 0, size_t n = std::string_view::npos);
 std::string str_substr(std::string &&str, size_t pos = 0, size_t n = std::string_view::npos);
 std::string str_substr(const char *str, size_t pos = 0, size_t n = std::string_view::npos);
+std::string str_toupper(std::string_view str);
+std::string str_tolower(std::string_view str);
