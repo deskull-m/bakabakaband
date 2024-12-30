@@ -29,7 +29,6 @@ FEAT_IDX feat_trap_armageddon;
 FEAT_IDX feat_trap_piranha;
 
 /* Seams */
-FEAT_IDX feat_magma_vein;
 FEAT_IDX feat_quartz_vein;
 
 /* Walls */
@@ -105,13 +104,9 @@ FEAT_IDX feat_jammed_door_random(int door_type)
     return candidates.empty() ? terrains.get_terrain_id(TerrainTag::NONE) : rand_choice(candidates);
 }
 
-void cave_set_feat_priority(PlayerType *player_ptr, POSITION y, POSITION x, FEAT_IDX feat)
+void cave_set_feat(PlayerType *player_ptr, const Pos2D &pos, TerrainTag tag)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    auto *g_ptr = &floor_ptr->grid_array[y][x];
-    if (TerrainList::get_instance().get_terrain(g_ptr->feat).change_priority <= TerrainList::get_instance().get_terrain(feat).change_priority) {
-        cave_set_feat(player_ptr, y, x, feat);
-    }
+    cave_set_feat(player_ptr, pos.y, pos.x, TerrainList::get_instance().get_terrain_id(tag));
 }
 
 /*
