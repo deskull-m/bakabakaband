@@ -125,48 +125,24 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
         info[i++] = _("それはその場から一切動かすことができない。", "It can't move at all from the spot.");
     }
 
-    POSITION rad = 0;
-    if (flags.has(TR_LITE_1) && flags.has_not(TR_DARK_SOURCE)) {
-        rad += 1;
-    }
-    if (flags.has(TR_LITE_2) && flags.has_not(TR_DARK_SOURCE)) {
-        rad += 2;
-    }
-    if (flags.has(TR_LITE_3) && flags.has_not(TR_DARK_SOURCE)) {
-        rad += 3;
-    }
-    if (flags.has(TR_LITE_M1)) {
-        rad -= 1;
-    }
-    if (flags.has(TR_LITE_M2)) {
-        rad -= 2;
-    }
-    if (flags.has(TR_LITE_M3)) {
-        rad -= 3;
-    }
-
-    if (o_ptr->ego_idx == EgoType::LITE_SHINE) {
-        rad++;
-    }
+    const auto radius = o_ptr->get_lite_radius();
 
     std::string desc;
-    if (flags.has(TR_LITE_FUEL) && flags.has_not(TR_DARK_SOURCE)) {
-        if (rad > 0) {
-            desc = _("それは燃料補給によって明かり(半径 ", "It provides light (radius ");
-            desc.append(std::to_string((int)rad)).append(_(")を授ける。", ") when fueled."));
-        }
-    } else {
-        if (rad > 0) {
-            desc = _("それは永遠なる明かり(半径 ", "It provides light (radius ");
-            desc.append(std::to_string((int)rad)).append(_(")を授ける。", ") forever."));
-        }
-        if (rad < 0) {
-            desc = _("それは明かりの半径を狭める(半径に-", "It decreases the radius of your light by ");
-            desc.append(std::to_string((int)-rad)).append(_(")。", "."));
-        }
-    }
+    if (radius > 0) {
+        if (flags.has(TR_LITE_FUEL)) {
 
-    if (rad != 0) {
+            desc = _("それは燃料補給によって明かり(半径 ", "It provides light (radius ");
+            desc.append(std::to_string(radius)).append(_(")を授ける。", ") when fueled."));
+
+        } else {
+            desc = _("それは永遠なる明かり(半径 ", "It provides light (radius ");
+            desc.append(std::to_string(radius)).append(_(")を授ける。", ") forever."));
+        }
+        info[i++] = desc.data();
+    }
+    if (radius < 0) {
+        desc = _("それは明かりの半径を狭める(半径に-", "It decreases the radius of your light by ");
+        desc.append(std::to_string(-radius)).append(_(")。", "."));
         info[i++] = desc.data();
     }
 
