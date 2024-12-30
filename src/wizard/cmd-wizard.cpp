@@ -214,13 +214,13 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         patron_list[player_ptr->chaos_patron].gain_level_reward(player_ptr, command_arg);
         return true;
     case 'n':
-        wiz_summon_specific_monster(player_ptr, i2enum<MonsterRaceId>(command_arg));
+        wiz_summon_specific_monster(player_ptr, i2enum<MonraceId>(command_arg));
         return true;
     case 'N':
-        wiz_summon_pet(player_ptr, i2enum<MonsterRaceId>(command_arg));
+        wiz_summon_pet(player_ptr, i2enum<MonraceId>(command_arg));
         return true;
     case KTRL('N'):
-        wiz_summon_clone(player_ptr, i2enum<MonsterRaceId>(command_arg));
+        wiz_summon_clone(player_ptr, i2enum<MonraceId>(command_arg));
         return true;
     case 'o':
         wiz_modify_item(player_ptr);

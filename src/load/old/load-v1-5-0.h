@@ -38,4 +38,4 @@ extern const int QUEST_ROYAL_CRYPT;
 
 class ItemEntity;
 class PlayerType;
-void set_old_lore(MonsterRaceInfo *r_ptr, BIT_FLAGS f4, const MonsterRaceId r_idx);
+void set_old_lore(MonsterRaceInfo *r_ptr, BIT_FLAGS f4, const MonraceId r_idx);

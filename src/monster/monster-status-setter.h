@@ -2,7 +2,7 @@
 
 #include "system/angband.h"
 
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
 class MonsterEntity;
 class PlayerType;
 void set_pet(PlayerType *player_ptr, MonsterEntity *m_ptr);

@@ -20,7 +20,7 @@ void MonsterLoader50::rd_monster(MonsterEntity *m_ptr_)
     this->m_ptr = m_ptr_;
 
     auto flags = rd_u32b();
-    this->m_ptr->r_idx = i2enum<MonsterRaceId>(rd_s16b());
+    this->m_ptr->r_idx = i2enum<MonraceId>(rd_s16b());
 
     if (loading_savefile_version_is_older_than(16)) {
         MonsterRaceInfo *r_ptr = &monraces_info[m_ptr->r_idx];
@@ -42,7 +42,7 @@ void MonsterLoader50::rd_monster(MonsterEntity *m_ptr_)
         this->m_ptr->death_count = rd_u32b();
     }
 
-    this->m_ptr->ap_r_idx = any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonsterRaceId>(rd_s16b()) : this->m_ptr->r_idx;
+    this->m_ptr->ap_r_idx = any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonraceId>(rd_s16b()) : this->m_ptr->r_idx;
     this->m_ptr->sub_align = any_bits(flags, SaveDataMonsterFlagType::SUB_ALIGN) ? rd_byte() : 0;
     this->m_ptr->mtimed[MonsterTimedEffect::SLEEP] = any_bits(flags, SaveDataMonsterFlagType::SLEEP) ? rd_s16b() : 0;
     this->m_ptr->mspeed = rd_byte();

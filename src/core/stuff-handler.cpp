@@ -30,7 +30,7 @@ void handle_stuff(PlayerType *player_ptr)
 /*
  * Track the given monster race
  */
-void monster_race_track(PlayerType *player_ptr, MonsterRaceId r_idx)
+void monster_race_track(PlayerType *player_ptr, MonraceId r_idx)
 {
     (void)player_ptr;
     LoreTracker::get_instance().set_trackee(r_idx);

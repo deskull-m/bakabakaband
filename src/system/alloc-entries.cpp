@@ -3,7 +3,7 @@
 #include "system/monster-race-info.h"
 #include "world/world-collapsion.h"
 
-MonraceAllocationEntry::MonraceAllocationEntry(MonsterRaceId index, int level, short prob1, short prob2)
+MonraceAllocationEntry::MonraceAllocationEntry(MonraceId index, int level, short prob1, short prob2)
     : index(index)
     , level(level)
     , prob1(prob1)

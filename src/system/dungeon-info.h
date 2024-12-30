@@ -54,7 +54,7 @@ constexpr auto DUNGEON_FEAT_PROB_NUM = 3;
 #define DUNGEON_MAX 31
 
 enum class FixedArtifactId : short;
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
 enum class MonsterSex;
 
 struct feat_prob {
@@ -111,7 +111,7 @@ struct dungeon_type {
     std::vector<char> r_chars; /* Monster symbols allowed */
     short final_object{}; /* The object you'll find at the bottom */
     FixedArtifactId final_artifact{}; /* The artifact you'll find at the bottom */
-    MonsterRaceId final_guardian{}; /* The artifact's guardian. If an artifact is specified, then it's NEEDED */
+    MonraceId final_guardian{}; /* The artifact's guardian. If an artifact is specified, then it's NEEDED */
 
     PROB special_div{}; /* % of monsters affected by the flags/races allowed, to add some variety */
     int tunnel_percent{};

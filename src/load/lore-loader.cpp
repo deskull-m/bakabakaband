@@ -416,13 +416,13 @@ void load_lore()
     const auto loading_max_monrace_id = rd_u16b();
     MonsterRaceInfo dummy;
     for (size_t i = 0; i < loading_max_monrace_id; i++) {
-        const auto monrace_id = static_cast<MonsterRaceId>(i);
+        const auto monrace_id = static_cast<MonraceId>(i);
         auto &monrace = i < monraces_size ? monraces.get_monrace(monrace_id) : dummy;
         rd_lore(monrace);
     }
 
     for (size_t i = loading_max_monrace_id; i < monraces_size; i++) {
-        const auto monrace_id = i2enum<MonsterRaceId>(i);
+        const auto monrace_id = i2enum<MonraceId>(i);
         auto &monrace = monraces.get_monrace(monrace_id);
         monrace.reset_max_number();
     }
