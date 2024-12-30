@@ -107,7 +107,7 @@ bool kawarimi(PlayerType *player_ptr, bool success)
     const int sv_wooden_statue = 0;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::STATUE, sv_wooden_statue }));
 
-    q_ptr->pval = enum2i(MonsterRaceId::NINJA);
+    q_ptr->pval = enum2i(MonraceId::NINJA);
     (void)drop_near(player_ptr, q_ptr, -1, y, x);
 
     if (success) {

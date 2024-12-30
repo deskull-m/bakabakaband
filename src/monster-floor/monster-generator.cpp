@@ -49,7 +49,7 @@
  * @return 成功したらtrue
  *
  */
-bool mon_scatter(PlayerType *player_ptr, MonsterRaceId r_idx, POSITION *yp, POSITION *xp, POSITION y, POSITION x, POSITION max_dist)
+bool mon_scatter(PlayerType *player_ptr, MonraceId r_idx, POSITION *yp, POSITION *xp, POSITION y, POSITION x, POSITION max_dist)
 {
     int place_x[MON_SCAT_MAXD]{};
     int place_y[MON_SCAT_MAXD]{};
@@ -125,7 +125,7 @@ bool mon_scatter(PlayerType *player_ptr, MonsterRaceId r_idx, POSITION *yp, POSI
  * @details
  * Note that "reproduction" REQUIRES empty space.
  */
-std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterRaceId r_idx, bool clone, BIT_FLAGS mode)
+std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MonraceId r_idx, bool clone, BIT_FLAGS mode)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
     auto *m_ptr = &floor_ptr->m_list[m_idx];
@@ -159,7 +159,7 @@ std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX 
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
  * @return 成功したらtrue
  */
-static bool place_monster_group(PlayerType *player_ptr, POSITION y, POSITION x, MonsterRaceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
+static bool place_monster_group(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
 {
     auto *r_ptr = &monraces_info[r_idx];
     int total = randint1(10);
@@ -221,7 +221,7 @@ static bool place_monster_group(PlayerType *player_ptr, POSITION y, POSITION x, 
  * @param escorted_m_idx 護衛されるモンスターのモンスターID
  * @return 護衛にできるならばtrue
  */
-static bool place_monster_can_escort(PlayerType *player_ptr, MonsterRaceId monrace_id, MonsterRaceId escorted_monrace_id, MONSTER_IDX escorted_m_idx)
+static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_id, MonraceId escorted_monrace_id, MONSTER_IDX escorted_m_idx)
 {
     auto *r_ptr = &monraces_info[escorted_monrace_id];
     auto *m_ptr = &player_ptr->current_floor_ptr->m_list[escorted_m_idx];
@@ -276,7 +276,7 @@ static bool place_monster_can_escort(PlayerType *player_ptr, MonsterRaceId monra
  * @return 生成に成功したらモンスターID、失敗したらstd::nullopt
  * @details 護衛も一緒に生成する
  */
-std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITION y, POSITION x, MonsterRaceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
+std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     if (!(mode & PM_NO_KAGE) && one_in_(333)) {
@@ -329,7 +329,7 @@ std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITI
             continue;
         }
 
-        auto hook = [place_monster_monrace_id = r_idx, place_monster_m_idx = *m_idx](PlayerType *player_ptr, MonsterRaceId escort_monrace_id) {
+        auto hook = [place_monster_monrace_id = r_idx, place_monster_m_idx = *m_idx](PlayerType *player_ptr, MonraceId escort_monrace_id) {
             return place_monster_can_escort(player_ptr, escort_monrace_id, place_monster_monrace_id, place_monster_m_idx);
         };
         get_mon_num_prep(player_ptr, std::move(hook), get_monster_hook2(player_ptr, ny, nx));
@@ -358,7 +358,7 @@ std::optional<MONSTER_IDX> place_random_monster(PlayerType *player_ptr, POSITION
 {
     get_mon_num_prep(player_ptr, get_monster_hook(player_ptr), get_monster_hook2(player_ptr, y, x));
     const auto &floor = *player_ptr->current_floor_ptr;
-    MonsterRaceId monrace_id;
+    MonraceId monrace_id;
     do {
         monrace_id = get_mon_num(player_ptr, 0, floor.monster_level, PM_NONE);
     } while ((mode & PM_NO_QUEST) && monraces_info[monrace_id].misc_flags.has(MonsterMiscType::NO_QUEST));
@@ -376,7 +376,7 @@ std::optional<MONSTER_IDX> place_random_monster(PlayerType *player_ptr, POSITION
     return place_specific_monster(player_ptr, y, x, monrace_id, mode);
 }
 
-static std::optional<MonsterRaceId> select_horde_leader_r_idx(PlayerType *player_ptr)
+static std::optional<MonraceId> select_horde_leader_r_idx(PlayerType *player_ptr)
 {
     const auto *floor_ptr = player_ptr->current_floor_ptr;
 
@@ -390,7 +390,7 @@ static std::optional<MonsterRaceId> select_horde_leader_r_idx(PlayerType *player
             continue;
         }
 
-        if (monrace_id == MonsterRaceId::HAGURE) {
+        if (monrace_id == MonraceId::HAGURE) {
             continue;
         }
 

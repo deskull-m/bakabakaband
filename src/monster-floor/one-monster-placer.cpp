@@ -54,7 +54,7 @@
  * @return 対象にできるならtrueを返す
  * @todo グローバル変数対策の上 monster_hook.cへ移す。
  */
-static bool monster_hook_tanuki(PlayerType *player_ptr, MonsterRaceId r_idx)
+static bool monster_hook_tanuki(PlayerType *player_ptr, MonraceId r_idx)
 {
     const auto &monrace = monraces_info[r_idx];
     bool unselectable = monrace.kind_flags.has(MonsterKindType::UNIQUE);
@@ -77,11 +77,11 @@ static bool monster_hook_tanuki(PlayerType *player_ptr, MonsterRaceId r_idx)
  * @param r_idx モンスター種族ID
  * @return モンスター種族の表層ID
  */
-static MonsterRaceId initial_r_appearance(PlayerType *player_ptr, MonsterRaceId r_idx, BIT_FLAGS generate_mode)
+static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, BIT_FLAGS generate_mode)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
     if (is_chargeman(player_ptr) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
-        return MonsterRaceId::ALIEN_JURAL;
+        return MonraceId::ALIEN_JURAL;
     }
 
     if (monraces_info[r_idx].misc_flags.has_not(MonsterMiscType::TANUKI)) {
@@ -107,7 +107,7 @@ static MonsterRaceId initial_r_appearance(PlayerType *player_ptr, MonsterRaceId 
  * @param r_idx 生成モンスター種族
  * @return ユニークの生成が不可能な条件ならFALSE、それ以外はTRUE
  */
-static bool check_unique_placeable(const FloorType &floor, MonsterRaceId r_idx, BIT_FLAGS mode)
+static bool check_unique_placeable(const FloorType &floor, MonraceId r_idx, BIT_FLAGS mode)
 {
     if (AngbandSystem::get_instance().is_phase_out()) {
         return true;
@@ -143,7 +143,7 @@ static bool check_unique_placeable(const FloorType &floor, MonsterRaceId r_idx, 
  * @param r_idx 生成モンスター種族
  * @return 生成が可能ならTRUE、不可能ならFALSE
  */
-static bool check_quest_placeable(const FloorType &floor, MonsterRaceId r_idx)
+static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
 {
     if (!inside_quest(floor.get_quest_id())) {
         return true;
@@ -183,7 +183,7 @@ static bool check_quest_placeable(const FloorType &floor, MonsterRaceId r_idx)
  * @param x 生成位置x座標
  * @return 生成が可能ならTRUE、不可能ならFALSE
  */
-static bool check_procection_rune(PlayerType *player_ptr, MonsterRaceId r_idx, POSITION y, POSITION x)
+static bool check_procection_rune(PlayerType *player_ptr, MonraceId r_idx, POSITION y, POSITION x)
 {
     auto *g_ptr = &player_ptr->current_floor_ptr->grid_array[y][x];
     if (!g_ptr->is_rune_protection()) {
@@ -206,7 +206,7 @@ static bool check_procection_rune(PlayerType *player_ptr, MonsterRaceId r_idx, P
     return true;
 }
 
-static void warn_unique_generation(PlayerType *player_ptr, MonsterRaceId r_idx)
+static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
 {
     if (!player_ptr->warning || !AngbandWorld::get_instance().character_dungeon) {
         return;
@@ -251,7 +251,7 @@ static void warn_unique_generation(PlayerType *player_ptr, MonsterRaceId r_idx)
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
  * @return 生成に成功したらモンスターID、失敗したらstd::nullopt
  */
-std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, POSITION x, MonsterRaceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
+std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     auto *g_ptr = &floor.grid_array[y][x];
@@ -295,7 +295,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     } else {
         m_ptr->r_idx = r_idx;
         if (any_bits(mode, PM_KAGE) && none_bits(mode, PM_FORCE_PET)) {
-            m_ptr->ap_r_idx = MonsterRaceId::KAGE;
+            m_ptr->ap_r_idx = MonraceId::KAGE;
             m_ptr->mflag2.set(MonsterConstantFlagType::KAGE);
         } else {
             m_ptr->ap_r_idx = initial_r_appearance(player_ptr, r_idx, mode);
@@ -320,7 +320,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     time_t now = time(nullptr);
     struct tm *t = localtime(&now);
     if (t->tm_mon == 11 && t->tm_mday >= 24 && t->tm_mday <= 25 && one_in_(6)) {
-        if (none_bits(mode, PM_MULTIPLY | PM_KAGE) && m_ptr->r_idx != MonsterRaceId::SANTA) {
+        if (none_bits(mode, PM_MULTIPLY | PM_KAGE) && m_ptr->r_idx != MonraceId::SANTA) {
             m_ptr->mflag2.set(MonsterConstantFlagType::SANTA);
         }
     }

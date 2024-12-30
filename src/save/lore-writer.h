@@ -2,6 +2,6 @@
 
 #include "system/angband.h"
 
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
 class MonsterEntity;
-void wr_lore(MonsterRaceId r_idx);
+void wr_lore(MonraceId r_idx);

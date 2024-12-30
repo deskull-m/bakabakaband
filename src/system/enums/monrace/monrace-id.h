@@ -1,6 +1,6 @@
 #pragma once
 
-enum class MonsterRaceId : int16_t {
+enum class MonraceId : int16_t {
     PLAYER = 0,
     FILTHY_URCHIN = 1,
     MAGGOT = 8,

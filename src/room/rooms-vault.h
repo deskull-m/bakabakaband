@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
 
 struct vault_type {
     vault_type() = default;
@@ -24,7 +24,7 @@ struct vault_type {
     int rarity = 1;
     std::map<char, FEAT_IDX> feature_list;
     std::map<char, FEAT_IDX> feature_ap_list;
-    std::map<char, MonsterRaceId> place_monster_list;
+    std::map<char, MonraceId> place_monster_list;
 };
 
 extern std::vector<vault_type> vaults_info;

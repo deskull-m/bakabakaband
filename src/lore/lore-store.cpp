@@ -30,7 +30,7 @@ static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const Enum
  * @details
  * Return the number of new flags learnt.  -Mogami-
  */
-int lore_do_probe(PlayerType *player_ptr, MonsterRaceId r_idx)
+int lore_do_probe(PlayerType *player_ptr, MonraceId r_idx)
 {
     (void)player_ptr;
     int n = 0;
