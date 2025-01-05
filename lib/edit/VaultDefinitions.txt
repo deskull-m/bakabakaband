@@ -12790,6 +12790,18 @@ D:    %....%
 D:    %....%    
 D:     %%%%     
 
+N:610:Treasure Room
+X:18:8:9:9
+D: %%   %% 
+D:%''%%%''%
+D:%'#^^^#'%
+D: %^[#[^% 
+D: %^#&#^% 
+D: %^[#[^% 
+D:%'#^^^#'%
+D:%''%%%''%
+D: %%   %% 
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
