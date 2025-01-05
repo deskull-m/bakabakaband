@@ -43,7 +43,7 @@ std::string look_mon_desc(MonsterEntity *m_ptr, BIT_FLAGS mode)
     concptr ally = alliance_list.find(m_ptr->alliance_idx)->second.get()->name.c_str();
 
     concptr clone = m_ptr->mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "";
-    MonsterRaceInfo *ap_r_ptr = &m_ptr->get_appearance_monrace();
+    MonraceDefinition *ap_r_ptr = &m_ptr->get_appearance_monrace();
     if (ap_r_ptr->r_tkills && m_ptr->mflag2.has_not(MonsterConstantFlagType::KAGE)) {
         return format(_("レベル%d, %s %s%s%s", "Level %d, %s %s%s%s"), ap_r_ptr->level, ally, desc, attitude, clone);
     }

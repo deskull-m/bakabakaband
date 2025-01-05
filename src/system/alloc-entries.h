@@ -12,7 +12,7 @@
 
 enum class AllianceType : int;
 enum class MonraceId : short;
-class MonsterRaceInfo;
+class MonraceDefinition;
 class MonraceAllocationEntry {
 public:
     MonraceAllocationEntry() = default;
@@ -27,7 +27,7 @@ public:
     bool is_same_alliance(AllianceType alliance_id) const;
 
 private:
-    const MonsterRaceInfo &get_monrace() const;
+    const MonraceDefinition &get_monrace() const;
 };
 
 /*
