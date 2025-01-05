@@ -16,7 +16,7 @@ bool is_male(const MonsterSex sex)
  * @param 判定するモンスターの参照
  * @return 男性を含むか否か
  */
-bool is_male(const MonsterRaceInfo &monrace)
+bool is_male(const MonraceDefinition &monrace)
 {
     return is_male(monrace.sex);
 }
@@ -36,7 +36,7 @@ bool is_female(const MonsterSex sex)
  * @param 判定するモンスターの参照
  *@return 女性を含むか否か
  */
-bool is_female(const MonsterRaceInfo &monrace)
+bool is_female(const MonraceDefinition &monrace)
 {
     return is_female(monrace.sex);
 }

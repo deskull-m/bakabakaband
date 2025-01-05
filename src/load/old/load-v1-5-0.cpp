@@ -54,14 +54,14 @@ const int OLD_QUEST_WATER_CAVE = 18; // 湖の洞窟.
 const int QUEST_OLD_CASTLE = 27; // 古い城.
 const int QUEST_ROYAL_CRYPT = 28; // 王家の墓.
 
-static void move_RF3_to_RFR(MonsterRaceInfo *r_ptr, BIT_FLAGS f3, const BIT_FLAGS rf3, const MonsterResistanceType rfr)
+static void move_RF3_to_RFR(MonraceDefinition *r_ptr, BIT_FLAGS f3, const BIT_FLAGS rf3, const MonsterResistanceType rfr)
 {
     if (f3 & rf3) {
         r_ptr->resistance_flags.set(rfr);
     }
 }
 
-static void move_RF4_BR_to_RFR(MonsterRaceInfo *r_ptr, BIT_FLAGS f4, const BIT_FLAGS rf4_br, const MonsterResistanceType rfr)
+static void move_RF4_BR_to_RFR(MonraceDefinition *r_ptr, BIT_FLAGS f4, const BIT_FLAGS rf4_br, const MonsterResistanceType rfr)
 {
     if (f4 & rf4_br) {
         r_ptr->resistance_flags.set(rfr);
@@ -74,7 +74,7 @@ static void move_RF4_BR_to_RFR(MonsterRaceInfo *r_ptr, BIT_FLAGS f4, const BIT_F
  * @param r_idx モンスター種族ID
  * @details 本来はr_idxからr_ptrを決定可能だが、互換性を優先するため元コードのままとする
  */
-void set_old_lore(MonsterRaceInfo *r_ptr, BIT_FLAGS f3, BIT_FLAGS f4, const MonraceId r_idx)
+void set_old_lore(MonraceDefinition *r_ptr, BIT_FLAGS f3, BIT_FLAGS f4, const MonraceId r_idx)
 {
     r_ptr->r_resistance_flags.clear();
     move_RF3_to_RFR(r_ptr, f3, RF3_IM_ACID, MonsterResistanceType::IMMUNE_ACID);

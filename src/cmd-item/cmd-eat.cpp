@@ -108,7 +108,7 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
         return false;
     }
 
-    MonsterRaceInfo *r_ptr = &monraces_info[i2enum<MonraceId, int>(o_ptr->pval)];
+    MonraceDefinition *r_ptr = &monraces_info[i2enum<MonraceId, int>(o_ptr->pval)];
     EXP max_exp = r_ptr->level * r_ptr->level * 10;
 
     chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
@@ -135,7 +135,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
         return false;
     }
 
-    MonsterRaceInfo *r_ptr = &monraces_info[i2enum<MonraceId, int>(o_ptr->pval)];
+    MonraceDefinition *r_ptr = &monraces_info[i2enum<MonraceId, int>(o_ptr->pval)];
 
     if (r_ptr->meat_feed_flags.has(MonsterFeedType::BLIND)) {
         BadStatusSetter(player_ptr).mod_blindness(200 + randint1(200));

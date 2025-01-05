@@ -67,9 +67,9 @@ public:
 enum class GridFlow : int;
 class DropArtifact;
 class Reinforce;
-class MonsterRaceInfo {
+class MonraceDefinition {
 public:
-    MonsterRaceInfo();
+    MonraceDefinition();
 
     MonraceId idx{};
     LocalizedString name{}; //!< モンスターの名称
@@ -159,12 +159,12 @@ public:
     bool is_explodable() const;
     bool symbol_char_is_any_of(std::string_view symbol_characters) const;
     std::string get_died_message() const;
-    std::optional<bool> order_level(const MonsterRaceInfo &other) const;
-    bool order_level_strictly(const MonsterRaceInfo &other) const;
-    std::optional<bool> order_pet(const MonsterRaceInfo &other) const;
+    std::optional<bool> order_level(const MonraceDefinition &other) const;
+    bool order_level_strictly(const MonraceDefinition &other) const;
+    std::optional<bool> order_pet(const MonraceDefinition &other) const;
     void kill_unique();
     std::string get_pronoun_of_summoned_kin() const;
-    const MonsterRaceInfo &get_next() const;
+    const MonraceDefinition &get_next() const;
     bool is_bounty(bool unachieved_only) const;
     int calc_power() const;
     int calc_figurine_value() const;
@@ -200,7 +200,7 @@ public:
     Reinforce(MonraceId monrace_id, Dice dice);
     MonraceId get_monrace_id() const;
     bool is_valid() const;
-    const MonsterRaceInfo &get_monrace() const;
+    const MonraceDefinition &get_monrace() const;
     std::string get_dice_as_string() const;
     int roll_dice() const;
     int roll_max_dice() const;
@@ -210,7 +210,7 @@ private:
     Dice dice;
 };
 
-extern std::map<MonraceId, MonsterRaceInfo> monraces_info;
+extern std::map<MonraceId, MonraceDefinition> monraces_info;
 
 class MonraceList {
 public:
@@ -223,19 +223,19 @@ public:
     static const std::map<MonraceId, std::set<MonraceId>> &get_unified_uniques();
     static MonraceList &get_instance();
     static MonraceId empty_id();
-    std::map<MonraceId, MonsterRaceInfo>::iterator begin();
-    std::map<MonraceId, MonsterRaceInfo>::const_iterator begin() const;
-    std::map<MonraceId, MonsterRaceInfo>::iterator end();
-    std::map<MonraceId, MonsterRaceInfo>::const_iterator end() const;
-    std::map<MonraceId, MonsterRaceInfo>::reverse_iterator rbegin();
-    std::map<MonraceId, MonsterRaceInfo>::const_reverse_iterator rbegin() const;
-    std::map<MonraceId, MonsterRaceInfo>::reverse_iterator rend();
-    std::map<MonraceId, MonsterRaceInfo>::const_reverse_iterator rend() const;
+    std::map<MonraceId, MonraceDefinition>::iterator begin();
+    std::map<MonraceId, MonraceDefinition>::const_iterator begin() const;
+    std::map<MonraceId, MonraceDefinition>::iterator end();
+    std::map<MonraceId, MonraceDefinition>::const_iterator end() const;
+    std::map<MonraceId, MonraceDefinition>::reverse_iterator rbegin();
+    std::map<MonraceId, MonraceDefinition>::const_reverse_iterator rbegin() const;
+    std::map<MonraceId, MonraceDefinition>::reverse_iterator rend();
+    std::map<MonraceId, MonraceDefinition>::const_reverse_iterator rend() const;
     size_t size() const;
-    MonsterRaceInfo &get_monrace(MonraceId monrace_id);
-    const MonsterRaceInfo &get_monrace(MonraceId monrace_id) const;
+    MonraceDefinition &get_monrace(MonraceId monrace_id);
+    const MonraceDefinition &get_monrace(MonraceId monrace_id) const;
     const std::vector<MonraceId> &get_valid_monrace_ids() const;
-    const std::vector<std::pair<MonraceId, const MonsterRaceInfo *>> &get_sorted_monraces() const;
+    const std::vector<std::pair<MonraceId, const MonraceDefinition *>> &get_sorted_monraces() const;
     bool can_unify_separate(const MonraceId r_idx) const;
     void kill_unified_unique(const MonraceId r_idx);
     bool is_selectable(const MonraceId r_idx) const;
@@ -248,7 +248,7 @@ public:
     bool order_level(MonraceId id1, MonraceId id2) const;
     bool order_level_unique(MonraceId id1, MonraceId id2) const;
     MonraceId pick_id_at_random() const;
-    const MonsterRaceInfo &pick_monrace_at_random() const;
+    const MonraceDefinition &pick_monrace_at_random() const;
 
     void reset_current_numbers();
     void reset_all_visuals();

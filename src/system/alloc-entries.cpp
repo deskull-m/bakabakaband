@@ -62,7 +62,7 @@ bool MonraceAllocationEntry::is_same_alliance(AllianceType alliance_id) const
     return monrace.alliance_idx == alliance_id;
 }
 
-const MonsterRaceInfo &MonraceAllocationEntry::get_monrace() const
+const MonraceDefinition &MonraceAllocationEntry::get_monrace() const
 {
     return MonraceList::get_instance().get_monrace(index);
 }

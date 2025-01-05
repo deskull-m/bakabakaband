@@ -17,12 +17,12 @@
 
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る(モンスター用1) /
- * Grab one (basic) flag in a MonsterRaceInfo from a textual string
+ * Grab one (basic) flag in a MonraceDefinition from a textual string
  * @param monrace 保管先のモンスター種族構造体
  * @param what 参照元の文字列ポインタ
  * @return 見つけたらtrue
  */
-static bool grab_one_basic_flag(MonsterRaceInfo &monrace, std::string_view what)
+static bool grab_one_basic_flag(MonraceDefinition &monrace, std::string_view what)
 {
     if (EnumClassFlagGroup<MonsterFeedType>::grab_one_flag(monrace.meat_feed_flags, r_info_meat_feed, what)) {
         return true;
@@ -84,12 +84,12 @@ static bool grab_one_basic_flag(MonsterRaceInfo &monrace, std::string_view what)
 
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る(モンスター用2) /
- * Grab one (spell) flag in a MonsterRaceInfo from a textual string
+ * Grab one (spell) flag in a MonraceDefinition from a textual string
  * @param monrace 保管先のモンスター種族構造体
  * @param what 参照元の文字列ポインタ
  * @return 見つけたらtrue
  */
-static bool grab_one_spell_flag(MonsterRaceInfo &monrace, std::string_view what)
+static bool grab_one_spell_flag(MonraceDefinition &monrace, std::string_view what)
 {
     if (EnumClassFlagGroup<MonsterAbilityType>::grab_one_flag(monrace.ability_flags, r_info_ability_flags, what)) {
         return true;
@@ -105,7 +105,7 @@ static bool grab_one_spell_flag(MonsterRaceInfo &monrace, std::string_view what)
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_name(const nlohmann::json &name_data, MonsterRaceInfo &monrace)
+static errr set_mon_name(const nlohmann::json &name_data, MonraceDefinition &monrace)
 {
     if (name_data.is_null()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -146,7 +146,7 @@ static errr set_mon_name(const nlohmann::json &name_data, MonsterRaceInfo &monra
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_symbol(const nlohmann::json &symbol_data, MonsterRaceInfo &monrace)
+static errr set_mon_symbol(const nlohmann::json &symbol_data, MonraceDefinition &monrace)
 {
     if (symbol_data.is_null()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -180,7 +180,7 @@ static errr set_mon_symbol(const nlohmann::json &symbol_data, MonsterRaceInfo &m
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_speed(const nlohmann::json &speed_data, MonsterRaceInfo &monrace)
+static errr set_mon_speed(const nlohmann::json &speed_data, MonraceDefinition &monrace)
 {
     int speed;
     if (auto err = info_set_integer(speed_data, speed, true, Range(-50, 99))) {
@@ -196,7 +196,7 @@ static errr set_mon_speed(const nlohmann::json &speed_data, MonsterRaceInfo &mon
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_evolve(nlohmann::json &evolve_data, MonsterRaceInfo &monrace)
+static errr set_mon_evolve(nlohmann::json &evolve_data, MonraceDefinition &monrace)
 {
     if (evolve_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -218,7 +218,7 @@ static errr set_mon_evolve(nlohmann::json &evolve_data, MonsterRaceInfo &monrace
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_sex(const nlohmann::json &sex_data, MonsterRaceInfo &monrace)
+static errr set_mon_sex(const nlohmann::json &sex_data, MonraceDefinition &monrace)
 {
     if (sex_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -241,7 +241,7 @@ static errr set_mon_sex(const nlohmann::json &sex_data, MonsterRaceInfo &monrace
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_artifacts(nlohmann::json &artifact_data, MonsterRaceInfo &monrace)
+static errr set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinition &monrace)
 {
     if (artifact_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -271,7 +271,7 @@ static errr set_mon_artifacts(nlohmann::json &artifact_data, MonsterRaceInfo &mo
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_escorts(nlohmann::json &escort_data, MonsterRaceInfo &monrace)
+static errr set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition &monrace)
 {
     if (escort_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -302,7 +302,7 @@ static errr set_mon_escorts(nlohmann::json &escort_data, MonsterRaceInfo &monrac
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_blows(nlohmann::json &blow_data, MonsterRaceInfo &monrace)
+static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
 {
     if (blow_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -350,7 +350,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonsterRaceInfo &monrace)
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_flags(const nlohmann::json &flag_data, MonsterRaceInfo &monrace)
+static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &monrace)
 {
     if (flag_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -628,7 +628,7 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonsterRaceInfo &monr
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_skills(const nlohmann::json &skill_data, MonsterRaceInfo &monrace)
+static errr set_mon_skills(const nlohmann::json &skill_data, MonraceDefinition &monrace)
 {
     if (skill_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -683,7 +683,7 @@ static errr set_mon_skills(const nlohmann::json &skill_data, MonsterRaceInfo &mo
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_alliance(const nlohmann::json &alliance_data, MonsterRaceInfo &monrace)
+static errr set_mon_alliance(const nlohmann::json &alliance_data, MonraceDefinition &monrace)
 {
     if (alliance_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -715,7 +715,7 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
         return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
     }
     error_idx = monster_idx;
-    auto &monrace = monraces_info.emplace_hint(monraces_info.end(), i2enum<MonraceId>(monster_idx), MonsterRaceInfo{})->second;
+    auto &monrace = monraces_info.emplace_hint(monraces_info.end(), i2enum<MonraceId>(monster_idx), MonraceDefinition{})->second;
     monrace.idx = i2enum<MonraceId>(monster_idx);
 
     errr err;
