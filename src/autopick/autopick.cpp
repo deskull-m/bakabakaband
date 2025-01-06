@@ -45,7 +45,7 @@ static void autopick_delayed_alter_aux(PlayerType *player_ptr, INVENTORY_IDX i_i
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, 0);
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
     if (i_idx >= 0) {
         inven_item_increase(player_ptr, i_idx, -(o_ptr->number));
         inven_item_optimize(player_ptr, i_idx);
@@ -112,7 +112,7 @@ void autopick_pickup_items(PlayerType *player_ptr, Grid *g_ptr)
         }
 
         disturb(player_ptr, false, false);
-        const auto item_name = describe_flavor(player_ptr, o_ptr, 0);
+        const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
 
         if (!check_get_item(o_ptr)) {
             msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
