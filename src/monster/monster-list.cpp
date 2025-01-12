@@ -72,8 +72,7 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
     }
 
     max_level += wc_ptr->plus_monster_level();
-
-    ProbabilityTable<int> prob_table;
+    ProbabilityTable<MonraceId> prob_table;
 
     /* Process probabilities */
     const auto &monraces = MonraceList::get_instance();
@@ -106,7 +105,7 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
             }
         }
 
-        prob_table.entry_item(i, entry.prob2);
+        prob_table.entry_item(monrace_id, entry.prob2);
     }
 
     if (cheat_hear) {
@@ -129,11 +128,11 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
         n++;
     }
 
-    std::vector<int> result;
-    ProbabilityTable<int>::lottery(std::back_inserter(result), prob_table, n);
+    std::vector<MonraceId> result;
+    ProbabilityTable<MonraceId>::lottery(std::back_inserter(result), prob_table, n);
     const auto it = std::max_element(result.begin(), result.end(),
-        [&table](int a, int b) { return table.get_entry(a).level < table.get_entry(b).level; });
-    return table.get_entry(*it).index;
+        [&monraces](MonraceId id1, MonraceId id2) { return monraces.get_monrace(id1).level < monraces.get_monrace(id2).level; });
+    return *it;
 }
 
 static std::optional<MonraceId> polymorph_of_chameleon(PlayerType *player_ptr, short m_idx, short terrain_id, const std::optional<short> summoner_m_idx)
