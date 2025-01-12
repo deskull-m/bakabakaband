@@ -156,7 +156,7 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return r_idx == MonraceId::TURBAN_KID;
         break;
     case SUMMON_DEAD_UNIQUE: {
-        return monrace.kind_flags.has(MonsterKindType::UNIQUE) && monrace.mob_num == 0;
+        return monrace.is_dead_unique();
     }
     case SUMMON_ALLIANCE: {
         return (monrace.alliance_idx == smonrace.alliance_idx);
