@@ -93,7 +93,7 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
             }
 
             auto &monrace = monraces.get_monrace(monrace_id);
-            if (monrace.can_generate() && none_bits(mode, PM_CLONE)) {
+            if (!monrace.can_generate() && none_bits(mode, PM_CLONE)) {
                 continue;
             }
 
