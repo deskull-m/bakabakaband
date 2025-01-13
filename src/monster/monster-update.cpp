@@ -97,8 +97,8 @@ bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr,
     monster.x = nx;
     update_monster(player_ptr, m_idx, true);
 
-    lite_spot(player_ptr, { oy, ox });
-    lite_spot(player_ptr, { ny, nx });
+    lite_spot(*player_ptr, { oy, ox });
+    lite_spot(*player_ptr, { ny, nx });
     return true;
 }
 
@@ -516,7 +516,7 @@ static void update_invisible_monster(PlayerType *player_ptr, um_type *um_ptr, MO
     }
 
     monster.ml = true;
-    lite_spot(player_ptr, um_ptr->get_position());
+    lite_spot(*player_ptr, um_ptr->get_position());
 
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
     if (monster.is_riding()) {
@@ -557,7 +557,7 @@ static void update_visible_monster(PlayerType *player_ptr, um_type *um_ptr, MONS
     }
 
     um_ptr->m_ptr->ml = false;
-    lite_spot(player_ptr, um_ptr->get_position());
+    lite_spot(*player_ptr, um_ptr->get_position());
 
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
     if (um_ptr->m_ptr->is_riding()) {
