@@ -16,27 +16,26 @@
 #include "view/display-messages.h"
 int AllianceTzeentch::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
     // ティーンチは知識と魔法の力を重視
     impression += Alliance::calcPlayerPower(creature, 2, 35);
 
     // 知力と魔法能力による追加評価
-    impression += (player.stat_use[A_INT] - 10) * 4;
-    impression += (player.stat_use[A_WIS] - 10) * 2;
+    impression += (creature.stat_use[A_INT] - 10) * 4;
+    impression += (creature.stat_use[A_WIS] - 10) * 2;
 
     /*
     // 魔法使用による大幅な好感度向上
-    if (player.realm1 != REALM_NONE || player.realm2 != REALM_NONE) {
+    if (creature.realm1 != REALM_NONE || creature.realm2 != REALM_NONE) {
         impression += 100;
     }
 
     // 特に混沌魔法やソーサリーを好む
-    if (player.realm1 == REALM_CHAOS || player.realm2 == REALM_CHAOS) {
+    if (creature.realm1 == REALM_CHAOS || creature.realm2 == REALM_CHAOS) {
         impression += 150;
     }
-    if (player.realm1 == REALM_SORCERY || player.realm2 == REALM_SORCERY) {
+    if (creature.realm1 == REALM_SORCERY || creature.realm2 == REALM_SORCERY) {
         impression += 100;
     }
     */

@@ -16,11 +16,10 @@
 #include "view/display-messages.h"
 int AllianceValinor::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += (player.alignment > 0) ? player.alignment : -player.alignment * 3;
+    impression += (creature.alignment > 0) ? creature.alignment : -creature.alignment * 3;
     impression += Alliance::calcPlayerPower(creature, -16, 30);
     return impression;
 }
