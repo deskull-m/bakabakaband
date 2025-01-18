@@ -8,7 +8,7 @@ class CreatureEntity;
 class MonraceDefinition;
 class MonsterEntity;
 class PlayerType;
-bool project_all_los(PlayerType *player_ptr, AttributeType typ, int dam);
+bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam);
 bool speed_monsters(PlayerType *player_ptr);
 bool slow_monsters(PlayerType *player_ptr, int power);
 bool sleep_monsters(PlayerType *player_ptr, int power);

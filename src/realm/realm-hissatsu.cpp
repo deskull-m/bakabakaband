@@ -508,7 +508,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
     case 22:
         if (cast) {
             msg_print(_("雄叫びをあげた！", "You roar!"));
-            project_all_los(player_ptr, AttributeType::SOUND, randint1(plev * 3));
+            project_all_los(*player_ptr, AttributeType::SOUND, randint1(plev * 3));
             aggravate_monsters(player_ptr, 0);
         }
         break;
@@ -605,7 +605,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
     case 25:
         if (cast) {
             msg_print(_("武器を不規則に揺らした．．．", "You irregularly wave your weapon..."));
-            project_all_los(player_ptr, AttributeType::ENGETSU, plev * 4);
+            project_all_los(*player_ptr, AttributeType::ENGETSU, plev * 4);
         }
         break;
 
