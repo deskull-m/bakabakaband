@@ -146,7 +146,7 @@ static std::vector<TextCommand> get_text_commands()
                 // 周囲のモンスターが嫌悪感を示す可能性
                 if (one_in_(4)) {
                     msg_print(_("あなたの行為に周囲が困惑している。", "Your actions confuse those around you."));
-                    aggravate_monsters(player_ptr, 0);
+                    aggravate_monsters(*player_ptr, 0);
                 } else if (one_in_(8)) {
                     msg_print(_("なんとも言えない臭いが漂っている...", "An indescribable smell wafts through the air..."));
                 }
@@ -207,7 +207,7 @@ static std::vector<TextCommand> get_text_commands()
                 // 周囲のモンスターが反応する可能性
                 if (one_in_(3)) {
                     msg_print(_("あなたの踊りに周囲が注目している。", "Your dancing attracts attention."));
-                    aggravate_monsters(player_ptr, 0);
+                    aggravate_monsters(*player_ptr, 0);
                 }
 
                 // 稀にポジティブ効果

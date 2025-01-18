@@ -483,7 +483,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             break;
         case REW_DISPEL_C:
             msg_format(_("%sの力が敵を攻撃するのを感じた！", "You can feel the power of %s assault your enemies!"), this->name.data());
-            (void)dispel_monsters(this->player_ptr, this->player_ptr->level * 4);
+            (void)dispel_monsters(*this->player_ptr, this->player_ptr->level * 4);
             break;
         case REW_GOOD_HAFTED:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());

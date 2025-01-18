@@ -106,9 +106,9 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         return eat_magic(player_ptr, player_ptr->level * 2);
     case PlayerClassType::PRIEST:
         if (!PlayerRealm(player_ptr).realm1().is_good_attribute()) {
-            (void)dispel_monsters(player_ptr, player_ptr->level * 4);
-            turn_monsters(player_ptr, player_ptr->level * 4);
-            banish_monsters(player_ptr, player_ptr->level * 4);
+            (void)dispel_monsters(*player_ptr, player_ptr->level * 4);
+            turn_monsters(*player_ptr, player_ptr->level * 4);
+            banish_monsters(*player_ptr, player_ptr->level * 4);
             return true;
         }
 
@@ -498,7 +498,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         if (player_ptr->level < 25) {
             (void)sleep_monsters_touch(player_ptr);
         } else {
-            (void)sleep_monsters(player_ptr, player_ptr->level);
+            (void)sleep_monsters(*player_ptr, player_ptr->level);
         }
 
         return true;

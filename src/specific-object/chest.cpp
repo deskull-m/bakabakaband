@@ -276,7 +276,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     /* Aggravate monsters. */
     if (trap.has(ChestTrapType::ALARM)) {
         msg_print(_("けたたましい音が鳴り響いた！", "An alarm sounds!"));
-        aggravate_monsters(this->player_ptr, 0);
+        aggravate_monsters(*this->player_ptr, 0);
     }
 
     /* Explode */

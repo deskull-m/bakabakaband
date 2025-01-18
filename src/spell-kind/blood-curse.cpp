@@ -79,7 +79,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
         case 14:
         case 15:
         case 16:
-            aggravate_monsters(player_ptr, 0);
+            aggravate_monsters(*player_ptr, 0);
             if (!one_in_(6)) {
                 break;
             }

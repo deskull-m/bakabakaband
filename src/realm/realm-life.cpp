@@ -191,7 +191,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
 
     case 13: {
         if (cast) {
-            turn_undead(player_ptr);
+            turn_undead(*player_ptr);
         }
     } break;
 
@@ -233,7 +233,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            dispel_undead(player_ptr, dice.roll());
+            dispel_undead(*player_ptr, dice.roll());
         }
     } break;
 
@@ -245,7 +245,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            charm_monsters(player_ptr, power);
+            charm_monsters(*player_ptr, power);
         }
     } break;
 

@@ -198,7 +198,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            sleep_monsters(player_ptr, plev);
+            sleep_monsters(*player_ptr, plev);
         }
     } break;
 
@@ -413,7 +413,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            charm_monsters(player_ptr, power);
+            charm_monsters(*player_ptr, power);
         }
     } break;
 
@@ -433,7 +433,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            banish_monsters(player_ptr, power);
+            banish_monsters(*player_ptr, power);
         }
     } break;
 

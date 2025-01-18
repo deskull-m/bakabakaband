@@ -386,7 +386,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     switch (spell) {
     case MonsterAbilityType::SHRIEK:
         msg_print(_("かん高い金切り声をあげた。", "You make a high pitched shriek."));
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(*player_ptr, 0);
         break;
 
     case MonsterAbilityType::XXX1:

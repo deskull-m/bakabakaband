@@ -75,7 +75,7 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_AGGRAVATE_MONSTER:
         msg_print(_("カン高くうなる様な音が辺りを覆った。", "There is a high pitched humming noise."));
-        aggravate_monsters(this->player_ptr, 0);
+        aggravate_monsters(*this->player_ptr, 0);
         this->ident = true;
         break;
     case SV_SCROLL_CURSE_ARMOR:
@@ -347,7 +347,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_DISPEL_UNDEAD:
-        if (dispel_undead(this->player_ptr, 80)) {
+        if (dispel_undead(*this->player_ptr, 80)) {
             this->ident = true;
         }
 

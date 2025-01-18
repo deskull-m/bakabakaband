@@ -427,14 +427,14 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         break;
     case TrapType::ALARM:
         msg_print(_("けたたましい音が鳴り響いた！", "An alarm sounds!"));
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(*player_ptr, 0);
         break;
     case TrapType::OPEN:
         msg_print(_("大音響と共にまわりの壁が崩れた！", "Suddenly, surrounding walls are opened!"));
         (void)project(*player_ptr, 0, 3, p_pos.y, p_pos.x, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
         (void)project(*player_ptr, 0, 3, p_pos.y, p_pos.x - 4, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
         (void)project(*player_ptr, 0, 3, p_pos.y, p_pos.x + 4, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(*player_ptr, 0);
         break;
     case TrapType::ARMAGEDDON: {
         static int levs[10] = { 0, 0, 20, 10, 5, 3, 2, 1, 1, 1 };

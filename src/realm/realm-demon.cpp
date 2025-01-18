@@ -236,8 +236,8 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            dispel_monsters(player_ptr, randint1(sides1));
-            dispel_good(player_ptr, randint1(sides2));
+            dispel_monsters(*player_ptr, randint1(sides1));
+            dispel_good(*player_ptr, randint1(sides2));
         }
     } break;
 

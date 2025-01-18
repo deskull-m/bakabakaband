@@ -84,9 +84,10 @@ bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool speed_monsters(PlayerType *player_ptr)
+bool speed_monsters(CreatureEntity &creature)
 {
-    return project_all_los(*player_ptr, AttributeType::OLD_SPEED, player_ptr->level);
+    auto &player = dynamic_cast<PlayerType &>(creature);
+    return project_all_los(creature, AttributeType::OLD_SPEED, player.level);
 }
 
 /*!
@@ -94,9 +95,9 @@ bool speed_monsters(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool slow_monsters(PlayerType *player_ptr, int power)
+bool slow_monsters(CreatureEntity &creature, int power)
 {
-    return project_all_los(*player_ptr, AttributeType::OLD_SLOW, power);
+    return project_all_los(creature, AttributeType::OLD_SLOW, power);
 }
 
 /*!
@@ -104,9 +105,9 @@ bool slow_monsters(PlayerType *player_ptr, int power)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool sleep_monsters(PlayerType *player_ptr, int power)
+bool sleep_monsters(CreatureEntity &creature, int power)
 {
-    return project_all_los(*player_ptr, AttributeType::OLD_SLEEP, power);
+    return project_all_los(creature, AttributeType::OLD_SLEEP, power);
 }
 
 /*!
@@ -114,20 +115,21 @@ bool sleep_monsters(PlayerType *player_ptr, int power)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool banish_evil(PlayerType *player_ptr, int dist)
+bool banish_evil(CreatureEntity &creature, int dist)
 {
-    return project_all_los(*player_ptr, AttributeType::AWAY_EVIL, dist);
+    return project_all_los(creature, AttributeType::AWAY_EVIL, dist);
 }
 
 /*!
  * @brief 視界内のアンデッド・モンスターを恐怖させる処理 / Turn undead
  * @return 効力があった場合TRUEを返す
  */
-bool turn_undead(PlayerType *player_ptr)
+bool turn_undead(CreatureEntity &creature)
 {
-    bool tester = (project_all_los(*player_ptr, AttributeType::TURN_UNDEAD, player_ptr->level));
+    auto &player = dynamic_cast<PlayerType &>(creature);
+    bool tester = (project_all_los(creature, AttributeType::TURN_UNDEAD, player.level));
     if (tester) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
+        chg_virtue(creature, Virtue::UNLIFE, -1);
     }
     return tester;
 }
@@ -137,11 +139,11 @@ bool turn_undead(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool dispel_undead(PlayerType *player_ptr, int dam)
+bool dispel_undead(CreatureEntity &creature, int dam)
 {
-    bool tester = (project_all_los(*player_ptr, AttributeType::DISP_UNDEAD, dam));
+    bool tester = (project_all_los(creature, AttributeType::DISP_UNDEAD, dam));
     if (tester) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
+        chg_virtue(creature, Virtue::UNLIFE, -2);
     }
     return tester;
 }
@@ -151,9 +153,9 @@ bool dispel_undead(PlayerType *player_ptr, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool dispel_evil(PlayerType *player_ptr, int dam)
+bool dispel_evil(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::DISP_EVIL, dam);
+    return project_all_los(creature, AttributeType::DISP_EVIL, dam);
 }
 
 /*!
@@ -161,9 +163,9 @@ bool dispel_evil(PlayerType *player_ptr, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool dispel_good(PlayerType *player_ptr, int dam)
+bool dispel_good(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::DISP_GOOD, dam);
+    return project_all_los(creature, AttributeType::DISP_GOOD, dam);
 }
 
 /*!
@@ -171,9 +173,9 @@ bool dispel_good(PlayerType *player_ptr, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool dispel_monsters(PlayerType *player_ptr, int dam)
+bool dispel_monsters(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::DISP_ALL, dam);
+    return project_all_los(creature, AttributeType::DISP_ALL, dam);
 }
 
 /*!
@@ -181,9 +183,9 @@ bool dispel_monsters(PlayerType *player_ptr, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool dispel_living(PlayerType *player_ptr, int dam)
+bool dispel_living(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::DISP_LIVING, dam);
+    return project_all_los(creature, AttributeType::DISP_LIVING, dam);
 }
 
 /*!
@@ -191,9 +193,9 @@ bool dispel_living(PlayerType *player_ptr, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool dispel_demons(PlayerType *player_ptr, int dam)
+bool dispel_demons(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::DISP_DEMON, dam);
+    return project_all_los(creature, AttributeType::DISP_DEMON, dam);
 }
 
 /*!
@@ -201,9 +203,10 @@ bool dispel_demons(PlayerType *player_ptr, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 効力があった場合TRUEを返す
  */
-bool crusade(PlayerType *player_ptr)
+bool crusade(CreatureEntity &creature)
 {
-    return project_all_los(*player_ptr, AttributeType::CRUSADE, player_ptr->level * 4);
+    auto &player = dynamic_cast<PlayerType &>(creature);
+    return project_all_los(creature, AttributeType::CRUSADE, player.level * 4);
 }
 
 /*!
@@ -211,11 +214,12 @@ bool crusade(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param src_idx 怒らせる原因を起こしたモンスター(0ならばプレイヤー)
  */
-void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
+void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
 {
+    auto &player = dynamic_cast<PlayerType &>(creature);
     auto sleep = false;
     auto speed = false;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.m_list[i];
         if (!monster.is_valid()) {
@@ -249,7 +253,7 @@ void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
         msg_print(_("何かが突如興奮したような騒々しい音が遠くに聞こえた！", "You hear a sudden stirring in the distance!"));
     }
 
-    if (player_ptr->riding) {
+    if (player.riding) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 }
@@ -260,9 +264,9 @@ void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool confuse_monsters(PlayerType *player_ptr, int dam)
+bool confuse_monsters(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::OLD_CONF, dam);
+    return project_all_los(creature, AttributeType::OLD_CONF, dam);
 }
 
 /*!
@@ -271,9 +275,9 @@ bool confuse_monsters(PlayerType *player_ptr, int dam)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool charm_monsters(PlayerType *player_ptr, int dam)
+bool charm_monsters(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::CHARM, dam);
+    return project_all_los(creature, AttributeType::CHARM, dam);
 }
 
 /*!
@@ -282,9 +286,9 @@ bool charm_monsters(PlayerType *player_ptr, int dam)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool charm_animals(PlayerType *player_ptr, int dam)
+bool charm_animals(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::CONTROL_ANIMAL, dam);
+    return project_all_los(creature, AttributeType::CONTROL_ANIMAL, dam);
 }
 
 /*!
@@ -293,9 +297,9 @@ bool charm_animals(PlayerType *player_ptr, int dam)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool stun_monsters(PlayerType *player_ptr, int dam)
+bool stun_monsters(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::STUN, dam);
+    return project_all_los(creature, AttributeType::STUN, dam);
 }
 
 /*!
@@ -304,9 +308,9 @@ bool stun_monsters(PlayerType *player_ptr, int dam)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool stasis_monsters(PlayerType *player_ptr, int dam)
+bool stasis_monsters(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::STASIS, dam);
+    return project_all_los(creature, AttributeType::STASIS, dam);
 }
 
 /*!
@@ -315,9 +319,9 @@ bool stasis_monsters(PlayerType *player_ptr, int dam)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool mindblast_monsters(PlayerType *player_ptr, int dam)
+bool mindblast_monsters(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::PSI, dam);
+    return project_all_los(creature, AttributeType::PSI, dam);
 }
 
 /*!
@@ -326,9 +330,9 @@ bool mindblast_monsters(PlayerType *player_ptr, int dam)
  * @param dist 効力（距離）
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool banish_monsters(PlayerType *player_ptr, int dist)
+bool banish_monsters(CreatureEntity &creature, int dist)
 {
-    return project_all_los(*player_ptr, AttributeType::AWAY_ALL, dist);
+    return project_all_los(creature, AttributeType::AWAY_ALL, dist);
 }
 
 /*!
@@ -337,9 +341,9 @@ bool banish_monsters(PlayerType *player_ptr, int dist)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool turn_evil(PlayerType *player_ptr, int dam)
+bool turn_evil(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::TURN_EVIL, dam);
+    return project_all_los(creature, AttributeType::TURN_EVIL, dam);
 }
 
 /*!
@@ -348,9 +352,9 @@ bool turn_evil(PlayerType *player_ptr, int dam)
  * @param dam 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool turn_monsters(PlayerType *player_ptr, int dam)
+bool turn_monsters(CreatureEntity &creature, int dam)
 {
-    return project_all_los(*player_ptr, AttributeType::TURN_ALL, dam);
+    return project_all_los(creature, AttributeType::TURN_ALL, dam);
 }
 
 /*!
@@ -358,9 +362,10 @@ bool turn_monsters(PlayerType *player_ptr, int dam)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool deathray_monsters(PlayerType *player_ptr)
+bool deathray_monsters(CreatureEntity &creature)
 {
-    return project_all_los(*player_ptr, AttributeType::DEATH_RAY, player_ptr->level * 200);
+    auto &player = dynamic_cast<PlayerType &>(creature);
+    return project_all_los(creature, AttributeType::DEATH_RAY, player.level * 200);
 }
 
 /*!
@@ -370,7 +375,7 @@ bool deathray_monsters(PlayerType *player_ptr)
  * @param r_ptr モンスター種族への参照ポインタ
  * @return 調査結果 善悪アライメント、最大HP、残りHP、AC、速度、ステータス
  */
-std::string probed_monster_info(PlayerType *player_ptr, MonsterEntity &monster, const MonraceDefinition &monrace)
+std::string probed_monster_info(CreatureEntity &creature, MonsterEntity &monster, const MonraceDefinition &monrace)
 {
     if (!monster.is_original_ap()) {
         if (monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
@@ -378,10 +383,10 @@ std::string probed_monster_info(PlayerType *player_ptr, MonsterEntity &monster, 
         }
 
         monster.ap_r_idx = monster.r_idx;
-        lite_spot(*player_ptr, monster.get_position());
+        lite_spot(creature, monster.get_position());
     }
 
-    const auto m_name = monster_desc(*player_ptr, monster, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
+    const auto m_name = monster_desc(creature, monster, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
 
     concptr align;
     if (monrace.kind_flags.has_all_of(alignment_mask)) {
@@ -461,7 +466,7 @@ bool probing(CreatureEntity &creature)
         }
         msg_erase();
 
-        const auto probe_result = probed_monster_info(player_ptr, monster, monrace);
+        const auto probe_result = probed_monster_info(creature, monster, monrace);
         prt(probe_result, 0, 0);
 
         message_add(probe_result);

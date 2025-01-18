@@ -35,7 +35,7 @@ static void exe_ring_of_power(PlayerType *player_ptr, const Direction &dir)
         break;
     case 3:
         msg_print(_("あなたは強力なオーラに包み込まれた。", "You are surrounded by a powerful aura."));
-        dispel_monsters(player_ptr, 1000);
+        dispel_monsters(*player_ptr, 1000);
         break;
     case 4:
     case 5:

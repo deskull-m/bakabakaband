@@ -234,7 +234,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             BadStatusSetter bss(player_ptr);
-            dispel_evil(player_ptr, randint1(dam_sides));
+            dispel_evil(*player_ptr, randint1(dam_sides));
             hp_player(player_ptr, heal);
             (void)bss.set_fear(0);
             (void)bss.set_poison(0);
@@ -347,7 +347,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_power(power);
         }
         if (cast) {
-            if (banish_evil(player_ptr, power)) {
+            if (banish_evil(*player_ptr, power)) {
                 msg_print(_("神聖な力が邪悪を打ち払った！", "The holy power banishes evil!"));
             }
         }
@@ -420,12 +420,12 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             project(*player_ptr, 0, 1, player_ptr->y, player_ptr->x, b_dam, AttributeType::HOLY_FIRE, PROJECT_KILL);
-            dispel_monsters(player_ptr, d_dam);
-            slow_monsters(player_ptr, plev);
-            stun_monsters(player_ptr, power);
-            confuse_monsters(player_ptr, power);
-            turn_monsters(player_ptr, power);
-            stasis_monsters(player_ptr, power);
+            dispel_monsters(*player_ptr, d_dam);
+            slow_monsters(*player_ptr, plev);
+            stun_monsters(*player_ptr, power);
+            confuse_monsters(*player_ptr, power);
+            turn_monsters(*player_ptr, power);
+            stasis_monsters(*player_ptr, power);
             hp_player(player_ptr, heal);
         }
     } break;

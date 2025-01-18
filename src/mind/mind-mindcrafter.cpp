@@ -205,7 +205,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
 
             fire_ball(*player_ptr, AttributeType::DOMINATION, dir, plev, 0);
         } else {
-            charm_monsters(player_ptr, plev * 2);
+            charm_monsters(*player_ptr, plev * 2);
         }
 
         break;
@@ -248,7 +248,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         if (plev < 25) {
             project(*player_ptr, 0, 2 + plev / 10, player_ptr->y, player_ptr->x, (plev * 3), AttributeType::PSI, PROJECT_KILL);
         } else {
-            (void)mindblast_monsters(player_ptr, randint1(plev * ((plev - 5) / 10 + 1)));
+            (void)mindblast_monsters(*player_ptr, randint1(plev * ((plev - 5) / 10 + 1)));
         }
 
         break;
