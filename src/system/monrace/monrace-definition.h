@@ -216,6 +216,7 @@ public:
     bool is_human() const;
     bool is_eatable_human() const;
     bool is_catchable_for_fishing() const;
+    bool is_suitable_for_orc_pit() const;
 
     void init_sex(uint32_t value);
 
