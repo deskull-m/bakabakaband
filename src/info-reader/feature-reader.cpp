@@ -369,11 +369,6 @@ void init_feat_variables()
     feat_pattern_exit = terrains.get_terrain_id_by_tag("PATTERN_EXIT");
     feat_pattern_corrupted = terrains.get_terrain_id_by_tag("PATTERN_CORRUPTED");
 
-    /* Terrains */
-    feat_swamp = terrains.get_terrain_id_by_tag("SWAMP");
-    feat_deep_dung_pool = terrains.get_terrain_id_by_tag("DEEP_DUNG_POOL");
-    feat_shallow_dung_pool = terrains.get_terrain_id_by_tag("SHALLOW_DUNG_POOL");
-
     feat_undetected = terrains.get_terrain_id_by_tag("UNDETECTED");
 
     init_wilderness_terrains();
