@@ -459,7 +459,7 @@ void build_vault(
                 floor.set_terrain_id_at(pos, feat_electrical_zone);
                 break;
             case 'I':
-                floor.set_terrain_id_at(pos, feat_heavy_electrical_zone);
+                floor.set_terrain_id_at(pos, TerrainTag::HEAVY_ELECTRICAL_ZONE);
                 break;
             }
         }
