@@ -456,7 +456,7 @@ void build_vault(
                 floor.set_terrain_id_at(pos, TerrainTag::HEAVY_COLD_ZONE);
                 break;
             case 'i':
-                floor.set_terrain_id_at(pos, feat_electrical_zone);
+                floor.set_terrain_id_at(pos, TerrainTag::ELECTRICAL_ZONE);
                 break;
             case 'I':
                 floor.set_terrain_id_at(pos, TerrainTag::HEAVY_ELECTRICAL_ZONE);
