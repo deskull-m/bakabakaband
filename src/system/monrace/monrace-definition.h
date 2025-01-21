@@ -176,6 +176,7 @@ public:
     bool is_female() const;
     bool has_living_flag() const;
     bool is_explodable() const;
+    bool is_angel_superficially() const;
     bool symbol_char_is_any_of(std::string_view symbol_characters) const;
     std::string get_died_message() const;
     std::optional<bool> order_level(const MonraceDefinition &other) const;
@@ -223,6 +224,7 @@ public:
     bool is_suitable_for_horror_pit() const;
     bool is_suitable_for_mimic_nest() const;
     bool is_suitable_for_dog_nest() const;
+    bool is_suitable_for_chapel_nest() const;
 
     void init_sex(uint32_t value);
 
