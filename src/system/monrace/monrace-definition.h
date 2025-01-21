@@ -226,6 +226,7 @@ public:
     bool is_suitable_for_dog_nest() const;
     bool is_suitable_for_chapel_nest() const;
     bool is_suitable_for_jelly_nest() const;
+    bool is_suitable_for_animal_nest() const;
 
     void init_sex(uint32_t value);
 
