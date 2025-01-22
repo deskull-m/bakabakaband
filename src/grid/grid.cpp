@@ -1009,24 +1009,6 @@ void place_bold(PlayerType *player_ptr, POSITION y, POSITION x, grid_bold_type g
     place_grid(player_ptr, g_ptr, gb_type);
 }
 
-void set_cave_feat(FloorType *floor_ptr, POSITION y, POSITION x, FEAT_IDX feature_idx)
-{
-    floor_ptr->grid_array[y][x].feat = feature_idx;
-}
-
-void set_cave_feat_mimic(FloorType *floor_ptr, POSITION y, POSITION x, FEAT_IDX feature_idx)
-{
-    floor_ptr->grid_array[y][x].mimic = feature_idx;
-}
-
-/*!
- * @brief マス構造体のspecial要素を利用する地形かどうかを判定する.
- */
-bool feat_uses_special(FEAT_IDX f_idx)
-{
-    return TerrainList::get_instance().get_terrain(f_idx).flags.has(TerrainCharacteristics::SPECIAL);
-}
-
 /*
  * This function allows us to efficiently add a grid to the "lite" array,
  * note that we are never called for illegal grids, or for grids which
