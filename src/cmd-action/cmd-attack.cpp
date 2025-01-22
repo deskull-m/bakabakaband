@@ -231,7 +231,7 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     // 頭突き後の反動処理
     if (!*mdeath && one_in_(6)) {
         msg_print(_("頭突きの反動で少しダメージを受けた。", "You take some damage from the headbutt recoil."));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(3), _("頭突きの反動", "headbutt recoil"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, randint1(3), _("頭突きの反動", "headbutt recoil"));
     }
 
     touch_zap_player(monster, player_ptr);
@@ -332,7 +332,7 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     if (!*mdeath && one_in_(8)) {
         int self_damage = randint1(4);
         msg_print(_("体当たりの反動で体が痛んだ。", "You feel the recoil from your body slam."));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, self_damage, _("体当たりの反動", "body slam recoil"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, self_damage, _("体当たりの反動", "body slam recoil"));
     }
 
     touch_zap_player(monster, player_ptr);

@@ -80,7 +80,7 @@ void effect_player_mind_blast(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     if (check_multishadow(*player_ptr)) {
-        ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+        ep_ptr->get_damage = take_hit(*player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
         return;
     }
 
@@ -101,7 +101,7 @@ void effect_player_mind_blast(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
-    ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = take_hit(*player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
@@ -122,7 +122,7 @@ void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
     }
 
-    ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = take_hit(*player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     if (check_multishadow(*player_ptr)) {
         return;
     }

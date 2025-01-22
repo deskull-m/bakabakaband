@@ -78,7 +78,7 @@ void starve_player(PlayerType *player_ptr)
     if (player_ptr->food < PY_FOOD_STARVE) {
         int dam = (PY_FOOD_STARVE - player_ptr->food) / 10;
         if (!is_invuln(player_ptr)) {
-            take_hit(player_ptr, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
+            take_hit(*player_ptr, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
     }
 }

@@ -143,7 +143,7 @@ bool pattern_effect(PlayerType *player_ptr)
 
     case PATTERN_TILE_WRECKED:
         if (!is_invuln(player_ptr)) {
-            take_hit(player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
         break;
 
@@ -151,7 +151,7 @@ bool pattern_effect(PlayerType *player_ptr)
         if (CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
         } else if (!is_invuln(player_ptr)) {
-            take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;
     }

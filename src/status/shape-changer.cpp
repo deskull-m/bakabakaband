@@ -46,7 +46,7 @@ void do_poly_wounds(PlayerType *player_ptr)
     }
 
     msg_print(_("新たな傷ができた！", "A new wound was created!"));
-    take_hit(player_ptr, DAMAGE_LOSELIFE, change / 2, _("変化した傷", "a polymorphed wound"));
+    take_hit(*player_ptr, DAMAGE_LOSELIFE, change / 2, _("変化した傷", "a polymorphed wound"));
     (void)bss.set_cut(change);
 }
 
@@ -177,7 +177,7 @@ void do_poly_self(PlayerType *player_ptr)
         }
         if (one_in_(6)) {
             msg_print(_("現在の姿で生きていくのは困難なようだ！", "You find living difficult in your present form!"));
-            take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(randint1(10), player_ptr->level), _("致命的な突然変異", "a lethal mutation"));
+            take_hit(*player_ptr, DAMAGE_LOSELIFE, Dice::roll(randint1(10), player_ptr->level), _("致命的な突然変異", "a lethal mutation"));
 
             power -= 10;
         }

@@ -452,7 +452,7 @@ static bool racial_power_reduce_mana(PlayerType *player_ptr, rc_type *rc_ptr)
     } else {
         actual_racial_cost -= player_ptr->csp;
         player_ptr->csp = 0;
-        take_hit(player_ptr, DAMAGE_USELIFE, actual_racial_cost, _("過度の集中", "concentrating too hard"));
+        take_hit(*player_ptr, DAMAGE_USELIFE, actual_racial_cost, _("過度の集中", "concentrating too hard"));
     }
 
     return true;

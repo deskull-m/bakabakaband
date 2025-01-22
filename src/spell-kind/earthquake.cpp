@@ -109,8 +109,7 @@ void process_player_damage_undodged(CreatureEntity &creature, int m_idx)
     constexpr auto direct_hit_damage = 200;
     msg_print(_("あなたはひどい怪我を負った！", "You are severely crushed!"));
     /// FIXME: 避けた時はスタン値が増加するのに直撃時は増加していない。バグ？
-    auto &player = static_cast<PlayerType &>(creature);
-    take_hit(&player, DAMAGE_ATTACK, direct_hit_damage, killer);
+    take_hit(creature, DAMAGE_ATTACK, direct_hit_damage, killer);
 }
 
 void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
@@ -130,7 +129,7 @@ void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
     auto &player = static_cast<PlayerType &>(creature);
     const auto killer = build_killer_on_earthquake(creature, m_idx);
     BadStatusSetter(player).mod_stun(randnum1<short>(50));
-    take_hit(&player, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
+    take_hit(creature, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
 }
 
 void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_collapses, int m_idx)

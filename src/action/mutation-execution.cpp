@@ -230,7 +230,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     case PlayerMutationType::STERILITY:
         msg_print(_("突然頭が痛くなった！", "You suddenly have a headache!"));
-        take_hit(player_ptr, DAMAGE_LOSELIFE, randint1(17) + 17, _("禁欲を強いた疲労", "the strain of forcing abstinence"));
+        take_hit(*player_ptr, DAMAGE_LOSELIFE, randint1(17) + 17, _("禁欲を強いた疲労", "the strain of forcing abstinence"));
         floor.num_repro += MAX_REPRODUCTION;
         return true;
     case PlayerMutationType::HIT_AND_AWAY:

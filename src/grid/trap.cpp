@@ -214,7 +214,7 @@ static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
     msg_format(_("%sに落ちてしまった！", "You have fallen into %s!"), trap_name);
     dam = Dice::roll(2, 6);
     if (((trap_feat_type != TrapType::SPIKED_PIT) && (trap_feat_type != TrapType::POISON_PIT)) || one_in_(2)) {
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
@@ -223,19 +223,19 @@ static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
     BadStatusSetter bss(*player_ptr);
     (void)bss.mod_cut(randnum1<short>(dam));
     if (trap_feat_type != TrapType::POISON_PIT) {
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
     if (has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) {
         msg_print(_("しかし毒の影響はなかった！", "The poison does not affect you!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
     dam = dam * 2;
     (void)bss.mod_poison(randnum1<short>(dam));
-    take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+    take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
 }
 
 /*!
@@ -248,7 +248,7 @@ static bool hit_trap_dart(PlayerType *player_ptr)
 
     if (check_hit_from_monster_to_player(player_ptr, 125)) {
         msg_print(_("小さなダーツが飛んできて刺さった！", "A small dart hits you!"));
-        take_hit(player_ptr, DAMAGE_ATTACK, Dice::roll(1, 4), _("ダーツの罠", "a dart trap"));
+        take_hit(*player_ptr, DAMAGE_ATTACK, Dice::roll(1, 4), _("ダーツの罠", "a dart trap"));
         if (!check_multishadow(*player_ptr)) {
             hit = true;
         }
@@ -319,7 +319,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         const auto dam = Dice::roll(2, 8);
         constexpr auto name = _("落とし戸", "a trap door");
 
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, name);
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, name);
 
         if (floor.is_in_quest()) {
             return;
@@ -505,27 +505,27 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     case TrapType::FIRE_STORM: {
         msg_print(_("火炎の嵐に包まれた！", "You ware filled with huge fire storm!"));
         fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), 600, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_fire_damage_rate(player_ptr) / 100, _("火炎嵐の罠", "a Hige Fire Trap"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_fire_damage_rate(player_ptr) / 100, _("火炎嵐の罠", "a Hige Fire Trap"));
 
         break;
     }
     case TrapType::ICE_STORM: {
         msg_print(_("冷気の嵐に包まれた！", "You ware filled with huge ice storm!"));
         fire_ball(*player_ptr, AttributeType::ICE, Direction::self(), 600, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_cold_damage_rate(player_ptr) / 100, _("極寒嵐の罠", "a Hige Ice Trap"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_cold_damage_rate(player_ptr) / 100, _("極寒嵐の罠", "a Hige Ice Trap"));
         break;
     }
     case TrapType::CHAOS_STORM: {
         msg_print(_("混沌の嵐に包まれた！", "You ware filled with huge chaos storm!"));
         fire_ball(*player_ptr, AttributeType::CHAOS, Direction::self(), 600, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_chaos_damage_rate(player_ptr, CALC_RAND) / 100, _("混沌嵐の罠", "a Hige Chaos Trap"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_chaos_damage_rate(player_ptr, CALC_RAND) / 100, _("混沌嵐の罠", "a Hige Chaos Trap"));
         break;
     }
 
     case TrapType::MINE: {
         msg_print(_("地雷を踏んだ！", "You stepped on a land mine!"));
         fire_ball(*player_ptr, AttributeType::MANA, Direction::self(), 200, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (200 + randint1(50)), _("地雷", "a Land Mine"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, (200 + randint1(50)), _("地雷", "a Land Mine"));
         break;
     }
 

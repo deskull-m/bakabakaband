@@ -88,7 +88,7 @@ static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concpt
     if (player_ptr->levitation) {
         msg_print(msg_levitation);
         constexpr auto mes = _("%sの上に浮遊したダメージ", "flying over %s");
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
 
         if (additional_effect != nullptr) {
             additional_effect(player_ptr, damage);
@@ -97,7 +97,7 @@ static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concpt
         const auto p_pos = player_ptr->get_position();
         const auto &name = player_ptr->current_floor_ptr->get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name;
         msg_format(_("%s%s！", "The %s %s!"), name.data(), msg_normal);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, name);
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, name);
 
         if (additional_effect != nullptr) {
             additional_effect(player_ptr, damage);
@@ -126,7 +126,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     const auto &player_poison = effects->poison();
     if (player_poison.is_poisoned() && !is_invuln(player_ptr)) {
-        if (take_hit(player_ptr, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
+        if (take_hit(*player_ptr, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
@@ -134,7 +134,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     const auto &player_cut = effects->cut();
     if (player_cut.is_cut() && !is_invuln(player_ptr)) {
         const auto dam = player_cut.get_damage();
-        if (take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
+        if (take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
@@ -144,7 +144,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         if (!floor.is_underground() && !has_resist_lite(*player_ptr) && !is_invuln(player_ptr) && AngbandWorld::get_instance().is_daytime()) {
             if ((floor.grid_array[player_ptr->y][player_ptr->x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
                 msg_print(_("日光があなたのアンデッドの肉体を焼き焦がした！", "The sun's rays scorch your undead flesh!"));
-                take_hit(player_ptr, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
+                take_hit(*player_ptr, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
                 cave_no_regen = true;
             }
         }
@@ -159,7 +159,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
                 const auto wielding_item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
                 std::stringstream ss;
                 ss << _(wielding_item_name, "wielding ") << _("を装備したダメージ", wielding_item_name);
-                take_hit(player_ptr, DAMAGE_NOESCAPE, 1, ss.str());
+                take_hit(*player_ptr, DAMAGE_NOESCAPE, 1, ss.str());
             }
         }
     }
@@ -227,7 +227,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     if (can_drown && !player_ptr->levitation && !player_ptr->can_swim && !has_resist_water(*player_ptr)) {
         if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
             msg_print(_("溺れている！", "You are drowning!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->level), _("溺れ", "drowning"));
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->level), _("溺れ", "drowning"));
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
@@ -242,7 +242,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
             damage = (randint1(player_ptr->level) + 1) / 2;
         }
         cave_no_regen = true;
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
@@ -278,7 +278,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
         damage = std::max(damage, 1);
         msg_print(_("熱い！", "It's hot!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
     }
 
     if (get_player_flags(*player_ptr, TR_SELF_ELEC) && !has_immune_elec(*player_ptr)) {
@@ -296,7 +296,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
         damage = std::max(damage, 1);
         msg_print(_("痛い！", "It hurts!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
     }
 
     if (get_player_flags(*player_ptr, TR_SELF_COLD) && !has_immune_cold(*player_ptr)) {
@@ -314,7 +314,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
         damage = std::max(damage, 1);
         msg_print(_("冷たい！", "It's cold!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
     }
 
     if (player_ptr->riding) {
@@ -334,7 +334,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
             damage = std::max(damage, 1);
             msg_print(_("熱い！", "It's hot!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
         }
 
         if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(*player_ptr)) {
@@ -351,7 +351,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
             damage = std::max(damage, 1);
             msg_print(_("痛い！", "It hurts!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
         }
 
         if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(*player_ptr)) {
@@ -368,7 +368,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
             damage = std::max(damage, 1);
             msg_print(_("冷たい！", "It's cold!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
         }
     }
 
@@ -396,7 +396,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
                 dam_desc = _("硬い岩", "solid rock");
             }
 
-            take_hit(player_ptr, DAMAGE_NOESCAPE, 1 + (player_ptr->level / 5), dam_desc);
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, 1 + (player_ptr->level / 5), dam_desc);
         }
     }
 

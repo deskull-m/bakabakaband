@@ -76,7 +76,7 @@ void call_the_void(PlayerType *player_ptr)
         if (!vanish_dungeon(player_ptr)) {
             msg_print(_("ダンジョンは一瞬静まり返った。", "The dungeon becomes quiet for a moment."));
         }
-        take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
         return;
     }
 
@@ -85,7 +85,7 @@ void call_the_void(PlayerType *player_ptr)
     } else {
         msg_print(_("ダンジョンは大きく揺れた。", "The dungeon trembles."));
     }
-    take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+    take_hit(*player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
 }
 
 /*!

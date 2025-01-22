@@ -2752,7 +2752,7 @@ void wreck_the_pattern(PlayerType *player_ptr)
     msg_print(_("パターンを血で汚してしまった！", "You bleed on the Pattern!"));
     msg_print(_("何か恐ろしい事が起こった！", "Something terrible happens!"));
     if (!is_invuln(player_ptr)) {
-        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 8), _("パターン損壊", "corrupting the Pattern"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 8), _("パターン損壊", "corrupting the Pattern"));
     }
 
     auto to_ruin = randint1(45) + 35;

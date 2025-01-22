@@ -531,7 +531,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, dam, rad);
-            take_hit(player_ptr, DAMAGE_USELIFE, 20 + randint1(30), _("地獄の劫火の呪文を唱えた疲労", "the strain of casting Hellfire"));
+            take_hit(*player_ptr, DAMAGE_USELIFE, 20 + randint1(30), _("地獄の劫火の呪文を唱えた疲労", "the strain of casting Hellfire"));
         }
     } break;
 

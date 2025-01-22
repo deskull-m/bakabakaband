@@ -70,7 +70,7 @@ bool unleash_mana_storm(PlayerType *player_ptr, bool powerful)
         PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
     if (!CreatureClass(*player_ptr).is_wizard()) {
-        (void)take_hit(player_ptr, DAMAGE_NOESCAPE, 50, _("コントロールし難い強力な魔力の解放", "unleashing magics too mighty to control"));
+        (void)take_hit(*player_ptr, DAMAGE_NOESCAPE, 50, _("コントロールし難い強力な魔力の解放", "unleashing magics too mighty to control"));
     }
 
     return true;

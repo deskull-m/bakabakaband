@@ -428,7 +428,7 @@ static void curse_drain_hp(PlayerType *player_ptr)
     const auto *item_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::DRAIN_HP);
     const auto item_name = describe_flavor(player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの体力を吸収した！", "Your %s drains HP from you!"), item_name.data());
-    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min(player_ptr->level * 2, 100), item_name);
+    take_hit(*player_ptr, DAMAGE_LOSELIFE, std::min(player_ptr->level * 2, 100), item_name);
 }
 
 static void curse_drain_mp(PlayerType *player_ptr)
@@ -463,7 +463,7 @@ static void curse_megaton_coin(PlayerType *player_ptr)
     msg_print(_("メガトンコインで床が抜けた！ンアアアアアアァァァ！", "The floor came off with the Megaton Coin!AAAAaaaaaa!"));
 
     auto dam = Dice::roll(2, 8);
-    take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
+    take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
 
     if (autosave_l && (player_ptr->hp >= 0)) {
         do_cmd_save_game(player_ptr, true);
@@ -535,5 +535,5 @@ void execute_cursed_items_effect(PlayerType *player_ptr)
         msg_print(_("なにかがあなたの体力を吸収した！", "Something drains life from you!"));
     }
 
-    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min<short>(player_ptr->level, 50), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(*player_ptr, DAMAGE_LOSELIFE, std::min<short>(player_ptr->level, 50), _("審判の宝石", "the Jewel of Judgement"));
 }

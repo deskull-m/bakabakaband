@@ -250,7 +250,7 @@ static std::vector<TextCommand> get_text_commands()
                 damage = std::max(damage, 50);
                 damage = std::min(damage, player_ptr->hp - 1);
 
-                take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
+                take_hit(*player_ptr, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
 
                 // HPが1未満にならないようにする
                 if (player_ptr->hp < 1) {
