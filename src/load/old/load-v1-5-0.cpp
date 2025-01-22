@@ -9,7 +9,6 @@
 #include "artifact/fixed-art-types.h"
 #include "floor/floor-object.h"
 #include "game-option/birth-options.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "grid/trap.h"
 #include "load/angband-version-comparer.h"
