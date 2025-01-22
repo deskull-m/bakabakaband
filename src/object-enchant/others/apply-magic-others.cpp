@@ -205,5 +205,5 @@ void OtherItemsEnchanter::generate_chest()
 
 void OtherItemsEnchanter::generate_disarmed_trap()
 {
-    this->o_ptr->pval = choose_random_trap(this->player_ptr->current_floor_ptr);
+    this->o_ptr->pval = static_cast<PARAMETER_VALUE>(choose_random_trap(this->player_ptr->current_floor_ptr));
 }
