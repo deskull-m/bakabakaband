@@ -256,5 +256,4 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "CLOSED_GLASS_DOOR", TerrainTag::CLOSED_GLASS_DOOR },
     { "OPEN_CURTAIN", TerrainTag::OPEN_CURTAIN },
     { "CLOSED_CURTAIN", TerrainTag::CLOSED_CURTAIN },
-
 };
