@@ -5,11 +5,25 @@
 #include "monster-race/race-ability-flags.h"
 #include "util/flag-group.h"
 
-enum class MonraceId : int16_t;
+enum class MonraceId : short;
+class PitNestFilter {
+public:
+    ~PitNestFilter() = default;
+    PitNestFilter(const PitNestFilter &) = delete;
+    PitNestFilter(PitNestFilter &&) = delete;
+    PitNestFilter &operator=(const PitNestFilter &) = delete;
+    PitNestFilter &operator=(PitNestFilter &&) = delete;
+    static PitNestFilter &get_instance();
 
-extern MonraceId vault_aux_race;
-extern char vault_aux_char;
-extern EnumClassFlagGroup<MonsterAbilityType> vault_aux_dragon_mask4;
+    MonraceId vault_aux_race{}; //<! 通常pit/nest生成時のモンスターの構成条件ID.
+    char vault_aux_char = '\0'; //!< 単一シンボルpit/nest生成時の指定シンボル.
+    EnumClassFlagGroup<MonsterAbilityType> vault_aux_dragon_mask4{}; //!< ブレス属性に基づくドラゴンpit生成時条件マスク.
+
+private:
+    PitNestFilter() = default;
+
+    static PitNestFilter instance;
+};
 
 class PlayerType;
 void vault_prep_clone(PlayerType *player_ptr);
