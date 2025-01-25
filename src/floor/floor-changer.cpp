@@ -57,7 +57,6 @@ static void build_dead_end(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     msg_print(_("階段は行き止まりだった。", "The staircases come to a dead end..."));
     clear_cave(player_ptr);
     player_ptr->x = player_ptr->y = 0;
-    set_floor_and_wall(DungeonId::WILDERNESS);
     player_ptr->current_floor_ptr->height = SCREEN_HGT;
     player_ptr->current_floor_ptr->width = SCREEN_WID;
     for (POSITION y = 0; y < MAX_HGT; y++) {

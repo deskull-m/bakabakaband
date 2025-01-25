@@ -298,6 +298,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
     wc_ptr->plus_perm_collapsion(10 + floor.dun_level / 2);
 
     /* Big area of affect */
+    const auto &dungeon = floor.get_dungeon_definition();
     auto flag = false;
     for (auto y = (y1 - r); y <= (y1 + r); y++) {
         for (auto x = (x1 - r); x <= (x1 + r); x++) {
@@ -411,7 +412,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                     cave_set_feat(player_ptr, pos, TerrainTag::MAGMA_VEIN);
                 } else {
                     /* Create floor */
-                    cave_set_feat(player_ptr, pos, rand_choice(feat_ground_type));
+                    cave_set_feat(player_ptr, pos, dungeon.select_floor_terrain_id());
                 }
 
                 continue;
