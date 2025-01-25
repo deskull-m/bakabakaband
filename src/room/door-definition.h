@@ -1,7 +1,7 @@
 #pragma once
 
+#include "util/enum-range.h"
 #include <map>
-#include <vector>
 
 #define DUN_ROOMS_MAX 100 /*!< 部屋生成処理の基本比率(ダンジョンのサイズに比例する) / Max number rate of rooms */
 
@@ -20,13 +20,13 @@ enum class LockJam {
 enum class TerrainTag;
 class Door {
 public:
-    Door() = default;
+    Door(TerrainTag open, TerrainTag broken, TerrainTag closd, const EnumRangeInclusive<TerrainTag> &locked, const EnumRangeInclusive<TerrainTag> &jammed);
 
     TerrainTag open{};
     TerrainTag broken{};
     TerrainTag closed{};
-    std::vector<TerrainTag> locked;
-    std::vector<TerrainTag> jammed;
+    EnumRangeInclusive<TerrainTag> locked;
+    EnumRangeInclusive<TerrainTag> jammed;
 };
 
 class Doors {
