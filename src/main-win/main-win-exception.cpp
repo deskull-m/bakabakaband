@@ -35,7 +35,7 @@ void handle_unexpected_exception(const std::exception &e)
 
     if (auto choice = MessageBoxW(NULL, report_confirm_msg_ss.str().data(), caption, MB_ICONEXCLAMATION | MB_YESNO | MB_ICONSTOP);
         choice == IDYES) {
-        report_error(msg);
+        // report_error(msg);
     }
 #endif
 
