@@ -596,7 +596,7 @@ void process_monster_change_feat(PlayerType *player_ptr, MONSTER_IDX m_idx)
         auto deno = std::get<1>(spawn_info);
         auto feat = std::get<2>(spawn_info);
         if (randint1(deno) <= num && feat) {
-            cave_set_feat(player_ptr, m_ptr->fy, m_ptr->fx, feat);
+            cave_set_feat(player_ptr, Pos2D::Point2D(m_ptr->fy, m_ptr->fx), feat);
         }
     }
 }
