@@ -252,7 +252,6 @@ public:
 
     bool monk_notify_aux{};
 
-    bool leaving_dungeon{}; /* True if player is leaving the dungeon */
     bool teleport_town{};
 
     IDX health_who{}; /* Health bar trackee */
