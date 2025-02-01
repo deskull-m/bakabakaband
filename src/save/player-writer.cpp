@@ -249,7 +249,7 @@ void wr_player(PlayerType *player_ptr)
     wr_byte((byte)player_ptr->action);
     wr_byte(0);
     wr_bool(preserve_mode);
-    wr_bool(player_ptr->wait_report_score);
+    wr_bool(system.is_awaiting_report_status());
 
     for (int i = 0; i < 12; i++) {
         wr_u32b(0L);
@@ -260,7 +260,6 @@ void wr_player(PlayerType *player_ptr)
     wr_u32b(0L);
     wr_u32b(0L);
 
-    const auto &system = AngbandSystem::get_instance();
     wr_u32b(system.get_seed_flavor());
     wr_u32b(system.get_seed_town());
     wr_u16b(system.is_panic_save_executed() ? 1 : 0);
