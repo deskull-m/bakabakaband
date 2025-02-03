@@ -5455,6 +5455,9 @@
     <ClInclude Include="..\..\src\system\enums\monrace\monrace-id.h">
       <Filter>system\enums\monrace</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\system\enums\grid-count-kind.h">
+      <Filter>system\enums</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />
