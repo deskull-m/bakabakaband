@@ -38,4 +38,5 @@ std::tuple<errr, int> init_info_txt(FILE *fp, char *buf, angband_header *head, P
 parse_error_type parse_line_feature(FloorType *floor_ptr, char *buf);
 parse_error_type parse_line_vault(FloorType *floor_ptr, char *buf);
 parse_error_type parse_line_alliance(FloorType *floor_ptr, char *buf);
+parse_error_type parse_line_feature(const FloorType &floor, char *buf);
 parse_error_type parse_line_building(char *buf);

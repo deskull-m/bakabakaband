@@ -233,14 +233,15 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
 std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
 {
     auto &floor = *player_ptr->current_floor_ptr;
+    auto pos = Pos2D(y, x);
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     const auto &world = AngbandWorld::get_instance();
-    if (world.is_wild_mode() || !in_bounds(&floor, y, x) || !MonraceList::is_valid(r_idx)) {
+    if (world.is_wild_mode() || !in_bounds(floor, pos.y, pos.x) || !MonraceList::is_valid(r_idx)) {
         return std::nullopt;
     }
 
-    if (none_bits(mode, PM_IGNORE_TERRAIN) && (pattern_tile(&floor, y, x) || !monster_can_enter(player_ptr, y, x, &monrace, 0))) {
+    if (none_bits(mode, PM_IGNORE_TERRAIN) && (pattern_tile(floor, pos.y, pos.x) || !monster_can_enter(player_ptr, pos.y, pos.x, &monrace, 0))) {
         return std::nullopt;
     }
 

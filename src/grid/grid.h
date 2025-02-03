@@ -78,9 +78,7 @@ bool cave_monster_teleportable_bold(PlayerType *player_ptr, MONSTER_IDX m_idx, P
 bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION x, teleport_flags mode);
 void place_grid(PlayerType *player_ptr, Grid *g_ptr, grid_bold_type pg_type);
 void place_bold(PlayerType *player_ptr, POSITION y, POSITION x, grid_bold_type gh_type);
-void set_cave_feat(FloorType *floor_ptr, POSITION y, POSITION x, FEAT_IDX feature_idx);
-void set_cave_feat_mimic(FloorType *floor_ptr, POSITION y, POSITION x, FEAT_IDX feature_idx);
-void cave_lite_hack(FloorType *floor_ptr, POSITION y, POSITION x);
-void cave_redraw_later(FloorType *floor_ptr, POSITION y, POSITION x);
-void cave_note_and_redraw_later(FloorType *floor_ptr, POSITION y, POSITION x);
-void cave_view_hack(FloorType *floor_ptr, POSITION y, POSITION x);
+void cave_lite_hack(FloorType &floor, POSITION y, POSITION x);
+void cave_redraw_later(FloorType &floor, POSITION y, POSITION x);
+void cave_note_and_redraw_later(FloorType &floor, POSITION y, POSITION x);
+void cave_view_hack(FloorType &floor, POSITION y, POSITION x);

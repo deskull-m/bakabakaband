@@ -51,10 +51,8 @@ static void init_gf_colors()
  */
 void init_other(PlayerType *player_ptr)
 {
-    player_ptr->current_floor_ptr = &floor_info; // TODO:本当はこんなところで初期化したくない
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    floor_ptr->o_list.assign(MAX_FLOOR_ITEMS, {});
-    floor_ptr->m_list.assign(MAX_FLOOR_MONSTERS, {});
+    auto &floor_data = FloorList::get_instance();
+    player_ptr->current_floor_ptr = &floor_data.get_floor(0); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
 
     init_gf_colors();
 
