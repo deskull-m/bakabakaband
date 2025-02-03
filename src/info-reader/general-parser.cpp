@@ -136,7 +136,7 @@ parse_error_type parse_line_vault(FloorType *floor_ptr, char *buf)
 /*!
  * @brief 地形情報の「F:」情報をパースする
  * Process "F:<letter>:<terrain>:<cave_info>:<monster>:<object>:<ego>:<artifact>:<trap>:<special>" -- info for dungeon grid
- * @param floor_ptr 現在フロアへの参照ポインタ
+ * @param floor フロアへの参照
  * @param buf 解析文字列
  * @return エラーコード
  */
