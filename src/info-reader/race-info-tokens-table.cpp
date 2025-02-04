@@ -425,6 +425,17 @@ const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = 
     { "DROP_3D2", MonsterDropType::DROP_3D2 },
     { "DROP_4D2", MonsterDropType::DROP_4D2 },
     { "DROP_NASTY", MonsterDropType::DROP_NASTY },
+    { "DROP_COPPER", MonsterDropType::DROP_COPPER },
+    { "DROP_SILVER", MonsterDropType::DROP_SILVER },
+    { "DROP_GARNET", MonsterDropType::DROP_GARNET },
+    { "DROP_GOLD", MonsterDropType::DROP_GOLD },
+    { "DROP_OPAL", MonsterDropType::DROP_OPAL },
+    { "DROP_SAPPHIRE", MonsterDropType::DROP_SAPPHIRE },
+    { "DROP_RUBY", MonsterDropType::DROP_RUBY },
+    { "DROP_DIAMOND", MonsterDropType::DROP_DIAMOND },
+    { "DROP_EMERALD", MonsterDropType::DROP_EMERALD },
+    { "DROP_MITHRIL", MonsterDropType::DROP_MITHRIL },
+    { "DROP_ADAMANTITE", MonsterDropType::DROP_ADAMANTITE },
 };
 
 const std::unordered_map<std::string_view, MonsterWildernessType> r_info_wilderness_flags = {
