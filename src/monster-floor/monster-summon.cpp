@@ -1,7 +1,6 @@
 #include "monster-floor/monster-summon.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "floor/geometry.h"
-#include "floor/wild.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "monster-floor/monster-generator.h"
@@ -14,7 +13,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/monrace/monrace-definition.h"
+#include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
@@ -47,7 +46,7 @@ DEPTH get_dungeon_or_wilderness_level(PlayerType *player_ptr)
         return floor.dun_level;
     }
 
-    return wilderness[player_ptr->wilderness_y][player_ptr->wilderness_x].level;
+    return wilderness_grids[player_ptr->wilderness_y][player_ptr->wilderness_x].level;
 }
 
 /*!

@@ -12,7 +12,6 @@
 #include "floor/cave.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/geometry.h"
-#include "floor/wild.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
@@ -32,6 +31,7 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
+#include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
@@ -319,7 +319,7 @@ bool tele_town(PlayerType *player_ptr)
     const auto &world = AngbandWorld::get_instance();
     for (POSITION y = 0; y < world.max_wild_y; y++) {
         for (POSITION x = 0; x < world.max_wild_x; x++) {
-            if (wilderness[y][x].town == (key - 'a' + 1)) {
+            if (wilderness_grids[y][x].town == (key - 'a' + 1)) {
                 player_ptr->wilderness_y = y;
                 player_ptr->wilderness_x = x;
             }
