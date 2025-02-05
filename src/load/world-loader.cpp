@@ -112,8 +112,10 @@ void rd_global_configurations(PlayerType *player_ptr)
 
 void load_wilderness_info(PlayerType *player_ptr)
 {
-    player_ptr->wilderness_x = rd_s32b();
-    player_ptr->wilderness_y = rd_s32b();
+    const auto x = rd_s32b();
+    const auto y = rd_s32b();
+    auto &wilderness = WildernessGrids::get_instance();
+    wilderness.set_player_position({ y, x });
 
     auto &world = AngbandWorld::get_instance();
     world.set_wild_mode(rd_bool());
