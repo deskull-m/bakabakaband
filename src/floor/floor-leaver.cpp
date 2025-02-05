@@ -310,18 +310,18 @@ static Grid *set_grid_by_leaving_floor(PlayerType *player_ptr)
     if (FloorChangeModesStore::get_instace()->has_not(FloorChangeMode::SAVE_FLOORS)) {
         return nullptr;
     }
-
-    auto *g_ptr = &player_ptr->current_floor_ptr->get_grid(player_ptr->get_position());
-    const auto &terrain = g_ptr->get_terrain();
-    if (g_ptr->special && terrain.flags.has_not(TerrainCharacteristics::SPECIAL) && get_sf_ptr(g_ptr->special)) {
-        new_floor_id = g_ptr->special;
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &grid = floor.get_grid(player_ptr->get_position());
+    const auto &terrain = grid.get_terrain();
+    if (grid.special && terrain.flags.has_not(TerrainCharacteristics::SPECIAL) && get_sf_ptr(grid.special)) {
+        new_floor_id = grid.special;
     }
 
     if (terrain.flags.has_all_of({ TerrainCharacteristics::STAIRS, TerrainCharacteristics::SHAFT })) {
         FloorChangeModesStore::get_instace()->set(FloorChangeMode::SHAFT);
     }
 
-    return g_ptr;
+    return &grid;
 }
 
 static void jump_floors(PlayerType *player_ptr)

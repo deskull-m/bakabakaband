@@ -129,7 +129,7 @@ static void make_tunnels(PlayerType *player_ptr, DungeonData *dd_ptr)
         const auto &terrain = grid.get_terrain();
         if (terrain.flags.has_not(TerrainCharacteristics::MOVE) || terrain.flags.has_none_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::LAVA })) {
             grid.mimic = 0;
-            place_grid(player_ptr, &grid, GB_FLOOR);
+            place_grid(player_ptr, grid, GB_FLOOR);
         }
     }
 }
@@ -138,9 +138,9 @@ static void make_walls(PlayerType *player_ptr, DungeonData *dd_ptr, const Dungeo
 {
     for (size_t j = 0; j < dd_ptr->wall_n; j++) {
         dd_ptr->tunnel_pos = dd_ptr->walls[j];
-        auto *g_ptr = &player_ptr->current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
-        g_ptr->mimic = 0;
-        place_grid(player_ptr, g_ptr, GB_FLOOR);
+        auto &grid = player_ptr->current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
+        grid.mimic = 0;
+        place_grid(player_ptr, grid, GB_FLOOR);
         if (evaluate_percent(dt_ptr->dun_tun_pen) && dungeon.flags.has_not(DungeonFeatureType::NO_DOORS)) {
             place_random_door(player_ptr, dd_ptr->tunnel_pos, true);
         }
@@ -293,7 +293,7 @@ static void place_bound_perm_wall(PlayerType *player_ptr, Grid &grid)
 {
     if (bound_walls_perm) {
         grid.mimic = 0;
-        place_grid(player_ptr, &grid, GB_SOLID_PERM);
+        place_grid(player_ptr, grid, GB_SOLID_PERM);
         return;
     }
 
@@ -303,7 +303,7 @@ static void place_bound_perm_wall(PlayerType *player_ptr, Grid &grid)
     }
 
     grid.mimic = grid.feat;
-    place_grid(player_ptr, &grid, GB_SOLID_PERM);
+    place_grid(player_ptr, grid, GB_SOLID_PERM);
 }
 
 static void make_perm_walls(PlayerType *player_ptr)
