@@ -1027,7 +1027,6 @@
     <ClInclude Include="..\..\src\alliance\alliance-megadeth.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
     <ClInclude Include="..\..\src\external-lib\include-json.h" />
-    <ClInclude Include="..\..\src\external-lib\json.hpp" />
     <ClInclude Include="..\..\src\system\enums\terrain\terrain-kind.h" />
     <ClInclude Include="..\..\src\system\enums\terrain\wilderness-terrain.h" />
     <ClInclude Include="..\..\src\system\services\dungeon-monrace-service.h" />
