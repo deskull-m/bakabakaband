@@ -111,6 +111,7 @@ public:
 
     std::vector<town_vault> vault_list;
     AllianceType allianceID;
+    int get_level() const;
     Grid &get_grid(const Pos2D pos);
     const Grid &get_grid(const Pos2D pos) const;
     bool is_entering_dungeon() const;
