@@ -287,14 +287,14 @@ void do_cmd_feeling(PlayerType *player_ptr)
         msg_print("狭そうなフロアだ。");
     }
 
-    std::string feeling_text;
-
+    const DungeonFeeling feeling{};
+    std::string_view feeling_text;
     if (has_good_luck(player_ptr)) {
-        feeling_text = do_cmd_feeling_text_lucky[player_ptr->feeling];
+        feeling_text = feeling.get_feeling_lucky(player_ptr->feeling);
     } else if (is_echizen(player_ptr)) {
-        feeling_text = do_cmd_feeling_text_combat[player_ptr->feeling];
+        feeling_text = feeling.get_feeling_combat(player_ptr->feeling);
     } else {
-        feeling_text = do_cmd_feeling_text[player_ptr->feeling];
+        feeling_text = feeling.get_feeling_normal(player_ptr->feeling);
     }
 
     msg_print(feeling_text);
