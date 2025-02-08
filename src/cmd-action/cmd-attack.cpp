@@ -65,7 +65,7 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
 {
     WEIGHT n_weight = 0;
     auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    auto *r_ptr = &m_ptr->get_monrace();
+    const auto &monrace = m_ptr->get_monrace();
 
     Dice dice{};
     concptr atk_desc;
@@ -104,9 +104,8 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
     player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
-
-    bool is_hit = (r_ptr->kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, r_ptr->ac, m_ptr->ml);
+    bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
+    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, m_ptr->ml);
     if (!is_hit) {
         sound(SOUND_MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), m_name.data());
@@ -267,7 +266,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     }
 
     if (player_ptr->riding) {
-        PlayerSkill(player_ptr).gain_riding_skill_exp_on_melee_attack(r_ptr);
+        PlayerSkill(player_ptr).gain_riding_skill_exp_on_melee_attack(*r_ptr);
     }
 
     player_ptr->plus_incident(INCIDENT::ATTACK_ACT_COUNT, 1);
