@@ -10,11 +10,7 @@
  */
 
 #include "cmd-io/cmd-dump.h"
-<<<<<<< HEAD
 #include "alliance/alliance.h"
-#include "cmd-io/feeling-table.h"
-=======
->>>>>>> 2c3a76c860 ([Refactor] #4951 feeling-table.cpp/h をcmd-io/ からfloor/dungeon-feeling.cpp/h へ移した)
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "floor/dungeon-feeling.h"
