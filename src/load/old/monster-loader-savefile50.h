@@ -10,5 +10,5 @@ public:
     void rd_monster(MonsterEntity *m_ptr) override;
 
 private:
-    MonsterEntity *m_ptr = nullptr;
+    PlayerType *player_ptr;
 };
