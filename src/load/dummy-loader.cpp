@@ -39,7 +39,7 @@ void rd_dummy_monsters()
     MonsterEntity dummy_mon;
     auto monster_loader = MonsterLoaderFactory::create_loader();
     for (int i = 0; i < tmp16s; i++) {
-        monster_loader->rd_monster(&dummy_mon);
+        monster_loader->rd_monster(dummy_mon);
     }
 }
 

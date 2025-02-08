@@ -57,8 +57,8 @@ static void summon_disturb(PlayerType *player_ptr, int target_type, bool known, 
 static BIT_FLAGS monster_u_mode(const FloorType &floor, MONSTER_IDX m_idx)
 {
     BIT_FLAGS u_mode = 0L;
-    auto *m_ptr = &floor.m_list[m_idx];
-    bool pet = m_ptr->is_pet();
+    const auto &monster = floor.m_list[m_idx];
+    bool pet = monster.is_pet();
     if (!pet) {
         u_mode |= PM_ALLOW_UNIQUE;
     }
@@ -107,12 +107,12 @@ static void decide_summon_kin_caster(
     PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, concptr m_name, concptr m_poss, const bool known)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor.m_list[m_idx];
+    const auto &monster = floor.m_list[m_idx];
     bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
 
-    if (m_ptr->r_idx == MonraceId::SERPENT || m_ptr->r_idx == MonraceId::ZOMBI_SERPENT) {
+    if (monster.r_idx == MonraceId::SERPENT || monster.r_idx == MonraceId::ZOMBI_SERPENT) {
         mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
             _("%s^がダンジョンの主を召喚した。", "%s^ magically summons guardians of dungeons."),
             _("%s^がダンジョンの主を召喚した。", "%s^ magically summons guardians of dungeons."));
@@ -131,8 +131,8 @@ static void decide_summon_kin_caster(
 #ifdef JP
         (void)m_poss;
 #endif
-        _(msg_format("%sが魔法で%sを召喚した。", m_name, m_ptr->get_pronoun_of_summoned_kin().data()),
-            msg_format("%s^ magically summons %s %s.", m_name, m_poss, m_ptr->get_pronoun_of_summoned_kin().data()));
+        _(msg_format("%sが魔法で%sを召喚した。", m_name, monster.get_pronoun_of_summoned_kin().data()),
+            msg_format("%s^ magically summons %s %s.", m_name, m_poss, monster.get_pronoun_of_summoned_kin().data()));
     }
 
     if (mon_to_mon && known && !see_either) {
@@ -154,10 +154,10 @@ static void decide_summon_kin_caster(
 MonsterSpellResult spell_RF6_S_KIN(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor.m_list[m_idx];
+    const auto &monster = floor.m_list[m_idx];
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto m_name = monster_name(player_ptr, m_idx);
-    const auto m_poss = monster_desc(player_ptr, m_ptr, MD_PRON_VISIBLE | MD_POSSESSIVE);
+    const auto m_poss = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
     bool known = monster_near_player(floor, m_idx, t_idx);
@@ -166,11 +166,11 @@ MonsterSpellResult spell_RF6_S_KIN(PlayerType *player_ptr, POSITION y, POSITION 
 
     decide_summon_kin_caster(player_ptr, m_idx, t_idx, target_type, m_name.data(), m_poss.data(), known);
     int count = 0;
-
     auto alliance_id = MonraceList::get_instance().get_monrace(m_ptr->r_idx).alliance_idx;
 
     if (alliance_id == AllianceType::NONE) {
-        switch (m_ptr->r_idx) {
+
+        switch (monster.r_idx) {
         case MonraceId::MENELDOR:
         case MonraceId::GWAIHIR:
         case MonraceId::THORONDOR:
@@ -195,7 +195,7 @@ MonsterSpellResult spell_RF6_S_KIN(PlayerType *player_ptr, POSITION y, POSITION 
         case MonraceId::VAIF:
             count += summon_MOAI(player_ptr, y, x, rlev, m_idx);
             break;
-        case MonraceId::DESLAYER_SENIOR:
+        case MonraceId::DEMON_SLAYER_SENIOR:
             count += summon_DEMON_SLAYER(player_ptr, y, x, m_idx);
             break;
         case MonraceId::ALDUIN:
@@ -232,813 +232,814 @@ MonsterSpellResult spell_RF6_S_KIN(PlayerType *player_ptr, POSITION y, POSITION 
             count += summon_Kin(player_ptr, y, x, rlev, m_idx);
             break;
         }
-    } else {
-        count += summon_Alliance(player_ptr, y, x, rlev, m_idx);
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && (target_type == MONSTER_TO_PLAYER)) {
-        msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
-    }
-
-    if (known && !see_monster(player_ptr, t_idx) && count && (target_type == MONSTER_TO_MONSTER)) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_CYBERの処理。サイバー・デーモン召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_CYBER(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor.m_list[m_idx];
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^がサイバーデーモンを召喚した！", "%s^ magically summons Cyberdemons!"),
-        _("%s^がサイバーデーモンを召喚した！", "%s^ magically summons Cyberdemons!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    if (m_ptr->is_friendly() && mon_to_mon) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_CYBER, (PM_ALLOW_GROUP), m_idx) ? 1 : 0;
-    } else {
-        count += summon_cyber(player_ptr, y, x, m_idx);
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("重厚な足音が近くで聞こえる。", "You hear heavy steps nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_MONSTERの処理。モンスター一体召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_MONSTER(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法で仲間を召喚した！", "%s^ magically summons help!"),
-        _("%s^が魔法で仲間を召喚した！", "%s^ magically summons help!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (int k = 0; k < 1; k++) {
-        if (mon_to_player) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        else
+        {
+            count += summon_Alliance(player_ptr, y, x, rlev, m_idx);
         }
 
-        if (mon_to_mon) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
-        }
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_MONSTERSの処理。モンスター複数召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_MONSTERS(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でモンスターを召喚した！", "%s^ magically summons monsters!"), _("%s^が魔法でモンスターを召喚した！", "%s^ magically summons monsters!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (auto k = 0; k < S_NUM_6; k++) {
-        if (mon_to_player) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
-        }
-
-        if (mon_to_mon) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
-        }
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_ANTの処理。アリ召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_ANT(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法でアリを召喚した。", "%s^ magically summons ants."),
-        _("%s^が魔法でアリを召喚した。", "%s^ magically summons ants."));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (auto k = 0; k < S_NUM_6; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_ANT, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_SPIDERの処理。クモ召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_SPIDER(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法でクモを召喚した。", "%s^ magically summons spiders."),
-        _("%s^が魔法でクモを召喚した。", "%s^ magically summons spiders."));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (auto k = 0; k < S_NUM_6; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_SPIDER, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_HOUNDの処理。ハウンド召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_HOUND(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でハウンドを召喚した。", "%s^ magically summons hounds."), _("%s^が魔法でハウンドを召喚した。", "%s^ magically summons hounds."));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_HOUND, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_HYDRAの処理。ヒドラ召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_HYDRA(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でヒドラを召喚した。", "%s^ magically summons hydras."), _("%s^が魔法でヒドラを召喚した。", "%s^ magically summons hydras."));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_HYDRA, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_ANGELの処理。天使一体召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_ANGEL(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法で天使を召喚した！", "%s^ magically summons an angel!"), _("%s^が魔法で天使を召喚した！", "%s^ magically summons an angel!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    auto *m_ptr = &floor.m_list[m_idx];
-    const auto &monrace = m_ptr->get_monrace();
-    int num = 1;
-    if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-        num += monrace.level / 40;
-    }
-
-    int count = 0;
-    for (int k = 0; k < num; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_ANGEL, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
-    }
-
-    const auto is_blind = player_ptr->effects()->blindness().is_blind();
-    if (count < 2) {
-        if (is_blind && count) {
-            msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
-        }
-    } else {
-        if (is_blind) {
+        if (player_ptr->effects()->blindness().is_blind() && count && (target_type == MONSTER_TO_PLAYER)) {
             msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
         }
+
+        if (known && !see_monster(player_ptr, t_idx) && count && (target_type == MONSTER_TO_MONSTER)) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_DEMONの処理。デーモン一体召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_DEMON(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^は魔法で混沌の宮廷から悪魔を召喚した！", "%s^ magically summons a demon from the Courts of Chaos!"),
-        _("%s^は魔法で混沌の宮廷から悪魔を召喚した！", "%s^ magically summons a demon from the Courts of Chaos!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (int k = 0; k < 1; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DEMON, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count) {
-        msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_UNDEADの処理。アンデッド一体召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_UNDEAD(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でアンデッドの強敵を召喚した！", "%s^ magically summons an undead adversary!"),
-        _("%sが魔法でアンデッドを召喚した。", "%s^ magically summons undead."));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    for (int k = 0; k < 1; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_UNDEAD, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count) {
-        msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_DRAGONの処理。ドラゴン一体召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_DRAGON(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でドラゴンを召喚した！", "%s^ magically summons a dragon!"), _("%s^が魔法でドラゴンを召喚した！", "%s^ magically summons a dragon!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    if (mon_to_player) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
-    }
-
-    if (mon_to_mon) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count) {
-        msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_HI_UNDEADの処理。強力なアンデッド召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_HI_UNDEAD(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor.m_list[m_idx];
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    int count = 0;
-    if (m_ptr->can_ring_boss_call_nazgul() && mon_to_player) {
-        count += summon_NAZGUL(player_ptr, y, x, m_idx);
-    } else {
+    /*!
+     * @brief RF6_S_CYBERの処理。サイバー・デーモン召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_CYBER(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        const auto &monster = floor.m_list[m_idx];
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
         mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-            _("%s^が魔法で強力なアンデッドを召喚した！", "%s^ magically summons greater undead!"),
-            _("%sが魔法でアンデッドを召喚した。", "%s^ magically summons undead."));
+            _("%s^がサイバーデーモンを召喚した！", "%s^ magically summons Cyberdemons!"),
+            _("%s^がサイバーデーモンを召喚した！", "%s^ magically summons Cyberdemons!"));
 
         monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
 
-        for (auto k = 0; k < S_NUM_6; k++) {
+        int count = 0;
+        if (monster.is_friendly() && mon_to_mon) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_CYBER, (PM_ALLOW_GROUP), m_idx) ? 1 : 0;
+        } else {
+            count += summon_cyber(player_ptr, y, x, m_idx);
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("重厚な足音が近くで聞こえる。", "You hear heavy steps nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
+    }
+
+    /*!
+     * @brief RF6_S_MONSTERの処理。モンスター一体召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_MONSTER(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法で仲間を召喚した！", "%s^ magically summons help!"),
+            _("%s^が魔法で仲間を召喚した！", "%s^ magically summons help!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (int k = 0; k < 1; k++) {
             if (mon_to_player) {
-                count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+                count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
             }
 
             if (mon_to_mon) {
-                count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+                count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
             }
         }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("間近で何か多くのものが這い回る音が聞こえる。", "You hear many creepy things appear nearby."));
+    /*!
+     * @brief RF6_S_MONSTERSの処理。モンスター複数召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_MONSTERS(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法でモンスターを召喚した！", "%s^ magically summons monsters!"), _("%s^が魔法でモンスターを召喚した！", "%s^ magically summons monsters!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (auto k = 0; k < S_NUM_6; k++) {
+            if (mon_to_player) {
+                count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+            }
+
+            if (mon_to_mon) {
+                count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+            }
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
+    /*!
+     * @brief RF6_S_ANTの処理。アリ召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_ANT(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法でアリを召喚した。", "%s^ magically summons ants."),
+            _("%s^が魔法でアリを召喚した。", "%s^ magically summons ants."));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (auto k = 0; k < S_NUM_6; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_ANT, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
+    /*!
+     * @brief RF6_S_SPIDERの処理。クモ召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_SPIDER(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
 
-    return res;
-}
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法でクモを召喚した。", "%s^ magically summons spiders."),
+            _("%s^が魔法でクモを召喚した。", "%s^ magically summons spiders."));
 
-/*!
- * @brief RF6_S_HI_DRAGONの処理。古代ドラゴン召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_HI_DRAGON(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法で古代ドラゴンを召喚した！", "%s^ magically summons ancient dragons!"),
-        _("%s^が魔法で古代ドラゴンを召喚した！", "%s^ magically summons ancient dragons!"));
+        int count = 0;
+        for (auto k = 0; k < S_NUM_6; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_SPIDER, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        }
 
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
+        }
 
-    int count = 0;
-    for (auto k = 0; k < S_NUM_4; k++) {
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
+    }
+
+    /*!
+     * @brief RF6_S_HOUNDの処理。ハウンド召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_HOUND(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法でハウンドを召喚した。", "%s^ magically summons hounds."), _("%s^が魔法でハウンドを召喚した。", "%s^ magically summons hounds."));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (auto k = 0; k < S_NUM_4; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HOUND, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
+    }
+
+    /*!
+     * @brief RF6_S_HYDRAの処理。ヒドラ召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_HYDRA(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法でヒドラを召喚した。", "%s^ magically summons hydras."), _("%s^が魔法でヒドラを召喚した。", "%s^ magically summons hydras."));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (auto k = 0; k < S_NUM_4; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HYDRA, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
+    }
+
+    /*!
+     * @brief RF6_S_ANGELの処理。天使一体召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_ANGEL(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法で天使を召喚した！", "%s^ magically summons an angel!"), _("%s^が魔法で天使を召喚した！", "%s^ magically summons an angel!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        const auto &monster = floor.m_list[m_idx];
+        const auto &monrace = monster.get_monrace();
+        int num = 1;
+        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+            num += monrace.level / 40;
+        }
+
+        int count = 0;
+        for (int k = 0; k < num; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_ANGEL, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        }
+
+        const auto is_blind = player_ptr->effects()->blindness().is_blind();
+        if (count < 2) {
+            if (is_blind && count) {
+                msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
+            }
+        } else {
+            if (is_blind) {
+                msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
+            }
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
+    }
+
+    /*!
+     * @brief RF6_S_DEMONの処理。デーモン一体召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_DEMON(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^は魔法で混沌の宮廷から悪魔を召喚した！", "%s^ magically summons a demon from the Courts of Chaos!"),
+            _("%s^は魔法で混沌の宮廷から悪魔を召喚した！", "%s^ magically summons a demon from the Courts of Chaos!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (int k = 0; k < 1; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_DEMON, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count) {
+            msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
+    }
+
+    /*!
+     * @brief RF6_S_UNDEADの処理。アンデッド一体召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_UNDEAD(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法でアンデッドの強敵を召喚した！", "%s^ magically summons an undead adversary!"),
+            _("%sが魔法でアンデッドを召喚した。", "%s^ magically summons undead."));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (int k = 0; k < 1; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_UNDEAD, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count) {
+            msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
+    }
+
+    /*!
+     * @brief RF6_S_DRAGONの処理。ドラゴン一体召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_DRAGON(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法でドラゴンを召喚した！", "%s^ magically summons a dragon!"), _("%s^が魔法でドラゴンを召喚した！", "%s^ magically summons a dragon!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
         if (mon_to_player) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
         }
 
         if (mon_to_mon) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
         }
+
+        if (player_ptr->effects()->blindness().is_blind() && count) {
+            msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("多くの力強いものが間近に現れた音が聞こえる。", "You hear many powerful things appear nearby."));
+    /*!
+     * @brief RF6_S_HI_UNDEADの処理。強力なアンデッド召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_HI_UNDEAD(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        const auto &monster = floor.m_list[m_idx];
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        if (monster.can_ring_boss_call_nazgul() && mon_to_player) {
+            count += summon_NAZGUL(player_ptr, y, x, m_idx);
+        } else {
+            mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+                _("%s^が魔法で強力なアンデッドを召喚した！", "%s^ magically summons greater undead!"),
+                _("%sが魔法でアンデッドを召喚した。", "%s^ magically summons undead."));
+
+            monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+
+            for (auto k = 0; k < S_NUM_6; k++) {
+                if (mon_to_player) {
+                    count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+                }
+
+                if (mon_to_mon) {
+                    count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+                }
+            }
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("間近で何か多くのものが這い回る音が聞こえる。", "You hear many creepy things appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
+    /*!
+     * @brief RF6_S_HI_DRAGONの処理。古代ドラゴン召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_HI_DRAGON(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法で古代ドラゴンを召喚した！", "%s^ magically summons ancient dragons!"),
+            _("%s^が魔法で古代ドラゴンを召喚した！", "%s^ magically summons ancient dragons!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        int count = 0;
+        for (auto k = 0; k < S_NUM_4; k++) {
+            if (mon_to_player) {
+                count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+            }
+
+            if (mon_to_mon) {
+                count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+            }
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("多くの力強いものが間近に現れた音が聞こえる。", "You hear many powerful things appear nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
+    /*!
+     * @brief RF6_S_AMBERITESの処理。アンバーの王族召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_AMBERITES(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
 
-    return res;
-}
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^がアンバーの王族を召喚した！", "%s^ magically summons Lords of Amber!"),
+            _("%s^がアンバーの王族を召喚した！", "%s^ magically summons Lords of Amber!"));
 
-/*!
- * @brief RF6_S_AMBERITESの処理。アンバーの王族召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_AMBERITES(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^がアンバーの王族を召喚した！", "%s^ magically summons Lords of Amber!"),
-        _("%s^がアンバーの王族を召喚した！", "%s^ magically summons Lords of Amber!"));
+        int count = 0;
+        for (auto k = 0; k < S_NUM_4; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        }
 
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_print(_("何者かが次元を超えて現れた気配がした。", "You feel shadow shifting by immortal beings."));
+        }
 
-    int count = 0;
-    for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_print(_("何者かが次元を超えて現れた気配がした。", "You feel shadow shifting by immortal beings."));
+    /*!
+     * @brief RF6_S_UNIQUEの処理。ユニーク・モンスター召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_UNIQUE(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        DEPTH rlev = monster_level_idx(floor, m_idx);
+        bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        bool known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+            _("%s^が魔法で特別な強敵を召喚した！", "%s^ magically summons special opponents!"),
+            _("%s^が魔法で特別な強敵を召喚した！", "%s^ magically summons special opponents!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        const auto &monster = floor.m_list[m_idx];
+        bool uniques_are_summoned = false;
+        int count = 0;
+        for (auto k = 0; k < S_NUM_4; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_UNIQUE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        }
+
+        if (count) {
+            uniques_are_summoned = true;
+        }
+
+        summon_type non_unique_type = SUMMON_HI_UNDEAD;
+        if ((monster.sub_align & (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) == (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) {
+            non_unique_type = SUMMON_NONE;
+        } else if (monster.sub_align & SUB_ALIGN_GOOD) {
+            non_unique_type = SUMMON_ANGEL;
+        }
+
+        for (auto k = count; k < S_NUM_4; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, non_unique_type, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_format(_("多くの%sが間近に現れた音が聞こえる。", "You hear many %s appear nearby."),
+                uniques_are_summoned ? _("力強いもの", "powerful things") : _("もの", "things"));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
+    /*!
+     * @brief RF6_S_DEAD_UNIQUEの処理。撃破済みユニーク・モンスターをクローンとして召喚。 /
+     * @param player_ptr プレイヤーへの参照ポインタ
+     * @param y 対象の地点のy座標
+     * @param x 対象の地点のx座標
+     * @param m_idx 呪文を唱えるモンスターID
+     * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+     * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+     *
+     * プレイヤーが対象ならラーニング可。
+     */
+    MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(PlayerType * player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+    {
+        auto &floor = *player_ptr->current_floor_ptr;
+        auto rlev = monster_level_idx(floor, m_idx);
+        auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+        auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
+        auto see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+        auto known = monster_near_player(floor, m_idx, t_idx);
+
+        mspell_cast_msg_blind msg(_("%^sが何かをつぶやいた。", "%^s mumbles."),
+            _("%s^が魔法で特別な強敵を蘇らせた！", "%^s magically animates special opponents!"),
+            _("%s^が魔法で特別な強敵を蘇らせた！", "%^s magically animates special opponents!"));
+
+        monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        summon_disturb(player_ptr, target_type, known, see_either);
+
+        auto count = 0;
+        for (auto k = 0; k < S_NUM_4; k++) {
+            count += summon_specific(player_ptr, y, x, rlev, SUMMON_DEAD_UNIQUE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_CLONE), m_idx) ? 1 : 0;
+        }
+
+        if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+            msg_format(_("多くの力強いものが間近に蘇った音が聞こえる。", "You hear many powerful things animate nearby."));
+        }
+
+        if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+            floor.monster_noise = true;
+        }
+
+        auto res = MonsterSpellResult::make_valid();
+        res.learnable = target_type == MONSTER_TO_PLAYER;
+
+        return res;
     }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_UNIQUEの処理。ユニーク・モンスター召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_UNIQUE(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    DEPTH rlev = monster_level_idx(floor, m_idx);
-    bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法で特別な強敵を召喚した！", "%s^ magically summons special opponents!"),
-        _("%s^が魔法で特別な強敵を召喚した！", "%s^ magically summons special opponents!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    auto *m_ptr = &floor.m_list[m_idx];
-    bool uniques_are_summoned = false;
-    int count = 0;
-    for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_UNIQUE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
-    }
-
-    if (count) {
-        uniques_are_summoned = true;
-    }
-
-    summon_type non_unique_type = SUMMON_HI_UNDEAD;
-    if ((m_ptr->sub_align & (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) == (SUB_ALIGN_GOOD | SUB_ALIGN_EVIL)) {
-        non_unique_type = SUMMON_NONE;
-    } else if (m_ptr->sub_align & SUB_ALIGN_GOOD) {
-        non_unique_type = SUMMON_ANGEL;
-    }
-
-    for (auto k = count; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, non_unique_type, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_format(_("多くの%sが間近に現れた音が聞こえる。", "You hear many %s appear nearby."),
-            uniques_are_summoned ? _("力強いもの", "powerful things") : _("もの", "things"));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}
-
-/*!
- * @brief RF6_S_DEAD_UNIQUEの処理。撃破済みユニーク・モンスターをクローンとして召喚。 /
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 対象の地点のy座標
- * @param x 対象の地点のx座標
- * @param m_idx 呪文を唱えるモンスターID
- * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
- * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
- *
- * プレイヤーが対象ならラーニング可。
- */
-MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
-{
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto rlev = monster_level_idx(floor, m_idx);
-    auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
-    auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    auto see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    auto known = monster_near_player(floor, m_idx, t_idx);
-
-    mspell_cast_msg_blind msg(_("%^sが何かをつぶやいた。", "%^s mumbles."),
-        _("%s^が魔法で特別な強敵を蘇らせた！", "%^s magically animates special opponents!"),
-        _("%s^が魔法で特別な強敵を蘇らせた！", "%^s magically animates special opponents!"));
-
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
-    summon_disturb(player_ptr, target_type, known, see_either);
-
-    auto count = 0;
-    for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DEAD_UNIQUE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_CLONE), m_idx) ? 1 : 0;
-    }
-
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
-        msg_format(_("多くの力強いものが間近に蘇った音が聞こえる。", "You hear many powerful things animate nearby."));
-    }
-
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
-        floor.monster_noise = true;
-    }
-
-    auto res = MonsterSpellResult::make_valid();
-    res.learnable = target_type == MONSTER_TO_PLAYER;
-
-    return res;
-}

@@ -270,10 +270,10 @@ void print_speed(PlayerType *player_ptr)
     const auto is_slow = player_ptr->effects()->deceleration().is_slow();
     if (speed > 0) {
         if (player_ptr->riding) {
-            auto *m_ptr = &floor.m_list[player_ptr->riding];
-            if (m_ptr->is_accelerated() && !m_ptr->is_decelerated()) {
+            const auto &monster = floor.m_list[player_ptr->riding];
+            if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
-            } else if (m_ptr->is_decelerated() && !m_ptr->is_accelerated()) {
+            } else if (monster.is_decelerated() && !monster.is_accelerated()) {
                 attr = TERM_VIOLET;
             } else {
                 attr = TERM_GREEN;
@@ -288,10 +288,10 @@ void print_speed(PlayerType *player_ptr)
         sprintf(buf, "%s(%d)", (player_ptr->riding ? _("乗馬", "Ride") : _("減速", "Slow")), speed);
     } else if (speed < 0) {
         if (player_ptr->riding) {
-            auto *m_ptr = &floor.m_list[player_ptr->riding];
-            if (m_ptr->is_accelerated() && !m_ptr->is_decelerated()) {
+            const auto &monster = floor.m_list[player_ptr->riding];
+            if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
-            } else if (m_ptr->is_decelerated() && !m_ptr->is_accelerated()) {
+            } else if (monster.is_decelerated() && !monster.is_accelerated()) {
                 attr = TERM_VIOLET;
             } else {
                 attr = TERM_RED;
