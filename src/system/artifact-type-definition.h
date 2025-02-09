@@ -41,6 +41,10 @@ public:
     PERCENTAGE broken_rate; /*!< 発動破損率 */
 
     bool can_generate(const BaseitemKey &bi_key) const;
+    bool can_make_instant_artifact() const;
+    bool evaluate_shallow_instant_artifact(int making_level) const;
+    bool evaluate_rarity() const;
+    bool evaluate_shallow_baseitem(int making_level) const;
 };
 
 class ArtifactList {
