@@ -565,7 +565,10 @@ void wilderness_gen(PlayerType *player_ptr)
         player_ptr->teleport_town = false;
     }
 
-    player_place(player_ptr, player_ptr->oldpy, player_ptr->oldpx);
+    if (!player_ptr->try_set_position(player_ptr->get_old_position())) {
+        return;
+    }
+
     generate_wild_monsters(player_ptr);
     if (generate_encounter) {
         player_ptr->ambush_flag = true;
