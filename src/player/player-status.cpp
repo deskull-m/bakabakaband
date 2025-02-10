@@ -193,18 +193,18 @@ static bool is_heavy_shoot(PlayerType *player_ptr, const ItemEntity *o_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 総重量
  */
-WEIGHT calc_inventory_weight(PlayerType *player_ptr)
+int calc_inventory_weight(PlayerType *player_ptr)
 {
-    WEIGHT weight = 0;
-
-    ItemEntity *o_ptr;
+    auto weight = 0;
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        o_ptr = &player_ptr->inventory_list[i];
-        if (!o_ptr->is_valid()) {
+        const auto &item = player_ptr->inventory_list[i];
+        if (!item.is_valid()) {
             continue;
         }
-        weight += o_ptr->weight * o_ptr->number;
+
+        weight += item.weight * item.number;
     }
+
     return weight;
 }
 
@@ -2572,12 +2572,13 @@ static int calc_to_weapon_dice_num(PlayerType *player_ptr, INVENTORY_IDX slot)
  * Computes current weight limit.
  * @return 制限重量(ポンド)
  */
-WEIGHT calc_weight_limit(PlayerType *player_ptr)
+int calc_weight_limit(PlayerType *player_ptr)
 {
-    WEIGHT i = (WEIGHT)adj_str_wgt[player_ptr->stat_index[A_STR]] * 50;
+    auto i = adj_str_wgt[player_ptr->stat_index[A_STR]] * 50;
     if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
         i = i * 3 / 2;
     }
+
     return i;
 }
 
@@ -2718,7 +2719,7 @@ bool player_has_no_spellbooks(PlayerType *player_ptr)
  * @param y 配置先Y座標
  * @return 配置に成功したらTRUE
  */
-bool player_place(PlayerType *player_ptr, POSITION y, POSITION x)
+bool player_place(PlayerType *player_ptr, int y, int x)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
     if (x <= 0 || y <= 0 || x >= floor_ptr->width - 1 || y >= floor_ptr->height - 1) {
@@ -3003,7 +3004,7 @@ int16_t modify_stat_value(int value, int amount)
  * Hack -- Calculates the total number of points earned		-JWT-
  * @details
  */
-long calc_score(PlayerType *player_ptr)
+uint32_t calc_score(PlayerType *player_ptr)
 {
     const auto &entries = ArenaEntryList::get_instance();
     const auto current_entry = entries.get_current_entry();
@@ -3168,10 +3169,9 @@ bool is_chargeman(PlayerType *player_ptr)
     return player_ptr->ppersonality == PERSONALITY_CHARGEMAN;
 }
 
-WEIGHT calc_weapon_weight_limit(PlayerType *player_ptr)
+int calc_weapon_weight_limit(PlayerType *player_ptr)
 {
-    WEIGHT weight = adj_str_hold[player_ptr->stat_index[A_STR]];
-
+    auto weight = adj_str_hold[player_ptr->stat_index[A_STR]];
     if (has_two_handed_weapons(player_ptr)) {
         weight *= 2;
     }
@@ -3179,10 +3179,9 @@ WEIGHT calc_weapon_weight_limit(PlayerType *player_ptr)
     return weight;
 }
 
-WEIGHT calc_bow_weight_limit(PlayerType *player_ptr)
+int calc_bow_weight_limit(PlayerType *player_ptr)
 {
-    WEIGHT weight = adj_str_hold[player_ptr->stat_index[A_STR]];
-
+    auto weight = adj_str_hold[player_ptr->stat_index[A_STR]];
     return weight;
 }
 
