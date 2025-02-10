@@ -412,7 +412,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
     case AttributeType::ROCKET: {
         if (grid.is_mirror()) {
             msg_print(_("鏡が割れた！", "The mirror was shattered!"));
-            sound(SOUND_GLASS);
+            sound(SoundKind::GLASS);
             SpellsMirrorMaster(player_ptr).remove_mirror(y, x);
             project(player_ptr, 0, 2, y, x, player_ptr->lev / 2 + 5, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
@@ -424,7 +424,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         if (known && (grid.is_mark())) {
             msg_format(_("%sが割れた！", "The %s crumbled!"), grid.get_terrain(TerrainKind::MIMIC).name.data());
-            sound(SOUND_GLASS);
+            sound(SoundKind::GLASS);
         }
 
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);
@@ -434,7 +434,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
     case AttributeType::SOUND: {
         if (grid.is_mirror() && player_ptr->lev < 40) {
             msg_print(_("鏡が割れた！", "The mirror was shattered!"));
-            sound(SOUND_GLASS);
+            sound(SoundKind::GLASS);
             SpellsMirrorMaster(player_ptr).remove_mirror(y, x);
             project(player_ptr, 0, 2, y, x, player_ptr->lev / 2 + 5, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
@@ -446,7 +446,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         if (known && (grid.is_mark())) {
             msg_format(_("%sが割れた！", "The %s crumbled!"), grid.get_terrain(TerrainKind::MIMIC).name.data());
-            sound(SOUND_GLASS);
+            sound(SoundKind::GLASS);
         }
 
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);

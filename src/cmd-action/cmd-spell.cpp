@@ -889,7 +889,7 @@ void do_cmd_study(PlayerType *player_ptr)
         break;
     }
 
-    sound(SOUND_STUDY);
+    sound(SoundKind::STUDY);
 
     /* One less spell available */
     player_ptr->learned_spells++;
@@ -1056,7 +1056,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
         }
 
         msg_format(_("%sをうまく唱えられなかった！", "You failed to get the %s off!"), prayer.data());
-        sound(SOUND_FAIL);
+        sound(SoundKind::FAIL);
 
         switch (use_realm) {
         case RealmType::LIFE:
