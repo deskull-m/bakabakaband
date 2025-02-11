@@ -664,6 +664,7 @@ std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *li
     }
 
     Pos2D pos = pos_parsing;
+    auto &wilderness = WildernessGrids::get_instance();
     switch (line[2]) {
         /* Process "W:F:<letter>:<terrain>:<town>:<road>:<name> */
 #ifdef JP
@@ -738,7 +739,6 @@ std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *li
 
     /* Process "W:P:<x>:<y> - starting position in the wilderness */
     case 'P': {
-        auto &wilderness = WildernessGrids::get_instance();
         if (wilderness.has_player_located()) {
             break;
         }
@@ -765,9 +765,10 @@ std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *li
             continue;
         }
 
-        wilderness_grids[dungeon->dy][dungeon->dx].entrance = dungeon_id;
-        if (!wilderness_grids[dungeon->dy][dungeon->dx].town) {
-            wilderness_grids[dungeon->dy][dungeon->dx].level = dungeon->mindepth;
+        auto &wg = wilderness.get_grid(dungeon->get_position());
+        wg.entrance = dungeon_id;
+        if (wg.town == 0) {
+            wg.level = dungeon->mindepth;
         }
     }
 
