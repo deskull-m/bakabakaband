@@ -7,6 +7,10 @@
 #include "system/floor/wilderness-grid.h"
 #include "floor/geometry.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/monrace/monrace-hook-types.h"
+#include "system/enums/terrain/wilderness-terrain.h"
+#include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include "term/z-rand.h"
 
 std::vector<std::vector<WildernessGrid>> wilderness_grids;
@@ -14,6 +18,53 @@ std::vector<std::vector<WildernessGrid>> wilderness_grids;
 int WildernessGrid::get_level() const
 {
     return this->level;
+}
+
+uint32_t WildernessGrid::get_seed() const
+{
+    return this->seed;
+}
+
+void WildernessGrid::set_seed(uint32_t saved_seed)
+{
+    this->seed = saved_seed;
+}
+
+MonraceHook WildernessGrid::get_monrace_hook() const
+{
+    switch (this->terrain) {
+    case WildernessTerrain::TOWN:
+        return MonraceHook::TOWN;
+    case WildernessTerrain::DEEP_WATER:
+        return MonraceHook::OCEAN;
+    case WildernessTerrain::SHALLOW_WATER:
+    case WildernessTerrain::SWAMP:
+        return MonraceHook::SHORE;
+    case WildernessTerrain::DIRT:
+    case WildernessTerrain::DESERT:
+        return MonraceHook::WASTE;
+    case WildernessTerrain::GRASS:
+        return MonraceHook::GRASS;
+    case WildernessTerrain::TREES:
+        return MonraceHook::WOOD;
+    case WildernessTerrain::SHALLOW_LAVA:
+    case WildernessTerrain::DEEP_LAVA:
+        return MonraceHook::VOLCANO;
+    case WildernessTerrain::MOUNTAIN:
+        return MonraceHook::MOUNTAIN;
+    default:
+        return MonraceHook::DUNGEON;
+    }
+}
+
+WildernessTerrain WildernessGrid::get_terrain() const
+{
+    return this->terrain;
+}
+
+void WildernessGrid::set_terrain(WildernessTerrain wt)
+{
+    this->terrain = wt;
 }
 
 bool WildernessGrid::has_town() const
@@ -155,4 +206,33 @@ bool WildernessGrids::is_player_in_bounds() const
 const Rect2D &WildernessGrids::get_area() const
 {
     return this->area;
+}
+
+MonraceHook WildernessGrids::get_monrace_hook() const
+{
+    return this->get_player_grid().get_monrace_hook();
+}
+
+WildernessLetters WildernessLetters::instance{};
+
+WildernessLetters &WildernessLetters::get_instance()
+{
+    return instance;
+}
+
+void WildernessLetters::initialize()
+{
+    if (this->letters.empty()) {
+        this->letters.resize(TerrainList::get_instance().size());
+    }
+}
+
+const WildernessGrid &WildernessLetters::get_grid(int index) const
+{
+    return this->letters.at(index);
+}
+
+WildernessGrid &WildernessLetters::get_grid(int index)
+{
+    return this->letters.at(index);
 }
