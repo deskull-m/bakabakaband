@@ -82,12 +82,12 @@ public:
 private:
     WildernessGrids() = default;
     static WildernessGrids instance;
+    std::vector<std::vector<WildernessGrid>> grids;
+
     Rect2D area = { 0, 0, 0, 0 };
     Pos2D current_pos = { 0, 0 };
     Pos2D starting_pos = { 0, 0 };
 };
-
-extern std::vector<std::vector<WildernessGrid>> wilderness_grids;
 
 class WildernessLetters {
 public:
