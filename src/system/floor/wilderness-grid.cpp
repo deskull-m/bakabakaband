@@ -16,6 +16,24 @@ int WildernessGrid::get_level() const
     return this->level;
 }
 
+bool WildernessGrid::has_road() const
+{
+    return this->road > 0;
+}
+
+void WildernessGrid::set_road(int road_parsing)
+{
+    this->road = road_parsing;
+}
+
+void WildernessGrid::initialize(const WildernessGrid &letter)
+{
+    this->terrain = letter.terrain;
+    this->level = letter.level;
+    this->town = letter.town;
+    this->road = letter.road;
+}
+
 void WildernessGrid::initialize_seed()
 {
     this->seed = randint0(0x10000000);
