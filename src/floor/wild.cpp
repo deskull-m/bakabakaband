@@ -276,8 +276,9 @@ static void generate_wilderness_area(FloorType &floor, WildernessTerrain terrain
  */
 static void generate_area(PlayerType *player_ptr, const Pos2D &pos, bool is_border, bool is_corner)
 {
-    const auto &wg = WildernessGrids::get_instance().get_grid(pos);
-    player_ptr->town_num = wg.town;
+    const auto &wilderness = WildernessGrids::get_instance();
+    const auto &wg = wilderness.get_grid(pos);
+    player_ptr->town_num = wg.get_town();
     auto &floor = *player_ptr->current_floor_ptr;
     floor.base_level = wg.level;
     floor.dun_level = 0;
@@ -310,8 +311,8 @@ static void generate_area(PlayerType *player_ptr, const Pos2D &pos, bool is_bord
         generate_wilderness_area(floor, terrain, seed, is_corner);
     }
 
-    if (!is_corner && (wg.town == 0)) {
-        //!< @todo make the road a bit more interresting.
+    //!< @details 地上マップに曲がり道の道路を作る.
+    if (!is_corner && !wg.has_town()) {
         if (wg.has_road()) {
             floor.get_grid({ MAX_HGT / 2, MAX_WID / 2 }).set_terrain_id(TerrainTag::FLOOR);
             if (wilderness_grids[pos.y - 1][pos.x].has_road()) {
@@ -350,7 +351,7 @@ static void generate_area(PlayerType *player_ptr, const Pos2D &pos, bool is_bord
 
     const auto entrance = wg.entrance;
     auto is_winner = entrance > DungeonId::WILDERNESS;
-    is_winner &= (wg.town == 0);
+    is_winner &= !wg.has_town();
     auto is_wild_winner = DungeonList::get_instance().get_dungeon(entrance).flags.has_not(DungeonFeatureType::WINNER);
     is_winner &= ((AngbandWorld::get_instance().total_winner != 0) || is_wild_winner);
     if (!is_winner) {
@@ -604,9 +605,9 @@ void wilderness_gen_small(PlayerType *player_ptr)
     for (const auto &pos : area) {
         auto &grid = floor.get_grid(pos);
         const auto &wg = wilderness.get_grid(pos);
-        if (wg.town && (wg.town != VALID_TOWNS)) {
+        if (wg.has_town() && !wg.matches_town(VALID_TOWNS)) {
             grid.set_terrain_id(TerrainTag::TOWN);
-            grid.special = wg.town;
+            grid.special = wg.get_town();
             grid.info |= (CAVE_GLOW | CAVE_MARK);
             continue;
         }
@@ -700,9 +701,7 @@ std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *li
         }
 
         if (num > 3) {
-            letter.town = static_cast<short>(std::stoi(zz[3]));
-        } else {
-            letter.town = 0;
+            letter.set_town(static_cast<short>(std::stoi(zz[3])));
         }
 
         if (num > 4) {
@@ -724,13 +723,9 @@ std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *li
         int len = strlen(s);
         for (auto i = 0; ((pos.x < xmax) && (i < len)); pos.x++, s++, i++) {
             int id = s[0];
-            auto &wg = WildernessGrids::get_instance().get_grid(pos);
-            const auto &letter = wilderness_letters.at(id);
-            wg.terrain = letter.terrain;
-            wg.level = letter.level;
-            wg.town = letter.town;
-            wg.road = letter.road;
-            towns_info[letter.town].name = letter.name;
+            const auto &letter = letters.get_grid(id);
+            wilderness.get_grid(pos).initialize(letter);
+            towns_info[letter.get_town()].name = letter.name;
         }
 
         pos.y++;
@@ -767,7 +762,7 @@ std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *li
 
         auto &wg = wilderness.get_grid(dungeon->get_position());
         wg.entrance = dungeon_id;
-        if (wg.town == 0) {
+        if (!wg.has_town()) {
             wg.level = dungeon->mindepth;
         }
     }
