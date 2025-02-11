@@ -1,22 +1,17 @@
 #include "window/main-window-left-frame.h"
-#include "dungeon/quest.h"
 #include "floor/dungeon-feeling.h"
 #include "game-option/special-options.h"
 #include "game-option/text-display-options.h"
-#include "market/arena-entry.h"
-#include "monster/monster-status.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
 #include "player-info/mimic-info-table.h"
 #include "player/player-status-table.h"
-#include "system/angband-system.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "timed-effect/timed-effects.h"
 #include "tracking/health-bar-tracker.h"
@@ -25,6 +20,7 @@
 #include "window/main-window-stat-poster.h"
 #include "window/main-window-util.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief ターゲットしているモンスターの情報部に表示する状態異常と文字色の対応を保持する構造体
@@ -80,12 +76,12 @@ void print_exp(PlayerType *player_ptr)
 
     PlayerRace pr(player_ptr);
     if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
-        (void)sprintf(out_val, "%8ld", (long)player_ptr->exp);
+        out_val = format("%8d", player_ptr->exp);
     } else {
         if (player_ptr->lev >= PY_MAX_LEVEL) {
             (void)sprintf(out_val, "********");
         } else {
-            (void)sprintf(out_val, "%8ld", (long)(player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100L) - player_ptr->exp);
+            out_val = format("%8d", player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100 - player_ptr->exp);
         }
     }
 
@@ -138,11 +134,11 @@ void print_hp(PlayerType *player_ptr)
         color = TERM_RED;
     }
 
-    c_put_str(color, tmp, ROW_CURHP, COL_CURHP + 3);
+    c_put_str(color, format("%4d", player_ptr->chp), ROW_CURHP, COL_CURHP + 3);
     put_str("/", ROW_CURHP, COL_CURHP + 7);
     sprintf(tmp, "%4ld", (long int)player_ptr->mhp);
     color = TERM_L_GREEN;
-    c_put_str(color, tmp, ROW_CURHP, COL_CURHP + 8);
+    c_put_str(color, format("%4d", player_ptr->mhp), ROW_CURHP, COL_CURHP + 8);
 }
 
 /*!
@@ -166,11 +162,11 @@ void print_sp(PlayerType *player_ptr)
         color = TERM_RED;
     }
 
-    c_put_str(color, tmp, ROW_CURSP, COL_CURSP + 3);
+    c_put_str(color, format("%4d", player_ptr->csp), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
     sprintf(tmp, "%4ld", (long int)player_ptr->msp);
     color = TERM_L_GREEN;
-    c_put_str(color, tmp, ROW_CURSP, COL_CURSP + 8);
+    c_put_str(color, format("%4d", player_ptr->msp), ROW_CURSP, COL_CURSP + 8);
 }
 
 /*!
@@ -181,8 +177,7 @@ void print_gold(PlayerType *player_ptr)
 {
     char tmp[32];
     put_str(_("＄ ", "AU "), ROW_GOLD, COL_GOLD);
-    sprintf(tmp, "%9ld", (long)player_ptr->au);
-    c_put_str(TERM_L_GREEN, tmp, ROW_GOLD, COL_GOLD + 3);
+    c_put_str(TERM_L_GREEN, format("%9d", player_ptr->au), ROW_GOLD, COL_GOLD + 3);
 }
 
 /*!
@@ -203,9 +198,9 @@ void print_depth(PlayerType *player_ptr)
     }
 
     if (depth_in_feet) {
-        depths = format(_("%d ft", "%d ft"), floor.dun_level * 50);
+        depths = fmt::format(_("{} ft", "{} ft"), floor.dun_level * 50);
     } else {
-        depths = format(_("%d 階", "Lev %d"), floor.dun_level);
+        depths = fmt::format(_("{} 階", "Lev {}"), floor.dun_level);
     }
 
     switch (DungeonFeeling::get_instance().get_feeling()) {
