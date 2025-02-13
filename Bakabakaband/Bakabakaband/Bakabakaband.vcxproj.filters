@@ -2520,6 +2520,9 @@
     <ClCompile Include="..\..\src\timed-effect\player-protection.cpp">
       <Filter>timed-effect</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\dungeon-data-definition.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
