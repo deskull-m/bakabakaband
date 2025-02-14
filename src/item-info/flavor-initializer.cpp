@@ -7,8 +7,7 @@
 #include "item-info/flavor-initializer.h"
 #include "object/tval-types.h"
 #include "system/angband-system.h"
-#include "system/baseitem-info.h"
-#include "world/world.h"
+#include "system/baseitem/baseitem-definition.h"
 
 /*!
  * @brief ゲーム開始時に行われるベースアイテムの初期化ルーチン
