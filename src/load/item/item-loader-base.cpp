@@ -3,6 +3,7 @@
 #include "load/load-util.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
@@ -12,7 +13,7 @@
 void ItemLoaderBase::load_item()
 {
     auto loading_max_k_idx = rd_u16b();
-    BaseitemInfo dummy;
+    BaseitemDefinition dummy;
     auto &baseitems = BaseitemList::get_instance();
     for (uint16_t i = 0; i < loading_max_k_idx; i++) {
         auto &baseitem = i < baseitems.size() ? baseitems.get_baseitem(i) : dummy;

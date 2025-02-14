@@ -1,5 +1,6 @@
 #include "system/alloc-entries.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/monster-race-info.h"
 #include "world/world-collapsion.h"
 
@@ -123,7 +124,7 @@ MonraceAllocationEntry &MonraceAllocationTable::get_entry(int index)
 /* The entries in the "kind allocator table" */
 std::vector<alloc_entry> alloc_kind_table;
 
-BaseitemInfo &alloc_entry::get_baseitem() const
+BaseitemDefinition &alloc_entry::get_baseitem() const
 {
     return BaseitemList::get_instance().get_baseitem(this->index);
 }

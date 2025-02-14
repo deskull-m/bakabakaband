@@ -12,6 +12,7 @@
 #include "object-enchant/trg-types.h"
 #include "object/tval-types.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/item-entity.h"
 #include "system/monster-race-info.h"
 #include "system/terrain-type-definition.h"
