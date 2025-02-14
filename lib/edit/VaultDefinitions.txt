@@ -13315,6 +13315,23 @@ D:%..::...%%%%%...::..%
 D: %.....%     %.....% 
 D:  %%%%%       %%%%%  
 
+N:628:Acid Room
+X:18:8:13:20
+D: %%%%%%%%%%%%%%%%%% 
+D:%.ffffffffffffffff.%
+D:%.f..............f.%
+D:%.f.ff..ffff..ff.f.%
+D:%.f.f..ffffff..f.f.%
+D:%.f.f.ffFFFFff.f.f.%
+D:%.f.f.ffF[[Fff.f.f.%
+D:%.f.f.ffFFFFff.f.f.%
+D:%.f.f..ffffff..f.f.%
+D:%.f.ff..ffff..ff.f.%
+D:%.f..............f.%
+D:%.ffffffffffffffff.%
+D: %%%%%%%%%%%%%%%%%% 
+
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
