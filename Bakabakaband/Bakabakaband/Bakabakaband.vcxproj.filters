@@ -2558,6 +2558,9 @@
     <ClCompile Include="..\..\src\monster-floor\monster-movement-direction-list.cpp">
       <Filter>monster-floor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\target\target.cpp">
+      <Filter>target</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5549,6 +5552,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\monster-floor\monster-movement-direction-list.h">
       <Filter>monster-floor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\target\target.h">
+      <Filter>target</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
