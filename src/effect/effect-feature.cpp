@@ -233,7 +233,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::SPIKE);
         grid.mimic = old_mimic;
 
-        note_spot(player_ptr, y, x);
+        note_spot(player_ptr, pos);
         lite_spot(player_ptr, y, x);
 
         if (!known || terrain_mimic.flags.has_not(TerrainCharacteristics::OPEN)) {
@@ -294,7 +294,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
         grid.info |= CAVE_OBJECT;
         grid.set_terrain_id(TerrainTag::RUNE_PROTECTION, TerrainKind::MIMIC);
-        note_spot(player_ptr, y, x);
+        note_spot(player_ptr, pos);
         lite_spot(player_ptr, y, x);
         break;
     }
@@ -342,7 +342,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
 
         grid.info |= (CAVE_GLOW);
-        note_spot(player_ptr, y, x);
+        note_spot(player_ptr, pos);
         lite_spot(player_ptr, y, x);
         update_local_illumination(player_ptr, pos);
 
@@ -392,7 +392,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER) || has_element_resist(player_ptr, ElementRealmType::DARKNESS, 1)) {
             /* Forget */
             grid.info &= ~(CAVE_MARK);
-            note_spot(player_ptr, y, x);
+            note_spot(player_ptr, pos);
         }
 
         lite_spot(player_ptr, y, x);
