@@ -5,12 +5,6 @@
  */
 
 #include "room/rooms-vault.h"
-#include "dungeon/dungeon-flag-types.h"
-#include "floor/cave.h"
-#include "floor/floor-generator-util.h"
-#include "floor/floor-generator.h"
-#include "floor/geometry.h"
-#include "floor/wild.h"
 #include "game-option/cheat-types.h"
 #include "grid/door.h"
 #include "grid/grid.h"
@@ -27,9 +21,7 @@
 #include "room/rooms-maze-vault.h"
 #include "room/space-finder.h"
 #include "room/treasure-deployment.h"
-#include "store/store-util.h"
 #include "store/store.h"
-#include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -38,7 +30,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "util/probability-table.h"
 #include "wizard/wizard-messages.h"
 
 /*
@@ -742,7 +733,7 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
     auto &floor = *player_ptr->current_floor_ptr;
     for (auto x = x1 - 2; x <= x2 + 2; x++) {
         const Pos2D pos(y1 - 2, x);
-        if (!in_bounds(floor, pos.y, pos.x)) {
+        if (!floor.contains(pos)) {
             break;
         }
 
@@ -752,7 +743,7 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
 
     for (auto x = x1 - 2; x <= x2 + 2; x++) {
         const Pos2D pos(y2 + 2, x);
-        if (!in_bounds(floor, pos.y, pos.x)) {
+        if (!floor.contains(pos)) {
             break;
         }
 
@@ -762,7 +753,7 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
 
     for (auto y = y1 - 2; y <= y2 + 2; y++) {
         const Pos2D pos(y, x1 - 2);
-        if (!in_bounds(floor, pos.y, pos.x)) {
+        if (!floor.contains(pos)) {
             break;
         }
 
@@ -771,11 +762,11 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
     }
 
     for (auto y = y1 - 2; y <= y2 + 2; y++) {
-        if (!in_bounds(floor, y, x2 + 2)) {
+        const Pos2D pos(y, x2 + 2);
+        if (!floor.contains(pos)) {
             break;
         }
 
-        const Pos2D pos(y, x2 + 2);
         floor.get_grid(pos).info |= (CAVE_ROOM | CAVE_ICKY);
         place_bold(player_ptr, pos.y, pos.x, GB_OUTER_NOPERM);
     }
