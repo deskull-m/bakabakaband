@@ -13331,6 +13331,26 @@ D:%.f..............f.%
 D:%.ffffffffffffffff.%
 D: %%%%%%%%%%%%%%%%%% 
 
+N:629:Cold Zone
+X:18:8:17:17
+D:   %%%%%%%%%%%   
+D:  %.hhhh.hhhh.%  
+D:  %.hhh...hhh.%  
+D:  %..hh...hh..%  
+D:  %..hhh.hhh..%  
+D: %..hhhh.hhhh..% 
+D:%..hhHHH.HHHhh..%
+D:%.hhHHH#+#HHHhh.%
+D:%.hhHHH#[#HHHhh.%
+D:%.hhHHH#+#HHHhh.%
+D:%..hhHHH.HHHhh..%
+D: %..hhhh.hhhh..% 
+D:  %..hhh.hhh..%  
+D:  %..hh...hh..%  
+D:  %.hhh...hhh.%  
+D:  %.hhhh.hhhh.%  
+D:   %%%%%%%%%%%   
+
 
 
 #    % - outside of the vault, where corridors may be connected
