@@ -3,8 +3,8 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/monster-race-info.h"
-#include "world/world-collapsion.h"
 #include "system/system-variables.h"
+#include "world/world-collapsion.h"
 #include <array>
 
 MonraceAllocationEntry::MonraceAllocationEntry(MonraceId index, int level, short prob1, short prob2)
