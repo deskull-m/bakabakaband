@@ -122,7 +122,7 @@ static void send_waiting_record(PlayerType *player_ptr)
     }
 
     if (!input_check_strict(player_ptr, _("待機していたスコア登録を今行ないますか？", "Do you register score now? "), UserCheck::NO_HISTORY)) {
-        quit(0);
+        quit("");
     }
 
     static constexpr auto flags = {
@@ -158,7 +158,7 @@ static void send_waiting_record(PlayerType *player_ptr)
     (void)fd_close(highscore_fd);
     highscore_fd = -1;
     signals_handle_tstp();
-    quit(0);
+    quit("");
 }
 
 static void init_random_seed(PlayerType *player_ptr, bool new_game)
@@ -477,5 +477,5 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie)
     select_floor_music(player_ptr);
     process_game_turn(player_ptr);
     close_game(player_ptr);
-    quit(nullptr);
+    quit("");
 }

@@ -3,6 +3,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/monster-race-info.h"
+#include "system/system-variables.h"
 #include "world/world-collapsion.h"
 #include <array>
 
@@ -131,9 +132,14 @@ BaseitemAllocationEntry::BaseitemAllocationEntry(short index, int level, short p
 {
 }
 
-const BaseitemKey &BaseitemAllocationEntry::get_bi_key() const
+bool BaseitemAllocationEntry::is_same_bi_key(const BaseitemKey &bi_key) const
 {
-    return this->get_baseitem().bi_key;
+    return bi_key == this->get_bi_key();
+}
+
+bool BaseitemAllocationEntry::is_chest() const
+{
+    return this->get_bi_key().tval() == ItemKindType::CHEST;
 }
 
 int BaseitemAllocationEntry::get_baseitem_level() const
@@ -141,14 +147,21 @@ int BaseitemAllocationEntry::get_baseitem_level() const
     return this->get_baseitem().level;
 }
 
-/* The entries in the "kind allocator table" */
-std::vector<BaseitemAllocationEntry> alloc_kind_table;
+bool BaseitemAllocationEntry::order_level(const BaseitemAllocationEntry &other) const
+{
+    return this->level < other.level;
+}
 
 BaseitemAllocationTable BaseitemAllocationTable::instance{};
 
 const BaseitemDefinition &BaseitemAllocationEntry::get_baseitem() const
 {
     return BaseitemList::get_instance().get_baseitem(this->index);
+}
+
+const BaseitemKey &BaseitemAllocationEntry::get_bi_key() const
+{
+    return this->get_baseitem().bi_key;
 }
 
 BaseitemAllocationTable &BaseitemAllocationTable::get_instance()
@@ -229,4 +242,26 @@ const BaseitemAllocationEntry &BaseitemAllocationTable::get_entry(int index) con
 BaseitemAllocationEntry &BaseitemAllocationTable::get_entry(int index)
 {
     return this->entries.at(index);
+}
+
+bool BaseitemAllocationTable::order_level(int index1, int index2) const
+{
+    const auto &entry1 = this->entries.at(index1);
+    const auto &entry2 = this->entries.at(index2);
+    return entry1.order_level(entry2);
+}
+
+/*!
+ * @brief オブジェクト生成テーブルに生成制約を加える
+ * @todo get_obj_index_hook グローバル関数ポインタは引数化して除去する
+ */
+void BaseitemAllocationTable::prepare_allocation()
+{
+    for (auto &entry : this->entries) {
+        if (!get_obj_index_hook || (*get_obj_index_hook)(entry.index)) {
+            entry.prob2 = entry.prob1;
+        } else {
+            entry.prob2 = 0;
+        }
+    }
 }
