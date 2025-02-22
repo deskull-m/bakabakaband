@@ -108,6 +108,7 @@
 #include "util/enum-range.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
+#include "view/display-symbol.h"
 #include <algorithm>
 #include <filesystem>
 #include <map>
@@ -1507,8 +1508,7 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
     co_ord max, min;
     TERM_LEN x, y;
     int l;
-    TERM_COLOR a;
-    char c;
+    DisplaySymbol ds;
 
     sort_co_ord(&min, &max, &s_ptr->init, &s_ptr->cur);
     if (XGetSelectionOwner(DPY, XA_PRIMARY) != WIN) {
@@ -1532,10 +1532,10 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
                 break;
             }
 
-            term_what(x, y, &a, &c);
+            ds = term_what(x, y, ds);
             if (1 == kanji) {
                 kanji = 2;
-            } else if (iskanji(c)) {
+            } else if (iskanji(ds.character)) {
                 kanji = 1;
             } else {
                 kanji = 0;
@@ -1550,7 +1550,7 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
              * Delete the garbage.
              */
             if ((2 == kanji && x == min.x) || (1 == kanji && x == max.x)) {
-                c = ' ';
+                ds.character = ' ';
             }
 #else
             if (x > max.x) {
@@ -1560,10 +1560,10 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
                 continue;
             }
 
-            term_what(x, y, &a, &c);
+            ds = term_what(x, y, ds);
 #endif
 
-            buf[l] = c;
+            buf[l] = ds.character;
             l++;
         }
 
