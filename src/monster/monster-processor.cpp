@@ -515,7 +515,7 @@ bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
     for (auto y = oy - 1; y <= oy + 1; y++) {
         for (auto x = ox - 1; x <= ox + 1; x++) {
             const Pos2D pos(y, x);
-            if (!in_bounds2(floor, pos.y, pos.x)) {
+            if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
                 continue;
             }
 
@@ -630,7 +630,7 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
 
         for (POSITION y = oy - 1; y <= oy + 1; y++) {
             for (POSITION x = ox - 1; x <= ox + 1; x++) {
-                if (!in_bounds2(*player_ptr->current_floor_ptr, y, x)) {
+                if (!player_ptr->current_floor_ptr->contains(Pos2D(y, x), FloorBoundary::OUTER_WALL_INCLUSIVE)) {
                     continue;
                 }
 
