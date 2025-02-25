@@ -149,26 +149,22 @@ std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX 
 }
 
 /*!
- * @brief モンスターを目標地点に集団生成する / Attempt to place a "group" of monsters around the given location
- * @param y 中心生成位置y座標
- * @param x 中心生成位置x座標
- * @param r_idx 生成モンスター種族
+ * @brief モンスターを目標地点に集団生成する
+ * @param pos_center 中心生成位置
+ * @param monrace_id 生成モンスター種族
  * @param mode 生成オプション
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
- * @return 成功したらtrue
  */
-static bool place_monster_group(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
+static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center, MonraceId monrace_id, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto *r_ptr = &monraces_info[r_idx];
-    int total = randint1(10);
-
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    int extra = 0;
-    if (r_ptr->level > floor_ptr->dun_level) {
-        extra = r_ptr->level - floor_ptr->dun_level;
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    const auto floor_level = player_ptr->current_floor_ptr->dun_level;
+    auto extra = 0;
+    if (monrace.level > floor_level) {
+        extra = monrace.level - floor_level;
         extra = 0 - randint1(extra);
-    } else if (r_ptr->level < floor_ptr->dun_level) {
-        extra = floor_ptr->dun_level - r_ptr->level;
+    } else if (monrace.level < floor_level) {
+        extra = floor_level - monrace.level;
         extra = randint1(extra);
     }
 
@@ -176,42 +172,35 @@ static bool place_monster_group(PlayerType *player_ptr, POSITION y, POSITION x, 
         extra = 9;
     }
 
-    total += extra;
-
-    if (total < 1) {
-        total = 1;
-    }
-    if (total > GROUP_MAX) {
-        total = GROUP_MAX;
+    auto total_int = randint1(10) + extra;
+    if (total_int < 1) {
+        total_int = 1;
     }
 
-    int hack_n = 1;
-    POSITION hack_x[GROUP_MAX];
-    hack_x[0] = x;
-    POSITION hack_y[GROUP_MAX];
-    hack_y[0] = y;
+    constexpr auto max_monsters_count = 32;
+    if (total_int > max_monsters_count) {
+        total_int = max_monsters_count;
+    }
 
-    for (int n = 0; (n < hack_n) && (hack_n < total); n++) {
-        POSITION hx = hack_x[n];
-        POSITION hy = hack_y[n];
-        for (int i = 0; (i < 8) && (hack_n < total); i++) {
-            POSITION mx, my;
-            scatter(player_ptr, &my, &mx, hy, hx, 4, PROJECT_NONE);
-            if (!is_cave_empty_bold2(player_ptr, my, mx)) {
+    const size_t total_size = total_int;
+    std::vector<Pos2D> positions;
+    positions.push_back(pos_center);
+    for (size_t n = 0; (n < positions.size()) && (positions.size() < total_size); n++) {
+        for (auto i = 0; (i < 8) && (positions.size() < total_size); i++) {
+            //!< @details 要素数が変わると参照がダングリング状態になるので毎回取得する必要がある.
+            const auto &pos_neighbor = positions.at(n);
+            Pos2D pos(0, 0);
+            scatter(player_ptr, &pos.y, &pos.x, pos_neighbor.y, pos_neighbor.x, 4, PROJECT_NONE);
+            if (!is_cave_empty_bold2(player_ptr, pos.y, pos.x)) {
                 continue;
             }
 
-            if (place_monster_one(player_ptr, my, mx, r_idx, mode, summoner_m_idx)) {
-                hack_y[hack_n] = my;
-                hack_x[hack_n] = mx;
-                hack_n++;
+            if (place_monster_one(player_ptr, pos.y, pos.x, monrace_id, mode, summoner_m_idx)) {
+                positions.push_back(pos);
             }
         }
     }
-
-    return true;
 }
-
 /*!
  * @brief モンスター種族が護衛となれるかどうかをチェックする
  * @param monrace_id チェックするモンスターの種族ID
@@ -313,7 +302,7 @@ std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITI
     }
 
     if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS)) {
-        (void)place_monster_group(player_ptr, y, x, r_idx, mode, summoner_m_idx);
+        place_monster_group(player_ptr, { y, x }, r_idx, mode, summoner_m_idx);
     }
 
     if (monrace.misc_flags.has_not(MonsterMiscType::ESCORT)) {
@@ -337,8 +326,8 @@ std::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITI
         }
 
         (void)place_monster_one(player_ptr, ny, nx, monrace_id, mode, *m_idx);
-        if (monraces_info[monrace_id].misc_flags.has(MonsterMiscType::HAS_FRIENDS) || monrace.misc_flags.has(MonsterMiscType::MORE_ESCORT)) {
-            (void)place_monster_group(player_ptr, ny, nx, monrace_id, mode, *m_idx);
+        if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS) || monrace.misc_flags.has(MonsterMiscType::MORE_ESCORT)) {
+            place_monster_group(player_ptr, { ny, nx }, monrace_id, mode, *m_idx);
         }
     }
 
