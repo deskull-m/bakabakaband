@@ -163,7 +163,7 @@ void wiz_debug_spell(PlayerType *player_ptr)
  */
 void wiz_dimension_door(PlayerType *player_ptr)
 {
-    const auto pos = tgt_pt(player_ptr);
+    const auto pos = point_target(player_ptr);
     if (!pos) {
         return;
     }
