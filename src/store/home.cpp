@@ -35,9 +35,9 @@ int home_carry(PlayerType *player_ptr, ItemEntity *o_ptr, StoreSaleType store_nu
     }
 
     for (int slot = 0; slot < st_ptr->stock_num; slot++) {
-        auto &item_store = st_ptr->stock[slot];
-        if (item_store->is_similar(*o_ptr)) {
-            item_store->absorb(*o_ptr);
+        auto &item_store = *st_ptr->stock[slot];
+        if (item_store.is_similar(*o_ptr)) {
+            item_store.absorb(*o_ptr);
             if (store_num != StoreSaleType::HOME) {
                 stack_force_notes = old_stack_force_notes;
                 stack_force_costs = old_stack_force_costs;
@@ -98,33 +98,31 @@ static bool exe_combine_store_items(ItemEntity *o_ptr, ItemEntity *j_ptr, const 
     return true;
 }
 
-static void sweep_reorder_store_item(ItemEntity *o_ptr, const int i, bool *combined)
+static void sweep_reorder_store_item(ItemEntity &item, const int i, bool *combined)
 {
     for (auto j = 0; j < i; j++) {
-        const auto &item = st_ptr->stock[j];
-        if (!item->is_valid()) {
+        auto &item_store = *st_ptr->stock[j];
+        if (!item_store.is_valid()) {
             continue;
         }
 
-        const auto max_num = item->is_similar_part(*o_ptr);
-        if (max_num == 0 || item->number >= max_num) {
+        const auto max_num = item_store.is_similar_part(item);
+        if (max_num == 0 || item_store.number >= max_num) {
             continue;
         }
 
-        if (exe_combine_store_items(o_ptr, item.get(), max_num, i, combined)) {
-            break;
-        }
+        exe_combine_store_items(&item, &item_store, max_num, i, combined);
 
-        ITEM_NUMBER old_num = o_ptr->number;
-        ITEM_NUMBER remain = item->number + o_ptr->number - max_num;
-        item->absorb(*o_ptr);
-        o_ptr->number = remain;
-        const auto tval = o_ptr->bi_key.tval();
+        const auto old_num = item.number;
+        const auto remain = item_store.number + item.number - max_num;
+        item_store.absorb(item);
+        item.number = remain;
+        const auto tval = item.bi_key.tval();
         if (tval == ItemKindType::ROD) {
-            o_ptr->pval = o_ptr->pval * remain / old_num;
-            o_ptr->timeout = o_ptr->timeout * remain / old_num;
+            item.pval = item.pval * remain / old_num;
+            item.timeout = item.timeout * remain / old_num;
         } else if (tval == ItemKindType::WAND) {
-            o_ptr->pval = o_ptr->pval * remain / old_num;
+            item.pval = item.pval * remain / old_num;
         }
 
         *combined = true;
@@ -171,12 +169,12 @@ bool combine_and_reorder_home(PlayerType *player_ptr, const StoreSaleType store_
     while (combined) {
         combined = false;
         for (auto i = st_ptr->stock_num - 1; i > 0; i--) {
-            auto &item = st_ptr->stock[i];
-            if (!item->is_valid()) {
+            auto &item = *st_ptr->stock[i];
+            if (!item.is_valid()) {
                 continue;
             }
 
-            sweep_reorder_store_item(item.get(), i, &combined);
+            sweep_reorder_store_item(item, i, &combined);
         }
 
         flag |= combined;
