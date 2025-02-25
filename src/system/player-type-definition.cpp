@@ -1,14 +1,17 @@
 #include "system/player-type-definition.h"
 #include "floor/geometry.h"
 #include "market/arena-entry.h"
+#include "inventory/inventory-slot-types.h"
 #include "monster/monster-util.h"
 #include "system/angband-exceptions.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
 #include "world/world.h"
+#include <range/v3/algorithm.hpp>
 
 /*!
  * @brief プレイヤー構造体実体 / Static player info record
@@ -21,8 +24,10 @@ PlayerType p_body;
 PlayerType *p_ptr = &p_body;
 
 PlayerType::PlayerType()
-    : timed_effects(std::make_shared<TimedEffects>())
+    : inventory(INVEN_TOTAL)
+    , timed_effects(std::make_shared<TimedEffects>())
 {
+    ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
 }
 
 bool PlayerType::is_true_winner() const
