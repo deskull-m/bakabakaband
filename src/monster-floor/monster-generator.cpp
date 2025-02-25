@@ -149,25 +149,22 @@ std::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX 
 }
 
 /*!
- * @brief モンスターを目標地点に集団生成する / Attempt to place a "group" of monsters around the given location
- * @param y 中心生成位置y座標
- * @param x 中心生成位置x座標
- * @param r_idx 生成モンスター種族
+ * @brief モンスターを目標地点に集団生成する
+ * @param pos_center 中心生成位置
+ * @param monrace_id 生成モンスター種族
  * @param mode 生成オプション
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
  */
 static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center, MonraceId monrace_id, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto *r_ptr = &monraces_info[monrace_id];
-    int total = randint1(10);
-
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    int extra = 0;
-    if (r_ptr->level > floor_ptr->dun_level) {
-        extra = r_ptr->level - floor_ptr->dun_level;
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    const auto floor_level = player_ptr->current_floor_ptr->dun_level;
+    auto extra = 0;
+    if (monrace.level > floor_level) {
+        extra = monrace.level - floor_level;
         extra = 0 - randint1(extra);
-    } else if (r_ptr->level < floor_ptr->dun_level) {
-        extra = floor_ptr->dun_level - r_ptr->level;
+    } else if (monrace.level < floor_level) {
+        extra = floor_level - monrace.level;
         extra = randint1(extra);
     }
 
@@ -175,41 +172,35 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
         extra = 9;
     }
 
-    total += extra;
-
-    if (total < 1) {
-        total = 1;
-    }
-    if (total > GROUP_MAX) {
-        total = GROUP_MAX;
+    auto total_int = randint1(10) + extra;
+    if (total_int < 1) {
+        total_int = 1;
     }
 
-    int hack_n = 1;
-    POSITION hack_x[GROUP_MAX];
-    hack_x[0] = pos_center.x;
-    POSITION hack_y[GROUP_MAX];
-    hack_y[0] = pos_center.y;
+    constexpr auto max_monsters_count = 32;
+    if (total_int > max_monsters_count) {
+        total_int = max_monsters_count;
+    }
+
+    const size_t total_size = total_int;
     std::vector<Pos2D> positions;
     positions.push_back(pos_center);
-    for (size_t n = 0; (n < positions.size()) && (positions.size() < total); n++) {
-        for (auto i = 0; (i < 8) && (positions.size() < total); i++) {
+    for (size_t n = 0; (n < positions.size()) && (positions.size() < total_size); n++) {
+        for (auto i = 0; (i < 8) && (positions.size() < total_size); i++) {
             //!< @details 要素数が変わると参照がダングリング状態になるので毎回取得する必要がある.
             const auto &pos_neighbor = positions.at(n);
-            int mx, my;
-            scatter(player_ptr, &my, &mx, pos_neighbor.y, pos_neighbor.x, 4, PROJECT_NONE);
-            if (!is_cave_empty_bold2(player_ptr, my, mx)) {
+            Pos2D pos(0, 0);
+            scatter(player_ptr, &pos.y, &pos.x, pos_neighbor.y, pos_neighbor.x, 4, PROJECT_NONE);
+            if (!is_cave_empty_bold2(player_ptr, pos.y, pos.x)) {
                 continue;
             }
 
-            if (place_monster_one(player_ptr, my, mx, monrace_id, mode, summoner_m_idx)) {
-                hack_y[hack_n] = my;
-                hack_x[hack_n] = mx;
-                hack_n++;
+            if (place_monster_one(player_ptr, pos.y, pos.x, monrace_id, mode, summoner_m_idx)) {
+                positions.push_back(pos);
             }
         }
     }
 }
-
 /*!
  * @brief モンスター種族が護衛となれるかどうかをチェックする
  * @param monrace_id チェックするモンスターの種族ID
