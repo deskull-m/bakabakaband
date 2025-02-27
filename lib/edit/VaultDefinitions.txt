@@ -13475,6 +13475,21 @@ D:%::::::::::::::::::::::::%
 D:%........................%
 D: %%%%%%%%%%%%%%%%%%%%%%%% 
 
+N:647:Electrical Room
+X:18:8:12:27
+D: %%%%%%%%%%%%%%%%%%%%%%%%% 
+D:%.III..III..III..III..III.%
+D:%.IIIiiIIIiiIIIiiIIIiiIII.%
+D:%.III..III..III..III..III.%
+D: %.i+########+########+i.% 
+D: %.i#........[.......&#i.% 
+D: %.i#&.......[........#i.% 
+D: %.i+########+########+i.% 
+D:%.III..III..III..III..III.%
+D:%.IIIiiIIIiiIIIiiIIIiiIII.%
+D:%.III..III..III..III..III.%
+D: %%%%%%%%%%%%%%%%%%%%%%%%% 
+
 
 
 #    % - outside of the vault, where corridors may be connected
