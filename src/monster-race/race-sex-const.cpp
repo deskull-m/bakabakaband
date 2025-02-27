@@ -1,5 +1,5 @@
 #include "monster-race/race-sex-const.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 
 /*!
  * @brief 性別が男性を含むか否かを判定

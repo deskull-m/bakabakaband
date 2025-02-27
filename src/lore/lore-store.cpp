@@ -9,7 +9,6 @@
 #include "monster/monster-info.h"
 #include "system/floor-type-definition.h"
 #include "system/monster-entity.h" //!< @todo 違和感、m_ptr は外から与えることとしたい.
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/lore-tracker.h"
