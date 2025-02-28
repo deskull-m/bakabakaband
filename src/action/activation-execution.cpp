@@ -45,7 +45,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
