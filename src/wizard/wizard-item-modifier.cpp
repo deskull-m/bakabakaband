@@ -29,7 +29,7 @@
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -602,7 +602,7 @@ static void wiz_reroll_item(PlayerType *player_ptr, ItemEntity *o_ptr)
         return;
     }
 
-    ItemEntity item = *o_ptr;
+    auto item = o_ptr->clone();
     auto changed = false;
     constexpr auto prompt = "[a]ccept, [w]orthless, [c]ursed, [n]ormal, [g]ood, [e]xcellent, [s]pecial? ";
     while (true) {
@@ -628,9 +628,9 @@ static void wiz_reroll_item(PlayerType *player_ptr, ItemEntity *o_ptr)
             item.fa_id = FixedArtifactId::NONE;
         }
 
-        const auto applied_item = wiz_apply_magic_to_item(player_ptr, *command, o_ptr->bi_id);
+        auto applied_item = wiz_apply_magic_to_item(player_ptr, *command, o_ptr->bi_id);
         if (applied_item) {
-            item = *applied_item;
+            item = std::move(*applied_item);
         }
 
         item.iy = o_ptr->iy;
@@ -642,7 +642,7 @@ static void wiz_reroll_item(PlayerType *player_ptr, ItemEntity *o_ptr)
         return;
     }
 
-    *o_ptr = item;
+    *o_ptr = std::move(item);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,

@@ -117,12 +117,12 @@ void inven_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     }
 
     player_ptr->inven_cnt--;
-    int i;
-    for (i = i_idx; i < INVEN_PACK; i++) {
-        player_ptr->inventory_list[i] = player_ptr->inventory_list[i + 1];
-    }
 
-    (&player_ptr->inventory_list[i])->wipe();
+    auto first = &player_ptr->inventory_list[i_idx];
+    auto last = &player_ptr->inventory_list[INVEN_PACK];
+    std::rotate(first, first + 1, last + 1);
+    last->wipe();
+
     static constexpr auto flags = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::SPELL,
@@ -152,7 +152,7 @@ void drop_from_inventory(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
         o_ptr = &player_ptr->inventory_list[i_idx];
     }
 
-    ItemEntity item = *o_ptr;
+    auto item = o_ptr->clone();
     distribute_charges(o_ptr, &item, amt);
 
     item.number = amt;
@@ -199,12 +199,10 @@ void combine_pack(PlayerType *player_ptr)
                     flag = true;
                     item2.absorb(item1);
                     player_ptr->inven_cnt--;
-                    int k;
-                    for (k = i; k < INVEN_PACK; k++) {
-                        player_ptr->inventory_list[k] = player_ptr->inventory_list[k + 1];
-                    }
-
-                    (&player_ptr->inventory_list[k])->wipe();
+                    auto first = &player_ptr->inventory_list[i];
+                    auto last = &player_ptr->inventory_list[INVEN_PACK];
+                    std::rotate(first, first + 1, last + 1);
+                    last->wipe();
                 } else {
                     int old_num = item1.number;
                     int remain = item2.number + item1.number - max_num;
@@ -246,14 +244,18 @@ void reorder_pack(PlayerType *player_ptr)
         return object_sort_comp(player_ptr, item1, item2);
     };
 
+    const auto sort_count = std::min(enum2i(INVEN_PACK), player_ptr->inven_cnt);
+
     auto first = &player_ptr->inventory_list[0];
-    auto last = &player_ptr->inventory_list[player_ptr->inven_cnt];
+    auto last = &player_ptr->inventory_list[sort_count];
 
     if (std::is_sorted(first, last, comp)) {
         return;
     }
 
     std::stable_sort(first, last, comp);
+    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
+
     msg_print(_("ザックの中のアイテムを並べ直した。", "You reorder some items in your pack."));
 }
 
@@ -383,7 +385,7 @@ INVENTORY_IDX inven_takeoff(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NU
         amt = item_inventory.number;
     }
 
-    ItemEntity item = item_inventory;
+    auto item = item_inventory.clone();
     item.number = amt;
     const auto item_name = describe_flavor(player_ptr, item, 0);
     std::string act;

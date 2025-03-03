@@ -41,7 +41,7 @@
 #include "system/building-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -374,7 +374,9 @@ void wipe_generate_random_floor_flags(FloorType *floor_ptr)
 void clear_cave(PlayerType *player_ptr)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
-    std::fill_n(floor_ptr->o_list.begin(), floor_ptr->o_max, ItemEntity{});
+    for (auto &item : floor_ptr->o_list) {
+        item.wipe();
+    }
     floor_ptr->o_max = 1;
     floor_ptr->o_cnt = 0;
 

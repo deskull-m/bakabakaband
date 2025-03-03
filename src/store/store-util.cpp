@@ -12,7 +12,7 @@
 #include "system/item-entity.h"
 #include <algorithm>
 
-store_type *st_ptr = nullptr;
+Store *st_ptr = nullptr;
 
 /*!
  * @brief 店舗のオブジェクト数を増やす
@@ -186,6 +186,6 @@ int store_carry(ItemEntity *o_ptr)
     std::rotate(first + slot, last, last + 1);
 
     st_ptr->stock_num++;
-    *st_ptr->stock[slot] = *o_ptr;
+    *st_ptr->stock[slot] = o_ptr->clone();
     return slot;
 }

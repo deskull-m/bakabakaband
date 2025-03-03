@@ -30,7 +30,7 @@
 #include "perception/object-perception.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-allocation.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
@@ -106,9 +106,9 @@ bool make_object(PlayerType *player_ptr, ItemEntity *j_ptr, BIT_FLAGS mode, std:
     const auto prob = any_bits(mode, AM_GOOD) ? 10 : 1000;
     const auto base = get_base_floor(floor, mode, rq_mon_level);
     if (one_in_(prob)) {
-        const auto fa_opt = floor.try_make_instant_artifact();
+        auto fa_opt = floor.try_make_instant_artifact();
         if (fa_opt) {
-            *j_ptr = *fa_opt;
+            *j_ptr = std::move(*fa_opt);
             apply();
             return true;
         }
