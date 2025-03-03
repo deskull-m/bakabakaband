@@ -9,6 +9,7 @@
 #include "load/player-class-specific-data-loader.h"
 #include "load/world-loader.h"
 #include "market/arena-entry.h"
+#include "mind/mind-elementalist.h"
 #include "monster-race/race-ability-flags.h"
 #include "mutation/mutation-calculator.h"
 #include "object/tval-types.h"
@@ -39,7 +40,7 @@ static void rd_realms(PlayerType *player_ptr)
     pr.reset();
 
     if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        player_ptr->element = rd_byte();
+        player_ptr->element = i2enum<ElementRealmType>(rd_byte());
         (void)rd_byte();
         return;
     }
