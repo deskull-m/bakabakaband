@@ -13490,6 +13490,24 @@ D:%.IIIiiIIIiiIIIiiIIIiiIII.%
 D:%.III..III..III..III..III.%
 D: %%%%%%%%%%%%%%%%%%%%%%%%% 
 
+N:648:Poisonous Puddle Room
+X:18:8:15:14
+D:  %%      %%  
+D: %gg%%%%%%gg% 
+D:%gggggggggggg%
+D:%gGGGGGGGGGGg%
+D:%gggggGGggggg%
+D: %ggg++++ggg% 
+D: %ggg+**+ggg% 
+D:  %gg+**+gg%  
+D: %ggg++++ggg% 
+D: %ggggGGgggg% 
+D:%gggggGGggggg%
+D:%gGGGGGGGGGGg%
+D:%gggggggggggg%
+D: %gg%%%%%%gg% 
+D:  %%      %%  
+
 
 
 #    % - outside of the vault, where corridors may be connected
