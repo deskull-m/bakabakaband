@@ -29,6 +29,8 @@ public:
     MonsterEntity();
     MonsterEntity(MonsterEntity &&) = default;
     MonsterEntity &operator=(MonsterEntity &&) = default;
+    MonsterEntity(const MonsterEntity &) = default;
+    MonsterEntity &operator=(const MonsterEntity &) = default;
 
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
     MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
@@ -123,9 +125,6 @@ public:
     void set_friendly();
 
 private:
-    MonsterEntity(const MonsterEntity &) = default;
-    MonsterEntity &operator=(const MonsterEntity &) = default;
-
     std::optional<bool> order_pet_named(const MonsterEntity &other) const;
     std::optional<bool> order_pet_hp(const MonsterEntity &other) const;
 };
