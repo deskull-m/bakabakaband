@@ -94,7 +94,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     const auto back_m = m_ptr->clone();
-    new_r_idx = select_polymorph_monrace_id(player_ptr, old_r_idx);
+    new_r_idx = poly_r_idx(player_ptr, old_r_idx);
     if (new_r_idx == old_r_idx) {
         return false;
     }
