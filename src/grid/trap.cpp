@@ -147,7 +147,7 @@ void place_trap(FloorType &floor, const Pos2D &pos)
         return;
     }
 
-    if (!cave_clean_bold(floor, pos.y, pos.x)) {
+    if (!floor.is_clean_at(pos)) {
         return;
     }
 
