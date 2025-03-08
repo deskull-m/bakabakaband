@@ -16,7 +16,6 @@
 #include "avatar/avatar.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/speed-table.h"
-#include "floor/cave.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"

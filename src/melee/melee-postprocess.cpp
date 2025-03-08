@@ -13,7 +13,6 @@
 #include "melee/melee-postprocess.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
-#include "floor/cave.h"
 #include "floor/geometry.h"
 #include "grid/grid.h"
 #include "main/sound-definitions-table.h"
