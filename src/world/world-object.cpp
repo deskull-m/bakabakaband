@@ -1,4 +1,3 @@
-#include "world/world-object.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "object-enchant/item-apply-magic.h"
 #include "system/baseitem/baseitem-definition.h"

@@ -1,4 +1,5 @@
 #pragma once
+#include "system/angband.h"
 
 /*
  * Bit flags for apply_magic()
