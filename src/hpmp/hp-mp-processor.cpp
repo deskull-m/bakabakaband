@@ -218,7 +218,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("糞が飛び散った！", "The feced scatter to you!"), _("に浸かった！", "tainted you!"),
             calc_acid_damage_rate, [](PlayerType *player_ptr, int damage) {
                 if (!has_resist_pois(player_ptr)) {
-                    (void)BadStatusSetter(player_ptr).mod_poison(damage);
+                    (void)BadStatusSetter(player_ptr).mod_poison(static_cast<TIME_EFFECT>(damage));
                 }
             });
     }
