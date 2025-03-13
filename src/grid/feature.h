@@ -66,7 +66,6 @@ extern FEAT_IDX feat_wall_type[100];
 
 class FloorType;
 class PlayerType;
-bool is_ascii_graphics(char x);
 FEAT_IDX feat_locked_door_random(int door_type);
 FEAT_IDX feat_jammed_door_random(int door_type);
 void cave_set_feat_priority(PlayerType *player_ptr, POSITION y, POSITION x, FEAT_IDX feat);
