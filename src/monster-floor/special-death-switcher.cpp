@@ -162,7 +162,7 @@ static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
         if (randint1(deno) > num) {
             continue;
         }
-        int kind_idx = std::get<2>(kind);
+        short kind_idx = std::get<2>(kind);
         int grade = std::get<3>(kind);
         int dn = std::get<4>(kind);
         int ds = std::get<5>(kind);
