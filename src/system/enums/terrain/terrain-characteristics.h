@@ -80,5 +80,3 @@ enum class TerrainCharacteristics {
     TENTACLE = 118, /*!< 触手地形である */
     MAX,
 };
-
-constexpr auto FF_FLAG_MAX = enum2i(TerrainCharacteristics::MAX);
