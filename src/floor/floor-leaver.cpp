@@ -277,7 +277,7 @@ static void preserve_info(PlayerType *player_ptr)
         }
     }
 
-    for (DUNGEON_IDX i = 1; i < floor.m_max; i++) {
+    for (short i = 1; i < floor.m_max; i++) {
         auto *m_ptr = &floor.m_list[i];
         if (!m_ptr->is_valid() || (quest_monrace_id != m_ptr->r_idx)) {
             continue;
@@ -291,7 +291,7 @@ static void preserve_info(PlayerType *player_ptr)
         delete_monster_idx(player_ptr, i);
     }
 
-    for (DUNGEON_IDX i = 0; i < INVEN_PACK; i++) {
+    for (short i = 0; i < INVEN_PACK; i++) {
         auto *o_ptr = &player_ptr->inventory_list[i];
         if (!o_ptr->is_valid()) {
             continue;
@@ -380,7 +380,7 @@ static void kill_saved_floors(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 {
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_not(FloorChangeMode::SAVE_FLOORS)) {
-        for (DUNGEON_IDX i = 0; i < MAX_SAVED_FLOORS; i++) {
+        for (auto i = 0; i < MAX_SAVED_FLOORS; i++) {
             kill_saved_floor(player_ptr, &saved_floors[i]);
         }
 
@@ -475,12 +475,7 @@ void leave_floor(PlayerType *player_ptr)
  * @brief 任意のダンジョン及び階層に飛ぶ
  * Go to any level
  */
-
-/*!
- * @brief 任意のダンジョン及び階層に飛ぶ
- * Go to any level
- */
-void jump_floor(PlayerType *player_ptr, DUNGEON_IDX dun_idx, DEPTH depth)
+void jump_floor(PlayerType *player_ptr, int dun_idx, DEPTH depth)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     floor.set_dungeon_index(dun_idx);

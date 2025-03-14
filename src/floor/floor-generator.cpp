@@ -314,16 +314,17 @@ static std::optional<std::string> level_gen(PlayerType *player_ptr)
 {
     constexpr auto chance_small_floor = 10;
     auto *floor_ptr = player_ptr->current_floor_ptr;
-    DUNGEON_IDX d_idx = floor_ptr->dungeon_idx;
+    const auto d_idx = floor_ptr->dungeon_idx;
+    const auto &dungeon = dungeons_info[d_idx];
     int level_height;
     int level_width;
-    if (dungeons_info[d_idx].flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
+    if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
         level_width = MAX_WID / SCREEN_WID;
     } else if (always_small_levels || ironman_small_levels || (small_levels && one_in_(chance_small_floor)) || dungeons_info[d_idx].flags.has(DungeonFeatureType::SMALLEST)) {
         level_height = MIN_HGT_MULTIPLE;
         level_width = MIN_WID_MULTIPLE;
-    } else if (dungeons_info[d_idx].flags.has(DungeonFeatureType::BEGINNER)) {
+    } else if (dungeon.flags.has(DungeonFeatureType::BEGINNER)) {
         level_height = MIN_HGT_MULTIPLE * 2;
         level_width = MIN_WID_MULTIPLE * 2;
     } else {
