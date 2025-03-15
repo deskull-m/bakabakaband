@@ -62,7 +62,7 @@ MonraceId get_mon_num(PlayerType *player_ptr, DEPTH min_level, DEPTH max_level, 
     if (max_level > MAX_DEPTH - 1) {
         max_level = MAX_DEPTH - 1;
     }
-    const auto &dungeon = dungeons_info[floor.dungeon_idx];
+    const auto &dungeon = floor.get_dungeon_definition();
 
     /* Boost the max_level */
     if (any_bits(mode, PM_ARENA) || dungeon.flags.has_not(DungeonFeatureType::BEGINNER)) {

@@ -111,8 +111,9 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
     room_info_type *room_info_ptr = room_info_normal;
 
     for (auto r : ROOM_TYPE_LIST) {
-        if (dungeons_info[floor_ptr->dungeon_idx].room_rate.count(r)) {
-            prob_list[r] = dungeons_info[floor_ptr->dungeon_idx].room_rate[r];
+        auto &dungeon = floor_ptr->get_dungeon_definition();
+        if (dungeon.room_rate.count(r)) {
+            prob_list[r] = dungeon.room_rate.count(r);
         } else if (floor_ptr->dun_level < room_info_ptr[enum2i(r)].min_level) {
             prob_list[r] = 0;
         } else {
@@ -199,7 +200,7 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
         }
     }
 
-    for (auto &r : dungeons_info[floor_ptr->dungeon_idx].fixed_room_list) {
+    for (auto &r : floor_ptr->get_dungeon_definition().fixed_room_list) {
         auto depth = std::get<0>(r);
         auto id = std::get<1>(r);
         auto percentage = std::get<2>(r);

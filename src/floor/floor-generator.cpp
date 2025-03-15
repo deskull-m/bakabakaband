@@ -314,14 +314,13 @@ static std::optional<std::string> level_gen(PlayerType *player_ptr)
 {
     constexpr auto chance_small_floor = 10;
     auto *floor_ptr = player_ptr->current_floor_ptr;
-    const auto d_idx = floor_ptr->dungeon_idx;
-    const auto &dungeon = dungeons_info[d_idx];
+    const auto &dungeon = floor_ptr->get_dungeon_definition();
     int level_height;
     int level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
         level_width = MAX_WID / SCREEN_WID;
-    } else if (always_small_levels || ironman_small_levels || (small_levels && one_in_(chance_small_floor)) || dungeons_info[d_idx].flags.has(DungeonFeatureType::SMALLEST)) {
+    } else if (always_small_levels || ironman_small_levels || (small_levels && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
         level_height = MIN_HGT_MULTIPLE;
         level_width = MIN_WID_MULTIPLE;
     } else if (dungeon.flags.has(DungeonFeatureType::BEGINNER)) {
@@ -331,7 +330,7 @@ static std::optional<std::string> level_gen(PlayerType *player_ptr)
         if (one_in_(HUGE_DUNGEON_RATE)) {
             level_height = randint1(MAX_HGT / SCREEN_HGT);
             level_width = randint1(MAX_WID / SCREEN_WID);
-        } else if (one_in_(LARGE_DUNGEON_RATE) || dungeons_info[d_idx].flags.has(DungeonFeatureType::BIG)) {
+        } else if (one_in_(LARGE_DUNGEON_RATE) || dungeon.flags.has(DungeonFeatureType::BIG)) {
             level_height = randint1(MAX_HGT / SCREEN_HGT / 2);
             level_width = randint1(MAX_WID / SCREEN_WID / 2);
         } else {
