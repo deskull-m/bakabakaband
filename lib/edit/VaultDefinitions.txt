@@ -13692,6 +13692,22 @@ D:  %%% %.*.%      %...%
 D:      %...%       %%% 
 D:       %%%            
 
+N:658:Lava Cross
+X:18:8:13:19
+D:       %%%%%       
+D:      %.vXv.%      
+D:      %.vXv.%      
+D: %%%%%..vXv..%%%%% 
+D:%......+#X#+......%
+D:%.vvvvv#,#,#vvvvv.%
+D:%.XXXXXX#+#XXXXXX.%
+D:%.vvvvv#,#,#vvvvv.%
+D:%......+#X#+......%
+D: %%%%%..vXv..%%%%% 
+D:      %.vXv.%      
+D:      %.vXv.%      
+D:       %%%%%       
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
