@@ -13770,4 +13770,3 @@ D: %%%%%%%%%%%%%%%%%
 #    H - heavy cold zone
 #    i - electrical zone
 #    I - heavy electrical zone
-
