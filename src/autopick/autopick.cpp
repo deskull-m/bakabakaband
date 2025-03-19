@@ -127,7 +127,7 @@ void autopick_pickup_items(PlayerType *player_ptr, const Grid &grid)
         }
 
         if (!(autopick_list[idx].action & DO_QUERY_AUTOPICK)) {
-            describe_pickup_item(player_ptr, this_o_idx);
+            process_player_pickup_item(player_ptr, this_o_idx);
             continue;
         }
 
@@ -142,6 +142,6 @@ void autopick_pickup_items(PlayerType *player_ptr, const Grid &grid)
             continue;
         }
 
-        describe_pickup_item(player_ptr, this_o_idx);
+        process_player_pickup_item(player_ptr, this_o_idx);
     }
 }
