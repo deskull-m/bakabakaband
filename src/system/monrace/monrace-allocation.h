@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "util/abstract-vector-wrapper.h"
 #include <vector>
 
 enum class AllianceType : int;
@@ -28,7 +29,7 @@ private:
     const MonraceDefinition &get_monrace() const;
 };
 
-class MonraceAllocationTable {
+class MonraceAllocationTable : public util::AbstractVectorWrapper<MonraceAllocationEntry> {
 public:
     MonraceAllocationTable(const MonraceAllocationTable &) = delete;
     MonraceAllocationTable(MonraceAllocationTable &&) = delete;
@@ -37,11 +38,6 @@ public:
     static MonraceAllocationTable &get_instance();
 
     void initialize();
-    std::vector<MonraceAllocationEntry>::iterator begin();
-    std::vector<MonraceAllocationEntry>::const_iterator begin() const;
-    std::vector<MonraceAllocationEntry>::iterator end();
-    std::vector<MonraceAllocationEntry>::const_iterator end() const;
-    size_t size() const;
     const MonraceAllocationEntry &get_entry(int index) const;
     MonraceAllocationEntry &get_entry(int index);
 
@@ -49,4 +45,9 @@ private:
     static MonraceAllocationTable instance;
     MonraceAllocationTable() = default;
     std::vector<MonraceAllocationEntry> entries{};
+
+    std::vector<MonraceAllocationEntry> &get_inner_container() override
+    {
+        return this->entries;
+    }
 };
