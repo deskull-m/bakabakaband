@@ -375,7 +375,6 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
                 continue;
             }
 
-
             if (!grab_one_basic_monster_flag(*dungeon, f)) {
                 return PARSE_ERROR_INVALID_FLAG;
             }
