@@ -181,7 +181,7 @@ static std::optional<std::string> search_death_cause(PlayerType *player_ptr)
             streq(player_ptr->died_from, "Seppuku") ? _("切腹", "committed seppuku") : _("引退", "retired from the adventure"));
     }
 
-    if (!floor.is_in_underground()) {
+    if (!floor.is_underground()) {
         constexpr auto killed_monster = _("…あなたは%sで%sに殺されて飽きた。", "...You were killed by %s in %s and got tired..");
 #ifdef JP
         return format(killed_monster, map_name(player_ptr).data(), player_ptr->died_from.data());
@@ -249,7 +249,7 @@ static std::string decide_current_floor(PlayerType *player_ptr)
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;
-    if (!floor.is_in_underground()) {
+    if (!floor.is_underground()) {
         return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(player_ptr).data());
     }
 

@@ -36,7 +36,7 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
-#include "system/dungeon/dungeon-definition.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"

@@ -9,6 +9,7 @@
 #include "player-info/mimic-info-table.h"
 #include "player/player-status-table.h"
 #include "system/angband-system.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
@@ -190,28 +191,26 @@ void print_gold(PlayerType *player_ptr)
  */
 void print_depth(PlayerType *player_ptr)
 {
-    char depths[32];
+    std::string depths;
     TERM_COLOR attr = TERM_WHITE;
     const auto &[wid, hgt] = term_get_size();
-    TERM_LEN col_depth = wid + COL_DEPTH;
-    TERM_LEN row_depth = hgt + ROW_DEPTH;
-
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (!floor_ptr->dun_level) {
-        strcpy(depths, _("地上", "Surf."));
-        c_prt(attr, format("%7s", depths), row_depth, col_depth);
+    const auto col_depth = wid + COL_DEPTH;
+    const auto row_depth = hgt + ROW_DEPTH;
+    const auto &floor = *player_ptr->current_floor_ptr;
+    if (!floor.is_underground()) {
+        c_prt(attr, format("%7s", _("地上", "Surf.")), row_depth, col_depth);
         return;
     }
 
-    if (floor_ptr->is_in_quest() && !floor_ptr->dungeon_idx) {
+    if (floor.is_in_quest() && floor.dungeon_idx == DungeonId::WILDERNESS) {
         c_prt(attr, format("%7s", _("地上", "Quest")), row_depth, col_depth);
         return;
     }
 
     if (depth_in_feet) {
-        (void)sprintf(depths, _("%d ft", "%d ft"), (int)floor_ptr->dun_level * 50);
+        depths = format(_("%d ft", "%d ft"), floor.dun_level * 50);
     } else {
-        (void)sprintf(depths, _("%d 階", "Lev %d"), (int)floor_ptr->dun_level);
+        depths = format(_("%d 階", "Lev %d"), floor.dun_level);
     }
 
     switch (player_ptr->feeling) {
@@ -250,7 +249,7 @@ void print_depth(PlayerType *player_ptr)
         break; /* Boring place */
     }
 
-    c_prt(attr, format("%7s", depths), row_depth, col_depth);
+    c_prt(attr, depths.c_str(), row_depth, col_depth);
 }
 
 /*!

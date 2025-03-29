@@ -30,6 +30,7 @@
 #include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -153,7 +154,7 @@ static void preserve_pet(PlayerType *player_ptr)
  * @brief 新フロアに移動元フロアに繋がる階段を配置する / Virtually teleport onto the stairs that is connecting between two floors.
  * @param sf_ptr 移動元の保存フロア構造体参照ポインタ
  */
-static void locate_connected_stairs(PlayerType *player_ptr, FloorType *floor_ptr, saved_floor_type *sf_ptr)
+static void locate_connected_stairs(PlayerType *player_ptr, FloorType &floor, saved_floor_type *sf_ptr)
 {
     auto sx = 0;
     auto sy = 0;
@@ -161,9 +162,9 @@ static void locate_connected_stairs(PlayerType *player_ptr, FloorType *floor_ptr
     int y_table[20]{};
     auto num = 0;
     const auto &fcms = FloorChangeModesStore::get_instace();
-    for (POSITION y = 0; y < floor_ptr->height; y++) {
-        for (POSITION x = 0; x < floor_ptr->width; x++) {
-            const auto &grid = floor_ptr->get_grid({ y, x });
+    for (POSITION y = 0; y < floor.height; y++) {
+        for (POSITION x = 0; x < floor.width; x++) {
+            const auto &grid = floor.get_grid({ y, x });
             const auto &terrain = grid.get_terrain();
             auto ok = false;
             if (fcms->has(FloorChangeMode::UP)) {
@@ -204,8 +205,9 @@ static void locate_connected_stairs(PlayerType *player_ptr, FloorType *floor_ptr
 
     if (num == 0) {
         FloorChangeModesStore::get_instace()->set({ FloorChangeMode::RANDOM_PLACE, FloorChangeMode::NO_RETURN });
-        if (!feat_uses_special(floor_ptr->grid_array[player_ptr->y][player_ptr->x].feat)) {
-            floor_ptr->grid_array[player_ptr->y][player_ptr->x].special = 0;
+        auto &grid = floor.get_grid(player_ptr->get_position());
+        if (!feat_uses_special(grid.feat)) {
+            grid.special = 0;
         }
 
         return;
@@ -221,20 +223,20 @@ static void locate_connected_stairs(PlayerType *player_ptr, FloorType *floor_ptr
  */
 static void get_out_monster(PlayerType *player_ptr)
 {
-    int tries = 0;
-    POSITION dis = 1;
-    POSITION oy = player_ptr->y;
-    POSITION ox = player_ptr->x;
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    MONSTER_IDX m_idx = floor_ptr->grid_array[oy][ox].m_idx;
+    auto tries = 0;
+    auto dis = 1;
+    const auto p_pos = player_ptr->get_position();
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &grid = floor.get_grid(p_pos);
+    const auto m_idx = grid.m_idx;
     if (m_idx == 0) {
         return;
     }
 
     while (true) {
-        MonsterEntity *m_ptr;
-        POSITION ny = rand_spread(oy, dis);
-        POSITION nx = rand_spread(ox, dis);
+        const auto ny = rand_spread(p_pos.y, dis);
+        const auto nx = rand_spread(p_pos.x, dis);
+        const Pos2D pos_neighbor(ny, nx); //!< @details 乱数引数の評価順を固定.
         tries++;
         if (tries > 10000) {
             return;
@@ -244,15 +246,16 @@ static void get_out_monster(PlayerType *player_ptr)
             dis++;
         }
 
-        if (!in_bounds(floor_ptr, ny, nx) || !is_cave_empty_bold(player_ptr, ny, nx) || floor_ptr->grid_array[ny][nx].is_rune_protection() || floor_ptr->grid_array[ny][nx].is_rune_explosion() || pattern_tile(floor_ptr, ny, nx)) {
+        auto &grid_neighbor = floor.get_grid(pos_neighbor);
+        if (!in_bounds(&floor, ny, nx) || !is_cave_empty_bold(player_ptr, ny, nx) || grid_neighbor.is_rune_protection() || grid_neighbor.is_rune_explosion() || pattern_tile(&floor, ny, nx)) {
             continue;
         }
 
-        m_ptr = &floor_ptr->m_list[m_idx];
-        floor_ptr->grid_array[oy][ox].m_idx = 0;
-        floor_ptr->grid_array[ny][nx].m_idx = m_idx;
-        m_ptr->fy = ny;
-        m_ptr->fx = nx;
+        auto &monster = floor.m_list[m_idx];
+        grid.m_idx = 0;
+        grid_neighbor.m_idx = m_idx;
+        monster.fy = ny;
+        monster.fx = nx;
         return;
     }
 }
@@ -343,7 +346,7 @@ static void jump_floors(PlayerType *player_ptr)
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (fcms->has(FloorChangeMode::DOWN)) {
-        if (!floor.is_in_underground()) {
+        if (!floor.is_underground()) {
             move_num = dungeon.mindepth;
         }
     } else if (fcms->has(FloorChangeMode::UP)) {
@@ -359,7 +362,7 @@ static void jump_floors(PlayerType *player_ptr)
 static void exit_to_wilderness(PlayerType *player_ptr)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    if (floor.is_in_underground() || (floor.dungeon_idx == 0)) {
+    if (floor.is_underground() || (floor.dungeon_idx == DungeonId::WILDERNESS)) {
         return;
     }
 
@@ -465,7 +468,7 @@ void leave_floor(PlayerType *player_ptr)
     preserve_info(player_ptr);
     saved_floor_type *sf_ptr = get_sf_ptr(player_ptr->floor_id);
     if (FloorChangeModesStore::get_instace()->has(FloorChangeMode::RANDOM_CONNECT)) {
-        locate_connected_stairs(player_ptr, player_ptr->current_floor_ptr, sf_ptr);
+        locate_connected_stairs(player_ptr, *player_ptr->current_floor_ptr, sf_ptr);
     }
 
     exe_leave_floor(player_ptr, sf_ptr);
@@ -475,20 +478,20 @@ void leave_floor(PlayerType *player_ptr)
  * @brief 任意のダンジョン及び階層に飛ぶ
  * Go to any level
  */
-void jump_floor(PlayerType *player_ptr, int dun_idx, DEPTH depth)
+void jump_floor(PlayerType *player_ptr, DungeonId dun_idx, DEPTH depth)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     floor.set_dungeon_index(dun_idx);
     floor.dun_level = depth;
     auto &fcms = FloorChangeModesStore::get_instace();
     fcms->set(FloorChangeMode::RANDOM_PLACE);
-    if (!floor.is_in_underground()) {
+    if (!floor.is_underground()) {
         floor.reset_dungeon_index();
     }
 
     floor.inside_arena = false;
     leave_quest_check(player_ptr);
-    auto to = !floor.is_in_underground()
+    auto to = !floor.is_underground()
                   ? _("地上", "the surface")
                   : format(_("%d階(%s)", "level %d of %s"), floor.dun_level, floor.get_dungeon_definition().name.data());
     constexpr auto mes = _("%sへとウィザード・テレポートで移動した。\n", "You wizard-teleported to %s.\n");
