@@ -179,7 +179,7 @@ public:
     MonraceId get_monrace_id() const;
     int get_lite_radius() const;
     Pos2D get_position() const;
-    bool is_special(ItemKindType tval) const;
+    bool has_knowledge(ItemKindType tval) const;
 
     void mark_as_known();
     void mark_as_tried() const;
@@ -201,6 +201,7 @@ private:
     std::string build_activation_description_dragon_breath() const;
     uint8_t get_color() const;
     char get_character() const;
+    bool is_special() const;
 
     std::string build_item_info_for_debug() const;
 };
