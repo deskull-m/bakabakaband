@@ -64,7 +64,7 @@ static void load_quest_details(PlayerType *player_ptr, QuestType *q_ptr, const Q
 static bool is_loadable_quest(const QuestId q_idx, const byte max_rquests_load)
 {
     const auto &quests = QuestList::get_instance();
-    if (quests.find(q_idx) != quests.end()) {
+    if (quests.contains(q_idx)) {
         return true;
     }
 
