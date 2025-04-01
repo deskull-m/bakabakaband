@@ -172,6 +172,8 @@ public:
     short get_baseitem_pval() const;
     bool is_worthless() const;
     int get_baseitem_cost() const;
+    MonraceId get_monrace_id() const;
+    int get_lite_radius() const;
 
     void mark_as_known();
     void mark_as_tried() const;
@@ -192,5 +194,4 @@ private:
     std::string build_activation_description_dragon_breath() const;
     uint8_t get_color() const;
     char get_character() const;
-    MonraceId get_monrace_id() const;
 };
