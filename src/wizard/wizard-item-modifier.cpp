@@ -1019,7 +1019,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
 #ifdef JP
             const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
 #else
-            const auto item_name = str_tolower(describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
+            const auto item_name = str_tolower(describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
 #endif
             if (cheat_xtra) {
                 msg_format("Matching object No.%d %s", baseitem.idx, item_name.data());
