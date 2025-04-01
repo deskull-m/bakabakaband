@@ -291,9 +291,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
-
-        choose_chameleon_polymorph(player_ptr, g_ptr->m_idx, *g_ptr, summoner_m_idx);
-
+        choose_chameleon_polymorph(player_ptr, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
         m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
     } else {
         m_ptr->r_idx = r_idx;
