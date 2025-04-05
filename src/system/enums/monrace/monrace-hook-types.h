@@ -27,22 +27,6 @@ enum class MonraceHook {
     FISHING,
     QUEST,
     VAULT,
-    CLONE,
-    JELLY,
-    GOOD,
-    EVIL,
-    MIMIC,
-    HORROR,
-    KENNEL,
-    ANIMAL,
-    CHAPEL,
-    UNDEAD,
-    ORC,
-    TROLL,
-    GIANT,
-    DRAGON,
-    DEMON,
-    DARK_ELF,
 };
 
 enum class MonraceHookTerrain {
