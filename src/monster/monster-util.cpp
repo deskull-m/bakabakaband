@@ -414,7 +414,6 @@ void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHoo
                 }
             }
         }
-
     }
 
     if (cheat_hear) {
