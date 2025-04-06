@@ -345,6 +345,7 @@ const std::unordered_map<std::string_view, MonsterAuraType> r_info_aura_flags = 
 
 const std::unordered_map<std::string_view, MonsterBehaviorType> r_info_behavior_flags = {
     { "NEVER_MOVE", MonsterBehaviorType::NEVER_MOVE },
+    { "NEVER_BLOW", MonsterBehaviorType::NEVER_BLOW },
     { "OPEN_DOOR", MonsterBehaviorType::OPEN_DOOR },
     { "BASH_DOOR", MonsterBehaviorType::BASH_DOOR },
     { "MOVE_BODY", MonsterBehaviorType::MOVE_BODY },

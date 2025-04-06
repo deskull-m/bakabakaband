@@ -79,7 +79,7 @@ static bool grab_one_basic_flag(MonraceDefinition &monrace, std::string_view wha
     if (EnumClassFlagGroup<MonsterMiscType>::grab_one_flag(monrace.misc_flags, r_info_misc_flags, what)) {
         return true;
     }
-
+    msg_format(_("モンスターフラグ読込失敗'%d'。", "Failed to load monster flag data.'%d'."), what);
     return false;
 }
 
