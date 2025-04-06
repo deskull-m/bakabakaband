@@ -342,7 +342,8 @@ static void generate_area(PlayerType *player_ptr, const Pos2D &pos, bool is_bord
         floor.height = MAX_HGT;
 
         for (auto tv : floor.vault_list) {
-            build_vault(&vaults_info[static_cast<int>(tv.id)], player_ptr, tv.y, tv.x, tv.yoffset, tv.xoffset, tv.transno);
+            const auto vault = &vaults_info[static_cast<int>(tv.id)];
+            build_vault(player_ptr, tv.y, tv.x, vault->hgt, vault->wid, vault->text.data(), tv.yoffset, tv.xoffset, tv.transno);
         }
 
         if (!is_corner && !is_border) {

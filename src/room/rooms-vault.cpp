@@ -32,6 +32,7 @@
 #include "store/store.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
@@ -294,20 +295,19 @@ static Pos2D coord_trans(const Pos2D &pos_initial, const Pos2DVec &offset, int t
 
 /*!
  * @brief Vaultをフロアに配置する / Hack -- fill in "vault" rooms
- * @param v_ptr Vault情報への参照ポインタ
- * @param player_ptr プレーヤーへの参照ポインタ
+ * @param player_ptr プレイヤーへの参照ポインタ
  * @param yval 生成基準Y座標
  * @param xval 生成基準X座標
+ * @param ymax VaultのYサイズ
+ * @param xmax VaultのXサイズ
+ * @param data Vaultのデータ文字列
  * @param xoffset 変換基準X座標
  * @param yoffset 変換基準Y座標
  * @param transno 変換ID
  */
-void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSITION xval, POSITION xoffset, POSITION yoffset, int transno)
+void build_vault(
+    PlayerType *player_ptr, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno)
 {
-    POSITION ymax = v_ptr->hgt;
-    POSITION xmax = v_ptr->wid;
-    concptr data = v_ptr->text.c_str();
-
     /* Place dungeon features and objects */
     auto &floor = *player_ptr->current_floor_ptr;
     auto t = data;
@@ -348,14 +348,6 @@ void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSIT
             /* Part of a vault */
             grid.info |= (CAVE_ROOM | CAVE_ICKY);
 
-            if (v_ptr->feature_list.count(*t) != 0) {
-                set_cave_feat(&floor, y, x, v_ptr->feature_list[*t]);
-                set_cave_feat_mimic(&floor, y, x, v_ptr->feature_ap_list[*t]);
-                if (v_ptr->place_monster_list.count(*t) != 0) {
-                    place_monster_one(player_ptr, y, x, v_ptr->place_monster_list[*t], 0);
-                }
-                continue;
-            }
             /* Analyze the grid */
             switch (*t) {
             case '%':
@@ -366,28 +358,28 @@ void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSIT
                 break;
             case '$':
                 place_grid(player_ptr, &grid, GB_INNER);
-                grid.feat = feat_glass_wall;
+                grid.set_terrain_id(TerrainTag::GLASS_WALL);
                 break;
             case 'X':
                 place_grid(player_ptr, &grid, GB_INNER_PERM);
                 break;
             case 'Y':
                 place_grid(player_ptr, &grid, GB_INNER_PERM);
-                grid.feat = feat_permanent_glass_wall;
+                grid.set_terrain_id(TerrainTag::PERMANENT_GLASS_WALL);
                 break;
             case '*':
                 if (evaluate_percent(75)) {
-                    place_object(player_ptr, pos.y, pos.x, 0L);
+                    place_object(player_ptr, pos.y, pos.x, 0);
                 } else {
                     place_trap(&floor, pos.y, pos.x);
                 }
 
                 break;
             case '[':
-                place_object(player_ptr, pos.y, pos.x, 0L);
+                place_object(player_ptr, pos.y, pos.x, 0);
                 break;
             case ':':
-                grid.feat = feat_tree;
+                grid.set_terrain_id(TerrainTag::TREE);
                 break;
             case '+':
                 place_secret_door(player_ptr, pos.y, pos.x, DOOR_DEFAULT);
@@ -397,7 +389,6 @@ void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSIT
                 if (floor.is_closed_door(pos)) {
                     grid.mimic = feat_glass_wall;
                 }
-
                 break;
             case '\'':
                 place_secret_door(player_ptr, pos.y, pos.x, DOOR_CURTAIN);
@@ -406,29 +397,29 @@ void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSIT
                 place_trap(&floor, pos.y, pos.x);
                 break;
             case 'S':
-                floor.set_terrain_id(pos, feat_black_market);
+                floor.set_terrain_id(pos, TerrainTag::BLACK_MARKET);
                 store_init(VALID_TOWNS, StoreSaleType::BLACK);
                 break;
             case 'p':
-                floor.set_terrain_id(pos, feat_pattern_start);
+                floor.set_terrain_id(pos, TerrainTag::PATTERN_START);
                 break;
             case 'a':
-                floor.set_terrain_id(pos, feat_pattern_1);
+                floor.set_terrain_id(pos, TerrainTag::PATTERN_1);
                 break;
             case 'b':
-                floor.set_terrain_id(pos, feat_pattern_2);
+                floor.set_terrain_id(pos, TerrainTag::PATTERN_2);
                 break;
             case 'c':
-                floor.set_terrain_id(pos, feat_pattern_3);
+                floor.set_terrain_id(pos, TerrainTag::PATTERN_3);
                 break;
             case 'd':
-                floor.set_terrain_id(pos, feat_pattern_4);
+                floor.set_terrain_id(pos, TerrainTag::PATTERN_4);
                 break;
             case 'P':
-                floor.set_terrain_id(pos, feat_pattern_end);
+                floor.set_terrain_id(pos, TerrainTag::PATTERN_END);
                 break;
             case 'B':
-                floor.set_terrain_id(pos, feat_pattern_exit);
+                floor.set_terrain_id(pos, TerrainTag::PATTERN_EXIT);
                 break;
             case 'A':
                 floor.object_level = floor.base_level + 12;
@@ -436,40 +427,40 @@ void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSIT
                 floor.object_level = floor.base_level;
                 break;
             case '~':
-                floor.set_terrain_id(pos, feat_shallow_water);
+                floor.set_terrain_id(pos, TerrainTag::SHALLOW_WATER);
                 break;
             case '=':
-                floor.set_terrain_id(pos, feat_deep_water);
+                floor.set_terrain_id(pos, TerrainTag::DEEP_WATER);
                 break;
             case 'v':
-                floor.set_terrain_id(pos, feat_shallow_lava);
+                floor.set_terrain_id(pos, TerrainTag::SHALLOW_LAVA);
                 break;
             case 'w':
-                floor.set_terrain_id(pos, feat_deep_lava);
+                floor.set_terrain_id(pos, TerrainTag::DEEP_LAVA);
                 break;
             case 'f':
-                floor.set_terrain_id(pos, feat_shallow_acid_puddle);
+                floor.set_terrain_id(pos, TerrainTag::SHALLOW_ACID_PUDDLE);
                 break;
             case 'F':
-                floor.set_terrain_id(pos, feat_deep_acid_puddle);
+                floor.set_terrain_id(pos, TerrainTag::DEEP_ACID_PUDDLE);
                 break;
             case 'g':
-                floor.set_terrain_id(pos, feat_shallow_poisonous_puddle);
+                floor.set_terrain_id(pos, TerrainTag::SHALLOW_POISONOUS_PUDDLE);
                 break;
             case 'G':
-                floor.set_terrain_id(pos, feat_deep_poisonous_puddle);
+                floor.set_terrain_id(pos, TerrainTag::DEEP_POISONOUS_PUDDLE);
                 break;
             case 'h':
-                floor.set_terrain_id(pos, feat_cold_zone);
+                floor.set_terrain_id(pos, TerrainTag::COLD_ZONE);
                 break;
             case 'H':
-                floor.set_terrain_id(pos, feat_heavy_cold_zone);
+                floor.set_terrain_id(pos, TerrainTag::HEAVY_COLD_ZONE);
                 break;
             case 'i':
-                floor.set_terrain_id(pos, feat_electrical_zone);
+                floor.set_terrain_id(pos, TerrainTag::ELECTRICAL_ZONE);
                 break;
             case 'I':
-                floor.set_terrain_id(pos, feat_heavy_electrical_zone);
+                floor.set_terrain_id(pos, TerrainTag::HEAVY_ELECTRICAL_ZONE);
                 break;
             }
         }
@@ -527,7 +518,7 @@ void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSIT
                 place_random_monster(player_ptr, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 7;
-                place_object(player_ptr, y, x, AM_GOOD);
+                place_object(player_ptr, y, x , AM_GOOD);
                 floor.object_level = floor.base_level;
                 break;
             }
@@ -552,7 +543,7 @@ void build_vault(vault_type *v_ptr, PlayerType *player_ptr, POSITION yval, POSIT
                 }
                 if (one_in_(2)) {
                     floor.object_level = floor.base_level + 7;
-                    place_object(player_ptr, y, x, 0L);
+                    place_object(player_ptr, y, x, 0);
                     floor.object_level = floor.base_level;
                 }
                 break;
@@ -953,7 +944,6 @@ bool build_fixed_room(PlayerType *player_ptr, DungeonData *dd_ptr, int typ, bool
     }
 
     auto &vault = vaults_info[result];
-
     auto num_transformation = randint0(8);
 
     /* calculate offsets */
@@ -987,81 +977,7 @@ bool build_fixed_room(PlayerType *player_ptr, DungeonData *dd_ptr, int typ, bool
     }
 
     msg_format_wizard(player_ptr, CHEAT_DUNGEON, _("固定部屋(%s)を生成しました。", "Fixed room (%s)."), vault.name.data());
-    build_vault(&vault, player_ptr, vault.hgt, vault.wid, x_offset, y_offset, num_transformation);
-
-    return true;
-}
-
-/*!
- * @brief タイプ18の部屋…vaults_info.txtより変態部屋を生成する / Type 18 -- pervo room (see "vaults_info.txt")
- */
-bool build_type18(PlayerType *player_ptr, DungeonData *dd_ptr)
-{
-    vault_type *v_ptr = nullptr;
-    int dummy;
-    POSITION x, y;
-    POSITION xoffset, yoffset;
-    int transno;
-
-    /* Pick a lesser vault */
-    for (dummy = 0; dummy < SAFE_MAX_ATTEMPTS; dummy++) {
-        /* Access a random vault record */
-        v_ptr = &vaults_info[randint0(vaults_info.size())];
-
-        if (player_ptr->current_floor_ptr->dun_level < v_ptr->min_depth || v_ptr->max_depth < player_ptr->current_floor_ptr->dun_level || !one_in_(v_ptr->rarity)) {
-            continue;
-        }
-
-        /* Accept the special fix room. */
-        if (v_ptr->typ == 18) {
-            break;
-        }
-    }
-
-    /* No lesser vault found */
-    if (dummy >= SAFE_MAX_ATTEMPTS) {
-        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("固定特殊部屋を配置できませんでした。", "Could not place fixed special room."));
-        return false;
-    }
-
-    /* pick type of transformation (0-7) */
-    transno = randint0(8);
-
-    /* calculate offsets */
-    x = v_ptr->wid;
-    y = v_ptr->hgt;
-
-    /* Some huge vault cannot be ratated to fit in the dungeon */
-    FloorType *floor_ptr = player_ptr->current_floor_ptr;
-    if (x + 2 > floor_ptr->height - 2) {
-        /* Forbid 90 or 270 degree ratation */
-        transno &= ~1;
-    }
-
-    coord_trans({ y, x }, { 0, 0 }, transno);
-
-    if (x < 0) {
-        xoffset = -x - 1;
-    } else {
-        xoffset = 0;
-    }
-
-    if (y < 0) {
-        yoffset = -y - 1;
-    } else {
-        yoffset = 0;
-    }
-
-    const auto xsize = std::abs(x);
-    const auto ysize = std::abs(y);
-    const auto center = find_space(player_ptr, dd_ptr, ysize, xsize);
-    if (!center) {
-        return false;
-    }
-
-    msg_format_wizard(player_ptr, CHEAT_DUNGEON, _("特殊固定部屋(%s)を生成しました。", "Special Fixed Room (%s)."), v_ptr->name.c_str());
-
-    build_vault(v_ptr, player_ptr, v_ptr->hgt, v_ptr->wid, xoffset, yoffset, transno);
+    build_vault(player_ptr, center->y, center->x, vault.hgt, vault.wid, vault.text.data(), x_offset, y_offset, num_transformation);
 
     return true;
 }
