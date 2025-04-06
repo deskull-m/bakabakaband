@@ -69,6 +69,14 @@ bool MonraceAllocationEntry::is_same_alliance(AllianceType alliance_id) const
     return monrace.alliance_idx == alliance_id;
 }
 
+void MonraceAllocationEntry::update_prob2(int division)
+{
+    const auto numer = this->prob2 * division;
+    const auto q = numer / 64;
+    const auto r = numer % 64;
+    this->prob2 = static_cast<short>(randint0(64) < r ? q + 1 : q);
+}
+
 const MonraceDefinition &MonraceAllocationEntry::get_monrace() const
 {
     return MonraceList::get_instance().get_monrace(index);

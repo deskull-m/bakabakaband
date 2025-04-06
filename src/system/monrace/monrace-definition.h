@@ -84,6 +84,7 @@ private:
  * monster recall (no knowledge of spells, etc).  All of the "recall"
  * fields have a special prefix to aid in searching for them.
  */
+enum class DungeonId;
 enum class GridFlow : int;
 class MonraceDefinition {
 public:
@@ -192,6 +193,7 @@ public:
     const std::vector<Reinforce> &get_reinforces() const;
     bool can_generate() const;
     GridFlow get_grid_flow_type() const;
+    bool is_suitable_for_random_quest() const;
 
     void init_sex(uint32_t value);
 

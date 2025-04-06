@@ -25,6 +25,8 @@ public:
     bool is_collapse_exceeded() const;
     bool is_same_alliance(AllianceType alliance_id) const;
 
+    void update_prob2(int division);
+
 private:
     const MonraceDefinition &get_monrace() const;
 };
