@@ -518,7 +518,7 @@ void build_vault(
                 place_random_monster(player_ptr, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 7;
-                place_object(player_ptr, y, x , AM_GOOD);
+                place_object(player_ptr, y, x, AM_GOOD);
                 floor.object_level = floor.base_level;
                 break;
             }
