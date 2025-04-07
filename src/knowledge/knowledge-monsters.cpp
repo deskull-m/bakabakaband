@@ -172,7 +172,7 @@ void do_cmd_knowledge_kill_count(PlayerType *player_ptr)
     for (const auto monrace_id : monrace_ids) {
         const auto &monrace = monraces.get_monrace(monrace_id);
         if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-            if (monrace.max_num == 0) {
+            if (monrace.is_dead_unique()) {
                 std::string details;
                 if (monrace.defeat_level && monrace.defeat_time) {
                     details = format(_(" - レベル%2d - %d:%02d:%02d", " - level %2d - %d:%02d:%02d"), monrace.defeat_level, monrace.defeat_time / (60 * 60),
@@ -253,7 +253,8 @@ static void display_monster_list(int col, int row, int per_page, const std::vect
             } else if (monrace.mob_num > 0) {
                 put_str(format("%4d(%4d)", monrace.r_pkills, monrace.mob_num), row + i, 73);
             } else {
-                put_str(format("%4d(****)", monrace.r_pkills, monrace.mob_num), row + i, 73);
+                const auto is_dead = monrace.is_dead_unique();
+                c_put_str((is_dead ? TERM_L_DARK : TERM_WHITE), (is_dead ? _("死亡", " dead") : _("生存", "alive")), row + i, 74);
             }
         }
     }
