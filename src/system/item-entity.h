@@ -16,6 +16,7 @@
 #include "system/system-variables.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
+#include "util/point-2d.h"
 #include <optional>
 #include <string>
 #include <vector>
@@ -179,6 +180,7 @@ public:
     void mark_as_tried() const;
     std::string build_activation_description() const;
 
+    void set_position(const Pos2D &pos);
     bool try_become_artifact(int dungeon_level);
     void absorb(ItemEntity &other);
 
