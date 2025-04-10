@@ -692,7 +692,7 @@ bool vault_aux_dark_elf(PlayerType *player_ptr, MonraceId r_idx)
 bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
 {
     MonraceDefinition *r_ptr = &monraces_info[r_idx];
-    if (!vault_monster_okay(player_ptr, r_idx)) {
+    if (!item_monster_okay(player_ptr, r_idx)) {
         return false;
     }
 
@@ -715,7 +715,7 @@ bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
 bool vault_aux_les(PlayerType *player_ptr, MonraceId r_idx)
 {
     MonraceDefinition *r_ptr = &monraces_info[r_idx];
-    if (!vault_monster_okay(player_ptr, r_idx)) {
+    if (!item_monster_okay(player_ptr, r_idx)) {
         return false;
     }
 
