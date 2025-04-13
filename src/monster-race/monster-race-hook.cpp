@@ -551,16 +551,23 @@ bool vault_aux_dark_elf(PlayerType *player_ptr, MonraceId r_idx)
  */
 bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
 {
-    MonraceDefinition *r_ptr = &monraces_info[r_idx];
-    if (!item_monster_okay(player_ptr, r_idx)) {
+    const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
+    if (!monrace.is_suitable_for_figurine()) {
         return false;
     }
 
-    if (!is_male(*r_ptr)) {
+    if (!is_male(monrace)) {
         return false;
     }
 
-    if (!(r_ptr->kind_flags.has(MonsterKindType::HOMO_SEXUAL))) {
+    if (!(monrace.kind_flags.has(MonsterKindType::HOMO_SEXUAL))) {
+        return false;
+    }
+
+    const auto &floor = *player_ptr->current_floor_ptr;
+    auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
+    is_valid &= monrace.is_suitable_for_special_room();
+    if (!is_valid) {
         return false;
     }
 
@@ -574,16 +581,23 @@ bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
  */
 bool vault_aux_les(PlayerType *player_ptr, MonraceId r_idx)
 {
-    MonraceDefinition *r_ptr = &monraces_info[r_idx];
-    if (!item_monster_okay(player_ptr, r_idx)) {
+    const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
+    if (!monrace.is_suitable_for_figurine()) {
         return false;
     }
 
-    if (!is_female(*r_ptr)) {
+    if (!is_female(monrace)) {
         return false;
     }
 
-    if (!(r_ptr->kind_flags.has(MonsterKindType::HOMO_SEXUAL))) {
+    if (!(monrace.kind_flags.has(MonsterKindType::HOMO_SEXUAL))) {
+        return false;
+    }
+
+    const auto &floor = *player_ptr->current_floor_ptr;
+    auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
+    is_valid &= monrace.is_suitable_for_special_room();
+    if (!is_valid) {
         return false;
     }
 
