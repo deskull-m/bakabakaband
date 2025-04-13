@@ -396,29 +396,29 @@ void build_vault(
                 place_trap(&floor, pos.y, pos.x);
                 break;
             case 'S':
-                floor.set_terrain_id(pos, TerrainTag::BLACK_MARKET);
+                floor.set_terrain_id_at(pos, TerrainTag::BLACK_MARKET);
                 store_init(VALID_TOWNS, StoreSaleType::BLACK);
                 break;
             case 'p':
-                floor.set_terrain_id(pos, TerrainTag::PATTERN_START);
+                floor.set_terrain_id_at(pos, feat_pattern_start);
                 break;
             case 'a':
-                floor.set_terrain_id(pos, TerrainTag::PATTERN_1);
+                floor.set_terrain_id_at(pos, feat_pattern_1);
                 break;
             case 'b':
-                floor.set_terrain_id(pos, TerrainTag::PATTERN_2);
+                floor.set_terrain_id_at(pos, feat_pattern_2);
                 break;
             case 'c':
-                floor.set_terrain_id(pos, TerrainTag::PATTERN_3);
+                floor.set_terrain_id_at(pos, feat_pattern_3);
                 break;
             case 'd':
-                floor.set_terrain_id(pos, TerrainTag::PATTERN_4);
+                floor.set_terrain_id_at(pos, feat_pattern_4);
                 break;
             case 'P':
-                floor.set_terrain_id(pos, TerrainTag::PATTERN_END);
+                floor.set_terrain_id_at(pos, feat_pattern_end);
                 break;
             case 'B':
-                floor.set_terrain_id(pos, TerrainTag::PATTERN_EXIT);
+                floor.set_terrain_id_at(pos, feat_pattern_exit);
                 break;
             case 'A':
                 floor.object_level = floor.base_level + 12;
@@ -426,40 +426,40 @@ void build_vault(
                 floor.object_level = floor.base_level;
                 break;
             case '~':
-                floor.set_terrain_id(pos, TerrainTag::SHALLOW_WATER);
+                floor.set_terrain_id_at(pos, feat_shallow_water);
                 break;
             case '=':
-                floor.set_terrain_id(pos, TerrainTag::DEEP_WATER);
+                floor.set_terrain_id_at(pos, feat_deep_water);
                 break;
             case 'v':
-                floor.set_terrain_id(pos, TerrainTag::SHALLOW_LAVA);
+                floor.set_terrain_id_at(pos, feat_shallow_lava);
                 break;
             case 'w':
-                floor.set_terrain_id(pos, TerrainTag::DEEP_LAVA);
+                floor.set_terrain_id_at(pos, feat_deep_lava);
                 break;
             case 'f':
-                floor.set_terrain_id(pos, TerrainTag::SHALLOW_ACID_PUDDLE);
+                floor.set_terrain_id_at(pos, feat_shallow_acid_puddle);
                 break;
             case 'F':
-                floor.set_terrain_id(pos, TerrainTag::DEEP_ACID_PUDDLE);
+                floor.set_terrain_id_at(pos, feat_deep_acid_puddle);
                 break;
             case 'g':
-                floor.set_terrain_id(pos, TerrainTag::SHALLOW_POISONOUS_PUDDLE);
+                floor.set_terrain_id_at(pos, feat_shallow_poisonous_puddle);
                 break;
             case 'G':
-                floor.set_terrain_id(pos, TerrainTag::DEEP_POISONOUS_PUDDLE);
+                floor.set_terrain_id_at(pos, feat_deep_poisonous_puddle);
                 break;
             case 'h':
-                floor.set_terrain_id(pos, TerrainTag::COLD_ZONE);
+                floor.set_terrain_id_at(pos, feat_cold_zone);
                 break;
             case 'H':
-                floor.set_terrain_id(pos, TerrainTag::HEAVY_COLD_ZONE);
+                floor.set_terrain_id_at(pos, feat_heavy_cold_zone);
                 break;
             case 'i':
-                floor.set_terrain_id(pos, TerrainTag::ELECTRICAL_ZONE);
+                floor.set_terrain_id_at(pos, feat_electrical_zone);
                 break;
             case 'I':
-                floor.set_terrain_id(pos, TerrainTag::HEAVY_ELECTRICAL_ZONE);
+                floor.set_terrain_id_at(pos, feat_heavy_electrical_zone);
                 break;
             }
         }
