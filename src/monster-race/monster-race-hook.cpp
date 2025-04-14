@@ -412,4 +412,3 @@ bool vault_aux_les(PlayerType *player_ptr, MonraceId r_idx)
 
     return true;
 }
-
