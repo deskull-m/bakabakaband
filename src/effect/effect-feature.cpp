@@ -128,7 +128,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         if (message) {
             msg_format(_("木は%s。", "A tree %s"), message);
-            cave_set_feat(player_ptr, y, x, one_in_(3) ? feat_brake : feat_grass);
+            cave_set_feat(player_ptr, pos, one_in_(3) ? TerrainTag::BRAKE : TerrainTag::GRASS);
 
             /* Observe */
             if (grid.is_mark()) {
@@ -286,7 +286,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         if (player_ptr->is_located_at(pos)) {
             break;
         }
-        cave_set_feat(player_ptr, y, x, feat_tree);
+        cave_set_feat(player_ptr, pos, TerrainTag::TREE);
         if (grid.is_mark()) {
             obvious = true;
         }
@@ -478,9 +478,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (!terrain.flags.has(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            cave_set_feat(player_ptr, y, x, feat_shallow_dung_pool);
+            cave_set_feat(player_ptr, pos, TerrainTag::SHALLOW_DUNG_POOL);
         } else if (dam) {
-            cave_set_feat(player_ptr, y, x, feat_deep_dung_pool);
+            cave_set_feat(player_ptr, pos, TerrainTag::DEEP_DUNG_POOL);
         }
 
         break;

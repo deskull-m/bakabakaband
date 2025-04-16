@@ -171,6 +171,8 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "SHALLOW_ACID_PUDDLE", TerrainTag::SHALLOW_ACID_PUDDLE },
     { "DEEP_POISONOUS_PUDDLE", TerrainTag::DEEP_POISONOUS_PUDDLE },
     { "SHALLOW_POISONOUS_PUDDLE", TerrainTag::SHALLOW_POISONOUS_PUDDLE },
+    { "DEEP_DUNG_POOL", TerrainTag::DEEP_DUNG_POOL },
+    { "SHALLOW_DUNG_POOL", TerrainTag::SHALLOW_DUNG_POOL },
     { "DIRT", TerrainTag::DIRT },
     { "GRASS", TerrainTag::GRASS },
     { "BRAKE", TerrainTag::BRAKE },
@@ -254,4 +256,5 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "CLOSED_GLASS_DOOR", TerrainTag::CLOSED_GLASS_DOOR },
     { "OPEN_CURTAIN", TerrainTag::OPEN_CURTAIN },
     { "CLOSED_CURTAIN", TerrainTag::CLOSED_CURTAIN },
+
 };
