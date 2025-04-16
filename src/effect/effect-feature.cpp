@@ -478,9 +478,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (!terrain.flags.has(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            cave_set_feat(player_ptr, y, x, feat_shallow_dung_pool);
+            cave_set_feat(player_ptr, pos, TerrainTag::SHALLOW_DUNG_POOL);
         } else if (dam) {
-            cave_set_feat(player_ptr, y, x, feat_deep_dung_pool);
+            cave_set_feat(player_ptr, pos, TerrainTag::DEEP_DUNG_POOL);
         }
 
         break;
