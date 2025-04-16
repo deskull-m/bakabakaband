@@ -21,6 +21,7 @@
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
+#include "grid/feature.h"
 #include "grid/grid.h"
 #include "io/write-diary.h"
 #include "melee/melee-postprocess.h"
