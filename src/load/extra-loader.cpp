@@ -23,7 +23,7 @@ void rd_extra(PlayerType *player_ptr)
     rd_dummy_monsters();
 
     auto &world = AngbandWorld::get_instance();
-    world.play_time = rd_u32b();
+    world.play_time = ElapsedTime(rd_u32b());
 
     player_ptr->visit = rd_u32b();
     player_ptr->count = rd_u32b();
