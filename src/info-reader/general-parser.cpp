@@ -170,7 +170,7 @@ parse_error_type parse_line_feature(FloorType *floor_ptr, char *buf)
             letter[index].monster = (MONSTER_IDX)atoi(zz[4]);
             letter[index].cave_info = atoi(zz[3]);
             letter[index].force_monster_place = false;
-            letter[index].feature = TerrainList::get_instance().get_terrain_id_by_tag(zz[2]);
+            letter[index].feature = terrains.get_terrain_id(zz[2]);
             return PARSE_ERROR_NONE;
         }
     }
@@ -184,7 +184,7 @@ parse_error_type parse_line_feature(FloorType *floor_ptr, char *buf)
             letter[index].random |= RANDOM_TRAP;
         } else {
             try {
-                letter[index].trap = terrains.get_terrain_id_by_tag(zz[7]);
+                letter[index].trap = terrains.get_terrain_id(zz[7]);
             } catch (const std::exception &) {
                 return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
             }
@@ -259,7 +259,7 @@ parse_error_type parse_line_feature(FloorType *floor_ptr, char *buf)
             letter[index].random |= RANDOM_FEATURE;
         } else {
             try {
-                letter[index].feature = terrains.get_terrain_id_by_tag(zz[1]);
+                letter[index].feature = terrains.get_terrain_id(zz[1]);
             } catch (const std::exception &) {
                 return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
             }
