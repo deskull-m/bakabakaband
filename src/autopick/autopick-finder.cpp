@@ -271,7 +271,7 @@ AutopickSearch get_string_for_search(PlayerType *player_ptr, const AutopickSearc
 #ifdef JP
                 if (pos < len && (isprint(c) || iskana(c))) {
 #else
-                if (pos < len && isprint(c)) {
+            if (pos < len && isprint(c)) {
 #endif
                 buf.push_back(c);
                 pos++;
