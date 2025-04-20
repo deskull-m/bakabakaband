@@ -167,7 +167,7 @@ MonsterSpellResult spell_RF6_S_KIN(PlayerType *player_ptr, POSITION y, POSITION 
     decide_summon_kin_caster(player_ptr, m_idx, t_idx, target_type, m_name.data(), m_poss.data(), known);
     int count = 0;
 
-    auto alliance_id = monraces_info[m_ptr->r_idx].alliance_idx;
+    auto alliance_id = MonraceList::get_instance().get_monrace(m_ptr->r_idx).alliance_idx;
 
     if (alliance_id == AllianceType::NONE) {
         switch (m_ptr->r_idx) {

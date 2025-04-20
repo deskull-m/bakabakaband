@@ -297,7 +297,7 @@ std::optional<MONSTER_IDX> place_random_monster(PlayerType *player_ptr, POSITION
     MonraceId monrace_id;
     do {
         monrace_id = get_mon_num(player_ptr, 0, floor.monster_level, PM_NONE);
-    } while ((mode & PM_NO_QUEST) && monraces_info[monrace_id].misc_flags.has(MonsterMiscType::NO_QUEST));
+    } while ((mode & PM_NO_QUEST) && MonraceList::get_instance().get_monrace(monrace_id).misc_flags.has(MonsterMiscType::NO_QUEST));
     if (!MonraceList::is_valid(monrace_id)) {
         return std::nullopt;
     }
@@ -323,7 +323,7 @@ static std::optional<MonraceId> select_horde_leader_r_idx(PlayerType *player_ptr
             return std::nullopt;
         }
 
-        if (monraces_info[monrace_id].kind_flags.has(MonsterKindType::UNIQUE)) {
+        if (MonraceList::get_instance().get_monrace(monrace_id).kind_flags.has(MonsterKindType::UNIQUE)) {
             continue;
         }
 
@@ -377,7 +377,7 @@ bool alloc_horde(PlayerType *player_ptr, POSITION y, POSITION x, summon_specific
         return true;
     }
 
-    const auto &monrace = monentity.mflag2.has(MonsterConstantFlagType::CHAMELEON) ? monentity.get_monrace() : monraces_info[*monrace_id];
+    const auto &monrace = monentity.mflag2.has(MonsterConstantFlagType::CHAMELEON) ? monentity.get_monrace() : MonraceList::get_instance().get_monrace(*monrace_id);
     msg_format(_("モンスターの大群(%c)", "Monster horde (%c)."), monrace.symbol_definition.character);
     return true;
 }

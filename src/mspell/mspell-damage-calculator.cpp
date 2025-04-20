@@ -437,7 +437,7 @@ int monspell_damage(PlayerType *player_ptr, MonsterAbilityType ms_type, MONSTER_
  */
 int monspell_race_damage(PlayerType *player_ptr, MonsterAbilityType ms_type, MonraceId r_idx, int TYPE)
 {
-    auto *r_ptr = &monraces_info[r_idx];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     DEPTH rlev = ((r_ptr->level >= 1) ? r_ptr->level : 1);
     bool powerful = r_ptr->misc_flags.has(MonsterMiscType::POWERFUL);
     int hp = r_ptr->hit_dice.maxroll() * (ironman_nightmare ? 2 : 1);

@@ -80,7 +80,7 @@ MONSTER_NUMBER summon_guardian(PlayerType *player_ptr, POSITION y, POSITION x, i
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
 
-    if (monraces_info[MonraceId::JORMUNGAND].cur_num < monraces_info[MonraceId::JORMUNGAND].max_num && one_in_(6)) {
+    if (MonraceList::get_instance().get_monrace(MonraceId::JORMUNGAND).cur_num < MonraceList::get_instance().get_monrace(MonraceId::JORMUNGAND).max_num && one_in_(6)) {
         mspell_cast_msg_simple msg(_("地面から水が吹き出した！", "Water blew off from the ground!"),
             _("地面から水が吹き出した！", "Water blew off from the ground!"));
 
@@ -153,7 +153,7 @@ MONSTER_NUMBER summon_MOAI(PlayerType *player_ptr, POSITION y, POSITION x, int r
 
 MONSTER_NUMBER summon_DEMON_SLAYER(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto *r_ptr = &monraces_info[MonraceId::DESLAYER_MEMBER];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(MonraceId::DESLAYER_MEMBER);
     if (r_ptr->mob_num == 0) {
         msg_print(_("しかし、隊士は全滅していた…。", "However, all demon slayer members were murdered..."));
         return 0;
@@ -312,7 +312,7 @@ MONSTER_NUMBER summon_THUNDERS(PlayerType *player_ptr, POSITION y, POSITION x, i
  */
 MONSTER_NUMBER summon_YENDER_WIZARD(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto *r_ptr = &monraces_info[MonraceId::YENDOR_WIZARD_2];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(MonraceId::YENDOR_WIZARD_2);
     if (r_ptr->mob_num == 0) {
         msg_print(_("しかし、誰も来なかった…。", "However, no kin was appeared..."));
         return 0;
@@ -353,7 +353,7 @@ MONSTER_NUMBER summon_LAFFEY_II(PlayerType *player_ptr, const Pos2D &position, M
     auto &floor = *player_ptr->current_floor_ptr;
     auto count = 0;
     constexpr auto summon_num = 2;
-    auto real_num = summon_num - monraces_info[MonraceId::BUNBUN_STRIKERS].cur_num;
+    auto real_num = summon_num - MonraceList::get_instance().get_monrace(MonraceId::BUNBUN_STRIKERS).cur_num;
 
     if (!floor.inside_arena && real_num < MAX_BUNBUN_NUM) {
         for (auto &monster : floor.m_list) {

@@ -33,7 +33,7 @@ int lore_do_probe(PlayerType *player_ptr, MonraceId r_idx)
 {
     (void)player_ptr;
     int n = 0;
-    auto *r_ptr = &monraces_info[r_idx];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     if (r_ptr->r_wake != MAX_UCHAR) {
         n++;
     }
