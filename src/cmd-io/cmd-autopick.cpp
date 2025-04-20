@@ -29,12 +29,6 @@ text_body_type::text_body_type(int cx, int cy)
 {
 }
 
-text_body_type::text_body_type(int cx, int cy)
-    : cx(cx)
-    , cy(cy)
-{
-}
-
 /*
  * Check special key code and get a movement command id
  */
