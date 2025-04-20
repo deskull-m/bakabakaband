@@ -145,7 +145,7 @@ void wiz_complete_quest(PlayerType *player_ptr)
 void wiz_restore_monster_max_num(MonraceId r_idx)
 {
     if (!MonraceList::is_valid(r_idx)) {
-        const auto restore_monrace_id = input_numerics("MonsterID", 1, monraces_info.size() - 1, MonraceId::FILTHY_URCHIN);
+        const auto restore_monrace_id = input_numerics("MonsterID", 1, MonraceList::get_instance().size() - 1, MonraceId::FILTHY_URCHIN);
         if (!restore_monrace_id.has_value()) {
             return;
         }
@@ -153,7 +153,7 @@ void wiz_restore_monster_max_num(MonraceId r_idx)
         r_idx = *restore_monrace_id;
     }
 
-    auto *r_ptr = &monraces_info[r_idx];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     auto n = 0;
     if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
         n = 1;

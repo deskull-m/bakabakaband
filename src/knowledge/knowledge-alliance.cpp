@@ -45,7 +45,7 @@ void do_cmd_knowledge_alliance(PlayerType *player_ptr, bool detail)
                 fprintf(fff, _("残存戦力--\n", "Remaining strength--\n"));
             }
 
-            for (auto &[r_idx, r_ref] : monraces_info) {
+            for (auto &[r_idx, r_ref] : MonraceList::get_instance()) {
                 if (r_ref.alliance_idx == a.second->id) {
                     fprintf(fff, _("%s  %-40s レベル %3d 評価値 %9d", "%s  %-40s LEVEL %3d POW %9d"), r_ref.kind_flags.has(MonsterKindType::UNIQUE) ? "[U]" : "---", r_ref.name.data(), r_ref.level, monraces.get_monrace(r_idx).calc_power());
                     if (r_ref.kind_flags.has_not(MonsterKindType::UNIQUE)) {

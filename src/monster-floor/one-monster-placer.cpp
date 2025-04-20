@@ -62,7 +62,7 @@ static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, B
         return MonraceId::ALIEN_JURAL;
     }
 
-    if (monraces_info[r_idx].misc_flags.has_not(MonsterMiscType::TANUKI)) {
+    if (MonraceList::get_instance().get_monrace(r_idx).misc_flags.has_not(MonsterMiscType::TANUKI)) {
         return r_idx;
     }
 
@@ -72,7 +72,7 @@ static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, B
     auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
         auto ap_r_idx = get_mon_num(player_ptr, 0, floor_ptr->base_level + 10, PM_NONE);
-        if (monraces_info[ap_r_idx].level >= min) {
+        if (MonraceList::get_instance().get_monrace(ap_r_idx).level >= min) {
             return ap_r_idx;
         }
     }
@@ -96,7 +96,7 @@ static bool check_unique_placeable(const FloorType &floor, MonraceId r_idx, BIT_
         return true;
     }
 
-    auto *r_ptr = &monraces_info[r_idx];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     auto is_unique = r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->population_flags.has(MonsterPopulationType::NAZGUL);
     is_unique &= r_ptr->cur_num >= r_ptr->mob_num;
     if (is_unique) {
@@ -169,7 +169,7 @@ static bool check_procection_rune(PlayerType *player_ptr, MonraceId r_idx, POSIT
         return true;
     }
 
-    auto *r_ptr = &monraces_info[r_idx];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     if (randint1(BREAK_RUNE_PROTECTION) >= (r_ptr->level + 20)) {
         return false;
     }

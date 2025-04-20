@@ -19,8 +19,8 @@
  */
 bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, MonraceId r_idx, summon_type type)
 {
-    const auto &monrace = monraces_info[r_idx];
-    const auto &smonrace = monraces_info[summoner_idx];
+    const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
+    const auto &smonrace = MonraceList::get_instance().get_monrace(summoner_idx);
     switch (type) {
     case SUMMON_ANT:
         return monrace.symbol_char_is_any_of("a");
@@ -63,7 +63,7 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
     case SUMMON_CYBER:
         return monrace.symbol_char_is_any_of("U") && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
     case SUMMON_KIN: {
-        const auto summon_kin_type = MonraceList::is_valid(summoner_idx) ? monraces_info[summoner_idx].symbol_definition.character : PlayerRace(player_ptr).get_summon_symbol();
+        const auto summon_kin_type = MonraceList::is_valid(summoner_idx) ? MonraceList::get_instance().get_monrace(summoner_idx).symbol_definition.character : PlayerRace(player_ptr).get_summon_symbol();
         return (monrace.symbol_definition.character == summon_kin_type) && (r_idx != MonraceId::HAGURE);
     }
     case SUMMON_DAWN:

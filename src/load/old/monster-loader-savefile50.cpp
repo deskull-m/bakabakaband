@@ -24,7 +24,7 @@ void MonsterLoader50::rd_monster(MonsterEntity *m_ptr_)
     this->m_ptr->r_idx = i2enum<MonraceId>(rd_s16b());
 
     if (loading_savefile_version_is_older_than(16)) {
-        MonraceDefinition *r_ptr = &monraces_info[m_ptr->r_idx];
+        MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
         m_ptr->alliance_idx = r_ptr->alliance_idx;
     } else {
         m_ptr->alliance_idx = i2enum<AllianceType>(rd_s32b());

@@ -15,11 +15,11 @@ int AllianceJural::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 5, 10);
-    impression -= monraces_info[MonraceId::ALIEN_JURAL].r_akills * 5;
-    if (monraces_info[MonraceId::JURAL_MONS].mob_num == 0) {
+    impression -= MonraceList::get_instance().get_monrace(MonraceId::ALIEN_JURAL).r_akills * 5;
+    if (MonraceList::get_instance().get_monrace(MonraceId::JURAL_MONS).mob_num == 0) {
         impression -= 300;
     }
-    if (monraces_info[MonraceId::JURAL_WITCHKING].mob_num == 0) {
+    if (MonraceList::get_instance().get_monrace(MonraceId::JURAL_WITCHKING).mob_num == 0) {
         impression -= 1230;
     }
     return impression;
@@ -27,5 +27,5 @@ int AllianceJural::calcImpressionPoint(PlayerType *creature_ptr) const
 
 bool AllianceJural::isAnnihilated()
 {
-    return monraces_info[MonraceId::JURAL_WITCHKING].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::JURAL_WITCHKING).mob_num == 0;
 }

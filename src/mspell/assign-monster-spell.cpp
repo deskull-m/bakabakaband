@@ -33,7 +33,7 @@
 static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
     MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonraceDefinition *r_ptr = &monraces_info[m_ptr->r_idx];
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
     if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG)) {
@@ -200,7 +200,7 @@ static MonsterSpellResult monspell_to_monster_impl(
 {
 
     MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonraceDefinition *r_ptr = &monraces_info[m_ptr->r_idx];
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
     if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG)) {

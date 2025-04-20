@@ -39,7 +39,7 @@
  */
 static MonraceId poly_r_idx(PlayerType *player_ptr, MonraceId r_idx)
 {
-    auto *r_ptr = &monraces_info[r_idx];
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->misc_flags.has(MonsterMiscType::QUESTOR)) {
         return r_idx;
     }
@@ -53,7 +53,7 @@ static MonraceId poly_r_idx(PlayerType *player_ptr, MonraceId r_idx)
             break;
         }
 
-        r_ptr = &monraces_info[monrace_id];
+        r_ptr = &MonraceList::get_instance().get_monrace(monrace_id);
         if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
             continue;
         }
