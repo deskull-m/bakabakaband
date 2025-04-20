@@ -23,6 +23,12 @@
 #include "world/world.h"
 #include <ctime>
 
+text_body_type::text_body_type(int cx, int cy)
+    : cx(cx)
+    , cy(cy)
+{
+}
+
 /*
  * Check special key code and get a movement command id
  */
@@ -79,7 +85,7 @@ static int analyze_move_key(text_body_type *tb, uint32_t skey)
         return com_id;
     }
 
-    int len = strlen(tb->lines_list[tb->cy]);
+    const int len = tb->lines_list[tb->cy]->length();
     tb->mark = MARK_MARK | MARK_BY_SHIFT;
     tb->my = tb->cy;
     tb->mx = tb->cx;
@@ -110,24 +116,9 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
     static int32_t old_autosave_turn = 0L;
     ape_quittance quit = APE_QUIT;
 
-    text_body_type text_body;
+    text_body_type text_body(cx_save, cy_save);
     text_body_type *tb = &text_body;
-    tb->changed = false;
-    tb->cx = cx_save;
-    tb->cy = cy_save;
-    tb->upper = tb->left = 0;
-    tb->mark = 0;
-    tb->mx = tb->my = 0;
-    tb->old_cy = tb->old_upper = tb->old_left = -1;
-    tb->old_wid = tb->old_hgt = -1;
-    tb->old_com_id = 0;
-
-    tb->yank.clear();
-    tb->search_o_ptr = nullptr;
-    tb->search_str = nullptr;
-    tb->last_destroyed = nullptr;
     tb->dirty_flags = DIRTY_ALL | DIRTY_MODE | DIRTY_EXPRESSION;
-    tb->dirty_line = -1;
     tb->filename_mode = PT_DEFAULT;
     auto &world = AngbandWorld::get_instance();
     world.play_time.pause();
@@ -209,11 +200,6 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
     if (quit == APE_QUIT_AND_SAVE) {
         write_text_lines(filename, tb->lines_list);
     }
-
-    free_text_lines(tb->lines_list);
-    string_free(tb->search_str);
-    string_free(tb->last_destroyed);
-    kill_yank_chain(tb);
 
     process_autopick_file(player_ptr, filename);
     cx_save = tb->cx;
