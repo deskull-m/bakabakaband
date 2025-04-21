@@ -39,12 +39,6 @@ private:
 };
 
 class PlayerType;
-void vault_prep_clone(PlayerType *player_ptr);
-void vault_prep_symbol(PlayerType *player_ptr);
-
-bool vault_aux_clone(PlayerType *player_ptr, MonraceId r_idx);
-bool vault_aux_symbol_e(PlayerType *player_ptr, MonraceId r_idx);
-bool vault_aux_symbol_g(PlayerType *player_ptr, MonraceId r_idx);
 bool vault_aux_dragon(PlayerType *player_ptr, MonraceId r_idx);
 bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx);
 bool vault_aux_les(PlayerType *player_ptr, MonraceId r_idx);
