@@ -841,7 +841,7 @@ void sweep_monster_process(PlayerType *player_ptr)
         auto &f_ptr = TerrainList::get_instance().get_terrain(g_ptr->feat);
         if (f_ptr.flags.has(TerrainCharacteristics::TENTACLE)) {
             int pow = 30;
-            auto r_ptr = MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+            const auto &r_ptr = m_ptr->get_monrace();
             if (r_ptr.kind_flags.has(MonsterKindType::HENTAI)) {
                 pow += 50;
             }
