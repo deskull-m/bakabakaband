@@ -655,5 +655,5 @@ void player_defecate(PlayerType *player_ptr)
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
     msg_print(NULL);
     q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-    (void)drop_near(player_ptr, q_ptr, -1, player_ptr->y, player_ptr->x);
+    (void)drop_near(player_ptr, q_ptr, player_ptr->get_position());
 }

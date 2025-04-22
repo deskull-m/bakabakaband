@@ -312,7 +312,7 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, DIRECTION dir)
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::DISARM);
         exe_movement(player_ptr, dir, easy_disarm, false);
 
-        (void)drop_near(player_ptr, q_ptr, -1, y, x);
+        (void)drop_near(player_ptr, q_ptr, pos);
 
     } else if ((i > 5) && (randint1(i) > 5)) {
         if (flush_failure) {
