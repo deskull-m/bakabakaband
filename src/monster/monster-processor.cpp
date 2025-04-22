@@ -21,7 +21,6 @@
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "io/write-diary.h"
 #include "melee/melee-postprocess.h"
@@ -596,7 +595,7 @@ void process_monster_change_feat(PlayerType *player_ptr, MONSTER_IDX m_idx)
         auto deno = std::get<1>(spawn_info);
         auto feat = std::get<2>(spawn_info);
         if (randint1(deno) <= num && feat) {
-            cave_set_feat(player_ptr, m_ptr->fy, m_ptr->fx, feat);
+            set_terrain_id_to_grid(player_ptr, m_ptr->get_position(), feat);
         }
     }
 }

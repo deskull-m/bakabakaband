@@ -1,10 +1,8 @@
 #include "effect/effect-feature.h"
-#include "dungeon/dungeon-flag-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h" // 暫定、後で消す.
 #include "floor/cave.h"
 #include "floor/geometry.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "grid/trap.h"
 #include "main/sound-definitions-table.h"
@@ -13,10 +11,8 @@
 #include "mind/mind-ninja.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
-#include "player/special-defense-types.h"
 #include "room/door-definition.h"
 #include "spell-class/spells-mirror-master.h"
-#include "system/angband-system.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -128,7 +124,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         if (message) {
             msg_format(_("木は%s。", "A tree %s"), message);
-            cave_set_feat(player_ptr, pos, one_in_(3) ? TerrainTag::BRAKE : TerrainTag::GRASS);
+            set_terrain_id_to_grid(player_ptr, pos, one_in_(3) ? TerrainTag::BRAKE : TerrainTag::GRASS);
 
             /* Observe */
             if (grid.is_mark()) {
@@ -269,7 +265,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         if (player_ptr->is_located_at(pos)) {
             break;
         }
-        cave_set_feat(player_ptr, pos, Doors::get_instance().get_door(DoorKind::DOOR).closed);
+        set_terrain_id_to_grid(player_ptr, pos, Doors::get_instance().get_door(DoorKind::DOOR).closed);
         if (grid.is_mark()) {
             obvious = true;
         }
@@ -286,7 +282,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         if (player_ptr->is_located_at(pos)) {
             break;
         }
-        cave_set_feat(player_ptr, pos, TerrainTag::TREE);
+        set_terrain_id_to_grid(player_ptr, pos, TerrainTag::TREE);
         if (grid.is_mark()) {
             obvious = true;
         }
@@ -307,7 +303,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             break;
         }
 
-        cave_set_feat(player_ptr, pos, TerrainTag::GRANITE_WALL);
+        set_terrain_id_to_grid(player_ptr, pos, TerrainTag::GRANITE_WALL);
         break;
     case AttributeType::LAVA_FLOW: {
         if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
@@ -317,9 +313,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (terrain.flags.has_not(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            cave_set_feat(player_ptr, pos, TerrainTag::SHALLOW_LAVA);
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SHALLOW_LAVA);
         } else if (dam) {
-            cave_set_feat(player_ptr, pos, TerrainTag::DEEP_LAVA);
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::DEEP_LAVA);
         }
 
         break;
@@ -332,9 +328,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (terrain.flags.has_not(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            cave_set_feat(player_ptr, pos, TerrainTag::SHALLOW_WATER);
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SHALLOW_WATER);
         } else if (dam) {
-            cave_set_feat(player_ptr, pos, TerrainTag::DEEP_WATER);
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::DEEP_WATER);
         }
 
         break;
@@ -478,9 +474,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (!terrain.flags.has(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            cave_set_feat(player_ptr, pos, TerrainTag::SHALLOW_DUNG_POOL);
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SHALLOW_DUNG_POOL);
         } else if (dam) {
-            cave_set_feat(player_ptr, pos, TerrainTag::DEEP_DUNG_POOL);
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::DEEP_DUNG_POOL);
         }
 
         break;

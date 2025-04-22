@@ -7,7 +7,6 @@
 #include "flavor/tval-description-switcher.h"
 #include "flavor/flavor-util.h"
 #include "flavor/object-flavor-types.h"
-#include "grid/feature.h"
 #include "locale/english.h"
 #include "object-enchant/trg-types.h"
 #include "object/tval-types.h"
