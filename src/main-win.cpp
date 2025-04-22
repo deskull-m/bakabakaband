@@ -1141,9 +1141,9 @@ static errr term_text_win(int x, int y, int n, TERM_COLOR a, concptr s)
             i++;
             rc.left += 2 * td->tile_wid;
             rc.right += 2 * td->tile_wid;
-        } else if (iskanji(*(s + i))) { /* 2バイト文字 */
-            char tmp[] = { *(s + i), *(s + i + 1), '\0' };
-            to_wchar wc(tmp);
+        } else if (iskanji(*(s + i))) /* 2バイト文字 */
+        {
+            to_wchar wc({ s + 1, 2 });
             const auto *buf = wc.wc_str();
             rc.right += td->font_wid;
             if (buf == NULL) {
@@ -1371,7 +1371,8 @@ static void init_windows(void)
     /* Font of each window */
     for (int i = 0; i < MAX_TERM_DATA; i++) {
         td = &data[i];
-        wcsncpy(td->lf.lfFaceName, to_wchar(td->font_want).wc_str(), LF_FACESIZE);
+        const std::string_view font(td->font_want != NULL ? td->font_want : "");
+        wcsncpy(td->lf.lfFaceName, to_wchar(font).wc_str(), LF_FACESIZE);
         td->lf.lfCharSet = _(SHIFTJIS_CHARSET, DEFAULT_CHARSET);
         td->lf.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
         term_force_font(td);
@@ -2580,7 +2581,7 @@ static LRESULT PASCAL AngbandListProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 static void hook_plog(std::string_view str)
 {
     if (!str.empty()) {
-        MessageBoxW(data[0].w, to_wchar(str.data()).wc_str(), _(L"警告！", L"Warning"), MB_ICONEXCLAMATION | MB_OK);
+        MessageBoxW(data[0].w, to_wchar(str).wc_str(), _(L"警告！", L"Warning"), MB_ICONEXCLAMATION | MB_OK);
     }
 }
 
@@ -2590,7 +2591,7 @@ static void hook_plog(std::string_view str)
 static void hook_quit(std::string_view str)
 {
     if (!str.empty()) {
-        MessageBoxW(data[0].w, to_wchar(str.data()).wc_str(), _(L"エラー！", L"Error"), MB_ICONEXCLAMATION | MB_OK | MB_ICONSTOP);
+        MessageBoxW(data[0].w, to_wchar(str).wc_str(), _(L"エラー！", L"Error"), MB_ICONEXCLAMATION | MB_OK | MB_ICONSTOP);
     }
 
     save_prefs();
@@ -2773,12 +2774,12 @@ int WINAPI WinMain(
     // before term_data initialize
     plog_aux = [](std::string_view str) {
         if (!str.empty()) {
-            MessageBoxW(NULL, to_wchar(str.data()).wc_str(), _(L"警告！", L"Warning"), MB_ICONEXCLAMATION | MB_OK);
+            MessageBoxW(NULL, to_wchar(str).wc_str(), _(L"警告！", L"Warning"), MB_ICONEXCLAMATION | MB_OK);
         }
     };
     quit_aux = [](std::string_view str) {
         if (!str.empty()) {
-            MessageBoxW(NULL, to_wchar(str.data()).wc_str(), _(L"エラー！", L"Error"), MB_ICONEXCLAMATION | MB_OK | MB_ICONSTOP);
+            MessageBoxW(NULL, to_wchar(str).wc_str(), _(L"エラー！", L"Error"), MB_ICONEXCLAMATION | MB_OK | MB_ICONSTOP);
         }
 
         UnregisterClassW(AppName, hInstance);
