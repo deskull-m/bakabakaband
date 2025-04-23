@@ -344,7 +344,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         grid.info |= (CAVE_GLOW);
         note_spot(player_ptr, y, x);
         lite_spot(player_ptr, y, x);
-        update_local_illumination(player_ptr, y, x);
+        update_local_illumination(player_ptr, pos);
 
         if (player_can_see_bold(player_ptr, y, x)) {
             obvious = true;
@@ -397,7 +397,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         lite_spot(player_ptr, y, x);
 
-        update_local_illumination(player_ptr, y, x);
+        update_local_illumination(player_ptr, pos);
 
         if (player_can_see_bold(player_ptr, y, x)) {
             obvious = true;
