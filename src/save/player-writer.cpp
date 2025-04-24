@@ -41,6 +41,8 @@ static void wr_relams(PlayerType *player_ptr)
  */
 void wr_player(PlayerType *player_ptr)
 {
+    auto &system = AngbandSystem::get_instance();
+
     wr_string(player_ptr->name);
     wr_string(player_ptr->died_from);
     wr_string(player_ptr->last_message);
@@ -249,7 +251,7 @@ void wr_player(PlayerType *player_ptr)
     wr_byte((byte)player_ptr->action);
     wr_byte(0);
     wr_bool(preserve_mode);
-    wr_bool(player_ptr->wait_report_score);
+    wr_bool(system.is_awaiting_report_status());
 
     for (int i = 0; i < 12; i++) {
         wr_u32b(0L);
@@ -260,10 +262,9 @@ void wr_player(PlayerType *player_ptr)
     wr_u32b(0L);
     wr_u32b(0L);
 
-    const auto &system = AngbandSystem::get_instance();
     wr_u32b(system.get_seed_flavor());
     wr_u32b(system.get_seed_town());
-    wr_u16b(player_ptr->panic_save);
+    wr_u16b(system.is_panic_save_executed() ? 1 : 0);
     wr_u16b(world.total_winner);
     wr_u16b(world.noscore);
     wr_bool(player_ptr->is_dead);
