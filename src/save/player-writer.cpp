@@ -41,6 +41,8 @@ static void wr_relams(PlayerType *player_ptr)
  */
 void wr_player(PlayerType *player_ptr)
 {
+    auto &system = AngbandSystem::get_instance();
+
     wr_string(player_ptr->name);
     wr_string(player_ptr->died_from);
     wr_string(player_ptr->last_message);
