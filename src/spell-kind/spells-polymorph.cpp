@@ -164,7 +164,6 @@ bool trans_sex(PlayerType *player_ptr)
     clear_bldg(4, 10);
 
     int i;
-    int num = 0;
     for (i = 0; i < MAX_SEXES; i++) {
         char buf[80];
 
@@ -174,7 +173,6 @@ bool trans_sex(PlayerType *player_ptr)
 
         sprintf(buf, "%c) %-20s", I2A(i), sex_info[i].title.data());
         prt(buf, 5 + i, 5);
-        num++;
     }
 
     prt(_("どの性別に変わりますか:", "Which sex do you chenge: "), 0, 0);

@@ -618,6 +618,10 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
 
     int k = 0;
 
+    if (SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_MULTI)) {
+        return false;
+    }
+
     for (const auto &spawn_info : r_ptr->spawn_monsters) {
 
         for (POSITION y = oy - 1; y <= oy + 1; y++) {
@@ -632,8 +636,8 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
             }
         }
 
-        if (SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_MULTI)) {
-            k = 8;
+        if (k >= 8) {
+            return false;
         }
 
         auto num = std::get<0>(spawn_info);
