@@ -38,8 +38,8 @@ void call_the_void(PlayerType *player_ptr)
     const auto &floor = *player_ptr->current_floor_ptr;
     /* 虚無招来そのものを唱えることによる時空崩壊度進行(*破壊*とは別) */
     wc_ptr->plus_perm_collapsion(150);
-    for (int i = 0; i < 9; i++) {
-        const Pos2D p_pos_neighbor(player_ptr->y + ddy_ddd[i], player_ptr->x + ddx_ddd[i]);
+    for (const auto &d : Direction::directions()) {
+        const auto p_pos_neighbor = player_ptr->get_position() + d.vec();
         const auto &grid = floor.get_grid(p_pos_neighbor);
         if (!grid.has(TerrainCharacteristics::PROJECT)) {
             if (!grid.mimic || grid.get_terrain(TerrainKind::MIMIC_RAW).flags.has_not(TerrainCharacteristics::PROJECT) || !grid.get_terrain().is_permanent_wall()) {

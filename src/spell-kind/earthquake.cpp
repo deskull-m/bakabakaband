@@ -92,18 +92,17 @@ bool earthquake(PlayerType *player_ptr, POSITION cy, POSITION cx, POSITION r, MO
     auto sn = 0;
     Pos2D p_pos_new(0, 0); // 落石を避けた後のプレイヤー座標
     if (hurt && !has_pass_wall(player_ptr) && !has_kill_wall(player_ptr)) {
-        for (auto i = 0; i < 8; i++) {
-            auto y = player_ptr->y + ddy_ddd[i];
-            auto x = player_ptr->x + ddx_ddd[i];
-            if (!is_cave_empty_bold(player_ptr, y, x)) {
+        for (const auto &d : Direction::directions_8()) {
+            const auto pos = player_ptr->get_position() + d.vec();
+            if (!is_cave_empty_bold(player_ptr, pos.y, pos.x)) {
                 continue;
             }
 
-            if (map[earthquake_max + y - cy][earthquake_max + x - cx]) {
+            if (map[earthquake_max + pos.y - cy][earthquake_max + pos.x - cx]) {
                 continue;
             }
 
-            if (floor.grid_array[y][x].has_monster()) {
+            if (floor.get_grid(pos).has_monster()) {
                 continue;
             }
 
@@ -112,7 +111,7 @@ bool earthquake(PlayerType *player_ptr, POSITION cy, POSITION cx, POSITION r, MO
                 continue;
             }
 
-            p_pos_new = { y, x };
+            p_pos_new = pos;
         }
 
         constexpr static auto msgs = {
@@ -186,8 +185,8 @@ bool earthquake(PlayerType *player_ptr, POSITION cy, POSITION cx, POSITION r, MO
 
             sn = 0;
             if (monrace.behavior_flags.has_not(MonsterBehaviorType::NEVER_MOVE)) {
-                for (auto i = 0; i < 8; i++) {
-                    const Pos2D pos_neighbor(pos.y + ddy_ddd[i], pos.x + ddx_ddd[i]);
+                for (const auto &d : Direction::directions_8()) {
+                    const auto pos_neighbor = pos + d.vec();
                     if (!is_cave_empty_bold(player_ptr, pos_neighbor.y, pos_neighbor.x)) {
                         continue;
                     }
@@ -321,8 +320,8 @@ bool earthquake(PlayerType *player_ptr, POSITION cy, POSITION cx, POSITION r, MO
                 continue;
             }
 
-            for (auto j = 0; j < 9; j++) {
-                const Pos2D pos_neighbor(pos.y + ddy_ddd[j], pos.x + ddx_ddd[j]);
+            for (const auto &d : Direction::directions()) {
+                const auto pos_neighbor = pos + d.vec();
                 if (!in_bounds2(&floor, pos_neighbor.y, pos_neighbor.x)) {
                     continue;
                 }
