@@ -5385,8 +5385,8 @@
     <ClInclude Include="..\..\src\util\sha256.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\external-lib\json.hpp">
-      <Filter>external-lib</Filter>
+    <ClInclude Include="..\..\src\util\stack-trace.h">
+      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\external-lib\include-json.h">
       <Filter>external-lib</Filter>
