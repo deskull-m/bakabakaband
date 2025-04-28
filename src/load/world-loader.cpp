@@ -1,5 +1,5 @@
 #include "load/world-loader.h"
-#include "floor/wild.h"
+#include "load/angband-version-comparer.h"
 #include "load/load-util.h"
 #include "load/load-zangband.h"
 #include "market/bounty.h"
@@ -10,6 +10,7 @@
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/wilderness-grid.h"
 #include "system/inner-game-data.h"
 #include "system/player-type-definition.h"
 #include "world/world.h"
@@ -111,8 +112,10 @@ void rd_global_configurations(PlayerType *player_ptr)
 
 void load_wilderness_info(PlayerType *player_ptr)
 {
-    player_ptr->wilderness_x = rd_s32b();
-    player_ptr->wilderness_y = rd_s32b();
+    const auto x = rd_s32b();
+    const auto y = rd_s32b();
+    auto &wilderness = WildernessGrids::get_instance();
+    wilderness.set_player_position({ y, x });
 
     auto &world = AngbandWorld::get_instance();
     world.set_wild_mode(rd_bool());
@@ -123,15 +126,16 @@ errr analyze_wilderness(void)
 {
     const auto wild_x_size = rd_s32b();
     const auto wild_y_size = rd_s32b();
-    auto &world = AngbandWorld::get_instance();
-    if ((wild_x_size > world.max_wild_x) || (wild_y_size > world.max_wild_y)) {
-        load_note(format(_("荒野が大きすぎる(%u/%u)！", "Wilderness is too big (%u/%u)!"), wild_x_size, wild_y_size));
+    auto &wilderness = WildernessGrids::get_instance();
+    const auto &bottom_right = wilderness.get_bottom_right();
+    if ((wild_x_size > bottom_right.x) || (wild_y_size > bottom_right.y)) {
+        load_note(format(_("荒野が大きすぎる(%d/%d)！", "Wilderness is too big (%d/%d)!"), wild_x_size, wild_y_size));
         return 23;
     }
 
-    for (int i = 0; i < wild_x_size; i++) {
-        for (int j = 0; j < wild_y_size; j++) {
-            wilderness[j][i].seed = rd_u32b();
+    for (auto x = 0; x < wild_x_size; x++) {
+        for (auto y = 0; y < wild_y_size; y++) {
+            wilderness.get_grid({ y, x }).seed = rd_u32b();
         }
     }
 
