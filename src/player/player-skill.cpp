@@ -290,7 +290,7 @@ void PlayerSkill::gain_riding_skill_exp_on_gross_eating()
     }
 }
 
-void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition *r_ptr)
+void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition &monrace)
 {
     auto now_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
     auto max_exp = class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
@@ -301,7 +301,7 @@ void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition 
     auto riding_level = this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding].get_monrace().level;
     int inc = 0;
 
-    if ((now_exp / 200 - 5) < r_ptr->level) {
+    if ((now_exp / 200 - 5) < monrace.level) {
         inc += 1;
     }
 
