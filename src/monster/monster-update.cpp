@@ -297,7 +297,7 @@ static void update_specific_race_telepathy(PlayerType *player_ptr, um_type *um_p
     if ((player_ptr->esp_nasty) && monrace.kind_flags.has(MonsterKindType::NASTY)) {
         um_ptr->flag = true;
         um_ptr->m_ptr->mflag.set(MonsterTemporaryFlagType::ESP);
-        if (is_original_ap_and_seen(player_ptr, um_ptr->m_ptr) && !is_hallucinated) {
+        if (is_original_ap_and_seen(player_ptr, *um_ptr->m_ptr) && !is_hallucinated) {
             monrace.r_kind_flags.set(MonsterKindType::NASTY);
         }
     }

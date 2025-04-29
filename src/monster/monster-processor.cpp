@@ -646,7 +646,7 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
         if (randint1(deno) <= num) {
             if (multiply_monster(player_ptr, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
                 auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-                if (monster.ml && is_original_ap_and_seen(player_ptr, m_ptr)) {
+                if (monster.ml && is_original_ap_and_seen(player_ptr, *m_ptr)) {
                     r_ptr->misc_flags.set(MonsterMiscType::MULTIPLY);
                 }
                 return true;
@@ -710,7 +710,7 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
 {
     const auto &baseitems = BaseitemList::get_instance();
     auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(player_ptr, *m_ptr, 0);
 
     if (m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
@@ -829,23 +829,23 @@ void sweep_monster_process(PlayerType *player_ptr)
         }
 
         monster.energy_need += ENERGY_NEED();
-        auto m_name = monster_desc(player_ptr, m_ptr, 0);
+        auto m_name = monster_desc(player_ptr, monster, 0);
 
-        if (m_ptr->death_count > 0) {
-            m_ptr->death_count--;
-            if (m_ptr->death_count == 0) {
+        if (monster.death_count > 0) {
+            monster.death_count--;
+            if (monster.death_count == 0) {
                 bool fear;
-                m_ptr->max_maxhp = m_ptr->maxhp = m_ptr->hp = -1;
+                monster.max_maxhp = monster.maxhp = monster.hp = -1;
                 MonsterDamageProcessor mdp(player_ptr, m_idx, 0, &fear, AttributeType::ATTACK);
                 mdp.mon_take_hit(_("は爆発した。", " explodes."));
             }
         }
 
-        auto g_ptr = &player_ptr->current_floor_ptr->grid_array[m_ptr->fy][m_ptr->fx];
+        auto g_ptr = &player_ptr->current_floor_ptr->grid_array[monster.fy][monster.fx];
         auto &f_ptr = TerrainList::get_instance().get_terrain(g_ptr->feat);
         if (f_ptr.flags.has(TerrainCharacteristics::TENTACLE)) {
             int pow = 30;
-            const auto &r_ptr = m_ptr->get_monrace();
+            const auto &r_ptr = monster.get_monrace();
             if (r_ptr.kind_flags.has(MonsterKindType::HENTAI)) {
                 pow += 50;
             }
@@ -856,18 +856,18 @@ void sweep_monster_process(PlayerType *player_ptr)
                 pow *= 3;
             }
             if (r_ptr.level < randint0(pow)) {
-                if (m_ptr->ml) {
+                if (monster.ml) {
                     msg_format(_("%sは%sに絡めとられて動けなかった！", "%s wes entangled in the %s and could not move!"), m_name.data(), f_ptr.name.data());
                 }
                 if (r_ptr.kind_flags.has(MonsterKindType::HENTAI)) {
                     switch (randint1(3)) {
                     case 1:
                         msg_format(_("%s「んほぉ！」", "%s 'Nnhor!'"), m_name.data());
-                        (void)set_monster_stunned(player_ptr, 0, m_ptr->get_remaining_stun() + 10 + randint0(player_ptr->lev) / 5);
+                        (void)set_monster_stunned(player_ptr, 0, monster.get_remaining_stun() + 10 + randint0(player_ptr->lev) / 5);
                         break;
                     case 2:
                         msg_format(_("%s「アへぇ！」", "%s 'Aherr!'"), m_name.data());
-                        (void)set_monster_slow(player_ptr, 0, m_ptr->get_remaining_deceleration() + 10 + randint0(player_ptr->lev) / 5);
+                        (void)set_monster_slow(player_ptr, 0, monster.get_remaining_deceleration() + 10 + randint0(player_ptr->lev) / 5);
                         break;
                     case 3: {
                         bool fear = false;

@@ -9,10 +9,6 @@
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
-MonsterLoader50::MonsterLoader50()
-{
-}
-
 /*!
  * @brief モンスターを読み込む(v3.0.0 Savefile ver50まで)
  */
@@ -22,10 +18,10 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
     monster.r_idx = i2enum<MonraceId>(rd_s16b());
 
     if (loading_savefile_version_is_older_than(16)) {
-        MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
-        m_ptr->alliance_idx = r_ptr->alliance_idx;
+        MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(monster.r_idx);
+        monster.alliance_idx = r_ptr->alliance_idx;
     } else {
-        m_ptr->alliance_idx = i2enum<AllianceType>(rd_s32b());
+        monster.alliance_idx = i2enum<AllianceType>(rd_s32b());
     }
 
     monster.fy = rd_byte();

@@ -180,7 +180,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         return false;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(player_ptr, *m_ptr, 0);
     const auto effects = player_ptr->effects();
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
     if (m_ptr->ml) {

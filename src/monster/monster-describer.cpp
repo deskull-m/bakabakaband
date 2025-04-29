@@ -248,17 +248,17 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
     const auto name = get_describing_monster_name(monster, is_hallucinated, mode);
     std::stringstream ss;
 #ifdef JP
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::SANTA)) {
+    if (monster.mflag2.has(MonsterConstantFlagType::SANTA)) {
         ss << "サンタと化した";
     }
 #endif
 #ifndef JP
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::SANTA)) {
+    if (monster.mflag2.has(MonsterConstantFlagType::SANTA)) {
         ss << "Santa turned";
     }
 #endif
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
+    if (monster.mflag2.has(MonsterConstantFlagType::LARGE)) {
         ss << _("大型の", "large ");
     }
 

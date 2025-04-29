@@ -543,7 +543,7 @@ static std::string_view get_speak_filename(const MonsterEntity &monster)
 
 static void speaking(PlayerType *player_ptr, const MonsterEntity &monster)
 {
-    const auto m_name = monster.ml ? monster_desc(player_ptr, &monster, 0) : std::string(_("それ", "It"));
+    const auto m_name = monster.ml ? monster_desc(player_ptr, monster, 0) : std::string(_("それ", "It"));
     auto filename = get_speak_filename(monster);
     if (filename.empty()) {
         return;

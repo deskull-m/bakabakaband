@@ -61,11 +61,10 @@ void teleport_level(PlayerType *player_ptr, MONSTER_IDX m_idx)
     std::string m_name;
     auto see_m = true;
     auto &floor = *player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor.m_list[m_idx];
+    auto &monster = floor.m_list[m_idx];
     if (m_idx <= 0) {
         m_name = _("あなた", "you");
     } else {
-        const auto &monster = floor.m_list[m_idx];
         m_name = monster_desc(player_ptr, monster, 0);
         see_m = is_seen(player_ptr, monster);
     }
@@ -209,7 +208,6 @@ void teleport_level(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return;
     }
 
-    const auto &monster = floor.m_list[m_idx];
     QuestCompletionChecker(player_ptr, monster).complete();
     if (record_named_pet && monster.is_named_pet()) {
         const auto m2_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
