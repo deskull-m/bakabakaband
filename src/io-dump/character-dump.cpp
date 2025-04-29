@@ -60,16 +60,16 @@ static void dump_aux_pet(PlayerType *player_ptr, FILE *fff)
     bool pet = false;
     bool pet_settings = false;
     for (int i = player_ptr->current_floor_ptr->m_max - 1; i >= 1; i--) {
-        auto *m_ptr = &player_ptr->current_floor_ptr->m_list[i];
+        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
 
-        if (!m_ptr->is_valid()) {
+        if (!monster.is_valid()) {
             continue;
         }
-        if (!m_ptr->is_pet()) {
+        if (!monster.is_pet()) {
             continue;
         }
         pet_settings = true;
-        if (!m_ptr->is_named() && !m_ptr->is_riding()) {
+        if (!monster.is_named() && !monster.is_riding()) {
             continue;
         }
         if (!pet) {
@@ -77,7 +77,7 @@ static void dump_aux_pet(PlayerType *player_ptr, FILE *fff)
             pet = true;
         }
 
-        const auto pet_name = monster_desc(player_ptr, m_ptr, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
         fprintf(fff, "%s\n", pet_name.data());
     }
 
@@ -348,7 +348,7 @@ static void dump_aux_monsters(FILE *fff)
 #endif
 
     std::stable_sort(monrace_ids.begin(), monrace_ids.end(), [&monraces](auto x, auto y) { return monraces.order(x, y); });
-    fprintf(fff, _("\n《上位%d体のユニーク・モンスター》\n", "\n< Unique monsters top %d >\n"), std::min(uniq_total, 10));
+    fmt::println(fff, _("\n《上位{}体のユニーク・モンスター", "\n< Unique monsters top {} >"), std::min(uniq_total, 10));
     for (auto it = monrace_ids.rbegin(); it != monrace_ids.rend() && std::distance(monrace_ids.rbegin(), it) < 10; it++) {
         const auto &monrace = monraces.get_monrace(*it);
         const auto defeat_level = monrace.defeat_level;

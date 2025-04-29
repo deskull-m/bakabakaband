@@ -249,8 +249,8 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     const auto &floor_ref = *player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor_ref.m_list[m_idx];
-    const auto &monrace = m_ptr->get_monrace();
+    const auto &monster = floor_ref.m_list[m_idx];
+    const auto &monrace = monster.get_monrace();
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ACID)) {
         if (!has_immune_acid(player_ptr) && (player_ptr->oppose_acid || music_singing(player_ptr, MUSIC_RESIST))) {
             return true;
@@ -335,7 +335,9 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    if (player_ptr->lightspeed && (m_ptr->mspeed < 136)) {
+    constexpr auto threshold = 25;
+    const auto threshold_speed = STANDARD_SPEED + threshold;
+    if (player_ptr->lightspeed && (monster.mspeed <= threshold_speed)) {
         return true;
     }
 

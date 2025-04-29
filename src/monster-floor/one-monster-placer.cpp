@@ -352,7 +352,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
 
     m_ptr->ml = false;
     if (any_bits(mode, PM_FORCE_PET)) {
-        set_pet(player_ptr, m_ptr);
+        set_pet(player_ptr, *m_ptr);
     } else {
         auto should_be_friendly = !is_summoned && new_monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY);
         should_be_friendly |= is_summoned && summoner.is_friendly();
@@ -423,7 +423,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     m_ptr->get_real_monrace().increment_current_numbers();
 
     if (any_bits(mode, PM_AMBUSH)) {
-        auto m_name = monster_desc(player_ptr, m_ptr, 0);
+        auto m_name = monster_desc(player_ptr, *m_ptr, 0);
         msg_format(_("突如%sがあなたに襲い掛かってきた！", "Suddenly %s has ambushed you!"), m_name.data());
         disturb(player_ptr, false, true);
         MonsterAttackPlayer(player_ptr, g_ptr->m_idx).make_attack_normal();

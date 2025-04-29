@@ -329,9 +329,9 @@ static void on_dead_dawn(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
 static void on_dead_ninja(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
-    if (is_seen(player_ptr, md_ptr->m_ptr)) {
+    if (is_seen(player_ptr, *md_ptr->m_ptr)) {
         msg_print(_("「サヨナラ！」", "Sayonara!"));
-        auto m_name = monster_desc(player_ptr, md_ptr->m_ptr, MD_NONE);
+        auto m_name = monster_desc(player_ptr, *md_ptr->m_ptr, MD_NONE);
         msg_format(_("%sは哀れ爆発四散した！ショッギョ・ムッジョ！", "%s explodes pitifully! Shogyomujo!"), m_name.data());
     }
 
@@ -470,7 +470,7 @@ static void on_dead_dragon_centipede(PlayerType *player_ptr, MonsterDeath *md_pt
     }
 
     if (notice) {
-        const auto m_name = monster_desc(player_ptr, md_ptr->m_ptr, MD_NONE);
+        const auto m_name = monster_desc(player_ptr, *md_ptr->m_ptr, MD_NONE);
         msg_format(_("%sが再生した！", "The %s reproduced!"), m_name.data());
         sound(SOUND_SUMMON);
     }
@@ -548,7 +548,7 @@ static void on_dead_random_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr
  */
 static void on_dead_manimani(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
-    if (!is_seen(player_ptr, md_ptr->m_ptr)) {
+    if (!is_seen(player_ptr, *md_ptr->m_ptr)) {
         return;
     }
 
