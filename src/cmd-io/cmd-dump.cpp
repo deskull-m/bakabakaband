@@ -11,9 +11,9 @@
 
 #include "cmd-io/cmd-dump.h"
 #include "alliance/alliance.h"
-#include "cmd-io/feeling-table.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
+#include "floor/dungeon-feeling.h"
 #include "io-dump/dump-remover.h"
 #include "io-dump/dump-util.h"
 #include "io/files-util.h"
@@ -287,13 +287,17 @@ void do_cmd_feeling(PlayerType *player_ptr)
         msg_print("狭そうなフロアだ。");
     }
 
+    const auto &df = DungeonFeeling::get_instance();
+    std::string_view feeling_text;
     if (has_good_luck(player_ptr)) {
-        msg_print(do_cmd_feeling_text_lucky[player_ptr->feeling]);
+        feeling_text = df.get_feeling_lucky();
     } else if (is_echizen(player_ptr)) {
-        msg_print(do_cmd_feeling_text_combat[player_ptr->feeling]);
+        feeling_text = df.get_feeling_combat();
     } else {
-        msg_print(do_cmd_feeling_text[player_ptr->feeling]);
+        feeling_text = df.get_feeling_normal();
     }
+
+    msg_print(feeling_text);
 }
 
 /*
