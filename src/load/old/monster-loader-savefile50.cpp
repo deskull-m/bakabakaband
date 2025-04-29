@@ -18,10 +18,8 @@ MonsterLoader50::MonsterLoader50()
  */
 void MonsterLoader50::rd_monster(MonsterEntity *m_ptr)
 {
-    this->m_ptr = m_ptr_;
-
     auto flags = rd_u32b();
-    this->m_ptr->r_idx = i2enum<MonraceId>(rd_s16b());
+    m_ptr->r_idx = i2enum<MonraceId>(rd_s16b());
 
     if (loading_savefile_version_is_older_than(16)) {
         MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
@@ -30,17 +28,17 @@ void MonsterLoader50::rd_monster(MonsterEntity *m_ptr)
         m_ptr->alliance_idx = i2enum<AllianceType>(rd_s32b());
     }
 
-    this->m_ptr->fy = rd_byte();
-    this->m_ptr->fx = rd_byte();
+    m_ptr->fy = rd_byte();
+    m_ptr->fx = rd_byte();
 
-    this->m_ptr->hp = rd_s16b();
-    this->m_ptr->maxhp = rd_s16b();
-    this->m_ptr->max_maxhp = rd_s16b();
-    this->m_ptr->dealt_damage = rd_u32b();
+    m_ptr->hp = rd_s16b();
+    m_ptr->maxhp = rd_s16b();
+    m_ptr->max_maxhp = rd_s16b();
+    m_ptr->dealt_damage = rd_u32b();
     if (loading_savefile_version_is_older_than(23)) {
-        this->m_ptr->death_count = 0;
+        m_ptr->death_count = 0;
     } else {
-        this->m_ptr->death_count = rd_u32b();
+        m_ptr->death_count = rd_u32b();
     }
 
     m_ptr->ap_r_idx = any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX) ? i2enum<MonraceId>(rd_s16b()) : m_ptr->r_idx;

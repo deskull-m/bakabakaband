@@ -192,7 +192,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (r_ptr->meat_feed_flags.has(MonsterFeedType::INSANITY)) {
-        sanity_blast(player_ptr, NULL, false);
+        sanity_blast(player_ptr, std::nullopt, false);
     }
 
     if (r_ptr->meat_feed_flags.has(MonsterFeedType::DRAIN_EXP)) {

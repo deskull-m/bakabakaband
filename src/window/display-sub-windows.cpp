@@ -563,11 +563,11 @@ static void display_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
     const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
     if (player_ptr->is_located_at(pos)) {
         line = format(_("(X:%03d Y:%03d) あなたの足元のアイテム一覧", "Items at (%03d,%03d) under you"), pos.x, pos.y);
-    } else if (is_seeing_monster_on(floor, grid)) {
+    } else if (is_seeing_monster_on(*floor_ptr, *g_ptr)) {
         if (is_hallucinated) {
             line = format(_("(X:%03d Y:%03d) 何か奇妙な物の足元の発見済みアイテム一覧", "Found items at (%03d,%03d) under something strange"), pos.x, pos.y);
         } else {
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor_ptr->m_list[g_ptr->m_idx];
             const auto &monrace = monster.get_appearance_monrace();
             line = format(_("(X:%03d Y:%03d) %sの足元の発見済みアイテム一覧", "Found items at (%03d,%03d) under %s"), pos.x, pos.y, monrace.name.data());
         }
