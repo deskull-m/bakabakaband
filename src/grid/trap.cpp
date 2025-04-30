@@ -348,7 +348,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
-        sound(SOUND_FALL);
+        sound(SoundKind::FALL);
         const auto dam = Dice::roll(2, 8);
         constexpr auto name = _("落とし戸", "a trap door");
 

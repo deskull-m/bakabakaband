@@ -104,9 +104,13 @@
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
+#include "util/enum-range.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include <algorithm>
+#include <filesystem>
+#include <map>
 #include <memory>
 #include <span>
 #include <string>
@@ -1836,38 +1840,20 @@ static errr CheckEvent(bool wait)
 /*
  * An array of sound file names
  */
-static concptr sound_file[SOUND_MAX];
-
-/*
- * Check for existance of a file
- */
-static bool check_file(concptr s)
-{
-    FILE *fff;
-
-    fff = fopen(s, "r");
-    if (!fff) {
-        return false;
-    }
-
-    fclose(fff);
-    return true;
-}
+static std::map<SoundKind, std::string> sound_files;
 
 /*
  * Initialize sound
  */
-static void init_sound(void)
+static void init_sound()
 {
     const auto &dir_xtra_sound = path_build(ANGBAND_DIR_XTRA, "sound");
-    for (auto i = 1; i < SOUND_MAX; i++) {
-        std::string wav = angband_sound_name[i];
+    constexpr EnumRange<SoundKind> sound_kinds(SoundKind::HIT, SoundKind::MAX);
+    for (const auto sk : sound_kinds) {
+        std::string wav = sound_names.at(sk);
         wav.append(".wav");
         const auto &path = path_build(dir_xtra_sound, wav);
-        const auto &filename = path.string();
-        if (check_file(filename.data())) {
-            sound_file[i] = string_make(filename.data());
-        }
+        sound_files[sk] = std::filesystem::exists(path) ? path.string() : "";
     }
 
     use_sound = true;
@@ -1879,19 +1865,16 @@ static void init_sound(void)
  */
 static errr game_term_xtra_x11_sound(int v)
 {
-    char buf[1024];
     if (!use_sound) {
         return 1;
     }
-    if ((v < 0) || (v >= SOUND_MAX)) {
-        return 1;
-    }
-    if (!sound_file[v]) {
+    if ((v < 0) || (v >= enum2i(SoundKind::MAX))) {
         return 1;
     }
 
-    sprintf(buf, "./playwave.sh %s\n", sound_file[v]);
-    return system(buf) < 0;
+    std::string buf = "./playwave.sh ";
+    buf.append(sound_files.at(i2enum<SoundKind>(v))).append("\n");
+    return system(buf.data()) < 0;
 }
 
 /*
