@@ -1865,7 +1865,6 @@ static void init_sound()
  */
 static errr game_term_xtra_x11_sound(int v)
 {
-    char buf[1024];
     if (!use_sound) {
         return 1;
     }

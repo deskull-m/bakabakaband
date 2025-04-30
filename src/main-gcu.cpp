@@ -848,8 +848,6 @@ static errr game_term_xtra_gcu_event(int v)
  */
 static errr game_term_xtra_gcu_sound(int v)
 {
-    char buf[1024];
-
     /* Sound disabled */
     if (!use_sound) {
         return 1;
