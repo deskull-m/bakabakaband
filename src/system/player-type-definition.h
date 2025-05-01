@@ -46,6 +46,7 @@ enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
 enum class RealmType;
 enum class Virtue : short;
+class Direction;
 class FloorType;
 class ItemEntity;
 class TimedEffects;
@@ -413,6 +414,7 @@ public:
     std::string decrease_ability_all();
     Pos2D get_position() const;
     Pos2D get_neighbor(int dir) const;
+    Pos2D get_neighbor(const Direction &dir) const;
     bool is_located_at_running_destination() const;
     bool is_located_at(const Pos2D &pos) const;
     void set_position(const Pos2D &pos);

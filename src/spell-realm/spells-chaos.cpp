@@ -39,7 +39,7 @@ void call_the_void(PlayerType *player_ptr)
     /* 虚無招来そのものを唱えることによる時空崩壊度進行(*破壊*とは別) */
     wc_ptr->plus_perm_collapsion(150);
     for (const auto &d : Direction::directions()) {
-        const auto p_pos_neighbor = player_ptr->get_position() + d.vec();
+        const auto p_pos_neighbor = player_ptr->get_neighbor(d);
         const auto &grid = floor.get_grid(p_pos_neighbor);
         if (!grid.has(TerrainCharacteristics::PROJECT)) {
             if (!grid.mimic || grid.get_terrain(TerrainKind::MIMIC_RAW).flags.has_not(TerrainCharacteristics::PROJECT) || !grid.get_terrain().is_permanent_wall()) {
