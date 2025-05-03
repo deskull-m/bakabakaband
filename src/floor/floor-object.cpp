@@ -6,7 +6,6 @@
  */
 
 #include "floor/floor-object.h"
-#include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/cave.h"
@@ -25,7 +24,6 @@
 #include "object-hook/hook-enchant.h"
 #include "object/object-info.h"
 #include "object/object-kind-hook.h"
-#include "object/object-stack.h"
 #include "perception/object-perception.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-allocation.h"
@@ -36,7 +34,6 @@
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
-#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
 #include "wizard/wizard-messages.h"
@@ -148,7 +145,7 @@ bool make_object(PlayerType *player_ptr, ItemEntity *j_ptr, BIT_FLAGS mode, std:
 void delete_all_items_from_floor(PlayerType *player_ptr, const Pos2D &pos)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    if (!in_bounds(floor, pos.y, pos.x)) {
+    if (!floor.contains(pos)) {
         return;
     }
 
@@ -316,7 +313,7 @@ short drop_near(PlayerType *player_ptr, ItemEntity *j_ptr, const Pos2D &pos, std
             }
 
             const auto pos_target = pos + vec;
-            if (!in_bounds(floor, pos_target.y, pos_target.x)) {
+            if (!floor.contains(pos_target)) {
                 continue;
             }
             if (!projectable(player_ptr, pos, pos_target)) {
@@ -382,7 +379,7 @@ short drop_near(PlayerType *player_ptr, ItemEntity *j_ptr, const Pos2D &pos, std
         const auto ty = rand_spread(pos_drop.y, 1);
         const auto tx = rand_spread(pos_drop.x, 1);
         Pos2D pos_target(ty, tx); //!< @details 乱数引数の評価順を固定する.
-        if (!in_bounds(floor, pos_target.y, pos_target.x)) {
+        if (!floor.contains(pos_target)) {
             continue;
         }
 

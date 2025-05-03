@@ -2,7 +2,6 @@
 #include "dungeon/quest.h"
 #include "floor/cave.h"
 #include "floor/floor-object.h"
-#include "floor/geometry.h"
 #include "game-option/play-record-options.h"
 #include "game-option/text-display-options.h"
 #include "grid/grid.h"
@@ -51,19 +50,13 @@ bool earthquake(PlayerType *player_ptr, POSITION cy, POSITION cx, POSITION r, MO
         r = 75;
     }
 
-    bool map[earthquake_max * 2][earthquake_max * 2];
-    for (POSITION y = 0; y < earthquake_max * 2; y++) {
-        for (POSITION x = 0; x < earthquake_max * 2; x++) {
-            map[y][x] = false;
-        }
-    }
-
+    bool map[earthquake_max * 2][earthquake_max * 2]{};
     auto damage = 0;
     auto hurt = false;
     for (auto dy = -r; dy <= r; dy++) {
         for (auto dx = -r; dx <= r; dx++) {
             const Pos2D pos(cy + dy, cx + dx);
-            if (!in_bounds(floor, pos.y, pos.x)) {
+            if (!floor.contains(pos)) {
                 continue;
             }
 
@@ -302,7 +295,7 @@ bool earthquake(PlayerType *player_ptr, POSITION cy, POSITION cx, POSITION r, MO
     for (auto dy = -r; dy <= r; dy++) {
         for (auto dx = -r; dx <= r; dx++) {
             const Pos2D pos(cy + dy, cx + dx);
-            if (!in_bounds(floor, pos.y, pos.x)) {
+            if (!floor.contains(pos)) {
                 continue;
             }
 
