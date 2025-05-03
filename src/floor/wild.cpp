@@ -651,6 +651,7 @@ void wilderness_gen_small(PlayerType *player_ptr)
  */
 std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *line, int xmin, int xmax, const Pos2D &pos_parsing)
 {
+    auto &letters = WildernessLetters::get_instance();
     if (wilderness_letters.empty()) {
         wilderness_letters.resize(TerrainList::get_instance().size());
     }
