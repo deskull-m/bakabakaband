@@ -145,7 +145,7 @@ void WildernessGrids::initialize_height(int height)
     this->area.bottom_right.y = height - 1;
 }
 
-void WildernessGrids::init_width(int width)
+void WildernessGrids::initialize_width(int width)
 {
     this->area.bottom_right.x = width - 1;
 }
@@ -234,26 +234,6 @@ void WildernessGrids::set_player_position(const Pos2D &pos)
 void WildernessGrids::move_player_to(const Direction &dir)
 {
     this->current_pos += dir.vec();
-}
-
-bool WildernessGrids::should_reinitialize() const
-{
-    return this->reinitialization_flag;
-}
-
-void WildernessGrids::set_reinitialization(bool state)
-{
-    this->reinitialization_flag = state;
-}
-
-bool WildernessGrids::should_ambush() const
-{
-    return this->ambushes_flag;
-}
-
-void WildernessGrids::set_ambushes(bool state)
-{
-    this->ambushes_flag = state;
 }
 
 WildernessLetters WildernessLetters::instance{};
