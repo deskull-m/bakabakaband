@@ -525,39 +525,39 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
 
     case TrapType::LAVA: {
         msg_print(_("突然溶岩が溢れだした！", "Suddenly, the room is filled with lava!"));
-        fire_ball_hide(player_ptr, AttributeType::LAVA_FLOW, 0, 1, 10);
+        fire_ball_hide(player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 1, 10);
         break;
     }
 
     case TrapType::DUNG_POOL: {
         msg_print(_("突然糞便が溢れだした！ああ＾～たまらねえぜ！", "Suddenly, the room is filled with dung! Ahh^- how marvelous!"));
-        fire_ball_hide(player_ptr, AttributeType::DIRT, 0, 1, 10);
+        fire_ball_hide(player_ptr, AttributeType::DIRT, Direction::self(), 1, 10);
         break;
     }
 
     case TrapType::FIRE_STORM: {
         msg_print(_("火炎の嵐に包まれた！", "You ware filled with huge fire storm!"));
-        fire_ball(player_ptr, AttributeType::FIRE, 0, 600, 4);
+        fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), 600, 4);
         take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_fire_damage_rate(player_ptr) / 100, _("火炎嵐の罠", "a Hige Fire Trap"));
 
         break;
     }
     case TrapType::ICE_STORM: {
         msg_print(_("冷気の嵐に包まれた！", "You ware filled with huge ice storm!"));
-        fire_ball(player_ptr, AttributeType::ICE, 0, 600, 4);
+        fire_ball(player_ptr, AttributeType::ICE, Direction::self(), 600, 4);
         take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_cold_damage_rate(player_ptr) / 100, _("極寒嵐の罠", "a Hige Ice Trap"));
         break;
     }
     case TrapType::CHAOS_STORM: {
         msg_print(_("混沌の嵐に包まれた！", "You ware filled with huge chaos storm!"));
-        fire_ball(player_ptr, AttributeType::CHAOS, 0, 600, 4);
+        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), 600, 4);
         take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_chaos_damage_rate(player_ptr, CALC_RAND) / 100, _("混沌嵐の罠", "a Hige Chaos Trap"));
         break;
     }
 
     case TrapType::MINE: {
         msg_print(_("地雷を踏んだ！", "You stepped on a land mine!"));
-        fire_ball(player_ptr, AttributeType::MANA, 0, 200, 4);
+        fire_ball(player_ptr, AttributeType::MANA, Direction::self(), 200, 4);
         take_hit(player_ptr, DAMAGE_NOESCAPE, (200 + randint1(50)), _("地雷", "a Land Mine"));
         break;
     }

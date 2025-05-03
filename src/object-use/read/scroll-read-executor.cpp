@@ -432,7 +432,7 @@ bool ScrollReadExecutor::read()
         break;
     }
     case SV_SCROLL_THUNDER: {
-        fire_ball(player_ptr, AttributeType::ELEC, 0, 888, 4);
+        fire_ball(player_ptr, AttributeType::ELEC, Direction::self(), 888, 4);
         if (!(is_oppose_elec(player_ptr) || has_resist_elec(player_ptr) || has_immune_elec(player_ptr))) {
             take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(100), _("雷の巻物", "a Scroll of Thunder"));
         }
