@@ -72,14 +72,14 @@ void print_level(PlayerType *player_ptr)
  */
 void print_exp(PlayerType *player_ptr)
 {
-    char out_val[32];
+    std::string out_val;
 
     PlayerRace pr(player_ptr);
     if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
         out_val = format("%8d", player_ptr->exp);
     } else {
         if (player_ptr->lev >= PY_MAX_LEVEL) {
-            (void)sprintf(out_val, "********");
+            (void)sprintf(out_val.data(), "********");
         } else {
             out_val = format("%8d", player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100 - player_ptr->exp);
         }
@@ -175,7 +175,6 @@ void print_sp(PlayerType *player_ptr)
  */
 void print_gold(PlayerType *player_ptr)
 {
-    char tmp[32];
     put_str(_("＄ ", "AU "), ROW_GOLD, COL_GOLD);
     c_put_str(TERM_L_GREEN, format("%9d", player_ptr->au), ROW_GOLD, COL_GOLD + 3);
 }
