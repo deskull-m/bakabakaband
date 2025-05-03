@@ -56,7 +56,9 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 
-static int get_hack_dir(PlayerType *player_ptr)
+/// @todo get_aim_dir() の repeat_push() / repeat_pull() が無いバージョンらしい。
+/// 後で統合を予定する。
+static Direction get_hack_dir(PlayerType *player_ptr)
 {
     auto dir = 0;
     while (dir == 0) {
@@ -104,7 +106,7 @@ static int get_hack_dir(PlayerType *player_ptr)
     }
 
     if (dir == 0) {
-        return 0;
+        return Direction::none();
     }
 
     command_dir = Direction(dir);
@@ -116,7 +118,7 @@ static int get_hack_dir(PlayerType *player_ptr)
         msg_print(_("あなたは混乱している。", "You are confused."));
     }
 
-    return dir;
+    return (dir == 5) ? Direction::targetting() : Direction(dir);
 }
 
 /*!
@@ -214,8 +216,8 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     if (player_ptr->muta.has(PlayerMutationType::FLATULENT) && (randint1(3000) == 13)) {
         disturb(player_ptr, false, true);
         msg_print(_("ブゥーーッ！おっと。", "BRRAAAP! Oops."));
-        msg_print(NULL);
-        fire_ball(player_ptr, AttributeType::DIRT, 0, player_ptr->lev, 3);
+        msg_print(nullptr);
+        fire_ball(player_ptr, AttributeType::POIS, Direction::self(), player_ptr->lev, 3);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::DEFECATION) && (randint1(1500) == 13)) {
@@ -337,7 +339,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(player_ptr, false, true);
         msg_print(_("周りの空間が歪んでいる気がする！", "You feel the world warping around you!"));
         msg_print(nullptr);
-        fire_ball(player_ptr, AttributeType::CHAOS, 0, player_ptr->lev, 8);
+        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), player_ptr->lev, 8);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::NORMALITY) && one_in_(5000)) {
