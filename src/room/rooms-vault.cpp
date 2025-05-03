@@ -369,14 +369,14 @@ void build_vault(
                 break;
             case '*':
                 if (evaluate_percent(75)) {
-                    place_object(player_ptr, pos.y, pos.x, 0);
+                    place_object(player_ptr, pos, 0);
                 } else {
-                    place_trap(floor, pos.y, pos.x);
+                    place_trap(floor, pos);
                 }
 
                 break;
             case '[':
-                place_object(player_ptr, pos.y, pos.x, 0);
+                place_object(player_ptr, pos, 0);
                 break;
             case ':':
                 grid.set_terrain_id(TerrainTag::TREE);
@@ -394,7 +394,7 @@ void build_vault(
                 place_secret_door(player_ptr, pos, DoorKind::CURTAIN);
                 break;
             case '^':
-                place_trap(floor, pos.y, pos.x);
+                place_trap(floor, pos);
                 break;
             case 'S':
                 floor.set_terrain_id_at(pos, TerrainTag::BLACK_MARKET);
@@ -423,7 +423,7 @@ void build_vault(
                 break;
             case 'A':
                 floor.object_level = floor.base_level + 12;
-                place_object(player_ptr, pos.y, pos.x, AM_GOOD | AM_GREAT);
+                place_object(player_ptr, pos, AM_GOOD | AM_GREAT);
                 floor.object_level = floor.base_level;
                 break;
             case '~':
@@ -518,7 +518,7 @@ void build_vault(
                 place_random_monster(player_ptr, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 7;
-                place_object(player_ptr, y, x, AM_GOOD);
+                place_object(player_ptr, { y, x }, AM_GOOD);
                 floor.object_level = floor.base_level;
                 break;
             }
@@ -529,7 +529,7 @@ void build_vault(
                 place_random_monster(player_ptr, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 20;
-                place_object(player_ptr, y, x, AM_GOOD | AM_GREAT);
+                place_object(player_ptr, { y, x }, AM_GOOD | AM_GREAT);
                 floor.object_level = floor.base_level;
                 break;
             }
@@ -543,7 +543,7 @@ void build_vault(
                 }
                 if (one_in_(2)) {
                     floor.object_level = floor.base_level + 7;
-                    place_object(player_ptr, y, x, 0);
+                    place_object(player_ptr, { y, x }, 0);
                     floor.object_level = floor.base_level;
                 }
                 break;
