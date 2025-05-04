@@ -14607,6 +14607,25 @@ D:    %%...~~..~~...%%
 D:      %%........%%      
 D:        %%%%%%%%        
 
+N:704:Poisonous Spring
+X:17:8:16:16
+D:       %%       
+D:      %..%      
+D:      %..%      
+D:    %%%..%%%    
+D:   %........%   
+D:   %.gggggg.%   
+D: %%..gGGGGg..%% 
+D:%...ggG,,Ggg...%
+D:%...ggG,,Ggg...%
+D: %%..gGGGGg..%% 
+D:   %.gggggg.%   
+D:   %........%   
+D:    %%%..%%%    
+D:      %..%      
+D:      %..%      
+D:       %%       
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
