@@ -535,20 +535,13 @@ bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
             if (player_ptr->current_floor_ptr->m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
+            if (floor.m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(player_ptr, monster)) {
+                monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
+            }
             return true;
         }
     }
-
-    const auto multiplied_m_idx = multiply_monster(player_ptr, m_idx, false, (monster.is_pet() ? PM_FORCE_PET : 0));
-    if (!multiplied_m_idx) {
-        return false;
-    }
-
-    if (floor.m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(player_ptr, monster)) {
-        monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
-    }
-
-    return true;
+    return false;
 }
 
 /*!
