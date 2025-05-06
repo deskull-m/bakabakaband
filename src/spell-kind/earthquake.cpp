@@ -181,7 +181,6 @@ std::optional<Pos2D> decide_monster_dodge_position(PlayerType *player_ptr, const
 
 void move_monster_to(PlayerType *player_ptr, MonsterEntity &monster, const Pos2D &pos_to)
 {
-    const int earthquake_max = 80;
     auto &floor = *player_ptr->current_floor_ptr;
     const auto pos_from = monster.get_position();
     auto &grid_from = floor.get_grid(pos_from);
@@ -347,13 +346,15 @@ void set_redrawing_flags()
  */
 bool earthquake(PlayerType *player_ptr, POSITION cy, POSITION cx, POSITION r, MONSTER_IDX m_idx)
 {
+    const int earthquake_max = 80;
+
     auto &floor = *player_ptr->current_floor_ptr;
     if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         return false;
     }
 
-    if (r > 15) {
-        r = 15;
+    if (r > earthquake_max) {
+        r = earthquake_max;
     }
 
     const auto earthquake_area = get_earthquake_area(floor, { cy, cx }, r);
