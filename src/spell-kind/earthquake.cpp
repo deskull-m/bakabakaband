@@ -29,6 +29,7 @@
 #include "util/probability-table.h"
 #include "view/display-messages.h"
 #include <functional>
+#include <optional>
 #include <range/v3/algorithm.hpp>
 #include <range/v3/view.hpp>
 #include <span>
@@ -354,8 +355,8 @@ bool earthquake(PlayerType *player_ptr, const Pos2D &center, int radius, MONSTER
         return false;
     }
 
-    if (r > earthquake_max) {
-        r = earthquake_max;
+    if (radius > earthquake_max) {
+        radius = earthquake_max;
     }
 
     const auto earthquake_area = get_earthquake_area(floor, center, radius);

@@ -423,7 +423,7 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_HUGE_EARTHQUAKE: {
         ident = true;
-        earthquake(player_ptr, player_ptr->y, player_ptr->x, randint1(20) + 50, 0);
+        earthquake(player_ptr, player_ptr->get_position(), randint1(20) + 50, 0);
         break;
     }
     case SV_SCROLL_CALL_THE_VOID: {
