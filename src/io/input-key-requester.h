@@ -3,6 +3,7 @@
 #include "floor/geometry.h"
 #include "game-option/keymap-directory-getter.h"
 #include "system/angband.h"
+#include "system/item-entity.h"
 #include <string>
 
 extern bool use_menu;
