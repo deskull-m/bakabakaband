@@ -199,7 +199,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
 
         grid.info &= ~(CAVE_UNSAFE);
-        lite_spot(player_ptr, y, x);
+        lite_spot(player_ptr, pos);
         obvious = true;
         break;
     }
@@ -218,7 +218,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
 
         grid.info &= ~(CAVE_UNSAFE);
-        lite_spot(player_ptr, y, x);
+        lite_spot(player_ptr, pos);
         obvious = true;
         break;
     }
@@ -233,8 +233,8 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::SPIKE);
         grid.mimic = old_mimic;
 
-        note_spot(player_ptr, y, x);
-        lite_spot(player_ptr, y, x);
+        note_spot(player_ptr, pos);
+        lite_spot(player_ptr, pos);
 
         if (!known || terrain_mimic.flags.has_not(TerrainCharacteristics::OPEN)) {
             break;
@@ -294,8 +294,8 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
         grid.info |= CAVE_OBJECT;
         grid.set_terrain_id(TerrainTag::RUNE_PROTECTION, TerrainKind::MIMIC);
-        note_spot(player_ptr, y, x);
-        lite_spot(player_ptr, y, x);
+        note_spot(player_ptr, pos);
+        lite_spot(player_ptr, pos);
         break;
     }
     case AttributeType::STONE_WALL:
@@ -342,8 +342,8 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
 
         grid.info |= (CAVE_GLOW);
-        note_spot(player_ptr, y, x);
-        lite_spot(player_ptr, y, x);
+        note_spot(player_ptr, pos);
+        lite_spot(player_ptr, pos);
         update_local_illumination(player_ptr, pos);
 
         if (player_can_see_bold(player_ptr, y, x)) {
@@ -392,10 +392,10 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER) || has_element_resist(player_ptr, ElementRealmType::DARKNESS, 1)) {
             /* Forget */
             grid.info &= ~(CAVE_MARK);
-            note_spot(player_ptr, y, x);
+            note_spot(player_ptr, pos);
         }
 
-        lite_spot(player_ptr, y, x);
+        lite_spot(player_ptr, pos);
 
         update_local_illumination(player_ptr, pos);
 
@@ -486,6 +486,6 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
     }
     }
 
-    lite_spot(player_ptr, y, x);
+    lite_spot(player_ptr, pos);
     return obvious;
 }

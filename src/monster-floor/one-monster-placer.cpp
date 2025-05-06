@@ -155,26 +155,26 @@ static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
  * @param x 生成位置x座標
  * @return 生成が可能ならTRUE、不可能ならFALSE
  */
-static bool check_procection_rune(PlayerType *player_ptr, MonraceId r_idx, POSITION y, POSITION x)
+static bool check_procection_rune(PlayerType *player_ptr, MonraceId monrace_id, const Pos2D &pos)
 {
-    auto *g_ptr = &player_ptr->current_floor_ptr->grid_array[y][x];
-    if (!g_ptr->is_rune_protection()) {
+    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    if (!grid.is_rune_protection()) {
         return true;
     }
 
-    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
-    if (randint1(BREAK_RUNE_PROTECTION) >= (r_ptr->level + 20)) {
+    auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    if (randint1(BREAK_RUNE_PROTECTION) >= (monrace.level + 20)) {
         return false;
     }
 
-    if (any_bits(g_ptr->info, CAVE_MARK)) {
+    if (any_bits(grid.info, CAVE_MARK)) {
         msg_print(_("守りのルーンが壊れた！", "The rune of protection is broken!"));
     }
 
-    reset_bits(g_ptr->info, CAVE_MARK);
-    reset_bits(g_ptr->info, CAVE_OBJECT);
-    g_ptr->mimic = 0;
-    note_spot(player_ptr, y, x);
+    reset_bits(grid.info, CAVE_MARK);
+    reset_bits(grid.info, CAVE_OBJECT);
+    grid.mimic = 0;
+    note_spot(player_ptr, pos);
     return true;
 }
 
@@ -238,7 +238,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
         return std::nullopt;
     }
 
-    if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(player_ptr, r_idx, y, x)) {
+    if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(player_ptr, r_idx, pos)) {
         return std::nullopt;
     }
 
