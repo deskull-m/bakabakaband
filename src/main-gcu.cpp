@@ -1229,8 +1229,7 @@ errr init_gcu(int argc, char *argv[])
 
     setlocale(LC_ALL, "");
 
-    const auto &filename = path_build(ANGBAND_DIR_XTRA, "sound").string();
-    ANGBAND_DIR_XTRA_SOUND = string_make(filename.data());
+    ANGBAND_DIR_XTRA_SOUND = path_build(ANGBAND_DIR_XTRA, "sound").string().c_str();
     keymap_norm_prepare();
     auto nobigscreen = false;
     for (auto i = 1; i < argc; i++) {

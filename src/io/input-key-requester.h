@@ -3,9 +3,8 @@
 #include "floor/geometry.h"
 #include "game-option/keymap-directory-getter.h"
 #include "system/angband.h"
+#include "system/item-entity.h"
 #include <string>
-
-extern concptr keymap_act[KEYMAP_MODES][256];
 
 extern bool use_menu;
 
@@ -18,7 +17,7 @@ extern TERM_LEN command_gap;
 extern int16_t command_wrk;
 extern int16_t command_new;
 
-class ItemEntity;
+enum class KeymapMode;
 class PlayerType;
 class SpecialMenuContent;
 class InputKeyRequestor {
@@ -29,7 +28,7 @@ public:
 private:
     PlayerType *player_ptr;
     bool shopping;
-    keymap_mode mode;
+    KeymapMode mode;
     int base_y;
     int base_x = 15;
     int menu_num = 0;
