@@ -47,7 +47,7 @@ bool exchange_cash(PlayerType *player_ptr)
     constexpr auto fmt_convert = _("%s を換金しますか？", "Convert %s into money? ");
     constexpr auto fmt_reward = _("賞金 %d＄を手に入れた。", "You get %dgp.");
     for (INVENTORY_IDX i = 0; i <= INVEN_SUB_HAND; i++) {
-        const auto &item = player_ptr->inventory_list[i];
+        const auto &item = player_ptr->inventory[i];
         if (item.bi_key.tval() != ItemKindType::CAPTURE) {
             continue;
         }
@@ -70,7 +70,7 @@ bool exchange_cash(PlayerType *player_ptr)
     }
 
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-        const auto &item = player_ptr->inventory_list[i];
+        const auto &item = player_ptr->inventory[i];
         if (!item.is_corpse()) {
             continue;
         }
@@ -93,7 +93,7 @@ bool exchange_cash(PlayerType *player_ptr)
     }
 
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-        const auto &item = player_ptr->inventory_list[i];
+        const auto &item = player_ptr->inventory[i];
         if (item.bi_key != BaseitemKey(ItemKindType::MONSTER_REMAINS, SV_SKELETON)) {
             continue;
         }
@@ -117,7 +117,7 @@ bool exchange_cash(PlayerType *player_ptr)
 
     auto &world = AngbandWorld::get_instance();
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-        const auto &item = player_ptr->inventory_list[i];
+        const auto &item = player_ptr->inventory[i];
         const auto &monrace = world.get_today_bounty();
         if (!item.is_corpse() || (item.get_monrace().name != monrace.name)) {
             continue;
@@ -137,7 +137,7 @@ bool exchange_cash(PlayerType *player_ptr)
     }
 
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-        const auto &item = player_ptr->inventory_list[i];
+        const auto &item = player_ptr->inventory[i];
         const auto &monrace = world.get_today_bounty();
         if ((item.bi_key != BaseitemKey(ItemKindType::MONSTER_REMAINS, SV_SKELETON)) || (item.get_monrace().name != monrace.name)) {
             continue;
@@ -162,7 +162,7 @@ bool exchange_cash(PlayerType *player_ptr)
         }
 
         for (INVENTORY_IDX i = INVEN_PACK - 1; i >= 0; i--) {
-            auto &item = player_ptr->inventory_list[i];
+            auto &item = player_ptr->inventory[i];
             if ((item.bi_key.tval() != ItemKindType::MONSTER_REMAINS) || (item.get_monrace().idx != monrace_id)) {
                 continue;
             }

@@ -70,7 +70,7 @@
 #include "world/world.h"
 
 /*!
- * @brief 持ち物一覧を表示するコマンドのメインルーチン / Display inventory_list
+ * @brief 持ち物一覧を表示するコマンドのメインルーチン / Display inventory
  */
 void do_cmd_inven(PlayerType *player_ptr)
 {
@@ -292,7 +292,7 @@ void do_cmd_use(PlayerType *player_ptr)
     case ItemKindType::SHOT:
     case ItemKindType::ARROW:
     case ItemKindType::BOLT:
-        exe_fire(player_ptr, i_idx, &player_ptr->inventory_list[INVEN_BOW], SP_NONE);
+        exe_fire(player_ptr, i_idx, &player_ptr->inventory[INVEN_BOW], SP_NONE);
         break;
     default:
         exe_activate(player_ptr, i_idx);

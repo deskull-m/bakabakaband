@@ -2,7 +2,7 @@
  * The values for the "tval" field of various objects.
  *
  * This value is the primary means by which items are sorted in the
- * player inventory_list, followed by "sval" and "cost".
+ * player inventory, followed by "sval" and "cost".
  *
  * Note that a "BOW" with tval = 19 and sval S = 10*N+P takes a missile
  * weapon with tval = 16+N, and does (xP) damage when so combined.  This
