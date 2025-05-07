@@ -185,7 +185,7 @@ bool ObjectBreaker::can_destroy(ItemEntity *o_ptr) const
  * @return 薬を浴びたモンスターが起こるならばTRUEを返す
  * @details
  * <pre>
- * (1) they are shattered while in the player's p_ptr->inventory_list,
+ * (1) they are shattered while in the player's p_ptr->inventory,
  * due to cold (etc) attacks;
  * (2) they are thrown at a monster, or obstacle;
  * (3) they are shattered by a "cold ball" or other such spell

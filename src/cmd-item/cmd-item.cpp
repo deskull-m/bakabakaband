@@ -70,7 +70,7 @@
 #include "world/world.h"
 
 /*!
- * @brief 持ち物一覧を表示するコマンドのメインルーチン / Display inventory_list
+ * @brief 持ち物一覧を表示するコマンドのメインルーチン / Display inventory
  */
 void do_cmd_inven(PlayerType *player_ptr)
 {
