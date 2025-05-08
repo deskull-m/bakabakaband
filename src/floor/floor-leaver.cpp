@@ -247,7 +247,7 @@ static void get_out_monster(PlayerType *player_ptr)
         }
 
         auto &grid = floor.get_grid(pos);
-        if (!floor.contains(pos) || !is_cave_empty_bold(player_ptr, pos.y, pos.x) || grid.is_rune_protection() || grid.is_rune_explosion() || pattern_tile(floor, pos.y, pos.x)) {
+        if (!floor.contains(pos) || !floor.is_empty_at(pos) || (pos == p_pos) || grid.is_rune_protection() || grid.is_rune_explosion() || pattern_tile(floor, pos.y, pos.x)) {
             continue;
         }
 
@@ -294,7 +294,7 @@ static void preserve_info(PlayerType *player_ptr)
     }
 
     for (short i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = &player_ptr->inventory[i];
+        auto *o_ptr = player_ptr->inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }

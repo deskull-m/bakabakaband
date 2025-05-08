@@ -163,12 +163,12 @@ void wiz_debug_spell(PlayerType *player_ptr)
  */
 void wiz_dimension_door(PlayerType *player_ptr)
 {
-    POSITION x = 0, y = 0;
-    if (!tgt_pt(player_ptr, &x, &y)) {
+    const auto pos = point_target(player_ptr);
+    if (!pos) {
         return;
     }
 
-    teleport_player_to(player_ptr, y, x, TELEPORT_NONMAGICAL);
+    teleport_player_to(player_ptr, pos->y, pos->x, TELEPORT_NONMAGICAL);
 }
 
 /*!
@@ -177,12 +177,13 @@ void wiz_dimension_door(PlayerType *player_ptr)
  */
 void wiz_summon_horde(PlayerType *player_ptr)
 {
+    const auto &floor = *player_ptr->current_floor_ptr;
     const auto p_pos = player_ptr->get_position();
     auto pos = p_pos;
     auto attempts = 1000;
     while (--attempts) {
         pos = scatter(player_ptr, p_pos, 3, PROJECT_NONE);
-        if (is_cave_empty_bold(player_ptr, pos.y, pos.x)) {
+        if (floor.is_empty_at(pos) && (pos != p_pos)) {
             break;
         }
     }

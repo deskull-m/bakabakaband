@@ -439,25 +439,24 @@ bool alloc_monster(PlayerType *player_ptr, int min_dis, BIT_FLAGS mode, summon_s
         return true;
     }
 
+    const auto p_pos = player_ptr->get_position();
     auto &floor = *player_ptr->current_floor_ptr;
-    auto y = 0;
-    auto x = 0;
+    Pos2D pos(0, 0);
     auto attempts_left = 10000;
     while (attempts_left--) {
-        y = randint0(floor.height);
-        x = randint0(floor.width);
-
+        pos.y = randint0(floor.height);
+        pos.x = randint0(floor.width);
         if (floor.is_underground()) {
-            if (!is_cave_empty_bold2(player_ptr, y, x)) {
+            if (!is_cave_empty_bold2(player_ptr, pos.y, pos.x)) {
                 continue;
             }
         } else {
-            if (!is_cave_empty_bold(player_ptr, y, x)) {
+            if (!floor.is_empty_at(pos) || (pos == p_pos)) {
                 continue;
             }
         }
 
-        const auto dist = Grid::calc_distance({ y, x }, player_ptr->get_position());
+        const auto dist = Grid::calc_distance(pos, player_ptr->get_position());
         if ((min_dis < dist) && (dist <= max_dis)) {
             break;
         }
@@ -472,14 +471,8 @@ bool alloc_monster(PlayerType *player_ptr, int min_dis, BIT_FLAGS mode, summon_s
     }
 
     if (randint1(5000) <= floor.dun_level) {
-        if (alloc_horde(player_ptr, y, x, summon_specific)) {
-            return true;
-        }
-    } else {
-        if (place_random_monster(player_ptr, y, x, (mode | PM_ALLOW_GROUP))) {
-            return true;
-        }
+        return alloc_horde(player_ptr, pos.y, pos.x, summon_specific);
     }
 
-    return false;
+    return place_random_monster(player_ptr, pos.y, pos.x, (mode | PM_ALLOW_GROUP)).has_value();
 }

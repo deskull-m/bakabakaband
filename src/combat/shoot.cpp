@@ -337,7 +337,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
 
             auto can_eliminate_smaug = arrow_ptr->is_specific_artifact(FixedArtifactId::BARD_ARROW);
-            can_eliminate_smaug &= player_ptr->inventory[INVEN_BOW].is_specific_artifact(FixedArtifactId::BARD);
+            can_eliminate_smaug &= player_ptr->inventory[INVEN_BOW]->is_specific_artifact(FixedArtifactId::BARD);
             can_eliminate_smaug &= monster.r_idx == MonraceId::SMAUG;
             if (can_eliminate_smaug) {
                 mult *= 5;
@@ -469,7 +469,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
     /* Access the item (if in the pack) */
     auto &floor = *player_ptr->current_floor_ptr;
     if (i_idx >= 0) {
-        o_ptr = &player_ptr->inventory[i_idx];
+        o_ptr = player_ptr->inventory[i_idx].get();
     } else {
         o_ptr = &floor.o_list[0 - i_idx];
     }
@@ -844,11 +844,12 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                             msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
                         }
 
-                        monster.set_target(player_ptr->y, player_ptr->x);
+                        monster.set_target(player_ptr->get_position());
 
                         /* Sniper */
                         if (snipe_type == SP_RUSH) {
                             auto n = randint1(5) + 3;
+                            const auto p_pos = player_ptr->get_position();
                             const auto n0 = n;
                             const auto m_idx = c_mon_ptr->m_idx;
                             for (; cur_dis <= tdis;) {
@@ -871,7 +872,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                                 }
 
                                 /* Stopped by monsters */
-                                if (!is_cave_empty_bold(player_ptr, pos_to.y, pos_to.x)) {
+                                if (!floor.is_empty_at(pos_to) || (pos_to == p_pos)) {
                                     break;
                                 }
 
@@ -1029,7 +1030,7 @@ bool test_hit_fire(PlayerType *player_ptr, int chance, const MonsterEntity &mons
  */
 int critical_shot(PlayerType *player_ptr, WEIGHT weight, int plus_ammo, int plus_bow, int dam)
 {
-    const auto &item = player_ptr->inventory[INVEN_BOW];
+    const auto &item = *player_ptr->inventory[INVEN_BOW];
     const auto bonus = player_ptr->to_h_b + plus_ammo;
     const auto tval = item.bi_key.tval();
     const auto median_skill_exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2;
@@ -1090,7 +1091,7 @@ int critical_shot(PlayerType *player_ptr, WEIGHT weight, int plus_ammo, int plus
  */
 int calc_crit_ratio_shot(PlayerType *player_ptr, int plus_ammo, int plus_bow)
 {
-    auto *j_ptr = &player_ptr->inventory[INVEN_BOW];
+    auto *j_ptr = player_ptr->inventory[INVEN_BOW].get();
 
     /* Extract "shot" power */
     auto i = player_ptr->to_h_b + plus_ammo;

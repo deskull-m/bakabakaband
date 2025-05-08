@@ -253,30 +253,31 @@ std::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX s
                 return "";
             }
             if (grid.has_monster()) {
-                auto target = pos;
-                auto origin = pos;
+                auto pos_target = pos;
+                auto pos_origin = pos;
                 const auto m_idx = grid.m_idx;
                 auto &monster = floor.m_list[m_idx];
                 const auto m_name = monster_desc(player_ptr, monster, 0);
-                auto neighbor = pos;
+                const auto p_pos = player_ptr->get_position();
+                auto pos_neighbor = pos;
                 for (auto i = 0; i < 5; i++) {
-                    neighbor += dir.vec();
-                    if (is_cave_empty_bold(player_ptr, neighbor.y, neighbor.x)) {
-                        target = Pos2D(neighbor.y, neighbor.x);
+                    pos_neighbor += dir.vec();
+                    if (floor.is_empty_at(pos_neighbor) && (pos != p_pos)) {
+                        pos_target = pos_neighbor;
                     } else {
                         break;
                     }
                 }
-                if (target != origin) {
+                if (pos_target != pos_origin) {
                     msg_format(_("%sを吹き飛ばした！", "You blow %s away!"), m_name.data());
-                    floor.get_grid(origin).m_idx = 0;
-                    floor.get_grid(target).m_idx = m_idx;
-                    monster.fy = target.y;
-                    monster.fx = target.x;
+                    floor.get_grid(pos_origin).m_idx = 0;
+                    floor.get_grid(pos_target).m_idx = m_idx;
+                    monster.fy = pos_target.y;
+                    monster.fx = pos_target.x;
 
                     update_monster(player_ptr, m_idx, true);
-                    lite_spot(player_ptr, origin);
-                    lite_spot(player_ptr, target);
+                    lite_spot(player_ptr, pos_origin);
+                    lite_spot(player_ptr, pos_target);
 
                     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
                         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
@@ -480,7 +481,7 @@ std::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX s
                 if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
                     break;
                 }
-                o_ptr = &player_ptr->inventory[INVEN_MAIN_HAND + i];
+                o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
                 basedam = o_ptr->damage_dice.floored_expected_value_multiplied_by(100);
                 damage = o_ptr->to_d * 100;
 
@@ -648,16 +649,15 @@ std::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX s
 
     case 27:
         if (cast) {
-            POSITION y, x;
-            if (!tgt_pt(player_ptr, &x, &y)) {
+            const auto pos = point_target(player_ptr);
+            if (!pos) {
                 return std::nullopt;
             }
 
-            const Pos2D pos(y, x);
             const auto p_pos = player_ptr->get_position();
-            const auto is_teleportable = cave_player_teleportable_bold(player_ptr, y, x, TELEPORT_SPONTANEOUS);
-            const auto dist = Grid::calc_distance(pos, p_pos);
-            if (!is_teleportable || (dist > MAX_PLAYER_SIGHT / 2) || !projectable(player_ptr, p_pos, pos)) {
+            const auto is_teleportable = cave_player_teleportable_bold(player_ptr, pos->y, pos->x, TELEPORT_SPONTANEOUS);
+            const auto dist = Grid::calc_distance(*pos, p_pos);
+            if (!is_teleportable || (dist > MAX_PLAYER_SIGHT / 2) || !projectable(player_ptr, p_pos, *pos)) {
                 msg_print(_("失敗！", "You cannot move to that place!"));
                 break;
             }
@@ -665,8 +665,8 @@ std::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX s
                 msg_print(_("不思議な力がテレポートを防いだ！", "A mysterious force prevents you from teleporting!"));
                 break;
             }
-            project(player_ptr, 0, 0, y, x, HISSATSU_ISSEN, AttributeType::ATTACK, PROJECT_BEAM | PROJECT_KILL);
-            teleport_player_to(player_ptr, y, x, TELEPORT_SPONTANEOUS);
+            project(player_ptr, 0, 0, pos->y, pos->x, HISSATSU_ISSEN, AttributeType::ATTACK, PROJECT_BEAM | PROJECT_KILL);
+            teleport_player_to(player_ptr, pos->y, pos->x, TELEPORT_SPONTANEOUS);
         }
         break;
 
@@ -713,7 +713,7 @@ std::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX s
                     break;
                 }
 
-                const auto &item = player_ptr->inventory[INVEN_MAIN_HAND + i];
+                const auto &item = *player_ptr->inventory[INVEN_MAIN_HAND + i];
                 auto basedam = item.damage_dice.floored_expected_value_multiplied_by(100);
                 auto damage = item.to_d * 100;
 
