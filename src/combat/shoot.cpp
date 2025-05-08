@@ -849,6 +849,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                         /* Sniper */
                         if (snipe_type == SP_RUSH) {
                             auto n = randint1(5) + 3;
+                            const auto p_pos = player_ptr->get_position();
                             const auto n0 = n;
                             const auto m_idx = c_mon_ptr->m_idx;
                             for (; cur_dis <= tdis;) {
@@ -871,7 +872,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                                 }
 
                                 /* Stopped by monsters */
-                                if (!is_cave_empty_bold(player_ptr, pos_to.y, pos_to.x)) {
+                                if (!floor.is_empty_at(pos_to) || (pos_to == p_pos)) {
                                     break;
                                 }
 
