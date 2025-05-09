@@ -29,7 +29,7 @@ OBJECT_IDX o_pop(FloorType *floor_ptr)
     }
 
     for (short i = 1; i < floor_ptr->o_max; i++) {
-        if (floor_ptr->o_list[i].is_valid()) {
+        if (floor_ptr->o_list[i]->is_valid()) {
             continue;
         }
 
