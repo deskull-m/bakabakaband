@@ -588,8 +588,8 @@ static void display_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
 
     // (y,x) のアイテムを1行に1個ずつ書く。
     TERM_LEN term_y = 1;
-    for (const auto o_idx : grid.o_idx_list) {
-        const auto &item = *floor.o_list[o_idx];
+    for (const auto o_idx : g_ptr->o_idx_list) {
+        const auto &item = *floor_ptr->o_list[o_idx];
         const auto tval = item.bi_key.tval();
         if (item.marked.has_not(OmType::FOUND) || tval == ItemKindType::GOLD) {
             continue;
@@ -606,7 +606,7 @@ static void display_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
         if (is_hallucinated) {
             term_addstr(-1, TERM_WHITE, _("何か奇妙な物", "something strange"));
         } else {
-            const auto item_name = describe_flavor(player_ptr, *item, 0);
+            const auto item_name = describe_flavor(player_ptr, item, 0);
             TERM_COLOR attr = tval_to_attr[enum2i(tval) % 128];
             term_addstr(-1, attr, item_name);
         }
