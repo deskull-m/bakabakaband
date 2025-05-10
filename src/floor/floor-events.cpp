@@ -214,7 +214,7 @@ static int get_dungeon_feeling(const auto &floor)
             delta += 5 * base;
         }
 
-        if (item.bi_key == BaseitemKey(ItemKindType::SOFT_ARMOR, SV_DRAGON_BIKINI)) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::SOFT_ARMOR, SV_DRAGON_BIKINI)) {
             delta += 5 * base;
         }
 
