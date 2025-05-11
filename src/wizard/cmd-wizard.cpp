@@ -245,16 +245,15 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
     case 't':
         teleport_player(player_ptr, 100, TELEPORT_SPONTANEOUS);
         return true;
-    case 'u':
-        for (int y = 0; y < player_ptr->current_floor_ptr->height; y++) {
-            for (int x = 0; x < player_ptr->current_floor_ptr->width; x++) {
-                player_ptr->current_floor_ptr->grid_array[y][x].info |= CAVE_GLOW | CAVE_MARK;
-            }
+    case 'u': {
+        auto &floor = *player_ptr->current_floor_ptr;
+        for (const auto &pos : floor.get_area()) {
+            floor.get_grid(pos).info |= CAVE_GLOW | CAVE_MARK;
         }
         wiz_lite(player_ptr, false);
         return true;
+    }
     case 'v': {
-
         const auto value = input_integer("時空崩壊度(0.000001%単位)", 0, 100000000, wc_ptr->collapse_degree);
         if (value.has_value()) {
             wc_ptr->collapse_degree = value.value();
@@ -275,7 +274,6 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
                 drop_from_inventory(player_ptr, i, 999);
             }
         }
-
         player_outfit(player_ptr);
         return true;
     case 'y':
