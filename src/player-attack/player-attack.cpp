@@ -12,7 +12,6 @@
 #include "combat/attack-criticality.h"
 #include "combat/martial-arts-table.h"
 #include "combat/slaying.h"
-#include "floor/cave.h"
 #include "floor/geometry.h"
 #include "game-option/cheat-types.h"
 #include "inventory/inventory-slot-types.h"

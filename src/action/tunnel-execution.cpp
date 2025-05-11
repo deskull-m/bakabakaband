@@ -5,7 +5,6 @@
 
 #include "action/tunnel-execution.h"
 #include "avatar/avatar.h"
-#include "floor/cave.h"
 #include "grid/grid.h"
 #include "io/input-key-requester.h"
 #include "main/sound-definitions-table.h"
@@ -17,7 +16,6 @@
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
-#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
 /*!
