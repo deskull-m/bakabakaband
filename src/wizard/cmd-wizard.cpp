@@ -252,8 +252,8 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         }
         wiz_lite(player_ptr, false);
         return true;
+    }
     case 'v': {
-
         const auto value = input_integer("時空崩壊度(0.000001%単位)", 0, 100000000, wc_ptr->collapse_degree);
         if (value.has_value()) {
             wc_ptr->collapse_degree = value.value();
@@ -274,7 +274,6 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
                 drop_from_inventory(player_ptr, i, 999);
             }
         }
-
         player_outfit(player_ptr);
         return true;
     case 'y':
