@@ -1,7 +1,6 @@
 #include "spell-kind/spells-detection.h"
 #include "core/window-redrawer.h"
 #include "dungeon/dungeon-flag-types.h"
-#include "floor/cave.h"
 #include "floor/floor-save-util.h"
 #include "grid/grid.h"
 #include "grid/trap.h"
