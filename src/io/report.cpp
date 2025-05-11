@@ -51,8 +51,8 @@ std::string screen_dump;
 #define HTTP_TIMEOUT 30 /*!< デフォルトのタイムアウト時間(秒) / Timeout length (second) */
 
 #ifdef JP
-constexpr auto SCORE_SERVER_SCHEME_HOST = ""; /*!< スコアサーバホスト */
-constexpr auto SCORE_SERVER_PATH = ""; /*< スコアサーバパス */
+// constexpr auto SCORE_SERVER_SCHEME_HOST = ""; /*!< スコアサーバホスト */
+// constexpr auto SCORE_SERVER_PATH = ""; /*< スコアサーバパス */
 #endif
 
 size_t read_callback(char *buffer, size_t size, size_t nitems, void *userdata)
