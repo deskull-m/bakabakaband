@@ -14787,6 +14787,21 @@ D:  %..++++++++++++++..%
 D:   %................%   
 D:    %%%%%%%%%%%%%%%%    
 
+N:713:Boss Room
+X:17:8:12:21
+D:       %%%%%%%%%     
+D:   %%%%.........%%%% 
+D:  %.....XXXXXXX.....%
+D: %..XXXXXv^.v#XXXXX.%
+D:%..XX....v^&.v#.vvX.%
+D:%..+...#..^..#..8.X.%
+D:%..X...v#.^^..v..XX.%
+D:%..XXXXX#..^.&.##X..%
+D: %.....XXXXvv.##XX.% 
+D:  %%%%....XXXXXXX..% 
+D:      %%%.........%  
+D:         %%%%%%%%%   
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
