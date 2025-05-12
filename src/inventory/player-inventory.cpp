@@ -193,7 +193,6 @@ static void py_pickup_floor(PlayerType *player_ptr, bool pickup)
         return;
     }
 
-    const auto &item = *player_ptr->current_floor_ptr->o_list[floor_o_idx];
     const auto item_name = describe_flavor(player_ptr, item, 0);
     if (query_pickup(item_name)) {
         process_player_pickup_item(player_ptr, floor_o_idx);
