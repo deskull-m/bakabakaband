@@ -636,11 +636,8 @@ void wilderness_gen_small(PlayerType *player_ptr)
 std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *line, int xmin, int xmax, const Pos2D &pos_parsing)
 {
     auto &letters = WildernessLetters::get_instance();
-    if (wilderness_letters.empty()) {
-        wilderness_letters.resize(TerrainList::get_instance().size());
-    }
-
-    if (!(std::string_view(line).starts_with("W:"))) {
+    letters.initialize();
+    if (!std::string_view(line).starts_with("W:")) {
         return { PARSE_ERROR_GENERIC, std::nullopt };
     }
 
@@ -666,8 +663,8 @@ std::pair<parse_error_type, std::optional<Pos2D>> parse_line_wilderness(char *li
             return { PARSE_ERROR_TOO_FEW_ARGUMENTS, std::nullopt };
         }
 
-        int index = zz[0][0];
-        auto &letter = wilderness_letters.at(index);
+        const int index = zz[0][0];
+        auto &letter = letters.get_grid(index);
         if (num > 1) {
             letter.set_terrain(i2enum<WildernessTerrain>(std::stoi(zz[1])));
         }
