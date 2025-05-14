@@ -17,6 +17,8 @@ void MonsterEntityWriter::write_to_savedata() const
     const auto flags = this->write_monster_flags();
 
     wr_s16b(enum2i(this->monster.r_idx));
+    wr_s32b(enum2i(this->monster.alliance_idx));
+
     wr_byte((byte)this->monster.fy);
     wr_byte((byte)this->monster.fx);
     wr_s16b((int16_t)this->monster.hp);
