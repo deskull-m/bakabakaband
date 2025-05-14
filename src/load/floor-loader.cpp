@@ -41,6 +41,7 @@
  * <li>1.7.0.2で8bitだったGridのfeat,mimicのID値を16bitに拡張する処理。</li>
  * <li>1.7.0.8までに廃止、IDなどを差し替えたクエスト番号を置換する処理。</li>
  * </ul>
+ * 書き込まれるデータ構造は wr_dungeon() と一致していなければならない。
  * The monsters/objects must be loaded in the same order
  * that they were stored, since the actual indexes matter.
  */
