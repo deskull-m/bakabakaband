@@ -55,7 +55,8 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         floor.dun_level = rd_s16b();
         floor.base_level = floor.dun_level;
     } else {
-        if (rd_s16b() != sf_ptr->floor_id) {
+        auto floor_id = rd_s16b();
+        if (floor_id != sf_ptr->floor_id) {
             return 171;
         }
 
