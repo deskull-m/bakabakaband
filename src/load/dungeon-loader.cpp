@@ -28,6 +28,7 @@ static errr rd_dungeon(PlayerType *player_ptr)
     errr err = 0;
     auto &floor = *player_ptr->current_floor_ptr;
 
+    (void)rd_byte(); // @todo 1byteズレた場所を特定。要修正。
     max_floor_id = rd_s16b();
     floor.set_dungeon_index(i2enum<DungeonId>(rd_byte())); // @todo セーブデータの方を16ビットにするかdungeon_idxの定義を8ビットにした方が良い.
     auto num = rd_byte();
