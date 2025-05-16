@@ -58,5 +58,4 @@ const std::vector<tval_desc> tval_desc_list = {
     { ItemKindType::FLAVOR_SKELETON, _("骨", "Skeleton") },
     { ItemKindType::MATERIAL, _("素材", "Matrial") },
     { ItemKindType::TRAP, _("解除済罠", "Disarmed Trap") },
-    { ItemKindType::NONE, nullptr },
 };
