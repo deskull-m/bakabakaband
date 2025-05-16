@@ -315,10 +315,9 @@ static void generate_fixed_floor(PlayerType *player_ptr)
 static std::optional<std::string> level_gen(PlayerType *player_ptr)
 {
     constexpr auto chance_small_floor = 10;
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    const auto &dungeon = floor_ptr->get_dungeon_definition();
-    int level_height;
-    int level_width;
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &dungeon = floor.get_dungeon_definition();
+    int level_height, level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
         level_width = MAX_WID / SCREEN_WID;
@@ -348,6 +347,10 @@ static std::optional<std::string> level_gen(PlayerType *player_ptr)
             is_max_area = (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
         }
     }
+    floor.height = level_height * SCREEN_HGT;
+    floor.width = level_width * SCREEN_WID;
+    panel_row_min = floor.height;
+    panel_col_min = floor.width;
 
     return cave_gen(player_ptr);
 }
