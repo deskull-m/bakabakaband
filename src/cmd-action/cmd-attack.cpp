@@ -161,7 +161,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     auto &floor = *player_ptr->current_floor_ptr;
     auto *g_ptr = &floor.grid_array[y][x];
     auto *m_ptr = &floor.m_list[g_ptr->m_idx];
-    auto *r_ptr = &m_ptr->get_monrace();
+    const auto &monrace = m_ptr->get_monrace();
 
     const auto mutation_attack_methods = {
         PlayerMutationType::HORNS,
@@ -194,7 +194,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
 
     const auto is_confused = effects->confusion().is_confused();
     const auto is_stunned = effects->stun().is_stunned();
-    if (is_female(*r_ptr) && !(is_stunned || is_confused || is_hallucinated || !m_ptr->ml)) {
+    if (is_female(monrace) && !(is_stunned || is_confused || is_hallucinated || !m_ptr->ml)) {
         // @todo 「特定の武器を装備している」旨のメソッドを別途作る
         constexpr auto zantetsu = FixedArtifactId::ZANTETSU;
         const auto is_main_hand_zantetsu = player_ptr->inventory[INVEN_MAIN_HAND]->is_specific_artifact(zantetsu);
@@ -256,22 +256,22 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     }
 
     if (m_ptr->is_asleep()) {
-        if (r_ptr->kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
+        if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
             chg_virtue(player_ptr, Virtue::COMPASSION, -1);
         }
-        if (r_ptr->kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
+        if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
             chg_virtue(player_ptr, Virtue::HONOUR, -1);
         }
     }
 
     if (can_attack_with_main_hand(player_ptr) && can_attack_with_sub_hand(player_ptr)) {
-        if (((player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON] - 1000) / 200) < r_ptr->level) {
+        if (((player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON] - 1000) / 200) < monrace.level) {
             PlayerSkill(player_ptr).gain_two_weapon_skill_exp();
         }
     }
 
     if (player_ptr->riding) {
-        PlayerSkill(player_ptr).gain_riding_skill_exp_on_melee_attack(*r_ptr);
+        PlayerSkill(player_ptr).gain_riding_skill_exp_on_melee_attack(monrace);
     }
 
     player_ptr->plus_incident(INCIDENT::ATTACK_ACT_COUNT, 1);
