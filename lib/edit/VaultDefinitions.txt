@@ -14922,6 +14922,23 @@ D: %..~~~~~~...%
 D:  %..........%
 D:   %%%%%%%%%% 
 
+N:719:Treasure Room with Damage Field
+X:18:8:14:24
+D:       %%%%%%%%%%       
+D:     %%..........%%     
+D:   %%..............%%   
+D:  %.....########.....%  
+D: %..ww..#GGGGGG#..ww..% 
+D:  %.ww.##GG[[GG##.ww.%  
+D:  %.w#.#GGG[[GGG#.#w.%  
+D:  %.##.#GGGGGGGG#.##.%  
+D: %%.##.####++####.##.%% 
+D:%......hhhh..hhhh......%
+D: %.......hh..hh.......% 
+D:  %..###.######.###.%%  
+D:   %................%   
+D:    %%%%%%%%%%%%%%%%    
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
