@@ -154,6 +154,13 @@ void wr_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
  * Write the current dungeon (new method)
  * @player_ptr プレイヤーへの参照ポインタ
  * @return 保存に成功したらTRUE
+ * @details
+ *  * max_floor_id (2byte)
+ *  * dungeon_id (1byte)
+ *  * saved_floor_id (1byte)
+ *  * saved_floor_dun_level (2byte)
+ *  
+ *  * 保存したフロアがない場合 (1byte + wr_save_floor())
  */
 bool wr_dungeon(PlayerType *player_ptr)
 {
