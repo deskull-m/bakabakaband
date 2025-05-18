@@ -14939,6 +14939,25 @@ D:  %..###.######.###.%%
 D:   %................%   
 D:    %%%%%%%%%%%%%%%%    
 
+N:720:Cold Room
+X:18:8:16:22
+D:    %%%%%%%%%%%%%%    
+D:   %..............%   
+D:  %..============..%  
+D: %..==============..% 
+D:%..=====HHHHHH=====..%
+D:%.===HHHHHHHHHHHH===.%
+D:%.==HHHHHHHHHHHHHH==.%
+D:%.==HHHHHH[[HHHHHH==.%
+D:%.==HHHHHH[[HHHHHH==.%
+D:%.==HHHHHHHHHHHHHH==.%
+D:%.===HHHHHHHHHHHH===.%
+D:%..=====HHHHHH=====..%
+D: %..==============..% 
+D:  %..============..%  
+D:   %..............%   
+D:    %%%%%%%%%%%%%%    
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
