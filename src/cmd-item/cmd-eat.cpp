@@ -110,8 +110,8 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
         return false;
     }
 
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
-    EXP max_exp = r_ptr->level * r_ptr->level * 10;
+    const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
+    EXP max_exp = monrace.level * monrace.level * 10;
 
     chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
     if (player_ptr->exp < PY_MAX_EXP) {
