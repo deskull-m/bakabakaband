@@ -323,3 +323,6 @@ a.button-link:hover		{ color:white;}
     width: 100%;
 }
 
+.modal-body {
+    background-color: rgba(0,0,0,0.8);
+}
