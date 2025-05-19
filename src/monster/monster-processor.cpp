@@ -551,8 +551,8 @@ bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
 void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
     MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
-    for (const auto &spawn_info : r_ptr->spawn_items) {
+    MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    for (const auto &spawn_info : monrace.spawn_items) {
         auto num = std::get<0>(spawn_info);
         auto deno = std::get<1>(spawn_info);
         auto kind = std::get<2>(spawn_info);
