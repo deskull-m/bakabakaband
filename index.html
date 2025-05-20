@@ -114,15 +114,19 @@
     </div>
 
     <div id="flex-box">
-      <div id="top-message" v-html="updateList">
-      </div>
       <div id="menu-block">
+
 
         <a class="button-link" href="#Melkor">
           <div class="button">
             <img class="select-icon" src="mel-icon.png" />冥王の書簡
           </div>
         </a>
+
+        <div class="button" data-bs-toggle="modal" data-bs-target="#featureModal">
+          <img class="select-icon" src="nasty.png" />更新履歴
+        </div>
+
         <a class="button-link"
           href="https://github.com/sikabane-works/bakabakaband/releases/download/0.0.0.60-Alpha/Bakabakaband-0.0.0.60-Alpha-jp.zip">
           <div class="button">
@@ -144,9 +148,26 @@
             <img class="select-icon" src="hengband.png" />アホ臭いので変愚へ飛ぶ
           </div>
         </a>
+
+      </div>
+
+      <div class="modal fade" id="featureModal" tabindex="-1" aria-labelledby="featureModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="featureModalLabel">更新履歴</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="modal-update-list" v-html="updateList"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
   </div>
 
 </body>
