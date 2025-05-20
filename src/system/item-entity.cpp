@@ -35,6 +35,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
+#include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
 #include <fmt/format.h>
@@ -87,51 +88,66 @@ void ItemEntity::generate(const BaseitemKey &new_bi_key)
  */
 void ItemEntity::generate(short new_bi_id)
 {
-    const auto &baseitem = BaseitemList::get_instance().get_baseitem(new_bi_id);
-    auto old_stack_idx = this->stack_idx;
-    this->wipe();
-    this->stack_idx = old_stack_idx;
-    this->bi_id = new_bi_id;
-    this->bi_key = baseitem.bi_key;
-    this->pval = baseitem.pval;
-    this->number = 1;
-    this->weight = baseitem.weight;
-    this->to_h = baseitem.to_h;
-    this->to_d = baseitem.to_d;
-    this->to_a = baseitem.to_a;
-    this->ac = baseitem.ac;
-    this->damage_dice = baseitem.damage_dice;
+    try {
+        const auto &baseitem = BaseitemList::get_instance().get_baseitem(new_bi_id);
 
-    if (baseitem.act_idx > RandomArtActType::NONE) {
-        this->activation_id = baseitem.act_idx;
-    }
+        auto old_stack_idx = this->stack_idx;
+        this->wipe();
+        this->stack_idx = old_stack_idx;
+        this->bi_id = new_bi_id;
+        this->bi_key = baseitem.bi_key;
+        this->pval = baseitem.pval;
+        this->number = 1;
+        this->weight = baseitem.weight;
+        this->to_h = baseitem.to_h;
+        this->to_d = baseitem.to_d;
+        this->to_a = baseitem.to_a;
+        this->ac = baseitem.ac;
+        this->damage_dice = baseitem.damage_dice;
 
-    if (this->is_worthless()) {
-        this->ident |= (IDENT_BROKEN);
-    }
+        if (baseitem.act_idx > RandomArtActType::NONE) {
+            this->activation_id = baseitem.act_idx;
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::CURSED)) {
-        this->curse_flags.set(CurseTraitType::CURSED);
-    }
+        if (this->is_worthless()) {
+            this->ident |= (IDENT_BROKEN);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::HEAVY_CURSE)) {
-        this->curse_flags.set(CurseTraitType::HEAVY_CURSE);
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::CURSED)) {
+            this->curse_flags.set(CurseTraitType::CURSED);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::PERMA_CURSE)) {
-        this->curse_flags.set(CurseTraitType::PERMA_CURSE);
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::HEAVY_CURSE)) {
+            this->curse_flags.set(CurseTraitType::HEAVY_CURSE);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE0)) {
-        this->curse_flags.set(get_curse(0, this));
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::PERMA_CURSE)) {
+            this->curse_flags.set(CurseTraitType::PERMA_CURSE);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE1)) {
-        this->curse_flags.set(get_curse(1, this));
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE0)) {
+            this->curse_flags.set(get_curse(0, this));
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE2)) {
-        this->curse_flags.set(get_curse(2, this));
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE1)) {
+            this->curse_flags.set(get_curse(1, this));
+        }
+
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE2)) {
+            this->curse_flags.set(get_curse(2, this));
+        }
+#ifdef WIN_DEBUG
+    } catch (const std::exception) {
+#else
+    } catch (const std::exception &e) {
+#endif
+        msg_format("*** Invalid Item ID: %d ***", new_bi_id);
+#ifdef WIN_DEBUG
+        this->generate(BaseitemKey(ItemKindType::JUNK));
+        return;
+#else
+        throw e;
+#endif
     }
 }
 
