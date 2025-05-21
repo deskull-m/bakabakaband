@@ -360,7 +360,7 @@ static void decide_arena_death(PlayerType *player_ptr)
             i = inkey();
             prt("", 0, 0);
             if (i == '@') {
-                return;
+                break;
             }
         }
     }
@@ -372,10 +372,10 @@ static void decide_arena_death(PlayerType *player_ptr)
     } else {
         entries.set_defeated_entry();
     }
+    player_ptr->playing = false;
+    player_ptr->is_dead = true;
+    player_ptr->leaving = true;
 
-    player_ptr->is_dead = false;
-    player_ptr->chp = 0;
-    player_ptr->chp_frac = 0;
     world.set_arena(true);
     reset_tim_flags(player_ptr);
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::RANDOM_CONNECT });
