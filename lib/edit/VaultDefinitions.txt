@@ -14979,6 +14979,24 @@ D:%.##############.%
 D:%................%
 D:%%%%%%%%%%%%%%%%%%
 
+N:722:Parmanent Wall Room
+X:18:8:14:14
+D:  %%%%%%%%%%  
+D: %..........% 
+D:%..XXX++XXX..%
+D:%.XX......XX.%
+D:%.X..Y..Y..X.%
+D:%.X.Y.YY.Y.X.%
+D:%.X..YYYY..X.%
+D:%.X..YYYY..X.%
+D:%.X.Y.YY.Y.X.%
+D:%.X..Y..Y..X.%
+D:%.XX......XX.%
+D:%..XXX++XXX..%
+D: %..........% 
+D:  %%%%%%%%%%  
+
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
