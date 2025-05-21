@@ -16,15 +16,16 @@ strong {
 
 h1.copy
 {
-    padding: 0.5rem;
+    padding: 1.5rem;
     z-index: 30;
-    font-size: 1.0rem;
-    width: 80vw;
-    line-height: 1.2rem;
-    background-color: rgba(20,10,0,0.8);
+    font-size: 1.2rem;
+    /* width: 80vw; */
+    line-height: 1.8rem;
+    background-color: rgba(20, 10, 0, 0.8);
     border-radius: 0.4rem;
     letter-spacing: 0.05rem;
     margin: 0.3rem;
+    position: absolute;
 }
 
 #top-message h2 {

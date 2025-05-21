@@ -82,7 +82,6 @@
   <div id="popup-bg"></div>
 
   <div id="app">
-    <h1 class="copy">{{text}}</h1>
 
     <div class="popup-contents" id="malkor-message">
       <article id="malkor-article">
@@ -106,6 +105,10 @@
     <div id="visual">
       <img id="melko" src="Melko.png" />
       <div id="title-div">
+        <h1 class="copy">
+        この門をくぐる者は一切の良識を捨てよ<br />
+        Abandon all decency, ye who dare enter here.<br />
+        </h1>
         <img id="title" src="BakabakabandTitle.png" />
       </div>
     </div>
@@ -179,7 +182,7 @@
     el: "#app",
     data() {
       return {
-        text: "この門をくぐる者は一切の良識を捨てよ",
+        text: "この門をくぐる者は一切の良識を捨てよ\nAbandon all decency, ye who dare enter here.",
         updateText: "",
         currentAnchor: "",
         melkorLetter: "",
