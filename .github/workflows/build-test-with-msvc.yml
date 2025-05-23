@@ -22,8 +22,8 @@ jobs:
 
       - name: Restore Nuget Packages
         run: |
-          NuGet restore .\Bakabakaband\Bakabakaband.sln
+          NuGet restore .\VisualStudio\Bakabakaband.sln
 
       - name: Run build test
         run: |
-          MSBuild -warnAsError .\Bakabakaband\Bakabakaband.sln /t:Rebuild /p:Configuration=Debug
+          MSBuild -warnAsError .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration=Debug
