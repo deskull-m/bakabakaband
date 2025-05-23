@@ -1,0 +1,3 @@
+[submodule "VisualStudio/Bakabakaband/libcurl"]
+	path = VisualStudio/Bakabakaband/libcurl
+	url = https://github.com/hengband/libcurl.git
