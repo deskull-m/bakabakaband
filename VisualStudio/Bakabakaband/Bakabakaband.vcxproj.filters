@@ -2431,9 +2431,6 @@
     <ClCompile Include="..\..\src\util\sha256.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\system\terrain-type-definition.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\system\angband-system.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -2558,6 +2555,10 @@
     <ClCompile Include="..\..\src\io\macro-configurations-store.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-exception.cpp" />
+    <ClCompile Include="..\..\src\util\candidate-selector.cpp" />
+    <ClCompile Include="..\..\src\world\world-object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -4846,9 +4847,6 @@
     <ClInclude Include="..\..\src\locale\utf-8.h">
       <Filter>locale</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\sv-definition\sv-junk-types.h">
-      <Filter>sv-definition</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\wizard\wizard-game-modifier.h">
       <Filter>wizard</Filter>
     </ClInclude>
@@ -5394,9 +5392,6 @@
     <ClInclude Include="..\..\src\external-lib\include-json.h">
       <Filter>external-lib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\system\terrain-type-definition.h">
-      <Filter>system</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\system\angband-system.h">
       <Filter>system</Filter>
     </ClInclude>
@@ -5550,6 +5545,11 @@
     <ClInclude Include="..\..\src\io\macro-configurations-store.h">
       <Filter>io</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\grid\feature-action-flags.h" />
+    <ClInclude Include="..\..\src\system\terrain\terrain-actions-table.h" />
+    <ClInclude Include="..\..\src\util\candidate-selector.h" />
+    <ClInclude Include="..\..\src\monster-race\race-flags8.h" />
+    <ClInclude Include="..\..\src\world\world-object.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />
