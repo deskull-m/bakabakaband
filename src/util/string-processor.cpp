@@ -363,44 +363,41 @@ std::string str_erase(std::string str, std::string_view erase_chars)
     return str;
 }
 
-/*
- * @brief 2バイト文字を考慮して指定バイト数で文字列を区切る
- * @param str 元文字列
- * @param count 文字列長 (nulloptは、「最終1バイトが2バイト文字の1バイト目だった時だけその1バイトを削る」の意味)
- * @return 上記を実施したイミュータブルな文字列
+/**
+ * @brief 文字列 str に含まれる文字列 old_str をすべて new_str に置き換える
+ *
+ * 一致する文字列が重複している場合は、前方を優先する。
+ *
+ * @param str 操作の対象とする文字列
+ * @param old_str 置き換える文字列
+ * @param new_str 置き換え後の文字列
+ * @return std::string old_str をすべて new_str で置き換えた文字列
  */
-std::string trim_kanji(const std::string &str, std::optional<int> count)
+std::string str_replace(std::string_view str, std::string_view old_str, std::string_view new_str)
 {
-    const auto max_chars = count.has_value() ? count.value() : static_cast<int>(str.length());
-#ifdef JP
-    auto c = str.data();
-    auto should_trim = false;
-    for (auto seek = 0; seek < max_chars; seek++) {
-        if (*c == '\0') {
-            break;
+    if (old_str.empty()) {
+        return std::string(str);
+    }
+
+    const auto mb_char_indexes = str_find_all_multibyte_chars(str);
+    std::stringstream ss;
+
+    for (size_t start_pos = 0;;) {
+        const auto found_pos = str.find(old_str, start_pos);
+        if (found_pos == std::string_view::npos) {
+            ss << str.substr(start_pos);
+            return ss.str();
         }
 
-        if (!iskanji(*c)) {
-            c++;
+        if (found_pos > 0 && mb_char_indexes.contains(found_pos - 1)) {
+            ss << str.substr(start_pos, found_pos + 1 - start_pos);
+            start_pos = found_pos + 1;
             continue;
         }
 
-        should_trim = true;
-        c++;
-        if ((*c == '\0') || (seek == max_chars - 1)) {
-            break;
-        }
-
-        should_trim = false;
-        c++;
-        seek++;
+        ss << str.substr(start_pos, found_pos - start_pos) << new_str;
+        start_pos = found_pos + old_str.length();
     }
-
-    const auto trimed_length = should_trim ? max_chars - 1 : max_chars;
-    return str.substr(0, trimed_length);
-#else
-    return str.substr(0, max_chars);
-#endif
 }
 
 static std::pair<size_t, size_t> adjust_substr_pos(std::string_view sv, size_t pos, size_t n)
