@@ -30024,7 +30024,7 @@ D:透明で硬い立方体状の謎の生物だ。
 N:1572:理不尽にも吹き飛ぶおっさん
 E:Unreasonably blown away man
 G:t:w
-I:109:3d10:10:1-0:12
+I:109:3d10:10:0:12
 W:7:10:0:200:0:0
 B:EXPLODE:SHATTER:15d10
 F:GOOD | DROP_90 | FRIENDS | HUMAN
