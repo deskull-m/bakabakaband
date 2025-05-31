@@ -82787,7 +82787,7 @@
     "exp": 0,
     "next_exp": 3650,
     "next_mon": 0,
-    "alliance": "PHYREXIAN",
+    "alliance": "PHYREXIA",
     "flags": [
         "FORCE_MAXHP",
         "CAN_FLY",
@@ -88717,7 +88717,7 @@
     "exp": 0,
     "next_exp": 20,
     "next_mon": 0,
-    "alliance": "PHYREXIAN",
+    "alliance": "PHYREXIA",
     "flags": [
         "DROP_90",
         "OPEN_DOOR",
