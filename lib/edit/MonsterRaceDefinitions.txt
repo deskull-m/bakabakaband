@@ -32221,7 +32221,7 @@ B:DROOL:FLAVOR
 F:UNIQUE | NO_QUEST
 F:DROP_CORPSE | RES_ALL | RAND_25 | RAND_50
 F:ONLY_ITEM | DROP_1D2 | DROP_GOOD | PERHP_1
-S:SHRIEK
+S:1_IN_4 | SHRIEK
 D:マッスルボディ２ダッシュプラスになるべく懸垂もどきにはげみ、
 D:自分で調合したの魔法のクスリを大量に服用し続ける高校生だ。
 D:今にも折れて朽ち果てそうなほど痩せこけているが、
