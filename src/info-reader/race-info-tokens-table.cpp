@@ -509,14 +509,15 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "EMPTY_MIND", MonsterMiscType::EMPTY_MIND },
     { "WEIRD_MIND", MonsterMiscType::WEIRD_MIND },
     { "VOCIFEROUS", MonsterMiscType::VOCIFEROUS },
-};
-
-const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags = {
-    { "DIMINISH_MAX_DAMAGE", MonsterSpecialType::DIMINISH_MAX_DAMAGE },
+    { "STALKER", MonsterMiscType::STALKER },
 };
 
 const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {
     { "NONE", MonsterSex::NONE },
     { "MALE", MonsterSex::MALE },
     { "FEMALE", MonsterSex::FEMALE },
+};
+
+const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags = {
+    { "DIMINISH_MAX_DAMAGE", MonsterSpecialType::DIMINISH_MAX_DAMAGE },
 };
