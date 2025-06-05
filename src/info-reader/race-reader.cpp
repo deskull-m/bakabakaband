@@ -382,12 +382,6 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &mo
                     continue;
                 }
 
-                if (s_tokens.size() == 2 && s_tokens[0] == "MOB") {
-                    info_set_value(r_ptr->max_num, s_tokens[1]);
-                    r_ptr->mob_num = r_ptr->max_num;
-                    continue;
-                }
-
                 if (s_tokens.size() == 2 && s_tokens[0] == "FATHER") {
                     info_set_value(r_ptr->father_r_idx, s_tokens[1]);
                     continue;
@@ -797,6 +791,13 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     if (err) {
         msg_format(_("モンスター初期体力読込失敗。ID: '%d'。", "Failed to load monster starting HP. ID: '%d'."), error_idx);
         return err;
+    }
+    err = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999));
+    if (err) {
+        msg_format(_("モンスター基本モブ数読込失敗。ID: '%d'。", "Failed to load monster base mob number. ID: '%d'."), error_idx);
+        return err;
+    } else {
+        monrace.max_num = monrace.mob_num;
     }
     err = set_mon_artifacts(mon_data["artifacts"], monrace);
     if (err) {

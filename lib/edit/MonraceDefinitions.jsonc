@@ -21457,7 +21457,7 @@
     },
     "sex": "MALE",
     "alliance": "AMBER",
-    "mob": "190",
+    "mob": 190,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
@@ -41866,7 +41866,7 @@
         "en": "It is a massive humanoid demon wreathed in flames."
     },
     "alliance": "UTUMNO",
-    "mob": "174",
+    "mob": 174,
     "flags": [
         "FORCE_MAXHP",
         "AURA_FIRE",
@@ -43135,7 +43135,7 @@
     },
     "sex": "MALE",
     "alliance": "COCHAOS",
-    "mob": "130",
+    "mob": 130,
     "flags": [
         "EVIL",
         "HUMAN",
@@ -58509,7 +58509,7 @@
     },
     "sex": "MALE",
     "alliance": "GE-ORLIC",
-    "mob": "90",
+    "mob": 90,
     "flags": [
         "DROP_CORPSE",
         "FORCE_MAXHP",
@@ -59328,7 +59328,7 @@
         "en": "It is a massive humanoid demon wreathed in flames."
     },
     "alliance": "UTUMNO",
-    "mob": "872",
+    "mob": 872,
     "flags": [
         "FORCE_MAXHP",
         "SELF_LITE_1",
@@ -63649,7 +63649,7 @@
     },
     "sex": "MALE",
     "alliance": "VALINOR",
-    "mob": "300",
+    "mob": 300,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -68524,7 +68524,7 @@
         "en": "This maroon-colored, vaguely humanoid, creature with one eye, tentacle-like limbs, slim waist and broad chest is a member of an advanced civilization from another world.  They have invaded this world to steal its resources."
     },
     "alliance": "JURAL",
-    "mob": "2400",
+    "mob": 2400,
     "flags": [
         "DROP_90",
         "OPEN_DOOR",
@@ -69248,7 +69248,7 @@
     },
     "sex": "MALE",
     "alliance": "AMBER",
-    "mob": "240",
+    "mob": 240,
     "flags": [
         "BASH_DOOR",
         "OPEN_DOOR",
@@ -82678,7 +82678,7 @@
     },
     "sex": "MALE",
     "alliance": "MEGADETH",
-    "mob": "200",
+    "mob": 200,
     "flags": [
         "DROP_90",
         "OPEN_DOOR",
@@ -82732,7 +82732,7 @@
     },
     "sex": "MALE",
     "alliance": "MEGADETH",
-    "mob": "35",
+    "mob": 35,
     "flags": [
         "SPEAK_ALL",
         "DROP_CORPSE",
@@ -82794,7 +82794,7 @@
     },
     "sex": "MALE",
     "alliance": "HAKUSIN-KARATE",
-    "mob": "119",
+    "mob": 119,
     "flags": [
         "WILD_WOOD",
         "HAS_LITE_1",
@@ -83485,7 +83485,7 @@
         "ja": "ファイレクシアの生み出した恐るべき兵器の中でも傑作の一つだ。真っ二つに破壊されてなお平然と稼働する。"
     },
     "alliance": "PHYREXIA",
-    "mob": "80",
+    "mob": 80,
     "flags": [
         "BASH_DOOR",
         "REFLECTING",
@@ -83550,7 +83550,7 @@
         "ja": "ファイレクシアの生み出した恐るべき兵器の中でも傑作の一つだ。真っ二つに破壊されてなお平然と稼働する。"
     },
     "alliance": "PHYREXIA",
-    "mob": "80",
+    "mob": 80,
     "flags": [
         "BASH_DOOR",
         "REFLECTING",
@@ -83603,7 +83603,7 @@
         "ja": "ファイレクシアの生み出した恐るべき兵器の中でも傑作の一つだ。真っ二つに破壊されてなお平然と稼働する。"
     },
     "alliance": "PHYREXIA",
-    "mob": "80",
+    "mob": 80,
     "flags": [
         "BASH_DOOR",
         "REFLECTING",
@@ -83652,7 +83652,7 @@
     },
     "sex": "MALE",
     "alliance": "TURBAN-KIDS",
-    "mob": "1000",
+    "mob": 1000,
     "flags": [
         "HAS_LITE_1",
         "WEIRD_MIND",
@@ -87385,7 +87385,7 @@
         "ja": "何故こんなものを作る存在がいるのか、私には理解に苦しむね（ペチペチ）"
     },
     "alliance": "DOKACHANS",
-    "mob": "500",
+    "mob": 500,
     "flags": [
         "EMPTY_MIND",
         "BASH_DOOR",
@@ -90333,7 +90333,7 @@
     },
     "sex": "MALE",
     "alliance": "CHINCHINTEI",
-    "mob": "2000",
+    "mob": 2000,
     "flags": [
         "DROP_2D2",
         "WILD_ALL",
@@ -90701,7 +90701,7 @@
         }
     ],
     "alliance": "PHYREXIA",
-    "mob": "50",
+    "mob": 50,
     "flags": [
         "BASH_DOOR",
         "REFLECTING",
@@ -90755,7 +90755,7 @@
         "ja": "ミラディンの旧き管理者、メムナークの名残のごとき機械生命体たちだ。無意識にミラディンへの侵略者を防ごうとしているように思える"
     },
     "alliance": "PURE-MIRRODIN",
-    "mob": "1500",
+    "mob": 1500,
     "flags": [
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -91255,7 +91255,7 @@
     },
     "sex": "MALE",
     "alliance": "FANG-FAMILY",
-    "mob": "140",
+    "mob": 140,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
@@ -91629,7 +91629,7 @@
         "ja": "「赤表紙本」にも子細な記述の乏しい、メルコール率いるウトゥムノの一統にあった「バルログ」の古名。この実態はその中でもアルダの上古創世にも直接携わり、「赤表紙本」の堕落者の汚名に反して今も何ら神なる力を失っていない魔神だ。それはその中も戦の神として、旧きウルク＝ハイやオログ＝ハイの諸部族に祭られている。"
     },
     "alliance": "UTUMNO",
-    "mob": "39",
+    "mob": 39,
     "flags": [
         "DEMON",
         "ANGEL",
@@ -91752,7 +91752,7 @@
     },
     "sex": "MALE",
     "alliance": "KOGAN-RYU",
-    "mob": "450",
+    "mob": 450,
     "flags": [
         "HAS_LITE_1",
         "DROP_60",
@@ -92238,7 +92238,7 @@
     },
     "sex": "MALE",
     "alliance": "KOGAN-RYU",
-    "mob": "150",
+    "mob": 150,
     "flags": [
         "HAS_LITE_1",
         "DROP_1D2",
@@ -92463,7 +92463,7 @@
     },
     "sex": "MALE",
     "alliance": "KOGAN-RYU",
-    "mob": "10",
+    "mob": 10,
     "flags": [
         "HAS_LITE_1",
         "DROP_2D2",
@@ -92920,7 +92920,7 @@
     },
     "sex": "MALE",
     "alliance": "TURBAN-KIDS",
-    "mob": "3000",
+    "mob": 3000,
     "flags": [
         "HAS_LITE_1",
         "WEIRD_MIND",
@@ -93128,7 +93128,7 @@
     },
     "sex": "MALE",
     "alliance": "NAKED-KNIGHTS",
-    "mob": "10",
+    "mob": 10,
     "flags": [
         "HUMAN",
         "FRIENDS",
@@ -93219,7 +93219,7 @@
     },
     "sex": "MALE",
     "alliance": "KETHOLDETH",
-    "mob": "15",
+    "mob": 15,
     "flags": [
         "HUMAN",
         "FRIENDS",
@@ -93579,7 +93579,7 @@
     },
     "sex": "MALE",
     "alliance": "ASHINA-CLAN",
-    "mob": "900",
+    "mob": 900,
     "flags": [
         "HUMAN",
         "WILD_ALL",
@@ -93790,7 +93790,7 @@
         "en": "This strange creature, transformed into an abandoned feces,  waits for a stupid fecalophile to get close to its poisonous claws."
     },
     "alliance": "DOKACHANS",
-    "mob": "100",
+    "mob": 100,
     "flags": [
         "NEVER_MOVE",
         "EMPTY_MIND",
@@ -94210,7 +94210,7 @@
     },
     "sex": "MALE",
     "alliance": "ASHINA-CLAN",
-    "mob": "240",
+    "mob": 240,
     "flags": [
         "HAS_LITE_1",
         "SAMURAI",
@@ -94272,7 +94272,7 @@
         "ja": "葦名の民の中にしばしば見られる、独特の顔つきをした巨漢の男が軍役についたものだ。頭の回らぬうすのろと小馬鹿にされているが、ひとたび暴れ出した彼らは、雑兵が束になったところで抑えられないだろう。"
     },
     "alliance": "ASHINA-CLAN",
-    "mob": "150",
+    "mob": 150,
     "flags": [
         "DROP_1D2",
         "OPEN_DOOR",
@@ -94329,7 +94329,7 @@
         "ja": "葦名の暗部で行われている研究の成果「変若の淀み」と呼ばれる力の産物で生まれたといわれる、鬼にも例えられる巨人だ。"
     },
     "alliance": "ASHINA-CLAN",
-    "mob": "10",
+    "mob": 10,
     "flags": [
         "DROP_2D2",
         "OPEN_DOOR",
@@ -98786,7 +98786,7 @@
     },
     "sex": "MALE",
     "alliance": "SHITTO-DAN",
-    "mob": "45",
+    "mob": 45,
     "flags": [
         "DROP_90",
         "OPEN_DOOR",
@@ -98838,7 +98838,7 @@
     },
     "sex": "MALE",
     "alliance": "THE-SHIRE",
-    "mob": "145",
+    "mob": 145,
     "flags": [
         "HAS_LITE_1",
         "DROP_60",
@@ -99032,7 +99032,7 @@
     },
     "sex": "MALE",
     "alliance": "AVARIN-LORDS",
-    "mob": "350",
+    "mob": 350,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -99896,7 +99896,7 @@
     },
     "sex": "MALE",
     "alliance": "ANGARTHA",
-    "mob": "200",
+    "mob": 200,
     "flags": [
         "FORCE_MAXHP",
         "DROP_1D2",
@@ -100129,7 +100129,7 @@
     },
     "sex": "MALE",
     "alliance": "NUMENOR",
-    "mob": "1200",
+    "mob": 1200,
     "flags": [
         "FORCE_MAXHP",
         "DROP_1D2",
@@ -101361,7 +101361,7 @@
     },
     "sex": "MALE",
     "alliance": "KENOHGUN",
-    "mob": "300",
+    "mob": 300,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
@@ -103495,7 +103495,7 @@
         "ja": "彼らはゲッターが見せる無数の人類の未来の中でも特に恐るべき具現だ。聖ドラゴンの力の元、機械と融合を果たした彼らは互いに殺し合い、その部品を奪い合うことでただひたすらに強くなることを求め続けている。"
     },
     "alliance": "GETTER",
-    "mob": "400",
+    "mob": 400,
     "flags": [
         "EVIL",
         "DROP_GOOD",
@@ -104099,7 +104099,7 @@
         "ja": "ミラディンの旧き管理者、メムナークが世界の管理のために用いていた下僕たちだ。"
     },
     "alliance": "PURE-MIRRODIN",
-    "mob": "800",
+    "mob": 800,
     "flags": [
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -105100,7 +105100,7 @@
         "ja": "「赤表紙本」にも子細な記述の乏しい、メルコール率いるウトゥムノの一統にあった「バルログ」の古名。この実態はその中でもアルダの上古創世にも直接携わり、「赤表紙本」の堕落者の汚名に反して今も何ら神なる力を失っていない魔神だ。それはその中も叡智の与え手として、旧きウルク＝ハイやオログ＝ハイの諸部族に祭られている。"
     },
     "alliance": "UTUMNO",
-    "mob": "44",
+    "mob": 44,
     "flags": [
         "DEMON",
         "ANGEL",
@@ -106228,7 +106228,7 @@
     },
     "sex": "MALE",
     "alliance": "ODIO",
-    "mob": "9",
+    "mob": 9,
     "flags": [
         "FORCE_MAXHP",
         "DROP_1D2",
@@ -106286,7 +106286,7 @@
     },
     "sex": "MALE",
     "alliance": "ODIO",
-    "mob": "6",
+    "mob": 6,
     "flags": [
         "FORCE_MAXHP",
         "DROP_1D2",
@@ -106486,7 +106486,7 @@
     },
     "sex": "MALE",
     "alliance": "ODIO",
-    "mob": "2",
+    "mob": 2,
     "flags": [
         "FORCE_MAXHP",
         "DROP_1D2",
@@ -106637,7 +106637,7 @@
     },
     "sex": "MALE",
     "alliance": "GOLAN",
-    "mob": "500",
+    "mob": 500,
     "flags": [
         "BASH_DOOR",
         "OPEN_DOOR",
@@ -106939,7 +106939,7 @@
     },
     "sex": "MALE",
     "alliance": "GOLAN",
-    "mob": "20",
+    "mob": 20,
     "flags": [
         "BASH_DOOR",
         "OPEN_DOOR",
@@ -107012,7 +107012,7 @@
         "ja": "多数の憎しみ満ちた争いの果て、屍の山の上に姿を現すという憎悪の権化だ。"
     },
     "alliance": "ODIO",
-    "mob": "2",
+    "mob": 2,
     "flags": [
         "FORCE_MAXHP",
         "RES_TELE",
@@ -107186,7 +107186,7 @@
         "ja": "多数の憎しみ満ちた争いの果て、屍の山の上に姿を現すという憎悪の権化だ。"
     },
     "alliance": "ODIO",
-    "mob": "1",
+    "mob": 1,
     "flags": [
         "FORCE_MAXHP",
         "RES_TELE",
@@ -108745,7 +108745,7 @@
         "ja": "南斗最後の将、慈母星に仕えその直臣五車星に付き従う南斗の戦士だ。"
     },
     "sex": "MALE",
-    "mob": "300",
+    "mob": 300,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
@@ -108959,7 +108959,7 @@
         "en": "It's a stormy mass of fecal matter that blows around with a terrific defecating sound. It is maintained in its form by the desires of dirt lovers."
     },
     "alliance": "DOKACHANS",
-    "mob": "53",
+    "mob": 53,
     "flags": [
         "RAND_50",
         "EMPTY_MIND",
@@ -109074,7 +109074,7 @@
         "ja": "ファイレクシア人の未成熟な「細菌」が乗って操る成体武器だ。その中でも特に安価に量産された代物と思われる。"
     },
     "alliance": "PHYREXIA",
-    "mob": "1000",
+    "mob": 1000,
     "flags": [
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -109334,7 +109334,7 @@
         "ja": "ファイレクシア人の未成熟な「細菌」が乗って操る成体武器だ。その中でも特に戦車のような強靭さで相手をひき殺す。"
     },
     "alliance": "PHYREXIA",
-    "mob": "100",
+    "mob": 100,
     "flags": [
         "BASH_DOOR",
         "REFLECTING",
@@ -111170,7 +111170,7 @@
         "ja": "排泄物の塊がそのまま猟犬になったような姿だ。全くすさまじい匂いを、腹立たしいほどの機敏さで振りまいてくる。"
     },
     "alliance": "DOKACHANS",
-    "mob": "1000",
+    "mob": 1000,
     "flags": [
         "FRIENDS",
         "CAN_FLY",
@@ -111591,7 +111591,7 @@
         "ja": "「赤表紙本」にも子細な記述の乏しい、メルコール率いるウトゥムノの一統にあった「バルログ」の古名。この実態はその中でもアルダの上古創世にも直接携わり、「赤表紙本」の堕落者の汚名に反して今も何ら神なる力を失っていない魔神だ。彼らはその中でも産業や交易の神として、古ウルクの民に利益をもたらし続けている。清貧は持たざる者の僻みか、持てる者の欺瞞に過ぎない。彼は常にそう説いている。"
     },
     "alliance": "UTUMNO",
-    "mob": "34",
+    "mob": 34,
     "flags": [
         "DEMON",
         "ANGEL",
@@ -113278,7 +113278,7 @@
     },
     "sex": "MALE",
     "alliance": "THE-SHIRE",
-    "mob": "60",
+    "mob": 60,
     "flags": [
         "HAS_LITE_1",
         "DROP_90",
@@ -113446,7 +113446,7 @@
         "ja": "色のない霧に包まれたボーレタリアの地でソウルに飢え自我を失った兵士だ。"
     },
     "sex": "MALE",
-    "mob": "400",
+    "mob": 400,
     "flags": [
         "UNDEAD",
         "HUMAN",
@@ -114395,7 +114395,7 @@
     },
     "sex": "MALE",
     "alliance": "SUREN",
-    "mob": "120",
+    "mob": 120,
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
@@ -114456,7 +114456,7 @@
     },
     "sex": "MALE",
     "alliance": "SUREN",
-    "mob": "30",
+    "mob": 30,
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
@@ -114517,7 +114517,7 @@
     },
     "sex": "MALE",
     "alliance": "SUREN",
-    "mob": "50",
+    "mob": 50,
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
@@ -114578,7 +114578,7 @@
     },
     "sex": "MALE",
     "alliance": "SUREN",
-    "mob": "20",
+    "mob": 20,
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
@@ -115408,7 +115408,7 @@
     },
     "sex": "MALE",
     "alliance": "GOLAN",
-    "mob": "100",
+    "mob": 100,
     "flags": [
         "FORCE_MAXHP",
         "DROP_SKELETON",
@@ -117206,7 +117206,7 @@
         "ja": "相手高校球児を殺戮しながら野球の勝利をももぎ取ろうとする文字通り外道な高校生たちだ。"
     },
     "sex": "MALE",
-    "mob": "23",
+    "mob": 23,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
@@ -117434,7 +117434,7 @@
         "ja": "ファイレクシアの下僕と化した弟ミシュラが兄ウルザと最終決戦を行う際に造り上げた最高傑作だ。"
     },
     "alliance": "PHYREXIA",
-    "mob": "10",
+    "mob": 10,
     "flags": [
         "FORCE_MAXHP",
         "RES_TELE",
@@ -120142,7 +120142,7 @@
         "ja": "ミラディンの奉仕種族が自ら寄り集まって、巨大な兵器となった姿だ。"
     },
     "alliance": "PURE-MIRRODIN",
-    "mob": "10",
+    "mob": 10,
     "flags": [
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -122114,7 +122114,7 @@
     },
     "sex": "MALE",
     "alliance": "FEANOR-NOLDOR",
-    "mob": "420",
+    "mob": 420,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -122631,7 +122631,7 @@
     },
     "sex": "FEMALE",
     "alliance": "UNGOLIANT",
-    "mob": "120",
+    "mob": 120,
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -128715,7 +128715,7 @@
         "ja": "ザレム地上監察局の実働組織、TUNEDが工作員ガリィの精神的不安定さと叛逆の可能性を厭って作った代替ロボット「ガリィ・レプリカ」だ。オリジナルがそれまでに見せてきた機甲術の忠実なコピーに成功しており、戦闘能力の安定性はオリジナル以上とされている。"
     },
     "sex": "MALE",
-    "mob": "9",
+    "mob": 9,
     "flags": [
         "DROP_CORPSE",
         "FORCE_MAXHP",
@@ -128797,7 +128797,7 @@
         "ja": "闇の格闘王ベガが、何らかの目的のために各地の素質ある女性を拉致洗脳し、自らの忠実な配下に仕立て上げたものだ。"
     },
     "sex": "FEMALE",
-    "mob": "20",
+    "mob": 20,
     "flags": [
         "FORCE_MAXHP",
         "DROP_SKELETON",
@@ -129625,7 +129625,7 @@
     },
     "sex": "MALE",
     "alliance": "AMBER",
-    "mob": "50",
+    "mob": 50,
     "flags": [
         "NO_FEAR",
         "NO_CONF",
@@ -133567,7 +133567,7 @@
         "ja": "ATGC社のジーンセラピー技術により、後天的に戦士としての遺伝素質を組み込まれた改造兵だ。その源たる伝説の英雄ビッグ・ボスの素質を確かに発揮しているが、戦闘経験自体は未熟なままのようだ。"
     },
     "sex": "MALE",
-    "mob": "340",
+    "mob": 340,
     "flags": [
         "FORCE_MAXHP",
         "DROP_1D2",
@@ -134836,7 +134836,7 @@
         "ja": "あらゆる災厄に見舞われる次元で生まれ育った一般人の平均は、明白に他の世界のそれらと別格になる。鉄獄でもそれなりにやっていけるだろう。「我々は大患期を生き延びた！殺戮の天使も！月の彼方の怪物も！大きな人狼どもも！油ぎった機械人形共も！そいつらがまとめて徘徊するクソみてえな迷宮だろうと生き延びてやらあ！」"
     },
     "sex": "MALE",
-    "mob": "10000",
+    "mob": 10000,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
@@ -136098,7 +136098,7 @@
         "ja": "ストームヴィルの王ゴドリックに使える正規兵だ。"
     },
     "sex": "MALE",
-    "mob": "450",
+    "mob": 450,
     "flags": [
         "HUMAN",
         "WILD_ALL",
@@ -136268,7 +136268,7 @@
         "ja": "外道高校球児たちに殺戮野球を教える恐るべき監督だ。「てめーにはおしえてやんねー！くそして寝な！」"
     },
     "sex": "MALE",
-    "mob": "23",
+    "mob": 23,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
@@ -136461,7 +136461,7 @@
     },
     "sex": "MALE",
     "alliance": "GO",
-    "mob": "2100",
+    "mob": 2100,
     "flags": [
         "HUMAN",
         "WILD_ALL",
@@ -136632,7 +136632,7 @@
     "flavor": {
         "ja": "ラヴォスによって荒廃した世界に存在するロボットの一機種だ。生き残った人類を駆逐しようとする機械の長、マザーブレーンに従属している。"
     },
-    "mob": "500",
+    "mob": 500,
     "flags": [
         "DROP_CORPSE",
         "NONLIVING",
@@ -136973,7 +136973,7 @@
     },
     "sex": "MALE",
     "alliance": "VALINOR",
-    "mob": "40",
+    "mob": 40,
     "flags": [
         "FORCE_MAXHP",
         "DROP_SKELETON",
@@ -137045,7 +137045,7 @@
         "ja": "日々、殺戮と破壊に満ちた川越市で平和と暴力を謳歌する善良な市民たちだ。高坂を見下している。"
     },
     "sex": "MALE",
-    "mob": "10000",
+    "mob": 10000,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
@@ -137105,7 +137105,7 @@
     },
     "sex": "MALE",
     "alliance": "KENOHGUN",
-    "mob": "115",
+    "mob": 115,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
@@ -137804,7 +137804,7 @@
     "flavor": {
         "ja": "偉大なるエムラクールの導きの元、愛馬と一体化したイニストラードの聖戦士だ。何とも仲睦まじいことだ。"
     },
-    "mob": "50",
+    "mob": 50,
     "flags": [
         "WILD_ALL",
         "BASH_DOOR",
@@ -137864,7 +137864,7 @@
     },
     "sex": "MALE",
     "alliance": "AMBER",
-    "mob": "150",
+    "mob": 150,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
@@ -138115,7 +138115,7 @@
     },
     "sex": "MALE",
     "alliance": "BINJO-BUDDHISM",
-    "mob": "200",
+    "mob": 200,
     "flags": [
         "HUMAN",
         "DROP_CORPSE",
@@ -138271,7 +138271,7 @@
     },
     "sex": "MALE",
     "alliance": "PURE-MIRRODIN",
-    "mob": "2000",
+    "mob": 2000,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
@@ -138706,7 +138706,7 @@
         "ja": "ほとんど生き物のようだが、実は「ゲッター」により導かれた過去の存在に過ぎない。"
     },
     "alliance": "GETTER",
-    "mob": "4400",
+    "mob": 4400,
     "flags": [
         "RAND_25",
         "ONLY_ITEM",
@@ -138769,7 +138769,7 @@
         "ja": "とある世界の支配階級たる種族、デアボリカの一員だが、その中にあっては最下級に位置する者たちだ。人間と比べればはるかに膂力に優れているが、人間と変わらず子を成し、寿命を持っている。人間の文明が進歩し火砲を持った軍隊を組織するようになった時代には、逆に人間からの迫害や虐殺の対象となることもあったという。"
     },
     "sex": "MALE",
-    "mob": "10000",
+    "mob": 10000,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
@@ -139354,7 +139354,7 @@
     "flavor": {
         "ja": "ほとんど生き物のようだが、実は「イデ」により因果地平に導かれた遠い存在に過ぎない。"
     },
-    "mob": "4400",
+    "mob": 4400,
     "flags": [
         "RAND_25",
         "ONLY_ITEM",
@@ -139781,7 +139781,7 @@
         "ja": "とある世界の支配階級たる種族、デアボリカの一員でありその中堅に属する種族だ。不老性と異能の能力、特に異種族に己の体液を注いで凶(まがき)と呼ばれる下僕を生み出すことができる。"
     },
     "sex": "MALE",
-    "mob": "7000",
+    "mob": 7000,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
