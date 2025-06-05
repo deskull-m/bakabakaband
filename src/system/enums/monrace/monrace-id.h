@@ -195,7 +195,7 @@ enum class MonraceId : int16_t {
     MANIMANI = 1368,
     LOSTRINGIL = 1383,
     POWERFUL_EYE_SENIOR = 1338,
-    MISUMI = 8, // TODO: モンスターデータのjson置換が終わるまで暫定的にマゴットに変更。
+    MISUMI = 1393,
     LEE_QIEZI = 1399,
     DONELD = 1401,
     THUNDERS = 1402,
