@@ -7,6 +7,7 @@
 #include "system/enums/grid-flow.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-message.h"
 #include "system/system-variables.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
@@ -31,12 +32,6 @@ static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const Enum
 DropArtifact::DropArtifact(FixedArtifactId fa_id, int chance)
     : fa_id(fa_id)
     , chance(chance)
-{
-}
-
-MonsterMessage::MonsterMessage(int chance, std::string message)
-    : chance(chance)
-    , message(message)
 {
 }
 
@@ -335,20 +330,12 @@ bool MonraceDefinition::has_reinforce() const
     return it != end;
 }
 
-const std::optional<std::string> MonraceDefinition::get_message(const MonsterMessageType message_type) const
+const std::optional<MonsterMessage> MonraceDefinition::get_message(const MonsterMessageType message_type) const
 {
-    const auto &message = this->messages.find(message_type);
-    if (message != this->messages.end()) {
-        return message->second.message;
-    }
-    return std::nullopt;
-}
+    auto message = MonraceMessageList::get_instance().get_message((int)this->idx, message_type);
 
-const std::optional<int> MonraceDefinition::get_message_chance(const MonsterMessageType message_type) const
-{
-    const auto &message = this->messages.find(message_type);
-    if (message != this->messages.end()) {
-        return message->second.chance;
+    if (message) {
+        return message;
     }
     return std::nullopt;
 }
@@ -794,11 +781,6 @@ void MonraceDefinition::make_lore_treasure(int num_item, int num_gold)
     if (this->drop_flags.has(MonsterDropType::DROP_GREAT)) {
         this->r_drop_flags.set(MonsterDropType::DROP_GREAT);
     }
-}
-
-void MonraceDefinition::set_message(MonsterMessageType message_type, int chance, std::string message)
-{
-    this->messages.insert(std::make_pair(message_type, MonsterMessage(chance, message)));
 }
 
 void MonraceDefinition::emplace_drop_artifact(FixedArtifactId fa_id, int chance)
