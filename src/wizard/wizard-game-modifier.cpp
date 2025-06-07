@@ -132,7 +132,7 @@ void wiz_complete_quest(PlayerType *player_ptr)
     const auto &floor = *player_ptr->current_floor_ptr;
     if (!floor.is_in_quest()) {
         msg_print("No current quest");
-        msg_print(nullptr);
+        msg_erase();
         return;
     }
 
@@ -163,7 +163,7 @@ void wiz_restore_monster_max_num(MonraceId r_idx)
 
     if (n == 0) {
         msg_print(_("出現数に制限がないモンスターです。", "This monster can appear any time."));
-        msg_print(nullptr);
+        msg_erase();
         return;
     }
 
@@ -172,5 +172,5 @@ void wiz_restore_monster_max_num(MonraceId r_idx)
     std::stringstream ss;
     ss << r_ptr->name << _("の出現数を復元しました。", " can appear again now.");
     msg_print(ss.str());
-    msg_print(nullptr);
+    msg_erase();
 }

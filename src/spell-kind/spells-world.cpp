@@ -287,7 +287,7 @@ bool tele_town(PlayerType *player_ptr)
 
     if (num == 0) {
         msg_print(_("まだ行けるところがない。", "You have not yet visited any town."));
-        msg_print(nullptr);
+        msg_erase();
         screen_load();
         return false;
     }
@@ -369,7 +369,7 @@ static std::optional<DungeonId> choose_dungeon(std::string_view note, int row, i
         const auto &dungeons = DungeonList::get_instance();
         constexpr auto fmt = _("まだ%sに入ったことはない。", "You haven't entered %s yet.");
         msg_format(fmt, dungeons.get_dungeon(DungeonId::ANGBAND).name.data());
-        msg_print(nullptr);
+        msg_erase();
         return std::nullopt;
     }
 

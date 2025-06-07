@@ -366,7 +366,7 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
         }
 
         msg_print(mes);
-        msg_print(nullptr);
+        msg_erase();
     }
 
     if (has_resist_time(player_ptr)) {
@@ -418,7 +418,7 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
         }
 
         msg_print(mes);
-        msg_print(nullptr);
+        msg_erase();
     }
 
     handle_stuff(player_ptr);
