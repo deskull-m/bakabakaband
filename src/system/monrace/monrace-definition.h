@@ -47,6 +47,13 @@ public:
     Dice damage_dice;
 };
 
+class MonsterMessage {
+public:
+    MonsterMessage(int chance, std::string message);
+    int chance;
+    std::string message;
+};
+
 class MonraceDefinition;
 class Reinforce {
 public:
@@ -131,7 +138,6 @@ public:
     std::vector<std::tuple<int, int, MonraceId, int, int>> dead_spawns; //!< 死亡時モンスター生成
 
     //! 特定アーティファクトドロップリスト <アーティファクトID,ドロップ率>
-    std::vector<std::tuple<FixedArtifactId, PERCENTAGE>> drop_artifacts;
     int suicide_dice_num{}; //!< 自滅ターンダイス数
     int suicide_dice_side{}; //!< 自滅ターン面数
     PERCENTAGE arena_ratio{}; //!< モンスター闘技場の掛け金倍率修正値(%基準 / 0=100%) / The adjustment ratio for gambling monster
@@ -194,6 +200,9 @@ public:
     int calc_capture_value() const;
     std::string build_eldritch_horror_message(std::string_view description) const;
     bool has_reinforce() const;
+    const std::optional<std::string> get_message(const MonsterMessageType message_type) const;
+    const std::optional<int> get_message_chance(const MonsterMessageType message_type) const;
+    const std::vector<DropArtifact> &get_drop_artifacts() const;
     const std::vector<Reinforce> &get_reinforces() const;
     bool can_generate() const;
     GridFlow get_grid_flow_type() const;
@@ -240,7 +249,10 @@ public:
 
     std::optional<std::string> probe_lore();
     void make_lore_treasure(int num_item, int num_drop);
+    void set_message(MonsterMessageType message_type, int chance, std::string message);
+    void emplace_drop_artifact(FixedArtifactId fa_id, int percentage);
     void emplace_reinforce(MonraceId monrace_id, const Dice &dice);
+    std::vector<DropArtifact> drop_artifacts; //!< 特定アーティファクトドロップリスト
 
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
     bool has_entity() const;
@@ -260,6 +272,7 @@ public:
     void increment_tkills();
 
 private:
+    std::unordered_map<MonsterMessageType, MonsterMessage> messages; //!< メッセージリスト
     std::vector<Reinforce> reinforces; //!< 指定護衛リスト
 
     bool is_suitable_for_arena() const;

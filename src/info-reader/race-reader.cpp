@@ -694,6 +694,46 @@ static errr set_mon_alliance(const nlohmann::json &alliance_data, MonraceDefinit
     return PARSE_ERROR_INVALID_FLAG;
 }
 
+/*
+ * @brief JSON Objectからモンスターのメッセージをセットする
+ * @param message_data メッセージ情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+static errr set_mon_message(const nlohmann::json &message_data, MonraceDefinition &monrace)
+{
+    if (message_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!message_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (auto &message : message_data.items()) {
+        const auto &action_str = message.value()["action"];
+        if (action_str.is_null()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+        const auto action = r_info_message_flags.find(action_str.get<std::string>());
+        if (action == r_info_message_flags.end()) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        int chance;
+        if (auto err = info_set_integer(message.value()["chance"], chance, true, Range(1, 100))) {
+            return err;
+        }
+
+        std::string str;
+        if (auto err = info_set_string(message.value()["message"], str, false)) {
+            return err;
+        }
+
+        monrace.set_message(action->second, chance, str);
+    }
+    return PARSE_ERROR_NONE;
+}
+
 /*!
  * @brief モンスター種族情報(JSON Object)のパース関数
  * @param mon_data モンスターデータの格納されたJSON Object
@@ -832,6 +872,10 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_alliance(mon_data["alliance"], monrace);
     if (err) {
         msg_format(_("モンスターアライアンス情報読込失敗。ID: '%d'。", "Failed to load monster alliance: '%d'."), error_idx);
+    }
+    err = set_mon_message(mon_data["message"], monrace);
+    if (err) {
+        msg_format(_("モンスターメッセージ読込失敗。ID: '%d'。", "Failed to load monster message. ID: '%d'."), error_idx);
         return err;
     }
 
