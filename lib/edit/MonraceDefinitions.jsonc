@@ -49719,33 +49719,7 @@
             "ROCKET"
         ],
         "probability": "1_IN_4"
-    },
-      "message": [
-        {
-          "action": "WALK_CLOSERANGE",
-          "chance": 20,
-          "message": {
-            "ja": "近くで重厚な足音が聞こえた。",
-            "en": "You hear heavy steps nearby."
-          }
-        },
-        {
-          "action": "WALK_MIDDLERANGE",
-          "chance": 20,
-          "message": {
-            "ja": "重厚な足音が聞こえた。",
-            "en": "You hear heavy steps."
-          }
-        },
-        {
-          "action": "WALK_LONGRANGE",
-          "chance": 40,
-          "message": {
-            "ja": "遠くで重厚な足音が聞こえた。",
-            "en": "You hear heavy steps in the distance."
-          }
-        }
-      ]
+    }
 },
 {
     "id": 817,
