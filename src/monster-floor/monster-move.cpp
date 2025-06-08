@@ -512,41 +512,26 @@ static bool can_speak(const MonraceDefinition &ap_r_ref, MonsterSpeakType mon_sp
     return can_speak_all || can_speak_specific;
 }
 
-static std::string_view get_speak_filename(const MonsterEntity &monster)
+static std::optional<MonsterMessageType> get_speak_type(const MonsterEntity &monster)
 {
     const auto &ap_monrace = monster.get_appearance_monrace();
     if (monster.is_fearful() && can_speak(ap_monrace, MonsterSpeakType::SPEAK_FEAR)) {
-        return _("monfear_j.txt", "monfear.txt");
+        return MonsterMessageType::SPEAK_FEAR;
     }
 
-    constexpr auto monspeak_txt(_("monspeak_j.txt", "monspeak.txt"));
     if (monster.is_pet() && can_speak(ap_monrace, MonsterSpeakType::SPEAK_BATTLE)) {
-        return monspeak_txt;
+        return MonsterMessageType::SPEAK_BATTLE;
     }
 
     if (monster.is_friendly() && can_speak(ap_monrace, MonsterSpeakType::SPEAK_FRIEND)) {
-        return _("monfrien_j.txt", "monfrien.txt");
+        return MonsterMessageType::SPEAK_FRIEND;
     }
 
     if (can_speak(ap_monrace, MonsterSpeakType::SPEAK_BATTLE)) {
-        return monspeak_txt;
+        return MonsterMessageType::SPEAK_BATTLE;
     }
 
-    return "";
-}
-
-static void speaking(PlayerType *player_ptr, const MonsterEntity &monster)
-{
-    const auto m_name = monster.ml ? monster_desc(player_ptr, monster, 0) : std::string(_("それ", "It"));
-    auto filename = get_speak_filename(monster);
-    if (filename.empty()) {
-        return;
-    }
-
-    const auto monmessage = get_random_line(filename.data(), enum2i(monster.ap_r_idx));
-    if (monmessage.has_value()) {
-        msg_format(_("%s^%s", "%s^ %s"), m_name.data(), monmessage->data());
-    }
+    return std::nullopt;
 }
 
 /*!
@@ -587,37 +572,46 @@ void process_speak_sound(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy,
         if (!monster.ml && (monster.cdis <= MAX_PLAYER_SIGHT / 2)) {
             const auto message = monrace.get_message(MonsterMessageType::WALK_CLOSERANGE);
             if (message) {
-                process_sound(player_ptr, message.value().get_message(), message.value().get_message_chance());
+                process_sound(player_ptr, message->get_message(), message->get_message_chance());
                 return;
             }
         }
         if (!monster.ml && (monster.cdis <= MAX_PLAYER_SIGHT)) {
             const auto message = monrace.get_message(MonsterMessageType::WALK_MIDDLERANGE);
             if (message) {
-                process_sound(player_ptr, message.value().get_message(), message.value().get_message_chance());
+                process_sound(player_ptr, message->get_message(), message->get_message_chance());
                 return;
             }
         }
         if (!monster.ml && (monster.cdis <= MAX_PLAYER_SIGHT * 2)) {
             const auto message = monrace.get_message(MonsterMessageType::WALK_LONGRANGE);
             if (message) {
-                process_sound(player_ptr, message.value().get_message(), message.value().get_message_chance());
+                process_sound(player_ptr, message->get_message(), message->get_message_chance());
                 return;
             }
         }
     }
 
-    if (monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (monster.cdis <= MAX_PLAYER_SIGHT * 2) && one_in_(SPEAK_CHANCE / 3 + 1)) {
-        speaking(p_ptr, monster);
-        return;
-    }
-
     constexpr auto chance_speak = 8;
+    auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (monster.cdis <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
+
     const auto p_pos = player_ptr->get_position();
     const auto can_speak = monster.get_appearance_monrace().speak_flags.any();
-    if (!can_speak || !aware || !one_in_(chance_speak) || !floor.has_los_at({ oy, ox }) || !projectable(floor, p_pos, pos, p_pos)) {
+    if ((!vociferous) && (!can_speak || !aware || !floor.has_los_at({ oy, ox }) || !projectable(floor, p_pos, pos, p_pos))) {
         return;
     }
 
-    speaking(p_ptr, monster);
+    const auto m_name = monster.ml ? monster_desc(player_ptr, monster, 0) : std::string(_("それ", "It"));
+    const auto message_type = get_speak_type(monster);
+    if (!message_type) {
+        return;
+    }
+
+    const auto monmessage = monrace.get_message(*message_type);
+    if (monmessage) {
+        if (!one_in_(monmessage->get_message_chance())) {
+            return;
+        }
+        msg_format(_("%s^%s", "%s^ %s"), m_name.data(), monmessage->get_message().data());
+    }
 }
