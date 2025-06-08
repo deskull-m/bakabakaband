@@ -534,20 +534,6 @@ static std::optional<MonsterMessageType> get_speak_type(const MonsterEntity &mon
     return std::nullopt;
 }
 
-static void speaking(PlayerType *player_ptr, const MonsterEntity &monster)
-{
-    const auto m_name = monster.ml ? monster_desc(player_ptr, monster, 0) : std::string(_("それ", "It"));
-    auto filename = get_speak_filename(monster);
-    if (filename.empty()) {
-        return;
-    }
-
-    const auto monmessage = get_random_line(filename.data(), enum2i(monster.ap_r_idx));
-    if (monmessage.has_value()) {
-        msg_format(_("%s^%s", "%s^ %s"), m_name.data(), monmessage->data());
-    }
-}
-
 /*!
  * @brief 姿の見えないモンスターのメッセージを表示する
  * @param player_ptr プレイヤーへの参照ポインタ
@@ -606,15 +592,12 @@ void process_speak_sound(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy,
         }
     }
 
-    if (monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (monster.cdis <= MAX_PLAYER_SIGHT * 2) && one_in_(SPEAK_CHANCE / 3 + 1)) {
-        speaking(p_ptr, monster);
-        return;
-    }
-
     constexpr auto chance_speak = 8;
+    auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (monster.cdis <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
+
     const auto p_pos = player_ptr->get_position();
     const auto can_speak = monster.get_appearance_monrace().speak_flags.any();
-    if (!can_speak || !aware || !floor.has_los_at({ oy, ox }) || !projectable(floor, p_pos, pos, p_pos)) {
+    if ((!vociferous) && (!can_speak || !aware || !floor.has_los_at({ oy, ox }) || !projectable(floor, p_pos, pos, p_pos))) {
         return;
     }
 
