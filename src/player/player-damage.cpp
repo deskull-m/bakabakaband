@@ -385,7 +385,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
             entries.set_defeated_entry();
             const auto &m_name = entries.get_monrace().name;
             msg_format(_("あなたは%sの前に敗れ去った。", "You are beaten by %s."), m_name.data());
-            msg_print(nullptr);
+            msg_erase();
             if (record_arena) {
                 exe_write_diary(floor, DiaryKind::ARENA, 0, m_name);
             }
@@ -470,7 +470,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
                 msg_print(android ? "You are broken." : "You die.");
 #endif
 
-                msg_print(nullptr);
+                msg_erase();
             } else {
                 std::optional<std::string> death_message_opt;
                 if (winning_seppuku) {
@@ -584,7 +584,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         }
 
         msg_print(_("*** 警告:低ヒット・ポイント！ ***", "*** LOW HITPOINT WARNING! ***"));
-        msg_print(nullptr);
+        msg_erase();
         flush();
     }
 
@@ -648,7 +648,7 @@ void player_defecate(PlayerType *player_ptr)
     ItemEntity *q_ptr = &forge;
     disturb(player_ptr, false, true);
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
-    msg_print(NULL);
+    msg_erase();
     q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
     (void)drop_near(player_ptr, q_ptr, player_ptr->get_position());
 }
