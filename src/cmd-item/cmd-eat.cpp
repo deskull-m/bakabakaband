@@ -404,15 +404,15 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
         player_ptr->incident[INCIDENT::EAT_POISON]++;
         msg_print("ヴォエ！食ったら尻の肉だった！");
-        msg_print(NULL);
+        msg_erase();
         (void)BadStatusSetter(player_ptr).mod_poison(10);
         msg_print("「作者は広告で収入得てないけど、こんな卑猥なアイテム放置するなよ」");
-        msg_print(NULL);
+        msg_erase();
         player_ptr->plus_incident(INCIDENT::EAT_FECES, 1);
         return true;
     case SV_FOOD_SURSTROMMING:
         msg_print("悪臭が周囲を取り巻いた！");
-        msg_print(NULL);
+        msg_erase();
         fire_ball(player_ptr, AttributeType::POIS, Direction::self(), 30, 4);
         (void)BadStatusSetter(player_ptr).mod_poison(10);
         return true;

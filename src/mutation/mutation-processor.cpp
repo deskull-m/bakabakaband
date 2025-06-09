@@ -162,7 +162,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
 
     if (player_ptr->muta.has(PlayerMutationType::ZEERO_VIRUS) && (randint1(721) == 1)) {
         msg_print(_("SEX!DAAAAAAAAAAAA!", "SEX!DAAAAAAAAAAAA!"));
-        msg_print(NULL);
+        msg_erase();
         disturb(player_ptr, false, true);
         const auto flags = {
             MainWindowRedrawingFlag::EXTRA,

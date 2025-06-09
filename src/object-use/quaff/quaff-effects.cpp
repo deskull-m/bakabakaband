@@ -189,7 +189,7 @@ bool QuaffEffects::influence(const ItemEntity &item)
 
     case SV_POTION_NEO_TSUYOSHI:
         msg_print(_("「新・オクレ兄さん！」", "NEW Brother OKURE!"));
-        msg_print(NULL);
+        msg_erase();
         player_ptr->tsuyoshi = 1;
         (void)set_tsuyoshi(player_ptr, 0, true);
         if (!has_resist_chaos(player_ptr)) {

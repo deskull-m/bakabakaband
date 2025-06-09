@@ -648,7 +648,7 @@ void player_defecate(PlayerType *player_ptr)
     ItemEntity *q_ptr = &forge;
     disturb(player_ptr, false, true);
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
-    msg_print(NULL);
+    msg_erase();
     q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
     (void)drop_near(player_ptr, q_ptr, player_ptr->get_position());
 }
