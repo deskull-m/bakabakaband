@@ -107,9 +107,9 @@ public:
     std::string get_died_message() const;
     std::pair<TERM_COLOR, int> get_hp_bar_data() const;
     std::string get_pronoun_of_summoned_kin() const;
-    std::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
-    std::optional<bool> order_pet_whistle(const MonsterEntity &other) const;
-    std::optional<bool> order_pet_dismission(const MonsterEntity &other) const;
+    tl::optional<std::string> get_pain_message(std::string_view monster_name, int damage) const;
+    tl::optional<bool> order_pet_whistle(const MonsterEntity &other) const;
+    tl::optional<bool> order_pet_dismission(const MonsterEntity &other) const;
     bool is_riding() const;
     Pos2D get_position() const;
     Pos2D get_target_position() const;
@@ -126,8 +126,8 @@ public:
     void set_friendly();
 
 private:
-    std::optional<bool> order_pet_named(const MonsterEntity &other) const;
-    std::optional<bool> order_pet_hp(const MonsterEntity &other) const;
+    tl::optional<bool> order_pet_named(const MonsterEntity &other) const;
+    tl::optional<bool> order_pet_hp(const MonsterEntity &other) const;
     std::string build_damage_description() const;
     std::string build_attitude_description() const;
 };

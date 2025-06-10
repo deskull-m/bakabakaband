@@ -11,8 +11,8 @@
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
 #include "view/display-util.h"
-#include <optional>
 #include <string>
+#include <tl/optional.hpp>
 
 constexpr auto TOTAL_REALM_NUM = std::ssize(MAGIC_REALM_RANGE) + std::ssize(TECHNIC_REALM_RANGE);
 
@@ -194,7 +194,7 @@ static bool get_a_realm(PlayerType *player_ptr, birth_realm_type *birth_realm_pt
  * @return 選択した魔法領域のID
  * @details 領域数が0 (戦士等)or 1 (観光客等)なら自動での値を返す
  */
-static std::optional<RealmType> select_realm(PlayerType *player_ptr, RealmType selecting_realm, RealmChoices choices)
+static tl::optional<RealmType> select_realm(PlayerType *player_ptr, RealmType selecting_realm, RealmChoices choices)
 {
     clear_from(10);
     if (choices.count() <= 1) {
@@ -205,16 +205,15 @@ static std::optional<RealmType> select_realm(PlayerType *player_ptr, RealmType s
     put_str(_("注意：魔法の領域の選択によりあなたが習得する呪文のタイプが決まります。", "Note: The realm of magic will determine which spells you can learn."),
         23, 5);
 
-    birth_realm_type tmp_birth_realm;
-    birth_realm_type *birth_realm_ptr = initialize_birth_realm_type(&tmp_birth_realm);
-    analyze_realms(player_ptr, selecting_realm, choices, birth_realm_ptr);
-    birth_realm_ptr->cur = format("%c%c %s", '*', birth_realm_ptr->p2, _("ランダム", "Random"));
-    if (get_a_realm(player_ptr, birth_realm_ptr)) {
-        return std::nullopt;
+    birth_realm_type birth_realm;
+    analyze_realms(player_ptr, selecting_realm, choices, &birth_realm);
+    birth_realm.cur = format("%c%c %s", '*', birth_realm.p2, _("ランダム", "Random"));
+    if (get_a_realm(player_ptr, &birth_realm)) {
+        return tl::nullopt;
     }
 
     clear_from(10);
-    return birth_realm_ptr->picks[birth_realm_ptr->k];
+    return birth_realm.picks[birth_realm.k];
 }
 
 static void cleanup_realm_selection_window(void)
@@ -244,7 +243,7 @@ static bool check_realm_selection(PlayerType *player_ptr, int count)
     return false;
 }
 
-static std::optional<RealmType> process_choose_realm(PlayerType *player_ptr, RealmChoices choices)
+static tl::optional<RealmType> process_choose_realm(PlayerType *player_ptr, RealmChoices choices)
 {
     auto selecting_realm = RealmType::NONE;
     while (true) {
