@@ -27,19 +27,6 @@ struct birth_realm_type {
     int os;
 };
 
-static birth_realm_type *initialize_birth_realm_type(birth_realm_type *birth_realm_ptr)
-{
-    birth_realm_ptr->cs = 0;
-    birth_realm_ptr->n = 0;
-    birth_realm_ptr->p2 = ')';
-    for (int i = 0; i < TOTAL_REALM_NUM; i++) {
-        birth_realm_ptr->picks[i] = RealmType::NONE;
-    }
-
-    birth_realm_ptr->k = -1;
-    return birth_realm_ptr;
-}
-
 static void impose_first_realm(PlayerType *player_ptr, RealmChoices &choices)
 {
     PlayerRealm pr(player_ptr);
