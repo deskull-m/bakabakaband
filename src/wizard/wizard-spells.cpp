@@ -79,7 +79,7 @@ std::vector<MonraceId> wiz_collect_monster_candidates(char symbol)
     return monraces.search_by_symbol(symbol, false);
 }
 
-std::optional<MonraceId> wiz_select_summon_monrace_id(MonraceId monrace_id)
+tl::optional<MonraceId> wiz_select_summon_monrace_id(MonraceId monrace_id)
 {
     if (MonraceList::is_valid(monrace_id)) {
         return monrace_id;
@@ -89,7 +89,7 @@ std::optional<MonraceId> wiz_select_summon_monrace_id(MonraceId monrace_id)
     const auto skey = inkey_special(false);
     prt("", 0, 0);
     if ((skey & SKEY_MASK) || skey == ESCAPE) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     const auto &monraces = MonraceList::get_instance();
@@ -99,7 +99,7 @@ std::optional<MonraceId> wiz_select_summon_monrace_id(MonraceId monrace_id)
 
     const auto monrace_ids = wiz_collect_monster_candidates(static_cast<char>(skey));
     if (monrace_ids.empty()) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     auto describer = [&](MonraceId id) {
@@ -108,7 +108,7 @@ std::optional<MonraceId> wiz_select_summon_monrace_id(MonraceId monrace_id)
     CandidateSelector cs("Witch monster: ", 15);
     const auto choice = cs.select(monrace_ids, describer);
 
-    return (choice != monrace_ids.end()) ? std::make_optional(*choice) : std::nullopt;
+    return (choice != monrace_ids.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 }
 

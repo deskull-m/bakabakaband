@@ -217,9 +217,9 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
  * @param r_idx 生成モンスター種族
  * @param mode 生成オプション
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
- * @return 生成に成功したらモンスターID、失敗したらstd::nullopt
+ * @return 生成に成功したらモンスターID、失敗したらtl::nullopt
  */
-std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, std::optional<MONSTER_IDX> summoner_m_idx)
+tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     auto pos = Pos2D(y, x);
@@ -227,15 +227,15 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     const auto &world = AngbandWorld::get_instance();
     if (world.is_wild_mode() || !floor.contains(pos) || !MonraceList::is_valid(r_idx)) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0))) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(player_ptr, r_idx, pos)) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%s(Lv%d)を生成しました。", "%s(Lv%d) was generated."), monrace.name.data(), monrace.level);
@@ -246,7 +246,7 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     const auto m_idx = floor.pop_empty_index_monster();
     g_ptr->m_idx = m_idx;
     if (!g_ptr->has_monster()) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     MonsterEntity *m_ptr;
@@ -431,8 +431,6 @@ std::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y,
     }
 
     warn_unique_generation(player_ptr, r_idx);
-
-    activate_explosive_rune(player_ptr, Pos2D(y, x), new_monrace);
-
-    return m_ptr->is_valid() ? std::make_optional(g_ptr->m_idx) : std::nullopt;
+    activate_explosive_rune(player_ptr, pos, new_monrace);
+    return m_ptr->is_valid() ? tl::make_optional(g_ptr->m_idx) : tl::nullopt;
 }

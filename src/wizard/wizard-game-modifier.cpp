@@ -142,35 +142,35 @@ void wiz_complete_quest(PlayerType *player_ptr)
     }
 }
 
-void wiz_restore_monster_max_num(MonraceId r_idx)
+void wiz_restore_monster_max_num(MonraceId monrace_id)
 {
-    if (!MonraceList::is_valid(r_idx)) {
+    if (!MonraceList::is_valid(monrace_id)) {
         const auto restore_monrace_id = input_numerics("MonsterID", 1, MonraceList::get_instance().size() - 1, MonraceId::FILTHY_URCHIN);
         if (!restore_monrace_id.has_value()) {
             return;
         }
 
-        r_idx = *restore_monrace_id;
+        monrace_id = *restore_monrace_id;
+    }
+    auto &monraces = MonraceList::get_instance();
+    auto &monrace = monraces.get_monrace(monrace_id);
+    tl::optional<int> max_num;
+    if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+        max_num = MAX_UNIQUE_NUM;
+    } else if (monrace.population_flags.has(MonsterPopulationType::NAZGUL)) {
+        max_num = MAX_NAZGUL_NUM;
     }
 
-    auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
-    auto n = 0;
-    if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-        n = 1;
-    } else if (r_ptr->population_flags.has(MonsterPopulationType::NAZGUL)) {
-        n = MAX_NAZGUL_NUM;
-    }
-
-    if (n == 0) {
+    if (monrace.mob_num == 0) {
         msg_print(_("出現数に制限がないモンスターです。", "This monster can appear any time."));
         msg_erase();
         return;
     }
 
-    r_ptr->mob_num = n;
+    monrace.cur_num = monrace.mob_num;
 
     std::stringstream ss;
-    ss << r_ptr->name << _("の出現数を復元しました。", " can appear again now.");
+    ss << monrace.name << _("の出現数を復元しました。", " can appear again now.");
     msg_print(ss.str());
     msg_erase();
 }

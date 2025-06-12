@@ -311,13 +311,13 @@ void InputKeyRequestor::sweep_confirmation_equipments()
             continue;
         }
 
-        this->confirm_command(item, caret_command);
+        this->confirm_command(item.inscription, caret_command);
     }
 }
 
-void InputKeyRequestor::confirm_command(ItemEntity &o_ref, const int caret_command)
+void InputKeyRequestor::confirm_command(const tl::optional<std::string> &inscription, const int caret_command)
 {
-    auto s = o_ref.inscription->data();
+    auto s = inscription->data();
     s = angband_strchr(s, '^');
     while (s) {
 #ifdef JP
