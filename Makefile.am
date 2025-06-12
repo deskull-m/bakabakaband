@@ -26,6 +26,7 @@ schema_files = \
 	schema/BaseitemDefinitions.schema.json \
 	schema/ClassMagicDefinitions.schema.json \
 	schema/MonraceDefinitions.schema.json \
+	schema/MonsterMessages.schema.json \
 	schema/SpellDefinitions.schema.json
 
 EXTRA_DIST = \
