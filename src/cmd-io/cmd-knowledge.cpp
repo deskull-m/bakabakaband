@@ -62,7 +62,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
         } else {
             prt(_("(l) これまで行った行為                   の一覧", "(l) Display incident counter"), 6, 5);
             prt(_("(m) アライアンス詳細                     の一覧", "(m) Display alliance detail information"), 7, 5);
-            prt(_("(n) アライアンス概要                     の一覧", "(m) Display alliance information"), 7, 5);
+            prt(_("(n) アライアンス概要                     の一覧", "(m) Display alliance information"), 8, 5);
         }
 
         prt(_("-続く-", "-more-"), 17, 8);
