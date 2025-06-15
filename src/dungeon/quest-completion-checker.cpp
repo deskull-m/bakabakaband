@@ -230,10 +230,10 @@ Pos2D QuestCompletionChecker::make_stairs(const bool create_stairs)
     }
 
     auto &floor = *this->player_ptr->current_floor_ptr;
-    const auto *grid_ptr = &floor.get_grid(m_pos);
-    while (floor.has_terrain_characteristics(m_pos, TerrainCharacteristics::PERMANENT) || !grid_ptr->o_idx_list.empty() || grid_ptr->is_object()) {
+    auto &grid = floor.get_grid(m_pos);
+    while (floor.has_terrain_characteristics(m_pos, TerrainCharacteristics::PERMANENT) || !grid.o_idx_list.empty() || grid.is_object()) {
         m_pos = scatter(this->player_ptr, m_pos, 1, PROJECT_NONE);
-        grid_ptr = &floor.get_grid(m_pos);
+        grid = floor.get_grid(m_pos);
     }
 
     msg_print(_("魔法の階段が現れた...", "A magical staircase appears..."));
