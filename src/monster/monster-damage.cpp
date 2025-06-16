@@ -192,7 +192,6 @@ void MonsterDamageProcessor::death_special_flag_monster()
     }
 
     if (monrace.population_flags.has(MonsterPopulationType::NAZGUL)) {
-        monrace.mob_num--;
         return;
     }
 
@@ -219,9 +218,11 @@ void MonsterDamageProcessor::increase_kill_numbers()
         auto &shadower = monraces.get_monrace(MonraceId::KAGE);
         shadower.increment_pkills();
         shadower.increment_tkills();
+        shadower.decrement_mob_numbers();
     } else {
         monrace.increment_pkills();
         monrace.increment_tkills();
+        monrace.decrement_mob_numbers();
     }
 
     LoreTracker::get_instance().set_trackee(monster.ap_r_idx);

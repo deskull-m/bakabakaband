@@ -263,6 +263,8 @@ public:
     void increment_pkills();
     void increment_tkills();
 
+    void decrement_mob_numbers();
+
 private:
     std::unordered_map<MonsterMessageType, MonsterMessage> messages; //!< メッセージリスト
     std::vector<Reinforce> reinforces; //!< 指定護衛リスト
