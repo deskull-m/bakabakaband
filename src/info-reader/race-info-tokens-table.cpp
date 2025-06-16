@@ -490,6 +490,10 @@ const std::unordered_map<std::string_view, MonsterMessageType> r_info_message_fl
     { "MESSAGE_REFLECT", MonsterMessageType::MESSAGE_REFLECT },
     { "MESSAGE_TIMESTOP", MonsterMessageType::MESSAGE_TIMESTOP },
     { "MESSAGE_TIMESTART", MonsterMessageType::MESSAGE_TIMESTART },
+    { "MESSAGE_BREATH_SOUND", MonsterMessageType::MESSAGE_BREATH_SOUND },
+    { "MESSAGE_BREATH_SHARDS", MonsterMessageType::MESSAGE_BREATH_SHARDS },
+    { "MESSAGE_BREATH_FORCE", MonsterMessageType::MESSAGE_BREATH_FORCE },
+    { "MESSAGE_DETECT_UNIQUE", MonsterMessageType::MESSAGE_DETECT_UNIQUE },
 };
 
 const std::unordered_map<std::string_view, MonsterBrightnessType> r_info_brightness_flags = {
