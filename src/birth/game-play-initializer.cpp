@@ -76,7 +76,7 @@ void player_wipe_without_name(PlayerType *player_ptr)
             continue;
         }
 
-        //馬鹿馬鹿独自仕様
+        // 馬鹿馬鹿独自仕様 ... ユニークは常にモブ数1と生成最大数1
         if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
             monrace.mob_num = monrace.max_num = MAX_UNIQUE_NUM;
         }
