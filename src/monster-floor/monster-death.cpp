@@ -397,6 +397,7 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
 void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, AttributeFlags attribute_flags)
 {
     auto &floor = *player_ptr->current_floor_ptr;
+
     MonsterDeath md(floor, m_idx, drop_item);
     auto &world = AngbandWorld::get_instance();
     if ((world.timewalk_m_idx > 0) && world.timewalk_m_idx == m_idx) {

@@ -941,6 +941,13 @@ void MonraceDefinition::increment_tkills()
     }
 }
 
+void MonraceDefinition::decrement_mob_numbers()
+{
+    if (this->mob_num > 0) {
+        this->mob_num--;
+    }
+}
+
 /*!
  * @brief モンスター闘技場 (ギャンブル)に出場できるかを返す
  * @return 出場可不可
