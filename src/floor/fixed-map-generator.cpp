@@ -133,7 +133,7 @@ static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
             if (clone && m_idx) {
                 floor.m_list[*m_idx].mflag2.set(MonsterConstantFlagType::CLONED);
                 monrace.cur_num = old_cur_num;
-                monrace.cur_num = old_mob_num;
+                monrace.mob_num = old_mob_num;
                 monrace.max_num = old_max_num;
             }
         }

@@ -690,7 +690,7 @@ void display_monster_guardian(lore_type *lore_ptr)
 {
     bool is_kingpin = lore_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
     is_kingpin &= lore_ptr->r_ptr->r_sights > 0;
-    is_kingpin &= lore_ptr->r_ptr->mob_num > 0;
+    is_kingpin &= !lore_ptr->r_ptr->is_dead_unique();
     is_kingpin &= (lore_ptr->monrace_id == MonraceId::MELKO);
     if (is_kingpin) {
         hook_c_roff(TERM_VIOLET, _("あなたはこのモンスターを殺したいという強い欲望を感じている...", "You feel an intense desire to kill this monster...  "));

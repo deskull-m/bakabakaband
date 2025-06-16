@@ -246,11 +246,8 @@ static void display_monster_list(int col, int row, int per_page, const std::vect
                     row + i, 74);
                 c_put_str(TERM_WHITE, _("撃破回数:", "Kill Count:"), row + i, 80);
                 c_put_str(TERM_WHITE, format("%4d", monrace.r_pkills), row + i, 90);
-            } else if (monrace.mob_num > 0) {
-                put_str(format("%4d(%4d)", monrace.r_pkills, monrace.mob_num), row + i, 73);
             } else {
-                const auto is_dead = monrace.is_dead_unique();
-                c_put_str((is_dead ? TERM_L_DARK : TERM_WHITE), (is_dead ? _("死亡", " dead") : _("生存", "alive")), row + i, 74);
+                put_str(format("%4d(%4d)", monrace.r_pkills, monrace.mob_num), row + i, 73);
             }
         }
     }

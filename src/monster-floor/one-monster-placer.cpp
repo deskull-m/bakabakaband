@@ -93,6 +93,7 @@ static bool check_unique_placeable(const FloorType &floor, MonraceId r_idx, BIT_
     auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     auto is_unique = r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->population_flags.has(MonsterPopulationType::NAZGUL);
     is_unique &= r_ptr->cur_num >= r_ptr->mob_num;
+    is_unique &= r_ptr->cur_num >= r_ptr->max_num;
     if (is_unique) {
         return false;
     }

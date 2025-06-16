@@ -18,7 +18,6 @@
 #endif
 
 namespace {
-constexpr auto MAX_MONSTER_NUM = 100; /*!< 1種類の非ユニークモンスターが1フロアに存在できる最大数 */
 
 template <class T>
 static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const EnumClassFlagGroup<T> &r_flags)
@@ -349,6 +348,7 @@ bool MonraceDefinition::can_generate() const
 {
     auto can_generate = this->kind_flags.has_not(MonsterKindType::UNIQUE) && this->population_flags.has_not(MonsterPopulationType::NAZGUL);
     can_generate |= this->cur_num < this->mob_num;
+    can_generate |= this->cur_num < this->max_num;
     return can_generate;
 }
 
@@ -879,7 +879,7 @@ void MonraceDefinition::kill_unique()
 
 bool MonraceDefinition::is_dead_unique() const
 {
-    return this->kind_flags.has(MonsterKindType::UNIQUE) && this->mob_num == 0;
+    return this->kind_flags.has(MonsterKindType::UNIQUE) && (this->mob_num == 0);
 }
 
 void MonraceDefinition::reset_current_numbers()
@@ -901,20 +901,23 @@ void MonraceDefinition::reset_max_number()
 {
     if (this->kind_flags.has(MonsterKindType::UNIQUE) || this->population_flags.has(MonsterPopulationType::ONLY_ONE)) {
         this->max_num = MAX_UNIQUE_NUM;
+        this->mob_num = MAX_UNIQUE_NUM;
         return;
     }
 
     if (this->population_flags.has(MonsterPopulationType::NAZGUL)) {
         this->max_num = MAX_NAZGUL_NUM;
+        this->mob_num = MAX_NAZGUL_NUM;
         return;
     }
 
     if (this->population_flags.has(MonsterPopulationType::BUNBUN_STRIKER)) {
         this->max_num = MAX_BUNBUN_NUM;
+        this->mob_num = MAX_BUNBUN_NUM;
         return;
     }
 
-    this->max_num = MAX_MONSTER_NUM;
+    this->max_num = this->mob_num;
 }
 
 void MonraceDefinition::increment_akills()

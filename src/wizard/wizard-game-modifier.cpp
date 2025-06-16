@@ -161,13 +161,13 @@ void wiz_restore_monster_max_num(MonraceId monrace_id)
         max_num = MAX_NAZGUL_NUM;
     }
 
-    if (monrace.mob_num == 0) {
+    if (monrace.max_num == 0) {
         msg_print(_("出現数に制限がないモンスターです。", "This monster can appear any time."));
         msg_erase();
         return;
     }
 
-    monrace.cur_num = monrace.mob_num;
+    monrace.mob_num = monrace.max_num;
 
     std::stringstream ss;
     ss << monrace.name << _("の出現数を復元しました。", " can appear again now.");
