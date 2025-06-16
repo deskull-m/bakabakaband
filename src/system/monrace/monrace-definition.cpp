@@ -18,7 +18,6 @@
 #endif
 
 namespace {
-constexpr auto MAX_MONSTER_NUM = 100; /*!< 1種類の非ユニークモンスターが1フロアに存在できる最大数 */
 
 template <class T>
 static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const EnumClassFlagGroup<T> &r_flags)
