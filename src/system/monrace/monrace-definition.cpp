@@ -34,6 +34,15 @@ DropArtifact::DropArtifact(FixedArtifactId fa_id, int chance)
 {
 }
 
+MonsterSummon::MonsterSummon(MonraceId id, int probability, int min_num, int max_num, int radius)
+    : id(id)
+    , probability(probability)
+    , min_num(min_num)
+    , max_num(max_num)
+    , radius(radius)
+{
+}
+
 Reinforce::Reinforce(MonraceId monrace_id, Dice dice)
     : monrace_id(monrace_id)
     , dice(dice)
@@ -946,6 +955,11 @@ void MonraceDefinition::decrement_mob_numbers()
     if (this->mob_num > 0) {
         this->mob_num--;
     }
+}
+
+void MonraceDefinition::emplace_final_summon(MonraceId id, int probability, int min_num, int max_num, int radius)
+{
+    this->final_summons.emplace_back(MonsterSummon(id, probability, min_num, max_num, radius));
 }
 
 /*!

@@ -49,6 +49,16 @@ public:
     Dice damage_dice;
 };
 
+class MonsterSummon {
+public:
+    MonsterSummon(MonraceId id, int probability, int min_num, int max_num, int radius);
+    MonraceId id;
+    int probability;
+    int min_num;
+    int max_num;
+    int radius;
+};
+
 class MonraceDefinition;
 class Reinforce {
 public:
@@ -264,10 +274,12 @@ public:
     void increment_tkills();
 
     void decrement_mob_numbers();
+    void emplace_final_summon(MonraceId id, int probability, int min_num, int max_num, int radius);
 
 private:
     std::unordered_map<MonsterMessageType, MonsterMessage> messages; //!< メッセージリスト
     std::vector<Reinforce> reinforces; //!< 指定護衛リスト
+    std::vector<MonsterSummon> final_summons; //!< 死亡召喚リスト
 
     bool is_suitable_for_arena() const;
     bool has_blow_with_damage() const;

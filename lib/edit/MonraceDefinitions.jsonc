@@ -56278,7 +56278,6 @@
         "FORCE_MAXHP",
         "DROP_1D2",
         "SMART",
-        "RES_COLD",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "CAN_SWIM"
