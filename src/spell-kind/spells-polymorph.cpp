@@ -26,8 +26,6 @@
 #include "term/screen-processor.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
-#include "util/int-char-converter.h"
-#include <range/v3/view.hpp>
 
 /*!
  * @brief 変身処理向けにモンスターの近隣レベル帯モンスターを返す
@@ -92,7 +90,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
         return false;
     }
 
-    const auto back_m = monster.clone();
+    auto back_m = monster.clone();
     new_r_idx = select_polymorph_monrace_id(player_ptr, old_r_idx);
     if (new_r_idx == old_r_idx) {
         return false;
@@ -137,7 +135,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
             o_ptr->held_m_idx = *m_idx;
         }
     } else {
-        delete_items(player_ptr, back_m.hold_o_idx_list | ranges::to_vector);
+        delete_items(player_ptr, back_m.hold_o_idx_list);
     }
 
     if (targeted) {
