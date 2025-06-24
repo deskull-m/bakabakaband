@@ -26,6 +26,7 @@
 #include "term/screen-processor.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/int-char-converter.h"
 
 /*!
  * @brief 変身処理向けにモンスターの近隣レベル帯モンスターを返す
