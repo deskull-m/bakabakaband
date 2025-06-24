@@ -1,0 +1,28 @@
+html {
+    color: white;
+    background-color: black;
+}
+
+input, select {
+    font-size: 130%;
+    margin: 0.3rem;
+    padding: 0.1rem;
+}
+
+input.size 
+{
+    width: 5rem;
+}
+
+#total-layout {
+    display: flex;
+    flex-direction: row;
+}
+
+#mapping, #output {
+    width: 45vw;
+    height: 80vh;
+    border: solid 0.1rem white;
+    border-radius: 0.2rem;
+    margin: 1vw 1vh;
+}

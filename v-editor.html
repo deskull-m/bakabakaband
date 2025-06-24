@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="v-editor.css" />
+    </head>
+
+<body>
+<h1>v_info.txtエディタ</h1>
+
+<div id="total-layout">
+
+    <div>
+        <h2>エディット</h2>
+
+        <div id="mapping">
+            <div id="setting">
+                <div id="base">
+                    タイプ:<select class="type" name="type">
+                        <option value="7">小型Vault</option>
+                        <option value="8">大型Vault</option>
+                        <option value="17">固定部屋</option>
+                    </select>
+                    X:<input class="size" type="number" value="20">
+                    Y:<input class="size" type="number" value="20">    
+                </div>
+    
+                <div id="palette">
+                    地形:<select name="example">
+                        <option value=" ">blank</option>
+                        <option value="%">% - outside of the vault, where corridors may be connected</option>
+                        <option value="#"># - granite</option>
+                        <option value="$">$ - glass wall</option>
+                        <option value="X">X - impenetrable rock</option>
+                        <option value="Y">Y - impenetrable glass wall</option>
+                        <option value="*">* - treasure or trap</option>
+                        <option value="+">+ - secret door</option>
+                        <option value="-">- - secret glass door</option>
+                        <option value="=">' - curtain</option>
+                        <option value="^">^ - trap</option>
+                        <option value="&">& - monster up to 5 levels out of depth (OOD)</option>
+                        <option value="@">@ - monster up to 11 levels OOD</option>
+                        <option value="9">9 - monster up to 9 levels OOD and treasure up to 7 levels OOD</option>
+                        <option value="8">8 - monster up to 40 levels OOD and treasure up to 20 levels OOD</option>
+                        <option value=",">, - monster up to 3 levels OOD and/or treasure up to 7 levels OOD</option>
+                        <option value=":">: - tree</option>
+                        <option value="[">[ - treasure</option>
+                        <option value="~">~ - shallow water</option>
+                        <option value="=">= - deep water</option>
+                        <option value="v">v - shallow lava</option>
+                        <option value="w">w - deep lava</option>
+                        <option value="f">f - shallow acid puddle</option>
+                        <option value="F">F - deep acid puddle</option>
+                        <option value="g">g - shallow poisonous puddle</option>
+                        <option value="G">G - deep poisonous puddle</option>
+                        <option value="h">h - cold zone</option>
+                        <option value="H">H - heavy cold zone</option>
+                        <option value="i">i - electrical zone</option>
+                        <option value="I">I - heavy electrical zone</option>             
+                    </select>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div>
+
+        <h2>出力</h2>
+
+        <div id="output">
+            <pre id="text">
+            </pre>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        $("#text").text('');
+    });
+</script>
+
+</body>
+</html>
+
