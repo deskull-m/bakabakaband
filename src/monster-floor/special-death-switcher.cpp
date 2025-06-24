@@ -541,6 +541,15 @@ void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, Attribut
         return;
     }
 
+    on_dead_drop_kind_item(player_ptr, md_ptr);
+    on_dead_drop_tval_item(player_ptr, md_ptr);
+    on_dead_spawn_monsters(player_ptr, md_ptr);
+
+    if (md_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
+        on_dead_ninja(player_ptr, md_ptr);
+        return;
+    }
+
     switch (md_ptr->m_ptr->r_idx) {
     case MonraceId::EARTH_DESTROYER:
         on_dead_earth_destroyer(player_ptr, md_ptr);
