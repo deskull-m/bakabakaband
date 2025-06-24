@@ -133,7 +133,7 @@ static void wiz_item_drop(PlayerType *player_ptr, const int num_items, const Enu
             continue;
         }
 
-        if (!drop_near(player_ptr, &*item, player_ptr->get_position())) {
+        if (!drop_near(player_ptr, *item, player_ptr->get_position())) {
             msg_print_wizard(player_ptr, 0, "No item dropping space!");
             return;
         }
@@ -1121,7 +1121,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
                 } while (!o_ptr->is_random_artifact() || o_ptr->is_ego() || o_ptr->is_cursed());
 
                 if (o_ptr->is_random_artifact()) {
-                    drop_near(player_ptr, o_ptr, player_ptr->get_position());
+                    drop_near(player_ptr, item, player_ptr->get_position());
                 }
             } else {
                 wishing_puff_of_smoke();
@@ -1194,7 +1194,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
             o_ptr->art_flags.set(TR_IGNORE_FIRE);
         }
 
-        (void)drop_near(player_ptr, o_ptr, player_ptr->get_position());
+        (void)drop_near(player_ptr, item, player_ptr->get_position());
         return res;
     }
 

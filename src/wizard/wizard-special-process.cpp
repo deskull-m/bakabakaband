@@ -180,7 +180,7 @@ void wiz_create_item(PlayerType *player_ptr)
     ItemEntity item;
     item.generate(*bi_id);
     ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(player_ptr, &item, player_ptr->get_position());
+    (void)drop_near(player_ptr, item, player_ptr->get_position());
     msg_print("Allocated.");
 }
 
