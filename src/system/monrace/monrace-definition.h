@@ -275,6 +275,7 @@ public:
 
     void decrement_mob_numbers();
     void emplace_final_summon(MonraceId id, int probability, int min_num, int max_num, int radius);
+    const std::vector<MonsterSummon> &get_final_summons() const;
 
 private:
     std::unordered_map<MonsterMessageType, MonsterMessage> messages; //!< メッセージリスト
