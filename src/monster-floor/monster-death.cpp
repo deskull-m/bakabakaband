@@ -147,7 +147,7 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
         if (one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4)) {
             item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::MONSTER_REMAINS, SV_SOUL }));
             item.pval = enum2i(md_ptr->m_ptr->r_idx);
-            (void)drop_near(player_ptr, &item, md_ptr->get_position());
+            (void)drop_near(player_ptr, item, md_ptr->get_position());
         }
     } catch (const std::exception &e) {
         msg_format(_("エラー:ソウルドロップの処理に失敗", "Error: Failed to drop a soul."), e.what());

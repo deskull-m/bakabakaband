@@ -177,7 +177,7 @@ static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
             default:
                 break;
             }
-            (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+            (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
         }
     }
 }
@@ -231,7 +231,7 @@ static void on_dead_drop_tval_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
             default:
                 break;
             }
-            (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+            (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
         }
     }
 }
@@ -241,7 +241,7 @@ static void on_dead_bottle_gnome(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity forge;
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::POTION, SV_POTION_CURE_CRITICAL }));
-    (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+    (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
 }
 
 static void on_dead_bloodletter(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -262,7 +262,7 @@ static void on_dead_inariman1_2(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI2 }));
     ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+    (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
 }
 
 static void on_dead_inariman3(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -271,7 +271,7 @@ static void on_dead_inariman3(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI3 }));
     ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+    (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
 }
 
 static void on_dead_raal(PlayerType *player_ptr, MonsterDeath *md_ptr)
