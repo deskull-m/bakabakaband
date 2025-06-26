@@ -177,7 +177,7 @@ static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
             default:
                 break;
             }
-            (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+            (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
         }
     }
 }
@@ -231,7 +231,7 @@ static void on_dead_drop_tval_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
             default:
                 break;
             }
-            (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+            (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
         }
     }
 }
@@ -241,7 +241,7 @@ static void on_dead_bottle_gnome(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity forge;
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::POTION, SV_POTION_CURE_CRITICAL }));
-    (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+    (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
 }
 
 static void on_dead_bloodletter(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -253,7 +253,7 @@ static void on_dead_bloodletter(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity item;
     item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SWORD, SV_BLADE_OF_CHAOS }));
     ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->object_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(player_ptr, &item, md_ptr->get_position());
+    (void)drop_near(player_ptr, item, md_ptr->get_position());
 }
 
 static void on_dead_inariman1_2(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -262,7 +262,7 @@ static void on_dead_inariman1_2(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI2 }));
     ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+    (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
 }
 
 static void on_dead_inariman3(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -271,7 +271,7 @@ static void on_dead_inariman3(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI3 }));
     ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(player_ptr, q_ptr, md_ptr->get_position());
+    (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
 }
 
 static void on_dead_raal(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -284,7 +284,7 @@ static void on_dead_raal(PlayerType *player_ptr, MonsterDeath *md_ptr)
     const auto restrict = ((floor.dun_level > 49) && one_in_(5)) ? kind_is_good_book : kind_is_book;
 
     if (auto item = make_object(player_ptr, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(player_ptr, &*item, md_ptr->get_position());
+        (void)drop_near(player_ptr, *item, md_ptr->get_position());
     }
 }
 
@@ -341,12 +341,12 @@ static void on_dead_serpent(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity item_grond({ ItemKindType::HAFTED, SV_GROND });
     item_grond.fa_id = FixedArtifactId::GROND;
     ItemMagicApplier(player_ptr, &item_grond, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(player_ptr, &item_grond, md_ptr->get_position());
+    (void)drop_near(player_ptr, item_grond, md_ptr->get_position());
 
     ItemEntity item_chaos({ ItemKindType::CROWN, SV_CHAOS });
     item_chaos.fa_id = FixedArtifactId::CHAOS;
     ItemMagicApplier(player_ptr, &item_chaos, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(player_ptr, &item_chaos, md_ptr->get_position());
+    (void)drop_near(player_ptr, item_chaos, md_ptr->get_position());
 }
 
 static void on_dead_death_sword(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -356,7 +356,7 @@ static void on_dead_death_sword(PlayerType *player_ptr, MonsterDeath *md_ptr)
     }
 
     ItemEntity item({ ItemKindType::SWORD, randint1(2) });
-    (void)drop_near(player_ptr, &item, md_ptr->get_position());
+    (void)drop_near(player_ptr, item, md_ptr->get_position());
 }
 
 static void on_dead_can_angel(PlayerType *player_ptr, MonsterDeath *md_ptr)
@@ -372,7 +372,7 @@ static void on_dead_can_angel(PlayerType *player_ptr, MonsterDeath *md_ptr)
     ItemEntity item;
     item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::CHEST, SV_CHEST_KANDUME }));
     ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->object_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(player_ptr, &item, md_ptr->get_position());
+    (void)drop_near(player_ptr, item, md_ptr->get_position());
 }
 
 /*!
@@ -416,7 +416,7 @@ static void on_dead_random_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr
         }
 
         if (item->is_random_artifact()) {
-            (void)drop_near(player_ptr, &*item, md_ptr->get_position());
+            (void)drop_near(player_ptr, *item, md_ptr->get_position());
             return;
         }
 
@@ -431,7 +431,7 @@ static void on_dead_random_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr
         is_good_random_art &= item->to_a > 0;
         is_good_random_art &= item->pval > 0;
         if (is_good_random_art) {
-            (void)drop_near(player_ptr, &*item, md_ptr->get_position());
+            (void)drop_near(player_ptr, *item, md_ptr->get_position());
             return;
         }
     }
@@ -453,7 +453,7 @@ static void on_dead_manimani(PlayerType *player_ptr, MonsterDeath *md_ptr)
 static void drop_specific_item_on_dead(PlayerType *player_ptr, MonsterDeath *md_ptr, BaseitemRestrict restrict)
 {
     if (auto item = make_object(player_ptr, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(player_ptr, &*item, md_ptr->get_position());
+        (void)drop_near(player_ptr, *item, md_ptr->get_position());
     }
 }
 

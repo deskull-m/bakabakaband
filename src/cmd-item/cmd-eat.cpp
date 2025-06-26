@@ -639,7 +639,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
             msg_print(_("食べ物がアゴを素通りして落ちた！", "The food falls through your jaws!"));
 
             /* Drop the object from heaven */
-            (void)drop_near(player_ptr, &item, player_ptr->get_position());
+            (void)drop_near(player_ptr, item, player_ptr->get_position());
             ate = true;
         } else {
             msg_print(_("食べ物がアゴを素通りして落ち、消えた！", "The food falls through your jaws and vanishes!"));

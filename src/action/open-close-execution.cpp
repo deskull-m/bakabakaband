@@ -299,16 +299,15 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction 
 
     auto more = false;
     if (evaluate_percent(j)) {
-        ItemEntity forge;
-        ItemEntity *q_ptr = &forge;
-        q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::TRAP, 0 }));
-        q_ptr->pval = grid.feat;
+        ItemEntity item;
+        item.generate(baseitems.lookup_baseitem_id({ ItemKindType::TRAP, 0 }));
+        item.pval = grid.feat;
         msg_format(_("%sを解除した。", "You have disarmed the %s."), name.data());
         gain_exp(player_ptr, power);
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::DISARM);
         exe_movement(player_ptr, dir, easy_disarm, false);
 
-        (void)drop_near(player_ptr, q_ptr, pos);
+        (void)drop_near(player_ptr, item, pos);
 
     } else if ((i > 5) && (randint1(i) > 5)) {
         if (flush_failure) {

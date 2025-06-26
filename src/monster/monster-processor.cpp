@@ -573,7 +573,7 @@ void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
             ItemEntity *q_ptr = &forge;
             q_ptr->generate(kind);
             q_ptr->number = 1;
-            (void)drop_near(player_ptr, q_ptr, m_ptr->get_position());
+            (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
         }
     }
 }
@@ -597,7 +597,7 @@ void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
     q_ptr->generate(684);
     q_ptr->number = 1;
     q_ptr->pval = enum2i(m_ptr->ap_r_idx);
-    (void)drop_near(player_ptr, q_ptr, m_ptr->get_position());
+    (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
 }
 
 /*!
@@ -734,7 +734,7 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
         ItemEntity forge;
         ItemEntity *q_ptr = &forge;
         q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-        (void)drop_near(player_ptr, q_ptr, m_ptr->get_position());
+        (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
     }
 
     if (m_ptr->is_fearful() && one_in_(20)) {
@@ -742,7 +742,7 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
         ItemEntity forge;
         ItemEntity *q_ptr = &forge;
         q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
-        (void)drop_near(player_ptr, q_ptr, m_ptr->get_position());
+        (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
     }
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
