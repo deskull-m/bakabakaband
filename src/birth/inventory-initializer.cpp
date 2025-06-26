@@ -153,20 +153,18 @@ static void decide_initial_items(PlayerType *player_ptr)
 void player_outfit(PlayerType *player_ptr)
 {
     const auto &baseitems = BaseitemList::get_instance();
-    ItemEntity *q_ptr;
-    ItemEntity forge;
-    q_ptr = &forge;
+    ItemEntity item;
     decide_initial_items(player_ptr);
 
     // アンナタールの羊皮紙
-    q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 0 }));
-    q_ptr->number = 1;
-    add_outfit(player_ptr, *q_ptr);
+    item.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 0 }));
+    item.number = 1;
+    add_outfit(player_ptr, item);
 
     // メルコールの羊皮紙
-    q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 3 }));
-    q_ptr->number = 1;
-    add_outfit(player_ptr, *q_ptr);
+    item.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 3 }));
+    item.number = 1;
+    add_outfit(player_ptr, item);
 
     PlayerClass pc(player_ptr);
     PlayerRace pr(player_ptr);

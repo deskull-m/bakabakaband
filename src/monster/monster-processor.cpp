@@ -580,6 +580,7 @@ void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
 /*!
  * @brief モンスターの残気自然生成処理
+ * @note 馬鹿馬鹿の固有実装
  */
 void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
@@ -592,16 +593,16 @@ void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
     if (randint1(53) < 10000) {
         return;
     }
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(684);
-    q_ptr->number = 1;
-    q_ptr->pval = enum2i(m_ptr->ap_r_idx);
-    (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
+    ItemEntity item;
+    item.generate(684);
+    item.number = 1;
+    item.pval = enum2i(m_ptr->ap_r_idx);
+    (void)drop_near(player_ptr, item, m_ptr->get_position());
 }
 
 /*!
  * @brief モンスターによる地形変化処理
+ * @note 馬鹿馬鹿の固有実装
  */
 void process_monster_change_feat(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
@@ -731,18 +732,16 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
 
     if (m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
-        ItemEntity forge;
-        ItemEntity *q_ptr = &forge;
-        q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-        (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
+        ItemEntity item;
+        item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
+        (void)drop_near(player_ptr, item, m_ptr->get_position());
     }
 
     if (m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
-        ItemEntity forge;
-        ItemEntity *q_ptr = &forge;
-        q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
-        (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
+        ItemEntity item;
+        item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
+        (void)drop_near(player_ptr, item, m_ptr->get_position());
     }
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];

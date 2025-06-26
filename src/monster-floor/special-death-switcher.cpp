@@ -128,11 +128,16 @@ static void on_dead_spawn_monsters(PlayerType *player_ptr, MonsterDeath *md_ptr)
     }
 }
 
+/*
+ * @brief 死亡時アイテムドロップ処理
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param md_ptr モンスター撃破構造体への参照ポインタ
+ * @note 馬鹿馬鹿独自処理
+ */
 static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
     for (auto kind : md_ptr->r_ptr->drop_kinds) {
-        ItemEntity forge;
-        ItemEntity *q_ptr = &forge;
+        ItemEntity item;
         int num = std::get<0>(kind);
         int deno = std::get<1>(kind);
         if (randint1(deno) > num) {
@@ -145,48 +150,53 @@ static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
         int drop_nums = Dice::roll(dn, ds);
 
         for (int i = 0; i < drop_nums; i++) {
-            q_ptr->generate(kind_idx);
+            item.generate(kind_idx);
             switch (grade) {
             /* Apply bad magic, but first clear object */
             case -2:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
                 break;
             /* Apply bad magic, but first clear object */
             case -1:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
                 break;
             /* Apply normal magic, but first clear object */
             case 0:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
                 break;
             /* Apply good magic, but first clear object */
             case 1:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
                 break;
             /* Apply great magic, but first clear object */
             case 2:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
                 break;
             /* Apply special magic, but first clear object */
             case 3:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
-                if (!q_ptr->is_fixed_artifact()) {
-                    become_random_artifact(player_ptr, q_ptr, false);
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+                if (!item.is_fixed_artifact()) {
+                    become_random_artifact(player_ptr, &item, false);
                 }
                 break;
             default:
                 break;
             }
-            (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
+            (void)drop_near(player_ptr, item, md_ptr->get_position());
         }
     }
 }
 
+/*
+ * @brief 死亡時アイテムドロップ処理
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param md_ptr モンスター撃破構造体への参照ポインタ
+ * @note 馬鹿馬鹿独自処理
+ */
 static void on_dead_drop_tval_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
     for (auto kind : md_ptr->r_ptr->drop_tvals) {
-        ItemEntity forge;
-        ItemEntity *q_ptr = &forge;
+        ItemEntity item;
         int num = std::get<0>(kind);
         int deno = std::get<1>(kind);
         if (randint1(deno) > num) {
@@ -199,39 +209,39 @@ static void on_dead_drop_tval_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
         int drop_nums = Dice::roll(dn, ds);
 
         for (int i = 0; i < drop_nums; i++) {
-            q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ i2enum<ItemKindType>(tval), 0 }));
+            item.generate(BaseitemList::get_instance().lookup_baseitem_id({ i2enum<ItemKindType>(tval), 0 }));
             switch (grade) {
             /* Apply bad magic, but first clear object */
             case -2:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
                 break;
             /* Apply bad magic, but first clear object */
             case -1:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
                 break;
             /* Apply normal magic, but first clear object */
             case 0:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
                 break;
             /* Apply good magic, but first clear object */
             case 1:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
                 break;
             /* Apply great magic, but first clear object */
             case 2:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
                 break;
             /* Apply special magic, but first clear object */
             case 3:
-                ItemMagicApplier(player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
-                if (!q_ptr->is_fixed_artifact()) {
-                    become_random_artifact(player_ptr, q_ptr, false);
+                ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+                if (!item.is_fixed_artifact()) {
+                    become_random_artifact(player_ptr, &item, false);
                 }
                 break;
             default:
                 break;
             }
-            (void)drop_near(player_ptr, *q_ptr, md_ptr->get_position());
+            (void)drop_near(player_ptr, item, md_ptr->get_position());
         }
     }
 }
