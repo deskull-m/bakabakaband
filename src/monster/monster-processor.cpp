@@ -731,18 +731,16 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
 
     if (m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
-        ItemEntity forge;
-        ItemEntity *q_ptr = &forge;
-        q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-        (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
+        ItemEntity item;
+        item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
+        (void)drop_near(player_ptr, item, m_ptr->get_position());
     }
 
     if (m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
-        ItemEntity forge;
-        ItemEntity *q_ptr = &forge;
-        q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
-        (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
+        ItemEntity item;
+        item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
+        (void)drop_near(player_ptr, item, m_ptr->get_position());
     }
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
