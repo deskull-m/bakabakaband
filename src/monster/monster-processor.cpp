@@ -580,6 +580,7 @@ void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
 /*!
  * @brief モンスターの残気自然生成処理
+ * @note 馬鹿馬鹿の固有実装
  */
 void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
@@ -592,16 +593,16 @@ void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
     if (randint1(53) < 10000) {
         return;
     }
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(684);
-    q_ptr->number = 1;
-    q_ptr->pval = enum2i(m_ptr->ap_r_idx);
-    (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
+    ItemEntity item;
+    item.generate(684);
+    item.number = 1;
+    item.pval = enum2i(m_ptr->ap_r_idx);
+    (void)drop_near(player_ptr, item, m_ptr->get_position());
 }
 
 /*!
  * @brief モンスターによる地形変化処理
+ * @note 馬鹿馬鹿の固有実装
  */
 void process_monster_change_feat(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
