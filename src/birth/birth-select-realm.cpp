@@ -17,15 +17,24 @@
 constexpr auto TOTAL_REALM_NUM = std::ssize(MAGIC_REALM_RANGE) + std::ssize(TECHNIC_REALM_RANGE);
 
 struct birth_realm_type {
-    int cs;
-    int n;
-    char p2;
+    birth_realm_type();
+    int cs = 0;
+    int n = 0;
+    char p2 = ')';
     char sym[TOTAL_REALM_NUM];
     RealmType picks[TOTAL_REALM_NUM];
     std::string cur;
-    int k;
-    int os;
+    int k = -1;
+    int os = 0;
 };
+
+birth_realm_type::birth_realm_type()
+{
+    for (auto i = 0; i < TOTAL_REALM_NUM; i++) {
+        this->sym[i] = '\0';
+        this->picks[i] = RealmType::NONE;
+    }
+}
 
 static void impose_first_realm(PlayerType *player_ptr, RealmChoices &choices)
 {
