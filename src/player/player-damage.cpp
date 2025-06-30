@@ -644,11 +644,10 @@ void touch_zap_player(const MonsterEntity &monster, PlayerType *player_ptr)
 void player_defecate(PlayerType *player_ptr)
 {
     auto &baseitems = BaseitemList::get_instance();
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
+    ItemEntity item;
     disturb(player_ptr, false, true);
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
     msg_erase();
-    q_ptr->generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-    (void)drop_near(player_ptr, *q_ptr, player_ptr->get_position());
+    item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
+    (void)drop_near(player_ptr, item, player_ptr->get_position());
 }
