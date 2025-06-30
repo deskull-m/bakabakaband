@@ -569,11 +569,10 @@ void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
         auto deno = std::get<1>(spawn_info);
         auto kind = std::get<2>(spawn_info);
         if (randint1(deno) <= num) {
-            ItemEntity forge;
-            ItemEntity *q_ptr = &forge;
-            q_ptr->generate(kind);
-            q_ptr->number = 1;
-            (void)drop_near(player_ptr, *q_ptr, m_ptr->get_position());
+            ItemEntity item;
+            item.generate(kind);
+            item.number = 1;
+            (void)drop_near(player_ptr, item, m_ptr->get_position());
         }
     }
 }
