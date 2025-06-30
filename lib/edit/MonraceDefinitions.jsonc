@@ -29,7 +29,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "1d4",
@@ -660,7 +660,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "2d8",
@@ -2045,7 +2045,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "8d4",
@@ -2300,7 +2300,7 @@
     },
     "symbol": {
         "character": "a",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "3d6",
@@ -2785,7 +2785,7 @@
     },
     "symbol": {
         "character": "S",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "2d6",
@@ -3162,7 +3162,7 @@
     },
     "symbol": {
         "character": "B",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "4d5",
@@ -3287,7 +3287,7 @@
     },
     "symbol": {
         "character": "n",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "6d8",
@@ -5157,7 +5157,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "8d4",
@@ -5676,7 +5676,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "7d10",
@@ -5783,7 +5783,7 @@
     },
     "symbol": {
         "character": "s",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "6d8",
@@ -6427,7 +6427,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "25d10",
@@ -6815,7 +6815,7 @@
     },
     "symbol": {
         "character": ".",
-        "color": "Dark Gray"
+        "color": "Black"
     },
     "speed": 0,
     "hit_point": "21d8",
@@ -7093,7 +7093,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "8d8",
@@ -7432,7 +7432,7 @@
     },
     "symbol": {
         "character": "H",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "3d8",
@@ -8784,7 +8784,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "10d11",
@@ -9577,7 +9577,7 @@
     },
     "symbol": {
         "character": "f",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "10d8",
@@ -9624,7 +9624,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "9d8",
@@ -10228,7 +10228,7 @@
     },
     "symbol": {
         "character": "J",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "10d8",
@@ -10369,7 +10369,7 @@
     },
     "symbol": {
         "character": "w",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -10,
     "hit_point": "5d8",
@@ -10413,7 +10413,7 @@
     },
     "symbol": {
         "character": "w",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -10,
     "hit_point": "5d8",
@@ -12032,7 +12032,7 @@
     },
     "symbol": {
         "character": "o",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "12d10",
@@ -12675,7 +12675,7 @@
     },
     "symbol": {
         "character": "C",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "8d8",
@@ -12926,7 +12926,7 @@
     },
     "symbol": {
         "character": "O",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "20d9",
@@ -13087,7 +13087,7 @@
     },
     "symbol": {
         "character": "n",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "22d11",
@@ -13370,7 +13370,7 @@
     },
     "symbol": {
         "character": "r",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "20d8",
@@ -13477,7 +13477,7 @@
     },
     "symbol": {
         "character": "Z",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "6d6",
@@ -16162,7 +16162,7 @@
     },
     "symbol": {
         "character": "F",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "3d8",
@@ -17521,7 +17521,7 @@
     },
     "symbol": {
         "character": "C",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "20d22",
@@ -17572,7 +17572,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "18d15",
@@ -18544,7 +18544,7 @@
     },
     "symbol": {
         "character": "#",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "10d8",
@@ -18862,7 +18862,7 @@
     },
     "symbol": {
         "character": "j",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -20,
     "hit_point": "6d8",
@@ -19169,7 +19169,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "15d9",
@@ -20063,7 +20063,7 @@
     },
     "symbol": {
         "character": "b",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "9d10",
@@ -20391,7 +20391,7 @@
     },
     "symbol": {
         "character": "#",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "25d25",
@@ -20702,7 +20702,7 @@
     },
     "symbol": {
         "character": "T",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "23d10",
@@ -20758,7 +20758,7 @@
     },
     "symbol": {
         "character": "j",
-        "color": "Dark Gray"
+        "color": "Black"
     },
     "speed": 1,
     "hit_point": "14d14",
@@ -20971,7 +20971,7 @@
     },
     "symbol": {
         "character": "l",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "22d22",
@@ -21734,7 +21734,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "80d11",
@@ -22137,7 +22137,7 @@
     },
     "symbol": {
         "character": "#",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "70d12",
@@ -22595,7 +22595,7 @@
     },
     "symbol": {
         "character": "H",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "25d20",
@@ -22655,7 +22655,7 @@
     },
     "symbol": {
         "character": "B",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "25d20",
@@ -23163,7 +23163,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "30d10",
@@ -23712,7 +23712,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "70d12",
@@ -23841,7 +23841,7 @@
     },
     "symbol": {
         "character": "R",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "20d30",
@@ -24984,7 +24984,7 @@
     },
     "symbol": {
         "character": "d",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "30d10",
@@ -25258,7 +25258,7 @@
     },
     "symbol": {
         "character": "P",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "22d15",
@@ -25541,7 +25541,7 @@
     },
     "symbol": {
         "character": "S",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 15,
     "hit_point": "82d100",
@@ -25688,7 +25688,7 @@
     },
     "symbol": {
         "character": "z",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "15d12",
@@ -25816,7 +25816,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "10d12",
@@ -26570,7 +26570,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "30d20",
@@ -27850,7 +27850,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "18d10",
@@ -28777,7 +28777,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -10,
     "hit_point": "100d20",
@@ -28841,7 +28841,7 @@
     },
     "symbol": {
         "character": "{",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "12d12",
@@ -29199,7 +29199,7 @@
     },
     "symbol": {
         "character": "E",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "15d10",
@@ -29764,7 +29764,7 @@
     },
     "symbol": {
         "character": "d",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "30d10",
@@ -30049,7 +30049,7 @@
     },
     "symbol": {
         "character": "T",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "15d100",
@@ -30173,7 +30173,7 @@
     },
     "symbol": {
         "character": "G",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "20d25",
@@ -30896,7 +30896,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "19d13",
@@ -31014,7 +31014,7 @@
     },
     "symbol": {
         "character": "u",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "35d10",
@@ -31319,7 +31319,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "28d13",
@@ -32266,7 +32266,7 @@
     },
     "symbol": {
         "character": "j",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "40d10",
@@ -32699,7 +32699,7 @@
     },
     "symbol": {
         "character": "d",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "40d10",
@@ -33776,7 +33776,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "50d10",
@@ -33850,7 +33850,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "24d10",
@@ -34663,7 +34663,7 @@
     },
     "symbol": {
         "character": "w",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "100d10",
@@ -36819,7 +36819,7 @@
     },
     "symbol": {
         "character": "A",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "100d35",
@@ -37367,7 +37367,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "45d10",
@@ -37594,7 +37594,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "22d20",
@@ -37670,7 +37670,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "30d17",
@@ -37886,7 +37886,7 @@
     },
     "symbol": {
         "character": "L",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "40d35",
@@ -38039,7 +38039,7 @@
     },
     "symbol": {
         "character": "R",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "50d30",
@@ -38336,7 +38336,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "90d19",
@@ -38448,7 +38448,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "18d100",
@@ -38683,7 +38683,7 @@
     },
     "symbol": {
         "character": "#",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "12d100",
@@ -38908,7 +38908,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "6d6",
@@ -38973,7 +38973,7 @@
     },
     "symbol": {
         "character": "q",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "30d100",
@@ -39205,7 +39205,7 @@
     },
     "symbol": {
         "character": "z",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "50d66",
@@ -39277,7 +39277,7 @@
     },
     "symbol": {
         "character": "j",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 30,
     "hit_point": "50d20",
@@ -39349,7 +39349,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "45d50",
@@ -39943,7 +39943,7 @@
     },
     "symbol": {
         "character": "L",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "25d100",
@@ -40108,7 +40108,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 15,
     "hit_point": "66d66",
@@ -40266,7 +40266,7 @@
     },
     "symbol": {
         "character": "|",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "13d123",
@@ -40407,7 +40407,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 13,
     "hit_point": "6d6",
@@ -40834,7 +40834,7 @@
     },
     "symbol": {
         "character": "P",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "55d55",
@@ -40906,7 +40906,7 @@
     },
     "symbol": {
         "character": "H",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "100d30",
@@ -41194,7 +41194,7 @@
     },
     "symbol": {
         "character": "m",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 30,
     "hit_point": "100d20",
@@ -41401,7 +41401,7 @@
     },
     "symbol": {
         "character": "R",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "50d100",
@@ -41911,7 +41911,7 @@
     },
     "symbol": {
         "character": "q",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "18d111",
@@ -41991,7 +41991,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "60d30",
@@ -42137,7 +42137,7 @@
     },
     "symbol": {
         "character": "Z",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "60d10",
@@ -42517,7 +42517,7 @@
     },
     "symbol": {
         "character": "H",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "35d100",
@@ -42670,7 +42670,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 30,
     "hit_point": "25d100",
@@ -43180,7 +43180,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "35d100",
@@ -43661,7 +43661,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "80d60",
@@ -44364,7 +44364,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "39d111",
@@ -44530,7 +44530,7 @@
     },
     "symbol": {
         "character": "V",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "40d100",
@@ -44906,7 +44906,7 @@
     },
     "symbol": {
         "character": "j",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "55d99",
@@ -45004,7 +45004,7 @@
     },
     "symbol": {
         "character": "#",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "50d110",
@@ -45359,7 +45359,7 @@
     },
     "symbol": {
         "character": "A",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "65d100",
@@ -45458,7 +45458,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "75d100",
@@ -45619,7 +45619,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "50d65",
@@ -48192,7 +48192,7 @@
     },
     "symbol": {
         "character": "L",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "35d100",
@@ -48279,7 +48279,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "56d100",
@@ -48524,7 +48524,7 @@
     },
     "symbol": {
         "character": ".",
-        "color": "Dark Gray"
+        "color": "Black"
     },
     "speed": 10,
     "hit_point": "50d100",
@@ -48789,7 +48789,7 @@
     },
     "symbol": {
         "character": "r",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "66d100",
@@ -48947,7 +48947,7 @@
     },
     "symbol": {
         "character": "S",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "130d110",
@@ -49031,7 +49031,7 @@
     },
     "symbol": {
         "character": "S",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "130d100",
@@ -50397,7 +50397,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "60d100",
@@ -50489,7 +50489,7 @@
     },
     "symbol": {
         "character": "e",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "64d100",
@@ -52230,7 +52230,7 @@
     },
     "symbol": {
         "character": "C",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 24,
     "hit_point": "120d100",
@@ -52429,7 +52429,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "65d99",
@@ -52611,7 +52611,7 @@
     },
     "symbol": {
         "character": "C",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 25,
     "hit_point": "75d200",
@@ -53663,7 +53663,7 @@
     },
     "symbol": {
         "character": "P",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 30,
     "hit_point": "200d100",
@@ -53756,7 +53756,7 @@
     },
     "symbol": {
         "character": "J",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 45,
     "hit_point": "200d150",
@@ -54115,7 +54115,7 @@
     },
     "symbol": {
         "character": "E",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "15d231",
@@ -54249,7 +54249,7 @@
     },
     "symbol": {
         "character": ".",
-        "color": "Dark Gray"
+        "color": "Black"
     },
     "speed": 15,
     "hit_point": "30d20",
@@ -54357,7 +54357,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "57d11",
@@ -54684,7 +54684,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "30d80",
@@ -55358,7 +55358,7 @@
     },
     "symbol": {
         "character": "J",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 50,
     "hit_point": "200d150",
@@ -56588,7 +56588,7 @@
     },
     "symbol": {
         "character": "%",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -10,
     "hit_point": "15d25",
@@ -58555,7 +58555,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "60d100",
@@ -59204,7 +59204,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "25d100",
@@ -60086,7 +60086,7 @@
     },
     "symbol": {
         "character": "R",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -10,
     "hit_point": "15d15",
@@ -60189,7 +60189,7 @@
     },
     "symbol": {
         "character": "|",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "6d3",
@@ -60762,7 +60762,7 @@
     },
     "symbol": {
         "character": "N",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "1d1",
@@ -61485,7 +61485,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "77d20",
@@ -61630,7 +61630,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "22d100",
@@ -62718,7 +62718,7 @@
     },
     "symbol": {
         "character": "C",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "75d100",
@@ -62903,7 +62903,7 @@
     },
     "symbol": {
         "character": "C",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "8d15",
@@ -63089,7 +63089,7 @@
     },
     "symbol": {
         "character": "B",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "25d20",
@@ -63526,7 +63526,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "22d150",
@@ -63676,7 +63676,7 @@
     },
     "symbol": {
         "character": "I",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "2d2",
@@ -63784,7 +63784,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "20d100",
@@ -64269,7 +64269,7 @@
     },
     "symbol": {
         "character": "I",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "1d1",
@@ -64382,7 +64382,7 @@
     },
     "symbol": {
         "character": "q",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "30d100",
@@ -64739,7 +64739,7 @@
     },
     "symbol": {
         "character": "W",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "28d100",
@@ -64968,7 +64968,7 @@
     },
     "symbol": {
         "character": "q",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "18d10",
@@ -65301,7 +65301,7 @@
     },
     "symbol": {
         "character": "K",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "75d100",
@@ -66199,7 +66199,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "100d25",
@@ -66268,7 +66268,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "100d50",
@@ -67399,7 +67399,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "39d50",
@@ -67676,7 +67676,7 @@
     },
     "symbol": {
         "character": "w",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "30d10",
@@ -68858,7 +68858,7 @@
     },
     "symbol": {
         "character": "c",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "50d100",
@@ -69116,7 +69116,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -2,
     "hit_point": "80d12",
@@ -70634,7 +70634,7 @@
     },
     "symbol": {
         "character": "k",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "20d10",
@@ -70806,7 +70806,7 @@
     },
     "symbol": {
         "character": "o",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "25d10",
@@ -73279,7 +73279,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "60d50",
@@ -75155,7 +75155,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 15,
     "hit_point": "50d100",
@@ -77320,7 +77320,7 @@
     },
     "symbol": {
         "character": "z",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "21d50",
@@ -78292,7 +78292,7 @@
     },
     "symbol": {
         "character": "c",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "15d13",
@@ -78916,7 +78916,7 @@
     },
     "symbol": {
         "character": "R",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "75d30",
@@ -79289,7 +79289,7 @@
     },
     "symbol": {
         "character": "C",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "100d101",
@@ -80534,7 +80534,7 @@
     },
     "symbol": {
         "character": "B",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "24d23",
@@ -80790,7 +80790,7 @@
     },
     "symbol": {
         "character": "G",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "10d100",
@@ -81808,7 +81808,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -10,
     "hit_point": "1d3",
@@ -81867,7 +81867,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 21,
     "hit_point": "45d100",
@@ -82869,7 +82869,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "18d10",
@@ -86313,7 +86313,7 @@
     },
     "symbol": {
         "character": "H",
-        "color": "Dark Gray"
+        "color": "Black"
     },
     "speed": 0,
     "hit_point": "10d20",
@@ -87517,7 +87517,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "40d100",
@@ -89739,7 +89739,7 @@
     },
     "symbol": {
         "character": "L",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "21d100",
@@ -90078,7 +90078,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "50d100",
@@ -92083,7 +92083,7 @@
     },
     "symbol": {
         "character": "*",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "60d10",
@@ -96996,7 +96996,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "100d80",
@@ -97849,7 +97849,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "1d4",
@@ -97952,7 +97952,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "9d8",
@@ -98351,7 +98351,7 @@
     },
     "symbol": {
         "character": "B",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "24d100",
@@ -105300,7 +105300,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "19d40",
@@ -108988,7 +108988,7 @@
     },
     "symbol": {
         "character": "q",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "30d100",
@@ -109296,7 +109296,7 @@
     },
     "symbol": {
         "character": "I",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 13,
     "hit_point": "90d23",
@@ -110128,7 +110128,7 @@
     },
     "symbol": {
         "character": "#",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "20d100",
@@ -112771,7 +112771,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "30d30",
@@ -114966,7 +114966,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -2,
     "hit_point": "1d5",
@@ -115025,7 +115025,7 @@
     },
     "symbol": {
         "character": ".",
-        "color": "Dark Gray"
+        "color": "Black"
     },
     "speed": 0,
     "hit_point": "21d80",
@@ -115095,7 +115095,7 @@
     },
     "symbol": {
         "character": ".",
-        "color": "Dark Gray"
+        "color": "Black"
     },
     "speed": 0,
     "hit_point": "21d80",
@@ -115519,7 +115519,7 @@
     },
     "symbol": {
         "character": "l",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "65d100",
@@ -115882,7 +115882,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 3,
     "hit_point": "80d20",
@@ -116136,7 +116136,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -2,
     "hit_point": "9d10",
@@ -116659,7 +116659,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 15,
     "hit_point": "14d12",
@@ -116718,7 +116718,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 15,
     "hit_point": "14d15",
@@ -117708,7 +117708,7 @@
     },
     "symbol": {
         "character": "D",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 2,
     "hit_point": "100d22",
@@ -117851,7 +117851,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "10d20",
@@ -119220,7 +119220,7 @@
     },
     "symbol": {
         "character": "G",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "12d12",
@@ -119271,7 +119271,7 @@
     },
     "symbol": {
         "character": "l",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "100d10",
@@ -120589,7 +120589,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 8,
     "hit_point": "10d98",
@@ -121510,7 +121510,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "90d10",
@@ -122265,7 +122265,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "18d100",
@@ -122592,7 +122592,7 @@
     },
     "symbol": {
         "character": "S",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "50d100",
@@ -124585,7 +124585,7 @@
     },
     "symbol": {
         "character": "S",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -2,
     "hit_point": "12d120",
@@ -124795,7 +124795,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "20d66",
@@ -125555,7 +125555,7 @@
     },
     "symbol": {
         "character": "U",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "51d100",
@@ -126998,7 +126998,7 @@
     },
     "symbol": {
         "character": "B",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "5d50",
@@ -127053,7 +127053,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 3,
     "hit_point": "66d16",
@@ -127719,7 +127719,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -6,
     "hit_point": "30d100",
@@ -127784,7 +127784,7 @@
     },
     "symbol": {
         "character": "H",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "18d8",
@@ -128027,7 +128027,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 13,
     "hit_point": "75d100",
@@ -128559,7 +128559,7 @@
     },
     "symbol": {
         "character": "s",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 10,
     "hit_point": "40d10",
@@ -128615,7 +128615,7 @@
     },
     "symbol": {
         "character": "*",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 6,
     "hit_point": "50d6",
@@ -128677,7 +128677,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 13,
     "hit_point": "20d170",
@@ -129059,7 +129059,7 @@
     },
     "symbol": {
         "character": "h",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 14,
     "hit_point": "10d20",
@@ -129364,7 +129364,7 @@
     },
     "symbol": {
         "character": "o",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "30d50",
@@ -129510,7 +129510,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "21d40",
@@ -129697,7 +129697,7 @@
     },
     "symbol": {
         "character": "{",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 20,
     "hit_point": "5d1",
@@ -130487,7 +130487,7 @@
     },
     "symbol": {
         "character": "g",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": -15,
     "hit_point": "28d8",
@@ -130544,7 +130544,7 @@
     },
     "symbol": {
         "character": "J",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 5,
     "hit_point": "30d19",
@@ -132590,7 +132590,7 @@
     },
     "symbol": {
         "character": "*",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 3,
     "hit_point": "10d6",
@@ -135629,7 +135629,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 15,
     "hit_point": "20d12",
@@ -135698,7 +135698,7 @@
     },
     "symbol": {
         "character": "f",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 8,
     "hit_point": "14d100",
@@ -136179,7 +136179,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "30d10",
@@ -136353,7 +136353,7 @@
     },
     "symbol": {
         "character": "S",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 9,
     "hit_point": "20d100",
@@ -138791,7 +138791,7 @@
     },
     "symbol": {
         "character": "t",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 0,
     "hit_point": "2d6",
@@ -139988,7 +139988,7 @@
     },
     "symbol": {
         "character": "p",
-        "color": "Black"
+        "color": "Dark Gray"
     },
     "speed": 7,
     "hit_point": "19d15",
