@@ -175,7 +175,7 @@ errr parse_artifacts_info(nlohmann::json &art_data, angband_header *)
         msg_format(_("アーティファクトの命中補正値読込失敗。ID: '%d'。", "Failed to load damage bonus of artifact. ID: '%d'."), error_idx);
         return err;
     }
-    if (auto err = info_set_integer(art_data["ac_bonus"], artifact.to_a, false, Range(-99, 99))) {
+    if (auto err = info_set_integer(art_data["ac_bonus"], artifact.to_a, false, Range(-999, 999))) {
         msg_format(_("アーティファクトのAC補正値読込失敗。ID: '%d'。", "Failed to load AC bonus of artifact. ID: '%d'."), error_idx);
         return err;
     }
