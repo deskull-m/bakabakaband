@@ -1,0 +1,32 @@
+{
+    "version": 1.0,
+    "monster_parties": [
+        {
+            "id": 1,
+            "name": {
+                "ja": "初心者パーティ",
+                "en": "Novice Party"
+            },
+            "level": 4,
+            "rarity": 3,
+            "monster_list": [
+                {
+                    "id": 43,
+                    "number": "1d2"
+                },
+                {
+                    "id": 44,
+                    "number": "1d2"
+                },
+                {
+                    "id": 45,
+                    "number": "1d2"
+                },
+                {
+                    "id": 46,
+                    "number": "1d2"
+                }
+            ]
+        }
+   ]
+}
