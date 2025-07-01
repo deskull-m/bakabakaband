@@ -58,6 +58,10 @@ void starve_player(PlayerType *player_ptr)
             digestion = 100;
         }
 
+        if (is_sushi_eater(player_ptr)) {
+            digestion *= 100;
+        }
+
         (void)set_food(player_ptr, player_ptr->food - digestion);
     }
 

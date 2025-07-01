@@ -76,6 +76,12 @@ const player_personality personality_info[MAX_PERSONALITIES] = {
         { 1, -2, -2, 2, 3, -1 },
         -5, -5, -3, -1, -2, -3, 15, 0,
         1, 0, 0 },
+
+    { { "寿司を食べないと死ぬ", "Sushi Eater" },
+        { 12, 8, 8, 12, 12, 8 },
+        20, 40, 30, 10, 40, 40, 80, 80,
+        20, 0, 0 },
+
 };
 
 const player_personality *ap_ptr;

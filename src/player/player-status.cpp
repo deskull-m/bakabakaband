@@ -3141,6 +3141,11 @@ bool is_chargeman(PlayerType *player_ptr)
     return player_ptr->ppersonality == PERSONALITY_CHARGEMAN;
 }
 
+bool is_sushi_eater(PlayerType *player_ptr)
+{
+    return (player_ptr->ppersonality == PERSONALITY_SUSHI_EATER);
+}
+
 int calc_weapon_weight_limit(PlayerType *player_ptr)
 {
     auto weight = adj_str_hold[player_ptr->stat_index[A_STR]];
