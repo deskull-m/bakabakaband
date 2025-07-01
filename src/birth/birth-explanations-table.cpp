@@ -253,6 +253,9 @@ const std::vector<std::string_view> personality_explanations = {
     _("タフは、ナチュラル・ボーン・ファイターであり、まさにタフという言葉はこの性格の持ち主のためにあります。ちからじまん以上に戦闘能力にすぐれますが、余りも理不尽な猿空間、猿展開に巻き込まれる定めにあります。",
         "\"Tough\" is a just natural born fighter, and the very word \"tough\" is reserved for those with this personality. You can be a better combat skill than mighty, but you are destined to get caught up in too much unreasonable monkey-space and monkey-deployment."),
 
+    _("あなたは寿司を愛するあまり、寿司を食べないと死んでしまいます。寿司の力のためにとんでもない能力を持っていますが、その急激な空腹を満たせるのは世界に散在する寿司だけになります。",
+        "You \"Sushi Eater\" love sushi so much that you will die if you don't eat it. You have incredible abilities thanks to the power of sushi, but the only thing that can satisfy your sudden hunger is sushi scattered around the world."),
+
 };
 
 /*! 魔法領域の詳細解説メッセージテーブル */
