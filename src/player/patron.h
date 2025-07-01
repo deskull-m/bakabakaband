@@ -7,6 +7,11 @@
 
 #define MAX_PATRON 18 /*!< カオスパトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
 
+enum class PatronType : int {
+    KHORNE = 11, //!< コーン
+    GETTER = 16, //!< ゲッター
+};
+
 /* カオスパトロンからの報酬種別定義 / Chaos Warrior: Reward types: */
 enum patron_reward {
     REW_POLY_SLF = 1, /*!< カオスパトロンからの報酬: 自己変容 */
