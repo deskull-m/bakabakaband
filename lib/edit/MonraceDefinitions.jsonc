@@ -19080,6 +19080,8 @@
         "ja": "不快な犬形の生物で、爬虫類のような頭部をした悪魔の猟犬だ。",
         "en": "A revolting canine creature, a huge demon hound with a somewhat reptilian head."
     },
+    "alliance": "KHORNE",
+    "mob": 1200,
     "flags": [
         "BASH_DOOR",
         "DEMON",
@@ -28386,6 +28388,8 @@
         "ja": "流血の神<コーン>の配下の下級悪魔。悪夢のような姿に捻じ曲がった、細身で赤い肌をした悪魔だ。ヘルブレードを装備していて、その刃はあなたの生命力を吸いとる。",
         "en": "It is a slender, red-skinned demon twisted into a nightmarish shape. It is armed with a hellblade, which will suck the life from your body."
     },
+    "alliance": "KHORNE",
+    "mob": 900,
     "flags": [
         "FORCE_MAXHP",
         "OPEN_DOOR",
@@ -38374,6 +38378,8 @@
         "ja": "巨大な悪意に満ちた獣で、肉体は鉄、血は炎でできている。他の全てを無視してあなたに突進してくるだろう。",
         "en": "A great, vicious beast whose flesh is made of steel and whose blood is fire. It charges at you ignoring everything else."
     },
+    "alliance": "KHORNE",
+    "mob": 400,
     "flags": [
         "BASH_DOOR",
         "REFLECTING",
@@ -44825,6 +44831,8 @@
         "ja": "流血の神<コーン>の最強の下僕である、羽根の生えた犬型の悪魔だ。二本足で歩き、強力な斧と鞭を前足で持っている。知性のある、血に飢えた目が血塗られた悪魔の鎧の内側からあなたを睨んでいる。（TRPG ウォーハンマー）",
         "en": "Khorne's mightiest servant, a winged hound-demon walking on two paws and wielding a mighty axe and a whip in the other two. Intelligent, bloodthirsty eyes behold you from inside the bloody demon armour."
     },
+    "alliance": "KHORNE",
+    "mob": 200,
     "flags": [
         "DEMON",
         "EVIL",
@@ -126390,6 +126398,8 @@
         "ja": "戦鎚世界の混沌神〈コーン〉に選ばれた混沌の戦士だ。肉厚の装甲に包まれたその心身は主君の性質に触れ、常に冷めやらぬ怒りと殺戮の衝動に駆られている。"
     },
     "sex": "MALE",
+    "alliance": "KHORNE",
+    "mob": 750,
     "flags": [
         "FORCE_MAXHP",
         "SMART",

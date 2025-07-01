@@ -6242,9 +6242,10 @@ B:CLAW:HURT:4d1
 B:CLAW:HURT:4d1
 B:BITE:HURT:6d1
 B:BITE:HURT:6d1
-F:BASH_DOOR | DEMON | NO_STUN | NO_FEAR |
+F:BASH_DOOR | DEMON | NO_STUN | NO_FEAR
 F:ANIMAL | EVIL | IM_FIRE | NO_SLEEP | NO_CONF 
 F:RES_NETH | RES_NEXU | RES_DISE | RES_PLAS
+F:ALLIANCE_KHORNE | MOB_1200
 D:$A revolting canine creature, a huge demon hound with a somewhat 
 D:$reptilian head.
 D:不快な犬形の生物で、爬虫類のような頭部をした悪魔の猟犬だ。
@@ -9104,6 +9105,7 @@ B:HIT:EXP_20:13d1
 F:FORCE_MAXHP | OPEN_DOOR | FRIENDS | DROP_60 | REGENERATE |
 F:ONLY_ITEM | NO_FEAR | NONLIVING |
 F:EVIL | IM_POIS | IM_COLD | IM_FIRE | RES_CHAO | DEMON
+F:ALLIANCE_KHORNE | MOB_900
 D:$It is a slender, red-skinned demon twisted into a nightmarish shape.
 D:$ It is armed with a hellblade, which will suck the life from your body.
 D:流血の神<コーン>の配下の下級悪魔。
@@ -12291,6 +12293,7 @@ B:BUTT:HURT:8d6
 F:BASH_DOOR | REFLECTING | KILL_ITEM |
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | DEMON |
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | EVIL | RIDING
+F:ALLIANCE_KHORNE | MOB_400
 D:$A great, vicious beast whose flesh is made of steel and whose 
 D:$blood is fire. It charges at you ignoring everything else.
 D:巨大な悪意に満ちた獣で、肉体は鉄、血は炎でできている。
@@ -14457,6 +14460,7 @@ F:DEMON | EVIL | DROP_GOOD | REGENERATE | CAN_FLY | NONLIVING |
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | ONLY_ITEM | DROP_4D2 | ELDRITCH_HORROR |
 F:OPEN_DOOR | BASH_DOOR | RES_NETH | RES_NEXU | RES_TELE | MOVE_BODY |
 F:IM_ACID | IM_FIRE | IM_COLD | IM_POIS | NO_CONF | NO_SLEEP | NO_FEAR
+F:ALLIANCE_KHORNE | MOB_200
 D:$Khorne's mightiest servant, a winged hound-demon walking on 
 D:$two paws and wielding a mighty axe and a whip in the other 
 D:$two. Intelligent, bloodthirsty eyes behold you from inside 
@@ -36997,6 +37001,7 @@ B:HIT:HURT:10d5
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | SMART | IM_FIRE | IM_POIS | MALE | HUMAN |
 F:ONLY_ITEM | DROP_1D2 | DROP_2D2 | RES_NEXU | RES_CHAO |
 F:OPEN_DOOR | BASH_DOOR | EVIL | PALADIN | REFLECTING | RES_TELE
+F:ALLIANCE_KHORNE | MOB_750
 D:戦鎚世界の混沌神〈コーン〉に選ばれた混沌の戦士だ。
 D:肉厚の装甲に包まれたその心身は主君の性質に触れ、常に冷めやらぬ怒りと殺戮の衝動に駆られている。
 
