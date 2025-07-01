@@ -2565,6 +2565,9 @@
     <ClCompile Include="..\..\src\main-win\main-win-exception.cpp" />
     <ClCompile Include="..\..\src\util\candidate-selector.cpp" />
     <ClCompile Include="..\..\src\world\world-object.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-khrone.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5562,6 +5565,9 @@
     <ClInclude Include="..\..\src\util\candidate-selector.h" />
     <ClInclude Include="..\..\src\monster-race\race-flags8.h" />
     <ClInclude Include="..\..\src\world\world-object.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-khrone.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />
