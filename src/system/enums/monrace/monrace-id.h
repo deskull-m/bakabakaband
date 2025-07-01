@@ -228,6 +228,7 @@ enum class MonraceId : int16_t {
     GOLAN_SOLDIER = 1687,
     GOLAN_OFFICER = 1692,
     GOLAN_RED_BELET = 1828,
+    KHORNE_CHOSEN = 2003,
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
 

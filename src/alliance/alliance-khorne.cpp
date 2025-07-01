@@ -19,10 +19,10 @@
 int AllianceKhorne::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
-
-    /*
     // プレイヤーの戦闘力を評価（コーンは戦闘を重視）
     impression += Alliance::calcPlayerPower(*creature_ptr, 3, 50);
+
+    /*
 
     // コーン配下のモンスター討伐による好感度減少
     impression -= MonraceList::get_instance().get_monrace(MonraceId::KHORNE_BERSERKER).r_akills * 15;
@@ -92,11 +92,26 @@ void AllianceKhorne::panishment(PlayerType &player_ptr)
         }
     }
 
+
     // 極度に嫌われている場合の追加ペナルティ
     if (impression < -800 && one_in_(30)) {
         msg_print(_("コーンの怒りが戦場を血に染める！", "Khorne's rage stains the battlefield with blood!"));
         // 追加の効果（出血ダメージなど）をここに実装可能
     }
     */
+
+    if (one_in_(20)) {
+        Pos2D m_pos(player_ptr.get_position());
+        m_pos = scatter(&player_ptr, m_pos, 12, PROJECT_NONE);
+        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
+        if (m_idx) {
+            msg_print(_("コーンの選ばれし者があなたを誅すべく追跡してきた！", "Khorne's Chosen is chasing you for revenge!"));
+            disturb(&player_ptr, true, true);
+            for (int k = 0; k < 3; k++) {
+                summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+            }
+        }
+    }
+
     return;
 }
