@@ -19,6 +19,7 @@ hengband_SOURCES = \
 	\
 	alliance/alliance.cpp alliance/alliance.h \
 	alliance/alliance-jural.cpp alliance/alliance-jural.h \
+	alliance/alliance-khrone.cpp alliance/alliance-khrone.h \
 	alliance/alliance-shire.cpp alliance/alliance-shire.h \
 	alliance/alliance-tophamhatt.cpp alliance/alliance-tophamhatt.h \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
