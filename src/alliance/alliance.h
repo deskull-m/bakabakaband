@@ -1,8 +1,10 @@
 #pragma once
+#include "player/patron.h"
 #include "system/angband.h"
 #include "util/flag-group.h"
 #include <map>
 #include <string>
+#include <tl/optional.hpp>
 
 typedef int ALLIANCE_ID;
 class PlayerType;
@@ -61,10 +63,11 @@ enum alliance_flags {
 class Alliance {
 public:
     AllianceType id; //!< ID
+    tl::optional<PatronType> patron_id = tl::nullopt; //!< パトロンID
     std::string tag; //!< タグ
     std::string name; //!< 陣営名
     int64_t base_power; //!< 基本勢力指数
-    Alliance(AllianceType id, std::string tag, std::string name, int64_t base_power);
+    Alliance(AllianceType id, tl::optional<PatronType> patron_id, std::string tag, std::string name, int64_t base_power);
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
