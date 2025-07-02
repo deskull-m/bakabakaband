@@ -30,6 +30,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -64,6 +65,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると盲目になる。",
       "en": "It blinds you when you eat it."
@@ -98,6 +100,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると恐怖する。",
       "en": "It scares you when you eat it."
@@ -132,6 +135,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると混乱する。",
       "en": "It confuses you when you eat it."
@@ -166,6 +170,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると幻覚に侵される。",
       "en": "It makes you hallucinate when you eat it."
@@ -200,6 +205,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると毒を癒す。",
       "en": "It cures poison when you eat it."
@@ -234,6 +240,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると盲目を癒す。",
       "en": "It cures blindness when you eat it."
@@ -268,6 +275,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると恐怖を取り除く。",
       "en": "It removes fear when you eat it."
@@ -302,6 +310,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると混乱から立ち直る。",
       "en": "It cures confusion when you eat it."
@@ -336,6 +345,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると6d6のダメージを受け、腕力の現在値が下がる。",
       "en": "You take 6d6 damage and it decreases your strength when you eat it."
@@ -370,6 +380,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると10d10のダメージを受け、耐久力の現在値が下がる。",
       "en": "You take 10d10 damage and it decreases your constitution when you eat it."
@@ -404,6 +415,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると耐久力が回復する。",
       "en": "It restores your constitution when you eat it."
@@ -438,6 +450,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると全ステータスが回復する。",
       "en": "It restores all your stats when you eat it."
@@ -472,6 +485,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると8d8のダメージを受け、知能の現在値が下がる。",
       "en": "You take 8d8 damage and it decreases your intelligence when you eat it."
@@ -506,6 +520,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると8d8のダメージを受け、賢さの現在値が下がる。",
       "en": "You take 8d8 damage and it decreases your wisdom when you eat it."
@@ -540,6 +555,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると毒に冒される。",
       "en": "It poisons you when you eat it."
@@ -574,6 +590,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると6d6のダメージを受け、耐久力の現在値が下がる。",
       "en": "You take 6d6 damage and it decreases your constitution when you eat it."
@@ -608,6 +625,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると麻痺する。",
       "en": "It paralyzes you when you eat it."
@@ -642,6 +660,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると腕力が回復する。",
       "en": "It restores your strength when you eat it."
@@ -676,6 +695,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると10d10のダメージを受け、腕力の現在値が下がる。",
       "en": "You take 10d10 damage and it decreases your strength when you eat it."
@@ -710,6 +730,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは食べると体力が4d8回復する。",
       "en": "It heals you 4d8 when you eat it."
@@ -744,9 +765,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "栄養はあるが味気ないこの食料は長旅を考える冒険者に良く合う。",
-      "en": "This nutritious but fairly bland food is\nfamiliar to anyone contemplating long journeys."
+      "en": "This nutritious but fairly bland food isfamiliar to anyone contemplating long journeys."
     }
   },
   {
@@ -778,9 +800,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "日持ちを良くする為に二度焼きした乾パンの一種だ。\n岩のように固く、味もだいたいその程度。",
-      "en": "Twice-cooked for good keeping qualities, this lump of bread is as hard as a\nrock and about as tasty."
+      "ja": "日持ちを良くする為に二度焼きした乾パンの一種だ。岩のように固く、味もだいたいその程度。",
+      "en": "Twice-cooked for good keeping qualities, this lump of bread is as hard as arock and about as tasty."
     }
   },
   {
@@ -812,6 +835,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "良く乾燥させた肉。決して腐る事が無さそうだ。",
       "en": "A strip of jerked beef that never seems to spoil."
@@ -846,6 +870,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "ぞっとするような菌類の固まりだ。なぜか食欲を刺激する…。",
       "en": "An utterly hideous fungal growth.  It is strangely appealing..."
@@ -880,9 +905,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "銀色の葉に包まれた小さな山吹色の薄焼き菓子の束だ。エルフの技で作られ、\nその滋養は他に食べ物が何も無くとも数週間もの間生命を維持する程である。",
-      "en": "Small golden-brown wafers wrapped in silven leaves.  Made with elvish art,\nit sustains life where nothing else can."
+      "ja": "銀色の葉に包まれた小さな山吹色の薄焼き菓子の束だ。エルフの技で作られ、その滋養は他に食べ物が何も無くとも数週間もの間生命を維持する程である。",
+      "en": "Small golden-brown wafers wrapped in silven leaves.  Made with elvish art,it sustains life where nothing else can."
     }
   },
   {
@@ -914,6 +940,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "エリアドールの大麦を醸造し、金色になるまで熟成させたものだ。",
       "en": "Made from the barley of Eriador, and brewed to golden perfection."
@@ -948,8 +975,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "水の辺村の緑竜館で出るのと同じくらい質の良い、\nアルコール度の高いワインだ。",
+      "ja": "水の辺村の緑竜館で出るのと同じくらい質の良い、アルコール度の高いワインだ。",
       "en": "A heady wine, almost as good as that served at the Green Dragon at Bywater."
     }
   },
@@ -981,6 +1009,10 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "TUNNEL"
     ],
     "flavor": {
       "ja": "",
@@ -1016,6 +1048,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -1049,6 +1084,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -1084,9 +1122,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "片手半剣とも呼ばれる。通常のロング・ソードよりも長い両刃の直刀だ。",
-      "en": "Also known as the hand-and-a-half blade.  A larger-than-normal straight-\nsided sword with two cutting edges."
+      "en": "Also known as the hand-and-a-half blade.  A larger-than-normal straight-sided sword with two cutting edges."
     }
   },
   {
@@ -1117,6 +1158,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "斬る用途に特化した三日月のような刀身を持つ片刃の剣だ。",
@@ -1152,6 +1196,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -1185,6 +1233,10 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "重く広い刀身と頑丈な柄を持った両刃の直刀だ。",
@@ -1220,6 +1272,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "主に突く用途に用いる短い剣だ。",
       "en": "A short thrusting sword."
@@ -1254,9 +1309,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_CHAOS",
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "千変万化の姿を持つこの武器は混沌の力によって敵を切り刻み、\n殺戮にふける事に残忍な喜びを感じている。",
-      "en": "This inconstant weapon revels in disorder, hacking and slashing your foes\nwith bloodthirsty glee."
+      "ja": "千変万化の姿を持つこの武器は混沌の力によって敵を切り刻み、殺戮にふける事に残忍な喜びを感じている。",
+      "en": "This inconstant weapon revels in disorder, hacking and slashing your foeswith bloodthirsty glee."
     }
   },
   {
@@ -1287,6 +1346,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "非常に大きな両刃の直刀で、これを片手で持てる者はほとんどいない。",
@@ -1322,6 +1384,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "SUPPORTIVE"
+    ],
     "flavor": {
       "ja": "拳を防御する大きな鍔を持つ短い剣。主に決闘で防御用の短剣として用いられる。",
       "en": "A short thrusting blade with a large guard, primarily used in duels."
@@ -1355,6 +1421,9 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "大きな曲った刀身と手をカバーする網状の柄を備えた剣だ。船員に良く用いられる。",
@@ -1390,9 +1459,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "胴体から頭を綺麗に切り落とす為に作られた、巨大な曲った刃を持つ剣だ。",
-      "en": "A giant, curved blade designed to cleave the head cleanly from the\nbody."
+      "en": "A giant, curved blade designed to cleave the head cleanly from thebody."
     }
   },
   {
@@ -1424,9 +1496,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "長い柄と微妙に曲った刃を持つ切れ味に優れた片刃の剣だ。",
-      "en": "A slightly curved long-handled slashing sword with a single-edged\nblade and a chisel tip."
+      "en": "A slightly curved long-handled slashing sword with a single-edgedblade and a chisel tip."
     }
   },
   {
@@ -1458,9 +1533,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
       "ja": "十字の形に2本の柄が付いた長い両刃の直刀だ。",
-      "en": "A long, straight, two-edged blade, with two hand guards projecting out from\nthe hilt to form a perfect cross."
+      "en": "A long, straight, two-edged blade, with two hand guards projecting out fromthe hilt to form a perfect cross."
     }
   },
   {
@@ -1491,6 +1570,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "先端が鋭い両刃の短剣だ。",
@@ -1526,6 +1608,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "突きに用いる長く細い刀身を持つ剣。主に決闘に用いられる。",
       "en": "A long, thin thrusting blade, mainly used in duels."
@@ -1560,9 +1645,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
       "ja": "軽い少し曲った刃を持ち、切る事も突く事もできる。馬上及び決闘においてよく使われる。",
-      "en": "A light, somewhat curved blade that can be used to thrust or slash; familiar\nto horseman and duelists alike."
+      "en": "A light, somewhat curved blade that can be used to thrust or slash; familiarto horseman and duelists alike."
     }
   },
   {
@@ -1593,6 +1682,9 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "ロング・ソードを少し短くしたような剣だ。ホビットにぴったりのサイズだ。",
@@ -1628,6 +1720,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "柄の上でギザギザに折れている。",
       "en": "Above the hilt, a foot of steel rises, ending in a jagged edge."
@@ -1661,6 +1756,10 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "頑丈な木製のハンドルに、重い鉄のボールが鎖で繋っている。",
@@ -1696,9 +1795,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "重い鞭だ。きつく巻いたこの鞭を肩の上から振り下ろすと大の男でも打ち倒す事ができる。",
-      "en": "A heavy whip, this thick coil is thrown from the shoulder and can\nknock down a large man."
+      "en": "A heavy whip, this thick coil is thrown from the shoulder and canknock down a large man."
     }
   },
   {
@@ -1730,9 +1832,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
       "ja": "2本の重い木製の棒を短い鎖で繋げた物だ。対象を叩き潰す為に用いる。",
-      "en": "Two heavy bars of wood connected by a short link of chain, capable of\ndelivering crushing blows."
+      "en": "Two heavy bars of wood connected by a short link of chain, capable ofdelivering crushing blows."
     }
   },
   {
@@ -1764,9 +1870,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "2本の非常に大きな木製の棒を重い鎖で継いである。うまく用いるためには両手が必要だ。",
-      "en": "Two great bars of wood connected by a massive chain, needing two hands\nto properly wield."
+      "en": "Two great bars of wood connected by a massive chain, needing two handsto properly wield."
     }
   },
   {
@@ -1797,6 +1906,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "星型のトゲが突き出た鉄球が先端に付いた棍棒だ。",
@@ -1832,6 +1944,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "鉄球、または鍔付きの多面体形の鉄塊が先端に付いた棍棒だ。",
       "en": "A war club with an iron head, usually flanged."
@@ -1866,9 +1981,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "2メートル程度の長さの木製の杖だ。\n両手で持って打ち付けたり攻撃を受け止める為に用いられる。",
-      "en": "Six feet of oak which can be wielded in both hands to give a drubbing or\nblock one."
+      "ja": "2メートル程度の長さの木製の杖だ。両手で持って打ち付けたり攻撃を受け止める為に用いられる。",
+      "en": "Six feet of oak which can be wielded in both hands to give a drubbing orblock one."
     }
   },
   {
@@ -1899,6 +2017,10 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "長いハンドルがあり、先の尖った槌が先端から直角に付き出た形をしている。",
@@ -1934,9 +2056,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "重い棍棒の先に鉛を詰めた鋼鉄の重りを繋げてある。対象を叩き潰す為に用いる。",
-      "en": "A heavy war club topped with a mass of lead-filled steel, capable of\nlanding crushing blows."
+      "en": "A heavy war club topped with a mass of lead-filled steel, capable oflanding crushing blows."
     }
   },
   {
@@ -1968,9 +2093,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SLAY_UNDEAD",
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "巨人の武器であり、相手の骨を、体を、そして精神をも粉砕する魔法が掛けられている。",
-      "en": "A giant's weapon, enchanted with shattering power that breaks bones, bodies,\nand spirit."
+      "en": "A giant's weapon, enchanted with shattering power that breaks bones, bodies,and spirit."
     }
   },
   {
@@ -2001,6 +2130,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -2036,6 +2168,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "木製の柄に、背が烏のクチバシを模した突起になった形の幅が狭い斧が付いている。",
       "en": "A narrow axe head opposed by a crow's beak, mounted on an oaken shaft."
@@ -2070,9 +2205,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
-      "ja": "2.5メートル程の補強された木製の棒の先端に大きなナイフの刃が真っ直に付いている。\n切り裂く事も付き刺す事もできる。",
-      "en": "A reinforced wooden pole eight feet long, topped by a massive knife blade\nthat can can be used to thrust or chop."
+      "ja": "2.5メートル程の補強された木製の棒の先端に大きなナイフの刃が真っ直に付いている。切り裂く事も付き刺す事もできる。",
+      "en": "A reinforced wooden pole eight feet long, topped by a massive knife bladethat can can be used to thrust or chop."
     }
   },
   {
@@ -2104,9 +2243,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "長い竿に重い斧の刃とその反対側にスパイクが付き、さらに竿の先端に付き刺す為の\n穂先が付いている。最も完成されたタイプの竿状武器である。",
-      "en": "The most successful of the polearms, the halberd has a long haft mounted\nwith a heavy axe blade and opposing spike, and topped by a thrusting spine."
+      "ja": "長い竿に重い斧の刃とその反対側にスパイクが付き、さらに竿の先端に付き刺す為の穂先が付いている。最も完成されたタイプの竿状武器である。",
+      "en": "The most successful of the polearms, the halberd has a long haft mountedwith a heavy axe blade and opposing spike, and topped by a thrusting spine."
     }
   },
   {
@@ -2137,6 +2279,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -2172,6 +2317,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "補強された柄に鉄の穂先が付いた、非常に長く重い槍だ。",
       "en": "A long, heavy spear with an iron head and reinforced shaft."
@@ -2206,9 +2354,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
-      "ja": "最も基本的な竿状武器だ。軽く長い竿の先に尖った両刃の穂先が付いていて、\n突き刺すのに適している。",
-      "en": "The basic polearm, with a double-edged knife mounted on a light shaft.\nThis weapon can be thrown effectively."
+      "ja": "最も基本的な竿状武器だ。軽く長い竿の先に尖った両刃の穂先が付いていて、突き刺すのに適している。",
+      "en": "The basic polearm, with a double-edged knife mounted on a light shaft.This weapon can be thrown effectively."
     }
   },
   {
@@ -2239,6 +2391,10 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "三又の槍で、元来は魚を捕るのに用いられていた。",
@@ -2274,9 +2430,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
-      "ja": "大きく長い円錐形の穂先を持った槍だ。\n馬上で構えて突撃する為に作られている。",
-      "en": "A spear with a long conical tip.  It is well-suited for the rider of\na charging horse."
+      "ja": "大きく長い円錐形の穂先を持った槍だ。馬上で構えて突撃する為に作られている。",
+      "en": "A spear with a long conical tip.  It is well-suited for the rider ofa charging horse."
     }
   },
   {
@@ -2308,9 +2468,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "巨大な両手持ち用の戦斧だ。オークの首を落とした数を競うドワーフの戦士が\n愛用している。",
-      "en": "An enormous two-handed battle axe, carried by Dwarven champions, who\ncompete to see who can cleave the most orc heads."
+      "ja": "巨大な両手持ち用の戦斧だ。オークの首を落とした数を競うドワーフの戦士が愛用している。",
+      "en": "An enormous two-handed battle axe, carried by Dwarven champions, whocompete to see who can cleave the most orc heads."
     }
   },
   {
@@ -2341,6 +2504,9 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "幅広の両刃の斧だ。ドワーフによく用いられる。",
@@ -2376,6 +2542,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -2409,6 +2578,9 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "単純な作りの片刃の戦斧で、対象の胴体や鎧を切断する威力がある。",
@@ -2444,9 +2616,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "長い三日月型の刃が長い柄の先端に突けられている。\n両手に持って穀物、または生命を苅り取る為に用いられる…。",
-      "en": "The long crescent blade stands out from the handle of this polearm, and\nit is swung with two hands to harvest grain or blood."
+      "ja": "長い三日月型の刃が長い柄の先端に突けられている。両手に持って穀物、または生命を苅り取る為に用いられる…。",
+      "en": "The long crescent blade stands out from the handle of this polearm, andit is swung with two hands to harvest grain or blood."
     }
   },
   {
@@ -2478,9 +2653,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
       "ja": "死神の武器である。その長い刃は流血の期待に歓喜の声を上げているかのようだ。",
-      "en": "A reaper's weapon, the long blade almost hums in anticipation of the\nblood it will spill."
+      "en": "A reaper's weapon, the long blade almost hums in anticipation of theblood it will spill."
     }
   },
   {
@@ -2511,6 +2690,9 @@
         "depth": 3,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "伝統的に狩人に用いられる武器だ。この軽い弓は簡単に引く事ができる。",
@@ -2546,9 +2728,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "人の身長程の長さの弓だ。厚い鉄製の鎧でも貫通する程の威力を持つ。",
-      "en": "As tall as a man, the longbow can drive an arrow through the heaviest\narmour."
+      "en": "As tall as a man, the longbow can drive an arrow through the heaviestarmour."
     }
   },
   {
@@ -2580,9 +2765,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "鋼鉄製の弦をあらかじめ引いておき、機械式の引き金を引くだけで矢を発射\nする事ができる。ショート・ボウやロング・ボウに比べて扱いが簡単な武器だ。",
-      "en": "A mechanical bow made of wood, it is cocked to augment the strength of\nits wielder."
+      "ja": "鋼鉄製の弦をあらかじめ引いておき、機械式の引き金を引くだけで矢を発射する事ができる。ショート・ボウやロング・ボウに比べて扱いが簡単な武器だ。",
+      "en": "A mechanical bow made of wood, it is cocked to augment the strength ofits wielder."
     }
   },
   {
@@ -2614,9 +2802,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "鋼鉄製の弦をあらかじめ引いておき、機械式の引き金を引くだけで矢を発射\nする事ができる。ショート・ボウやロング・ボウに比べて扱いが簡単な武器だ。\nヘヴィ・クロスボウはライト・クロスボウに比べて威力は強いが、\n弦を引くのに長い時間がかかってしまう。",
-      "en": "A heavy mechanical bow.  It is slower to fire than its lighter\ncousin but each bolt fired is deadlier."
+      "ja": "鋼鉄製の弦をあらかじめ引いておき、機械式の引き金を引くだけで矢を発射する事ができる。ショート・ボウやロング・ボウに比べて扱いが簡単な武器だ。ヘヴィ・クロスボウはライト・クロスボウに比べて威力は強いが、弦を引くのに長い時間がかかってしまう。",
+      "en": "A heavy mechanical bow.  It is slower to fire than its lightercousin but each bolt fired is deadlier."
     }
   },
   {
@@ -2648,9 +2839,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
-      "ja": "長い紐の中間にある革製の石受け部分に石を包み、これを振り回す勢いで\n石を飛ばす武器だ。原始的な構造だが威力はある。",
-      "en": "A loop of leather and cords able to hurl stones or shot with tremendous\nvelocity."
+      "ja": "長い紐の中間にある革製の石受け部分に石を包み、これを振り回す勢いで石を飛ばす武器だ。原始的な構造だが威力はある。",
+      "en": "A loop of leather and cords able to hurl stones or shot with tremendousvelocity."
     }
   },
   {
@@ -2681,6 +2875,9 @@
         "depth": 3,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "たくみに羽が付けられた真っ直な標準的な矢だ。",
@@ -2716,9 +2913,16 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "IGNORE_ACID",
+      "IGNORE_COLD",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC"
+    ],
     "flavor": {
-      "ja": "希少な種類の木材から切り出され、鷲の羽を付け、\n威力を高めるルーンを刻まれた矢だ。",
-      "en": "Carved from a rare wood, this arrow is inscribed with fell runes and\nfletched with eagle feathers."
+      "ja": "希少な種類の木材から切り出され、鷲の羽を付け、威力を高めるルーンを刻まれた矢だ。",
+      "en": "Carved from a rare wood, this arrow is inscribed with fell runes andfletched with eagle feathers."
     }
   },
   {
@@ -2749,6 +2953,9 @@
         "depth": 3,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "発射時の強い負荷に耐えるように作られた短く重いクロスボウ用の矢だ。",
@@ -2784,6 +2991,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "IGNORE_ACID",
+      "IGNORE_COLD",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC"
+    ],
     "flavor": {
       "ja": "威力を高める魔法が掛けられた強力なクロスボウ用の矢だ。",
       "en": "A mighty quarrel, bound about with battle magics."
@@ -2817,6 +3031,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -2852,6 +3069,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -2885,6 +3105,10 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "TUNNEL"
     ],
     "flavor": {
       "ja": "小型で頑丈なシャベルだ。",
@@ -2920,6 +3144,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "TUNNEL"
+    ],
     "flavor": {
       "ja": "ノームの職人によって作られた鋼鉄製のシャベルだ。",
       "en": "A small spade forged of steel with gnomish craftmanship."
@@ -2954,9 +3182,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "TUNNEL"
+    ],
     "flavor": {
-      "ja": "ドワーフの強力な肩にちょうど良い幅広のシャベルだ。\n採掘力を高めるルーンを帯び、普通の岩ならばどんな物でも掘り進む事ができる。",
-      "en": "A broad shovel, fit for the strong shoulders of a dwarf.  It bears runes\nof delving and no ordinary rock can resist it."
+      "ja": "ドワーフの強力な肩にちょうど良い幅広のシャベルだ。採掘力を高めるルーンを帯び、普通の岩ならばどんな物でも掘り進む事ができる。",
+      "en": "A broad shovel, fit for the strong shoulders of a dwarf.  It bears runesof delving and no ordinary rock can resist it."
     }
   },
   {
@@ -2988,9 +3220,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "TUNNEL"
+    ],
     "flavor": {
       "ja": "重い採掘用の道具で、微妙に曲った頭部の両端に切先が付いている。",
-      "en": "A heavy mining tool with a long, slightly curved head that tapers\nto chisel points on both ends."
+      "en": "A heavy mining tool with a long, slightly curved head that tapersto chisel points on both ends."
     }
   },
   {
@@ -3022,9 +3258,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "TUNNEL"
+    ],
     "flavor": {
       "ja": "粗雑で醜い作りだが、実用的なつるはしだ。",
-      "en": "A crude, ugly, but effective pickaxe.  Made in enormous quantities for\nthe slave-mines of Durthang."
+      "en": "A crude, ugly, but effective pickaxe.  Made in enormous quantities forthe slave-mines of Durthang."
     }
   },
   {
@@ -3056,9 +3296,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "TUNNEL"
+    ],
     "flavor": {
       "ja": "モリアの深部の採掘に使われていたのと同様な、短く頑丈なつるはしだ。",
-      "en": "A short but sturdy pick, like those that delved deep Moria, with runes to\nbreak the sinews of mountains."
+      "en": "A short but sturdy pick, like those that delved deep Moria, with runes tobreak the sinews of mountains."
     }
   },
   {
@@ -3090,9 +3334,17 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_COLD",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC",
+      "STEALTH",
+      "SEARCH"
+    ],
     "flavor": {
-      "ja": "不思議な絹のような素材で作られた外套だ。\nその素材は周りの景色の色と形を映し出し、着用者を隠す効果がある。",
-      "en": "A mantle made of curious silken material by the Galadrim that wondrously\ntakes on the hues and shapes of its surroundings."
+      "ja": "不思議な絹のような素材で作られた外套だ。その素材は周りの景色の色と形を映し出し、着用者を隠す効果がある。",
+      "en": "A mantle made of curious silken material by the Galadrim that wondrouslytakes on the hues and shapes of its surroundings."
     }
   },
   {
@@ -3124,8 +3376,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "ふくらはぎの高さまでの柔軟な革のブーツだ。\n踵からふくらはぎまで結び紐が付いている。",
+      "ja": "ふくらはぎの高さまでの柔軟な革のブーツだ。踵からふくらはぎまで結び紐が付いている。",
       "en": "These are calf-high boots of flexible leather, laced from heel to calf."
     }
   },
@@ -3158,6 +3411,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "長い旅路でも良く保つ丈夫な革製のブーツだ。",
       "en": "A set of sturdy leather boots that will last many weary miles."
@@ -3192,9 +3446,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "二重の革製ブーツで、踵と爪先が鉄で補強されている。",
-      "en": "A set of double-lined leather boots, with toes and heels reinforced with\niron."
+      "en": "A set of double-lined leather boots, with toes and heels reinforced withiron."
     }
   },
   {
@@ -3226,6 +3481,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "煮固めた革製の詰め物入りの帽子だ。",
       "en": "A padded skullcap of boiled leather."
@@ -3260,6 +3516,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "頭部を保護する鋼鉄の帽子だ。",
       "en": "A pot-helm of steel that protects the skull."
@@ -3294,6 +3551,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "頭部を完全に覆う鉄製のヘルメットだ。",
       "en": "A mighty helmet of heavy iron, completely enclosing the head."
@@ -3328,9 +3586,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "鋼鉄板と鎖かたびらを組み合わせて、頭部から肩までを完全に覆う防具だ。",
-      "en": "This great helm covers the head and shoulders with plates of steel and a\ncurtain of mail."
+      "en": "This great helm covers the head and shoulders with plates of steel and acurtain of mail."
     }
   },
   {
@@ -3362,9 +3621,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "鉄の環に鉄の突起で飾りが付けられた冠だ。君主の印である。",
-      "en": "A plain band of iron, crowned with iron spikes.  It is a tyrant's\nsymbol."
+      "en": "A plain band of iron, crowned with iron spikes.  It is a tyrant'ssymbol."
     }
   },
   {
@@ -3396,9 +3656,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID"
+    ],
     "flavor": {
-      "ja": "幾つもの細い突起が上向きに付いた優雅な金の頭飾り。\n王の額に相応しい物に見える。",
-      "en": "An elegant golden circlet, with slender spines thrusting upward.\nIt looks like it should be resting over the brow of a king."
+      "ja": "幾つもの細い突起が上向きに付いた優雅な金の頭飾り。王の額に相応しい物に見える。",
+      "en": "An elegant golden circlet, with slender spines thrusting upward.It looks like it should be resting over the brow of a king."
     }
   },
   {
@@ -3430,9 +3693,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID"
+    ],
     "flavor": {
       "ja": "精巧に飾り付けられた重厚な金の冠に様々な宝石が虹色にちりばめられている。",
-      "en": "An elaboratedly decorated crown of massive gold, studded with a rainbow\nof gems and jewels; worthy of an emperor."
+      "en": "An elaboratedly decorated crown of massive gold, studded with a rainbowof gems and jewels; worthy of an emperor."
     }
   },
   {
@@ -3464,6 +3730,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "首から踵までを覆う、ビロードまたは綿製の実用的な衣服だ。",
       "en": "A practical garment of thick wool or velvet, draping from neck to heels."
@@ -3498,9 +3765,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "このぼろきれは元々はローブだった物のようだが、\nあまりにも継ぎはぎだらけでよく判別できない。",
-      "en": "This tattered rag appears to once have been a robe, but has been patched\nand re-patched so many times that you can't be sure."
+      "ja": "このぼろきれは元々はローブだった物のようだが、あまりにも継ぎはぎだらけでよく判別できない。",
+      "en": "This tattered rag appears to once have been a robe, but has been patchedand re-patched so many times that you can't be sure."
     }
   },
   {
@@ -3532,6 +3800,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "しなやかな革の胴当てに薄い革ジャケットが付いた鎧だ。",
       "en": "A cuirass of pliable leather with a thicker leather jack."
@@ -3566,6 +3835,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "多数の金属製の鋲で補強されたしなやかな革の胴当てだ。",
       "en": "A cuirass of pliable leather studded with metal rivets."
@@ -3600,6 +3870,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "煮固めた革製の胴当てと肩当てが付いた鎧だ。",
       "en": "A boiled leather cuirass and shoulder plates."
@@ -3634,9 +3905,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "多数の金属製の鋲で補強した革製のシャツに煮固めた革製の胴当てと肩当てが付いた鎧だ。",
-      "en": "A strong leather breastplate and shoulder guards over a sleeved shirt\nof cured leather covered with iron studs."
+      "en": "A strong leather breastplate and shoulder guards over a sleeved shirtof cured leather covered with iron studs."
     }
   },
   {
@@ -3668,9 +3940,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "革製のシャツに煮固めた革製の鱗のような形の部品を多数縫い付けてある鎧だ。",
-      "en": "A tunic and skirt sewn with thick, overlapping scales of hardened\nleather."
+      "en": "A tunic and skirt sewn with thick, overlapping scales of hardenedleather."
     }
   },
   {
@@ -3702,9 +3975,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "革製の袖付きシャツに鋼鉄製の鱗のような形の部品を多数縫い付けてある鎧だ。",
-      "en": "A heavy shirt of overlapping steel scales backed by leather, with\nmatching skirt and sleeves."
+      "en": "A heavy shirt of overlapping steel scales backed by leather, withmatching skirt and sleeves."
     }
   },
   {
@@ -3736,9 +4010,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "鋼鉄の輪が噛み合った袖付きの鎖かたびらで、革が当てられている。\n鎖かたびらを作るには熟練を要するが、高い防御力を持ち比較的に軽量に仕上がる。",
-      "en": "A sleeved hauberk of interlocking steel rings, well padded with leather.\nChain mail takes skill to make, but offers good protection and relatively\nlow weight."
+      "ja": "鋼鉄の輪が噛み合った袖付きの鎖かたびらで、革が当てられている。鎖かたびらを作るには熟練を要するが、高い防御力を持ち比較的に軽量に仕上がる。",
+      "en": "A sleeved hauberk of interlocking steel rings, well padded with leather.Chain mail takes skill to make, but offers good protection and relativelylow weight."
     }
   },
   {
@@ -3770,9 +4045,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "この鎧の各部の継ぎ目は錆で脆くなっており、朽ちた鎖の輪は固まってしまい弱まっ\nている。",
-      "en": "Each link of this suit is brittle with rust, and the corroded rings\nare stiff and weakened."
+      "ja": "この鎧の各部の継ぎ目は錆で脆くなっており、朽ちた鎖の輪は固まってしまい弱まっている。",
+      "en": "Each link of this suit is brittle with rust, and the corroded ringsare stiff and weakened."
     }
   },
   {
@@ -3804,9 +4080,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "噛み合った鋼鉄の輪でできた鎖かたびらの胴鎧と脛当てと袖であり、\n2枚目の鎖の層で重要な部分を戦略的に補強しており、\n至る所に重い詰め物の層がある。",
-      "en": "A hauberk, leggings, and sleeves of interlocking steel rings,\nstrategically reinforced at vital locations with a second layer\nof chain, all over a layer of heavy padding."
+      "ja": "噛み合った鋼鉄の輪でできた鎖かたびらの胴鎧と脛当てと袖であり、2枚目の鎖の層で重要な部分を戦略的に補強しており、至る所に重い詰め物の層がある。",
+      "en": "A hauberk, leggings, and sleeves of interlocking steel rings,strategically reinforced at vital locations with a second layerof chain, all over a layer of heavy padding."
     }
   },
   {
@@ -3838,6 +4115,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -3872,6 +4150,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -3906,6 +4185,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "鋼鉄製の胴鎧であり、スカートの上部には腕鎧があり、鎖の脛当てを持つ。",
       "en": "A steel corselet and vambraces over a skirt and leggings of chain."
@@ -3940,6 +4220,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -3974,9 +4255,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "念入りに体に合わせた鉄板製の全身鎧であり、ちょうつがいで繋がった部分の裏は\n鎖で守られ、鎧の裏には軽い詰め物がある。",
-      "en": "A full suit of carefully fitted plates, with hinged joints backed\nby chain, and light padding underneath."
+      "ja": "念入りに体に合わせた鉄板製の全身鎧であり、ちょうつがいで繋がった部分の裏は鎖で守られ、鎧の裏には軽い詰め物がある。",
+      "en": "A full suit of carefully fitted plates, with hinged joints backedby chain, and light padding underneath."
     }
   },
   {
@@ -4008,6 +4290,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4042,9 +4325,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID"
+    ],
     "flavor": {
-      "ja": "ダイアモンドのように硬いアダマンタイトでできた精巧で美しい鎧であり、\nこれほどの防御をもたらす鎧は中つ国には他に存在しない。",
-      "en": "Adamantite, hard as diamonds, forms this exquisite suit; nothing else\nin Middle Earth gives as much protection."
+      "ja": "ダイアモンドのように硬いアダマンタイトでできた精巧で美しい鎧であり、これほどの防御をもたらす鎧は中つ国には他に存在しない。",
+      "en": "Adamantite, hard as diamonds, forms this exquisite suit; nothing elsein Middle Earth gives as much protection."
     }
   },
   {
@@ -4076,9 +4362,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID"
+    ],
     "flavor": {
-      "ja": "遥かなる昔に伝説のドワーフの鍛冶師に鍛えられた、輝くまことの銀の鎧だ。\n凝視すると純白にきらめく。",
-      "en": "A shimmering suit of true-silver, forged long ago by dwarven smiths of\nlegend.  It gleams with purest white as you gaze upon it."
+      "ja": "遥かなる昔に伝説のドワーフの鍛冶師に鍛えられた、輝くまことの銀の鎧だ。凝視すると純白にきらめく。",
+      "en": "A shimmering suit of true-silver, forged long ago by dwarven smiths oflegend.  It gleams with purest white as you gaze upon it."
     }
   },
   {
@@ -4110,9 +4399,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID"
+    ],
     "flavor": {
-      "ja": "本当に希少で驚くべきまことの銀製の鎖かたびらであり、他の鎧に比べてもその\n軽さにしてより高い防御を与える。",
-      "en": "Rare and wondrous is chain mail made of true-silver, for it offers more\nprotection for the weight than any other armour."
+      "ja": "本当に希少で驚くべきまことの銀製の鎖かたびらであり、他の鎧に比べてもその軽さにしてより高い防御を与える。",
+      "en": "Rare and wondrous is chain mail made of true-silver, for it offers moreprotection for the weight than any other armour."
     }
   },
   {
@@ -4144,6 +4436,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4177,6 +4470,10 @@
         "depth": 70,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "REFLECT"
     ],
     "flavor": {
       "ja": "",
@@ -4212,6 +4509,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "冒険者用の丈夫な外套だ。",
       "en": "A traveller's sturdy outer garment."
@@ -4245,6 +4543,10 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_DARK",
+      "RES_LITE"
     ],
     "flavor": {
       "ja": "着用者を影の層で包み込む闇夜の色のクロークだ。",
@@ -4280,6 +4582,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "革製の手甲で、手のひらは武器を握るために開いている。",
       "en": "Leather hand protection, with an open palm for gripping weapons."
@@ -4314,6 +4617,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "手と手首を鋼鉄板で完全に覆うグローブだ。",
       "en": "A set of gloves that completely covers the hand and wrist in steel plating."
@@ -4348,6 +4652,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "重厚な手の覆いで、鋼鉄としっかり煮固めた革で縛ってある。",
       "en": "A massive set of hand sheathings, bound with steel and thrice-cured leather."
@@ -4382,6 +4687,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "煮固めた動物の革を重ねた小さな木の板いっぱいに伸ばして作った丸い盾だ。",
       "en": "A circular shield of cured animal hide stretched over layered wooden strips."
@@ -4416,9 +4722,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "重ねた木の板を厚い革で覆った大きな楕円形の盾だ。",
-      "en": "A large oval shield made of layered wooden strips with a thick leather\ncovering."
+      "en": "A large oval shield made of layered wooden strips with a thick leathercovering."
     }
   },
   {
@@ -4450,6 +4757,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "金属の縁材と中心の円盤で強化した円形の木の盾だ。",
       "en": "A round shield of wood reinforced with metal rims and central disk."
@@ -4484,9 +4792,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "革で覆った木の板を金属で縁取った楕円形の盾だ。盾の大きな鉄の突起は素晴らしい\n腕の防御をもたらす。",
-      "en": "An oval shield of wood covered by leather and rimmed with metal.  A large\niron shield boss offers excellent hand protection."
+      "ja": "革で覆った木の板を金属で縁取った楕円形の盾だ。盾の大きな鉄の突起は素晴らしい腕の防御をもたらす。",
+      "en": "An oval shield of wood covered by leather and rimmed with metal.  A largeiron shield boss offers excellent hand protection."
     }
   },
   {
@@ -4517,6 +4826,10 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "STR",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -4552,6 +4865,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "DEX",
+      "HIDE_TYPE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4585,6 +4902,10 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "CON",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -4620,6 +4941,11 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_ELEC",
+      "IGNORE_ELEC",
+      "ACTIVATE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4653,6 +4979,10 @@
         "depth": 80,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SPEED",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -4688,6 +5018,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SEARCH",
+      "HIDE_TYPE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4721,6 +5055,10 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "TELEPORT",
+      "CURSED"
     ],
     "flavor": {
       "ja": "",
@@ -4756,6 +5094,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SLOW_DIGEST"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4789,6 +5130,10 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_FIRE",
+      "IGNORE_FIRE"
     ],
     "flavor": {
       "ja": "",
@@ -4824,6 +5169,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_COLD",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4857,6 +5206,9 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "LEVITATION"
     ],
     "flavor": {
       "ja": "",
@@ -4892,6 +5244,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_POIS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4925,6 +5280,9 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "FREE_ACT"
     ],
     "flavor": {
       "ja": "",
@@ -4960,6 +5318,11 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "CURSED",
+      "STR",
+      "HIDE_TYPE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -4993,6 +5356,11 @@
         "depth": 35,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_FIRE",
+      "IGNORE_FIRE",
+      "ACTIVATE"
     ],
     "flavor": {
       "ja": "",
@@ -5028,6 +5396,11 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_ACID",
+      "IGNORE_ACID",
+      "ACTIVATE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5061,6 +5434,11 @@
         "depth": 35,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_COLD",
+      "IGNORE_COLD",
+      "ACTIVATE"
     ],
     "flavor": {
       "ja": "",
@@ -5096,6 +5474,14 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "CURSED",
+      "TELEPORT",
+      "WIS",
+      "CHR",
+      "HIDE_TYPE",
+      "RANDOM_CURSE0"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5129,6 +5515,11 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "CURSED",
+      "INT",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -5164,6 +5555,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5198,6 +5590,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5232,6 +5625,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5265,6 +5659,10 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "CURSED",
+      "AGGRAVATE"
     ],
     "flavor": {
       "ja": "",
@@ -5300,6 +5698,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SEE_INVIS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5333,6 +5734,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SUST_STR"
     ],
     "flavor": {
       "ja": "",
@@ -5368,6 +5772,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SUST_INT"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5401,6 +5808,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SUST_WIS"
     ],
     "flavor": {
       "ja": "",
@@ -5436,6 +5846,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SUST_CON"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5469,6 +5882,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SUST_DEX"
     ],
     "flavor": {
       "ja": "",
@@ -5504,6 +5920,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SUST_CHR"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5537,6 +5956,9 @@
         "depth": 40,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -5572,6 +5994,15 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INT",
+      "WIS",
+      "CHR",
+      "SUST_INT",
+      "SUST_WIS",
+      "SUST_CHR",
+      "HIDE_TYPE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5605,6 +6036,10 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "CHR",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -5640,6 +6075,11 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SEARCH",
+      "INFRA",
+      "HIDE_TYPE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5673,6 +6113,10 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "TELEPORT",
+      "CURSED"
     ],
     "flavor": {
       "ja": "",
@@ -5708,6 +6152,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SLOW_DIGEST"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5741,6 +6188,10 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_ACID",
+      "IGNORE_ACID"
     ],
     "flavor": {
       "ja": "",
@@ -5776,6 +6227,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5810,6 +6262,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5843,6 +6296,16 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "FREE_ACT",
+      "SEE_INVIS",
+      "SEARCH",
+      "INFRA",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -5878,6 +6341,22 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "CURSED",
+      "HEAVY_CURSE",
+      "STR",
+      "INT",
+      "WIS",
+      "DEX",
+      "CON",
+      "CHR",
+      "TY_CURSE",
+      "NO_TELE",
+      "NO_MAGIC",
+      "REGEN",
+      "HIDE_TYPE",
+      "RANDOM_CURSE2"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -5912,6 +6391,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと武器の命中修正を強化する。",
       "en": "It increases a weapon's to-hit when you read it."
@@ -5946,6 +6426,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと武器のダメージ修正を強化する。",
       "en": "It increases a weapon's to-dam when you read it."
@@ -5980,6 +6461,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと防具のAC修正を強化する。",
       "en": "It increases an armour's to-AC when you read it."
@@ -6014,6 +6496,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと1個のアイテムを鑑定する。",
       "en": "It identifies an item when you read it."
@@ -6048,6 +6531,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと1個のアイテムの能力を完全に知る。",
       "en": "It reveals all information about an item when you read it."
@@ -6082,6 +6566,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それには噂が書かれている。",
       "en": "A rumor is in it."
@@ -6116,9 +6601,15 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_FIRE",
+      "IGNORE_ACID",
+      "IGNORE_COLD",
+      "IGNORE_ELEC"
+    ],
     "flavor": {
-      "ja": "それは読むと中心部ダメージ1000の巨大なカオスの球を自分を中心として\n発生する。カオス耐性がなければ自分も111+d111のダメージを受ける。",
-      "en": "It produces a huge chaos ball (damage of core: 1000) centered on you when\nyou read it. If you don't have resistance to chaos, you take 111+d111\ndamage."
+      "ja": "それは読むと中心部ダメージ1000の巨大なカオスの球を自分を中心として発生する。カオス耐性がなければ自分も111+d111のダメージを受ける。",
+      "en": "It produces a huge chaos ball (damage of core: 1000) centered on you whenyou read it. If you don't have resistance to chaos, you take 111+d111damage."
     }
   },
   {
@@ -6150,6 +6641,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと装備しているアイテムにかかった弱い呪いを解く。",
       "en": "It removes normal curses from equipped items when you read it."
@@ -6184,6 +6676,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周囲もしくは部屋全体を永久に照らす。",
       "en": "It lights up nearby area or the current room permanently when you read it."
@@ -6218,9 +6711,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_FIRE"
+    ],
     "flavor": {
-      "ja": "それは読むと中心部ダメージ666の巨大な炎の球を自分を中心として発生する。\n火炎耐性がなければ自分も50+d50のダメージを受ける。",
-      "en": "It produces a huge fire ball (damage of core: 666) centered on you when you\nread it. If you don't have resistance to fire, you take 50+d50 damage."
+      "ja": "それは読むと中心部ダメージ666の巨大な炎の球を自分を中心として発生する。火炎耐性がなければ自分も50+d50のダメージを受ける。",
+      "en": "It produces a huge fire ball (damage of core: 666) centered on you when youread it. If you don't have resistance to fire, you take 50+d50 damage."
     }
   },
   {
@@ -6252,9 +6748,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "それは読むと中心部ダメージ777の巨大な極寒の球を自分を中心として発生する。\n冷気耐性がなければ自分も100+d100のダメージを受ける。",
-      "en": "It produces a huge ice ball (damage of core: 777) centered on you when you\nread it. If you don't have resistance to cold, you take 100+d100 damage."
+      "ja": "それは読むと中心部ダメージ777の巨大な極寒の球を自分を中心として発生する。冷気耐性がなければ自分も100+d100のダメージを受ける。",
+      "en": "It produces a huge ice ball (damage of core: 777) centered on you when youread it. If you don't have resistance to cold, you take 100+d100 damage."
     }
   },
   {
@@ -6286,6 +6785,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと複数のモンスターを敵として召喚する。",
       "en": "It summons several monsters as enemies when you read it."
@@ -6320,6 +6820,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと近距離のテレポートをする。",
       "en": "It teleports you a short distance when you read it."
@@ -6354,6 +6855,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと遠距離のテレポートをする。",
       "en": "It teleports you a long distance when you read it."
@@ -6388,6 +6890,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと瞬時に上か下の階にテレポートする。",
       "en": "It teleports you one dungeon level up or down immediately when you read it."
@@ -6422,6 +6925,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと1度だけモンスターを打撃で混乱させられるようになる。",
       "en": "You can confuse monster you hit just for once when you read it."
@@ -6456,6 +6960,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺の地形を感知する。",
       "en": "It maps your vicinity when you read it."
@@ -6490,6 +6995,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の足元の床に守りのルーンを作り出す。",
       "en": "It creates a rune of protection on the floor you stand when you read it."
@@ -6524,6 +7030,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと装備しているアイテムにかかった弱い呪いと重い呪いを解く。",
       "en": "It removes normal and heavy curses from equipped items when you read it."
@@ -6558,6 +7065,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺の財宝を感知する。",
       "en": "It detects all treasures in your vicinity when you read it."
@@ -6592,6 +7100,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺のアイテムを感知する。",
       "en": "It detects all items in your vicinity when you read it."
@@ -6626,6 +7135,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺のトラップを感知する。",
       "en": "It detects all traps in your vicinity when you read it."
@@ -6659,6 +7169,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -6694,6 +7207,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "IGNORE_ACID",
+      "IGNORE_COLD",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -6728,6 +7248,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺のドア・階段を感知する。",
       "en": "It detects all doors and stairs in your vicinity when you read it."
@@ -6762,6 +7283,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと1個の高級なアイテムを作り出す。",
       "en": "It creates one great item when you read it."
@@ -6796,6 +7318,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと複数の高級なアイテムを作り出す。",
       "en": "It creates some great items when you read it."
@@ -6830,9 +7353,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周囲のモンスターを現在の階から消し去る。抵抗されると無効。",
-      "en": "It eliminates all nearby monsters, exhausting you.\nPowerful or unique monsters may be able to resist."
+      "en": "It eliminates all nearby monsters, exhausting you.Powerful or unique monsters may be able to resist."
     }
   },
   {
@@ -6864,6 +7388,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺の透明なモンスターを感知する。",
       "en": "It detects all invisible monsters in your vicinity when you read it."
@@ -6898,6 +7423,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺のモンスターを怒らせる。",
       "en": "It aggravates monsters in your vicinity when you read it."
@@ -6932,6 +7458,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分と隣接する床にトラップを作り出す。",
       "en": "It creates traps on the squares adjacent to you when you read it."
@@ -6966,6 +7493,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分と隣接するトラップやドアを破壊する。",
       "en": "It destroys traps on the floors adjacent to you when you read it."
@@ -7000,9 +7528,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは読むと無銘の武器・防具からアーティファクトを作り出す。装備品が\n積み重なっていた場合は1個を残して壊れる。",
-      "en": "It creates an artifact from a nameless weapon or armour when you read it.\nDon't be greedy - you will get only one artifact."
+      "ja": "それは読むと無銘の武器・防具からアーティファクトを作り出す。装備品が積み重なっていた場合は1個を残して壊れる。",
+      "en": "It creates an artifact from a nameless weapon or armour when you read it.Don't be greedy - you will get only one artifact."
     }
   },
   {
@@ -7034,8 +7563,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは読むと魔法棒/杖の充填数を回復させたり, 充填中のロッドの充填時間を\n縮めたりする。",
+      "ja": "それは読むと魔法棒/杖の充填数を回復させたり, 充填中のロッドの充填時間を縮めたりする。",
       "en": "It recharges wands, staffs or rods when you read it."
     }
   },
@@ -7068,9 +7598,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは読むと指定した文字のモンスターを現在の階から消し去る。抵抗されると\n無効。",
-      "en": "It eliminates an entire class of monster, exhausting you.\nPowerful or unique monsters may resist."
+      "ja": "それは読むと指定した文字のモンスターを現在の階から消し去る。抵抗されると無効。",
+      "en": "It eliminates an entire class of monster, exhausting you.Powerful or unique monsters may resist."
     }
   },
   {
@@ -7102,6 +7633,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周囲もしくは部屋全体が暗闇に包まれ、盲目になる。",
       "en": "It darkens the nearby area or current room and blinds you when you read it."
@@ -7136,6 +7668,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと一時的に弱い邪悪な者の攻撃を回避しやすくなる結界を張る。",
       "en": "It gives temporary protection from lesser evil creatures when you read it."
@@ -7170,6 +7703,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと満腹になる。",
       "en": "It satisfies hunger when you read it."
@@ -7204,6 +7738,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと視界内のアンデッドのモンスターに80のダメージを与える。",
       "en": "It does 80 damage to all undead monsters in sight when you read it."
@@ -7238,6 +7773,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと武器の命中修正とダメージ修正を強化する。",
       "en": "It increases a weapon's to-hit and to-dam when you read it."
@@ -7272,6 +7808,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと装備中の武器を(不良品)に変える。",
       "en": "It makes your wielding weapon (Shattered) when you read it."
@@ -7306,6 +7843,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと防具のAC修正を複数回強化する。",
       "en": "It increases an armour's to-ac powerfully when you read it."
@@ -7340,6 +7878,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと着ている鎧を(粗悪品)に変える。",
       "en": "It makes your current armour (Blasted) when you read it."
@@ -7374,6 +7913,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと複数のアンデッドのモンスターを敵として召喚する。",
       "en": "It summons several undead monsters as enemies when you read it."
@@ -7408,6 +7948,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと一時的に祝福される。",
       "en": "It blesses you temporarily when you read it."
@@ -7442,6 +7983,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと一時的に祝福される。",
       "en": "It blesses you temporarily when you read it."
@@ -7476,6 +8018,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと一時的に祝福される。",
       "en": "It blesses you temporarily when you read it."
@@ -7510,9 +8053,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは読むと地上にいる時は行ったことのあるダンジョンの最深階へ、\nダンジョンにいる時は地上へと移動する。",
-      "en": "It recalls you to the town or back into the dungeon you have entered when\nyou read it."
+      "ja": "それは読むと地上にいる時は行ったことのあるダンジョンの最深階へ、ダンジョンにいる時は地上へと移動する。",
+      "en": "It recalls you to the town or back into the dungeon you have entered whenyou read it."
     }
   },
   {
@@ -7544,6 +8088,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の周辺の全てのものを破壊する。",
       "en": "It destroys everything nearby you when you read it."
@@ -7577,6 +8122,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "FIXED_FLAVOR"
     ],
     "flavor": {
       "ja": "それは不気味な味のするジュースである。",
@@ -7612,6 +8160,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "FIXED_FLAVOR"
+    ],
     "flavor": {
       "ja": "それは甘くてサッパリしているジュースである。",
       "en": "It tastes sweet."
@@ -7645,6 +8196,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "FIXED_FLAVOR"
     ],
     "flavor": {
       "ja": "それはただの水である。",
@@ -7680,6 +8234,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと腕力の最大値が上がる。",
       "en": "It increases your strength when you quaff it."
@@ -7714,6 +8269,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと腕力の現在値が下がる。",
       "en": "It decreases your strength when you quaff it."
@@ -7748,6 +8304,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと腕力が回復する。",
       "en": "It restores your strength when you quaff it."
@@ -7782,6 +8339,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと知能の最大値が上がる。",
       "en": "It increases your intellingence when you quaff it."
@@ -7816,6 +8374,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと知能の現在値が下がる。",
       "en": "It decreases your intelligence when you quaff it."
@@ -7850,6 +8409,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと知能が回復する。",
       "en": "It restores your intelligence when you quaff it."
@@ -7884,6 +8444,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと賢さの最大値が上がる。",
       "en": "It increases your wisdom when you quaff it."
@@ -7918,6 +8479,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと賢さの現在値が下がる。",
       "en": "It decreases your wisdom when you quaff it."
@@ -7952,6 +8514,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと賢さが回復する。",
       "en": "It restores your wisdom when you quaff it."
@@ -7986,6 +8549,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと魅力の最大値が上がる。",
       "en": "It increases your charisma when you quaff it."
@@ -8020,6 +8584,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと魅力の現在値が下がる。",
       "en": "It decreases your charisma when you quaff it."
@@ -8054,6 +8619,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと魅力が回復する。",
       "en": "It restores your charisma when you quaff it."
@@ -8088,9 +8654,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと体力が50回復し、盲目・毒・混乱・朦朧・切り傷・幻覚を癒す。",
-      "en": "It heals you 50 and cures blindness, poison, confusion, stunning, cuts\nand hallucination when you quaff it."
+      "en": "It heals you 50 and cures blindness, poison, confusion, stunning, cutsand hallucination when you quaff it."
     }
   },
   {
@@ -8122,6 +8689,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと一時的に無敵化する。",
       "en": "You get invulnerable temporarily when you quaff it."
@@ -8156,9 +8724,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは飲むと自分の生命力ランクや全ステータスの限界が作り直され、\n全ての突然変異が消える。",
-      "en": "It changes your life rating and max of all your stats and cures all\nmutations when you quaff it."
+      "ja": "それは飲むと自分の生命力ランクや全ステータスの限界が作り直され、全ての突然変異が消える。",
+      "en": "It changes your life rating and max of all your stats and cures allmutations when you quaff it."
     }
   },
   {
@@ -8190,9 +8759,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと体力が4d8回復し、盲目・混乱・狂戦士化を癒し、切り傷を和らげる。",
-      "en": "It heals you 4d8, cures blindness, confusion and berserk and reduces cuts\nwhen you quaff it."
+      "en": "It heals you 4d8, cures blindness, confusion and berserk and reduces cutswhen you quaff it."
     }
   },
   {
@@ -8224,9 +8794,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと体力が6d8回復し、盲目・混乱・毒・朦朧・切り傷・狂戦士化を癒す。",
-      "en": "It heals you 6d8 and cures blindness, confusion, poison, stunned, cuts and\nberserk when you quaff it."
+      "en": "It heals you 6d8 and cures blindness, confusion, poison, stunned, cuts andberserk when you quaff it."
     }
   },
   {
@@ -8258,9 +8829,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと体力が300回復し、盲目・混乱・毒・朦朧・切り傷・狂戦士化を癒す。",
-      "en": "It heals you 300 and cures blindness, confusion, poison, stunned, cuts and\nberserk when you quaff it."
+      "en": "It heals you 300 and cures blindness, confusion, poison, stunned, cuts andberserk when you quaff it."
     }
   },
   {
@@ -8292,6 +8864,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと耐久力の最大値が上がる。",
       "en": "It increases your constitution when you quaff it."
@@ -8326,9 +8899,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと現在の経験値の半分(100000を超えない)の経験を得る。",
-      "en": "You gain experience equal to the lesser of 100000 or half of your current\nexperience when you quaff it."
+      "en": "You gain experience equal to the lesser of 100000 or half of your currentexperience when you quaff it."
     }
   },
   {
@@ -8360,6 +8934,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと麻痺する。",
       "en": "It paralyzes you when you quaff it."
@@ -8394,6 +8969,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと盲目になる。",
       "en": "It blinds you when you quaff it."
@@ -8428,9 +9004,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと混乱し、幻覚に侵される。修行僧が飲むと酔拳を使えるらしい。",
-      "en": "It confuses you and causes you to hallucinate when you quaff it. If you are\na monk, you may be a drunken master."
+      "en": "It confuses you and causes you to hallucinate when you quaff it. If you area monk, you may be a drunken master."
     }
   },
   {
@@ -8462,6 +9039,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと毒に冒される。",
       "en": "It poisons you when you quaff it."
@@ -8496,6 +9074,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと一時的に加速する。",
       "en": "It hastes you temporarily when you quaff it."
@@ -8530,6 +9109,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと一時的に減速する。",
       "en": "It slows you down temporarily when you quaff it."
@@ -8564,6 +9144,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと器用さの最大値が上がる。",
       "en": "It increases your dexterity when you quaff it."
@@ -8598,6 +9179,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと器用さが回復する。",
       "en": "It restores your dexterity when you quaff it."
@@ -8632,6 +9214,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと耐久力が回復する。",
       "en": "It restores your constitution when you quaff it."
@@ -8666,6 +9249,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと現在の経験値を失う。",
       "en": "You lose experience when you quaff it."
@@ -8700,9 +9284,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと餓死寸前になり麻痺するが、毒を癒す。",
-      "en": "It makes you nearly faint from hunger and paralyzes you,\nbut it cures poison when you quaff it."
+      "en": "It makes you nearly faint from hunger and paralyzes you,but it cures poison when you quaff it."
     }
   },
   {
@@ -8734,9 +9319,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは飲むとその階の地形を完全に知ることができ、その階全体が永久に\n照らされ、その階の全てのアイテムを感知する。",
-      "en": "It maps, lights permanently and detects all items on the entire level when\nyou quaff it."
+      "ja": "それは飲むとその階の地形を完全に知ることができ、その階全体が永久に照らされ、その階の全てのアイテムを感知する。",
+      "en": "It maps, lights permanently and detects all items on the entire level whenyou quaff it."
     }
   },
   {
@@ -8768,9 +9354,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと恐怖を取り除き、一時的にヒーロー気分になり、体力が10回復する。",
-      "en": "It removes fear, causes you temporary heroism and heals you 10 when you\nquaff it."
+      "en": "It removes fear, causes you temporary heroism and heals you 10 when youquaff it."
     }
   },
   {
@@ -8802,9 +9389,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと恐怖を取り除き、一時的に狂戦士化し、体力が30回復する。",
-      "en": "It removes fear, causes you to go berserk and heals you 30 when you\nquaff it."
+      "en": "It removes fear, causes you to go berserk and heals you 30 when youquaff it."
     }
   },
   {
@@ -8836,6 +9424,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと恐怖を取り除く。",
       "en": "It removes fear when you quaff it."
@@ -8870,6 +9459,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと経験値が回復する。",
       "en": "It restores your experience when you quaff it."
@@ -8904,9 +9494,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと一時的に火炎の耐性を得る。装備による耐性に累積する。",
-      "en": "You get temporary resistance to fire when you quaff it. This resistance\nis cumulative with equipment."
+      "en": "You get temporary resistance to fire when you quaff it. This resistanceis cumulative with equipment."
     }
   },
   {
@@ -8938,9 +9529,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと一時的に冷気の耐性を得る。装備による耐性に累積する。",
-      "en": "You get temporary resistance to cold when you quaff it. This resistance\nis cumulative with equipment."
+      "en": "You get temporary resistance to cold when you quaff it. This resistanceis cumulative with equipment."
     }
   },
   {
@@ -8972,6 +9564,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと一時的に透明なものが見える能力を得る。",
       "en": "It gives temporary see invisible when you quaff it."
@@ -9006,6 +9599,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと毒を和らげる。",
       "en": "It reduces poison when you quaff it."
@@ -9040,6 +9634,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと毒を癒す。",
       "en": "It cures poison when you quaff it."
@@ -9074,9 +9669,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは飲むと魔力が最大まで回復し、狂戦士化を癒す。\n魔道具術師の場合、使用回数が最大使用回数の1/3だけ回復する。",
-      "en": "It restores mana to full and cures berserk when you quaff it.\nMagicEaters restore their charges up to 1/3 of full charge."
+      "ja": "それは飲むと魔力が最大まで回復し、狂戦士化を癒す。魔道具術師の場合、使用回数が最大使用回数の1/3だけ回復する。",
+      "en": "It restores mana to full and cures berserk when you quaff it.MagicEaters restore their charges up to 1/3 of full charge."
     }
   },
   {
@@ -9108,6 +9704,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと一時的に赤外線視力を強める。",
       "en": "It gives temporary infravision when you quaff it."
@@ -9142,9 +9739,15 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "それは飲むと一時的に酸・電撃・火炎・冷気・毒の耐性を得る。\n装備による耐性に累積する。",
-      "en": "You get temporary resistances to elements and poison when you quaff it.\nThese resistances are cumulative with equipment."
+      "ja": "それは飲むと一時的に酸・電撃・火炎・冷気・毒の耐性を得る。装備による耐性に累積する。",
+      "en": "You get temporary resistances to elements and poison when you quaff it.These resistances are cumulative with equipment."
     }
   },
   {
@@ -9176,6 +9779,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと光線を放つ。",
       "en": "It fires a line of light when you use it."
@@ -9210,6 +9814,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを魅了してペットにする。",
       "en": "It charms a monster into your pet when you use it."
@@ -9244,6 +9849,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとダメージ(5+レベル/8)d8の冷気の矢またはビームを放つ。",
       "en": "It fires a bolt or beam of cold (damage: (5+level/8)d8) when you use it."
@@ -9278,6 +9884,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとダメージ(7+レベル/6)d8の火炎の矢またはビームを放つ。",
       "en": "It fires a bolt or beam of fire (damage: (7+level/6)d8) when you use it."
@@ -9312,6 +9919,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとドアや岩石や壁を溶かす。",
       "en": "It turns a door, rock, wall square to mud when you use it."
@@ -9346,6 +9954,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを変身させる。",
       "en": "It changes a monster into another when you use it."
@@ -9380,6 +9989,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターの体力を回復させる。",
       "en": "It heals a monster when you use it."
@@ -9414,6 +10024,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを加速させる。",
       "en": "It hastes a monster when you use it."
@@ -9448,6 +10059,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを減速させる。",
       "en": "It slows a monster down when you use it."
@@ -9482,6 +10094,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを混乱させる。",
       "en": "It confuses a monster when you use it."
@@ -9516,6 +10129,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを眠らせる。",
       "en": "It puts a monster to sleep when you use it."
@@ -9550,6 +10164,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとダメージ80+レベルの衰弱の矢を放つ。",
       "en": "It fires a bolt of hypodynamia (damage: 80+level) when you use it."
@@ -9584,9 +10199,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとトラップやドアを破壊するビームを放つ。",
-      "en": "It fires a beam that destroys all traps and doors along a line when you\nuse it."
+      "en": "It fires a beam that destroys all traps and doors along a line when youuse it."
     }
   },
   {
@@ -9618,6 +10234,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとダメージ(2+レベル/10)d6の魔法の矢またはビームを放つ。",
       "en": "It fires a bolt or beam of magic (damage: (2+level/10)d6) when you use it."
@@ -9652,8 +10269,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは使うと1体のモンスターのクローンを作り出す。ユニーク・\nモンスターには無効。",
+      "ja": "それは使うと1体のモンスターのクローンを作り出す。ユニーク・モンスターには無効。",
       "en": "It clones a monster when you use it. Unique monsters are not cloned."
     }
   },
@@ -9686,6 +10304,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを恐怖させる。",
       "en": "It scares a monster when you use it."
@@ -9720,6 +10339,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとモンスターをテレポートさせるビームを放つ。",
       "en": "It fires a beam that teleports all monsters along a line when you use it."
@@ -9754,6 +10374,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとトラップを破壊するビームを放つ。",
       "en": "It fires a beam that destroys all traps along a line when you use it."
@@ -9787,6 +10408,9 @@
         "depth": 35,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ELEC"
     ],
     "flavor": {
       "ja": "それは使うとダメージ40+3*レベル/4の電撃の球を放つ。",
@@ -9822,6 +10446,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "それは使うとダメージ50+3*レベル/4の冷気の球を放つ。",
       "en": "It fires a ball of cold (damage: 50+3*level/4) when you use it."
@@ -9855,6 +10482,9 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_FIRE"
     ],
     "flavor": {
       "ja": "それは使うとダメージ70+3*レベル/4の火炎の球を放つ。",
@@ -9890,6 +10520,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとダメージ12+レベル/4の毒の球を放つ。",
       "en": "It fires a ball of poison (damage: 12+level/4) when you use it."
@@ -9923,6 +10554,9 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID"
     ],
     "flavor": {
       "ja": "それは使うとダメージ60+3*レベル/4の酸の球を放つ。",
@@ -9958,6 +10592,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "それは使うと何が起こるかわからない。",
       "en": "It effects uncertainly when you use it."
@@ -9991,6 +10631,9 @@
         "depth": 3,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -10026,6 +10669,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとダメージ(6+レベル/7)d8の酸の矢またはビームを放つ。",
       "en": "It fires a bolt or beam of acid (damage: (6+level/7)d8) when you use it."
@@ -10059,6 +10703,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "それは使うとダメージ200の火炎のブレスを放つ。",
@@ -10094,6 +10744,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "それは使うとダメージ180の冷気のブレスを放つ。",
       "en": "It breathes cold (damage: 180) when you use it."
@@ -10128,9 +10784,15 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "それは使うとダメージ240の酸のブレス、ダメージ210の電撃のブレス、\nダメージ240の火炎のブレス、ダメージ210の冷気のブレス、\nダメージ180の毒のブレスのいずれかを放つ。",
-      "en": "It breathes acid (damage: 240), lightning (damage: 210), fire (damage:\n240), cold (damage: 210) or poison (damage: 180) when you use it."
+      "ja": "それは使うとダメージ240の酸のブレス、ダメージ210の電撃のブレス、ダメージ240の火炎のブレス、ダメージ210の冷気のブレス、ダメージ180の毒のブレスのいずれかを放つ。",
+      "en": "It breathes acid (damage: 240), lightning (damage: 210), fire (damage:240), cold (damage: 210) or poison (damage: 180) when you use it."
     }
   },
   {
@@ -10161,6 +10823,12 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "それは使うとダメージ200+d(レベル*2)の分解の球を放つ。",
@@ -10196,6 +10864,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "それは使うとダメージ250+レベル*3のロケットを発射する。",
       "en": "It fires a rocket (damage: 250+level*3) when you use it."
@@ -10230,6 +10904,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺のトラップを感知する。",
       "en": "It detects all traps in your vicinity when you use it."
@@ -10264,6 +10939,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺の財宝を感知する。",
       "en": "It detects all treasures in your vicinity when you use it."
@@ -10298,6 +10974,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺のアイテムを感知する。",
       "en": "It detects all items in your vicinity when you use it."
@@ -10332,6 +11009,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと遠距離のテレポートをする。",
       "en": "It teleports you a long distance when you use it."
@@ -10366,6 +11044,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周囲に地震を起こす。",
       "en": "It causes a earthquake nearby you when you use it."
@@ -10400,6 +11079,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと複数のモンスターを敵として召喚する。",
       "en": "It summons several monsters as enemies when you use it."
@@ -10434,6 +11114,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周囲もしくは部屋全体を永久に照らす。",
       "en": "It lights up nearby area or the current room permanently when you use it."
@@ -10468,6 +11149,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺の全てのものを破壊する。",
       "en": "It destroys everything nearby you when you use it."
@@ -10502,6 +11184,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うとランダムな方向への光線を5d3回放つ。",
       "en": "It fires 5d3 random lines of light when you use it."
@@ -10536,6 +11219,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと視界内のモンスターを加速させる。",
       "en": "It hastes all monsters in sight when you use it."
@@ -10570,6 +11254,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと視界内のモンスターを減速させる。",
       "en": "It slows all monsters in sight down when you use it."
@@ -10604,6 +11289,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと視界内のモンスターを眠らせる。",
       "en": "It puts all monsters in sight to sleep when you use it."
@@ -10638,6 +11324,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと体力が2d8回復し、盲目・狂戦士化を癒す。",
       "en": "It heals you 2d8 and cures blindness and berserk when you use it."
@@ -10672,6 +11359,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺の透明なモンスターを感知する。",
       "en": "It detects all invisible monsters in your vicinity when you use it."
@@ -10706,6 +11394,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと一時的に加速する。",
       "en": "It hastes you temporarily when you use it."
@@ -10740,6 +11429,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと一時的に減速する。",
       "en": "It slows you down temporarily when you use it."
@@ -10774,6 +11464,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺のドア・階段を感知する。",
       "en": "It detects all doors and stairs in your vicinity when you use it."
@@ -10808,6 +11499,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと装備しているアイテムにかかった弱い呪いを解く。",
       "en": "It removes normal curses from equipped items when you use it."
@@ -10842,6 +11534,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺の邪悪なモンスターを感知する。",
       "en": "It detects all evil monsters in your vicinity when you use it."
@@ -10876,9 +11569,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと盲目・毒・混乱・朦朧・切り傷・幻覚・狂戦士化を癒す。",
-      "en": "It cures blindness, poison, confusion, stunned, cuts, hallucination and\nberserk when you use it."
+      "en": "It cures blindness, poison, confusion, stunned, cuts, hallucination andberserk when you use it."
     }
   },
   {
@@ -10910,6 +11604,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと視界内の邪悪なモンスターに80のダメージを与える。",
       "en": "It does 80 damage to all evil monsters in sight when you use it."
@@ -10944,9 +11639,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは使うと視界内のモンスターの属性・HP・AC・スピード・現在の経験値・正体を\n表示する。",
-      "en": "It probes all monsters' alignment, HP, AC, speed, current experience and\ntrue character in sight when you use it."
+      "ja": "それは使うと視界内のモンスターの属性・HP・AC・スピード・現在の経験値・正体を表示する。",
+      "en": "It probes all monsters' alignment, HP, AC, speed, current experience andtrue character in sight when you use it."
     }
   },
   {
@@ -10978,6 +11674,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周囲もしくは部屋全体が暗闇に包まれ、盲目になる。",
       "en": "It darkens the nearby area or current room and blinds you when you use it."
@@ -11012,9 +11709,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは使うと指定した文字のモンスターを現在の階から消し去る。抵抗されると\n無効。",
-      "en": "It eliminates an entire class of monster, exhausting you.\nPowerful or unique monsters may resist."
+      "ja": "それは使うと指定した文字のモンスターを現在の階から消し去る。抵抗されると無効。",
+      "en": "It eliminates an entire class of monster, exhausting you.Powerful or unique monsters may resist."
     }
   },
   {
@@ -11046,6 +11744,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと視界内のモンスターに150のダメージを与える。",
       "en": "It does 150 damage to all monsters in sight when you use it."
@@ -11080,9 +11779,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと魔力が最大まで回復し、知能を回復し、狂戦士化を癒す。",
-      "en": "It restores mana to full, restores your intelligence and cures berserk when\nyou use it."
+      "en": "It restores mana to full, restores your intelligence and cures berserk whenyou use it."
     }
   },
   {
@@ -11114,6 +11814,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1個のアイテムを鑑定する。",
       "en": "It identifies an item when you use it."
@@ -11148,9 +11849,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは使うと視界内の邪悪なモンスターに150のダメージを与え、\n一時的に弱い邪悪な者の攻撃を回避しやすくなる結界を張り、\n毒・朦朧・切り傷を癒し、恐怖を取り除き、体力が50回復する。",
-      "en": "It does 150 damage to all evil monsters in sight, gives temporary\nprotection from lesser evil creatures, cures poison, stuuned, cuts, removes\nfear and heals you 50 when you use it."
+      "ja": "それは使うと視界内の邪悪なモンスターに150のダメージを与え、一時的に弱い邪悪な者の攻撃を回避しやすくなる結界を張り、毒・朦朧・切り傷を癒し、恐怖を取り除き、体力が50回復する。",
+      "en": "It does 150 damage to all evil monsters in sight, gives temporaryprotection from lesser evil creatures, cures poison, stuuned, cuts, removesfear and heals you 50 when you use it."
     }
   },
   {
@@ -11182,6 +11884,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周辺の地形を感知する。",
       "en": "It maps your vicinity when you use it."
@@ -11216,6 +11919,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと体力が300回復し、朦朧・切り傷・狂戦士化を癒す。",
       "en": "It heals you 300 and cures stunned, cuts and berserk when you use it."
@@ -11250,6 +11954,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11284,6 +11989,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11317,6 +12023,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -11352,6 +12064,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11386,6 +12104,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11420,6 +12139,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11453,6 +12173,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -11488,6 +12214,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11522,6 +12254,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11556,6 +12289,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11590,6 +12324,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11624,6 +12359,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11658,6 +12394,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11692,6 +12429,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11726,6 +12464,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11760,6 +12499,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11793,6 +12533,10 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "LITE",
+      "LITE_FUEL"
     ],
     "flavor": {
       "ja": "",
@@ -11828,6 +12572,11 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_FIRE",
+      "LITE_2",
+      "LITE_FUEL"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11862,6 +12611,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11896,6 +12646,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -11930,6 +12681,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとランダムな1属性でランダムな攻撃をする。",
       "en": "It is capable of firing almost anything, at random."
@@ -11964,6 +12716,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると自分の周辺のドア・階段を感知する。",
       "en": "It detects all doors and stairs in your vicinity when you zap it."
@@ -11998,6 +12751,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると自分の周辺のトラップを感知する。",
       "en": "It detects all traps in your vicinity when you zap it."
@@ -12032,9 +12786,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは振ると視界内のモンスターの属性・HP・AC・スピード・現在の経験値・正体を\n表示する。",
-      "en": "It probes all monsters' alignment, HP, AC, speed, current experience and\ntrue character in sight when you zap it."
+      "ja": "それは振ると視界内のモンスターの属性・HP・AC・スピード・現在の経験値・正体を表示する。",
+      "en": "It probes all monsters' alignment, HP, AC, speed, current experience andtrue character in sight when you zap it."
     }
   },
   {
@@ -12066,9 +12821,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは振ると地上にいる時は行ったことのあるダンジョンの最深階へ、\nダンジョンにいる時は地上へと移動する。",
-      "en": "It recalls you to the town or back into the dungeon you have entered when\nyou zap it."
+      "ja": "それは振ると地上にいる時は行ったことのあるダンジョンの最深階へ、ダンジョンにいる時は地上へと移動する。",
+      "en": "It recalls you to the town or back into the dungeon you have entered whenyou zap it."
     }
   },
   {
@@ -12100,6 +12856,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると自分の周囲もしくは部屋全体を永久に照らす。",
       "en": "It lights up nearby area or current room permanently when you zap it."
@@ -12134,6 +12891,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると光線を放つ。",
       "en": "It fires a line of light when you zap it."
@@ -12168,9 +12926,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ(4+レベル/9)d8の電撃の矢またはビームを放つ。",
-      "en": "It fires a bolt or beam of lightning (damage: (4+level/9)d8) when you zap\nit."
+      "en": "It fires a bolt or beam of lightning (damage: (4+level/9)d8) when you zapit."
     }
   },
   {
@@ -12202,6 +12961,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ(5+レベル/8)d8の冷気の矢またはビームを放つ。",
       "en": "It fires a bolt or beam of cold (damage: (5+level/8)d8) when you zap it."
@@ -12236,6 +12996,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ(7+レベル/6)d8の火炎の矢またはビームを放つ。",
       "en": "It fires a bolt or beam of fire (damage: (7+level/6)d8) when you zap it."
@@ -12270,6 +13031,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると1体のモンスターを変身させる。",
       "en": "It changes a monster into another when you zap it."
@@ -12304,6 +13066,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると1体のモンスターを減速させる。",
       "en": "It slows a monster down when you zap it."
@@ -12338,6 +13101,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると1体のモンスターを眠らせる。",
       "en": "It puts a monster to sleep when you zap it."
@@ -12372,6 +13136,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ70+3*レベル/2の衰弱の矢を放つ。",
       "en": "It fires a bolt of hypodynamia (damage: 70+3*level/2) when you zap it."
@@ -12406,6 +13171,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとモンスターをテレポートさせるビームを放つ。",
       "en": "It fires a beam that teleports all monsters along a line when you zap it."
@@ -12440,6 +13206,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとトラップを破壊するビームを放つ。",
       "en": "It fires a beam that destroys all traps along a line when you zap it."
@@ -12474,6 +13241,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ40+レベルの電撃の球を放つ。",
       "en": "It fires a ball of lightning (damage: 40+level) when you zap it."
@@ -12508,6 +13276,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ50+レベルの冷気の球を放つ。",
       "en": "It fires a ball of cold (damage: 50+level) when you zap it."
@@ -12542,6 +13311,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ70+レベルの火炎の球を放つ。",
       "en": "It fires a ball of fire (damage: 70+level) when you zap it."
@@ -12576,6 +13346,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ60+レベルの酸の球を放つ。",
       "en": "It fires a ball of acid (damage: 60+level) when you zap it."
@@ -12610,6 +13381,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとダメージ(6+レベル/7)d8の酸の矢またはビームを放つ。",
       "en": "It fires a bolt or beam of acid (damage: (6+level/7)d8) when you zap it."
@@ -12644,6 +13416,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると自分の周辺の地形を感知する。",
       "en": "It maps your vicinity when you zap it."
@@ -12678,6 +13451,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると1個のアイテムを鑑定する。",
       "en": "It identifies an item when you zap it."
@@ -12712,9 +13486,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると盲目・毒・混乱・朦朧・切り傷・幻覚・狂戦士化を癒す。",
-      "en": "It cures blindness, poison, confusion, stunned, cuts, hallucination and\nberserk when you zap it."
+      "en": "It cures blindness, poison, confusion, stunned, cuts, hallucination andberserk when you zap it."
     }
   },
   {
@@ -12746,6 +13521,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると体力が500回復し、朦朧・切り傷・狂戦士化を癒す。",
       "en": "It heals you 500 and cures stunned, cuts and berserk when you zap it."
@@ -12780,9 +13556,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは振ると自分の周辺のトラップ・ドア・階段・財宝・アイテム・\nモンスターを感知する。",
-      "en": "It detects all traps, doors, stairs, treasures, items and monsters in the\nneighborhood when you zap it."
+      "ja": "それは振ると自分の周辺のトラップ・ドア・階段・財宝・アイテム・モンスターを感知する。",
+      "en": "It detects all traps, doors, stairs, treasures, items and monsters in theneighborhood when you zap it."
     }
   },
   {
@@ -12814,6 +13591,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると経験値と全ステータスが回復する。",
       "en": "It restores experience and all your stats when you zap it."
@@ -12848,6 +13626,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると一時的に加速する。",
       "en": "It hastes you temporarily when you zap it."
@@ -12882,6 +13661,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると視界内のモンスターに4のダメージを与える。",
       "en": "It does 4 damage to all monsters in sight when you zap it."
@@ -12916,6 +13696,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -12950,6 +13731,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -12983,6 +13765,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -13018,6 +13806,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13052,6 +13846,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13086,6 +13881,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13119,6 +13915,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -13154,6 +13956,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13188,6 +13996,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13222,6 +14031,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13256,6 +14066,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13290,6 +14101,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13324,6 +14136,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13358,6 +14171,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13392,6 +14206,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13426,6 +14241,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13460,6 +14276,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13494,6 +14311,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13528,6 +14346,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13562,6 +14381,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -13595,6 +14415,9 @@
         "depth": 45,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -13630,6 +14453,14 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_ACID",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "木や金属が耐えられないかのような漆黒の鱗鎧だ。",
       "en": "A suit of utterly black scales, against which no metal or wood can rest."
@@ -13664,9 +14495,17 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_ELEC",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "着た者が動くと不気味な稲妻と光を放つ、サファイアのように青い鱗鎧だ。",
-      "en": "A suit of scales as blue as sapphires, emitting eerie sparks and flashes as\nyou move about in it."
+      "en": "A suit of scales as blue as sapphires, emitting eerie sparks and flashes asyou move about in it."
     }
   },
   {
@@ -13698,9 +14537,17 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_COLD",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "冷淡な白に冷たくきらめく鱗鎧だ。それを見る時、背筋が寒くなる。",
-      "en": "A suit of scales, coldly gleaming in frosty white.  A shiver runs down\nthrough your spine even as you look at it."
+      "en": "A suit of scales, coldly gleaming in frosty white.  A shiver runs downthrough your spine even as you look at it."
     }
   },
   {
@@ -13732,9 +14579,17 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_FIRE",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "常に燃える炎に赤く彩られた鱗鎧だ。これを着ると古い火傷跡が痛む。",
-      "en": "A suit of scales, with all the reds of every fire ever lit.  The scar\ntissue from an old burn aches as you put this armour on."
+      "en": "A suit of scales, with all the reds of every fire ever lit.  The scartissue from an old burn aches as you put this armour on."
     }
   },
   {
@@ -13765,6 +14620,14 @@
         "depth": 45,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_POIS",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "病的な緑に光る鱗鎧だ。",
@@ -13800,9 +14663,21 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_ACID",
+      "RES_ELEC",
+      "RES_FIRE",
+      "RES_COLD",
+      "RES_POIS",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "怒りのエネルギーに脈打つ鱗鎧で、鎧の中に捕らわれ永遠に戦い続けるエレメント達\nを支配するために着る者の力全てを用いる。",
-      "en": "A suit of scales that throbs with angry energies; it takes all your energy\nto master the Elements fighting an endless war trapped inside."
+      "ja": "怒りのエネルギーに脈打つ鱗鎧で、鎧の中に捕らわれ永遠に戦い続けるエレメント達を支配するために着る者の力全てを用いる。",
+      "en": "A suit of scales that throbs with angry energies; it takes all your energyto master the Elements fighting an endless war trapped inside."
     }
   },
   {
@@ -13833,6 +14708,15 @@
         "depth": 65,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_LITE",
+      "RES_DARK",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -13868,9 +14752,18 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_SOUND",
+      "RES_SHARDS",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "厳粛な青と銀の鱗鎧だ。それに触れると、トランペットの集団の演奏が聞こえるか\n遠方からの竜巻を感じるかのようにごく微かな振動を感じる。",
-      "en": "A suit of scales in stern blue and silver.  You feel the slightest tremor\nas you touch it, like massed trumpets heard and cyclones felt from afar."
+      "ja": "厳粛な青と銀の鱗鎧だ。それに触れると、トランペットの集団の演奏が聞こえるか遠方からの竜巻を感じるかのようにごく微かな振動を感じる。",
+      "en": "A suit of scales in stern blue and silver.  You feel the slightest tremoras you touch it, like massed trumpets heard and cyclones felt from afar."
     }
   },
   {
@@ -13902,9 +14795,17 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_CONF",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "贅沢に彫刻された青銅がきらめく鱗鎧だ。近づいて見ると鎧の表面に現れる渦と線の\n迷宮を見れば見るほど、どうやってそれらができているのかわからなくなる。",
-      "en": "A suit of scales, gleaming in rich engraved bronze.  The more you look at\nthe the maze of whorls and lines that close inspection reveal on its\nsurface, the less sense you are able to make of them."
+      "ja": "贅沢に彫刻された青銅がきらめく鱗鎧だ。近づいて見ると鎧の表面に現れる渦と線の迷宮を見れば見るほど、どうやってそれらができているのかわからなくなる。",
+      "en": "A suit of scales, gleaming in rich engraved bronze.  The more you look atthe the maze of whorls and lines that close inspection reveal on itssurface, the less sense you are able to make of them."
     }
   },
   {
@@ -13936,9 +14837,17 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_SOUND",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "鏡のような金の鱗鎧だ。不協和音の中にいるかのように耳が痛くなり、この鎧を着る\nと異常なまでに何も聞こえなくなる。",
-      "en": "A suit of scales in mirror-like gold.  You hear nothing unusual as you\nwear this armour, yet your ears ache as though in the midst of a\ncacophony."
+      "ja": "鏡のような金の鱗鎧だ。不協和音の中にいるかのように耳が痛くなり、この鎧を着ると異常なまでに何も聞こえなくなる。",
+      "en": "A suit of scales in mirror-like gold.  You hear nothing unusual as youwear this armour, yet your ears ache as though in the midst of acacophony."
     }
   },
   {
@@ -13970,9 +14879,18 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_CHAOS",
+      "RES_DISEN",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "鱗鎧だ。魅惑されて見つめると、その表面で想像できる限りの色をとる様々な形\nすべてが乱舞し争う。",
-      "en": "A suit of scales.  Every shape, in every color imaginable, riot and\ncontend upon its surface as you stare in fascination."
+      "ja": "鱗鎧だ。魅惑されて見つめると、その表面で想像できる限りの色をとる様々な形すべてが乱舞し争う。",
+      "en": "A suit of scales.  Every shape, in every color imaginable, riot andcontend upon its surface as you stare in fascination."
     }
   },
   {
@@ -14004,9 +14922,20 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_CHAOS",
+      "RES_DISEN",
+      "RES_SOUND",
+      "RES_SHARDS",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "鱗鎧だ。何気なく見ると平凡な灰色だが、近づいてよく見るとアダマンタイトの鎖の\nようなものに縛られたエネルギーが脈打つ虹色の紋様の中にも紋様が現れる。",
-      "en": "A suit of scales.  Featureless grey to casual inspection, yet a closer\nlook reveals patterns within patterns of iridescence that throb with\nleashed energies bound as though by chains of adamant."
+      "ja": "鱗鎧だ。何気なく見ると平凡な灰色だが、近づいてよく見るとアダマンタイトの鎖のようなものに縛られたエネルギーが脈打つ虹色の紋様の中にも紋様が現れる。",
+      "en": "A suit of scales.  Featureless grey to casual inspection, yet a closerlook reveals patterns within patterns of iridescence that throb withleashed energies bound as though by chains of adamant."
     }
   },
   {
@@ -14038,9 +14967,30 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_ACID",
+      "RES_FIRE",
+      "RES_COLD",
+      "RES_ELEC",
+      "RES_POIS",
+      "RES_NETHER",
+      "RES_NEXUS",
+      "RES_CHAOS",
+      "RES_LITE",
+      "RES_DARK",
+      "RES_SHARDS",
+      "RES_SOUND",
+      "RES_DISEN",
+      "RES_CONF",
+      "ACTIVATE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "すべての色を持つ鱗鎧で、完全な自由でありながら密接に混ざり合い完全に支配され\nた元素と天上界の力の後光に包まれている。",
-      "en": "A suit with scales of every color, surrounded in a nimbus of perfectly\nuntramelled yet inextricably intermingled and utterly mastered powers\nelemental and ethereal."
+      "ja": "すべての色を持つ鱗鎧で、完全な自由でありながら密接に混ざり合い完全に支配された元素と天上界の力の後光に包まれている。",
+      "en": "A suit with scales of every color, surrounded in a nimbus of perfectlyuntramelled yet inextricably intermingled and utterly mastered powerselemental and ethereal."
     }
   },
   {
@@ -14072,9 +15022,15 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "ドラゴンの翼飾りのある大きな兜で、虹色に輝く。元素への耐性を保証する。",
-      "en": "A dragon-winged great helm, glowing in all the colors of the rainbow.\nIt grants resistance to the elements."
+      "en": "A dragon-winged great helm, glowing in all the colors of the rainbow.It grants resistance to the elements."
     }
   },
   {
@@ -14105,6 +15061,12 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -14140,6 +15102,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと5000のダメージを受ける。",
       "en": "You take 5000 damage when you quaff it."
@@ -14174,9 +15137,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと10d10のダメージを受け、全ステータスの最大値が下がる。",
-      "en": "You take 10d10 damage and it decreases all your stats permanently when you\nquaff it."
+      "en": "You take 10d10 damage and it decreases all your stats permanently when youquaff it."
     }
   },
   {
@@ -14208,6 +15172,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと50d20のダメージを受け、朦朧と切り傷を受ける。",
       "en": "You take 50d20 damage and stuns and cuts you when you quaff it."
@@ -14242,6 +15207,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと全ステータスの最大値が上がる。",
       "en": "It increases all your stats when you quaff it."
@@ -14276,9 +15242,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと体力が1200回復し、盲目・混乱・毒・朦朧・切り傷・狂戦士化を癒す。",
-      "en": "It heals you 1200 and cures blindness, confusion, poison, stunned, cuts and\nberserk when you quaff it."
+      "en": "It heals you 1200 and cures blindness, confusion, poison, stunned, cuts andberserk when you quaff it."
     }
   },
   {
@@ -14310,9 +15277,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは飲むと体力が5000回復し、経験値と全ステータスを回復し、盲目・混乱・毒・\n幻覚・朦朧・切り傷・狂戦士化を癒す。",
-      "en": "It heals you 5000, restores experience and all your stats and cures\nblindness, confusion, poison, hallucination, stunned, cuts and berserk\nwhen you quaff it."
+      "ja": "それは飲むと体力が5000回復し、経験値と全ステータスを回復し、盲目・混乱・毒・幻覚・朦朧・切り傷・狂戦士化を癒す。",
+      "en": "It heals you 5000, restores experience and all your stats and curesblindness, confusion, poison, hallucination, stunned, cuts and berserkwhen you quaff it."
     }
   },
   {
@@ -14344,6 +15312,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと自分についての情報を得る。",
       "en": "It gives information about yourself when you quaff it."
@@ -14378,9 +15347,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは飲むとその階の地形を完全に知ることができ、その階全体が永久に照らされ、\nその階全体のアイテムを感知し、知能・賢さの最大値を上げ、自分の周辺の\nトラップ・ドア・階段・財宝を感知し、持ち物全てを鑑定し、自分についての情報を\n得る。",
-      "en": "It maps, lights permanently and detects all items on the entire level,\nincreases your intelligence and wisdom, detects all traps, doors, stairs,\ntreasures in your vicinity, identifies all items in pack and gives\ninformation about yourself when you quaff it."
+      "ja": "それは飲むとその階の地形を完全に知ることができ、その階全体が永久に照らされ、その階全体のアイテムを感知し、知能・賢さの最大値を上げ、自分の周辺のトラップ・ドア・階段・財宝を感知し、持ち物全てを鑑定し、自分についての情報を得る。",
+      "en": "It maps, lights permanently and detects all items on the entire level,increases your intelligence and wisdom, detects all traps, doors, stairs,treasures in your vicinity, identifies all items in pack and givesinformation about yourself when you quaff it."
     }
   },
   {
@@ -14411,6 +15381,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -14446,6 +15422,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -14479,6 +15461,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_FEAR"
     ],
     "flavor": {
       "ja": "",
@@ -14514,6 +15499,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_LITE",
+      "RES_DARK"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -14547,6 +15536,10 @@
         "depth": 34,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_NETHER",
+      "HOLD_EXP"
     ],
     "flavor": {
       "ja": "",
@@ -14582,6 +15575,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_NEXUS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -14615,6 +15611,9 @@
         "depth": 26,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_SOUND"
     ],
     "flavor": {
       "ja": "",
@@ -14650,6 +15649,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_CONF"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -14683,6 +15685,9 @@
         "depth": 25,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_SHARDS"
     ],
     "flavor": {
       "ja": "",
@@ -14718,6 +15723,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_DISEN"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -14751,6 +15759,10 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_CHAOS",
+      "RES_CONF"
     ],
     "flavor": {
       "ja": "",
@@ -14786,6 +15798,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_BLIND"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -14819,6 +15834,12 @@
         "depth": 100,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_DISEN",
+      "RES_POIS",
+      "HOLD_EXP",
+      "FREE_ACT"
     ],
     "flavor": {
       "ja": "",
@@ -14854,6 +15875,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "BLOWS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -14888,9 +15912,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと体力が2d8回復し、盲目・狂戦士化を癒し、切り傷を和らげる。",
-      "en": "It heals you 2d8, cures blindness and berserk and reduces cuts when you\nquaff it."
+      "en": "It heals you 2d8, cures blindness and berserk and reduces cuts when youquaff it."
     }
   },
   {
@@ -14922,6 +15947,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと器用さの現在値が下がる。",
       "en": "It decreases your dexterity when you quaff it."
@@ -14956,6 +15982,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと耐久力の現在値が下がる。",
       "en": "It decreases your constitution when you quaff it."
@@ -14990,6 +16017,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15024,6 +16052,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15058,6 +16087,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15092,6 +16122,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15126,6 +16157,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15160,6 +16192,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15194,6 +16227,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15228,6 +16262,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15262,6 +16297,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15296,6 +16332,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15330,6 +16367,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15364,6 +16402,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15398,6 +16437,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15432,6 +16472,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15466,6 +16507,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15500,6 +16542,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15534,6 +16577,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15568,6 +16612,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15601,6 +16646,11 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "INSTA_ART",
+      "RIDING"
     ],
     "flavor": {
       "ja": "",
@@ -15636,6 +16686,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15669,6 +16722,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -15704,6 +16760,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15737,6 +16796,9 @@
         "depth": 70,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -15772,6 +16834,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15805,6 +16870,9 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -15840,6 +16908,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15873,6 +16944,9 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -15908,6 +16982,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -15941,6 +17018,9 @@
         "depth": 80,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -15976,6 +17056,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16009,6 +17092,9 @@
         "depth": 100,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -16044,6 +17130,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART",
+      "FIXED_FLAVOR"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16078,6 +17168,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16112,6 +17203,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16145,6 +17237,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -16180,6 +17278,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16214,6 +17318,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16248,6 +17353,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16282,6 +17388,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16316,6 +17423,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16349,6 +17457,13 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "REFLECT",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -16384,6 +17499,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NO_MAGIC",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16417,6 +17539,13 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NO_TELE",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -16452,6 +17581,16 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_ACID",
+      "RES_ELEC",
+      "RES_FIRE",
+      "RES_COLD",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16485,6 +17624,9 @@
         "depth": 40,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -16520,6 +17662,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16554,6 +17699,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16588,6 +17734,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16621,6 +17768,10 @@
         "depth": 35,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "",
@@ -16656,6 +17807,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16690,6 +17844,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16724,6 +17879,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16757,6 +17913,9 @@
         "depth": 25,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -16792,6 +17951,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16826,6 +17988,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16860,6 +18023,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16893,6 +18057,9 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -16928,6 +18095,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -16961,6 +18131,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -16996,6 +18169,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17029,6 +18205,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -17064,6 +18243,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17097,6 +18279,10 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "",
@@ -17132,6 +18318,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17165,6 +18354,9 @@
         "depth": 40,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -17200,6 +18392,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17233,6 +18428,9 @@
         "depth": 40,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -17268,6 +18466,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17301,6 +18503,10 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "SUPPORTIVE"
     ],
     "flavor": {
       "ja": "",
@@ -17336,6 +18542,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17369,6 +18578,10 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "",
@@ -17404,6 +18617,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17437,6 +18653,10 @@
         "depth": 43,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "RIDING"
     ],
     "flavor": {
       "ja": "",
@@ -17472,6 +18692,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17505,6 +18728,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "",
@@ -17540,6 +18766,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17574,6 +18801,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17608,6 +18836,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17642,6 +18871,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17676,6 +18906,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17710,6 +18941,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17744,6 +18976,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17778,6 +19011,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17811,6 +19045,9 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -17846,6 +19083,11 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "VORPAL",
+      "TUNNEL"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17880,9 +19122,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは読むとアイテム1個を並のアイテムに変える。複数のアイテムがまとまって\nいる場合は1個を残して壊れる。",
-      "en": "This removes the ego or artifact status and all enchantment of an item.\nAs a bonus, if you have a stack of them, the extras are destroyed."
+      "ja": "それは読むとアイテム1個を並のアイテムに変える。複数のアイテムがまとまっている場合は1個を残して壊れる。",
+      "en": "This removes the ego or artifact status and all enchantment of an item.As a bonus, if you have a stack of them, the extras are destroyed."
     }
   },
   {
@@ -17914,6 +19157,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17948,6 +19192,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -17982,6 +19227,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18016,6 +19262,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18050,6 +19297,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18084,6 +19332,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18118,6 +19367,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18152,6 +19402,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18186,6 +19437,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18220,6 +19472,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18254,6 +19507,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18288,6 +19542,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18322,6 +19577,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18356,6 +19612,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18389,6 +19646,10 @@
         "depth": 25,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "DEC_MANA"
     ],
     "flavor": {
       "ja": "",
@@ -18424,6 +19685,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_FIRE",
+      "LITE_2"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18458,6 +19723,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振るとドアや岩石や壁を溶かす。",
       "en": "It turns a door, rock and wall square to mud when you zap it."
@@ -18491,6 +19757,12 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -18526,6 +19798,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18559,6 +19837,10 @@
         "depth": 100,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART",
+      "FIXED_FLAVOR"
     ],
     "flavor": {
       "ja": "",
@@ -18594,6 +19876,13 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "TELEPATHY",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18627,6 +19916,10 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -18662,6 +19955,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18695,6 +19991,9 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -18730,6 +20029,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18763,6 +20065,13 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -18798,6 +20107,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "ACTIVATE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18831,6 +20143,32 @@
         "depth": 70,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "VORPAL",
+      "CURSED",
+      "HEAVY_CURSE",
+      "SLAY_DRAGON",
+      "SLAY_ANIMAL",
+      "SLAY_EVIL",
+      "SLAY_HUMAN",
+      "VAMPIRIC",
+      "SLAY_UNDEAD",
+      "SLAY_DEMON",
+      "SLAY_TROLL",
+      "SLAY_GIANT",
+      "SLAY_ORC",
+      "BRAND_FIRE",
+      "BRAND_ELEC",
+      "BRAND_COLD",
+      "BRAND_ACID",
+      "BRAND_POIS",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD",
+      "RIDING"
     ],
     "flavor": {
       "ja": "",
@@ -18866,9 +20204,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "それは飲むと幻覚を癒し、一時的に腕力と耐久力が上がるが、効果が切れると\n腕力と耐久力の最大値が飲む前よりも下がる。",
-      "en": "It cures hallucination and increases your strength and constitution\ntemporarily when you quaff it but your strength and constitution decrease\npermanently than before when the effect expires."
+      "ja": "それは飲むと幻覚を癒し、一時的に腕力と耐久力が上がるが、効果が切れると腕力と耐久力の最大値が飲む前よりも下がる。",
+      "en": "It cures hallucination and increases your strength and constitutiontemporarily when you quaff it but your strength and constitution decreasepermanently than before when the effect expires."
     }
   },
   {
@@ -18899,6 +20240,9 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "XTRA_SHOTS"
     ],
     "flavor": {
       "ja": "",
@@ -18934,6 +20278,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -18967,6 +20314,16 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SUST_STR",
+      "SUST_INT",
+      "SUST_WIS",
+      "SUST_DEX",
+      "SUST_CON",
+      "SUST_CHR",
+      "RES_TIME",
+      "HOLD_EXP"
     ],
     "flavor": {
       "ja": "",
@@ -19002,6 +20359,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "DEC_MANA"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19036,9 +20396,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは読むと呪文を1つ学習できるようになる。\n学習できない、または学習する必要のない職業では何も起きない。",
-      "en": "It increases the number of spells you can study when read. If you are a\nclass that can't study or don't need to study, it has no effect."
+      "ja": "それは読むと呪文を1つ学習できるようになる。学習できない、または学習する必要のない職業では何も起きない。",
+      "en": "It increases the number of spells you can study when read. If you are aclass that can't study or don't need to study, it has no effect."
     }
   },
   {
@@ -19070,6 +20431,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと1体のペットを召喚する。",
       "en": "It summons a monster as your pet when you read it."
@@ -19103,6 +20465,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -19138,9 +20503,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと腕力と耐久力の最大値が下がり、幻覚に侵される。",
-      "en": "It decreases your strength and constitution permanently and makes you hallucinate\nwhen you quaff it."
+      "en": "It decreases your strength and constitution permanently and makes you hallucinatewhen you quaff it."
     }
   },
   {
@@ -19172,6 +20538,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19206,6 +20573,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19239,6 +20607,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -19274,6 +20648,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19308,9 +20688,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと自分の周囲の死体や骨を生き返らせてペットにする。",
-      "en": "It raises nearby corpses and skeletons from the dead and makes them your\npets when you use it."
+      "en": "It raises nearby corpses and skeletons from the dead and makes them yourpets when you use it."
     }
   },
   {
@@ -19341,6 +20722,9 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -19376,6 +20760,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19410,9 +20797,16 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "LEVITATION",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "この世の物ではない、この完全に透明な外套は着る者を虹模様で包み飾る。\nそれは完全に重さがない。",
-      "en": "This unearthly, completely transparent body mantle folds and drapes in\niridescent patterns around you.  It weighs absolutely nothing."
+      "ja": "この世の物ではない、この完全に透明な外套は着る者を虹模様で包み飾る。それは完全に重さがない。",
+      "en": "This unearthly, completely transparent body mantle folds and drapes iniridescent patterns around you.  It weighs absolutely nothing."
     }
   },
   {
@@ -19443,6 +20837,11 @@
         "depth": 65,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "REFLECT",
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -19478,6 +20877,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART",
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19511,6 +20914,13 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD",
+      "AGGRAVATE"
     ],
     "flavor": {
       "ja": "",
@@ -19546,6 +20956,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19579,6 +20992,9 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -19614,6 +21030,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと突然変異を起こす。稀に全ての突然変異が消える。",
       "en": "It mutates you when you quaff it. Rarely it cures all mutations."
@@ -19647,6 +21064,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "WARNING"
     ],
     "flavor": {
       "ja": "",
@@ -19682,6 +21102,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19715,6 +21138,12 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -19750,6 +21179,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19783,6 +21215,9 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -19818,6 +21253,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19851,6 +21289,10 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INT",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -19886,6 +21328,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "WIS",
+      "HIDE_TYPE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19919,6 +21365,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "STR",
+      "DEX",
+      "CON",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -19954,6 +21406,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -19987,6 +21440,12 @@
         "depth": 65,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "それは使うとダメージ(15+レベル/3)d13の隕石の矢を放つ。",
@@ -20022,9 +21481,15 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "それは使うと中心部ダメージ(300+d200)*2の巨大な純粋な魔力の球を自分を\n中心として発生する。メイジ、ハイ=メイジ、スペルマスター、魔道具術師、\n青魔道師でなければ自分も50のダメージを受ける。",
-      "en": "It produces a huge mana ball (damage of core: (300+d200)*2) centered on you\nwhen you use it. If you are neither mage, high-mage, sorcerer, magiceater\nnor blue-mage, you take 50 damage."
+      "ja": "それは使うと中心部ダメージ(300+d200)*2の巨大な純粋な魔力の球を自分を中心として発生する。メイジ、ハイ=メイジ、スペルマスター、魔道具術師、青魔道師でなければ自分も50のダメージを受ける。",
+      "en": "It produces a huge mana ball (damage of core: (300+d200)*2) centered on youwhen you use it. If you are neither mage, high-mage, sorcerer, magiceaternor blue-mage, you take 50 damage."
     }
   },
   {
@@ -20056,6 +21521,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むとダンジョンの帰還階を到達した範囲内で設定できる。",
       "en": "It resets the dungeon level for recall spell when you read it."
@@ -20090,6 +21556,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20124,6 +21591,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20157,6 +21625,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -20192,6 +21666,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20225,6 +21705,10 @@
         "depth": 55,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "BLOWS"
     ],
     "flavor": {
       "ja": "",
@@ -20260,6 +21744,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20294,6 +21784,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20328,6 +21819,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20361,6 +21853,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -20396,6 +21894,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20430,9 +21934,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは使うと1体のモンスターを現在の階から消し去る。抵抗されると無効。",
-      "en": "It removes a monster from current dungeon level unless resisted when you\nuse it."
+      "en": "It removes a monster from current dungeon level unless resisted when youuse it."
     }
   },
   {
@@ -20464,6 +21969,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは振ると自分の周辺のモンスターを怒らせる。",
       "en": "It aggravates monsters in your vicinity when you zap it."
@@ -20498,6 +22004,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20531,6 +22038,10 @@
         "depth": 35,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "MAGIC_MASTERY",
+      "HIDE_TYPE"
     ],
     "flavor": {
       "ja": "",
@@ -20566,6 +22077,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20600,6 +22112,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20634,6 +22147,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20667,6 +22181,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -20702,6 +22222,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20736,6 +22262,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと自分の種族に対応したモンスター1体をペットとして召喚する。",
       "en": "It summons a monster that corresponds to your race as your pet when you read it."
@@ -20769,6 +22296,9 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "ACTIVATE"
     ],
     "flavor": {
       "ja": "",
@@ -20804,6 +22334,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20837,6 +22370,10 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "STEALTH",
+      "IGNORE_FIRE"
     ],
     "flavor": {
       "ja": "",
@@ -20872,6 +22409,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20906,6 +22444,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -20939,6 +22478,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -20974,6 +22519,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21007,6 +22558,9 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "FULL_NAME"
     ],
     "flavor": {
       "ja": "それは使っても何も起こらない。",
@@ -21042,6 +22596,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21075,6 +22632,9 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -21110,6 +22670,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21143,6 +22706,9 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -21178,6 +22744,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21212,6 +22779,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21245,6 +22813,12 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -21280,6 +22854,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21314,6 +22894,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと誰の得なのかわからないものを1個作り出す。",
       "en": "It creates one amusing item when you read it."
@@ -21348,6 +22929,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと誰の得なのかわからないものを複数作り出す。",
       "en": "It creates some amusing item when you read it."
@@ -21381,6 +22963,9 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -21416,6 +23001,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21449,6 +23037,10 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -21484,6 +23076,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21517,6 +23112,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "",
@@ -21552,6 +23150,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21585,6 +23186,9 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "",
@@ -21620,6 +23224,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21653,6 +23260,9 @@
         "depth": 5,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "",
@@ -21688,9 +23298,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは飲むと腕力と耐久力の最大値が下がり、幻覚に侵される。",
-      "en": "It decreases your strength and constitution permanently and makes you hallucinate\nwhen you quaff it."
+      "en": "It decreases your strength and constitution permanently and makes you hallucinatewhen you quaff it."
     }
   },
   {
@@ -21722,6 +23333,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -21755,6 +23367,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "それはまさにそびえたつクソだ！",
@@ -21790,6 +23405,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY",
+      "RES_ELEC"
+    ],
     "flavor": {
       "ja": "漁師の人との幼い頃の体験というか、淡い恋心とかそういうものが籠っているようだ。",
       "en": ""
@@ -21823,6 +23442,10 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY",
+      "WORLD_END"
     ],
     "flavor": {
       "ja": "ピンク色のＯバックとかどう評しろというのか。",
@@ -21858,6 +23481,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "ふたいたいは（適当）",
       "en": ""
@@ -21891,6 +23517,9 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NEVER_MOVE"
     ],
     "flavor": {
       "ja": "強き者が、その場に留まっていた時にしばしば残すものらしい。実際は弱き者でも普通に残ったり残らなかったりするようだ。",
@@ -21926,6 +23555,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "「クォクォアはバン・ホーテンのものを使用したのかな？」勝手に海外老舗大手食品会社を幻想入りさせるな。訴訟も辞さない（半）",
       "en": ""
@@ -21959,6 +23591,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "顔を保護はできるようだが、そこに小便されても知らんぞ。",
@@ -21994,6 +23629,14 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD",
+      "NEVER_MOVE",
+      "INDESTRUCTIBLE"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -22027,6 +23670,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "とある島の吸血鬼たちと戦うのに理想的な武器らしいが、無論無駄に重い。",
@@ -22062,6 +23708,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "RES_BLIND"
+    ],
     "flavor": {
       "ja": "日差しや強い照明から眼を守るために着用する保護眼鏡だ。物理的には頭部を守れない。",
       "en": ""
@@ -22095,6 +23744,14 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD",
+      "NEVER_MOVE",
+      "INDESTRUCTIBLE"
     ],
     "flavor": {
       "ja": "",
@@ -22130,6 +23787,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INSTA_ART",
+      "NASTY"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -22163,6 +23824,9 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_CURSE"
     ],
     "flavor": {
       "ja": "魔術的なルーンの刻まれた陰気な外套だ。",
@@ -22198,6 +23862,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY",
+      "INVEN_ACTIVATE"
+    ],
     "flavor": {
       "ja": "モザイクは一切なしだから。",
       "en": ""
@@ -22232,9 +23900,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "二倍のカロリー、二倍の炭水化物、二倍のカフェイン、そして二倍おいしい！\nそれは飲むと自己変容を起こす。",
-      "en": "Twice the calories, twice the carbs, twice the caffeine,\nand twice the delicious!\nIt causes polymorph when drunk."
+      "ja": "二倍のカロリー、二倍の炭水化物、二倍のカフェイン、そして二倍おいしい！それは飲むと自己変容を起こす。",
+      "en": "Twice the calories, twice the carbs, twice the caffeine,and twice the delicious!It causes polymorph when drunk."
     }
   },
   {
@@ -22265,6 +23934,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "きっと大好きだったのだろう。",
@@ -22300,8 +23972,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "ヤーナムの悪夢に潜むメンシス学派の徒が頭部に被る檻だ。\n上位者たちの交信に用いるとも、己の獣の愚かさを克する誓いとも言われている。",
+      "ja": "ヤーナムの悪夢に潜むメンシス学派の徒が頭部に被る檻だ。上位者たちの交信に用いるとも、己の獣の愚かさを克する誓いとも言われている。",
       "en": ""
     }
   },
@@ -22333,6 +24006,12 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -22368,6 +24047,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "全ての絶望の始まりとなる、ウェルカムドリンクだ。",
       "en": ""
@@ -22401,6 +24083,9 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "お茶でも飲んで…話でもしようや…",
@@ -22436,6 +24121,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -22470,6 +24156,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -22503,6 +24190,9 @@
         "depth": 10,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "六尺サポータになって、Ｈしよう！（直球）",
@@ -22538,6 +24228,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "ACTIVATE"
+    ],
     "flavor": {
       "ja": "汚物は消毒しなければいけない（戒め）",
       "en": ""
@@ -22572,8 +24266,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "物資運搬用の品だが冒険用のザックのようには扱えない。\n浮浪者が寒さしのぎにまとったり、寝床にもちいることもある。\n一部の伝説の傭兵はこれを隠密の術に用いるらしい。",
+      "ja": "物資運搬用の品だが冒険用のザックのようには扱えない。浮浪者が寒さしのぎにまとったり、寝床にもちいることもある。一部の伝説の傭兵はこれを隠密の術に用いるらしい。",
       "en": ""
     }
   },
@@ -22605,6 +24300,13 @@
         "depth": 35,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "DEC_MANA",
+      "EASY_SPELL",
+      "CURSED",
+      "HEAVY_CURSE",
+      "DOWN_SAVING"
     ],
     "flavor": {
       "ja": "それはラトリアをデーモンの滅びに追い込んだ黄衣の翁の狂気の表れだ。",
@@ -22640,6 +24342,10 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "SHOW_MODS",
+      "ACTIVATE"
+    ],
     "flavor": {
       "ja": "神秘の霧を放ち敵を葬るヤーナムの「聖歌隊」の武装だ。",
       "en": ""
@@ -22674,6 +24380,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "太古からのフェアリー的存在、テングの顔をかたどった面だ。",
       "en": ""
@@ -22708,6 +24415,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは世紀末の農耕で元を取るのにリスクと労力がかかりすぎるし、墓に適当にばら撒いても実らない。",
       "en": ""
@@ -22741,6 +24449,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_FIRE"
     ],
     "flavor": {
       "ja": "君もこれでオーラントの公使になれる！",
@@ -22776,6 +24487,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それには希少な鉱物が混じっている。",
       "en": ""
@@ -22810,6 +24522,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "マクドネルド社の悪魔の兵器だ。それの過剰摂取はあなたに肥満や動脈硬化などの無数の不衛生をもたらす。",
       "en": ""
@@ -22844,6 +24557,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -22878,6 +24592,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -22912,6 +24627,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと途轍もない大地震を起こす。",
       "en": ""
@@ -22945,6 +24661,9 @@
         "depth": 90,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INSTA_ART"
     ],
     "flavor": {
       "ja": "",
@@ -22980,6 +24699,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -23014,6 +24734,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと途轍もない虚無の力が引き起こされる。",
       "en": "It produces calling of void when you read it."
@@ -23048,9 +24769,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "それは読むと中心部ダメージ888の巨大な電撃の球を自分を中心として発生する。\n電撃耐性がなければ自分も100+d100のダメージを受ける。",
-      "en": "It produces a huge electric ball (damage of core: 888) centered on you when you\nread it. If you don't have resistance to electricity, you take 100+d100 damage."
+      "ja": "それは読むと中心部ダメージ888の巨大な電撃の球を自分を中心として発生する。電撃耐性がなければ自分も100+d100のダメージを受ける。",
+      "en": "It produces a huge electric ball (damage of core: 888) centered on you when youread it. If you don't have resistance to electricity, you take 100+d100 damage."
     }
   },
   {
@@ -23081,6 +24805,9 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "枕がデカすぎる。訴訟（きそ）",
@@ -23116,6 +24843,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "うーん、それはおいしそうだ！",
       "en": ""
@@ -23149,6 +24879,9 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "それは３カメを通じて捕らえられた悲劇のケツ末そのものだ。悲しいなあ！",
@@ -23184,6 +24917,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -23218,6 +24952,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと複数の目力先輩を敵として召喚する。",
       "en": "It summons powerfuleye seinors as enemies when you read it."
@@ -23251,6 +24986,9 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "NASTY"
     ],
     "flavor": {
       "ja": "いいか？リア充御用達の球技にだけ使えよ。絶対にだ。",
@@ -23286,6 +25024,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "それは直腸注入すると糞がドバーっと出る。",
       "en": ""
@@ -23320,6 +25061,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "その缶詰をうかつに開けると大変なことになるぞ。",
       "en": ""
@@ -23353,6 +25095,9 @@
         "depth": 30,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "RES_DARK"
     ],
     "flavor": {
       "ja": "ニンジャが本能的に頭部にまとうことを好む覆いだ。",
@@ -23388,6 +25133,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "INVEN_ACTIVATE"
+    ],
     "flavor": {
       "ja": "この安価な現代兵器はとあるアラジン神を恥辱と絶望に追いやった。",
       "en": ""
@@ -23422,6 +25170,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それを飲むと昏睡し、野獣と化した先輩に襲われるという。",
       "en": ""
@@ -23456,6 +25205,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -23489,6 +25239,10 @@
         "depth": 15,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS",
+      "ACTIVATE"
     ],
     "flavor": {
       "ja": "ロマン溢れる100万発入りのドリル型だ。",
@@ -23524,6 +25278,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "希少素材の一つだ。",
       "en": ""
@@ -23557,6 +25312,14 @@
         "depth": 50,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD",
+      "NEVER_MOVE",
+      "INDESTRUCTIBLE"
     ],
     "flavor": {
       "ja": "",
@@ -23592,6 +25355,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "東方の国の舞踊に使われる面だ。元より防具としては適さない。",
       "en": ""
@@ -23626,6 +25390,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは誰が得をするのか分からない拳のような玩具だ。",
       "en": ""
@@ -23660,6 +25425,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは毛根滅びた者にとって救いであり、虚無でもある。",
       "en": ""
@@ -23694,6 +25460,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは読むと周辺に森林を生成する",
       "en": "It creatures trees around you."
@@ -23727,6 +25494,14 @@
         "depth": 1,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD",
+      "NEVER_MOVE",
+      "INDESTRUCTIBLE"
     ],
     "flavor": {
       "ja": "死者の寝床だ。迂闊に開けるべきではないだろう。",
@@ -23762,6 +25537,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それを地の果てに返すため、若者が遠く旅立つこともあるらしい。",
       "en": ""
@@ -23796,6 +25572,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "う～んそれは美味しいそうだ！",
       "en": ""
@@ -23830,6 +25607,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "う～んそれは美味しそう…いなりが入ってないやん！",
       "en": ""
@@ -23864,6 +25642,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "寿司がほとんど残ってないやん！",
       "en": ""
@@ -23898,6 +25677,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "類稀なる金のガチョウが生み落とした卵だ。食えば精力が増す。",
       "en": ""
@@ -23932,6 +25712,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "食ってもただただ、空しいだけだ。",
       "en": ""
@@ -23966,8 +25747,14 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
-      "ja": "ルナ・チタニウム合金とも呼ばれる、\n人類が宇宙に新たな開拓を求めた時代に生み出された技術の精髄だ。\n本来は機械仕掛けの巨人の装甲に用いられるらしい。",
+      "ja": "ルナ・チタニウム合金とも呼ばれる、人類が宇宙に新たな開拓を求めた時代に生み出された技術の精髄だ。本来は機械仕掛けの巨人の装甲に用いられるらしい。",
       "en": ""
     }
   },
@@ -24000,8 +25787,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それは生存に必要な栄養素がすべて含まれ、従来の食事が不要となる\n素晴らしい未来の完全食だ。おや、ちょっと待てよ……",
+      "ja": "それは生存に必要な栄養素がすべて含まれ、従来の食事が不要となる素晴らしい未来の完全食だ。おや、ちょっと待てよ……",
       "en": ""
     }
   },
@@ -24034,6 +25822,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "辺境の惑星クロッカスに豊富に存在する鉱物にして完全食だ。",
       "en": ""
@@ -24068,6 +25857,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは世紀末の悪党たちが残した無様な断末魔だ。取り込むと力がみなぎる。",
       "en": ""
@@ -24102,6 +25892,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは世紀末の悪党たちが残した無様な断末魔だ。取り込むと力がみなぎる。",
       "en": ""
@@ -24136,6 +25927,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "「☆」はついていない、ごくごく普通の菓子だ。",
       "en": ""
@@ -24170,6 +25962,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "固形燃料としては優れものだ。",
       "en": ""
@@ -24203,6 +25996,16 @@
         "depth": 65,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "INT",
+      "WIS",
+      "SUST_INT",
+      "SUST_WIS",
+      "RES_CHAOS",
+      "RES_CONF",
+      "RES_NEXUS",
+      "HOLD_EXP"
     ],
     "flavor": {
       "ja": "それは混沌の力からあなたを守る。",
@@ -24238,6 +26041,9 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "NASTY"
+    ],
     "flavor": {
       "ja": "う～ん、それはおいしそう……にどう見えるのか私には理解に苦しむね（ペチペチ）",
       "en": ""
@@ -24272,6 +26078,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24306,6 +26113,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24340,6 +26148,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24374,6 +26183,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24408,6 +26218,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24441,6 +26252,12 @@
         "depth": 60,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_FIRE",
+      "IGNORE_ELEC",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -24476,8 +26293,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "それはとある万能の大悪魔が「星」を手に入れるために残した、\n哲学的存在だ。",
+      "ja": "それはとある万能の大悪魔が「星」を手に入れるために残した、哲学的存在だ。",
       "en": ""
     }
   },
@@ -24510,6 +26328,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "偉大なるデーモン閣下の裁きを受けた者の成れの果てと言われている。",
       "en": ""
@@ -24544,6 +26363,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24578,6 +26398,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24612,6 +26433,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "スパムバイキングもスパム御用達のランチョンミートのスパム缶詰だ。スパム。",
       "en": ""
@@ -24646,6 +26468,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "クッキー☆世界の特級茶葉のお茶だ。なぜCRNが関係しているのかはHZN何も考えてないと思うよ。",
       "en": ""
@@ -24680,8 +26503,9 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
-      "ja": "なぜこんな概念が無造作に落ちているのかを真面目に考えてはならない。\n摂取すると高揚とするが、ヤクを決めたようなバップを踊らずにはいられなくなるだろう。",
+      "ja": "なぜこんな概念が無造作に落ちているのかを真面目に考えてはならない。摂取すると高揚とするが、ヤクを決めたようなバップを踊らずにはいられなくなるだろう。",
       "en": ""
     }
   },
@@ -24714,6 +26538,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それにはマフティーの清廉さが感じられず、着用すると神経が苛立つ。",
       "en": "It doesn't feel the honesty of the Mafty, and it makes me nervous when I wear it."
@@ -24748,6 +26573,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは明確にフェティシズムを目的としたものだ。",
       "en": "It is clearly aimed at fetishism."
@@ -24782,6 +26608,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "ジュラル星人が未来にばら撒いた、人間の精神を狂わせ肉体を老衰させるレコードだ。",
       "en": ""
@@ -24816,6 +26643,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "鮮やかな色の意匠は見栄え良いがおよそ防具になるものではない。",
       "en": ""
@@ -24850,6 +26678,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "フリーザ軍が制式装備している超質ラバー製の鎧だ。",
       "en": ""
@@ -24884,6 +26713,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは生物の老廃物ではなく「杜撰で安普請な世界の切れ端」と言われている。",
       "en": ""
@@ -24918,6 +26748,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -24952,6 +26783,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "幼い女性向けの装飾具だ。魔法的な要素を込めない限り防御力は皆無だ。",
       "en": ""
@@ -24986,6 +26818,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "頭部に巻く分厚い布だ。",
       "en": ""
@@ -25020,6 +26853,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25054,6 +26888,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "現場作業者や研究職がしばしば着こなす丈夫な衣服だ。",
       "en": ""
@@ -25088,6 +26923,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25122,6 +26958,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それはお得だ。やったぜ。",
       "en": ""
@@ -25156,6 +26993,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25190,6 +27028,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25223,6 +27062,13 @@
         "depth": 20,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "TELEPATHY",
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "頭部を完全に覆う精神感応素材のヘルメットだ。",
@@ -25258,6 +27104,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "これで名作を買うことができる。実は別になくても買える。",
       "en": ""
@@ -25292,6 +27139,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "これを所持していると突如回収者に襲撃されることがある。かもしれない。",
       "en": ""
@@ -25325,6 +27173,9 @@
         "depth": 3,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "ACTIVATE"
     ],
     "flavor": {
       "ja": "惑星戦士のほぼ全員に配備される、相手の戦闘力を解析する小型装置だ。",
@@ -25360,6 +27211,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "足の保全よりも踏ん張りの聞きやすさを重視した作業用の履物だ。",
       "en": ""
@@ -25394,6 +27246,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25428,6 +27281,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25462,6 +27316,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25496,6 +27351,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25530,6 +27386,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "性的倒錯の産物だ。",
       "en": ""
@@ -25564,6 +27421,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "性的倒錯の産物だ。",
       "en": ""
@@ -25598,6 +27456,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "西洋で様々な用途で被られていた、ありふれた帽子だ。",
       "en": ""
@@ -25632,6 +27491,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "数カラット程のカット済ダイヤモンドだ。",
       "en": ""
@@ -25666,6 +27526,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "これでクソゲーで流した涙を拭け。",
       "en": ""
@@ -25700,6 +27561,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25734,6 +27596,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それは遊戯を楽しむために時空すら歪める輩が扱う、物質ですらない何かだ。",
       "en": ""
@@ -25768,6 +27631,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "それはひどく苦い。",
       "en": ""
@@ -25802,6 +27666,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "これを偏執的に集める謎の集団がいるらしい。",
       "en": ""
@@ -25836,6 +27701,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "なんか悲しいね。",
       "en": ""
@@ -25870,6 +27736,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "様々な筋トレに用いることのできるボディビル用品だ。しかし壊れやすい。",
       "en": ""
@@ -25904,6 +27771,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -25938,6 +27806,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "下着だ。通常これだけを付けて外を歩くものではない。",
       "en": ""
@@ -25972,6 +27841,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "信じがたいがこれには$3000の価値がある。",
       "en": ""
@@ -26006,6 +27876,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "",
       "en": ""
@@ -26040,6 +27911,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "頭に結ぶと気合が入る気がする。",
       "en": ""
@@ -26073,6 +27945,12 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -26108,6 +27986,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -26141,6 +28025,12 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -26176,6 +28066,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -26209,6 +28105,12 @@
         "depth": 0,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
     ],
     "flavor": {
       "ja": "",
@@ -26244,6 +28146,12 @@
         "rarity": 1
       }
     ],
+    "flags": [
+      "IGNORE_ACID",
+      "IGNORE_ELEC",
+      "IGNORE_FIRE",
+      "IGNORE_COLD"
+    ],
     "flavor": {
       "ja": "",
       "en": ""
@@ -26278,9 +28186,10 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "安っぽい紙切れだ。グングニルの隠し場所でも書いてあるのだろうか。",
-      "en": "It's a cheap piece of paper.\nYou should wonder if the hidden location of Gungnir is written."
+      "en": "It's a cheap piece of paper.You should wonder if the hidden location of Gungnir is written."
     }
   },
   {
@@ -26312,6 +28221,7 @@
         "rarity": 1
       }
     ],
+    "flags": [],
     "flavor": {
       "ja": "亀の甲羅の形をした鉄板の追加装甲だ。鎧に重ねて着ければ不意打ちも物ともしないだろうが、かなり重い。",
       "en": ""
@@ -26345,6 +28255,9 @@
         "depth": 25,
         "rarity": 1
       }
+    ],
+    "flags": [
+      "SHOW_MODS"
     ],
     "flavor": {
       "ja": "それに苦しめられたものの怨念が籠った石だ。",
