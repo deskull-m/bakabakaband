@@ -140143,5 +140143,82 @@
         "DROP_CORPSE",
         "EVIL"
     ]
+},
+{
+    "id": 2234,
+    "name": {
+        "ja": "血の神『コーン』",
+        "en": "Khorne, the Blood God"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Light Red"
+    },
+    "speed": 40,
+    "hit_point": "150d140",
+    "vision": 100,
+    "armor_class": 230,
+    "alertness": 0,
+    "level": 96,
+    "rarity": 2,
+    "exp": 146000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "30d12"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "30d12"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "30d12"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "30d12"
+        }
+    ],
+    "alliance": "KHORNE",
+    "flags": [
+        "UNIQUE",
+        "NO_STUN",
+        "NO_FEAR",
+        "FORCE_MAXHP",
+        "REFLECTING",
+        "WARRIOR",
+        "MOVE_BODY",
+        "KILL_WALL",
+        "IM_FIRE",
+        "IM_ELEC",
+        "IM_POIS",
+        "IM_ACID",
+        "IM_COLD",
+        "RES_NETH",
+        "RES_WATE",
+        "RES_PLAS",
+        "RES_NEXU",
+        "RES_CHAO",
+        "EVIL",
+        "RES_DISE",
+        "RES_WALL",
+        "RES_INER",
+        "NO_STUN",
+        "REGENERATE",
+        "WEIRD_MIND",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_FLY",
+        "BASH_DOOR",
+        "POWERFUL",
+        "KILL_BODY"
+    ]
 }]
 }
