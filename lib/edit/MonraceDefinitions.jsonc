@@ -81521,8 +81521,8 @@
     "alertness": 10,
     "level": 44,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 450,
+    "exp": 450,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -81581,8 +81581,8 @@
     "alertness": 20,
     "level": 3,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 150,
+    "exp": 150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -81639,8 +81639,8 @@
     "alertness": 20,
     "level": 3,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 150,
+    "exp": 150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -81697,8 +81697,8 @@
     "alertness": 50,
     "level": 59,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -81775,8 +81775,8 @@
     "alertness": 20,
     "level": 2,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -81884,8 +81884,8 @@
     "alertness": 0,
     "level": 50,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -81974,8 +81974,8 @@
     "alertness": 12,
     "level": 0,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82023,8 +82023,8 @@
     "alertness": 1,
     "level": 0,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82093,9 +82093,9 @@
     "alertness": 20,
     "level": 1,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 3,
-    "next_mon": 5,
+    "exp": 3,
+    "next_exp": 5,
+    "next_mon": 86,
     "blows": [
         {
             "method": "BITE",
@@ -82134,9 +82134,9 @@
     "alertness": 5,
     "level": 3,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 8,
-    "next_mon": 250,
+    "exp": 8,
+    "next_exp": 250,
+    "next_mon": 1292,
     "blows": [
         {
             "method": "SLASH",
@@ -82196,9 +82196,9 @@
     "alertness": 40,
     "level": 23,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 110,
-    "next_mon": 2500,
+    "exp": 110,
+    "next_exp": 2500,
+    "next_mon": 1293,
     "blows": [
         {
             "method": "SLASH",
@@ -82256,8 +82256,8 @@
     "alertness": 40,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82317,8 +82317,8 @@
     "alertness": 3,
     "level": 5,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "観葉植物くんは全てを見ていた！＊あなた＊の行為も包み隠さずにだ。"
@@ -82350,9 +82350,9 @@
     "alertness": 5,
     "level": 6,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 12,
-    "next_mon": 40,
+    "exp": 12,
+    "next_exp": 40,
+    "next_mon": 0,
     "blows": [
         {
             "method": "BITE",
@@ -82389,9 +82389,9 @@
     "alertness": 100,
     "level": 4,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 20,
-    "next_mon": 1400,
+    "exp": 20,
+    "next_exp": 1400,
+    "next_mon": 1298,
     "blows": [
         {
             "method": "CRAWL",
@@ -82443,8 +82443,8 @@
     "alertness": 1,
     "level": 7,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82480,9 +82480,9 @@
     "alertness": 20,
     "level": 20,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
-    "next_mon": 5000,
+    "exp": 50,
+    "next_exp": 5000,
+    "next_mon": 1426,
     "blows": [
         {
             "method": "CRAWL",
@@ -82538,8 +82538,8 @@
     "alertness": 12,
     "level": 26,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 230,
+    "exp": 230,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82582,9 +82582,9 @@
     "alertness": 0,
     "level": 18,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 240,
-    "next_mon": 5000,
+    "exp": 240,
+    "next_exp": 5000,
+    "next_mon": 1347,
     "blows": [
         {
             "method": "CRUSH",
@@ -82626,8 +82626,8 @@
     "alertness": 0,
     "level": 4,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 45,
+    "exp": 45,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82671,8 +82671,8 @@
     "alertness": 10,
     "level": 3,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82720,8 +82720,8 @@
     "alertness": 10,
     "level": 13,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 80,
+    "exp": 80,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82782,8 +82782,8 @@
     "alertness": 15,
     "level": 7,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82886,8 +82886,8 @@
     "alertness": 20,
     "level": 7,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 150,
+    "exp": 150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -82947,8 +82947,8 @@
     "alertness": 0,
     "level": 53,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83030,8 +83030,8 @@
     "alertness": 10,
     "level": 50,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83110,8 +83110,8 @@
     "alertness": 10,
     "level": 50,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 22200,
+    "exp": 22200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83184,8 +83184,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83241,8 +83241,8 @@
     "alertness": 10,
     "level": 25,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83287,8 +83287,8 @@
     "alertness": 15,
     "level": 22,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83357,8 +83357,8 @@
     "alertness": 25,
     "level": 23,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83419,8 +83419,8 @@
     "alertness": 10,
     "level": 4,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83464,8 +83464,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 6500,
+    "exp": 6500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83539,8 +83539,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 255,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83592,8 +83592,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 255,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83645,8 +83645,8 @@
     "alertness": 5,
     "level": 12,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "skill": {
         "shoot": "1d30",
@@ -83877,8 +83877,8 @@
     "alertness": 30,
     "level": 15,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 16,
+    "exp": 16,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -83923,8 +83923,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "それは脈打つ奇妙な糞の塊だ。",
@@ -83983,8 +83983,8 @@
     "alertness": 20,
     "level": 2,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84019,8 +84019,8 @@
     "alertness": 0,
     "level": 4,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 3,
+    "exp": 3,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84070,8 +84070,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84126,8 +84126,8 @@
     "alertness": 20,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84182,8 +84182,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84244,8 +84244,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84306,8 +84306,8 @@
     "alertness": 20,
     "level": 21,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84369,8 +84369,8 @@
     "alertness": 25,
     "level": 9,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84418,8 +84418,8 @@
     "alertness": 25,
     "level": 10,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84467,8 +84467,8 @@
     "alertness": 25,
     "level": 11,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84516,8 +84516,8 @@
     "alertness": 7,
     "level": 35,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1600,
+    "exp": 1600,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84582,8 +84582,8 @@
     "alertness": 40,
     "level": 11,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 36,
+    "exp": 36,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84641,8 +84641,8 @@
     "alertness": 5,
     "level": 3,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84687,8 +84687,8 @@
     "alertness": 12,
     "level": 0,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84736,9 +84736,9 @@
     "alertness": 5,
     "level": 28,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 300,
-    "next_mon": 1919,
+    "exp": 300,
+    "next_exp": 1919,
+    "next_mon": 2060,
     "flavor": {
         "ja": "うるせえ！（マジギレ）このクッソ汚い頭部のようなホモの玩具を一刻も早く破壊しろ！"
     },
@@ -84783,8 +84783,8 @@
     "alertness": 0,
     "level": 4,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "真夏の夜の淫夢に欠かせぬ偉大なる助優兄貴たちだ。でもうるせえ！（半ギレ）"
@@ -84821,9 +84821,9 @@
     "alertness": 80,
     "level": 20,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 600,
-    "next_mon": 8000,
+    "exp": 600,
+    "next_exp": 8000,
+    "next_mon": 1341,
     "blows": [
         {
             "method": "ENGULF",
@@ -84880,8 +84880,8 @@
     "alertness": 80,
     "level": 33,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 600,
+    "exp": 600,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -84953,8 +84953,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 130,
+    "exp": 130,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85021,8 +85021,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 180,
+    "exp": 180,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85084,8 +85084,8 @@
     "alertness": 10,
     "level": 31,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 700,
+    "exp": 700,
+    "next_exp": 0,
     "next_mon": 0,
     "skill": {
         "shoot": "10d5",
@@ -85129,8 +85129,8 @@
     "alertness": 20,
     "level": 28,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 230,
+    "exp": 230,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85201,9 +85201,9 @@
     "alertness": 0,
     "level": 8,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40,
-    "next_mon": 100,
+    "exp": 40,
+    "next_exp": 100,
+    "next_mon": 1300,
     "blows": [
         {
             "method": "CRUSH",
@@ -85245,9 +85245,9 @@
     "alertness": 0,
     "level": 32,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2400,
-    "next_mon": 20000,
+    "exp": 2400,
+    "next_exp": 20000,
+    "next_mon": 1348,
     "blows": [
         {
             "method": "CRUSH",
@@ -85289,9 +85289,9 @@
     "alertness": 0,
     "level": 44,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 10000,
-    "next_mon": 90000,
+    "exp": 10000,
+    "next_exp": 90000,
+    "next_mon": 1349,
     "blows": [
         {
             "method": "CRUSH",
@@ -85332,8 +85332,8 @@
     "alertness": 0,
     "level": 67,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 34000,
+    "exp": 34000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85405,8 +85405,8 @@
     "alertness": 0,
     "level": 35,
     "rarity": 255,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85462,8 +85462,8 @@
     "alertness": 5,
     "level": 26,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85532,8 +85532,8 @@
     "alertness": 10,
     "level": 7,
     "rarity": 8,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85581,8 +85581,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 255,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85648,8 +85648,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 255,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85715,8 +85715,8 @@
     "alertness": 80,
     "level": 41,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -85767,8 +85767,8 @@
     "alertness": 99,
     "level": 1,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87002,9 +87002,9 @@
     "alertness": 10,
     "level": 7,
     "rarity": 2,
-    "exp": 0,
+    "exp": 200,
     "next_exp": 200,
-    "next_mon": 200,
+    "next_mon": 1676,
     "blows": [
         {
             "method": "HIT",
@@ -87055,8 +87055,8 @@
     "alertness": 7,
     "level": 27,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87126,8 +87126,8 @@
     "alertness": 25,
     "level": 26,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87192,8 +87192,8 @@
     "alertness": 0,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87257,8 +87257,8 @@
     "alertness": 10,
     "level": 127,
     "rarity": 15,
-    "exp": 0,
-    "next_exp": 1000000,
+    "exp": 1000000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87317,8 +87317,8 @@
     "alertness": 25,
     "level": 10,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87374,8 +87374,8 @@
     "alertness": 10,
     "level": 17,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 80,
+    "exp": 80,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87426,8 +87426,8 @@
     "alertness": 5,
     "level": 39,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 9500,
+    "exp": 9500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87879,8 +87879,8 @@
     "alertness": 25,
     "level": 25,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 750,
+    "exp": 750,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87924,8 +87924,8 @@
     "alertness": 7,
     "level": 28,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -87985,8 +87985,8 @@
     "alertness": 25,
     "level": 17,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -88026,8 +88026,8 @@
     "alertness": 250,
     "level": 5,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 70,
+    "exp": 70,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -88079,8 +88079,8 @@
     "alertness": 40,
     "level": 18,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -88214,8 +88214,8 @@
     "alertness": 40,
     "level": 21,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -88282,8 +88282,8 @@
     "alertness": 30,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -88359,8 +88359,8 @@
     "alertness": 1,
     "level": 35,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90178,8 +90178,8 @@
     "alertness": 10,
     "level": 42,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90256,8 +90256,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90321,8 +90321,8 @@
     "alertness": 20,
     "level": 39,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90385,8 +90385,8 @@
     "alertness": 0,
     "level": 47,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 16000,
+    "exp": 16000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90453,8 +90453,8 @@
     "alertness": 20,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90498,8 +90498,8 @@
     "alertness": 10,
     "level": 35,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90554,8 +90554,8 @@
     "alertness": 20,
     "level": 30,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90618,8 +90618,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90683,8 +90683,8 @@
     "alertness": 10,
     "level": 50,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 9500,
+    "exp": 9500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90744,8 +90744,8 @@
     "alertness": 10,
     "level": 6,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90795,8 +90795,8 @@
     "alertness": 50,
     "level": 45,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 11000,
+    "exp": 11000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90876,8 +90876,8 @@
     "alertness": 20,
     "level": 5,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -90932,8 +90932,8 @@
     "alertness": 10,
     "level": 44,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91000,8 +91000,8 @@
     "alertness": 15,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91077,8 +91077,8 @@
     "alertness": 15,
     "level": 42,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 11000,
+    "exp": 11000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91156,8 +91156,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91231,8 +91231,8 @@
     "alertness": 40,
     "level": 19,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91308,8 +91308,8 @@
     "alertness": 20,
     "level": 34,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2500,
+    "exp": 2500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91392,8 +91392,8 @@
     "alertness": 20,
     "level": 28,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91444,8 +91444,8 @@
     "alertness": 10,
     "level": 34,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91505,8 +91505,8 @@
     "alertness": 10,
     "level": 13,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91556,8 +91556,8 @@
     "alertness": 12,
     "level": 89,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 60000,
+    "exp": 60000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91604,8 +91604,8 @@
     "alertness": 90,
     "level": 81,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91689,8 +91689,8 @@
     "alertness": 40,
     "level": 19,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -91745,9 +91745,9 @@
     "alertness": 4,
     "level": 3,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 12,
-    "next_mon": 1000,
+    "exp": 12,
+    "next_exp": 1000,
+    "next_mon": 1456,
     "blows": [
         {
             "method": "SLASH",
@@ -92226,9 +92226,9 @@
     "alertness": 4,
     "level": 26,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 400,
-    "next_mon": 4000,
+    "exp": 400,
+    "next_exp": 4000,
+    "next_mon": 1459,
     "blows": [
         {
             "method": "SLASH",
@@ -92279,8 +92279,8 @@
     "alertness": 10,
     "level": 55,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 11000,
+    "exp": 11000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92366,8 +92366,8 @@
     "alertness": 15,
     "level": 52,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 12500,
+    "exp": 12500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92446,8 +92446,8 @@
     "alertness": 4,
     "level": 35,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92504,8 +92504,8 @@
     "alertness": 25,
     "level": 11,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92552,8 +92552,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 6500,
+    "exp": 6500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92625,8 +92625,8 @@
     "alertness": 20,
     "level": 25,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 600,
+    "exp": 600,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92690,8 +92690,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 390,
+    "exp": 390,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92743,8 +92743,8 @@
     "alertness": 20,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92791,8 +92791,8 @@
     "alertness": 100,
     "level": 0,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92840,8 +92840,8 @@
     "alertness": 10,
     "level": 45,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92913,8 +92913,8 @@
     "alertness": 5,
     "level": 12,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -92973,8 +92973,8 @@
     "alertness": 5,
     "level": 3,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 7,
+    "exp": 7,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "その名の通り、涅槃寂静の境地に至った野獣先輩の御顔だ。もちろんただイって賢者モードになっているだけだ。"
@@ -93010,8 +93010,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 6000,
+    "exp": 6000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93073,8 +93073,8 @@
     "alertness": 20,
     "level": 14,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 125,
+    "exp": 125,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93121,8 +93121,8 @@
     "alertness": 10,
     "level": 15,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 120,
+    "exp": 120,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93167,8 +93167,8 @@
     "alertness": 30,
     "level": 21,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93212,8 +93212,8 @@
     "alertness": 10,
     "level": 15,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 120,
+    "exp": 120,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93258,8 +93258,8 @@
     "alertness": 0,
     "level": 81,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40000,
+    "exp": 40000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93340,8 +93340,8 @@
     "alertness": 0,
     "level": 20,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 3,
+    "exp": 3,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "常に野獣のイキ声を絶え間なく響かせている。うるせえ！"
@@ -93383,8 +93383,8 @@
     "alertness": 5,
     "level": 1,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 7,
+    "exp": 7,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "確かにそれはりんごに見える。だが、どこからともなく声が聞こえるのだ。「りんごは即刻中止せよ！繰り返す！りんごは即刻中止せよ！！」"
@@ -93419,9 +93419,9 @@
     "alertness": 10,
     "level": 39,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3000,
-    "next_mon": 2000,
+    "exp": 3000,
+    "next_exp": 2000,
+    "next_mon": 1091,
     "blows": [
         {
             "method": "HIT",
@@ -93482,8 +93482,8 @@
     "alertness": 10,
     "level": 65,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 17000,
+    "exp": 17000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93562,8 +93562,8 @@
     "alertness": 20,
     "level": 8,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93618,8 +93618,8 @@
     "alertness": 0,
     "level": 50,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 20000,
+    "exp": 20000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93768,9 +93768,9 @@
     "alertness": 0,
     "level": 25,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 70,
-    "next_mon": 1000,
+    "exp": 70,
+    "next_exp": 1000,
+    "next_mon": 1483,
     "blows": [
         {
             "method": "GAZE",
@@ -93837,9 +93837,9 @@
     "alertness": 0,
     "level": 30,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 70,
-    "next_mon": 1000,
+    "exp": 70,
+    "next_exp": 1000,
+    "next_mon": 1484,
     "blows": [
         {
             "method": "GAZE",
@@ -93904,8 +93904,8 @@
     "alertness": 0,
     "level": 20,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 110,
+    "exp": 110,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -93959,8 +93959,8 @@
     "alertness": 50,
     "level": 49,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 11000,
+    "exp": 11000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94044,9 +94044,9 @@
     "alertness": 10,
     "level": 16,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
-    "next_mon": 4000,
+    "exp": 100,
+    "next_exp": 4000,
+    "next_mon": 1617,
     "blows": [
         {
             "method": "STING",
@@ -94104,8 +94104,8 @@
     "alertness": 50,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94188,8 +94188,8 @@
     "alertness": 4,
     "level": 17,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94251,8 +94251,8 @@
     "alertness": 50,
     "level": 26,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94308,8 +94308,8 @@
     "alertness": 30,
     "level": 31,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94369,8 +94369,8 @@
     "alertness": 30,
     "level": 37,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94476,8 +94476,8 @@
     "alertness": 70,
     "level": 59,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94552,8 +94552,8 @@
     "alertness": 25,
     "level": 0,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94662,8 +94662,8 @@
     "alertness": 20,
     "level": 19,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 750,
+    "exp": 750,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94709,8 +94709,8 @@
     "alertness": 15,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 15500,
+    "exp": 15500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94764,8 +94764,8 @@
     "alertness": 15,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 13500,
+    "exp": 13500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94819,8 +94819,8 @@
     "alertness": 20,
     "level": 28,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94876,8 +94876,8 @@
     "alertness": 0,
     "level": 65,
     "rarity": 20,
-    "exp": 0,
-    "next_exp": 20000,
+    "exp": 20000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -94971,8 +94971,8 @@
     "alertness": 4,
     "level": 39,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95051,8 +95051,8 @@
     "alertness": 25,
     "level": 9,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95105,8 +95105,8 @@
     "alertness": 30,
     "level": 33,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1700,
+    "exp": 1700,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95174,8 +95174,8 @@
     "alertness": 0,
     "level": 65,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 20000,
+    "exp": 20000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95270,8 +95270,8 @@
     "alertness": 25,
     "level": 2,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 35,
+    "exp": 35,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95313,8 +95313,8 @@
     "alertness": 15,
     "level": 25,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 110,
+    "exp": 110,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95392,8 +95392,8 @@
     "alertness": 30,
     "level": 69,
     "rarity": 12,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95463,8 +95463,8 @@
     "alertness": 25,
     "level": 70,
     "rarity": 20,
-    "exp": 0,
-    "next_exp": 150000,
+    "exp": 150000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95546,8 +95546,8 @@
     "alertness": 10,
     "level": 72,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 37000,
+    "exp": 37000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95644,8 +95644,8 @@
     "alertness": 10,
     "level": 24,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95699,8 +95699,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 120,
+    "exp": 120,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95761,8 +95761,8 @@
     "alertness": 25,
     "level": 1,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "skill": {
         "shoot": "1d4",
@@ -95805,8 +95805,8 @@
     "alertness": 10,
     "level": 22,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 240,
+    "exp": 240,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95857,8 +95857,8 @@
     "alertness": 30,
     "level": 70,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95932,8 +95932,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -95982,8 +95982,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 75,
+    "exp": 75,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -96041,8 +96041,8 @@
     "alertness": 20,
     "level": 38,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -96248,8 +96248,8 @@
     "alertness": 20,
     "level": 35,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -96319,8 +96319,8 @@
     "alertness": 20,
     "level": 36,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -96382,8 +96382,8 @@
     "alertness": 30,
     "level": 14,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -96432,9 +96432,9 @@
     "alertness": 0,
     "level": 2,
     "rarity": 100,
-    "exp": 0,
+    "exp": 10,
     "next_exp": 10,
-    "next_mon": 10,
+    "next_mon": 68,
     "blows": [
         {
             "method": "BITE",
@@ -96483,8 +96483,8 @@
     "alertness": 12,
     "level": 24,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97175,8 +97175,8 @@
     "alertness": 20,
     "level": 62,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97247,8 +97247,8 @@
     "alertness": 12,
     "level": 28,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 650,
+    "exp": 650,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97302,8 +97302,8 @@
     "alertness": 0,
     "level": 43,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97364,8 +97364,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 110,
+    "exp": 110,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97435,8 +97435,8 @@
     "alertness": 0,
     "level": 8,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97489,8 +97489,8 @@
     "alertness": 20,
     "level": 3,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97571,11 +97571,11 @@
     "vision": 30,
     "armor_class": 96,
     "alertness": 5,
-    "level": 35,
-    "rarity": 10,
-    "exp": 3,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
     "next_exp": 0,
-    "next_mon": 5000,
+    "next_mon": 0,
     "blows": [
         {
             "method": "SLASH",
@@ -97693,8 +97693,8 @@
     "alertness": 100,
     "level": 52,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4100,
+    "exp": 4100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97756,8 +97756,8 @@
     "alertness": 10,
     "level": 12,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97807,8 +97807,8 @@
     "alertness": 50,
     "level": 35,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97912,8 +97912,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -97969,8 +97969,8 @@
     "alertness": 10,
     "level": 0,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98018,8 +98018,8 @@
     "alertness": 10,
     "level": 0,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98080,8 +98080,8 @@
     "alertness": 20,
     "level": 14,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 80,
+    "exp": 80,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98140,8 +98140,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98508,8 +98508,8 @@
     "alertness": 11,
     "level": 30,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98576,8 +98576,8 @@
     "alertness": 12,
     "level": 0,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98618,8 +98618,8 @@
     "alertness": 40,
     "level": 28,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 600,
+    "exp": 600,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98665,8 +98665,8 @@
     "alertness": 15,
     "level": 9,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98717,8 +98717,8 @@
     "alertness": 15,
     "level": 9,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98769,8 +98769,8 @@
     "alertness": 10,
     "level": 12,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98826,8 +98826,8 @@
     "alertness": 10,
     "level": 5,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -98955,8 +98955,8 @@
     "alertness": 7,
     "level": 26,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99013,8 +99013,8 @@
     "alertness": 20,
     "level": 42,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 550,
+    "exp": 550,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99074,8 +99074,8 @@
     "alertness": 20,
     "level": 8,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99135,8 +99135,8 @@
     "alertness": 20,
     "level": 7,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99184,8 +99184,8 @@
     "alertness": 0,
     "level": 15,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99254,8 +99254,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1400,
+    "exp": 1400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99310,8 +99310,8 @@
     "alertness": 50,
     "level": 35,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "透明で硬い立方体状の謎の生物だ。",
@@ -99357,8 +99357,8 @@
     "alertness": 12,
     "level": 7,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99402,8 +99402,8 @@
     "alertness": 0,
     "level": 0,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "この愛すべき鳥類は、『パーティか死か』を常に迫られている。",
@@ -99439,8 +99439,8 @@
     "alertness": 3,
     "level": 50,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "型式：SG-RA4　要塞の甲板につくられた防衛用の移動砲台　対艦ビーム砲と対機動ビーム砲の2つの武装をもっている　要塞甲板に作られたレール上を移動して防衛にあたります。兵器というよりは要塞自体の武装といえる　（アースライト,1992）",
@@ -99487,8 +99487,8 @@
     "alertness": 4,
     "level": 35,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2500,
+    "exp": 2500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99547,8 +99547,8 @@
     "alertness": 5,
     "level": 80,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 12000,
+    "exp": 12000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "半透明のオレンジ色の水晶で精巧に彫られた名もなき小神の彫像だ。その生命のない目は邪悪な知性で不思議なことに煌めいて見える。それは近づく者の心に強力な精神攻撃を解き放つだろう。（Dungeon Crawl)",
@@ -99604,8 +99604,8 @@
     "alertness": 25,
     "level": 33,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99657,8 +99657,8 @@
     "alertness": 1,
     "level": 33,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99727,8 +99727,8 @@
     "alertness": 10,
     "level": 3,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99787,8 +99787,8 @@
     "alertness": 25,
     "level": 10,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99874,8 +99874,8 @@
     "alertness": 60,
     "level": 39,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -99939,8 +99939,8 @@
     "alertness": 10,
     "level": 22,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 490,
+    "exp": 490,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100006,8 +100006,8 @@
     "alertness": 10,
     "level": 64,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100063,8 +100063,8 @@
     "alertness": 10,
     "level": 15,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 150,
+    "exp": 150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100112,8 +100112,8 @@
     "alertness": 20,
     "level": 41,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2100,
+    "exp": 2100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100173,8 +100173,8 @@
     "alertness": 7,
     "level": 40,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100253,8 +100253,8 @@
     "alertness": 40,
     "level": 26,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100336,8 +100336,8 @@
     "alertness": 40,
     "level": 26,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100419,8 +100419,8 @@
     "alertness": 10,
     "level": 16,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 120,
+    "exp": 120,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100463,8 +100463,8 @@
     "alertness": 5,
     "level": 43,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 12000,
+    "exp": 12000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100528,8 +100528,8 @@
     "alertness": 5,
     "level": 38,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100658,8 +100658,8 @@
     "alertness": 10,
     "level": 29,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "多元宇宙は広大であり、中には様々な事情でカードゲームで一個人の生死どころか、人類の趨勢を分けてしまうような世界が存在する。彼らはそのような次元からやってきた決闘者だ。「奴をデュエルで拘束せよ！」──遊戯王5D's セキュリティの隊長"
@@ -100707,8 +100707,8 @@
     "alertness": 10,
     "level": 15,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 25,
+    "exp": 25,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100755,8 +100755,8 @@
     "alertness": 255,
     "level": 50,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100828,8 +100828,8 @@
     "alertness": 10,
     "level": 22,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100899,8 +100899,8 @@
     "alertness": 50,
     "level": 24,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 380,
+    "exp": 380,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -100976,8 +100976,8 @@
     "alertness": 99,
     "level": 1,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 2500,
+    "exp": 2500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101054,8 +101054,8 @@
     "alertness": 10,
     "level": 41,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 7500,
+    "exp": 7500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101130,8 +101130,8 @@
     "alertness": 25,
     "level": 9,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 350,
+    "exp": 350,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101187,8 +101187,8 @@
     "alertness": 20,
     "level": 33,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101250,8 +101250,8 @@
     "alertness": 20,
     "level": 2,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101286,8 +101286,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101344,8 +101344,8 @@
     "alertness": 40,
     "level": 19,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101420,8 +101420,8 @@
     "alertness": 20,
     "level": 44,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101486,8 +101486,8 @@
     "alertness": 4,
     "level": 38,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101544,8 +101544,8 @@
     "alertness": 4,
     "level": 32,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101607,8 +101607,8 @@
     "alertness": 4,
     "level": 34,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 4400,
+    "exp": 4400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101679,8 +101679,8 @@
     "alertness": 30,
     "level": 79,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 36000,
+    "exp": 36000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101765,8 +101765,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 90,
+    "exp": 90,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101815,8 +101815,8 @@
     "alertness": 30,
     "level": 80,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -101906,8 +101906,8 @@
     "alertness": 10,
     "level": 89,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 41000,
+    "exp": 41000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102000,8 +102000,8 @@
     "alertness": 10,
     "level": 94,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 50000,
+    "exp": 50000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102105,8 +102105,8 @@
     "alertness": 30,
     "level": 42,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 2900,
+    "exp": 2900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102173,8 +102173,8 @@
     "alertness": 25,
     "level": 19,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 290,
+    "exp": 290,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102238,8 +102238,8 @@
     "alertness": 10,
     "level": 38,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102298,8 +102298,8 @@
     "level": 0,
     "rarity": 1,
     "exp": 0,
-    "next_exp": 0,
-    "next_mon": 20,
+    "next_exp": 20,
+    "next_mon": 1619,
     "blows": [
         {
             "method": "HIT",
@@ -102342,9 +102342,9 @@
     "alertness": 250,
     "level": 0,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 20,
-    "next_mon": 300,
+    "exp": 20,
+    "next_exp": 300,
+    "next_mon": 1881,
     "blows": [
         {
             "method": "HIT",
@@ -102394,8 +102394,8 @@
     "alertness": 5,
     "level": 45,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 14000,
+    "exp": 14000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102458,8 +102458,8 @@
     "alertness": 10,
     "level": 32,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102559,8 +102559,8 @@
     "alertness": 0,
     "level": 82,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 33000,
+    "exp": 33000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102656,8 +102656,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 150,
+    "exp": 150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102705,8 +102705,8 @@
     "alertness": 10,
     "level": 48,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 15000,
+    "exp": 15000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102787,8 +102787,8 @@
     "alertness": 30,
     "level": 25,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102841,8 +102841,8 @@
     "alertness": 30,
     "level": 39,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4500,
+    "exp": 4500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102903,8 +102903,8 @@
     "alertness": 5,
     "level": 35,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -102974,8 +102974,8 @@
     "alertness": 40,
     "level": 15,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 220,
+    "exp": 220,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103031,8 +103031,8 @@
     "alertness": 20,
     "level": 7,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103087,8 +103087,8 @@
     "alertness": 30,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103151,8 +103151,8 @@
     "alertness": 20,
     "level": 38,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103228,8 +103228,8 @@
     "alertness": 10,
     "level": 95,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 51000,
+    "exp": 51000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103322,8 +103322,8 @@
     "alertness": 0,
     "level": 25,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103379,8 +103379,8 @@
     "alertness": 0,
     "level": 60,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 27000,
+    "exp": 27000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103471,8 +103471,8 @@
     "alertness": 20,
     "level": 52,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 16500,
+    "exp": 16500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103544,8 +103544,8 @@
     "alertness": 12,
     "level": 0,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103591,8 +103591,8 @@
     "alertness": 0,
     "level": 25,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103648,8 +103648,8 @@
     "alertness": 30,
     "level": 33,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4500,
+    "exp": 4500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103712,8 +103712,8 @@
     "alertness": 12,
     "level": 0,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "それはホモ共のおもちゃの捨て屑だ。"
@@ -103755,8 +103755,8 @@
     "alertness": 10,
     "level": 50,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 16000,
+    "exp": 16000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103832,8 +103832,8 @@
     "alertness": 40,
     "level": 37,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1800,
+    "exp": 1800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -103884,8 +103884,8 @@
     "alertness": 20,
     "level": 22,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "風評被害により自分を滅ぼしたホモ共に復讐するため、冥界から復活した！実際はただの不景気で潰れただけのようだ。"
@@ -103931,8 +103931,8 @@
     "alertness": 20,
     "level": 48,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104009,8 +104009,8 @@
     "level": 0,
     "rarity": 1,
     "exp": 0,
-    "next_exp": 0,
-    "next_mon": 10,
+    "next_exp": 10,
+    "next_mon": 1646,
     "blows": [
         {
             "method": "BEG",
@@ -104093,8 +104093,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 80,
+    "exp": 80,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104140,8 +104140,8 @@
     "alertness": 50,
     "level": 45,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "この肥満中年男のような巨大な蝶は、常識を持たぬホモのアンバー人のクッソ汚い妄想によって生み出された、のかもしれない。",
@@ -104188,8 +104188,8 @@
     "alertness": 0,
     "level": 35,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104247,8 +104247,8 @@
     "alertness": 30,
     "level": 14,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 180,
+    "exp": 180,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104301,8 +104301,8 @@
     "alertness": 40,
     "level": 49,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 26000,
+    "exp": 26000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104380,8 +104380,8 @@
     "alertness": 10,
     "level": 50,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 15000,
+    "exp": 15000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104452,8 +104452,8 @@
     "alertness": 20,
     "level": 24,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104687,8 +104687,8 @@
     "alertness": 70,
     "level": 66,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 27500,
+    "exp": 27500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104764,8 +104764,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104838,8 +104838,8 @@
     "alertness": 50,
     "level": 18,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104882,8 +104882,8 @@
     "alertness": 40,
     "level": 23,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 70,
+    "exp": 70,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104931,8 +104931,8 @@
     "alertness": 1,
     "level": 30,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1800,
+    "exp": 1800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -104995,8 +104995,8 @@
     "alertness": 20,
     "level": 43,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 5200,
+    "exp": 5200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105080,8 +105080,8 @@
     "alertness": 90,
     "level": 83,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105189,8 +105189,8 @@
     "alertness": 8,
     "level": 20,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105252,8 +105252,8 @@
     "alertness": 10,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105317,8 +105317,8 @@
     "alertness": 10,
     "level": 38,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 350,
+    "exp": 350,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105379,8 +105379,8 @@
     "alertness": 30,
     "level": 35,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1150,
+    "exp": 1150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105443,8 +105443,8 @@
     "alertness": 50,
     "level": 51,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 14000,
+    "exp": 14000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105517,8 +105517,8 @@
     "alertness": 0,
     "level": 62,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 36000,
+    "exp": 36000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105596,8 +105596,8 @@
     "alertness": 10,
     "level": 42,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105658,8 +105658,8 @@
     "alertness": 0,
     "level": 29,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105711,8 +105711,8 @@
     "alertness": 50,
     "level": 45,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 11000,
+    "exp": 11000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105788,8 +105788,8 @@
     "alertness": 20,
     "level": 35,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105853,8 +105853,8 @@
     "alertness": 20,
     "level": 30,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105918,8 +105918,8 @@
     "alertness": 20,
     "level": 21,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -105969,9 +105969,9 @@
     "alertness": 10,
     "level": 18,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 200,
-    "next_mon": 8000,
+    "exp": 200,
+    "next_exp": 8000,
+    "next_mon": 1677,
     "blows": [
         {
             "method": "HIT",
@@ -106022,8 +106022,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106089,8 +106089,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106140,8 +106140,8 @@
     "alertness": 4,
     "level": 42,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 7500,
+    "exp": 7500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106204,8 +106204,8 @@
     "alertness": 30,
     "level": 30,
     "rarity": 8,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106262,8 +106262,8 @@
     "alertness": 30,
     "level": 30,
     "rarity": 8,
-    "exp": 0,
-    "next_exp": 1300,
+    "exp": 1300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106320,8 +106320,8 @@
     "alertness": 10,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106398,8 +106398,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106462,8 +106462,8 @@
     "alertness": 30,
     "level": 32,
     "rarity": 8,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106519,9 +106519,9 @@
     "alertness": 20,
     "level": 19,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 50,
-    "next_mon": 600,
+    "exp": 50,
+    "next_exp": 600,
+    "next_mon": 1686,
     "blows": [
         {
             "method": "HIT",
@@ -106566,8 +106566,8 @@
     "alertness": 20,
     "level": 29,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106618,8 +106618,8 @@
     "alertness": 10,
     "level": 16,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 240,
+    "exp": 240,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106680,8 +106680,8 @@
     "alertness": 40,
     "level": 20,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106738,8 +106738,8 @@
     "alertness": 20,
     "level": 38,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106811,8 +106811,8 @@
     "alertness": 10,
     "level": 12,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 22,
+    "exp": 22,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106856,8 +106856,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106920,8 +106920,8 @@
     "alertness": 10,
     "level": 22,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 240,
+    "exp": 240,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -106996,8 +106996,8 @@
     "alertness": 5,
     "level": 55,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 12000,
+    "exp": 12000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107165,8 +107165,8 @@
     "alertness": 5,
     "level": 58,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 15000,
+    "exp": 15000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107237,8 +107237,8 @@
     "alertness": 10,
     "level": 8,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107287,8 +107287,8 @@
     "alertness": 20,
     "level": 58,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107378,8 +107378,8 @@
     "alertness": 10,
     "level": 87,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 75000,
+    "exp": 75000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "この髪のない全裸の巨大な女性を象った「敵」の母体は光と闇の声をただ周囲に振りまき続けている。"
@@ -107446,8 +107446,8 @@
     "alertness": 25,
     "level": 11,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107500,8 +107500,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 3500,
+    "exp": 3500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107574,8 +107574,8 @@
     "alertness": 12,
     "level": 22,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 555,
+    "exp": 555,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107640,8 +107640,8 @@
     "alertness": 99,
     "level": 1,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107723,8 +107723,8 @@
     "alertness": 0,
     "level": 72,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 60000,
+    "exp": 60000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107810,8 +107810,8 @@
     "alertness": 20,
     "level": 60,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107884,8 +107884,8 @@
     "alertness": 25,
     "level": 26,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -107972,8 +107972,8 @@
     "alertness": 10,
     "level": 41,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108053,8 +108053,8 @@
     "alertness": 20,
     "level": 43,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108121,8 +108121,8 @@
     "alertness": 10,
     "level": 70,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108192,8 +108192,8 @@
     "alertness": 20,
     "level": 45,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 9500,
+    "exp": 9500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108254,8 +108254,8 @@
     "alertness": 0,
     "level": 96,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 140000,
+    "exp": 140000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108332,8 +108332,8 @@
     "alertness": 20,
     "level": 53,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108408,9 +108408,9 @@
     "alertness": 10,
     "level": 27,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 900,
-    "next_mon": 3000,
+    "exp": 900,
+    "next_exp": 3000,
+    "next_mon": 1714,
     "blows": [
         {
             "method": "TOUCH",
@@ -108468,8 +108468,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 5900,
+    "exp": 5900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108533,8 +108533,8 @@
     "alertness": 10,
     "level": 34,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4800,
+    "exp": 4800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108597,8 +108597,8 @@
     "alertness": 10,
     "level": 34,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4800,
+    "exp": 4800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108661,8 +108661,8 @@
     "alertness": 10,
     "level": 39,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 4100,
+    "exp": 4100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108722,8 +108722,8 @@
     "alertness": 40,
     "level": 10,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108784,8 +108784,8 @@
     "alertness": 10,
     "level": 32,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108841,8 +108841,8 @@
     "alertness": 50,
     "level": 30,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "安心と信頼の企業、キサラギ社が生み出した巨大昆虫型生物兵器だ。"
@@ -108883,8 +108883,8 @@
     "alertness": 40,
     "level": 22,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -108942,8 +108942,8 @@
     "alertness": 0,
     "level": 39,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 730,
+    "exp": 730,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109005,8 +109005,8 @@
     "alertness": 50,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109063,8 +109063,8 @@
     "alertness": 10,
     "level": 14,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109114,8 +109114,8 @@
     "alertness": 6,
     "level": 18,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109165,8 +109165,8 @@
     "alertness": 25,
     "level": 19,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109227,8 +109227,8 @@
     "alertness": 10,
     "level": 82,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 27500,
+    "exp": 27500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109313,8 +109313,8 @@
     "alertness": 10,
     "level": 45,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3500,
+    "exp": 3500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109377,8 +109377,8 @@
     "alertness": 25,
     "level": 11,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 230,
+    "exp": 230,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109427,8 +109427,8 @@
     "alertness": 10,
     "level": 22,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 240,
+    "exp": 240,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109478,8 +109478,8 @@
     "alertness": 10,
     "level": 62,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 28000,
+    "exp": 28000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109556,8 +109556,8 @@
     "alertness": 50,
     "level": 40,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 6000,
+    "exp": 6000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "安心と信頼の企業、キサラギ社が生み出したダニのような巨大生物兵器だ。"
@@ -109599,8 +109599,8 @@
     "alertness": 20,
     "level": 12,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 34,
+    "exp": 34,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109650,8 +109650,8 @@
     "alertness": 30,
     "level": 16,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 70,
+    "exp": 70,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109709,8 +109709,8 @@
     "alertness": 30,
     "level": 16,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 70,
+    "exp": 70,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109809,8 +109809,8 @@
     "alertness": 0,
     "level": 63,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109925,8 +109925,8 @@
     "alertness": 25,
     "level": 10,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 230,
+    "exp": 230,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -109981,8 +109981,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110032,8 +110032,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110083,8 +110083,8 @@
     "alertness": 20,
     "level": 25,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 75,
+    "exp": 75,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110145,8 +110145,8 @@
     "alertness": 20,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 12500,
+    "exp": 12500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110232,8 +110232,8 @@
     "alertness": 10,
     "level": 36,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110296,8 +110296,8 @@
     "alertness": 0,
     "level": 25,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110357,8 +110357,8 @@
     "alertness": 50,
     "level": 33,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110460,8 +110460,8 @@
     "alertness": 30,
     "level": 29,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110540,8 +110540,8 @@
     "alertness": 10,
     "level": 56,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 28000,
+    "exp": 28000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110622,8 +110622,8 @@
     "alertness": 0,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110699,8 +110699,8 @@
     "alertness": 10,
     "level": 0,
     "rarity": 40,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110756,8 +110756,8 @@
     "alertness": 10,
     "level": 0,
     "rarity": 40,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110813,8 +110813,8 @@
     "alertness": 10,
     "level": 0,
     "rarity": 40,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -110872,8 +110872,8 @@
     "alertness": 120,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111081,8 +111081,8 @@
     "alertness": 10,
     "level": 43,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 3900,
+    "exp": 3900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111149,8 +111149,8 @@
     "alertness": 0,
     "level": 39,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111210,8 +111210,8 @@
     "alertness": 30,
     "level": 55,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 22000,
+    "exp": 22000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111279,8 +111279,8 @@
     "alertness": 10,
     "level": 35,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111345,8 +111345,8 @@
     "alertness": 20,
     "level": 14,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111425,8 +111425,8 @@
     "alertness": 20,
     "level": 14,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111498,8 +111498,8 @@
     "alertness": 20,
     "level": 14,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111571,8 +111571,8 @@
     "alertness": 90,
     "level": 79,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 35000,
+    "exp": 35000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111670,8 +111670,8 @@
     "alertness": 10,
     "level": 68,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 17000,
+    "exp": 17000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111744,9 +111744,9 @@
     "alertness": 40,
     "level": 20,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40,
-    "next_mon": 700,
+    "exp": 40,
+    "next_exp": 700,
+    "next_mon": 1872,
     "blows": [
         {
             "method": "BITE",
@@ -111791,8 +111791,8 @@
     "alertness": 30,
     "level": 19,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111845,8 +111845,8 @@
     "alertness": 20,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111919,8 +111919,8 @@
     "alertness": 10,
     "level": 20,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -111970,8 +111970,8 @@
     "alertness": 30,
     "level": 12,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 75,
+    "exp": 75,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112019,8 +112019,8 @@
     "alertness": 5,
     "level": 31,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "▲涙はお前にはまったく似合いません！▲"
@@ -112076,8 +112076,8 @@
     "alertness": 0,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 900,
+    "exp": 900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112142,8 +112142,8 @@
     "alertness": 20,
     "level": 50,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112190,8 +112190,8 @@
     "alertness": 25,
     "level": 18,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112246,8 +112246,8 @@
     "alertness": 20,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112319,8 +112319,8 @@
     "alertness": 50,
     "level": 38,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 2900,
+    "exp": 2900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112390,8 +112390,8 @@
     "alertness": 5,
     "level": 20,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112440,8 +112440,8 @@
     "alertness": 10,
     "level": 35,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 6000,
+    "exp": 6000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112511,8 +112511,8 @@
     "alertness": 10,
     "level": 36,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112572,8 +112572,8 @@
     "alertness": 10,
     "level": 44,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112634,8 +112634,8 @@
     "alertness": 10,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2500,
+    "exp": 2500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112694,8 +112694,8 @@
     "alertness": 10,
     "level": 15,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112742,8 +112742,8 @@
     "alertness": 40,
     "level": 8,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 15,
+    "exp": 15,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112788,8 +112788,8 @@
     "alertness": 10,
     "level": 39,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112851,8 +112851,8 @@
     "alertness": 20,
     "level": 36,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1800,
+    "exp": 1800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -112901,8 +112901,8 @@
     "alertness": 20,
     "level": 38,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1800,
+    "exp": 1800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113000,8 +113000,8 @@
     "alertness": 20,
     "level": 39,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 75,
+    "exp": 75,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "UNEIの勘違いの果てに消え去ったイベント会場の亡霊だ。"
@@ -113201,8 +113201,8 @@
     "alertness": 10,
     "level": 9,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 25,
+    "exp": 25,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113259,8 +113259,8 @@
     "alertness": 10,
     "level": 14,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113317,8 +113317,8 @@
     "alertness": 25,
     "level": 13,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113382,8 +113382,8 @@
     "alertness": 20,
     "level": 35,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2800,
+    "exp": 2800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113435,8 +113435,8 @@
     "alertness": 20,
     "level": 12,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113533,8 +113533,8 @@
     "alertness": 5,
     "level": 60,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 9,
+    "exp": 9,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113584,8 +113584,8 @@
     "alertness": 20,
     "level": 19,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 175,
+    "exp": 175,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113631,8 +113631,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3200,
+    "exp": 3200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113695,8 +113695,8 @@
     "alertness": 0,
     "level": 64,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 27500,
+    "exp": 27500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113761,8 +113761,8 @@
     "alertness": 20,
     "level": 5,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113826,8 +113826,8 @@
     "alertness": 10,
     "level": 20,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 25,
+    "exp": 25,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113876,8 +113876,8 @@
     "alertness": 10,
     "level": 20,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 25,
+    "exp": 25,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113925,8 +113925,8 @@
     "alertness": 10,
     "level": 9,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -113983,8 +113983,8 @@
     "alertness": 10,
     "level": 25,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 700,
+    "exp": 700,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114044,8 +114044,8 @@
     "alertness": 10,
     "level": 23,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 660,
+    "exp": 660,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114107,8 +114107,8 @@
     "alertness": 20,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 110,
+    "exp": 110,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114169,8 +114169,8 @@
     "alertness": 25,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 900,
+    "exp": 900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114236,8 +114236,8 @@
     "alertness": 20,
     "level": 85,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 42000,
+    "exp": 42000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114378,9 +114378,9 @@
     "alertness": 5,
     "level": 6,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 6,
-    "next_mon": 300,
+    "exp": 6,
+    "next_exp": 300,
+    "next_mon": 1814,
     "blows": [
         {
             "method": "SLASH",
@@ -114434,8 +114434,8 @@
     "alertness": 5,
     "level": 20,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114495,9 +114495,9 @@
     "alertness": 5,
     "level": 16,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 60,
-    "next_mon": 500,
+    "exp": 60,
+    "next_exp": 500,
+    "next_mon": 1816,
     "blows": [
         {
             "method": "SLASH",
@@ -114556,8 +114556,8 @@
     "alertness": 5,
     "level": 24,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114617,8 +114617,8 @@
     "alertness": 10,
     "level": 48,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 14000,
+    "exp": 14000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114686,8 +114686,8 @@
     "alertness": 5,
     "level": 1,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 8,
+    "exp": 8,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114731,8 +114731,8 @@
     "alertness": 1,
     "level": 43,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114800,8 +114800,8 @@
     "alertness": 15,
     "level": 70,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 60000,
+    "exp": 60000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -114903,8 +114903,8 @@
     "alertness": 10,
     "level": 66,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 22500,
+    "exp": 22500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115042,8 +115042,8 @@
     "alertness": 20,
     "level": 40,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 28,
+    "exp": 28,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115112,8 +115112,8 @@
     "alertness": 20,
     "level": 40,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 28,
+    "exp": 28,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115182,8 +115182,8 @@
     "alertness": 20,
     "level": 82,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 42000,
+    "exp": 42000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115336,8 +115336,8 @@
     "level": 0,
     "rarity": 2,
     "exp": 0,
-    "next_exp": 0,
-    "next_mon": 10,
+    "next_exp": 10,
+    "next_mon": 14,
     "blows": [
         {
             "method": "PUNCH",
@@ -115386,8 +115386,8 @@
     "alertness": 4,
     "level": 25,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115448,8 +115448,8 @@
     "alertness": 20,
     "level": 95,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 111000,
+    "exp": 111000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115536,8 +115536,8 @@
     "alertness": 30,
     "level": 58,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115622,8 +115622,8 @@
     "alertness": 5,
     "level": 22,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 180,
+    "exp": 180,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115666,8 +115666,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 90,
+    "exp": 90,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115727,8 +115727,8 @@
     "alertness": 20,
     "level": 70,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 42000,
+    "exp": 42000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115817,8 +115817,8 @@
     "alertness": 30,
     "level": 69,
     "rarity": 8,
-    "exp": 0,
-    "next_exp": 45000,
+    "exp": 45000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115899,8 +115899,8 @@
     "alertness": 10,
     "level": 36,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -115960,8 +115960,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 90,
+    "exp": 90,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116015,8 +116015,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 90,
+    "exp": 90,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116079,8 +116079,8 @@
     "alertness": 50,
     "level": 62,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 22500,
+    "exp": 22500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116153,8 +116153,8 @@
     "alertness": 10,
     "level": 0,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116209,8 +116209,8 @@
     "alertness": 25,
     "level": 21,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116273,8 +116273,8 @@
     "alertness": 25,
     "level": 21,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116336,8 +116336,8 @@
     "alertness": 25,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2500,
+    "exp": 2500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116405,8 +116405,8 @@
     "alertness": 20,
     "level": 70,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 43000,
+    "exp": 43000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116489,8 +116489,8 @@
     "alertness": 20,
     "level": 50,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 18000,
+    "exp": 18000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116629,8 +116629,8 @@
     "alertness": 25,
     "level": 13,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 250,
+    "exp": 250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116676,9 +116676,9 @@
     "alertness": 10,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 700,
-    "next_mon": 7000,
+    "exp": 700,
+    "next_exp": 7000,
+    "next_mon": 1466,
     "blows": [
         {
             "method": "HIT",
@@ -116735,8 +116735,8 @@
     "alertness": 10,
     "level": 28,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116801,8 +116801,8 @@
     "alertness": 10,
     "level": 28,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116867,8 +116867,8 @@
     "alertness": 10,
     "level": 3,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 9,
+    "exp": 9,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116918,8 +116918,8 @@
     "alertness": 0,
     "level": 40,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 28000,
+    "exp": 28000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -116999,8 +116999,8 @@
     "alertness": 5,
     "level": 39,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117066,8 +117066,8 @@
     "alertness": 40,
     "level": 45,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117142,8 +117142,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "自ら標的を見つけて延々と砲を放つゴーレムの一種だ。"
@@ -117183,8 +117183,8 @@
     "alertness": 40,
     "level": 18,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117245,8 +117245,8 @@
     "alertness": 20,
     "level": 12,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 27,
+    "exp": 27,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117288,8 +117288,8 @@
     "alertness": 0,
     "level": 54,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 25000,
+    "exp": 25000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117413,8 +117413,8 @@
     "alertness": 30,
     "level": 44,
     "rarity": 8,
-    "exp": 0,
-    "next_exp": 12000,
+    "exp": 12000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117486,8 +117486,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117542,8 +117542,8 @@
     "alertness": 10,
     "level": 62,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40000,
+    "exp": 40000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117618,8 +117618,8 @@
     "alertness": 10,
     "level": 23,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 350,
+    "exp": 350,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117673,8 +117673,8 @@
     "alertness": 20,
     "level": 26,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 27,
+    "exp": 27,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117725,8 +117725,8 @@
     "alertness": 70,
     "level": 38,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117790,8 +117790,8 @@
     "alertness": 30,
     "level": 64,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 37000,
+    "exp": 37000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117869,8 +117869,8 @@
     "level": 0,
     "rarity": 2,
     "exp": 0,
-    "next_exp": 0,
-    "next_mon": 10,
+    "next_exp": 10,
+    "next_mon": 14,
     "blows": [
         {
             "method": "BEG",
@@ -117920,8 +117920,8 @@
     "alertness": 10,
     "level": 24,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 160,
+    "exp": 160,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -117968,8 +117968,8 @@
     "alertness": 30,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1100,
+    "exp": 1100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118031,8 +118031,8 @@
     "alertness": 10,
     "level": 26,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 560,
+    "exp": 560,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118145,8 +118145,8 @@
     "alertness": 25,
     "level": 27,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118211,8 +118211,8 @@
     "alertness": 40,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118263,8 +118263,8 @@
     "alertness": 20,
     "level": 38,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118329,8 +118329,8 @@
     "alertness": 10,
     "level": 38,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118383,8 +118383,8 @@
     "alertness": 10,
     "level": 33,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 450,
+    "exp": 450,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118437,8 +118437,8 @@
     "alertness": 20,
     "level": 23,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 75,
+    "exp": 75,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "ここでは罪が許されることはない。"
@@ -118483,9 +118483,9 @@
     "alertness": 20,
     "level": 26,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 400,
-    "next_mon": 600,
+    "exp": 400,
+    "next_exp": 600,
+    "next_mon": 1878,
     "blows": [
         {
             "method": "BITE",
@@ -118534,8 +118534,8 @@
     "alertness": 20,
     "level": 32,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1800,
+    "exp": 1800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118585,8 +118585,8 @@
     "alertness": 12,
     "level": 10,
     "rarity": 9,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118629,8 +118629,8 @@
     "alertness": 10,
     "level": 9,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118676,8 +118676,8 @@
     "alertness": 250,
     "level": 0,
     "rarity": 12,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118784,8 +118784,8 @@
     "alertness": 20,
     "level": 18,
     "rarity": 8,
-    "exp": 0,
-    "next_exp": 55,
+    "exp": 55,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118846,8 +118846,8 @@
     "alertness": 30,
     "level": 65,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 38000,
+    "exp": 38000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118906,8 +118906,8 @@
     "alertness": 12,
     "level": 42,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -118973,8 +118973,8 @@
     "alertness": 20,
     "level": 40,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119039,8 +119039,8 @@
     "alertness": 50,
     "level": 9,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119096,8 +119096,8 @@
     "alertness": 0,
     "level": 38,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2400,
+    "exp": 2400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119139,8 +119139,8 @@
     "alertness": 0,
     "level": 5,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 90,
+    "exp": 90,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119179,8 +119179,8 @@
     "alertness": 5,
     "level": 13,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 260,
+    "exp": 260,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119237,8 +119237,8 @@
     "alertness": 40,
     "level": 24,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119288,8 +119288,8 @@
     "alertness": 30,
     "level": 40,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 3650,
+    "exp": 3650,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119357,8 +119357,8 @@
     "alertness": 0,
     "level": 60,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 3500,
+    "exp": 3500,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "それは洞察力のある魔道士すべてが求めるものを与えてくれる。考える時間だ。",
@@ -119395,8 +119395,8 @@
     "alertness": 10,
     "level": 70,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 76000,
+    "exp": 76000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119496,8 +119496,8 @@
     "alertness": 20,
     "level": 51,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 24000,
+    "exp": 24000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119626,8 +119626,8 @@
     "alertness": 30,
     "level": 18,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119668,8 +119668,8 @@
     "alertness": 20,
     "level": 37,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119737,8 +119737,8 @@
     "alertness": 30,
     "level": 22,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 600,
+    "exp": 600,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119796,8 +119796,8 @@
     "alertness": 0,
     "level": 35,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119868,8 +119868,8 @@
     "alertness": 20,
     "level": 5,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119912,8 +119912,8 @@
     "alertness": 10,
     "level": 15,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 22,
+    "exp": 22,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -119956,8 +119956,8 @@
     "alertness": 30,
     "level": 48,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120020,8 +120020,8 @@
     "alertness": 30,
     "level": 59,
     "rarity": 20,
-    "exp": 0,
-    "next_exp": 28000,
+    "exp": 28000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120087,9 +120087,9 @@
     "alertness": 20,
     "level": 8,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 30,
-    "next_mon": 0,
+    "exp": 30,
+    "next_exp": 0,
+    "next_mon": 2,
     "blows": [
         {
             "method": "SLASH",
@@ -120136,8 +120136,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1800,
+    "exp": 1800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120189,8 +120189,8 @@
     "alertness": 50,
     "level": 36,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 2300,
+    "exp": 2300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120249,8 +120249,8 @@
     "alertness": 15,
     "level": 70,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 40000,
+    "exp": 40000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120330,8 +120330,8 @@
     "alertness": 20,
     "level": 2,
     "rarity": 60,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120391,8 +120391,8 @@
     "alertness": 50,
     "level": 41,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 4250,
+    "exp": 4250,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120470,8 +120470,8 @@
     "alertness": 40,
     "level": 32,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1800,
+    "exp": 1800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120541,8 +120541,8 @@
     "alertness": 20,
     "level": 11,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120606,8 +120606,8 @@
     "alertness": 30,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1400,
+    "exp": 1400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120671,8 +120671,8 @@
     "alertness": 30,
     "level": 39,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 4400,
+    "exp": 4400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120733,8 +120733,8 @@
     "alertness": 40,
     "level": 28,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120795,8 +120795,8 @@
     "alertness": 50,
     "level": 45,
     "rarity": 7,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120859,8 +120859,8 @@
     "alertness": 30,
     "level": 58,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 22000,
+    "exp": 22000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -120940,8 +120940,8 @@
     "alertness": 10,
     "level": 59,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 27000,
+    "exp": 27000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121019,9 +121019,9 @@
     "alertness": 10,
     "level": 4,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 9,
-    "next_mon": 10,
+    "exp": 9,
+    "next_exp": 10,
+    "next_mon": 133,
     "blows": [
         {
             "method": "TOUCH",
@@ -121075,8 +121075,8 @@
     "alertness": 10,
     "level": 36,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121149,8 +121149,8 @@
     "alertness": 0,
     "level": 33,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121213,8 +121213,8 @@
     "alertness": 0,
     "level": 0,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "太古の水棲生物だ。全くもって無害だ。"
@@ -121250,8 +121250,8 @@
     "alertness": 20,
     "level": 12,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121307,8 +121307,8 @@
     "alertness": 0,
     "level": 52,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 16000,
+    "exp": 16000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121384,8 +121384,8 @@
     "alertness": 40,
     "level": 31,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121446,8 +121446,8 @@
     "alertness": 20,
     "level": 40,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 9500,
+    "exp": 9500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121527,8 +121527,8 @@
     "alertness": 20,
     "level": 33,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 3000,
+    "exp": 3000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121597,8 +121597,8 @@
     "alertness": 10,
     "level": 9,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 22,
+    "exp": 22,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121634,8 +121634,8 @@
     "alertness": 20,
     "level": 70,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 95000,
+    "exp": 95000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121761,8 +121761,8 @@
     "alertness": 20,
     "level": 9,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121823,8 +121823,8 @@
     "alertness": 40,
     "level": 20,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 120,
+    "exp": 120,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121881,8 +121881,8 @@
     "alertness": 0,
     "level": 86,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 105000,
+    "exp": 105000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -121964,8 +121964,8 @@
     "alertness": 10,
     "level": 27,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122023,8 +122023,8 @@
     "alertness": 25,
     "level": 29,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 600,
+    "exp": 600,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122089,8 +122089,8 @@
     "alertness": 25,
     "level": 49,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 550,
+    "exp": 550,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122158,8 +122158,8 @@
     "alertness": 10,
     "level": 34,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 700,
+    "exp": 700,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122222,8 +122222,8 @@
     "alertness": 20,
     "level": 18,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 110,
+    "exp": 110,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122282,8 +122282,8 @@
     "alertness": 20,
     "level": 58,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 28000,
+    "exp": 28000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122353,8 +122353,8 @@
     "alertness": 10,
     "level": 45,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 12000,
+    "exp": 12000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122419,8 +122419,8 @@
     "alertness": 20,
     "level": 13,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 120,
+    "exp": 120,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122482,9 +122482,9 @@
     "alertness": 20,
     "level": 6,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 20,
-    "next_mon": 2108,
+    "exp": 20,
+    "next_exp": 2108,
+    "next_mon": 1000,
     "blows": [
         {
             "method": "ENEMA",
@@ -122529,8 +122529,8 @@
     "alertness": 0,
     "level": 25,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122569,8 +122569,8 @@
     "alertness": 0,
     "level": 20,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122609,8 +122609,8 @@
     "alertness": 80,
     "level": 68,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 20000,
+    "exp": 20000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122689,8 +122689,8 @@
     "alertness": 10,
     "level": 52,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 19000,
+    "exp": 19000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122761,8 +122761,8 @@
     "alertness": 0,
     "level": 31,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122814,8 +122814,8 @@
     "alertness": 100,
     "level": 7,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -122917,8 +122917,8 @@
     "alertness": 20,
     "level": 12,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 130,
+    "exp": 130,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123028,8 +123028,8 @@
     "alertness": 0,
     "level": 36,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "侵入者を防ぐ障壁を張る地雷の一種だという。惑星進出時代の月面戦争に用いられているらしい。"
@@ -123065,8 +123065,8 @@
     "alertness": 0,
     "level": 29,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123107,8 +123107,8 @@
     "alertness": 5,
     "level": 32,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123170,8 +123170,8 @@
     "alertness": 5,
     "level": 52,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 20000,
+    "exp": 20000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123232,8 +123232,8 @@
     "alertness": 10,
     "level": 45,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 9900,
+    "exp": 9900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123297,8 +123297,8 @@
     "alertness": 30,
     "level": 50,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 25000,
+    "exp": 25000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123372,8 +123372,8 @@
     "alertness": 5,
     "level": 52,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 19000,
+    "exp": 19000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123443,8 +123443,8 @@
     "alertness": 5,
     "level": 55,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 66666,
+    "exp": 66666,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "天に浮かび、北斗七星の横で死の兆しを示す星だ。これが相手に見えないと戦わないというヘタレが居るらしい。"
@@ -123488,8 +123488,8 @@
     "alertness": 10,
     "level": 63,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123580,8 +123580,8 @@
     "alertness": 10,
     "level": 57,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123666,8 +123666,8 @@
     "alertness": 5,
     "level": 18,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "混沌の産物、悪魔城で随所に存在する爬虫類の頭部が重ねられた柱だ。定期的に炎のブレスを吐いてくる。"
@@ -123770,8 +123770,8 @@
     "alertness": 10,
     "level": 25,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123834,8 +123834,8 @@
     "alertness": 7,
     "level": 26,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123892,8 +123892,8 @@
     "alertness": 7,
     "level": 26,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -123950,8 +123950,8 @@
     "alertness": 7,
     "level": 27,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124008,8 +124008,8 @@
     "alertness": 7,
     "level": 31,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124061,8 +124061,8 @@
     "alertness": 7,
     "level": 40,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124114,8 +124114,8 @@
     "alertness": 10,
     "level": 39,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124182,8 +124182,8 @@
     "alertness": 10,
     "level": 54,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "skill": {
         "shoot": "60d5",
@@ -124223,8 +124223,8 @@
     "alertness": 60,
     "level": 36,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124281,8 +124281,8 @@
     "alertness": 60,
     "level": 36,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124340,8 +124340,8 @@
     "alertness": 0,
     "level": 70,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40000,
+    "exp": 40000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124439,8 +124439,8 @@
     "alertness": 10,
     "level": 65,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 45000,
+    "exp": 45000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124517,8 +124517,8 @@
     "alertness": 3,
     "level": 5,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "それは種から育てた大切なものだ。あ（察し）"
@@ -124550,8 +124550,8 @@
     "alertness": 80,
     "level": 31,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124602,8 +124602,8 @@
     "alertness": 80,
     "level": 37,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 4500,
+    "exp": 4500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124664,8 +124664,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124734,8 +124734,8 @@
     "alertness": 40,
     "level": 58,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 26000,
+    "exp": 26000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124812,8 +124812,8 @@
     "alertness": 15,
     "level": 42,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124890,8 +124890,8 @@
     "alertness": 0,
     "level": 42,
     "rarity": 255,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "OD-10システム全体を維持するための補助システムだ。"
@@ -124926,8 +124926,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -124991,8 +124991,8 @@
     "alertness": 20,
     "level": 3,
     "rarity": 15,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "あらゆる滑稽で、迂遠で、残酷な死を求める不思議な兎たちだ。この多元宇宙でもそれを求めて、あなたにこの上ない期待をしているようだ。是非愛らしい彼らの願いを叶えてあげよう。"
@@ -125026,8 +125026,8 @@
     "alertness": 20,
     "level": 10,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125078,8 +125078,8 @@
     "alertness": 10,
     "level": 39,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125151,8 +125151,8 @@
     "alertness": 4,
     "level": 38,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 6000,
+    "exp": 6000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125223,8 +125223,8 @@
     "alertness": 10,
     "level": 39,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 5500,
+    "exp": 5500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125298,8 +125298,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125372,9 +125372,9 @@
     "alertness": 60,
     "level": 44,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 3750,
-    "next_mon": 150000,
+    "exp": 3750,
+    "next_exp": 150000,
+    "next_mon": 1998,
     "blows": [
         {
             "method": "CLAW",
@@ -125441,8 +125441,8 @@
     "alertness": 30,
     "level": 25,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125507,8 +125507,8 @@
     "alertness": 10,
     "level": 2,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125572,8 +125572,8 @@
     "alertness": 10,
     "level": 66,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 48000,
+    "exp": 48000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125654,8 +125654,8 @@
     "alertness": 10,
     "level": 71,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 52000,
+    "exp": 52000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125736,8 +125736,8 @@
     "alertness": 10,
     "level": 79,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 56000,
+    "exp": 56000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125816,8 +125816,8 @@
     "alertness": 10,
     "level": 65,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 40000,
+    "exp": 40000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125907,8 +125907,8 @@
     "alertness": 10,
     "level": 69,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 49000,
+    "exp": 49000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -125996,8 +125996,8 @@
     "alertness": 30,
     "level": 63,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126072,8 +126072,8 @@
     "alertness": 0,
     "level": 45,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 20000,
+    "exp": 20000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126158,8 +126158,8 @@
     "alertness": 20,
     "level": 53,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 15000,
+    "exp": 15000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126233,8 +126233,8 @@
     "alertness": 20,
     "level": 44,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 2500,
+    "exp": 2500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126294,8 +126294,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126369,8 +126369,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126436,8 +126436,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126510,8 +126510,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126580,8 +126580,8 @@
     "alertness": 30,
     "level": 53,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126689,9 +126689,9 @@
     "alertness": 20,
     "level": 55,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 19000,
-    "next_mon": 60000,
+    "exp": 19000,
+    "next_exp": 60000,
+    "next_mon": 2043,
     "blows": [
         {
             "method": "SLASH",
@@ -126766,8 +126766,8 @@
     "alertness": 20,
     "level": 5,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126806,8 +126806,8 @@
     "alertness": 0,
     "level": 44,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126845,8 +126845,8 @@
     "alertness": 10,
     "level": 45,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "惑星封鎖機構がルビコンの災厄を抑止すべく各地に派遣する大型ヘリコプターだ。"
@@ -126895,8 +126895,8 @@
     "alertness": 0,
     "level": 48,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -126952,8 +126952,8 @@
     "alertness": 0,
     "level": 37,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127017,8 +127017,8 @@
     "alertness": 0,
     "level": 31,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 500,
+    "exp": 500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127072,8 +127072,8 @@
     "alertness": 40,
     "level": 34,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127128,8 +127128,8 @@
     "alertness": 20,
     "level": 49,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 12000,
+    "exp": 12000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127202,8 +127202,8 @@
     "alertness": 20,
     "level": 29,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127317,8 +127317,8 @@
     "alertness": 10,
     "level": 39,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2500,
+    "exp": 2500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127377,8 +127377,8 @@
     "alertness": 10,
     "level": 4,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127426,8 +127426,8 @@
     "alertness": 0,
     "level": 67,
     "rarity": 6,
-    "exp": 0,
-    "next_exp": 8000,
+    "exp": 8000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127497,8 +127497,8 @@
     "alertness": 12,
     "level": 41,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127565,8 +127565,8 @@
     "alertness": 10,
     "level": 18,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 220,
+    "exp": 220,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127610,8 +127610,8 @@
     "alertness": 10,
     "level": 23,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127664,8 +127664,8 @@
     "alertness": 10,
     "level": 44,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127738,8 +127738,8 @@
     "alertness": 10,
     "level": 55,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 11000,
+    "exp": 11000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127803,8 +127803,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127850,8 +127850,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127922,8 +127922,8 @@
     "alertness": 20,
     "level": 51,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 14500,
+    "exp": 14500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -127986,8 +127986,8 @@
     "alertness": 5,
     "level": 5,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128046,8 +128046,8 @@
     "alertness": 20,
     "level": 60,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 33000,
+    "exp": 33000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128131,8 +128131,8 @@
     "alertness": 20,
     "level": 60,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 33000,
+    "exp": 33000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128216,8 +128216,8 @@
     "alertness": 70,
     "level": 20,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 145,
+    "exp": 145,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128273,8 +128273,8 @@
     "alertness": 10,
     "level": 53,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 16000,
+    "exp": 16000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128391,8 +128391,8 @@
     "alertness": 10,
     "level": 14,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128449,8 +128449,8 @@
     "alertness": 20,
     "level": 48,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 150,
+    "exp": 150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128578,8 +128578,8 @@
     "alertness": 10,
     "level": 49,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 6000,
+    "exp": 6000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "それは宙に浮かぶ尾てい骨で、性的に誘うように上下に動く他には身動きをしない。",
@@ -128634,8 +128634,8 @@
     "alertness": 0,
     "level": 46,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128696,8 +128696,8 @@
     "alertness": 20,
     "level": 56,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 18000,
+    "exp": 18000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128774,8 +128774,8 @@
     "alertness": 4,
     "level": 32,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 4000,
+    "exp": 4000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128843,8 +128843,8 @@
     "alertness": 15,
     "level": 73,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 30000,
+    "exp": 30000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -128965,8 +128965,8 @@
     "alertness": 40,
     "level": 12,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129017,8 +129017,8 @@
     "alertness": 20,
     "level": 24,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 190,
+    "exp": 190,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129078,8 +129078,8 @@
     "alertness": 5,
     "level": 19,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 120,
+    "exp": 120,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129134,8 +129134,8 @@
     "alertness": 10,
     "level": 33,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129203,8 +129203,8 @@
     "alertness": 20,
     "level": 35,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1500,
+    "exp": 1500,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129266,8 +129266,8 @@
     "alertness": 20,
     "level": 14,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 5,
+    "exp": 5,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129311,8 +129311,8 @@
     "alertness": 4,
     "level": 53,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 14000,
+    "exp": 14000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129383,8 +129383,8 @@
     "alertness": 6,
     "level": 57,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 13000,
+    "exp": 13000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129457,8 +129457,8 @@
     "alertness": 40,
     "level": 41,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1475,
+    "exp": 1475,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129529,8 +129529,8 @@
     "alertness": 40,
     "level": 39,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 950,
+    "exp": 950,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129599,8 +129599,8 @@
     "alertness": 20,
     "level": 51,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129665,8 +129665,8 @@
     "alertness": 10,
     "level": 14,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 90,
+    "exp": 90,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129763,8 +129763,8 @@
     "alertness": 4,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129822,8 +129822,8 @@
     "alertness": 30,
     "level": 14,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 8,
+    "exp": 8,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -129868,8 +129868,8 @@
     "alertness": 5,
     "level": 55,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 5000,
+    "exp": 5000,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "おかしいな？何も聞こえないゾ。"
@@ -129914,9 +129914,9 @@
     "alertness": 10,
     "level": 42,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 4900,
-    "next_mon": 2218,
+    "exp": 4900,
+    "next_exp": 2218,
+    "next_mon": 30000,
     "blows": [
         {
             "method": "PUNCH",
@@ -129990,8 +129990,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 45,
+    "exp": 45,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130046,8 +130046,8 @@
     "alertness": 10,
     "level": 45,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 5800,
+    "exp": 5800,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "無数の白い人塊に覆われた、得体の知れないデーモンと思われる何かだ。その球体の内から触手と目玉が時折蠢き出てくる。"
@@ -130100,8 +130100,8 @@
     "alertness": 10,
     "level": 20,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 350,
+    "exp": 350,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130167,8 +130167,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 40,
+    "exp": 40,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130212,8 +130212,8 @@
     "alertness": 30,
     "level": 35,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 38,
+    "exp": 38,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130264,8 +130264,8 @@
     "alertness": 0,
     "level": 42,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1700,
+    "exp": 1700,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130370,8 +130370,8 @@
     "alertness": 10,
     "level": 15,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 200,
+    "exp": 200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130440,8 +130440,8 @@
     "alertness": 10,
     "level": 41,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 10000,
+    "exp": 10000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130506,8 +130506,8 @@
     "alertness": 10,
     "level": 22,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 190,
+    "exp": 190,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130563,8 +130563,8 @@
     "alertness": 10,
     "level": 31,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1100,
+    "exp": 1100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130673,8 +130673,8 @@
     "alertness": 10,
     "level": 45,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130729,8 +130729,8 @@
     "alertness": 10,
     "level": 10,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130781,8 +130781,8 @@
     "alertness": 10,
     "level": 4,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 10,
+    "exp": 10,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130833,8 +130833,8 @@
     "alertness": 50,
     "level": 35,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130884,8 +130884,8 @@
     "alertness": 50,
     "level": 40,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130935,8 +130935,8 @@
     "alertness": 50,
     "level": 45,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -130986,8 +130986,8 @@
     "alertness": 50,
     "level": 50,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -131037,8 +131037,8 @@
     "alertness": 50,
     "level": 55,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -131088,8 +131088,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 150,
+    "exp": 150,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -131155,8 +131155,8 @@
     "alertness": 0,
     "level": 39,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 1700,
+    "exp": 1700,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -131271,8 +131271,8 @@
     "alertness": 10,
     "level": 30,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 400,
+    "exp": 400,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -131564,8 +131564,8 @@
     "alertness": 20,
     "level": 30,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 1000,
+    "exp": 1000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -131870,8 +131870,8 @@
     "alertness": 10,
     "level": 4,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -131960,8 +131960,8 @@
     "alertness": 10,
     "level": 20,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "絶え間なく電気の球体を発生させ続ける、機械の箱だ。"
@@ -132004,8 +132004,8 @@
     "alertness": 10,
     "level": 20,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "絶え間なく火炎の球を発生させ続ける、機械の箱だ。"
@@ -132048,8 +132048,8 @@
     "alertness": 10,
     "level": 20,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "絶え間なく火炎の球を発生させ続ける、機械の箱だ。"
@@ -132092,8 +132092,8 @@
     "alertness": 0,
     "level": 60,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 9000,
+    "exp": 9000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -132562,8 +132562,8 @@
     "alertness": 20,
     "level": 35,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 20,
+    "exp": 20,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -132609,8 +132609,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -132672,8 +132672,8 @@
     "alertness": 0,
     "level": 30,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -132735,8 +132735,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 7200,
+    "exp": 7200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -132807,8 +132807,8 @@
     "alertness": 10,
     "level": 40,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 11000,
+    "exp": 11000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -133228,8 +133228,8 @@
     "alertness": 0,
     "level": 34,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 100,
+    "exp": 100,
+    "next_exp": 0,
     "next_mon": 0,
     "flavor": {
         "ja": "オルゾフ組が死者を行使する力そのものだ。彼らは貸しつけた財貨の返済を終えるまで、死しても債務者を逃さない。"
@@ -134327,8 +134327,8 @@
     "alertness": 20,
     "level": 18,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 170,
+    "exp": 170,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -134379,8 +134379,8 @@
     "alertness": 1,
     "level": 36,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 2000,
+    "exp": 2000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -135648,8 +135648,8 @@
     "alertness": 10,
     "level": 28,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 900,
+    "exp": 900,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -135847,8 +135847,8 @@
     "alertness": 20,
     "level": 67,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 32000,
+    "exp": 32000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -136247,8 +136247,8 @@
     "alertness": 40,
     "level": 18,
     "rarity": 3,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -136614,8 +136614,8 @@
     "alertness": 0,
     "level": 31,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 800,
+    "exp": 800,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -136849,8 +136849,8 @@
     "alertness": 20,
     "level": 13,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 50,
+    "exp": 50,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -137083,8 +137083,8 @@
     "alertness": 40,
     "level": 17,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 60,
+    "exp": 60,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -137447,8 +137447,8 @@
     "alertness": 0,
     "level": 15,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 300,
+    "exp": 300,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -137506,8 +137506,8 @@
     "alertness": 7,
     "level": 24,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 1200,
+    "exp": 1200,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -137635,8 +137635,8 @@
     "alertness": 40,
     "level": 8,
     "rarity": 1,
-    "exp": 0,
-    "next_exp": 30,
+    "exp": 30,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -137957,8 +137957,8 @@
     "alertness": 20,
     "level": 40,
     "rarity": 10,
-    "exp": 0,
-    "next_exp": 170,
+    "exp": 170,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -138590,8 +138590,8 @@
     "alertness": 50,
     "level": 12,
     "rarity": 2,
-    "exp": 0,
-    "next_exp": 90,
+    "exp": 90,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -138977,8 +138977,8 @@
     "alertness": 20,
     "level": 42,
     "rarity": 5,
-    "exp": 0,
-    "next_exp": 7000,
+    "exp": 7000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -139270,8 +139270,8 @@
     "alertness": 10,
     "level": 56,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 15000,
+    "exp": 15000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
@@ -139408,8 +139408,8 @@
     "alertness": 10,
     "level": 62,
     "rarity": 4,
-    "exp": 0,
-    "next_exp": 34000,
+    "exp": 34000,
+    "next_exp": 0,
     "next_mon": 0,
     "blows": [
         {
