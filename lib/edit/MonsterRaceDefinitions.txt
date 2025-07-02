@@ -40489,6 +40489,23 @@ F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
 F:EVIL
 D:実際容貌と振る舞いと化粧とで色々誤魔化してはいるが、年は人間以上に重ねている上、心根のクッソ汚さはひでたるとと同類だ。
 
+N:2234:血の神『コーン』
+E:Khorne, the Blood God
+G:P:R
+I:150:150d140:100:230:0
+W:96:2:146000:0:0
+B:HIT:HURT:30d12
+B:HIT:HURT:30d12
+B:HIT:HURT:30d12
+B:HIT:HURT:30d12
+R:758:4d6
+F:UNIQUE | NO_STUN | NO_FEAR | FORCE_MAXHP | PREVENT_SUDDEN_MAGIC | REFLECTING | WARRIOR
+F:MOVE_BODY | KILL_WALL | IM_FIRE | IM_ELEC | IM_POIS | IM_ACID | IM_COLD |
+F:RES_NETH | RES_WATE | RES_PLAS | RES_NEXU | RES_CHAO | EVIL | ALLIANCE_KHORNE
+F:RES_DISE | RES_WALL | RES_INER | NO_STUN | REGENERATE | WEIRD_MIND
+F:NO_CONF | NO_SLEEP | CAN_FLY | BASH_DOOR | POWERFUL | KILL_BODY
+A:9:100
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
