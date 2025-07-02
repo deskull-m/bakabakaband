@@ -104,11 +104,16 @@ static void py_pickup_all_golds_on_floor(PlayerType *player_ptr, const Grid &gri
 
 static void py_pickup_single_item(PlayerType *player_ptr, short i_idx, bool pickup)
 {
-    const auto &item = *player_ptr->current_floor_ptr->o_list[i_idx];
+    auto &item = *player_ptr->current_floor_ptr->o_list[i_idx];
     const auto item_name = describe_flavor(player_ptr, item, 0);
 
     if (!pickup) {
         msg_print(_("{}がある。", "You see {}."), item_name);
+        return;
+    }
+
+    if (!check_get_item(&item)) {
+        msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
         return;
     }
 
