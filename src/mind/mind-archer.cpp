@@ -3,7 +3,6 @@
 #include "autopick/autopick.h"
 #include "core/asking-player.h"
 #include "flavor/flavor-describer.h"
-#include "floor/cave.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "grid/grid.h"
@@ -14,16 +13,14 @@
 #include "object-enchant/object-boost.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
-#include "object/object-kind-hook.h"
 #include "perception/object-perception.h"
 #include "system/angband.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -38,9 +35,9 @@ enum ammo_creation_type {
 
 static bool select_ammo_creation_type(ammo_creation_type &type, PLAYER_LEVEL plev)
 {
-    COMMAND_CODE code;
-    if (repeat_pull(&code)) {
-        type = i2enum<ammo_creation_type>(code);
+    const auto code = repeat_pull();
+    if (code) {
+        type = i2enum<ammo_creation_type>(*code);
         switch (type) {
         case AMMO_SHOT:
         case AMMO_ARROW:
@@ -106,33 +103,31 @@ bool create_ammo(PlayerType *player_ptr)
 
     switch (ext) {
     case AMMO_SHOT: {
-        int dir;
-        if (!get_rep_dir(player_ptr, &dir)) {
+        const auto dir = get_rep_dir(player_ptr);
+        if (!dir) {
             return false;
         }
 
         const auto pos = player_ptr->get_neighbor(dir);
         const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-        if (grid.get_terrain_mimic().flags.has_not(TerrainCharacteristics::CAN_DIG)) {
+        if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::CAN_DIG)) {
             msg_print(_("そこには岩石がない。", "You need a pile of rubble."));
             return false;
         }
 
-        if (!grid.cave_has_flag(TerrainCharacteristics::CAN_DIG) || !grid.cave_has_flag(TerrainCharacteristics::HURT_ROCK)) {
+        if (!grid.has(TerrainCharacteristics::CAN_DIG) || !grid.has(TerrainCharacteristics::HURT_ROCK)) {
             msg_print(_("硬すぎて崩せなかった。", "You failed to make ammo."));
             return true;
         }
 
-        ItemEntity forge;
-        auto *q_ptr = &forge;
-        q_ptr->prep(lookup_baseitem_id({ ItemKindType::SHOT, m_bonus(1, player_ptr->lev) + 1 }));
-        q_ptr->number = (byte)rand_range(15, 30);
-        object_aware(player_ptr, q_ptr);
-        q_ptr->mark_as_known();
-        ItemMagicApplier(player_ptr, q_ptr, player_ptr->lev, AM_NO_FIXED_ART).execute();
-        q_ptr->discount = 99;
-        int16_t slot = store_item_to_inventory(player_ptr, q_ptr);
-        const auto item_name = describe_flavor(player_ptr, q_ptr, 0);
+        ItemEntity item({ ItemKindType::SHOT, m_bonus(1, player_ptr->lev) + 1 });
+        item.number = rand_range(15, 30);
+        object_aware(player_ptr, item);
+        item.mark_as_known();
+        ItemMagicApplier(player_ptr, &item, player_ptr->lev, AM_NO_FIXED_ART).execute();
+        item.discount = 99;
+        int16_t slot = store_item_to_inventory(player_ptr, &item);
+        const auto item_name = describe_flavor(player_ptr, item, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         if (slot >= 0) {
             autopick_alter_item(player_ptr, slot, false);
@@ -150,19 +145,16 @@ bool create_ammo(PlayerType *player_ptr)
         if (!q_ptr) {
             return false;
         }
-
-        ItemEntity forge;
-        q_ptr = &forge;
-        q_ptr->prep(lookup_baseitem_id({ ItemKindType::ARROW, static_cast<short>(m_bonus(1, player_ptr->lev) + 1) }));
-        q_ptr->number = (byte)rand_range(5, 10);
-        object_aware(player_ptr, q_ptr);
-        q_ptr->mark_as_known();
-        ItemMagicApplier(player_ptr, q_ptr, player_ptr->lev, AM_NO_FIXED_ART).execute();
-        q_ptr->discount = 99;
-        const auto item_name = describe_flavor(player_ptr, q_ptr, 0);
+        ItemEntity ammo({ ItemKindType::ARROW, m_bonus(1, player_ptr->lev) + 1 });
+        ammo.number = rand_range(5, 10);
+        object_aware(player_ptr, ammo);
+        ammo.mark_as_known();
+        ItemMagicApplier(player_ptr, &ammo, player_ptr->lev, AM_NO_FIXED_ART).execute();
+        ammo.discount = 99;
+        const auto item_name = describe_flavor(player_ptr, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         vary_item(player_ptr, i_idx, -1);
-        int16_t slot = store_item_to_inventory(player_ptr, q_ptr);
+        int16_t slot = store_item_to_inventory(player_ptr, &ammo);
         if (slot >= 0) {
             autopick_alter_item(player_ptr, slot, false);
         }
@@ -178,18 +170,16 @@ bool create_ammo(PlayerType *player_ptr)
             return false;
         }
 
-        ItemEntity forge;
-        q_ptr = &forge;
-        q_ptr->prep(lookup_baseitem_id({ ItemKindType::BOLT, static_cast<short>(m_bonus(1, player_ptr->lev) + 1) }));
-        q_ptr->number = (byte)rand_range(4, 8);
-        object_aware(player_ptr, q_ptr);
-        q_ptr->mark_as_known();
-        ItemMagicApplier(player_ptr, q_ptr, player_ptr->lev, AM_NO_FIXED_ART).execute();
-        q_ptr->discount = 99;
-        const auto item_name = describe_flavor(player_ptr, q_ptr, 0);
+        ItemEntity ammo({ ItemKindType::BOLT, m_bonus(1, player_ptr->lev) + 1 });
+        ammo.number = rand_range(4, 8);
+        object_aware(player_ptr, ammo);
+        ammo.mark_as_known();
+        ItemMagicApplier(player_ptr, &ammo, player_ptr->lev, AM_NO_FIXED_ART).execute();
+        ammo.discount = 99;
+        const auto item_name = describe_flavor(player_ptr, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         vary_item(player_ptr, i_idx, -1);
-        int16_t slot = store_item_to_inventory(player_ptr, q_ptr);
+        int16_t slot = store_item_to_inventory(player_ptr, &ammo);
         if (slot >= 0) {
             autopick_alter_item(player_ptr, slot, false);
         }

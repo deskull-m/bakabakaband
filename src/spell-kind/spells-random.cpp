@@ -32,7 +32,7 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/experience.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
@@ -56,15 +56,12 @@ void call_chaos(PlayerType *player_ptr)
         line_chaos = true;
     }
 
-    int dir;
     if (one_in_(6)) {
-        for (int dummy = 1; dummy < 10; dummy++) {
-            if (dummy - 5) {
-                if (line_chaos) {
-                    fire_beam(player_ptr, chaos_type, dummy, 150);
-                } else {
-                    fire_ball(player_ptr, chaos_type, dummy, 150, 2);
-                }
+        for (const auto &dir : Direction::directions_8()) {
+            if (line_chaos) {
+                fire_beam(player_ptr, chaos_type, dir, 150);
+            } else {
+                fire_ball(player_ptr, chaos_type, dir, 150, 2);
             }
         }
 
@@ -72,11 +69,12 @@ void call_chaos(PlayerType *player_ptr)
     }
 
     if (one_in_(3)) {
-        fire_ball(player_ptr, chaos_type, 0, 500, 8);
+        fire_ball(player_ptr, chaos_type, Direction::self(), 500, 8);
         return;
     }
 
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return;
     }
     if (line_chaos) {
@@ -102,7 +100,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
 {
     BIT_FLAGS flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     bool is_first_curse = true;
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    const auto &floor = *player_ptr->current_floor_ptr;
     while (is_first_curse || (one_in_(3) && !stop_ty)) {
         is_first_curse = false;
         switch (randint1(34)) {
@@ -110,7 +108,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 29:
             if (!(*count)) {
                 msg_print(_("地面が揺れた...", "The ground trembles..."));
-                earthquake(player_ptr, player_ptr->y, player_ptr->x, 5 + randint0(10), 0);
+                earthquake(player_ptr, player_ptr->get_position(), 5 + randint0(10));
                 if (!one_in_(6)) {
                     break;
                 }
@@ -119,7 +117,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 30:
         case 31:
             if (!(*count)) {
-                int dam = damroll(10, 10);
+                int dam = Dice::roll(10, 10);
                 msg_print(_("純粋な魔力の次元への扉が開いた！", "A portal opens to a plane of raw mana!"));
                 project(player_ptr, 0, 8, player_ptr->y, player_ptr->x, dam, AttributeType::MANA, flg);
                 take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("純粋な魔力の解放", "released pure mana"));
@@ -132,7 +130,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 33:
             if (!(*count)) {
                 msg_print(_("周囲の空間が歪んだ！", "Space warps about you!"));
-                teleport_player(player_ptr, damroll(10, 10), TELEPORT_PASSIVE);
+                teleport_player(player_ptr, Dice::roll(10, 10), TELEPORT_PASSIVE);
                 if (randint0(13)) {
                     (*count) += activate_hi_summon(player_ptr, player_ptr->y, player_ptr->x, false);
                 }
@@ -175,8 +173,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 8:
         case 9:
         case 18:
-            (*count) += summon_specific(
-                player_ptr, 0, player_ptr->y, player_ptr->x, floor_ptr->dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+            (*count) += summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET)) ? 1 : 0;
             if (!one_in_(6)) {
                 break;
             }
@@ -226,8 +223,8 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
             }
             [[fallthrough]];
         case 25:
-            if ((floor_ptr->dun_level > 65) && !stop_ty) {
-                (*count) += summon_cyber(player_ptr, -1, player_ptr->y, player_ptr->x);
+            if ((floor.dun_level > 65) && !stop_ty) {
+                (*count) += summon_cyber(player_ptr, player_ptr->y, player_ptr->x);
                 stop_ty = true;
                 break;
             }
@@ -262,7 +259,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         type = SUMMON_MIMIC;
     }
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    const auto &floor = *player_ptr->current_floor_ptr;
     switch (randint1(spell) + randint1(8) + 1) {
     case 1:
     case 2:
@@ -286,7 +283,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
     case 12:
     case 13:
     case 14:
-        lite_area(player_ptr, damroll(2, 3), 2);
+        lite_area(player_ptr, Dice::roll(2, 3), 2);
         break;
     case 15:
         destroy_doors_touch(player_ptr);
@@ -312,7 +309,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         aggravate_monsters(player_ptr, 0);
         break;
     case 26:
-        earthquake(player_ptr, player_ptr->y, player_ptr->x, 5, 0);
+        earthquake(player_ptr, player_ptr->get_position(), 5);
         break;
     case 27:
     case 28:
@@ -326,7 +323,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         lose_all_info(player_ptr);
         break;
     case 32:
-        fire_ball(player_ptr, AttributeType::CHAOS, 0, spell + 5, 1 + (spell / 10));
+        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), spell + 5, 1 + (spell / 10));
         break;
     case 33:
         wall_stone(player_ptr);
@@ -335,7 +332,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
     case 35:
         for (int counter = 0; counter < 8; counter++) {
             (void)summon_specific(
-                player_ptr, 0, player_ptr->y, player_ptr->x, (floor_ptr->dun_level * 3) / 2, i2enum<summon_type>(type), (PM_ALLOW_GROUP | PM_NO_PET));
+                player_ptr, player_ptr->y, player_ptr->x, (floor.dun_level * 3) / 2, i2enum<summon_type>(type), (PM_ALLOW_GROUP | PM_NO_PET));
         }
 
         break;
@@ -344,7 +341,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         activate_hi_summon(player_ptr, player_ptr->y, player_ptr->x, false);
         break;
     case 38:
-        (void)summon_cyber(player_ptr, -1, player_ptr->y, player_ptr->x);
+        (void)summon_cyber(player_ptr, player_ptr->y, player_ptr->x);
         break;
     default: {
         int count = 0;
@@ -365,7 +362,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
  * while keeping the results quite random.  It also allows some potent\n
  * effects only at high level.
  */
-void cast_wonder(PlayerType *player_ptr, DIRECTION dir)
+void cast_wonder(PlayerType *player_ptr, const Direction &dir)
 {
     PLAYER_LEVEL plev = player_ptr->lev;
     int die = randint1(100) + plev / 5;
@@ -401,7 +398,7 @@ void cast_wonder(PlayerType *player_ptr, DIRECTION dir)
     }
 
     if (die < 26) {
-        heal_monster(player_ptr, dir, damroll(4, 6));
+        heal_monster(player_ptr, dir, Dice::roll(4, 6));
         return;
     }
 
@@ -411,7 +408,7 @@ void cast_wonder(PlayerType *player_ptr, DIRECTION dir)
     }
 
     if (die < 36) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, damroll(3 + ((plev - 1) / 5), 4));
+        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
         return;
     }
 
@@ -426,27 +423,27 @@ void cast_wonder(PlayerType *player_ptr, DIRECTION dir)
     }
 
     if (die < 51) {
-        (void)lite_line(player_ptr, dir, damroll(6, 8));
+        (void)lite_line(player_ptr, dir, Dice::roll(6, 8));
         return;
     }
 
     if (die < 56) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, damroll(3 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, Dice::roll(3 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 61) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, damroll(5 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, Dice::roll(5 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 66) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::ACID, dir, damroll(6 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::ACID, dir, Dice::roll(6 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 71) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, damroll(8 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, Dice::roll(8 + ((plev - 5) / 4), 8));
         return;
     }
 
@@ -481,7 +478,7 @@ void cast_wonder(PlayerType *player_ptr, DIRECTION dir)
     }
 
     if (die < 104) {
-        earthquake(player_ptr, player_ptr->y, player_ptr->x, 12, 0);
+        earthquake(player_ptr, player_ptr->get_position(), 12);
         return;
     }
 

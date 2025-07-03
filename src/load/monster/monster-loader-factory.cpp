@@ -25,7 +25,7 @@ std::shared_ptr<MonsterLoaderBase> MonsterLoaderFactory::create_loader()
         return std::make_shared<MonsterLoader50>();
         // dummy yet.
     default:
-        throw("Invalid loader version was specified!");
+        THROW_EXCEPTION(std::logic_error, "Invalid loader version was specified!");
     }
 }
 

@@ -4,7 +4,6 @@
 #include "floor/line-of-sight.h"
 #include "mind/mind-mirror-master.h"
 #include "monster-race/monster-kind-mask.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
@@ -12,8 +11,8 @@
 #include "player/player-damage.h"
 #include "status/bad-status-setter.h"
 #include "system/grid-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -35,7 +34,7 @@ static bool resisted_psi_because_empty_mind(PlayerType *player_ptr, EffectMonste
 
     em_ptr->dam = 0;
     em_ptr->note = _("には完全な耐性がある！", " is immune.");
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
     }
 
@@ -159,7 +158,7 @@ static void effect_monster_psi_resist(PlayerType *player_ptr, EffectMonster *em_
     }
 
     /* Injure +/- confusion */
-    angband_strcpy(em_ptr->killer, monster_desc(player_ptr, em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
+    angband_strcpy(em_ptr->killer, monster_desc(player_ptr, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
     take_hit(player_ptr, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
     effect_monster_psi_reflect_extra_effect(player_ptr, em_ptr);
     em_ptr->dam = 0;
@@ -210,7 +209,7 @@ ProcessResult effect_monster_psi(PlayerType *player_ptr, EffectMonster *em_ptr)
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
-    if (!(los(player_ptr, em_ptr->m_ptr->fy, em_ptr->m_ptr->fx, player_ptr->y, player_ptr->x))) {
+    if (!los(*player_ptr->current_floor_ptr, em_ptr->m_ptr->get_position(), player_ptr->get_position())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sはあなたが見えないので影響されない！", "%s^ can't see you, and isn't affected!"), em_ptr->m_name);
         }
@@ -251,7 +250,7 @@ static void effect_monster_psi_drain_resist(PlayerType *player_ptr, EffectMonste
         return;
     }
 
-    angband_strcpy(em_ptr->killer, monster_desc(player_ptr, em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
+    angband_strcpy(em_ptr->killer, monster_desc(player_ptr, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
     if (check_multishadow(player_ptr)) {
         take_hit(player_ptr, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
         em_ptr->dam = 0;
@@ -259,7 +258,7 @@ static void effect_monster_psi_drain_resist(PlayerType *player_ptr, EffectMonste
     }
 
     msg_print(_("超能力パワーを吸いとられた！", "Your psychic energy is drained!"));
-    player_ptr->csp -= damroll(5, em_ptr->dam) / 2;
+    player_ptr->csp -= Dice::roll(5, em_ptr->dam) / 2;
     if (player_ptr->csp < 0) {
         player_ptr->csp = 0;
     }
@@ -278,7 +277,7 @@ static void effect_monster_psi_drain_resist(PlayerType *player_ptr, EffectMonste
  */
 static void effect_monster_psi_drain_change_power(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    int b = damroll(5, em_ptr->dam) / 4;
+    int b = Dice::roll(5, em_ptr->dam) / 4;
     concptr str = PlayerClass(player_ptr).equals(PlayerClassType::MINDCRAFTER) ? _("超能力パワー", "psychic energy") : _("魔力", "mana");
     concptr msg = _("あなたは%sの苦痛を%sに変換した！", (em_ptr->seen ? "You convert %s's pain into %s!" : "You convert %ss pain into %s!"));
     msg_format(msg, em_ptr->m_name, str);
@@ -321,20 +320,20 @@ ProcessResult effect_monster_psi_drain(PlayerType *player_ptr, EffectMonster *em
  * @details
  * 朦朧＋ショートテレポートアウェイ
  */
-ProcessResult effect_monster_telekinesis(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_telekinesis(EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
     if (one_in_(4)) {
-        if (player_ptr->riding && (em_ptr->g_ptr->m_idx == player_ptr->riding)) {
+        if (em_ptr->m_ptr->is_riding()) {
             em_ptr->do_dist = 0;
         } else {
             em_ptr->do_dist = 7;
         }
     }
 
-    em_ptr->do_stun = damroll((em_ptr->caster_lev / 20) + 3, em_ptr->dam) + 1;
+    em_ptr->do_stun = Dice::roll((em_ptr->caster_lev / 20) + 3, em_ptr->dam) + 1;
     if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || (em_ptr->r_ptr->level > 5 + randint1(em_ptr->dam))) {
         em_ptr->do_stun = 0;
         em_ptr->obvious = false;

@@ -12,7 +12,6 @@
 #include "io/cursor.h"
 #include "io/write-diary.h"
 #include "monster-floor/monster-remover.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
@@ -21,9 +20,9 @@
 #include "monster/monster-status.h"
 #include "player/player-damage.h"
 #include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -55,7 +54,7 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
     } else if (monrace.resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH)) {
         monrace.r_resistance_flags.set(MonsterResistanceType::NO_INSTANTLY_DEATH);
         resist = true;
-    } else if (m_idx == player_ptr->riding) {
+    } else if (monster.is_riding()) {
         resist = true;
     } else if (floor.is_special()) {
         resist = true;
@@ -65,8 +64,8 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
         resist = true;
     } else {
         if (record_named_pet && monster.is_named_pet()) {
-            const auto m_name = monster_desc(player_ptr, &monster, MD_INDEF_VISIBLE);
-            exe_write_diary(player_ptr, DiaryKind::NAMED_PET, RECORD_NAMED_PET_GENOCIDE, m_name);
+            const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+            exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_GENOCIDE, m_name);
         }
 
         wc_ptr->plus_collapsion(10 + monrace.level * 5);
@@ -74,8 +73,8 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
     }
 
     if (resist && player_cast) {
-        const auto see_m = is_seen(player_ptr, &monster);
-        const auto m_name = monster_desc(player_ptr, &monster, 0);
+        const auto see_m = is_seen(player_ptr, monster);
+        const auto m_name = monster_desc(player_ptr, monster, 0);
         if (see_m) {
             msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), m_name.data());
         }
@@ -143,9 +142,9 @@ bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
 
     auto result = false;
     for (short i = 1; i < floor.m_max; i++) {
-        auto *m_ptr = &floor.m_list[i];
-        auto *r_ptr = &m_ptr->get_monrace();
-        if (!m_ptr->is_valid() || (r_ptr->d_char != symbol)) {
+        const auto &monster = floor.m_list[i];
+        const auto &monrace = monster.get_monrace();
+        if (!monster.is_valid() || (monrace.symbol_definition.character != symbol)) {
             continue;
         }
 
@@ -179,11 +178,11 @@ bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
 
     bool result = false;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        auto *m_ptr = &floor.m_list[i];
-        if (!m_ptr->is_valid()) {
+        const auto &monster = floor.m_list[i];
+        if (!monster.is_valid()) {
             continue;
         }
-        if (m_ptr->cdis > MAX_PLAYER_SIGHT) {
+        if (monster.cdis > MAX_PLAYER_SIGHT) {
             continue;
         }
 
@@ -216,15 +215,15 @@ bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
 
     bool result = false;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        auto *m_ptr = &floor.m_list[i];
-        auto *r_ptr = &m_ptr->get_monrace();
-        if (!m_ptr->is_valid()) {
+        const auto &monster = floor.m_list[i];
+        const auto &monrace = monster.get_monrace();
+        if (!monster.is_valid()) {
             continue;
         }
-        if (r_ptr->kind_flags.has_not(MonsterKindType::UNDEAD)) {
+        if (monrace.kind_flags.has_not(MonsterKindType::UNDEAD)) {
             continue;
         }
-        if (m_ptr->cdis > MAX_PLAYER_SIGHT) {
+        if (monster.cdis > MAX_PLAYER_SIGHT) {
             continue;
         }
 

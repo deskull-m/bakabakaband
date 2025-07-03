@@ -216,7 +216,7 @@ static std::pair<std::string, TERM_COLOR> likert(int x, int y)
 static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
 {
     ItemEntity *o_ptr;
-    o_ptr = &player_ptr->inventory_list[INVEN_BOW];
+    o_ptr = player_ptr->inventory[INVEN_BOW].get();
 
     for (int i = 0; i < 2; i++) {
         int basedam;
@@ -230,7 +230,7 @@ static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
             continue;
         }
 
-        o_ptr = &player_ptr->inventory_list[INVEN_MAIN_HAND + i];
+        o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
         if (!calc_weapon_one_hand(o_ptr, i, damage, &basedam)) {
             continue;
         }
@@ -242,8 +242,8 @@ static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
             to_h[i] += o_ptr->to_h;
         }
 
-        int mindice = (o_ptr->dd + player_ptr->to_dd[i]);
-        int maxdice = (o_ptr->dd + player_ptr->to_dd[i]) * (o_ptr->ds + player_ptr->to_ds[i]);
+        const auto mindice = (o_ptr->damage_dice.num + player_ptr->damage_dice_bonus[i].num);
+        const auto maxdice = mindice * (o_ptr->damage_dice.sides + player_ptr->damage_dice_bonus[i].sides);
 
         basedam = calc_expect_dice(player_ptr, mindice, p_ptr->to_h[i], o_ptr);
         basedam += calc_expect_dice(player_ptr, maxdice, p_ptr->to_h[i], o_ptr);
@@ -355,7 +355,7 @@ static void display_first_page(PlayerType *player_ptr, int xthb, int *damage, in
 void display_player_various(PlayerType *player_ptr)
 {
     ItemEntity *o_ptr;
-    o_ptr = &player_ptr->inventory_list[INVEN_BOW];
+    o_ptr = player_ptr->inventory[INVEN_BOW].get();
     int tmp = player_ptr->to_h_b + o_ptr->to_h;
     int xthb = player_ptr->skill_thb + (tmp * BTH_PLUS_ADJ);
     int shots = 0;

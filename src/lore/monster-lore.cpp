@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @brief モンスターの思い出表示に必要なフラグ類の処理
  * @date 2020/06/09
  * @author Hourier
@@ -9,13 +9,11 @@
 #include "lore/lore-calculator.h"
 #include "lore/lore-util.h"
 #include "lore/magic-types-setter.h"
-#include "monster-race/monster-race.h"
-#include "monster-race/race-indice-types.h"
 #include "monster-race/race-misc-flags.h"
-#include "monster-race/race-sex-const.h"
 #include "player-ability/player-ability-types.h"
 #include "system/angband.h"
-#include "system/monster-race-info.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
 #include "term/term-color-types.h"
 #include "view/display-lore-attacks.h"
 #include "view/display-lore-drops.h"
@@ -26,12 +24,12 @@
 
 static void set_msex_flags(lore_type *lore_ptr)
 {
-    lore_ptr->msex = MSEX_NONE;
-    if (is_male(*(lore_ptr->r_ptr))) {
-        lore_ptr->msex = MSEX_MALE;
+    lore_ptr->msex = MonsterSex::NONE;
+    if (lore_ptr->r_ptr->is_male()) {
+        lore_ptr->msex = MonsterSex::MALE;
     }
-    if (is_female(*(lore_ptr->r_ptr))) {
-        lore_ptr->msex = MSEX_FEMALE;
+    if (lore_ptr->r_ptr->is_female()) {
+        lore_ptr->msex = MonsterSex::FEMALE;
     }
 }
 
@@ -208,12 +206,20 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::PUYO);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ANGEL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::ANGEL);
+    }
+
     if (lore_ptr->r_ptr->misc_flags.has(MonsterMiscType::FORCE_DEPTH)) {
         lore_ptr->misc_flags.set(MonsterMiscType::FORCE_DEPTH);
     }
 
     if (lore_ptr->r_ptr->misc_flags.has(MonsterMiscType::FORCE_MAXHP)) {
         lore_ptr->misc_flags.set(MonsterMiscType::FORCE_MAXHP);
+    }
+
+    if (lore_ptr->r_ptr->misc_flags.has(MonsterMiscType::STALKER)) {
+        lore_ptr->misc_flags.set(MonsterMiscType::STALKER);
     }
 }
 
@@ -227,24 +233,10 @@ static void set_race_flags(lore_type *lore_ptr)
  * left edge of the screen, on a cleared line, in which the recall is
  * to take place.  One extra blank line is left after the recall.
  */
-void process_monster_lore(PlayerType *player_ptr, MonsterRaceId r_idx, monster_lore_mode mode)
+void process_monster_lore(PlayerType *player_ptr, MonraceId r_idx, monster_lore_mode mode)
 {
     lore_type tmp_lore(r_idx, mode);
     lore_type *lore_ptr = &tmp_lore;
-
-    auto is_valid_reinforcer = [](const auto &reinforce) {
-        auto [r_idx, dd, ds] = reinforce;
-        auto is_reinforce = MonsterRace(r_idx).is_valid();
-        is_reinforce &= dd > 0;
-        is_reinforce &= ds > 0;
-        return is_reinforce;
-    };
-
-    lore_ptr->reinforce =
-        std::find_if(
-            lore_ptr->r_ptr->reinforces.begin(), lore_ptr->r_ptr->reinforces.end(),
-            is_valid_reinforcer) != lore_ptr->r_ptr->reinforces.end();
-
     if (cheat_know || (mode == MONSTER_LORE_RESEARCH) || (mode == MONSTER_LORE_DEBUG)) {
         lore_ptr->know_everything = true;
     }
@@ -254,13 +246,13 @@ void process_monster_lore(PlayerType *player_ptr, MonsterRaceId r_idx, monster_l
     set_flags1(lore_ptr);
     set_race_flags(lore_ptr);
     display_kill_numbers(lore_ptr);
-    concptr tmp = lore_ptr->r_ptr->text.data();
-    if (tmp[0]) {
-        hooked_roff(tmp);
+    const auto &text = lore_ptr->r_ptr->text;
+    if (!text.empty()) {
+        hooked_roff(text);
         hooked_roff("\n");
     }
 
-    if (r_idx == MonsterRaceId::KAGE) {
+    if (r_idx == MonraceId::KAGE) {
         hooked_roff("\n");
         return;
     }
@@ -278,32 +270,30 @@ void process_monster_lore(PlayerType *player_ptr, MonsterRaceId r_idx, monster_l
 
     display_lore_this(player_ptr, lore_ptr);
     if (lore_ptr->special_flags.has(MonsterSpecialType::DIMINISH_MAX_DAMAGE)) {
-        hooked_roff(format(_("%s^は", "%s^ "), Who::who(lore_ptr->msex)));
+        hooked_roff(format(_("%s^は", "%s^ "), Who::who(lore_ptr->msex).data()));
         hook_c_roff(TERM_RED, _("致命的な威力の攻撃に対して大きな耐性を持っている。", "has the strong resistance for a critical damage.  "));
     }
     display_monster_aura(lore_ptr);
     if (lore_ptr->misc_flags.has(MonsterMiscType::REFLECTING)) {
-        hooked_roff(format(_("%s^は矢の呪文を跳ね返す。", "%s^ reflects bolt spells.  "), Who::who(lore_ptr->msex)));
+        hooked_roff(format(_("%s^は矢の呪文を跳ね返す。", "%s^ reflects bolt spells.  "), Who::who(lore_ptr->msex).data()));
     }
 
     display_monster_collective(lore_ptr);
-    lore_ptr->vn = 0;
+    lore_ptr->lore_msgs.clear();
     if (lore_ptr->ability_flags.has(MonsterAbilityType::SHRIEK)) {
-        lore_ptr->vp[lore_ptr->vn] = _("悲鳴で助けを求める", "shriek for help");
-        lore_ptr->color[lore_ptr->vn++] = TERM_L_WHITE;
+        lore_ptr->lore_msgs.emplace_back(_("悲鳴で助けを求める", "shriek for help"), TERM_L_WHITE);
     }
 
     display_monster_launching(player_ptr, lore_ptr);
     if (lore_ptr->ability_flags.has(MonsterAbilityType::SPECIAL)) {
-        lore_ptr->vp[lore_ptr->vn] = _("特別な行動をする", "do something");
-        lore_ptr->color[lore_ptr->vn++] = TERM_VIOLET;
+        lore_ptr->lore_msgs.emplace_back(_("特別な行動をする", "do something"), TERM_VIOLET);
     }
 
     display_monster_sometimes(lore_ptr);
     set_breath_types(player_ptr, lore_ptr);
     display_monster_breath(lore_ptr);
 
-    lore_ptr->vn = 0;
+    lore_ptr->lore_msgs.clear();
     set_ball_types(player_ptr, lore_ptr);
     set_particular_types(player_ptr, lore_ptr);
     set_bolt_types(player_ptr, lore_ptr);
@@ -315,21 +305,21 @@ void process_monster_lore(PlayerType *player_ptr, MonsterRaceId r_idx, monster_l
     display_mosnter_magic_possibility(lore_ptr);
     display_monster_hp_ac(lore_ptr);
 
-    lore_ptr->vn = 0;
+    lore_ptr->lore_msgs.clear();
     display_monster_concrete_abilities(lore_ptr);
     display_monster_abilities(lore_ptr);
     display_monster_constitutions(lore_ptr);
 
-    lore_ptr->vn = 0;
+    lore_ptr->lore_msgs.clear();
     display_monster_concrete_weakness(lore_ptr);
     display_monster_weakness(lore_ptr);
 
-    lore_ptr->vn = 0;
+    lore_ptr->lore_msgs.clear();
     display_monster_concrete_resistances(lore_ptr);
     display_monster_resistances(lore_ptr);
     display_monster_evolution(lore_ptr);
 
-    lore_ptr->vn = 0;
+    lore_ptr->lore_msgs.clear();
     display_monster_concrete_immunities(lore_ptr);
     display_monster_immunities(lore_ptr);
     display_monster_alert(lore_ptr);

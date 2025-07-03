@@ -1,7 +1,10 @@
 #pragma once
 
 #include "util/point-2d.h"
+#include <string>
+#include <tl/optional.hpp>
 
+class Direction;
 class PlayerType;
 struct ProjectResult;
 class SpellsMirrorMaster {
@@ -10,11 +13,11 @@ public:
     void remove_all_mirrors(bool explode);
     void remove_mirror(int y, int x);
     bool mirror_tunnel();
-    bool place_mirror();
+    tl::optional<std::string> place_mirror();
     bool mirror_concentration();
     void seal_of_mirror(const int dam);
-    void seeker_ray(int dir, int dam);
-    void super_ray(int dir, int dam);
+    void seeker_ray(const Direction &dir, int dam);
+    void super_ray(const Direction &dir, int dam);
 
 private:
     PlayerType *player_ptr;

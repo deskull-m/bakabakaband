@@ -2,33 +2,42 @@
 
 /*!
  * @file grid.h
- * @brief ダンジョンの生成処理の基幹部分ヘッダーファイル
- * @date 2014/08/15
- * @details
- * Purpose: header file for grid.c, used only in dungeon generation
- * files (generate.c, rooms.c)
- * @author
- * Copyright (c) 1989 James E. Wilson, Robert A. Koeneke
- * This software may be copied and distributed for educational, research, and
- * not for profit purposes provided that this copyright and statement are
- * included in all such copies.
+ * @brief グリッドに関するコントローラ的処理定義
+ * @author Hourier
+ * @date 2015/01/25
  */
 
 #include "object/object-index-list.h"
 #include "spell/spells-util.h"
 #include "system/angband.h"
 #include "util/point-2d.h"
-#include <utility>
+#include <tl/optional.hpp>
 
 enum class AttributeType;
+class Grid;
+class GridTemplate {
+public:
+    GridTemplate()
+        : GridTemplate(0, 0, 0, 0, 0)
+    {
+    }
 
-/*  A structure type for terrain template of saving dungeon floor */
-struct grid_template_type {
+    GridTemplate(BIT_FLAGS info, FEAT_IDX feat, FEAT_IDX mimic, short special, uint16_t occurrence)
+        : info(info)
+        , feat(feat)
+        , mimic(mimic)
+        , special(special)
+        , occurrence(occurrence)
+    {
+    }
+
     BIT_FLAGS info;
     FEAT_IDX feat;
     FEAT_IDX mimic;
-    int16_t special;
+    short special;
     uint16_t occurrence;
+
+    bool matches(const Grid &grid) const;
 };
 
 enum grid_bold_type {
@@ -44,36 +53,32 @@ enum grid_bold_type {
     GB_SOLID_NOPERM
 };
 
+class DisplaySymbol;
 class FloorType;
 class Grid;
 class PlayerType;
-class MonsterRaceInfo;
+class MonraceDefinition;
+enum class GridCountKind;
 enum class TerrainCharacteristics;
-bool new_player_spot(PlayerType *player_ptr);
-bool is_hidden_door(PlayerType *player_ptr, const Grid &grid);
+enum class TerrainTag;
+void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, TerrainTag tag);
+void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terrain_id);
+tl::optional<Pos2D> new_player_spot(PlayerType *player_ptr);
 bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode);
-bool feat_uses_special(FEAT_IDX f_idx);
-void update_local_illumination(PlayerType *player_ptr, POSITION y, POSITION x);
+void update_local_illumination(PlayerType *player_ptr, const Pos2D &pos);
 bool no_lite(PlayerType *player_ptr);
-void print_rel(PlayerType *player_ptr, char c, TERM_COLOR a, POSITION y, POSITION x);
+void print_rel(PlayerType *player_ptr, const DisplaySymbol &symbol, POSITION y, POSITION x);
 void print_bolt_pict(PlayerType *player_ptr, POSITION y, POSITION x, POSITION ny, POSITION nx, AttributeType typ);
-void note_spot(PlayerType *player_ptr, POSITION y, POSITION x);
-void lite_spot(PlayerType *player_ptr, POSITION y, POSITION x);
+void note_spot(PlayerType *player_ptr, const Pos2D &pos);
+void lite_spot(PlayerType *player_ptr, const Pos2D &pos);
 void update_flow(PlayerType *player_ptr);
-FEAT_IDX feat_state(const FloorType *floor_ptr, FEAT_IDX feat, TerrainCharacteristics action);
 void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainCharacteristics action);
-bool is_open(PlayerType *player_ptr, FEAT_IDX feat);
 bool check_local_illumination(PlayerType *player_ptr, POSITION y, POSITION x);
 bool cave_monster_teleportable_bold(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION y, POSITION x, teleport_flags mode);
 bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION x, teleport_flags mode);
-void place_grid(PlayerType *player_ptr, Grid *g_ptr, grid_bold_type pg_type);
-bool darkened_grid(PlayerType *player_ptr, Grid *g_ptr);
-void delete_monster(PlayerType *player_ptr, POSITION y, POSITION x);
+void place_grid(PlayerType *player_ptr, Grid &grid, grid_bold_type pg_type);
 void place_bold(PlayerType *player_ptr, POSITION y, POSITION x, grid_bold_type gh_type);
-void set_cave_feat(FloorType *floor_ptr, POSITION y, POSITION x, FEAT_IDX feature_idx);
-void set_cave_feat_mimic(FloorType *floor_ptr, POSITION y, POSITION x, FEAT_IDX feature_idx);
-std::pair<int, Pos2D> count_dt(PlayerType *player_ptr, bool (*test)(PlayerType *, short), bool under);
-void cave_lite_hack(FloorType *floor_ptr, POSITION y, POSITION x);
-void cave_redraw_later(FloorType *floor_ptr, POSITION y, POSITION x);
-void cave_note_and_redraw_later(FloorType *floor_ptr, POSITION y, POSITION x);
-void cave_view_hack(FloorType *floor_ptr, POSITION y, POSITION x);
+void cave_lite_hack(FloorType &floor, POSITION y, POSITION x);
+void cave_redraw_later(FloorType &floor, POSITION y, POSITION x);
+void cave_note_and_redraw_later(FloorType &floor, POSITION y, POSITION x);
+void cave_view_hack(FloorType &floor, POSITION y, POSITION x);

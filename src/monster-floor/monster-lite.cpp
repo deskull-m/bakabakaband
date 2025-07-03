@@ -1,21 +1,19 @@
 #include "monster-floor/monster-lite.h"
 #include "dungeon/dungeon-flag-types.h"
-#include "floor/cave.h"
-#include "grid/feature-flag-types.h"
 #include "grid/grid.h"
 #include "monster-floor/monster-lite-util.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-brightness-flags.h"
 #include "monster/monster-status.h"
 #include "player-base/player-class.h"
 #include "player-info/ninja-data-type.h"
 #include "player/special-defense-types.h"
 #include "system/angband-system.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/enums/terrain/terrain-characteristics.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/point-2d.h"
@@ -24,119 +22,120 @@
 #include <vector>
 
 /*!
- * @brief モンスターによる光量状態更新 / Add a square to the changes array
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param points 座標たちを記録する配列
- * @param y Y座標
- * @param x X座標
+ * @brief モンスターによる光量状態更新 (照らす方)
+ * @param floor フロアへの参照
+ * @param points 座標記録用の配列
+ * @param p_pos プレイヤーの座標
+ * @param pos 更新対象の座標
+ * @param monster_lite モンスター光量状態への参照 (TODO: 後で消す)
  */
 static void update_monster_lite(
-    PlayerType *const player_ptr, std::vector<Pos2D> &points, const POSITION y, const POSITION x, const monster_lite_type *const ml_ptr)
+    FloorType &floor, std::vector<Pos2D> &points, const Pos2D &p_pos, const Pos2D &pos, const monster_lite_type &monster_lite)
 {
-    Grid *g_ptr;
-    int dpf, d;
-    POSITION midpoint;
-    g_ptr = &player_ptr->current_floor_ptr->grid_array[y][x];
-    if ((g_ptr->info & (CAVE_MNLT | CAVE_VIEW)) != CAVE_VIEW) {
+    auto &grid = floor.get_grid(pos);
+    if ((grid.info & (CAVE_MNLT | CAVE_VIEW)) != CAVE_VIEW) {
         return;
     }
 
-    if (!feat_supports_los(g_ptr->feat)) {
-        if (((y < player_ptr->y) && (y > ml_ptr->mon_fy)) || ((y > player_ptr->y) && (y < ml_ptr->mon_fy))) {
-            dpf = player_ptr->y - ml_ptr->mon_fy;
-            d = y - ml_ptr->mon_fy;
-            midpoint = ml_ptr->mon_fx + ((player_ptr->x - ml_ptr->mon_fx) * std::abs(d)) / std::abs(dpf);
-            if (x < midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y, x + 1)) {
+    if (!grid.has_los_terrain()) {
+        if (((pos.y < p_pos.y) && (pos.y > monster_lite.m_pos.y)) || ((pos.y > p_pos.y) && (pos.y < monster_lite.m_pos.y))) {
+            const auto dpf = p_pos.y - monster_lite.m_pos.y;
+            const auto d = pos.y - monster_lite.m_pos.y;
+            const auto midpoint = monster_lite.m_pos.x + ((p_pos.x - monster_lite.m_pos.x) * std::abs(d)) / std::abs(dpf);
+            if (pos.x < midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(6).vec())) {
                     return;
                 }
-            } else if (x > midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y, x - 1)) {
+            } else if (pos.x > midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(4).vec())) {
                     return;
                 }
-            } else if (ml_ptr->mon_invis) {
+            } else if (monster_lite.mon_invis) {
                 return;
             }
         }
 
-        if (((x < player_ptr->x) && (x > ml_ptr->mon_fx)) || ((x > player_ptr->x) && (x < ml_ptr->mon_fx))) {
-            dpf = player_ptr->x - ml_ptr->mon_fx;
-            d = x - ml_ptr->mon_fx;
-            midpoint = ml_ptr->mon_fy + ((player_ptr->y - ml_ptr->mon_fy) * std::abs(d)) / std::abs(dpf);
-            if (y < midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y + 1, x)) {
+        if (((pos.x < p_pos.x) && (pos.x > monster_lite.m_pos.x)) || ((pos.x > p_pos.x) && (pos.x < monster_lite.m_pos.x))) {
+            const auto dpf = p_pos.x - monster_lite.m_pos.x;
+            const auto d = pos.x - monster_lite.m_pos.x;
+            const auto midpoint = monster_lite.m_pos.y + ((p_pos.y - monster_lite.m_pos.y) * std::abs(d)) / std::abs(dpf);
+            if (pos.y < midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(2).vec())) {
                     return;
                 }
-            } else if (y > midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y - 1, x)) {
+            } else if (pos.y > midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(8).vec())) {
                     return;
                 }
-            } else if (ml_ptr->mon_invis) {
+            } else if (monster_lite.mon_invis) {
                 return;
             }
         }
     }
 
-    if (!(g_ptr->info & CAVE_MNDK)) {
-        points.emplace_back(y, x);
+    if (!(grid.info & CAVE_MNDK)) {
+        points.push_back(pos);
     } else {
-        g_ptr->info &= ~(CAVE_MNDK);
+        grid.info &= ~(CAVE_MNDK);
     }
 
-    g_ptr->info |= CAVE_MNLT;
+    grid.info |= CAVE_MNLT;
 }
 
-/*
- * Add a square to the changes array
+/*!
+ * @brief モンスターによる光量状態更新 (暗くする方)
+ * @param floor フロアへの参照
+ * @param points 座標記録用の配列
+ * @param p_pos プレイヤーの座標
+ * @param pos 更新対象の座標
+ * @param monster_lite モンスター光量状態への参照 (TODO: 後で消す)
  */
 static void update_monster_dark(
-    PlayerType *const player_ptr, std::vector<Pos2D> &points, const POSITION y, const POSITION x, const monster_lite_type *const ml_ptr)
+    FloorType &floor, std::vector<Pos2D> &points, const Pos2D &p_pos, const Pos2D &pos, const monster_lite_type &monster_lite)
 {
-    Grid *g_ptr;
-    int midpoint, dpf, d;
-    g_ptr = &player_ptr->current_floor_ptr->grid_array[y][x];
-    if ((g_ptr->info & (CAVE_LITE | CAVE_MNLT | CAVE_MNDK | CAVE_VIEW)) != CAVE_VIEW) {
+    auto &grid = floor.get_grid(pos);
+    if ((grid.info & (CAVE_LITE | CAVE_MNLT | CAVE_MNDK | CAVE_VIEW)) != CAVE_VIEW) {
         return;
     }
 
-    if (!feat_supports_los(g_ptr->feat) && !g_ptr->cave_has_flag(TerrainCharacteristics::PROJECT)) {
-        if (((y < player_ptr->y) && (y > ml_ptr->mon_fy)) || ((y > player_ptr->y) && (y < ml_ptr->mon_fy))) {
-            dpf = player_ptr->y - ml_ptr->mon_fy;
-            d = y - ml_ptr->mon_fy;
-            midpoint = ml_ptr->mon_fx + ((player_ptr->x - ml_ptr->mon_fx) * std::abs(d)) / std::abs(dpf);
-            if (x < midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y, x + 1) && !cave_has_flag_bold(player_ptr->current_floor_ptr, y, x + 1, TerrainCharacteristics::PROJECT)) {
+    if (!grid.has_los_terrain() && !grid.has(TerrainCharacteristics::PROJECTION)) {
+        if (((pos.y < p_pos.y) && (pos.y > monster_lite.m_pos.y)) || ((pos.y > p_pos.y) && (pos.y < monster_lite.m_pos.y))) {
+            const auto dpf = p_pos.y - monster_lite.m_pos.y;
+            const auto d = pos.y - monster_lite.m_pos.y;
+            const auto midpoint = monster_lite.m_pos.x + ((p_pos.x - monster_lite.m_pos.x) * std::abs(d)) / std::abs(dpf);
+            if (pos.x < midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(6).vec()) && !floor.has_terrain_characteristics({ pos.y, pos.x + 1 }, TerrainCharacteristics::PROJECTION)) {
                     return;
                 }
-            } else if (x > midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y, x - 1) && !cave_has_flag_bold(player_ptr->current_floor_ptr, y, x - 1, TerrainCharacteristics::PROJECT)) {
+            } else if (pos.x > midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(4).vec()) && !floor.has_terrain_characteristics({ pos.y, pos.x - 1 }, TerrainCharacteristics::PROJECTION)) {
                     return;
                 }
-            } else if (ml_ptr->mon_invis) {
+            } else if (monster_lite.mon_invis) {
                 return;
             }
         }
 
-        if (((x < player_ptr->x) && (x > ml_ptr->mon_fx)) || ((x > player_ptr->x) && (x < ml_ptr->mon_fx))) {
-            dpf = player_ptr->x - ml_ptr->mon_fx;
-            d = x - ml_ptr->mon_fx;
-            midpoint = ml_ptr->mon_fy + ((player_ptr->y - ml_ptr->mon_fy) * std::abs(d)) / std::abs(dpf);
-            if (y < midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y + 1, x) && !cave_has_flag_bold(player_ptr->current_floor_ptr, y + 1, x, TerrainCharacteristics::PROJECT)) {
+        if (((pos.x < p_pos.x) && (pos.x > monster_lite.m_pos.x)) || ((pos.x > p_pos.x) && (pos.x < monster_lite.m_pos.x))) {
+            const auto dpf = p_pos.x - monster_lite.m_pos.x;
+            const auto d = pos.x - monster_lite.m_pos.x;
+            const auto midpoint = monster_lite.m_pos.y + ((p_pos.y - monster_lite.m_pos.y) * std::abs(d)) / std::abs(dpf);
+            if (pos.y < midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(2).vec()) && !floor.has_terrain_characteristics({ pos.y + 1, pos.x }, TerrainCharacteristics::PROJECTION)) {
                     return;
                 }
-            } else if (y > midpoint) {
-                if (!cave_los_bold(player_ptr->current_floor_ptr, y - 1, x) && !cave_has_flag_bold(player_ptr->current_floor_ptr, y - 1, x, TerrainCharacteristics::PROJECT)) {
+            } else if (pos.y > midpoint) {
+                if (!floor.has_los_terrain_at(pos + Direction(8).vec()) && !floor.has_terrain_characteristics({ pos.y - 1, pos.x }, TerrainCharacteristics::PROJECTION)) {
                     return;
                 }
-            } else if (ml_ptr->mon_invis) {
+            } else if (monster_lite.mon_invis) {
                 return;
             }
         }
     }
 
-    points.emplace_back(y, x);
-    g_ptr->info |= CAVE_MNDK;
+    points.push_back(pos);
+    grid.info |= CAVE_MNDK;
 }
 
 /*!
@@ -148,48 +147,43 @@ static void update_monster_dark(
  */
 void update_mon_lite(PlayerType *player_ptr)
 {
-    if (!player_ptr->is_vaild_position()) {
-        return;
-    }
-
     // 座標たちを記録する配列。
     std::vector<Pos2D> points;
 
-    void (*add_mon_lite)(PlayerType *, std::vector<Pos2D> &, const POSITION, const POSITION, const monster_lite_type *);
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    const auto &dungeon = floor_ptr->get_dungeon_definition();
-    auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !player_ptr->see_nocto) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
-    for (int i = 0; i < floor_ptr->mon_lite_n; i++) {
-        Grid *g_ptr;
-        g_ptr = &floor_ptr->grid_array[floor_ptr->mon_lite_y[i]][floor_ptr->mon_lite_x[i]];
-        g_ptr->info |= (g_ptr->info & CAVE_MNLT) ? CAVE_TEMP : CAVE_XTRA;
-        g_ptr->info &= ~(CAVE_MNLT | CAVE_MNDK);
+    void (*add_mon_lite)(FloorType &, std::vector<Pos2D> &, const Pos2D &p_pos, const Pos2D &pos, const monster_lite_type &);
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &dungeon = floor.get_dungeon_definition();
+    const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !player_ptr->see_nocto) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
+    for (auto i = 0; i < floor.mon_lite_n; i++) {
+        auto &grid = floor.get_grid({ floor.mon_lite_y[i], floor.mon_lite_x[i] });
+        grid.add_info((grid.info & CAVE_MNLT) ? CAVE_TEMP : CAVE_XTRA);
+        grid.info &= ~(CAVE_MNLT | CAVE_MNDK);
     }
 
-    if (!w_ptr->timewalk_m_idx) {
-        MonsterEntity *m_ptr;
-        MonsterRaceInfo *r_ptr;
-        for (int i = 1; i < floor_ptr->m_max; i++) {
-            m_ptr = &floor_ptr->m_list[i];
-            r_ptr = &m_ptr->get_monrace();
-            if (!m_ptr->is_valid() || (m_ptr->cdis > dis_lim)) {
+    const auto &world = AngbandWorld::get_instance();
+    const auto p_pos = player_ptr->get_position();
+    if (!world.timewalk_m_idx) {
+        for (auto i = 1; i < floor.m_max; i++) {
+            const auto &monster = floor.m_list[i];
+            const auto &monrace = monster.get_monrace();
+            if (!monster.is_valid() || (monster.cdis > dis_lim)) {
                 continue;
             }
 
-            int rad = 0;
-            if (r_ptr->brightness_flags.has_any_of({ MonsterBrightnessType::HAS_LITE_1, MonsterBrightnessType::SELF_LITE_1 })) {
+            auto rad = 0;
+            if (monrace.brightness_flags.has_any_of({ MonsterBrightnessType::HAS_LITE_1, MonsterBrightnessType::SELF_LITE_1 })) {
                 rad++;
             }
 
-            if (r_ptr->brightness_flags.has_any_of({ MonsterBrightnessType::HAS_LITE_2, MonsterBrightnessType::SELF_LITE_2 })) {
+            if (monrace.brightness_flags.has_any_of({ MonsterBrightnessType::HAS_LITE_2, MonsterBrightnessType::SELF_LITE_2 })) {
                 rad += 2;
             }
 
-            if (r_ptr->brightness_flags.has_any_of({ MonsterBrightnessType::HAS_DARK_1, MonsterBrightnessType::SELF_DARK_1 })) {
+            if (monrace.brightness_flags.has_any_of({ MonsterBrightnessType::HAS_DARK_1, MonsterBrightnessType::SELF_DARK_1 })) {
                 rad--;
             }
 
-            if (r_ptr->brightness_flags.has_any_of({ MonsterBrightnessType::HAS_DARK_2, MonsterBrightnessType::SELF_DARK_2 })) {
+            if (monrace.brightness_flags.has_any_of({ MonsterBrightnessType::HAS_DARK_2, MonsterBrightnessType::SELF_DARK_2 })) {
                 rad -= 2;
             }
 
@@ -197,10 +191,10 @@ void update_mon_lite(PlayerType *player_ptr)
                 continue;
             }
 
-            TerrainCharacteristics f_flag;
+            TerrainCharacteristics tc;
             if (rad > 0) {
-                auto should_lite = r_ptr->brightness_flags.has_none_of({ MonsterBrightnessType::SELF_LITE_1, MonsterBrightnessType::SELF_LITE_2 });
-                should_lite &= (m_ptr->is_asleep() || (!floor_ptr->dun_level && w_ptr->is_daytime()) || AngbandSystem::get_instance().is_phase_out());
+                auto should_lite = monrace.brightness_flags.has_none_of({ MonsterBrightnessType::SELF_LITE_1, MonsterBrightnessType::SELF_LITE_2 });
+                should_lite &= (monster.is_asleep() || (!floor.is_underground() && world.is_daytime()) || AngbandSystem::get_instance().is_phase_out());
                 if (should_lite) {
                     continue;
                 }
@@ -210,78 +204,76 @@ void update_mon_lite(PlayerType *player_ptr)
                 }
 
                 add_mon_lite = update_monster_lite;
-                f_flag = TerrainCharacteristics::LOS;
+                tc = TerrainCharacteristics::LOS;
             } else {
-                if (r_ptr->brightness_flags.has_none_of({ MonsterBrightnessType::SELF_DARK_1, MonsterBrightnessType::SELF_DARK_2 }) && (m_ptr->is_asleep() || (!floor_ptr->dun_level && !w_ptr->is_daytime()))) {
+                if (monrace.brightness_flags.has_none_of({ MonsterBrightnessType::SELF_DARK_1, MonsterBrightnessType::SELF_DARK_2 }) && (monster.is_asleep() || (!floor.is_underground() && !world.is_daytime()))) {
                     continue;
                 }
 
                 add_mon_lite = update_monster_dark;
-                f_flag = TerrainCharacteristics::PROJECT;
+                tc = TerrainCharacteristics::PROJECTION;
                 rad = -rad;
             }
 
-            monster_lite_type tmp_ml;
-            monster_lite_type *ml_ptr = initialize_monster_lite_type(floor_ptr->grid_array[m_ptr->fy][m_ptr->fx].info, &tmp_ml, m_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy, ml_ptr->mon_fx, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 1, ml_ptr->mon_fx, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 1, ml_ptr->mon_fx, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy, ml_ptr->mon_fx + 1, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy, ml_ptr->mon_fx - 1, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 1, ml_ptr->mon_fx + 1, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 1, ml_ptr->mon_fx - 1, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 1, ml_ptr->mon_fx + 1, ml_ptr);
-            add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 1, ml_ptr->mon_fx - 1, ml_ptr);
+            monster_lite_type monster_lite(floor.get_grid(monster.get_position()).info, monster);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y, monster_lite.m_pos.x }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 1, monster_lite.m_pos.x }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 1, monster_lite.m_pos.x }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y, monster_lite.m_pos.x + 1 }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y, monster_lite.m_pos.x - 1 }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 1, monster_lite.m_pos.x + 1 }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 1, monster_lite.m_pos.x - 1 }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 1, monster_lite.m_pos.x + 1 }, monster_lite);
+            add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 1, monster_lite.m_pos.x - 1 }, monster_lite);
             if (rad < 2) {
                 continue;
             }
 
-            Grid *g_ptr;
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy + 1, ml_ptr->mon_fx, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 2, ml_ptr->mon_fx + 1, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 2, ml_ptr->mon_fx, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 2, ml_ptr->mon_fx - 1, ml_ptr);
-                g_ptr = &floor_ptr->grid_array[ml_ptr->mon_fy + 2][ml_ptr->mon_fx];
-                if ((rad == 3) && g_ptr->cave_has_flag(f_flag)) {
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 3, ml_ptr->mon_fx + 1, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 3, ml_ptr->mon_fx, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 3, ml_ptr->mon_fx - 1, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y + 1, monster_lite.m_pos.x }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 2, monster_lite.m_pos.x + 1 }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 2, monster_lite.m_pos.x }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 2, monster_lite.m_pos.x - 1 }, monster_lite);
+                const auto &grid = floor.grid_array[monster_lite.m_pos.y + 2][monster_lite.m_pos.x];
+                if ((rad == 3) && grid.has(tc)) {
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 3, monster_lite.m_pos.x + 1 }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 3, monster_lite.m_pos.x }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 3, monster_lite.m_pos.x - 1 }, monster_lite);
                 }
             }
 
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy - 1, ml_ptr->mon_fx, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 2, ml_ptr->mon_fx + 1, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 2, ml_ptr->mon_fx, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 2, ml_ptr->mon_fx - 1, ml_ptr);
-                g_ptr = &floor_ptr->grid_array[ml_ptr->mon_fy - 2][ml_ptr->mon_fx];
-                if ((rad == 3) && g_ptr->cave_has_flag(f_flag)) {
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 3, ml_ptr->mon_fx + 1, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 3, ml_ptr->mon_fx, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 3, ml_ptr->mon_fx - 1, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y - 1, monster_lite.m_pos.x }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 2, monster_lite.m_pos.x + 1 }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 2, monster_lite.m_pos.x }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 2, monster_lite.m_pos.x - 1 }, monster_lite);
+                const auto &grid = floor.grid_array[monster_lite.m_pos.y - 2][monster_lite.m_pos.x];
+                if ((rad == 3) && grid.has(tc)) {
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 3, monster_lite.m_pos.x + 1 }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 3, monster_lite.m_pos.x }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 3, monster_lite.m_pos.x - 1 }, monster_lite);
                 }
             }
 
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy, ml_ptr->mon_fx + 1, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 1, ml_ptr->mon_fx + 2, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy, ml_ptr->mon_fx + 2, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 1, ml_ptr->mon_fx + 2, ml_ptr);
-                g_ptr = &floor_ptr->grid_array[ml_ptr->mon_fy][ml_ptr->mon_fx + 2];
-                if ((rad == 3) && g_ptr->cave_has_flag(f_flag)) {
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 1, ml_ptr->mon_fx + 3, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy, ml_ptr->mon_fx + 3, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 1, ml_ptr->mon_fx + 3, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y, monster_lite.m_pos.x + 1 }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 1, monster_lite.m_pos.x + 2 }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y, monster_lite.m_pos.x + 2 }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 1, monster_lite.m_pos.x + 2 }, monster_lite);
+                const auto &grid = floor.grid_array[monster_lite.m_pos.y][monster_lite.m_pos.x + 2];
+                if ((rad == 3) && grid.has(tc)) {
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 1, monster_lite.m_pos.x + 3 }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y, monster_lite.m_pos.x + 3 }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 1, monster_lite.m_pos.x + 3 }, monster_lite);
                 }
             }
 
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy, ml_ptr->mon_fx - 1, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 1, ml_ptr->mon_fx - 2, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy, ml_ptr->mon_fx - 2, ml_ptr);
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 1, ml_ptr->mon_fx - 2, ml_ptr);
-                g_ptr = &floor_ptr->grid_array[ml_ptr->mon_fy][ml_ptr->mon_fx - 2];
-                if ((rad == 3) && g_ptr->cave_has_flag(f_flag)) {
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 1, ml_ptr->mon_fx - 3, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy, ml_ptr->mon_fx - 3, ml_ptr);
-                    add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 1, ml_ptr->mon_fx - 3, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y, monster_lite.m_pos.x - 1 }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 1, monster_lite.m_pos.x - 2 }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y, monster_lite.m_pos.x - 2 }, monster_lite);
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 1, monster_lite.m_pos.x - 2 }, monster_lite);
+                const auto &grid = floor.grid_array[monster_lite.m_pos.y][monster_lite.m_pos.x - 2];
+                if ((rad == 3) && grid.has(tc)) {
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 1, monster_lite.m_pos.x - 3 }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y, monster_lite.m_pos.x - 3 }, monster_lite);
+                    add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 1, monster_lite.m_pos.x - 3 }, monster_lite);
                 }
             }
 
@@ -289,67 +281,65 @@ void update_mon_lite(PlayerType *player_ptr)
                 continue;
             }
 
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy + 1, ml_ptr->mon_fx + 1, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 2, ml_ptr->mon_fx + 2, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y + 1, monster_lite.m_pos.x + 1 }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 2, monster_lite.m_pos.x + 2 }, monster_lite);
             }
 
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy + 1, ml_ptr->mon_fx - 1, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy + 2, ml_ptr->mon_fx - 2, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y + 1, monster_lite.m_pos.x - 1 }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y + 2, monster_lite.m_pos.x - 2 }, monster_lite);
             }
 
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy - 1, ml_ptr->mon_fx + 1, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 2, ml_ptr->mon_fx + 2, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y - 1, monster_lite.m_pos.x + 1 }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 2, monster_lite.m_pos.x + 2 }, monster_lite);
             }
 
-            if (cave_has_flag_bold(player_ptr->current_floor_ptr, ml_ptr->mon_fy - 1, ml_ptr->mon_fx - 1, f_flag)) {
-                add_mon_lite(player_ptr, points, ml_ptr->mon_fy - 2, ml_ptr->mon_fx - 2, ml_ptr);
+            if (floor.has_terrain_characteristics({ monster_lite.m_pos.y - 1, monster_lite.m_pos.x - 1 }, tc)) {
+                add_mon_lite(floor, points, p_pos, { monster_lite.m_pos.y - 2, monster_lite.m_pos.x - 2 }, monster_lite);
             }
         }
     }
 
-    const auto end_temp = size(points);
-    for (int i = 0; i < floor_ptr->mon_lite_n; i++) {
-        POSITION fx = floor_ptr->mon_lite_x[i];
-        POSITION fy = floor_ptr->mon_lite_y[i];
-        Grid *g_ptr;
-        g_ptr = &floor_ptr->grid_array[fy][fx];
-        if (g_ptr->info & CAVE_TEMP) {
-            if ((g_ptr->info & (CAVE_VIEW | CAVE_MNLT)) == CAVE_VIEW) {
-                cave_note_and_redraw_later(floor_ptr, fy, fx);
+    const auto end_temp = std::size(points);
+    for (auto i = 0; i < floor.mon_lite_n; i++) {
+        const auto fx = floor.mon_lite_x[i];
+        const auto fy = floor.mon_lite_y[i];
+        const auto &grid = floor.get_grid({ fy, fx });
+        if (grid.info & CAVE_TEMP) {
+            if ((grid.info & (CAVE_VIEW | CAVE_MNLT)) == CAVE_VIEW) {
+                cave_note_and_redraw_later(floor, fy, fx);
             }
-        } else if ((g_ptr->info & (CAVE_VIEW | CAVE_MNDK)) == CAVE_VIEW) {
-            cave_note_and_redraw_later(floor_ptr, fy, fx);
+        } else if ((grid.info & (CAVE_VIEW | CAVE_MNDK)) == CAVE_VIEW) {
+            cave_note_and_redraw_later(floor, fy, fx);
         }
 
         points.emplace_back(fy, fx);
     }
 
-    floor_ptr->mon_lite_n = 0;
+    floor.mon_lite_n = 0;
     for (size_t i = 0; i < end_temp; i++) {
-        const auto &[fy, fx] = points[i];
-
-        Grid *const g_ptr = &floor_ptr->grid_array[fy][fx];
-        if (g_ptr->info & CAVE_MNLT) {
-            if ((g_ptr->info & (CAVE_VIEW | CAVE_TEMP)) == CAVE_VIEW) {
-                cave_note_and_redraw_later(floor_ptr, fy, fx);
+        const auto &pos = points[i];
+        const auto &grid = floor.get_grid(pos);
+        if (grid.info & CAVE_MNLT) {
+            if ((grid.info & (CAVE_VIEW | CAVE_TEMP)) == CAVE_VIEW) {
+                cave_note_and_redraw_later(floor, pos.y, pos.x);
             }
-        } else if ((g_ptr->info & (CAVE_VIEW | CAVE_XTRA)) == CAVE_VIEW) {
-            cave_note_and_redraw_later(floor_ptr, fy, fx);
+        } else if ((grid.info & (CAVE_VIEW | CAVE_XTRA)) == CAVE_VIEW) {
+            cave_note_and_redraw_later(floor, pos.y, pos.x);
         }
 
-        floor_ptr->mon_lite_x[floor_ptr->mon_lite_n] = fx;
-        floor_ptr->mon_lite_y[floor_ptr->mon_lite_n] = fy;
-        floor_ptr->mon_lite_n++;
+        floor.mon_lite_x[floor.mon_lite_n] = pos.x;
+        floor.mon_lite_y[floor.mon_lite_n] = pos.y;
+        floor.mon_lite_n++;
     }
 
-    for (size_t i = end_temp; i < size(points); i++) {
-        const auto &[y, x] = points[i];
-        floor_ptr->grid_array[y][x].info &= ~(CAVE_TEMP | CAVE_XTRA);
+    for (size_t i = end_temp; i < std::size(points); i++) {
+        const auto &pos = points[i];
+        floor.get_grid(pos).info &= ~(CAVE_TEMP | CAVE_XTRA);
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
-    player_ptr->monlite = (floor_ptr->grid_array[player_ptr->y][player_ptr->x].info & CAVE_MNLT) != 0;
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    player_ptr->monlite = (floor.get_grid(p_pos).info & CAVE_MNLT) != 0;
+    const auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
         player_ptr->old_monlite = player_ptr->monlite;
         return;
@@ -371,15 +361,14 @@ void update_mon_lite(PlayerType *player_ptr)
 
 /*!
  * @brief 画面切り替え等でモンスターの灯りを消去する
- * @param floor_ptr 現在フロアへの参照ポインタ
+ * @param floor フロアへの参照
  */
-void clear_mon_lite(FloorType *floor_ptr)
+void clear_mon_lite(FloorType &floor)
 {
-    for (int i = 0; i < floor_ptr->mon_lite_n; i++) {
-        Grid *g_ptr;
-        g_ptr = &floor_ptr->grid_array[floor_ptr->mon_lite_y[i]][floor_ptr->mon_lite_x[i]];
-        g_ptr->info &= ~(CAVE_MNLT | CAVE_MNDK);
+    for (int i = 0; i < floor.mon_lite_n; i++) {
+        auto &grid = floor.grid_array[floor.mon_lite_y[i]][floor.mon_lite_x[i]];
+        grid.info &= ~(CAVE_MNLT | CAVE_MNDK);
     }
 
-    floor_ptr->mon_lite_n = 0;
+    floor.mon_lite_n = 0;
 }

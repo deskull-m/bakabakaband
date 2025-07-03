@@ -11,26 +11,19 @@
 #include "player-info/sniper-data-type.h"
 #include "player/attack-defense-types.h"
 #include "player/digestion-processor.h"
+#include "player/player-realm.h"
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "realm/realm-hex-numbers.h"
 #include "realm/realm-types.h"
 #include "spell-realm/spells-hex.h"
 #include "status/element-resistance.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "timed-effect/player-blindness.h"
-#include "timed-effect/player-confusion.h"
-#include "timed-effect/player-cut.h"
-#include "timed-effect/player-deceleration.h"
-#include "timed-effect/player-fear.h"
-#include "timed-effect/player-hallucination.h"
-#include "timed-effect/player-paralysis.h"
-#include "timed-effect/player-poison.h"
-#include "timed-effect/player-stun.h"
+#include "term/z-form.h"
 #include "timed-effect/timed-effects.h"
 #include "view/status-bars-table.h"
 #include "window/main-window-row-column.h"
@@ -80,15 +73,14 @@ void print_stat(PlayerType *player_ptr, int stat)
  */
 void print_cut(PlayerType *player_ptr)
 {
-    const auto [width, height] = term_get_size();
-    auto player_cut = player_ptr->effects()->cut();
-    if (!player_cut->is_cut()) {
-        put_str("            ", height + ROW_CUT, COL_CUT);
+    const auto &player_cut = player_ptr->effects()->cut();
+    if (!player_cut.is_cut()) {
+        put_str("            ", ROW_CUT, COL_CUT);
         return;
     }
 
-    auto [color, stat] = player_cut->get_expr();
-    c_put_str(color, stat, height + ROW_CUT, COL_CUT);
+    auto [color, stat] = player_cut.get_expr();
+    c_put_str(color, stat, ROW_CUT, COL_CUT);
 }
 
 /*!
@@ -97,15 +89,14 @@ void print_cut(PlayerType *player_ptr)
  */
 void print_stun(PlayerType *player_ptr)
 {
-    const auto [width, height] = term_get_size();
-    auto player_stun = player_ptr->effects()->stun();
-    if (!player_stun->is_stunned()) {
-        put_str("            ", height + ROW_STUN, COL_STUN);
+    const auto &player_stun = player_ptr->effects()->stun();
+    if (!player_stun.is_stunned()) {
+        put_str("            ", ROW_STUN, COL_STUN);
         return;
     }
 
-    auto [color, stat] = player_stun->get_expr();
-    c_put_str(color, stat, height + ROW_STUN, COL_STUN);
+    const auto &[color, stat] = player_stun.get_expr();
+    c_put_str(color, stat, ROW_STUN, COL_STUN);
 }
 
 /*!
@@ -114,7 +105,7 @@ void print_stun(PlayerType *player_ptr)
  */
 void print_hunger(PlayerType *player_ptr)
 {
-    if (w_ptr->wizard && player_ptr->current_floor_ptr->inside_arena) {
+    if (AngbandWorld::get_instance().wizard && player_ptr->current_floor_ptr->inside_arena) {
         return;
     }
 
@@ -271,19 +262,18 @@ void print_speed(PlayerType *player_ptr)
     auto col_speed = wid + COL_SPEED;
     auto row_speed = hgt + ROW_SPEED;
 
-    int speed_value = player_ptr->pspeed - 110;
-
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    const auto speed = player_ptr->pspeed - STANDARD_SPEED;
+    const auto &floor = *player_ptr->current_floor_ptr;
     bool is_player_fast = is_fast(player_ptr);
     char buf[32] = "";
     TERM_COLOR attr = TERM_WHITE;
-    if (speed_value > 0) {
-        auto is_slow = player_ptr->effects()->deceleration()->is_slow();
+    const auto is_slow = player_ptr->effects()->deceleration().is_slow();
+    if (speed > 0) {
         if (player_ptr->riding) {
-            auto *m_ptr = &floor_ptr->m_list[player_ptr->riding];
-            if (m_ptr->is_accelerated() && !m_ptr->is_decelerated()) {
+            const auto &monster = floor.m_list[player_ptr->riding];
+            if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
-            } else if (m_ptr->is_decelerated() && !m_ptr->is_accelerated()) {
+            } else if (monster.is_decelerated() && !monster.is_accelerated()) {
                 attr = TERM_VIOLET;
             } else {
                 attr = TERM_GREEN;
@@ -295,14 +285,13 @@ void print_speed(PlayerType *player_ptr)
         } else {
             attr = TERM_L_GREEN;
         }
-        sprintf(buf, "%s(+%d)", (player_ptr->riding ? _("乗馬", "Ride") : _("加速", "Fast")), speed_value);
-    } else if (speed_value < 0) {
-        auto is_slow = player_ptr->effects()->deceleration()->is_slow();
+        sprintf(buf, "%s(+%d)", (player_ptr->riding ? _("乗馬", "Ride") : _("加速", "Fast")), speed);
+    } else if (speed < 0) {
         if (player_ptr->riding) {
-            auto *m_ptr = &floor_ptr->m_list[player_ptr->riding];
-            if (m_ptr->is_accelerated() && !m_ptr->is_decelerated()) {
+            const auto &monster = floor.m_list[player_ptr->riding];
+            if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
-            } else if (m_ptr->is_decelerated() && !m_ptr->is_accelerated()) {
+            } else if (monster.is_decelerated() && !monster.is_accelerated()) {
                 attr = TERM_VIOLET;
             } else {
                 attr = TERM_RED;
@@ -314,7 +303,7 @@ void print_speed(PlayerType *player_ptr)
         } else {
             attr = TERM_L_UMBER;
         }
-        sprintf(buf, "%s(%d)", (player_ptr->riding ? _("乗馬", "Ride") : _("減速", "Slow")), speed_value);
+        sprintf(buf, "%s(%d)", (player_ptr->riding ? _("乗馬", "Ride") : _("減速", "Slow")), speed);
     } else if (player_ptr->riding) {
         attr = TERM_GREEN;
         strcpy(buf, _("乗馬中", "Riding"));
@@ -371,7 +360,7 @@ void print_imitation(PlayerType *player_ptr)
  */
 static void add_hex_status_flags(PlayerType *player_ptr, BIT_FLAGS *bar_flags)
 {
-    if (player_ptr->realm1 != REALM_HEX) {
+    if (!PlayerRealm(player_ptr).is_realm_hex()) {
         return;
     }
 
@@ -468,23 +457,23 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_TSUYOSHI);
     }
 
-    if (effects->hallucination()->is_hallucinated()) {
+    if (effects->hallucination().is_hallucinated()) {
         ADD_BAR_FLAG(BAR_HALLUCINATION);
     }
 
-    if (player_ptr->effects()->blindness()->is_blind()) {
+    if (player_ptr->effects()->blindness().is_blind()) {
         ADD_BAR_FLAG(BAR_BLINDNESS);
     }
 
-    if (effects->paralysis()->is_paralyzed()) {
+    if (effects->paralysis().is_paralyzed()) {
         ADD_BAR_FLAG(BAR_PARALYZE);
     }
 
-    if (effects->confusion()->is_confused()) {
+    if (effects->confusion().is_confused()) {
         ADD_BAR_FLAG(BAR_CONFUSE);
     }
 
-    if (effects->poison()->is_poisoned()) {
+    if (effects->poison().is_poisoned()) {
         ADD_BAR_FLAG(BAR_POISONED);
     }
 
@@ -510,7 +499,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_INFRAVISION);
     }
 
-    if (player_ptr->protevil) {
+    if (effects->protection().is_protected()) {
         ADD_BAR_FLAG(BAR_PROTEVIL);
     }
 
@@ -603,7 +592,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_ALTER);
     }
 
-    if (effects->fear()->is_fearful()) {
+    if (effects->fear().is_fearful()) {
         ADD_BAR_FLAG(BAR_AFRAID);
     }
 

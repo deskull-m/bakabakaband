@@ -1,6 +1,5 @@
 #include "specific-object/chest.h"
 #include "effect/attribute-types.h"
-#include "floor/cave.h"
 #include "floor/floor-object.h"
 #include "grid/grid.h"
 #include "grid/trap.h"
@@ -21,7 +20,7 @@
 #include "status/base-status.h"
 #include "status/element-resistance.h"
 #include "sv-definition/sv-other-types.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
@@ -44,7 +43,7 @@ void Chest::open(bool scatter, const Pos2D &pos, short item_idx)
 {
     BIT_FLAGS mode = AM_GOOD | AM_FORBID_CHEST;
     auto &floor = *this->player_ptr->current_floor_ptr;
-    auto &item = floor.o_list[item_idx];
+    auto &item = *floor.o_list[item_idx];
     if (!item.is_valid()) {
         msg_print(_("箱は既に壊れてしまっている…", "The chest was broken and you couldn't open it..."));
         return;
@@ -70,51 +69,35 @@ void Chest::open(bool scatter, const Pos2D &pos, short item_idx)
         number = 0;
     }
 
-    /* Drop some objects (non-chests) */
-    ItemEntity forge;
-    ItemEntity *q_ptr;
     for (; number > 0; --number) {
-        q_ptr = &forge;
-        q_ptr->wipe();
-
-        /* Small chests often drop gold */
-        if (small && (randint0(100) < 25)) {
-            /* Make some gold */
-            if (!make_gold(this->player_ptr, q_ptr)) {
+        ItemEntity item_inner_chest;
+        if (small && one_in_(4)) {
+            item_inner_chest = floor.make_gold();
+        } else {
+            auto item = make_object(this->player_ptr, mode);
+            if (!item) {
                 continue;
             }
+            item_inner_chest = std::move(*item);
         }
 
-        /* Otherwise drop an item */
-        else {
-            /* Make a good object */
-            if (!make_object(this->player_ptr, q_ptr, mode)) {
-                continue;
-            }
+        if (!scatter) {
+            /* Normally, drop object near the chest. */
+            (void)drop_near(this->player_ptr, item_inner_chest, pos);
+            continue;
         }
 
         /* If chest scatters its contents, pick any floor square. */
-        if (scatter) {
-            for (auto i = 0; i < 200; i++) {
-                /* Pick a totally random spot. */
-                const auto y = randint0(MAX_HGT);
-                const auto x = randint0(MAX_WID);
-
-                /* Must be an empty floor. */
-                if (!is_cave_empty_bold(this->player_ptr, y, x)) {
-                    continue;
-                }
-
-                /* Place the object there. */
-                (void)drop_near(this->player_ptr, q_ptr, -1, y, x);
-
-                /* Done. */
-                break;
+        for (auto i = 0; i < 200; i++) {
+            const auto y = randint0(MAX_HGT);
+            const auto x = randint0(MAX_WID);
+            const Pos2D pos_random(y, x); //!< @details 乱数引数の標準を固定する.
+            if (!floor.is_empty_at(pos_random) || (pos_random == this->player_ptr->get_position())) {
+                continue;
             }
-        }
-        /* Normally, drop object near the chest. */
-        else {
-            (void)drop_near(this->player_ptr, q_ptr, -1, pos.y, pos.x);
+
+            (void)drop_near(this->player_ptr, item_inner_chest, pos_random);
+            break;
         }
     }
 
@@ -131,7 +114,7 @@ void Chest::open(bool scatter, const Pos2D &pos, short item_idx)
  */
 void Chest::fire_trap(const Pos2D &pos, short item_idx)
 {
-    auto *o_ptr = &this->player_ptr->current_floor_ptr->o_list[item_idx];
+    auto *o_ptr = this->player_ptr->current_floor_ptr->o_list[item_idx].get();
 
     int mon_level = o_ptr->chest_level;
 
@@ -145,14 +128,14 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     /* Lose strength */
     if (trap.has(ChestTrapType::LOSE_STR)) {
         msg_print(_("仕掛けられていた小さな針に刺されてしまった！", "A small needle has pricked you!"));
-        take_hit(this->player_ptr, DAMAGE_NOESCAPE, damroll(1, 4), _("毒針", "a poison needle"));
+        take_hit(this->player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
         (void)do_dec_stat(this->player_ptr, A_STR);
     }
 
     /* Lose constitution */
     if (trap.has(ChestTrapType::LOSE_CON)) {
         msg_print(_("仕掛けられていた小さな針に刺されてしまった！", "A small needle has pricked you!"));
-        take_hit(this->player_ptr, DAMAGE_NOESCAPE, damroll(1, 4), _("毒針", "a poison needle"));
+        take_hit(this->player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
         (void)do_dec_stat(this->player_ptr, A_CON);
     }
 
@@ -180,7 +163,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
             if (randint1(100) < this->player_ptr->current_floor_ptr->dun_level) {
                 activate_hi_summon(this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
             } else {
-                (void)summon_specific(this->player_ptr, 0, pos.y, pos.x, mon_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+                (void)summon_specific(this->player_ptr, pos.y, pos.x, mon_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
             }
         }
     }
@@ -189,7 +172,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     if (trap.has(ChestTrapType::E_SUMMON)) {
         msg_print(_("宝を守るためにエレメンタルが現れた！", "Elemental beings appear to protect their treasures!"));
         for (auto i = 0; i < randint1(3) + 5; i++) {
-            (void)summon_specific(this->player_ptr, 0, pos.y, pos.x, mon_level, SUMMON_ELEMENTAL, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+            (void)summon_specific(this->player_ptr, pos.y, pos.x, mon_level, SUMMON_ELEMENTAL, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
         }
     }
 
@@ -202,7 +185,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         }
 
         for (auto i = 0; i < randint1(5) + o_ptr->pval / 5; i++) {
-            (void)summon_specific(this->player_ptr, 0, pos.y, pos.x, mon_level, SUMMON_BIRD, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+            (void)summon_specific(this->player_ptr, pos.y, pos.x, mon_level, SUMMON_BIRD, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
         }
     }
 
@@ -213,7 +196,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
             msg_print(_("炎と硫黄の雲の中に悪魔が姿を現した！", "Demons materialize in clouds of fire and brimstone!"));
             for (auto i = 0; i < randint1(3) + 2; i++) {
                 (void)fire_meteor(this->player_ptr, -1, AttributeType::FIRE, pos.y, pos.x, 10, 5);
-                (void)summon_specific(this->player_ptr, 0, pos.y, pos.x, mon_level, SUMMON_DEMON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+                (void)summon_specific(this->player_ptr, pos.y, pos.x, mon_level, SUMMON_DEMON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
             }
         }
 
@@ -221,7 +204,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         else if (one_in_(3)) {
             msg_print(_("暗闇にドラゴンの影がぼんやりと現れた！", "Draconic forms loom out of the darkness!"));
             for (auto i = 0; i < randint1(3) + 2; i++) {
-                (void)summon_specific(this->player_ptr, 0, pos.y, pos.x, mon_level, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+                (void)summon_specific(this->player_ptr, pos.y, pos.x, mon_level, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
             }
         }
 
@@ -229,7 +212,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         else if (one_in_(2)) {
             msg_print(_("奇妙な姿の怪物が襲って来た！", "Creatures strange and twisted assault you!"));
             for (auto i = 0; i < randint1(5) + 3; i++) {
-                (void)summon_specific(this->player_ptr, 0, pos.y, pos.x, mon_level, SUMMON_HYBRID, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+                (void)summon_specific(this->player_ptr, pos.y, pos.x, mon_level, SUMMON_HYBRID, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
             }
         }
 
@@ -237,7 +220,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         else {
             msg_print(_("渦巻が合体し、破裂した！", "Vortices coalesce and wreak destruction!"));
             for (auto i = 0; i < randint1(3) + 2; i++) {
-                (void)summon_specific(this->player_ptr, 0, pos.y, pos.x, mon_level, SUMMON_VORTEX, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+                (void)summon_specific(this->player_ptr, pos.y, pos.x, mon_level, SUMMON_VORTEX, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
             }
         }
     }
@@ -251,7 +234,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
             }
 
             if (one_in_(6)) {
-                take_hit(this->player_ptr, DAMAGE_NOESCAPE, damroll(5, 20), _("破滅のトラップの宝箱", "a chest dispel-player trap"));
+                take_hit(this->player_ptr, DAMAGE_NOESCAPE, Dice::roll(5, 20), _("破滅のトラップの宝箱", "a chest dispel-player trap"));
                 continue;
             }
 
@@ -301,8 +284,8 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         msg_print(_("突然、箱が爆発した！", "There is a sudden explosion!"));
         msg_print(_("箱の中の物はすべて粉々に砕け散った！", "Everything inside the chest is destroyed!"));
         o_ptr->pval = 0;
-        sound(SOUND_EXPLODE);
-        take_hit(this->player_ptr, DAMAGE_ATTACK, damroll(5, 8), _("爆発する箱", "an exploding chest"));
+        sound(SoundKind::EXPLODE);
+        take_hit(this->player_ptr, DAMAGE_ATTACK, Dice::roll(5, 8), _("爆発する箱", "an exploding chest"));
     }
     /* Scatter contents. */
     if ((trap.has(ChestTrapType::SCATTER)) && o_ptr->is_valid()) {

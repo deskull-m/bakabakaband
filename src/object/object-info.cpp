@@ -14,13 +14,12 @@
 #include "inventory/inventory-slot-types.h"
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
-#include "realm/realm-names-table.h"
 #include "sv-definition/sv-bow-types.h"
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "util/int-char-converter.h"
 
@@ -98,11 +97,11 @@ int16_t wield_slot(PlayerType *player_ptr, const ItemEntity *o_ptr)
     case ItemKindType::HAFTED:
     case ItemKindType::POLEARM:
     case ItemKindType::SWORD:
-        if (!player_ptr->inventory_list[INVEN_MAIN_HAND].bi_id) {
+        if (!player_ptr->inventory[INVEN_MAIN_HAND]->bi_id) {
             return INVEN_MAIN_HAND;
         }
 
-        if (player_ptr->inventory_list[INVEN_SUB_HAND].bi_id) {
+        if (player_ptr->inventory[INVEN_SUB_HAND]->bi_id) {
             return INVEN_MAIN_HAND;
         }
 
@@ -110,11 +109,11 @@ int16_t wield_slot(PlayerType *player_ptr, const ItemEntity *o_ptr)
     case ItemKindType::CAPTURE:
     case ItemKindType::CARD:
     case ItemKindType::SHIELD:
-        if (!player_ptr->inventory_list[INVEN_SUB_HAND].bi_id) {
+        if (!player_ptr->inventory[INVEN_SUB_HAND]->bi_id) {
             return INVEN_SUB_HAND;
         }
 
-        if (player_ptr->inventory_list[INVEN_MAIN_HAND].bi_id) {
+        if (player_ptr->inventory[INVEN_MAIN_HAND]->bi_id) {
             return INVEN_SUB_HAND;
         }
 
@@ -122,7 +121,7 @@ int16_t wield_slot(PlayerType *player_ptr, const ItemEntity *o_ptr)
     case ItemKindType::BOW:
         return INVEN_BOW;
     case ItemKindType::RING:
-        if (!player_ptr->inventory_list[INVEN_MAIN_RING].bi_id) {
+        if (!player_ptr->inventory[INVEN_MAIN_RING]->bi_id) {
             return INVEN_MAIN_RING;
         }
 
@@ -163,20 +162,23 @@ bool check_book_realm(PlayerType *player_ptr, const BaseitemKey &bi_key)
     }
 
     const auto tval = bi_key.tval();
+    const auto book_realm = PlayerRealm::get_realm_of_book(tval);
     PlayerClass pc(player_ptr);
     if (pc.equals(PlayerClassType::SORCERER)) {
-        return is_magic(tval2realm(tval));
+        return PlayerRealm::is_magic(book_realm);
     } else if (pc.equals(PlayerClassType::RED_MAGE)) {
-        if (is_magic(tval2realm(tval))) {
-            return ((tval == ItemKindType::ARCANE_BOOK) || (bi_key.sval() < 2));
+        if (!PlayerRealm::is_magic(book_realm)) {
+            return false;
         }
+        return ((book_realm == RealmType::ARCANE) || (bi_key.sval() < 2));
     }
 
-    return (get_realm1_book(player_ptr) == tval) || (get_realm2_book(player_ptr) == tval);
+    PlayerRealm pr(player_ptr);
+    return pr.realm1().equals(book_realm) || pr.realm2().equals(book_realm);
 }
 
 ItemEntity *ref_item(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    return i_idx >= 0 ? &player_ptr->inventory_list[i_idx] : &(floor_ptr->o_list[0 - i_idx]);
+    auto &floor = *player_ptr->current_floor_ptr;
+    return i_idx >= 0 ? player_ptr->inventory[i_idx].get() : floor.o_list[0 - i_idx].get();
 }

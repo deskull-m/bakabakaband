@@ -11,6 +11,7 @@
 #include "io/signal-handlers.h"
 #include "player/player-move.h"
 #include "save/save.h"
+#include "system/angband-system.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
@@ -26,7 +27,8 @@
  */
 void exit_game_panic(PlayerType *player_ptr)
 {
-    if (!w_ptr->character_generated || w_ptr->character_saved) {
+    auto &world = AngbandWorld::get_instance();
+    if (!world.character_generated || world.character_saved) {
         quit(_("緊急事態", "panic"));
     }
     msg_flag = false;
@@ -37,7 +39,7 @@ void exit_game_panic(PlayerType *player_ptr)
         player_ptr->is_dead = false;
     }
 
-    player_ptr->panic_save = 1;
+    AngbandSystem::get_instance().set_panic_save(true);
     signals_ignore_tstp();
     player_ptr->died_from = _("(緊急セーブ)", "(panic save)");
     if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {

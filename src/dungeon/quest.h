@@ -1,7 +1,9 @@
 #pragma once
 
 #include "system/angband.h"
+#include "util/abstract-map-wrapper.h"
 #include "util/enum-converter.h"
+#include "util/enum-range.h"
 #include <map>
 #include <stdint.h>
 #include <string>
@@ -61,6 +63,7 @@ enum class QuestId : short{
 	RANDOM_QUEST10 = 49, /*<! ランダムクエストを割り当てるクエストIDの終了値 */
 };
 
+constexpr auto RANDOM_QUEST_ID_RANGE = EnumRangeInclusive(QuestId::RANDOM_QUEST1, QuestId::RANDOM_QUEST10);
 constexpr auto MIN_RANDOM_QUEST = enum2i(QuestId::RANDOM_QUEST1);
 constexpr auto MAX_RANDOM_QUEST = enum2i(QuestId::RANDOM_QUEST10);
 
@@ -97,9 +100,11 @@ enum class QuestKindType : short {
 /*!
  * @brief クエスト情報の構造体 / Structure for the "quests".
  */
+enum class DungeonId;
 enum class FixedArtifactId : short;
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
 class ArtifactType;
+class MonraceDefinition;
 class QuestType {
 public:
     QuestType() = default;
@@ -109,16 +114,16 @@ public:
 
     std::string name = ""; /*!< クエスト名 / Quest name */
     DEPTH level = 0; /*!< 処理階層 / Dungeon level */
-    MonsterRaceId r_idx{}; /*!< クエスト対象のモンスターID / Monster race */
+    MonraceId r_idx{}; /*!< クエスト対象のモンスターID / Monster race */
 
     MONSTER_NUMBER cur_num = 0; /*!< 撃破したモンスターの数 / Number killed */
     MONSTER_NUMBER max_num = 0; /*!< 求められるモンスターの撃破数 / Number required */
 
-    FixedArtifactId reward_artifact_idx{}; /*!< クエスト対象のアイテムID / object index */
+    FixedArtifactId reward_fa_id{}; /*!< クエスト対象のアイテムID / object index */
     MONSTER_NUMBER num_mon = 0; /*!< QuestKindTypeがKILL_NUMBER時の目標撃破数 number of monsters on level */
 
     BIT_FLAGS flags = 0; /*!< クエストに関するフラグビット / quest flags */
-    DUNGEON_IDX dungeon = 0; /*!< クエスト対象のダンジョンID / quest dungeon */
+    DungeonId dungeon{}; /*!< クエスト対象のダンジョンID / quest dungeon */
 
     PLAYER_LEVEL complev = 0; /*!< クリア時プレイヤーレベル / player level (complete) */
     REAL_TIME comptime = 0; /*!< クリア時ゲーム時間 /  quest clear time*/
@@ -126,39 +131,34 @@ public:
     static bool is_fixed(QuestId quest_idx);
     bool has_reward() const;
     ArtifactType &get_reward() const;
+    MonraceDefinition &get_bounty();
+    const MonraceDefinition &get_bounty() const;
 };
 
-class QuestList final {
+class QuestList final : public util::AbstractMapWrapper<QuestId, QuestType> {
 public:
-    using iterator = std::map<QuestId, QuestType>::iterator;
-    using reverse_iterator = std::map<QuestId, QuestType>::reverse_iterator;
-    using const_iterator = std::map<QuestId, QuestType>::const_iterator;
-    using const_reverse_iterator = std::map<QuestId, QuestType>::const_reverse_iterator;
-    static QuestList &get_instance();
-    QuestType &operator[](QuestId id);
-    const QuestType &operator[](QuestId id) const;
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
-    reverse_iterator rbegin();
-    const_reverse_iterator rbegin() const;
-    reverse_iterator rend();
-    const_reverse_iterator rend() const;
-    iterator find(QuestId id);
-    const_iterator find(QuestId id) const;
-    size_t size() const;
-    void initialize();
     QuestList(const QuestList &) = delete;
     QuestList(QuestList &&) = delete;
     QuestList &operator=(const QuestList &) = delete;
     QuestList &operator=(QuestList &&) = delete;
+    static QuestList &get_instance();
+
+    void initialize();
+    QuestType &get_quest(QuestId id);
+    const QuestType &get_quest(QuestId id) const;
+    std::vector<QuestId> get_sorted_quest_ids() const;
 
 private:
-    bool initialized = false;
-    std::map<QuestId, QuestType> quest_data;
+    static QuestList instance;
+    std::map<QuestId, QuestType> quests;
     QuestList() = default;
-    ~QuestList() = default;
+
+    std::map<QuestId, QuestType> &get_inner_container() override
+    {
+        return this->quests;
+    }
+
+    bool order_completed(QuestId id1, QuestId id2) const;
 };
 
 extern std::vector<std::string> quest_text_lines;
@@ -169,13 +169,13 @@ constexpr auto QUEST_TEST_LINES_MAX = 10;
 class FloorType;
 class ItemEntity;
 class PlayerType;
-void determine_random_questor(PlayerType *player_ptr, QuestType *q_ptr);
+void determine_random_questor(PlayerType *player_ptr, QuestType &quest);
 void record_quest_final_status(QuestType *q_ptr, PLAYER_LEVEL lev, QuestStatusType stat);
 void complete_quest(PlayerType *player_ptr, QuestId quest_num);
 void check_find_art_quest_completion(PlayerType *player_ptr, ItemEntity *o_ptr);
-void quest_discovery(QuestId q_idx);
+void quest_discovery(QuestId quest_id);
 void leave_quest_check(PlayerType *player_ptr);
 void leave_tower_check(PlayerType *player_ptr);
-void exe_enter_quest(PlayerType *player_ptr, QuestId quest_idx);
+void exe_enter_quest(PlayerType *player_ptr, QuestId quest_id);
 void do_cmd_quest(PlayerType *player_ptr);
-bool inside_quest(QuestId id);
+bool inside_quest(QuestId quest_id);

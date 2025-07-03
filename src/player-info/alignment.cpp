@@ -3,18 +3,19 @@
 #include "avatar/avatar.h"
 #include "game-option/text-display-options.h"
 #include "inventory/inventory-slot-types.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
 #include "player-info/equipment-info.h"
 #include "player-info/race-info.h"
 #include "system/angband-exceptions.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
+#include <array>
+#include <fmt/format.h>
 
 PlayerAlignment::PlayerAlignment(PlayerType *player_ptr)
 {
@@ -28,9 +29,9 @@ PlayerAlignment::PlayerAlignment(PlayerType *player_ptr)
  */
 std::string PlayerAlignment::get_alignment_description(bool with_value)
 {
-    auto s = alignment_label();
+    const auto s = this->alignment_label();
     if (with_value || show_actual_value) {
-        return format(_("%s(%ld)", "%s (%ld)"), s, static_cast<long>(this->player_ptr->alignment));
+        return fmt::format(_("{}({})", "{} ({})"), s, this->player_ptr->alignment);
     }
 
     return s;
@@ -43,24 +44,24 @@ std::string PlayerAlignment::get_alignment_description(bool with_value)
 void PlayerAlignment::update_alignment()
 {
     this->reset_alignment();
-    auto *floor_ptr = this->player_ptr->current_floor_ptr;
-    for (MONSTER_IDX m_idx = floor_ptr->m_max - 1; m_idx >= 1; m_idx--) {
-        auto *m_ptr = &floor_ptr->m_list[m_idx];
-        if (!m_ptr->is_valid()) {
+    const auto &floor = *this->player_ptr->current_floor_ptr;
+    for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
+        const auto &monster = floor.m_list[m_idx];
+        if (!monster.is_valid()) {
             continue;
         }
-        auto *r_ptr = &m_ptr->get_monrace();
+        const auto &monrace = monster.get_monrace();
 
-        if (!m_ptr->is_pet()) {
+        if (!monster.is_pet()) {
             continue;
         }
 
-        if (r_ptr->kind_flags.has(MonsterKindType::GOOD)) {
-            this->bias_good_alignment(r_ptr->level);
+        if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
+            this->bias_good_alignment(monrace.level);
         }
 
-        if (r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
-            this->bias_evil_alignment(r_ptr->level);
+        if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
+            this->bias_evil_alignment(monrace.level);
         }
     }
 
@@ -91,7 +92,7 @@ void PlayerAlignment::update_alignment()
     }
 
     for (int i = 0; i < 2; i++) {
-        const auto &wielding_weapon = this->player_ptr->inventory_list[INVEN_MAIN_HAND + i];
+        const auto &wielding_weapon = *this->player_ptr->inventory[INVEN_MAIN_HAND + i];
         if (!has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND + i) || !wielding_weapon.is_specific_artifact(FixedArtifactId::IRON_BALL)) {
             continue;
         }
@@ -100,7 +101,7 @@ void PlayerAlignment::update_alignment()
     }
 
     int j = 0;
-    int neutral[2];
+    std::array<int, 2> neutral{};
     for (int i = 0; i < 8; i++) {
         switch (this->player_ptr->vir_types[i]) {
         case Virtue::JUSTICE:
@@ -156,7 +157,7 @@ void PlayerAlignment::reset_alignment()
  * @param player_ptr プレイヤーへの参照ポインタ。
  * @return アライメントの表記名
  */
-concptr PlayerAlignment::alignment_label()
+std::string PlayerAlignment::alignment_label() const
 {
     if (this->player_ptr->alignment > 150) {
         return _("大善", "Lawful");

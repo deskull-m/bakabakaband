@@ -21,6 +21,7 @@
 #include "player-info/sniper-data-type.h"
 #include "player-info/spell-hex-data-type.h"
 #include "player/attack-defense-types.h"
+#include "player/player-realm.h"
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
 #include "realm/realm-types.h"
@@ -28,7 +29,6 @@
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
@@ -226,7 +226,7 @@ TrFlags PlayerClass::stance_tr_flags() const
 
     switch (this->get_samurai_stance()) {
     case SamuraiStanceType::FUUJIN:
-        if (!this->player_ptr->effects()->blindness()->is_blind()) {
+        if (!this->player_ptr->effects()->blindness().is_blind()) {
             flags.set(TR_REFLECT);
         }
         break;
@@ -498,7 +498,7 @@ void PlayerClass::init_specific_data()
         this->player_ptr->class_specific_data = std::make_shared<bluemage_data_type>();
         break;
     case PlayerClassType::MAGIC_EATER:
-        this->player_ptr->class_specific_data = std::make_shared<magic_eater_data_type>();
+        this->player_ptr->class_specific_data = std::make_shared<MagicEaterDataList>();
         break;
     case PlayerClassType::BARD:
         this->player_ptr->class_specific_data = std::make_shared<bard_data_type>();
@@ -519,7 +519,7 @@ void PlayerClass::init_specific_data()
         this->player_ptr->class_specific_data = std::make_shared<ninja_data_type>();
         break;
     case PlayerClassType::HIGH_MAGE:
-        if (this->player_ptr->realm1 == REALM_HEX) {
+        if (PlayerRealm(this->player_ptr).is_realm_hex()) {
             this->player_ptr->class_specific_data = std::make_shared<spell_hex_data_type>();
         } else {
             this->player_ptr->class_specific_data = no_class_specific_data();
@@ -533,9 +533,9 @@ void PlayerClass::init_specific_data()
 
 bool PlayerClass::has_ninja_speed() const
 {
-    auto has_ninja_speed_main = !this->player_ptr->inventory_list[INVEN_MAIN_HAND].is_valid();
+    auto has_ninja_speed_main = !this->player_ptr->inventory[INVEN_MAIN_HAND]->is_valid();
     has_ninja_speed_main |= can_attack_with_main_hand(this->player_ptr);
-    auto has_ninja_speed_sub = !this->player_ptr->inventory_list[INVEN_SUB_HAND].is_valid();
+    auto has_ninja_speed_sub = !this->player_ptr->inventory[INVEN_SUB_HAND]->is_valid();
     has_ninja_speed_sub |= can_attack_with_sub_hand(this->player_ptr);
     return has_ninja_speed_main && has_ninja_speed_sub;
 }
@@ -550,7 +550,7 @@ bool PlayerClass::has_ninja_speed() const
  */
 std::span<const std::string> PlayerClass::get_subtitle_candidates() const
 {
-    static const std::span<const std::string> candidates(diary_subtitles.begin(), diary_subtitles.end());
+    const std::span candidates(diary_subtitles);
     const auto max = diary_subtitles.size();
     if (this->is_tough()) {
         return candidates.subspan(0, max - 1);

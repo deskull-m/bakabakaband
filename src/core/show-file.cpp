@@ -1,10 +1,10 @@
-﻿#include "core/show-file.h"
+#include "core/show-file.h"
 #include "core/asking-player.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "main/sound-of-music.h"
 #include "system/angband-exceptions.h"
-#include "system/angband-version.h"
+#include "system/angband-system.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -35,16 +35,13 @@
  */
 static void show_file_aux_line(std::string_view str, int cy, std::string_view shower)
 {
-    char lcstr[1024];
+    const auto lcstr = str_tolower(str);
     concptr ptr;
     byte textcolor = TERM_WHITE;
     byte focuscolor = TERM_YELLOW;
 
     if (!shower.empty()) {
-        strcpy(lcstr, str.data());
-        str_tolower(lcstr);
-
-        ptr = angband_strstr(lcstr, shower);
+        ptr = angband_strstr(lcstr.data(), shower);
         textcolor = (ptr == nullptr) ? TERM_L_DARK : TERM_WHITE;
     }
 
@@ -134,9 +131,9 @@ static void show_file_aux_line(std::string_view str, int cy, std::string_view sh
  * </pre>
  * @todo 表示とそれ以外を分割する
  */
-bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_with_tag, int initial_line, uint32_t mode, std::string_view what)
+void FileDisplayer::display(bool show_version, std::string_view name_with_tag, int initial_line, uint32_t mode, std::string_view what)
 {
-    TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, std::nullopt);
+    TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
     const auto &[wid, hgt] = term_get_size();
 
@@ -187,15 +184,17 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
     auto next = 0;
     auto back = 0;
     auto menu = false;
-    char buf[1024]{};
     auto reverse = initial_line < 0;
     auto line = initial_line;
     while (true) {
-        char *str = buf;
-        if (angband_fgets(fff, buf, sizeof(buf))) {
+        auto line_str = angband_fgets(fff);
+        if (!line_str) {
             break;
         }
-        if (!prefix(str, "***** ")) {
+
+        auto *const str = line_str->data();
+
+        if (!line_str->starts_with("***** ")) {
             next++;
             continue;
         }
@@ -254,10 +253,11 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
         }
 
         while (next < line) {
-            if (angband_fgets(fff, buf, sizeof(buf))) {
+            const auto line_str = angband_fgets(fff);
+            if (!line_str) {
                 break;
             }
-            if (prefix(buf, "***** ")) {
+            if (line_str->starts_with("***** ")) {
                 continue;
             }
             next++;
@@ -265,28 +265,26 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
 
         int row_count;
         for (row_count = 0; row_count < rows;) {
-            concptr str = buf;
             if (!row_count) {
                 line = next;
             }
-            if (angband_fgets(fff, buf, sizeof(buf))) {
+            const auto line_str = angband_fgets(fff);
+            if (!line_str) {
                 break;
             }
-            if (prefix(buf, "***** ")) {
+            if (line_str->starts_with("***** ")) {
                 continue;
             }
             next++;
             if (!find.empty() && !row_count) {
-                char lc_buf[1024];
-                strcpy(lc_buf, str);
-                str_tolower(lc_buf);
-                if (!str_find(lc_buf, find)) {
+                const auto lc_str = str_tolower(*line_str);
+                if (!str_find(lc_str, find)) {
                     continue;
                 }
             }
 
             find.clear();
-            show_file_aux_line(str, row_count + 2, shower);
+            show_file_aux_line(*line_str, row_count + 2, shower);
             row_count++;
         }
 
@@ -304,7 +302,8 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
 
         if (show_version) {
             constexpr auto title = _("[%s, %s, %d/%d]", "[%s, %s, Line %d/%d]");
-            prt(format(title, get_version().data(), caption_str.data(), line, size), 0, 0);
+            const auto version = AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL);
+            prt(format(title, version.data(), caption_str.data(), line, size), 0, 0);
         } else {
             constexpr auto title = _("[%s, %d/%d]", "[%s, Line %d/%d]");
             prt(format(title, caption_str.data(), line, size), 0, 0);
@@ -328,7 +327,7 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
         switch (skey) {
         case '?':
             if (name != _("jhelpinfo.txt", "helpinfo.txt")) {
-                show_file(player_ptr, true, _("jhelpinfo.txt", "helpinfo.txt"), 0, mode);
+                this->display(true, _("jhelpinfo.txt", "helpinfo.txt"), 0, mode);
             }
 
             break;
@@ -339,13 +338,12 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
                 break;
             }
 
-            shower_str = *ask_result;
+            shower_str = str_tolower(*ask_result);
             if (shower_str.empty()) {
                 shower.clear();
                 break;
             }
 
-            str_tolower(shower_str.data());
             shower = shower_str;
             break;
         }
@@ -366,7 +364,7 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
             find = finder_str;
             back = line;
             line = line + 1;
-            str_tolower(finder_str.data());
+            finder_str = str_tolower(finder_str);
             shower = finder_str;
             break;
         }
@@ -391,10 +389,10 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
 
             break;
         }
-        case SKEY_TOP:
+        case SKEY_HOME:
             line = 0;
             break;
-        case SKEY_BOTTOM:
+        case SKEY_END:
             line = ((size - 1) / rows) * rows;
             break;
         case '%': {
@@ -404,7 +402,8 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
                 break;
             }
 
-            if (!show_file(player_ptr, true, *ask_result, 0, mode)) {
+            this->display(true, *ask_result, 0, mode);
+            if (this->is_terminated) {
                 skey = 'q';
             }
 
@@ -466,7 +465,8 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
 
             if ((key > -1) && hook[key][0]) {
                 /* Recurse on that file */
-                if (!show_file(player_ptr, true, hook[key], 0, mode)) {
+                this->display(true, hook[key], 0, mode);
+                if (this->is_terminated) {
                     skey = 'q';
                 }
             }
@@ -480,7 +480,7 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
 
             angband_fclose(fff);
             fff = angband_fopen(path_reopen, FileOpenMode::READ);
-            const auto &path_xtemp = path_build(ANGBAND_DIR_USER, *xtmp);
+            const auto path_xtemp = path_build(ANGBAND_DIR_USER, *xtmp);
             auto *ffp = angband_fopen(path_xtemp, FileOpenMode::WRITE);
 
             if (!(fff && ffp)) {
@@ -489,10 +489,14 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
                 break;
             }
 
-            fprintf(ffp, "%s: %s\n", player_ptr->name, !what.empty() ? what.data() : caption_str.data());
-            char buff[1024]{};
-            while (!angband_fgets(fff, buff, sizeof(buff))) {
-                angband_fputs(ffp, buff, 80);
+            fprintf(ffp, "%s: %s\n", this->player_name.data(), !what.empty() ? what.data() : caption_str.data());
+            while (true) {
+                const auto line_str = angband_fgets(fff);
+                if (!line_str) {
+                    break;
+                }
+
+                fprintf(ffp, "%s\n", line_str->data());
             }
             angband_fclose(fff);
             angband_fclose(ffp);
@@ -513,21 +517,5 @@ bool show_file(PlayerType *player_ptr, bool show_version, std::string_view name_
     }
 
     angband_fclose(fff);
-    return skey != 'q';
-}
-
-/*
- * Convert string to lower case
- */
-void str_tolower(char *str)
-{
-    for (; *str; str++) {
-#ifdef JP
-        if (iskanji(*str)) {
-            str++;
-            continue;
-        }
-#endif
-        *str = (char)tolower(*str);
-    }
+    this->is_terminated = skey == 'q';
 }

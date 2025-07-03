@@ -9,7 +9,6 @@
 #include "flavor/flavor-describer.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/monster-describer.h"
@@ -19,11 +18,11 @@
 #include "monster/smart-learn-types.h"
 #include "object-enchant/tr-types.h"
 #include "object/object-mark-types.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -148,12 +147,12 @@ static void monster_pickup_object(PlayerType *player_ptr, turn_flags *turn_flags
             msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
         }
 
-        excise_object_idx(player_ptr->current_floor_ptr, this_o_idx);
+        excise_object_idx(*player_ptr->current_floor_ptr, this_o_idx);
         // 意図としては OmType::TOUCHED を維持しつつ OmType::FOUND を消す事と思われるが一応元のロジックを維持しておく
         o_ptr->marked &= { OmType::TOUCHED };
         o_ptr->iy = o_ptr->ix = 0;
         o_ptr->held_m_idx = m_idx;
-        monster.hold_o_idx_list.add(player_ptr->current_floor_ptr, this_o_idx);
+        monster.hold_o_idx_list.add(*player_ptr->current_floor_ptr, this_o_idx);
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }
@@ -163,7 +162,7 @@ static void monster_pickup_object(PlayerType *player_ptr, turn_flags *turn_flags
     }
 
     turn_flags_ptr->did_kill_item = true;
-    if (floor.has_los({ ny, nx })) {
+    if (floor.has_los_at({ ny, nx })) {
         msg_format(_("%s^が%sを破壊した。", "%s^ destroys %s."), m_name.data(), o_name.data());
     }
 
@@ -180,32 +179,31 @@ static void monster_pickup_object(PlayerType *player_ptr, turn_flags *turn_flags
  */
 void update_object_by_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION ny, POSITION nx)
 {
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    auto *r_ptr = &m_ptr->get_monrace();
-    auto *g_ptr = &player_ptr->current_floor_ptr->grid_array[ny][nx];
-    turn_flags_ptr->do_take = r_ptr->behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);
-    for (auto it = g_ptr->o_idx_list.begin(); it != g_ptr->o_idx_list.end();) {
+    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monrace = monster.get_monrace();
+    const auto &grid = player_ptr->current_floor_ptr->grid_array[ny][nx];
+    turn_flags_ptr->do_take = monrace.behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);
+    for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         EnumClassFlagGroup<MonsterKindType> flg_monster_kind;
         EnumClassFlagGroup<MonsterResistanceType> flgr;
         OBJECT_IDX this_o_idx = *it++;
-        auto *o_ptr = &player_ptr->current_floor_ptr->o_list[this_o_idx];
-
+        auto &item = *player_ptr->current_floor_ptr->o_list[this_o_idx];
         if (turn_flags_ptr->do_take) {
-            const auto tval = o_ptr->bi_key.tval();
-            if (tval == ItemKindType::GOLD || (tval == ItemKindType::CORPSE) || (tval == ItemKindType::STATUE)) {
+            const auto tval = item.bi_key.tval();
+            if (tval == ItemKindType::GOLD || (tval == ItemKindType::MONSTER_REMAINS) || (tval == ItemKindType::STATUE)) {
                 continue;
             }
         }
 
-        const auto flags = o_ptr->get_flags();
-        const auto item_name = describe_flavor(player_ptr, o_ptr, 0);
-        const auto m_name = monster_desc(player_ptr, m_ptr, MD_INDEF_HIDDEN);
+        const auto flags = item.get_flags();
+        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_HIDDEN);
         update_object_flags(flags, flg_monster_kind, flgr);
 
-        auto is_unpickable_object = o_ptr->is_fixed_or_random_artifact();
-        is_unpickable_object |= r_ptr->kind_flags.has_any_of(flg_monster_kind);
-        is_unpickable_object |= !r_ptr->resistance_flags.has_all_of(flgr) && r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_ALL);
-        monster_pickup_object(player_ptr, turn_flags_ptr, m_idx, o_ptr, is_unpickable_object, ny, nx, m_name, item_name, this_o_idx);
+        auto is_unpickable_object = item.is_fixed_or_random_artifact();
+        is_unpickable_object |= monrace.kind_flags.has_any_of(flg_monster_kind);
+        is_unpickable_object |= !monrace.resistance_flags.has_all_of(flgr) && monrace.resistance_flags.has_not(MonsterResistanceType::RESIST_ALL);
+        monster_pickup_object(player_ptr, turn_flags_ptr, m_idx, &item, is_unpickable_object, ny, nx, m_name, item_name, this_o_idx);
     }
 }
 
@@ -214,20 +212,15 @@ void update_object_by_monster_movement(PlayerType *player_ptr, turn_flags *turn_
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_ptr モンスター参照ポインタ
  */
-void monster_drop_carried_objects(PlayerType *player_ptr, MonsterEntity *m_ptr)
+void monster_drop_carried_objects(PlayerType *player_ptr, MonsterEntity &monster)
 {
-    for (auto it = m_ptr->hold_o_idx_list.begin(); it != m_ptr->hold_o_idx_list.end();) {
-        ItemEntity forge;
-        ItemEntity *o_ptr;
-        ItemEntity *q_ptr;
-        const OBJECT_IDX this_o_idx = *it++;
-        o_ptr = &player_ptr->current_floor_ptr->o_list[this_o_idx];
-        q_ptr = &forge;
-        q_ptr->copy_from(o_ptr);
-        q_ptr->held_m_idx = 0;
+    for (auto it = monster.hold_o_idx_list.begin(); it != monster.hold_o_idx_list.end();) {
+        const auto this_o_idx = *it++;
+        auto drop_item = player_ptr->current_floor_ptr->o_list[this_o_idx]->clone();
+        drop_item.held_m_idx = 0;
         delete_object_idx(player_ptr, this_o_idx);
-        (void)drop_near(player_ptr, q_ptr, -1, m_ptr->fy, m_ptr->fx);
+        (void)drop_near(player_ptr, drop_item, monster.get_position());
     }
 
-    m_ptr->hold_o_idx_list.clear();
+    monster.hold_o_idx_list.clear();
 }

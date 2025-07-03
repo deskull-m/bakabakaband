@@ -1,32 +1,16 @@
 #include "core/turn-compensator.h"
-#include "floor/floor-town.h"
+#include "floor/dungeon-feeling.h"
 #include "player-info/race-types.h"
 #include "store/store-owners.h"
 #include "store/store-util.h"
 #include "store/store.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/floor/town-info.h"
+#include "system/floor/town-list.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "world/world.h"
-
-/*!
- * @brief ゲームターンからの実時間換算を行うための補正をかける
- * @param hoge ゲームターン
- * @details アンデッド種族は18:00からゲームを開始するので、この修正を予め行う。
- * @return 修正をかけた後のゲームターン
- */
-int32_t turn_real(PlayerType *player_ptr, int32_t hoge)
-{
-    switch (player_ptr->start_race) {
-    case PlayerRaceType::VAMPIRE:
-    case PlayerRaceType::SKELETON:
-    case PlayerRaceType::ZOMBIE:
-    case PlayerRaceType::SPECTRE:
-        return hoge - (TURNS_PER_TICK * TOWN_DAWN * 3 / 4);
-    default:
-        return hoge;
-    }
-}
 
 /*!
  * @brief ターンのオーバーフローに対する対処
@@ -36,49 +20,54 @@ int32_t turn_real(PlayerType *player_ptr, int32_t hoge)
  */
 void prevent_turn_overflow(PlayerType *player_ptr)
 {
-    if (w_ptr->game_turn < w_ptr->game_turn_limit) {
+    const auto &igd = InnerGameData::get_instance();
+    const auto game_turn_limit = igd.get_game_turn_limit();
+    auto &world = AngbandWorld::get_instance();
+    if (world.game_turn < game_turn_limit) {
         return;
     }
 
-    int rollback_days = 1 + (w_ptr->game_turn - w_ptr->game_turn_limit) / (TURNS_PER_TICK * TOWN_DAWN);
+    int rollback_days = 1 + (world.game_turn - game_turn_limit) / (TURNS_PER_TICK * TOWN_DAWN);
     int32_t rollback_turns = TURNS_PER_TICK * TOWN_DAWN * rollback_days;
 
-    if (w_ptr->game_turn > rollback_turns) {
-        w_ptr->game_turn -= rollback_turns;
+    if (world.game_turn > rollback_turns) {
+        world.game_turn -= rollback_turns;
     } else {
-        w_ptr->game_turn = 1;
+        world.game_turn = 1;
     }
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (floor_ptr->generated_turn > rollback_turns) {
-        floor_ptr->generated_turn -= rollback_turns;
+    auto &floor = *player_ptr->current_floor_ptr;
+    if (floor.generated_turn > rollback_turns) {
+        floor.generated_turn -= rollback_turns;
     } else {
-        floor_ptr->generated_turn = 1;
+        floor.generated_turn = 1;
     }
-    if (w_ptr->arena_start_turn > rollback_turns) {
-        w_ptr->arena_start_turn -= rollback_turns;
+    if (world.arena_start_turn > rollback_turns) {
+        world.arena_start_turn -= rollback_turns;
     } else {
-        w_ptr->arena_start_turn = 1;
+        world.arena_start_turn = 1;
     }
-    if (player_ptr->feeling_turn > rollback_turns) {
-        player_ptr->feeling_turn -= rollback_turns;
+
+    auto &df = DungeonFeeling::get_instance();
+    if (df.get_turns() > rollback_turns) {
+        df.mod_turns(-rollback_turns);
     } else {
-        player_ptr->feeling_turn = 1;
+        df.set_turns(1);
     }
 
     for (size_t i = 1; i < towns_info.size(); i++) {
         for (auto sst : STORE_SALE_TYPE_LIST) {
-            auto *store_ptr = &towns_info[i].stores[sst];
-            if (store_ptr->last_visit > -10L * TURNS_PER_TICK * STORE_TICKS) {
-                store_ptr->last_visit -= rollback_turns;
-                if (store_ptr->last_visit < -10L * TURNS_PER_TICK * STORE_TICKS) {
-                    store_ptr->last_visit = -10L * TURNS_PER_TICK * STORE_TICKS;
+            auto &store = towns_info[i].get_store(sst);
+            if (store.last_visit > -10L * TURNS_PER_TICK * STORE_TICKS) {
+                store.last_visit -= rollback_turns;
+                if (store.last_visit < -10L * TURNS_PER_TICK * STORE_TICKS) {
+                    store.last_visit = -10L * TURNS_PER_TICK * STORE_TICKS;
                 }
             }
 
-            if (store_ptr->store_open) {
-                store_ptr->store_open -= rollback_turns;
-                if (store_ptr->store_open < 1) {
-                    store_ptr->store_open = 1;
+            if (store.store_open) {
+                store.store_open -= rollback_turns;
+                if (store.store_open < 1) {
+                    store.store_open = 1;
                 }
             }
         }

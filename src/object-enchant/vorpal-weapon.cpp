@@ -4,12 +4,11 @@
 #include "io/files-util.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-flags-resistance.h"
 #include "player-attack/player-attack.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -23,31 +22,31 @@ static void print_vorpal_message(player_attack_type *pa_ptr, const int magnifica
     switch (magnification) {
     case 2:
         msg_format(_("%sを斬った！", "You gouge %s!"), pa_ptr->m_name);
-        sound(SOUND_GOUGE_HIT);
+        sound(SoundKind::GOUGE_HIT);
         break;
     case 3:
         msg_format(_("%sをぶった斬った！", "You maim %s!"), pa_ptr->m_name);
-        sound(SOUND_MAIM_HIT);
+        sound(SoundKind::MAIM_HIT);
         break;
     case 4:
         msg_format(_("%sをメッタ斬りにした！", "You carve %s!"), pa_ptr->m_name);
-        sound(SOUND_CARVE_HIT);
+        sound(SoundKind::CARVE_HIT);
         break;
     case 5:
         msg_format(_("%sをメッタメタに斬った！", "You cleave %s!"), pa_ptr->m_name);
-        sound(SOUND_CLEAVE_HIT);
+        sound(SoundKind::CLEAVE_HIT);
         break;
     case 6:
         msg_format(_("%sを刺身にした！", "You smite %s!"), pa_ptr->m_name);
-        sound(SOUND_SMITE_HIT);
+        sound(SoundKind::SMITE_HIT);
         break;
     case 7:
         msg_format(_("%sを斬って斬って斬りまくった！", "You eviscerate %s!"), pa_ptr->m_name);
-        sound(SOUND_EVISCERATE_HIT);
+        sound(SoundKind::EVISCERATE_HIT);
         break;
     default:
         msg_format(_("%sを細切れにした！", "You shred %s!"), pa_ptr->m_name);
-        sound(SOUND_SHRED_HIT);
+        sound(SoundKind::SHRED_HIT);
         break;
     }
 }
@@ -81,7 +80,7 @@ void process_vorpal_attack(PlayerType *player_ptr, player_attack_type *pa_ptr, c
         return;
     }
 
-    auto *o_ptr = &player_ptr->inventory_list[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand];
+    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     int vorpal_magnification = 2;
     print_chainsword_noise(o_ptr);
     if (o_ptr->is_specific_artifact(FixedArtifactId::VORPAL_BLADE)) {
@@ -95,8 +94,8 @@ void process_vorpal_attack(PlayerType *player_ptr, player_attack_type *pa_ptr, c
     }
 
     pa_ptr->attack_damage *= (int)vorpal_magnification;
-    auto *r_ptr = &pa_ptr->m_ptr->get_monrace();
-    if ((r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_ALL) ? pa_ptr->attack_damage / 100 : pa_ptr->attack_damage) > pa_ptr->m_ptr->hp) {
+    const auto &monrace = pa_ptr->m_ptr->get_monrace();
+    if ((monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL) ? pa_ptr->attack_damage / 100 : pa_ptr->attack_damage) > pa_ptr->m_ptr->hp) {
         msg_format(_("%sを真っ二つにした！", "You cut %s in half!"), pa_ptr->m_name);
     } else {
         print_vorpal_message(pa_ptr, vorpal_magnification);

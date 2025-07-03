@@ -1,14 +1,15 @@
 #include "market/building-quest.h"
-#include "cmd-building/cmd-building.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
+#include "floor/wild.h"
 #include "info-reader/fixed-map-parser.h"
 #include "market/building-util.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-list.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/dungeon/dungeon-id.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -17,16 +18,16 @@
 /*!
  * @brief クエスト情報を処理しつつ取得する。/ Process and get quest information
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param questnum クエストのID
+ * @param quest_id クエストのID
  * @param do_init クエストの開始処理か(true)、結果処理か(FALSE)
  */
-static void get_questinfo(PlayerType *player_ptr, QuestId questnum, bool do_init)
+static void get_questinfo(PlayerType *player_ptr, QuestId quest_id, bool do_init)
 {
     quest_text_lines.clear();
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    QuestId old_quest = floor_ptr->quest_number;
-    floor_ptr->quest_number = questnum;
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto old_quest = floor.quest_number;
+    floor.quest_number = quest_id;
 
     init_flags = INIT_SHOW_TEXT;
     if (do_init) {
@@ -34,25 +35,23 @@ static void get_questinfo(PlayerType *player_ptr, QuestId questnum, bool do_init
     }
 
     parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-    floor_ptr->quest_number = old_quest;
+    floor.quest_number = old_quest;
 }
 
 /*!
  * @brief クエスト情報を処理しつつ表示する。/ Process and display quest information
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param questnum クエストのID
+ * @param quest_id クエストのID
  * @param do_init クエストの開始処理か(true)、結果処理か(FALSE)
  */
-void print_questinfo(PlayerType *player_ptr, QuestId questnum, bool do_init)
+static void print_questinfo(PlayerType *player_ptr, QuestId quest_id, bool do_init)
 {
-    get_questinfo(player_ptr, questnum, do_init);
+    get_questinfo(player_ptr, quest_id, do_init);
 
-    const auto &quest_list = QuestList::get_instance();
-    const auto *q_ptr = &quest_list[questnum];
-    GAME_TEXT tmp_str[80];
-    sprintf(tmp_str, _("クエスト情報 (危険度: %d 階相当)", "Quest Information (Danger level: %d)"), (int)q_ptr->level);
-    prt(tmp_str, 5, 0);
-    prt(q_ptr->name, 7, 0);
+    const auto &quests = QuestList::get_instance();
+    const auto &quest = quests.get_quest(quest_id);
+    prt(format(_("クエスト情報 (危険度: %d 階相当)", "Quest Information (Danger level: %d)"), quest.level), 5, 0);
+    prt(quest.name, 7, 0);
 
     for (auto i = 0; i < std::ssize(quest_text_lines); i++) {
         c_put_str(TERM_YELLOW, quest_text_lines[i], i + 8, 0);
@@ -66,85 +65,84 @@ void print_questinfo(PlayerType *player_ptr, QuestId questnum, bool do_init)
 void castle_quest(PlayerType *player_ptr)
 {
     clear_bldg(4, 18);
-    QuestId q_index = i2enum<QuestId>(player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x].special);
-
-    if (!inside_quest(q_index)) {
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto quest_id = i2enum<QuestId>(floor.get_grid(player_ptr->get_position()).special);
+    if (!inside_quest(quest_id)) {
         put_str(_("今のところクエストはありません。", "I don't have a quest for you at the moment."), 8, 0);
         return;
     }
 
-    auto &quest_list = QuestList::get_instance();
-    auto *q_ptr = &quest_list[q_index];
-    if (q_ptr->status == QuestStatusType::COMPLETED) {
-        q_ptr->status = QuestStatusType::REWARDED;
-        print_questinfo(player_ptr, q_index, false);
+    auto &quests = QuestList::get_instance();
+    auto &quest = quests.get_quest(quest_id);
+    if (quest.status == QuestStatusType::COMPLETED) {
+        quest.status = QuestStatusType::REWARDED;
+        print_questinfo(player_ptr, quest_id, false);
         reinit_wilderness = true;
         return;
     }
 
-    if (q_ptr->status == QuestStatusType::TAKEN) {
+    if (quest.status == QuestStatusType::TAKEN) {
         put_str(_("あなたは現在のクエストを終了させていません！", "You have not completed your current quest yet!"), 8, 0);
         put_str(_("CTRL-Qを使えばクエストの状態がチェックできます。", "Use CTRL-Q to check the status of your quest."), 9, 0);
 
-        get_questinfo(player_ptr, q_index, false);
-        put_str(format(_("現在のクエスト「%s」", "Current quest is '%s'."), q_ptr->name.data()), 11, 0);
+        get_questinfo(player_ptr, quest_id, false);
+        put_str(format(_("現在のクエスト「%s」", "Current quest is '%s'."), quest.name.data()), 11, 0);
 
-        if (q_ptr->type != QuestKindType::KILL_LEVEL || q_ptr->dungeon == 0) {
+        if (quest.type != QuestKindType::KILL_LEVEL || quest.dungeon == DungeonId::WILDERNESS) {
             put_str(_("クエストを終わらせたら戻って来て下さい。", "Return when you have completed your quest."), 12, 0);
             return;
         }
 
         put_str(_("このクエストは放棄することができます。", "You can give up this quest."), 12, 0);
-
         if (!input_check(_("二度と受けられなくなりますが放棄しますか？", "Are you sure to give up this quest? "))) {
             return;
         }
 
         clear_bldg(4, 18);
         msg_print(_("放棄しました。", "You gave up."));
-        msg_print(nullptr);
-        record_quest_final_status(q_ptr, player_ptr->lev, QuestStatusType::FAILED);
+        msg_erase();
+        record_quest_final_status(&quest, player_ptr->lev, QuestStatusType::FAILED);
     }
 
-    if (q_ptr->status == QuestStatusType::FAILED) {
-        print_questinfo(player_ptr, q_index, false);
-        q_ptr->status = QuestStatusType::FAILED_DONE;
+    if (quest.status == QuestStatusType::FAILED) {
+        print_questinfo(player_ptr, quest_id, false);
+        quest.status = QuestStatusType::FAILED_DONE;
         reinit_wilderness = true;
         return;
     }
 
-    if (q_ptr->status != QuestStatusType::UNTAKEN) {
+    if (quest.status != QuestStatusType::UNTAKEN) {
         return;
     }
 
-    q_ptr->status = QuestStatusType::TAKEN;
+    quest.status = QuestStatusType::TAKEN;
     reinit_wilderness = true;
-    if (q_ptr->type != QuestKindType::KILL_ANY_LEVEL) {
-        print_questinfo(player_ptr, q_index, true);
+    if (quest.type != QuestKindType::KILL_ANY_LEVEL) {
+        print_questinfo(player_ptr, quest_id, true);
         return;
     }
 
-    MonsterRaceInfo *r_ptr;
-    r_ptr = &monraces_info[q_ptr->r_idx];
+    MonraceDefinition *r_ptr;
+    r_ptr = &MonraceList::get_instance().get_monrace(quest.r_idx);
     while (r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || (r_ptr->rarity != 1)) {
-        q_ptr->r_idx = get_mon_num(player_ptr, 0, q_ptr->level + 4 + randint1(6), 0);
-        r_ptr = &monraces_info[q_ptr->r_idx];
+        quest.r_idx = get_mon_num(player_ptr, 0, quest.level + 4 + randint1(6), 0);
+        r_ptr = &MonraceList::get_instance().get_monrace(quest.r_idx);
     }
 
-    if (q_ptr->max_num == 0) {
+    if (quest.max_num == 0) {
         if (randint1(10) > 7) {
-            q_ptr->max_num = 1;
+            quest.max_num = 1;
         } else {
-            q_ptr->max_num = randint1(3) + 1;
+            quest.max_num = randint1(3) + 1;
         }
     }
 
-    q_ptr->cur_num = 0;
-    concptr name = r_ptr->name.c_str();
+    quest.cur_num = 0;
+    concptr name = r_ptr->name.data();
 #ifdef JP
-    msg_format("クエスト: %sを %d体倒す", name, q_ptr->max_num);
+    msg_format("クエスト: %sを %d体倒す", name, quest.max_num);
 #else
-    msg_format("Your quest: kill %d %s", q_ptr->max_num, name);
+    msg_format("Your quest: kill %d %s", quest.max_num, name);
 #endif
-    print_questinfo(player_ptr, q_index, true);
+    print_questinfo(player_ptr, quest_id, true);
 }

@@ -19,7 +19,6 @@
 #include "main/sound-of-music.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/place-monster-types.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-info.h"
 #include "monster/monster-util.h"
 #include "object-activation/activation-switcher.h"
@@ -43,17 +42,17 @@
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-key.h"
+#include "system/baseitem/baseitem-list.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/player-confusion.h"
 #include "timed-effect/timed-effects.h"
-#include "util/sort.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -87,7 +86,7 @@ static void decide_activation_level(ae_type *ae_ptr)
 static void decide_chance_fail(PlayerType *player_ptr, ae_type *ae_ptr)
 {
     ae_ptr->chance = player_ptr->skill_dev;
-    if (player_ptr->effects()->confusion()->is_confused()) {
+    if (player_ptr->effects()->confusion().is_confused()) {
         ae_ptr->chance = ae_ptr->chance / 2;
     }
 
@@ -133,7 +132,7 @@ static bool check_activation_success(ae_type *ae_ptr)
     }
 
     msg_print(_("うまく始動させることができなかった。", "You failed to activate it properly."));
-    sound(SOUND_FAIL);
+    sound(SoundKind::FAIL);
     return false;
 }
 
@@ -171,7 +170,7 @@ static bool activate_artifact(PlayerType *player_ptr, ItemEntity *o_ptr)
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
     if (!switch_activation(player_ptr, &o_ptr, it_activation->index, item_name)) {
         return false;
     }
@@ -217,18 +216,18 @@ static bool activate_whistle(PlayerType *player_ptr, ae_type *ae_ptr)
         (void)SpellHex(player_ptr).stop_all_spells();
     }
 
-    std::vector<MONSTER_IDX> who;
-    for (MONSTER_IDX pet_ctr = player_ptr->current_floor_ptr->m_max - 1; pet_ctr >= 1; pet_ctr--) {
-        const auto &m_ref = player_ptr->current_floor_ptr->m_list[pet_ctr];
-        if (m_ref.is_pet() && (player_ptr->riding != pet_ctr)) {
-            who.push_back(pet_ctr);
+    const auto &floor = *player_ptr->current_floor_ptr;
+    std::vector<short> pet_index;
+    for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
+        const auto &monster = floor.m_list[pet_indice];
+        if (monster.is_pet() && (player_ptr->riding != pet_indice)) {
+            pet_index.push_back(pet_indice);
         }
     }
 
-    short dummy_why = 0;
-    ang_sort(player_ptr, who.data(), &dummy_why, who.size(), ang_sort_comp_pet, ang_sort_swap_hook);
-    for (auto pet_ctr : who) {
-        teleport_monster_to(player_ptr, pet_ctr, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
+    std::stable_sort(pet_index.begin(), pet_index.end(), [&floor](auto x, auto y) { return floor.order_pet_whistle(x, y); });
+    for (auto pet_indice : pet_index) {
+        teleport_monster_to(player_ptr, pet_indice, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
     }
 
     ae_ptr->o_ptr->timeout = 100 + randint1(100);
@@ -251,8 +250,8 @@ static bool activate_firethrowing(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    DIRECTION dir;
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
@@ -267,8 +266,8 @@ static bool activate_rosmarinus(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    DIRECTION dir;
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
@@ -282,9 +281,9 @@ static bool activate_stungun(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    DIRECTION dir;
     project_length = 1;
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
@@ -300,8 +299,8 @@ static bool activate_raygun(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    DIRECTION dir;
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
@@ -318,7 +317,7 @@ static bool activate_raygun(PlayerType *player_ptr, ae_type *ae_ptr)
 void exe_activate(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 {
     bool activated = false;
-    if (i_idx <= INVEN_PACK && baseitems_info[player_ptr->inventory_list[i_idx].bi_id].flags.has_not(TR_INVEN_ACTIVATE)) {
+    if (i_idx <= INVEN_PACK && BaseitemList::get_instance().get_baseitem(player_ptr->inventory[i_idx]->bi_id).flags.has_not(TR_INVEN_ACTIVATE)) {
         msg_print(_("このアイテムは装備しないと始動できない。", "That object must be activated by equipment."));
         return;
     }
@@ -344,7 +343,7 @@ void exe_activate(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     }
 
     msg_print(_("始動させた...", "You activate it..."));
-    sound(SOUND_ZAP);
+    sound(SoundKind::ZAP);
     if (ae_ptr->o_ptr->has_activation()) {
         (void)activate_artifact(player_ptr, ae_ptr->o_ptr);
         static constexpr auto flags = {
@@ -377,7 +376,7 @@ void exe_activate(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     }
 
     if (randint1(100) <= ae_ptr->broken) {
-        std::string o_name = describe_flavor(player_ptr, ae_ptr->o_ptr, OD_OMIT_PREFIX);
+        std::string o_name = describe_flavor(player_ptr, *ae_ptr->o_ptr, OD_OMIT_PREFIX);
         msg_format(_("%sは壊れた！", "%s is destroyed!"), o_name.data());
         curse_weapon_object(player_ptr, true, ae_ptr->o_ptr);
     }

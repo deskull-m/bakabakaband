@@ -29,6 +29,7 @@
 #include "player/player-status.h"
 #include "player/race-info-table.h"
 #include "system/angband-version.h"
+#include "system/inner-game-data.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -188,13 +189,14 @@ errr top_twenty(PlayerType *player_ptr)
 {
     high_score the_score = {};
     snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9ld", (long)calc_score(player_ptr));
+    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(player_ptr));
     the_score.pts[9] = '\0';
 
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9lu", (long)player_ptr->au);
+    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", player_ptr->au);
     the_score.gold[9] = '\0';
 
-    snprintf(the_score.turns, sizeof(the_score.turns), "%9lu", (long)turn_real(player_ptr, w_ptr->game_turn));
+    const auto &igd = InnerGameData::get_instance();
+    snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
     the_score.turns[9] = '\0';
 
     auto ct = time((time_t *)0);
@@ -248,14 +250,15 @@ errr predict_score(PlayerType *player_ptr)
     high_score the_score;
     if (highscore_fd < 0) {
         msg_print(_("スコア・ファイルが使用できません。", "Score file unavailable."));
-        msg_print(nullptr);
+        msg_erase();
         return 0;
     }
 
+    const auto &igd = InnerGameData::get_instance();
     snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9ld", (long)calc_score(player_ptr));
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9lu", (long)player_ptr->au);
-    snprintf(the_score.turns, sizeof(the_score.turns), "%9lu", (long)turn_real(player_ptr, w_ptr->game_turn));
+    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(player_ptr));
+    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", player_ptr->au);
+    snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
     angband_strcpy(the_score.day, _("今日", "TODAY"), sizeof(the_score.day));
     the_score.copy_info(*player_ptr);
     strcpy(the_score.how, _("yet", "nobody (yet!)"));
@@ -277,11 +280,11 @@ errr predict_score(PlayerType *player_ptr)
 void show_highclass(PlayerType *player_ptr)
 {
     screen_save();
-    const auto &path = path_build(ANGBAND_DIR_APEX, "scores.raw");
+    const auto path = path_build(ANGBAND_DIR_APEX, "scores.raw");
     highscore_fd = fd_open(path, O_RDONLY);
     if (highscore_fd < 0) {
         msg_print(_("スコア・ファイルが使用できません。", "Score file unavailable."));
-        msg_print(nullptr);
+        msg_erase();
         return;
     }
 
@@ -312,9 +315,9 @@ void show_highclass(PlayerType *player_ptr)
         clev = (PLAYER_LEVEL)atoi(the_score.cur_lev);
 
 #ifdef JP
-        sprintf(out_val, "   %3d) %sの%s (レベル %2d)", (m + 1), race_info[pr].title, the_score.who, clev);
+        snprintf(out_val, sizeof(out_val), "   %3d) %sの%s (レベル %2d)", (m + 1), race_info[pr].title.data(), the_score.who, clev);
 #else
-        sprintf(out_val, "%3d) %s the %s (Level %2d)", (m + 1), the_score.who, race_info[pr].title, clev);
+        snprintf(out_val, sizeof(out_val), "%3d) %s the %s (Level %2d)", (m + 1), the_score.who, race_info[pr].title.data(), clev);
 #endif
 
         prt(out_val, (m + 7), 0);
@@ -323,9 +326,9 @@ void show_highclass(PlayerType *player_ptr)
     }
 
 #ifdef JP
-    sprintf(out_val, "あなた) %sの%s (レベル %2d)", race_info[enum2i(player_ptr->prace)].title, player_ptr->name, player_ptr->lev);
+    snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->name, player_ptr->lev);
 #else
-    sprintf(out_val, "You) %s the %s (Level %2d)", player_ptr->name, race_info[enum2i(player_ptr->prace)].title, player_ptr->lev);
+    snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %2d)", player_ptr->name, race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->lev);
 #endif
 
     prt(out_val, (m + 8), 0);
@@ -356,11 +359,11 @@ void race_score(PlayerType *player_ptr, int race_num)
 
     /* rr9: TODO - pluralize the race */
     prt(std::string(_("最高の", "The Greatest of all the ")).append(race_info[race_num].title), 5, 15);
-    const auto &path = path_build(ANGBAND_DIR_APEX, "scores.raw");
+    const auto path = path_build(ANGBAND_DIR_APEX, "scores.raw");
     highscore_fd = fd_open(path, O_RDONLY);
     if (highscore_fd < 0) {
         msg_print(_("スコア・ファイルが使用できません。", "Score file unavailable."));
-        msg_print(nullptr);
+        msg_erase();
         return;
     }
 
@@ -390,9 +393,9 @@ void race_score(PlayerType *player_ptr, int race_num)
         if (pr == race_num) {
             char out_val[256];
 #ifdef JP
-            sprintf(out_val, "   %3d) %sの%s (レベル %2d)", (m + 1), race_info[pr].title, the_score.who, clev);
+            snprintf(out_val, sizeof(out_val), "   %3d) %sの%s (レベル %2d)", (m + 1), race_info[pr].title.data(), the_score.who, clev);
 #else
-            sprintf(out_val, "%3d) %s the %s (Level %3d)", (m + 1), the_score.who, race_info[pr].title, clev);
+            snprintf(out_val, sizeof(out_val), "%3d) %s the %s (Level %3d)", (m + 1), the_score.who, race_info[pr].title.data(), clev);
 #endif
 
             prt(out_val, (m + 7), 0);
@@ -406,9 +409,9 @@ void race_score(PlayerType *player_ptr, int race_num)
     if ((enum2i(player_ptr->prace) == race_num) && (player_ptr->lev >= lastlev)) {
         char out_val[256];
 #ifdef JP
-        sprintf(out_val, "あなた) %sの%s (レベル %2d)", race_info[enum2i(player_ptr->prace)].title, player_ptr->name, player_ptr->lev);
+        snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->name, player_ptr->lev);
 #else
-        sprintf(out_val, "You) %s the %s (Level %3d)", player_ptr->name, race_info[enum2i(player_ptr->prace)].title, player_ptr->lev);
+        snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %3d)", player_ptr->name, race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->lev);
 #endif
 
         prt(out_val, (m + 8), 0);
@@ -427,7 +430,7 @@ void race_legends(PlayerType *player_ptr)
     for (int i = 0; i < MAX_RACES; i++) {
         race_score(player_ptr, i);
         msg_print(_("何かキーを押すとゲームに戻ります", "Hit any key to continue"));
-        msg_print(nullptr);
+        msg_erase();
         for (int j = 5; j < 19; j++) {
             prt("", j, 0);
         }
@@ -445,35 +448,38 @@ bool check_score(PlayerType *player_ptr)
     /* No score file */
     if (highscore_fd < 0) {
         msg_print(_("スコア・ファイルが使用できません。", "Score file unavailable."));
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
 
     /* Wizard-mode pre-empts scoring */
-    if (w_ptr->noscore & 0x000F) {
+    auto &world = AngbandWorld::get_instance();
+    const auto no_score = world.noscore;
+    if (no_score & 0x000F) {
         msg_print(_("ウィザード・モードではスコアが記録されません。", "Score not registered for wizards."));
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
 
     /* Cheaters are not scored */
-    if (w_ptr->noscore & 0xFF00) {
+    if (no_score & 0xFF00) {
         msg_print(_("詐欺をやった人はスコアが記録されません。", "Score not registered for cheaters."));
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
 
     /* Interupted */
-    if (!w_ptr->total_winner && streq(player_ptr->died_from, _("強制終了", "Interrupting"))) {
+    const auto is_total_winner = world.total_winner != 0;
+    if (!is_total_winner && streq(player_ptr->died_from, _("強制終了", "Interrupting"))) {
         msg_print(_("強制終了のためスコアが記録されません。", "Score not registered due to interruption."));
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
 
     /* Quitter */
-    if (!w_ptr->total_winner && streq(player_ptr->died_from, _("途中終了", "Quitting"))) {
+    if (!is_total_winner && streq(player_ptr->died_from, _("途中終了", "Quitting"))) {
         msg_print(_("途中終了のためスコアが記録されません。", "Score not registered due to quitting."));
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
     return true;

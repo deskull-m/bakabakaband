@@ -2,10 +2,10 @@
 #include "floor/floor-object.h"
 #include "object-enchant/object-boost.h"
 #include "object-enchant/object-ego.h"
-#include "object/object-kind-hook.h"
 #include "sv-definition/sv-weapon-types.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include <span>
@@ -65,16 +65,13 @@ void acquire_chaos_weapon(PlayerType *player_ptr)
         SV_BLADE_OF_CHAOS, // LV50
     };
 
-    std::span<const sv_sword_type> candidates(weapons.begin(), player_ptr->lev);
+    const auto candidates = std::span(weapons).first(player_ptr->lev);
     const auto sval = rand_choice(candidates);
 
-    ItemEntity forge;
-    auto *q_ptr = &forge;
-
-    q_ptr->prep(lookup_baseitem_id({ ItemKindType::SWORD, sval }));
-    q_ptr->to_h = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
-    q_ptr->to_d = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
-    one_resistance(q_ptr);
-    q_ptr->ego_idx = EgoType::CHAOTIC;
-    (void)drop_near(player_ptr, q_ptr, -1, player_ptr->y, player_ptr->x);
+    ItemEntity item({ ItemKindType::SWORD, sval });
+    item.to_h = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
+    item.to_d = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
+    one_resistance(&item);
+    item.ego_idx = EgoType::CHAOTIC;
+    (void)drop_near(player_ptr, item, player_ptr->get_position());
 }

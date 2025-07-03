@@ -1,12 +1,13 @@
 #pragma once
 
 #include "system/angband.h"
+#include "util/point-2d.h"
 #include <string>
 
 enum class AttributeType;
 class Grid;
 class MonsterEntity;
-class MonsterRaceInfo;
+class MonraceDefinition;
 class PlayerType;
 class EffectMonster {
 public:
@@ -41,11 +42,15 @@ public:
     Grid *g_ptr;
     MonsterEntity *m_ptr;
     MonsterEntity *m_caster_ptr;
-    MonsterRaceInfo *r_ptr;
+    MonraceDefinition *r_ptr;
     bool seen;
     bool seen_msg;
     bool slept;
     bool known;
     std::string note_dies;
     int caster_lev;
+
+    bool is_player() const;
+    bool is_monster() const;
+    Pos2D get_position() const;
 };

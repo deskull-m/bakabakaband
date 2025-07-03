@@ -1,8 +1,9 @@
 #pragma once
 
-#include <optional>
+#include <tl/optional.hpp>
 #include <vector>
 
+#include "locale/localized-string.h"
 #include "system/angband.h"
 
 #define MAX_GAME_INSCRIPTIONS 10
@@ -11,29 +12,16 @@ enum tr_type : int32_t;
 
 /*! オブジェクトの特性表示記号テーブルの構造体 / Structs and tables for Auto Inscription for flags */
 struct flag_insc_table {
-#ifdef JP
-    flag_insc_table(concptr japanese, concptr english, tr_type flag, const std::optional<tr_type> &except_flag = std::nullopt)
-        : japanese(japanese)
-        , english(english)
+    flag_insc_table(LocalizedString &&inscription, tr_type flag, const tl::optional<tr_type> &except_flag = tl::nullopt)
+        : inscription(std::move(inscription))
         , flag(flag)
         , except_flag(except_flag)
     {
     }
-#else
-    flag_insc_table(concptr english, tr_type flag, const std::optional<tr_type> &except_flag = std::nullopt)
-        : english(english)
-        , flag(flag)
-        , except_flag(except_flag)
-    {
-    }
-#endif
 
-#ifdef JP
-    concptr japanese;
-#endif
-    concptr english;
+    LocalizedString inscription;
     tr_type flag;
-    std::optional<tr_type> except_flag;
+    tl::optional<tr_type> except_flag;
 };
 
 extern const concptr game_inscriptions[MAX_GAME_INSCRIPTIONS];

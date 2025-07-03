@@ -28,8 +28,9 @@
  */
 void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
 {
+    const auto &world = AngbandWorld::get_instance();
     char old_player_base[32] = "";
-    if (w_ptr->character_generated) {
+    if (world.character_generated) {
         strcpy(old_player_base, player_ptr->base_name);
     }
 
@@ -106,15 +107,15 @@ void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
 
     if (is_modified || savefile_base.empty()) {
 #ifdef SAVEFILE_USE_UID
-        const auto &savefile_str = savefile.filename().string();
+        const auto savefile_str = savefile.filename().string();
         const auto split = str_split(savefile_str, '.');
         savefile_base = split[1];
 #else
-        savefile_base = savefile.filename().string();
+        savefile_base = savefile.filename();
 #endif
     }
 
-    if (w_ptr->character_generated && !streq(old_player_base, player_ptr->base_name)) {
+    if (world.character_generated && !streq(old_player_base, player_ptr->base_name)) {
         autopick_load_pref(player_ptr, false);
     }
 }
@@ -137,11 +138,8 @@ void get_name(PlayerType *player_ptr)
     const auto copy_size = sizeof(player_ptr->name);
     constexpr auto prompt = _("キャラクターの名前を入力して下さい: ", "Enter a name for your character: ");
     const auto name = input_string(prompt, max_name_size, initial_name);
-    if (name.has_value()) {
-        if (!name->empty()) {
-            angband_strcpy(player_ptr->name, *name, copy_size);
-        }
-
+    if (name && !name->empty()) {
+        angband_strcpy(player_ptr->name, *name, copy_size);
         return;
     }
 

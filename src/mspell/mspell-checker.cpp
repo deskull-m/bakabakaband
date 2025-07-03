@@ -10,51 +10,20 @@
  */
 
 #include "mspell/mspell-checker.h"
-#include "blue-magic/blue-magic-checker.h"
-#include "core/disturbance.h"
-#include "dungeon/dungeon-flag-types.h"
-#include "dungeon/quest.h"
-#include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
-#include "floor/cave.h"
-#include "floor/geometry.h"
 #include "floor/line-of-sight.h"
-#include "monster-floor/monster-move.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-ability-mask.h"
-#include "monster-race/race-indice-types.h"
-#include "monster/monster-describer.h"
-#include "monster/monster-description-types.h"
-#include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
-#include "monster/monster-status.h"
-#include "monster/monster-util.h"
-#include "mspell/assign-monster-spell.h"
-#include "mspell/improper-mspell-remover.h"
-#include "mspell/mspell-judgement.h"
-#include "mspell/mspell-learn-checker.h"
-#include "mspell/mspell-selector.h"
 #include "mspell/mspell-util.h"
-#include "object-enchant/object-curse.h"
-#include "player-info/class-info.h"
-#include "player-info/race-types.h"
-#include "player/attack-defense-types.h"
-#include "spell-kind/spells-world.h"
-#include "spell-realm/spells-hex.h"
-#include "spell/range-calc.h"
-#include "system/angband-system.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/terrain/terrain-characteristics.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
-#include "util/bit-flags-calculator.h"
-#include "view/display-messages.h"
-#include "world/world.h"
 
 /*!
  * @brief モンスターにとって所定の地点が召還に相応しい地点かどうかを返す。 /
@@ -66,22 +35,25 @@
  */
 bool summon_possible(PlayerType *player_ptr, POSITION y1, POSITION x1)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    for (POSITION y = y1 - 2; y <= y1 + 2; y++) {
-        for (POSITION x = x1 - 2; x <= x1 + 2; x++) {
-            if (!in_bounds(floor_ptr, y, x)) {
+    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const Pos2D pos1(y1, x1);
+    for (auto y = y1 - 2; y <= y1 + 2; y++) {
+        for (auto x = x1 - 2; x <= x1 + 2; x++) {
+            const Pos2D pos(y, x);
+            if (!floor.contains(pos)) {
                 continue;
             }
 
-            if (distance(y1, x1, y, x) > 2) {
+            if (Grid::calc_distance(pos1, pos) > 2) {
                 continue;
             }
 
-            if (pattern_tile(floor_ptr, y, x)) {
+            if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PATTERN)) {
                 continue;
             }
 
-            if (is_cave_empty_bold(player_ptr, y, x) && projectable(player_ptr, y1, x1, y, x) && projectable(player_ptr, y, x, y1, x1)) {
+            if (floor.is_empty_at(pos) && (pos != p_pos) && projectable(floor, pos1, pos) && projectable(floor, pos, pos1)) {
                 return true;
             }
         }
@@ -97,30 +69,29 @@ bool summon_possible(PlayerType *player_ptr, POSITION y1, POSITION x1)
  * @param m_ptr 判定を行いたいモンスターの構造体参照ポインタ
  * @return 死者復活が有効な状態ならばTRUEを返す。
  */
-bool raise_possible(PlayerType *player_ptr, MonsterEntity *m_ptr)
+bool raise_possible(PlayerType *player_ptr, const MonsterEntity &monster)
 {
-    POSITION y = m_ptr->fy;
-    POSITION x = m_ptr->fx;
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    for (POSITION xx = x - 5; xx <= x + 5; xx++) {
-        Grid *g_ptr;
-        for (POSITION yy = y - 5; yy <= y + 5; yy++) {
-            if (distance(y, x, yy, xx) > 5) {
+    const auto m_pos = monster.get_position();
+    const auto &floor = *player_ptr->current_floor_ptr;
+    for (auto xx = m_pos.x - 5; xx <= m_pos.x + 5; xx++) {
+        for (auto yy = m_pos.y - 5; yy <= m_pos.y + 5; yy++) {
+            const Pos2D pos(yy, xx);
+            if (Grid::calc_distance(m_pos, pos) > 5) {
                 continue;
             }
-            if (!los(player_ptr, y, x, yy, xx)) {
+            if (!los(floor, m_pos, pos)) {
                 continue;
             }
-            if (!projectable(player_ptr, y, x, yy, xx)) {
+            if (!projectable(floor, m_pos, pos)) {
                 continue;
             }
 
-            g_ptr = &floor_ptr->grid_array[yy][xx];
-            for (const auto this_o_idx : g_ptr->o_idx_list) {
-                const auto &item = floor_ptr->o_list[this_o_idx];
-                if (item.bi_key.tval() == ItemKindType::CORPSE) {
-                    auto corpse_r_idx = i2enum<MonsterRaceId>(item.pval);
-                    if (!monster_has_hostile_align(player_ptr, m_ptr, 0, 0, &monraces_info[corpse_r_idx])) {
+            const auto &grid = floor.get_grid(pos);
+            for (const auto this_o_idx : grid.o_idx_list) {
+                const auto &item = *floor.o_list[this_o_idx];
+                if (item.bi_key.tval() == ItemKindType::MONSTER_REMAINS) {
+                    const auto &monrace = item.get_monrace();
+                    if (!monster_has_hostile_to_other_monster(monster, monrace)) {
                         return true;
                     }
                 }
@@ -153,8 +124,8 @@ bool raise_possible(PlayerType *player_ptr, MonsterEntity *m_ptr)
  */
 bool clean_shot(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, POSITION x2, bool is_friend)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    projection_path grid_g(player_ptr, AngbandSystem::get_instance().get_max_range(), y1, x1, y2, x2, 0);
+    const auto &floor = *player_ptr->current_floor_ptr;
+    ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), { y1, x1 }, { y2, x2 });
     if (grid_g.path_num() == 0) {
         return false;
     }
@@ -166,10 +137,10 @@ bool clean_shot(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, P
 
     for (const auto &[y, x] : grid_g) {
         const Pos2D pos(y, x);
-        const auto &grid = floor_ptr->get_grid(pos);
+        const auto &grid = floor.get_grid(pos);
         if (grid.has_monster() && (y != y2 || x != x2)) {
-            auto *m_ptr = &floor_ptr->m_list[grid.m_idx];
-            if (is_friend == m_ptr->is_pet()) {
+            const auto &monster = floor.m_list[grid.m_idx];
+            if (is_friend == monster.is_pet()) {
                 return false;
             }
         }
@@ -264,15 +235,15 @@ ProjectResult ball(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m
  */
 ProjectResult breath(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, AttributeType typ, int dam_hp, POSITION rad, int target_type)
 {
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    auto *r_ptr = &m_ptr->get_monrace();
+    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monrace = monster.get_monrace();
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_BREATH;
     if (target_type == MONSTER_TO_PLAYER) {
         flg |= PROJECT_PLAYER;
     }
 
     if (rad < 1) {
-        rad = r_ptr->misc_flags.has(MonsterMiscType::POWERFUL) ? 3 : 2;
+        rad = monrace.misc_flags.has(MonsterMiscType::POWERFUL) ? 3 : 2;
     }
 
     return project(player_ptr, m_idx, rad, y, x, dam_hp, typ, flg);

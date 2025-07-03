@@ -104,9 +104,14 @@
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
+#include "util/enum-range.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
+#include "view/display-symbol.h"
 #include <algorithm>
+#include <filesystem>
+#include <map>
 #include <memory>
 #include <span>
 #include <string>
@@ -1021,11 +1026,6 @@ struct term_data {
 }
 
 /*
- * The number of term data structures
- */
-#define MAX_TERM_DATA 8
-
-/*
  * The array of term data structures
  */
 static term_data data[MAX_TERM_DATA];
@@ -1092,7 +1092,6 @@ static void react_keypress(XKeyEvent *xev)
     XKeyEvent *ev = (XKeyEvent *)(xev);
     KeySym ks;
     char buf[128];
-    char msg[128];
 
 #ifdef USE_XIM
     int valid_keysym = true;
@@ -1172,16 +1171,17 @@ static void react_keypress(XKeyEvent *xev)
     }
     }
 
+    std::string msg;
     if (ks) {
-        sprintf(msg, "%c%s%s%s%s_%lX%c", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", (unsigned long)(ks), 13);
+        msg = format("%c%s%s%s%s_%lX%c", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", (unsigned long)(ks), 13);
     } else {
-        sprintf(msg, "%c%s%s%s%sK_%X%c", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", ev->keycode, 13);
+        msg = format("%c%s%s%s%sK_%X%c", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", ev->keycode, 13);
     }
 
-    send_keys(msg);
+    send_keys(msg.data());
 
-    if (n && !macro_patterns.empty() && (macro_find_exact(msg) < 0)) {
-        macro_add(msg, buf);
+    if (n && !macro_patterns.empty() && (macro_find_exact(msg.data()) < 0)) {
+        macro_add(msg.data(), buf);
     }
 }
 
@@ -1508,8 +1508,7 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
     co_ord max, min;
     TERM_LEN x, y;
     int l;
-    TERM_COLOR a;
-    char c;
+    DisplaySymbol ds;
 
     sort_co_ord(&min, &max, &s_ptr->init, &s_ptr->cur);
     if (XGetSelectionOwner(DPY, XA_PRIMARY) != WIN) {
@@ -1533,10 +1532,10 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
                 break;
             }
 
-            term_what(x, y, &a, &c);
+            ds = term_what(x, y, ds);
             if (1 == kanji) {
                 kanji = 2;
-            } else if (iskanji(c)) {
+            } else if (iskanji(ds.character)) {
                 kanji = 1;
             } else {
                 kanji = 0;
@@ -1551,7 +1550,7 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
              * Delete the garbage.
              */
             if ((2 == kanji && x == min.x) || (1 == kanji && x == max.x)) {
-                c = ' ';
+                ds.character = ' ';
             }
 #else
             if (x > max.x) {
@@ -1561,10 +1560,10 @@ static bool paste_x11_send_text(XSelectionRequestEvent *rq)
                 continue;
             }
 
-            term_what(x, y, &a, &c);
+            ds = term_what(x, y, ds);
 #endif
 
-            buf[l] = c;
+            buf[l] = ds.character;
             l++;
         }
 
@@ -1841,38 +1840,20 @@ static errr CheckEvent(bool wait)
 /*
  * An array of sound file names
  */
-static concptr sound_file[SOUND_MAX];
-
-/*
- * Check for existance of a file
- */
-static bool check_file(concptr s)
-{
-    FILE *fff;
-
-    fff = fopen(s, "r");
-    if (!fff) {
-        return false;
-    }
-
-    fclose(fff);
-    return true;
-}
+static std::map<SoundKind, std::string> sound_files;
 
 /*
  * Initialize sound
  */
-static void init_sound(void)
+static void init_sound()
 {
     const auto &dir_xtra_sound = path_build(ANGBAND_DIR_XTRA, "sound");
-    for (auto i = 1; i < SOUND_MAX; i++) {
-        std::string wav = angband_sound_name[i];
+    constexpr EnumRange<SoundKind> sound_kinds(SoundKind::HIT, SoundKind::MAX);
+    for (const auto sk : sound_kinds) {
+        std::string wav = sound_names.at(sk);
         wav.append(".wav");
         const auto &path = path_build(dir_xtra_sound, wav);
-        const auto &filename = path.string();
-        if (check_file(filename.data())) {
-            sound_file[i] = string_make(filename.data());
-        }
+        sound_files[sk] = std::filesystem::exists(path) ? path.string() : "";
     }
 
     use_sound = true;
@@ -1884,19 +1865,16 @@ static void init_sound(void)
  */
 static errr game_term_xtra_x11_sound(int v)
 {
-    char buf[1024];
     if (!use_sound) {
         return 1;
     }
-    if ((v < 0) || (v >= SOUND_MAX)) {
-        return 1;
-    }
-    if (!sound_file[v]) {
+    if ((v < 0) || (v >= enum2i(SoundKind::MAX))) {
         return 1;
     }
 
-    sprintf(buf, "./playwave.sh %s\n", sound_file[v]);
-    return system(buf) < 0;
+    std::string buf = "./playwave.sh ";
+    buf.append(sound_files.at(i2enum<SoundKind>(v))).append("\n");
+    return system(buf.data()) < 0;
 }
 
 /*
@@ -1974,7 +1952,9 @@ static errr game_term_xtra_x11(int n, int v)
         s_ptr->drawn = false;
         return 0;
     case TERM_XTRA_DELAY:
-        usleep(1000 * v);
+        if (v > 0) {
+            usleep(1000 * v);
+        }
         return 0;
     case TERM_XTRA_REACT:
         return game_term_xtra_x11_react();

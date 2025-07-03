@@ -9,7 +9,6 @@
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -20,7 +19,7 @@
  */
 void reduce_lite_life(PlayerType *player_ptr)
 {
-    auto *o_ptr = &player_ptr->inventory_list[INVEN_LITE];
+    auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
     if (o_ptr->bi_key.tval() != ItemKindType::LITE) {
         return;
     }
@@ -30,7 +29,7 @@ void reduce_lite_life(PlayerType *player_ptr)
     }
 
     if (o_ptr->ego_idx == EgoType::LITE_LONG) {
-        if (w_ptr->game_turn % (TURNS_PER_TICK * 2)) {
+        if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 2)) {
             o_ptr->fuel--;
         }
     } else {
@@ -52,7 +51,7 @@ void notice_lite_change(PlayerType *player_ptr, ItemEntity *o_ptr)
         rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
     }
 
-    if (player_ptr->effects()->blindness()->is_blind()) {
+    if (player_ptr->effects()->blindness().is_blind()) {
         if (o_ptr->fuel == 0) {
             o_ptr->fuel++;
         }
@@ -65,7 +64,7 @@ void notice_lite_change(PlayerType *player_ptr, ItemEntity *o_ptr)
         };
         rfu.set_flags(flags);
     } else if (o_ptr->ego_idx == EgoType::LITE_LONG) {
-        if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5)) && (w_ptr->game_turn % (TURNS_PER_TICK * 2))) {
+        if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5)) && (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 2))) {
             if (disturb_minor) {
                 disturb(player_ptr, false, true);
             }

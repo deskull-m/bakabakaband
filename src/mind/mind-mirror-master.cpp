@@ -15,11 +15,9 @@
 #include "effect/effect-monster.h"
 #include "effect/effect-processor.h"
 #include "effect/spells-effect-util.h"
-#include "floor/geometry.h"
 #include "game-option/disturbance-options.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/special-options.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "io/cursor.h"
 #include "io/screen-util.h"
@@ -38,25 +36,26 @@
 #include "status/buff-setter.h"
 #include "status/sight-setter.h"
 #include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-getter.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
+#include "util/point-2d.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <range/v3/algorithm.hpp>
 
 /*
  * @brief Multishadow effects is determined by turn
  */
 bool check_multishadow(PlayerType *player_ptr)
 {
-    return (player_ptr->multishadow != 0) && ((w_ptr->game_turn & 1) != 0);
+    return (player_ptr->multishadow != 0) && ((AngbandWorld::get_instance().game_turn & 1) != 0);
 }
 
 /*!
@@ -81,24 +80,22 @@ bool binding_field(PlayerType *player_ptr, int dam)
 
     const auto max_range = AngbandSystem::get_instance().get_max_range();
     const auto &floor = *player_ptr->current_floor_ptr;
-    for (auto x = 0; x < floor.width; x++) {
-        for (auto y = 0; y < floor.height; y++) {
-            const Pos2D pos(y, x);
-            const auto &grid = floor.get_grid(pos);
-            if (!grid.is_mirror()) {
-                continue;
-            }
-
-            const auto dist = distance(player_ptr->y, player_ptr->x, pos.y, pos.x);
-            const auto is_projectable = projectable(player_ptr, player_ptr->y, player_ptr->x, pos.y, pos.x);
-            if ((dist == 0) || (dist > max_range) || !grid.has_los() || !is_projectable) {
-                continue;
-            }
-
-            mirror_y[mirror_num] = y;
-            mirror_x[mirror_num] = x;
-            mirror_num++;
+    const auto p_pos = player_ptr->get_position();
+    for (const auto &pos : floor.get_area()) {
+        const auto &grid = floor.get_grid(pos);
+        if (!grid.is_mirror()) {
+            continue;
         }
+
+        const auto dist = Grid::calc_distance(p_pos, pos);
+        const auto is_projectable = projectable(floor, p_pos, pos);
+        if ((dist == 0) || (dist > max_range) || !grid.has_los() || !is_projectable) {
+            continue;
+        }
+
+        mirror_y[mirror_num] = pos.y;
+        mirror_x[mirror_num] = pos.x;
+        mirror_num++;
     }
 
     if (mirror_num < 2) {
@@ -150,8 +147,8 @@ bool binding_field(PlayerType *player_ptr, int dam)
                 continue;
             }
 
-            if (floor.has_los(pos) && projectable(player_ptr, player_ptr->y, player_ptr->x, y, x)) {
-                if (!(player_ptr->effects()->blindness()->is_blind()) && panel_contains(y, x)) {
+            if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
+                if (!(player_ptr->effects()->blindness().is_blind()) && panel_contains(y, x)) {
                     print_bolt_pict(player_ptr, y, x, y, x, AttributeType::MANA);
                     move_cursor_relative(y, x);
                     term_fresh();
@@ -176,7 +173,7 @@ bool binding_field(PlayerType *player_ptr, int dam)
                 continue;
             }
 
-            if (floor.has_los(pos) && projectable(player_ptr, player_ptr->y, player_ptr->x, y, x)) {
+            if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
                 (void)affect_feature(player_ptr, 0, 0, y, x, dam, AttributeType::MANA);
             }
         }
@@ -197,7 +194,7 @@ bool binding_field(PlayerType *player_ptr, int dam)
                 continue;
             }
 
-            if (floor.has_los(pos) && projectable(player_ptr, player_ptr->y, player_ptr->x, y, x)) {
+            if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
                 (void)affect_item(player_ptr, 0, 0, y, x, dam, AttributeType::MANA);
             }
         }
@@ -218,7 +215,7 @@ bool binding_field(PlayerType *player_ptr, int dam)
                 continue;
             }
 
-            if (floor.has_los(pos) && projectable(player_ptr, player_ptr->y, player_ptr->x, y, x)) {
+            if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
                 constexpr auto flags = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP;
                 (void)affect_monster(player_ptr, 0, 0, y, x, dam, AttributeType::MANA, flags, true);
             }
@@ -346,18 +343,10 @@ bool set_dustrobe(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @brief 現在フロアに存在している鏡の数を数える / calculate mirrors
  * @return 鏡の枚数
  */
-static int number_of_mirrors(FloorType *floor_ptr)
+static int number_of_mirrors(const FloorType &floor)
 {
-    int val = 0;
-    for (POSITION x = 0; x < floor_ptr->width; x++) {
-        for (POSITION y = 0; y < floor_ptr->height; y++) {
-            if (floor_ptr->grid_array[y][x].is_mirror()) {
-                val++;
-            }
-        }
-    }
-
-    return val;
+    const auto has_mirror = [&](const Pos2D &pos) { return floor.get_grid(pos).is_mirror(); };
+    return ranges::count_if(floor.get_area(), has_mirror);
 }
 
 /*!
@@ -368,15 +357,13 @@ static int number_of_mirrors(FloorType *floor_ptr)
  */
 bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
 {
-    DIRECTION dir;
     PLAYER_LEVEL plev = player_ptr->lev;
     int tmp;
     TIME_EFFECT t;
-    POSITION x, y;
-    auto *g_ptr = &player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x];
+    const auto &grid = player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x];
     switch (spell) {
     case MindMirrorMasterType::MIRROR_SEEING:
-        tmp = g_ptr->is_mirror() ? 4 : 0;
+        tmp = grid.is_mirror() ? 4 : 0;
         if (plev + tmp > 4) {
             detect_monsters_normal(player_ptr, DETECT_RAD_DEFAULT);
         }
@@ -394,30 +381,35 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
         }
         break;
     case MindMirrorMasterType::MAKE_MIRROR:
-        if (number_of_mirrors(player_ptr->current_floor_ptr) < 4 + plev / 10) {
-            SpellsMirrorMaster(player_ptr).place_mirror();
+        if (number_of_mirrors(*player_ptr->current_floor_ptr) < 4 + plev / 10) {
+            const auto error = SpellsMirrorMaster(player_ptr).place_mirror();
+            if (error) {
+                msg_print(*error);
+            }
         } else {
             msg_format(_("これ以上鏡は制御できない！", "There are too many mirrors to control!"));
         }
 
         break;
-    case MindMirrorMasterType::DRIP_LIGHT:
-        if (!get_aim_dir(player_ptr, &dir)) {
+    case MindMirrorMasterType::DRIP_LIGHT: {
+        const auto dir = get_aim_dir(player_ptr);
+        if (!dir) {
             return false;
         }
 
-        if (plev > 9 && g_ptr->is_mirror()) {
-            fire_beam(player_ptr, AttributeType::LITE, dir, damroll(3 + ((plev - 1) / 5), 4));
+        if (plev > 9 && grid.is_mirror()) {
+            fire_beam(player_ptr, AttributeType::LITE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
         } else {
-            fire_bolt(player_ptr, AttributeType::LITE, dir, damroll(3 + ((plev - 1) / 5), 4));
+            fire_bolt(player_ptr, AttributeType::LITE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
         }
 
         break;
+    }
     case MindMirrorMasterType::WRAPPED_MIRROR:
         teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
         break;
     case MindMirrorMasterType::MIRROR_LIGHT:
-        (void)lite_area(player_ptr, damroll(2, (plev / 2)), (plev / 10) + 1);
+        (void)lite_area(player_ptr, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
         break;
     case MindMirrorMasterType::WANDERING_MIRROR:
         teleport_player(player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
@@ -425,38 +417,42 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
     case MindMirrorMasterType::ROBE_DUST:
         set_dustrobe(player_ptr, 20 + randint1(20), false);
         break;
-    case MindMirrorMasterType::BANISHING_MIRROR:
-        if (!get_aim_dir(player_ptr, &dir)) {
+    case MindMirrorMasterType::BANISHING_MIRROR: {
+        const auto dir = get_aim_dir(player_ptr);
+        if (!dir) {
             return false;
         }
 
         (void)fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, plev);
         break;
-    case MindMirrorMasterType::MIRROR_CRASHING:
-        if (!get_aim_dir(player_ptr, &dir)) {
+    }
+    case MindMirrorMasterType::MIRROR_CRASHING: {
+        const auto dir = get_aim_dir(player_ptr);
+        if (!dir) {
             return false;
         }
 
-        fire_ball(player_ptr, AttributeType::SHARDS, dir, damroll(8 + ((plev - 5) / 4), 8), (plev > 20 ? (plev - 20) / 8 + 1 : 0));
+        fire_ball(player_ptr, AttributeType::SHARDS, dir, Dice::roll(8 + ((plev - 5) / 4), 8), (plev > 20 ? (plev - 20) / 8 + 1 : 0));
         break;
+    }
     case MindMirrorMasterType::SLEEPING_MIRROR:
-        for (x = 0; x < player_ptr->current_floor_ptr->width; x++) {
-            for (y = 0; y < player_ptr->current_floor_ptr->height; y++) {
-                if (player_ptr->current_floor_ptr->grid_array[y][x].is_mirror()) {
-                    project(player_ptr, 0, 2, y, x, (int)plev, AttributeType::OLD_SLEEP,
-                        (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
-                }
+        for (const auto &pos : player_ptr->current_floor_ptr->get_area()) {
+            if (player_ptr->current_floor_ptr->get_grid(pos).is_mirror()) {
+                project(player_ptr, 0, 2, pos.y, pos.x, (int)plev, AttributeType::OLD_SLEEP,
+                    (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
             }
         }
 
         break;
-    case MindMirrorMasterType::SEEKER_RAY:
-        if (!get_aim_dir(player_ptr, &dir)) {
+    case MindMirrorMasterType::SEEKER_RAY: {
+        const auto dir = get_aim_dir(player_ptr);
+        if (!dir) {
             return false;
         }
 
-        SpellsMirrorMaster(player_ptr).seeker_ray(dir, damroll(11 + (plev - 5) / 4, 8));
+        SpellsMirrorMaster(player_ptr).seeker_ray(dir, Dice::roll(11 + (plev - 5) / 4, 8));
         break;
+    }
     case MindMirrorMasterType::SEALING_MIRROR:
         SpellsMirrorMaster(player_ptr).seal_of_mirror(plev * 4 + 100);
         break;
@@ -472,15 +468,17 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
         }
 
         break;
-    case MindMirrorMasterType::SUPER_RAY:
-        if (!get_aim_dir(player_ptr, &dir)) {
+    case MindMirrorMasterType::SUPER_RAY: {
+        const auto dir = get_aim_dir(player_ptr);
+        if (!dir) {
             return false;
         }
 
         SpellsMirrorMaster(player_ptr).super_ray(dir, 150 + randint1(2 * plev));
         break;
+    }
     case MindMirrorMasterType::ILLUSION_LIGHT:
-        tmp = g_ptr->is_mirror() ? 4 : 3;
+        tmp = grid.is_mirror() ? 4 : 3;
         slow_monsters(player_ptr, plev);
         stun_monsters(player_ptr, plev * tmp * 2);
         confuse_monsters(player_ptr, plev * tmp);
@@ -488,7 +486,7 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
         stasis_monsters(player_ptr, plev * tmp);
         break;
     case MindMirrorMasterType::MIRROR_SHIFT:
-        if (!g_ptr->is_mirror()) {
+        if (!grid.is_mirror()) {
             msg_print(_("鏡の国の場所がわからない！", "You cannot find out where the mirror is!"));
             break;
         }

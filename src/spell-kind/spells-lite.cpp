@@ -1,44 +1,32 @@
 #include "spell-kind/spells-lite.h"
-#include "dungeon/dungeon-flag-types.h"
-#include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
-#include "floor/cave.h"
 #include "floor/floor-util.h"
-#include "floor/geometry.h"
 #include "game-option/map-screen-options.h"
 #include "grid/grid.h"
 #include "mind/mind-ninja.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status-setter.h"
-#include "monster/monster-status.h"
 #include "monster/monster-update.h"
-#include "player/special-defense-types.h"
 #include "spell-kind/spells-launcher.h"
-#include "system/angband-system.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
-#include "util/bit-flags-calculator.h"
-#include "util/point-2d.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <range/v3/view.hpp>
 #include <vector>
-
-using PassBoldFunc = bool (*)(const FloorType *, POSITION, POSITION);
 
 /*!
  * @brief 指定した座標全てを照らす。
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param points 明るくすべき座標たち
+ * @param positions 明るくすべき座標群
  * @details
  * <pre>
  * This routine clears the entire "temp" set.
@@ -51,41 +39,38 @@ using PassBoldFunc = bool (*)(const FloorType *, POSITION, POSITION);
  * NORMAL monsters wake up 1/4 the time when illuminated
  * STUPID monsters wake up 1/10 the time when illuminated
  * </pre>
- * @todo この辺、xとyが引数になっているが、player_ptr->xとplayer_ptr->yで全て置き換えが効くはず……
  */
-static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D> &points)
+static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D> &positions)
 {
-    for (const auto &point : points) {
-        const POSITION y = point.y;
-        const POSITION x = point.x;
-
-        auto *g_ptr = &player_ptr->current_floor_ptr->grid_array[y][x];
-        g_ptr->info &= ~(CAVE_TEMP);
-        g_ptr->info |= (CAVE_GLOW);
-        if (g_ptr->has_monster()) {
-            PERCENTAGE chance = 25;
-            auto *m_ptr = &player_ptr->current_floor_ptr->m_list[g_ptr->m_idx];
-            auto *r_ptr = &m_ptr->get_monrace();
-            update_monster(player_ptr, g_ptr->m_idx, false);
-            if (r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    auto &floor = *player_ptr->current_floor_ptr;
+    for (const auto &pos : positions) {
+        auto &grid = floor.get_grid(pos);
+        grid.info &= ~(CAVE_TEMP);
+        grid.info |= (CAVE_GLOW);
+        if (grid.has_monster()) {
+            auto chance = 25;
+            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monrace = monster.get_monrace();
+            update_monster(player_ptr, grid.m_idx, false);
+            if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
                 chance = 10;
             }
-            if (r_ptr->behavior_flags.has(MonsterBehaviorType::SMART)) {
+            if (monrace.behavior_flags.has(MonsterBehaviorType::SMART)) {
                 chance = 100;
             }
 
-            if (m_ptr->is_asleep() && (randint0(100) < chance)) {
-                (void)set_monster_csleep(player_ptr, g_ptr->m_idx, 0);
-                if (m_ptr->ml) {
-                    const auto m_name = monster_desc(player_ptr, m_ptr, 0);
+            if (monster.is_asleep() && evaluate_percent(chance)) {
+                (void)set_monster_csleep(player_ptr, grid.m_idx, 0);
+                if (monster.ml) {
+                    const auto m_name = monster_desc(player_ptr, monster, 0);
                     msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
                 }
             }
         }
 
-        note_spot(player_ptr, y, x);
-        lite_spot(player_ptr, y, x);
-        update_local_illumination(player_ptr, y, x);
+        note_spot(player_ptr, pos);
+        lite_spot(player_ptr, pos);
+        update_local_illumination(player_ptr, pos);
     }
 }
 
@@ -94,26 +79,27 @@ static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D>
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param points 暗くすべき座標群
  */
-static void cave_temp_room_unlite(PlayerType *player_ptr, const std::vector<Pos2D> &points)
+static void cave_temp_room_unlite(PlayerType *player_ptr, const std::vector<Pos2D> &positions)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    for (const auto &point : points) {
-        auto &grid = floor.get_grid(point);
+    const auto &world = AngbandWorld::get_instance();
+    for (const auto &pos : positions) {
+        auto &grid = floor.get_grid(pos);
         auto do_dark = !grid.is_mirror();
         grid.info &= ~(CAVE_TEMP);
         if (!do_dark) {
             continue;
         }
 
-        if (floor.dun_level || !w_ptr->is_daytime()) {
-            for (int j = 0; j < 9; j++) {
-                const Pos2D pos_neighbor(point.y + ddy_ddd[j], point.x + ddx_ddd[j]);
-                if (!in_bounds2(&floor, pos_neighbor.y, pos_neighbor.x)) {
+        if (floor.is_underground() || !world.is_daytime()) {
+            for (const auto &d : Direction::directions()) {
+                const Pos2D pos_neighbor = pos + d.vec();
+                if (!floor.contains(pos_neighbor, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
                     continue;
                 }
 
                 const auto &grid_neighbor = floor.get_grid(pos_neighbor);
-                if (grid_neighbor.get_terrain_mimic().flags.has(TerrainCharacteristics::GLOW)) {
+                if (grid_neighbor.get_terrain(TerrainKind::MIMIC).flags.has(TerrainCharacteristics::GLOW)) {
                     do_dark = false;
                     break;
                 }
@@ -125,245 +111,178 @@ static void cave_temp_room_unlite(PlayerType *player_ptr, const std::vector<Pos2
         }
 
         grid.info &= ~(CAVE_GLOW);
-        if (grid.get_terrain_mimic().flags.has_not(TerrainCharacteristics::REMEMBER)) {
+        if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::REMEMBER)) {
             if (!view_torch_grids) {
                 grid.info &= ~(CAVE_MARK);
             }
-            note_spot(player_ptr, point.y, point.x);
+            note_spot(player_ptr, pos);
         }
 
         if (grid.has_monster()) {
             update_monster(player_ptr, grid.m_idx, false);
         }
 
-        lite_spot(player_ptr, point.y, point.x);
-        update_local_illumination(player_ptr, point.y, point.x);
+        lite_spot(player_ptr, pos);
+        update_local_illumination(player_ptr, pos);
     }
 }
 
 /*!
- * @brief 周辺に関数ポインタの条件に該当する地形がいくつあるかを計算する / Determine how much contiguous open space this grid is next to
- * @param floor_ptr 配置するフロアの参照ポインタ
- * @param cy Y座標
- * @param cx X座標
- * @param pass_bold 地形条件を返す関数ポインタ
+ * @brief 周辺に関数ポインタの条件に該当する地形がいくつあるかを計算する
+ * @param floor フロアへの参照
+ * @param pos_center 中心座標
+ * @param tc 地形条件
  * @return 該当地形の数
  */
-static int next_to_open(FloorType *floor_ptr, const POSITION cy, const POSITION cx, const PassBoldFunc pass_bold)
+static int next_to_open(const FloorType &floor, const Pos2D &pos_center)
 {
-    int len = 0;
-    int blen = 0;
-    const Pos2D pos_center(cy, cx);
-    for (int i = 0; i < 16; i++) {
-        const auto pos = pos_center + CCW_DD[i % 8];
-        if (!pass_bold(floor_ptr, pos.y, pos.x)) {
-            if (len > blen) {
-                blen = len;
-            }
-
-            len = 0;
-        } else {
+    auto len = 0;
+    auto blen = 0;
+    for (const auto cdir : ranges::views::iota(0, 8) | ranges::views::cycle | ranges::views::take(16)) {
+        const auto pos = pos_center + Direction::from_cdir(cdir).vec();
+        if (floor.has_los_terrain_at(pos)) {
             len++;
+            continue;
         }
+
+        if (len > blen) {
+            blen = len;
+        }
+
+        len = 0;
     }
 
     return std::max(len, blen);
 }
 
 /*!
- * @brief 周辺に関数ポインタの条件に該当する地形がいくつあるかを計算する / Determine how much contiguous open space this grid is next to
- * @param floor_ptr 配置するフロアの参照ポインタ
- * @param cy Y座標
- * @param cx X座標
- * @param pass_bold 地形条件を返す関数ポインタ
+ * @brief 周辺に関数ポインタの条件に該当する地形がいくつあるかを計算する
+ * @param floor フロアへの参照
+ * @param pos_center 中心座標
  * @return 該当地形の数
  */
-static int next_to_walls_adj(FloorType *floor_ptr, const POSITION cy, const POSITION cx, const PassBoldFunc pass_bold)
+static int next_to_walls_adj(const FloorType &floor, const Pos2D &pos_center)
 {
-    POSITION y, x;
-    int c = 0;
-    for (DIRECTION i = 0; i < 8; i++) {
-        y = cy + ddy_ddd[i];
-        x = cx + ddx_ddd[i];
-
-        if (!pass_bold(floor_ptr, y, x)) {
-            c++;
+    auto count = 0;
+    for (const auto &d : Direction::directions_8()) {
+        const auto pos = pos_center + d.vec();
+        if (!floor.has_los_terrain_at(pos)) {
+            count++;
         }
     }
 
-    return c;
+    return count;
 }
 
 /*!
- * @brief (y,x) が指定条件を満たすなら points に加える
+ * @brief pos が指定条件を満たすかをチェックする
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param points 座標記録用配列
- * @param y 部屋内のy座標1点
- * @param x 部屋内のx座標1点
- * @param only_room 部屋内地形のみをチェック対象にするならば TRUE
- * @param pass_bold 地形条件を返す関数ポインタ
+ * @param pos 部屋内の座標
+ * @param tc 明るくするならLOS、暗くするならPROJECTION
+ * @return 明るくするか暗くするならtrue、何もしないならfalse
+ * @details The reason why it is ==6 instead of >5 is that 8 is impossible due to the check for cave_bold above.
+ * 7 lights dead-end corridors (you need to do this for the checkboard interesting rooms, so that the boundary is lit properly.
+ * This leaves only a check for 6 bounding walls!
  */
-static void cave_temp_room_aux(
-    PlayerType *player_ptr, std::vector<Pos2D> &points, const POSITION y, const POSITION x, const bool only_room, const PassBoldFunc pass_bold)
+static bool cave_temp_room_aux(const FloorType &floor, const Pos2D &pos, const Pos2D &p_pos, TerrainCharacteristics tc)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    auto *g_ptr = &floor_ptr->grid_array[y][x];
-
-    // 既に points に追加済みなら何もしない。
-    if (g_ptr->info & (CAVE_TEMP)) {
-        return;
+    auto &grid = floor.get_grid(pos);
+    if (any_bits(grid.info, CAVE_TEMP)) {
+        return false;
     }
 
-    if (!(g_ptr->info & (CAVE_ROOM))) {
-        if (only_room) {
-            return;
-        }
-        if (!in_bounds2(floor_ptr, y, x)) {
-            return;
-        }
-        if (distance(player_ptr->y, player_ptr->x, y, x) > AngbandSystem::get_instance().get_max_range()) {
-            return;
-        }
-
-        /* Verify this grid */
-        /*
-         * The reason why it is ==6 instead of >5 is that 8 is impossible
-         * due to the check for cave_bold above.
-         * 7 lights dead-end corridors (you need to do this for the
-         * checkboard interesting rooms, so that the boundary is lit
-         * properly.
-         * This leaves only a check for 6 bounding walls!
-         */
-        if (in_bounds(floor_ptr, y, x) && pass_bold(floor_ptr, y, x) && (next_to_walls_adj(floor_ptr, y, x, pass_bold) == 6) && (next_to_open(floor_ptr, y, x, pass_bold) <= 1)) {
-            return;
-        }
+    if (any_bits(grid.info, CAVE_ROOM)) {
+        return true;
     }
 
-    // (y,x) を points に追加し、追加済みフラグを立てる。
-    points.emplace_back(y, x);
-    g_ptr->info |= (CAVE_TEMP);
+    if (tc == TerrainCharacteristics::PROJECTION) {
+        return false;
+    }
+
+    if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        return false;
+    }
+
+    if (Grid::calc_distance(p_pos, pos) > AngbandSystem::get_instance().get_max_range()) {
+        return false;
+    }
+
+    if (floor.contains(pos) && floor.has_los_terrain_at(pos) && (next_to_walls_adj(floor, pos) == 6) && (next_to_open(floor, pos) <= 1)) {
+        return false;
+    }
+
+    return true;
 }
 
 /*!
- * @brief (y,x) が明るくすべきマスなら points に加える
+ * @brief 起点座標が含まれる部屋を照らす (部屋でない場合は起点周辺)
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param points 座標記録用配列
- * @param y 指定Y座標
- * @param x 指定X座標
+ * @param pos_start 起点座標
+ * @details pos_start を起点として明るくするマスを記録していく. 実質幅優先探索.
  */
-static void cave_temp_lite_room_aux(PlayerType *player_ptr, std::vector<Pos2D> &points, const POSITION y, const POSITION x)
+void lite_room(PlayerType *player_ptr, const Pos2D &pos_start)
 {
-    cave_temp_room_aux(player_ptr, points, y, x, false, cave_los_bold);
-}
+    std::vector<Pos2D> positions;
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = player_ptr->get_position();
+    if (cave_temp_room_aux(floor, pos_start, p_pos, TerrainCharacteristics::LOS)) {
+        floor.get_grid(pos_start).info |= CAVE_TEMP;
+        positions.push_back(pos_start);
+    }
 
-/*!
- * @brief 指定のマスが光を通さず射線のみを通すかを返す。 / Aux function -- see below
- * @param floor_ptr 配置するフロアの参照ポインタ
- * @param y 指定Y座標
- * @param x 指定X座標
- * @return 射線を通すならばtrueを返す。
- */
-static bool cave_pass_dark_bold(const FloorType *floor_ptr, POSITION y, POSITION x)
-{
-    return cave_has_flag_bold(floor_ptr, y, x, TerrainCharacteristics::PROJECT);
-}
-
-/*!
- * @brief (y,x) が暗くすべきマスなら points に加える
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y 指定Y座標
- * @param x 指定X座標
- */
-static void cave_temp_unlite_room_aux(PlayerType *player_ptr, std::vector<Pos2D> &points, const POSITION y, const POSITION x)
-{
-    cave_temp_room_aux(player_ptr, points, y, x, true, cave_pass_dark_bold);
-}
-
-/*!
- * @brief (y1,x1) を含む全ての部屋を照らす。 / Illuminate any room containing the given location.
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param y1 指定Y座標
- * @param x1 指定X座標
- *
- * NOTE: 部屋に限らないかも?
- */
-void lite_room(PlayerType *player_ptr, const POSITION y1, const POSITION x1)
-{
-    // 明るくするマスを記録する配列。
-    std::vector<Pos2D> points;
-
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-
-    // (y1,x1) を起点として明るくするマスを記録していく。
-    // 実質幅優先探索。
-    cave_temp_lite_room_aux(player_ptr, points, y1, x1);
-    for (size_t i = 0; i < size(points); i++) {
-        const auto &point = points[i];
-        const POSITION y = point.y;
-        const POSITION x = point.x;
-
-        if (!cave_los_bold(floor_ptr, y, x)) {
+    for (size_t i = 0; i < positions.size(); i++) {
+        const Pos2D pos = positions[i];
+        if (!floor.has_los_terrain_at(pos)) {
             continue;
         }
 
-        cave_temp_lite_room_aux(player_ptr, points, y + 1, x);
-        cave_temp_lite_room_aux(player_ptr, points, y - 1, x);
-        cave_temp_lite_room_aux(player_ptr, points, y, x + 1);
-        cave_temp_lite_room_aux(player_ptr, points, y, x - 1);
-
-        cave_temp_lite_room_aux(player_ptr, points, y + 1, x + 1);
-        cave_temp_lite_room_aux(player_ptr, points, y - 1, x - 1);
-        cave_temp_lite_room_aux(player_ptr, points, y - 1, x + 1);
-        cave_temp_lite_room_aux(player_ptr, points, y + 1, x - 1);
+        for (const auto &d : Direction::directions_8()) {
+            const auto pos_neighbor = pos + d.vec();
+            if (cave_temp_room_aux(floor, pos_neighbor, p_pos, TerrainCharacteristics::LOS)) {
+                floor.get_grid(pos_neighbor).info |= CAVE_TEMP;
+                positions.push_back(pos_neighbor);
+            }
+        }
     }
 
-    // 記録したマスを実際に明るくする。
-    cave_temp_room_lite(player_ptr, points);
-
-    // 超隠密状態の更新。
-    if (floor_ptr->grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
+    cave_temp_room_lite(player_ptr, positions);
+    if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
         set_superstealth(player_ptr, false);
     }
 }
 
 /*!
- * @brief (y1,x1) を含む全ての部屋を暗くする。 / Darken all rooms containing the given location
+ * @brief 起点座標が含まれる部屋を暗くする (部屋でない場合は起点周辺)
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param y1 指定Y座標
- * @param x1 指定X座標
+ * @param pos_start 指定座標
+ * @details pos_start を起点として暗くするマスを記録していく. 実質幅優先探索.
  */
-void unlite_room(PlayerType *player_ptr, const POSITION y1, const POSITION x1)
+void unlite_room(PlayerType *player_ptr, const Pos2D &pos_start)
 {
-    // 暗くするマスを記録する配列。
-    std::vector<Pos2D> points;
+    std::vector<Pos2D> positions;
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = player_ptr->get_position();
+    if (cave_temp_room_aux(floor, pos_start, p_pos, TerrainCharacteristics::PROJECTION)) {
+        floor.get_grid(pos_start).info |= CAVE_TEMP;
+        positions.push_back(pos_start);
+    }
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-
-    // (y1,x1) を起点として暗くするマスを記録していく。
-    // 実質幅優先探索。
-    cave_temp_unlite_room_aux(player_ptr, points, y1, x1);
-    for (size_t i = 0; i < size(points); i++) {
-        const auto &point = points[i];
-        const POSITION y = point.y;
-        const POSITION x = point.x;
-
-        if (!cave_pass_dark_bold(floor_ptr, y, x)) {
+    for (size_t i = 0; i < positions.size(); i++) {
+        const Pos2D pos = positions[i];
+        if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
             continue;
         }
 
-        cave_temp_unlite_room_aux(player_ptr, points, y + 1, x);
-        cave_temp_unlite_room_aux(player_ptr, points, y - 1, x);
-        cave_temp_unlite_room_aux(player_ptr, points, y, x + 1);
-        cave_temp_unlite_room_aux(player_ptr, points, y, x - 1);
-
-        cave_temp_unlite_room_aux(player_ptr, points, y + 1, x + 1);
-        cave_temp_unlite_room_aux(player_ptr, points, y - 1, x - 1);
-        cave_temp_unlite_room_aux(player_ptr, points, y - 1, x + 1);
-        cave_temp_unlite_room_aux(player_ptr, points, y + 1, x - 1);
+        for (const auto &d : Direction::directions_8()) {
+            const auto pos_neighbor = pos + d.vec();
+            if (cave_temp_room_aux(floor, pos_neighbor, p_pos, TerrainCharacteristics::PROJECTION)) {
+                floor.get_grid(pos_neighbor).info |= CAVE_TEMP;
+                positions.push_back(pos_neighbor);
+            }
+        }
     }
 
-    // 記録したマスを実際に暗くする。
-    cave_temp_room_unlite(player_ptr, points);
+    cave_temp_room_unlite(player_ptr, positions);
 }
 
 /*!
@@ -374,19 +293,18 @@ void unlite_room(PlayerType *player_ptr, const POSITION y1, const POSITION x1)
  */
 bool starlight(PlayerType *player_ptr, bool magic)
 {
-    if (!player_ptr->effects()->blindness()->is_blind() && !magic) {
+    if (!player_ptr->effects()->blindness().is_blind() && !magic) {
         msg_print(_("杖の先が明るく輝いた...", "The end of the staff glows brightly..."));
     }
 
-    int num = damroll(5, 3);
-    auto y = 0;
-    auto x = 0;
-    for (int k = 0; k < num; k++) {
+    const auto p_pos = player_ptr->get_position();
+    const auto num = Dice::roll(5, 3);
+    for (auto k = 0; k < num; k++) {
+        Pos2D pos(0, 0);
         auto attempts = 1000;
         while (attempts--) {
-            scatter(player_ptr, &y, &x, player_ptr->y, player_ptr->x, 4, PROJECT_LOS);
-            const Pos2D pos(y, x);
-            if (!cave_has_flag_bold(player_ptr->current_floor_ptr, pos.y, pos.x, TerrainCharacteristics::PROJECT)) {
+            pos = scatter(player_ptr, p_pos, 4, PROJECT_LOS);
+            if (!player_ptr->current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
 
@@ -396,55 +314,55 @@ bool starlight(PlayerType *player_ptr, bool magic)
         }
 
         constexpr uint flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL | PROJECT_LOS;
-        project(player_ptr, 0, 0, y, x, damroll(6 + player_ptr->lev / 8, 10), AttributeType::LITE_WEAK, flags);
+        project(player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + player_ptr->lev / 8, 10), AttributeType::LITE_WEAK, flags);
     }
 
     return true;
 }
 
 /*!
- * @brief プレイヤー位置を中心にLITE_WEAK属性を通じた照明処理を行う / Hack -- call light around the player Affect all monsters in the projection radius
+ * @brief プレイヤー位置を中心にLITE_WEAK属性を通じた照明処理を行う
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param dam 威力
  * @param rad 効果半径
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool lite_area(PlayerType *player_ptr, int dam, POSITION rad)
+bool lite_area(PlayerType *player_ptr, int dam, int rad)
 {
     if (player_ptr->current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         msg_print(_("ダンジョンが光を吸収した。", "The darkness of this dungeon absorbs your light."));
         return false;
     }
 
-    if (!player_ptr->effects()->blindness()->is_blind()) {
+    if (!player_ptr->effects()->blindness().is_blind()) {
         msg_print(_("白い光が辺りを覆った。", "You are surrounded by a white light."));
     }
 
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_KILL;
     (void)project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::LITE_WEAK, flg);
 
-    lite_room(player_ptr, player_ptr->y, player_ptr->x);
+    lite_room(player_ptr, player_ptr->get_position());
 
     return true;
 }
 
 /*!
- * @brief プレイヤー位置を中心にLITE_DARK属性を通じた消灯処理を行う / Hack -- call light around the player Affect all monsters in the projection radius
+ * @brief プレイヤー位置を中心にLITE_DARK属性を通じた消灯処理を行う
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param dam 威力
  * @param rad 効果半径
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool unlite_area(PlayerType *player_ptr, int dam, POSITION rad)
+bool unlite_area(PlayerType *player_ptr, int dam, int rad)
 {
-    if (!player_ptr->effects()->blindness()->is_blind()) {
+    if (!player_ptr->effects()->blindness().is_blind()) {
         msg_print(_("暗闇が辺りを覆った。", "Darkness surrounds you."));
     }
 
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_KILL;
     (void)project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::DARK_WEAK, flg);
 
-    unlite_room(player_ptr, player_ptr->y, player_ptr->x);
+    unlite_room(player_ptr, player_ptr->get_position());
 
     return true;
 }
@@ -456,7 +374,7 @@ bool unlite_area(PlayerType *player_ptr, int dam, POSITION rad)
  * @param dam 威力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool lite_line(PlayerType *player_ptr, DIRECTION dir, int dam)
+bool lite_line(PlayerType *player_ptr, const Direction &dir, int dam)
 {
     BIT_FLAGS flg = PROJECT_BEAM | PROJECT_GRID | PROJECT_KILL;
     return project_hook(player_ptr, AttributeType::LITE_WEAK, dir, dam, flg);

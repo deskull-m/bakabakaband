@@ -16,5 +16,5 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
 int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
 int cold_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
-void touch_zap_player(MonsterEntity *m_ptr, PlayerType *player_ptr);
+void touch_zap_player(const MonsterEntity &monster, PlayerType *player_ptr);
 void player_defecate(PlayerType *player_ptr);

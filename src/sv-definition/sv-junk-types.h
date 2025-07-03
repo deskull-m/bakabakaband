@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 /* The "sval" codes for ItemKindType::JUNK */
 typedef enum sv_junk_type {

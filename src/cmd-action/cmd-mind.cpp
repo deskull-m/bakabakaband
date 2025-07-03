@@ -43,12 +43,11 @@
 #include "spell-kind/spells-teleport.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/player-stun.h"
 #include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -189,9 +188,7 @@ static void decide_mind_chance(PlayerType *player_ptr, cm_type *cm_ptr)
         cm_ptr->chance = cm_ptr->minfail;
     }
 
-    auto player_stun = player_ptr->effects()->stun();
-    cm_ptr->chance += player_stun->get_magic_chance_penalty();
-
+    cm_ptr->chance += player_ptr->effects()->stun().get_magic_chance_penalty();
     if (cm_ptr->use_mind != MindKindType::KI) {
         return;
     }
@@ -336,8 +333,8 @@ static void mind_turn_passing(PlayerType *player_ptr, cm_type *cm_ptr)
 
 static bool judge_mind_chance(PlayerType *player_ptr, cm_type *cm_ptr)
 {
-    if (randint0(100) >= cm_ptr->chance) {
-        sound(SOUND_ZAP);
+    if (!evaluate_percent(cm_ptr->chance)) {
+        sound(SoundKind::ZAP);
         return switch_mind_class(player_ptr, cm_ptr) && cm_ptr->cast;
     }
 
@@ -346,7 +343,7 @@ static bool judge_mind_chance(PlayerType *player_ptr, cm_type *cm_ptr)
     }
 
     msg_format(_("%sの集中に失敗した！", "You failed to concentrate hard enough for %s!"), cm_ptr->mind_explanation);
-    sound(SOUND_FAIL);
+    sound(SoundKind::FAIL);
     check_mind_class(player_ptr, cm_ptr);
     return true;
 }
@@ -361,11 +358,11 @@ static void mind_reflection(PlayerType *player_ptr, cm_type *cm_ptr)
     player_ptr->csp = std::max(0, player_ptr->csp - cm_ptr->mana_cost);
     msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
     (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
-    if (randint0(100) >= 50) {
+    if (one_in_(2)) {
         return;
     }
 
-    bool perm = randint0(100) < 25;
+    const auto perm = one_in_(4);
     msg_print(_("自分の精神を攻撃してしまった！", "You have damaged your mind!"));
     (void)dec_stat(player_ptr, A_WIS, 15 + randint1(10), perm);
 }

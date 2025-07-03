@@ -12,6 +12,7 @@
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 指定された順位範囲でスコアを並べて表示する / Display the scores in a given range.
@@ -73,8 +74,7 @@ void display_scores(int from, int to, int note, high_score *score)
         put_str(_("                馬鹿馬鹿蛮怒: 勇者の殿堂", "                Hengband Hall of Fame"), 0, 0);
         GAME_TEXT tmp_val[160];
         if (k > 0) {
-            sprintf(tmp_val, _("( %d 位以下 )", "(from position %d)"), k + 1);
-            put_str(tmp_val, 0, 40);
+            put_str(fmt::format(_("( {} 位以下 )", "(from position {})"), k + 1), 0, 40);
         }
 
         for (auto n = 0, j = k; (j < num_scores) && (n < per_screen); place++, j++, n++) {
@@ -123,52 +123,53 @@ void display_scores(int from, int to, int note, high_score *score)
                 when = tmp_val;
             }
 
-            GAME_TEXT out_val[256];
+            std::string out_val;
+            const auto pclass = i2enum<PlayerClassType>(pc);
 #ifdef JP
-            /*sprintf(out_val, "%3d.%9s  %s%s%sという名の%sの%s (レベル %d)", */
-            sprintf(out_val, "%3d.%9s  %s%s%s - %s%s (レベル %d)", place, the_score.pts, personality_info[pa].title, (personality_info[pa].no ? "の" : ""),
-                the_score.who, race_info[pr].title, class_info[pc].title, clev);
+            /* out_val = format("%3d.%9s  %s%s%sという名の%sの%s (レベル %d)", */
+            out_val = format("%3d.%9s  %s%s%s - %s%s (レベル %d)", place, the_score.pts, personality_info[pa].title.data(), (personality_info[pa].no ? "の" : ""),
+                the_score.who, race_info[pr].title.data(), class_info.at(pclass).title.data(), clev);
 
 #else
-            sprintf(out_val, "%3d.%9s  %s %s the %s %s, Level %d", place, the_score.pts, personality_info[pa].title, the_score.who, race_info[pr].title,
-                class_info[pc].title, clev);
+            out_val = format("%3d.%9s  %s %s the %s %s, Level %d", place, the_score.pts, personality_info[pa].title.data(), the_score.who, race_info[pr].title.data(),
+                class_info.at(pclass).title.data(), clev);
 #endif
             if (mlev > clev) {
-                strcat(out_val, format(_(" (最高%d)", " (Max %d)"), mlev).c_str());
+                out_val.append(fmt::format(_(" (最高{})", " (Max {})"), mlev));
             }
 
             c_put_str(attr, out_val, n * 4 + 2, 0);
 #ifdef JP
             if (mdun != 0) {
-                sprintf(out_val, "    最高%3d階", mdun);
+                out_val = format("    最高%3d階", mdun);
             } else {
-                sprintf(out_val, "             ");
+                out_val = "             ";
             }
 
             /* 死亡原因をオリジナルより細かく表示 */
             if (streq(the_score.how, "yet")) {
-                sprintf(out_val + 13, "  まだ生きている (%d%s)", cdun, "階");
+                out_val.append(fmt::format("  まだ生きている ({}{})", cdun, "階"));
             } else if (streq(the_score.how, "ripe")) {
-                sprintf(out_val + 13, "  勝利の後に引退 (%d%s)", cdun, "階");
+                out_val.append(fmt::format("  勝利の後に引退 ({}{})", cdun, "階"));
             } else if (streq(the_score.how, "Seppuku")) {
-                sprintf(out_val + 13, "  勝利の後に切腹 (%d%s)", cdun, "階");
+                out_val.append(fmt::format("  勝利の後に切腹 ({}{})", cdun, "階"));
             } else {
                 codeconv(the_score.how);
                 if (!cdun) {
-                    sprintf(out_val + 13, "  地上で%sに殺された", the_score.how);
+                    out_val.append(fmt::format("  地上で{}に殺された", the_score.how));
                 } else {
-                    sprintf(out_val + 13, "  %d階で%sに殺された", cdun, the_score.how);
+                    out_val.append(fmt::format("  {}階で{}に殺された", cdun, the_score.how));
                 }
             }
 #else
             if (!cdun) {
-                sprintf(out_val, "               Killed by %s on the surface", the_score.how);
+                out_val = fmt::format("               Killed by {} on the surface", the_score.how);
             } else {
-                sprintf(out_val, "               Killed by %s on %s %d", the_score.how, "Dungeon Level", cdun);
+                out_val = fmt::format("               Killed by {} on {} {}", the_score.how, "Dungeon Level", cdun);
             }
 
             if (mdun > cdun) {
-                strcat(out_val, format(" (Max %d)", mdun).c_str());
+                out_val.append(format(" (Max %d)", mdun));
             }
 #endif
             c_put_str(attr, out_val, n * 4 + 3, 0);
@@ -181,9 +182,9 @@ void display_scores(int from, int to, int note, high_score *score)
                 when = buf;
             }
 
-            sprintf(out_val, "        (ユーザー:%s, 日付:%s, 所持金:%s, ターン:%s)", user, when, gold, aged);
+            out_val = fmt::format("        (ユーザー:{}, 日付:{}, 所持金:{}, ターン:{})", user, when, gold, aged);
 #else
-            sprintf(out_val, "               (User %s, Date %s, Gold %s, Turn %s).", user, when, gold, aged);
+            out_val = fmt::format("               (User {}, Date {}, Gold {}, Turn {}).", user, when, gold, aged);
 #endif
 
             c_put_str(attr, out_val, n * 4 + 4, 0);
@@ -210,8 +211,8 @@ void display_scores(int from, int to, int note, high_score *score)
  */
 void display_scores(int from, int to)
 {
-    const auto &path = path_build(ANGBAND_DIR_APEX, "scores.raw");
-    const auto &filename = path.string();
+    const auto path = path_build(ANGBAND_DIR_APEX, "scores.raw");
+    const auto filename = path.string();
     highscore_fd = fd_open(filename, O_RDONLY);
     if (highscore_fd < 0) {
         quit(_("スコア・ファイルが使用できません。", "Score file unavailable."));
@@ -221,6 +222,6 @@ void display_scores(int from, int to)
     display_scores(from, to, -1, nullptr);
     (void)fd_close(highscore_fd);
     highscore_fd = -1;
-    quit(nullptr);
+    quit("");
 }
 #endif

@@ -13,20 +13,17 @@
 #include "info-reader/fixed-map-parser.h"
 #include "io-dump/dump-util.h"
 #include "locale/english.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/special-object-flags.h"
-#include "object/object-kind-hook.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-record.h"
+#include "system/enums/dungeon/dungeon-id.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
 #include "util/enum-converter.h"
-#include "util/sort.h"
 #include "util/string-processor.h"
 #include "world/world.h"
 #include <numeric>
@@ -49,15 +46,15 @@ void do_cmd_checkquest(PlayerType *player_ptr)
  */
 static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
 {
-    const auto &quest_list = QuestList::get_instance();
+    const auto &quests = QuestList::get_instance();
     std::string rand_tmp_str;
     int rand_level = 100;
     int total = 0;
 
     fprintf(fff, _("《遂行中のクエスト》\n", "< Current Quest >\n"));
-
-    for (const auto &[q_idx, quest] : quest_list) {
-        if (q_idx == QuestId::NONE) {
+    const auto &dungeon_records = DungeonRecords::get_instance();
+    for (const auto &[quest_id, quest] : quests) {
+        if (quest_id == QuestId::NONE) {
             continue;
         }
 
@@ -72,7 +69,7 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
 
         quest_text_lines.clear();
 
-        player_ptr->current_floor_ptr->quest_number = q_idx;
+        player_ptr->current_floor_ptr->quest_number = quest_id;
         init_flags = INIT_SHOW_TEXT;
         parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
         player_ptr->current_floor_ptr->quest_number = old_quest;
@@ -86,7 +83,7 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
             if (quest.status == QuestStatusType::TAKEN || quest.status == QuestStatusType::STAGE_COMPLETED) {
                 switch (quest.type) {
                 case QuestKindType::KILL_LEVEL: {
-                    const auto &monrace = monraces_info[quest.r_idx];
+                    const auto &monrace = quest.get_bounty();
                     if (quest.max_num > 1) {
 #ifdef JP
                         note = format(" - %d 体の%sを倒す。(あと %d 体)", (int)quest.max_num, monrace.name.data(), (int)(quest.max_num - quest.cur_num));
@@ -104,12 +101,10 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
                     std::string item_name("");
                     if (quest.has_reward()) {
                         const auto &artifact = quest.get_reward();
-                        ItemEntity item;
-                        auto bi_id = lookup_baseitem_id(artifact.bi_key);
-                        item.prep(bi_id);
-                        item.fixed_artifact_idx = quest.reward_artifact_idx;
+                        ItemEntity item(artifact.bi_key);
+                        item.fa_id = quest.reward_fa_id;
                         item.ident = IDENT_STORE;
-                        item_name = describe_flavor(player_ptr, &item, OD_NAME_ONLY);
+                        item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
                     }
 
                     note = format(_("\n   - %sを見つけ出す。", "\n   - Find %s."), item_name.data());
@@ -152,11 +147,11 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
             continue;
         }
         rand_level = quest.level;
-        if (max_dlv[DUNGEON_ANGBAND] < rand_level) {
+        if (dungeon_records.get_record(DungeonId::ANGBAND).get_max_level() < rand_level) {
             continue;
         }
 
-        const auto &monrace = monraces_info[quest.r_idx];
+        const auto &monrace = quest.get_bounty();
         if (quest.max_num <= 1) {
             constexpr auto mes = _("  %s (%d 階) - %sを倒す。\n", "  %s (Dungeon level: %d)\n  Kill %s.\n");
             rand_tmp_str = format(mes, quest.name.data(), (int)quest.level, monrace.name.data());
@@ -184,17 +179,17 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
 
 static bool do_cmd_knowledge_quests_aux(PlayerType *player_ptr, FILE *fff, QuestId q_idx)
 {
-    const auto &quest_list = QuestList::get_instance();
-    const auto &quest = quest_list[q_idx];
+    const auto &quests = QuestList::get_instance();
+    const auto &quest = quests.get_quest(q_idx);
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     auto is_fixed_quest = QuestType::is_fixed(q_idx);
     if (is_fixed_quest) {
-        QuestId old_quest = floor_ptr->quest_number;
-        floor_ptr->quest_number = q_idx;
+        const auto old_quest = floor.quest_number;
+        floor.quest_number = q_idx;
         init_flags = INIT_NAME_ONLY;
         parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-        floor_ptr->quest_number = old_quest;
+        floor.quest_number = old_quest;
         if (quest.flags & QUEST_FLAG_SILENT) {
             return false;
         }
@@ -207,7 +202,7 @@ static bool do_cmd_knowledge_quests_aux(PlayerType *player_ptr, FILE *fff, Quest
         }
     };
 
-    if (is_fixed_quest || !MonsterRace(quest.r_idx).is_valid()) {
+    if (is_fixed_quest || !quest.get_bounty().is_valid()) {
         auto name = str_separate(quest.name, 35);
         constexpr auto mes = _("  %-35s (危険度:%3d階相当) - レベル%2d - %s\n", "  %-35s (Danger  level: %3d) - level %2d - %s\n");
         fprintf(fff, mes, name.front().data(), (int)quest.level, quest.complev, playtime_str.data());
@@ -215,7 +210,7 @@ static bool do_cmd_knowledge_quests_aux(PlayerType *player_ptr, FILE *fff, Quest
         return true;
     }
 
-    auto name = str_separate(monraces_info[quest.r_idx].name, 35);
+    const auto name = str_separate(quest.get_bounty().name, 35);
     if (quest.complev == 0) {
         constexpr auto mes = _("  %-35s (%3d階)            -   不戦勝 - %s\n", "  %-35s (Dungeon level: %3d) - Unearned - %s\n");
         fprintf(fff, mes, name.front().data(), (int)quest.level, playtime_str.data());
@@ -233,16 +228,16 @@ static bool do_cmd_knowledge_quests_aux(PlayerType *player_ptr, FILE *fff, Quest
  * Print all finished quests
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param fff セーブファイル (展開済？)
- * @param quest_numbers 受注したことのあるクエスト群
+ * @param quest_ids 受注したことのあるクエスト群
  */
-void do_cmd_knowledge_quests_completed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_numbers)
+void do_cmd_knowledge_quests_completed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_ids)
 {
     fprintf(fff, _("《達成したクエスト》\n", "< Completed Quest >\n"));
     int16_t total = 0;
-    for (auto &q_idx : quest_numbers) {
-        const auto &quest_list = QuestList::get_instance();
-        const auto &quest = quest_list[q_idx];
-        if (quest.status == QuestStatusType::FINISHED && do_cmd_knowledge_quests_aux(player_ptr, fff, q_idx)) {
+    for (const auto quest_id : quest_ids) {
+        const auto &quests = QuestList::get_instance();
+        const auto &quest = quests.get_quest(quest_id);
+        if (quest.status == QuestStatusType::FINISHED && do_cmd_knowledge_quests_aux(player_ptr, fff, quest_id)) {
             ++total;
         }
     }
@@ -256,16 +251,16 @@ void do_cmd_knowledge_quests_completed(PlayerType *player_ptr, FILE *fff, const 
  * Print all failed quests
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param fff セーブファイル (展開済？)
- * @param quest_numbers 受注したことのあるクエスト群
+ * @param quest_ids 受注したことのあるクエスト群
  */
-void do_cmd_knowledge_quests_failed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_numbers)
+void do_cmd_knowledge_quests_failed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_ids)
 {
     fprintf(fff, _("《失敗したクエスト》\n", "< Failed Quest >\n"));
     int16_t total = 0;
-    for (auto &q_idx : quest_numbers) {
-        const auto &quest_list = QuestList::get_instance();
-        const auto &quest = quest_list[q_idx];
-        if (((quest.status == QuestStatusType::FAILED_DONE) || (quest.status == QuestStatusType::FAILED)) && do_cmd_knowledge_quests_aux(player_ptr, fff, q_idx)) {
+    for (const auto quest_id : quest_ids) {
+        const auto &quests = QuestList::get_instance();
+        const auto &quest = quests.get_quest(quest_id);
+        if (((quest.status == QuestStatusType::FAILED_DONE) || (quest.status == QuestStatusType::FAILED)) && do_cmd_knowledge_quests_aux(player_ptr, fff, quest_id)) {
             ++total;
         }
     }
@@ -281,9 +276,9 @@ void do_cmd_knowledge_quests_failed(PlayerType *player_ptr, FILE *fff, const std
 static void do_cmd_knowledge_quests_wiz_random(FILE *fff)
 {
     fprintf(fff, _("《残りのランダムクエスト》\n", "< Remaining Random Quest >\n"));
-    const auto &quest_list = QuestList::get_instance();
+    const auto &quests = QuestList::get_instance();
     int16_t total = 0;
-    for (const auto &[q_idx, quest] : quest_list) {
+    for (const auto &[q_idx, quest] : quests) {
         if (quest.flags & QUEST_FLAG_SILENT) {
             continue;
         }
@@ -291,7 +286,7 @@ static void do_cmd_knowledge_quests_wiz_random(FILE *fff)
         if ((quest.type == QuestKindType::RANDOM) && (quest.status == QuestStatusType::TAKEN)) {
             total++;
             constexpr auto mes = _("  %s (%d階, %s)\n", "  %s (%d, %s)\n");
-            fprintf(fff, mes, quest.name.data(), (int)quest.level, monraces_info[quest.r_idx].name.data());
+            fprintf(fff, mes, quest.name.data(), (int)quest.level, quest.get_bounty().name.data());
         }
     }
 
@@ -312,25 +307,19 @@ void do_cmd_knowledge_quests(PlayerType *player_ptr)
         return;
     }
 
-    std::vector<QuestId> quest_numbers;
-    const auto &quest_list = QuestList::get_instance();
-    for (const auto &[q_idx, quest] : quest_list) {
-        quest_numbers.push_back(q_idx);
-    }
-    int dummy;
-    ang_sort(player_ptr, quest_numbers.data(), &dummy, quest_numbers.size(), ang_sort_comp_quest_num, ang_sort_swap_quest_num);
-
+    const auto &quests = QuestList::get_instance();
+    const auto quest_ids = quests.get_sorted_quest_ids();
     do_cmd_knowledge_quests_current(player_ptr, fff);
     fputc('\n', fff);
-    do_cmd_knowledge_quests_completed(player_ptr, fff, quest_numbers);
+    do_cmd_knowledge_quests_completed(player_ptr, fff, quest_ids);
     fputc('\n', fff);
-    do_cmd_knowledge_quests_failed(player_ptr, fff, quest_numbers);
-    if (w_ptr->wizard) {
+    do_cmd_knowledge_quests_failed(player_ptr, fff, quest_ids);
+    if (AngbandWorld::get_instance().wizard) {
         fputc('\n', fff);
         do_cmd_knowledge_quests_wiz_random(fff);
     }
 
     angband_fclose(fff);
-    (void)show_file(player_ptr, true, file_name, 0, 0, _("クエスト達成状況", "Quest status"));
+    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("クエスト達成状況", "Quest status"));
     fd_kill(file_name);
 }

@@ -2,18 +2,35 @@
 #include "floor/geometry.h"
 #include "game-option/keymap-directory-getter.h"
 #include "game-option/special-options.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 
-TERM_COLOR attr_idx = 0;
-char char_idx = 0;
+DisplaySymbolsClipboard DisplaySymbolsClipboard::instance{};
 
-TERM_COLOR attr_idx_feat[F_LIT_MAX];
-char char_idx_feat[F_LIT_MAX];
+DisplaySymbolsClipboard::DisplaySymbolsClipboard()
+    : symbol()
+    , symbols(DEFAULT_SYMBOLS)
+{
+}
+
+DisplaySymbolsClipboard &DisplaySymbolsClipboard::get_instance()
+{
+    return instance;
+}
+
+void DisplaySymbolsClipboard::reset_symbols()
+{
+    this->symbols = DEFAULT_SYMBOLS;
+}
+
+void DisplaySymbolsClipboard::set_symbol(const std::map<int, DisplaySymbol> &symbol_configs)
+{
+    this->symbols = symbol_configs;
+}
 
 /*!
  * @brief シンボル変更処理 / Do visual mode command -- Change symbols
@@ -35,7 +52,7 @@ bool visual_mode_command(char ch, bool *visual_list_ptr,
 {
     static TERM_COLOR attr_old = 0;
     static char char_old = 0;
-
+    auto &symbols_cb = DisplaySymbolsClipboard::get_instance();
     switch (ch) {
     case ESCAPE: {
         if (!*visual_list_ptr) {
@@ -71,29 +88,25 @@ bool visual_mode_command(char ch, bool *visual_list_ptr,
         return true;
     }
     case 'C':
-    case 'c': {
-        attr_idx = *cur_attr_ptr;
-        char_idx = *cur_char_ptr;
-        for (int i = 0; i < F_LIT_MAX; i++) {
-            attr_idx_feat[i] = 0;
-            char_idx_feat[i] = 0;
-        }
-
+    case 'c':
+        symbols_cb.symbol = { *cur_attr_ptr, *cur_char_ptr };
+        symbols_cb.reset_symbols();
         return true;
-    }
     case 'P':
     case 'p': {
-        if (attr_idx || (!(char_idx & 0x80) && char_idx)) {
-            *cur_attr_ptr = attr_idx;
+        const auto &symbols = symbols_cb.symbol;
+        const auto has_character = symbols.has_character();
+        if (symbols.color || (!(symbols.character & 0x80) && has_character)) {
+            *cur_attr_ptr = symbols.color;
             *attr_top_ptr = std::max<int8_t>(0, (*cur_attr_ptr & 0x7f) - 5);
             if (!*visual_list_ptr) {
                 *need_redraw = true;
             }
         }
 
-        if (char_idx) {
+        if (has_character) {
             /* Set the char */
-            *cur_char_ptr = char_idx;
+            *cur_char_ptr = symbols.character;
             *char_left_ptr = std::max<int8_t>(0, *cur_char_ptr - 10);
             if (!*visual_list_ptr) {
                 *need_redraw = true;
@@ -108,7 +121,7 @@ bool visual_mode_command(char ch, bool *visual_list_ptr,
         }
 
         int eff_width;
-        int d = get_keymap_dir(ch);
+        const auto dir = get_keymap_dir(ch);
         TERM_COLOR a = (*cur_attr_ptr & 0x7f);
         auto c = *cur_char_ptr;
 
@@ -118,37 +131,32 @@ bool visual_mode_command(char ch, bool *visual_list_ptr,
             eff_width = width;
         }
 
-        if ((a == 0) && (ddy[d] < 0)) {
-            d = 0;
-        }
-        if ((c == 0) && (ddx[d] < 0)) {
-            d = 0;
-        }
-        if ((a == 0x7f) && (ddy[d] > 0)) {
-            d = 0;
-        }
-        if (((byte)c == 0xff) && (ddx[d] > 0)) {
-            d = 0;
+        auto vec = dir.vec();
+        if (((a == 0) && (vec.y < 0)) ||
+            ((c == 0) && (vec.x < 0)) ||
+            ((a == 0x7f) && (vec.y > 0)) ||
+            (((byte)c == 0xff) && (vec.x > 0))) {
+            vec = Direction::self().vec();
         }
 
-        a += (TERM_COLOR)ddy[d];
-        c += static_cast<char>(ddx[d]);
+        a += (TERM_COLOR)vec.y;
+        c += static_cast<char>(vec.x);
         if (c & 0x80) {
             a |= 0x80;
         }
 
         *cur_attr_ptr = a;
         *cur_char_ptr = c;
-        if ((ddx[d] < 0) && *char_left_ptr > std::max(0, (unsigned char)c - 10)) {
+        if ((vec.x < 0) && *char_left_ptr > std::max(0, (unsigned char)c - 10)) {
             (*char_left_ptr)--;
         }
-        if ((ddx[d] > 0) && *char_left_ptr + eff_width < std::min(0xff, (unsigned char)c + 10)) {
+        if ((vec.x > 0) && *char_left_ptr + eff_width < std::min(0xff, (unsigned char)c + 10)) {
             (*char_left_ptr)++;
         }
-        if ((ddy[d] < 0) && *attr_top_ptr > std::max(0, (int)(a & 0x7f) - 4)) {
+        if ((vec.y < 0) && *attr_top_ptr > std::max(0, (int)(a & 0x7f) - 4)) {
             (*attr_top_ptr)--;
         }
-        if ((ddy[d] > 0) && *attr_top_ptr + height < std::min(0x7f, (a & 0x7f) + 4)) {
+        if ((vec.y > 0) && *attr_top_ptr + height < std::min(0x7f, (a & 0x7f) + 4)) {
             (*attr_top_ptr)++;
         }
 
@@ -172,15 +180,12 @@ bool open_temporary_file(FILE **fff, char *file_name)
     }
 
     msg_format(_("一時ファイル %s を作成できませんでした。", "Failed to create temporary file %s."), file_name);
-    msg_print(nullptr);
+    msg_erase();
     return false;
 }
 
 /*!
- * @brief モンスター情報リスト中のグループを表示する /
- * Display the object groups.
- * @param col 開始行
- * @param row 開始列
+ * @brief モンスター情報リスト中のグループを表示する
  * @param wid 表示文字数幅
  * @param per_page リストの表示行
  * @param grp_idx グループのID配列
@@ -188,13 +193,14 @@ bool open_temporary_file(FILE **fff, char *file_name)
  * @param grp_cur 現在の選択ID
  * @param grp_top 現在の選択リスト最上部ID
  */
-void display_group_list(int col, int row, int wid, int per_page, IDX grp_idx[], concptr group_text[], int grp_cur, int grp_top)
+void display_group_list(int wid, int per_page, const std::vector<short> &grp_idx, const std::vector<std::string> &group_text, int grp_cur, int grp_top)
 {
-    for (int i = 0; i < per_page && (grp_idx[i] >= 0); i++) {
-        int grp = grp_idx[grp_top + i];
-        TERM_COLOR attr = (grp_top + i == grp_cur) ? TERM_L_BLUE : TERM_WHITE;
-        term_erase(col, row + i, wid);
-        c_put_str(attr, group_text[grp], row + i, col);
+    const int size = std::min(grp_idx.size(), group_text.size());
+    for (auto i = 0; i < per_page && (i < size); i++) {
+        const auto grp = grp_idx[grp_top + i];
+        const auto attr = (grp_top + i == grp_cur) ? TERM_L_BLUE : TERM_WHITE;
+        term_erase(0, 6 + i, wid);
+        c_put_str(attr, group_text[grp], 6 + i, 0);
     }
 }
 
@@ -232,7 +238,7 @@ void display_visual_list(int col, int row, int height, int width, TERM_COLOR att
                 a |= 0x80;
             }
 
-            term_queue_bigchar(x, y, a, c, 0, 0);
+            term_queue_bigchar(x, y, { { a, c }, {} });
         }
     }
 }
@@ -259,29 +265,30 @@ void place_visual_list_cursor(TERM_LEN col, TERM_LEN row, TERM_COLOR a, byte c, 
  */
 void browser_cursor(char ch, int *column, IDX *grp_cur, int grp_cnt, IDX *list_cur, int list_cnt)
 {
-    int d;
     int col = *column;
     IDX grp = *grp_cur;
     IDX list = *list_cur;
+    auto dir = Direction::none();
     if (ch == ' ') {
-        d = 3;
+        dir = Direction(3);
     } else if (ch == '-') {
-        d = 9;
+        dir = Direction(9);
     } else {
-        d = get_keymap_dir(ch);
+        dir = get_keymap_dir(ch);
     }
 
-    if (!d) {
+    if (!dir) {
         return;
     }
 
-    if ((ddx[d] > 0) && ddy[d]) {
+    const auto vec = dir.vec();
+    if ((vec.x > 0) && vec.y) {
         int browser_rows;
         const auto &[wid, hgt] = term_get_size();
         browser_rows = hgt - 8;
         if (!col) {
             int old_grp = grp;
-            grp += ddy[d] * (browser_rows - 1);
+            grp += vec.y * (browser_rows - 1);
             if (grp >= grp_cnt) {
                 grp = grp_cnt - 1;
             }
@@ -292,7 +299,7 @@ void browser_cursor(char ch, int *column, IDX *grp_cur, int grp_cnt, IDX *list_c
                 list = 0;
             }
         } else {
-            list += ddy[d] * browser_rows;
+            list += vec.y * browser_rows;
             if (list >= list_cnt) {
                 list = list_cnt - 1;
             }
@@ -306,8 +313,8 @@ void browser_cursor(char ch, int *column, IDX *grp_cur, int grp_cnt, IDX *list_c
         return;
     }
 
-    if (ddx[d]) {
-        col += ddx[d];
+    if (vec.x) {
+        col += vec.x;
         if (col < 0) {
             col = 0;
         }
@@ -321,7 +328,7 @@ void browser_cursor(char ch, int *column, IDX *grp_cur, int grp_cnt, IDX *list_c
 
     if (!col) {
         int old_grp = grp;
-        grp += (IDX)ddy[d];
+        grp += (IDX)vec.y;
         if (grp >= grp_cnt) {
             grp = grp_cnt - 1;
         }
@@ -332,7 +339,7 @@ void browser_cursor(char ch, int *column, IDX *grp_cur, int grp_cnt, IDX *list_c
             list = 0;
         }
     } else {
-        list += (IDX)ddy[d];
+        list += (IDX)vec.y;
         if (list >= list_cnt) {
             list = list_cnt - 1;
         }

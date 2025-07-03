@@ -1,29 +1,26 @@
 #include "window/main-window-left-frame.h"
-#include "dungeon/quest.h"
+#include "floor/dungeon-feeling.h"
 #include "game-option/special-options.h"
 #include "game-option/text-display-options.h"
-#include "market/arena-info-table.h"
-#include "monster-race/monster-race.h"
-#include "monster/monster-status.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
 #include "player-info/mimic-info-table.h"
 #include "player/player-status-table.h"
-#include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/term-color-types.h"
-#include "timed-effect/player-hallucination.h"
+#include "term/z-form.h"
 #include "timed-effect/timed-effects.h"
+#include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
 #include "window/main-window-row-column.h"
 #include "window/main-window-stat-poster.h"
 #include "window/main-window-util.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief ターゲットしているモンスターの情報部に表示する状態異常と文字色の対応を保持する構造体
@@ -38,19 +35,18 @@ struct condition_layout_info {
  */
 void print_title(PlayerType *player_ptr)
 {
-    GAME_TEXT str[14];
-    concptr p = "";
-    if (w_ptr->wizard) {
+    std::string p;
+    const auto &world = AngbandWorld::get_instance();
+    if (world.wizard) {
         p = _("[ウィザード]", "[=-WIZARD-=]");
-    } else if (w_ptr->total_winner) {
-        if (player_ptr->is_true_winner()) {
+    } else if (world.total_winner) {
+        if (world.is_player_true_winner()) {
             p = _("*真・勝利者*", "*TRUEWINNER*");
         } else {
             p = _("***勝利者***", "***WINNER***");
         }
     } else {
-        angband_strcpy(str, player_titles[enum2i(player_ptr->pclass)][(player_ptr->lev - 1) / 5], sizeof(str));
-        p = str;
+        p = player_titles.at(player_ptr->pclass).at((player_ptr->lev - 1) / 5);
     }
 
     print_field(p, ROW_TITLE, COL_TITLE);
@@ -76,16 +72,16 @@ void print_level(PlayerType *player_ptr)
  */
 void print_exp(PlayerType *player_ptr)
 {
-    char out_val[32];
+    std::string out_val;
 
     PlayerRace pr(player_ptr);
     if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
-        (void)sprintf(out_val, "%8ld", (long)player_ptr->exp);
+        out_val = format("%8d", player_ptr->exp);
     } else {
         if (player_ptr->lev >= PY_MAX_LEVEL) {
-            (void)sprintf(out_val, "********");
+            (void)sprintf(out_val.data(), "********");
         } else {
-            (void)sprintf(out_val, "%8ld", (long)(player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100L) - player_ptr->exp);
+            out_val = format("%8d", player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100 - player_ptr->exp);
         }
     }
 
@@ -138,11 +134,11 @@ void print_hp(PlayerType *player_ptr)
         color = TERM_RED;
     }
 
-    c_put_str(color, tmp, ROW_CURHP, COL_CURHP + 3);
+    c_put_str(color, format("%4d", player_ptr->chp), ROW_CURHP, COL_CURHP + 3);
     put_str("/", ROW_CURHP, COL_CURHP + 7);
     sprintf(tmp, "%4ld", (long int)player_ptr->mhp);
     color = TERM_L_GREEN;
-    c_put_str(color, tmp, ROW_CURHP, COL_CURHP + 8);
+    c_put_str(color, format("%4d", player_ptr->mhp), ROW_CURHP, COL_CURHP + 8);
 }
 
 /*!
@@ -166,11 +162,11 @@ void print_sp(PlayerType *player_ptr)
         color = TERM_RED;
     }
 
-    c_put_str(color, tmp, ROW_CURSP, COL_CURSP + 3);
+    c_put_str(color, format("%4d", player_ptr->csp), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
     sprintf(tmp, "%4ld", (long int)player_ptr->msp);
     color = TERM_L_GREEN;
-    c_put_str(color, tmp, ROW_CURSP, COL_CURSP + 8);
+    c_put_str(color, format("%4d", player_ptr->msp), ROW_CURSP, COL_CURSP + 8);
 }
 
 /*!
@@ -179,10 +175,8 @@ void print_sp(PlayerType *player_ptr)
  */
 void print_gold(PlayerType *player_ptr)
 {
-    char tmp[32];
     put_str(_("＄ ", "AU "), ROW_GOLD, COL_GOLD);
-    sprintf(tmp, "%9ld", (long)player_ptr->au);
-    c_put_str(TERM_L_GREEN, tmp, ROW_GOLD, COL_GOLD + 3);
+    c_put_str(TERM_L_GREEN, format("%9d", player_ptr->au), ROW_GOLD, COL_GOLD + 3);
 }
 
 /*!
@@ -191,31 +185,24 @@ void print_gold(PlayerType *player_ptr)
  */
 void print_depth(PlayerType *player_ptr)
 {
-    char depths[32];
+    std::string depths;
     TERM_COLOR attr = TERM_WHITE;
     const auto &[wid, hgt] = term_get_size();
-    TERM_LEN col_depth = wid + COL_DEPTH;
-    TERM_LEN row_depth = hgt + ROW_DEPTH;
-
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (!floor_ptr->dun_level) {
-        strcpy(depths, _("地上", "Surf."));
-        c_prt(attr, format("%7s", depths), row_depth, col_depth);
-        return;
-    }
-
-    if (floor_ptr->is_in_quest() && !floor_ptr->dungeon_idx) {
-        c_prt(attr, format("%7s", _("地上", "Quest")), row_depth, col_depth);
+    const auto col_depth = wid + COL_DEPTH;
+    const auto row_depth = hgt + ROW_DEPTH;
+    const auto &floor = *player_ptr->current_floor_ptr;
+    if (!floor.is_underground()) {
+        c_prt(attr, format("%7s", _("地上", "Surf.")), row_depth, col_depth);
         return;
     }
 
     if (depth_in_feet) {
-        (void)sprintf(depths, _("%d ft", "%d ft"), (int)floor_ptr->dun_level * 50);
+        depths = fmt::format(_("{} ft", "{} ft"), floor.dun_level * 50);
     } else {
-        (void)sprintf(depths, _("%d 階", "Lev %d"), (int)floor_ptr->dun_level);
+        depths = fmt::format(_("{} 階", "Lev {}"), floor.dun_level);
     }
 
-    switch (player_ptr->feeling) {
+    switch (DungeonFeeling::get_instance().get_feeling()) {
     case 0:
         attr = TERM_SLATE;
         break; /* Unknown */
@@ -251,7 +238,7 @@ void print_depth(PlayerType *player_ptr)
         break; /* Boring place */
     }
 
-    c_prt(attr, format("%7s", depths), row_depth, col_depth);
+    c_prt(attr, depths.c_str(), row_depth, col_depth);
 }
 
 /*!
@@ -260,14 +247,10 @@ void print_depth(PlayerType *player_ptr)
  */
 void print_frame_basic(PlayerType *player_ptr)
 {
-    if (player_ptr->mimic_form != MimicKindType::NONE) {
-        print_field(mimic_info.at(player_ptr->mimic_form).title, ROW_RACE, COL_RACE);
-    } else {
-        char str[14];
-        angband_strcpy(str, rp_ptr->title, sizeof(str));
-        print_field(str, ROW_RACE, COL_RACE);
-    }
-
+    const auto &title = player_ptr->mimic_form == MimicKindType::NONE
+                            ? rp_ptr->title
+                            : mimic_info.at(player_ptr->mimic_form).title;
+    print_field(title, ROW_RACE, COL_RACE);
     print_title(player_ptr);
     print_level(player_ptr);
     print_exp(player_ptr);
@@ -302,10 +285,10 @@ static void print_health_monster_in_arena_for_wizard(PlayerType *player_ptr)
         term_putstr(col - 2, row + row_offset, 12, TERM_WHITE, "      /     ");
 
         auto &monster = player_ptr->current_floor_ptr->m_list[monster_list_index];
-        if (MonsterRace(monster.r_idx).is_valid()) {
+        if (monster.is_valid()) {
             const auto &monrace = monster.get_monrace();
-            term_putstr(col - 2, row + row_offset, 2, monrace.x_attr,
-                format("%c", monrace.x_char));
+            const auto &symbol_config = monrace.symbol_config;
+            term_putstr(col - 2, row + row_offset, 2, symbol_config.color, format("%c", symbol_config.character));
             term_putstr(col - 1, row + row_offset, 5, TERM_WHITE, format("%5d", monster.hp));
             term_putstr(col + 5, row + row_offset, 6, TERM_WHITE, format("%5d", monster.max_maxhp));
         }
@@ -322,25 +305,25 @@ static std::vector<condition_layout_info> get_condition_layout_info(const Monste
     std::vector<condition_layout_info> result;
 
     if (monster.is_invulnerable()) {
-        result.push_back({ effect_type_to_label.at(MTIMED_INVULNER), TERM_WHITE });
+        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::INVULNERABILITY), TERM_WHITE });
     }
     if (monster.is_accelerated()) {
-        result.push_back({ effect_type_to_label.at(MTIMED_FAST), TERM_L_GREEN });
+        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::FAST), TERM_L_GREEN });
     }
     if (monster.is_decelerated()) {
-        result.push_back({ effect_type_to_label.at(MTIMED_SLOW), TERM_UMBER });
+        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::SLOW), TERM_UMBER });
     }
     if (monster.is_fearful()) {
-        result.push_back({ effect_type_to_label.at(MTIMED_MONFEAR), TERM_SLATE });
+        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::FEAR), TERM_SLATE });
     }
     if (monster.is_confused()) {
-        result.push_back({ effect_type_to_label.at(MTIMED_CONFUSED), TERM_L_UMBER });
+        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::CONFUSION), TERM_L_UMBER });
     }
     if (monster.is_asleep()) {
-        result.push_back({ effect_type_to_label.at(MTIMED_CSLEEP), TERM_BLUE });
+        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::SLEEP), TERM_BLUE });
     }
     if (monster.is_stunned()) {
-        result.push_back({ effect_type_to_label.at(MTIMED_STUNNED), TERM_ORANGE });
+        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::STUN), TERM_ORANGE });
     }
 
     return result;
@@ -367,7 +350,7 @@ static std::vector<condition_layout_info> get_condition_layout_info(const Monste
  */
 void print_health(PlayerType *player_ptr, bool riding)
 {
-    std::optional<short> monster_idx;
+    tl::optional<short> monster_idx;
     int row, col;
 
     if (riding) {
@@ -378,12 +361,14 @@ void print_health(PlayerType *player_ptr, bool riding)
         col = COL_RIDING_INFO;
     } else {
         // ウィザードモードで闘技場観戦時の表示
-        if (w_ptr->wizard && AngbandSystem::get_instance().is_phase_out()) {
+        if (AngbandWorld::get_instance().wizard && AngbandSystem::get_instance().is_phase_out()) {
             print_health_monster_in_arena_for_wizard(player_ptr);
             return;
         }
-        if (player_ptr->health_who > 0) {
-            monster_idx = player_ptr->health_who;
+
+        auto &tracker = HealthBarTracker::get_instance();
+        if (tracker.is_tracking()) {
+            monster_idx = tracker.get_trackee();
         }
         row = ROW_INFO;
         col = COL_INFO;
@@ -402,7 +387,7 @@ void print_health(PlayerType *player_ptr, bool riding)
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[monster_idx.value()];
 
-    if ((!monster.ml) || (player_ptr->effects()->hallucination()->is_hallucinated()) || monster.is_dead()) {
+    if ((!monster.ml) || (player_ptr->effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
         term_putstr(col, row, max_width, TERM_WHITE, "[----------]");
         return;
     }

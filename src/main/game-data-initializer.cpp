@@ -6,18 +6,24 @@
 #include "main/game-data-initializer.h"
 #include "cmd-io/macro-util.h"
 #include "dungeon/quest.h"
+#include "effect/attribute-types.h"
 #include "floor/floor-util.h"
 #include "game-option/option-flags.h"
 #include "game-option/option-types-table.h"
-#include "monster-race/monster-race.h"
-#include "system/alloc-entries.h"
-#include "system/baseitem-info.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "io/macro-configurations-store.h"
+#include "system/baseitem/baseitem-allocation.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
+#include "system/dungeon/dungeon-record.h"
+#include "system/floor/floor-info.h"
+#include "system/floor/floor-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-allocation.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -46,30 +52,19 @@ static void init_gf_colors()
  */
 void init_other(PlayerType *player_ptr)
 {
-    player_ptr->current_floor_ptr = &floor_info; // TODO:本当はこんなところで初期化したくない
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    floor_ptr->o_list.assign(MAX_FLOOR_ITEMS, {});
-    floor_ptr->m_list.assign(MAX_FLOOR_MONSTERS, {});
-    for (auto &list : floor_ptr->mproc_list) {
-        list.assign(MAX_FLOOR_MONSTERS, {});
-    }
+    auto &floor_data = FloorList::get_instance();
+    player_ptr->current_floor_ptr = &floor_data.get_floor(0); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
 
-    max_dlv.assign(dungeons_info.size(), {});
-    floor_ptr->grid_array.assign(MAX_HGT, std::vector<Grid>(MAX_WID));
     init_gf_colors();
 
     macro_patterns.assign(MACRO_MAX, {});
     macro_actions.assign(MACRO_MAX, {});
     macro_buffers.assign(FILE_READ_BUFF_SIZE, {});
-    for (auto i = 0; option_info[i].o_desc; i++) {
-        int os = option_info[i].o_set;
-        int ob = option_info[i].o_bit;
-        if (option_info[i].o_var == nullptr) {
-            continue;
-        }
-
+    for (auto &option : option_info) {
+        int os = option.flag_position;
+        int ob = option.offset;
         g_option_masks[os] |= (1UL << ob);
-        if (option_info[i].o_norm) {
+        if (option.default_value) {
             set_bits(g_option_flags[os], 1U << ob);
         } else {
             reset_bits(g_option_flags[os], 1U << ob);
@@ -95,29 +90,8 @@ void init_other(PlayerType *player_ptr)
  */
 void init_monsters_alloc()
 {
-    std::vector<const MonsterRaceInfo *> elements;
-    for (const auto &[r_idx, r_ref] : monraces_info) {
-        if (MonsterRace(r_ref.idx).is_valid()) {
-            elements.push_back(&r_ref);
-        }
-    }
-
-    std::sort(elements.begin(), elements.end(),
-        [](const MonsterRaceInfo *r1_ptr, const MonsterRaceInfo *r2_ptr) {
-            return r1_ptr->level < r2_ptr->level;
-        });
-
-    alloc_race_table.clear();
-    for (const auto r_ptr : elements) {
-        if (r_ptr->rarity == 0) {
-            continue;
-        }
-
-        const auto index = static_cast<short>(r_ptr->idx);
-        const auto level = r_ptr->level;
-        const auto prob = static_cast<PROB>(100 / r_ptr->rarity);
-        alloc_race_table.push_back({ index, level, prob, prob });
-    }
+    auto &table = MonraceAllocationTable::get_instance();
+    table.initialize();
 }
 
 /*!
@@ -125,42 +99,6 @@ void init_monsters_alloc()
  */
 void init_items_alloc()
 {
-    short num[MAX_DEPTH]{};
-    auto alloc_kind_size = 0;
-    for (const auto &baseitem : baseitems_info) {
-        for (const auto &[level, chance] : baseitem.alloc_tables) {
-            if (chance != 0) {
-                alloc_kind_size++;
-                num[level]++;
-            }
-        }
-    }
-
-    for (auto i = 1; i < MAX_DEPTH; i++) {
-        num[i] += num[i - 1];
-    }
-
-    if (num[0] == 0) {
-        quit(_("町のアイテムがない！", "No town objects!"));
-    }
-
-    alloc_kind_table.assign(alloc_kind_size, {});
-    short aux[MAX_DEPTH]{};
-    for (const auto &baseitem : baseitems_info) {
-        for (const auto &[level, chance] : baseitem.alloc_tables) {
-            if (chance == 0) {
-                continue;
-            }
-
-            const auto x = level;
-            const short p = 100 / chance;
-            const auto y = (x > 0) ? num[x - 1] : 0;
-            const auto z = y + aux[x];
-            alloc_kind_table[z].index = baseitem.idx;
-            alloc_kind_table[z].level = x;
-            alloc_kind_table[z].prob1 = p;
-            alloc_kind_table[z].prob2 = p;
-            aux[x]++;
-        }
-    }
+    auto &table = BaseitemAllocationTable::get_instance();
+    table.initialize();
 }

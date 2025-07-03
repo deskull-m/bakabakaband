@@ -1,15 +1,12 @@
 #pragma once
 
-#include "system/angband.h"
-#include <optional>
+#include <cstdint>
+#include <tl/optional.hpp>
 
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
 class FloorType;
-class MonsterRaceInfo;
+class MonraceDefinition;
 class PlayerType;
-MONSTER_IDX m_pop(FloorType *floor_ptr);
-
-MonsterRaceId get_mon_num(PlayerType *player_ptr, DEPTH min_level, DEPTH max_level, BIT_FLAGS mode);
-void choose_new_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, bool born, MonsterRaceId r_idx, std::optional<MONSTER_IDX> summoner_m_idx = std::nullopt);
-byte get_mspeed(FloorType *player_ptr, MonsterRaceInfo *r_ptr);
-int get_monster_crowd_number(FloorType *floor_ptr, MONSTER_IDX m_idx);
+MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint32_t mode);
+void choose_chameleon_polymorph(PlayerType *player_ptr, short m_idx, short terrain_id, tl::optional<short> summoner_m_idx = tl::nullopt);
+int get_monster_crowd_number(const FloorType &floor, short m_idx);

@@ -2,12 +2,11 @@
 #include "cmd-io/cmd-save.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
-#include "floor/cave.h"
 #include "floor/floor-mode-changer.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
-#include "grid/feature.h"
+#include "grid/grid.h"
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
 #include "player-base/player-race.h"
@@ -19,18 +18,14 @@
 #include "spell/spells-status.h"
 #include "status/bad-status-setter.h"
 #include "status/experience.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/terrain/terrain-tag.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
-#include "system/terrain-type-definition.h"
-#include "term/z-form.h"
-#include "timed-effect/player-confusion.h"
-#include "timed-effect/player-cut.h"
-#include "timed-effect/player-hallucination.h"
-#include "timed-effect/player-stun.h"
+#include "system/terrain/terrain-definition.h"
 #include "timed-effect/timed-effects.h"
-#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world-movement-processor.h"
 #include "world/world.h"
@@ -44,14 +39,14 @@ void pattern_teleport(PlayerType *player_ptr)
 {
     auto min_level = 0;
     auto max_level = 99;
-    auto current_level = static_cast<short>(player_ptr->current_floor_ptr->dun_level);
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto current_level = static_cast<short>(floor.dun_level);
     if (input_check(_("他の階にテレポートしますか？", "Teleport level? "))) {
         if (ironman_downward) {
             min_level = current_level;
         }
 
-        const auto &floor = *player_ptr->current_floor_ptr;
-        if (floor.dungeon_idx == DUNGEON_ANGBAND) {
+        if (floor.dungeon_id == DungeonId::ANGBAND) {
             if (floor.dun_level > 100) {
                 max_level = MAX_DEPTH - 1;
             } else if (current_level == 100) {
@@ -82,10 +77,10 @@ void pattern_teleport(PlayerType *player_ptr)
         do_cmd_save_game(player_ptr, true);
     }
 
-    player_ptr->current_floor_ptr->dun_level = command_arg;
+    floor.dun_level = command_arg;
     leave_quest_check(player_ptr);
     if (record_stair) {
-        exe_write_diary(player_ptr, DiaryKind::PAT_TELE, 0);
+        exe_write_diary(floor, DiaryKind::PAT_TELE, 0);
     }
 
     player_ptr->current_floor_ptr->quest_number = QuestId::NONE;
@@ -95,7 +90,11 @@ void pattern_teleport(PlayerType *player_ptr)
      * Clear all saved floors
      * and create a first saved floor
      */
-    move_floor(player_ptr, CFM_FIRST_FLOOR);
+    FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
+
+    check_random_quest_auto_failure(player_ptr);
+
+    player_ptr->leaving = true;
 }
 
 /*!
@@ -104,26 +103,26 @@ void pattern_teleport(PlayerType *player_ptr)
  */
 bool pattern_effect(PlayerType *player_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    const auto &floor = *player_ptr->current_floor_ptr;
     const auto p_pos = player_ptr->get_position();
-    if (!pattern_tile(floor_ptr, p_pos.y, p_pos.x)) {
+    const auto &grid = floor.get_grid(p_pos);
+    if (!grid.has(TerrainCharacteristics::PATTERN)) {
         return false;
     }
 
-    auto is_cut = player_ptr->effects()->cut()->is_cut();
+    const auto is_cut = player_ptr->effects()->cut().is_cut();
     if ((PlayerRace(player_ptr).equals(PlayerRaceType::AMBERITE)) && is_cut && one_in_(10)) {
         wreck_the_pattern(player_ptr);
     }
 
-    int pattern_type = floor_ptr->get_grid(p_pos).get_terrain().subtype;
-    switch (pattern_type) {
+    switch (grid.get_terrain().subtype) {
     case PATTERN_TILE_END:
         (void)BadStatusSetter(player_ptr).hallucination(0);
         (void)restore_all_status(player_ptr);
         (void)restore_level(player_ptr);
         (void)cure_critical_wounds(player_ptr, 1000);
 
-        cave_set_feat(player_ptr, player_ptr->y, player_ptr->x, feat_pattern_old);
+        set_terrain_id_to_grid(player_ptr, player_ptr->get_position(), TerrainTag::PATTERN_OLD);
         msg_print(_("「パターン」のこの部分は他の部分より強力でないようだ。", "This section of the Pattern looks less powerful."));
 
         /*
@@ -152,7 +151,7 @@ bool pattern_effect(PlayerType *player_ptr)
         if (PlayerRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
         } else if (!is_invuln(player_ptr)) {
-            take_hit(player_ptr, DAMAGE_NOESCAPE, damroll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
+            take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;
     }
@@ -183,9 +182,9 @@ bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
     int pattern_type_new = is_pattern_tile_new ? terrain_new.subtype : NOT_PATTERN_TILE;
     if (pattern_type_new == PATTERN_TILE_START) {
         const auto effects = player_ptr->effects();
-        const auto is_stunned = effects->stun()->is_stunned();
-        const auto is_confused = effects->confusion()->is_confused();
-        const auto is_hallucinated = effects->hallucination()->is_hallucinated();
+        const auto is_stunned = effects->stun().is_stunned();
+        const auto is_confused = effects->confusion().is_confused();
+        const auto is_hallucinated = effects->hallucination().is_hallucinated();
         if (is_pattern_tile_cur || is_confused || is_stunned || is_hallucinated) {
             return true;
         }
@@ -245,7 +244,7 @@ bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
         ok_move = PATTERN_TILE_1;
         break;
     default:
-        if (w_ptr->wizard) {
+        if (AngbandWorld::get_instance().wizard) {
             msg_format(_("おかしなパターン歩行、%d。", "Funny Pattern walking, %d."), pattern_type_cur);
         }
         return true;

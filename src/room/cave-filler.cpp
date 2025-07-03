@@ -5,18 +5,15 @@
  */
 
 #include "room/cave-filler.h"
-#include "dungeon/dungeon-flag-types.h"
-#include "floor//geometry.h"
-#include "floor/cave.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "room/lake-types.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/enums/terrain/terrain-tag.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
-#include "system/terrain-type-definition.h"
-#include "util/point-2d.h"
+#include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include <queue>
 
 struct fill_data_type {
@@ -49,17 +46,17 @@ static fill_data_type fill_data;
  * Store routine for the fractal floor generator
  * this routine probably should be an inline function or a macro.
  */
-static void store_height(FloorType *floor_ptr, POSITION x, POSITION y, FEAT_IDX val)
+static void store_height(FloorType &floor, POSITION x, POSITION y, FEAT_IDX val)
 {
     if (((x == fill_data.xmin) || (y == fill_data.ymin) || (x == fill_data.xmax) || (y == fill_data.ymax)) && (val <= fill_data.c1)) {
         val = fill_data.c1 + 1;
     }
 
-    floor_ptr->grid_array[y][x].feat = val;
+    floor.grid_array[y][x].feat = val;
     return;
 }
 
-void generate_hmap(FloorType *floor_ptr, POSITION y0, POSITION x0, POSITION xsiz, POSITION ysiz, int grd, int roug, int cutoff)
+void generate_hmap(FloorType &floor, POSITION y0, POSITION x0, POSITION xsiz, POSITION ysiz, int grd, int roug, int cutoff)
 {
     POSITION xsize = xsiz;
     POSITION ysize = ysiz;
@@ -94,16 +91,16 @@ void generate_hmap(FloorType *floor_ptr, POSITION y0, POSITION x0, POSITION xsiz
     POSITION maxsize = (xsize > ysize) ? xsize : ysize;
     for (POSITION i = 0; i <= xsize; i++) {
         for (POSITION j = 0; j <= ysize; j++) {
-            floor_ptr->grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].feat = -1;
-            floor_ptr->grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].info &= ~(CAVE_ICKY);
+            floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].feat = -1;
+            floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].info &= ~(CAVE_ICKY);
         }
     }
 
-    floor_ptr->grid_array[fill_data.ymin][fill_data.xmin].feat = (int16_t)maxsize;
-    floor_ptr->grid_array[fill_data.ymax][fill_data.xmin].feat = (int16_t)maxsize;
-    floor_ptr->grid_array[fill_data.ymin][fill_data.xmax].feat = (int16_t)maxsize;
-    floor_ptr->grid_array[fill_data.ymax][fill_data.xmax].feat = (int16_t)maxsize;
-    floor_ptr->grid_array[y0][x0].feat = 0;
+    floor.grid_array[fill_data.ymin][fill_data.xmin].feat = (int16_t)maxsize;
+    floor.grid_array[fill_data.ymax][fill_data.xmin].feat = (int16_t)maxsize;
+    floor.grid_array[fill_data.ymin][fill_data.xmax].feat = (int16_t)maxsize;
+    floor.grid_array[fill_data.ymax][fill_data.xmax].feat = (int16_t)maxsize;
+    floor.grid_array[y0][x0].feat = 0;
     POSITION xstep = xsize * 256;
     POSITION xhstep = xsize * 256;
     POSITION ystep = ysize * 256;
@@ -123,17 +120,17 @@ void generate_hmap(FloorType *floor_ptr, POSITION y0, POSITION x0, POSITION xsiz
             for (POSITION j = 0; j <= yysize; j += ystep) {
                 POSITION ii = i / 256 + fill_data.xmin;
                 POSITION jj = j / 256 + fill_data.ymin;
-                if (floor_ptr->grid_array[jj][ii].feat != -1) {
+                if (floor.grid_array[jj][ii].feat != -1) {
                     continue;
                 }
 
                 if (xhstep2 > grd) {
-                    store_height(floor_ptr, ii, jj, randnum1<short>(maxsize));
+                    store_height(floor, ii, jj, randnum1<short>(maxsize));
                     continue;
                 }
 
-                store_height(floor_ptr, ii, jj,
-                    (floor_ptr->grid_array[jj][fill_data.xmin + (i - xhstep) / 256].feat + floor_ptr->grid_array[jj][fill_data.xmin + (i + xhstep) / 256].feat) / 2 + (randint1(xstep2) - xhstep2) * roug / 16);
+                store_height(floor, ii, jj,
+                    (floor.grid_array[jj][fill_data.xmin + (i - xhstep) / 256].feat + floor.grid_array[jj][fill_data.xmin + (i + xhstep) / 256].feat) / 2 + (randint1(xstep2) - xhstep2) * roug / 16);
             }
         }
 
@@ -141,17 +138,17 @@ void generate_hmap(FloorType *floor_ptr, POSITION y0, POSITION x0, POSITION xsiz
             for (POSITION i = 0; i <= xxsize; i += xstep) {
                 POSITION ii = i / 256 + fill_data.xmin;
                 POSITION jj = j / 256 + fill_data.ymin;
-                if (floor_ptr->grid_array[jj][ii].feat != -1) {
+                if (floor.grid_array[jj][ii].feat != -1) {
                     continue;
                 }
 
                 if (xhstep2 > grd) {
-                    store_height(floor_ptr, ii, jj, randnum1<short>(maxsize));
+                    store_height(floor, ii, jj, randnum1<short>(maxsize));
                     continue;
                 }
 
-                store_height(floor_ptr, ii, jj,
-                    (floor_ptr->grid_array[fill_data.ymin + (j - yhstep) / 256][ii].feat + floor_ptr->grid_array[fill_data.ymin + (j + yhstep) / 256][ii].feat) / 2 + (randint1(ystep2) - yhstep2) * roug / 16);
+                store_height(floor, ii, jj,
+                    (floor.grid_array[fill_data.ymin + (j - yhstep) / 256][ii].feat + floor.grid_array[fill_data.ymin + (j + yhstep) / 256][ii].feat) / 2 + (randint1(ystep2) - yhstep2) * roug / 16);
             }
         }
 
@@ -159,12 +156,12 @@ void generate_hmap(FloorType *floor_ptr, POSITION y0, POSITION x0, POSITION xsiz
             for (POSITION j = yhstep; j <= yysize - yhstep; j += ystep) {
                 POSITION ii = i / 256 + fill_data.xmin;
                 POSITION jj = j / 256 + fill_data.ymin;
-                if (floor_ptr->grid_array[jj][ii].feat != -1) {
+                if (floor.grid_array[jj][ii].feat != -1) {
                     continue;
                 }
 
                 if (xhstep2 > grd) {
-                    store_height(floor_ptr, ii, jj, randnum1<short>(maxsize));
+                    store_height(floor, ii, jj, randnum1<short>(maxsize));
                     continue;
                 }
 
@@ -172,8 +169,8 @@ void generate_hmap(FloorType *floor_ptr, POSITION y0, POSITION x0, POSITION xsiz
                 POSITION xp = fill_data.xmin + (i + xhstep) / 256;
                 POSITION ym = fill_data.ymin + (j - yhstep) / 256;
                 POSITION yp = fill_data.ymin + (j + yhstep) / 256;
-                store_height(floor_ptr, ii, jj,
-                    (floor_ptr->grid_array[ym][xm].feat + floor_ptr->grid_array[yp][xm].feat + floor_ptr->grid_array[ym][xp].feat + floor_ptr->grid_array[yp][xp].feat) / 4 + (randint1(xstep2) - xhstep2) * (diagsize / 16) / 256 * roug);
+                store_height(floor, ii, jj,
+                    (floor.grid_array[ym][xm].feat + floor.grid_array[yp][xm].feat + floor.grid_array[ym][xp].feat + floor.grid_array[yp][xp].feat) / 4 + (randint1(xstep2) - xhstep2) * (diagsize / 16) / 256 * roug);
             }
         }
     }
@@ -182,44 +179,44 @@ void generate_hmap(FloorType *floor_ptr, POSITION y0, POSITION x0, POSITION xsiz
 static bool hack_isnt_wall(PlayerType *player_ptr, POSITION y, POSITION x, int c1, int c2, int c3, FEAT_IDX feat1, FEAT_IDX feat2, FEAT_IDX feat3,
     BIT_FLAGS info1, BIT_FLAGS info2, BIT_FLAGS info3)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (floor_ptr->grid_array[y][x].info & CAVE_ICKY) {
+    auto &floor = *player_ptr->current_floor_ptr;
+    if (floor.grid_array[y][x].info & CAVE_ICKY) {
         return false;
     }
 
-    floor_ptr->grid_array[y][x].info |= (CAVE_ICKY);
-    if (floor_ptr->grid_array[y][x].feat <= c1) {
+    floor.grid_array[y][x].info |= (CAVE_ICKY);
+    if (floor.grid_array[y][x].feat <= c1) {
         if (randint1(100) < 75) {
-            floor_ptr->grid_array[y][x].feat = feat1;
-            floor_ptr->grid_array[y][x].info &= ~(CAVE_MASK);
-            floor_ptr->grid_array[y][x].info |= info1;
+            floor.grid_array[y][x].feat = feat1;
+            floor.grid_array[y][x].info &= ~(CAVE_MASK);
+            floor.grid_array[y][x].info |= info1;
             return true;
         } else {
-            floor_ptr->grid_array[y][x].feat = feat2;
-            floor_ptr->grid_array[y][x].info &= ~(CAVE_MASK);
-            floor_ptr->grid_array[y][x].info |= info2;
+            floor.grid_array[y][x].feat = feat2;
+            floor.grid_array[y][x].info &= ~(CAVE_MASK);
+            floor.grid_array[y][x].info |= info2;
             return true;
         }
     }
 
-    if (floor_ptr->grid_array[y][x].feat <= c2) {
+    if (floor.grid_array[y][x].feat <= c2) {
         if (randint1(100) < 75) {
-            floor_ptr->grid_array[y][x].feat = feat2;
-            floor_ptr->grid_array[y][x].info &= ~(CAVE_MASK);
-            floor_ptr->grid_array[y][x].info |= info2;
+            floor.grid_array[y][x].feat = feat2;
+            floor.grid_array[y][x].info &= ~(CAVE_MASK);
+            floor.grid_array[y][x].info |= info2;
             return true;
         } else {
-            floor_ptr->grid_array[y][x].feat = feat1;
-            floor_ptr->grid_array[y][x].info &= ~(CAVE_MASK);
-            floor_ptr->grid_array[y][x].info |= info1;
+            floor.grid_array[y][x].feat = feat1;
+            floor.grid_array[y][x].info &= ~(CAVE_MASK);
+            floor.grid_array[y][x].info |= info1;
             return true;
         }
     }
 
-    if (floor_ptr->grid_array[y][x].feat <= c3) {
-        floor_ptr->grid_array[y][x].feat = feat3;
-        floor_ptr->grid_array[y][x].info &= ~(CAVE_MASK);
-        floor_ptr->grid_array[y][x].info |= info3;
+    if (floor.grid_array[y][x].feat <= c3) {
+        floor.grid_array[y][x].feat = feat3;
+        floor.grid_array[y][x].info &= ~(CAVE_MASK);
+        floor.grid_array[y][x].info |= info3;
         return true;
     }
 
@@ -243,10 +240,10 @@ static void cave_fill(PlayerType *player_ptr, const Pos2D &initial_pos)
         // 参照で受けるとダングリング状態になるのでコピーする.
         const Pos2D pos = que.front();
         que.pop();
-        for (int d = 0; d < 8; d++) {
-            const Pos2D pos_to(pos.y + ddy_ddd[d], pos.x + ddx_ddd[d]);
+        for (const auto &d : Direction::directions_8()) {
+            const auto pos_to = pos + d.vec();
             auto &grid = floor.get_grid(pos_to);
-            if (!in_bounds(&floor, pos_to.y, pos_to.x)) {
+            if (!floor.contains(pos_to)) {
                 grid.info |= CAVE_ICKY;
                 continue;
             }
@@ -269,25 +266,26 @@ static void cave_fill(PlayerType *player_ptr, const Pos2D &initial_pos)
 
 bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int cutoff, bool light, bool room)
 {
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &dungeon = floor.get_dungeon_definition();
     POSITION xhsize = xsize / 2;
     POSITION yhsize = ysize / 2;
     fill_data.c1 = cutoff;
     fill_data.c2 = 0;
     fill_data.c3 = 0;
-    fill_data.feat1 = rand_choice(feat_ground_type);
-    fill_data.feat2 = rand_choice(feat_ground_type);
-    fill_data.feat3 = rand_choice(feat_ground_type);
+    fill_data.feat1 = dungeon.select_floor_terrain_id();
+    fill_data.feat2 = dungeon.select_floor_terrain_id();
+    fill_data.feat3 = dungeon.select_floor_terrain_id();
     fill_data.info1 = CAVE_FLOOR;
     fill_data.info2 = CAVE_FLOOR;
     fill_data.info3 = CAVE_FLOOR;
     fill_data.amount = 0;
-    auto *floor_ptr = player_ptr->current_floor_ptr;
     cave_fill(player_ptr, { y0, x0 });
     if (fill_data.amount < 10) {
         for (POSITION x = 0; x <= xsize; ++x) {
             for (POSITION y = 0; y <= ysize; ++y) {
                 place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
-                floor_ptr->grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_ICKY | CAVE_ROOM);
+                floor.grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_ICKY | CAVE_ROOM);
             }
         }
 
@@ -295,102 +293,102 @@ bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION
     }
 
     for (int i = 0; i <= xsize; ++i) {
-        auto *g_ptr1 = &floor_ptr->grid_array[y0 - yhsize][i + x0 - xhsize];
-        if (g_ptr1->is_icky() && (room)) {
+        auto &grid1 = floor.grid_array[y0 - yhsize][i + x0 - xhsize];
+        if (grid1.is_icky() && (room)) {
             place_bold(player_ptr, y0 - yhsize, x0 + i - xhsize, GB_OUTER);
             if (light) {
-                floor_ptr->grid_array[y0 - yhsize][x0 + i - xhsize].info |= (CAVE_GLOW);
+                floor.grid_array[y0 - yhsize][x0 + i - xhsize].info |= (CAVE_GLOW);
             }
 
-            g_ptr1->info |= (CAVE_ROOM);
+            grid1.info |= (CAVE_ROOM);
             place_bold(player_ptr, y0 - yhsize, x0 + i - xhsize, GB_OUTER);
         } else {
             place_bold(player_ptr, y0 - yhsize, x0 + i - xhsize, GB_EXTRA);
         }
 
-        auto *g_ptr2 = &floor_ptr->grid_array[ysize + y0 - yhsize][i + x0 - xhsize];
-        if (g_ptr2->is_icky() && (room)) {
+        auto &grid2 = floor.grid_array[ysize + y0 - yhsize][i + x0 - xhsize];
+        if (grid2.is_icky() && (room)) {
             place_bold(player_ptr, y0 + ysize - yhsize, x0 + i - xhsize, GB_OUTER);
             if (light) {
-                g_ptr2->info |= (CAVE_GLOW);
+                grid2.info |= (CAVE_GLOW);
             }
 
-            g_ptr2->info |= (CAVE_ROOM);
+            grid2.info |= (CAVE_ROOM);
             place_bold(player_ptr, y0 + ysize - yhsize, x0 + i - xhsize, GB_OUTER);
         } else {
             place_bold(player_ptr, y0 + ysize - yhsize, x0 + i - xhsize, GB_EXTRA);
         }
 
-        g_ptr1->info &= ~(CAVE_ICKY);
-        g_ptr2->info &= ~(CAVE_ICKY);
+        grid1.info &= ~(CAVE_ICKY);
+        grid2.info &= ~(CAVE_ICKY);
     }
 
     for (int i = 1; i < ysize; ++i) {
-        auto *g_ptr1 = &floor_ptr->grid_array[i + y0 - yhsize][x0 - xhsize];
-        if (g_ptr1->is_icky() && room) {
+        auto &grid1 = floor.grid_array[i + y0 - yhsize][x0 - xhsize];
+        if (grid1.is_icky() && room) {
             place_bold(player_ptr, y0 + i - yhsize, x0 - xhsize, GB_OUTER);
             if (light) {
-                g_ptr1->info |= (CAVE_GLOW);
+                grid1.info |= (CAVE_GLOW);
             }
 
-            g_ptr1->info |= (CAVE_ROOM);
+            grid1.info |= (CAVE_ROOM);
             place_bold(player_ptr, y0 + i - yhsize, x0 - xhsize, GB_OUTER);
         } else {
             place_bold(player_ptr, y0 + i - yhsize, x0 - xhsize, GB_EXTRA);
         }
 
-        auto *g_ptr2 = &floor_ptr->grid_array[i + y0 - yhsize][xsize + x0 - xhsize];
-        if (g_ptr2->is_icky() && room) {
+        auto &grid2 = floor.grid_array[i + y0 - yhsize][xsize + x0 - xhsize];
+        if (grid2.is_icky() && room) {
             place_bold(player_ptr, y0 + i - yhsize, x0 + xsize - xhsize, GB_OUTER);
             if (light) {
-                g_ptr2->info |= (CAVE_GLOW);
+                grid2.info |= (CAVE_GLOW);
             }
 
-            g_ptr2->info |= (CAVE_ROOM);
+            grid2.info |= (CAVE_ROOM);
             place_bold(player_ptr, y0 + i - yhsize, x0 + xsize - xhsize, GB_OUTER);
         } else {
             place_bold(player_ptr, y0 + i - yhsize, x0 + xsize - xhsize, GB_EXTRA);
         }
 
-        g_ptr1->info &= ~(CAVE_ICKY);
-        g_ptr2->info &= ~(CAVE_ICKY);
+        grid1.info &= ~(CAVE_ICKY);
+        grid2.info &= ~(CAVE_ICKY);
     }
 
     for (POSITION x = 1; x < xsize; ++x) {
         for (POSITION y = 1; y < ysize; ++y) {
-            auto *g_ptr1 = &floor_ptr->grid_array[y0 + y - yhsize][x0 + x - xhsize];
-            if (g_ptr1->is_floor() && g_ptr1->is_icky()) {
-                g_ptr1->info &= ~CAVE_ICKY;
+            auto &grid1 = floor.grid_array[y0 + y - yhsize][x0 + x - xhsize];
+            if (grid1.is_floor() && grid1.is_icky()) {
+                grid1.info &= ~CAVE_ICKY;
                 if (light) {
-                    g_ptr1->info |= (CAVE_GLOW);
+                    grid1.info |= (CAVE_GLOW);
                 }
 
                 if (room) {
-                    g_ptr1->info |= (CAVE_ROOM);
+                    grid1.info |= (CAVE_ROOM);
                 }
 
                 continue;
             }
 
-            auto *g_ptr2 = &floor_ptr->grid_array[y0 + y - yhsize][x0 + x - xhsize];
-            if (g_ptr2->is_outer() && g_ptr2->is_icky()) {
-                g_ptr2->info &= ~(CAVE_ICKY);
+            auto &grid2 = floor.grid_array[y0 + y - yhsize][x0 + x - xhsize];
+            if (grid2.is_outer() && grid2.is_icky()) {
+                grid2.info &= ~(CAVE_ICKY);
                 if (light) {
-                    g_ptr2->info |= (CAVE_GLOW);
+                    grid2.info |= (CAVE_GLOW);
                 }
 
                 if (room) {
-                    g_ptr2->info |= (CAVE_ROOM);
+                    grid2.info |= (CAVE_ROOM);
                 } else {
                     place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
-                    g_ptr2->info &= ~(CAVE_ROOM);
+                    grid2.info &= ~(CAVE_ROOM);
                 }
 
                 continue;
             }
 
             place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
-            g_ptr2->info &= ~(CAVE_ICKY | CAVE_ROOM);
+            grid2.info &= ~(CAVE_ICKY | CAVE_ROOM);
         }
     }
 
@@ -399,44 +397,55 @@ bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION
 
 bool generate_lake(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int c1, int c2, int c3, int type)
 {
-    FEAT_IDX feat1, feat2, feat3;
-    POSITION xhsize = xsize / 2;
-    POSITION yhsize = ysize / 2;
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &dungeon = floor.get_dungeon_definition();
+    const auto &terrains = TerrainList::get_instance();
+    const auto terrain_id_rubble = terrains.get_terrain_id(TerrainTag::RUBBLE);
+    const auto terrain_id_deep_water = terrains.get_terrain_id(TerrainTag::DEEP_WATER);
+    const auto terrain_id_shallow_water = terrains.get_terrain_id(TerrainTag::SHALLOW_WATER);
+    const auto terrain_id_deep_lava = terrains.get_terrain_id(TerrainTag::DEEP_LAVA);
+    const auto terrain_id_shallow_lava = terrains.get_terrain_id(TerrainTag::SHALLOW_LAVA);
+    const auto terrain_id_grass = terrains.get_terrain_id(TerrainTag::GRASS);
+    const auto xhsize = xsize / 2;
+    const auto yhsize = ysize / 2;
+    short feat1;
+    short feat2;
+    short feat3;
     switch (type) {
     case LAKE_T_LAVA: /* Lava */
-        feat1 = feat_deep_lava;
-        feat2 = feat_shallow_lava;
-        feat3 = rand_choice(feat_ground_type);
+        feat1 = terrain_id_deep_lava;
+        feat2 = terrain_id_shallow_lava;
+        feat3 = dungeon.select_floor_terrain_id();
         break;
     case LAKE_T_WATER: /* Water */
-        feat1 = feat_deep_water;
-        feat2 = feat_shallow_water;
-        feat3 = rand_choice(feat_ground_type);
+        feat1 = terrain_id_deep_water;
+        feat2 = terrain_id_shallow_water;
+        feat3 = dungeon.select_floor_terrain_id();
         break;
-    case LAKE_T_CAVE: /* Collapsed floor_ptr->grid_array */
-        feat1 = rand_choice(feat_ground_type);
-        feat2 = rand_choice(feat_ground_type);
-        feat3 = feat_rubble;
+    case LAKE_T_CAVE: /* Collapsed floor.grid_array */
+        feat1 = dungeon.select_floor_terrain_id();
+        feat2 = dungeon.select_floor_terrain_id();
+        feat3 = terrain_id_rubble;
         break;
     case LAKE_T_EARTH_VAULT: /* Earth vault */
-        feat1 = feat_rubble;
-        feat2 = rand_choice(feat_ground_type);
-        feat3 = feat_rubble;
+        feat1 = terrain_id_rubble;
+        feat2 = dungeon.select_floor_terrain_id();
+        feat3 = terrain_id_rubble;
         break;
     case LAKE_T_AIR_VAULT: /* Air vault */
-        feat1 = feat_grass;
-        feat2 = feat_tree;
-        feat3 = feat_grass;
+        feat1 = terrain_id_grass;
+        feat2 = terrains.get_terrain_id(TerrainTag::TREE);
+        feat3 = terrain_id_grass;
         break;
     case LAKE_T_WATER_VAULT: /* Water vault */
-        feat1 = feat_shallow_water;
-        feat2 = feat_deep_water;
-        feat3 = feat_shallow_water;
+        feat1 = terrain_id_shallow_water;
+        feat2 = terrain_id_deep_water;
+        feat3 = terrain_id_shallow_water;
         break;
     case LAKE_T_FIRE_VAULT: /* Fire Vault */
-        feat1 = feat_shallow_lava;
-        feat2 = feat_deep_lava;
-        feat3 = feat_shallow_lava;
+        feat1 = terrain_id_shallow_lava;
+        feat2 = terrain_id_deep_lava;
+        feat3 = terrain_id_shallow_lava;
         break;
     default:
         return false;
@@ -453,44 +462,49 @@ bool generate_lake(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xs
     fill_data.info3 = 0;
     fill_data.amount = 0;
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
     cave_fill(player_ptr, { y0, x0 });
     if (fill_data.amount < 10) {
-        for (POSITION x = 0; x <= xsize; ++x) {
-            for (POSITION y = 0; y <= ysize; ++y) {
-                place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_FLOOR);
-                floor_ptr->grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_ICKY);
+        for (auto x = 0; x <= xsize; ++x) {
+            for (auto y = 0; y <= ysize; ++y) {
+                const Pos2D pos(y0 + y - yhsize, x0 + x - xhsize);
+                place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+                floor.get_grid(pos).info &= ~(CAVE_ICKY);
             }
         }
 
         return false;
     }
 
-    for (int i = 0; i <= xsize; ++i) {
-        place_bold(player_ptr, y0 + 0 - yhsize, x0 + i - xhsize, GB_EXTRA);
-        place_bold(player_ptr, y0 + ysize - yhsize, x0 + i - xhsize, GB_EXTRA);
-        floor_ptr->grid_array[y0 - yhsize][x0 + i - xhsize].info &= ~(CAVE_ICKY);
-        floor_ptr->grid_array[y0 + ysize - yhsize][x0 + i - xhsize].info &= ~(CAVE_ICKY);
+    for (auto i = 0; i <= xsize; ++i) {
+        const Pos2D pos(y0 - yhsize, x0 + i - xhsize);
+        const Pos2DVec vec(ysize, 0);
+        place_bold(player_ptr, pos.y, pos.x, GB_EXTRA);
+        place_bold(player_ptr, (pos + vec).y, (pos + vec).x, GB_EXTRA);
+        floor.get_grid(pos).info &= ~(CAVE_ICKY);
+        floor.get_grid(pos + vec).info &= ~(CAVE_ICKY);
     }
 
-    for (int i = 1; i < ysize; ++i) {
-        place_bold(player_ptr, y0 + i - yhsize, x0 - xhsize, GB_EXTRA);
-        place_bold(player_ptr, y0 + i - yhsize, x0 + xsize - xhsize, GB_EXTRA);
-        floor_ptr->grid_array[y0 + i - yhsize][x0 - xhsize].info &= ~(CAVE_ICKY);
-        floor_ptr->grid_array[y0 + i - yhsize][x0 + xsize - xhsize].info &= ~(CAVE_ICKY);
+    for (auto i = 1; i < ysize; ++i) {
+        const Pos2D pos(y0 + i - yhsize, x0 - xhsize);
+        const Pos2DVec vec(0, xsize);
+        place_bold(player_ptr, pos.y, pos.x, GB_EXTRA);
+        place_bold(player_ptr, (pos + vec).y, (pos + vec).x, GB_EXTRA);
+        floor.get_grid(pos).info &= ~(CAVE_ICKY);
+        floor.get_grid(pos + vec).info &= ~(CAVE_ICKY);
     }
 
-    for (POSITION x = 1; x < xsize; ++x) {
-        for (POSITION y = 1; y < ysize; ++y) {
-            auto *g_ptr = &floor_ptr->grid_array[y0 + y - yhsize][x0 + x - xhsize];
-            if (!g_ptr->is_icky() || g_ptr->is_outer()) {
-                place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
+    for (auto x = 1; x < xsize; ++x) {
+        for (auto y = 1; y < ysize; ++y) {
+            const Pos2D pos(y0 + y - yhsize, x0 + x - xhsize);
+            auto &grid = floor.get_grid(pos);
+            if (!grid.is_icky() || grid.is_outer()) {
+                place_bold(player_ptr, pos.y, pos.x, GB_EXTRA);
             }
 
-            floor_ptr->grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_ICKY | CAVE_ROOM);
-            if (cave_has_flag_bold(floor_ptr, y0 + y - yhsize, x0 + x - xhsize, TerrainCharacteristics::LAVA)) {
-                if (floor_ptr->get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS)) {
-                    floor_ptr->grid_array[y0 + y - yhsize][x0 + x - xhsize].info |= CAVE_GLOW;
+            grid.info &= ~(CAVE_ICKY | CAVE_ROOM);
+            if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::LAVA)) {
+                if (floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS)) {
+                    grid.info |= CAVE_GLOW;
                 }
             }
         }

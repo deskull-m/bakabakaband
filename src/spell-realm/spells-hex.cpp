@@ -3,14 +3,14 @@
 #include "core/window-redrawer.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
-#include "monster-attack/monster-attack-player.h"
-#include "monster-race/monster-race.h"
+#include "monster/monster-describer.h"
+#include "monster/monster-description-types.h"
 #include "player-base/player-class.h"
 #include "player-info/spell-hex-data-type.h"
 #include "player/attack-defense-types.h"
+#include "player/player-realm.h"
 #include "player/player-skill.h"
 #include "realm/realm-hex-numbers.h"
-#include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-song.h"
 #include "spell/spell-info.h"
@@ -18,20 +18,15 @@
 #include "spell/technic-info-table.h"
 #include "status/action-setter.h"
 #include "system/angband-exceptions.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
-#ifdef JP
-#else
-#include "monster/monster-describer.h"
-#include "monster/monster-description-types.h"
-#endif
 
 /*!< 呪術の最大詠唱数 */
 constexpr int MAX_KEEP = 4;
@@ -51,19 +46,13 @@ SpellHex::SpellHex(PlayerType *player_ptr)
     }
 }
 
-SpellHex::SpellHex(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
-    : player_ptr(player_ptr)
-    , monap_ptr(monap_ptr)
-{
-}
-
 /*!
  * @brief プレイヤーが詠唱中の全呪術を停止する
  */
 void SpellHex::stop_all_spells()
 {
     for (auto spell : this->casting_spells) {
-        exe_spell(this->player_ptr, REALM_HEX, spell, SpellProcessType::STOP);
+        exe_spell(this->player_ptr, RealmType::HEX, spell, SpellProcessType::STOP);
     }
 
     this->spell_hex_data->casting_spells.clear();
@@ -113,10 +102,9 @@ bool SpellHex::stop_spells_with_selection()
     }
 
     screen_load();
-    const auto is_selected = choice.has_value();
-    if (is_selected) {
-        auto n = this->casting_spells[A2I(choice.value())];
-        exe_spell(this->player_ptr, REALM_HEX, n, SpellProcessType::STOP);
+    if (choice) {
+        auto n = this->casting_spells[A2I(*choice)];
+        exe_spell(this->player_ptr, RealmType::HEX, n, SpellProcessType::STOP);
         this->reset_casting_flag(i2enum<spell_hex_type>(n));
     }
 
@@ -134,7 +122,7 @@ bool SpellHex::stop_spells_with_selection()
         MainWindowRedrawingFlag::MP,
     };
     rfu.set_flags(flags_mwrf);
-    return is_selected;
+    return choice.has_value();
 }
 
 /*!
@@ -145,13 +133,13 @@ bool SpellHex::stop_spells_with_selection()
  * Item2: 選択が完了したらtrue、キャンセルならばfalse
  * Item3: 選択した呪文番号 (a～d、lの5択)
  */
-std::pair<bool, std::optional<char>> SpellHex::select_spell_stopping(std::string_view prompt)
+std::pair<bool, tl::optional<char>> SpellHex::select_spell_stopping(std::string_view prompt)
 {
     while (true) {
         this->display_casting_spells_list();
         const auto choice_opt = input_command(prompt, true);
-        if (!choice_opt.has_value()) {
-            return { false, std::nullopt };
+        if (!choice_opt) {
+            return { false, tl::nullopt };
         }
 
         auto choice = *choice_opt;
@@ -182,8 +170,8 @@ void SpellHex::display_casting_spells_list()
     prt(_("     名前", "     Name"), y, x + 5);
     for (auto spell : this->casting_spells) {
         term_erase(x, y + n + 1);
-        const auto spell_name = exe_spell(this->player_ptr, REALM_HEX, spell, SpellProcessType::NAME);
-        put_str(format("%c)  %s", I2A(n), spell_name->data()), y + n + 1, x + 2);
+        const auto &spell_name = PlayerRealm::get_spell_name(RealmType::HEX, spell);
+        put_str(format("%c)  %s", I2A(n), spell_name.data()), y + n + 1, x + 2);
         n++;
     }
 }
@@ -213,7 +201,7 @@ void SpellHex::decrease_mana()
 
     this->gain_exp();
     for (auto spell : this->casting_spells) {
-        exe_spell(this->player_ptr, REALM_HEX, spell, SpellProcessType::CONTNUATION);
+        exe_spell(this->player_ptr, RealmType::HEX, spell, SpellProcessType::CONTNUATION);
     }
 }
 
@@ -279,9 +267,9 @@ bool SpellHex::check_restart()
 int SpellHex::calc_need_mana()
 {
     auto need_mana = 0;
-    for (auto spell : this->casting_spells) {
-        const auto *s_ptr = &technic_info[REALM_HEX - MIN_TECHNIC][spell];
-        need_mana += mod_need_mana(this->player_ptr, s_ptr->smana, spell, REALM_HEX);
+    for (auto spell_id : this->casting_spells) {
+        const auto &spell = PlayerRealm::get_spell_info(RealmType::HEX, spell_id);
+        need_mana += mod_need_mana(this->player_ptr, spell.smana, spell_id, RealmType::HEX);
     }
 
     return need_mana;
@@ -295,7 +283,7 @@ void SpellHex::gain_exp()
             continue;
         }
 
-        ps.gain_continuous_spell_skill_exp(REALM_HEX, spell);
+        ps.gain_continuous_spell_skill_exp(RealmType::HEX, spell);
     }
 }
 
@@ -321,10 +309,10 @@ void SpellHex::continue_revenge()
 
     switch (this->get_revenge_type()) {
     case SpellHexRevengeType::PATIENCE:
-        exe_spell(this->player_ptr, REALM_HEX, HEX_PATIENCE, SpellProcessType::CONTNUATION);
+        exe_spell(this->player_ptr, RealmType::HEX, HEX_PATIENCE, SpellProcessType::CONTNUATION);
         return;
     case SpellHexRevengeType::REVENGE:
-        exe_spell(this->player_ptr, REALM_HEX, HEX_REVENGE, SpellProcessType::CONTNUATION);
+        exe_spell(this->player_ptr, RealmType::HEX, HEX_REVENGE, SpellProcessType::CONTNUATION);
         return;
     default:
         return;
@@ -352,9 +340,9 @@ void SpellHex::store_vengeful_damage(int dam)
  */
 bool SpellHex::check_hex_barrier(MONSTER_IDX m_idx, spell_hex_type type) const
 {
-    const auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto *r_ptr = &m_ptr->get_monrace();
-    return this->is_spelling_specific(type) && ((this->player_ptr->lev * 3 / 2) >= randint1(r_ptr->level));
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monrace = monster.get_monrace();
+    return this->is_spelling_specific(type) && ((this->player_ptr->lev * 3 / 2) >= randint1(monrace.level));
 }
 
 bool SpellHex::is_spelling_specific(int hex) const
@@ -375,49 +363,29 @@ void SpellHex::interrupt_spelling()
 
 /*!
  * @brief 呪術「目には目を」の効果処理
- * @param this->player_ptr プレイヤーへの参照ポインタ
- * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
+ * @param m_idx モンスターのインデックス
+ * @param dam プレイヤーが受けたダメージ
  */
-void SpellHex::eyes_on_eyes()
+void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
 {
-    if (this->monap_ptr == nullptr) {
-        THROW_EXCEPTION(std::logic_error, "Invalid constructor was used!");
-    }
-
     const auto is_eyeeye_finished = (this->player_ptr->tim_eyeeye == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
-    if (is_eyeeye_finished || (this->monap_ptr->get_damage == 0) || this->player_ptr->is_dead) {
+    if (is_eyeeye_finished || (dam == 0) || this->player_ptr->is_dead) {
         return;
     }
 
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto m_name = monster_desc(this->player_ptr, monster, 0);
 #ifdef JP
-    msg_format("攻撃が%s自身を傷つけた！", this->monap_ptr->m_name);
+    msg_format("攻撃が%s自身を傷つけた！", m_name.data());
 #else
-    const auto m_name_self = monster_desc(this->player_ptr, this->monap_ptr->m_ptr, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
-    msg_format("The attack of %s has wounded %s!", this->monap_ptr->m_name, m_name_self.data());
+    const auto m_name_self = monster_desc(this->player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
+    msg_format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data());
 #endif
-    const auto y = this->monap_ptr->m_ptr->fy;
-    const auto x = this->monap_ptr->m_ptr->fx;
-    project(this->player_ptr, 0, 0, y, x, this->monap_ptr->get_damage, AttributeType::MISSILE, PROJECT_KILL);
+    const auto y = monster.fy;
+    const auto x = monster.fx;
+    project(this->player_ptr, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
     if (this->player_ptr->tim_eyeeye) {
         set_tim_eyeeye(this->player_ptr, this->player_ptr->tim_eyeeye - 5, true);
-    }
-}
-
-void SpellHex::thief_teleport()
-{
-    if (this->monap_ptr == nullptr) {
-        THROW_EXCEPTION(std::logic_error, "Invalid constructor was used!");
-    }
-
-    if (!this->monap_ptr->blinked || !this->monap_ptr->alive || this->player_ptr->is_dead) {
-        return;
-    }
-
-    if (this->check_hex_barrier(this->monap_ptr->m_idx, HEX_ANTI_TELE)) {
-        msg_print(_("泥棒は笑って逃げ...ようとしたがバリアに防がれた。", "The thief flees laughing...? But a magic barrier obstructs it."));
-    } else {
-        msg_print(_("泥棒は笑って逃げた！", "The thief flees laughing!"));
-        teleport_away(this->player_ptr, this->monap_ptr->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
     }
 }
 

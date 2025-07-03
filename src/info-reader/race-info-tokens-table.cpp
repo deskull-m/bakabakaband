@@ -81,7 +81,6 @@ const std::unordered_map<std::string_view, RaceBlowMethodType> r_info_blow_metho
     { "INSULT", RaceBlowMethodType::INSULT },
     { "MOAN", RaceBlowMethodType::MOAN },
     { "SHOW", RaceBlowMethodType::SHOW },
-    { "SHOOT", RaceBlowMethodType::SHOOT },
     { "ENEMA", RaceBlowMethodType::ENEMA },
     { "BIND", RaceBlowMethodType::BIND },
     { "WHISPER", RaceBlowMethodType::WHISPER },
@@ -268,7 +267,7 @@ const std::unordered_map<std::string_view, MonsterResistanceType> r_info_flagsr 
     { "RES_FIRE", MonsterResistanceType::RESIST_FIRE },
     { "IM_FIRE", MonsterResistanceType::IMMUNE_FIRE },
     { "HURT_COLD", MonsterResistanceType::HURT_COLD },
-    { "RES_COLD", MonsterResistanceType::RESIST_FIRE },
+    { "RES_COLD", MonsterResistanceType::RESIST_COLD },
     { "IM_COLD", MonsterResistanceType::IMMUNE_COLD },
     { "HURT_POIS", MonsterResistanceType::HURT_POISON },
     { "RES_POIS", MonsterResistanceType::RESIST_POISON },
@@ -345,8 +344,8 @@ const std::unordered_map<std::string_view, MonsterAuraType> r_info_aura_flags = 
 };
 
 const std::unordered_map<std::string_view, MonsterBehaviorType> r_info_behavior_flags = {
-    { "NEVER_BLOW", MonsterBehaviorType::NEVER_BLOW },
     { "NEVER_MOVE", MonsterBehaviorType::NEVER_MOVE },
+    { "NEVER_BLOW", MonsterBehaviorType::NEVER_BLOW },
     { "OPEN_DOOR", MonsterBehaviorType::OPEN_DOOR },
     { "BASH_DOOR", MonsterBehaviorType::BASH_DOOR },
     { "MOVE_BODY", MonsterBehaviorType::MOVE_BODY },
@@ -358,7 +357,6 @@ const std::unordered_map<std::string_view, MonsterBehaviorType> r_info_behavior_
     { "STUPID", MonsterBehaviorType::STUPID },
     { "SMART", MonsterBehaviorType::SMART },
     { "FRIENDLY", MonsterBehaviorType::FRIENDLY },
-    { "PREVENT_SUDDEN_MAGIC", MonsterBehaviorType::PREVENT_SUDDEN_MAGIC },
 };
 
 const std::unordered_map<std::string_view, MonsterVisualType> r_info_visual_flags = {
@@ -426,6 +424,18 @@ const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = 
     { "DROP_2D2", MonsterDropType::DROP_2D2 },
     { "DROP_3D2", MonsterDropType::DROP_3D2 },
     { "DROP_4D2", MonsterDropType::DROP_4D2 },
+    { "DROP_COPPER", MonsterDropType::DROP_COPPER },
+    { "DROP_SILVER", MonsterDropType::DROP_SILVER },
+    { "DROP_GARNET", MonsterDropType::DROP_GARNET },
+    { "DROP_GOLD", MonsterDropType::DROP_GOLD },
+    { "DROP_OPAL", MonsterDropType::DROP_OPAL },
+    { "DROP_SAPPHIRE", MonsterDropType::DROP_SAPPHIRE },
+    { "DROP_RUBY", MonsterDropType::DROP_RUBY },
+    { "DROP_DIAMOND", MonsterDropType::DROP_DIAMOND },
+    { "DROP_EMERALD", MonsterDropType::DROP_EMERALD },
+    { "DROP_MITHRIL", MonsterDropType::DROP_MITHRIL },
+    { "DROP_ADAMANTITE", MonsterDropType::DROP_ADAMANTITE },
+    { "DROP_OBSIDIAN", MonsterDropType::DROP_OBSIDIAN },
     { "DROP_NASTY", MonsterDropType::DROP_NASTY },
 };
 
@@ -454,6 +464,7 @@ const std::unordered_map<std::string_view, MonsterFeatureType> r_info_feature_fl
 const std::unordered_map<std::string_view, MonsterPopulationType> r_info_population_flags = {
     { "NAZGUL", MonsterPopulationType::NAZGUL },
     { "ONLY_ONE", MonsterPopulationType::ONLY_ONE },
+    { "BUNBUN_STRIKER", MonsterPopulationType::BUNBUN_STRIKER },
 };
 
 const std::unordered_map<std::string_view, MonsterSpeakType> r_info_speak_flags = {
@@ -463,6 +474,26 @@ const std::unordered_map<std::string_view, MonsterSpeakType> r_info_speak_flags 
     { "SPEAK_FRIEND", MonsterSpeakType::SPEAK_FRIEND },
     { "SPEAK_DEATH", MonsterSpeakType::SPEAK_DEATH },
     { "SPEAK_SPAWN", MonsterSpeakType::SPEAK_SPAWN },
+};
+
+const std::unordered_map<std::string_view, MonsterMessageType> r_info_message_flags = {
+    { "SPEAK_ALL", MonsterMessageType::SPEAK_ALL },
+    { "SPEAK_BATTLE", MonsterMessageType::SPEAK_BATTLE },
+    { "SPEAK_FEAR", MonsterMessageType::SPEAK_FEAR },
+    { "SPEAK_FRIEND", MonsterMessageType::SPEAK_FRIEND },
+    { "SPEAK_DEATH", MonsterMessageType::SPEAK_DEATH },
+    { "SPEAK_SPAWN", MonsterMessageType::SPEAK_SPAWN },
+    { "WALK_CLOSERANGE", MonsterMessageType::WALK_CLOSERANGE },
+    { "WALK_MIDDLERANGE", MonsterMessageType::WALK_MIDDLERANGE },
+    { "WALK_LONGRANGE", MonsterMessageType::WALK_LONGRANGE },
+    { "MESSAGE_STALKER", MonsterMessageType::MESSAGE_STALKER },
+    { "MESSAGE_REFLECT", MonsterMessageType::MESSAGE_REFLECT },
+    { "MESSAGE_TIMESTOP", MonsterMessageType::MESSAGE_TIMESTOP },
+    { "MESSAGE_TIMESTART", MonsterMessageType::MESSAGE_TIMESTART },
+    { "MESSAGE_BREATH_SOUND", MonsterMessageType::MESSAGE_BREATH_SOUND },
+    { "MESSAGE_BREATH_SHARDS", MonsterMessageType::MESSAGE_BREATH_SHARDS },
+    { "MESSAGE_BREATH_FORCE", MonsterMessageType::MESSAGE_BREATH_FORCE },
+    { "MESSAGE_DETECT_UNIQUE", MonsterMessageType::MESSAGE_DETECT_UNIQUE },
 };
 
 const std::unordered_map<std::string_view, MonsterBrightnessType> r_info_brightness_flags = {
@@ -498,14 +529,15 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "EMPTY_MIND", MonsterMiscType::EMPTY_MIND },
     { "WEIRD_MIND", MonsterMiscType::WEIRD_MIND },
     { "VOCIFEROUS", MonsterMiscType::VOCIFEROUS },
-};
-
-const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags = {
-    { "DIMINISH_MAX_DAMAGE", MonsterSpecialType::DIMINISH_MAX_DAMAGE },
+    { "STALKER", MonsterMiscType::STALKER },
 };
 
 const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {
     { "NONE", MonsterSex::NONE },
     { "MALE", MonsterSex::MALE },
     { "FEMALE", MonsterSex::FEMALE },
+};
+
+const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags = {
+    { "DIMINISH_MAX_DAMAGE", MonsterSpecialType::DIMINISH_MAX_DAMAGE },
 };

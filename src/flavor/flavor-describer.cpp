@@ -19,7 +19,6 @@
 #include "object-enchant/special-object-flags.h"
 #include "object-enchant/tr-types.h"
 #include "object-enchant/trg-types.h"
-#include "object-hook/hook-quest.h"
 #include "object/tval-types.h"
 #include "perception/object-perception.h"
 #include "player-base/player-class.h"
@@ -28,9 +27,10 @@
 #include "smith/object-smith.h"
 #include "smith/smith-types.h"
 #include "sv-definition/sv-lite-types.h"
+#include "sv-definition/sv-ring-types.h"
 #include "sv-definition/sv-weapon-types.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -72,10 +72,10 @@ static std::string describe_chest_trap(const ItemEntity &item)
     case ChestTrapType::SCATTER:
         return _("(アイテム散乱)", " (Scatter)");
     case ChestTrapType::MAX:
-        throw("Invalid chest trap type is specified!");
+        THROW_EXCEPTION(std::logic_error, "Invalid chest trap type is specified!");
+    default:
+        return "";
     }
-
-    return "";
 }
 
 static std::string describe_chest(const ItemEntity &item, const describe_option_type &opt)
@@ -130,7 +130,7 @@ static bool should_show_slaying_bonus(const ItemEntity &item)
         const auto &baseitem = item.get_baseitem();
         const auto base_has_no_bonus = (baseitem.to_h == 0) && (baseitem.to_d == 0);
         const auto item_has_bonus = (item.to_h != 0) || (item.to_d != 0);
-        if (base_has_no_bonus && item_has_bonus) {
+        if ((base_has_no_bonus && item_has_bonus) || (item.bi_key.sval() == SV_RING_LAW)) {
             return true;
         }
     }
@@ -140,13 +140,16 @@ static bool should_show_slaying_bonus(const ItemEntity &item)
 
 static std::string describe_weapon_dice(PlayerType *player_ptr, const ItemEntity &item, const describe_option_type &opt)
 {
-    if (!opt.known && object_is_quest_target(player_ptr->current_floor_ptr->quest_number, &item)) {
+    if (!opt.known && item.is_target_of(player_ptr->current_floor_ptr->quest_number)) {
         return "";
     }
 
     const auto is_bonus = (player_ptr->riding > 0) && item.is_lance();
-    const auto bonus = is_bonus ? 2 : 0;
-    return format(" (%dd%d)", item.dd + bonus, item.ds);
+    auto bonused_dice = item.damage_dice;
+    if (is_bonus) {
+        bonused_dice.num += 2;
+    }
+    return format(" (%s)", bonused_dice.to_string().data());
 }
 
 static std::string describe_bow_power(PlayerType *player_ptr, const ItemEntity &item, const describe_option_type &opt)
@@ -245,7 +248,7 @@ static std::string describe_fire_energy(PlayerType *player_ptr, const ItemEntity
 
 static std::string describe_ammo_detail(PlayerType *player_ptr, const ItemEntity &ammo, const ItemEntity &bow, const describe_option_type &opt)
 {
-    auto avgdam = ammo.dd * (ammo.ds + 1) * 10 / 2;
+    auto avgdam = ammo.damage_dice.floored_expected_value_multiplied_by(10);
     auto tmul = bow.get_arrow_magnification();
     if (bow.is_known()) {
         avgdam += (bow.to_d * 10);
@@ -342,7 +345,7 @@ static std::string describe_charges_rod(const ItemEntity &item)
         return _("(充填中)", " (charging)");
     }
 
-    const auto timeout_per_one = item.get_baseitem().pval;
+    const auto timeout_per_one = item.get_baseitem_pval();
     auto num_of_charging = (item.timeout + (timeout_per_one - 1)) / timeout_per_one;
     if (num_of_charging > item.number) {
         num_of_charging = item.number;
@@ -574,14 +577,13 @@ static describe_option_type decide_describe_option(const ItemEntity &item, BIT_F
  * @param mode 表記に関するオプション指定
  * @return modeに応じたオブジェクトの表記
  */
-std::string describe_flavor(PlayerType *player_ptr, const ItemEntity *o_ptr, BIT_FLAGS mode, const size_t max_length)
+std::string describe_flavor(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mode, const size_t max_length)
 {
-    const auto &item = *o_ptr;
     const auto opt = decide_describe_option(item, mode);
     std::stringstream ss;
     ss << describe_named_item(player_ptr, item, opt);
 
-    if (any_bits(mode, OD_NAME_ONLY) || !o_ptr->is_valid()) {
+    if (any_bits(mode, OD_NAME_ONLY) || !item.is_valid()) {
         return str_substr(ss.str(), 0, max_length);
     }
 
@@ -590,7 +592,7 @@ std::string describe_flavor(PlayerType *player_ptr, const ItemEntity *o_ptr, BIT
        << describe_accuracy_and_damage_bonus(item, opt);
 
     if (none_bits(mode, OD_DEBUG)) {
-        const auto &bow = player_ptr->inventory_list[INVEN_BOW];
+        const auto &bow = *player_ptr->inventory[INVEN_BOW];
         const auto tval = item.bi_key.tval();
         if (bow.is_valid() && (tval == bow.get_arrow_kind())) {
             ss << describe_ammo_detail(player_ptr, item, bow, opt);

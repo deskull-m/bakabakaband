@@ -1,31 +1,67 @@
 #pragma once
 
+#include "realm/realm-types.h"
 #include "system/angband.h"
+#include "util/flag-group.h"
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <tl/optional.hpp>
 #include <vector>
 
-/* 職業ごとの選択可能な魔法領域 / Possible realms that can be chosen. */
-enum choosable_realm {
-    CH_NONE = 0x00,
-    CH_LIFE = 0x01,
-    CH_SORCERY = 0x02,
-    CH_NATURE = 0x04,
-    CH_CHAOS = 0x08,
-    CH_DEATH = 0x10,
-    CH_TRUMP = 0x20,
-    CH_ARCANE = 0x40,
-    CH_ENCHANT = 0x80,
-    CH_DAEMON = 0x100,
-    CH_CRUSADE = 0x200,
+using RealmChoices = EnumClassFlagGroup<RealmType>;
 
-    CH_MUSIC = 0x8000,
-    CH_HISSATSU = 0x10000,
-    CH_HEX = 0x20000,
-};
-
-extern const std::vector<BIT_FLAGS> realm_choices1;
-extern const std::vector<BIT_FLAGS> realm_choices2;
-
-class PlayerType;
 enum class ItemKindType : short;
-ItemKindType get_realm1_book(PlayerType *player_ptr);
-ItemKindType get_realm2_book(PlayerType *player_ptr);
+enum class PlayerClassType : short;
+class PlayerType;
+class LocalizedString;
+struct magic_type;
+class PlayerRealm {
+public:
+    PlayerRealm(PlayerType *player_ptr);
+
+    static const LocalizedString &get_name(RealmType realm);
+    static std::string_view get_explanation(RealmType realm);
+    static std::string_view get_subinfo(RealmType realm);
+    static const magic_type &get_spell_info(RealmType realm, int spell_id, tl::optional<PlayerClassType> pclass = tl::nullopt);
+    static const std::string &get_spell_name(RealmType realm, int spell_id);
+    static const std::string &get_spell_description(RealmType realm, int spell_id);
+    static ItemKindType get_book(RealmType realm);
+    static RealmChoices get_realm1_choices(PlayerClassType pclass);
+    static RealmChoices get_realm2_choices(PlayerClassType pclass);
+    static RealmType get_realm_of_book(ItemKindType tval);
+    static bool is_magic(RealmType realm);
+    static bool is_technic(RealmType realm);
+
+    class Realm {
+    public:
+        Realm(RealmType realm);
+        const LocalizedString &get_name() const;
+        std::string_view get_explanation() const;
+        std::string_view get_subinfo() const;
+        const magic_type &get_spell_info(int spell_id) const;
+        const std::string &get_spell_name(int spell_id) const;
+        const std::string &get_spell_description(int spell_id) const;
+        ItemKindType get_book() const;
+        bool is_available() const;
+        bool is_good_attribute() const;
+        bool equals(RealmType realm) const;
+        RealmType to_enum() const;
+
+    private:
+        RealmType realm_;
+    };
+
+    const Realm &realm1() const;
+    const Realm &realm2() const;
+    bool is_realm_hex() const;
+    void reset();
+    void set(RealmType realm1, RealmType realm2 = RealmType::NONE);
+
+private:
+    void set_(RealmType realm1, RealmType realm2);
+
+    PlayerType *player_ptr;
+    Realm realm1_;
+    Realm realm2_;
+};

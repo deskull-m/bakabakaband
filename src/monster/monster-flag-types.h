@@ -4,10 +4,9 @@ enum class MonsterTemporaryFlagType {
     VIEW = 0, /* Monster is in line of sight */
     LOS = 1, /* Monster is marked for project_all_los(player_ptr, ) */
     ESP = 2, /* Monster is being sensed by ESP */
-    ETF = 3, /* Monster is entering the field. */
-    BORN = 4, /* Monster is still being born */
-    PREVENT_MAGIC = 5, /* Monster is still being no-magic */
-    SANITY_BLAST = 6, /* Monster gives sanity blast effects to player */
+    PRESENT_AT_TURN_START = 3, /* Monster on level at start of player's or monster's turn */
+    PREVENT_MAGIC = 4, /* Monster is still being no-magic */
+    SANITY_BLAST = 5, /* Monster gives sanity blast effects to player */
     MAX,
 };
 
@@ -24,5 +23,6 @@ enum class MonsterConstantFlagType {
     CLONED = 9, /*!< クローンである / Cloned */
     SANTA = 10, /*!< サンタと化した / Santa turned */
     LARGE = 11, /*!< 大型 / Large */
+    RIDING = 12, /*!< 乗馬中である / riding */
     MAX,
 };

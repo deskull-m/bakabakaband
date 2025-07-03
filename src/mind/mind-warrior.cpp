@@ -2,7 +2,7 @@
 #include "cmd-action/cmd-attack.h"
 #include "floor/geometry.h"
 #include "spell-kind/spells-teleport.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
@@ -20,7 +20,7 @@ bool hit_and_away(PlayerType *player_ptr)
         return false;
     }
 
-    const auto pos = player_ptr->get_neighbor(*dir);
+    const auto pos = player_ptr->get_neighbor(dir);
     if (player_ptr->current_floor_ptr->get_grid(pos).has_monster()) {
         do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
         if (randint0(player_ptr->skill_dis) < 7) {
@@ -32,7 +32,7 @@ bool hit_and_away(PlayerType *player_ptr)
     }
 
     msg_print(_("その方向にはモンスターはいません。", "You don't see any monster in this direction"));
-    msg_print(nullptr);
+    msg_erase();
     return false;
 }
 
@@ -44,8 +44,8 @@ bool hit_and_away(PlayerType *player_ptr)
 bool sword_dancing(PlayerType *player_ptr)
 {
     for (auto i = 0; i < 6; i++) {
-        const auto dir = randint0(8);
-        const Pos2D pos(player_ptr->y + ddy_ddd[dir], player_ptr->x + ddx_ddd[dir]);
+        const auto d = rand_choice(Direction::directions_8());
+        const auto pos = player_ptr->get_neighbor(d);
         const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
         if (grid.has_monster()) {
             do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);

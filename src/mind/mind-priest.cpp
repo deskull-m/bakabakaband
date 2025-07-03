@@ -34,7 +34,7 @@ bool bless_weapon(PlayerType *player_ptr)
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = o_ptr->get_flags();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (o_ptr->is_cursed()) {
@@ -105,7 +105,7 @@ bool bless_weapon(PlayerType *player_ptr)
             dis_happened = true;
         }
 
-        if ((o_ptr->to_h > 5) && (randint0(100) < 33)) {
+        if ((o_ptr->to_h > 5) && evaluate_percent(33)) {
             o_ptr->to_h--;
         }
 
@@ -115,7 +115,7 @@ bool bless_weapon(PlayerType *player_ptr)
             dis_happened = true;
         }
 
-        if ((o_ptr->to_d > 5) && (randint0(100) < 33)) {
+        if ((o_ptr->to_d > 5) && evaluate_percent(33)) {
             o_ptr->to_d--;
         }
 
@@ -125,7 +125,7 @@ bool bless_weapon(PlayerType *player_ptr)
             dis_happened = true;
         }
 
-        if ((o_ptr->to_a > 5) && (randint0(100) < 33)) {
+        if ((o_ptr->to_a > 5) && evaluate_percent(33)) {
             o_ptr->to_a--;
         }
 

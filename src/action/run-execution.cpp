@@ -6,39 +6,28 @@
 #include "action/run-execution.h"
 #include "action/movement-execution.h"
 #include "core/disturbance.h"
-#include "floor/cave.h"
-#include "floor/floor-util.h"
-#include "floor/geometry.h"
 #include "game-option/disturbance-options.h"
 #include "grid/grid.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
-#include "object/object-mark-types.h"
 #include "player-status/player-energy.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "system/terrain-type-definition.h"
-#include "util/bit-flags-calculator.h"
+#include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
 
 bool ignore_avoid_run;
 
-/* Allow quick "cycling" through the legal directions */
-byte cycle[MAX_RUN_CYCLES] = { 1, 2, 3, 6, 9, 8, 7, 4, 1, 2, 3, 6, 9, 8, 7, 4, 1 };
-
-/* Map each direction into the "middle" of the "cycle[]" array */
-byte chome[MAX_RUN_CHOME] = { 0, 8, 9, 10, 7, 0, 11, 6, 5, 4 };
-
 /* The direction we are running */
-static DIRECTION find_current;
+static Direction find_current = Direction::none();
 
 /* The direction we came from */
-static DIRECTION find_prevdir;
+static Direction find_prevdir = Direction::none();
 
 static bool find_openarea;
 
@@ -50,26 +39,25 @@ static bool find_breakleft;
  * @brief ダッシュ移動処理中、移動先のマスが既知の壁かどうかを判定する /
  * Hack -- Check for a "known wall" (see below)
  * @param player_ptr	プレイヤーへの参照ポインタ
- * @param dir 想定する移動方向ID
- * @param y 移動元のY座標
- * @param x 移動元のX座標
+ * @param dir 想定する移動方向
+ * @param pos_orig 移動元の座標
  * @return 移動先が既知の壁ならばTRUE
  */
-static bool see_wall(PlayerType *player_ptr, DIRECTION dir, POSITION y, POSITION x)
+static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &pos_orig)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    const Pos2D pos(y + ddy[dir], x + ddx[dir]);
-    if (!in_bounds2(floor_ptr, pos.y, pos.x)) {
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto pos = pos_orig + dir.vec();
+    if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return false;
     }
 
-    const auto &grid = floor_ptr->get_grid(pos);
+    const auto &grid = floor.get_grid(pos);
     if (!grid.is_mark()) {
         return false;
     }
 
-    const auto terrain_id = grid.get_feat_mimic();
-    const auto &terrain = grid.get_terrain_mimic();
+    const auto terrain_id = grid.get_terrain_id(TerrainKind::MIMIC);
+    const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
     if (!player_can_enter(player_ptr, terrain_id, 0)) {
         return terrain.flags.has_not(TerrainCharacteristics::DOOR);
     }
@@ -102,34 +90,35 @@ static bool see_wall(PlayerType *player_ptr, DIRECTION dir, POSITION y, POSITION
  *       \#x\#                  \@x\#\n
  *       \@\@p.                  p\n
  */
-static void run_init(PlayerType *player_ptr, DIRECTION dir)
+static void run_init(PlayerType *player_ptr, const Direction &dir)
 {
     find_current = dir;
     find_prevdir = dir;
     find_openarea = true;
     find_breakright = find_breakleft = false;
-    bool deepleft = false;
-    bool deepright = false;
-    bool shortright = false;
-    bool shortleft = false;
     const auto pos = player_ptr->get_position();
     player_ptr->run_py = pos.y;
     player_ptr->run_px = pos.x;
     const auto pos_neighbor = player_ptr->get_neighbor(dir);
-    ignore_avoid_run = cave_has_flag_bold(player_ptr->current_floor_ptr, pos_neighbor.y, pos_neighbor.x, TerrainCharacteristics::AVOID_RUN);
-    int i = chome[dir];
-    if (see_wall(player_ptr, cycle[i + 1], pos.y, pos.x)) {
+    ignore_avoid_run = player_ptr->current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
+    const auto dir_left45 = dir.rotated_45degree(1);
+    const auto dir_right45 = dir.rotated_45degree(-1);
+    auto deepleft = false;
+    auto shortleft = false;
+    if (see_wall(player_ptr, dir_left45, pos)) {
         find_breakleft = true;
         shortleft = true;
-    } else if (see_wall(player_ptr, cycle[i + 1], pos_neighbor.y, pos_neighbor.x)) {
+    } else if (see_wall(player_ptr, dir_left45, pos_neighbor)) {
         find_breakleft = true;
         deepleft = true;
     }
 
-    if (see_wall(player_ptr, cycle[i - 1], pos.y, pos.x)) {
+    auto deepright = false;
+    auto shortright = false;
+    if (see_wall(player_ptr, dir_right45, pos)) {
         find_breakright = true;
         shortright = true;
-    } else if (see_wall(player_ptr, cycle[i - 1], pos_neighbor.y, pos_neighbor.x)) {
+    } else if (see_wall(player_ptr, dir_right45, pos_neighbor)) {
         find_breakright = true;
         deepright = true;
     }
@@ -139,24 +128,24 @@ static void run_init(PlayerType *player_ptr, DIRECTION dir)
     }
 
     find_openarea = false;
-    if (dir & 0x01) {
+    if (dir.is_diagonal()) {
         if (deepleft && !deepright) {
-            find_prevdir = cycle[i - 1];
+            find_prevdir = dir_right45;
         } else if (deepright && !deepleft) {
-            find_prevdir = cycle[i + 1];
+            find_prevdir = dir_left45;
         }
 
         return;
     }
 
-    if (!see_wall(player_ptr, cycle[i], pos_neighbor.y, pos_neighbor.x)) {
+    if (!see_wall(player_ptr, dir, pos_neighbor)) {
         return;
     }
 
     if (shortleft && !shortright) {
-        find_prevdir = cycle[i - 2];
+        find_prevdir = dir.rotated_45degree(-2);
     } else if (shortright && !shortleft) {
-        find_prevdir = cycle[i + 2];
+        find_prevdir = dir.rotated_45degree(2);
     }
 }
 
@@ -164,26 +153,23 @@ static void run_init(PlayerType *player_ptr, DIRECTION dir)
  * @brief ダッシュ移動処理中、移動先のマスか未知の地形かどうかを判定する /
  * Hack -- Check for an "unknown corner" (see below)
  * @param player_ptr	プレイヤーへの参照ポインタ
- * @param dir 想定する移動方向ID
- * @param y 移動元のY座標
- * @param x 移動元のX座標
+ * @param dir 想定する移動方向
+ * @param pos_orig 移動元の座標
  * @return 移動先が未知の地形ならばTRUE
  */
-static bool see_nothing(PlayerType *player_ptr, DIRECTION dir, POSITION y, POSITION x)
+static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2D &pos_orig)
 {
-    y += ddy[dir];
-    x += ddx[dir];
-
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (!in_bounds2(floor_ptr, y, x)) {
+    const auto pos = pos_orig + dir.vec();
+    const auto &floor = *player_ptr->current_floor_ptr;
+    if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return true;
     }
 
-    if (floor_ptr->grid_array[y][x].is_mark()) {
+    if (floor.get_grid(pos).is_mark()) {
         return false;
     }
 
-    if (player_can_see_bold(player_ptr, y, x)) {
+    if (player_can_see_bold(player_ptr, pos.y, pos.x)) {
         return false;
     }
 
@@ -201,7 +187,6 @@ static bool see_nothing(PlayerType *player_ptr, DIRECTION dir, POSITION y, POSIT
 static bool run_test(PlayerType *player_ptr)
 {
     const auto prev_dir = find_prevdir;
-    const auto max = (prev_dir & 0x01) + 1;
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto p_pos = player_ptr->get_position();
     const auto &p_grid = floor.get_grid(p_pos);
@@ -219,11 +204,12 @@ static bool run_test(PlayerType *player_ptr)
         }
     }
 
-    auto check_dir = 0;
-    auto option = 0;
-    auto option2 = 0;
+    Direction check_dir(5);
+    auto option = Direction::none();
+    auto option2 = Direction::none();
+    const auto max = prev_dir.is_diagonal() ? 2 : 1;
     for (auto i = -max; i <= max; i++) {
-        int new_dir = cycle[chome[prev_dir] + i];
+        const auto new_dir = prev_dir.rotated_45degree(i);
         const auto pos = player_ptr->get_neighbor(new_dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
@@ -234,7 +220,7 @@ static bool run_test(PlayerType *player_ptr)
         }
 
         for (const auto this_o_idx : grid.o_idx_list) {
-            const auto &item = floor.o_list[this_o_idx];
+            const auto &item = *floor.o_list[this_o_idx];
             if (item.marked.has(OmType::FOUND)) {
                 return true;
             }
@@ -242,7 +228,7 @@ static bool run_test(PlayerType *player_ptr)
 
         auto inv = true;
         if (grid.is_mark()) {
-            const auto &terrain = grid.get_terrain_mimic();
+            const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
             auto notice = terrain.flags.has(TerrainCharacteristics::NOTICE);
             if (notice && terrain.flags.has(TerrainCharacteristics::MOVE)) {
                 if (find_ignore_doors && terrain.flags.has_all_of({ TerrainCharacteristics::DOOR, TerrainCharacteristics::CLOSE })) {
@@ -263,7 +249,7 @@ static bool run_test(PlayerType *player_ptr)
             inv = false;
         }
 
-        if (!inv && see_wall(player_ptr, 0, pos.y, pos.x)) {
+        if (!inv && see_wall(player_ptr, Direction::self(), pos)) {
             if (find_openarea) {
                 if (i < 0) {
                     find_breakright = true;
@@ -288,24 +274,24 @@ static bool run_test(PlayerType *player_ptr)
             return true;
         }
 
-        if (option != cycle[chome[prev_dir] + i - 1]) {
+        if (option != new_dir.rotated_45degree(-1)) {
             return true;
         }
 
-        if (new_dir & 0x01) {
-            check_dir = cycle[chome[prev_dir] + i - 2];
+        if (new_dir.is_diagonal()) {
+            check_dir = new_dir.rotated_45degree(-2);
             option2 = new_dir;
             continue;
         }
 
-        check_dir = cycle[chome[prev_dir] + i + 1];
+        check_dir = new_dir.rotated_45degree(1);
         option2 = option;
         option = new_dir;
     }
 
     if (find_openarea) {
         for (int i = -max; i < 0; i++) {
-            if (!see_wall(player_ptr, cycle[chome[prev_dir] + i], player_ptr->y, player_ptr->x)) {
+            if (!see_wall(player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakright) {
                     return true;
                 }
@@ -317,7 +303,7 @@ static bool run_test(PlayerType *player_ptr)
         }
 
         for (int i = max; i > 0; i--) {
-            if (!see_wall(player_ptr, cycle[chome[prev_dir] + i], player_ptr->y, player_ptr->x)) {
+            if (!see_wall(player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakleft) {
                     return true;
                 }
@@ -328,7 +314,7 @@ static bool run_test(PlayerType *player_ptr)
             }
         }
 
-        return see_wall(player_ptr, find_current, player_ptr->y, player_ptr->x);
+        return see_wall(player_ptr, find_current, p_pos);
     }
 
     if (!option) {
@@ -338,19 +324,19 @@ static bool run_test(PlayerType *player_ptr)
     if (!option2) {
         find_current = option;
         find_prevdir = option;
-        return see_wall(player_ptr, find_current, player_ptr->y, player_ptr->x);
+        return see_wall(player_ptr, find_current, p_pos);
     } else if (!find_cut) {
         find_current = option;
         find_prevdir = option2;
-        return see_wall(player_ptr, find_current, player_ptr->y, player_ptr->x);
+        return see_wall(player_ptr, find_current, p_pos);
     }
 
     const auto pos = player_ptr->get_neighbor(option);
-    if (!see_wall(player_ptr, option, pos.y, pos.x) || !see_wall(player_ptr, check_dir, pos.y, pos.x)) {
-        if (see_nothing(player_ptr, option, pos.y, pos.x) && see_nothing(player_ptr, option2, pos.y, pos.x)) {
+    if (!see_wall(player_ptr, option, pos) || !see_wall(player_ptr, check_dir, pos)) {
+        if (see_nothing(player_ptr, option, pos) && see_nothing(player_ptr, option2, pos)) {
             find_current = option;
             find_prevdir = option2;
-            return see_wall(player_ptr, find_current, player_ptr->y, player_ptr->x);
+            return see_wall(player_ptr, find_current, p_pos);
         }
 
         return true;
@@ -359,26 +345,26 @@ static bool run_test(PlayerType *player_ptr)
     if (find_cut) {
         find_current = option2;
         find_prevdir = option2;
-        return see_wall(player_ptr, find_current, player_ptr->y, player_ptr->x);
+        return see_wall(player_ptr, find_current, p_pos);
     }
 
     find_current = option;
     find_prevdir = option2;
-    return see_wall(player_ptr, find_current, player_ptr->y, player_ptr->x);
+    return see_wall(player_ptr, find_current, p_pos);
 }
 
 /*!
  * @brief 継続的なダッシュ処理 /
  * Take one step along the current "run" path
  * @param player_ptr	プレイヤーへの参照ポインタ
- * @param dir 移動を試みる方向ID
+ * @param dir 移動を試みる方向
  */
-void run_step(PlayerType *player_ptr, DIRECTION dir)
+void run_step(PlayerType *player_ptr, const Direction &dir)
 {
     if (dir) {
         ignore_avoid_run = true;
-        if (see_wall(player_ptr, dir, player_ptr->y, player_ptr->x)) {
-            sound(SOUND_HITWALL);
+        if (see_wall(player_ptr, dir, player_ptr->get_position())) {
+            sound(SoundKind::HITWALL);
             msg_print(_("その方向には走れません。", "You cannot run in that direction."));
             disturb(player_ptr, false, false);
             return;

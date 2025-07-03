@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @brief モンスターの思い出を表示する処理
  * @date 2020/06/09
  * @author Hourier
@@ -14,62 +14,52 @@
 #include "lore/lore-util.h"
 #include "lore/monster-lore.h"
 #include "monster-attack/monster-attack-table.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-ability-flags.h"
-#include "monster-race/race-indice-types.h"
-#include "system/monster-race-info.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
+#include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "view/display-symbol.h"
 #include "world/world.h"
 
 /*!
- * 英語の複数系記述用マクロ / Pluralizer.  Args(count, singular, plural)
- */
-#define plural(c, s, p) (((c) == 1) ? (s) : (p))
-
-/*!
  * @brief モンスター情報のヘッダを記述する
- * Hack -- Display the "name" and "attr/chars" of a monster race
- * @param r_idx モンスターの種族ID
+ * @param monrace_id モンスターの種族ID
  */
-void roff_top(MonsterRaceId r_idx)
+void roff_top(MonraceId monrace_id)
 {
-    auto *r_ptr = &monraces_info[r_idx];
-    char c1 = r_ptr->d_char;
-    char c2 = r_ptr->x_char;
-
-    TERM_COLOR a1 = r_ptr->d_attr;
-    TERM_COLOR a2 = r_ptr->x_attr;
-
     term_erase(0, 0);
     term_gotoxy(0, 0);
 
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
 #ifdef JP
 #else
-    if (r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
         term_addstr(-1, TERM_WHITE, "The ");
     }
 #endif
 
-    if (w_ptr->wizard || cheat_know) {
+    if (AngbandWorld::get_instance().wizard || cheat_know) {
         term_addstr(-1, TERM_WHITE, "[");
-        term_addstr(-1, TERM_L_BLUE, format("%d", r_idx));
+        term_addstr(-1, TERM_L_BLUE, format("%d", enum2i(monrace_id)));
         term_addstr(-1, TERM_WHITE, "] ");
     }
 
-    term_addstr(-1, TERM_WHITE, r_ptr->name);
+    term_addstr(-1, TERM_WHITE, monrace.name);
 
     term_addstr(-1, TERM_WHITE, " ('");
-    term_add_bigch(a1, c1);
+    term_add_bigch(monrace.symbol_definition);
     term_addstr(-1, TERM_WHITE, "')");
 
     term_addstr(-1, TERM_WHITE, "/('");
-    term_add_bigch(a2, c2);
+    term_add_bigch(monrace.symbol_config);
     term_addstr(-1, TERM_WHITE, "'):");
 }
 
@@ -79,7 +69,7 @@ void roff_top(MonsterRaceId r_idx)
  * @param r_idx モンスターの種族ID
  * @param mode 表示オプション
  */
-void screen_roff(PlayerType *player_ptr, MonsterRaceId r_idx, monster_lore_mode mode)
+void screen_roff(PlayerType *player_ptr, MonraceId r_idx, monster_lore_mode mode)
 {
     msg_erase();
     term_erase(0, 1);
@@ -101,9 +91,14 @@ void display_roff(PlayerType *player_ptr)
 
     term_gotoxy(0, 1);
     hook_c_roff = c_roff;
-    MonsterRaceId r_idx = player_ptr->monster_race_idx;
-    process_monster_lore(player_ptr, r_idx, MONSTER_LORE_NORMAL);
-    roff_top(r_idx);
+    const auto &tracker = LoreTracker::get_instance();
+    if (!tracker.is_tracking()) {
+        return;
+    }
+
+    const auto monrace_id = tracker.get_trackee();
+    process_monster_lore(player_ptr, monrace_id, MONSTER_LORE_NORMAL);
+    roff_top(monrace_id);
 }
 
 /*!
@@ -113,7 +108,7 @@ void display_roff(PlayerType *player_ptr)
  * @param roff_func 出力処理を行う関数ポインタ
  * @todo ここのroff_funcの引数にFILE* を追加しないとspoiler_file をローカル関数化することができないと判明した、保留.
  */
-void output_monster_spoiler(MonsterRaceId r_idx, hook_c_roff_pf roff_func)
+void output_monster_spoiler(MonraceId r_idx, hook_c_roff_pf roff_func)
 {
     hook_c_roff = roff_func;
     PlayerType dummy;
@@ -123,43 +118,14 @@ void output_monster_spoiler(MonsterRaceId r_idx, hook_c_roff_pf roff_func)
     process_monster_lore(&dummy, r_idx, MONSTER_LORE_DEBUG);
 }
 
-static bool display_kill_unique(lore_type *lore_ptr)
-{
-    if (lore_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        return false;
-    }
-
-    bool dead = (lore_ptr->r_ptr->mob_num == 0);
-    if (lore_ptr->r_ptr->r_deaths) {
-        hooked_roff(format(_("%s^はあなたの先祖を %d 人葬っている", "%s^ has slain %d of your ancestors"), Who::who(lore_ptr->msex), lore_ptr->r_ptr->r_deaths));
-
-        if (dead) {
-            hooked_roff(
-                _(format("が、すでに仇討ちは果たしている！"), format(", but you have avenged %s!  ", plural(lore_ptr->r_ptr->r_deaths, "him", "them"))));
-        } else {
-            hooked_roff(
-                _(format("のに、まだ仇討ちを果たしていない。"), format(", who %s unavenged.  ", plural(lore_ptr->r_ptr->r_deaths, "remains", "remain"))));
-        }
-
-        hooked_roff("\n");
-    } else {
-        if (dead) {
-            hooked_roff(_("あなたはこの仇敵をすでに葬り去っている。", "You have slain this foe.  "));
-        } else {
-            hooked_roff(_("この仇敵はまだ生きている！", "This foe is still alive!  "));
-        }
-
-        hooked_roff("\n");
-    }
-
-    return true;
-}
-
 static void display_killed(lore_type *lore_ptr)
 {
-    hooked_roff(_(format("このモンスターはあなたの先祖を %d 人葬っている", lore_ptr->r_ptr->r_deaths),
-        format("%d of your ancestors %s been killed by this creature, ", lore_ptr->r_ptr->r_deaths, plural(lore_ptr->r_ptr->r_deaths, "has", "have"))));
-
+#ifdef JP
+    hooked_roff(format("このモンスターはあなたの先祖を %d 人葬っている", lore_ptr->r_ptr->r_deaths));
+#else
+    const auto present_perfect_tense = lore_ptr->r_ptr->r_deaths == 1 ? "has" : "have";
+    hooked_roff(format("%d of your ancestors %s been killed by this creature, ", lore_ptr->r_ptr->r_deaths, present_perfect_tense));
+#endif
     if (lore_ptr->r_ptr->r_pkills) {
         hooked_roff(format(_("が、あなたはこのモンスターを少なくとも %d 体は倒している。", "and you have exterminated at least %d of the creatures.  "),
             lore_ptr->r_ptr->r_pkills));
@@ -168,7 +134,7 @@ static void display_killed(lore_type *lore_ptr)
             _("が、あなたの先祖はこのモンスターを少なくとも %d 体は倒している。", "and your ancestors have exterminated at least %d of the creatures.  "),
             lore_ptr->r_ptr->r_tkills));
     } else {
-        hooked_roff(format(_("が、まだ%sを倒したことはない。", "and %s is not ever known to have been defeated.  "), Who::who(lore_ptr->msex)));
+        hooked_roff(format(_("が、まだ%sを倒したことはない。", "and %s is not ever known to have been defeated.  "), Who::who(lore_ptr->msex).data()));
     }
 }
 
@@ -200,20 +166,22 @@ static void display_number_of_nazguls(lore_type *lore_ptr)
         return;
     }
 
-    int remain = lore_ptr->r_ptr->mob_num;
-    int killed = lore_ptr->r_ptr->r_akills;
+    const auto remain = lore_ptr->r_ptr->mob_num;
+    const auto killed = lore_ptr->r_ptr->r_akills;
     if (remain == 0) {
+        const auto whom = Who::whom(lore_ptr->msex, (killed > 1));
 #ifdef JP
-        hooked_roff(format("%sはかつて %ld 体存在した。", Who::who(lore_ptr->msex, (killed > 1)), killed));
+        hooked_roff(format("%sはかつて %d 体存在した。", whom.data(), killed));
 #else
-        hooked_roff(format("You already killed all %ld of %s.  ", killed, Who::whom(lore_ptr->msex, (killed > 1))));
+        hooked_roff(format("You already killed all %d of %s.  ", killed, whom.data()));
 #endif
     } else {
+        const auto whom = Who::whom(lore_ptr->msex, (remain + killed > 1));
 #ifdef JP
-        hooked_roff(format("%sはまだ %ld 体生きている。", Who::who(lore_ptr->msex, (remain + killed > 1)), remain));
+        hooked_roff(format("%sはまだ %d 体生きている。", whom.data(), remain));
 #else
-        concptr be = (remain > 1) ? "are" : "is";
-        hooked_roff(format("%ld of %s %s still alive.  ", remain, Who::whom(lore_ptr->msex, (remain + killed > 1)), be));
+        std::string be((remain > 1) ? "are" : "is");
+        hooked_roff(format("%d of %s %s still alive.  ", remain, whom.data(), be.data()));
 #endif
     }
 }
@@ -224,7 +192,11 @@ void display_kill_numbers(lore_type *lore_ptr)
         return;
     }
 
-    if (display_kill_unique(lore_ptr)) {
+    const auto kill_unique_description = lore_ptr->build_kill_unique_description();
+    if (kill_unique_description) {
+        for (const auto &[text, color] : *kill_unique_description) {
+            hook_c_roff(color, text);
+        }
         return;
     }
 
@@ -248,20 +220,20 @@ bool display_where_to_appear(lore_type *lore_ptr)
 {
     lore_ptr->old = false;
     if (lore_ptr->r_ptr->level == 0) {
-        hooked_roff(format(_("%s^は町に住み", "%s^ lives in the town"), Who::who(lore_ptr->msex)));
+        hooked_roff(format(_("%s^は町に住み", "%s^ lives in the town"), Who::who(lore_ptr->msex).data()));
         lore_ptr->old = true;
     } else if (lore_ptr->r_ptr->r_tkills || lore_ptr->know_everything) {
         if (depth_in_feet) {
             hooked_roff(format(
-                _("%s^は通常地下 %d フィートで出現し", "%s^ is normally found at depths of %d feet"), Who::who(lore_ptr->msex), lore_ptr->r_ptr->level * 50));
+                _("%s^は通常地下 %d フィートで出現し", "%s^ is normally found at depths of %d feet"), Who::who(lore_ptr->msex).data(), lore_ptr->r_ptr->level * 50));
         } else {
-            hooked_roff(format(_("%s^は通常地下 %d 階で出現し", "%s^ is normally found on dungeon level %d"), Who::who(lore_ptr->msex), lore_ptr->r_ptr->level));
+            hooked_roff(format(_("%s^は通常地下 %d 階で出現し", "%s^ is normally found on dungeon level %d"), Who::who(lore_ptr->msex).data(), lore_ptr->r_ptr->level));
         }
 
         lore_ptr->old = true;
     }
 
-    if (lore_ptr->r_idx == MonsterRaceId::CHAMELEON) {
+    if (lore_ptr->monrace_id == MonraceId::CHAMELEON) {
         hooked_roff(_("、他のモンスターに化ける。", "and can take the shape of other monster."));
         return false;
     }
@@ -269,7 +241,7 @@ bool display_where_to_appear(lore_type *lore_ptr)
     if (lore_ptr->old) {
         hooked_roff(_("、", ", and "));
     } else {
-        hooked_roff(format(_("%s^は", "%s^ "), Who::who(lore_ptr->msex)));
+        hooked_roff(format(_("%s^は", "%s^ "), Who::who(lore_ptr->msex).data()));
         lore_ptr->old = true;
     }
 
@@ -278,62 +250,8 @@ bool display_where_to_appear(lore_type *lore_ptr)
 
 void display_monster_move(lore_type *lore_ptr)
 {
-#ifdef JP
-#else
-    hooked_roff("moves");
-#endif
-
-    display_random_move(lore_ptr);
-    if (lore_ptr->speed > 110) {
-        if (lore_ptr->speed > 139) {
-            hook_c_roff(TERM_RED, _("信じ難いほど", " incredibly"));
-        } else if (lore_ptr->speed > 134) {
-            hook_c_roff(TERM_ORANGE, _("猛烈に", " extremely"));
-        } else if (lore_ptr->speed > 129) {
-            hook_c_roff(TERM_ORANGE, _("非常に", " very"));
-        } else if (lore_ptr->speed > 124) {
-            hook_c_roff(TERM_UMBER, _("かなり", " fairly"));
-        } else if (lore_ptr->speed < 120) {
-            hook_c_roff(TERM_L_UMBER, _("やや", " somewhat"));
-        }
-        hook_c_roff(TERM_L_RED, _("素早く", " quickly"));
-    } else if (lore_ptr->speed < 110) {
-        if (lore_ptr->speed < 90) {
-            hook_c_roff(TERM_L_GREEN, _("信じ難いほど", " incredibly"));
-        } else if (lore_ptr->speed < 95) {
-            hook_c_roff(TERM_BLUE, _("非常に", " very"));
-        } else if (lore_ptr->speed < 100) {
-            hook_c_roff(TERM_BLUE, _("かなり", " fairly"));
-        } else if (lore_ptr->speed > 104) {
-            hook_c_roff(TERM_GREEN, _("やや", " somewhat"));
-        }
-        hook_c_roff(TERM_L_BLUE, _("ゆっくりと", " slowly"));
-    } else {
-        hooked_roff(_("普通の速さで", " at normal speed"));
-    }
-
-#ifdef JP
-    hooked_roff("動いている");
-#endif
-}
-
-void display_random_move(lore_type *lore_ptr)
-{
-    if (lore_ptr->behavior_flags.has_none_of({ MonsterBehaviorType::RAND_MOVE_50, MonsterBehaviorType::RAND_MOVE_25 })) {
-        return;
-    }
-
-    if (lore_ptr->behavior_flags.has(MonsterBehaviorType::RAND_MOVE_50) && lore_ptr->behavior_flags.has(MonsterBehaviorType::RAND_MOVE_25)) {
-        hooked_roff(_("かなり", " extremely"));
-    } else if (lore_ptr->behavior_flags.has(MonsterBehaviorType::RAND_MOVE_50)) {
-        hooked_roff(_("幾分", " somewhat"));
-    } else if (lore_ptr->behavior_flags.has(MonsterBehaviorType::RAND_MOVE_25)) {
-        hooked_roff(_("少々", " a bit"));
-    }
-
-    hooked_roff(_("不規則に", " erratically"));
-    if (lore_ptr->speed != 110) {
-        hooked_roff(_("、かつ", ", and"));
+    for (const auto &[text, color] : lore_ptr->build_speed_description()) {
+        hook_c_roff(color, text);
     }
 }
 
@@ -346,7 +264,7 @@ void display_monster_never_move(lore_type *lore_ptr)
     if (lore_ptr->old) {
         hooked_roff(_("、しかし", ", but "));
     } else {
-        hooked_roff(format(_("%s^は", "%s^ "), Who::who(lore_ptr->msex)));
+        hooked_roff(format(_("%s^は", "%s^ "), Who::who(lore_ptr->msex).data()));
         lore_ptr->old = true;
     }
 
@@ -597,19 +515,19 @@ void display_monster_aura(lore_type *lore_ptr)
     auto has_cold_aura = lore_ptr->aura_flags.has(MonsterAuraType::COLD);
     if (has_fire_aura && has_elec_aura && has_cold_aura) {
         hook_c_roff(
-            TERM_VIOLET, format(_("%s^は炎と氷とスパークに包まれている。", "%s^ is surrounded by flames, ice and electricity.  "), Who::who(lore_ptr->msex)));
+            TERM_VIOLET, format(_("%s^は炎と氷とスパークに包まれている。", "%s^ is surrounded by flames, ice and electricity.  "), Who::who(lore_ptr->msex).data()));
     } else if (has_fire_aura && has_elec_aura) {
-        hook_c_roff(TERM_L_RED, format(_("%s^は炎とスパークに包まれている。", "%s^ is surrounded by flames and electricity.  "), Who::who(lore_ptr->msex)));
+        hook_c_roff(TERM_L_RED, format(_("%s^は炎とスパークに包まれている。", "%s^ is surrounded by flames and electricity.  "), Who::who(lore_ptr->msex).data()));
     } else if (has_fire_aura && has_cold_aura) {
-        hook_c_roff(TERM_BLUE, format(_("%s^は炎と氷に包まれている。", "%s^ is surrounded by flames and ice.  "), Who::who(lore_ptr->msex)));
+        hook_c_roff(TERM_BLUE, format(_("%s^は炎と氷に包まれている。", "%s^ is surrounded by flames and ice.  "), Who::who(lore_ptr->msex).data()));
     } else if (has_cold_aura && has_elec_aura) {
-        hook_c_roff(TERM_L_GREEN, format(_("%s^は氷とスパークに包まれている。", "%s^ is surrounded by ice and electricity.  "), Who::who(lore_ptr->msex)));
+        hook_c_roff(TERM_L_GREEN, format(_("%s^は氷とスパークに包まれている。", "%s^ is surrounded by ice and electricity.  "), Who::who(lore_ptr->msex).data()));
     } else if (has_fire_aura) {
-        hook_c_roff(TERM_RED, format(_("%s^は炎に包まれている。", "%s^ is surrounded by flames.  "), Who::who(lore_ptr->msex)));
+        hook_c_roff(TERM_RED, format(_("%s^は炎に包まれている。", "%s^ is surrounded by flames.  "), Who::who(lore_ptr->msex).data()));
     } else if (has_cold_aura) {
-        hook_c_roff(TERM_BLUE, format(_("%s^は氷に包まれている。", "%s^ is surrounded by ice.  "), Who::who(lore_ptr->msex)));
+        hook_c_roff(TERM_BLUE, format(_("%s^は氷に包まれている。", "%s^ is surrounded by ice.  "), Who::who(lore_ptr->msex).data()));
     } else if (has_elec_aura) {
-        hook_c_roff(TERM_L_BLUE, format(_("%s^はスパークに包まれている。", "%s^ is surrounded by electricity.  "), Who::who(lore_ptr->msex)));
+        hook_c_roff(TERM_L_BLUE, format(_("%s^はスパークに包まれている。", "%s^ is surrounded by electricity.  "), Who::who(lore_ptr->msex).data()));
     }
 }
 
@@ -646,7 +564,7 @@ void display_lore_this(PlayerType *player_ptr, lore_type *lore_ptr)
 
 static void display_monster_escort_contents(lore_type *lore_ptr)
 {
-    if (!lore_ptr->reinforce) {
+    if (!lore_ptr->has_reinforce()) {
         return;
     }
 
@@ -655,38 +573,37 @@ static void display_monster_escort_contents(lore_type *lore_ptr)
         hooked_roff(_("少なくとも", " at the least"));
     }
 
+    const auto &reinforces = lore_ptr->r_ptr->get_reinforces();
 #ifdef JP
 #else
     hooked_roff(" contain");
-    auto max_idx = lore_ptr->r_ptr->reinforces.size() - 1;
-    auto idx = 0 * max_idx;
+    const auto max_idx = reinforces.size() - 1;
+    auto idx = 0U;
 #endif
 
-    for (auto [r_idx, dd, ds] : lore_ptr->r_ptr->reinforces) {
-        auto is_reinforced = MonsterRace(r_idx).is_valid();
-#ifndef JP
-        const char *prefix = (idx == 0) ? " " : (idx == max_idx) ? " and "
-                                                                 : ", ";
+    for (const auto &reinforce : reinforces) {
+#ifdef JP
+#else
+        const std::string prefix = (idx == 0) ? " " : (idx == max_idx) ? " and "
+                                                                       : ", ";
         ++idx;
 #endif
-        is_reinforced &= dd > 0;
-        is_reinforced &= ds > 0;
-        if (!is_reinforced) {
+        if (!reinforce.is_valid()) {
             continue;
         }
 
-        const auto *rf_ptr = &monraces_info[r_idx];
-        if (rf_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-            hooked_roff(format("%s%s", _("、", prefix), rf_ptr->name.data()));
+        const auto &monrace = reinforce.get_monrace();
+        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+            hooked_roff(format("%s%s", _("、", prefix.data()), monrace.name.data()));
             continue;
         }
 
 #ifdef JP
-        hooked_roff(format("、 %dd%d 体の%s", dd, ds, rf_ptr->name.data()));
+        hooked_roff(format("、 %s 体の%s", reinforce.get_dice_as_string().data(), monrace.name.data()));
 #else
-        const auto plural = (dd * ds > 1);
-        const auto &name = plural ? pluralize(rf_ptr->name) : rf_ptr->name;
-        hooked_roff(format("%s%dd%d %s", prefix, dd, ds, name.data()));
+        const auto is_plural = reinforce.roll_max_dice() > 1;
+        const auto &name = is_plural ? pluralize(monrace.name) : monrace.name.string();
+        hooked_roff(format("%s%s %s", prefix.data(), reinforce.get_dice_as_string().data(), name.data()));
 #endif
     }
 
@@ -695,11 +612,11 @@ static void display_monster_escort_contents(lore_type *lore_ptr)
 
 void display_monster_collective(lore_type *lore_ptr)
 {
-    if (lore_ptr->misc_flags.has(MonsterMiscType::ESCORT) || lore_ptr->misc_flags.has(MonsterMiscType::MORE_ESCORT) || lore_ptr->reinforce) {
-        hooked_roff(format(_("%s^は通常護衛を伴って現れる。", "%s^ usually appears with escorts.  "), Who::who(lore_ptr->msex)));
+    if (lore_ptr->misc_flags.has(MonsterMiscType::ESCORT) || lore_ptr->misc_flags.has(MonsterMiscType::MORE_ESCORT) || lore_ptr->has_reinforce()) {
+        hooked_roff(format(_("%s^は通常護衛を伴って現れる。", "%s^ usually appears with escorts.  "), Who::who(lore_ptr->msex).data()));
         display_monster_escort_contents(lore_ptr);
     } else if (lore_ptr->misc_flags.has(MonsterMiscType::HAS_FRIENDS)) {
-        hooked_roff(format(_("%s^は通常集団で現れる。", "%s^ usually appears in groups.  "), Who::who(lore_ptr->msex)));
+        hooked_roff(format(_("%s^は通常集団で現れる。", "%s^ usually appears in groups.  "), Who::who(lore_ptr->msex).data()));
     }
 }
 
@@ -716,9 +633,7 @@ void display_monster_collective(lore_type *lore_ptr)
 void display_monster_launching(PlayerType *player_ptr, lore_type *lore_ptr)
 {
     if (lore_ptr->ability_flags.has(MonsterAbilityType::ROCKET)) {
-        set_damage(player_ptr, lore_ptr, MonsterAbilityType::ROCKET, _("ロケット%sを発射する", "shoot a rocket%s"));
-        lore_ptr->vp[lore_ptr->vn] = lore_ptr->tmp_msg[lore_ptr->vn];
-        lore_ptr->color[lore_ptr->vn++] = TERM_UMBER;
+        add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::ROCKET, _("ロケット%sを発射する", "shoot a rocket%s"), TERM_UMBER);
         lore_ptr->rocket = true;
     }
 
@@ -726,64 +641,46 @@ void display_monster_launching(PlayerType *player_ptr, lore_type *lore_ptr)
         return;
     }
 
-    int p = -1; /* Position of SHOOT */
-    int n = 0; /* Number of blows */
-    const int max_blows = 4;
-    for (int m = 0; m < max_blows; m++) {
-        if (lore_ptr->r_ptr->blows[m].method != RaceBlowMethodType::NONE) {
-            n++;
-        } /* Count blows */
-
-        if (lore_ptr->r_ptr->blows[m].method == RaceBlowMethodType::SHOOT) {
-            p = m; /* Remember position */
-            break;
-        }
-    }
-
-    if (p == max_blows || p < 0) {
-        return;
-    }
-
-    if (know_armour(lore_ptr->r_idx, lore_ptr->know_everything)) {
-        strnfmt(lore_ptr->tmp_msg[lore_ptr->vn], sizeof(lore_ptr->tmp_msg[lore_ptr->vn]), _("威力 %dd%d の射撃をする", "fire an arrow (Power:%dd%d)"), lore_ptr->r_ptr->blows[p].d_dice,
-            lore_ptr->r_ptr->blows[p].d_side);
+    std::string msg;
+    if (lore_ptr->is_details_known() || lore_ptr->know_everything) {
+        msg = format(_("威力 %s の射撃をする", "fire an arrow (Power:%s)"), lore_ptr->r_ptr->shoot_damage_dice.to_string().data());
     } else {
-        angband_strcpy(lore_ptr->tmp_msg[lore_ptr->vn], _("射撃をする", "fire an arrow"), sizeof(lore_ptr->tmp_msg[lore_ptr->vn]));
+        msg = _("射撃をする", "fire an arrow");
     }
 
-    lore_ptr->vp[lore_ptr->vn] = lore_ptr->tmp_msg[lore_ptr->vn];
-    lore_ptr->color[lore_ptr->vn++] = TERM_UMBER;
+    lore_ptr->lore_msgs.emplace_back(msg, TERM_UMBER);
     lore_ptr->shoot = true;
 }
 
 void display_monster_sometimes(lore_type *lore_ptr)
 {
-    if (lore_ptr->vn <= 0) {
+    if (lore_ptr->lore_msgs.empty()) {
         return;
     }
 
-    hooked_roff(format(_("%s^は", "%s^"), Who::who(lore_ptr->msex)));
-    for (int n = 0; n < lore_ptr->vn; n++) {
+    hooked_roff(format(_("%s^は", "%s^"), Who::who(lore_ptr->msex).data()));
+    for (int n = 0; const auto &[msg, color] : lore_ptr->lore_msgs) {
 #ifdef JP
-        if (n != lore_ptr->vn - 1) {
-            const auto verb = conjugate_jverb(lore_ptr->vp[n], JVerbConjugationType::OR);
-            hook_c_roff(lore_ptr->color[n], verb);
-            hook_c_roff(lore_ptr->color[n], "り");
+        if (n != std::ssize(lore_ptr->lore_msgs) - 1) {
+            const auto verb = conjugate_jverb(msg, JVerbConjugationType::OR);
+            hook_c_roff(color, verb);
+            hook_c_roff(color, "り");
             hooked_roff("、");
         } else {
-            hook_c_roff(lore_ptr->color[n], lore_ptr->vp[n]);
+            hook_c_roff(color, msg);
         }
 #else
         if (n == 0) {
             hooked_roff(" may ");
-        } else if (n < lore_ptr->vn - 1) {
+        } else if (n < std::ssize(lore_ptr->lore_msgs) - 1) {
             hooked_roff(", ");
         } else {
             hooked_roff(" or ");
         }
 
-        hook_c_roff(lore_ptr->color[n], lore_ptr->vp[n]);
+        hook_c_roff(color, msg);
 #endif
+        n++;
     }
 
     hooked_roff(_("ことがある。", ".  "));
@@ -793,8 +690,8 @@ void display_monster_guardian(lore_type *lore_ptr)
 {
     bool is_kingpin = lore_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
     is_kingpin &= lore_ptr->r_ptr->r_sights > 0;
-    is_kingpin &= lore_ptr->r_ptr->mob_num > 0;
-    is_kingpin &= (lore_ptr->r_idx == MonsterRaceId::MELKO);
+    is_kingpin &= !lore_ptr->r_ptr->is_dead_unique();
+    is_kingpin &= (lore_ptr->monrace_id == MonraceId::MELKO);
     if (is_kingpin) {
         hook_c_roff(TERM_VIOLET, _("あなたはこのモンスターを殺したいという強い欲望を感じている...", "You feel an intense desire to kill this monster...  "));
     } else if (lore_ptr->misc_flags.has(MonsterMiscType::GUARDIAN)) {

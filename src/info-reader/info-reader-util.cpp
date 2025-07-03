@@ -1,5 +1,6 @@
 #include "info-reader/info-reader-util.h"
 #include "artifact/random-art-effects.h"
+#include "info-reader/parse-error-types.h"
 #include "main/angband-headers.h"
 #include "object-enchant/activation-info-table.h"
 #include "util/enum-converter.h"

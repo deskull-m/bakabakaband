@@ -4,11 +4,10 @@
  * @brief Windows版固有実装(ユーティリティー)ヘッダ
  */
 
-#include "system/angband.h"
 #include <filesystem>
-#include <optional>
 #include <string>
 #include <string_view>
+#include <tl/optional.hpp>
 #include <vector>
 #include <windows.h>
 
@@ -17,18 +16,18 @@
  */
 class to_wchar {
 public:
-    to_wchar(const char *src)
+    to_wchar(std::string_view src)
     {
-        if (!src) {
+        if (src.empty()) {
             return;
         }
 
-        int size = ::MultiByteToWideChar(932, 0, src, -1, NULL, 0);
+        const auto size = ::MultiByteToWideChar(932, 0, src.data(), src.length(), NULL, 0);
         if (size > 0) {
-            buf = std::vector<WCHAR>(size + 1);
-            if (::MultiByteToWideChar(932, 0, src, -1, (*buf).data(), (*buf).size()) == 0) {
+            this->buf = std::vector<WCHAR>(size + 1);
+            if (::MultiByteToWideChar(932, 0, src.data(), src.length(), this->buf->data(), this->buf->size()) == 0) {
                 // fail
-                buf = std::nullopt;
+                this->buf = tl::nullopt;
             }
         }
     }
@@ -40,11 +39,11 @@ public:
 
     WCHAR *wc_str()
     {
-        return buf.has_value() ? (*buf).data() : NULL;
+        return this->buf ? this->buf->data() : NULL;
     }
 
 protected:
-    std::optional<std::vector<WCHAR>> buf;
+    tl::optional<std::vector<WCHAR>> buf;
 };
 
 /*!
@@ -54,16 +53,16 @@ class to_multibyte {
 public:
     to_multibyte(const WCHAR *src)
     {
-        if (!src) {
+        if (src == nullptr) {
             return;
         }
 
-        int size = ::WideCharToMultiByte(932, 0, src, -1, NULL, 0, NULL, NULL);
+        const auto size = ::WideCharToMultiByte(932, 0, src, -1, NULL, 0, NULL, NULL);
         if (size > 0) {
-            buf = std::vector<char>(size + 1);
-            if (::WideCharToMultiByte(932, 0, src, -1, (*buf).data(), (*buf).size(), NULL, NULL) == 0) {
+            this->buf = std::vector<char>(size + 1);
+            if (::WideCharToMultiByte(932, 0, src, -1, this->buf->data(), this->buf->size(), NULL, NULL) == 0) {
                 // fail
-                buf = std::nullopt;
+                this->buf = tl::nullopt;
             }
         }
     }
@@ -75,14 +74,14 @@ public:
 
     char *c_str()
     {
-        return buf.has_value() ? (*buf).data() : NULL;
+        return this->buf ? this->buf->data() : NULL;
     }
 
 protected:
-    std::optional<std::vector<char>> buf;
+    tl::optional<std::vector<char>> buf;
 };
 
 bool is_already_running(void);
 void save_screen_as_html(HWND hWnd);
-void open_dir_in_explorer(std::string_view filename);
-std::optional<std::filesystem::path> get_open_filename(OPENFILENAMEW *ofn, const std::filesystem::path &path_dir, const std::filesystem::path &path_file, DWORD max_name_size);
+void open_dir_in_explorer(const std::filesystem::path &path);
+tl::optional<std::filesystem::path> get_open_filename(OPENFILENAMEW *ofn, const std::filesystem::path &path_dir, const std::filesystem::path &path_file, DWORD max_name_size);

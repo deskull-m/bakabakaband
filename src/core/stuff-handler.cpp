@@ -1,8 +1,12 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "player/player-status.h"
+#include "system/floor/floor-info.h"
+#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "tracking/health-bar-tracker.h"
+#include "tracking/lore-tracker.h"
 
 /*!
  * @brief 全更新処理をチェックして処理していく
@@ -26,9 +30,10 @@ void handle_stuff(PlayerType *player_ptr)
 /*
  * Track the given monster race
  */
-void monster_race_track(PlayerType *player_ptr, MonsterRaceId r_idx)
+void monster_race_track(PlayerType *player_ptr, MonraceId r_idx)
 {
-    player_ptr->monster_race_idx = r_idx;
+    (void)player_ptr;
+    LoreTracker::get_instance().set_trackee(r_idx);
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
 }
 
@@ -47,14 +52,15 @@ void object_kind_track(PlayerType *player_ptr, short bi_id)
  * @param m_idx トラッキング対象のモンスターID。0の時キャンセル
  * @param なし
  */
-void health_track(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void health_track(PlayerType *player_ptr, short m_idx)
 {
-    if (m_idx && m_idx == player_ptr->riding) {
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &monster = floor.m_list[m_idx];
+    if (monster.is_riding()) {
         return;
     }
 
-    player_ptr->health_who = m_idx;
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HEALTH);
+    HealthBarTracker::get_instance().set_trackee(m_idx);
 }
 
 bool update_player()

@@ -16,12 +16,13 @@
 #include "io-dump/character-dump.h"
 #include "io/input-key-acceptor.h"
 #include "io/uid-checker.h"
-#include "monster-race/monster-race.h"
 #include "system/angband-exceptions.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #ifdef SAVEFILE_USE_UID
@@ -39,13 +40,11 @@ std::filesystem::path ANGBAND_DIR_HELP; //!< Help files (normal) for the online 
 std::filesystem::path ANGBAND_DIR_INFO; //!< Help files (spoilers) for the online help (ascii) These files are portable between platforms
 std::filesystem::path ANGBAND_DIR_PREF; //!< Default user "preference" files (ascii) These files are rarely portable between platforms
 std::filesystem::path ANGBAND_DIR_SAVE; //!< Savefiles for current characters (binary)
-std::filesystem::path ANGBAND_DIR_DEBUG_SAVE; //*< Savefiles for debug data
 std::filesystem::path ANGBAND_DIR_USER; //!< User "preference" files (ascii) These files are rarely portable between platforms
 std::filesystem::path ANGBAND_DIR_XTRA; //!< Various extra files (binary) These files are rarely portable between platforms
 
 std::filesystem::path savefile;
-std::string savefile_base;
-std::filesystem::path debug_savefile;
+std::filesystem::path savefile_base;
 
 /*!
  * @brief プレイヤーステータスをファイルダンプ出力する
@@ -59,7 +58,7 @@ std::filesystem::path debug_savefile;
  */
 void file_character(PlayerType *player_ptr, std::string_view filename)
 {
-    const auto &path = path_build(ANGBAND_DIR_USER, filename);
+    const auto path = path_build(ANGBAND_DIR_USER, filename);
     auto fd = fd_open(path, O_RDONLY);
     if (fd >= 0) {
         const auto &path_str = path.string();
@@ -78,17 +77,27 @@ void file_character(PlayerType *player_ptr, std::string_view filename)
         fff = angband_fopen(path, FileOpenMode::WRITE);
     }
 
+    constexpr auto error_msg = _("キャラクタ情報のファイルへの書き出しに失敗しました！", "Character dump failed!");
     if (!fff) {
-        THROW_EXCEPTION(std::runtime_error, _("キャラクタ情報のファイルへの書き出しに失敗しました！", "Character dump failed!"));
+        msg_print(error_msg);
+        msg_erase();
+        return;
     }
 
     screen_save();
     make_character_dump(player_ptr, fff);
     screen_load();
 
+    if (ferror(fff)) {
+        angband_fclose(fff);
+        msg_print(error_msg);
+        msg_erase();
+        return;
+    }
+
     angband_fclose(fff);
     msg_print(_("キャラクタ情報のファイルへの書き出しに成功しました。", "Character dump successful."));
-    msg_print(nullptr);
+    msg_erase();
 }
 
 /*!
@@ -97,22 +106,23 @@ void file_character(PlayerType *player_ptr, std::string_view filename)
  * @param entry 特定条件時のN:タグヘッダID
  * @return ファイルから取得した行 (但しファイルがなかったり異常値ならばnullopt)
  */
-std::optional<std::string> get_random_line(concptr file_name, int entry)
+tl::optional<std::string> get_random_line(concptr file_name, int entry)
 {
-    const auto &path = path_build(ANGBAND_DIR_FILE, file_name);
+    const auto path = path_build(ANGBAND_DIR_FILE, file_name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (!fp) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     int test;
     auto line_num = 0;
     while (true) {
-        char buf[1024];
-        if (angband_fgets(fp, buf, sizeof(buf)) != 0) {
+        const auto line_str = angband_fgets(fp);
+        if (!line_str) {
             angband_fclose(fp);
-            return std::nullopt;
+            return tl::nullopt;
         }
+        const auto *buf = line_str->data();
 
         line_num++;
         if ((buf[0] != 'N') || (buf[1] != ':')) {
@@ -124,11 +134,11 @@ std::optional<std::string> get_random_line(concptr file_name, int entry)
         }
 
         if (buf[2] == 'M') {
-            if (is_male(monraces_info[i2enum<MonsterRaceId>(entry)])) {
+            if (is_male(MonraceList::get_instance().get_monrace(i2enum<MonraceId>(entry)))) {
                 break;
             }
         } else if (buf[2] == 'F') {
-            if (is_female(monraces_info[i2enum<MonsterRaceId>(entry)])) {
+            if (is_female(MonraceList::get_instance().get_monrace(i2enum<MonraceId>(entry)))) {
                 break;
             }
         } else if (sscanf(&(buf[2]), "%d", &test) != EOF) {
@@ -138,34 +148,35 @@ std::optional<std::string> get_random_line(concptr file_name, int entry)
         } else {
             msg_format("Error in line %d of %s!", line_num, file_name);
             angband_fclose(fp);
-            return std::nullopt;
+            return tl::nullopt;
         }
     }
 
     auto counter = 0;
-    std::optional<std::string> line{};
+    tl::optional<std::string> line{};
     while (true) {
-        char buf[1024];
+        tl::optional<std::string> buf;
         while (true) {
-            if (angband_fgets(fp, buf, sizeof(buf))) {
+            buf = angband_fgets(fp);
+            if (!buf) {
                 break;
             }
 
-            if ((buf[0] == 'N') && (buf[1] == ':')) {
+            if (buf->starts_with("N:")) {
                 continue;
             }
 
-            if (buf[0] != '#') {
+            if (!buf->starts_with('#')) {
                 break;
             }
         }
 
-        if (!buf[0]) {
+        if (!buf || buf->empty()) {
             break;
         }
 
         if (one_in_(counter + 1)) {
-            line = buf;
+            line = std::move(buf);
         }
 
         counter++;
@@ -184,13 +195,13 @@ std::optional<std::string> get_random_line(concptr file_name, int entry)
  * @return ファイルから取得した行 (但しファイルがなかったり異常値ならばnullopt)
  * @details
  */
-std::optional<std::string> get_random_line_ja_only(concptr file_name, int entry, int count)
+tl::optional<std::string> get_random_line_ja_only(concptr file_name, int entry, int count)
 {
-    std::optional<std::string> line;
+    tl::optional<std::string> line;
     for (auto i = 0; i < count; i++) {
         line = get_random_line(file_name, entry);
-        if (!line.has_value()) {
-            return std::nullopt;
+        if (!line) {
+            return tl::nullopt;
         }
 
         auto is_kanji = false;
@@ -222,10 +233,11 @@ static errr counts_seek(PlayerType *player_ptr, int fd, uint32_t where, bool fla
     auto short_pclass = enum2i(player_ptr->pclass);
 #ifdef SAVEFILE_USE_UID
     const auto user_id = UnixUserIds::get_instance().get_user_id();
-    strnfmt(temp1, sizeof(temp1), "%d.%s.%d%d%d", user_id, savefile_base.data(), short_pclass, player_ptr->ppersonality, player_ptr->age);
+    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, player_ptr->ppersonality, player_ptr->age);
 #else
-    strnfmt(temp1, sizeof(temp1), "%s.%d%d%d", savefile_base.data(), short_pclass, player_ptr->ppersonality, player_ptr->age);
+    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, player_ptr->ppersonality, player_ptr->age);
 #endif
+    angband_strcpy(temp1, header, sizeof(temp1));
     for (int i = 0; temp1[i]; i++) {
         temp1[i] ^= (i + 1) * 63;
     }
@@ -266,7 +278,7 @@ static errr counts_seek(PlayerType *player_ptr, int fd, uint32_t where, bool fla
  */
 uint32_t counts_read(PlayerType *player_ptr, int where)
 {
-    const auto &path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
+    const auto path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
     auto fd = fd_open(path, O_RDONLY);
     uint32_t count = 0;
     if (counts_seek(player_ptr, fd, where, false) || fd_read(fd, (char *)(&count), sizeof(uint32_t))) {
@@ -287,7 +299,7 @@ uint32_t counts_read(PlayerType *player_ptr, int where)
  */
 errr counts_write(PlayerType *player_ptr, int where, uint32_t count)
 {
-    const auto &path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
+    const auto path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
     safe_setuid_grab();
     auto fd = fd_open(path, O_RDWR);
     safe_setuid_drop();
@@ -323,16 +335,19 @@ errr counts_write(PlayerType *player_ptr, int where, uint32_t count)
  */
 void read_dead_file(bool world_end)
 {
-    const auto &path = path_build(ANGBAND_DIR_FILE, world_end ? _("blownaway_j.txt", "blownaway.txt") : _("dead_j.txt", "dead.txt"));
+    const auto path = path_build(ANGBAND_DIR_FILE, world_end ? _("blownaway_j.txt", "blownaway.txt") : _("dead_j.txt", "dead.txt"));
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (!fp) {
         return;
     }
 
     int i = 0;
-    char buf[1024]{};
-    while (angband_fgets(fp, buf, sizeof(buf)) == 0) {
-        put_str(buf, i++, 0);
+    while (true) {
+        const auto buf = angband_fgets(fp);
+        if (!buf) {
+            break;
+        }
+        put_str(*buf, i++, 0);
     }
 
     angband_fclose(fp);

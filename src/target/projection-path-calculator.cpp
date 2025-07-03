@@ -1,310 +1,271 @@
 #include "target/projection-path-calculator.h"
 #include "effect/effect-characteristics.h"
 #include "effect/spells-effect-util.h"
-#include "floor/cave.h"
-#include "grid/feature-flag-types.h"
-#include "spell-class/spells-mirror-master.h"
-#include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/terrain/terrain-characteristics.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
-#include "util/bit-flags-calculator.h"
+#include "util/finalizer.h"
 
-struct projection_path_type {
-    std::vector<std::pair<int, int>> *position;
-    POSITION range;
-    BIT_FLAGS flag;
-    POSITION y1;
-    POSITION x1;
-    POSITION y2;
-    POSITION x2;
-    POSITION y;
-    POSITION x;
-    POSITION ay;
-    POSITION ax;
-    POSITION sy;
-    POSITION sx;
-    int frac;
-    int m;
+class ProjectionPathHelper {
+public:
+    ProjectionPathHelper(int range, uint32_t flag, const Pos2D &pos_src, const Pos2D &pos_dst)
+        : range(range)
+        , flag(flag)
+        , pos_src(pos_src)
+        , pos_dst(pos_dst)
+        , pos_diff(pos_dst - pos_src)
+        , half(std::abs(pos_diff.y) * std::abs(pos_diff.x))
+        , full(half * 2)
+    {
+    }
+
+    std::vector<Pos2D> positions;
+    int range;
+    uint32_t flag;
+    Pos2D pos_src;
+    Pos2D pos_dst;
+    Pos2DVec pos_diff;
+    Pos2D pos{ 0, 0 };
+    int frac = 0;
+    int m = 0;
     int half;
     int full;
-    int k;
+    int k = 0;
 };
 
-std::vector<std::pair<int, int>>::const_iterator projection_path::begin() const
+std::vector<Pos2D>::const_iterator ProjectionPath::begin() const
 {
-    return this->position.cbegin();
+    return this->positions.cbegin();
 }
 
-std::vector<std::pair<int, int>>::const_iterator projection_path::end() const
+std::vector<Pos2D>::const_iterator ProjectionPath::end() const
 {
-    return this->position.cend();
+    return this->positions.cend();
 }
 
-const std::pair<int, int> &projection_path::front() const
+const Pos2D &ProjectionPath::front() const
 {
-    return this->position.front();
+    return this->positions.front();
 }
 
-const std::pair<int, int> &projection_path::back() const
+const Pos2D &ProjectionPath::back() const
 {
-    return this->position.back();
+    return this->positions.back();
 }
 
-const std::pair<int, int> &projection_path::operator[](int num) const
+const Pos2D &ProjectionPath::operator[](int num) const
 {
-    return this->position[num];
+    return this->positions[num];
 }
 
-int projection_path::path_num() const
+int ProjectionPath::path_num() const
 {
-    return static_cast<int>(this->position.size());
+    return static_cast<int>(this->positions.size());
 }
 
-static projection_path_type *initialize_projection_path_type(
-    projection_path_type *pp_ptr, std::vector<std::pair<int, int>> *position, POSITION range, BIT_FLAGS flag, POSITION y1, POSITION x1, POSITION y2, POSITION x2)
+static int sign(int num)
 {
-    pp_ptr->position = position;
-    pp_ptr->range = range;
-    pp_ptr->flag = flag;
-    pp_ptr->y1 = y1;
-    pp_ptr->x1 = x1;
-    pp_ptr->y2 = y2;
-    pp_ptr->x2 = x2;
-    return pp_ptr;
-}
-
-static void set_asxy(projection_path_type *pp_ptr)
-{
-    if (pp_ptr->y2 < pp_ptr->y1) {
-        pp_ptr->ay = pp_ptr->y1 - pp_ptr->y2;
-        pp_ptr->sy = -1;
-    } else {
-        pp_ptr->ay = pp_ptr->y2 - pp_ptr->y1;
-        pp_ptr->sy = 1;
+    if (num > 0) {
+        return 1;
     }
-
-    if (pp_ptr->x2 < pp_ptr->x1) {
-        pp_ptr->ax = pp_ptr->x1 - pp_ptr->x2;
-        pp_ptr->sx = -1;
-    } else {
-        pp_ptr->ax = pp_ptr->x2 - pp_ptr->x1;
-        pp_ptr->sx = 1;
+    if (num < 0) {
+        return -1;
     }
+    return 0;
 }
 
-static bool project_stop(PlayerType *player_ptr, projection_path_type *pp_ptr)
+static bool project_stop(const FloorType &floor, const Pos2D &p_pos, ProjectionPathHelper *pph_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    const Pos2D pos(pp_ptr->y, pp_ptr->x);
-    const Pos2D pos2(pp_ptr->y2, pp_ptr->x2);
-    if (none_bits(pp_ptr->flag, PROJECT_THRU) && (pos == pos2)) {
+    if (none_bits(pph_ptr->flag, PROJECT_THRU) && (pph_ptr->pos == pph_ptr->pos_dst)) {
         return true;
     }
 
-    if (any_bits(pp_ptr->flag, PROJECT_DISI)) {
-        if (!pp_ptr->position->empty() && cave_stop_disintegration(floor_ptr, pos.y, pos.x)) {
+    const auto &grid = floor.get_grid(pph_ptr->pos);
+    if (any_bits(pph_ptr->flag, PROJECT_DISI)) {
+        if (!pph_ptr->positions.empty() && grid.can_block_disintegration()) {
             return true;
         }
-    } else if (any_bits(pp_ptr->flag, PROJECT_LOS)) {
-        if (!pp_ptr->position->empty() && !cave_los_bold(floor_ptr, pos.y, pos.x)) {
+    } else if (any_bits(pph_ptr->flag, PROJECT_LOS)) {
+        if (!pph_ptr->positions.empty() && !grid.has_los_terrain()) {
             return true;
         }
-    } else if (none_bits(pp_ptr->flag, PROJECT_PATH)) {
-        if (!pp_ptr->position->empty() && !cave_has_flag_bold(floor_ptr, pos.y, pos.x, TerrainCharacteristics::PROJECT)) {
-            return true;
-        }
-    }
-
-    const auto &grid = floor_ptr->get_grid(pos);
-    if (any_bits(pp_ptr->flag, PROJECT_MIRROR)) {
-        if (!pp_ptr->position->empty() && grid.is_mirror()) {
+    } else if (none_bits(pph_ptr->flag, PROJECT_PATH)) {
+        if (!pph_ptr->positions.empty() && !grid.has(TerrainCharacteristics::PROJECTION)) {
             return true;
         }
     }
 
-    if (any_bits(pp_ptr->flag, PROJECT_STOP) && !pp_ptr->position->empty() && (player_ptr->is_located_at(pos) || grid.has_monster())) {
+    if (any_bits(pph_ptr->flag, PROJECT_MIRROR)) {
+        if (!pph_ptr->positions.empty() && grid.is_mirror()) {
+            return true;
+        }
+    }
+
+    if (any_bits(pph_ptr->flag, PROJECT_STOP) && !pph_ptr->positions.empty() && ((p_pos == pph_ptr->pos) || grid.has_monster())) {
         return true;
     }
 
-    if (!in_bounds(floor_ptr, pos.y, pos.x)) {
-        return true;
-    }
-
-    return false;
+    return !floor.contains(pph_ptr->pos);
 }
 
-static void calc_frac(projection_path_type *pp_ptr, bool is_vertical)
+static void calc_frac(ProjectionPathHelper *pph_ptr, bool is_vertical)
 {
-    if (pp_ptr->m == 0) {
+    if (pph_ptr->m == 0) {
         return;
     }
 
-    pp_ptr->frac += pp_ptr->m;
-    if (pp_ptr->frac <= pp_ptr->half) {
+    pph_ptr->frac += pph_ptr->m;
+    if (pph_ptr->frac <= pph_ptr->half) {
         return;
     }
 
     if (is_vertical) {
-        pp_ptr->x += pp_ptr->sx;
+        pph_ptr->pos.x += sign(pph_ptr->pos_diff.x);
     } else {
-        pp_ptr->y += pp_ptr->sy;
+        pph_ptr->pos.y += sign(pph_ptr->pos_diff.y);
     }
 
-    pp_ptr->frac -= pp_ptr->full;
-    pp_ptr->k++;
+    pph_ptr->frac -= pph_ptr->full;
+    pph_ptr->k++;
 }
 
-static void calc_projection_to_target(PlayerType *player_ptr, projection_path_type *pp_ptr, bool is_vertical)
+static void calc_projection_to_target(const FloorType &floor, const Pos2D &p_pos, ProjectionPathHelper *pph_ptr, bool is_vertical)
 {
     while (true) {
-        pp_ptr->position->emplace_back(pp_ptr->y, pp_ptr->x);
-        if (static_cast<int>(pp_ptr->position->size()) + pp_ptr->k / 2 >= pp_ptr->range) {
+        pph_ptr->positions.push_back(pph_ptr->pos);
+        if (static_cast<int>(pph_ptr->positions.size()) + pph_ptr->k / 2 >= pph_ptr->range) {
             break;
         }
 
-        if (project_stop(player_ptr, pp_ptr)) {
+        if (project_stop(floor, p_pos, pph_ptr)) {
             break;
         }
 
-        calc_frac(pp_ptr, is_vertical);
+        calc_frac(pph_ptr, is_vertical);
         if (is_vertical) {
-            pp_ptr->y += pp_ptr->sy;
+            pph_ptr->pos.y += sign(pph_ptr->pos_diff.y);
         } else {
-            pp_ptr->x += pp_ptr->sx;
+            pph_ptr->pos.x += sign(pph_ptr->pos_diff.x);
         }
     }
 }
 
-static bool calc_vertical_projection(PlayerType *player_ptr, projection_path_type *pp_ptr)
+static bool calc_vertical_projection(const FloorType &floor, const Pos2D &p_pos, ProjectionPathHelper *pph_ptr)
 {
-    if (pp_ptr->ay <= pp_ptr->ax) {
+    if (std::abs(pph_ptr->pos_diff.y) <= std::abs(pph_ptr->pos_diff.x)) {
         return false;
     }
 
-    pp_ptr->m = pp_ptr->ax * pp_ptr->ax * 2;
-    pp_ptr->y = pp_ptr->y1 + pp_ptr->sy;
-    pp_ptr->x = pp_ptr->x1;
-    pp_ptr->frac = pp_ptr->m;
-    if (pp_ptr->frac > pp_ptr->half) {
-        pp_ptr->x += pp_ptr->sx;
-        pp_ptr->frac -= pp_ptr->full;
-        pp_ptr->k++;
+    pph_ptr->m = pph_ptr->pos_diff.x * pph_ptr->pos_diff.x * 2;
+    pph_ptr->pos.y = pph_ptr->pos_src.y + sign(pph_ptr->pos_diff.y);
+    pph_ptr->pos.x = pph_ptr->pos_src.x;
+    pph_ptr->frac = pph_ptr->m;
+    if (pph_ptr->frac > pph_ptr->half) {
+        pph_ptr->pos.x += sign(pph_ptr->pos_diff.x);
+        pph_ptr->frac -= pph_ptr->full;
+        pph_ptr->k++;
     }
 
-    calc_projection_to_target(player_ptr, pp_ptr, true);
+    calc_projection_to_target(floor, p_pos, pph_ptr, true);
     return true;
 }
 
-static bool calc_horizontal_projection(PlayerType *player_ptr, projection_path_type *pp_ptr)
+static bool calc_horizontal_projection(const FloorType &floor, const Pos2D &p_pos, ProjectionPathHelper *pph_ptr)
 {
-    if (pp_ptr->ax <= pp_ptr->ay) {
+    if (std::abs(pph_ptr->pos_diff.x) <= std::abs(pph_ptr->pos_diff.y)) {
         return false;
     }
 
-    pp_ptr->m = pp_ptr->ay * pp_ptr->ay * 2;
-    pp_ptr->y = pp_ptr->y1;
-    pp_ptr->x = pp_ptr->x1 + pp_ptr->sx;
-    pp_ptr->frac = pp_ptr->m;
-    if (pp_ptr->frac > pp_ptr->half) {
-        pp_ptr->y += pp_ptr->sy;
-        pp_ptr->frac -= pp_ptr->full;
-        pp_ptr->k++;
+    pph_ptr->m = pph_ptr->pos_diff.y * pph_ptr->pos_diff.y * 2;
+    pph_ptr->pos.y = pph_ptr->pos_src.y;
+    pph_ptr->pos.x = pph_ptr->pos_src.x + sign(pph_ptr->pos_diff.x);
+    pph_ptr->frac = pph_ptr->m;
+    if (pph_ptr->frac > pph_ptr->half) {
+        pph_ptr->pos.y += sign(pph_ptr->pos_diff.y);
+        pph_ptr->frac -= pph_ptr->full;
+        pph_ptr->k++;
     }
 
-    calc_projection_to_target(player_ptr, pp_ptr, false);
+    calc_projection_to_target(floor, p_pos, pph_ptr, false);
     return true;
 }
 
-static void calc_projection_others(PlayerType *player_ptr, projection_path_type *pp_ptr)
+static void calc_diagonal_projection(const FloorType &floor, const Pos2D &p_pos, ProjectionPathHelper *pph_ptr)
 {
+    pph_ptr->pos.y = pph_ptr->pos_src.y + sign(pph_ptr->pos_diff.y);
+    pph_ptr->pos.x = pph_ptr->pos_src.x + sign(pph_ptr->pos_diff.x);
+
     while (true) {
-        pp_ptr->position->emplace_back(pp_ptr->y, pp_ptr->x);
-        if (static_cast<int>(pp_ptr->position->size()) * 3 / 2 >= pp_ptr->range) {
+        pph_ptr->positions.push_back(pph_ptr->pos);
+        if (static_cast<int>(pph_ptr->positions.size()) * 3 / 2 >= pph_ptr->range) {
             break;
         }
 
-        if (project_stop(player_ptr, pp_ptr)) {
+        if (project_stop(floor, p_pos, pph_ptr)) {
             break;
         }
 
-        pp_ptr->y += pp_ptr->sy;
-        pp_ptr->x += pp_ptr->sx;
+        pph_ptr->pos.y += sign(pph_ptr->pos_diff.y);
+        pph_ptr->pos.x += sign(pph_ptr->pos_diff.x);
     }
 }
 
 /*!
- * @brief 始点から終点への直線経路を返す /
- * Determine the path taken by a projection.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @brief 始点から終点への直線経路を返す
+ * @param floor フロアへの参照
  * @param range 距離
- * @param y1 始点Y座標
- * @param x1 始点X座標
- * @param y2 終点Y座標
- * @param x2 終点X座標
- * @param flag フラグID
- * @return リストの長さ
+ * @param p_pos プレイヤーの座標
+ * @param pos_src 始点座標
+ * @param pos_dst 終点座標
+ * @param flag フラグ群
  */
-projection_path::projection_path(PlayerType *player_ptr, POSITION range, POSITION y1, POSITION x1, POSITION y2, POSITION x2, BIT_FLAGS flag)
+ProjectionPath::ProjectionPath(const FloorType &floor, int range, const Pos2D &p_pos, const Pos2D &pos_src, const Pos2D &pos_dst, uint32_t flag)
 {
-    this->position.clear();
-    if ((x1 == x2) && (y1 == y2)) {
+    if (pos_src == pos_dst) {
         return;
     }
 
-    projection_path_type tmp_projection_path;
-    auto *pp_ptr = initialize_projection_path_type(&tmp_projection_path, &this->position, range, flag, y1, x1, y2, x2);
-    set_asxy(pp_ptr);
-    pp_ptr->half = pp_ptr->ay * pp_ptr->ax;
-    pp_ptr->full = pp_ptr->half << 1;
-    pp_ptr->k = 0;
-
-    if (calc_vertical_projection(player_ptr, pp_ptr)) {
+    ProjectionPathHelper pph(range, flag, pos_src, pos_dst);
+    const auto finalizer = util::make_finalizer([this, &pph] { this->positions = std::move(pph.positions); });
+    if (calc_vertical_projection(floor, p_pos, &pph)) {
         return;
     }
 
-    if (calc_horizontal_projection(player_ptr, pp_ptr)) {
+    if (calc_horizontal_projection(floor, p_pos, &pph)) {
         return;
     }
 
-    pp_ptr->y = y1 + pp_ptr->sy;
-    pp_ptr->x = x1 + pp_ptr->sx;
-    calc_projection_others(player_ptr, pp_ptr);
+    calc_diagonal_projection(floor, p_pos, &pph);
+}
+
+/*!
+ * @brief 始点から終点への直線経路を返す(フラグ指定なし)
+ * @param floor フロアへの参照
+ * @param range 距離
+ * @param pos_src 始点座標
+ * @param pos_dst 終点座標
+ * @details プレイヤーの座標はPROJECT_STOPフラグが設定されている時のみ使用されるため、フラグ指定無しの場合は不要。
+ * したがってダミー座標を渡しておく。
+ */
+ProjectionPath::ProjectionPath(const FloorType &floor, int range, const Pos2D &pos_src, const Pos2D &pos_dst)
+    : ProjectionPath(floor, range, { 0, 0 } /* dummy */, pos_src, pos_dst, 0)
+{
 }
 
 /*
- * Determine if a bolt spell cast from (y1,x1) to (y2,x2) will arrive
+ * Determine if a bolt spell cast from pos_src to pos_dst will arrive
  * at the final destination, assuming no monster gets in the way.
  *
- * This is slightly (but significantly) different from "los(y1,x1,y2,x2)".
+ * This is slightly (but significantly) different from "los(floor, pos_src, pos_dst)".
  */
-bool projectable(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, POSITION x2)
+bool projectable(const FloorType &floor, const Pos2D &pos_src, const Pos2D &pos_dst)
 {
-    projection_path grid_g(player_ptr, (project_length ? project_length : AngbandSystem::get_instance().get_max_range()), y1, x1, y2, x2, 0);
+    const auto range = project_length ? project_length : AngbandSystem::get_instance().get_max_range();
+    ProjectionPath grid_g(floor, range, pos_src, pos_dst);
     if (grid_g.path_num() == 0) {
         return true;
     }
 
-    const auto &[y, x] = grid_g.back();
-    if ((y != y2) || (x != x2)) {
-        return false;
-    }
-
-    return true;
-}
-
-/*
- * Convert a "grid" (G) into a "location" (Y)
- */
-POSITION get_grid_y(uint16_t grid)
-{
-    return (int)(grid / 256U);
-}
-
-/*
- * Convert a "grid" (G) into a "location" (X)
- */
-POSITION get_grid_x(uint16_t grid)
-{
-    return (int)(grid % 256U);
+    const auto &pos = grid_g.back();
+    return pos == pos_dst;
 }

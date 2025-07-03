@@ -1,10 +1,16 @@
 #pragma once
 
+#include "locale/localized-string.h"
 #include "system/angband.h"
 #include <string>
 #include <vector>
 
 #define MAX_PATRON 18 /*!< カオスパトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
+
+enum class PatronType : int {
+    KHORNE = 11, //!< コーン
+    GETTER = 16, //!< ゲッター
+};
 
 /* カオスパトロンからの報酬種別定義 / Chaos Warrior: Reward types: */
 enum patron_reward {
@@ -54,13 +60,8 @@ enum player_ability_type : int;
  */
 class Patron {
 public:
-    std::string name; //!< パトロン名
-#ifdef JP
-    std::string ename; //!< PatronName
-    Patron(const char *name, const char *ename, std::vector<patron_reward> reward_table, const player_ability_type boost_stat);
-#else
-    Patron(const char *name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat);
-#endif
+    LocalizedString name; //!< パトロン名
+    Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat);
 
     // @note C4458 クラスメンバーの隠蔽 への対応として末尾に「_」を付ける.
     void gain_level_reward(PlayerType *player_ptr_, int chosen_reward);

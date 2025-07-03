@@ -8,64 +8,61 @@
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-remover.h"
 #include "monster-floor/place-monster-types.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
-#include "monster/monster-status.h"
 #include "monster/monster-util.h"
 #include "player/player-sex.h"
 #include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
+#include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 
 /*!
- * @brief 変身処理向けにモンスターの近隣レベル帯モンスターを返す /
- * Helper function -- return a "nearby" race for polymorphing
- * @param floor_ptr 配置するフロアの参照ポインタ
- * @param r_idx 基準となるモンスター種族ID
+ * @brief 変身処理向けにモンスターの近隣レベル帯モンスターを返す
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param monrace_id 基準となるモンスター種族ID
  * @return 変更先のモンスター種族ID
- * @details
- * Note that this function is one of the more "dangerous" ones...
  */
-static MonsterRaceId poly_r_idx(PlayerType *player_ptr, MonsterRaceId r_idx)
+static MonraceId select_polymorph_monrace_id(PlayerType *player_ptr, MonraceId monrace_id)
 {
-    auto *r_ptr = &monraces_info[r_idx];
-    if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->misc_flags.has(MonsterMiscType::QUESTOR)) {
-        return r_idx;
+    const auto &monraces = MonraceList::get_instance();
+    const auto &monrace = monraces.get_monrace(monrace_id);
+    if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.misc_flags.has(MonsterMiscType::QUESTOR)) {
+        return monrace_id;
     }
 
-    DEPTH lev1 = r_ptr->level - ((randint1(20) / randint1(9)) + 1);
-    DEPTH lev2 = r_ptr->level + ((randint1(20) / randint1(9)) + 1);
-    MonsterRaceId r;
-    for (int i = 0; i < 1000; i++) {
-        r = get_mon_num(player_ptr, 0, (player_ptr->current_floor_ptr->dun_level + r_ptr->level) / 2 + 5, PM_NONE);
-        if (!MonsterRace(r).is_valid()) {
+    const auto lev1 = monrace.level - ((randint1(20) / randint1(9)) + 1);
+    const auto lev2 = monrace.level + ((randint1(20) / randint1(9)) + 1);
+    for (auto i = 0; i < 1000; i++) {
+        const auto new_monrace_id = get_mon_num(player_ptr, 0, (player_ptr->current_floor_ptr->dun_level + monrace.level) / 2 + 5, PM_NONE);
+        if (!MonraceList::is_valid(new_monrace_id)) {
             break;
         }
 
-        r_ptr = &monraces_info[r];
-        if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-            continue;
-        }
-        if ((r_ptr->level < lev1) || (r_ptr->level > lev2)) {
+        const auto &new_monrace = monraces.get_monrace(new_monrace_id);
+        if (new_monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
             continue;
         }
 
-        r_idx = r;
-        break;
+        if ((new_monrace.level < lev1) || (new_monrace.level > lev2)) {
+            continue;
+        }
+
+        return new_monrace_id;
     }
 
-    return r_idx;
+    return monrace_id;
 }
 
 /*!
@@ -78,23 +75,24 @@ static MonsterRaceId poly_r_idx(PlayerType *player_ptr, MonsterRaceId r_idx)
  */
 bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    auto *g_ptr = &floor_ptr->grid_array[y][x];
-    auto *m_ptr = &floor_ptr->m_list[g_ptr->m_idx];
-    MonsterRaceId new_r_idx;
-    MonsterRaceId old_r_idx = m_ptr->r_idx;
-    bool targeted = target_who == g_ptr->m_idx;
-    bool health_tracked = player_ptr->health_who == g_ptr->m_idx;
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &grid = floor.grid_array[y][x];
+    auto &monster = floor.m_list[grid.m_idx];
+    MonraceId new_r_idx;
+    MonraceId old_r_idx = monster.r_idx;
+    const auto target_m_idx = Target::get_last_target().get_m_idx();
+    const auto targeted = target_m_idx == grid.m_idx;
+    auto health_tracked = HealthBarTracker::get_instance().is_tracking(grid.m_idx);
 
-    if (floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
+    if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         return false;
     }
-    if ((player_ptr->riding == g_ptr->m_idx) || m_ptr->mflag2.has(MonsterConstantFlagType::KAGE)) {
+    if (monster.is_riding() || monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
         return false;
     }
 
-    MonsterEntity back_m = *m_ptr;
-    new_r_idx = poly_r_idx(player_ptr, old_r_idx);
+    auto back_m = monster.clone();
+    new_r_idx = select_polymorph_monrace_id(player_ptr, old_r_idx);
     if (new_r_idx == old_r_idx) {
         return false;
     }
@@ -102,28 +100,31 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
     bool preserve_hold_objects = !back_m.hold_o_idx_list.empty();
 
     BIT_FLAGS mode = 0L;
-    if (m_ptr->is_friendly()) {
+    if (monster.is_friendly()) {
         mode |= PM_FORCE_FRIENDLY;
     }
-    if (m_ptr->is_pet()) {
+    if (monster.is_pet()) {
         mode |= PM_FORCE_PET;
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monster.mflag2.has(MonsterConstantFlagType::NOPET)) {
         mode |= PM_NO_PET;
     }
 
-    m_ptr->hold_o_idx_list.clear();
-    delete_monster_idx(player_ptr, g_ptr->m_idx);
+    monster.hold_o_idx_list.clear();
+    delete_monster_idx(player_ptr, grid.m_idx);
     bool polymorphed = false;
-    if (place_specific_monster(player_ptr, 0, y, x, new_r_idx, mode)) {
-        floor_ptr->m_list[hack_m_idx_ii].nickname = back_m.nickname;
-        floor_ptr->m_list[hack_m_idx_ii].parent_m_idx = back_m.parent_m_idx;
-        floor_ptr->m_list[hack_m_idx_ii].hold_o_idx_list = back_m.hold_o_idx_list;
+    auto m_idx = place_specific_monster(player_ptr, y, x, new_r_idx, mode);
+    if (m_idx) {
+        auto &monster_polymorphed = floor.m_list[*m_idx];
+        monster_polymorphed.nickname = back_m.nickname;
+        monster_polymorphed.parent_m_idx = back_m.parent_m_idx;
+        monster_polymorphed.hold_o_idx_list = back_m.hold_o_idx_list;
         polymorphed = true;
     } else {
-        if (place_specific_monster(player_ptr, 0, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN))) {
-            floor_ptr->m_list[hack_m_idx_ii] = back_m;
-            mproc_init(floor_ptr);
+        m_idx = place_specific_monster(player_ptr, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
+        if (m_idx) {
+            floor.m_list[*m_idx] = back_m.clone();
+            floor.reset_mproc();
         } else {
             preserve_hold_objects = false;
         }
@@ -131,21 +132,22 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
 
     if (preserve_hold_objects) {
         for (const auto this_o_idx : back_m.hold_o_idx_list) {
-            auto *o_ptr = &floor_ptr->o_list[this_o_idx];
-            o_ptr->held_m_idx = hack_m_idx_ii;
+            auto *o_ptr = floor.o_list[this_o_idx].get();
+            o_ptr->held_m_idx = *m_idx;
         }
     } else {
-        for (auto it = back_m.hold_o_idx_list.begin(); it != back_m.hold_o_idx_list.end();) {
-            OBJECT_IDX this_o_idx = *it++;
-            delete_object_idx(player_ptr, this_o_idx);
-        }
+        delete_items(player_ptr, back_m.hold_o_idx_list);
     }
 
     if (targeted) {
-        target_who = hack_m_idx_ii;
+        if (m_idx) {
+            Target::set_last_target(Target::create_monster_target(player_ptr, *m_idx));
+        } else {
+            Target::clear_last_target();
+        }
     }
     if (health_tracked) {
-        health_track(player_ptr, hack_m_idx_ii);
+        health_track(player_ptr, m_idx.value_or(0));
     }
     return polymorphed;
 }
@@ -161,7 +163,6 @@ bool trans_sex(PlayerType *player_ptr)
     clear_bldg(4, 10);
 
     int i;
-    int num = 0;
     for (i = 0; i < MAX_SEXES; i++) {
         char buf[80];
 
@@ -169,9 +170,8 @@ bool trans_sex(PlayerType *player_ptr)
             continue;
         }
 
-        sprintf(buf, "%c) %-20s", I2A(i), sex_info[i].title);
+        sprintf(buf, "%c) %-20s", I2A(i), sex_info[i].title.data());
         prt(buf, 5 + i, 5);
-        num++;
     }
 
     prt(_("どの性別に変わりますか:", "Which sex do you chenge: "), 0, 0);

@@ -13,7 +13,6 @@
 #include "floor/floor-object.h"
 #include "game-option/disturbance-options.h"
 #include "inventory/inventory-slot-types.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/item-magic-applier.h"
@@ -26,7 +25,6 @@
 #include "object-hook/hook-weapon.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
-#include "object/object-kind-hook.h"
 #include "perception/object-perception.h"
 #include "player-info/class-info.h"
 #include "racial/racial-android.h"
@@ -34,16 +32,17 @@
 #include "sv-definition/sv-scroll-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-key.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/probability-table.h"
 #include "view/display-messages.h"
+#include <variant>
 
 /*!
  * @brief 装備強化処理の失敗率定数 (千分率)
@@ -58,65 +57,88 @@ static constexpr std::array<int, 16> enchant_table = { { 0, 10, 50, 100, 200, 30
 enum class AmusementFlagType : byte {
     NOTHING, /* No restriction */
     NO_UNIQUE, /* Don't make the amusing object of uniques */
-    FIXED_ART, /* Make a fixed artifact based on the amusing object */
     MULTIPLE, /* Drop 1-3 objects for one type */
     PILE, /* Drop 1-99 pile objects for one type */
 };
 
+using AmusementRewardItem = std::variant<FixedArtifactId, BaseitemKey>;
+
 class AmuseDefinition {
 public:
-    AmuseDefinition(const BaseitemKey &key, PERCENTAGE prob, AmusementFlagType flag)
-        : key(key)
+    AmuseDefinition(const AmusementRewardItem &reward_item, PERCENTAGE prob, AmusementFlagType flag)
+        : reward_item(reward_item)
         , prob(prob)
         , flag(flag)
     {
     }
 
-    BaseitemKey key;
+    AmusementRewardItem reward_item;
     PERCENTAGE prob;
     AmusementFlagType flag;
 };
 
 static const std::array<AmuseDefinition, 13> amuse_info = { {
-    { { ItemKindType::BOTTLE }, 5, AmusementFlagType::NOTHING },
-    { { ItemKindType::JUNK }, 3, AmusementFlagType::MULTIPLE },
-    { { ItemKindType::SPIKE }, 10, AmusementFlagType::PILE },
-    { { ItemKindType::STATUE }, 15, AmusementFlagType::NOTHING },
-    { { ItemKindType::CORPSE }, 15, AmusementFlagType::NO_UNIQUE },
-    { { ItemKindType::SKELETON }, 10, AmusementFlagType::NO_UNIQUE },
-    { { ItemKindType::FIGURINE }, 10, AmusementFlagType::NO_UNIQUE },
-    { { ItemKindType::READING_MATTER }, 1, AmusementFlagType::NOTHING },
-    { { ItemKindType::POLEARM, SV_TSURIZAO }, 3, AmusementFlagType::NOTHING }, // Fishing Pole of Taikobo
-    { { ItemKindType::SWORD, SV_BROKEN_DAGGER }, 3, AmusementFlagType::FIXED_ART }, // Broken Dagger of Magician
-    { { ItemKindType::SWORD, SV_BROKEN_DAGGER }, 10, AmusementFlagType::NOTHING },
-    { { ItemKindType::SWORD, SV_BROKEN_SWORD }, 5, AmusementFlagType::NOTHING },
-    { { ItemKindType::SCROLL, SV_SCROLL_AMUSEMENT }, 10, AmusementFlagType::NOTHING },
+    { BaseitemKey{ ItemKindType::FLAVOR_SKELETON }, 5, AmusementFlagType::NOTHING },
+    { BaseitemKey{ ItemKindType::BOTTLE }, 5, AmusementFlagType::NOTHING },
+    { BaseitemKey{ ItemKindType::JUNK }, 3, AmusementFlagType::MULTIPLE },
+    { BaseitemKey{ ItemKindType::SPIKE }, 10, AmusementFlagType::PILE },
+    { BaseitemKey{ ItemKindType::STATUE }, 15, AmusementFlagType::NOTHING },
+    { BaseitemKey{ ItemKindType::MONSTER_REMAINS }, 15, AmusementFlagType::NO_UNIQUE },
+    { BaseitemKey{ ItemKindType::FIGURINE }, 10, AmusementFlagType::NO_UNIQUE },
+    { BaseitemKey{ ItemKindType::READING_MATTER }, 1, AmusementFlagType::NOTHING },
+    { FixedArtifactId::TAIKOBO, 3, AmusementFlagType::NOTHING },
+    { FixedArtifactId::MAGICIAN, 3, AmusementFlagType::NOTHING },
+    { BaseitemKey{ ItemKindType::SWORD, SV_BROKEN_DAGGER }, 10, AmusementFlagType::NOTHING },
+    { BaseitemKey{ ItemKindType::SWORD, SV_BROKEN_SWORD }, 5, AmusementFlagType::NOTHING },
+    { BaseitemKey{ ItemKindType::SCROLL, SV_SCROLL_AMUSEMENT }, 10, AmusementFlagType::NOTHING },
 } };
 
-static std::optional<FixedArtifactId> sweep_amusement_artifact(const bool insta_art, const short bi_id)
-{
-    for (const auto &[a_idx, artifact] : artifacts_info) {
-        if (a_idx == FixedArtifactId::NONE) {
-            continue;
-        }
-
-        if (insta_art && !artifact.gen_flags.has(ItemGenerationTraitType::INSTA_ART)) {
-            continue;
-        }
-
-        if (artifact.bi_key != baseitems_info[bi_id].bi_key) {
-            continue;
-        }
-
-        if (artifact.is_generated) {
-            continue;
-        }
-
-        return a_idx;
+struct AmusementRewardItemVisitor {
+    AmusementRewardItemVisitor(PlayerType *player_ptr, AmusementFlagType flag)
+        : player_ptr(player_ptr)
+        , flag(flag)
+    {
     }
 
-    return std::nullopt;
-}
+    tl::optional<ItemEntity> operator()(const FixedArtifactId &fa_id) const
+    {
+        const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
+        if (artifact.is_generated) {
+            return tl::nullopt;
+        }
+
+        ItemEntity item(artifact.bi_key);
+        item.fa_id = fa_id;
+        ItemMagicApplier(player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
+
+        return item;
+    }
+
+    tl::optional<ItemEntity> operator()(const BaseitemKey &bi_key) const
+    {
+        ItemEntity item(bi_key);
+        ItemMagicApplier(player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
+
+        if (this->flag == AmusementFlagType::NO_UNIQUE) {
+            if (item.has_monrace() && item.get_monrace().kind_flags.has(MonsterKindType::UNIQUE)) {
+                return tl::nullopt;
+            }
+        }
+
+        if (this->flag == AmusementFlagType::MULTIPLE) {
+            item.number = randint1(3);
+        }
+
+        if (this->flag == AmusementFlagType::PILE) {
+            item.number = randint1(99);
+        }
+
+        return item;
+    }
+
+    PlayerType *player_ptr;
+    AmusementFlagType flag;
+};
 
 /*!
  * @brief 誰得ドロップを行う。
@@ -133,49 +155,18 @@ void generate_amusement(PlayerType *player_ptr, int num, bool known)
 
     for (auto i = 0; i < num; i++) {
         auto am_ptr = pt.pick_one_at_random();
-        const auto bi_id = lookup_baseitem_id(am_ptr->key);
-        if (bi_id == 0) {
+
+        auto item = std::visit(AmusementRewardItemVisitor(player_ptr, am_ptr->flag), am_ptr->reward_item);
+        if (!item) {
             continue;
         }
 
-        const auto insta_art = baseitems_info[bi_id].gen_flags.has(ItemGenerationTraitType::INSTA_ART);
-        const auto flag = am_ptr->flag;
-        const auto fixed_art = flag == AmusementFlagType::FIXED_ART;
-        std::optional<FixedArtifactId> opt_a_idx;
-        if (insta_art || fixed_art) {
-            opt_a_idx = sweep_amusement_artifact(insta_art, bi_id);
-            if (!opt_a_idx.has_value()) {
-                continue;
-            }
-        }
-
-        ItemEntity item;
-        item.prep(bi_id);
-        if (opt_a_idx.has_value()) {
-            item.fixed_artifact_idx = opt_a_idx.value();
-        }
-
-        ItemMagicApplier(player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
-        if (flag == AmusementFlagType::NO_UNIQUE) {
-            if (monraces_info[i2enum<MonsterRaceId>(item.pval)].kind_flags.has(MonsterKindType::UNIQUE)) {
-                continue;
-            }
-        }
-
-        if (flag == AmusementFlagType::MULTIPLE) {
-            item.number = randint1(3);
-        }
-
-        if (flag == AmusementFlagType::PILE) {
-            item.number = randint1(99);
-        }
-
         if (known) {
-            object_aware(player_ptr, &item);
-            item.mark_as_known();
+            object_aware(player_ptr, *item);
+            item->mark_as_known();
         }
 
-        (void)drop_near(player_ptr, &item, -1, player_ptr->y, player_ptr->x);
+        (void)drop_near(player_ptr, *item, player_ptr->get_position());
     }
 }
 
@@ -190,14 +181,12 @@ void generate_amusement(PlayerType *player_ptr, int num, bool known)
  */
 void acquirement(PlayerType *player_ptr, POSITION y1, POSITION x1, int num, bool great)
 {
+    const Pos2D pos(y1, x1);
     auto mode = AM_GOOD | (great ? AM_GREAT : AM_NONE);
     for (auto i = 0; i < num; i++) {
-        ItemEntity item;
-        if (!make_object(player_ptr, &item, mode)) {
-            continue;
+        if (auto item = make_object(player_ptr, mode)) {
+            (void)drop_near(player_ptr, *item, pos);
         }
-
-        (void)drop_near(player_ptr, &item, -1, y1, x1);
     }
 }
 
@@ -210,14 +199,14 @@ void acquirement(PlayerType *player_ptr, POSITION y1, POSITION x1, int num, bool
 bool curse_armor(PlayerType *player_ptr)
 {
     /* Curse the body armor */
-    auto *o_ptr = &player_ptr->inventory_list[INVEN_BODY];
-    if (!o_ptr->is_valid()) {
+    auto &item = *player_ptr->inventory[INVEN_BODY];
+    if (!item.is_valid()) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(player_ptr, item, OD_OMIT_PREFIX);
 
-    if (o_ptr->is_fixed_or_random_artifact() && one_in_(2)) {
+    if (item.is_fixed_or_random_artifact() && one_in_(2)) {
 #ifdef JP
         msg_format("%sが%sを包み込もうとしたが、%sはそれを跳ね返した！", "恐怖の暗黒オーラ", "防具", item_name.data());
 #else
@@ -228,17 +217,16 @@ bool curse_armor(PlayerType *player_ptr)
 
     msg_format(_("恐怖の暗黒オーラがあなたの%sを包み込んだ！", "A terrible black aura blasts your %s!"), item_name.data());
     chg_virtue(player_ptr, Virtue::ENCHANT, -5);
-    o_ptr->fixed_artifact_idx = FixedArtifactId::NONE;
-    o_ptr->ego_idx = EgoType::BLASTED;
-    o_ptr->to_a = 0 - randint1(5) - randint1(5);
-    o_ptr->to_h = 0;
-    o_ptr->to_d = 0;
-    o_ptr->ac = 0;
-    o_ptr->dd = 0;
-    o_ptr->ds = 0;
-    o_ptr->art_flags.clear();
-    o_ptr->curse_flags.set(CurseTraitType::CURSED);
-    o_ptr->ident |= IDENT_BROKEN;
+    item.fa_id = FixedArtifactId::NONE;
+    item.ego_idx = EgoType::BLASTED;
+    item.to_a = 0 - randint1(5) - randint1(5);
+    item.to_h = 0;
+    item.to_d = 0;
+    item.ac = 0;
+    item.damage_dice = Dice(0, 0);
+    item.art_flags.clear();
+    item.curse_flags.set(CurseTraitType::CURSED);
+    item.ident |= IDENT_BROKEN;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
@@ -269,7 +257,7 @@ bool curse_weapon_object(PlayerType *player_ptr, bool force, ItemEntity *o_ptr)
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_OMIT_PREFIX);
     if (o_ptr->is_fixed_or_random_artifact() && one_in_(2) && !force) {
 #ifdef JP
         msg_format("%sが%sを包み込もうとしたが、%sはそれを跳ね返した！", "恐怖の暗黒オーラ", "武器", item_name.data());
@@ -284,14 +272,13 @@ bool curse_weapon_object(PlayerType *player_ptr, bool force, ItemEntity *o_ptr)
     }
 
     chg_virtue(player_ptr, Virtue::ENCHANT, -5);
-    o_ptr->fixed_artifact_idx = FixedArtifactId::NONE;
+    o_ptr->fa_id = FixedArtifactId::NONE;
     o_ptr->ego_idx = EgoType::SHATTERED;
     o_ptr->to_h = 0 - randint1(5) - randint1(5);
     o_ptr->to_d = 0 - randint1(5) - randint1(5);
     o_ptr->to_a = 0;
     o_ptr->ac = 0;
-    o_ptr->dd = 0;
-    o_ptr->ds = 0;
+    o_ptr->damage_dice = Dice(0, 0);
     o_ptr->art_flags.clear();
     o_ptr->curse_flags.set(CurseTraitType::CURSED);
     o_ptr->ident |= IDENT_BROKEN;
@@ -318,7 +305,7 @@ bool curse_weapon_object(PlayerType *player_ptr, bool force, ItemEntity *o_ptr)
 void brand_bolts(PlayerType *player_ptr)
 {
     for (auto i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = &player_ptr->inventory_list[i];
+        auto *o_ptr = player_ptr->inventory[i].get();
         if (o_ptr->bi_key.tval() != ItemKindType::BOLT) {
             continue;
         }
@@ -331,7 +318,7 @@ void brand_bolts(PlayerType *player_ptr)
             continue;
         }
 
-        if (randint0(100) < 75) {
+        if (evaluate_percent(75)) {
             continue;
         }
 
@@ -399,7 +386,7 @@ bool enchant_equipment(ItemEntity *o_ptr, int n, int eflag)
                 chance = enchant_table[o_ptr->to_h];
             }
 
-            if (force || ((randint1(1000) > chance) && (!a || (randint0(100) < 50)))) {
+            if (force || ((randint1(1000) > chance) && (!a || one_in_(2)))) {
                 o_ptr->to_h++;
                 res = true;
                 if (o_ptr->to_h >= 0) {
@@ -417,7 +404,7 @@ bool enchant_equipment(ItemEntity *o_ptr, int n, int eflag)
                 chance = enchant_table[o_ptr->to_d];
             }
 
-            if (force || ((randint1(1000) > chance) && (!a || (randint0(100) < 50)))) {
+            if (force || ((randint1(1000) > chance) && (!a || one_in_(2)))) {
                 o_ptr->to_d++;
                 res = true;
                 if (o_ptr->to_d >= 0) {
@@ -438,7 +425,7 @@ bool enchant_equipment(ItemEntity *o_ptr, int n, int eflag)
             chance = enchant_table[o_ptr->to_a];
         }
 
-        if (force || ((randint1(1000) > chance) && (!a || (randint0(100) < 50)))) {
+        if (force || ((randint1(1000) > chance) && (!a || one_in_(2)))) {
             o_ptr->to_a++;
             res = true;
             if (o_ptr->to_a >= 0) {
@@ -489,11 +476,11 @@ bool enchant_spell(PlayerType *player_ptr, HIT_PROB num_hit, int num_dam, ARMOUR
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
     auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, item_tester);
-    if (!o_ptr) {
+    if (o_ptr == nullptr) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
     msg_format("%s は明るく輝いた！", item_name.data());
 #else
@@ -561,7 +548,7 @@ void brand_weapon(PlayerType *player_ptr, int brand_type)
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     concptr act = nullptr;
     switch (brand_type) {
     case 17:

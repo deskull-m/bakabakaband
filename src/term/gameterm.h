@@ -4,8 +4,10 @@
 #include <array>
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
+constexpr auto MAX_TERM_DATA = 8; //!< Maximum number of terminals
 constexpr auto TERM_DEFAULT_COLS = 80;
 constexpr auto TERM_DEFAULT_ROWS = 24;
 constexpr auto MAIN_TERM_MIN_COLS = TERM_DEFAULT_COLS;
@@ -28,4 +30,7 @@ enum class AttributeType : int;
 extern std::map<AttributeType, std::string> gf_colors;
 extern TERM_COLOR color_char_to_attr(char c);
 
-std::pair<TERM_COLOR, char> bolt_pict(POSITION y, POSITION x, POSITION ny, POSITION nx, AttributeType typ);
+extern const std::unordered_map<std::string_view, TERM_COLOR> color_list;
+
+class DisplaySymbol;
+DisplaySymbol bolt_pict(POSITION y, POSITION x, POSITION ny, POSITION nx, AttributeType typ);

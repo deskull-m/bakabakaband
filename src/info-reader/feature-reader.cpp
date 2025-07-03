@@ -1,21 +1,19 @@
 #include "info-reader/feature-reader.h"
 #include "floor/wild.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
-#include "grid/trap.h"
 #include "info-reader/feature-info-tokens-table.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "main/angband-headers.h"
 #include "room/door-definition.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
-
-/*! 地形タグ情報から地形IDを得られなかった場合にtrueを返す */
-static bool feat_tag_is_not_found = false;
+#include <map>
+#include <set>
 
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る（地形情報向け） /
@@ -85,9 +83,19 @@ errr parse_terrains_info(std::string_view buf, angband_header *)
 
         error_idx = i;
         const auto s = static_cast<short>(i);
-        auto &terrain = terrains[s];
+        auto &terrain = terrains.get_terrain(s);
         terrain.idx = s;
-        terrain.tag = tokens[2];
+        const auto &tag = tokens[2];
+        terrain.tag = tag;
+
+        //!< @details リテラルで呼ばれていない地形タグ(文字列形式)もあるので残しておく.
+        static const auto tag_begin = terrain_tags.begin();
+        static const auto tag_end = terrain_tags.end();
+        const auto tag_enum = std::find_if(tag_begin, tag_end, [&tag](const auto &x) { return x.first == tag; });
+        if (tag_enum != tag_end) {
+            terrain.tag_enum = tag_enum->second;
+        }
+
         terrain.mimic = s;
         terrain.destroyed = s;
         for (auto j = 0; j < MAX_FEAT_STATES; j++) {
@@ -135,40 +143,38 @@ errr parse_terrains_info(std::string_view buf, angband_header *)
         }
 
         size_t n;
-        char s_char;
+        char character;
         if (tokens[1].size() == 1) {
-            s_char = tokens[1][0];
+            character = tokens[1][0];
             n = 2;
         } else if (tokens[1].size() == 0 && tokens[2].size() == 0) {
             if (tokens.size() < 4) {
                 return PARSE_ERROR_TOO_FEW_ARGUMENTS;
             }
 
-            s_char = ':';
+            character = ':';
             n = 3;
         } else {
             return PARSE_ERROR_GENERIC;
         }
 
-        auto s_attr = color_char_to_attr(tokens[n++][0]);
-        if (s_attr > 127) {
+        const auto color = color_char_to_attr(tokens[n++][0]);
+        if (color > 127) {
             return PARSE_ERROR_GENERIC;
         }
 
         auto &terrain = *terrains.rbegin();
-        terrain.d_char[F_LIT_STANDARD] = s_char;
-        terrain.d_attr[F_LIT_STANDARD] = s_attr;
+        terrain.symbol_definitions[F_LIT_STANDARD] = { color, character };
         if (tokens.size() == n) {
             for (int j = F_LIT_NS_BEGIN; j < F_LIT_MAX; j++) {
-                terrain.d_char[j] = s_char;
-                terrain.d_attr[j] = s_attr;
+                terrain.symbol_definitions[j] = { color, character };
             }
 
             return PARSE_ERROR_NONE;
         }
 
         if (tokens[n++] == "LIT") {
-            apply_default_feat_lighting(terrain.d_attr, terrain.d_char);
+            terrain.reset_lighting(false);
             for (auto j = F_LIT_NS_BEGIN; j < F_LIT_MAX; j++) {
                 auto c_idx = n + (j - F_LIT_NS_BEGIN) * 2;
                 auto a_idx = c_idx + 1;
@@ -180,18 +186,18 @@ errr parse_terrains_info(std::string_view buf, angband_header *)
                     continue;
                 }
 
-                terrain.d_char[j] = tokens[c_idx][0];
+                terrain.symbol_definitions[j].character = tokens[c_idx][0];
                 if (tokens[a_idx] == "*") {
                     continue;
                 }
 
                 if (tokens[a_idx] == "-") {
-                    terrain.d_attr[j] = s_attr;
+                    terrain.symbol_definitions[j].color = color;
                     continue;
                 }
 
-                terrain.d_attr[j] = color_char_to_attr(tokens[a_idx][0]);
-                if (terrain.d_attr[j] > 127) {
+                terrain.symbol_definitions[j].color = color_char_to_attr(tokens[a_idx][0]);
+                if (terrain.symbol_definitions[j].color > 127) {
                     return PARSE_ERROR_GENERIC;
                 }
             }
@@ -294,240 +300,9 @@ errr parse_terrains_info(std::string_view buf, angband_header *)
 /*!
  * @brief 地形の汎用定義をタグを通じて取得する /
  * Initialize feature variables
- * @return エラーコード
  */
-errr init_feat_variables(void)
+void init_feat_variables()
 {
-    feat_none = f_tag_to_index_in_init("NONE");
-
-    feat_floor = f_tag_to_index_in_init("FLOOR");
-    feat_rune_protection = f_tag_to_index_in_init("RUNE_PROTECTION");
-    feat_rune_explosion = f_tag_to_index_in_init("RUNE_EXPLOSION");
-    feat_mirror = f_tag_to_index_in_init("MIRROR");
-
-    feat_door[DOOR_DOOR].open = f_tag_to_index_in_init("OPEN_DOOR");
-    feat_door[DOOR_DOOR].broken = f_tag_to_index_in_init("BROKEN_DOOR");
-    feat_door[DOOR_DOOR].closed = f_tag_to_index_in_init("CLOSED_DOOR");
-
-    /* Locked doors */
-    FEAT_IDX i;
-    for (i = 1; i < MAX_LJ_DOORS; i++) {
-        int16_t door = f_tag_to_index(format("LOCKED_DOOR_%d", i));
-        if (door < 0) {
-            break;
-        }
-        feat_door[DOOR_DOOR].locked[i - 1] = door;
-    }
-
-    if (i == 1) {
-        return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
-    }
-    feat_door[DOOR_DOOR].num_locked = i - 1;
-
-    /* Jammed doors */
-    for (i = 0; i < MAX_LJ_DOORS; i++) {
-        int16_t door = f_tag_to_index(format("JAMMED_DOOR_%d", i));
-        if (door < 0) {
-            break;
-        }
-        feat_door[DOOR_DOOR].jammed[i] = door;
-    }
-
-    if (!i) {
-        return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
-    }
-    feat_door[DOOR_DOOR].num_jammed = i;
-
-    /* Glass doors */
-    feat_door[DOOR_GLASS_DOOR].open = f_tag_to_index_in_init("OPEN_GLASS_DOOR");
-    feat_door[DOOR_GLASS_DOOR].broken = f_tag_to_index_in_init("BROKEN_GLASS_DOOR");
-    feat_door[DOOR_GLASS_DOOR].closed = f_tag_to_index_in_init("CLOSED_GLASS_DOOR");
-
-    /* Locked glass doors */
-    for (i = 1; i < MAX_LJ_DOORS; i++) {
-        int16_t door = f_tag_to_index(format("LOCKED_GLASS_DOOR_%d", i));
-        if (door < 0) {
-            break;
-        }
-        feat_door[DOOR_GLASS_DOOR].locked[i - 1] = door;
-    }
-
-    if (i == 1) {
-        return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
-    }
-    feat_door[DOOR_GLASS_DOOR].num_locked = i - 1;
-
-    /* Jammed glass doors */
-    for (i = 0; i < MAX_LJ_DOORS; i++) {
-        int16_t door = f_tag_to_index(format("JAMMED_GLASS_DOOR_%d", i));
-        if (door < 0) {
-            break;
-        }
-        feat_door[DOOR_GLASS_DOOR].jammed[i] = door;
-    }
-
-    if (!i) {
-        return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
-    }
-    feat_door[DOOR_GLASS_DOOR].num_jammed = i;
-
-    /* Curtains */
-    feat_door[DOOR_CURTAIN].open = f_tag_to_index_in_init("OPEN_CURTAIN");
-    feat_door[DOOR_CURTAIN].broken = feat_door[DOOR_CURTAIN].open;
-    feat_door[DOOR_CURTAIN].closed = f_tag_to_index_in_init("CLOSED_CURTAIN");
-    feat_door[DOOR_CURTAIN].locked[0] = feat_door[DOOR_CURTAIN].closed;
-    feat_door[DOOR_CURTAIN].num_locked = 1;
-    feat_door[DOOR_CURTAIN].jammed[0] = feat_door[DOOR_CURTAIN].closed;
-    feat_door[DOOR_CURTAIN].num_jammed = 1;
-
-    /* Stairs */
-    feat_up_stair = f_tag_to_index_in_init("UP_STAIR");
-    feat_down_stair = f_tag_to_index_in_init("DOWN_STAIR");
-    feat_entrance = f_tag_to_index_in_init("ENTRANCE");
-
-    /* Normal traps */
-    init_normal_traps();
-
-    /* Special traps */
-    feat_trap_open = f_tag_to_index_in_init("TRAP_OPEN");
-    feat_trap_armageddon = f_tag_to_index_in_init("TRAP_ARMAGEDDON");
-    feat_trap_piranha = f_tag_to_index_in_init("TRAP_PIRANHA");
-
-    /* Rubble */
-    feat_rubble = f_tag_to_index_in_init("RUBBLE");
-
-    /* Seams */
-    feat_magma_vein = f_tag_to_index_in_init("MAGMA_VEIN");
-    feat_quartz_vein = f_tag_to_index_in_init("QUARTZ_VEIN");
-
-    /* Walls */
-    feat_granite = f_tag_to_index_in_init("GRANITE");
-    feat_permanent = f_tag_to_index_in_init("PERMANENT");
-
-    /* Glass floor */
-    feat_glass_floor = f_tag_to_index_in_init("GLASS_FLOOR");
-
-    /* Glass walls */
-    feat_glass_wall = f_tag_to_index_in_init("GLASS_WALL");
-    feat_permanent_glass_wall = f_tag_to_index_in_init("PERMANENT_GLASS_WALL");
-
-    /* Pattern */
-    feat_pattern_start = f_tag_to_index_in_init("PATTERN_START");
-    feat_pattern_1 = f_tag_to_index_in_init("PATTERN_1");
-    feat_pattern_2 = f_tag_to_index_in_init("PATTERN_2");
-    feat_pattern_3 = f_tag_to_index_in_init("PATTERN_3");
-    feat_pattern_4 = f_tag_to_index_in_init("PATTERN_4");
-    feat_pattern_end = f_tag_to_index_in_init("PATTERN_END");
-    feat_pattern_old = f_tag_to_index_in_init("PATTERN_OLD");
-    feat_pattern_exit = f_tag_to_index_in_init("PATTERN_EXIT");
-    feat_pattern_corrupted = f_tag_to_index_in_init("PATTERN_CORRUPTED");
-
-    /* Various */
-    feat_black_market = f_tag_to_index_in_init("BLACK_MARKET");
-    feat_town = f_tag_to_index_in_init("TOWN");
-
-    /* Terrains */
-    feat_deep_water = f_tag_to_index_in_init("DEEP_WATER");
-    feat_shallow_water = f_tag_to_index_in_init("SHALLOW_WATER");
-    feat_deep_lava = f_tag_to_index_in_init("DEEP_LAVA");
-    feat_shallow_lava = f_tag_to_index_in_init("SHALLOW_LAVA");
-    feat_heavy_cold_zone = f_tag_to_index_in_init("HEAVY_COLD_ZONE");
-    feat_cold_zone = f_tag_to_index_in_init("COLD_ZONE");
-    feat_heavy_electrical_zone = f_tag_to_index_in_init("HEAVY_ELECTRICAL_ZONE");
-    feat_electrical_zone = f_tag_to_index_in_init("ELECTRICAL_ZONE");
-    feat_deep_acid_puddle = f_tag_to_index_in_init("DEEP_ACID_PUDDLE");
-    feat_shallow_acid_puddle = f_tag_to_index_in_init("SHALLOW_ACID_PUDDLE");
-    feat_deep_poisonous_puddle = f_tag_to_index_in_init("DEEP_POISONOUS_PUDDLE");
-    feat_shallow_poisonous_puddle = f_tag_to_index_in_init("SHALLOW_POISONOUS_PUDDLE");
-    feat_dirt = f_tag_to_index_in_init("DIRT");
-    feat_grass = f_tag_to_index_in_init("GRASS");
-    feat_flower = f_tag_to_index_in_init("FLOWER");
-    feat_brake = f_tag_to_index_in_init("BRAKE");
-    feat_tree = f_tag_to_index_in_init("TREE");
-    feat_mountain = f_tag_to_index_in_init("MOUNTAIN");
-    feat_swamp = f_tag_to_index_in_init("SWAMP");
-    feat_deep_dung_pool = f_tag_to_index_in_init("DEEP_DUNG_POOL");
-    feat_shallow_dung_pool = f_tag_to_index_in_init("SHALLOW_DUNG_POOL");
-
-    feat_undetected = f_tag_to_index_in_init("UNDETECTED");
-
+    TerrainList::get_instance().emplace_tags();
     init_wilderness_terrains();
-    return feat_tag_is_not_found ? PARSE_ERROR_UNDEFINED_TERRAIN_TAG : 0;
-}
-
-/*!
- * @brief 地形タグからIDを得る /
- * Convert a fake tag to a real feat index
- * @param str タグ文字列
- * @return 地形ID
- */
-FEAT_IDX f_tag_to_index(std::string_view str)
-{
-    const auto &terrains = TerrainList::get_instance();
-    for (short i = 0; i < terrains_header.info_num; i++) {
-        if (terrains[i].tag == str) {
-            return (FEAT_IDX)i;
-        }
-    }
-
-    return -1;
-}
-
-/*!
- * @brief 地形タグからIDを得る /
- * Initialize quest array
- * @return 地形ID
- */
-int16_t f_tag_to_index_in_init(concptr str)
-{
-    FEAT_IDX feat = f_tag_to_index(str);
-
-    if (feat < 0) {
-        feat_tag_is_not_found = true;
-    }
-
-    return feat;
-}
-
-/*!
- * @brief 地形タグからIDを得る /
- * Search for real index corresponding to this fake tag
- * @param feat タグ文字列のオフセット
- * @return 地形ID。該当がないなら-1
- */
-static FEAT_IDX search_real_feat(std::string feat)
-{
-    if (feat.empty()) {
-        return -1;
-    }
-
-    const auto &terrains = TerrainList::get_instance();
-    for (short i = 0; i < terrains_header.info_num; i++) {
-        if (feat == terrains[i].tag) {
-            return i;
-        }
-    }
-
-    msg_format(_("未定義のタグ '%s'。", "%s is undefined."), feat.data());
-    return -1;
-}
-
-/*!
- * @brief 地形情報の各種タグからIDへ変換して結果を収める
- * @param head ヘッダ構造体
- */
-void retouch_terrains_info(angband_header *head)
-{
-    auto &terrains = TerrainList::get_instance();
-    for (short i = 0; i < head->info_num; i++) {
-        auto &terrain = terrains[i];
-        FEAT_IDX k = search_real_feat(terrain.mimic_tag);
-        terrain.mimic = k < 0 ? terrain.mimic : k;
-        k = search_real_feat(terrain.destroyed_tag);
-        terrain.destroyed = k < 0 ? terrain.destroyed : k;
-        for (FEAT_IDX j = 0; j < MAX_FEAT_STATES; j++) {
-            k = search_real_feat(terrain.state[j].result_tag);
-            terrain.state[j].result = k < 0 ? terrain.state[j].result : k;
-        }
-    }
 }

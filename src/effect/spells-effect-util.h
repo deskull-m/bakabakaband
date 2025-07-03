@@ -3,19 +3,32 @@
 #include "system/angband.h"
 #include <string>
 
-extern int rakubadam_m; /*!< 振り落とされた際のダメージ量 */
-extern int rakubadam_p; /*!< 落馬した際のダメージ量 */
-
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
+class PlayerType;
 
 class CapturedMonsterType {
 public:
     CapturedMonsterType();
-    MonsterRaceId r_idx;
+    MonraceId r_idx;
     byte speed = STANDARD_SPEED;
     short current_hp = 0;
     short max_hp = 0;
     std::string nickname = "";
+};
+
+class FallOffHorseEffect {
+public:
+    FallOffHorseEffect(PlayerType *player_ptr);
+    void set_shake_off(int damage);
+    void set_fall_off(int damage);
+    void apply() const;
+
+private:
+    constexpr static int FALL_OFF_DAMAGE_MAX = 200;
+
+    PlayerType *player_ptr;
+    int shake_off_damage = 0; /*!< 振り落とされた際のダメージ量 */
+    int fall_off_damage = 0; /*!< 落馬した際のダメージ量 */
 };
 
 extern bool sukekaku;

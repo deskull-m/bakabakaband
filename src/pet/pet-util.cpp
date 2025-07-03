@@ -1,14 +1,13 @@
 #include "pet/pet-util.h"
 #include "core/stuff-handler.h"
 #include "grid/grid.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
 #include "player-info/class-info.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -18,23 +17,24 @@ int total_friends = 0;
 
 /*!
  * @brief プレイヤーの騎乗/下馬処理判定
- * @param g_ptr プレイヤーの移動先マスの構造体参照ポインタ
+ * @param grid プレイヤーの移動先グリッドへの参照
  * @param now_riding trueなら下馬処理、falseならば騎乗処理
  * @return 可能ならばtrueを返す
  */
-bool can_player_ride_pet(PlayerType *player_ptr, const Grid *g_ptr, bool now_riding)
+bool can_player_ride_pet(PlayerType *player_ptr, const Grid &grid, bool now_riding)
 {
-    bool old_character_xtra = w_ptr->character_xtra;
-    MONSTER_IDX old_riding = player_ptr->riding;
-    bool old_riding_two_hands = player_ptr->riding_ryoute;
-    bool old_old_riding_two_hands = player_ptr->old_riding_ryoute;
-    bool old_pf_two_hands = any_bits(player_ptr->pet_extra_flags, PF_TWO_HANDS);
-    w_ptr->character_xtra = true;
+    auto &world = AngbandWorld::get_instance();
+    const auto old_character_xtra = world.character_xtra;
+    const auto old_riding = player_ptr->riding;
+    const auto old_riding_two_hands = player_ptr->riding_ryoute;
+    const auto old_old_riding_two_hands = player_ptr->old_riding_ryoute;
+    const auto old_pf_two_hands = any_bits(player_ptr->pet_extra_flags, PF_TWO_HANDS);
+    world.character_xtra = true;
 
     if (now_riding) {
-        player_ptr->riding = g_ptr->m_idx;
+        player_ptr->ride_monster(grid.m_idx);
     } else {
-        player_ptr->riding = 0;
+        player_ptr->ride_monster(0);
         player_ptr->pet_extra_flags &= ~(PF_TWO_HANDS);
         player_ptr->riding_ryoute = player_ptr->old_riding_ryoute = false;
     }
@@ -43,8 +43,8 @@ bool can_player_ride_pet(PlayerType *player_ptr, const Grid *g_ptr, bool now_rid
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(player_ptr);
 
-    bool p_can_enter = player_can_enter(player_ptr, g_ptr->feat, CEM_P_CAN_ENTER_PATTERN);
-    player_ptr->riding = old_riding;
+    bool p_can_enter = player_can_enter(player_ptr, grid.feat, CEM_P_CAN_ENTER_PATTERN);
+    player_ptr->ride_monster(old_riding);
     if (old_pf_two_hands) {
         player_ptr->pet_extra_flags |= (PF_TWO_HANDS);
     } else {
@@ -56,7 +56,7 @@ bool can_player_ride_pet(PlayerType *player_ptr, const Grid *g_ptr, bool now_rid
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(player_ptr);
 
-    w_ptr->character_xtra = old_character_xtra;
+    world.character_xtra = old_character_xtra;
     return p_can_enter;
 }
 
@@ -70,33 +70,33 @@ PERCENTAGE calculate_upkeep(PlayerType *player_ptr)
     DEPTH total_friend_levels = 0;
     total_friends = 0;
     for (auto m_idx = player_ptr->current_floor_ptr->m_max - 1; m_idx >= 1; m_idx--) {
-        auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-        if (!m_ptr->is_valid()) {
+        const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+        if (!monster.is_valid()) {
             continue;
         }
-        auto *r_ptr = &m_ptr->get_monrace();
+        const auto &monrace = monster.get_monrace();
 
-        if (!m_ptr->is_pet()) {
+        if (!monster.is_pet()) {
             continue;
         }
 
         total_friends++;
-        if (r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-            total_friend_levels += r_ptr->level;
+        if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+            total_friend_levels += monrace.level;
             continue;
         }
 
         if (player_ptr->pclass != PlayerClassType::CAVALRY) {
-            total_friend_levels += (r_ptr->level + 5) * 10;
+            total_friend_levels += (monrace.level + 5) * 10;
             continue;
         }
 
-        if (player_ptr->riding == m_idx) {
-            total_friend_levels += (r_ptr->level + 5) * 2;
-        } else if (!has_a_unique && m_ptr->get_monrace().misc_flags.has(MonsterMiscType::RIDING)) {
-            total_friend_levels += (r_ptr->level + 5) * 7 / 2;
+        if (monster.is_riding()) {
+            total_friend_levels += (monrace.level + 5) * 2;
+        } else if (!has_a_unique && monster.get_monrace().misc_flags.has(MonsterMiscType::RIDING)) {
+            total_friend_levels += (monrace.level + 5) * 7 / 2;
         } else {
-            total_friend_levels += (r_ptr->level + 5) * 10;
+            total_friend_levels += (monrace.level + 5) * 10;
         }
 
         has_a_unique = true;

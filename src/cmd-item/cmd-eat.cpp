@@ -10,17 +10,16 @@
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
+#include "floor/geometry.h"
 #include "hpmp/hp-mp-processor.h"
 #include "inventory/inventory-object.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/special-object-flags.h"
 #include "object-hook/hook-expendable.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
-#include "object/object-kind-hook.h"
 #include "perception/object-perception.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
@@ -50,11 +49,12 @@
 #include "sv-definition/sv-food-types.h"
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-other-types.h"
-#include "system/baseitem-info.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "util/dice.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "view/object-describer.h"
@@ -102,7 +102,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
  */
 static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
 {
-    if (!(o_ptr->bi_key.tval() == ItemKindType::CORPSE && o_ptr->bi_key.sval() == SV_SOUL)) {
+    if (!(o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_SOUL)) {
         return false;
     }
 
@@ -110,8 +110,8 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
         return false;
     }
 
-    MonsterRaceInfo *r_ptr = &monraces_info[i2enum<MonsterRaceId, int>(o_ptr->pval)];
-    EXP max_exp = r_ptr->level * r_ptr->level * 10;
+    const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
+    EXP max_exp = monrace.level * monrace.level * 10;
 
     chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
     if (player_ptr->exp < PY_MAX_EXP) {
@@ -133,127 +133,127 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
  */
 static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
 {
-    if (!(o_ptr->bi_key.tval() == ItemKindType::CORPSE && o_ptr->bi_key.sval() == SV_CORPSE)) {
+    if (!(o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_CORPSE)) {
         return false;
     }
 
-    MonsterRaceInfo *r_ptr = &monraces_info[i2enum<MonsterRaceId, int>(o_ptr->pval)];
+    const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::BLIND)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::BLIND)) {
         BadStatusSetter(player_ptr).mod_blindness(200 + randint1(200));
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::CONF)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::CONF)) {
         BadStatusSetter(player_ptr).mod_confusion(200 + randint1(200));
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::MANA)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::MANA)) {
         restore_mana(player_ptr, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::NEXUS)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::NEXUS)) {
         do_poly_self(player_ptr);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::SLEEP)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::SLEEP)) {
         if (!player_ptr->free_act) {
             BadStatusSetter(player_ptr).set_paralysis(10 + randint1(10));
         }
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::BERSERKER)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::BERSERKER)) {
         set_shero(player_ptr, player_ptr->shero + randint1(10) + 10, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::ACIDIC)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::ACIDIC)) {
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::SPEED)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::SPEED)) {
         (void)set_acceleration(player_ptr, randint1(20) + 20, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::CURE)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::CURE)) {
         true_healing(player_ptr, 50);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::FIRE_RES)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::FIRE_RES)) {
         set_oppose_fire(player_ptr, randint1(20) + 20, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::COLD_RES)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::COLD_RES)) {
         set_oppose_cold(player_ptr, randint1(20) + 20, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::ELEC_RES)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::ELEC_RES)) {
         set_oppose_elec(player_ptr, randint1(20) + 20, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::POIS_RES)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::POIS_RES)) {
         set_oppose_pois(player_ptr, randint1(20) + 20, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::INSANITY)) {
-        sanity_blast(player_ptr, NULL, false);
+    if (monrace.meat_feed_flags.has(MonsterFeedType::INSANITY)) {
+        sanity_blast(player_ptr, tl::nullopt, false);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::DRAIN_EXP)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::DRAIN_EXP)) {
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::POISONOUS)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::POISONOUS)) {
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
             (void)BadStatusSetter(player_ptr).mod_poison(10 + randint1(15));
         }
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::GIVE_STR)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_STR)) {
         do_inc_stat(player_ptr, A_STR);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::GIVE_INT)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_INT)) {
         do_inc_stat(player_ptr, A_INT);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::GIVE_WIS)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_WIS)) {
         do_inc_stat(player_ptr, A_WIS);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::GIVE_DEX)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_DEX)) {
         do_inc_stat(player_ptr, A_DEX);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::GIVE_CON)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_CON)) {
         do_inc_stat(player_ptr, A_CON);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::GIVE_CHR)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_CHR)) {
         do_inc_stat(player_ptr, A_CHR);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::LOSE_STR)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_STR)) {
         do_dec_stat(player_ptr, A_STR);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::LOSE_INT)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_INT)) {
         do_dec_stat(player_ptr, A_INT);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::LOSE_WIS)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_WIS)) {
         do_dec_stat(player_ptr, A_WIS);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::LOSE_DEX)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_DEX)) {
         do_dec_stat(player_ptr, A_DEX);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::LOSE_CON)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_CON)) {
         do_dec_stat(player_ptr, A_CON);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::LOSE_CHR)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_CHR)) {
         do_dec_stat(player_ptr, A_CHR);
     }
 
-    if (r_ptr->meat_feed_flags.has(MonsterFeedType::DRAIN_MANA)) {
+    if (monrace.meat_feed_flags.has(MonsterFeedType::DRAIN_MANA)) {
         player_ptr->csp -= 30;
         if (player_ptr->csp < 0) {
             player_ptr->csp = 0;
@@ -327,33 +327,27 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         break;
     case SV_FOOD_WEAKNESS:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damroll(6, 6), _("毒入り食料", "poisonous food"));
+        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_STR);
         return true;
     case SV_FOOD_SICKNESS:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damroll(6, 6), _("毒入り食料", "poisonous food"));
+        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_CON);
         return true;
     case SV_FOOD_STUPIDITY:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damroll(8, 8), _("毒入り食料", "poisonous food"));
+        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_INT);
         return true;
     case SV_FOOD_NAIVETY:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damroll(8, 8), _("毒入り食料", "poisonous food"));
+        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_WIS);
         return true;
     case SV_FOOD_UNHEALTH:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damroll(10, 10), _("毒入り食料", "poisonous food"));
+        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_CON);
         return true;
     case SV_FOOD_DISEASE:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damroll(10, 10), _("毒入り食料", "poisonous food"));
+        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_STR);
         return true;
     case SV_FOOD_CURE_POISON:
@@ -365,7 +359,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_CURE_CONFUSION:
         return bss.set_confusion(0);
     case SV_FOOD_CURE_SERIOUS:
-        return cure_serious_wounds(player_ptr, 4, 8);
+        return cure_serious_wounds(player_ptr, Dice::roll(4, 8));
     case SV_FOOD_RESTORE_STR:
         return do_res_stat(player_ptr, A_STR);
     case SV_FOOD_RESTORE_CON:
@@ -390,7 +384,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_WAYBREAD:
         msg_print(_("これはひじょうに美味だ。", "That tastes very good."));
         (void)bss.set_poison(0);
-        (void)hp_player(player_ptr, damroll(4, 8));
+        (void)hp_player(player_ptr, Dice::roll(4, 8));
         return true;
     case SV_FOOD_PINT_OF_ALE:
     case SV_FOOD_PINT_OF_WINE:
@@ -410,16 +404,16 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
         player_ptr->incident[INCIDENT::EAT_POISON]++;
         msg_print("ヴォエ！食ったら尻の肉だった！");
-        msg_print(NULL);
+        msg_erase();
         (void)BadStatusSetter(player_ptr).mod_poison(10);
         msg_print("「作者は広告で収入得てないけど、こんな卑猥なアイテム放置するなよ」");
-        msg_print(NULL);
+        msg_erase();
         player_ptr->plus_incident(INCIDENT::EAT_FECES, 1);
         return true;
     case SV_FOOD_SURSTROMMING:
         msg_print("悪臭が周囲を取り巻いた！");
-        msg_print(NULL);
-        fire_ball(player_ptr, AttributeType::POIS, 0, 30, 4);
+        msg_erase();
+        fire_ball(player_ptr, AttributeType::POIS, Direction::self(), 30, 4);
         (void)BadStatusSetter(player_ptr).mod_poison(10);
         return true;
     case SV_FOOD_HOMOTEA:
@@ -517,9 +511,7 @@ static bool exe_eat_charge_of_magic_device(PlayerType *player_ptr, ItemEntity *o
 
     /* XXX Hack -- unstack if necessary */
     if (is_staff && (i_idx >= 0) && (o_ptr->number > 1)) {
-        auto item = *o_ptr;
-
-        /* Modify quantity */
+        auto item = o_ptr->clone();
         item.number = 1;
 
         /* Restore the charges */
@@ -532,9 +524,9 @@ static bool exe_eat_charge_of_magic_device(PlayerType *player_ptr, ItemEntity *o
     }
 
     if (i_idx >= 0) {
-        inven_item_charges(player_ptr->inventory_list[i_idx]);
+        inven_item_charges(*player_ptr->inventory[i_idx]);
     } else {
-        floor_item_charges(player_ptr->current_floor_ptr, 0 - i_idx);
+        floor_item_charges(*player_ptr->current_floor_ptr, 0 - i_idx);
     }
 
     static constexpr auto flags = {
@@ -562,10 +554,10 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     auto *o_ptr = ref_item(player_ptr, i_idx);
 
-    sound(SOUND_EAT);
+    sound(SoundKind::EAT);
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    const auto lev = o_ptr->get_baseitem().level;
+    const auto level = o_ptr->get_baseitem_level();
 
     /* 基本食い物でないものを喰う判定 */
     bool ate = false;
@@ -608,8 +600,8 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     /* The player is now aware of the object */
     if (ident && !o_ptr->is_aware()) {
-        object_aware(player_ptr, o_ptr);
-        gain_exp(player_ptr, (lev + (player_ptr->lev >> 1)) / player_ptr->lev);
+        object_aware(player_ptr, *o_ptr);
+        gain_exp(player_ptr, (level + (player_ptr->lev >> 1)) / player_ptr->lev);
     }
 
     static constexpr auto flags_swrf = {
@@ -628,27 +620,26 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     auto food_type = PlayerRace(player_ptr).food();
 
     /* Balrogs change humanoid corpses to energy */
-    const auto corpse_r_idx = i2enum<MonsterRaceId>(o_ptr->pval);
-    const auto search = angband_strchr("pht", monraces_info[corpse_r_idx].d_char);
-    if (food_type == PlayerRaceFoodType::CORPSE && o_ptr->is_corpse() && (search != nullptr)) {
-        const auto item_name = describe_flavor(player_ptr, o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-        msg_format(_("%sは燃え上り灰になった。精力を吸収した気がする。", "%s^ is burnt to ashes.  You absorb its vitality!"), item_name.data());
-        (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+    if (food_type == PlayerRaceFoodType::CORPSE) {
+        if (o_ptr->is_corpse() && o_ptr->get_monrace().is_human()) {
+            const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            msg_format(_("%sは燃え上り灰になった。精力を吸収した気がする。", "%s^ is burnt to ashes.  You absorb its vitality!"), item_name.data());
+            (void)set_food(player_ptr, PY_FOOD_MAX - 1);
 
-        rfu.set_flags(flags_srf);
-        ate = true;
-    } else if (PlayerRace(player_ptr).equals(PlayerRaceType::SKELETON)) {
+            rfu.set_flags(flags_srf);
+            vary_item(player_ptr, i_idx, -1);
+            return;
+        }
+    }
+
+    if (PlayerRace(player_ptr).equals(PlayerRaceType::SKELETON)) {
         const auto sval = bi_key.sval();
         if ((sval != SV_FOOD_WAYBREAD) && (sval >= SV_FOOD_BISCUIT)) {
-            ItemEntity forge;
-            auto *q_ptr = &forge;
-
+            ItemEntity item(bi_key);
             msg_print(_("食べ物がアゴを素通りして落ちた！", "The food falls through your jaws!"));
-            q_ptr->prep(lookup_baseitem_id(bi_key));
 
             /* Drop the object from heaven */
-            (void)drop_near(player_ptr, q_ptr, -1, player_ptr->y, player_ptr->x);
-
+            (void)drop_near(player_ptr, item, player_ptr->get_position());
             ate = true;
         } else {
             msg_print(_("食べ物がアゴを素通りして落ち、消えた！", "The food falls through your jaws and vanishes!"));

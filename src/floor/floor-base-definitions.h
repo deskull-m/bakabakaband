@@ -14,13 +14,13 @@ constexpr int MAX_DEPTH = 128;
  * @brief 基本的なブロック数単位(垂直方向)
  * Number of grids in each block (vertically) Probably hard-coded to 11
  */
-constexpr int BLOCK_HGT = 3;
+constexpr int BLOCK_HGT = 11;
 
 /*!
  * @brief 基本的なブロック数単位(水平方向)
  * Number of grids in each block (horizontally) Probably hard-coded to 11
  */
-constexpr int BLOCK_WID = 3;
+constexpr int BLOCK_WID = 11;
 
 /*!
  * @brief 表示上の基本的なブロック単位(垂直方向、PANEL_HGTの倍数で設定すること)

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "system/angband.h"
+#include "util/dice.h"
 
 enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
 class PlayerType;
+class SpellHex;
 class MonsterEntity;
 class ItemEntity;
 class MonsterAttackPlayer {
@@ -25,8 +27,7 @@ public:
     bool explode = false;
     DEPTH rlev = 0;
     GAME_TEXT m_name[MAX_NLEN]{};
-    int d_dice = 0;
-    int d_side = 0;
+    Dice damage_dice{};
     ItemEntity *o_ptr = nullptr;
     bool obvious = false;
     int damage = 0;
@@ -58,4 +59,5 @@ private:
     void gain_armor_exp();
     void increase_blow_type_seen(const int ap_cnt);
     void postprocess_monster_blows();
+    void process_thief_teleport(const SpellHex &spell_hex);
 };

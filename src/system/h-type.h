@@ -34,7 +34,7 @@
  */
 
 #include <cassert>
-#include <stdint.h>
+#include <cstdint>
 
 /*** Special 4 letter names for some standard types ***/
 typedef void *vptr; /*!< void型ポインタ定義 / A standard pointer (to "void" because ANSI C says so) */
@@ -80,7 +80,6 @@ typedef int16_t FEAT_IDX; /*!< ゲーム中の地形ID型を定義 */
 typedef int16_t FLOOR_IDX; /*!< ゲーム中のフロアID型を定義 */
 
 typedef int16_t MONSTER_IDX; /*!< ゲーム中のモンスター個体ID型を定義 */
-typedef int16_t DUNGEON_IDX; /*!< ゲーム中のダンジョンID型を定義 */
 typedef int16_t EGO_IDX; /*!< アイテムエゴのID型を定義 */
 typedef int16_t QUEST_IDX; /*!< ゲーム中のクエストID型を定義 */
 
@@ -130,8 +129,6 @@ typedef int16_t SUB_EXP; /*!< ゲーム中の副経験値の型定義 */
 typedef int16_t PARAMETER_VALUE; /*!< ゲーム中のアイテム能力値の型定義 */
 typedef int32_t WEIGHT; /*!< ゲーム中の重量の型定義(ポンド) */
 
-typedef int DICE_NUMBER; /*!< ゲーム中のダイス数の型定義 */
-typedef int DICE_SID; /*!< ゲーム中のダイス面の型定義 */
 typedef int32_t PRICE; /*!< ゲーム中の金額価値の型定義 */
 
 typedef int POWER; /*!< 魔法の効力定義*/

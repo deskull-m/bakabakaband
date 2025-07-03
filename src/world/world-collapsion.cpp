@@ -1,5 +1,5 @@
 #include "world/world-collapsion.h"
-#include "market/arena-info-table.h"
+#include "market/arena-entry.h"
 #include "object-enchant/tr-flags.h"
 #include "player/player-status-flags.h"
 #include "system/player-type-definition.h"
@@ -25,7 +25,8 @@ bool WorldCollapsion::is_blown_away()
  */
 void WorldCollapsion::plus_timed_world_collapsion(AngbandWorld *w_ptr, PlayerType *player_ptr, int multi)
 {
-    if (w_ptr->total_winner && player_ptr->arena_number > MAX_ARENA_MONS + 2) {
+    auto &entries = ArenaEntryList::get_instance();
+    if (w_ptr->total_winner && entries.get_current_entry() >= entries.get_max_entries()) {
         return;
     }
     if (get_player_flags(player_ptr, TR_WORLD_END)) {

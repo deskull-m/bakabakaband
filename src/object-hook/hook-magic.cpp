@@ -5,8 +5,7 @@
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player/player-realm.h"
-#include "realm/realm-names-table.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -60,7 +59,7 @@ bool item_tester_hook_use(PlayerType *player_ptr, const ItemEntity *o_ptr)
         }
 
         for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            if ((&player_ptr->inventory_list[i] == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
+            if ((player_ptr->inventory[i].get() == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
                 return true;
             }
         }
@@ -80,13 +79,14 @@ bool item_tester_learn_spell(PlayerType *player_ptr, const ItemEntity *o_ptr)
         return false;
     }
 
-    int32_t choices = realm_choices2[enum2i(player_ptr->pclass)];
+    PlayerRealm pr(player_ptr);
+    auto choices = PlayerRealm::get_realm2_choices(player_ptr->pclass);
     PlayerClass pc(player_ptr);
     if (pc.equals(PlayerClassType::PRIEST)) {
-        if (is_good_realm(player_ptr->realm1)) {
-            choices &= ~(CH_DEATH | CH_DAEMON);
+        if (PlayerRealm(player_ptr).realm1().is_good_attribute()) {
+            choices.reset({ RealmType::DEATH, RealmType::DAEMON });
         } else {
-            choices &= ~(CH_LIFE | CH_CRUSADE);
+            choices.reset({ RealmType::LIFE, RealmType::CRUSADE });
         }
     }
 
@@ -95,9 +95,10 @@ bool item_tester_learn_spell(PlayerType *player_ptr, const ItemEntity *o_ptr)
         return true;
     }
 
-    if (!is_magic(tval2realm(tval))) {
+    const auto book_realm = PlayerRealm::get_realm_of_book(tval);
+    if (!PlayerRealm::is_magic(book_realm)) {
         return false;
     }
 
-    return (get_realm1_book(player_ptr) == tval) || (get_realm2_book(player_ptr) == tval) || (choices & (0x0001U << (tval2realm(tval) - 1)));
+    return pr.realm1().equals(book_realm) || pr.realm2().equals(book_realm) || choices.has(book_realm);
 }

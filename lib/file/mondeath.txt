@@ -95,5 +95,8 @@ is destroyed.  FINAL ZONE IS OVER.
 N:2151:Laffey II
 says, 'My battle... isn't over yet... Nope.'
 
+N:1362:Mika Misono, a witch of the Tea Party
+sobs and says, 'I... I haven't wreaked my revenge on her yet... no...' Her halo breaks, and then she falls down.
+
 N:*:Default
 shouts, 'AAAARRRGGGHHH!!!'

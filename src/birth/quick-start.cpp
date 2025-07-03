@@ -3,10 +3,12 @@
 #include "birth/birth-util.h"
 #include "birth/game-play-initializer.h"
 #include "io/input-key-acceptor.h"
+#include "mind/mind-elementalist.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/player-personality.h"
+#include "player/player-realm.h"
 #include "player/player-sex.h"
 #include "player/player-status.h"
 #include "player/process-name.h"
@@ -40,7 +42,7 @@ bool ask_quick_start(PlayerType *player_ptr)
         put_str(_("クイック・スタートを使いますか？[y/N]", "Use quick start? [y/N]"), 14, 10);
         c = inkey();
         if (c == 'Q') {
-            quit(nullptr);
+            quit("");
         } else if (c == 'S') {
             return false;
         } else if (c == '?') {
@@ -58,8 +60,8 @@ bool ask_quick_start(PlayerType *player_ptr)
 
     sp_ptr = &sex_info[player_ptr->psex];
     rp_ptr = &race_info[enum2i(player_ptr->prace)];
+    cp_ptr = &class_info.at(player_ptr->pclass);
     auto short_pclass = enum2i(player_ptr->pclass);
-    cp_ptr = &class_info[short_pclass];
     mp_ptr = &class_magics_info[short_pclass];
     ap_ptr = &personality_info[player_ptr->ppersonality];
 
@@ -88,13 +90,14 @@ void save_prev_data(PlayerType *player_ptr, birther *birther_ptr)
     birther_ptr->ppersonality = player_ptr->ppersonality;
 
     if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        birther_ptr->realm1 = player_ptr->element;
+        birther_ptr->realm1 = static_cast<int16_t>(player_ptr->element_realm);
+        birther_ptr->realm2 = 0;
     } else {
-        birther_ptr->realm1 = player_ptr->realm1;
+        PlayerRealm pr(player_ptr);
+        birther_ptr->realm1 = static_cast<int16_t>(pr.realm1().to_enum());
+        birther_ptr->realm2 = static_cast<int16_t>(pr.realm2().to_enum());
     }
 
-    birther_ptr->realm2 = player_ptr->realm2;
-    birther_ptr->death_count = player_ptr->death_count;
     birther_ptr->age = player_ptr->age;
     birther_ptr->ht = player_ptr->ht;
     birther_ptr->wt = player_ptr->wt;
@@ -137,14 +140,18 @@ void load_prev_data(PlayerType *player_ptr, bool swap)
     player_ptr->pclass = previous_char.pclass;
     player_ptr->ppersonality = previous_char.ppersonality;
 
+    PlayerRealm pr(player_ptr);
+    pr.reset();
     if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        player_ptr->element = previous_char.realm1;
+        player_ptr->element_realm = i2enum<ElementRealmType>(previous_char.realm1);
     } else {
-        player_ptr->realm1 = previous_char.realm1;
+        const auto realm1 = i2enum<RealmType>(previous_char.realm1);
+        const auto realm2 = i2enum<RealmType>(previous_char.realm2);
+        if (realm1 != RealmType::NONE) {
+            pr.set(realm1, realm2);
+        }
     }
 
-    player_ptr->realm2 = previous_char.realm2;
-    player_ptr->death_count = previous_char.death_count;
     player_ptr->age = previous_char.age;
     player_ptr->ht = previous_char.ht;
     player_ptr->wt = previous_char.wt;

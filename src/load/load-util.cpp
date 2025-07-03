@@ -1,4 +1,5 @@
 #include "load/load-util.h"
+#include "locale/character-encoding.h"
 #include "locale/japanese.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -10,13 +11,9 @@ uint32_t v_check = 0L; // Simple "checksum" on the actual values.
 uint32_t x_check = 0L; // Simple "checksum" on the encoded bytes.
 
 /*
- * Japanese Kanji code
- * 0: Unknown
- * 1: ASCII
- * 2: EUC
- * 3: SJIS
+ * Character encoding of loading savefile.
  */
-byte kanji_code = 0;
+CharacterEncoding loading_character_encoding = CharacterEncoding::UNKNOWN;
 
 /*!
  * @brief ゲームスクリーンにメッセージを表示する / Hack -- Show information on the screen, one line at a time.
@@ -110,44 +107,42 @@ int32_t rd_s32b()
 }
 
 /*!
- * @brief ロードファイルポインタから文字列を読み込んでポインタに渡す / Hack -- read a string
- * @param str 読み込みポインタ
- * @param max 最大読み取りバイト数
+ * @brief ロードファイルポインタから文字列を読み込む
  */
-void rd_string(char *str, int max)
+std::string rd_string()
 {
-    for (int i = 0; true; i++) {
-        auto tmp8u = rd_byte();
-        if (i < max) {
-            str[i] = tmp8u;
-        }
+    std::string str;
+    str.reserve(1024);
 
-        if (!tmp8u) {
+    while (true) {
+        const auto ch = static_cast<char>(rd_byte());
+        if (ch == '\0') {
             break;
         }
+
+        str.push_back(ch);
     }
 
-    str[max - 1] = '\0';
 #ifdef JP
-    switch (kanji_code) {
+    switch (loading_character_encoding) {
 #ifdef SJIS
-    case 2:
-        euc2sjis(str);
+    case CharacterEncoding::EUC_JP:
+        euc2sjis(str.data());
         break;
 #endif
 
 #ifdef EUC
-    case 3:
-        sjis2euc(str);
+    case CharacterEncoding::SHIFT_JIS:
+        sjis2euc(str.data());
         break;
 #endif
 
-    case 0: {
-        byte code = codeconv(str);
+    case CharacterEncoding::UNKNOWN: {
+        const auto code = codeconv(str.data());
 
         /* 漢字コードが判明したら、それを記録 */
-        if (code) {
-            kanji_code = code;
+        if (code != CharacterEncoding::UNKNOWN) {
+            loading_character_encoding = code;
         }
 
         break;
@@ -156,18 +151,9 @@ void rd_string(char *str, int max)
         break;
     }
 #endif
-}
 
-/*!
- * @brief ロードファイルポインタから文字列を読み込んで std::string オブジェクトに格納する
- * @param str std::string オブジェクトへの参照
- * @param max 最大読み取りバイト数
- */
-void rd_string(std::string &str, int max)
-{
-    std::vector<char> buf(max);
-    rd_string(buf.data(), max);
-    str = buf.data();
+    str.shrink_to_fit();
+    return str;
 }
 
 /*!

@@ -3,7 +3,6 @@
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-flags-resistance.h"
 #include "object/tval-types.h"
 #include "player-attack/player-attack.h"
@@ -13,8 +12,8 @@
 #include "specific-object/death-scythe.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -125,8 +124,8 @@ bool check_hit_from_monster_to_monster(int power, DEPTH level, ARMOUR_CLASS ac, 
 static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr, int chance)
 {
     bool success_hit = false;
-    auto *o_ptr = &player_ptr->inventory_list[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand];
-    auto *r_ptr = &pa_ptr->m_ptr->get_monrace();
+    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if ((o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) || (pa_ptr->mode == HISSATSU_KYUSHO)) {
         int n = 1;
 
@@ -139,10 +138,10 @@ static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr
         }
 
         success_hit = one_in_(n);
-    } else if (PlayerClass(player_ptr).equals(PlayerClassType::NINJA) && ((pa_ptr->backstab || pa_ptr->surprise_attack) && !r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_ALL))) {
+    } else if (PlayerClass(player_ptr).equals(PlayerClassType::NINJA) && ((pa_ptr->backstab || pa_ptr->surprise_attack) && !monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL))) {
         success_hit = true;
     } else {
-        success_hit = test_hit_norm(player_ptr, chance, r_ptr->ac, pa_ptr->m_ptr->ml);
+        success_hit = test_hit_norm(player_ptr, chance, monrace.ac, pa_ptr->m_ptr->ml);
     }
 
     if ((pa_ptr->mode == HISSATSU_MAJIN) && one_in_(2)) {
@@ -161,7 +160,7 @@ static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr
  */
 bool process_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr, int chance)
 {
-    auto *o_ptr = &player_ptr->inventory_list[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand];
+    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     if (decide_attack_hit(player_ptr, pa_ptr, chance)) {
         return true;
     }
@@ -172,7 +171,7 @@ bool process_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr, int 
     if ((o_ptr->bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE)) && one_in_(3)) {
         process_death_scythe_reflection(player_ptr, pa_ptr);
     } else {
-        sound(SOUND_MISS);
+        sound(SoundKind::MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), pa_ptr->m_name);
     }
 

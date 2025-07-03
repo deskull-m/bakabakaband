@@ -15,8 +15,6 @@
 #include "game-option/special-options.h"
 #include "hpmp/hp-mp-processor.h"
 #include "mind/mind-archer.h"
-#include "monster-race/monster-race.h"
-#include "monster-race/race-indice-types.h"
 #include "monster/monster-status.h"
 #include "player-attack/player-attack.h"
 #include "player/player-damage.h"
@@ -43,11 +41,12 @@
 #include "status/bad-status-setter.h"
 #include "status/body-improvement.h"
 #include "status/buff-setter.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
@@ -60,21 +59,21 @@
 
 bool activate_sunlight(PlayerType *player_ptr)
 {
-    DIRECTION dir;
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
     msg_print(_("太陽光線が放たれた。", "A line of sunlight appears."));
-    (void)lite_line(player_ptr, dir, damroll(6, 8));
+    (void)lite_line(player_ptr, dir, Dice::roll(6, 8));
     return true;
 }
 
 bool activate_confusion(PlayerType *player_ptr)
 {
-    DIRECTION dir;
     msg_print(_("様々な色の火花を発している...", "It glows in scintillating colours..."));
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
@@ -120,9 +119,9 @@ bool activate_aggravation(PlayerType *player_ptr, ItemEntity *o_ptr, std::string
 
 bool activate_stone_mud(PlayerType *player_ptr)
 {
-    DIRECTION dir;
     msg_print(_("鼓動している...", "It pulsates..."));
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
@@ -138,7 +137,7 @@ bool activate_judgement(PlayerType *player_ptr, std::string_view name)
     wiz_lite(player_ptr, false);
 
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
-    take_hit(player_ptr, DAMAGE_LOSELIFE, damroll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
 
     (void)detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
     (void)detect_doors(player_ptr, DETECT_RAD_DEFAULT);
@@ -153,8 +152,8 @@ bool activate_judgement(PlayerType *player_ptr, std::string_view name)
 
 bool activate_telekinesis(PlayerType *player_ptr, std::string_view name)
 {
-    DIRECTION dir;
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
@@ -165,27 +164,21 @@ bool activate_telekinesis(PlayerType *player_ptr, std::string_view name)
 
 bool activate_unique_detection(PlayerType *player_ptr)
 {
-    MonsterEntity *m_ptr;
-    MonsterRaceInfo *r_ptr;
     msg_print(_("奇妙な場所が頭の中に浮かんだ．．．", "Some strange places show up in your mind. And you see ..."));
     for (int i = player_ptr->current_floor_ptr->m_max - 1; i >= 1; i--) {
-        m_ptr = &player_ptr->current_floor_ptr->m_list[i];
-        if (!m_ptr->is_valid()) {
+        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
+        if (!monster.is_valid()) {
             continue;
         }
 
-        r_ptr = &m_ptr->get_monrace();
-        if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-            msg_format(_("%s． ", "%s. "), r_ptr->name.data());
+        const auto &monrace = monster.get_monrace();
+        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+            msg_format(_("%s． ", "%s. "), monrace.name.data());
         }
 
-        if (m_ptr->r_idx == MonsterRaceId::DIO) {
-            msg_print(_("きさま！　見ているなッ！", "You bastard! You're watching me, well watch this!"));
-        }
-
-        if (m_ptr->r_idx == MonsterRaceId::SAURON) {
-            msg_print(_("あなたは一瞬、瞼なき御目に凝視される感覚に襲われた！",
-                "For a moment, you had the horrible sensation of being stared at by the lidless eye!"));
+        const auto message = monrace.get_message(monrace.name, MonsterMessageType::MESSAGE_DETECT_UNIQUE);
+        if (message) {
+            msg_print(*message);
         }
     }
 
@@ -304,7 +297,7 @@ bool activate_whirlwind(PlayerType *player_ptr)
 bool activate_blinding_light(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが眩しい光で輝いた...", "The %s gleams with blinding light..."), name.data());
-    (void)fire_ball(player_ptr, AttributeType::LITE, 0, 300, 6);
+    (void)fire_ball(player_ptr, AttributeType::LITE, Direction::self(), 300, 6);
     confuse_monsters(player_ptr, 3 * player_ptr->lev / 2);
     return true;
 }
@@ -325,7 +318,7 @@ bool activate_door_destroy(PlayerType *player_ptr)
 
 bool activate_earthquake(PlayerType *player_ptr)
 {
-    earthquake(player_ptr, player_ptr->y, player_ptr->x, 5, 0);
+    earthquake(player_ptr, player_ptr->get_position(), 5);
     return true;
 }
 
@@ -360,7 +353,7 @@ bool activate_map_light(PlayerType *player_ptr)
 {
     msg_print(_("眩しく輝いた...", "It shines brightly..."));
     map_area(player_ptr, DETECT_RAD_MAP);
-    lite_area(player_ptr, damroll(2, 15), 3);
+    lite_area(player_ptr, Dice::roll(2, 15), 3);
     return true;
 }
 
@@ -394,7 +387,7 @@ bool activate_protection_elbereth(PlayerType *player_ptr)
 bool activate_light(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sから澄んだ光があふれ出た...", "The %s wells with clear light..."), name.data());
-    (void)lite_area(player_ptr, damroll(2, 15), 3);
+    (void)lite_area(player_ptr, Dice::roll(2, 15), 3);
     return true;
 }
 
@@ -436,21 +429,53 @@ bool activate_create_ammo(PlayerType *player_ptr)
 bool activate_dispel_magic(PlayerType *player_ptr)
 {
     msg_print(_("鈍い色に光った...", "It glowed in a dull color..."));
-    if (!target_set(player_ptr, TARGET_KILL)) {
+    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    if (!pos) {
         return false;
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;
-    const Pos2D pos(target_row, target_col);
-    const auto m_idx = floor.get_grid(pos).m_idx;
+    const auto m_idx = floor.get_grid(*pos).m_idx;
     if (m_idx == 0) {
         return true;
     }
 
-    if (!floor.has_los(pos) || !projectable(player_ptr, player_ptr->y, player_ptr->x, target_row, target_col)) {
+    const auto p_pos = player_ptr->get_position();
+    if (!floor.has_los_at(*pos) || !projectable(floor, p_pos, *pos)) {
         return true;
     }
 
     dispel_monster_status(player_ptr, m_idx);
+    return true;
+}
+
+bool activate_whistle(PlayerType *player_ptr, const ItemEntity &item)
+{
+    if (item.bi_key.tval() != ItemKindType::WHISTLE) {
+        return false;
+    }
+
+    if (music_singing_any(player_ptr)) {
+        stop_singing(player_ptr);
+    }
+
+    if (SpellHex(player_ptr).is_spelling_any()) {
+        (void)SpellHex(player_ptr).stop_all_spells();
+    }
+
+    const auto &floor = *player_ptr->current_floor_ptr;
+    std::vector<short> pet_index;
+    for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
+        const auto &monster = floor.m_list[pet_indice];
+        if (monster.is_pet() && !monster.is_riding()) {
+            pet_index.push_back(pet_indice);
+        }
+    }
+
+    std::stable_sort(pet_index.begin(), pet_index.end(), [&floor](auto x, auto y) { return floor.order_pet_whistle(x, y); });
+    for (auto pet_indice : pet_index) {
+        teleport_monster_to(player_ptr, pet_indice, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
+    }
+
     return true;
 }

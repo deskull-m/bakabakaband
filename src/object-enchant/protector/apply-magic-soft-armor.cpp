@@ -9,7 +9,8 @@
 #include "object/object-kind-hook.h"
 #include "object/tval-types.h"
 #include "sv-definition/sv-armor-types.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 
@@ -89,7 +90,7 @@ void SoftArmorEnchanter::sval_enchant()
 void SoftArmorEnchanter::give_high_ego_index()
 {
     const auto sval = this->o_ptr->bi_key.sval();
-    if ((sval != SV_ROBE) || (randint0(100) >= 15)) {
+    if ((sval != SV_ROBE) || evaluate_percent(85)) {
         return;
     }
 
@@ -101,7 +102,7 @@ void SoftArmorEnchanter::give_high_ego_index()
     }
 
     const BaseitemKey key(ItemKindType::SOFT_ARMOR, SV_TWILIGHT_ROBE);
-    this->o_ptr->bi_id = lookup_baseitem_id(key);
+    this->o_ptr->bi_id = BaseitemList::get_instance().lookup_baseitem_id(key);
     this->o_ptr->bi_key = key;
     this->o_ptr->ac = 0;
     this->o_ptr->to_a = 0;

@@ -20,9 +20,10 @@
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
-#include <optional>
+#include "view/display-symbol.h"
 #include <string>
 #include <string_view>
+#include <tl/optional.hpp>
 
 // Encode the screen colors
 static char hack[17] = "dwsorgbuDWvyRGBU";
@@ -55,21 +56,24 @@ static void read_temporary_file(FILE *fff, FILE *tmpfff, int num_tag)
 {
     bool is_first_line = true;
     int next_tag = num_tag + 1;
-    char buf[2048]{};
-    while (!angband_fgets(tmpfff, buf, sizeof(buf))) {
+    while (true) {
+        const auto buf = angband_fgets(tmpfff);
+        if (!buf) {
+            break;
+        }
         if (is_first_line) {
-            if (strncmp(buf, tags[num_tag], strlen(tags[num_tag])) == 0) {
+            if (strncmp(buf->data(), tags[num_tag], strlen(tags[num_tag])) == 0) {
                 is_first_line = false;
             }
 
             continue;
         }
 
-        if (strncmp(buf, tags[next_tag], strlen(tags[next_tag])) == 0) {
+        if (strncmp(buf->data(), tags[next_tag], strlen(tags[next_tag])) == 0) {
             break;
         }
 
-        fprintf(fff, "%s\n", buf);
+        fprintf(fff, "%s\n", buf->data());
     }
 }
 
@@ -81,12 +85,12 @@ static void read_temporary_file(FILE *fff, FILE *tmpfff, int num_tag)
  */
 static void screen_dump_one_line(int wid, int y, FILE *fff)
 {
-    TERM_COLOR a = 0, old_a = 0;
-    char c = ' ';
+    uint8_t old_a = 0;
+    DisplaySymbol ds(0, ' ');
     for (TERM_LEN x = 0; x < wid - 1; x++) {
         concptr cc = nullptr;
-        (void)(term_what(x, y, &a, &c));
-        switch (c) {
+        ds = term_what(x, y, ds);
+        switch (ds.character) {
         case '&':
             cc = "&amp;";
             break;
@@ -98,28 +102,28 @@ static void screen_dump_one_line(int wid, int y, FILE *fff)
             break;
 #ifdef WINDOWS
         case 0x1f:
-            c = '.';
+            ds.character = '.';
             break;
         case 0x7f:
-            c = (a == 0x09) ? '%' : '#';
+            ds.character = (ds.color == 0x09) ? '%' : '#';
             break;
 #endif
         }
 
-        a = a & 0x0F;
-        if ((y == 0 && x == 0) || a != old_a) {
-            int rv = angband_color_table[a][1];
-            int gv = angband_color_table[a][2];
-            int bv = angband_color_table[a][3];
+        ds.color = ds.color & 0x0F;
+        if (((y == 0) && (x == 0)) || (ds.color != old_a)) {
+            int rv = angband_color_table[ds.color][1];
+            int gv = angband_color_table[ds.color][2];
+            int bv = angband_color_table[ds.color][3];
             fprintf(fff, "%s<font color=\"#%02x%02x%02x\">",
                 ((y == 0 && x == 0) ? "" : "</font>"), rv, gv, bv);
-            old_a = a;
+            old_a = ds.color;
         }
 
         if (cc) {
             fprintf(fff, "%s", cc);
         } else {
-            fprintf(fff, "%c", c);
+            fprintf(fff, "%c", ds.character);
         }
     }
 }
@@ -213,7 +217,7 @@ void exe_cmd_save_screen_html(const std::filesystem::path &path, bool need_messa
         screen_save();
     }
 
-    const auto &path_prf = path_build(ANGBAND_DIR_USER, "htmldump.prf");
+    const auto path_prf = path_build(ANGBAND_DIR_USER, "htmldump.prf");
     auto *tmpfff = angband_fopen(path_prf, FileOpenMode::READ);
     write_html_header(tmpfff, fff);
     screen_dump_lines(wid, hgt, fff);
@@ -224,7 +228,7 @@ void exe_cmd_save_screen_html(const std::filesystem::path &path, bool need_messa
     }
 
     msg_print(_("画面(記念撮影)をファイルに書き出しました。", "Screen dump saved."));
-    msg_print(nullptr);
+    msg_erase();
     screen_load();
 }
 
@@ -239,8 +243,8 @@ static void exe_cmd_save_screen_html_with_naming()
         return;
     }
 
-    auto path = path_build(ANGBAND_DIR_USER, filename.value());
-    msg_print(nullptr);
+    const auto path = path_build(ANGBAND_DIR_USER, *filename);
+    msg_erase();
     exe_cmd_save_screen_html(path, true);
 }
 
@@ -283,7 +287,7 @@ static bool check_screen_text_can_open(FILE *fff, const std::string_view filenam
     }
 
     msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
-    msg_print(nullptr);
+    msg_erase();
     return false;
 }
 
@@ -296,9 +300,8 @@ static bool check_screen_text_can_open(FILE *fff, const std::string_view filenam
  */
 static bool do_cmd_save_screen_text(int wid, int hgt)
 {
-    TERM_COLOR a = 0;
-    auto c = ' ';
-    const auto &path = path_build(ANGBAND_DIR_USER, "dump.txt");
+    DisplaySymbol ds(0, ' ');
+    const auto path = path_build(ANGBAND_DIR_USER, "dump.txt");
     auto *fff = angband_fopen(path, FileOpenMode::WRITE);
     if (!check_screen_text_can_open(fff, path.string())) {
         return false;
@@ -309,8 +312,8 @@ static bool do_cmd_save_screen_text(int wid, int hgt)
         TERM_LEN x;
         char buf[1024]{};
         for (x = 0; x < wid - 1; x++) {
-            (void)(term_what(x, y, &a, &c));
-            buf[x] = c;
+            ds = term_what(x, y, ds);
+            buf[x] = ds.character;
         }
 
         buf[x] = '\0';
@@ -322,8 +325,8 @@ static bool do_cmd_save_screen_text(int wid, int hgt)
         TERM_LEN x;
         char buf[1024]{};
         for (x = 0; x < wid - 1; x++) {
-            (void)(term_what(x, y, &a, &c));
-            buf[x] = hack[a & 0x0F];
+            ds = term_what(x, y, ds);
+            buf[x] = hack[ds.color & 0x0F];
         }
 
         buf[x] = '\0';
@@ -333,7 +336,7 @@ static bool do_cmd_save_screen_text(int wid, int hgt)
     fprintf(fff, "\n");
     angband_fclose(fff);
     msg_print(_("画面(記念撮影)をファイルに書き出しました。", "Screen dump saved."));
-    msg_print(nullptr);
+    msg_erase();
     screen_load();
     return true;
 }
@@ -432,7 +435,7 @@ static bool draw_white_characters(FILE *fff, int wid, int hgt)
                 break;
             }
 
-            term_draw(x, y, TERM_WHITE, buf[x]);
+            term_draw(x, y, { TERM_WHITE, buf[x] });
         }
     }
 
@@ -449,9 +452,8 @@ static bool draw_white_characters(FILE *fff, int wid, int hgt)
  */
 static void draw_colored_characters(FILE *fff, int wid, int hgt, bool okay)
 {
-    TERM_COLOR a = TERM_DARK;
-    auto c = ' ';
-    for (TERM_LEN y = 0; okay; y++) {
+    DisplaySymbol ds(TERM_DARK, ' ');
+    for (auto y = 0; okay; y++) {
         char buf[1024]{};
         if (!fgets(buf, sizeof(buf), fff)) {
             okay = false;
@@ -464,19 +466,19 @@ static void draw_colored_characters(FILE *fff, int wid, int hgt, bool okay)
             continue;
         }
 
-        for (TERM_LEN x = 0; x < wid - 1; x++) {
+        for (auto x = 0; x < wid - 1; x++) {
             if (buf[x] == '\n' || buf[x] == '\0') {
                 break;
             }
 
-            (void)(term_what(x, y, &a, &c));
-            for (int i = 0; i < 16; i++) {
+            ds = term_what(x, y, ds);
+            for (uint8_t i = 0; i < 16; i++) {
                 if (hack[i] == buf[x]) {
-                    a = (byte)i;
+                    ds.color = i;
                 }
             }
 
-            term_draw(x, y, a, c);
+            term_draw(x, y, ds);
         }
     }
 }
@@ -493,7 +495,7 @@ void do_cmd_load_screen(void)
     if (!fff) {
         const auto filename = path.string();
         msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), filename.data());
-        msg_print(nullptr);
+        msg_erase();
         return;
     }
 

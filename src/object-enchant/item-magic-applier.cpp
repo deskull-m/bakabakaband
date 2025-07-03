@@ -13,9 +13,9 @@
 #include "object-enchant/special-object-flags.h"
 #include "player/player-status-flags.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -106,17 +106,17 @@ std::tuple<int, int> ItemMagicApplier::calculate_chances()
 int ItemMagicApplier::calculate_power(const int chance_good, const int chance_great)
 {
     auto power = 0;
-    if (any_bits(this->mode, AM_GOOD) || magik(chance_good)) {
+    if (any_bits(this->mode, AM_GOOD) || evaluate_percent(chance_good)) {
         power = 1;
-        if (any_bits(this->mode, AM_GREAT) || magik(chance_great)) {
+        if (any_bits(this->mode, AM_GREAT) || evaluate_percent(chance_great)) {
             power = 2;
             if (any_bits(this->mode, AM_SPECIAL)) {
                 power = 3;
             }
         }
-    } else if (magik(chance_good)) {
+    } else if (evaluate_percent(chance_good)) {
         power = -1;
-        if (magik(chance_great)) {
+        if (evaluate_percent(chance_great)) {
             power = -2;
         }
     }
@@ -156,12 +156,18 @@ int ItemMagicApplier::calculate_rolls(const int power)
 
 /*!
  * @brief アーティファクト生成を試みる
- * @param power 試行回数
+ * @param rolls 試行回数
+ * @details 地上では生成を禁止する
  */
 void ItemMagicApplier::try_make_artifact(const int rolls)
 {
+    const auto &floor = *this->player_ptr->current_floor_ptr;
+    if (!floor.is_underground()) {
+        return;
+    }
+
     for (auto i = 0; i < rolls; i++) {
-        if (make_artifact(this->player_ptr, this->o_ptr)) {
+        if (this->o_ptr->try_become_artifact(floor.dun_level)) {
             break;
         }
 
@@ -169,7 +175,7 @@ void ItemMagicApplier::try_make_artifact(const int rolls)
             continue;
         }
 
-        if (make_artifact(this->player_ptr, this->o_ptr)) {
+        if (this->o_ptr->try_become_artifact(floor.dun_level)) {
             break;
         }
     }
@@ -198,11 +204,11 @@ void ItemMagicApplier::apply_cursed()
         return;
     }
 
-    const auto &baseitem = this->o_ptr->get_baseitem();
-    if (!baseitem.cost) {
+    if (this->o_ptr->is_worthless()) {
         set_bits(this->o_ptr->ident, IDENT_BROKEN);
     }
 
+    const auto &baseitem = this->o_ptr->get_baseitem();
     if (baseitem.gen_flags.has(ItemGenerationTraitType::CURSED)) {
         this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
     }

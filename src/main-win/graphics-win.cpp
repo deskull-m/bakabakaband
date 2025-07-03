@@ -53,16 +53,13 @@ static void finalize_gdi_plus()
     }
 }
 
-HBITMAP read_graphic(const char *filename)
+HBITMAP read_graphic(const std::filesystem::path &path)
 {
-    HBITMAP result = NULL;
     init_gdi_plus();
-
-    Gdiplus::Bitmap bitmap(to_wchar(filename).wc_str());
-
+    Gdiplus::Bitmap bitmap(to_wchar(path.string()).wc_str());
     COLORREF bgcolor = RGB(0x00, 0x00, 0x00);
+    HBITMAP result = NULL;
     bitmap.GetHBITMAP(bgcolor, &result);
-
     return result;
 }
 
@@ -116,9 +113,8 @@ graphics_mode change_graphics(graphics_mode arg)
         return current_graphics_mode;
     }
 
-    const auto &path = path_build(ANGBAND_DIR_XTRA_GRAF, name);
-    const auto &filename = path.string();
-    infGraph.hBitmap = read_graphic(filename.data());
+    const auto path = path_build(ANGBAND_DIR_XTRA_GRAF, name);
+    infGraph.hBitmap = read_graphic(path);
     if (!infGraph.hBitmap) {
         plog_fmt(_("ビットマップ '%s' を読み込めません。", "Cannot read bitmap file '%s'"), name.data());
         ANGBAND_GRAF = "ascii";
@@ -145,8 +141,17 @@ graphics_mode change_graphics(graphics_mode arg)
         }
     }
 
-    current_graphics_mode = arg;
-    return arg;
+    const auto path_mask = path_build(ANGBAND_DIR_XTRA_GRAF, name_mask);
+    infGraph.hBitmapMask = read_graphic(path_mask);
+    if (infGraph.hBitmapMask) {
+        current_graphics_mode = arg;
+        return arg;
+    }
+
+    plog_fmt(_("ビットマップ '%s' を読み込めません。", "Cannot read bitmap file '%s'"), name_mask.data());
+    ANGBAND_GRAF = "ascii";
+    current_graphics_mode = graphics_mode::GRAPHICS_NONE;
+    return current_graphics_mode;
 }
 }
 

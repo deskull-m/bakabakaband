@@ -10,7 +10,7 @@
 #include "object/tval-types.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/angband.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -33,9 +33,9 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
     o_ptr->number = any_bits(flags, SaveDataItemFlagType::NUMBER) ? rd_byte() : 1;
     o_ptr->weight = rd_s16b();
     if (any_bits(flags, SaveDataItemFlagType::FIXED_ARTIFACT_IDX)) {
-        o_ptr->fixed_artifact_idx = i2enum<FixedArtifactId>(rd_s16b());
+        o_ptr->fa_id = i2enum<FixedArtifactId>(rd_s16b());
     } else {
-        o_ptr->fixed_artifact_idx = FixedArtifactId::NONE;
+        o_ptr->fa_id = FixedArtifactId::NONE;
     }
 
     o_ptr->ego_idx = i2enum<EgoType>(any_bits(flags, SaveDataItemFlagType::EGO_IDX) ? rd_byte() : 0);
@@ -44,8 +44,8 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
     o_ptr->to_d = any_bits(flags, SaveDataItemFlagType::TO_D) ? rd_s16b() : 0;
     o_ptr->to_a = any_bits(flags, SaveDataItemFlagType::TO_A) ? rd_s16b() : 0;
     o_ptr->ac = any_bits(flags, SaveDataItemFlagType::AC) ? rd_s16b() : 0;
-    o_ptr->dd = any_bits(flags, SaveDataItemFlagType::DD) ? rd_byte() : 0;
-    o_ptr->ds = any_bits(flags, SaveDataItemFlagType::DS) ? rd_byte() : 0;
+    o_ptr->damage_dice.num = any_bits(flags, SaveDataItemFlagType::DD) ? rd_byte() : 0;
+    o_ptr->damage_dice.sides = any_bits(flags, SaveDataItemFlagType::DS) ? rd_byte() : 0;
     o_ptr->ident = any_bits(flags, SaveDataItemFlagType::IDENT) ? rd_byte() : 0;
     o_ptr->marked.clear();
     if (any_bits(flags, SaveDataItemFlagType::MARKED)) {
@@ -157,17 +157,13 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
     }
 
     if (any_bits(flags, SaveDataItemFlagType::INSCRIPTION)) {
-        char buf[128];
-        rd_string(buf, sizeof(buf));
-        o_ptr->inscription.emplace(buf);
+        o_ptr->inscription = rd_string();
     } else {
         o_ptr->inscription.reset();
     }
 
     if (any_bits(flags, SaveDataItemFlagType::ART_NAME)) {
-        char buf[128];
-        rd_string(buf, sizeof(buf));
-        o_ptr->randart_name.emplace(buf);
+        o_ptr->randart_name = rd_string();
     } else {
         o_ptr->randart_name.reset();
     }

@@ -12,8 +12,8 @@
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include <algorithm>
-#include <optional>
 #include <sstream>
+#include <tl/optional.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -55,9 +55,9 @@ Smith::Smith(PlayerType *player_ptr)
  * @brief 引数で指定した鍛冶効果の鍛冶情報を得る
  *
  * @param effect 情報を得る鍛冶効果
- * @return 鍛冶情報構造体へのポインタを保持する std::optional オブジェクトを返す
+ * @return 鍛冶情報構造体へのポインタを保持する tl::optional オブジェクトを返す
  */
-std::optional<const ISmithInfo *> Smith::find_smith_info(SmithEffectType effect)
+tl::optional<const ISmithInfo *> Smith::find_smith_info(SmithEffectType effect)
 {
     // 何度も呼ぶので線形探索を避けるため鍛冶効果から鍛冶情報のテーブルを引けるmapを作成しておく。
     static std::unordered_map<SmithEffectType, const ISmithInfo *> search_map;
@@ -69,7 +69,7 @@ std::optional<const ISmithInfo *> Smith::find_smith_info(SmithEffectType effect)
 
     auto it = search_map.find(effect);
     if (it == search_map.end()) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     return it->second;
@@ -215,9 +215,9 @@ TrFlags Smith::get_effect_tr_flags(SmithEffectType effect)
  *
  * @param o_ptr アイテム構造体へのポインタ
  * @return アイテムに付与されている発動効果の発動ID(random_art_activation_type型)
- * 付与されている発動効果が無い場合は std::nullopt
+ * 付与されている発動効果が無い場合は tl::nullopt
  */
-std::optional<RandomArtActType> Smith::object_activation(const ItemEntity *o_ptr)
+tl::optional<RandomArtActType> Smith::object_activation(const ItemEntity *o_ptr)
 {
     return o_ptr->smith_act_idx;
 }
@@ -226,10 +226,10 @@ std::optional<RandomArtActType> Smith::object_activation(const ItemEntity *o_ptr
  * @brief アイテムに付与されている鍛冶効果を取得する
  *
  * @param o_ptr アイテム構造体へのポインタ
- * @return アイテムに付与されている鍛冶効果を保持する std::optional オブジェクト返す。
- * 鍛冶効果が付与できないアイテムか、何も付与されていなければ std::nullopt を返す。
+ * @return アイテムに付与されている鍛冶効果を保持する tl::optional オブジェクト返す。
+ * 鍛冶効果が付与できないアイテムか、何も付与されていなければ tl::nullopt を返す。
  */
-std::optional<SmithEffectType> Smith::object_effect(const ItemEntity *o_ptr)
+tl::optional<SmithEffectType> Smith::object_effect(const ItemEntity *o_ptr)
 {
     return o_ptr->smith_effect;
 }
@@ -349,8 +349,8 @@ Smith::DrainEssenceResult Smith::drain_essence(ItemEntity *o_ptr)
     const auto is_fixed_or_random_artifact = o_ptr->is_fixed_or_random_artifact();
 
     // アイテムをエッセンス抽出後の状態にする
-    const ItemEntity old_o = *o_ptr;
-    o_ptr->prep(o_ptr->bi_id);
+    const ItemEntity old_o = o_ptr->clone();
+    o_ptr->generate(o_ptr->bi_id);
     o_ptr->iy = old_o.iy;
     o_ptr->ix = old_o.ix;
     o_ptr->marked = old_o.marked;
@@ -361,7 +361,7 @@ Smith::DrainEssenceResult Smith::drain_essence(ItemEntity *o_ptr)
     }
 
     o_ptr->ident |= (IDENT_FULL_KNOWN);
-    object_aware(player_ptr, o_ptr);
+    object_aware(player_ptr, *o_ptr);
     o_ptr->mark_as_known();
 
     const auto new_flags = o_ptr->get_flags();
@@ -391,8 +391,8 @@ Smith::DrainEssenceResult Smith::drain_essence(ItemEntity *o_ptr)
     auto diff = [](int o, int n) { return std::max(o - n, 0); };
 
     if (o_ptr->is_weapon_ammo()) {
-        drain_values[SmithEssenceType::ATTACK] += diff(old_o.ds, o_ptr->ds) * 10;
-        drain_values[SmithEssenceType::ATTACK] += diff(old_o.dd, o_ptr->dd) * 10;
+        drain_values[SmithEssenceType::ATTACK] += diff(old_o.damage_dice.sides, o_ptr->damage_dice.sides) * 10;
+        drain_values[SmithEssenceType::ATTACK] += diff(old_o.damage_dice.num, o_ptr->damage_dice.num) * 10;
     }
 
     drain_values[SmithEssenceType::ATTACK] += diff(old_o.to_h, o_ptr->to_h) * 10;
@@ -456,7 +456,7 @@ bool Smith::add_essence(SmithEffectType effect, ItemEntity *o_ptr, int number)
  */
 void Smith::erase_essence(ItemEntity *o_ptr) const
 {
-    o_ptr->smith_act_idx = std::nullopt;
+    o_ptr->smith_act_idx = tl::nullopt;
 
     auto effect = Smith::object_effect(o_ptr);
     if (!effect.has_value()) {

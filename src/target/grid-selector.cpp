@@ -1,112 +1,121 @@
 #include "target/grid-selector.h"
 #include "core/stuff-handler.h"
-#include "core/window-redrawer.h"
-#include "floor/cave.h"
-#include "floor/geometry.h"
 #include "game-option/game-play-options.h"
 #include "game-option/input-options.h"
 #include "game-option/keymap-directory-getter.h"
-#include "grid/feature-flag-types.h"
 #include "io/cursor.h"
 #include "io/input-key-acceptor.h"
 #include "io/screen-util.h"
-#include "system/floor-type-definition.h"
+#include "system/building-type-definition.h"
+#include "system/enums/terrain/terrain-characteristics.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/target-checker.h"
+#include "target/target-sorter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/player-hallucination.h"
 #include "timed-effect/timed-effects.h"
+#include "util/candidate-selector.h"
+#include "util/finalizer.h"
 #include "util/int-char-converter.h"
-#include "util/sort.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
 #include <functional>
+#include <range/v3/view.hpp>
 #include <unordered_map>
 #include <vector>
-
-/*
- * XAngband: determine if a given location is "interesting"
- * based on target_set_accept function.
- */
-static bool tgt_pt_accept(PlayerType *player_ptr, POSITION y, POSITION x)
-{
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (!(in_bounds(floor_ptr, y, x))) {
-        return false;
-    }
-
-    if ((y == player_ptr->y) && (x == player_ptr->x)) {
-        return true;
-    }
-
-    if (player_ptr->effects()->hallucination()->is_hallucinated()) {
-        return false;
-    }
-
-    auto &grid = floor_ptr->grid_array[y][x];
-    if (!grid.is_mark()) {
-        return false;
-    }
-
-    using Tc = TerrainCharacteristics;
-    auto is_acceptable = grid.cave_has_flag(Tc::LESS);
-    is_acceptable |= grid.cave_has_flag(Tc::MORE);
-    is_acceptable |= grid.cave_has_flag(Tc::QUEST_ENTER);
-    is_acceptable |= grid.cave_has_flag(Tc::QUEST_EXIT);
-    is_acceptable |= grid.cave_has_flag(Tc::STORE);
-    is_acceptable |= grid.cave_has_flag(Tc::BLDG);
-    return is_acceptable;
-}
 
 /*
  * XAngband: Prepare the "temp" array for "tget_pt"
  * based on target_set_prepare funciton.
  */
-static void tgt_pt_prepare(PlayerType *player_ptr, std::vector<POSITION> &ys, std::vector<POSITION> &xs)
+static std::vector<Pos2D> tgt_pt_prepare(PlayerType *player_ptr)
 {
     if (!expand_list) {
-        return;
+        return {};
     }
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    for (POSITION y = 1; y < floor_ptr->height; y++) {
-        for (POSITION x = 1; x < floor_ptr->width; x++) {
-            if (!tgt_pt_accept(player_ptr, y, x)) {
-                continue;
-            }
+    std::vector<Pos2D> positions;
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = player_ptr->get_position();
+    const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
+    for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+        if (!floor.contains(pos)) {
+            continue;
+        }
 
-            ys.emplace_back(y);
-            xs.emplace_back(x);
+        if (pos == p_pos) {
+            positions.push_back(pos);
+            continue;
+        }
+
+        if (is_hallucinated) {
+            continue;
+        }
+
+        const auto &grid = floor.get_grid(pos);
+        if (!grid.is_mark()) {
+            continue;
+        }
+
+        if (grid.is_acceptable_target()) {
+            positions.push_back(pos);
         }
     }
 
-    ang_sort(player_ptr, xs.data(), ys.data(), size(ys), ang_sort_comp_distance, ang_sort_swap_position);
+    TargetSorter sorter(p_pos);
+    std::stable_sort(positions.begin(), positions.end(), [&sorter](const auto &a, const auto &b) { return sorter.compare_distance(a, b); });
+    return positions;
+}
+
+static tl::optional<Pos2D> select_building_pos(const FloorType &floor)
+{
+    const auto is_building_pos = [&](const Pos2D &pos) {
+        return floor.get_grid(pos).has(TerrainCharacteristics::BLDG);
+    };
+    const auto pos_buildings =
+        floor.get_area() |
+        ranges::views::filter(is_building_pos) |
+        ranges::to<std::vector>();
+
+    if (pos_buildings.size() <= 1) {
+        return pos_buildings.empty() ? tl::nullopt : tl::make_optional(pos_buildings.front());
+    }
+
+    CandidateSelector cs(_("施設を選択してください:", "Select a building:"), 15);
+    const auto describer = [&](const Pos2D &pos) {
+        const auto &grid = floor.get_grid(pos);
+        const auto &terrain = grid.get_terrain();
+        return buildings.at(terrain.subtype).name;
+    };
+
+    const auto choice = cs.select(pos_buildings, describer);
+    return choice != pos_buildings.end() ? tl::make_optional(*choice) : tl::nullopt;
 }
 
 /*!
  * @brief 指定したシンボルのマスかどうかを判定するための条件式コールバック
  */
-std::unordered_map<int, std::function<bool(Grid *)>> tgt_pt_symbol_call_back = {
-    { '<', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STAIRS) && g_ptr->cave_has_flag(TerrainCharacteristics::LESS); } },
-    { '>', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STAIRS) && g_ptr->cave_has_flag(TerrainCharacteristics::MORE); } },
-    { '+', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::BLDG); } },
-    { '0', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('0'); } },
-    { '!', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('1'); } },
-    { '"', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('2'); } },
-    { '#', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('3'); } },
-    { '$', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('4'); } },
-    { '%', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('5'); } },
-    { '&', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('6'); } },
-    { '\'', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('7'); } },
-    { '(', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('8'); } },
-    { ')', [](Grid *g_ptr) { return g_ptr->cave_has_flag(TerrainCharacteristics::STORE) && g_ptr->is_symbol('9'); } },
+std::unordered_map<int, std::function<bool(const Grid &)>> tgt_pt_symbol_call_back = {
+    { '<', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STAIRS) && grid.has(TerrainCharacteristics::LESS); } },
+    { '>', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STAIRS) && grid.has(TerrainCharacteristics::MORE); } },
+    { '+', [](const Grid &grid) { return grid.has(TerrainCharacteristics::BLDG); } },
+    { '0', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('0'); } },
+    { '!', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('1'); } },
+    { '"', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('2'); } },
+    { '#', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('3'); } },
+    { '$', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('4'); } },
+    { '%', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('5'); } },
+    { '&', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('6'); } },
+    { '\'', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('7'); } },
+    { '(', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('8'); } },
+    { ')', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('9'); } },
 };
 
 /*!
  * @brief 位置ターゲット指定情報構造体
- * @details
- * ang_sort() を利用する関係上、y/x 座標それぞれについて配列を作る。
  */
 struct tgt_pt_info {
     tgt_pt_info()
@@ -116,14 +125,12 @@ struct tgt_pt_info {
 
     int width; //!< 画面サイズ(幅)
     int height; //!< 画面サイズ(高さ)
-    POSITION y = 0; //!< 現在の指定位置(Y)
-    POSITION x = 0; //!< 現在の指定位置(X)
-    std::vector<POSITION> ys{}; //!< "interesting" な座標たちを記録する配列(Y)
-    std::vector<POSITION> xs{}; //!< "interesting" な座標たちを記録する配列(X)
+    Pos2D pos = { 0, 0 }; //!< 現在の指定位置
+    std::vector<Pos2D> positions{}; //!< "interesting" な座標一覧の記録
     size_t n = 0; //<! シンボル配列の何番目か
     char ch = '\0'; //<! 入力キー
     char prev_ch = '\0'; //<! 前回入力キー
-    std::function<bool(Grid *)> callback{}; //<! 条件判定コールバック
+    std::function<bool(const Grid &)> callback{}; //<! 条件判定コールバック
 
     void move_to_symbol(PlayerType *player_ptr);
 };
@@ -136,32 +143,37 @@ struct tgt_pt_info {
  */
 void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
 {
-    if (!expand_list || this->ys.empty()) {
+    if (!expand_list || this->positions.empty()) {
         return;
     }
 
-    int dx, dy;
-    int cx = (panel_col_min + panel_col_max) / 2;
-    int cy = (panel_row_min + panel_row_max) / 2;
     if (this->ch != this->prev_ch) {
         this->n = 0;
     }
     this->prev_ch = this->ch;
     this->n++;
 
-    for (; this->n < size(this->ys); ++this->n) {
-        const POSITION y_cur = this->ys[this->n];
-        const POSITION x_cur = this->xs[this->n];
-        auto *g_ptr = &player_ptr->current_floor_ptr->grid_array[y_cur][x_cur];
-        if (this->callback(g_ptr)) {
-            break;
+    if (this->ch == '+') {
+        const auto pos_building = select_building_pos(*player_ptr->current_floor_ptr);
+        if (!pos_building) {
+            return;
+        }
+        this->n = 0;
+        this->pos = *pos_building;
+    } else {
+        for (; this->n < this->positions.size(); ++this->n) {
+            const auto &pos_cur = this->positions.at(this->n);
+            const auto &grid = player_ptr->current_floor_ptr->get_grid(pos_cur);
+            if (this->callback(grid)) {
+                this->pos = this->positions.at(this->n);
+                break;
+            }
         }
     }
 
-    if (this->n == size(this->ys)) {
+    if (this->n == this->positions.size()) {
         this->n = 0;
-        this->y = player_ptr->y;
-        this->x = player_ptr->x;
+        this->pos = player_ptr->get_position();
         verify_panel(player_ptr);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -169,11 +181,11 @@ void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
         handle_stuff(player_ptr);
     } else {
-        this->y = this->ys[this->n];
-        this->x = this->xs[this->n];
-        dy = 2 * (this->y - cy) / this->height;
-        dx = 2 * (this->x - cx) / this->width;
-        if (dy || dx) {
+        const auto cx = (panel_col_min + panel_col_max) / 2;
+        const auto cy = (panel_row_min + panel_row_max) / 2;
+        const auto dy = 2 * (this->pos.y - cy) / this->height;
+        const auto dx = 2 * (this->pos.x - cx) / this->width;
+        if ((dy != 0) || (dx != 0)) {
             change_panel(player_ptr, dy, dx);
         }
     }
@@ -182,28 +194,25 @@ void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
 /*!
  * @brief 位置を指定するプロンプト
  * @param player_ptr プレイヤー情報への参照ポインタ
- * @param x_ptr x座標への参照ポインタ
- * @param y_ptr y座標への参照ポインタ
- * @return 指定したらTRUE、キャンセルしたらFALSE
+ * @return 指定したらその座標、キャンセルしたらnullopt
  */
-bool tgt_pt(PlayerType *player_ptr, POSITION *x_ptr, POSITION *y_ptr)
+tl::optional<Pos2D> point_target(PlayerType *player_ptr)
 {
     tgt_pt_info info;
-    info.y = player_ptr->y;
-    info.x = player_ptr->x;
+    info.pos = player_ptr->get_position();
     if (expand_list) {
-        tgt_pt_prepare(player_ptr, info.ys, info.xs);
+        info.positions = tgt_pt_prepare(player_ptr);
     }
 
-    msg_print(_("場所を選んでスペースキーを押して下さい。", "Select a point and press space."));
     msg_flag = false;
 
     info.ch = 0;
     info.n = 0;
-    bool success = false;
-    while ((info.ch != ESCAPE) && !success) {
-        bool move_fast = false;
-        move_cursor_relative(info.y, info.x);
+    tl::optional<Pos2D> pos_target;
+    while ((info.ch != ESCAPE) && !pos_target) {
+        prt(_("場所を選んでスペースキーを押して下さい。", "Select a point and press space."), 0, 0);
+        auto move_fast = false;
+        move_cursor_relative(info.pos.y, info.pos.x);
         info.ch = inkey();
         switch (info.ch) {
         case ESCAPE:
@@ -211,11 +220,12 @@ bool tgt_pt(PlayerType *player_ptr, POSITION *x_ptr, POSITION *y_ptr)
         case ' ':
         case 't':
         case '.':
-            if (player_ptr->is_located_at({ info.y, info.x })) {
+            if (player_ptr->is_located_at(info.pos)) {
                 info.ch = 0;
             } else {
-                success = true;
+                pos_target = info.pos;
             }
+
             break;
         case '>':
         case '<':
@@ -245,57 +255,58 @@ bool tgt_pt(PlayerType *player_ptr, POSITION *x_ptr, POSITION *y_ptr)
                 }
             } else {
                 if (info.ch == '5' || info.ch == '0') {
-                    if (player_ptr->is_located_at({ info.y, info.x })) {
+                    if (player_ptr->is_located_at(info.pos)) {
                         info.ch = 0;
                     } else {
-                        success = true;
+                        pos_target = info.pos;
                     }
+
                     break;
                 }
             }
 
-            int d = get_keymap_dir(info.ch);
+            const auto dir = get_keymap_dir(info.ch);
             if (isupper(info.ch)) {
                 move_fast = true;
             }
 
-            if (d == 0) {
+            if (!dir) {
                 break;
             }
 
-            int dx = ddx[d];
-            int dy = ddy[d];
+            auto [dy, dx] = dir.vec();
             if (move_fast) {
                 int mag = std::min(info.width / 2, info.height / 2);
-                info.x += dx * mag;
-                info.y += dy * mag;
+                info.pos.y += dy * mag;
+                info.pos.x += dx * mag;
             } else {
-                info.x += dx;
-                info.y += dy;
+                info.pos.y += dy;
+                info.pos.x += dx;
             }
 
-            if (((info.x < panel_col_min + info.width / 2) && (dx > 0)) || ((info.x > panel_col_min + info.width / 2) && (dx < 0))) {
+            if (((info.pos.x < panel_col_min + info.width / 2) && (dx > 0)) || ((info.pos.x > panel_col_min + info.width / 2) && (dx < 0))) {
                 dx = 0;
             }
 
-            if (((info.y < panel_row_min + info.height / 2) && (dy > 0)) || ((info.y > panel_row_min + info.height / 2) && (dy < 0))) {
+            if (((info.pos.y < panel_row_min + info.height / 2) && (dy > 0)) || ((info.pos.y > panel_row_min + info.height / 2) && (dy < 0))) {
                 dy = 0;
             }
 
-            if ((info.y >= panel_row_min + info.height) || (info.y < panel_row_min) || (info.x >= panel_col_min + info.width) || (info.x < panel_col_min)) {
+            if ((info.pos.y >= panel_row_min + info.height) || (info.pos.y < panel_row_min) || (info.pos.x >= panel_col_min + info.width) || (info.pos.x < panel_col_min)) {
                 change_panel(player_ptr, dy, dx);
             }
 
-            if (info.x >= player_ptr->current_floor_ptr->width - 1) {
-                info.x = player_ptr->current_floor_ptr->width - 2;
-            } else if (info.x <= 0) {
-                info.x = 1;
+            const auto &floor = *player_ptr->current_floor_ptr;
+            if (info.pos.x >= floor.width - 1) {
+                info.pos.x = floor.width - 2;
+            } else if (info.pos.x <= 0) {
+                info.pos.x = 1;
             }
 
-            if (info.y >= player_ptr->current_floor_ptr->height - 1) {
-                info.y = player_ptr->current_floor_ptr->height - 2;
-            } else if (info.y <= 0) {
-                info.y = 1;
+            if (info.pos.y >= floor.height - 1) {
+                info.pos.y = floor.height - 2;
+            } else if (info.pos.y <= 0) {
+                info.pos.y = 1;
             }
 
             break;
@@ -310,7 +321,5 @@ bool tgt_pt(PlayerType *player_ptr, POSITION *x_ptr, POSITION *y_ptr)
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(player_ptr);
-    *x_ptr = info.x;
-    *y_ptr = info.y;
-    return success;
+    return pos_target;
 }

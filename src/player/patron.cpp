@@ -12,7 +12,6 @@
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-investor-remover.h"
 #include "object-enchant/object-curse.h"
-#include "object/object-kind-hook.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -31,119 +30,106 @@
 #include "status/base-status.h"
 #include "status/experience.h"
 #include "status/shape-changer.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
-#ifdef JP
-#define N(JAPANESE, ENGLISH) JAPANESE, ENGLISH
-#else
-#define N(JAPANESE, ENGLISH) ENGLISH
-#endif
-
 std::vector<Patron> patron_list = {
 
-    Patron(N("スローター", "Slortar"),
+    Patron({ "スローター", "Slortar" },
         { REW_WRATH, REW_CURSE_WP, REW_CURSE_AR, REW_RUIN_ABL, REW_LOSE_ABL, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_POLY_WND, REW_POLY_SLF, REW_POLY_SLF,
             REW_POLY_SLF, REW_GAIN_ABL, REW_GAIN_ABL, REW_GAIN_EXP, REW_GOOD_OBJ, REW_CHAOS_WP, REW_GREA_OBJ, REW_AUGM_ABL, REW_AUGM_ABL },
         A_CON),
 
-    Patron(N("マベロード", "Mabelode"),
+    Patron({ "マベロード", "Mabelode" },
         { REW_WRATH, REW_CURSE_WP, REW_CURSE_AR, REW_H_SUMMON, REW_SUMMON_M, REW_SUMMON_M, REW_IGNORE, REW_IGNORE, REW_POLY_WND, REW_POLY_WND, REW_POLY_SLF,
             REW_HEAL_FUL, REW_HEAL_FUL, REW_GAIN_ABL, REW_SER_UNDE, REW_CHAOS_WP, REW_GOOD_OBJ, REW_GOOD_OBJ, REW_GOOD_OBS, REW_GOOD_OBS },
         A_CON),
 
-    Patron(N("チャードロス", "Chardros"),
+    Patron({ "チャードロス", "Chardros" },
         { REW_WRATH, REW_WRATH, REW_HURT_LOT, REW_PISS_OFF, REW_H_SUMMON, REW_SUMMON_M, REW_IGNORE, REW_IGNORE, REW_DESTRUCT, REW_SER_UNDE, REW_GENOCIDE,
             REW_MASS_GEN, REW_MASS_GEN, REW_DISPEL_C, REW_GOOD_OBJ, REW_CHAOS_WP, REW_GOOD_OBS, REW_GOOD_OBS, REW_AUGM_ABL, REW_AUGM_ABL },
         A_STR),
 
-    Patron(N("ハイオンハーン", "Hionhurn"),
+    Patron({ "ハイオンハーン", "Hionhurn" },
         { REW_WRATH, REW_WRATH, REW_CURSE_WP, REW_CURSE_AR, REW_RUIN_ABL, REW_IGNORE, REW_IGNORE, REW_SER_UNDE, REW_DESTRUCT, REW_GENOCIDE, REW_MASS_GEN,
             REW_MASS_GEN, REW_HEAL_FUL, REW_GAIN_ABL, REW_GAIN_ABL, REW_CHAOS_WP, REW_GOOD_OBS, REW_GOOD_OBS, REW_AUGM_ABL, REW_AUGM_ABL },
         A_STR),
 
-    Patron(N("キシオムバーグ", "Xiombarg"),
+    Patron({ "キシオムバーグ", "Xiombarg" },
         { REW_TY_CURSE, REW_TY_CURSE, REW_PISS_OFF, REW_RUIN_ABL, REW_LOSE_ABL, REW_IGNORE, REW_POLY_SLF, REW_POLY_SLF, REW_POLY_WND, REW_POLY_WND,
             REW_GENOCIDE, REW_DISPEL_C, REW_GOOD_OBJ, REW_GOOD_OBJ, REW_SER_MONS, REW_GAIN_ABL, REW_CHAOS_WP, REW_GAIN_EXP, REW_AUGM_ABL, REW_GOOD_OBS },
         A_STR),
 
-    Patron(N("ピアレー", "Pyaray"),
+    Patron({ "ピアレー", "Pyaray" },
         { REW_WRATH, REW_TY_CURSE, REW_PISS_OFF, REW_H_SUMMON, REW_H_SUMMON, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_POLY_WND, REW_POLY_SLF, REW_POLY_SLF,
             REW_SER_DEMO, REW_HEAL_FUL, REW_GAIN_ABL, REW_GAIN_ABL, REW_CHAOS_WP, REW_DO_HAVOC, REW_GOOD_OBJ, REW_GREA_OBJ, REW_GREA_OBS },
         A_INT),
 
-    Patron(N("バラン", "Balaan"),
+    Patron({ "バラン", "Balaan" },
         { REW_TY_CURSE, REW_HURT_LOT, REW_CURSE_WP, REW_CURSE_AR, REW_RUIN_ABL, REW_SUMMON_M, REW_LOSE_EXP, REW_POLY_SLF, REW_POLY_SLF, REW_POLY_WND,
             REW_SER_UNDE, REW_HEAL_FUL, REW_HEAL_FUL, REW_GAIN_EXP, REW_GAIN_EXP, REW_CHAOS_WP, REW_GOOD_OBJ, REW_GOOD_OBS, REW_GREA_OBS, REW_AUGM_ABL },
         A_STR),
 
-    Patron(N("アリオッチ", "Arioch"),
+    Patron({ "アリオッチ", "Arioch" },
         { REW_WRATH, REW_PISS_OFF, REW_RUIN_ABL, REW_LOSE_EXP, REW_H_SUMMON, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_POLY_SLF, REW_POLY_SLF,
             REW_MASS_GEN, REW_SER_DEMO, REW_HEAL_FUL, REW_CHAOS_WP, REW_CHAOS_WP, REW_GOOD_OBJ, REW_GAIN_EXP, REW_GREA_OBJ, REW_AUGM_ABL },
         A_INT),
 
-    Patron(N("イーカー", "Eequor"),
+    Patron({ "イーカー", "Eequor" },
         { REW_WRATH, REW_TY_CURSE, REW_PISS_OFF, REW_CURSE_WP, REW_RUIN_ABL, REW_IGNORE, REW_IGNORE, REW_POLY_SLF, REW_POLY_SLF, REW_POLY_WND, REW_GOOD_OBJ,
             REW_GOOD_OBJ, REW_SER_MONS, REW_HEAL_FUL, REW_GAIN_EXP, REW_GAIN_ABL, REW_CHAOS_WP, REW_GOOD_OBS, REW_GREA_OBJ, REW_AUGM_ABL },
         A_CON),
 
-    Patron(N("ナージャン", "Narjhan"),
+    Patron({ "ナージャン", "Narjhan" },
         { REW_WRATH, REW_CURSE_AR, REW_CURSE_WP, REW_CURSE_WP, REW_CURSE_AR, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_POLY_SLF, REW_POLY_SLF, REW_POLY_WND,
             REW_HEAL_FUL, REW_HEAL_FUL, REW_GAIN_EXP, REW_AUGM_ABL, REW_GOOD_OBJ, REW_GOOD_OBJ, REW_CHAOS_WP, REW_GREA_OBJ, REW_GREA_OBS },
         A_CHR),
 
-    Patron(N("バロ", "Balo"),
+    Patron({ "バロ", "Balo" },
         { REW_WRATH, REW_SER_DEMO, REW_CURSE_WP, REW_CURSE_AR, REW_LOSE_EXP, REW_GAIN_ABL, REW_LOSE_ABL, REW_POLY_WND, REW_POLY_SLF, REW_IGNORE, REW_DESTRUCT,
             REW_MASS_GEN, REW_CHAOS_WP, REW_GREA_OBJ, REW_HURT_LOT, REW_AUGM_ABL, REW_RUIN_ABL, REW_H_SUMMON, REW_GREA_OBS, REW_AUGM_ABL },
         A_RANDOM),
 
-    Patron(N("コーン", "Khorne"),
+    Patron({ "コーン", "Khorne" },
         { REW_WRATH, REW_HURT_LOT, REW_HURT_LOT, REW_H_SUMMON, REW_H_SUMMON, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_SER_MONS, REW_SER_DEMO, REW_POLY_SLF,
             REW_POLY_WND, REW_HEAL_FUL, REW_GOOD_OBJ, REW_GOOD_OBJ, REW_CHAOS_WP, REW_GOOD_OBS, REW_GOOD_OBS, REW_GREA_OBJ, REW_GREA_OBS },
         A_STR),
 
-    Patron(N("スラーネッシュ", "Slaanesh"),
+    Patron({ "スラーネッシュ", "Slaanesh" },
         { REW_WRATH, REW_PISS_OFF, REW_PISS_OFF, REW_RUIN_ABL, REW_LOSE_ABL, REW_LOSE_EXP, REW_IGNORE, REW_IGNORE, REW_POLY_WND, REW_SER_DEMO, REW_POLY_SLF,
             REW_HEAL_FUL, REW_HEAL_FUL, REW_GOOD_OBJ, REW_GAIN_EXP, REW_GAIN_EXP, REW_CHAOS_WP, REW_GAIN_ABL, REW_GREA_OBJ, REW_AUGM_ABL },
         A_CHR),
 
-    Patron(N("ナーグル", "Nurgle"),
+    Patron({ "ナーグル", "Nurgle" },
         { REW_WRATH, REW_PISS_OFF, REW_HURT_LOT, REW_RUIN_ABL, REW_LOSE_ABL, REW_LOSE_EXP, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_POLY_SLF, REW_POLY_SLF,
             REW_POLY_WND, REW_HEAL_FUL, REW_GOOD_OBJ, REW_GAIN_ABL, REW_GAIN_ABL, REW_SER_UNDE, REW_CHAOS_WP, REW_GREA_OBJ, REW_AUGM_ABL },
         A_CON),
 
-    Patron(N("ティーンチ", "Tzeentch"),
+    Patron({ "ティーンチ", "Tzeentch" },
         { REW_WRATH, REW_CURSE_WP, REW_CURSE_AR, REW_RUIN_ABL, REW_LOSE_ABL, REW_LOSE_EXP, REW_IGNORE, REW_POLY_SLF, REW_POLY_SLF, REW_POLY_SLF, REW_POLY_SLF,
             REW_POLY_WND, REW_HEAL_FUL, REW_CHAOS_WP, REW_GREA_OBJ, REW_GAIN_ABL, REW_GAIN_ABL, REW_GAIN_EXP, REW_GAIN_EXP, REW_AUGM_ABL },
         A_INT),
 
-    Patron(N("カイン", "Khaine"),
+    Patron({ "カイン", "Khaine" },
         { REW_WRATH, REW_HURT_LOT, REW_PISS_OFF, REW_LOSE_ABL, REW_LOSE_EXP, REW_IGNORE, REW_IGNORE, REW_DISPEL_C, REW_DO_HAVOC, REW_DO_HAVOC, REW_POLY_SLF,
             REW_POLY_SLF, REW_GAIN_EXP, REW_GAIN_ABL, REW_GAIN_ABL, REW_SER_MONS, REW_GOOD_OBJ, REW_CHAOS_WP, REW_GREA_OBJ, REW_GOOD_OBS },
         A_STR),
 
-    Patron(N("ゲッター", "Getter"),
+    Patron({ "ゲッター", "Getter" },
         { REW_H_SUMMON, REW_H_SUMMON, REW_H_SUMMON, REW_H_SUMMON, REW_WRATH, REW_DESTRUCT, REW_DESTRUCT, REW_DESTRUCT, REW_GENOCIDE, REW_GENOCIDE, REW_GENOCIDE,
             REW_HEAL_FUL, REW_HEAL_FUL, REW_GAIN_ABL, REW_GAIN_ABL, REW_GAIN_EXP, REW_GAIN_EXP, REW_AUGM_ABL, REW_AUGM_ABL, REW_AUGM_ABL },
         A_STR),
 
-    Patron(N("ロンゲーナ", "Longhena"),
+    Patron({ "ロンゲーナ", "Longhena" },
         { REW_WRATH, REW_WRATH, REW_WRATH, REW_WRATH, REW_WRATH, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_GOOD_OBJ, REW_GOOD_OBJ, REW_GOOD_OBS,
             REW_GOOD_OBS, REW_CHAOS_WP, REW_CHAOS_WP, REW_GAIN_EXP, REW_GAIN_EXP, REW_GAIN_EXP, REW_AUGM_ABL, REW_AUGM_ABL, REW_SER_MONS },
         A_DEX),
 };
 
-#ifdef JP
-Patron::Patron(const char *name, const char *ename, std::vector<patron_reward> reward_table, const player_ability_type boost_stat)
-#else
-Patron::Patron(const char *name, std::vector<patron_reward> reward_table, player_ability_type boost_stat)
-#endif
-    : name(name)
-#ifdef JP
-    , ename(ename)
-#endif
+Patron::Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat)
+    : name(std::move(name))
     , reward_table(std::move(reward_table))
     , boost_stat(boost_stat)
 {
@@ -152,7 +138,6 @@ Patron::Patron(const char *name, std::vector<patron_reward> reward_table, player
 void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
 {
     this->player_ptr = player_ptr_;
-    char wrath_reason[32] = "";
     int nasty_chance = 6;
     int type;
     patron_reward effect;
@@ -190,7 +175,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
     }
     type--;
 
-    sprintf(wrath_reason, _("%sの怒り", "the Wrath of %s"), this->name.data());
+    const auto wrath_reason = format(_("%sの怒り", "the Wrath of %s"), this->name.data());
 
     effect = this->reward_table[type];
 
@@ -199,7 +184,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         (void)gain_mutation(this->player_ptr, 0);
         reward = _("変異した。", "mutation");
     } else {
-        const auto *floor_ptr = this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->player_ptr->current_floor_ptr;
         switch (chosen_reward ? chosen_reward : effect) {
         case REW_POLY_SLF:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
@@ -275,7 +260,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「我が下僕たちよ、かの傲慢なる者を倒すべし！」", "'My pets, destroy the arrogant mortal!'"));
             for (int i = 0, summon_num = randint1(5) + 1; i < summon_num; i++) {
-                (void)summon_specific(this->player_ptr, 0, this->player_ptr->y, this->player_ptr->x, floor_ptr->dun_level, SUMMON_NONE,
+                (void)summon_specific(this->player_ptr, this->player_ptr->y, this->player_ptr->x, floor.dun_level, SUMMON_NONE,
                     (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
             }
 
@@ -342,7 +327,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_HURT_LOT:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「苦しむがよい、無能な愚か者よ！」", "'Suffer, pathetic fool!'"));
-            fire_ball(this->player_ptr, AttributeType::DISINTEGRATE, 0, this->player_ptr->lev * 4, 4);
+            fire_ball(this->player_ptr, AttributeType::DISINTEGRATE, Direction::self(), this->player_ptr->lev * 4, 4);
             take_hit(this->player_ptr, DAMAGE_NOESCAPE, this->player_ptr->lev * 4, wrath_reason);
             reward = _("分解の球が発生した。", "generating disintegration ball");
             break;
@@ -369,19 +354,19 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                 }
             }
 
-            const auto item_name = describe_flavor(this->player_ptr, &this->player_ptr->inventory_list[slot], OD_NAME_ONLY);
-            (void)curse_weapon_object(this->player_ptr, false, &this->player_ptr->inventory_list[slot]);
+            const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
+            (void)curse_weapon_object(this->player_ptr, false, this->player_ptr->inventory[slot].get());
             reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
             break;
         }
         case REW_CURSE_AR: {
-            if (!this->player_ptr->inventory_list[INVEN_BODY].is_valid()) {
+            if (!this->player_ptr->inventory[INVEN_BODY]->is_valid()) {
                 break;
             }
 
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝、防具に頼ることなかれ。」", "'Thou reliest too much on thine equipment.'"));
-            const auto item_name = describe_flavor(this->player_ptr, &this->player_ptr->inventory_list[INVEN_BODY], OD_NAME_ONLY);
+            const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
             (void)curse_armor(this->player_ptr);
             reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
             break;
@@ -412,15 +397,15 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                         }
                     }
 
-                    const auto item_name = describe_flavor(this->player_ptr, &this->player_ptr->inventory_list[slot], OD_NAME_ONLY);
-                    (void)curse_weapon_object(this->player_ptr, false, &this->player_ptr->inventory_list[slot]);
+                    const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
+                    (void)curse_weapon_object(this->player_ptr, false, this->player_ptr->inventory[slot].get());
                     reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
                 } else {
-                    if (!this->player_ptr->inventory_list[INVEN_BODY].is_valid()) {
+                    if (!this->player_ptr->inventory[INVEN_BODY]->is_valid()) {
                         break;
                     }
 
-                    const auto item_name = describe_flavor(this->player_ptr, &this->player_ptr->inventory_list[INVEN_BODY], OD_NAME_ONLY);
+                    const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
                     (void)curse_armor(this->player_ptr);
                     reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
                 }
@@ -457,7 +442,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                 }
 
                 if (slot) {
-                    (void)curse_weapon_object(this->player_ptr, false, &this->player_ptr->inventory_list[slot]);
+                    (void)curse_weapon_object(this->player_ptr, false, this->player_ptr->inventory[slot].get());
                 }
             }
 
@@ -493,7 +478,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             break;
         case REW_SER_DEMO:
             msg_format(_("%sは褒美として悪魔の使いをよこした！", "%s rewards you with a demonic servant!"), this->name.data());
-            if (!summon_specific(this->player_ptr, -1, this->player_ptr->y, this->player_ptr->x, floor_ptr->dun_level, SUMMON_DEMON, PM_FORCE_PET)) {
+            if (!summon_specific(this->player_ptr, this->player_ptr->y, this->player_ptr->x, floor.dun_level, SUMMON_DEMON, PM_FORCE_PET)) {
                 msg_print(_("何も現れなかった...", "Nobody ever turns up..."));
             } else {
                 reward = _("悪魔がペットになった。", "a demonic servant");
@@ -502,7 +487,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             break;
         case REW_SER_MONS:
             msg_format(_("%sは褒美として使いをよこした！", "%s rewards you with a servant!"), this->name.data());
-            if (!summon_specific(this->player_ptr, -1, this->player_ptr->y, this->player_ptr->x, floor_ptr->dun_level, SUMMON_NONE, PM_FORCE_PET)) {
+            if (!summon_specific(this->player_ptr, this->player_ptr->y, this->player_ptr->x, floor.dun_level, SUMMON_NONE, PM_FORCE_PET)) {
                 msg_print(_("何も現れなかった...", "Nobody ever turns up..."));
             } else {
                 reward = _("モンスターがペットになった。", "a servant");
@@ -511,7 +496,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             break;
         case REW_SER_UNDE:
             msg_format(_("%sは褒美としてアンデッドの使いをよこした。", "%s rewards you with an undead servant!"), this->name.data());
-            if (!summon_specific(this->player_ptr, -1, this->player_ptr->y, this->player_ptr->x, floor_ptr->dun_level, SUMMON_UNDEAD, PM_FORCE_PET)) {
+            if (!summon_specific(this->player_ptr, this->player_ptr->y, this->player_ptr->x, floor.dun_level, SUMMON_UNDEAD, PM_FORCE_PET)) {
                 msg_print(_("何も現れなかった...", "Nobody ever turns up..."));
             } else {
                 reward = _("アンデッドがペットになった。", "an undead servant");
@@ -526,7 +511,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
 
     if (!reward.empty()) {
         const auto note = format(_("パトロンの報酬で%s", "The patron rewarded you with %s."), reward.data());
-        exe_write_diary(this->player_ptr, DiaryKind::DESCRIPTION, 0, note);
+        exe_write_diary(*this->player_ptr->current_floor_ptr, DiaryKind::DESCRIPTION, 0, note);
     }
 }
 

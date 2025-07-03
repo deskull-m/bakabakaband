@@ -6,8 +6,7 @@
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
 #include "object/tval-types.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -20,20 +19,20 @@
  * If player has inscribed the object with "!!", let him know when it's recharged. -LM-
  * @param o_ptr 対象オブジェクトの構造体参照ポインタ
  */
-static void recharged_notice(PlayerType *player_ptr, ItemEntity *o_ptr)
+static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
 {
-    if (!o_ptr->is_inscribed()) {
+    if (!item.is_inscribed()) {
         return;
     }
 
-    auto s = angband_strchr(o_ptr->inscription->data(), '!');
+    auto s = angband_strchr(item.inscription->data(), '!');
     while (s) {
         if (s[1] == '!') {
-            const auto item_name = describe_flavor(player_ptr, o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
             msg_format("%sは再充填された。", item_name.data());
 #else
-            if (o_ptr->number > 1) {
+            if (item.number > 1) {
                 msg_format("Your %s are recharged.", item_name.data());
             } else {
                 msg_format("Your %s is recharged.", item_name.data());
@@ -57,15 +56,15 @@ void recharge_magic_items(PlayerType *player_ptr)
     bool changed;
 
     for (changed = false, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = &player_ptr->inventory_list[i];
-        if (!o_ptr->is_valid()) {
+        auto &item = *player_ptr->inventory[i];
+        if (!item.is_valid()) {
             continue;
         }
 
-        if (o_ptr->timeout > 0) {
-            o_ptr->timeout--;
-            if (!o_ptr->timeout) {
-                recharged_notice(player_ptr, o_ptr);
+        if (item.timeout > 0) {
+            item.timeout--;
+            if (!item.timeout) {
+                recharged_notice(player_ptr, item);
                 changed = true;
             }
         }
@@ -83,29 +82,31 @@ void recharge_magic_items(PlayerType *player_ptr)
      * one per turn. -LM-
      */
     for (changed = false, i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = &player_ptr->inventory_list[i];
-        const auto &baseitem = o_ptr->get_baseitem();
-        if (!o_ptr->is_valid()) {
+        auto &item = *player_ptr->inventory[i];
+        if (!item.is_valid()) {
             continue;
         }
 
-        if ((o_ptr->bi_key.tval() == ItemKindType::ROD) && (o_ptr->timeout)) {
-            TIME_EFFECT temp = (o_ptr->timeout + (baseitem.pval - 1)) / baseitem.pval;
-            if (temp > o_ptr->number) {
-                temp = (TIME_EFFECT)o_ptr->number;
-            }
+        if ((item.bi_key.tval() != ItemKindType::ROD) || (item.timeout == 0)) {
+            continue;
+        }
 
-            o_ptr->timeout -= temp;
-            if (o_ptr->timeout < 0) {
-                o_ptr->timeout = 0;
-            }
+        const auto base_pval = item.get_baseitem_pval();
+        short temp = (item.timeout + (base_pval - 1)) / base_pval;
+        if (temp > item.number) {
+            temp = static_cast<short>(item.number);
+        }
 
-            if (!(o_ptr->timeout)) {
-                recharged_notice(player_ptr, o_ptr);
-                changed = true;
-            } else if (o_ptr->timeout % baseitem.pval) {
-                changed = true;
-            }
+        item.timeout -= temp;
+        if (item.timeout < 0) {
+            item.timeout = 0;
+        }
+
+        if (!(item.timeout)) {
+            recharged_notice(player_ptr, item);
+            changed = true;
+        } else if (item.timeout % base_pval) {
+            changed = true;
         }
     }
 
@@ -114,16 +115,15 @@ void recharge_magic_items(PlayerType *player_ptr)
         wild_regen = 20;
     }
 
-    for (i = 1; i < player_ptr->current_floor_ptr->o_max; i++) {
-        auto *o_ptr = &player_ptr->current_floor_ptr->o_list[i];
-        if (!o_ptr->is_valid()) {
+    for (const auto &item_ptr : player_ptr->current_floor_ptr->o_list) {
+        if (!item_ptr->is_valid()) {
             continue;
         }
 
-        if ((o_ptr->bi_key.tval() == ItemKindType::ROD) && (o_ptr->timeout)) {
-            o_ptr->timeout -= (TIME_EFFECT)o_ptr->number;
-            if (o_ptr->timeout < 0) {
-                o_ptr->timeout = 0;
+        if ((item_ptr->bi_key.tval() == ItemKindType::ROD) && (item_ptr->timeout)) {
+            item_ptr->timeout -= (TIME_EFFECT)item_ptr->number;
+            if (item_ptr->timeout < 0) {
+                item_ptr->timeout = 0;
             }
         }
     }

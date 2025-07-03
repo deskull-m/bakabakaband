@@ -14,13 +14,13 @@
 #include "object-hook/hook-weapon.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
-#include "object/object-kind-hook.h"
 #include "object/object-value.h"
 #include "racial/racial-android.h"
 #include "spell-realm/spells-hex.h"
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-weapon-types.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -77,7 +77,7 @@ static void give_one_ability_of_object(ItemEntity *to_ptr, ItemEntity *from_ptr)
     if (TR_PVAL_FLAG_MASK.has(tr_idx)) {
         to_ptr->pval = std::max<short>(to_ptr->pval, 1);
     }
-    auto bmax = std::min<short>(3, std::max<short>(1, 40 / (to_ptr->dd * to_ptr->ds)));
+    auto bmax = std::min<short>(3, std::max<short>(1, 40 / to_ptr->damage_dice.maxroll()));
     if (tr_idx == TR_BLOWS) {
         to_ptr->pval = std::min<short>(to_ptr->pval, bmax);
     }
@@ -111,21 +111,21 @@ static std::pair<short, ItemEntity *> select_repairing_broken_weapon(PlayerType 
     return { i_idx, o_ptr };
 }
 
-static void display_reparing_weapon(PlayerType *player_ptr, ItemEntity *o_ptr, const int row)
+static void display_reparing_weapon(PlayerType *player_ptr, const ItemEntity &item, const int row)
 {
-    const auto item_name = describe_flavor(player_ptr, o_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
     prt(format(_("修復する武器　： %s", "Repairing: %s"), item_name.data()), row + 3, 2);
 }
 
-static void display_repair_success_message(PlayerType *player_ptr, ItemEntity *o_ptr, const int cost)
+static void display_repair_success_message(PlayerType *player_ptr, const ItemEntity &item, const int cost)
 {
-    const auto item_name = describe_flavor(player_ptr, o_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
 #ifdef JP
     msg_format("＄%dで%sに修復しました。", cost, item_name.data());
 #else
     msg_format("Repaired into %s for %d gold.", item_name.data(), cost);
 #endif
-    msg_print(nullptr);
+    msg_erase();
 }
 
 /*!
@@ -143,7 +143,7 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
         return 0;
     }
 
-    display_reparing_weapon(player_ptr, o_ptr, row);
+    display_reparing_weapon(player_ptr, *o_ptr, row);
     constexpr auto q = _("材料となる武器は？", "Which weapon for material? ");
     constexpr auto s = _("材料となる武器がありません。", "You have no material for the repair.");
     short mater;
@@ -157,7 +157,7 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
         return 0;
     }
 
-    const auto item_name = describe_flavor(player_ptr, mo_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player_ptr, *mo_ptr, OD_NAME_ONLY);
     prt(format(_("材料とする武器： %s", "Material : %s"), item_name.data()), row + 4, 2);
     const auto cost = bcost + object_value_real(o_ptr) * 2;
     if (!input_check(format(_("＄%dかかりますがよろしいですか？ ", "Costs %d gold, okay? "), cost))) {
@@ -166,15 +166,16 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
 
     if (player_ptr->au < cost) {
         msg_format(_("%sを修復するだけのゴールドがありません！", "You do not have the gold to repair %s!"), item_name.data());
-        msg_print(nullptr);
+        msg_erase();
         return 0;
     }
 
     short bi_id;
+    const auto &baseitems = BaseitemList::get_instance();
     if (o_ptr->bi_key.sval() == SV_BROKEN_DAGGER) {
         auto n = 1;
         bi_id = 0;
-        for (const auto &baseitem : baseitems_info) {
+        for (const auto &baseitem : baseitems) {
             if (baseitem.bi_key.tval() != ItemKindType::SWORD) {
                 continue;
             }
@@ -196,8 +197,8 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
     } else {
         auto tval = (one_in_(5) ? mo_ptr->bi_key.tval() : ItemKindType::SWORD);
         while (true) {
-            bi_id = lookup_baseitem_id({ tval });
-            const auto &baseitem = baseitems_info[bi_id];
+            bi_id = baseitems.lookup_baseitem_id({ tval });
+            const auto &baseitem = baseitems.get_baseitem(bi_id);
             const auto sval = baseitem.bi_key.sval();
             if (tval == ItemKindType::SWORD) {
                 if ((sval == SV_BROKEN_DAGGER) || (sval == SV_BROKEN_SWORD) || (sval == SV_DIAMOND_EDGE) || (sval == SV_POISON_NEEDLE)) {
@@ -223,17 +224,16 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
 
     const auto &baseitem_o = o_ptr->get_baseitem();
     const auto &baseitem_mo = mo_ptr->get_baseitem();
-    auto dd_bonus = o_ptr->dd - baseitem_o.dd;
-    auto ds_bonus = o_ptr->ds - baseitem_o.ds;
-    dd_bonus += mo_ptr->dd - baseitem_mo.dd;
-    ds_bonus += mo_ptr->ds - baseitem_mo.ds;
+    auto dd_bonus = o_ptr->damage_dice.num - baseitem_o.damage_dice.num;
+    auto ds_bonus = o_ptr->damage_dice.sides - baseitem_o.damage_dice.sides;
+    dd_bonus += mo_ptr->damage_dice.num - baseitem_mo.damage_dice.num;
+    ds_bonus += mo_ptr->damage_dice.sides - baseitem_mo.damage_dice.sides;
 
-    const auto &baseitem = baseitems_info[bi_id];
+    const auto &baseitem = baseitems.get_baseitem(bi_id);
     o_ptr->bi_id = bi_id;
     o_ptr->weight = baseitem.weight;
     o_ptr->bi_key = baseitem.bi_key;
-    o_ptr->dd = baseitem.dd;
-    o_ptr->ds = baseitem.ds;
+    o_ptr->damage_dice = baseitem.damage_dice;
     o_ptr->art_flags.set(baseitem.flags);
     if (baseitem.pval) {
         o_ptr->pval = std::max(o_ptr->pval, randnum1<short>(baseitem.pval));
@@ -243,26 +243,27 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
         o_ptr->activation_id = baseitem.act_idx;
     }
 
+    auto &dice = o_ptr->damage_dice;
     if (dd_bonus > 0) {
-        o_ptr->dd++;
+        dice.num++;
         for (int i = 1; i < dd_bonus; i++) {
-            if (one_in_(o_ptr->dd + i)) {
-                o_ptr->dd++;
+            if (one_in_(dice.num + i)) {
+                dice.num++;
             }
         }
     }
 
     if (ds_bonus > 0) {
-        o_ptr->ds++;
+        dice.sides++;
         for (int i = 1; i < ds_bonus; i++) {
-            if (one_in_(o_ptr->ds + i)) {
-                o_ptr->ds++;
+            if (one_in_(dice.sides + i)) {
+                dice.sides++;
             }
         }
     }
 
     if (baseitem.flags.has(TR_BLOWS)) {
-        auto bmax = std::min<short>(3, std::max<short>(1, 40 / (o_ptr->dd * o_ptr->ds)));
+        auto bmax = std::min<short>(3, std::max<short>(1, 40 / o_ptr->damage_dice.maxroll()));
         o_ptr->pval = std::min<short>(o_ptr->pval, bmax);
     }
 
@@ -291,7 +292,7 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
         msg_print(_("これはかなりの業物だったようだ。", "This blade seems to be exceptional."));
     }
 
-    display_repair_success_message(player_ptr, o_ptr, cost);
+    display_repair_success_message(player_ptr, *o_ptr, cost);
     o_ptr->ident &= ~(IDENT_BROKEN);
     o_ptr->discount = 99;
 

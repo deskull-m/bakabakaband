@@ -1,11 +1,10 @@
 #include "effect/effect-monster-evil.h"
 #include "effect/effect-monster-util.h"
 #include "monster-race/monster-race-hook.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster/monster-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 
 static bool effect_monster_away_resist(PlayerType *player_ptr, EffectMonster *em_ptr)
@@ -15,7 +14,7 @@ static bool effect_monster_away_resist(PlayerType *player_ptr, EffectMonster *em
     }
 
     if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
@@ -23,7 +22,7 @@ static bool effect_monster_away_resist(PlayerType *player_ptr, EffectMonster *em
     }
 
     if (em_ptr->r_ptr->level > randint1(100)) {
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
         em_ptr->note = _("には耐性がある！", " resists!");
@@ -46,7 +45,7 @@ ProcessResult effect_monster_away_undead(PlayerType *player_ptr, EffectMonster *
         if (em_ptr->seen) {
             em_ptr->obvious = true;
         }
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
         }
 
@@ -70,7 +69,7 @@ ProcessResult effect_monster_away_evil(PlayerType *player_ptr, EffectMonster *em
         if (em_ptr->seen) {
             em_ptr->obvious = true;
         }
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
         }
 
@@ -108,11 +107,11 @@ ProcessResult effect_monster_turn_undead(PlayerType *player_ptr, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
     }
 
-    em_ptr->do_fear = damroll(3, (em_ptr->dam / 2)) + 1;
+    em_ptr->do_fear = Dice::roll(3, (em_ptr->dam / 2)) + 1;
     if (em_ptr->r_ptr->level > randint1((em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10)) + 10) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
@@ -135,11 +134,11 @@ ProcessResult effect_monster_turn_evil(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
     }
 
-    em_ptr->do_fear = damroll(3, (em_ptr->dam / 2)) + 1;
+    em_ptr->do_fear = Dice::roll(3, (em_ptr->dam / 2)) + 1;
     if (em_ptr->r_ptr->level > randint1((em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10)) + 10) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
@@ -156,7 +155,7 @@ ProcessResult effect_monster_turn_all(EffectMonster *em_ptr)
         em_ptr->obvious = true;
     }
 
-    em_ptr->do_fear = damroll(3, (em_ptr->dam / 2)) + 1;
+    em_ptr->do_fear = Dice::roll(3, (em_ptr->dam / 2)) + 1;
     if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ||
         em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
         (em_ptr->r_ptr->level > randint1((em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10)) + 10)) {
@@ -181,7 +180,7 @@ ProcessResult effect_monster_disp_undead(PlayerType *player_ptr, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
     }
 
@@ -202,7 +201,7 @@ ProcessResult effect_monster_disp_evil(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
     }
 
@@ -223,7 +222,7 @@ ProcessResult effect_monster_disp_good(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::GOOD);
     }
 
@@ -261,7 +260,7 @@ ProcessResult effect_monster_disp_demon(PlayerType *player_ptr, EffectMonster *e
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::DEMON);
     }
 

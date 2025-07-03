@@ -1,9 +1,7 @@
 #include "wizard/fixed-artifacts-spoiler.h"
 #include "io/files-util.h"
-#include "object/object-kind-hook.h"
-#include "system/angband-version.h"
+#include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
@@ -67,20 +65,17 @@ void spoiler_outlist(std::string_view header, const std::vector<std::string> &de
 
 /*!
  * @brief アーティファクト情報を出力するためにダミー生成を行う
- * @param fixed_artifact_idx 生成するアーティファクトID
+ * @param fa_id 生成するアーティファクトID
  * @return 生成したアーティファクト (連番で埋まっているので不存在例外は吐かない)
  */
-static ItemEntity make_fake_artifact(FixedArtifactId fixed_artifact_idx)
+static ItemEntity make_fake_artifact(FixedArtifactId fa_id)
 {
-    const auto &artifact = ArtifactsInfo::get_instance().get_artifact(fixed_artifact_idx);
-    const auto bi_id = lookup_baseitem_id(artifact.bi_key);
-    ItemEntity item;
-    item.prep(bi_id);
-    item.fixed_artifact_idx = fixed_artifact_idx;
+    const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
+    ItemEntity item(artifact.bi_key);
+    item.fa_id = fa_id;
     item.pval = artifact.pval;
     item.ac = artifact.ac;
-    item.dd = artifact.dd;
-    item.ds = artifact.ds;
+    item.damage_dice = artifact.damage_dice;
     item.to_a = artifact.to_a;
     item.to_h = artifact.to_h;
     item.to_d = artifact.to_d;
@@ -128,14 +123,14 @@ static void spoiler_print_art(const ArtifactsDumpInfo *art_ptr, std::ofstream &o
  */
 SpoilerOutputResultType spoil_fixed_artifact()
 {
-    const auto &path = path_build(ANGBAND_DIR_USER, "artifact.txt");
+    const auto path = path_build(ANGBAND_DIR_USER, "artifact.txt");
     std::ofstream ofs(path);
     if (!ofs) {
         return SpoilerOutputResultType::FILE_OPEN_FAILED;
     }
 
     std::stringstream ss;
-    ss << "Artifact Spoilers for Hengband Version " << get_version();
+    ss << "Artifact Spoilers for Hengband Version " << AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL);
     spoiler_underline(ss.str(), ofs);
     for (const auto &[tval_list, name] : group_artifact_list) {
         spoiler_blanklines(2, ofs);
@@ -143,14 +138,14 @@ SpoilerOutputResultType spoil_fixed_artifact()
         spoiler_blanklines(1, ofs);
 
         for (auto tval : tval_list) {
-            for (const auto &[a_idx, artifact] : artifacts_info) {
+            for (const auto &[fa_id, artifact] : ArtifactList::get_instance()) {
                 if (artifact.bi_key.tval() != tval) {
                     continue;
                 }
 
-                const auto item = make_fake_artifact(a_idx);
+                const auto item = make_fake_artifact(fa_id);
                 PlayerType dummy;
-                const auto artifacts_list = object_analyze(&dummy, &item);
+                const auto artifacts_list = object_analyze(&dummy, item);
                 spoiler_print_art(&artifacts_list, ofs);
             }
         }

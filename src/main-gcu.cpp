@@ -171,7 +171,13 @@
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
+#include "util/enum-range.h"
 #include "view/display-map.h"
+#include <filesystem>
+#include <map>
+#include <string>
+#include <string_view>
 
 #ifdef USE_GCU
 
@@ -185,7 +191,12 @@
 /*
  * Include the proper "header" file
  */
+namespace curses {
 #include <curses.h>
+}
+
+// マクロの定義で chtype と書かれているのに対応するワークアラウンド
+using chtype = curses::chtype;
 
 /**
  * Simple rectangle type
@@ -212,11 +223,8 @@ static rect_t rect(int x, int y, int cx, int cy)
 struct term_data {
     term_type t;
     rect_t r;
-    WINDOW *win;
+    curses::WINDOW *win;
 };
-
-/* Max number of windows on screen */
-#define MAX_TERM_DATA 8
 
 /* Information about our windows */
 static term_data data[MAX_TERM_DATA];
@@ -302,7 +310,7 @@ static bool can_use_sound = false;
 /*
  * An array of sound file names
  */
-static concptr sound_file[SOUND_MAX];
+static std::map<SoundKind, std::string> sound_files;
 
 /*
  * Save the "normal" and "angband" terminal settings
@@ -536,29 +544,29 @@ static errr game_term_xtra_gcu_alive(int v)
         keymap_norm();
 
         /* Restore modes */
-        nocbreak();
-        echo();
-        nl();
+        curses::nocbreak();
+        curses::echo();
+        curses::nl();
 
         /* Hack -- make sure the cursor is visible */
         term_xtra(TERM_XTRA_SHAPE, 1);
 
         /* Flush the curses buffer */
-        (void)refresh();
+        (void)curses::refresh();
 
         /* this moves curses to bottom right corner */
-        mvcur(getcury(curscr), getcurx(curscr), LINES - 1, 0);
+        curses::mvcur(getcury(curses::curscr), getcurx(curses::curscr), curses::LINES - 1, 0);
 
         /* Exit curses */
-        endwin();
+        curses::endwin();
 
         /* Flush the output */
         (void)fflush(stdout);
     } else {
         /* Restore the settings */
-        cbreak();
-        noecho();
-        nonl();
+        curses::cbreak();
+        curses::noecho();
+        curses::nonl();
 
         /* Go to angband keymap mode */
         keymap_game();
@@ -568,36 +576,20 @@ static errr game_term_xtra_gcu_alive(int v)
 }
 
 /*
- * Check for existance of a file
- */
-static bool check_file(concptr s)
-{
-    FILE *fff;
-    fff = fopen(s, "r");
-    if (!fff) {
-        return false;
-    }
-
-    fclose(fff);
-    return true;
-}
-
-/*
  * Initialize sound
  */
-static bool init_sound(void)
+static bool init_sound()
 {
     if (can_use_sound) {
         return can_use_sound;
     }
 
-    for (auto i = 1; i < SOUND_MAX; i++) {
-        std::string wav = angband_sound_name[i];
+    constexpr EnumRange<SoundKind> sound_kinds(SoundKind::HIT, SoundKind::MAX);
+    for (const auto sk : sound_kinds) {
+        std::string wav = sound_names.at(sk);
         wav.append(".wav");
-        const auto &filename = path_build(ANGBAND_DIR_XTRA_SOUND, wav).string();
-        if (check_file(filename.data())) {
-            sound_file[i] = string_make(filename.data());
-        }
+        const auto &path = path_build(ANGBAND_DIR_XTRA_SOUND, wav);
+        sound_files[sk] = std::filesystem::exists(path) ? path.string() : "";
     }
 
     /* Sound available */
@@ -618,13 +610,13 @@ static void game_term_init_gcu(term_type *t)
     }
 
     /* Erase the screen */
-    (void)wclear(td->win);
+    (void)curses::wclear(td->win);
 
     /* Reset the cursor */
-    (void)wmove(td->win, 0, 0);
+    (void)curses::wmove(td->win, 0, 0);
 
     /* Flush changes */
-    (void)wrefresh(td->win);
+    (void)curses::wrefresh(td->win);
 
     /* Game keymap */
     keymap_game();
@@ -638,7 +630,7 @@ static void game_term_nuke_gcu(term_type *t)
     term_data *td = (term_data *)(t->data);
 
     /* Delete this window */
-    delwin(td->win);
+    curses::delwin(td->win);
 
     /* Count nuke's, handle last */
     if (--active != 0) {
@@ -650,17 +642,17 @@ static void game_term_nuke_gcu(term_type *t)
 
 #ifdef A_COLOR
     /* Reset colors to defaults */
-    start_color();
+    curses::start_color();
 #endif
 
     /* This moves curses to bottom right corner */
-    mvcur(getcury(curscr), getcurx(curscr), LINES - 1, 0);
+    curses::mvcur(getcury(curses::curscr), getcurx(curses::curscr), curses::LINES - 1, 0);
 
     /* Flush the curses buffer */
-    (void)refresh();
+    (void)curses::refresh();
 
     /* Exit curses */
-    endwin();
+    curses::endwin();
 
     /* Flush the output */
     (void)fflush(stdout);
@@ -695,10 +687,10 @@ static errr game_term_xtra_gcu_event(int v)
         char *bp = buf;
 
         /* Paranoia -- Wait for it */
-        nodelay(stdscr, false);
+        curses::nodelay(stdscr, false);
 
         /* Get a keypress */
-        i = getch();
+        i = curses::getch();
 
         /* Broken input is special */
         if (i == ERR) {
@@ -711,7 +703,7 @@ static errr game_term_xtra_gcu_event(int v)
         *bp++ = (char)i;
 
         /* Do not wait for it */
-        nodelay(stdscr, true);
+        curses::nodelay(stdscr, true);
 
         while ((i = getch()) != EOF) {
             if (i == ERR) {
@@ -724,7 +716,7 @@ static errr game_term_xtra_gcu_event(int v)
         }
 
         /* Wait for it next time */
-        nodelay(stdscr, false);
+        curses::nodelay(stdscr, false);
 
         *bp = '\0';
 #ifdef JP
@@ -740,13 +732,13 @@ static errr game_term_xtra_gcu_event(int v)
     /* Do not wait */
     else {
         /* Do not wait for it */
-        nodelay(stdscr, true);
+        curses::nodelay(stdscr, true);
 
         /* Check for keypresses */
         i = getch();
 
         /* Wait for it next time */
-        nodelay(stdscr, false);
+        curses::nodelay(stdscr, false);
 
         /* None ready */
         if (i == ERR) {
@@ -861,28 +853,19 @@ static errr game_term_xtra_gcu_event(int v)
  */
 static errr game_term_xtra_gcu_sound(int v)
 {
-    char buf[1024];
-
     /* Sound disabled */
     if (!use_sound) {
         return 1;
     }
 
     /* Illegal sound */
-    if ((v < 0) || (v >= SOUND_MAX)) {
+    if ((v < 0) || (v >= enum2i(SoundKind::MAX))) {
         return 1;
     }
 
-    /* Unknown sound */
-    if (!sound_file[v]) {
-        return 1;
-    }
-
-    sprintf(buf, "./gcusound.sh %s\n", sound_file[v]);
-
-    return system(buf) < 0;
-
-    return 0;
+    std::string buf("./gcusound.sh ");
+    buf.append(sound_files.at(i2enum<SoundKind>(v))).append("\n");
+    return system(buf.data()) < 0;
 }
 
 static int scale_color(int i, int j, int scale)
@@ -916,8 +899,8 @@ static errr game_term_xtra_gcu_react(void)
 
 #ifdef A_COLOR
 
-    if (!can_change_color()) {
-        if (COLORS == 256 || COLORS == 88) {
+    if (!curses::can_change_color()) {
+        if (curses::COLORS == 256 || curses::COLORS == 88) {
             /* If we have more than 16 colors, find the best matches. These numbers
              * correspond to xterm/rxvt's builtin color numbers--they do not
              * correspond to curses' constants OR with curses' color pairs.
@@ -928,16 +911,16 @@ static errr game_term_xtra_gcu_react(void)
              * Both also have the basic 16 ANSI colors, plus some extra grayscale
              * colors which we do not use.
              */
-            int scale = COLORS == 256 ? 6 : 4;
+            int scale = curses::COLORS == 256 ? 6 : 4;
             for (int i = 0; i < 16; i++) {
                 int fg = create_color(i, scale);
-                init_pair(i + 1, fg, bg_color);
+                curses::init_pair(i + 1, fg, bg_color);
                 colortable[i] = COLOR_PAIR(i + 1) | A_NORMAL;
             }
         }
     } else {
         for (int i = 0; i < 16; ++i) {
-            init_color(i,
+            curses::init_color(i,
                 (angband_color_table[i][1] * 1000) / 255,
                 (angband_color_table[i][2] * 1000) / 255,
                 (angband_color_table[i][3] * 1000) / 255);
@@ -962,7 +945,7 @@ static errr game_term_xtra_gcu(int n, int v)
     /* Clear screen */
     case TERM_XTRA_CLEAR:
         touchwin(td->win);
-        (void)werase(td->win);
+        (void)curses::werase(td->win);
         return 0;
 
     /* Make a noise */
@@ -975,12 +958,12 @@ static errr game_term_xtra_gcu(int n, int v)
 
     /* Flush the Curses buffer */
     case TERM_XTRA_FRESH:
-        (void)wrefresh(td->win);
+        (void)curses::wrefresh(td->win);
         return 0;
 
     /* Change the cursor visibility */
     case TERM_XTRA_SHAPE:
-        curs_set(v);
+        curses::curs_set(v);
         return 0;
 
     /* Suspend/Resume curses */
@@ -1021,7 +1004,7 @@ static errr game_term_curs_gcu(int x, int y)
     term_data *td = (term_data *)(game_term->data);
 
     /* Literally move the cursor */
-    wmove(td->win, y, x);
+    curses::wmove(td->win, y, x);
 
     /* Success */
     return 0;
@@ -1036,17 +1019,17 @@ static errr game_term_wipe_gcu(int x, int y, int n)
     term_data *td = (term_data *)(game_term->data);
 
     /* Place cursor */
-    wmove(td->win, y, x);
+    curses::wmove(td->win, y, x);
 
     /* Clear to end of line */
     if (x + n >= td->t.wid) {
-        wclrtoeol(td->win);
+        curses::wclrtoeol(td->win);
     }
 
     /* Clear some characters */
     else {
         while (n-- > 0) {
-            waddch(td->win, ' ');
+            curses::waddch(td->win, ' ');
         }
     }
 
@@ -1069,18 +1052,18 @@ static void game_term_acs_text_gcu(int x, int y, int n, byte a, concptr s)
     int i;
 
     /* position the cursor */
-    wmove(td->win, y, x);
+    curses::wmove(td->win, y, x);
 
 #ifdef A_COLOR
     /* Set the color */
-    wattrset(td->win, colortable[a & 0x0F]);
+    curses::wattrset(td->win, colortable[a & 0x0F]);
 #endif
 
     for (i = 0; i < n; i++) {
         /* add acs_map of a */
-        waddch(td->win, acs_map[(int)s[i]]);
+        curses::waddch(td->win, acs_map[(int)s[i]]);
     }
-    wattrset(td->win, WA_NORMAL);
+    curses::wattrset(td->win, WA_NORMAL);
 }
 #endif
 
@@ -1101,12 +1084,12 @@ static errr game_term_text_gcu(int x, int y, int n, byte a, concptr s)
 #endif
 
     /* Move the cursor and dump the string */
-    wmove(td->win, y, x);
+    curses::wmove(td->win, y, x);
 
 #ifdef A_COLOR
     /* Set the color */
     if (can_use_color) {
-        wattrset(td->win, colortable[a & 0x0F]);
+        curses::wattrset(td->win, colortable[a & 0x0F]);
     }
 #endif
 
@@ -1118,7 +1101,7 @@ static errr game_term_text_gcu(int x, int y, int n, byte a, concptr s)
     }
 #endif
     /* Add the text */
-    waddnstr(td->win, _(text, s), _(text_len, n));
+    curses::waddnstr(td->win, _(text, s), _(text_len, n));
 
     /* Success */
     return 0;
@@ -1139,7 +1122,7 @@ static errr term_data_init_gcu(term_data *td, int rows, int cols, int y, int x)
     }
 
     /* Create a window */
-    td->win = newwin(rows, cols, y, x);
+    td->win = curses::newwin(rows, cols, y, x);
 
     /* Make sure we succeed */
     if (!td->win) {
@@ -1219,13 +1202,13 @@ static int _parse_size_list(const char *arg, int sizes[], int max)
     return i;
 }
 
-static void hook_quit(concptr str)
+static void hook_quit(std::string_view str)
 {
     /* Unused */
     (void)str;
 
     /* Exit curses */
-    endwin();
+    curses::endwin();
 }
 
 /*
@@ -1246,8 +1229,7 @@ errr init_gcu(int argc, char *argv[])
 
     setlocale(LC_ALL, "");
 
-    const auto &filename = path_build(ANGBAND_DIR_XTRA, "sound").string();
-    ANGBAND_DIR_XTRA_SOUND = string_make(filename.data());
+    ANGBAND_DIR_XTRA_SOUND = path_build(ANGBAND_DIR_XTRA, "sound").string().c_str();
     keymap_norm_prepare();
     auto nobigscreen = false;
     for (auto i = 1; i < argc; i++) {
@@ -1256,16 +1238,13 @@ errr init_gcu(int argc, char *argv[])
         }
     }
 
-    if (initscr() == (WINDOW *)ERR) {
+    if (curses::initscr() == (curses::WINDOW *)ERR) {
         return -1;
     }
 
     quit_aux = hook_quit;
     core_aux = hook_quit;
-
-    /* Hack -- Require large screen, or Quit with message */
-    auto i = ((LINES < MAIN_TERM_MIN_ROWS) || (COLS < MAIN_TERM_MIN_COLS));
-    if (i) {
+    if ((curses::LINES < MAIN_TERM_MIN_ROWS) || (curses::COLS < MAIN_TERM_MIN_COLS)) {
         quit_fmt("%s needs an %dx%d 'curses' screen", std::string(VARIANT_NAME).data(), MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
     }
 
@@ -1274,18 +1253,18 @@ errr init_gcu(int argc, char *argv[])
     /*** Init the Color-pairs and set up a translation table ***/
 
     /* Do we have color, and enough color, available? */
-    can_use_color = ((start_color() != ERR) && has_colors() && (COLORS >= 8) && (COLOR_PAIRS >= 8));
+    can_use_color = ((curses::start_color() != ERR) && curses::has_colors() && (curses::COLORS >= 8) && (curses::COLOR_PAIRS >= 8));
 
 #ifdef REDEFINE_COLORS
     /* Can we change colors? */
-    can_fix_color = (can_use_color && can_change_color() && (COLORS >= 16) && (COLOR_PAIRS > 8));
+    can_fix_color = (can_use_color && curses::can_change_color() && (curses::COLORS >= 16) && (curses::COLOR_PAIRS > 8));
 #endif
 
     /* Attempt to use customized colors */
     if (can_fix_color) {
         /* Prepare the color pairs */
         for (auto i = 1; i <= 15; i++) {
-            if (init_pair(i, i, 0) == ERR) {
+            if (curses::init_pair(i, i, 0) == ERR) {
                 quit("Color pair init failed");
             }
 
@@ -1298,13 +1277,13 @@ errr init_gcu(int argc, char *argv[])
         /* Color-pair 0 is *always* WHITE on BLACK */
 
         /* Prepare the color pairs */
-        init_pair(1, COLOR_RED, COLOR_BLACK);
-        init_pair(2, COLOR_GREEN, COLOR_BLACK);
-        init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-        init_pair(4, COLOR_BLUE, COLOR_BLACK);
-        init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
-        init_pair(6, COLOR_CYAN, COLOR_BLACK);
-        init_pair(7, COLOR_BLACK, COLOR_BLACK);
+        curses::init_pair(1, COLOR_RED, COLOR_BLACK);
+        curses::init_pair(2, COLOR_GREEN, COLOR_BLACK);
+        curses::init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+        curses::init_pair(4, COLOR_BLUE, COLOR_BLACK);
+        curses::init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+        curses::init_pair(6, COLOR_CYAN, COLOR_BLACK);
+        curses::init_pair(7, COLOR_BLACK, COLOR_BLACK);
 
         /* Prepare the "Angband Colors" -- Bright white is too bright */
         /* Changed in Drangband. Cyan as grey sucks -- -TM- */
@@ -1356,15 +1335,15 @@ errr init_gcu(int argc, char *argv[])
 #ifdef USE_GETCH
 
     /* Paranoia -- Assume no waiting */
-    nodelay(stdscr, false);
+    curses::nodelay(stdscr, false);
 
 #endif
 
     /* Prepare */
-    cbreak();
-    noecho();
-    nonl();
-    raw();
+    curses::cbreak();
+    curses::noecho();
+    curses::nonl();
+    curses::raw();
 
     /* Extract the game keymap */
     keymap_game_prepare();
@@ -1387,7 +1366,7 @@ errr init_gcu(int argc, char *argv[])
 
             /* Lower left */
             case 1: {
-                rows = LINES - TERM_DEFAULT_ROWS - 1;
+                rows = curses::LINES - TERM_DEFAULT_ROWS - 1;
                 cols = TERM_DEFAULT_COLS;
                 y = TERM_DEFAULT_ROWS + 1;
                 x = 0;
@@ -1397,7 +1376,7 @@ errr init_gcu(int argc, char *argv[])
             /* Upper right */
             case 2: {
                 rows = TERM_DEFAULT_ROWS;
-                cols = COLS - TERM_DEFAULT_COLS - 1;
+                cols = curses::COLS - TERM_DEFAULT_COLS - 1;
                 y = 0;
                 x = TERM_DEFAULT_COLS + 1;
                 break;
@@ -1405,8 +1384,8 @@ errr init_gcu(int argc, char *argv[])
 
             /* Lower right */
             case 3: {
-                rows = LINES - TERM_DEFAULT_ROWS - 1;
-                cols = COLS - TERM_DEFAULT_COLS - 1;
+                rows = curses::LINES - TERM_DEFAULT_ROWS - 1;
+                cols = curses::COLS - TERM_DEFAULT_COLS - 1;
                 y = TERM_DEFAULT_ROWS + 1;
                 x = TERM_DEFAULT_COLS + 1;
                 break;
@@ -1456,7 +1435,7 @@ errr init_gcu(int argc, char *argv[])
         EDIT: Added support for -left and -top.
     */
     {
-        rect_t remaining = rect(0, 0, COLS, LINES);
+        rect_t remaining = rect(0, 0, curses::COLS, curses::LINES);
         int spacer_cx = 1;
         int spacer_cy = 1;
         int next_term = 1;

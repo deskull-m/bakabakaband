@@ -7,25 +7,19 @@
 #include "spell-realm/spells-crusade.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
-#include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
-#include "floor/cave.h"
-#include "floor/geometry.h"
 #include "game-option/disturbance-options.h"
-#include "grid/feature-flag-types.h"
-#include "spell-realm/spells-crusade.h"
 #include "spell/range-calc.h"
-#include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/terrain/terrain-characteristics.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
-#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
+#include <cmath>
 
 /*!
  * @brief 破邪魔法「神の怒り」の処理としてターゲットを指定した後分解のボールを最大20回発生させる。
@@ -36,32 +30,29 @@
  */
 bool cast_wrath_of_the_god(PlayerType *player_ptr, int dam, POSITION rad)
 {
-    int dir;
-    if (!get_aim_dir(player_ptr, &dir)) {
+    const auto dir = get_aim_dir(player_ptr);
+    if (!dir) {
         return false;
     }
 
-    Pos2D pos_target(player_ptr->y + 99 * ddy[dir], player_ptr->x + 99 * ddx[dir]);
-    if ((dir == 5) && target_okay(player_ptr)) {
-        pos_target.x = target_col;
-        pos_target.y = target_row;
-    }
+    const auto p_pos = player_ptr->get_position();
+    auto pos_target = dir.get_target_position(p_pos, 99);
 
-    Pos2D pos = player_ptr->get_position();
+    auto pos = p_pos;
     auto &floor = *player_ptr->current_floor_ptr;
     while (true) {
         if (pos == pos_target) {
             break;
         }
 
-        const auto pos_to = mmove2(pos, player_ptr->get_position(), pos_target);
-        if (AngbandSystem::get_instance().get_max_range() <= distance(player_ptr->y, player_ptr->x, pos_to.y, pos_to.x)) {
+        const auto pos_to = mmove2(pos, p_pos, pos_target);
+        if (AngbandSystem::get_instance().get_max_range() <= Grid::calc_distance(p_pos, pos_to)) {
             break;
         }
-        if (!cave_has_flag_bold(&floor, pos_to.y, pos_to.x, TerrainCharacteristics::PROJECT)) {
+        if (!floor.has_terrain_characteristics(pos_to, TerrainCharacteristics::PROJECTION)) {
             break;
         }
-        if ((dir != 5) && floor.get_grid(pos_to).has_monster()) {
+        if (!dir.is_targetting() && floor.get_grid(pos_to).has_monster()) {
             break;
         }
 
@@ -72,16 +63,15 @@ bool cast_wrath_of_the_god(PlayerType *player_ptr, int dam, POSITION rad)
     const auto b = 10 + randint1(10);
     for (auto i = 0; i < b; i++) {
         auto count = 20;
-        Pos2D pos_explode(pos_target.x, pos_target.y);
+        auto pos_explode = pos_target;
         while (count--) {
-            const auto x = pos_target.x - 5 + randint0(11);
             const auto y = pos_target.y - 5 + randint0(11);
-            const auto dx = (pos_target.x > x) ? (pos_target.x - x) : (x - pos_target.x);
-            const auto dy = (pos_target.y > y) ? (pos_target.y - y) : (y - pos_target.y);
+            const auto x = pos_target.x - 5 + randint0(11);
+            const auto dy = std::abs(pos_target.y - y);
+            const auto dx = std::abs(pos_target.x - x);
             const auto d = (dy > dx) ? (dy + (dx >> 1)) : (dx + (dy >> 1));
             if (d < 5) {
-                pos_explode.x = x;
-                pos_explode.y = y;
+                pos_explode = { y, x };
                 break;
             }
         }
@@ -90,9 +80,8 @@ bool cast_wrath_of_the_god(PlayerType *player_ptr, int dam, POSITION rad)
             continue;
         }
 
-        auto should_cast = in_bounds(&floor, pos_explode.y, pos_explode.x);
-        should_cast &= !cave_stop_disintegration(&floor, pos_explode.y, pos_explode.x);
-        should_cast &= in_disintegration_range(&floor, pos_target.y, pos_target.x, pos_explode.y, pos_explode.x);
+        auto should_cast = floor.contains(pos_explode) && !floor.can_block_disintegration_at(pos_explode);
+        should_cast &= in_disintegration_range(floor, pos_target, pos_explode);
         if (!should_cast) {
             continue;
         }

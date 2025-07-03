@@ -23,13 +23,13 @@
 #include "player-info/mimic-info-table.h"
 #include "player/patron.h"
 #include "player/player-personality.h"
+#include "player/player-realm.h"
 #include "player/player-sex.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-table.h"
 #include "player/player-status.h"
-#include "realm/realm-names-table.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
@@ -42,6 +42,7 @@
 #include "view/display-util.h"
 #include "view/status-first-page.h"
 #include "world/world.h"
+#include <sstream>
 #include <string>
 
 /*!
@@ -70,7 +71,7 @@ static bool display_player_info(PlayerType *player_ptr, int mode)
     }
 
     if (mode == 5) {
-        TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, std::nullopt);
+        TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
         do_cmd_knowledge_mutations(player_ptr);
         return true;
     }
@@ -96,20 +97,22 @@ static void display_player_basic_info(PlayerType *player_ptr)
  */
 static void display_magic_realms(PlayerType *player_ptr)
 {
-    if (player_ptr->realm1 == REALM_NONE && player_ptr->element == REALM_NONE) {
+    PlayerRealm pr(player_ptr);
+    if (!pr.realm1().is_available() && player_ptr->element_realm == ElementRealmType::NONE) {
         return;
     }
 
-    char tmp[64];
     if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        sprintf(tmp, "%s", get_element_title(player_ptr->element));
-    } else if (player_ptr->realm2) {
-        sprintf(tmp, "%s, %s", realm_names[player_ptr->realm1], realm_names[player_ptr->realm2]);
-    } else {
-        strcpy(tmp, realm_names[player_ptr->realm1]);
+        display_player_one_line(ENTRY_REALM, get_element_title(player_ptr->element_realm), TERM_L_BLUE);
+        return;
     }
 
-    display_player_one_line(ENTRY_REALM, tmp, TERM_L_BLUE);
+    std::stringstream ss;
+    ss << pr.realm1().get_name();
+    if (pr.realm2().is_available()) {
+        ss << ", " << pr.realm2().get_name();
+    }
+    display_player_one_line(ENTRY_REALM, ss.str(), TERM_L_BLUE);
 }
 
 /*!
@@ -166,19 +169,19 @@ static void display_player_stats(PlayerType *player_ptr)
  * @param statmsg メッセージバッファ
  * @return 生きていたらFALSE、死んでいたらTRUE
  */
-static std::optional<std::string> search_death_cause(PlayerType *player_ptr)
+static tl::optional<std::string> search_death_cause(PlayerType *player_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    const auto &floor = *player_ptr->current_floor_ptr;
     if (!player_ptr->is_dead) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
-    if (w_ptr->total_winner) {
+    if (AngbandWorld::get_instance().total_winner) {
         return format(_("…あなたは勝利の後%sした。", "...You %s after winning."),
             streq(player_ptr->died_from, "Seppuku") ? _("切腹", "committed seppuku") : _("引退", "retired from the adventure"));
     }
 
-    if (!floor_ptr->dun_level) {
+    if (!floor.is_underground()) {
         constexpr auto killed_monster = _("…あなたは%sで%sに殺されて飽きた。", "...You were killed by %s in %s and got tired..");
 #ifdef JP
         return format(killed_monster, map_name(player_ptr).data(), player_ptr->died_from.data());
@@ -187,28 +190,28 @@ static std::optional<std::string> search_death_cause(PlayerType *player_ptr)
 #endif
     }
 
-    if (floor_ptr->is_in_quest() && QuestType::is_fixed(floor_ptr->quest_number)) {
-        const auto &quest_list = QuestList::get_instance();
+    if (floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) {
+        const auto &quests = QuestList::get_instance();
 
         /* Get the quest text */
         /* Bewere that INIT_ASSIGN resets the cur_num. */
         init_flags = INIT_NAME_ONLY;
         parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
 
-        const auto *q_ptr = &quest_list[floor_ptr->quest_number];
+        const auto &quest = quests.get_quest(floor.quest_number);
         constexpr auto killed_quest = _("…あなたは、クエスト「%s」で%sに殺されて飽きた。", "...You were killed by %s in the quest '%s' and god tired..");
 #ifdef JP
-        return format(killed_quest, q_ptr->name.data(), player_ptr->died_from.data());
+        return format(killed_quest, quest.name.data(), player_ptr->died_from.data());
 #else
-        return format(killed_quest, player_ptr->died_from.data(), q_ptr->name.data());
+        return format(killed_quest, player_ptr->died_from.data(), quest.name.data());
 #endif
     }
 
     constexpr auto killed_floor = _("…あなたは、%sの%d階で%sに殺されて飽きた。", "...You were killed by %s on level %d of %s and got tired..");
 #ifdef JP
-    return format(killed_floor, map_name(player_ptr).data(), (int)floor_ptr->dun_level, player_ptr->died_from.data());
+    return format(killed_floor, map_name(player_ptr).data(), floor.dun_level, player_ptr->died_from.data());
 #else
-    return format(killed_floor, player_ptr->died_from.data(), floor_ptr->dun_level, map_name(player_ptr).data());
+    return format(killed_floor, player_ptr->died_from.data(), floor.dun_level, map_name(player_ptr).data());
 #endif
 }
 
@@ -218,19 +221,19 @@ static std::optional<std::string> search_death_cause(PlayerType *player_ptr)
  * @param statmsg メッセージバッファ
  * @return クエスト内であればTRUE、いなければFALSE
  */
-static std::optional<std::string> decide_death_in_quest(PlayerType *player_ptr)
+static tl::optional<std::string> decide_death_in_quest(PlayerType *player_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (!floor_ptr->is_in_quest() || !QuestType::is_fixed(floor_ptr->quest_number)) {
-        return std::nullopt;
+    const auto &floor = *player_ptr->current_floor_ptr;
+    if (!floor.is_in_quest() || !QuestType::is_fixed(floor.quest_number)) {
+        return tl::nullopt;
     }
 
     quest_text_lines.clear();
 
-    const auto &quest_list = QuestList::get_instance();
+    const auto &quests = QuestList::get_instance();
     init_flags = INIT_NAME_ONLY;
     parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-    return std::string(format(_("…あなたは現在、 クエスト「%s」を遂行中だ。", "...Now, you are in the quest '%s'."), quest_list[floor_ptr->quest_number].name.data()));
+    return format(_("…あなたは現在、 クエスト「%s」を遂行中だ。", "...Now, you are in the quest '%s'."), quests.get_quest(floor.quest_number).name.data());
 }
 
 /*!
@@ -240,13 +243,13 @@ static std::optional<std::string> decide_death_in_quest(PlayerType *player_ptr)
  */
 static std::string decide_current_floor(PlayerType *player_ptr)
 {
-    if (auto death_cause = search_death_cause(player_ptr);
-        death_cause.has_value() || !w_ptr->character_dungeon) {
+    if (const auto death_cause = search_death_cause(player_ptr);
+        death_cause || !AngbandWorld::get_instance().character_dungeon) {
         return death_cause.value_or("");
     }
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (floor_ptr->dun_level == 0) {
+    const auto &floor = *player_ptr->current_floor_ptr;
+    if (!floor.is_underground()) {
         return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(player_ptr).data());
     }
 
@@ -256,9 +259,9 @@ static std::string decide_current_floor(PlayerType *player_ptr)
 
     constexpr auto mes = _("…あなたは現在、 %s の %d 階で探索している。", "...Now, you are exploring level %d of %s.");
 #ifdef JP
-    return format(mes, map_name(player_ptr).data(), (int)floor_ptr->dun_level);
+    return format(mes, map_name(player_ptr).data(), floor.dun_level);
 #else
-    return format(mes, (int)floor_ptr->dun_level, map_name(player_ptr).data());
+    return format(mes, floor.dun_level, map_name(player_ptr).data());
 #endif
 }
 
@@ -277,7 +280,7 @@ static std::string decide_current_floor(PlayerType *player_ptr)
  * Mode 4 = mutations.
  * Mode 5 = ??? (コード上の定義より6で割った余りは5になりうるが元のコメントに記載なし).
  */
-std::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
+tl::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
 {
     auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr)) && display_mutations;
     auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
@@ -286,7 +289,7 @@ std::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
         clear_from(0);
     }
     if (display_player_info(player_ptr, mode)) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     display_player_basic_info(player_ptr);
@@ -300,7 +303,7 @@ std::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
     if (mode == 0) {
         display_player_middle(player_ptr);
         display_player_various(player_ptr);
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     put_str(_("(キャラクターの生い立ち)", "(Character Background)"), 11, 25);
@@ -310,7 +313,7 @@ std::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
 
     auto statmsg = decide_current_floor(player_ptr);
     if (statmsg.empty()) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     constexpr auto chars_per_line = 60;
@@ -330,14 +333,13 @@ void display_player_equippy(PlayerType *player_ptr, TERM_LEN y, TERM_LEN x, BIT_
 {
     const auto max_i = (mode & DP_WP) ? INVEN_BOW + 1 : INVEN_TOTAL;
     for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
-        const auto &item = player_ptr->inventory_list[i];
-        auto a = item.get_color();
-        auto c = item.get_symbol();
+        const auto &item = *player_ptr->inventory[i];
+        auto symbol = item.get_symbol();
         if (!equippy_chars || !item.is_valid()) {
-            c = ' ';
-            a = TERM_DARK;
+            symbol.color = TERM_DARK;
+            symbol.character = ' ';
         }
 
-        term_putch(x + i - INVEN_MAIN_HAND, y, a, c);
+        term_putch(x + i - INVEN_MAIN_HAND, y, symbol);
     }
 }

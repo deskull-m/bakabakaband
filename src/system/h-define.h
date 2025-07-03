@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file h-define.h
  * @brief 馬鹿馬鹿蛮怒で新しく追加された主要なマクロ定義ヘッダ / Define some simple constants
  * @date 2014/08/16

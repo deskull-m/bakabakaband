@@ -9,6 +9,7 @@
 #include "main/scene-table.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
+#include "util/enum-converter.h"
 
 // モンスターBGMの設定有無。設定なし時に関連処理をスキップする。
 bool has_monster_music = false;
@@ -30,26 +31,26 @@ void bell(void)
  * @brief 音を鳴らす
  * @todo intをsound_typeに差し替える
  */
-void sound(int val)
+void sound(SoundKind sk)
 {
     if (!use_sound) {
         return;
     }
 
-    term_xtra(TERM_XTRA_SOUND, val);
+    term_xtra(TERM_XTRA_SOUND, enum2i(sk));
 }
 
 /*!
  * @brief Hack -- Play a music
  */
-errr play_music(int type, int val)
+void play_music(int type, int val)
 {
     if (!use_music) {
-        return 1;
+        return;
     }
 
     interrupt_scene(type, val);
-    return term_xtra(type, val);
+    term_xtra(type, val);
 }
 
 /*!
@@ -72,7 +73,7 @@ void select_floor_music(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monster_list モンスターリスト
  */
-void select_monster_music(PlayerType *player_ptr, const std::vector<MONSTER_IDX> &monster_list)
+void select_monster_music(PlayerType *player_ptr, const std::vector<short> &monster_list)
 {
     if (!use_music) {
         return;

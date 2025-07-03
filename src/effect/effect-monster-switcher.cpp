@@ -22,7 +22,6 @@
 #include "mind/mind-elementalist.h"
 #include "monster-floor/monster-death.h"
 #include "monster-race/monster-race-hook.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
@@ -30,8 +29,8 @@
 #include "player/player-damage.h"
 #include "spell-kind/spells-genocide.h"
 #include "system/grid-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -47,7 +46,7 @@ ProcessResult effect_monster_hypodynamia(PlayerType *player_ptr, EffectMonster *
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::DEMON)) {
             em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::DEMON);
         }
@@ -75,7 +74,7 @@ ProcessResult effect_monster_death_ray(PlayerType *player_ptr, EffectMonster *em
     }
 
     if (!em_ptr->m_ptr->has_living_flag()) {
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::DEMON)) {
                 em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::DEMON);
             }
@@ -116,7 +115,7 @@ ProcessResult effect_monster_kill_wall(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_ROCK);
     }
 
@@ -137,8 +136,8 @@ ProcessResult effect_monster_hand_doom(EffectMonster *em_ptr)
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (is_monster(em_ptr->src_idx) ? ((em_ptr->caster_lev + randint1(em_ptr->dam)) > (em_ptr->r_ptr->level + 10 + randint1(20)))
-                                    : (((em_ptr->caster_lev / 2) + randint1(em_ptr->dam)) > (em_ptr->r_ptr->level + randint1(200)))) {
+    if (em_ptr->is_monster() ? ((em_ptr->caster_lev + randint1(em_ptr->dam)) > (em_ptr->r_ptr->level + 10 + randint1(20)))
+                             : (((em_ptr->caster_lev / 2) + randint1(em_ptr->dam)) > (em_ptr->r_ptr->level + randint1(200)))) {
         em_ptr->dam = ((40 + randint1(20)) * em_ptr->m_ptr->hp) / 100;
         if (em_ptr->m_ptr->hp < em_ptr->dam) {
             em_ptr->dam = em_ptr->m_ptr->hp - 1;
@@ -171,7 +170,7 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->dam = 0;
         em_ptr->skipped = true;
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
         }
         return ProcessResult::PROCESS_CONTINUE;
@@ -208,14 +207,14 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
                 em_ptr->do_stun = 0;
             } else {
-                em_ptr->do_stun = damroll((player_ptr->lev / 10) + 3, (em_ptr->dam)) + 1;
+                em_ptr->do_stun = Dice::roll((player_ptr->lev / 10) + 3, (em_ptr->dam)) + 1;
                 done = true;
             }
             break;
         case 2:
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
                 if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-                    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+                    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
                         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::NO_CONF);
                     }
                 }
@@ -230,7 +229,7 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
         default:
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
                 if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
-                    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+                    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
                         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::NO_SLEEP);
                     }
                 }
@@ -265,7 +264,7 @@ ProcessResult effect_monster_genocide(PlayerType *player_ptr, EffectMonster *em_
     }
 
     std::string_view spell_name(_("モンスター消滅", "Genocide One"));
-    if (genocide_aux(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, is_player(em_ptr->src_idx), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+    if (genocide_aux(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sは消滅した！", "%s^ disappeared!"), em_ptr->m_name);
         }
@@ -279,7 +278,7 @@ ProcessResult effect_monster_genocide(PlayerType *player_ptr, EffectMonster *em_
 
 ProcessResult effect_monster_photo(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (is_player(em_ptr->src_idx)) {
+    if (em_ptr->is_player()) {
         msg_format(_("%sを写真に撮った。", "You take a photograph of %s."), em_ptr->m_name);
     }
 
@@ -288,7 +287,7 @@ ProcessResult effect_monster_photo(PlayerType *player_ptr, EffectMonster *em_ptr
             em_ptr->obvious = true;
         }
 
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_LITE);
         }
 
@@ -321,7 +320,7 @@ ProcessResult effect_monster_wounds(EffectMonster *em_ptr)
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @return ここのスイッチングで終るならTRUEかFALSE、後続処理を実行するならCONTINUE
  */
-ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_ptr, std::optional<CapturedMonsterType *> cap_mon_ptr)
+ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> cap_mon_ptr)
 {
     switch (em_ptr->attribute) {
     case AttributeType::PSY_SPEAR:
@@ -385,7 +384,7 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
     case AttributeType::PSI_DRAIN:
         return effect_monster_psi_drain(player_ptr, em_ptr);
     case AttributeType::TELEKINESIS:
-        return effect_monster_telekinesis(player_ptr, em_ptr);
+        return effect_monster_telekinesis(em_ptr);
     case AttributeType::DOMINATION:
         return effect_monster_domination(player_ptr, em_ptr);
     case AttributeType::ICE:

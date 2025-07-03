@@ -11,10 +11,9 @@
 
 #include "cmd-io/cmd-dump.h"
 #include "alliance/alliance.h"
-#include "cmd-io/feeling-table.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
-#include "floor/floor-town.h"
+#include "floor/dungeon-feeling.h"
 #include "io-dump/dump-remover.h"
 #include "io-dump/dump-util.h"
 #include "io/files-util.h"
@@ -27,14 +26,16 @@
 #include "player/player-personality-types.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
-#include "system/angband-version.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/angband-system.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/floor/town-info.h"
+#include "system/floor/town-list.h"
+#include "system/inner-game-data.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "timed-effect/player-hallucination.h"
 #include "timed-effect/timed-effects.h"
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"
@@ -103,7 +104,7 @@ void do_cmd_colors(PlayerType *player_ptr)
                 continue;
             }
 
-            const auto &path = path_build(ANGBAND_DIR_USER, *ask_result);
+            const auto path = path_build(ANGBAND_DIR_USER, *ask_result);
             if (!open_auto_dump(&auto_dump_stream, path, mark)) {
                 continue;
             }
@@ -209,7 +210,7 @@ void do_cmd_colors(PlayerType *player_ptr)
 /*
  * Note something in the message recall
  */
-void do_cmd_note(void)
+void do_cmd_note()
 {
     const auto note_opt = input_string(_("メモ: ", "Note: "), 60);
     if (!note_opt.has_value() || note_opt->empty()) {
@@ -223,9 +224,9 @@ void do_cmd_note(void)
 /*
  * Mention the current version
  */
-void do_cmd_version(void)
+void do_cmd_version()
 {
-    msg_print(get_version());
+    msg_print(AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL));
 }
 
 /*
@@ -234,8 +235,7 @@ void do_cmd_version(void)
  */
 void do_cmd_feeling(PlayerType *player_ptr)
 {
-
-    if (player_ptr->wild_mode) {
+    if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
     FloorType *floor_ptr = player_ptr->current_floor_ptr;
@@ -254,7 +254,7 @@ void do_cmd_feeling(PlayerType *player_ptr)
         return;
     }
 
-    if (player_ptr->town_num && !floor.is_in_dungeon()) {
+    if (player_ptr->town_num && !floor.is_underground()) {
         if (towns_info[player_ptr->town_num].name == _("荒野", "wilderness")) {
             msg_print(_("何かありそうな荒野のようだ。", "Looks like a strange wilderness."));
             return;
@@ -264,7 +264,7 @@ void do_cmd_feeling(PlayerType *player_ptr)
         return;
     }
 
-    if (!floor.is_in_dungeon()) {
+    if (!floor.is_underground()) {
         msg_print(_("典型的な荒野のようだ。", "Looks like a typical wilderness."));
         return;
     }
@@ -287,13 +287,17 @@ void do_cmd_feeling(PlayerType *player_ptr)
         msg_print("狭そうなフロアだ。");
     }
 
+    const auto &df = DungeonFeeling::get_instance();
+    std::string_view feeling_text;
     if (has_good_luck(player_ptr)) {
-        msg_print(do_cmd_feeling_text_lucky[player_ptr->feeling]);
+        feeling_text = df.get_feeling_lucky();
     } else if (is_echizen(player_ptr)) {
-        msg_print(do_cmd_feeling_text_combat[player_ptr->feeling]);
+        feeling_text = df.get_feeling_combat();
     } else {
-        msg_print(do_cmd_feeling_text[player_ptr->feeling]);
+        feeling_text = df.get_feeling_normal();
     }
+
+    msg_print(feeling_text);
 }
 
 /*
@@ -302,12 +306,12 @@ void do_cmd_feeling(PlayerType *player_ptr)
  */
 void do_cmd_time(PlayerType *player_ptr)
 {
-    const auto &[day, hour, min] = w_ptr->extract_date_time(player_ptr->start_race);
+    const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     std::string day_buf = (day < MAX_DAYS) ? std::to_string(day) : "*****";
     constexpr auto mes = _("%s日目, 時刻は%d:%02d %sです。", "This is day %s. The time is %d:%02d %s.");
     msg_format(mes, day_buf.data(), (hour % 12 == 0) ? 12 : (hour % 12), min, (hour < 12) ? "AM" : "PM");
     std::filesystem::path path;
-    if (!randint0(10) || player_ptr->effects()->hallucination()->is_hallucinated()) {
+    if (!randint0(10) || player_ptr->effects()->hallucination().is_hallucinated()) {
         path = path_build(ANGBAND_DIR_FILE, _("timefun_j.txt", "timefun.txt"));
     } else {
         path = path_build(ANGBAND_DIR_FILE, _("timenorm_j.txt", "timenorm.txt"));
@@ -323,8 +327,12 @@ void do_cmd_time(PlayerType *player_ptr)
     auto start = 9999;
     auto end = -9999;
     auto num = 0;
-    char buf[1024]{};
-    while (!angband_fgets(fff, buf, sizeof(buf))) {
+    while (true) {
+        const auto line_str = angband_fgets(fff);
+        if (!line_str) {
+            break;
+        }
+        const auto *buf = line_str->data();
         if (!buf[0] || (buf[0] == '#')) {
             continue;
         }

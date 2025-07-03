@@ -24,9 +24,6 @@ static errr rd_inventory(PlayerType *player_ptr)
     player_ptr->inven_cnt = 0;
     player_ptr->equip_cnt = 0;
 
-    //! @todo std::make_shared の配列対応版は C++20 から
-    player_ptr->inventory_list = std::shared_ptr<ItemEntity[]>{ new ItemEntity[INVEN_TOTAL] };
-
     int slot = 0;
     auto item_loader = ItemLoaderFactory::create_loader();
     while (true) {
@@ -44,7 +41,7 @@ static errr rd_inventory(PlayerType *player_ptr)
 
         if (n >= INVEN_MAIN_HAND) {
             item.marked.set(OmType::TOUCHED);
-            player_ptr->inventory_list[n].copy_from(&item);
+            *player_ptr->inventory[n] = std::move(item);
             player_ptr->equip_cnt++;
             continue;
         }
@@ -56,7 +53,7 @@ static errr rd_inventory(PlayerType *player_ptr)
 
         n = slot++;
         item.marked.set(OmType::TOUCHED);
-        player_ptr->inventory_list[n].copy_from(&item);
+        *player_ptr->inventory[n] = std::move(item);
         player_ptr->inven_cnt++;
     }
 
@@ -65,8 +62,10 @@ static errr rd_inventory(PlayerType *player_ptr)
 
 errr load_inventory(PlayerType *player_ptr)
 {
-    for (int i = 0; i < 64; i++) {
-        player_ptr->spell_order[i] = rd_byte();
+    for (auto i = 0; i < 64; i++) {
+        if (const auto spell_id = rd_byte(); spell_id < 64) {
+            player_ptr->spell_order_learned.push_back(spell_id);
+        }
     }
 
     int errr = rd_inventory(player_ptr);

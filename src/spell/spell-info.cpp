@@ -1,46 +1,43 @@
 #include "spell/spell-info.h"
 #include "io/input-key-requester.h"
-#include "monster-race/monster-race.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
+#include "player/player-realm.h"
 #include "player/player-skill.h"
+#include "player/player-spell-status.h"
 #include "player/player-status-table.h"
 #include "player/player-status.h"
-#include "realm/realm-names-table.h"
 #include "realm/realm-types.h"
 #include "spell/spells-execution.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "timed-effect/player-stun.h"
+#include "term/z-form.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
-// 5%
-static const int extra_min_magic_fail_rate = 2;
-
 /*!
  * @brief 呪文の消費MPを返す /
  * Modify mana consumption rate using spell exp and dec_mana
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param need_mana 基本消費MP
- * @param spell 呪文ID
+ * @param spell_id 呪文ID
  * @param realm 魔法領域
  * @return 消費MP
  */
-MANA_POINT mod_need_mana(PlayerType *player_ptr, MANA_POINT need_mana, SPELL_IDX spell, int16_t realm)
+MANA_POINT mod_need_mana(PlayerType *player_ptr, MANA_POINT need_mana, SPELL_IDX spell_id, RealmType realm)
 {
 #define MANA_CONST 2400
 #define MANA_DIV 4
 #define DEC_MANA_DIV 3
-    if ((realm > REALM_NONE) && (realm <= MAX_REALM)) {
-        need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(player_ptr).exp_of_spell(realm, spell)) + (MANA_CONST - 1);
+    if (PlayerRealm::is_magic(realm) || PlayerRealm::is_technic(realm)) {
+        need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(player_ptr).exp_of_spell(realm, spell_id)) + (MANA_CONST - 1);
         need_mana *= player_ptr->dec_mana ? DEC_MANA_DIV : MANA_DIV;
         need_mana /= MANA_CONST * MANA_DIV;
         if (need_mana < 1) {
@@ -114,45 +111,42 @@ PERCENTAGE mod_spell_chance_2(PlayerType *player_ptr, PERCENTAGE chance)
  * @brief 呪文の失敗率計算メインルーチン /
  * Returns spell chance of failure for spell -RAK-
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param spell 呪文ID
+ * @param spell_id 呪文ID
  * @param use_realm 魔法領域ID
  * @return 失敗率(%)
  */
-PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell, int16_t use_realm)
+PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell_id, RealmType use_realm)
 {
     if (mp_ptr->spell_book == ItemKindType::NONE) {
         return 100;
     }
-    if (use_realm == REALM_HISSATSU) {
+    if (use_realm == RealmType::HISSATSU) {
         return 0;
     }
 
-    const magic_type *s_ptr;
-    if (!is_magic(use_realm)) {
-        s_ptr = &technic_info[use_realm - MIN_TECHNIC][spell];
-    } else {
-        s_ptr = &mp_ptr->info[use_realm - 1][spell];
-    }
+    const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
-    PERCENTAGE chance = s_ptr->sfail;
-    chance -= 3 * (player_ptr->lev - s_ptr->slevel);
+    PERCENTAGE chance = spell.sfail;
+    chance -= 3 * (player_ptr->lev - spell.slevel);
     chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
     if (player_ptr->riding) {
-        chance += (std::max(monraces_info[player_ptr->current_floor_ptr->m_list[player_ptr->riding].r_idx].level - player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
+        const auto &riding_monrace = player_ptr->current_floor_ptr->m_list[player_ptr->riding].get_monrace();
+        chance += (std::max(riding_monrace.level - player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
     }
 
-    MANA_POINT need_mana = mod_need_mana(player_ptr, s_ptr->smana, spell, use_realm);
+    MANA_POINT need_mana = mod_need_mana(player_ptr, spell.smana, spell_id, use_realm);
     if (need_mana > player_ptr->csp) {
         chance += 5 * (need_mana - player_ptr->csp);
     }
 
     PlayerClass pc(player_ptr);
-    if ((use_realm != player_ptr->realm1) && (pc.equals(PlayerClassType::MAGE) || pc.equals(PlayerClassType::PRIEST))) {
+    PlayerRealm pr(player_ptr);
+    if (!pr.realm1().equals(use_realm) && (pc.equals(PlayerClassType::MAGE) || pc.equals(PlayerClassType::PRIEST))) {
         chance += 5;
     }
 
     PERCENTAGE minfail = adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]];
-    if (any_bits(mp_ptr->spell_xtra, extra_min_magic_fail_rate)) {
+    if (mp_ptr->has_magic_fail_rate_cap) {
         if (minfail < 5) {
             minfail = 5;
         }
@@ -171,23 +165,25 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell, int16_t use_rea
     chance = mod_spell_chance_1(player_ptr, chance);
     PERCENTAGE penalty = (mp_ptr->spell_stat == A_WIS) ? 10 : 4;
     switch (use_realm) {
-    case REALM_NATURE:
+    case RealmType::NATURE:
         if ((player_ptr->alignment > 50) || (player_ptr->alignment < -50)) {
             chance += penalty;
         }
         break;
-    case REALM_LIFE:
-    case REALM_CRUSADE:
+    case RealmType::LIFE:
+    case RealmType::CRUSADE:
         if (player_ptr->alignment < -20) {
             chance += penalty;
         }
         break;
-    case REALM_DEATH:
-    case REALM_DAEMON:
-    case REALM_HEX:
+    case RealmType::DEATH:
+    case RealmType::DAEMON:
+    case RealmType::HEX:
         if (player_ptr->alignment > 20) {
             chance += penalty;
         }
+        break;
+    default:
         break;
     }
 
@@ -195,14 +191,13 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell, int16_t use_rea
         chance = minfail;
     }
 
-    auto player_stun = player_ptr->effects()->stun();
-    chance += player_stun->get_magic_chance_penalty();
+    chance += player_ptr->effects()->stun().get_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }
 
-    if ((use_realm == player_ptr->realm1) || (use_realm == player_ptr->realm2) || pc.is_every_magic()) {
-        auto exp = PlayerSkill(player_ptr).exp_of_spell(use_realm, spell);
+    if (pr.realm1().equals(use_realm) || pr.realm2().equals(use_realm) || pc.is_every_magic()) {
+        auto exp = PlayerSkill(player_ptr).exp_of_spell(use_realm, spell_id);
         if (exp >= PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT)) {
             chance--;
         }
@@ -218,22 +213,22 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell, int16_t use_rea
  * @brief 呪文情報の表示処理 /
  * Print a list of spells (for browsing or casting or viewing)
  * @param player_ptr 術者の参照ポインタ
- * @param target_spell 呪文ID
- * @param spells 表示するスペルID配列の参照ポインタ
+ * @param target_spell_id 呪文ID
+ * @param spell_ids 表示するスペルID配列の参照ポインタ
  * @param num 表示するスペルの数(spellsの要素数)
  * @param y 表示メッセージ左上Y座標
  * @param x 表示メッセージ左上X座標
  * @param use_realm 魔法領域ID
  */
-void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell, SPELL_IDX *spells, int num, TERM_LEN y, TERM_LEN x, int16_t use_realm)
+void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell_id, const SPELL_IDX *spell_ids, int num, TERM_LEN y, TERM_LEN x, RealmType use_realm)
 {
-    if (((use_realm <= REALM_NONE) || (use_realm > MAX_REALM)) && w_ptr->wizard) {
+    if ((!PlayerRealm::is_magic(use_realm) && !PlayerRealm::is_technic(use_realm)) && AngbandWorld::get_instance().wizard) {
         msg_print(_("警告！ print_spell が領域なしに呼ばれた", "Warning! print_spells called with null realm"));
     }
 
     prt("", y, x);
     char buf[256];
-    if (use_realm == REALM_HISSATSU) {
+    if (use_realm == RealmType::HISSATSU) {
         strcpy(buf, _("  Lv   MP", "  Lv   SP"));
     } else {
         strcpy(buf, _("熟練度 Lv   MP 失率 効果", "Profic Lv   SP Fail Effect"));
@@ -244,37 +239,30 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell, SPELL_IDX *spe
 
     int increment = 64;
     PlayerClass pc(player_ptr);
+    PlayerRealm pr(player_ptr);
     if (pc.is_every_magic()) {
         increment = 0;
-    } else if (use_realm == player_ptr->realm1) {
+    } else if (pr.realm1().equals(use_realm)) {
         increment = 0;
-    } else if (use_realm == player_ptr->realm2) {
+    } else if (pr.realm2().equals(use_realm)) {
         increment = 32;
     }
 
     int i;
-    const magic_type *s_ptr;
-    char info[80];
-    char out_val[160];
     char ryakuji[5];
     bool max = false;
     for (i = 0; i < num; i++) {
-        SPELL_IDX spell = spells[i];
-
-        if (!is_magic(use_realm)) {
-            s_ptr = &technic_info[use_realm - MIN_TECHNIC][spell];
-        } else {
-            s_ptr = &mp_ptr->info[use_realm - 1][spell];
-        }
+        const auto spell_id = spell_ids[i];
+        const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
         MANA_POINT need_mana;
-        if (use_realm == REALM_HISSATSU) {
-            need_mana = s_ptr->smana;
+        if (use_realm == RealmType::HISSATSU) {
+            need_mana = spell.smana;
         } else {
-            auto exp = PlayerSkill(player_ptr).exp_of_spell(use_realm, spell);
-            need_mana = mod_need_mana(player_ptr, s_ptr->smana, spell, use_realm);
+            auto exp = PlayerSkill(player_ptr).exp_of_spell(use_realm, spell_id);
+            need_mana = mod_need_mana(player_ptr, spell.smana, spell_id, use_realm);
             PlayerSkillRank skill_rank;
-            if ((increment == 64) || (s_ptr->slevel >= 99)) {
+            if ((increment == 64) || (spell.slevel >= 99)) {
                 skill_rank = PlayerSkillRank::UNSKILLED;
             } else {
                 skill_rank = PlayerSkill::spell_skill_rank(exp);
@@ -285,7 +273,7 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell, SPELL_IDX *spe
                 max = true;
             } else if ((increment == 32) && (skill_rank >= PlayerSkillRank::EXPERT)) {
                 max = true;
-            } else if (s_ptr->slevel >= 99) {
+            } else if (spell.slevel >= 99) {
                 max = true;
             } else if (pc.equals(PlayerClassType::RED_MAGE) && (skill_rank >= PlayerSkillRank::SKILLED)) {
                 max = true;
@@ -296,56 +284,56 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell, SPELL_IDX *spe
             ryakuji[4] = '\0';
         }
 
-        if (use_menu && target_spell) {
-            if (i == (target_spell - 1)) {
-                strcpy(out_val, _("  》 ", "  >  "));
+        std::string out_val;
+        if (use_menu && target_spell_id) {
+            if (i == (target_spell_id - 1)) {
+                out_val = _("  》 ", "  >  ");
             } else {
-                strcpy(out_val, "     ");
+                out_val = "     ";
             }
         } else {
-            sprintf(out_val, "  %c) ", I2A(i));
+            out_val = format("  %c) ", I2A(i));
         }
 
-        if (s_ptr->slevel >= 99) {
-            strcat(out_val, format("%-30s", _("(判読不能)", "(illegible)")).c_str());
+        if (spell.slevel >= 99) {
+            out_val.append(format("%-30s", _("(判読不能)", "(illegible)")));
             c_prt(TERM_L_DARK, out_val, y + i + 1, x);
             continue;
         }
 
-        const auto spell_info = exe_spell(player_ptr, use_realm, spell, SpellProcessType::INFO);
-        strcpy(info, spell_info->data());
-        concptr comment = info;
+        const auto info = exe_spell(player_ptr, use_realm, spell_id, SpellProcessType::INFO);
+        concptr comment = info->data();
         byte line_attr = TERM_WHITE;
+        PlayerSpellStatus pss(player_ptr);
+        const auto realm_status = pr.realm1().equals(use_realm) ? pss.realm1() : pss.realm2();
         if (pc.is_every_magic()) {
-            if (s_ptr->slevel > player_ptr->max_plv) {
+            if (spell.slevel > player_ptr->max_plv) {
                 comment = _("未知", "unknown");
                 line_attr = TERM_L_BLUE;
-            } else if (s_ptr->slevel > player_ptr->lev) {
+            } else if (spell.slevel > player_ptr->lev) {
                 comment = _("忘却", "forgotten");
                 line_attr = TERM_YELLOW;
             }
-        } else if ((use_realm != player_ptr->realm1) && (use_realm != player_ptr->realm2)) {
+        } else if (!pr.realm1().equals(use_realm) && !pr.realm2().equals(use_realm)) {
             comment = _("未知", "unknown");
             line_attr = TERM_L_BLUE;
-        } else if ((use_realm == player_ptr->realm1) ? ((player_ptr->spell_forgotten1 & (1UL << spell))) : ((player_ptr->spell_forgotten2 & (1UL << spell)))) {
+        } else if (realm_status.is_forgotten(spell_id)) {
             comment = _("忘却", "forgotten");
             line_attr = TERM_YELLOW;
-        } else if (!((use_realm == player_ptr->realm1) ? (player_ptr->spell_learned1 & (1UL << spell)) : (player_ptr->spell_learned2 & (1UL << spell)))) {
+        } else if (!realm_status.is_learned(spell_id)) {
             comment = _("未知", "unknown");
             line_attr = TERM_L_BLUE;
-        } else if (!((use_realm == player_ptr->realm1) ? (player_ptr->spell_worked1 & (1UL << spell)) : (player_ptr->spell_worked2 & (1UL << spell)))) {
+        } else if (!realm_status.is_worked(spell_id)) {
             comment = _("未経験", "untried");
             line_attr = TERM_L_GREEN;
         }
 
-        const auto spell_name = exe_spell(player_ptr, use_realm, spell, SpellProcessType::NAME);
-        if (use_realm == REALM_HISSATSU) {
-            strcat(out_val, format("%-25s %2d %4d", spell_name->data(), s_ptr->slevel, need_mana).c_str());
+        const auto &spell_name = PlayerRealm::get_spell_name(use_realm, spell_id);
+        if (use_realm == RealmType::HISSATSU) {
+            out_val.append(format("%-25s %2d %4d", spell_name.data(), spell.slevel, need_mana));
         } else {
-            strcat(out_val,
-                format("%-25s%c%-4s %2d %4d %3d%% %s", spell_name->data(), (max ? '!' : ' '), ryakuji, s_ptr->slevel,
-                    need_mana, spell_chance(player_ptr, spell, use_realm), comment)
-                    .c_str());
+            out_val.append(format("%-25s%c%-4s %2d %4d %3d%% %s", spell_name.data(), (max ? '!' : ' '), ryakuji, spell.slevel,
+                need_mana, spell_chance(player_ptr, spell_id, use_realm), comment));
         }
 
         c_prt(line_attr, out_val, y + i + 1, x);

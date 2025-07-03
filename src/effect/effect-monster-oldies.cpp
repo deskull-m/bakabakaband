@@ -2,18 +2,18 @@
 #include "avatar/avatar.h"
 #include "effect/effect-monster-util.h"
 #include "monster-floor/monster-generator.h"
-#include "monster-race/monster-race.h"
-#include "monster-race/race-indice-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-util.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -49,7 +49,7 @@ ProcessResult effect_monster_old_clone(PlayerType *player_ptr, EffectMonster *em
     has_resistance |= em_ptr->m_ptr->is_pet();
     has_resistance |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
-    has_resistance |= em_ptr->r_ptr->population_flags.has_any_of({ MonsterPopulationType::NAZGUL, MonsterPopulationType::ONLY_ONE });
+    has_resistance |= em_ptr->r_ptr->population_flags.has_any_of({ MonsterPopulationType::NAZGUL, MonsterPopulationType::ONLY_ONE, MonsterPopulationType::BUNBUN_STRIKER });
 
     if (has_resistance) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
@@ -81,14 +81,10 @@ ProcessResult effect_monster_star_heal(PlayerType *player_ptr, EffectMonster *em
         em_ptr->m_ptr->maxhp = em_ptr->m_ptr->max_maxhp;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (!em_ptr->dam) {
-        if (player_ptr->health_who == em_ptr->g_ptr->m_idx) {
-            rfu.set_flag(MainWindowRedrawingFlag::HEALTH);
-        }
-
-        if (player_ptr->riding == em_ptr->g_ptr->m_idx) {
-            rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
+        HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->g_ptr->m_idx);
+        if (em_ptr->m_ptr->is_riding()) {
+            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
         }
 
         return ProcessResult::PROCESS_FALSE;
@@ -101,7 +97,7 @@ ProcessResult effect_monster_star_heal(PlayerType *player_ptr, EffectMonster *em
 // who == 0ならばプレイヤーなので、それの判定.
 static void effect_monster_old_heal_check_player(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (is_monster(em_ptr->src_idx)) {
+    if (em_ptr->is_monster()) {
         return;
     }
 
@@ -169,20 +165,16 @@ ProcessResult effect_monster_old_heal(PlayerType *player_ptr, EffectMonster *em_
     }
 
     effect_monster_old_heal_check_player(player_ptr, em_ptr);
-    if (em_ptr->m_ptr->r_idx == MonsterRaceId::LEPER) {
+    if (em_ptr->m_ptr->r_idx == MonraceId::LEPER) {
         em_ptr->heal_leper = true;
-        if (is_player(em_ptr->src_idx)) {
+        if (em_ptr->is_player()) {
             chg_virtue(player_ptr, Virtue::COMPASSION, 5);
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (player_ptr->health_who == em_ptr->g_ptr->m_idx) {
-        rfu.set_flag(MainWindowRedrawingFlag::HEALTH);
-    }
-
-    if (player_ptr->riding == em_ptr->g_ptr->m_idx) {
-        rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
+    HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->g_ptr->m_idx);
+    if (em_ptr->m_ptr->is_riding()) {
+        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     em_ptr->note = _("は体力を回復したようだ。", " looks healthier.");
@@ -200,7 +192,7 @@ ProcessResult effect_monster_old_speed(PlayerType *player_ptr, EffectMonster *em
         em_ptr->note = _("の動きが速くなった。", " starts moving faster.");
     }
 
-    if (is_player(em_ptr->src_idx)) {
+    if (em_ptr->is_player()) {
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
             chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
         }
@@ -254,7 +246,7 @@ ProcessResult effect_monster_old_sleep(PlayerType *player_ptr, EffectMonster *em
 
     if (has_resistance) {
         if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
-            if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
                 em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_SLEEP);
             }
         }
@@ -280,14 +272,14 @@ ProcessResult effect_monster_old_conf(PlayerType *player_ptr, EffectMonster *em_
         em_ptr->obvious = true;
     }
 
-    em_ptr->do_conf = damroll(3, (em_ptr->dam / 2)) + 1;
+    em_ptr->do_conf = Dice::roll(3, (em_ptr->dam / 2)) + 1;
 
     bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF);
     has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (has_resistance) {
         if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-            if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
                 em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_CONF);
             }
         }
@@ -332,7 +324,7 @@ ProcessResult effect_monster_stun(EffectMonster *em_ptr)
         em_ptr->obvious = true;
     }
 
-    em_ptr->do_stun = damroll((em_ptr->caster_lev / 20) + 3, (em_ptr->dam)) + 1;
+    em_ptr->do_stun = Dice::roll((em_ptr->caster_lev / 20) + 3, (em_ptr->dam)) + 1;
 
     bool has_resistance = em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);

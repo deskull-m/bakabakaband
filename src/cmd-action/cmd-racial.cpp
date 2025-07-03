@@ -35,6 +35,7 @@
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
+#include "world/world.h"
 #include <string>
 
 #define RC_PAGE_SIZE 18
@@ -119,7 +120,7 @@ static void racial_power_make_prompt(rc_type *rc_ptr)
         fmt = _("(特殊能力 %c-%c, '*'で一覧, '/'で閲覧, ESCで中断) どの能力を使いますか？", "(Powers %c-%c, *=List, /=Browse, ESC=exit) Use which power? ");
     }
 
-    (void)strnfmt(rc_ptr->out_val, 78, fmt, I2A(0), (rc_ptr->power_count() <= 26) ? I2A(rc_ptr->power_count() - 1) : '0' + rc_ptr->power_count() - 27);
+    rc_ptr->out_val = format(fmt, I2A(0), (rc_ptr->power_count() <= 26) ? I2A(rc_ptr->power_count() - 1) : '0' + rc_ptr->power_count() - 27);
 }
 
 /*!
@@ -296,9 +297,8 @@ static bool ask_invoke_racial_power(rc_type *rc_ptr)
         return true;
     }
 
-    char tmp_val[160];
-    (void)strnfmt(tmp_val, 78, _("%sを使いますか？ ", "Use %s? "), rc_ptr->power_desc[rc_ptr->command_code].racial_name.data());
-    return input_check(tmp_val);
+    const auto prompt = format(_("%sを使いますか？ ", "Use %s? "), rc_ptr->power_desc[rc_ptr->command_code].racial_name.data());
+    return input_check(prompt);
 }
 
 static void racial_power_display_explanation(PlayerType *player_ptr, rc_type *rc_ptr)
@@ -375,8 +375,12 @@ static bool racial_power_process_input(PlayerType *player_ptr, rc_type *rc_ptr)
  */
 static bool racial_power_select_power(PlayerType *player_ptr, rc_type *rc_ptr)
 {
-    if (repeat_pull(&rc_ptr->command_code) && rc_ptr->command_code >= 0 && rc_ptr->command_code < rc_ptr->power_count()) {
-        return RC_CONTINUE;
+    const auto code = repeat_pull();
+    if (code) {
+        rc_ptr->command_code = *code;
+        if ((rc_ptr->command_code >= 0) && (rc_ptr->command_code < rc_ptr->power_count())) {
+            return true;
+        }
     }
 
     screen_save();
@@ -460,7 +464,7 @@ static bool racial_power_reduce_mana(PlayerType *player_ptr, rc_type *rc_ptr)
  */
 void do_cmd_racial_power(PlayerType *player_ptr)
 {
-    if (player_ptr->wild_mode) {
+    if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 

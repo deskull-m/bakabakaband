@@ -4,29 +4,26 @@
 #include "autopick/autopick-keys-table.h"
 #include "autopick/autopick-methods-table.h"
 #include "autopick/autopick-util.h"
-#include "core/show-file.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/special-object-flags.h"
-#include "object-hook/hook-quest.h"
 #include "object-hook/hook-weapon.h"
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "perception/object-perception.h"
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "util/string-processor.h"
-#include <optional>
 #include <sstream>
 #include <string>
+#include <tl/optional.hpp>
 
 #ifdef JP
 static char kanji_colon[] = "：";
@@ -35,16 +32,18 @@ static char kanji_colon[] = "：";
 /*!
  * @brief A function to create new entry
  */
-bool autopick_new_entry(autopick_type *entry, concptr str, bool allow_default)
+bool autopick_new_entry(autopick_type *entry, std::string_view str_view, bool allow_default)
 {
-    if (str[0] && str[1] == ':') {
-        switch (str[0]) {
+    if ((str_view.length() > 1) && (str_view[1] == ':')) {
+        switch (str_view[0]) {
         case '?':
         case '%':
         case 'A':
         case 'P':
         case 'C':
             return false;
+        default:
+            break;
         }
     }
 
@@ -53,6 +52,7 @@ bool autopick_new_entry(autopick_type *entry, concptr str, bool allow_default)
     entry->bonus = 0;
 
     byte act = DO_AUTOPICK | DO_DISPLAY;
+    auto str = str_view.data();
     while (true) {
         if ((act & DO_AUTOPICK) && *str == '!') {
             act &= ~DO_AUTOPICK;
@@ -243,7 +243,7 @@ bool autopick_new_entry(autopick_type *entry, concptr str, bool allow_default)
         }
     }
 
-    std::optional<int> previous_flag = std::nullopt;
+    tl::optional<int> previous_flag = tl::nullopt;
     if (MATCH_KEY2(KEY_ARTIFACT)) {
         entry->add(FLG_ARTIFACT);
         previous_flag = FLG_ARTIFACT;
@@ -341,12 +341,10 @@ bool autopick_new_entry(autopick_type *entry, concptr str, bool allow_default)
 /*!
  * @brief Get auto-picker entry from o_ptr.
  */
-void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, ItemEntity *o_ptr)
+void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, const ItemEntity *o_ptr)
 {
     /* Assume that object name is to be added */
     bool name = true;
-    GAME_TEXT name_str[MAX_NLEN + 32];
-    name_str[0] = '\0';
     entry->name.clear();
     entry->insc = o_ptr->inscription.value_or("");
     entry->action = DO_AUTOPICK | DO_DISPLAY;
@@ -426,25 +424,28 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, It
 
     if (o_ptr->is_melee_weapon()) {
         const auto &baseitem = o_ptr->get_baseitem();
-        if ((o_ptr->dd != baseitem.dd) || (o_ptr->ds != baseitem.ds)) {
+        if (o_ptr->damage_dice != baseitem.damage_dice) {
             entry->add(FLG_BOOSTED);
         }
     }
 
-    if (object_is_bounty(player_ptr, o_ptr)) {
+    if (o_ptr->is_bounty()) {
         entry->remove(FLG_WORTHLESS);
         entry->add(FLG_WANTED);
     }
 
-    const auto r_idx = i2enum<MonsterRaceId>(o_ptr->pval);
     const auto &bi_key = o_ptr->bi_key;
     const auto tval = bi_key.tval();
-    if ((tval == ItemKindType::CORPSE || tval == ItemKindType::STATUE) && monraces_info[r_idx].kind_flags.has(MonsterKindType::UNIQUE)) {
-        entry->add(FLG_UNIQUE);
+    if ((tval == ItemKindType::MONSTER_REMAINS) || (tval == ItemKindType::STATUE)) {
+        if (o_ptr->get_monrace().kind_flags.has(MonsterKindType::UNIQUE)) {
+            entry->add(FLG_UNIQUE);
+        }
     }
 
-    if (tval == ItemKindType::CORPSE && angband_strchr("pht", monraces_info[r_idx].d_char)) {
-        entry->add(FLG_HUMAN);
+    if (tval == ItemKindType::MONSTER_REMAINS) {
+        if (o_ptr->get_monrace().is_human()) {
+            entry->add(FLG_HUMAN);
+        }
     }
 
     if (o_ptr->is_spell_book() && !check_book_realm(player_ptr, bi_key)) {
@@ -457,12 +458,13 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, It
     PlayerClass pc(player_ptr);
     auto realm_except_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
-    if ((get_realm1_book(player_ptr) == tval) && !realm_except_class) {
+    PlayerRealm pr(player_ptr);
+    if ((pr.realm1().get_book() == tval) && !realm_except_class) {
         entry->add(FLG_REALM1);
         name = false;
     }
 
-    if ((get_realm2_book(player_ptr) == tval) && !realm_except_class) {
+    if ((pr.realm2().get_book() == tval) && !realm_except_class) {
         entry->add(FLG_REALM2);
         name = false;
     }
@@ -489,7 +491,7 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, It
         entry->add(FLG_LIGHTS);
     } else if (o_ptr->is_junk()) {
         entry->add(FLG_JUNKS);
-    } else if (tval == ItemKindType::CORPSE) {
+    } else if (tval == ItemKindType::MONSTER_REMAINS) {
         entry->add(FLG_CORPSES);
     } else if (o_ptr->is_spell_book()) {
         entry->add(FLG_SPELLBOOKS);
@@ -516,22 +518,20 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, It
     }
 
     if (!name) {
-        str_tolower(name_str);
-        entry->name = name_str;
+        entry->name = str_tolower(entry->name);
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL | OD_NAME_ONLY));
 
     /*
      * If necessary, add a '^' which indicates the
      * beginning of line.
      */
-    entry->name = std::string(is_hat_added ? "^" : "").append(item_name);
-    str_tolower(entry->name.data());
+    entry->name = str_tolower(std::string(is_hat_added ? "^" : "").append(item_name));
 }
 
-std::string shape_autopick_key(const std::string &key)
+static std::string shape_autopick_key(const std::string &key)
 {
 #ifdef JP
     return key;
@@ -545,7 +545,7 @@ std::string shape_autopick_key(const std::string &key)
 /*!
  * @brief Reconstruct preference line from entry
  */
-concptr autopick_line_from_entry(const autopick_type &entry)
+std::string autopick_line_from_entry(const autopick_type &entry)
 {
     std::stringstream ss;
     if (!(entry.action & DO_DISPLAY)) {
@@ -724,13 +724,11 @@ concptr autopick_line_from_entry(const autopick_type &entry)
     }
 
     if (entry.insc.empty()) {
-        auto str = ss.str();
-        return string_make(str.data());
+        return ss.str();
     }
 
     ss << '#' << entry.insc;
-    auto str = ss.str();
-    return string_make(str.data());
+    return ss.str();
 }
 
 /*!

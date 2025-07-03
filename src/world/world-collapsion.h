@@ -6,8 +6,10 @@ class AngbandWorld;
 class PlayerType;
 
 class WorldCollapsion {
-public:
+private:
     const int32_t OVER_COLLAPSION_DEGREE = 100000000LL;
+
+public:
     WorldCollapsion();
     void plus_timed_world_collapsion(AngbandWorld *w_ptr, PlayerType *player_ptr, int multi);
     void plus_collapsion(int value);
@@ -16,6 +18,7 @@ public:
     bool is_blown_away();
 
     int32_t collapse_degree{}; /*!< 時空崩壊度 */
+    WorldCollapsion &operator=(const WorldCollapsion &) = delete;
 };
 
 extern WorldCollapsion world_collapsion;

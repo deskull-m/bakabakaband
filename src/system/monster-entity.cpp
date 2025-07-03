@@ -1,15 +1,26 @@
 #include "system/monster-entity.h"
+#include "core/speed-table.h"
 #include "game-option/birth-options.h"
-#include "monster-race/monster-race.h"
-#include "monster-race/race-indice-types.h"
 #include "monster-race/race-kind-flags.h"
+#include "monster/monster-pain-describer.h"
 #include "monster/monster-status.h"
 #include "system/angband-system.h"
-#include "system/monster-race-info.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
+#include "system/redrawing-flags-updater.h"
 #include "term/term-color-types.h"
+#include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include <algorithm>
+
+MonsterEntity::MonsterEntity()
+{
+    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+        this->mtimed[mte] = 0;
+    }
+}
 
 /*!
  * @brief モンスターの属性に基づいた敵対関係の有無を返す
@@ -32,6 +43,16 @@ bool MonsterEntity::check_sub_alignments(const byte sub_align1, const byte sub_a
     auto this_good = any_bits(sub_align1, SUB_ALIGN_GOOD);
     this_good &= any_bits(sub_align2, SUB_ALIGN_EVIL);
     return this_good;
+}
+
+void MonsterEntity::wipe()
+{
+    *this = {};
+}
+
+MonsterEntity MonsterEntity::clone() const
+{
+    return *this;
 }
 
 bool MonsterEntity::is_friendly() const
@@ -60,8 +81,8 @@ bool MonsterEntity::is_hostile_to_melee(const MonsterEntity &other) const
         return !this->is_pet() && !other.is_pet();
     }
 
-    const auto &monrace1 = monraces_info[this->r_idx];
-    const auto &monrace2 = monraces_info[other.r_idx];
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
     const auto is_m1_wild = monrace1.wilderness_flags.has_any_of({ MonsterWildernessType::WILD_TOWN, MonsterWildernessType::WILD_ALL });
     const auto is_m2_wild = monrace2.wilderness_flags.has_any_of({ MonsterWildernessType::WILD_TOWN, MonsterWildernessType::WILD_ALL });
     if (is_m1_wild && is_m2_wild) {
@@ -118,61 +139,60 @@ bool MonsterEntity::is_original_ap() const
  */
 bool MonsterEntity::is_mimicry() const
 {
-    auto is_special_mimic = this->ap_r_idx == MonsterRaceId::BEHINDER;
+    auto is_special_mimic = this->ap_r_idx == MonraceId::BEHINDER;
     if (is_special_mimic) {
         return true;
     }
 
-    const auto &r_ref = this->get_appearance_monrace();
-    const auto mimic_symbols = "/|\\()[]=$,.!?&`#%<>+~";
-    if (angband_strchr(mimic_symbols, r_ref.d_char) == nullptr) {
+    const auto &monrace = this->get_appearance_monrace();
+    if (!monrace.symbol_char_is_any_of(R"(/|\()[]="$,.!?&`#%<>+~)")) {
         return false;
     }
 
-    if (r_ref.kind_flags.has(MonsterKindType::UNIQUE)) {
+    if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
         return true;
     }
 
-    return r_ref.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || this->is_asleep();
+    return monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || this->is_asleep();
 }
 
 bool MonsterEntity::is_valid() const
 {
-    return MonsterRace(this->r_idx).is_valid();
+    return MonraceList::is_valid(this->r_idx);
 }
 
-MonsterRaceId MonsterEntity::get_real_monrace_id() const
+MonraceId MonsterEntity::get_real_monrace_id() const
 {
     const auto &monrace = this->get_monrace();
     if (this->mflag2.has_not(MonsterConstantFlagType::CHAMELEON)) {
         return this->r_idx;
     }
 
-    return monrace.kind_flags.has(MonsterKindType::UNIQUE) ? MonsterRaceId::CHAMELEON_K : MonsterRaceId::CHAMELEON;
+    return monrace.kind_flags.has(MonsterKindType::UNIQUE) ? MonraceId::CHAMELEON_K : MonraceId::CHAMELEON;
 }
 
 /*!
  * @brief モンスターの真の種族定義を返す (CHAMAELEONフラグ専用)
  * @return 真のモンスター種族参照
  */
-MonsterRaceInfo &MonsterEntity::get_real_monrace() const
+MonraceDefinition &MonsterEntity::get_real_monrace() const
 {
-    return monraces_info[this->get_real_monrace_id()];
+    return MonraceList::get_instance().get_monrace(this->get_real_monrace_id());
 }
 
-MonsterRaceInfo &MonsterEntity::get_appearance_monrace() const
+MonraceDefinition &MonsterEntity::get_appearance_monrace() const
 {
-    return monraces_info[this->ap_r_idx];
+    return MonraceList::get_instance().get_monrace(this->ap_r_idx);
 }
 
-MonsterRaceInfo &MonsterEntity::get_monrace() const
+MonraceDefinition &MonsterEntity::get_monrace() const
 {
-    return monraces_info[this->r_idx];
+    return MonraceList::get_instance().get_monrace(this->r_idx);
 }
 
 short MonsterEntity::get_remaining_sleep() const
 {
-    return this->mtimed[MTIMED_CSLEEP];
+    return this->mtimed.at(MonsterTimedEffect::SLEEP);
 }
 
 bool MonsterEntity::is_dead() const
@@ -187,7 +207,7 @@ bool MonsterEntity::is_asleep() const
 
 short MonsterEntity::get_remaining_acceleration() const
 {
-    return this->mtimed[MTIMED_FAST];
+    return this->mtimed.at(MonsterTimedEffect::FAST);
 }
 
 bool MonsterEntity::is_accelerated() const
@@ -197,7 +217,7 @@ bool MonsterEntity::is_accelerated() const
 
 short MonsterEntity::get_remaining_deceleration() const
 {
-    return this->mtimed[MTIMED_SLOW];
+    return this->mtimed.at(MonsterTimedEffect::SLOW);
 }
 
 bool MonsterEntity::is_decelerated() const
@@ -207,7 +227,7 @@ bool MonsterEntity::is_decelerated() const
 
 short MonsterEntity::get_remaining_stun() const
 {
-    return this->mtimed[MTIMED_STUNNED];
+    return this->mtimed.at(MonsterTimedEffect::STUN);
 }
 
 bool MonsterEntity::is_stunned() const
@@ -217,7 +237,7 @@ bool MonsterEntity::is_stunned() const
 
 short MonsterEntity::get_remaining_confusion() const
 {
-    return this->mtimed[MTIMED_CONFUSED];
+    return this->mtimed.at(MonsterTimedEffect::CONFUSION);
 }
 
 bool MonsterEntity::is_confused() const
@@ -227,7 +247,7 @@ bool MonsterEntity::is_confused() const
 
 short MonsterEntity::get_remaining_fear() const
 {
-    return this->mtimed[MTIMED_MONFEAR];
+    return this->mtimed.at(MonsterTimedEffect::FEAR);
 }
 
 bool MonsterEntity::is_fearful() const
@@ -237,7 +257,7 @@ bool MonsterEntity::is_fearful() const
 
 short MonsterEntity::get_remaining_invulnerability() const
 {
-    return this->mtimed[MTIMED_INVULNER];
+    return this->mtimed.at(MonsterTimedEffect::INVULNERABILITY);
 }
 
 bool MonsterEntity::is_invulnerable() const
@@ -289,6 +309,15 @@ bool MonsterEntity::is_explodable() const
 }
 
 /*!
+ * @brief モンスターに召喚主がいるか
+ * @return 召喚主がいるならtrue
+ */
+bool MonsterEntity::has_parent() const
+{
+    return this->parent_m_idx > 0;
+}
+
+/*!
  * @brief モンスターを撃破した際の述語メッセージを返す
  * @return 撃破されたモンスターの述語
  */
@@ -296,6 +325,16 @@ std::string MonsterEntity::get_died_message() const
 {
     const auto &monrace = this->get_monrace();
     return monrace.get_died_message();
+}
+
+/*!
+ * @brief モンスターにダメージを与えた際の述語メッセージを返す
+ * @return ダメージを受けたモンスターの述語
+ */
+tl::optional<std::string> MonsterEntity::get_pain_message(std::string_view monster_name, int damage) const
+{
+    auto &monrace = this->get_monrace();
+    return MonsterPainDescriber(monrace.idx, monrace.symbol_definition.character, monster_name).describe(this->hp, damage, this->ml);
 }
 
 /*!
@@ -328,6 +367,77 @@ std::pair<TERM_COLOR, int> MonsterEntity::get_hp_bar_data() const
     return { TERM_RED, len };
 }
 
+tl::optional<bool> MonsterEntity::order_pet_whistle(const MonsterEntity &other) const
+{
+    const auto is_ordered_name = this->order_pet_named(other);
+    if (is_ordered_name) {
+        return *is_ordered_name;
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_ordered_race = monrace1.order_pet(monrace2);
+    if (is_ordered_race) {
+        return *is_ordered_race;
+    }
+
+    return this->order_pet_hp(other);
+}
+
+tl::optional<bool> MonsterEntity::order_pet_dismission(const MonsterEntity &other) const
+{
+    const auto is_ordered_name = this->order_pet_named(other);
+    if (is_ordered_name) {
+        return *is_ordered_name;
+    }
+
+    if (!this->has_parent() && other.has_parent()) {
+        return true;
+    }
+
+    if (this->has_parent() && !other.has_parent()) {
+        return false;
+    }
+
+    const auto &monrace1 = this->get_monrace();
+    const auto &monrace2 = other.get_monrace();
+    const auto is_ordered_race = monrace1.order_pet(monrace2);
+    if (is_ordered_race) {
+        return *is_ordered_race;
+    }
+
+    return this->order_pet_hp(other);
+}
+
+/*!
+ * @brief モンスターの個体加速を設定する / Get initial monster speed
+ * @param force_fixed_speed 速度を固定にする(個体差を適用しない)か否か
+ */
+void MonsterEntity::set_individual_speed(bool force_fixed_speed)
+{
+    const auto &monrace = this->get_monrace();
+    auto speed = monrace.speed;
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !force_fixed_speed) {
+        /* Allow some small variation per monster */
+        int i = speed_to_energy(monrace.speed) / (one_in_(4) ? 3 : 10);
+        if (i) {
+            speed += static_cast<uint8_t>(rand_spread(0, i));
+        }
+    }
+
+    if (speed > STANDARD_SPEED + 99) {
+        speed = STANDARD_SPEED + 99;
+    }
+
+    this->mspeed = speed;
+}
+
+void MonsterEntity::set_position(const Pos2D &pos)
+{
+    this->fy = pos.y;
+    this->fx = pos.x;
+}
+
 /*!
  * @brief モンスターを敵に回す
  */
@@ -340,7 +450,162 @@ void MonsterEntity::set_hostile()
     this->mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
 }
 
+/*
+ * 捕獲・死亡の際にカメレオンの変身を元に戻す
+ */
+void MonsterEntity::reset_chameleon_polymorph()
+{
+    auto real_monrace_id = this->get_real_monrace_id();
+    this->r_idx = real_monrace_id;
+    this->ap_r_idx = real_monrace_id;
+}
+
 std::string MonsterEntity::get_pronoun_of_summoned_kin() const
 {
     return this->get_monrace().get_pronoun_of_summoned_kin();
+}
+
+void MonsterEntity::make_lore_treasure(int num_item, int num_gold) const
+{
+    auto &monrace = this->get_monrace();
+    if (!this->is_original_ap()) {
+        return;
+    }
+
+    monrace.make_lore_treasure(num_item, num_gold);
+    if (LoreTracker::get_instance().is_tracking(this->r_idx)) {
+        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
+    }
+}
+
+tl::optional<bool> MonsterEntity::order_pet_named(const MonsterEntity &other) const
+{
+    if (this->is_named() && !other.is_named()) {
+        return true;
+    }
+
+    if (!this->is_named() && other.is_named()) {
+        return false;
+    }
+
+    return tl::nullopt;
+}
+
+tl::optional<bool> MonsterEntity::order_pet_hp(const MonsterEntity &other) const
+{
+    if (this->hp > other.hp) {
+        return true;
+    }
+
+    if (this->hp < other.hp) {
+        return false;
+    }
+
+    return tl::nullopt;
+}
+
+/*!
+ * @brief モンスターの目標地点をセットする
+ * @param pos 目標座標
+ */
+void MonsterEntity::set_target(const Pos2D &pos)
+{
+    this->target_y = pos.y;
+    this->target_x = pos.x;
+}
+
+/*!
+ * @brief モンスターの目標地点をリセットする
+ */
+void MonsterEntity::reset_target()
+{
+    this->set_target({ 0, 0 });
+}
+
+/*!
+ * @brief モンスターを友好的にする
+ */
+void MonsterEntity::set_friendly()
+{
+    this->mflag2.set(MonsterConstantFlagType::FRIENDLY);
+}
+
+bool MonsterEntity::is_riding() const
+{
+    return this->mflag2.has(MonsterConstantFlagType::RIDING);
+}
+
+Pos2D MonsterEntity::get_position() const
+{
+    return { this->fy, this->fx };
+}
+
+Pos2D MonsterEntity::get_target_position() const
+{
+    return { this->target_y, this->target_x };
+}
+
+bool MonsterEntity::can_ring_boss_call_nazgul() const
+{
+    auto is_boss = this->r_idx == MonraceId::MORGOTH;
+    is_boss |= this->r_idx == MonraceId::SAURON;
+    is_boss |= this->r_idx == MonraceId::ANGMAR;
+    const auto &nazgul = MonraceList::get_instance().get_monrace(MonraceId::NAZGUL);
+    const auto is_nazgul_alive = (nazgul.cur_num + 2) < nazgul.max_num;
+    return is_boss && is_nazgul_alive;
+}
+
+std::string MonsterEntity::build_looking_description(bool needs_attitude) const
+{
+    const auto description = this->build_damage_description();
+    const auto attitude = needs_attitude ? this->build_attitude_description() : "";
+    const std::string clone(this->mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
+    const auto &apparent_monrace = this->get_appearance_monrace();
+    if ((apparent_monrace.r_tkills > 0) && this->mflag2.has_not(MonsterConstantFlagType::KAGE)) {
+        constexpr auto fmt = _("レベル%d, %s%s%s", "Level %d, %s%s%s");
+        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data());
+    }
+
+    constexpr auto fmt = _("レベル???, %s%s%s", "Level ???, %s%s%s");
+    return format(fmt, description.data(), attitude.data(), clone.data());
+}
+
+std::string MonsterEntity::build_damage_description() const
+{
+    const auto is_living = this->has_living_flag(true);
+    const auto damage_ratio = this->maxhp > 0 ? 100L * this->hp / this->maxhp : 0;
+    if (!this->ml) {
+        return _("損傷具合不明", "damage unknown");
+    }
+
+    if (this->hp >= this->maxhp) {
+        return is_living ? _("無傷", "unhurt") : _("無ダメージ", "undamaged");
+    }
+
+    if (damage_ratio >= 60) {
+        return is_living ? _("軽傷", "somewhat wounded") : _("小ダメージ", "somewhat damaged");
+    }
+
+    if (damage_ratio >= 25) {
+        return is_living ? _("負傷", "wounded") : _("中ダメージ", "damaged");
+    }
+
+    if (damage_ratio >= 10) {
+        return is_living ? _("重傷", "badly wounded") : _("大ダメージ", "badly damaged");
+    }
+
+    return is_living ? _("半死半生", "almost dead") : _("倒れかけ", "almost destroyed");
+}
+
+std::string MonsterEntity::build_attitude_description() const
+{
+    if (this->is_pet()) {
+        return _(", ペット", ", pet");
+    }
+
+    if (this->is_friendly()) {
+        return _(", 友好的", ", friendly");
+    }
+
+    return "";
 }

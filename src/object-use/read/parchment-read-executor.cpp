@@ -34,11 +34,11 @@ bool ParchmentReadExecutor::read()
     std::stringstream ss;
     ss << "book-" << std::setfill('0') << std::right << std::setw(3) << *this->o_ptr->bi_key.sval();
     ss << "_" << _("jp", "en") << ".txt";
-    const auto item_name = describe_flavor(this->player_ptr, this->o_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(this->player_ptr, *this->o_ptr, OD_NAME_ONLY);
     auto path = path_build(ANGBAND_DIR_FILE, "books");
     path.append(ss.str());
     const auto &filename = path.string();
-    (void)show_file(this->player_ptr, true, filename, 0, 0, item_name);
+    FileDisplayer(this->player_ptr->name).display(true, filename, 0, 0, item_name);
     screen_load();
     return false;
 }

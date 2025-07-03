@@ -1,28 +1,22 @@
 #include "spell-realm/spells-chaos.h"
-#include "core/window-redrawer.h"
 #include "dungeon/quest.h"
-#include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
-#include "floor/cave.h"
-#include "floor/geometry.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status-setter.h"
-#include "monster/monster-status.h"
 #include "player-info/class-info.h"
 #include "player/player-damage.h"
 #include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-launcher.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
-#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 
@@ -38,11 +32,11 @@ void call_the_void(PlayerType *player_ptr)
     const auto &floor = *player_ptr->current_floor_ptr;
     /* 虚無招来そのものを唱えることによる時空崩壊度進行(*破壊*とは別) */
     wc_ptr->plus_perm_collapsion(150);
-    for (int i = 0; i < 9; i++) {
-        const Pos2D p_pos_neighbor(player_ptr->y + ddy_ddd[i], player_ptr->x + ddx_ddd[i]);
+    for (const auto &d : Direction::directions()) {
+        const auto p_pos_neighbor = player_ptr->get_neighbor(d);
         const auto &grid = floor.get_grid(p_pos_neighbor);
-        if (!grid.cave_has_flag(TerrainCharacteristics::PROJECT)) {
-            if (!grid.mimic || grid.get_terrain_mimic_raw().flags.has_not(TerrainCharacteristics::PROJECT) || !grid.get_terrain().is_permanent_wall()) {
+        if (!grid.has(TerrainCharacteristics::PROJECTION)) {
+            if (!grid.mimic || grid.get_terrain(TerrainKind::MIMIC_RAW).flags.has_not(TerrainCharacteristics::PROJECTION) || !grid.get_terrain().is_permanent_wall()) {
                 do_call = false;
                 break;
             }
@@ -50,29 +44,21 @@ void call_the_void(PlayerType *player_ptr)
     }
 
     if (do_call) {
-        for (int i = 1; i < 10; i++) {
-            if (i - 5) {
-                fire_ball(player_ptr, AttributeType::ROCKET, i, 175, 2);
-            }
+        for (const auto &dir : Direction::directions_8()) {
+            fire_ball(player_ptr, AttributeType::ROCKET, dir, 175, 2);
         }
-
-        for (int i = 1; i < 10; i++) {
-            if (i - 5) {
-                fire_ball(player_ptr, AttributeType::MANA, i, 175, 3);
-            }
+        for (const auto &dir : Direction::directions_8()) {
+            fire_ball(player_ptr, AttributeType::MANA, dir, 175, 3);
         }
-
-        for (int i = 1; i < 10; i++) {
-            if (i - 5) {
-                fire_ball(player_ptr, AttributeType::NUKE, i, 175, 4);
-            }
+        for (const auto &dir : Direction::directions_8()) {
+            fire_ball(player_ptr, AttributeType::NUKE, dir, 175, 4);
         }
 
         return;
     }
 
     auto is_special_fllor = floor.is_in_quest() && QuestType::is_fixed(floor.quest_number);
-    is_special_fllor |= floor.dun_level == 0;
+    is_special_fllor |= !floor.is_underground();
     if (is_special_fllor) {
         msg_print(_("地面が揺れた。", "The ground trembles."));
         return;
@@ -111,14 +97,14 @@ void call_the_void(PlayerType *player_ptr)
 static void erase_wall(FloorType &floor, const Pos2D &pos)
 {
     auto &grid = floor.get_grid(pos);
-    const auto &terrain = grid.get_terrain_mimic_raw();
+    const auto &terrain = grid.get_terrain(TerrainKind::MIMIC_RAW);
     grid.info &= ~(CAVE_ROOM | CAVE_ICKY);
     if ((grid.mimic == 0) || terrain.flags.has_not(TerrainCharacteristics::HURT_DISI)) {
         return;
     }
 
-    grid.mimic = feat_state(&floor, grid.mimic, TerrainCharacteristics::HURT_DISI);
-    const auto &terrain_changed = grid.get_terrain_mimic_raw();
+    grid.mimic = floor.get_dungeon_definition().convert_terrain_id(grid.mimic, TerrainCharacteristics::HURT_DISI);
+    const auto &terrain_changed = grid.get_terrain(TerrainKind::MIMIC_RAW);
     if (terrain_changed.flags.has_not(TerrainCharacteristics::REMEMBER)) {
         grid.info &= ~(CAVE_MARK);
     }
@@ -131,15 +117,9 @@ static void erase_wall(FloorType &floor, const Pos2D &pos)
  */
 static void erase_all_walls(FloorType &floor)
 {
-    for (auto x = 0; x < floor.width; x++) {
-        erase_wall(floor, { 0, x });
-        erase_wall(floor, { floor.height - 1, x });
-    }
-
-    for (auto y = 1; y < (floor.height - 1); y++) {
-        erase_wall(floor, { y, 0 });
-        erase_wall(floor, { y, floor.width - 1 });
-    }
+    floor.get_area().each_edge([&](const Pos2D &pos) {
+        erase_wall(floor, pos);
+    });
 }
 
 /*!
@@ -153,29 +133,26 @@ bool vanish_dungeon(PlayerType *player_ptr)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     auto is_special_floor = floor.is_in_quest() && QuestType::is_fixed(floor.quest_number);
-    is_special_floor |= (floor.dun_level == 0);
+    is_special_floor |= !floor.is_underground();
     if (is_special_floor) {
         return false;
     }
 
-    for (auto y = 1; y < floor.height - 1; y++) {
-        for (auto x = 1; x < floor.width - 1; x++) {
-            const Pos2D pos(y, x);
-            auto &grid = floor.get_grid(pos);
-            const auto &terrrain = grid.get_terrain();
-            grid.info &= ~(CAVE_ROOM | CAVE_ICKY);
-            const auto &monster = floor.m_list[grid.m_idx];
-            if (grid.has_monster() && monster.is_asleep()) {
-                (void)set_monster_csleep(player_ptr, grid.m_idx, 0);
-                if (monster.ml) {
-                    const auto m_name = monster_desc(player_ptr, &monster, 0);
-                    msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
-                }
+    for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+        auto &grid = floor.get_grid(pos);
+        const auto &terrrain = grid.get_terrain();
+        grid.info &= ~(CAVE_ROOM | CAVE_ICKY);
+        const auto &monster = floor.m_list[grid.m_idx];
+        if (grid.has_monster() && monster.is_asleep()) {
+            (void)set_monster_csleep(player_ptr, grid.m_idx, 0);
+            if (monster.ml) {
+                const auto m_name = monster_desc(player_ptr, monster, 0);
+                msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
+        }
 
-            if (terrrain.flags.has(TerrainCharacteristics::HURT_DISI)) {
-                cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::HURT_DISI);
-            }
+        if (terrrain.flags.has(TerrainCharacteristics::HURT_DISI)) {
+            cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
         }
     }
 
@@ -210,31 +187,29 @@ bool vanish_dungeon(PlayerType *player_ptr)
  */
 void cast_meteor(PlayerType *player_ptr, int dam, POSITION rad)
 {
-    int b = 10 + randint1(10);
-    for (int i = 0; i < b; i++) {
-        POSITION y = 0, x = 0;
+    const auto b = 10 + randint1(10);
+    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *player_ptr->current_floor_ptr;
+    for (auto i = 0; i < b; i++) {
+        Pos2D pos(0, 0);
         int count;
-
         for (count = 0; count <= 20; count++) {
-            int dy, dx, d;
-
-            x = player_ptr->x - 8 + randint0(17);
-            y = player_ptr->y - 8 + randint0(17);
-            dx = (player_ptr->x > x) ? (player_ptr->x - x) : (x - player_ptr->x);
-            dy = (player_ptr->y > y) ? (player_ptr->y - y) : (y - player_ptr->y);
-            d = (dy > dx) ? (dy + (dx >> 1)) : (dx + (dy >> 1));
+            const Pos2DVec vec(randint0(17) - 8, randint0(17) - 8);
+            pos = p_pos + vec;
+            const auto dx = std::abs(player_ptr->x - pos.x);
+            const auto dy = std::abs(player_ptr->y - pos.y);
+            const auto d = (dy > dx) ? (dy + (dx >> 1)) : (dx + (dy >> 1));
 
             if (d >= 9) {
                 continue;
             }
 
-            auto *floor_ptr = player_ptr->current_floor_ptr;
-            if (!in_bounds(floor_ptr, y, x)) {
+            if (!floor.contains(pos)) {
                 continue;
             }
 
-            const auto is_projectable = projectable(player_ptr, player_ptr->y, player_ptr->x, y, x);
-            if (!is_projectable || !cave_has_flag_bold(floor_ptr, y, x, TerrainCharacteristics::PROJECT)) {
+            const auto is_projectable = projectable(floor, p_pos, pos);
+            if (!is_projectable || !floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
 
@@ -245,6 +220,6 @@ void cast_meteor(PlayerType *player_ptr, int dam, POSITION rad)
             continue;
         }
 
-        project(player_ptr, 0, rad, y, x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
+        project(player_ptr, 0, rad, pos.y, pos.x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
     }
 }

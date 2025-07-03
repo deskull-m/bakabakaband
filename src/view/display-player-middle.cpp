@@ -20,12 +20,13 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "sv-definition/sv-bow-types.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "term/term-color-types.h"
-#include "timed-effect/player-deceleration.h"
+#include "term/z-form.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-util.h"
 #include "view/status-first-page.h"
@@ -42,7 +43,7 @@ static void display_player_melee_bonus(PlayerType *player_ptr, int hand, int han
 {
     HIT_PROB show_tohit = player_ptr->dis_to_h[hand];
     int show_todam = player_ptr->dis_to_d[hand];
-    auto *o_ptr = &player_ptr->inventory_list[INVEN_MAIN_HAND + hand];
+    auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + hand].get();
 
     if (o_ptr->is_known()) {
         show_tohit += o_ptr->to_h;
@@ -97,7 +98,7 @@ static void display_sub_hand(PlayerType *player_ptr)
  */
 static void display_bow_hit_damage(PlayerType *player_ptr)
 {
-    const auto &item = player_ptr->inventory_list[INVEN_BOW];
+    const auto &item = *player_ptr->inventory[INVEN_BOW];
     auto show_tohit = player_ptr->dis_to_h_b;
     auto show_todam = 0;
     if (item.is_known()) {
@@ -133,8 +134,8 @@ static void display_bow_hit_damage(PlayerType *player_ptr)
 static void display_shoot_magnification(PlayerType *player_ptr)
 {
     int tmul = 0;
-    if (player_ptr->inventory_list[INVEN_BOW].is_valid()) {
-        tmul = player_ptr->inventory_list[INVEN_BOW].get_arrow_magnification();
+    if (player_ptr->inventory[INVEN_BOW]->is_valid()) {
+        tmul = player_ptr->inventory[INVEN_BOW]->get_arrow_magnification();
         if (player_ptr->xtra_might) {
             tmul++;
         }
@@ -189,7 +190,7 @@ static int calc_temporary_speed(PlayerType *player_ptr)
             tmp_speed += 10;
         }
 
-        if (player_ptr->effects()->deceleration()->is_slow()) {
+        if (player_ptr->effects()->deceleration().is_slow()) {
             tmp_speed -= 10;
         }
 
@@ -284,7 +285,7 @@ static void display_player_exp(PlayerType *player_ptr)
  */
 static void display_playtime_in_game(PlayerType *player_ptr)
 {
-    const auto &[day, hour, min] = w_ptr->extract_date_time(player_ptr->start_race);
+    const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     const auto is_days_countable = day < MAX_DAYS;
     const std::string fmt = is_days_countable ? _("%d日目 %2d:%02d", "Day %d %2d:%02d") : _("*****日目 %2d:%02d", "Day ***** %2d:%02d");
     const auto mes = is_days_countable ? format(fmt.data(), day, hour, min) : format(fmt.data(), hour, min);
@@ -306,19 +307,6 @@ static void display_playtime_in_game(PlayerType *player_ptr)
     } else {
         display_player_one_line(ENTRY_SP, format("%4d/%4d", player_ptr->csp, player_ptr->msp), TERM_RED);
     }
-}
-
-/*!
- * @brief 現実世界におけるプレイ時間を表示する
- * @param なし
- * @param なし
- */
-static void display_real_playtime(void)
-{
-    uint32_t play_hour = w_ptr->play_time / (60 * 60);
-    uint32_t play_min = (w_ptr->play_time / 60) % 60;
-    uint32_t play_sec = w_ptr->play_time % 60;
-    display_player_one_line(ENTRY_PLAY_TIME, format("%.2lu:%.2lu:%.2lu", play_hour, play_min, play_sec), TERM_L_GREEN);
 }
 
 /*!
@@ -348,5 +336,5 @@ void display_player_middle(PlayerType *player_ptr)
     display_player_exp(player_ptr);
     display_player_one_line(ENTRY_GOLD, format("%ld", player_ptr->au), TERM_L_GREEN);
     display_playtime_in_game(player_ptr);
-    display_real_playtime();
+    display_player_one_line(ENTRY_PLAY_TIME, AngbandWorld::get_instance().format_real_playtime(), TERM_L_GREEN);
 }

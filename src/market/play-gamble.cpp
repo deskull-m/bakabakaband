@@ -21,14 +21,14 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
 {
     screen_save();
     if (cmd == BACT_GAMBLE_RULES) {
-        (void)show_file(player_ptr, true, _("jgambling.txt", "gambling.txt"), 0, 0);
+        FileDisplayer(player_ptr->name).display(true, _("jgambling.txt", "gambling.txt"), 0, 0);
         screen_load();
         return;
     }
 
     if (player_ptr->au < 1) {
         msg_print(_("おい！おまえ一文なしじゃないか！こっから出ていけ！", "Hey! You don't have gold - get out of here!"));
-        msg_print(nullptr);
+        msg_erase();
         screen_load();
         return;
     }
@@ -39,19 +39,19 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
     constexpr auto prompt = _("賭け金？", "Your wager ?");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
     if (!wager) {
-        msg_print(nullptr);
+        msg_erase();
         screen_load();
         return;
     }
 
     if (wager > player_ptr->au) {
         msg_print(_("おい！金が足りないじゃないか！出ていけ！", "Hey! You don't have the gold - get out of here!"));
-        msg_print(nullptr);
+        msg_erase();
         screen_load();
         return;
     }
 
-    msg_print(nullptr);
+    msg_erase();
     auto win = 0;
     auto odds = 0;
     auto oldgold = player_ptr->au;
@@ -97,7 +97,7 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
             do {
                 msg_print(_("なにかキーを押すともう一回振ります。", "Hit any key to roll again"));
 
-                msg_print(nullptr);
+                msg_erase();
                 roll1 = randint1(6);
                 roll2 = randint1(6);
                 roll3 = roll1 + roll2;
@@ -122,7 +122,7 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
                     continue;
                 }
 
-                msg_print(nullptr);
+                msg_erase();
                 auto roll1 = randint0(10);
                 prt(format(_("ルーレットは回り、止まった。勝者は %d番だ。", "The wheel spins to a stop and the winner is %d"), roll1), 13, 3);
                 prt("", 9, 0);
@@ -240,7 +240,7 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
         prt("", 18, 37);
         if (wager > player_ptr->au) {
             msg_print(_("おい！金が足りないじゃないか！ここから出て行け！", "Hey! You don't have the gold - get out of here!"));
-            msg_print(nullptr);
+            msg_erase();
             break;
         }
 
@@ -260,6 +260,6 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
         chg_virtue(player_ptr, Virtue::CHANCE, -3);
     }
 
-    msg_print(nullptr);
+    msg_erase();
     screen_load();
 }

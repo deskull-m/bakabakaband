@@ -11,15 +11,10 @@
 
 #include "wizard/wizard-special-process.h"
 #include "artifact/fixed-art-generator.h"
-#include "artifact/fixed-art-types.h"
-#include "birth/inventory-initializer.h"
-#include "cmd-io/cmd-dump.h"
-#include "cmd-io/cmd-help.h"
 #include "cmd-io/cmd-save.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
-#include "core/window-redrawer.h"
 #include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
@@ -30,88 +25,63 @@
 #include "game-option/option-types-table.h"
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
-#include "info-reader/fixed-map-parser.h"
-#include "inventory/inventory-object.h"
-#include "inventory/inventory-slot-types.h"
 #include "io/files-util.h"
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
-#include "market/arena.h"
+#include "mind/mind-elementalist.h"
 #include "monster-floor/monster-remover.h"
-#include "monster-floor/monster-summon.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
-#include "monster/monster-info.h"
-#include "monster/monster-status.h"
-#include "monster/smart-learn-types.h"
-#include "mutation/mutation-investor-remover.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
-#include "object-enchant/trc-types.h"
-#include "object-enchant/trg-types.h"
-#include "object/object-kind-hook.h"
 #include "perception/object-perception.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
+#include "player-info/class-types.h"
 #include "player-info/race-info.h"
 #include "player-info/race-types.h"
 #include "player-info/self-info.h"
 #include "player-status/player-energy.h"
 #include "player/digestion-processor.h"
-#include "player/patron.h"
+#include "player/player-realm.h"
 #include "player/player-skill.h"
+#include "player/player-spell-status.h"
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "player/race-info-table.h"
-#include "spell-kind/spells-detection.h"
-#include "spell-kind/spells-sight.h"
-#include "spell-kind/spells-teleport.h"
 #include "spell-kind/spells-world.h"
-#include "spell/spells-object.h"
 #include "spell/spells-status.h"
-#include "spell/spells-summon.h"
 #include "status/bad-status-setter.h"
-#include "status/experience.h"
-#include "system/angband-system.h"
-#include "system/angband-version.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
+#include "system/enums/dungeon/dungeon-id.h"
+#include "system/floor/floor-info.h"
+#include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include "target/grid-selector.h"
-#include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
-#include "util/bit-flags-calculator.h"
 #include "util/candidate-selector.h"
-#include "util/enum-converter.h"
-#include "util/finalizer.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "wizard/spoiler-table.h"
 #include "wizard/tval-descriptions-table.h"
 #include "wizard/wizard-messages.h"
-#include "wizard/wizard-spells.h"
-#include "wizard/wizard-spoiler.h"
 #include "world/world.h"
 #include <algorithm>
-#include <optional>
+#include <fstream>
 #include <span>
 #include <sstream>
+#include <tl/optional.hpp>
 #include <tuple>
 #include <vector>
-
-#define NUM_O_SET 8
-#define NUM_O_BIT 32
 
 /*!
  * @brief プレイヤーを完全回復する
@@ -127,18 +97,18 @@ void wiz_cure_all(PlayerType *player_ptr)
     msg_print("You're fully cured by wizard command.");
 }
 
-static std::optional<tval_desc> wiz_select_tval()
+static tl::optional<tval_desc> wiz_select_tval()
 {
     CandidateSelector cs(_("アイテム種別を選んで下さい", "Get what type of object? "), 15);
     const auto choice = cs.select(tval_desc_list, [](const auto &tval) { return tval.desc; });
 
-    return (choice != tval_desc_list.end()) ? std::make_optional(*choice) : std::nullopt;
+    return (choice != tval_desc_list.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 
-static std::optional<short> wiz_select_sval(const tval_desc &td)
+static tl::optional<short> wiz_select_sval(const tval_desc &td)
 {
     std::vector<short> bi_ids;
-    for (const auto &baseitem : baseitems_info) {
+    for (const auto &baseitem : BaseitemList::get_instance()) {
         if (!baseitem.is_valid() || baseitem.bi_key.tval() != td.tval) {
             continue;
         }
@@ -149,9 +119,10 @@ static std::optional<short> wiz_select_sval(const tval_desc &td)
     const auto prompt = format(_("%s群の具体的なアイテムを選んで下さい", "What Kind of %s? "), td.desc);
 
     CandidateSelector cs(prompt, 15);
+    const auto &baseitems = BaseitemList::get_instance();
     const auto choice = cs.select(bi_ids,
-        [](short bi_id) { return baseitems_info[bi_id].stripped_name(); });
-    return (choice != bi_ids.end()) ? std::make_optional(*choice) : std::nullopt;
+        [&baseitems](short bi_id) { return baseitems.get_baseitem(bi_id).stripped_name(); });
+    return (choice != bi_ids.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 
 /*!
@@ -163,11 +134,11 @@ static std::optional<short> wiz_select_sval(const tval_desc &td)
  * This function returns the bi_id of an object type, or zero if failed
  * List up to 50 choices in three columns
  */
-static std::optional<short> wiz_create_itemtype()
+static tl::optional<short> wiz_create_itemtype()
 {
     auto selection = wiz_select_tval();
     if (!selection) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     return wiz_select_sval(*selection);
@@ -193,118 +164,73 @@ void wiz_create_item(PlayerType *player_ptr)
         return;
     }
 
-    const auto &baseitem = baseitems_info[*bi_id];
+    const auto &baseitem = BaseitemList::get_instance().get_baseitem(*bi_id);
     if (baseitem.gen_flags.has(ItemGenerationTraitType::INSTA_ART)) {
-        for (const auto &[a_idx, artifact] : artifacts_info) {
-            if ((a_idx == FixedArtifactId::NONE) || (artifact.bi_key != baseitem.bi_key)) {
+        for (const auto &[fa_id, artifact] : ArtifactList::get_instance()) {
+            if (artifact.bi_key != baseitem.bi_key) {
                 continue;
             }
 
-            (void)create_named_art(player_ptr, a_idx, player_ptr->y, player_ptr->x);
+            (void)create_named_art(player_ptr, fa_id, player_ptr->y, player_ptr->x);
             msg_print("Allocated(INSTA_ART).");
             return;
         }
     }
 
     ItemEntity item;
-    item.prep(*bi_id);
+    item.generate(*bi_id);
     ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(player_ptr, &item, -1, player_ptr->y, player_ptr->x);
+    (void)drop_near(player_ptr, item, player_ptr->get_position());
     msg_print("Allocated.");
 }
 
 /*!
  * @brief 指定したIDの固定アーティファクトの名称を取得する
  *
- * @param a_idx 固定アーティファクトのID
+ * @param fa_id 固定アーティファクトのID
  * @return 固定アーティファクトの名称(Ex. ★ロング・ソード『リンギル』)を保持する std::string オブジェクト
  */
-static std::string wiz_make_named_artifact_desc(PlayerType *player_ptr, FixedArtifactId a_idx)
+static std::string wiz_make_named_artifact_desc(PlayerType *player_ptr, FixedArtifactId fa_id)
 {
-    const auto &artifact = ArtifactsInfo::get_instance().get_artifact(a_idx);
-    ItemEntity item;
-    item.prep(lookup_baseitem_id(artifact.bi_key));
-    item.fixed_artifact_idx = a_idx;
-    item.mark_as_known();
-    return describe_flavor(player_ptr, &item, OD_NAME_ONLY);
+    const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
+    ItemEntity item(artifact.bi_key);
+    item.fa_id = fa_id;
+    return describe_flavor(player_ptr, item, OD_NAME_ONLY | OD_STORE);
 }
 
 /**
  * @brief 固定アーティファクトをリストから選択する
  *
- * @param a_idx_list 選択する候補となる固定アーティファクトのIDのリスト
- * @return 選択した固定アーティファクトのIDを返す。但しキャンセルした場合は std::nullopt を返す。
+ * @param fa_ids 選択する候補となる固定アーティファクトのIDのリスト
+ * @return 選択した固定アーティファクトのIDを返す。但しキャンセルした場合は tl::nullopt を返す。
  */
-static std::optional<FixedArtifactId> wiz_select_named_artifact(PlayerType *player_ptr, const std::vector<FixedArtifactId> &a_idx_list)
+static tl::optional<FixedArtifactId> wiz_select_named_artifact(PlayerType *player_ptr, const std::vector<FixedArtifactId> &fa_ids)
 {
-    constexpr auto MAX_PER_PAGE = 20UL;
-    const auto page_max = (a_idx_list.size() - 1) / MAX_PER_PAGE + 1;
-    auto current_page = 0UL;
+    CandidateSelector cs("Which artifact: ", 15);
 
-    screen_save();
-
-    std::optional<FixedArtifactId> selected_a_idx;
-
-    while (!selected_a_idx.has_value()) {
-        const auto page_base_idx = current_page * MAX_PER_PAGE;
-        for (auto i = 0U; i < MAX_PER_PAGE + 1; ++i) {
-            term_erase(14, i + 1, 255);
-        }
-        const auto page_item_count = std::min(MAX_PER_PAGE, a_idx_list.size() - page_base_idx);
-        for (auto i = 0U; i < page_item_count; ++i) {
-            std::stringstream ss;
-            ss << I2A(i) << ") " << wiz_make_named_artifact_desc(player_ptr, a_idx_list[page_base_idx + i]);
-            put_str(ss.str(), i + 1, 15);
-        }
-        if (page_max > 1) {
-            put_str(format("-- more (%d/%d) --", current_page + 1, page_max), page_item_count + 1, 15);
-        }
-
-        const auto command = input_command("Which artifact: ");
-        const auto cmd = command.value_or(ESCAPE);
-        switch (cmd) {
-        case ESCAPE:
-            screen_load();
-            return selected_a_idx;
-        case ' ':
-            current_page++;
-            if (current_page >= page_max) {
-                current_page = 0;
-            }
-            break;
-        default:
-            const auto select_idx = A2I(cmd) + page_base_idx;
-            if (select_idx < a_idx_list.size()) {
-                selected_a_idx = a_idx_list[select_idx];
-            }
-            break;
-        }
-    }
-
-    screen_load();
-
-    return selected_a_idx;
+    auto describe_artifact = [player_ptr](FixedArtifactId fa_id) { return wiz_make_named_artifact_desc(player_ptr, fa_id); };
+    const auto it = cs.select(fa_ids, describe_artifact);
+    return (it != fa_ids.end()) ? tl::make_optional(*it) : tl::nullopt;
 }
 
 /**
  * @brief 指定したカテゴリの固定アーティファクトのIDのリストを得る
- *
  * @param group_artifact 固定アーティファクトのカテゴリ
  * @return 該当のカテゴリの固定アーティファクトのIDのリスト
  */
-static std::vector<FixedArtifactId> wiz_collect_group_a_idx(const grouper &group_artifact)
+static std::vector<FixedArtifactId> wiz_collect_group_fa_ids(const grouper &group_artifact)
 {
-    const auto &[tval_list, name] = group_artifact;
-    std::vector<FixedArtifactId> a_idx_list;
-    for (auto tval : tval_list) {
-        for (const auto &[a_idx, artifact] : artifacts_info) {
+    const auto &[tvals, name] = group_artifact;
+    std::vector<FixedArtifactId> fa_ids;
+    for (const auto tval : tvals) {
+        for (const auto &[fa_id, artifact] : ArtifactList::get_instance()) {
             if (artifact.bi_key.tval() == tval) {
-                a_idx_list.push_back(a_idx);
+                fa_ids.push_back(fa_id);
             }
         }
     }
 
-    return a_idx_list;
+    return fa_ids;
 }
 
 /*!
@@ -321,33 +247,32 @@ void wiz_create_named_art(PlayerType *player_ptr)
         put_str(ss.str(), i + 1, 15);
     }
 
-    std::optional<FixedArtifactId> create_a_idx;
-    while (!create_a_idx.has_value()) {
+    tl::optional<FixedArtifactId> created_fa_id;
+    while (!created_fa_id) {
         const auto command = input_command("Kind of artifact: ");
-        const auto cmd = command.value_or(ESCAPE);
-        switch (cmd) {
-        case ESCAPE:
+        if (!command) {
             screen_load();
             return;
-        default:
-            if (auto idx = A2I(cmd); idx < group_artifact_list.size()) {
-                const auto &a_idx_list = wiz_collect_group_a_idx(group_artifact_list[idx]);
-                create_a_idx = wiz_select_named_artifact(player_ptr, a_idx_list);
-            }
-
-            break;
         }
+
+        const auto idx = A2I(*command);
+        if (idx >= group_artifact_list.size()) {
+            continue;
+        }
+
+        auto fa_ids = wiz_collect_group_fa_ids(group_artifact_list[idx]);
+        std::sort(fa_ids.begin(), fa_ids.end(), [](FixedArtifactId id1, FixedArtifactId id2) { return ArtifactList::get_instance().order(id1, id2); });
+        created_fa_id = wiz_select_named_artifact(player_ptr, fa_ids);
     }
 
     screen_load();
-    const auto a_idx = create_a_idx.value();
-    const auto &artifact = ArtifactsInfo::get_instance().get_artifact(a_idx);
+    const auto &artifact = ArtifactList::get_instance().get_artifact(*created_fa_id);
     if (artifact.is_generated) {
         msg_print("It's already allocated.");
         return;
     }
 
-    (void)create_named_art(player_ptr, a_idx, player_ptr->y, player_ptr->x);
+    (void)create_named_art(player_ptr, *created_fa_id, player_ptr->y, player_ptr->x);
     msg_print("Allocated.");
 }
 
@@ -475,13 +400,12 @@ void wiz_change_status(PlayerType *player_ptr)
  */
 void wiz_create_feature(PlayerType *player_ptr)
 {
-    POSITION y, x;
-    if (!tgt_pt(player_ptr, &x, &y)) {
+    const auto pos = point_target(player_ptr);
+    if (!pos) {
         return;
     }
 
-    const Pos2D pos(y, x);
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    auto &grid = player_ptr->current_floor_ptr->get_grid(*pos);
     const int max = TerrainList::get_instance().size() - 1;
     const auto f_val1 = input_numerics(_("実地形ID", "FeatureID"), 0, max, grid.feat);
     if (!f_val1.has_value()) {
@@ -493,32 +417,33 @@ void wiz_create_feature(PlayerType *player_ptr)
         return;
     }
 
-    cave_set_feat(player_ptr, y, x, *f_val1);
+    set_terrain_id_to_grid(player_ptr, *pos, *f_val1);
     grid.mimic = *f_val2;
-    const auto &terrain = grid.get_terrain_mimic();
+    const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
     if (terrain.flags.has(TerrainCharacteristics::RUNE_PROTECTION) || terrain.flags.has(TerrainCharacteristics::RUNE_EXPLOSION)) {
         grid.info |= CAVE_OBJECT;
     } else if (terrain.flags.has(TerrainCharacteristics::MIRROR)) {
         grid.info |= CAVE_GLOW | CAVE_OBJECT;
     }
 
-    note_spot(player_ptr, y, x);
-    lite_spot(player_ptr, y, x);
+    note_spot(player_ptr, *pos);
+    lite_spot(player_ptr, *pos);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
 }
 
 /*!
  * @brief デバッグ帰還のダンジョンを選ぶ
  * @param player_ptr プレイヤーへの参照ポインタ
- * @details 範囲外の値が選択されたら再入力を促す
  */
-static std::optional<short> select_debugging_dungeon(short initial_dungeon_id)
+static tl::optional<DungeonId> select_debugging_dungeon()
 {
-    if (command_arg > 0) {
-        return static_cast<short>(std::clamp(static_cast<int>(command_arg), DUNGEON_ANGBAND, DUNGEON_MAX));
-    }
+    const auto &dungeons = DungeonList::get_instance();
+    auto describer = [&](DungeonId id) { return dungeons.get_dungeon(id).name; };
 
-    return input_numerics("Jump which dungeon", DUNGEON_ANGBAND, DUNGEON_MAX, initial_dungeon_id);
+    CandidateSelector cs("Jump to which dungeon: ", 15);
+    const auto choice = cs.select(DUNGEON_IDS, describer);
+
+    return (choice != DUNGEON_IDS.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 
 /*
@@ -527,12 +452,12 @@ static std::optional<short> select_debugging_dungeon(short initial_dungeon_id)
  * @param dungeon_id ダンジョン番号
  * @return レベルを選択したらその値、キャンセルならnullopt
  */
-static std::optional<int> select_debugging_floor(const FloorType &floor, int dungeon_id)
+static tl::optional<int> select_debugging_floor(const FloorType &floor, DungeonId dungeon_id)
 {
-    const auto &dungeon = dungeons_info[dungeon_id];
+    const auto &dungeon = DungeonList::get_instance().get_dungeon(dungeon_id);
     const auto max_depth = dungeon.maxdepth;
     const auto min_depth = dungeon.mindepth;
-    const auto is_current_dungeon = floor.dungeon_idx == dungeon_id;
+    const auto is_current_dungeon = floor.dungeon_id == dungeon_id;
     auto initial_depth = floor.dun_level;
     if (!is_current_dungeon) {
         initial_depth = min_depth;
@@ -548,18 +473,15 @@ static std::optional<int> select_debugging_floor(const FloorType &floor, int dun
 void wiz_jump_to_dungeon(PlayerType *player_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
-    const auto is_in_dungeon = floor.is_in_dungeon();
-    const auto dungeon_idx = is_in_dungeon ? floor.dungeon_idx : static_cast<short>(DUNGEON_ANGBAND);
-    const auto dungeon_id = select_debugging_dungeon(dungeon_idx);
+    const auto dungeon_id = select_debugging_dungeon();
     if (!dungeon_id) {
-        if (!is_in_dungeon) {
-            return;
-        }
+        return;
+    }
 
-        if (input_check(("Jump to the ground?"))) {
-            jump_floor(player_ptr, 0, 0);
+    if (dungeon_id == DungeonId::WILDERNESS) {
+        if (floor.is_underground() && input_check("Jump to the ground? ")) {
+            jump_floor(player_ptr, DungeonId::WILDERNESS, 0);
         }
-
         return;
     }
 
@@ -582,11 +504,10 @@ void wiz_jump_to_dungeon(PlayerType *player_ptr)
  */
 void wiz_learn_items_all(PlayerType *player_ptr)
 {
-    for (const auto &baseitem : baseitems_info) {
+    for (const auto &baseitem : BaseitemList::get_instance()) {
         if (baseitem.is_valid() && baseitem.level <= command_arg) {
-            ItemEntity item;
-            item.prep(baseitem.idx);
-            object_aware(player_ptr, &item);
+            ItemEntity item(baseitem.idx);
+            object_aware(player_ptr, item);
         }
     }
 }
@@ -611,17 +532,78 @@ static void change_birth_flags()
     rfu.set_flags(flags_mwrf);
 }
 
+static tl::optional<ElementRealmType> wiz_select_element_realm()
+{
+    constexpr EnumRange element_realms(ElementRealmType::FIRE, ElementRealmType::MAX);
+    CandidateSelector cs("Which realm: ", 15);
+
+    const auto chosen_realm = cs.select(element_realms, get_element_title);
+    return (chosen_realm != element_realms.end()) ? tl::make_optional(*chosen_realm) : tl::nullopt;
+}
+
+static tl::optional<RealmType> wiz_select_realm(const RealmChoices &choices, const std::string &msg)
+{
+    if (choices.count() <= 1) {
+        return choices.first().value_or(RealmType::NONE);
+    }
+
+    std::vector<RealmType> candidates;
+    RealmChoices::get_flags(choices, std::back_inserter(candidates));
+    auto describe_realm = [](auto realm) { return PlayerRealm::get_name(realm).string(); };
+
+    CandidateSelector cs(msg, 15);
+    const auto choice = cs.select(candidates, describe_realm);
+    return (choice != candidates.end()) ? tl::make_optional(*choice) : tl::nullopt;
+}
+
+static tl::optional<std::tuple<RealmType, RealmType, ElementRealmType>> wiz_select_realms(PlayerClassType pclass)
+{
+    if (pclass == PlayerClassType::ELEMENTALIST) {
+        const auto realm = wiz_select_element_realm();
+        if (!realm) {
+            return tl::nullopt;
+        }
+
+        return std::make_tuple(RealmType::NONE, RealmType::NONE, *realm);
+    }
+
+    const auto realm1 = wiz_select_realm(PlayerRealm::get_realm1_choices(pclass), "1st realm: ");
+    if (!realm1) {
+        return tl::nullopt;
+    }
+
+    auto realm2_choices = PlayerRealm::get_realm2_choices(pclass).reset(*realm1);
+    if (pclass == PlayerClassType::PRIEST) {
+        if (PlayerRealm::Realm(*realm1).is_good_attribute()) {
+            realm2_choices.reset({ RealmType::DEATH, RealmType::DAEMON });
+        } else {
+            realm2_choices.reset({ RealmType::LIFE, RealmType::CRUSADE });
+        }
+    }
+
+    const auto realm2 = wiz_select_realm(realm2_choices, "2nd realm: ");
+    if (!realm2) {
+        return tl::nullopt;
+    }
+
+    return std::make_tuple(*realm1, *realm2, ElementRealmType::NONE);
+}
+
 /*!
  * @brief プレイヤーの種族を変更する
  */
 void wiz_reset_race(PlayerType *player_ptr)
 {
-    const auto new_race = input_numerics("RaceID", 0, MAX_RACES - 1, player_ptr->prace);
-    if (!new_race.has_value()) {
+    CandidateSelector cs("Which race: ", 15);
+    constexpr EnumRange races(PlayerRaceType::HUMAN, PlayerRaceType::MAX);
+    auto describe_race = [](auto player_race) { return race_info[enum2i(player_race)].title.string(); };
+
+    const auto chosen_race = cs.select(races, describe_race);
+    if (chosen_race == races.end()) {
         return;
     }
 
-    player_ptr->prace = *new_race;
+    player_ptr->prace = *chosen_race;
     rp_ptr = &race_info[enum2i(player_ptr->prace)];
     change_birth_flags();
     handle_stuff(player_ptr);
@@ -633,17 +615,35 @@ void wiz_reset_race(PlayerType *player_ptr)
  */
 void wiz_reset_class(PlayerType *player_ptr)
 {
-    const auto new_class_opt = input_numerics("ClassID", 0, PLAYER_CLASS_TYPE_MAX - 1, player_ptr->pclass);
-    if (!new_class_opt.has_value()) {
+    CandidateSelector cs("Which class: ", 15);
+    constexpr EnumRange classes(PlayerClassType::WARRIOR, PlayerClassType::MAX);
+    auto describe_class = [](auto player_class) { return class_info.at(player_class).title.string(); };
+
+    const auto chosen_class = cs.select(classes, describe_class);
+    if (chosen_class == classes.end()) {
         return;
     }
 
-    const auto new_class_enum = *new_class_opt;
-    const auto new_class = enum2i(new_class_enum);
-    player_ptr->pclass = new_class_enum;
-    cp_ptr = &class_info[new_class];
-    mp_ptr = &class_magics_info[new_class];
+    const auto chosen_realms = wiz_select_realms(*chosen_class);
+    if (!chosen_realms) {
+        return;
+    }
+
+    player_ptr->pclass = *chosen_class;
+    cp_ptr = &class_info.at(player_ptr->pclass);
+    mp_ptr = &class_magics_info[enum2i(player_ptr->pclass)];
     PlayerClass(player_ptr).init_specific_data();
+    PlayerRealm pr(player_ptr);
+    pr.reset();
+    const auto &[realm1, realm2, element_realm] = *chosen_realms;
+    if (realm1 != RealmType::NONE) {
+        pr.set(realm1, realm2);
+    }
+    player_ptr->element_realm = element_realm;
+    PlayerSpellStatus pss(player_ptr);
+    pss.realm1().initialize();
+    pss.realm2().initialize();
+    player_ptr->learned_spells = 0;
     change_birth_flags();
     handle_stuff(player_ptr);
 }
@@ -654,79 +654,69 @@ void wiz_reset_class(PlayerType *player_ptr)
  */
 void wiz_reset_realms(PlayerType *player_ptr)
 {
-    const auto new_realm1 = input_numerics("1st Realm (None=0)", 0, MAX_REALM - 1, player_ptr->realm1);
-    if (!new_realm1.has_value()) {
+    const auto chosen_realms = wiz_select_realms(player_ptr->pclass);
+    if (!chosen_realms) {
         return;
     }
 
-    const auto new_realm2 = input_numerics("2nd Realm (None=0)", 0, MAX_REALM - 1, player_ptr->realm2);
-    if (!new_realm2.has_value()) {
-        return;
+    PlayerRealm pr(player_ptr);
+    pr.reset();
+    const auto &[realm1, realm2, element_realm] = *chosen_realms;
+    if (realm1 != RealmType::NONE) {
+        pr.set(realm1, realm2);
     }
-
-    player_ptr->realm1 = *new_realm1;
-    player_ptr->realm2 = *new_realm2;
+    player_ptr->element_realm = element_realm;
+    PlayerSpellStatus pss(player_ptr);
+    pss.realm1().initialize();
+    pss.realm2().initialize();
+    player_ptr->learned_spells = 0;
     change_birth_flags();
     handle_stuff(player_ptr);
 }
 
 /*!
- * @brief 現在のオプション設定をダンプ出力する /
+ * @brief 現在のオプション設定をダンプ出力する
  * @param player_ptr プレイヤーへの参照ポインタ
- * Hack -- Dump option bits usage
  */
-void wiz_dump_options(void)
+void wiz_dump_options()
 {
-    const auto &path = path_build(ANGBAND_DIR_USER, "opt_info.txt");
+    const auto path = path_build(ANGBAND_DIR_USER, "opt_info.txt");
     const auto &filename = path.string();
-    auto *fff = angband_fopen(path, FileOpenMode::APPEND);
-    if (fff == nullptr) {
+    std::ofstream ofs(path);
+    if (ofs.bad()) {
         msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
-        msg_print(nullptr);
+        msg_erase();
         return;
     }
 
-    std::vector<std::vector<int>> exist(NUM_O_SET, std::vector<int>(NUM_O_BIT));
+    constexpr auto num_o_set = 8;
+    constexpr auto num_o_bit = 32;
 
-    for (int i = 0; option_info[i].o_desc; i++) {
-        const option_type *ot_ptr = &option_info[i];
-        if (ot_ptr->o_var) {
-            exist[ot_ptr->o_set][ot_ptr->o_bit] = i + 1;
-        }
+    std::vector<std::vector<int>> exist(num_o_set, std::vector<int>(num_o_bit));
+    auto option_count = 0;
+    for (const auto &option : option_info) {
+        exist[option.flag_position][option.offset] = option_count + 1;
+        option_count++;
     }
 
-    fprintf(fff, "[Option bits usage on %s\n]", get_version().data());
-    fputs("Set - Bit (Page) Option Name\n", fff);
-    fputs("------------------------------------------------\n", fff);
-    for (int i = 0; i < NUM_O_SET; i++) {
-        for (int j = 0; j < NUM_O_BIT; j++) {
+    ofs << "[Option bits usage on %s\n]", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL);
+    ofs << "Set - Bit (Page) Option Name\n";
+    ofs << "------------------------------------------------\n";
+    for (auto i = 0; i < num_o_set; i++) {
+        for (auto j = 0; j < num_o_bit; j++) {
             if (exist[i][j]) {
-                const option_type *ot_ptr = &option_info[exist[i][j] - 1];
-                fprintf(fff, "  %d -  %02d (%4d) %s\n", i, j, ot_ptr->o_page, ot_ptr->o_text);
+                const auto &option = option_info[exist[i][j] - 1];
+                const auto page = option.page ? enum2i(*option.page) : 255; //!< @details かつてnulloptではなかった頃の値.
+                ofs << format("  %d -  %02d (%4d) %s\n", i, j, page, option.text.data());
             } else {
-                fprintf(fff, "  %d -  %02d\n", i, j);
+                ofs << format("  %d -  %02d\n", i, j);
             }
         }
 
-        fputc('\n', fff);
+        ofs << '\n';
     }
 
-    angband_fclose(fff);
     msg_format(_("オプションbit使用状況をファイル %s に書き出しました。", "Option bits usage dump saved to file %s."), filename.data());
-}
-
-/*!
- * @brief プレイ日数を変更する / Set gametime.
- * @return 実際に変更を行ったらTRUEを返す
- */
-void set_gametime(void)
-{
-    const auto game_time = input_integer("Dungeon Turn", 0, w_ptr->dungeon_turn_limit - 1);
-    if (!game_time.has_value()) {
-        return;
-    }
-
-    w_ptr->dungeon_turn = w_ptr->game_turn = *game_time;
 }
 
 /*!
@@ -734,15 +724,16 @@ void set_gametime(void)
  */
 void wiz_zap_surrounding_monsters(PlayerType *player_ptr)
 {
-    for (MONSTER_IDX i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        auto *m_ptr = &player_ptr->current_floor_ptr->m_list[i];
-        if (!m_ptr->is_valid() || (i == player_ptr->riding) || (m_ptr->cdis > MAX_PLAYER_SIGHT)) {
+    const auto &floor = *player_ptr->current_floor_ptr;
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &monster = floor.m_list[i];
+        if (!monster.is_valid() || (i == player_ptr->riding) || (monster.cdis > MAX_PLAYER_SIGHT)) {
             continue;
         }
 
-        if (record_named_pet && m_ptr->is_named_pet()) {
-            const auto m_name = monster_desc(player_ptr, m_ptr, MD_INDEF_VISIBLE);
-            exe_write_diary(player_ptr, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
+        if (record_named_pet && monster.is_named_pet()) {
+            const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+            exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
         delete_monster_idx(player_ptr, i);
@@ -755,15 +746,16 @@ void wiz_zap_surrounding_monsters(PlayerType *player_ptr)
  */
 void wiz_zap_floor_monsters(PlayerType *player_ptr)
 {
-    for (MONSTER_IDX i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        auto *m_ptr = &player_ptr->current_floor_ptr->m_list[i];
-        if (!m_ptr->is_valid() || (i == player_ptr->riding)) {
+    const auto &floor = *player_ptr->current_floor_ptr;
+    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
+        const auto &monster = floor.m_list[i];
+        if (!monster.is_valid() || monster.is_riding()) {
             continue;
         }
 
-        if (record_named_pet && m_ptr->is_named_pet()) {
-            const auto m_name = monster_desc(player_ptr, m_ptr, MD_INDEF_VISIBLE);
-            exe_write_diary(player_ptr, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
+        if (record_named_pet && monster.is_named_pet()) {
+            const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+            exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
         delete_monster_idx(player_ptr, i);
@@ -773,15 +765,14 @@ void wiz_zap_floor_monsters(PlayerType *player_ptr)
 /* @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装) */
 void cheat_death(PlayerType *player_ptr, bool no_penalty)
 {
-    int16_t blank_years;
     if (!no_penalty) {
 
         switch (randint0(4)) {
 
-        case 0:
-            blank_years = damroll(8, 10);
+        case 0: {
+            auto blank_years = Dice::roll(8, 10);
             player_ptr->prestige /= 2;
-            player_ptr->age += blank_years;
+            player_ptr->age += static_cast<int16_t>(blank_years);
 
             player_ptr->max_max_exp = (player_ptr->max_max_exp * 6 / (randint1(3) + 6));
             player_ptr->max_exp = player_ptr->max_max_exp;
@@ -793,16 +784,18 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
                            "As a death penalry, you were forced to work like a slave by the wizards of Yendor at the '@' Stigmatic Graveyard for %d years!"),
                 blank_years);
             break;
+        }
 
-        case 1:
-            blank_years = damroll(2, 10);
+        case 1: {
+            auto blank_years = Dice::roll(2, 10);
             player_ptr->prestige /= 2;
-            player_ptr->age += blank_years;
+            player_ptr->age += static_cast<int16_t>(blank_years);
             msg_print(_("『猿先生何も考えてないと思うよ』", "\"I think that Mr.Sawatari thinks nothing.\""));
             msg_format(_("あなたは連載%d年の間猿空間に迷い込んでいた！ついでに死んだ設定も忘れ去られていた！",
                            "You have been lost in the *S*A*R*U* space for %d years! By the way, the dead setting was also forgotten!"),
                 blank_years);
             break;
+        }
 
         case 2:
             msg_print(_("『ああ＾～生き返るわぁ＾～』", "\"Ahh~ I'm reviving~.\""));
@@ -818,8 +811,9 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
         }
     }
 
-    w_ptr->noscore |= 0x0001;
-    msg_print(NULL);
+    auto &world = AngbandWorld::get_instance();
+    world.noscore |= 0x0001;
+    msg_erase();
 
     player_ptr->is_dead = false;
     (void)life_stream(player_ptr, false, false);
@@ -830,37 +824,30 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
     player_ptr->died_from = _("死の欺き", "Cheating death");
     (void)set_food(player_ptr, PY_FOOD_MAX - 1);
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    floor_ptr->dun_level = 0;
-    floor_ptr->inside_arena = false;
+    auto &floor = *player_ptr->current_floor_ptr;
+    floor.dun_level = 0;
+    floor.inside_arena = false;
     AngbandSystem::get_instance().set_phase_out(false);
     leaving_quest = QuestId::NONE;
-    floor_ptr->quest_number = QuestId::NONE;
-    if (floor_ptr->dungeon_idx) {
-        player_ptr->recall_dungeon = floor_ptr->dungeon_idx;
+    floor.quest_number = QuestId::NONE;
+    if (floor.is_underground()) {
+        player_ptr->recall_dungeon = floor.dungeon_id;
     }
 
-    floor_ptr->reset_dungeon_index();
-    if (lite_town || vanilla_town) {
-        player_ptr->wilderness_y = 1;
-        player_ptr->wilderness_x = 1;
-        if (vanilla_town) {
-            player_ptr->oldpy = 10;
-            player_ptr->oldpx = 34;
-        } else {
-            player_ptr->oldpy = 33;
-            player_ptr->oldpx = 131;
-        }
+    floor.reset_dungeon_index();
+    auto &wilderness = WildernessGrids::get_instance();
+    wilderness.initialize_position();
+    if (vanilla_town) {
+        player_ptr->oldpy = 10;
+        player_ptr->oldpx = 34;
     } else {
-        player_ptr->wilderness_y = 48;
-        player_ptr->wilderness_x = 5;
         player_ptr->oldpy = 33;
         player_ptr->oldpx = 131;
     }
 
-    player_ptr->wild_mode = false;
+    world.set_wild_mode(false);
     player_ptr->leaving = true;
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
-    exe_write_diary(player_ptr, DiaryKind::DESCRIPTION, 1, note);
+    exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);
     leave_floor(player_ptr);
 }

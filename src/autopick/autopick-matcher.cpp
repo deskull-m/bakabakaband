@@ -10,11 +10,9 @@
 #include "autopick/autopick-key-flag-process.h"
 #include "autopick/autopick-util.h"
 #include "inventory/inventory-slot-types.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/special-object-flags.h"
 #include "object-hook/hook-armor.h"
-#include "object-hook/hook-quest.h"
 #include "object-hook/hook-weapon.h"
 #include "object/object-info.h"
 #include "object/object-stack.h"
@@ -22,10 +20,10 @@
 #include "perception/object-perception.h"
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "util/string-processor.h"
 
@@ -65,7 +63,7 @@ static bool check_item_features(PlayerType *player_ptr, const autopick_type &ent
 
     if (entry.has(FLG_JUNKS)) {
         switch (tval) {
-        case ItemKindType::SKELETON:
+        case ItemKindType::FLAVOR_SKELETON:
         case ItemKindType::BOTTLE:
         case ItemKindType::JUNK:
         case ItemKindType::STATUE:
@@ -76,7 +74,7 @@ static bool check_item_features(PlayerType *player_ptr, const autopick_type &ent
     }
 
     if (entry.has(FLG_CORPSES)) {
-        return (tval == ItemKindType::CORPSE) || (tval == ItemKindType::SKELETON);
+        return (tval == ItemKindType::MONSTER_REMAINS) || (tval == ItemKindType::FLAVOR_SKELETON);
     }
 
     if (entry.has(FLG_SPELLBOOKS)) {
@@ -129,7 +127,7 @@ static bool check_item_features(PlayerType *player_ptr, const autopick_type &ent
 /*!
  * @brief A function for Auto-picker/destroyer Examine whether the object matches to the entry
  */
-bool is_autopick_match(PlayerType *player_ptr, ItemEntity *o_ptr, const autopick_type &entry, std::string_view item_name)
+bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const autopick_type &entry, std::string_view item_name)
 {
     if (entry.has(FLG_UNAWARE) && o_ptr->is_aware()) {
         return false;
@@ -153,17 +151,17 @@ bool is_autopick_match(PlayerType *player_ptr, ItemEntity *o_ptr, const autopick
         }
 
         const auto &baseitem = o_ptr->get_baseitem();
-        if ((o_ptr->dd == baseitem.dd) && (o_ptr->ds == baseitem.ds)) {
+        if (o_ptr->damage_dice == baseitem.damage_dice) {
             return false;
         }
 
-        if (!o_ptr->is_known() && object_is_quest_target(player_ptr->current_floor_ptr->quest_number, o_ptr)) {
+        if (!o_ptr->is_known() && o_ptr->is_target_of(player_ptr->current_floor_ptr->quest_number)) {
             return false;
         }
     }
 
     if (entry.has(FLG_MORE_DICE)) {
-        if (o_ptr->dd * o_ptr->ds < entry.dice) {
+        if (o_ptr->damage_dice.maxroll() < entry.dice) {
             return false;
         }
     }
@@ -184,7 +182,7 @@ bool is_autopick_match(PlayerType *player_ptr, ItemEntity *o_ptr, const autopick
         }
     }
 
-    if (entry.has(FLG_WORTHLESS) && (o_ptr->get_price() > 0)) {
+    if (entry.has(FLG_WORTHLESS) && (o_ptr->calc_price() > 0)) {
         return false;
     }
 
@@ -289,21 +287,26 @@ bool is_autopick_match(PlayerType *player_ptr, ItemEntity *o_ptr, const autopick
         return false;
     }
 
-    if (entry.has(FLG_WANTED) && !object_is_bounty(player_ptr, o_ptr)) {
+    if (entry.has(FLG_WANTED) && !o_ptr->is_bounty()) {
         return false;
     }
 
     // @details このタイミングでは、svalは絶対にnulloptにならない、はず.
     const auto &bi_key = o_ptr->bi_key;
     const auto tval = bi_key.tval();
-    const auto sval = bi_key.sval().value();
-    const auto r_idx = i2enum<MonsterRaceId>(o_ptr->pval);
-    if (entry.has(FLG_UNIQUE) && ((tval != ItemKindType::CORPSE && tval != ItemKindType::STATUE) || monraces_info[r_idx].kind_flags.has_not(MonsterKindType::UNIQUE))) {
-        return false;
+    const auto sval = *bi_key.sval();
+    if (entry.has(FLG_UNIQUE) && o_ptr->has_monrace()) {
+        const auto &monrace = o_ptr->get_monrace();
+        if (((tval != ItemKindType::MONSTER_REMAINS && tval != ItemKindType::STATUE) || monrace.kind_flags.has_not(MonsterKindType::UNIQUE))) {
+            return false;
+        }
     }
 
-    if (entry.has(FLG_HUMAN) && (tval != ItemKindType::CORPSE || !angband_strchr("pht", monraces_info[r_idx].d_char))) {
-        return false;
+    if (entry.has(FLG_HUMAN) && o_ptr->has_monrace()) {
+        const auto &monrace = o_ptr->get_monrace();
+        if (tval != ItemKindType::MONSTER_REMAINS || !monrace.is_human()) {
+            return false;
+        }
     }
 
     if (entry.has(FLG_UNREADABLE) && check_book_realm(player_ptr, bi_key)) {
@@ -313,11 +316,12 @@ bool is_autopick_match(PlayerType *player_ptr, ItemEntity *o_ptr, const autopick
     PlayerClass pc(player_ptr);
     auto realm_except_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
-    if (entry.has(FLG_REALM1) && ((get_realm1_book(player_ptr) != tval) || realm_except_class)) {
+    PlayerRealm pr(player_ptr);
+    if (entry.has(FLG_REALM1) && ((pr.realm1().get_book() != tval) || realm_except_class)) {
         return false;
     }
 
-    if (entry.has(FLG_REALM2) && ((get_realm2_book(player_ptr) != tval) || realm_except_class)) {
+    if (entry.has(FLG_REALM2) && ((pr.realm2().get_book() != tval) || realm_except_class)) {
         return false;
     }
 
@@ -361,7 +365,7 @@ bool is_autopick_match(PlayerType *player_ptr, ItemEntity *o_ptr, const autopick
          * into an inventory slot.
          * But an item can not be absorbed into itself!
          */
-        if ((&player_ptr->inventory_list[j] != o_ptr) && object_similar(&player_ptr->inventory_list[j], o_ptr)) {
+        if ((player_ptr->inventory[j].get() != o_ptr) && player_ptr->inventory[j]->is_similar(*o_ptr)) {
             return true;
         }
     }

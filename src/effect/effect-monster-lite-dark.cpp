@@ -1,9 +1,8 @@
 #include "effect/effect-monster-lite-dark.h"
 #include "effect/effect-monster-util.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster/monster-info.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 
 ProcessResult effect_monster_lite_weak(PlayerType *player_ptr, EffectMonster *em_ptr)
@@ -22,7 +21,7 @@ ProcessResult effect_monster_lite_weak(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_LITE);
     }
 
@@ -41,11 +40,11 @@ ProcessResult effect_monster_lite(PlayerType *player_ptr, EffectMonster *em_ptr)
         em_ptr->note = _("には耐性がある！", " resists!");
         em_ptr->dam *= 2;
         em_ptr->dam /= (randint1(6) + 6);
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_LITE);
         }
     } else if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::HURT_LITE)) {
-        if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_LITE);
         }
 
@@ -70,7 +69,7 @@ ProcessResult effect_monster_dark(PlayerType *player_ptr, EffectMonster *em_ptr)
     em_ptr->note = _("には耐性がある！", " resists!");
     em_ptr->dam *= 2;
     em_ptr->dam /= (randint1(6) + 6);
-    if (is_original_ap_and_seen(player_ptr, em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_DARK);
     }
 

@@ -29,11 +29,10 @@
 #include "status/base-status.h"
 #include "status/element-resistance.h"
 #include "status/experience.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/player-acceleration.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
@@ -112,8 +111,8 @@ static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *mona
 
     int max_draining_item = is_magic_mastery ? 5 : 10;
     for (int i = 0; i < max_draining_item; i++) {
-        INVENTORY_IDX i_idx = (INVENTORY_IDX)randint0(INVEN_PACK);
-        monap_ptr->o_ptr = &player_ptr->inventory_list[i_idx];
+        auto i_idx = randnum0<short>(INVEN_PACK);
+        monap_ptr->o_ptr = player_ptr->inventory[i_idx].get();
         if (!monap_ptr->o_ptr->is_valid()) {
             continue;
         }
@@ -218,7 +217,7 @@ static void calc_blow_paralysis(PlayerType *player_ptr, MonsterAttackPlayer *mon
  */
 static void calc_blow_drain_exp(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr, const int drain_value, const int hold_exp_prob)
 {
-    int32_t d = damroll(drain_value, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
+    int32_t d = Dice::roll(drain_value, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     int damage_ratio = 1000;
     if (has_hold_exp(player_ptr)) {
@@ -264,7 +263,7 @@ static void calc_blow_time(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
  */
 static void calc_blow_drain_life(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    int32_t d = damroll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
+    int32_t d = Dice::roll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     if (player_ptr->hold_exp) {
         monap_ptr->damage = monap_ptr->damage * 9 / 10;
@@ -276,7 +275,7 @@ static void calc_blow_drain_life(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     bool resist_drain = check_drain_hp(player_ptr, d);
-    process_drain_life(player_ptr, monap_ptr, resist_drain);
+    process_drain_life(monap_ptr, resist_drain);
 }
 
 /*!
@@ -307,7 +306,7 @@ static void calc_blow_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *mo
 
 static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (player_ptr->effects()->acceleration()->is_fast() || (player_ptr->pspeed >= 130)) {
+    if (player_ptr->effects()->acceleration().is_fast() || (player_ptr->pspeed >= 130)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -398,7 +397,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     }
     case RaceBlowEffectType::EAT_LITE: {
-        monap_ptr->o_ptr = &player_ptr->inventory_list[INVEN_LITE];
+        monap_ptr->o_ptr = player_ptr->inventory[INVEN_LITE].get();
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
         if (player_ptr->is_dead || check_multishadow(player_ptr)) {
             break;
@@ -490,7 +489,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
         if (monap_ptr->damage > 23 || monap_ptr->explode) {
-            earthquake(player_ptr, monap_ptr->m_ptr->fy, monap_ptr->m_ptr->fx, 8, monap_ptr->m_idx);
+            earthquake(player_ptr, monap_ptr->m_ptr->get_position(), 8, monap_ptr->m_idx);
         }
 
         break;
@@ -554,20 +553,20 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
                     return;
                 }
 
-                int32_t d = damroll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
+                int32_t d = Dice::roll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
 
                 bool resist_drain = check_drain_hp(player_ptr, d);
-                process_drain_life(player_ptr, monap_ptr, resist_drain);
+                process_drain_life(monap_ptr, resist_drain);
             }
             break;
         }
         if (one_in_(250)) {
             monap_ptr->obvious = true;
-            const auto *floor_ptr = player_ptr->current_floor_ptr;
-            if (floor_ptr->is_in_dungeon() && (!floor_ptr->is_in_quest() || !QuestType::is_fixed(floor_ptr->quest_number))) {
+            const auto &floor = *player_ptr->current_floor_ptr;
+            if (floor.is_underground() && (!floor.is_in_quest() || !QuestType::is_fixed(floor.quest_number))) {
                 if (monap_ptr->damage > 23 || monap_ptr->explode) {
                     msg_print(_("カオスの力でダンジョンが崩れ始める！", "The dungeon tumbles by the chaotic power!"));
-                    earthquake(player_ptr, monap_ptr->m_ptr->fy, monap_ptr->m_ptr->fx, 8, monap_ptr->m_idx);
+                    earthquake(player_ptr, monap_ptr->m_ptr->get_position(), 8, monap_ptr->m_idx);
                     break;
                 }
             }

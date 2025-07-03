@@ -41,9 +41,9 @@
 #include "player/player-damage.h"
 #include "player/player-realm.h"
 #include "player/player-skill.h"
+#include "player/player-spell-status.h"
 #include "player/player-status.h"
 #include "player/special-defense-types.h"
-#include "realm/realm-names-table.h"
 #include "spell-kind/spells-random.h"
 #include "spell-kind/spells-sight.h"
 #include "spell-realm/spells-hex.h"
@@ -56,22 +56,21 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/experience.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/baseitem/baseitem-key.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
+#include "util/dice.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
 #include <string_view>
-
-static const int extra_magic_gain_exp = 4;
+#include <vector>
 
 concptr KWD_DAM = _("損傷:", "dam ");
 concptr KWD_RANGE = _("射程:", "rng ");
@@ -93,50 +92,58 @@ const uint32_t fake_spell_flags[4] = { 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff0
  * @brief
  * 魔法の効果を「キャプション:ダイス＋定数値」のフォーマットで出力する / Generate dice info string such as "foo 2d10"
  * @param str キャプション
- * @param dice ダイス数
- * @param sides ダイス目
+ * @param dice ダイス
  * @param base 固定値
  * @return フォーマットに従い整形された文字列
  */
-std::string info_string_dice(concptr str, DICE_NUMBER dice, DICE_SID sides, int base)
+static std::string info_string_dice(concptr str, const Dice &dice, int base)
 {
     /* Fix value */
-    if (!dice) {
+    if (!dice.is_valid()) {
         return format("%s%d", str, base);
     }
 
     /* Dice only */
     else if (!base) {
-        return format("%s%dd%d", str, dice, sides);
+        return format("%s%s", str, dice.to_string().data());
     }
 
     /* Dice plus base value */
     else {
-        return format("%s%dd%d%+d", str, dice, sides, base);
+        return format("%s%s%+d", str, dice.to_string().data(), base);
     }
 }
 
 /*!
  * @brief 魔法によるダメージを出力する / Generate damage-dice info string such as "dam 2d10"
- * @param dice ダイス数
- * @param sides ダイス目
+ * @param dice ダイス
  * @param base 固定値
  * @return フォーマットに従い整形された文字列
  */
-std::string info_damage(DICE_NUMBER dice, DICE_SID sides, int base)
+std::string info_damage(const Dice &dice, int base)
 {
-    return info_string_dice(_("損傷:", "dam "), dice, sides, base);
+    return info_string_dice(_("損傷:", "dam "), dice, base);
+}
+
+/*!
+ * @brief 魔法によるダメージを出力する(固定ダメージのみ)
+ * @param base 固定値
+ * @return フォーマットに従い整形された文字列
+ */
+std::string info_damage(int base)
+{
+    return info_damage(Dice(0, 0), base);
 }
 
 /*!
  * @brief 魔法の効果時間を出力する / Generate duration info string such as "dur 20+1d20"
  * @param base 固定値
- * @param sides ダイス目
+ * @param dice ダイス
  * @return フォーマットに従い整形された文字列
  */
-std::string info_duration(int base, DICE_SID sides)
+std::string info_duration(int base, const Dice &dice)
 {
-    return format(_("期間:%d+1d%d", "dur %d+1d%d"), base, sides);
+    return format(_("期間:%d+%s", "dur %d+%s"), base, dice.to_string().data());
 }
 
 /*!
@@ -151,25 +158,34 @@ std::string info_range(POSITION range)
 
 /*!
  * @brief 魔法による回復量を出力する / Generate heal info string such as "heal 2d8"
- * @param dice ダイス数
- * @param sides ダイス目
+ * @param dice ダイス
  * @param base 固定値
  * @return フォーマットに従い整形された文字列
  */
-std::string info_heal(DICE_NUMBER dice, DICE_SID sides, int base)
+std::string info_heal(const Dice &dice, int base)
 {
-    return info_string_dice(_("回復:", "heal "), dice, sides, base);
+    return info_string_dice(_("回復:", "heal "), dice, base);
+}
+
+/*!
+ * @brief 魔法による回復量を出力する(固定回復量)
+ * @param base 固定値
+ * @return フォーマットに従い整形された文字列
+ */
+std::string info_heal(int base)
+{
+    return info_heal(Dice(0, 0), base);
 }
 
 /*!
  * @brief 魔法効果発動までの遅延ターンを出力する / Generate delay info string such as "delay 15+1d15"
  * @param base 固定値
- * @param sides ダイス目
+ * @param dice ダイス
  * @return フォーマットに従い整形された文字列
  */
-std::string info_delay(int base, DICE_SID sides)
+std::string info_delay(int base, const Dice &dice)
 {
-    return format(_("遅延:%d+1d%d", "delay %d+1d%d"), base, sides);
+    return format(_("遅延:%d+%s", "delay %d+%s"), base, dice.to_string().data());
 }
 
 /*!
@@ -184,13 +200,12 @@ std::string info_multi_damage(int dam)
 
 /*!
  * @brief 魔法によるダメージを出力する(ダイスのみ＆複数回処理) / Generate multiple-damage-dice info string such as "dam 5d2 each"
- * @param dice ダイス数
- * @param sides ダイス目
+ * @param dice ダイス
  * @return フォーマットに従い整形された文字列
  */
-std::string info_multi_damage_dice(DICE_NUMBER dice, DICE_SID sides)
+std::string info_multi_damage_dice(const Dice &dice)
 {
-    return format(_("損傷:各%dd%d", "dam %dd%d each"), dice, sides);
+    return format(_("損傷:各%s", "dam %s each"), dice.to_string().data());
 }
 
 /*!
@@ -205,16 +220,12 @@ std::string info_power(int power)
 
 /*!
  * @brief 魔法による一般的な効力値を出力する（ダイス値） / Generate power info string such as "power 100"
- * @param dice ダイス数
- * @param sides ダイス目
+ * @param dice ダイス
  * @return フォーマットに従い整形された文字列
  */
-/*
- * Generate power info string such as "power 1d100"
- */
-std::string info_power_dice(DICE_NUMBER dice, DICE_SID sides)
+std::string info_power_dice(const Dice &dice)
 {
-    return format(_("効力:%dd%d", "power %dd%d"), dice, sides);
+    return format(_("効力:%s", "power %s"), dice.to_string().data());
 }
 
 /*!
@@ -246,30 +257,27 @@ std::string info_weight(WEIGHT weight)
  * Determine if a spell is "okay" for the player to cast or study
  * The spell must be legible, not forgotten, and also, to cast,
  * it must be known, and to study, it must not be known.
- * @param spell 呪文ID
+ * @param spell_id 呪文ID
  * @param learned 使用可能な判定ならばTRUE、学習可能かどうかの判定ならばFALSE
  * @param study_pray 祈りの学習判定目的ならばTRUE
  * @param use_realm 魔法領域ID
  * @return 失敗率(%)
  */
-static bool spell_okay(PlayerType *player_ptr, int spell, bool learned, bool study_pray, int use_realm)
+static bool spell_okay(PlayerType *player_ptr, int spell_id, bool learned, bool study_pray, RealmType use_realm)
 {
-    const magic_type *s_ptr;
-
     /* Access the spell */
-    if (!is_magic(use_realm)) {
-        s_ptr = &technic_info[use_realm - MIN_TECHNIC][spell];
-    } else {
-        s_ptr = &mp_ptr->info[use_realm - 1][spell];
-    }
+    const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
     /* Spell is illegal */
-    if (s_ptr->slevel > player_ptr->lev) {
+    if (spell.slevel > player_ptr->lev) {
         return false;
     }
 
     /* Spell is forgotten */
-    if ((use_realm == player_ptr->realm2) ? (player_ptr->spell_forgotten2 & (1UL << spell)) : (player_ptr->spell_forgotten1 & (1UL << spell))) {
+    PlayerRealm pr(player_ptr);
+    PlayerSpellStatus pss(player_ptr);
+    const auto realm_status = pr.realm2().equals(use_realm) ? pss.realm2() : pss.realm1();
+    if (realm_status.is_forgotten(spell_id)) {
         /* Never okay */
         return false;
     }
@@ -279,7 +287,7 @@ static bool spell_okay(PlayerType *player_ptr, int spell, bool learned, bool stu
     }
 
     /* Spell is learned */
-    if ((use_realm == player_ptr->realm2) ? (player_ptr->spell_learned2 & (1UL << spell)) : (player_ptr->spell_learned1 & (1UL << spell))) {
+    if (realm_status.is_learned(spell_id)) {
         /* Always true */
         return !study_pray;
     }
@@ -305,18 +313,17 @@ static bool spell_okay(PlayerType *player_ptr, int spell, bool learned, bool stu
  * The "known" should be TRUE for cast/pray, false for study
  * </pre>
  */
-static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view prompt_verb, int sval, bool learned, int16_t use_realm)
+static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view prompt_verb, int sval, bool learned, RealmType use_realm)
 {
     int i;
     SPELL_IDX spell = -1;
     int num = 0;
     SPELL_IDX spells[64]{};
-    COMMAND_CODE code;
     int menu_line = (use_menu ? 1 : 0);
 
     /* Get the spell, if available */
-    if (repeat_pull(&code)) {
-        *sn = (SPELL_IDX)code;
+    if (const auto code = repeat_pull(); code) {
+        *sn = *code;
         /* Verify the spell */
         if (spell_okay(player_ptr, *sn, learned, false, use_realm)) {
             /* Success */
@@ -353,14 +360,15 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
     }
 
     PlayerClass pc(player_ptr);
+    PlayerRealm pr(player_ptr);
     auto is_every_magic = pc.is_every_magic();
-    if (((use_realm) != player_ptr->realm1) && ((use_realm) != player_ptr->realm2) && !is_every_magic) {
+    if (!pr.realm1().equals(use_realm) && !pr.realm2().equals(use_realm) && !is_every_magic) {
         return false;
     }
-    if (is_every_magic && !is_magic(use_realm)) {
+    if (is_every_magic && !PlayerRealm::is_magic(use_realm)) {
         return false;
     }
-    if (pc.equals(PlayerClassType::RED_MAGE) && ((use_realm) != REALM_ARCANE) && (sval > 1)) {
+    if (pc.equals(PlayerClassType::RED_MAGE) && ((use_realm) != RealmType::ARCANE) && (sval > 1)) {
         return false;
     }
 
@@ -517,33 +525,26 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
  */
 static void confirm_use_force(PlayerType *player_ptr, bool browse_only)
 {
-    char which;
-    COMMAND_CODE code;
-
-    /* Get the item index */
-    if (repeat_pull(&code) && (code == INVEN_FORCE)) {
+    if (const auto code = repeat_pull(); code == INVEN_FORCE) {
         browse_only ? do_cmd_mind_browse(player_ptr) : do_cmd_mind(player_ptr);
         return;
     }
 
-    /* Show the prompt */
     prt(_("('w'練気術, ESC) 'w'かESCを押してください。 ", "(w for the Force, ESC) Hit 'w' or ESC. "), 0, 0);
-
+    char which;
     while (true) {
-        /* Get a key */
         which = inkey();
-
         if (which == ESCAPE) {
             break;
-        } else if (which == 'w') {
+        }
+
+        if (which == 'w') {
             repeat_push(INVEN_FORCE);
             break;
         }
     }
 
-    /* Clear the prompt line */
     prt("", 0, 0);
-
     if (which == 'w') {
         browse_only ? do_cmd_mind_browse(player_ptr) : do_cmd_mind(player_ptr);
     }
@@ -556,7 +557,7 @@ static FuncItemTester get_castable_spellbook_tester(PlayerType *player_ptr)
 
 static FuncItemTester get_learnable_spellbook_tester(PlayerType *player_ptr)
 {
-    if (player_ptr->realm2 == REALM_NONE) {
+    if (!PlayerRealm(player_ptr).realm2().is_available()) {
         return get_castable_spellbook_tester(player_ptr);
     } else {
         return FuncItemTester(item_tester_learn_spell, player_ptr);
@@ -580,7 +581,7 @@ void do_cmd_browse(PlayerType *player_ptr)
 
     /* Warriors are illiterate */
     PlayerClass pc(player_ptr);
-    if (!(player_ptr->realm1 || player_ptr->realm2) && !pc.is_every_magic()) {
+    if (!PlayerRealm(player_ptr).realm1().is_available() && !pc.is_every_magic()) {
         msg_print(_("本を読むことができない！", "You cannot read books!"));
         return;
     }
@@ -613,11 +614,10 @@ void do_cmd_browse(PlayerType *player_ptr)
 
     /* Access the item's sval */
     const auto tval = o_ptr->bi_key.tval();
-    const auto sval = o_ptr->bi_key.sval().value();
-    short use_realm = tval2realm(tval);
+    const auto sval = *o_ptr->bi_key.sval();
+    const auto use_realm = PlayerRealm::get_realm_of_book(tval);
 
-    /* Track the object kind */
-    object_kind_track(player_ptr, o_ptr->bi_id);
+    o_ptr->track_baseitem();
     handle_stuff(player_ptr);
 
     /* Extract spells */
@@ -646,7 +646,7 @@ void do_cmd_browse(PlayerType *player_ptr)
             print_spells(player_ptr, 0, spells.data(), spells.size(), 1, 15, use_realm);
 
             /* Notify that there's nothing to see, and wait. */
-            if (use_realm == REALM_HISSATSU) {
+            if (use_realm == RealmType::HISSATSU) {
                 prt(_("読める技がない。", "No techniques to browse."), 0, 0);
             } else {
                 prt(_("読める呪文がない。", "No spells to browse."), 0, 0);
@@ -664,8 +664,8 @@ void do_cmd_browse(PlayerType *player_ptr)
         term_erase(14, 12);
         term_erase(14, 11);
 
-        const auto spell_desc = exe_spell(player_ptr, use_realm, spell, SpellProcessType::DESCRIPTION);
-        display_wrap_around(spell_desc.value(), 62, 11, 15);
+        const auto &spell_desc = PlayerRealm::get_spell_description(use_realm, spell);
+        display_wrap_around(spell_desc, 62, 11, 15);
     }
     screen_load();
 }
@@ -673,33 +673,22 @@ void do_cmd_browse(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーの第二魔法領域を変更する /
  * @param player_ptr プレイヤーへの参照ポインタ
+ * @param pr プレイヤーの魔法領域情報
  * @param next_realm 変更先の魔法領域ID
  */
-static void change_realm2(PlayerType *player_ptr, int16_t next_realm)
+static void change_realm2(PlayerType *player_ptr, PlayerRealm &pr, RealmType next_realm)
 {
-    int i, j = 0;
-    for (i = 0; i < 64; i++) {
-        player_ptr->spell_order[j] = player_ptr->spell_order[i];
-        if (player_ptr->spell_order[i] < 32) {
-            j++;
-        }
-    }
-    for (; j < 64; j++) {
-        player_ptr->spell_order[j] = 99;
-    }
+    PlayerSpellStatus(player_ptr).realm2().initialize();
 
-    for (i = 32; i < 64; i++) {
+    for (auto i = 32; i < 64; i++) {
         player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED);
     }
-    player_ptr->spell_learned2 = 0L;
-    player_ptr->spell_worked2 = 0L;
-    player_ptr->spell_forgotten2 = 0L;
 
     constexpr auto fmt_realm = _("魔法の領域を%sから%sに変更した。", "changed magic realm from %s to %s.");
-    const auto mes = format(fmt_realm, realm_names[player_ptr->realm2], realm_names[next_realm]);
-    exe_write_diary(player_ptr, DiaryKind::DESCRIPTION, 0, mes);
-    player_ptr->old_realm |= 1U << (player_ptr->realm2 - 1);
-    player_ptr->realm2 = next_realm;
+    const auto mes = format(fmt_realm, pr.realm2().get_name().data(), PlayerRealm::get_name(next_realm).data());
+    exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::DESCRIPTION, 0, mes);
+    player_ptr->old_realm |= 1U << (enum2i(pr.realm2().to_enum()) - 1);
+    pr.set(pr.realm1().to_enum(), next_realm);
 
     static constexpr auto flags = {
         StatusRecalculatingFlag::REORDER,
@@ -719,12 +708,12 @@ static void change_realm2(PlayerType *player_ptr, int16_t next_realm)
 void do_cmd_study(PlayerType *player_ptr)
 {
     auto increment = 0;
-    auto learned = false;
 
     /* Spells of realm2 will have an increment of +32 */
     SPELL_IDX spell = -1;
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
-    if (!player_ptr->realm1) {
+    PlayerRealm pr(player_ptr);
+    if (!pr.realm1().is_available()) {
         msg_print(_("本を読むことができない！", "You cannot read books!"));
         return;
     }
@@ -750,7 +739,7 @@ void do_cmd_study(PlayerType *player_ptr)
     msg_format("You can learn %d new %s%s.", player_ptr->new_spells, spell_category.data(), (player_ptr->new_spells == 1 ? "" : "s"));
 #endif
 
-    msg_print(nullptr);
+    msg_erase();
 
     /* Restrict choices to "useful" books */
     auto item_tester = get_learnable_spellbook_tester(player_ptr);
@@ -765,26 +754,26 @@ void do_cmd_study(PlayerType *player_ptr)
     }
 
     const auto tval = o_ptr->bi_key.tval();
-    const auto sval = o_ptr->bi_key.sval().value();
-    if (tval == get_realm2_book(player_ptr)) {
+    const auto sval = *o_ptr->bi_key.sval();
+    const auto study_realm = PlayerRealm::get_realm_of_book(tval);
+    if (pr.realm2().equals(study_realm)) {
         increment = 32;
-    } else if (tval != get_realm1_book(player_ptr)) {
+    } else if (!pr.realm1().equals(study_realm)) {
         if (!input_check(_("本当に魔法の領域を変更しますか？", "Really, change magic realm? "))) {
             return;
         }
 
-        change_realm2(player_ptr, tval2realm(tval));
+        change_realm2(player_ptr, pr, study_realm);
         increment = 32;
     }
 
-    /* Track the object kind */
-    object_kind_track(player_ptr, o_ptr->bi_id);
+    o_ptr->track_baseitem();
     handle_stuff(player_ptr);
 
     /* Mage -- Learn a selected spell */
     if (mp_ptr->spell_book != ItemKindType::LIFE_BOOK) {
         /* Ask for a spell, allow cancel */
-        if (!get_spell(player_ptr, &spell, _("学ぶ", "study"), sval, false, tval2realm(tval)) && (spell == -1)) {
+        if (!get_spell(player_ptr, &spell, _("学ぶ", "study"), sval, false, study_realm) && (spell == -1)) {
             return;
         }
     }
@@ -799,7 +788,8 @@ void do_cmd_study(PlayerType *player_ptr)
             /* Check spells in the book */
             if ((fake_spell_flags[sval] & (1UL << spell))) {
                 /* Skip non "okay" prayers */
-                if (!spell_okay(player_ptr, spell, false, true, (increment ? player_ptr->realm2 : player_ptr->realm1))) {
+                const auto &realm = increment ? pr.realm2() : pr.realm1();
+                if (!spell_okay(player_ptr, spell, false, true, realm.to_enum())) {
                     continue;
                 }
 
@@ -830,65 +820,47 @@ void do_cmd_study(PlayerType *player_ptr)
     }
 
     /* Learn the spell */
-    if (spell < 32) {
-        if (player_ptr->spell_learned1 & (1UL << spell)) {
-            learned = true;
-        } else {
-            player_ptr->spell_learned1 |= (1UL << spell);
-        }
-    } else {
-        if (player_ptr->spell_learned2 & (1UL << (spell - 32))) {
-            learned = true;
-        } else {
-            player_ptr->spell_learned2 |= (1UL << (spell - 32));
-        }
-    }
+    PlayerSpellStatus pss(player_ptr);
+    auto realm_status = increment ? pss.realm2() : pss.realm1();
 
-    if (learned) {
+    if (realm_status.is_learned(spell % 32)) {
         auto max_exp = PlayerSkill::spell_exp_at((spell < 32) ? PlayerSkillRank::MASTER : PlayerSkillRank::EXPERT);
         const auto old_exp = player_ptr->spell_exp[spell];
-        const auto realm = increment ? player_ptr->realm2 : player_ptr->realm1;
-        const auto spell_name = exe_spell(player_ptr, realm, spell % 32, SpellProcessType::NAME);
+        const auto &realm = increment ? pr.realm2() : pr.realm1();
+        const auto &spell_name = realm.get_spell_name(spell % 32);
 
         if (old_exp >= max_exp) {
             msg_format(_("その%sは完全に使いこなせるので学ぶ必要はない。", "You don't need to study this %s anymore."), spell_category.data());
             return;
-        }
+        } else {
 #ifdef JP
-        if (!input_check(format("%sの%sをさらに学びます。よろしいですか？", spell_name->data(), spell_category.data()))) {
+            if (!input_check(format("%sの%sをさらに学びます。よろしいですか？", spell_name.data(), spell_category.data())))
 #else
-        if (!input_check(format("You will study a %s of %s again. Are you sure? ", spell_category.data(), spell_name->data()))) {
+            if (!input_check(format("You will study a %s of %s again. Are you sure? ", spell_category.data(), spell_name.data())))
 #endif
-            return;
+                return;
         }
 
         auto new_rank = PlayerSkill(player_ptr).gain_spell_skill_exp_over_learning(spell);
         auto new_rank_str = PlayerSkill::skill_rank_str(new_rank);
-        msg_format(_("%sの熟練度が%sに上がった。", "Your proficiency of %s is now %s rank."), spell_name->data(), new_rank_str);
+        msg_format(_("%sの熟練度が%sに上がった。", "Your proficiency of %s is now %s rank."), spell_name.data(), new_rank_str);
     } else {
-        /* Find the next open entry in "player_ptr->spell_order[]" */
-        int i;
-        for (i = 0; i < 64; i++) {
-            /* Stop at the first empty space */
-            if (player_ptr->spell_order[i] == 99) {
-                break;
-            }
-        }
+        realm_status.set_learned(spell % 32);
 
         /* Add the spell to the known list */
-        player_ptr->spell_order[i++] = spell;
+        player_ptr->spell_order_learned.push_back(spell);
 
         /* Mention the result */
-        const auto realm = increment ? player_ptr->realm2 : player_ptr->realm1;
-        const auto spell_name = exe_spell(player_ptr, realm, spell % 32, SpellProcessType::NAME);
+        const auto &realm = increment ? pr.realm2() : pr.realm1();
+        const auto &spell_name = realm.get_spell_name(spell % 32);
 #ifdef JP
         if (mp_ptr->spell_book == ItemKindType::MUSIC_BOOK) {
-            msg_format("%sを学んだ。", spell_name->data());
+            msg_format("%sを学んだ。", spell_name.data());
         } else {
-            msg_format("%sの%sを学んだ。", spell_name->data(), spell_category.data());
+            msg_format("%sの%sを学んだ。", spell_name.data(), spell_category.data());
         }
 #else
-        msg_format("You have learned the %s of %s.", spell_category.data(), spell_name->data());
+        msg_format("You have learned the %s of %s.", spell_category.data(), spell_name.data());
 #endif
     }
 
@@ -909,7 +881,7 @@ void do_cmd_study(PlayerType *player_ptr)
         break;
     }
 
-    sound(SOUND_STUDY);
+    sound(SoundKind::STUDY);
 
     /* One less spell available */
     player_ptr->learned_spells++;
@@ -928,25 +900,22 @@ void do_cmd_study(PlayerType *player_ptr)
  */
 bool do_cmd_cast(PlayerType *player_ptr)
 {
-    SPELL_IDX spell;
-    int16_t realm;
     int chance;
     auto increment = 0;
-    int16_t use_realm;
     MANA_POINT need_mana;
 
-    const magic_type *s_ptr;
     auto over_exerted = false;
 
     /* Require spell ability */
     PlayerClass pc(player_ptr);
     auto is_every_magic = pc.is_every_magic();
-    if (!player_ptr->realm1 && !is_every_magic) {
+    PlayerRealm pr(player_ptr);
+    if (!pr.realm1().is_available() && !is_every_magic) {
         msg_print(_("呪文を唱えられない！", "You cannot cast spells!"));
         return false;
     }
 
-    if (player_ptr->effects()->blindness()->is_blind() || no_lite(player_ptr)) {
+    if (player_ptr->effects()->blindness().is_blind() || no_lite(player_ptr)) {
         if (pc.equals(PlayerClassType::FORCETRAINER)) {
             confirm_use_force(player_ptr, false);
         } else {
@@ -961,7 +930,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
         return false;
     }
 
-    if (player_ptr->realm1 == REALM_HEX) {
+    if (pr.is_realm_hex()) {
         if (SpellHex(player_ptr).is_casting_full_capacity()) {
             auto flag = false;
             msg_print(_("これ以上新しい呪文を詠唱することはできない。", "Can not cast more spells."));
@@ -1000,60 +969,48 @@ bool do_cmd_cast(PlayerType *player_ptr)
     }
 
     const auto tval = o_ptr->bi_key.tval();
-    const auto sval = o_ptr->bi_key.sval().value();
-    if (!is_every_magic && (tval == get_realm2_book(player_ptr))) {
+    const auto sval = *o_ptr->bi_key.sval();
+    const auto use_realm = PlayerRealm::get_realm_of_book(tval);
+    if (!is_every_magic && PlayerRealm(player_ptr).realm2().equals(use_realm)) {
         increment = 32;
     }
 
-    /* Track the object kind */
-    object_kind_track(player_ptr, o_ptr->bi_id);
+    o_ptr->track_baseitem();
     handle_stuff(player_ptr);
 
-    if (is_every_magic) {
-        realm = tval2realm(tval);
-    } else if (increment) {
-        realm = player_ptr->realm2;
-    } else {
-        realm = player_ptr->realm1;
-    }
-
     /* Ask for a spell */
+    SPELL_IDX spell_id;
 #ifdef JP
-    if (!get_spell(player_ptr, &spell,
+    if (!get_spell(player_ptr, &spell_id,
             ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK)       ? "詠唱する"
                 : (mp_ptr->spell_book == ItemKindType::MUSIC_BOOK) ? "歌う"
                                                                    : "唱える"),
-            sval, true, realm)) {
-        if (spell == -2) {
+            sval, true, use_realm)) {
+        if (spell_id == -2) {
             msg_format("その本には知っている%sがない。", prayer.data());
         }
         return false;
     }
 #else
-    if (!get_spell(player_ptr, &spell, ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"), sval, true, realm)) {
-        if (spell == -2) {
+    if (!get_spell(player_ptr, &spell_id, ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"), sval, true, use_realm)) {
+        if (spell_id == -2) {
             msg_format("You don't know any %ss in that book.", prayer.data());
         }
         return false;
     }
 #endif
 
-    use_realm = tval2realm(tval);
-    if (use_realm == REALM_HEX) {
-        if (SpellHex(player_ptr).is_spelling_specific(spell)) {
+    if (use_realm == RealmType::HEX) {
+        if (SpellHex(player_ptr).is_spelling_specific(spell_id)) {
             msg_print(_("その呪文はすでに詠唱中だ。", "You are already casting it."));
             return false;
         }
     }
 
-    if (!is_magic(use_realm)) {
-        s_ptr = &technic_info[use_realm - MIN_TECHNIC][spell];
-    } else {
-        s_ptr = &mp_ptr->info[realm - 1][spell];
-    }
+    const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
     /* Extract mana consumption rate */
-    need_mana = mod_need_mana(player_ptr, s_ptr->smana, spell, realm);
+    need_mana = mod_need_mana(player_ptr, spell.smana, spell_id, use_realm);
 
     /* Verify "dangerous" spells */
     if (need_mana > player_ptr->csp) {
@@ -1082,44 +1039,44 @@ bool do_cmd_cast(PlayerType *player_ptr)
     }
 
     /* Spell failure chance */
-    chance = spell_chance(player_ptr, spell, use_realm);
+    chance = spell_chance(player_ptr, spell_id, use_realm);
 
     /* Failed spell */
-    if (randint0(100) < chance) {
+    if (evaluate_percent(chance)) {
         if (flush_failure) {
             flush();
         }
 
         msg_format(_("%sをうまく唱えられなかった！", "You failed to get the %s off!"), prayer.data());
-        sound(SOUND_FAIL);
+        sound(SoundKind::FAIL);
 
-        switch (realm) {
-        case REALM_LIFE:
+        switch (use_realm) {
+        case RealmType::LIFE:
             if (randint1(100) < chance) {
                 chg_virtue(player_ptr, Virtue::VITALITY, -1);
             }
             break;
-        case REALM_DEATH:
+        case RealmType::DEATH:
             if (randint1(100) < chance) {
                 chg_virtue(player_ptr, Virtue::UNLIFE, -1);
             }
             break;
-        case REALM_NATURE:
+        case RealmType::NATURE:
             if (randint1(100) < chance) {
                 chg_virtue(player_ptr, Virtue::NATURE, -1);
             }
             break;
-        case REALM_DAEMON:
+        case RealmType::DAEMON:
             if (randint1(100) < chance) {
                 chg_virtue(player_ptr, Virtue::JUSTICE, 1);
             }
             break;
-        case REALM_CRUSADE:
+        case RealmType::CRUSADE:
             if (randint1(100) < chance) {
                 chg_virtue(player_ptr, Virtue::JUSTICE, -1);
             }
             break;
-        case REALM_HEX:
+        case RealmType::HEX:
             if (randint1(100) < chance) {
                 chg_virtue(player_ptr, Virtue::COMPASSION, -1);
             }
@@ -1132,23 +1089,23 @@ bool do_cmd_cast(PlayerType *player_ptr)
         }
 
         /* Failure casting may activate some side effect */
-        exe_spell(player_ptr, realm, spell, SpellProcessType::FAIL);
+        exe_spell(player_ptr, use_realm, spell_id, SpellProcessType::FAIL);
 
-        if ((tval == ItemKindType::CHAOS_BOOK) && (randint1(100) < spell)) {
+        if ((tval == ItemKindType::CHAOS_BOOK) && (randint1(100) < spell_id)) {
             msg_print(_("カオス的な効果を発生した！", "You produce a chaotic effect!"));
-            wild_magic(player_ptr, spell);
-        } else if ((tval == ItemKindType::DEATH_BOOK) && (randint1(100) < spell)) {
+            wild_magic(player_ptr, spell_id);
+        } else if ((tval == ItemKindType::DEATH_BOOK) && (randint1(100) < spell_id)) {
             if ((sval == 3) && one_in_(2)) {
-                sanity_blast(player_ptr, 0, true);
+                sanity_blast(player_ptr, tl::nullopt, true);
             } else {
                 msg_print(_("痛い！", "It hurts!"));
-                take_hit(player_ptr, DAMAGE_LOSELIFE, damroll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
+                take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
 
-                if ((spell > 15) && one_in_(6) && !player_ptr->hold_exp) {
-                    lose_exp(player_ptr, spell * 250);
+                if ((spell_id > 15) && one_in_(6) && !player_ptr->hold_exp) {
+                    lose_exp(player_ptr, spell_id * 250);
                 }
             }
-        } else if ((tval == ItemKindType::MUSIC_BOOK) && (randint1(200) < spell)) {
+        } else if ((tval == ItemKindType::MUSIC_BOOK) && (randint1(200) < spell_id)) {
             msg_print(_("いやな音が響いた", "An infernal sound echoed."));
             aggravate_monsters(player_ptr, 0);
         }
@@ -1160,7 +1117,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
     /* Process spell */
     else {
         /* Canceled spells cost neither a turn nor mana */
-        if (!exe_spell(player_ptr, realm, spell, SpellProcessType::CAST)) {
+        if (!exe_spell(player_ptr, use_realm, spell_id, SpellProcessType::CAST)) {
             return false;
         }
 
@@ -1169,49 +1126,47 @@ bool do_cmd_cast(PlayerType *player_ptr)
         }
 
         /* A spell was cast */
-        if (!(increment ? (player_ptr->spell_worked2 & (1UL << spell)) : (player_ptr->spell_worked1 & (1UL << spell))) && !is_every_magic) {
-            int e = s_ptr->sexp;
+        PlayerSpellStatus pss(player_ptr);
+        auto realm_status = increment ? pss.realm2() : pss.realm1();
+        if (!realm_status.is_worked(spell_id) && !is_every_magic) {
+            int e = spell.sexp;
 
             /* The spell worked */
-            if (realm == player_ptr->realm1) {
-                player_ptr->spell_worked1 |= (1UL << spell);
-            } else {
-                player_ptr->spell_worked2 |= (1UL << spell);
-            }
+            realm_status.set_worked(spell_id);
 
-            gain_exp(player_ptr, e * s_ptr->slevel);
+            gain_exp(player_ptr, e * spell.slevel);
             RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 
-            switch (realm) {
-            case REALM_LIFE:
+            switch (use_realm) {
+            case RealmType::LIFE:
                 chg_virtue(player_ptr, Virtue::TEMPERANCE, 1);
                 chg_virtue(player_ptr, Virtue::COMPASSION, 1);
                 chg_virtue(player_ptr, Virtue::VITALITY, 1);
                 chg_virtue(player_ptr, Virtue::DILIGENCE, 1);
                 break;
-            case REALM_DEATH:
+            case RealmType::DEATH:
                 chg_virtue(player_ptr, Virtue::UNLIFE, 1);
                 chg_virtue(player_ptr, Virtue::JUSTICE, -1);
                 chg_virtue(player_ptr, Virtue::FAITH, -1);
                 chg_virtue(player_ptr, Virtue::VITALITY, -1);
                 break;
-            case REALM_DAEMON:
+            case RealmType::DAEMON:
                 chg_virtue(player_ptr, Virtue::JUSTICE, -1);
                 chg_virtue(player_ptr, Virtue::FAITH, -1);
                 chg_virtue(player_ptr, Virtue::HONOUR, -1);
                 chg_virtue(player_ptr, Virtue::TEMPERANCE, -1);
                 break;
-            case REALM_CRUSADE:
+            case RealmType::CRUSADE:
                 chg_virtue(player_ptr, Virtue::FAITH, 1);
                 chg_virtue(player_ptr, Virtue::JUSTICE, 1);
                 chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
                 chg_virtue(player_ptr, Virtue::HONOUR, 1);
                 break;
-            case REALM_NATURE:
+            case RealmType::NATURE:
                 chg_virtue(player_ptr, Virtue::NATURE, 1);
                 chg_virtue(player_ptr, Virtue::HARMONY, 1);
                 break;
-            case REALM_HEX:
+            case RealmType::HEX:
                 chg_virtue(player_ptr, Virtue::JUSTICE, -1);
                 chg_virtue(player_ptr, Virtue::FAITH, -1);
                 chg_virtue(player_ptr, Virtue::HONOUR, -1);
@@ -1222,8 +1177,8 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 break;
             }
         }
-        switch (realm) {
-        case REALM_LIFE:
+        switch (use_realm) {
+        case RealmType::LIFE:
             if (randint1(100 + player_ptr->lev) < need_mana) {
                 chg_virtue(player_ptr, Virtue::TEMPERANCE, 1);
             }
@@ -1237,7 +1192,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 chg_virtue(player_ptr, Virtue::DILIGENCE, 1);
             }
             break;
-        case REALM_DEATH:
+        case RealmType::DEATH:
             if (randint1(100 + player_ptr->lev) < need_mana) {
                 chg_virtue(player_ptr, Virtue::UNLIFE, 1);
             }
@@ -1251,7 +1206,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 chg_virtue(player_ptr, Virtue::VITALITY, -1);
             }
             break;
-        case REALM_DAEMON:
+        case RealmType::DAEMON:
             if (randint1(100 + player_ptr->lev) < need_mana) {
                 chg_virtue(player_ptr, Virtue::JUSTICE, -1);
             }
@@ -1265,7 +1220,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 chg_virtue(player_ptr, Virtue::TEMPERANCE, -1);
             }
             break;
-        case REALM_CRUSADE:
+        case RealmType::CRUSADE:
             if (randint1(100 + player_ptr->lev) < need_mana) {
                 chg_virtue(player_ptr, Virtue::FAITH, 1);
             }
@@ -1279,7 +1234,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 chg_virtue(player_ptr, Virtue::HONOUR, 1);
             }
             break;
-        case REALM_NATURE:
+        case RealmType::NATURE:
             if (randint1(100 + player_ptr->lev) < need_mana) {
                 chg_virtue(player_ptr, Virtue::NATURE, 1);
             }
@@ -1287,7 +1242,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 chg_virtue(player_ptr, Virtue::HARMONY, 1);
             }
             break;
-        case REALM_HEX:
+        case RealmType::HEX:
             if (randint1(100 + player_ptr->lev) < need_mana) {
                 chg_virtue(player_ptr, Virtue::JUSTICE, -1);
             }
@@ -1301,9 +1256,11 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 chg_virtue(player_ptr, Virtue::COMPASSION, -1);
             }
             break;
+        default:
+            break;
         }
-        if (any_bits(mp_ptr->spell_xtra, extra_magic_gain_exp)) {
-            PlayerSkill(player_ptr).gain_spell_skill_exp(realm, spell);
+        if (mp_ptr->is_spell_trainable) {
+            PlayerSkill(player_ptr).gain_spell_skill_exp(use_realm, spell_id);
         }
     }
 
@@ -1326,23 +1283,23 @@ bool do_cmd_cast(PlayerType *player_ptr)
         player_ptr->csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
-        switch (realm) {
-        case REALM_LIFE:
+        switch (use_realm) {
+        case RealmType::LIFE:
             chg_virtue(player_ptr, Virtue::VITALITY, -10);
             break;
-        case REALM_DEATH:
+        case RealmType::DEATH:
             chg_virtue(player_ptr, Virtue::UNLIFE, -10);
             break;
-        case REALM_DAEMON:
+        case RealmType::DAEMON:
             chg_virtue(player_ptr, Virtue::JUSTICE, 10);
             break;
-        case REALM_NATURE:
+        case RealmType::NATURE:
             chg_virtue(player_ptr, Virtue::NATURE, -10);
             break;
-        case REALM_CRUSADE:
+        case RealmType::CRUSADE:
             chg_virtue(player_ptr, Virtue::JUSTICE, -10);
             break;
-        case REALM_HEX:
+        case RealmType::HEX:
             chg_virtue(player_ptr, Virtue::COMPASSION, 10);
             break;
         default:
@@ -1351,12 +1308,9 @@ bool do_cmd_cast(PlayerType *player_ptr)
         }
 
         /* Damage CON (possibly permanently) */
-        if (randint0(100) < 50) {
-            bool perm = (randint0(100) < 25);
-
+        if (one_in_(2)) {
+            const auto perm = one_in_(4);
             msg_print(_("体を悪くしてしまった！", "You have damaged your health!"));
-
-            /* Reduce constitution */
             (void)dec_stat(player_ptr, A_CON, 15 + randint1(10), perm);
         }
     }

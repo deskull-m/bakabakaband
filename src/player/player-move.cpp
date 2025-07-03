@@ -15,11 +15,9 @@
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
-#include "floor/cave.h"
 #include "floor/floor-util.h"
 #include "floor/geometry.h"
 #include "game-option/disturbance-options.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "grid/trap.h"
 #include "inventory/player-inventory.h"
@@ -37,27 +35,20 @@
 #include "spell-kind/spells-floor.h"
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include "target/target-checker.h"
-#include "timed-effect/player-blindness.h"
-#include "timed-effect/player-confusion.h"
-#include "timed-effect/player-hallucination.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
-
-int flow_head = 0;
-int flow_tail = 0;
-POSITION temp2_x[MAX_SHORT];
-POSITION temp2_y[MAX_SHORT];
 
 /*!
  * @brief 地形やその上のアイテムの隠された要素を全て明かす /
@@ -70,20 +61,20 @@ static void discover_hidden_things(PlayerType *player_ptr, const Pos2D &pos)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
-    if (grid.mimic && is_trap(player_ptr, grid.feat)) {
-        disclose_grid(player_ptr, pos.y, pos.x);
+    if (grid.mimic && floor.has_trap_at(pos)) {
+        disclose_grid(player_ptr, pos);
         msg_print(_("トラップを発見した。", "You have found a trap."));
         disturb(player_ptr, false, true);
     }
 
-    if (is_hidden_door(player_ptr, grid)) {
+    if (grid.is_hidden_door()) {
         msg_print(_("隠しドアを発見した。", "You have found a secret door."));
-        disclose_grid(player_ptr, pos.y, pos.x);
+        disclose_grid(player_ptr, pos);
         disturb(player_ptr, false, false);
     }
 
     for (const auto this_o_idx : grid.o_idx_list) {
-        auto &item = floor.o_list[this_o_idx];
+        auto &item = *floor.o_list[this_o_idx];
         if (item.bi_key.tval() != ItemKindType::CHEST) {
             continue;
         }
@@ -108,17 +99,17 @@ void search(PlayerType *player_ptr)
 {
     PERCENTAGE chance = player_ptr->skill_srh;
     const auto effects = player_ptr->effects();
-    if (effects->blindness()->is_blind() || no_lite(player_ptr)) {
+    if (effects->blindness().is_blind() || no_lite(player_ptr)) {
         chance = chance / 10;
     }
 
-    if (effects->confusion()->is_confused() || effects->hallucination()->is_hallucinated()) {
+    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
         chance = chance / 10;
     }
 
-    for (DIRECTION i = 0; i < 9; ++i) {
-        if (randint0(100) < chance) {
-            discover_hidden_things(player_ptr, { player_ptr->y + ddy_ddd[i], player_ptr->x + ddx_ddd[i] });
+    for (const auto &d : Direction::directions()) {
+        if (evaluate_percent(chance)) {
+            discover_hidden_things(player_ptr, player_ptr->get_neighbor(d));
         }
     }
 }
@@ -150,25 +141,23 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             grid_new.m_idx = om_idx;
             grid_old.m_idx = nm_idx;
             if (om_idx > 0) {
-                MonsterEntity *om_ptr = &floor.m_list[om_idx];
-                om_ptr->fy = pos_new.y;
-                om_ptr->fx = pos_new.x;
+                auto &monster = floor.m_list[om_idx];
+                monster.set_position(pos_new);
                 update_monster(player_ptr, om_idx, true);
             }
 
             if (nm_idx > 0) {
-                MonsterEntity *nm_ptr = &floor.m_list[nm_idx];
-                nm_ptr->fy = pos_old.y;
-                nm_ptr->fx = pos_old.x;
+                auto &monster = floor.m_list[nm_idx];
+                monster.set_position(pos_old);
                 update_monster(player_ptr, nm_idx, true);
             }
         }
 
-        lite_spot(player_ptr, pos_old.y, pos_old.x);
-        lite_spot(player_ptr, pos_new.y, pos_new.x);
+        lite_spot(player_ptr, pos_old);
+        lite_spot(player_ptr, pos_new);
         verify_panel(player_ptr);
         if (mpe_mode & MPE_FORGET_FLOW) {
-            forget_flow(&floor);
+            forget_flow(floor);
             rfu.set_flag(StatusRecalculatingFlag::UN_VIEW);
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
         }
@@ -186,11 +175,11 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags_swrf);
-        if ((!player_ptr->effects()->blindness()->is_blind() && !no_lite(player_ptr)) || !is_trap(player_ptr, grid_new.feat)) {
+        if ((!player_ptr->effects()->blindness().is_blind() && !no_lite(player_ptr)) || !floor.has_trap_at(pos_new)) {
             grid_new.info &= ~(CAVE_UNSAFE);
         }
 
-        if (floor.dun_level && floor.get_dungeon_definition().flags.has(DungeonFeatureType::FORGET)) {
+        if (floor.is_underground() && floor.get_dungeon_definition().flags.has(DungeonFeatureType::FORGET)) {
             wiz_dark(player_ptr);
         }
 
@@ -207,7 +196,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
         }
 
         using Tc = TerrainCharacteristics;
-        if ((player_ptr->action == ACTION_HAYAGAKE) && (terrain_new.flags.has_not(Tc::PROJECT) || (!player_ptr->levitation && terrain_new.flags.has(Tc::DEEP)))) {
+        if ((player_ptr->action == ACTION_HAYAGAKE) && (terrain_new.flags.has_not(Tc::PROJECTION) || (!player_ptr->levitation && terrain_new.flags.has(Tc::DEEP)))) {
             msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
             set_action(player_ptr, ACTION_NONE);
         }
@@ -271,8 +260,8 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
         energy.reset_player_turn();
         command_new = SPECIAL_KEY_QUEST;
     } else if (terrain_new.flags.has(TerrainCharacteristics::QUEST_EXIT)) {
-        const auto &quest_list = QuestList::get_instance();
-        if (quest_list[floor.quest_number].type == QuestKindType::FIND_EXIT) {
+        const auto &quests = QuestList::get_instance();
+        if (quests.get_quest(floor.quest_number).type == QuestKindType::FIND_EXIT) {
             complete_quest(player_ptr, floor.quest_number);
         }
         leave_quest_check(player_ptr);
@@ -288,7 +277,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
         disturb(player_ptr, false, true);
         if (grid_new.mimic || terrain_new.flags.has(TerrainCharacteristics::SECRET)) {
             msg_print(_("トラップだ！", "You found a trap!"));
-            disclose_grid(player_ptr, player_ptr->y, player_ptr->x);
+            disclose_grid(player_ptr, player_ptr->get_position());
         }
 
         hit_trap(player_ptr, any_bits(mpe_mode, MPE_BREAK_TRAP));
@@ -321,7 +310,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
  */
 bool trap_can_be_ignored(PlayerType *player_ptr, FEAT_IDX feat)
 {
-    const auto &terrain = TerrainList::get_instance()[feat];
+    const auto &terrain = TerrainList::get_instance().get_terrain(feat);
     if (terrain.flags.has_not(TerrainCharacteristics::TRAP)) {
         return true;
     }

@@ -12,7 +12,7 @@
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 
 static bool message_shoot(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
@@ -24,7 +24,7 @@ static bool message_shoot(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
     auto notice = monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
     if (notice) {
-        sound(SOUND_SHOOT);
+        sound(SoundKind::SHOOT);
     }
     return notice;
 }
@@ -66,7 +66,7 @@ const std::unordered_map<MonsterAbilityType, MSpellData> bolt_list = {
     { MonsterAbilityType::BO_ICEE, { { _("%s^が何かをつぶやいた。", "%s^ mumbles."),
                                          _("%s^が極寒の矢の呪文を唱えた。", "%s^ casts an ice bolt."),
                                          _("%s^が%sに向かって極寒の矢の呪文を唱えた。", "%s^ casts an ice bolt at %s.") },
-                                       AttributeType::ICE, { DRS_REFLECT, DRS_NETH } } },
+                                       AttributeType::ICE, { DRS_REFLECT, DRS_COLD } } },
     { MonsterAbilityType::BO_VOID, { { _("%s^が何かをつぶやいた。", "%s^ mumbles."),
                                          _("%s^がヴォイド・ボルトの呪文を唱えた。", "%s^ casts a void bolt."),
                                          _("%s^が%sに向かってヴォイド・ボルトの呪文を唱えた。", "%s^ casts a void bolt at %s.") },
@@ -82,7 +82,7 @@ const std::unordered_map<MonsterAbilityType, MSpellData> bolt_list = {
     { MonsterAbilityType::BO_LITE, { { _("%s^が何かをつぶやいた。", "%s^ mumbles."),
                                          _("%s^がスターライトアローを放った。", "%s^ fires a starlight arrow."),
                                          _("%s^が%sに向かってスターライトアローを放った。", "%s^ fires a starlight arrow at %s.") },
-                                       AttributeType::LITE, DRS_REFLECT } },
+                                       AttributeType::LITE, { DRS_REFLECT, DRS_LITE } } },
     { MonsterAbilityType::MISSILE, { { _("%s^が何かをつぶやいた。", "%s^ mumbles."),
                                          _("%s^がマジック・ミサイルの呪文を唱えた。", "%s^ casts a magic missile."),
                                          _("%s^が%sに向かってマジック・ミサイルの呪文を唱えた。", "%s^ casts a magic missile at %s.") },

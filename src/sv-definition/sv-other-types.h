@@ -8,7 +8,7 @@
 
 #define SV_PHOTO 50
 
-/* The "sval" codes for ItemKindType::CORPSE */
+/* The "sval" codes for ItemKindType::MONSTER_REMAINS */
 #define SV_SKELETON 0
 #define SV_CORPSE 1
 #define SV_SOUL 2

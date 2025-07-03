@@ -1,13 +1,12 @@
 #pragma once
 
-/* 人畜無害なenumヘッダを先に読み込む */
-#include "system/angband.h"
-
+#include "locale/localized-string.h"
 #include "object/tval-types.h"
 #include "player-info/class-types.h"
 #include "realm/realm-types.h"
 #include "spell/technic-info-table.h"
-
+#include "system/angband.h"
+#include <map>
 #include <string>
 #include <vector>
 
@@ -22,26 +21,24 @@
 
 struct player_magic {
     ItemKindType spell_book{}; /* Tval of spell books (if any) */
-    BIT_FLAGS8 spell_xtra{}; /* Something for later */
+    bool has_glove_mp_penalty{}; /* 籠手装備によるMP減少 */
+    bool has_magic_fail_rate_cap{}; /* 魔法失率の5%キャップ */
+    bool is_spell_trainable{}; /* 魔法熟練度 */
 
     int spell_stat{}; /* Stat for spells (if any)  */
-    int spell_type{}; /* Spell type (mage/priest) */
 
     int spell_first{}; /* Level of first spell */
     int spell_weight{}; /* Weight that hurts spells */
 
-    magic_type info[MAX_MAGIC][32]{}; /* The available spells */
+    magic_type info[MAX_MAGIC + 1][32]{}; /* The available spells */
 };
 
 extern std::vector<player_magic> class_magics_info;
 extern const player_magic *mp_ptr;
 
 struct player_class_info {
-    concptr title; /* Type of class */
+    LocalizedString title; /* Type of class */
 
-#ifdef JP
-    concptr E_title; /* 英語職業 */
-#endif
     int16_t c_adj[6]; /* Class stat modifier */
 
     int16_t c_dis; /* class disarming */
@@ -72,6 +69,7 @@ struct player_class_info {
     int mul;
 };
 
+enum class PlayerClassType : short;
 extern const player_class_info *cp_ptr;
-extern const std::vector<player_class_info> class_info;
-extern const std::vector<std::vector<std::string_view>> player_titles;
+extern const std::map<PlayerClassType, player_class_info> class_info;
+extern const std::map<PlayerClassType, std::vector<std::string>> player_titles;

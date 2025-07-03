@@ -50,7 +50,7 @@ bool inc_stat(PlayerType *player_ptr, int stat)
     }
 
     if (value < 18) {
-        value += (randint0(100) < 75) ? 1 : 2;
+        value += evaluate_percent(75) ? 1 : 2;
     } else if (value < (player_ptr->stat_max_max[stat] - 2)) {
         auto gain = (((player_ptr->stat_max_max[stat]) - value) / 2 + 3) / 2;
         if (gain < 1) {
@@ -305,7 +305,7 @@ bool lose_all_info(PlayerType *player_ptr)
     chg_virtue(player_ptr, Virtue::KNOWLEDGE, -5);
     chg_virtue(player_ptr, Virtue::ENLIGHTEN, -5);
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = &player_ptr->inventory_list[i];
+        auto *o_ptr = player_ptr->inventory[i].get();
         if (!o_ptr->is_valid() || o_ptr->is_fully_known()) {
             continue;
         }

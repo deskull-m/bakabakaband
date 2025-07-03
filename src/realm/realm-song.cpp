@@ -24,8 +24,8 @@
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
-#include "timed-effect/player-acceleration.h"
 #include "timed-effect/timed-effects.h"
+#include "util/dice.h"
 #include "view/display-messages.h"
 
 /*!
@@ -56,30 +56,20 @@ static void start_singing(PlayerType *player_ptr, SPELL_IDX spell, int32_t song)
  * @param mode 処理内容 (NAME / SPELL_DESC / INFO / CAST / FAIL / SPELL_CONT / STOP)
  * @return
  * NAME / SPELL_DESC / INFO 時には文字列を返す.
- * CAST / FAIL / SPELL_CONT / STOP 時は std::nullopt を返す.
+ * CAST / FAIL / SPELL_CONT / STOP 時は tl::nullopt を返す.
  */
-std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
 {
-    bool name = mode == SpellProcessType::NAME;
-    bool desc = mode == SpellProcessType::DESCRIPTION;
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
     bool fail = mode == SpellProcessType::FAIL;
     bool cont = mode == SpellProcessType::CONTNUATION;
     bool stop = mode == SpellProcessType::STOP;
 
-    DIRECTION dir;
     PLAYER_LEVEL plev = player_ptr->lev;
 
     switch (spell) {
     case 0:
-        if (name) {
-            return _("遅鈍の歌", "Song of Holding");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターを減速させる。抵抗されると無効。", "Attempts to slow all monsters in sight.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -104,13 +94,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 1:
-        if (name) {
-            return _("祝福の歌", "Song of Blessing");
-        }
-        if (desc) {
-            return _("命中率とACのボーナスを得る。", "Gives a bonus to hit and AC for a few turns.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -130,44 +113,30 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 2:
-        if (name) {
-            return _("崩壊の音色", "Wrecking Note");
-        }
-        if (desc) {
-            return _("轟音のボルトを放つ。", "Fires a bolt of sound.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
         }
 
         {
-            DICE_NUMBER dice = 4 + (plev - 1) / 5;
-            DICE_SID sides = 4;
+            const Dice dice(4 + (plev - 1) / 5, 4);
 
             if (info) {
-                return info_damage(dice, sides, 0);
+                return info_damage(dice);
             }
 
             if (cast) {
-                if (!get_aim_dir(player_ptr, &dir)) {
-                    return std::nullopt;
+                const auto dir = get_aim_dir(player_ptr);
+                if (!dir) {
+                    return tl::nullopt;
                 }
 
-                fire_bolt(player_ptr, AttributeType::SOUND, dir, damroll(dice, sides));
+                fire_bolt(player_ptr, AttributeType::SOUND, dir, dice.roll());
             }
         }
         break;
 
     case 3:
-        if (name) {
-            return _("朦朧の旋律", "Stun Pattern");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターを朦朧させる。抵抗されると無効。", "Attempts to stun all monsters in sight.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -179,28 +148,20 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         {
-            DICE_NUMBER dice = plev / 10;
-            DICE_SID sides = 2;
+            const Dice dice(plev / 10, 2);
 
             if (info) {
-                return info_power_dice(dice, sides);
+                return info_power_dice(dice);
             }
 
             if (cont) {
-                stun_monsters(player_ptr, damroll(dice, sides));
+                stun_monsters(player_ptr, dice.roll());
             }
         }
 
         break;
 
     case 4:
-        if (name) {
-            return _("生命の流れ", "Flow of Life");
-        }
-        if (desc) {
-            return _("体力を少し回復させる。", "Heals HP a little.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -212,57 +173,41 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         {
-            DICE_NUMBER dice = 2;
-            DICE_SID sides = 6;
+            const Dice dice(2, 6);
 
             if (info) {
-                return info_heal(dice, sides, 0);
+                return info_heal(dice);
             }
 
             if (cont) {
-                hp_player(player_ptr, damroll(dice, sides));
+                hp_player(player_ptr, dice.roll());
             }
         }
 
         break;
 
     case 5:
-        if (name) {
-            return _("太陽の歌", "Song of the Sun");
-        }
-        if (desc) {
-            return _("光源が照らしている範囲か部屋全体を永久に明るくする。", "Lights up nearby area and the inside of a room permanently.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
         }
 
         {
-            DICE_NUMBER dice = 2;
-            DICE_SID sides = plev / 2;
+            const Dice dice(2, plev / 2);
             POSITION rad = plev / 10 + 1;
 
             if (info) {
-                return info_damage(dice, sides, 0);
+                return info_damage(dice);
             }
 
             if (cast) {
                 msg_print(_("光り輝く歌が辺りを照らした。", "Your uplifting song brings brightness to dark places..."));
-                lite_area(player_ptr, damroll(dice, sides), rad);
+                lite_area(player_ptr, dice.roll(), rad);
             }
         }
         break;
 
     case 6:
-        if (name) {
-            return _("恐怖の歌", "Song of Fear");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターを恐怖させる。抵抗されると無効。", "Attempts to scare all monsters in sight.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -288,14 +233,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 7:
-        if (name) {
-            return _("戦いの歌", "Heroic Ballad");
-        }
-
-        if (desc) {
-            return _("ヒーロー気分になる。", "Removes fear. Gives a bonus to hit for a while. Heals you for 10 HP.");
-        }
-
         if (cast || fail) {
             stop_singing(player_ptr);
         }
@@ -318,17 +255,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         break;
     case 8:
-        if (name) {
-            return _("霊的知覚", "Clairaudience");
-        }
-        if (desc) {
-            return _("近くの罠/扉/"
-                     "階段を感知する。レベル15で全てのモンスター、20で財宝とアイテムを感知できるようになる。レベル25で周辺の地形を感知し、40でその階全体を永久"
-                     "に照らし、ダンジョン内のすべてのアイテムを感知する。この効果は歌い続けることで順に起こる。",
-                "Detects traps, doors and stairs in your vicinity. And detects all monsters at level 15, treasures and items at level 20. Maps nearby area at "
-                "level 25. Lights and know the whole level at level 40. These effects accumulate as the song continues.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -391,13 +317,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 9:
-        if (name) {
-            return _("魂の歌", "Soul Shriek");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターに対して精神攻撃を行う。", "Damages all monsters in sight with PSI damages.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -409,28 +328,20 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         {
-            DICE_NUMBER dice = 1;
-            DICE_SID sides = plev * 3 / 2;
+            const Dice dice(1, plev * 3 / 2);
 
             if (info) {
-                return info_damage(dice, sides, 0);
+                return info_damage(dice);
             }
 
             if (cont) {
-                project_all_los(player_ptr, AttributeType::PSI, damroll(dice, sides));
+                project_all_los(player_ptr, AttributeType::PSI, dice.roll());
             }
         }
 
         break;
 
     case 10:
-        if (name) {
-            return _("知識の歌", "Song of Lore");
-        }
-        if (desc) {
-            return _("自分のいるマスと隣りのマスに落ちているアイテムを鑑定する。", "Identifies all items which are in the adjacent squares.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -460,13 +371,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 11:
-        if (name) {
-            return _("隠遁の歌", "Hiding Tune");
-        }
-        if (desc) {
-            return _("隠密行動能力を上昇させる。", "Gives improved stealth.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -486,13 +390,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 12:
-        if (name) {
-            return _("幻影の旋律", "Illusion Pattern");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターを混乱させる。抵抗されると無効。", "Attempts to confuse all monsters in sight.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -518,13 +415,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 13:
-        if (name) {
-            return _("破滅の叫び", "Doomcall");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターに対して轟音攻撃を行う。", "Damages all monsters in sight with booming sound.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -536,49 +426,32 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         {
-            DICE_NUMBER dice = 10 + plev / 5;
-            DICE_SID sides = 7;
+            const Dice dice(10 + plev / 5, 7);
 
             if (info) {
-                return info_damage(dice, sides, 0);
+                return info_damage(dice);
             }
 
             if (cont) {
-                project_all_los(player_ptr, AttributeType::SOUND, damroll(dice, sides));
+                project_all_los(player_ptr, AttributeType::SOUND, dice.roll());
             }
         }
 
         break;
 
-    case 14:
-        if (name) {
-            return _("フィリエルの歌", "Firiel's Song");
-        }
-        if (desc) {
-            return _("周囲の死体や骨を生き返す。", "Resurrects nearby corpses and skeletons. And makes them your pets.");
+    case 14: {
+        /* Stop singing before start another */
+        if (cast || fail) {
+            stop_singing(player_ptr);
         }
 
-        {
-            /* Stop singing before start another */
-            if (cast || fail) {
-                stop_singing(player_ptr);
-            }
-
-            if (cast) {
-                msg_print(_("生命と復活のテーマを奏で始めた．．．", "The themes of life and revival are woven into your song..."));
-                animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
-            }
+        if (cast) {
+            msg_print(_("生命と復活のテーマを奏で始めた．．．", "The themes of life and revival are woven into your song..."));
+            animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
         }
-        break;
+    } break;
 
     case 15:
-        if (name) {
-            return _("旅の仲間", "Fellowship Chant");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターを魅了する。抵抗されると無効。", "Attempts to charm all monsters in sight.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -590,28 +463,20 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         {
-            DICE_NUMBER dice = 10 + plev / 15;
-            DICE_SID sides = 6;
+            const Dice dice(10 + plev / 15, 6);
 
             if (info) {
-                return info_power_dice(dice, sides);
+                return info_power_dice(dice);
             }
 
             if (cont) {
-                charm_monsters(player_ptr, damroll(dice, sides));
+                charm_monsters(player_ptr, dice.roll());
             }
         }
 
         break;
 
     case 16:
-        if (name) {
-            return _("フルゥの行進曲", "Hru's March");
-        }
-        if (desc) {
-            return _("壁を掘り進む。自分の足元のアイテムは蒸発する。", "Makes you be able to burrow into walls. Objects under your feet evaporate.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -634,15 +499,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 17:
-        if (name) {
-            return _("フィンロドの護り", "Finrod's Resistance");
-        }
-        if (desc) {
-            return _("酸、電撃、炎、冷気、毒に対する耐性を得る。装備による耐性に累積する。",
-                "Gives resistance to fire, cold, electricity, acid and poison. These resistances can be added to those from equipment for more powerful "
-                "resistances.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -678,13 +534,6 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         break;
 
     case 18:
-        if (name) {
-            return _("ホビットのメロディ", "Hobbit Melodies");
-        }
-        if (desc) {
-            return _("加速する。", "Hastes you.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -696,50 +545,33 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (stop) {
-            if (!player_ptr->effects()->acceleration()->is_fast()) {
+            if (!player_ptr->effects()->acceleration().is_fast()) {
                 msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
             }
         }
 
         break;
 
-    case 19:
-        if (name) {
-            return _("歪んだ世界", "World Contortion");
+    case 19: {
+        POSITION rad = plev / 15 + 1;
+        POWER power = plev * 3 + 1;
+
+        if (info) {
+            return info_radius(rad);
         }
-        if (desc) {
-            return _("近くのモンスターをテレポートさせる。抵抗されると無効。", "Teleports all nearby monsters away unless resisted.");
+
+        /* Stop singing before start another */
+        if (cast || fail) {
+            stop_singing(player_ptr);
         }
 
-        {
-            POSITION rad = plev / 15 + 1;
-            POWER power = plev * 3 + 1;
-
-            if (info) {
-                return info_radius(rad);
-            }
-
-            /* Stop singing before start another */
-            if (cast || fail) {
-                stop_singing(player_ptr);
-            }
-
-            if (cast) {
-                msg_print(_("歌が空間を歪めた．．．", "Reality whirls wildly as you sing a dizzying melody..."));
-                project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, power, AttributeType::AWAY_ALL, PROJECT_KILL);
-            }
+        if (cast) {
+            msg_print(_("歌が空間を歪めた．．．", "Reality whirls wildly as you sing a dizzying melody..."));
+            project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, power, AttributeType::AWAY_ALL, PROJECT_KILL);
         }
-        break;
+    } break;
 
     case 20:
-        if (name) {
-            return _("退散の歌", "Dispelling Chant");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターにダメージを与える。邪悪なモンスターに特に大きなダメージを与える。",
-                "Damages all monsters in sight. Hurts evil monsters greatly.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -751,28 +583,21 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         {
-            DICE_SID m_sides = plev * 3;
-            DICE_SID e_sides = plev * 3;
+            const Dice m_dice(1, plev * 3);
+            const Dice e_dice(1, plev * 3);
 
             if (info) {
-                return format("%s1d%d+1d%d", KWD_DAM, m_sides, e_sides);
+                return format("%s%s+%s", KWD_DAM, m_dice.to_string().data(), e_dice.to_string().data());
             }
 
             if (cont) {
-                dispel_monsters(player_ptr, randint1(m_sides));
-                dispel_evil(player_ptr, randint1(e_sides));
+                dispel_monsters(player_ptr, m_dice.roll());
+                dispel_evil(player_ptr, e_dice.roll());
             }
         }
         break;
 
     case 21:
-        if (name) {
-            return _("サルマンの甘言", "The Voice of Saruman");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターを減速させ、眠らせようとする。抵抗されると無効。", "Attempts to slow and put to sleep all monsters in sight.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -798,74 +623,48 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         break;
 
-    case 22:
-        if (name) {
-            return _("嵐の音色", "Song of the Tempest");
-        }
-        if (desc) {
-            return _("轟音のビームを放つ。", "Fires a beam of sound.");
-        }
+    case 22: {
+        const Dice dice(15 + (plev - 1) / 2, 10);
 
-        {
-            DICE_NUMBER dice = 15 + (plev - 1) / 2;
-            DICE_SID sides = 10;
-
-            if (info) {
-                return info_damage(dice, sides, 0);
-            }
-
-            /* Stop singing before start another */
-            if (cast || fail) {
-                stop_singing(player_ptr);
-            }
-
-            if (cast) {
-                if (!get_aim_dir(player_ptr, &dir)) {
-                    return std::nullopt;
-                }
-
-                fire_beam(player_ptr, AttributeType::SOUND, dir, damroll(dice, sides));
-            }
-        }
-        break;
-
-    case 23:
-        if (name) {
-            return _("もう一つの世界", "Ambarkanta");
-        }
-        if (desc) {
-            return _("現在の階を再構成する。", "Recreates current dungeon level.");
+        if (info) {
+            return info_damage(dice);
         }
 
-        {
-            int base = 15;
-            DICE_SID sides = 20;
-
-            if (info) {
-                return info_delay(base, sides);
-            }
-
-            /* Stop singing before start another */
-            if (cast || fail) {
-                stop_singing(player_ptr);
-            }
-
-            if (cast) {
-                msg_print(_("周囲が変化し始めた．．．", "You sing of the primeval shaping of Middle-earth..."));
-                reserve_alter_reality(player_ptr, randint0(sides) + base);
-            }
+        /* Stop singing before start another */
+        if (cast || fail) {
+            stop_singing(player_ptr);
         }
-        break;
+
+        if (cast) {
+            const auto dir = get_aim_dir(player_ptr);
+            if (!dir) {
+                return tl::nullopt;
+            }
+
+            fire_beam(player_ptr, AttributeType::SOUND, dir, dice.roll());
+        }
+    } break;
+
+    case 23: {
+        int base = 15;
+        const Dice dice(1, 20);
+
+        if (info) {
+            return info_delay(base, dice);
+        }
+
+        /* Stop singing before start another */
+        if (cast || fail) {
+            stop_singing(player_ptr);
+        }
+
+        if (cast) {
+            msg_print(_("周囲が変化し始めた．．．", "You sing of the primeval shaping of Middle-earth..."));
+            reserve_alter_reality(player_ptr, dice.roll() + base);
+        }
+    } break;
 
     case 24:
-        if (name) {
-            return _("破壊の旋律", "Wrecking Pattern");
-        }
-        if (desc) {
-            return _(
-                "周囲のダンジョンを揺らし、壁と床をランダムに入れ変える。", "Shakes dungeon structure, and results in random swapping of floors and walls.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -884,20 +683,13 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
             }
 
             if (cont) {
-                earthquake(player_ptr, player_ptr->y, player_ptr->x, 10, 0);
+                earthquake(player_ptr, player_ptr->get_position(), 10);
             }
         }
 
         break;
 
     case 25:
-        if (name) {
-            return _("停滞の歌", "Stationary Shriek");
-        }
-        if (desc) {
-            return _("視界内の全てのモンスターを麻痺させようとする。抵抗されると無効。", "Attempts to freeze all monsters in sight.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -922,36 +714,19 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         break;
 
-    case 26:
-        if (name) {
-            return _("エルベレスの聖歌", "Elbereth's Chant");
-        }
-        if (desc) {
-            return _("自分のいる床の上に、モンスターが通り抜けたり召喚されたりすることができなくなるルーンを描く。",
-                "Sets a rune on the floor beneath you. If you are on a rune, monsters cannot attack you but can try to break the rune.");
+    case 26: {
+        /* Stop singing before start another */
+        if (cast || fail) {
+            stop_singing(player_ptr);
         }
 
-        {
-            /* Stop singing before start another */
-            if (cast || fail) {
-                stop_singing(player_ptr);
-            }
-
-            if (cast) {
-                msg_print(_("歌が神聖な場を作り出した．．．", "The holy power of the Music is creating sacred field..."));
-                create_rune_protection_one(player_ptr);
-            }
+        if (cast) {
+            msg_print(_("歌が神聖な場を作り出した．．．", "The holy power of the Music is creating sacred field..."));
+            create_rune_protection_one(player_ptr);
         }
-        break;
+    } break;
 
     case 27: {
-        if (name) {
-            return _("英雄の詩", "The Hero's Poem");
-        }
-
-        if (desc) {
-            return _("加速し、ヒーロー気分になり、視界内の全てのモンスターにダメージを与える。", "Hastes you. Gives heroism. Damages all monsters in sight.");
-        }
 
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -971,31 +746,23 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
 
-            if (!player_ptr->effects()->acceleration()->is_fast()) {
+            if (!player_ptr->effects()->acceleration().is_fast()) {
                 msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
             }
         }
 
-        DICE_NUMBER dice = 1;
-        DICE_SID sides = plev * 3;
+        const Dice dice(1, plev * 3);
         if (info) {
-            return info_damage(dice, sides, 0);
+            return info_damage(dice);
         }
 
         if (cont) {
-            dispel_monsters(player_ptr, damroll(dice, sides));
+            dispel_monsters(player_ptr, dice.roll());
         }
 
         break;
     }
     case 28: {
-        if (name) {
-            return _("ヤヴァンナの助け", "Relief of Yavanna");
-        }
-
-        if (desc) {
-            return _("強力な回復の歌で、負傷と朦朧状態も全快する。", "Powerful healing song. Also completely heals cuts and being stunned.");
-        }
 
         if (cast || fail) {
             stop_singing(player_ptr);
@@ -1006,14 +773,13 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
             start_singing(player_ptr, spell, MUSIC_H_LIFE);
         }
 
-        auto dice = 15;
-        auto sides = 10;
+        const Dice dice(15, 10);
         if (info) {
-            return info_heal(dice, sides, 0);
+            return info_heal(dice);
         }
 
         if (cont) {
-            hp_player(player_ptr, damroll(dice, sides));
+            hp_player(player_ptr, dice.roll());
             BadStatusSetter bss(player_ptr);
             (void)bss.set_stun(0);
             (void)bss.set_cut(0);
@@ -1021,69 +787,44 @@ std::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         break;
     }
-    case 29:
-        if (name) {
-            return _("再生の歌", "Goddess's rebirth");
-        }
-        if (desc) {
-            return _("すべてのステータスと経験値を回復する。", "Restores all stats and experience.");
+    case 29: {
+        /* Stop singing before start another */
+        if (cast || fail) {
+            stop_singing(player_ptr);
         }
 
-        {
-            /* Stop singing before start another */
-            if (cast || fail) {
-                stop_singing(player_ptr);
+        if (cast) {
+            msg_print(
+                _("暗黒の中に光と美をふりまいた。体が元の活力を取り戻した。", "You strew light and beauty in the dark as you sing. You feel refreshed."));
+            (void)restore_all_status(player_ptr);
+            (void)restore_level(player_ptr);
+        }
+    } break;
+
+    case 30: {
+        const Dice dice(50 + plev, 10);
+        POSITION rad = 0;
+
+        if (info) {
+            return info_damage(dice);
+        }
+
+        /* Stop singing before start another */
+        if (cast || fail) {
+            stop_singing(player_ptr);
+        }
+
+        if (cast) {
+            const auto dir = get_aim_dir(player_ptr);
+            if (!dir) {
+                return tl::nullopt;
             }
 
-            if (cast) {
-                msg_print(
-                    _("暗黒の中に光と美をふりまいた。体が元の活力を取り戻した。", "You strew light and beauty in the dark as you sing. You feel refreshed."));
-                (void)restore_all_status(player_ptr);
-                (void)restore_level(player_ptr);
-            }
+            fire_ball(player_ptr, AttributeType::SOUND, dir, dice.roll(), rad);
         }
-        break;
-
-    case 30:
-        if (name) {
-            return _("サウロンの魔術", "Wizardry of Sauron");
-        }
-        if (desc) {
-            return _("非常に強力でごく小さい轟音の球を放つ。", "Fires an extremely powerful tiny ball of sound.");
-        }
-
-        {
-            DICE_NUMBER dice = 50 + plev;
-            DICE_SID sides = 10;
-            POSITION rad = 0;
-
-            if (info) {
-                return info_damage(dice, sides, 0);
-            }
-
-            /* Stop singing before start another */
-            if (cast || fail) {
-                stop_singing(player_ptr);
-            }
-
-            if (cast) {
-                if (!get_aim_dir(player_ptr, &dir)) {
-                    return std::nullopt;
-                }
-
-                fire_ball(player_ptr, AttributeType::SOUND, dir, damroll(dice, sides), rad);
-            }
-        }
-        break;
+    } break;
 
     case 31:
-        if (name) {
-            return _("フィンゴルフィンの挑戦", "Fingolfin's Challenge");
-        }
-        if (desc) {
-            return _("ダメージを受けなくなるバリアを張る。", "Generates a barrier which completely protects you from almost all damage.");
-        }
-
         /* Stop singing before start another */
         if (cast || fail) {
             stop_singing(player_ptr);

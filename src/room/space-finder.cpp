@@ -1,10 +1,8 @@
 #include "room/space-finder.h"
-#include "dungeon/dungeon-flag-types.h"
-#include "floor/cave.h"
 #include "grid/grid.h"
-#include "system/dungeon-data-definition.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-data-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 
@@ -13,13 +11,13 @@
  * @param pos チェックするマスの座標
  * @return 床系地形か否か
  */
-static bool get_is_floor(FloorType *floor_ptr, const Pos2D &pos)
+static bool get_is_floor(const FloorType &floor, const Pos2D &pos)
 {
-    if (!in_bounds(floor_ptr, pos.y, pos.x)) {
+    if (!floor.contains(pos)) {
         return false;
     }
 
-    if (floor_ptr->get_grid(pos).is_floor()) {
+    if (floor.get_grid(pos).is_floor()) {
         return true;
     }
 
@@ -33,12 +31,12 @@ static bool get_is_floor(FloorType *floor_ptr, const Pos2D &pos)
  */
 static void set_floor(PlayerType *player_ptr, const Pos2D &pos)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (!in_bounds(floor_ptr, pos.y, pos.x)) {
+    const auto &floor = *player_ptr->current_floor_ptr;
+    if (!floor.contains(pos)) {
         return;
     }
 
-    auto &grid = floor_ptr->get_grid(pos);
+    const auto &grid = floor.get_grid(pos);
     if (grid.is_room()) {
         return;
     }
@@ -56,12 +54,12 @@ static void set_floor(PlayerType *player_ptr, const Pos2D &pos)
  */
 static void check_room_boundary(PlayerType *player_ptr, const Pos2D &pos1, const Pos2D &pos2)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     auto count = 0;
-    auto old_is_floor = get_is_floor(floor_ptr, { pos1.y, pos1.x - 1 });
+    auto old_is_floor = get_is_floor(floor, { pos1.y, pos1.x - 1 });
     bool new_is_floor;
     for (auto x = pos1.x; x <= pos2.x; x++) {
-        new_is_floor = get_is_floor(floor_ptr, { pos1.y - 1, x });
+        new_is_floor = get_is_floor(floor, { pos1.y - 1, x });
         if (new_is_floor != old_is_floor) {
             count++;
         }
@@ -70,7 +68,7 @@ static void check_room_boundary(PlayerType *player_ptr, const Pos2D &pos1, const
     }
 
     for (auto y = pos1.y; y <= pos2.y; y++) {
-        new_is_floor = get_is_floor(floor_ptr, { y, pos2.x + 1 });
+        new_is_floor = get_is_floor(floor, { y, pos2.x + 1 });
         if (new_is_floor != old_is_floor) {
             count++;
         }
@@ -79,7 +77,7 @@ static void check_room_boundary(PlayerType *player_ptr, const Pos2D &pos1, const
     }
 
     for (auto x = pos2.x; x >= pos1.x; x--) {
-        new_is_floor = get_is_floor(floor_ptr, { pos2.y + 1, x });
+        new_is_floor = get_is_floor(floor, { pos2.y + 1, x });
         if (new_is_floor != old_is_floor) {
             count++;
         }
@@ -88,7 +86,7 @@ static void check_room_boundary(PlayerType *player_ptr, const Pos2D &pos1, const
     }
 
     for (auto y = pos2.y; y >= pos1.y; y--) {
-        new_is_floor = get_is_floor(floor_ptr, { y, pos1.x - 1 });
+        new_is_floor = get_is_floor(floor, { y, pos1.x - 1 });
         if (new_is_floor != old_is_floor) {
             count++;
         }
@@ -114,7 +112,7 @@ static void check_room_boundary(PlayerType *player_ptr, const Pos2D &pos1, const
  * @param block_y 範囲の上端
  * @param block_x 範囲の左端
  */
-static bool find_space_aux(dun_data_type *dd_ptr, const Pos2D &max_block_size, const Pos2D &block)
+static bool find_space_aux(DungeonData *dd_ptr, const Pos2D &max_block_size, const Pos2D &block)
 {
     if (max_block_size.x < 3) {
         if ((max_block_size.x == 2) && (block.x % 3) == 2) {
@@ -182,20 +180,17 @@ static bool find_space_aux(dun_data_type *dd_ptr, const Pos2D &max_block_size, c
  * Return TRUE and values for the center of the room if all went well.\n
  * Otherwise, return false.\n
  */
-bool find_space(PlayerType *player_ptr, dun_data_type *dd_ptr, POSITION *y, POSITION *x, POSITION height, POSITION width)
+tl::optional<Pos2D> find_space(PlayerType *player_ptr, DungeonData *dd_ptr, int height, int width)
 {
-    int pick;
-    POSITION block_y = 0;
-    POSITION block_x = 0;
-    POSITION blocks_high = 1 + ((height - 1) / BLOCK_HGT);
-    POSITION blocks_wide = 1 + ((width - 1) / BLOCK_WID);
+    const auto blocks_high = 1 + ((height - 1) / BLOCK_HGT);
+    const auto blocks_wide = 1 + ((width - 1) / BLOCK_WID);
     if ((dd_ptr->row_rooms < blocks_high) || (dd_ptr->col_rooms < blocks_wide)) {
-        return false;
+        return tl::nullopt;
     }
 
-    int candidates = 0;
-    for (block_y = dd_ptr->row_rooms - blocks_high; block_y >= 0; block_y--) {
-        for (block_x = dd_ptr->col_rooms - blocks_wide; block_x >= 0; block_x--) {
+    auto candidates = 0;
+    for (auto block_y = dd_ptr->row_rooms - blocks_high; block_y >= 0; block_y--) {
+        for (auto block_x = dd_ptr->col_rooms - blocks_wide; block_x >= 0; block_x--) {
             if (find_space_aux(dd_ptr, { blocks_high, blocks_wide }, { block_y, block_x })) {
                 /* Find a valid place */
                 candidates++;
@@ -203,16 +198,15 @@ bool find_space(PlayerType *player_ptr, dun_data_type *dd_ptr, POSITION *y, POSI
         }
     }
 
-    if (!candidates) {
-        return false;
+    if (candidates == 0) {
+        return tl::nullopt;
     }
 
-    if (player_ptr->current_floor_ptr->get_dungeon_definition().flags.has_not(DungeonFeatureType::NO_CAVE)) {
-        pick = randint1(candidates);
-    } else {
-        pick = candidates / 2 + 1;
-    }
-
+    auto block_y = 0;
+    auto block_x = 0;
+    const auto &dungeon = player_ptr->current_floor_ptr->get_dungeon_definition();
+    const auto has_cave = dungeon.flags.has_not(DungeonFeatureType::NO_CAVE);
+    auto pick = has_cave ? randint1(candidates) : candidates / 2 + 1;
     for (block_y = dd_ptr->row_rooms - blocks_high; block_y >= 0; block_y--) {
         for (block_x = dd_ptr->col_rooms - blocks_wide; block_x >= 0; block_x--) {
             if (find_space_aux(dd_ptr, { blocks_high, blocks_wide }, { block_y, block_x })) {
@@ -223,25 +217,23 @@ bool find_space(PlayerType *player_ptr, dun_data_type *dd_ptr, POSITION *y, POSI
             }
         }
 
-        if (!pick) {
+        if (pick == 0) {
             break;
         }
     }
 
-    POSITION by1 = block_y;
-    POSITION bx1 = block_x;
-    POSITION by2 = block_y + blocks_high;
-    POSITION bx2 = block_x + blocks_wide;
-    *y = ((by1 + by2) * BLOCK_HGT) / 2;
-    *x = ((bx1 + bx2) * BLOCK_WID) / 2;
-    if (dd_ptr->cent_n < CENT_MAX) {
-        dd_ptr->cent[dd_ptr->cent_n].y = (byte)*y;
-        dd_ptr->cent[dd_ptr->cent_n].x = (byte)*x;
+    const auto by1 = block_y;
+    const auto bx1 = block_x;
+    const auto by2 = block_y + blocks_high;
+    const auto bx2 = block_x + blocks_wide;
+    const Pos2D pos(((by1 + by2) * BLOCK_HGT) / 2, ((bx1 + bx2) * BLOCK_WID) / 2);
+    if (dd_ptr->cent_n < dd_ptr->centers.size()) {
+        dd_ptr->centers[dd_ptr->cent_n] = pos;
         dd_ptr->cent_n++;
     }
 
-    for (POSITION by = by1; by < by2; by++) {
-        for (POSITION bx = bx1; bx < bx2; bx++) {
+    for (auto by = by1; by < by2; by++) {
+        for (auto bx = bx1; bx < bx2; bx++) {
             if ((by < 0) || (bx < 0)) {
                 continue;
             }
@@ -250,6 +242,8 @@ bool find_space(PlayerType *player_ptr, dun_data_type *dd_ptr, POSITION *y, POSI
         }
     }
 
-    check_room_boundary(player_ptr, { *y - height / 2 - 1, *x - width / 2 - 1 }, { *y + (height - 1) / 2 + 1, *x + (width - 1) / 2 + 1 });
-    return true;
+    const Pos2D pos1(pos.y - height / 2 - 1, pos.x - width / 2 - 1);
+    const Pos2D pos2(pos.y + (height - 1) / 2 + 1, pos.x + (width - 1) / 2 + 1);
+    check_room_boundary(player_ptr, pos1, pos2);
+    return pos;
 }

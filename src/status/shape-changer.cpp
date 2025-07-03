@@ -23,7 +23,6 @@
 #include "status/base-status.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/player-cut.h"
 #include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -31,10 +30,10 @@
 void do_poly_wounds(PlayerType *player_ptr)
 {
     int16_t hit_p = (player_ptr->mhp - player_ptr->chp);
-    int16_t change = damroll(player_ptr->lev, 5);
+    auto change = static_cast<TIME_EFFECT>(Dice::roll(player_ptr->lev, 5));
     auto nasty_effect = one_in_(5);
-    auto player_cut = player_ptr->effects()->cut();
-    if (!player_cut->is_cut() && (hit_p == 0) && !nasty_effect) {
+    const auto &player_cut = player_ptr->effects()->cut();
+    if (!player_cut.is_cut() && (hit_p == 0) && !nasty_effect) {
         return;
     }
 
@@ -56,7 +55,7 @@ void do_poly_wounds(PlayerType *player_ptr)
  */
 void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect_msg)
 {
-    concptr title = race_info[enum2i(new_race)].title;
+    auto title = race_info[enum2i(new_race)].title.data();
     PlayerRaceType old_race = player_ptr->prace;
 #ifdef JP
     msg_format("あなたは%s%sに変化した！", effect_msg, title);
@@ -88,11 +87,8 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
 
     get_height_weight(player_ptr);
 
-    if (pc.equals(PlayerClassType::SORCERER)) {
-        player_ptr->hitdie = rp_ptr->r_mhp / 2 + cp_ptr->c_mhp + ap_ptr->a_mhp;
-    } else {
-        player_ptr->hitdie = rp_ptr->r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp;
-    }
+    const auto r_mhp = pc.equals(PlayerClassType::SORCERER) ? rp_ptr->r_mhp / 2 : rp_ptr->r_mhp;
+    player_ptr->hit_dice = Dice(1, r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
 
     roll_hitdice(player_ptr, SPOP_NONE);
     check_experience(player_ptr);
@@ -105,7 +101,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
         autopick_load_pref(player_ptr, false);
     }
 
-    lite_spot(player_ptr, player_ptr->y, player_ptr->x);
+    lite_spot(player_ptr, player_ptr->get_position());
 }
 
 void do_poly_self(PlayerType *player_ptr)
@@ -164,7 +160,7 @@ void do_poly_self(PlayerType *player_ptr)
         }
 
         do {
-            new_race = (PlayerRaceType)randint0(MAX_RACES);
+            new_race = randnum0<PlayerRaceType>(MAX_RACES);
         } while (pr.equals(new_race) || (new_race == PlayerRaceType::ANDROID));
 
         change_race(player_ptr, new_race, effect_msg);
@@ -181,7 +177,7 @@ void do_poly_self(PlayerType *player_ptr)
         }
         if (one_in_(6)) {
             msg_print(_("現在の姿で生きていくのは困難なようだ！", "You find living difficult in your present form!"));
-            take_hit(player_ptr, DAMAGE_LOSELIFE, damroll(randint1(10), player_ptr->lev), _("致命的な突然変異", "a lethal mutation"));
+            take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(randint1(10), player_ptr->lev), _("致命的な突然変異", "a lethal mutation"));
 
             power -= 10;
         }

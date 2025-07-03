@@ -15,8 +15,8 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <optional>
 #include <random>
+#include <tl/optional.hpp>
 
 /*
  * Angband 2.7.9 introduced a new (optimized) random number generator,
@@ -73,7 +73,7 @@ int rand_range(int a, int b)
         return a;
     }
     std::uniform_int_distribution<> d(a, b);
-    return d(AngbandSystem::get_instance().get_rng());
+    return rand_dist(d);
 }
 
 /*
@@ -85,28 +85,8 @@ int16_t randnor(int mean, int stand)
         return static_cast<int16_t>(mean);
     }
     std::normal_distribution<> d(mean, stand);
-    auto result = std::round(d(AngbandSystem::get_instance().get_rng()));
+    auto result = std::round(rand_dist(d));
     return static_cast<int16_t>(result);
-}
-
-/*
- * Generates damage for "2d6" style dice rolls
- */
-int16_t damroll(DICE_NUMBER num, DICE_SID sides)
-{
-    int i, sum = 0;
-    for (i = 0; i < num; i++) {
-        sum += randint1(sides);
-    }
-    return (int16_t)(sum);
-}
-
-/*
- * Same as above, but always maximal
- */
-int16_t maxroll(DICE_NUMBER num, DICE_SID sides)
-{
-    return num * sides;
 }
 
 /*
@@ -154,7 +134,7 @@ int32_t Rand_external(int32_t m)
         return 0;
     }
 
-    static std::optional<Xoshiro128StarStar> urbg_external;
+    static tl::optional<Xoshiro128StarStar> urbg_external;
 
     if (!urbg_external.has_value()) {
         /* Initialize with new seed */

@@ -79,15 +79,15 @@ static void check_nether_resistance(PlayerType *player_ptr, msr_type *msr_ptr)
         return;
     }
 
-    if (int_outof(msr_ptr->r_ptr, 20)) {
+    if (int_outof(*msr_ptr->r_ptr, 20)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_NETH);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BA_NETH);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_NETH);
     }
 }
@@ -98,12 +98,16 @@ static void check_lite_resistance(msr_type *msr_ptr)
         return;
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_LITE);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BA_LITE);
+    }
+
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
+        msr_ptr->ability_flags.reset(MonsterAbilityType::BO_LITE);
     }
 }
 
@@ -119,11 +123,11 @@ static void check_dark_resistance(PlayerType *player_ptr, msr_type *msr_ptr)
         return;
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_DARK);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BA_DARK);
     }
 }
@@ -135,7 +139,7 @@ static void check_conf_resistance(msr_type *msr_ptr)
     }
 
     msr_ptr->ability_flags.reset(MonsterAbilityType::CONF);
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_CONF);
     }
 }
@@ -146,11 +150,11 @@ static void check_chaos_resistance(msr_type *msr_ptr)
         return;
     }
 
-    if (int_outof(msr_ptr->r_ptr, 20)) {
+    if (int_outof(*msr_ptr->r_ptr, 20)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_CHAO);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BA_CHAO);
     }
 }
@@ -161,7 +165,7 @@ static void check_nexus_resistance(msr_type *msr_ptr)
         return;
     }
 
-    if (int_outof(msr_ptr->r_ptr, 50)) {
+    if (int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_NEXU);
     }
 
@@ -174,51 +178,59 @@ static void check_reflection(msr_type *msr_ptr)
         return;
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_COLD);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_FIRE);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_ACID);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_ELEC);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_NETH);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_WATE);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_MANA);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_PLAS);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_ICEE);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_VOID);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_ABYSS);
     }
 
-    if (int_outof(msr_ptr->r_ptr, 150)) {
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
+        msr_ptr->ability_flags.reset(MonsterAbilityType::BO_METEOR);
+    }
+
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
+        msr_ptr->ability_flags.reset(MonsterAbilityType::BO_LITE);
+    }
+
+    if (int_outof(*msr_ptr->r_ptr, 150)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::MISSILE);
     }
 }
@@ -234,7 +246,7 @@ void check_high_resistances(PlayerType *player_ptr, msr_type *msr_ptr)
 
     check_conf_resistance(msr_ptr);
     check_chaos_resistance(msr_ptr);
-    if (msr_ptr->smart_flags.has(MonsterSmartLearnType::RES_DISEN) && int_outof(msr_ptr->r_ptr, 40)) {
+    if (msr_ptr->smart_flags.has(MonsterSmartLearnType::RES_DISEN) && int_outof(*msr_ptr->r_ptr, 40)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_DISE);
     }
 
@@ -243,11 +255,11 @@ void check_high_resistances(PlayerType *player_ptr, msr_type *msr_ptr)
     }
 
     check_nexus_resistance(msr_ptr);
-    if (msr_ptr->smart_flags.has(MonsterSmartLearnType::RES_SOUND) && int_outof(msr_ptr->r_ptr, 50)) {
+    if (msr_ptr->smart_flags.has(MonsterSmartLearnType::RES_SOUND) && int_outof(*msr_ptr->r_ptr, 50)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_SOUN);
     }
 
-    if (msr_ptr->smart_flags.has(MonsterSmartLearnType::RES_SHARD) && int_outof(msr_ptr->r_ptr, 40)) {
+    if (msr_ptr->smart_flags.has(MonsterSmartLearnType::RES_SHARD) && int_outof(*msr_ptr->r_ptr, 40)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_SHAR);
     }
 

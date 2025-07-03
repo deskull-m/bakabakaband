@@ -1,9 +1,8 @@
 #pragma once
 
-#include <functional>
 #include <map>
-#include <optional>
 #include <string>
+#include <tl/optional.hpp>
 
 enum class NestKind {
     CLONE = 0,
@@ -11,7 +10,7 @@ enum class NestKind {
     SYMBOL_GOOD = 2,
     SYMBOL_EVIL = 3,
     MIMIC = 4,
-    LOVECRAFTIAN = 5,
+    HORROR = 5,
     KENNEL = 6,
     ANIMAL = 7,
     CHAPEL = 8,
@@ -23,7 +22,7 @@ enum class PitKind {
     ORC = 0,
     TROLL = 1,
     GIANT = 2,
-    LOVECRAFTIAN = 3,
+    HORROR = 3,
     SYMBOL_GOOD = 4,
     SYMBOL_EVIL = 5,
     CHAPEL = 6,
@@ -35,27 +34,40 @@ enum class PitKind {
     MAX,
 };
 
+enum class PitNestHook {
+    NONE,
+    CLONE,
+    DRAGON,
+    SYMBOL,
+};
+
 /*! pit/nest型情報の構造体定義 */
-enum class MonsterRaceId : short;
+enum class MonraceHook;
+enum class MonraceId : short;
 class PlayerType;
 struct nest_pit_type {
     std::string name; //<! 部屋名
-    std::function<bool(PlayerType *, MonsterRaceId)> hook_func; //<! モンスターフィルタ関数
-    std::optional<std::function<void(PlayerType *)>> prep_func; //<! 能力フィルタ関数
+    MonraceHook monrace_hook; //<! モンスター種別フィルタ
+    PitNestHook pn_hook; //<! シンボル/能力フィルタ
     int level; //<! 相当階
     int chance; //!< 生成確率
+
+    void prepare_filter(PlayerType *player_ptr) const;
 };
 
 /*! デバッグ時にnestのモンスター情報を確認するための構造体 / A struct for nest monster information with cheat_hear */
-struct nest_mon_info_type {
-    MonsterRaceId r_idx; //!< モンスター種族ID
+class MonraceDefinition;
+class NestMonsterInfo {
+public:
+    NestMonsterInfo() = default;
+    MonraceId monrace_id{}; //!< モンスター種族ID
     bool used = false; //!< 既に選んだかどうか
+    bool order_nest(const NestMonsterInfo &other) const;
+    const MonraceDefinition &get_monrace() const;
 };
 
 class FloorType;
 class MonsterEntity;
-std::optional<NestKind> pick_nest_type(const FloorType &floor, const std::map<NestKind, nest_pit_type> &np_types);
-std::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKind, nest_pit_type> &np_types);
-std::optional<MonsterRaceId> select_pit_nest_monrace_id(PlayerType *player_ptr, MonsterEntity &align, int boost);
-std::string pit_subtype_string(PitKind type);
-std::string nest_subtype_string(NestKind type);
+tl::optional<NestKind> pick_nest_type(const FloorType &floor, const std::map<NestKind, nest_pit_type> &np_types);
+tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKind, nest_pit_type> &np_types);
+tl::optional<MonraceId> select_pit_nest_monrace_id(PlayerType *player_ptr, MonsterEntity &align, int boost);

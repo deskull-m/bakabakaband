@@ -7,15 +7,15 @@
 #include "flavor/tval-description-switcher.h"
 #include "flavor/flavor-util.h"
 #include "flavor/object-flavor-types.h"
-#include "grid/feature.h"
 #include "locale/english.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/trg-types.h"
 #include "object/tval-types.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
-#include "system/terrain-type-definition.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
@@ -27,66 +27,62 @@
 static std::pair<std::string, std::string> describe_monster_ball(const ItemEntity &item, const describe_option_type &opt)
 {
     const auto &basename = item.get_baseitem().name;
-    const auto r_idx = i2enum<MonsterRaceId>(item.pval);
-    auto *r_ptr = &monraces_info[r_idx];
+    const auto &monrace = item.get_monrace();
     if (!opt.known) {
         return { basename, "" };
     }
 
-    if (!MonsterRace(r_idx).is_valid()) {
+    if (!monrace.is_valid()) {
         return { basename, _(" (空)", " (empty)") };
     }
 
 #ifdef JP
-    const auto modstr = format(" (%s)", r_ptr->name.data());
+    const auto monrace_name = format(" (%s)", monrace.name.data());
 #else
-    std::string modstr;
-    if (r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        modstr = format(" (%s%s)", (is_a_vowel(r_ptr->name[0]) ? "an " : "a "), r_ptr->name.data());
+    std::string monrace_name;
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+        monrace_name = format(" (%s%s)", (is_a_vowel(monrace.name.data()[0]) ? "an " : "a "), monrace.name.data());
     } else {
-        modstr = format(" (%s)", r_ptr->name.data());
+        monrace_name = format(" (%s)", monrace.name.data());
     }
 #endif
-    return { basename, modstr };
+    return { basename, monrace_name };
 }
 
 static std::pair<std::string, std::string> describe_statue(const ItemEntity &item)
 {
     const auto &basename = item.get_baseitem().name;
-    const auto r_idx = i2enum<MonsterRaceId>(item.pval);
-    auto *r_ptr = &monraces_info[r_idx];
+    const auto &monrace = item.get_monrace();
 #ifdef JP
-    const auto &modstr = r_ptr->name;
+    const auto &monrace_name = monrace.name.string();
 #else
-    std::string modstr;
-    if (r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        modstr = format("%s%s", (is_a_vowel(r_ptr->name[0]) ? "an " : "a "), r_ptr->name.data());
+    std::string monrace_name;
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+        monrace_name = format("%s%s", (is_a_vowel(monrace.name.data()[0]) ? "an " : "a "), monrace.name.data());
     } else {
-        modstr = r_ptr->name;
+        monrace_name = monrace.name;
     }
 #endif
-    return { basename, modstr };
+    return { basename, monrace_name };
 }
 
 static std::pair<std::string, std::string> describe_corpse(const ItemEntity &item)
 {
-    const auto r_idx = i2enum<MonsterRaceId>(item.pval);
-    auto *r_ptr = &monraces_info[r_idx];
-    const auto &modstr = r_ptr->name;
+    const auto &monrace = item.get_monrace();
 #ifdef JP
     const auto basename = "#%";
 #else
     const auto basename =
-        (r_ptr->kind_flags.has(MonsterKindType::UNIQUE))
+        (monrace.kind_flags.has(MonsterKindType::UNIQUE))
             ? "& % of #"
             : "& # %";
 #endif
-    return { basename, modstr };
+    return { basename, monrace.name.string() };
 }
 
 static std::pair<std::string, std::string> describe_trap(const ItemEntity &item)
 {
-    auto &terrain = TerrainList::get_instance()[item.pval];
+    auto &terrain = TerrainList::get_instance().get_terrain(item.pval);
     const auto &modstr = terrain.name.c_str();
 #ifdef JP
     const auto basename = "#%";
@@ -113,7 +109,7 @@ static std::string flavor_name_of(const ItemEntity &item, const describe_option_
     const auto &baseitem = item.get_baseitem();
     return any_bits(opt.mode, OD_FORCE_FLAVOR)
                ? baseitem.flavor_name
-               : baseitems_info[baseitem.flavor].flavor_name;
+               : BaseitemList::get_instance().get_baseitem(baseitem.flavor).flavor_name;
 }
 
 static std::pair<std::string, std::string> describe_amulet(const ItemEntity &item, const describe_option_type &opt)
@@ -379,7 +375,7 @@ std::pair<std::string, std::string> switch_tval_description(const ItemEntity &it
     switch (item.bi_key.tval()) {
     case ItemKindType::NONE:
         return { _("(なし)", "(Nothing)"), "" };
-    case ItemKindType::SKELETON:
+    case ItemKindType::FLAVOR_SKELETON:
     case ItemKindType::BOTTLE:
     case ItemKindType::JUNK:
     case ItemKindType::SPIKE:
@@ -393,7 +389,7 @@ std::pair<std::string, std::string> switch_tval_description(const ItemEntity &it
     case ItemKindType::FIGURINE:
     case ItemKindType::STATUE:
         return describe_statue(item);
-    case ItemKindType::CORPSE:
+    case ItemKindType::MONSTER_REMAINS:
         return describe_corpse(item);
     case ItemKindType::SHOT:
     case ItemKindType::BOLT:

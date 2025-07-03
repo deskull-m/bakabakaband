@@ -6,26 +6,22 @@
 #include "floor/floor-util.h"
 #include "dungeon/quest.h"
 #include "effect/effect-characteristics.h"
-#include "floor/cave.h"
 #include "floor/floor-object.h"
-#include "floor/floor-town.h"
-#include "floor/geometry.h"
 #include "floor/line-of-sight.h"
 #include "game-option/birth-options.h"
-#include "grid/feature.h"
-#include "perception/object-perception.h"
-#include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/floor/town-info.h"
+#include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
-#include "util/bit-flags-calculator.h"
 #include "world/world.h"
+#include <range/v3/view.hpp>
 
 /*
  * The array of floor [MAX_WID][MAX_HGT].
@@ -52,7 +48,7 @@ static int scent_when = 0;
  * Whenever the age count loops, most of the scent trail is erased and
  * the age of the remainder is recalculated.
  */
-void update_smell(FloorType *floor_ptr, PlayerType *player_ptr)
+void update_smell(FloorType &floor, const Pos2D &p_pos)
 {
     /* Create a table that controls the spread of scent */
     const int scent_adjust[5][5] = {
@@ -64,32 +60,31 @@ void update_smell(FloorType *floor_ptr, PlayerType *player_ptr)
     };
 
     if (++scent_when == 254) {
-        for (auto y = 0; y < floor_ptr->height; y++) {
-            for (auto x = 0; x < floor_ptr->width; x++) {
-                int w = floor_ptr->grid_array[y][x].when;
-                floor_ptr->grid_array[y][x].when = (w > 128) ? (w - 128) : 0;
-            }
+        for (const auto &pos : floor.get_area()) {
+            auto &grid = floor.get_grid(pos);
+            int w = grid.when;
+            grid.when = (w > 128) ? (w - 128) : 0;
         }
 
         scent_when = 126;
     }
 
-    for (auto i = 0; i < 5; i++) {
-        for (auto j = 0; j < 5; j++) {
-            const Pos2D pos(i + player_ptr->y - 2, j + player_ptr->x - 2);
-            if (!in_bounds(floor_ptr, pos.y, pos.x)) {
+    for (auto y = 0; y < 5; y++) {
+        for (auto x = 0; x < 5; x++) {
+            const auto pos = p_pos + Pos2DVec(y, x) + Pos2DVec(-2, -2);
+            if (!floor.contains(pos)) {
                 continue;
             }
 
-            auto &grid = floor_ptr->get_grid(pos);
-            auto update_when = !grid.cave_has_flag(TerrainCharacteristics::MOVE) && !is_closed_door(player_ptr, grid.feat);
+            auto &grid = floor.get_grid(pos);
+            auto update_when = !grid.has(TerrainCharacteristics::MOVE) && !floor.has_closed_door_at(pos);
             update_when |= !grid.has_los();
-            update_when |= scent_adjust[i][j] == -1;
+            update_when |= scent_adjust[y][x] == -1;
             if (update_when) {
                 continue;
             }
 
-            grid.when = scent_when + scent_adjust[i][j];
+            grid.when = scent_when + scent_adjust[y][x];
         }
     }
 }
@@ -97,15 +92,13 @@ void update_smell(FloorType *floor_ptr, PlayerType *player_ptr)
 /*
  * Hack -- forget the "flow" information
  */
-void forget_flow(FloorType *floor_ptr)
+void forget_flow(FloorType &floor)
 {
-    for (POSITION y = 0; y < floor_ptr->height; y++) {
-        for (POSITION x = 0; x < floor_ptr->width; x++) {
-            auto &grid = floor_ptr->grid_array[y][x];
-            grid.reset_costs();
-            grid.reset_dists();
-            floor_ptr->grid_array[y][x].when = 0;
-        }
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        grid.reset_costs();
+        grid.reset_dists();
+        grid.when = 0;
     }
 }
 
@@ -114,33 +107,31 @@ void forget_flow(FloorType *floor_ptr)
  * Delete all the items when player leaves the level
  * @note we do NOT visually reflect these (irrelevant) changes
  * @details
- * Hack -- we clear the "g_ptr->o_idx" field for every grid,
- * and the "m_ptr->next_o_idx" field for every monster, since
+ * Hack -- we clear the "grid.o_idx" field for every grid,
+ * and the "monster.next_o_idx" field for every monster, since
  * we know we are clearing every object.  Technically, we only
  * clear those fields for grids/monsters containing objects,
  * and we clear it once for every such object.
  */
-void wipe_o_list(FloorType *floor_ptr)
+void wipe_o_list(FloorType &floor)
 {
-    for (OBJECT_IDX i = 1; i < floor_ptr->o_max; i++) {
-        auto *o_ptr = &floor_ptr->o_list[i];
-        if (!o_ptr->is_valid()) {
+    for (const auto &[i_idx, item_ptr] : floor.o_list | ranges::views::enumerate) {
+        if (!item_ptr->is_valid()) {
             continue;
         }
 
-        if (!w_ptr->character_dungeon || preserve_mode) {
-            if (o_ptr->is_fixed_artifact() && !o_ptr->is_known()) {
-                o_ptr->get_fixed_artifact().is_generated = false;
+        if (!AngbandWorld::get_instance().character_dungeon || preserve_mode) {
+            if (item_ptr->is_fixed_artifact() && !item_ptr->is_known()) {
+                item_ptr->get_fixed_artifact().is_generated = false;
             }
         }
 
-        auto &list = get_o_idx_list_contains(floor_ptr, i);
+        auto &list = get_o_idx_list_contains(floor, static_cast<OBJECT_IDX>(i_idx));
         list.clear();
-        o_ptr->wipe();
     }
 
-    floor_ptr->o_max = 1;
-    floor_ptr->o_cnt = 0;
+    floor.o_list.clear();
+    floor.o_list.push_back(std::make_shared<ItemEntity>()); // 0番にダミーアイテムを用意
 }
 
 /*
@@ -154,34 +145,31 @@ void wipe_o_list(FloorType *floor_ptr)
  *
  * Currently the "m" parameter is unused.
  */
-void scatter(PlayerType *player_ptr, POSITION *yp, POSITION *xp, POSITION y, POSITION x, POSITION d, BIT_FLAGS mode)
+Pos2D scatter(PlayerType *player_ptr, const Pos2D &pos, int d, uint32_t mode)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    POSITION nx, ny;
+    const auto &floor = *player_ptr->current_floor_ptr;
     while (true) {
-        ny = rand_spread(y, d);
-        nx = rand_spread(x, d);
-
-        if (!in_bounds(floor_ptr, ny, nx)) {
+        const auto ny = rand_spread(pos.y, d);
+        const auto nx = rand_spread(pos.x, d);
+        const Pos2D pos_neighbor(ny, nx);
+        if (!floor.contains(pos_neighbor)) {
             continue;
         }
-        if ((d > 1) && (distance(y, x, ny, nx) > d)) {
+        if ((d > 1) && (Grid::calc_distance(pos, pos_neighbor) > d)) {
             continue;
         }
         if (mode & PROJECT_LOS) {
-            if (los(player_ptr, y, x, ny, nx)) {
-                break;
+            if (los(floor, pos, pos_neighbor)) {
+                return pos_neighbor;
             }
+
             continue;
         }
 
-        if (projectable(player_ptr, y, x, ny, nx)) {
-            break;
+        if (projectable(floor, pos, pos_neighbor)) {
+            return pos_neighbor;
         }
     }
-
-    *yp = ny;
-    *xp = nx;
 }
 
 /*!
@@ -191,22 +179,22 @@ void scatter(PlayerType *player_ptr, POSITION *yp, POSITION *xp, POSITION y, POS
  */
 std::string map_name(PlayerType *player_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    const auto &quest_list = QuestList::get_instance();
-    auto is_fixed_quest = floor_ptr->is_in_quest();
-    is_fixed_quest &= QuestType::is_fixed(floor_ptr->quest_number);
-    is_fixed_quest &= any_bits(quest_list[floor_ptr->quest_number].flags, QUEST_FLAG_PRESET);
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &quests = QuestList::get_instance();
+    auto is_fixed_quest = floor.is_in_quest();
+    is_fixed_quest &= QuestType::is_fixed(floor.quest_number);
+    is_fixed_quest &= any_bits(quests.get_quest(floor.quest_number).flags, QUEST_FLAG_PRESET);
     if (is_fixed_quest) {
         return _("クエスト", "Quest");
-    } else if (player_ptr->wild_mode) {
+    } else if (AngbandWorld::get_instance().is_wild_mode()) {
         return _("地上", "Surface");
-    } else if (floor_ptr->inside_arena) {
+    } else if (floor.inside_arena) {
         return _("アリーナ", "Arena");
     } else if (AngbandSystem::get_instance().is_phase_out()) {
         return _("闘技場", "Monster Arena");
-    } else if (!floor_ptr->dun_level && player_ptr->town_num) {
+    } else if (!floor.is_underground() && player_ptr->town_num) {
         return towns_info[player_ptr->town_num].name;
     } else {
-        return floor_ptr->get_dungeon_definition().name;
+        return floor.get_dungeon_definition().name;
     }
 }

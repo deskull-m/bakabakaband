@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  *  @brief オブジェクトの記述処理 / Mbject flavor code
  *  @date 2014/01/03
  *  @author
@@ -22,21 +22,19 @@
 #include "locale/japanese.h"
 #include "mind/mind-sniper.h"
 #include "mind/mind-weaponsmith.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/special-object-flags.h"
 #include "object-enchant/tr-types.h"
 #include "object-enchant/trg-types.h"
-#include "object-hook/hook-quest.h"
 #include "object/object-info.h"
 #include "perception/object-perception.h"
 #include "player-info/class-info.h"
 #include "player/player-status.h"
 #include "sv-definition/sv-food-types.h"
 #include "sv-definition/sv-lite-types.h"
-#include "system/angband-system.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-key.h"
 #include "util/bit-flags-calculator.h"
+#include <cctype>
 #include <functional>
 #include <sstream>
 #include <utility>
@@ -79,7 +77,7 @@ std::string get_table_name_aux()
     }
 
     auto name = ss.str();
-    name[0] = toupper(name[0]);
+    name[0] = static_cast<char>(std::toupper(name[0]));
     return name;
 #endif
 }

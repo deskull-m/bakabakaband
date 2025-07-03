@@ -4,11 +4,11 @@
 #include "core/window-redrawer.h"
 #include "game-option/input-options.h"
 #include "game-option/map-screen-options.h"
+#include "io/macro-configurations-store.h"
 #include "io/signal-handlers.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
-#include "util/string-processor.h"
 #include "world/world.h"
 
 bool inkey_base; /* See the "inkey()" function */
@@ -50,9 +50,8 @@ static bool parse_under = false;
  */
 static void all_term_fresh()
 {
-    TERM_LEN x, y;
     term_activate(angband_terms[0]);
-    term_locate(&x, &y);
+    auto [x, y] = term_locate();
 
     RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
     handle_stuff(p_ptr);
@@ -227,7 +226,8 @@ char inkey(bool do_all_term_refresh)
     (void)term_get_cursor(&v);
 
     /* Show the cursor if waiting, except sometimes in "command" mode */
-    if (!inkey_scan && (!inkey_flag || hilite_player || w_ptr->character_icky_depth > 0)) {
+    auto &world = AngbandWorld::get_instance();
+    if (!inkey_scan && (!inkey_flag || hilite_player || world.character_icky_depth > 0)) {
         (void)term_set_cursor(1);
     }
 
@@ -245,8 +245,8 @@ char inkey(bool do_all_term_refresh)
             } else {
                 term_fresh();
             }
-            w_ptr->character_saved = false;
 
+            world.character_saved = false;
             signal_count = 0;
             done = true;
         }
@@ -333,24 +333,24 @@ int inkey_special(bool numpad_cursor)
         { false, "Up]", SKEY_UP },
         { false, "Page_Up]", SKEY_PGUP },
         { false, "Page_Down]", SKEY_PGDOWN },
-        { false, "Home]", SKEY_TOP },
-        { false, "End]", SKEY_BOTTOM },
+        { false, "Home]", SKEY_HOME },
+        { false, "End]", SKEY_END },
         { true, "KP_Down]", SKEY_DOWN },
         { true, "KP_Left]", SKEY_LEFT },
         { true, "KP_Right]", SKEY_RIGHT },
         { true, "KP_Up]", SKEY_UP },
         { true, "KP_Page_Up]", SKEY_PGUP },
         { true, "KP_Page_Down]", SKEY_PGDOWN },
-        { true, "KP_Home]", SKEY_TOP },
-        { true, "KP_End]", SKEY_BOTTOM },
+        { true, "KP_Home]", SKEY_HOME },
+        { true, "KP_End]", SKEY_END },
         { true, "KP_2]", SKEY_DOWN },
         { true, "KP_4]", SKEY_LEFT },
         { true, "KP_6]", SKEY_RIGHT },
         { true, "KP_8]", SKEY_UP },
         { true, "KP_9]", SKEY_PGUP },
         { true, "KP_3]", SKEY_PGDOWN },
-        { true, "KP_7]", SKEY_TOP },
-        { true, "KP_1]", SKEY_BOTTOM },
+        { true, "KP_7]", SKEY_HOME },
+        { true, "KP_1]", SKEY_END },
         { false, nullptr, 0 },
     };
 
@@ -362,8 +362,8 @@ int inkey_special(bool numpad_cursor)
         { "B", SKEY_DOWN },
         { "C", SKEY_RIGHT },
         { "D", SKEY_LEFT },
-        { "1~", SKEY_TOP },
-        { "4~", SKEY_BOTTOM },
+        { "1~", SKEY_HOME },
+        { "4~", SKEY_END },
         { "5~", SKEY_PGUP },
         { "6~", SKEY_PGDOWN },
         { nullptr, 0 },

@@ -6,10 +6,9 @@
 #include "load/floor-loader.h"
 #include "load/load-util.h"
 #include "load/old/load-v1-5-0.h"
-#include "monster-race/monster-race.h"
 #include "save/floor-writer.h"
-#include "system/floor-type-definition.h"
-#include "system/monster-race-info.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-range.h"
@@ -25,12 +24,13 @@
  */
 static errr rd_dungeon(PlayerType *player_ptr)
 {
-    init_saved_floors(player_ptr, false);
+    init_saved_floors(false);
     errr err = 0;
     auto &floor = *player_ptr->current_floor_ptr;
 
+    (void)rd_byte(); // @todo 1byteズレた場所を特定。要修正。
     max_floor_id = rd_s16b();
-    floor.set_dungeon_index(rd_byte()); // @todo セーブデータの方を16ビットにするかdungeon_idxの定義を8ビットにした方が良い.
+    floor.set_dungeon_index(i2enum<DungeonId>(rd_byte())); // @todo セーブデータの方を16ビットにするかdungeon_idxの定義を8ビットにした方が良い.
     auto num = rd_byte();
     if (num == 0) {
         err = rd_saved_floor(player_ptr, nullptr);
@@ -118,16 +118,16 @@ static errr rd_dungeon(PlayerType *player_ptr)
         break;
     }
 
-    w_ptr->character_dungeon = true;
+    AngbandWorld::get_instance().character_dungeon = true;
     return err;
 }
 
 errr restore_dungeon(PlayerType *player_ptr)
 {
     if (player_ptr->is_dead) {
-        const auto &quest_list = QuestList::get_instance();
-        for (auto q_idx : EnumRange(QuestId::RANDOM_QUEST1, QuestId::RANDOM_QUEST10)) {
-            monraces_info[quest_list[q_idx].r_idx].misc_flags.reset(MonsterMiscType::QUESTOR);
+        auto &quests = QuestList::get_instance();
+        for (const auto quest_id : RANDOM_QUEST_ID_RANGE) {
+            quests.get_quest(quest_id).get_bounty().misc_flags.reset(MonsterMiscType::QUESTOR);
         }
 
         return 0;

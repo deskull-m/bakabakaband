@@ -10,9 +10,8 @@
 #include "system/h-basic.h"
 #include <string>
 
-uint vstrnfmt(char *buf, uint max, concptr fmt, va_list vp);
-uint strnfmt(char *buf, uint max, concptr fmt, ...);
-std::string format(concptr fmt, ...);
-void plog_fmt(concptr fmt, ...);
-void quit_fmt(concptr fmt, ...);
-void core_fmt(concptr fmt, ...);
+std::string vformat(const char *fmt, va_list vp);
+std::string format(const char *fmt, ...);
+void plog_fmt(const char *fmt, ...);
+void quit_fmt(const char *fmt, ...);
+void core_fmt(const char *fmt, ...);

@@ -26,9 +26,9 @@ static const char autoregister_header[] = "?:$AUTOREGISTER";
 /*!
  * @brief Clear auto registered lines in the picktype.prf .
  */
-static bool clear_auto_register(PlayerType *player_ptr)
+static bool clear_auto_register(std::string_view player_base_name)
 {
-    const auto path_pref = search_pickpref_path(player_ptr);
+    const auto path_pref = search_pickpref_path(player_base_name);
     if (path_pref.empty()) {
         return true;
     }
@@ -42,29 +42,29 @@ static bool clear_auto_register(PlayerType *player_ptr)
     if (!tmp_fff) {
         fclose(pref_fff);
         msg_format(_("一時ファイル %s を作成できませんでした。", "Failed to create temporary file %s."), tmp_file);
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
 
     auto autoregister = false;
     auto num = 0;
     while (true) {
-        char buf[1024]{};
-        if (angband_fgets(pref_fff, buf, sizeof(buf))) {
+        const auto buf = angband_fgets(pref_fff, MAX_LINELEN);
+        if (!buf) {
             break;
         }
 
         if (autoregister) {
-            if (buf[0] != '#' && buf[0] != '?') {
+            if (!buf->starts_with('#') && !buf->starts_with('?')) {
                 num++;
             }
             continue;
         }
 
-        if (streq(buf, autoregister_header)) {
+        if (streq(*buf, autoregister_header)) {
             autoregister = true;
         } else {
-            fprintf(tmp_fff, "%s\n", buf);
+            fprintf(tmp_fff, "%s\n", buf->data());
         }
     }
 
@@ -87,9 +87,12 @@ static bool clear_auto_register(PlayerType *player_ptr)
     if (autoregister) {
         tmp_fff = angband_fopen(tmp_file, FileOpenMode::READ);
         pref_fff = angband_fopen(path_pref, FileOpenMode::WRITE);
-        char buf[1024]{};
-        while (!angband_fgets(tmp_fff, buf, sizeof(buf))) {
-            fprintf(pref_fff, "%s\n", buf);
+        while (true) {
+            const auto buf = angband_fgets(tmp_fff, MAX_LINELEN);
+            if (!buf) {
+                break;
+            }
+            fprintf(pref_fff, "%s\n", buf->data());
         }
 
         angband_fclose(pref_fff);
@@ -103,7 +106,7 @@ static bool clear_auto_register(PlayerType *player_ptr)
 /*!
  * @brief Automatically register an auto-destroy preference line
  */
-bool autopick_autoregister(PlayerType *player_ptr, ItemEntity *o_ptr)
+bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr)
 {
     autopick_type an_entry, *entry = &an_entry;
     int autopick_registered = find_autopick_list(player_ptr, o_ptr);
@@ -125,29 +128,29 @@ bool autopick_autoregister(PlayerType *player_ptr, ItemEntity *o_ptr)
     }
 
     if ((o_ptr->is_known() && o_ptr->is_fixed_or_random_artifact()) || ((o_ptr->ident & IDENT_SENSE) && (o_ptr->feeling == FEEL_TERRIBLE || o_ptr->feeling == FEEL_SPECIAL))) {
-        const auto item_name = describe_flavor(player_ptr, o_ptr, 0);
+        const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
         msg_format(_("%sは破壊不能だ。", "You cannot auto-destroy %s."), item_name.data());
         return false;
     }
 
     if (!player_ptr->autopick_autoregister) {
-        if (!clear_auto_register(player_ptr)) {
+        if (!clear_auto_register(player_ptr->base_name)) {
             return false;
         }
     }
 
-    const auto path_pref = search_pickpref_path(player_ptr);
+    const auto path_pref = search_pickpref_path(player_ptr->base_name);
     auto *pref_fff = !path_pref.empty() ? angband_fopen(path_pref, FileOpenMode::READ) : nullptr;
 
     if (pref_fff) {
         while (true) {
-            char buf[1024]{};
-            if (angband_fgets(pref_fff, buf, sizeof(buf))) {
+            const auto buf = angband_fgets(pref_fff, MAX_LINELEN);
+            if (!buf) {
                 player_ptr->autopick_autoregister = false;
                 break;
             }
 
-            if (streq(buf, autoregister_header)) {
+            if (streq(*buf, autoregister_header)) {
                 player_ptr->autopick_autoregister = true;
                 break;
             }
@@ -166,7 +169,7 @@ bool autopick_autoregister(PlayerType *player_ptr, ItemEntity *o_ptr)
     if (!pref_fff) {
         const auto filename_pref = path_pref.string();
         msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), filename_pref.data());
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
 
@@ -184,9 +187,8 @@ bool autopick_autoregister(PlayerType *player_ptr, ItemEntity *o_ptr)
     entry->action = DO_AUTODESTROY;
     autopick_list.push_back(*entry);
 
-    concptr tmp = autopick_line_from_entry(*entry);
-    fprintf(pref_fff, "%s\n", tmp);
-    string_free(tmp);
+    const auto line = autopick_line_from_entry(*entry);
+    fprintf(pref_fff, "%s\n", line.data());
     fclose(pref_fff);
     return true;
 }

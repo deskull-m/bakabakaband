@@ -11,11 +11,9 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "mind/drs-types.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster-race/race-brightness-mask.h"
 #include "monster-race/race-flags-resistance.h"
-#include "monster-race/race-indice-types.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
@@ -34,12 +32,12 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell-kind/spells-world.h"
 #include "spell-realm/spells-hex.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -60,9 +58,9 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, PlayerType *player_ptr, M
 
     simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     auto result = MonsterSpellResult::make_valid();
-    if (m_ptr->r_idx == MonsterRaceId::LEE_QIEZI) {
+    if (monster.r_idx == MonraceId::LEE_QIEZI) {
         msg_print(_("しかし、その声は誰の心にも響かなかった…。", "However, that voice didn't touch anyone's heart..."));
         return result;
     }
@@ -85,9 +83,8 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, PlayerType *player_ptr, M
  */
 MonsterSpellResult spell_RF6_WORLD(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
     disturb(player_ptr, true, true);
-    (void)set_monster_timewalk(player_ptr, randint1(2) + 2, m_ptr->r_idx, true);
+    (void)set_monster_timewalk(player_ptr, m_idx, randint1(2) + 2, true);
 
     return MonsterSpellResult::make_valid();
 }
@@ -176,10 +173,10 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor_ptr->m_list[m_idx];
-    auto *t_ptr = &floor_ptr->m_list[t_idx];
-    auto *tr_ptr = &t_ptr->get_monrace();
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &monster = floor.m_list[m_idx];
+    const auto &monster_target = floor.m_list[t_idx];
+    auto &monrace_target = monster_target.get_monrace();
 
     mspell_cast_msg_simple msg(_("%s^があなたを引き戻した。", "%s^ commands you to return."),
         _("%s^が%sを引き戻した。", "%s^ commands %s to return."));
@@ -187,7 +184,7 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
     simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        teleport_player_to(player_ptr, m_ptr->fy, m_ptr->fx, TELEPORT_PASSIVE);
+        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_PASSIVE);
         return res;
     }
 
@@ -198,18 +195,18 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
     bool resists_tele = false;
     const auto t_name = monster_name(player_ptr, t_idx);
 
-    if (tr_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
-        if (tr_ptr->kind_flags.has(MonsterKindType::UNIQUE) || tr_ptr->resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-            if (is_original_ap_and_seen(player_ptr, t_ptr)) {
-                tr_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+    if (monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
+        if (monrace_target.kind_flags.has(MonsterKindType::UNIQUE) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
+            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+                monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {
                 msg_format(_("%s^には効果がなかった。", "%s^ is unaffected!"), t_name.data());
             }
             resists_tele = true;
-        } else if (tr_ptr->level > randint1(100)) {
-            if (is_original_ap_and_seen(player_ptr, t_ptr)) {
-                tr_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+        } else if (monrace_target.level > randint1(100)) {
+            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+                monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {
                 msg_format(_("%s^は耐性を持っている！", "%s^ resists!"), t_name.data());
@@ -223,10 +220,10 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
         return res;
     }
 
-    if (t_idx == player_ptr->riding) {
-        teleport_player_to(player_ptr, m_ptr->fy, m_ptr->fx, TELEPORT_PASSIVE);
+    if (monster_target.is_riding()) {
+        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_PASSIVE);
     } else {
-        teleport_monster_to(player_ptr, t_idx, m_ptr->fy, m_ptr->fx, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(player_ptr, t_idx, monster.fy, monster.fx, 100, TELEPORT_PASSIVE);
     }
     set_monster_csleep(player_ptr, t_idx, 0);
 
@@ -247,9 +244,9 @@ MonsterSpellResult spell_RF6_TELE_AWAY(PlayerType *player_ptr, MONSTER_IDX m_idx
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    MonsterEntity *t_ptr = &floor_ptr->m_list[t_idx];
-    MonsterRaceInfo *tr_ptr = &t_ptr->get_monrace();
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &monster_target = floor.m_list[t_idx];
+    auto &monrace_target = monster_target.get_monrace();
 
     mspell_cast_msg_simple msg(_("%s^にテレポートさせられた。", "%s^ teleports you away."),
         _("%s^は%sをテレポートさせた。", "%s^ teleports %s away."));
@@ -280,18 +277,18 @@ MonsterSpellResult spell_RF6_TELE_AWAY(PlayerType *player_ptr, MONSTER_IDX m_idx
     bool resists_tele = false;
     const auto t_name = monster_name(player_ptr, t_idx);
 
-    if (tr_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
-        if (tr_ptr->kind_flags.has(MonsterKindType::UNIQUE) || tr_ptr->resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-            if (is_original_ap_and_seen(player_ptr, t_ptr)) {
-                tr_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+    if (monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
+        if (monrace_target.kind_flags.has(MonsterKindType::UNIQUE) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
+            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+                monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {
                 msg_format(_("%s^には効果がなかった。", "%s^ is unaffected!"), t_name.data());
             }
             resists_tele = true;
-        } else if (tr_ptr->level > randint1(100)) {
-            if (is_original_ap_and_seen(player_ptr, t_ptr)) {
-                tr_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
+        } else if (monrace_target.level > randint1(100)) {
+            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+                monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {
                 msg_format(_("%s^は耐性を持っている！", "%s^ resists!"), t_name.data());
@@ -305,7 +302,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(PlayerType *player_ptr, MONSTER_IDX m_idx
         return res;
     }
 
-    if (t_idx == player_ptr->riding) {
+    if (monster_target.is_riding()) {
         teleport_player_away(m_idx, player_ptr, MAX_PLAYER_SIGHT * 2 + 5, false);
     } else {
         teleport_away(player_ptr, t_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_PASSIVE);
@@ -328,10 +325,10 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(PlayerType *player_ptr, MONSTER_IDX m_id
 {
     const auto res = MonsterSpellResult::make_valid();
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    MonsterEntity *t_ptr = &floor_ptr->m_list[t_idx];
-    MonsterRaceInfo *tr_ptr = &t_ptr->get_monrace();
-    DEPTH rlev = monster_level_idx(floor_ptr, m_idx);
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &monster_target = floor.m_list[t_idx];
+    const auto &monrace_target = monster_target.get_monrace();
+    DEPTH rlev = monster_level_idx(floor, m_idx);
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
@@ -356,8 +353,8 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(PlayerType *player_ptr, MONSTER_IDX m_id
         return res;
     }
 
-    resist = tr_ptr->resistance_flags.has_any_of(RFR_EFF_RESIST_NEXUS_MASK) || tr_ptr->resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
-    saving_throw = (tr_ptr->misc_flags.has(MonsterMiscType::QUESTOR)) || (tr_ptr->level > randint1((rlev - 10) < 1 ? 1 : (rlev - 10)) + 10);
+    resist = monrace_target.resistance_flags.has_any_of(RFR_EFF_RESIST_NEXUS_MASK) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
+    saving_throw = (monrace_target.misc_flags.has(MonsterMiscType::QUESTOR)) || (monrace_target.level > randint1((rlev - 10) < 1 ? 1 : (rlev - 10)) + 10);
 
     mspell_cast_msg_bad_status_to_monster msg(_("%s^が%sの足を指さした。", "%s^ gestures at %s's feet."),
         _("%s^には効果がなかった。", "%s^ is unaffected!"), _("%s^は効力を跳ね返した！", "%s^ resist the effects!"), "");
@@ -365,7 +362,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(PlayerType *player_ptr, MONSTER_IDX m_id
     spell_badstatus_message_to_mons(player_ptr, m_idx, t_idx, msg, resist, saving_throw);
 
     if (!resist && !saving_throw) {
-        teleport_level(player_ptr, (t_idx == player_ptr->riding) ? 0 : t_idx);
+        teleport_level(player_ptr, monster_target.is_riding() ? 0 : t_idx);
     }
 
     return res;
@@ -384,24 +381,25 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(PlayerType *player_ptr, MONSTER_IDX m_id
  */
 MonsterSpellResult spell_RF6_DARKNESS(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
+    const Pos2D pos(y, x);
     mspell_cast_msg_blind msg;
     concptr msg_done;
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor_ptr->m_list[m_idx];
-    auto *r_ptr = &m_ptr->get_monrace();
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &monster = floor.m_list[m_idx];
+    const auto &monrace = monster.get_monrace();
     bool can_use_lite_area = false;
     bool monster_to_monster = target_type == MONSTER_TO_MONSTER;
     bool monster_to_player = target_type == MONSTER_TO_PLAYER;
     const auto t_name = monster_name(player_ptr, t_idx);
 
     const auto is_ninja = PlayerClass(player_ptr).equals(PlayerClassType::NINJA);
-    const auto is_living_monster = r_ptr->kind_flags.has_not(MonsterKindType::UNDEAD);
-    const auto is_not_weak_lite = r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
-    if (is_ninja && is_living_monster && is_not_weak_lite && r_ptr->brightness_flags.has_none_of(dark_mask)) {
+    const auto is_living_monster = monrace.kind_flags.has_not(MonsterKindType::UNDEAD);
+    const auto is_not_weak_lite = monrace.resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
+    if (is_ninja && is_living_monster && is_not_weak_lite && monrace.brightness_flags.has_none_of(dark_mask)) {
         can_use_lite_area = true;
     }
 
-    const auto &t_ref = floor_ptr->m_list[t_idx];
+    const auto &t_ref = floor.m_list[t_idx];
     if (monster_to_monster && !t_ref.is_hostile()) {
         can_use_lite_area = false;
     }
@@ -438,10 +436,10 @@ MonsterSpellResult spell_RF6_DARKNESS(PlayerType *player_ptr, POSITION y, POSITI
     } else if (monster_to_monster) {
         if (can_use_lite_area) {
             (void)project(player_ptr, m_idx, 3, y, x, 0, AttributeType::LITE_WEAK, PROJECT_GRID | PROJECT_KILL);
-            lite_room(player_ptr, y, x);
+            lite_room(player_ptr, pos);
         } else {
             (void)project(player_ptr, m_idx, 3, y, x, 0, AttributeType::DARK_WEAK, PROJECT_GRID | PROJECT_KILL);
-            unlite_room(player_ptr, y, x);
+            unlite_room(player_ptr, pos);
         }
     }
 
@@ -462,7 +460,7 @@ MonsterSpellResult spell_RF6_TRAPS(PlayerType *player_ptr, POSITION y, POSITION 
     const auto m_name = monster_name(player_ptr, m_idx);
     disturb(player_ptr, true, true);
 
-    if (player_ptr->effects()->blindness()->is_blind()) {
+    if (player_ptr->effects()->blindness().is_blind()) {
         msg_format(_("%s^が何かをつぶやいて邪悪に微笑んだ。", "%s^ mumbles, and then cackles evilly."), m_name.data());
     } else {
         msg_format(_("%s^が呪文を唱えて邪悪に微笑んだ。", "%s^ casts a spell and cackles evilly."), m_name.data());
@@ -487,13 +485,13 @@ MonsterSpellResult spell_RF6_TRAPS(PlayerType *player_ptr, POSITION y, POSITION 
  */
 MonsterSpellResult spell_RF6_RAISE_DEAD(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."), _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."));
 
     monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
-    animate_dead(player_ptr, m_idx, m_ptr->fy, m_ptr->fx);
+    animate_dead(player_ptr, m_idx, monster.fy, monster.fx);
 
     return MonsterSpellResult::make_valid();
 }

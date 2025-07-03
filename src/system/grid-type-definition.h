@@ -2,6 +2,9 @@
 
 #include "object/object-index-list.h"
 #include "system/angband.h"
+#include "system/enums/terrain/terrain-kind.h"
+#include "util/point-2d.h"
+#include <map>
 
 /*
  * 特殊なマス状態フラグ / Special grid flags
@@ -38,17 +41,13 @@
 
 // clang-format on
 
-enum flow_type {
-    FLOW_NORMAL = 0,
-    FLOW_CAN_FLY = 1,
-    FLOW_MAX = 2,
-};
-
-class MonsterRaceInfo;
-class TerrainType;
+enum class GridFlow : int;
 enum class TerrainCharacteristics;
+enum class TerrainTag;
+class TerrainType;
 class Grid {
 public:
+    Grid();
     BIT_FLAGS info{}; /* Hack -- grid flags */
 
     FEAT_IDX feat{}; /* Hack -- feature type */
@@ -64,10 +63,13 @@ public:
 
     FEAT_IDX mimic{}; /* Feature to mimic */
 
-    byte costs[FLOW_MAX]{}; /* Hack -- cost of flowing */
-    byte dists[FLOW_MAX]{}; /* Hack -- distance from player */
+    std::map<GridFlow, uint8_t> costs; //!< Cost of flowing
+    std::map<GridFlow, uint8_t> dists; //!< Distance from player
     byte when{}; /* Hack -- when cost was computed */
 
+    static int calc_distance(const Pos2D &pos1, const Pos2D &pos2);
+
+    short get_terrain_id(TerrainKind tk = TerrainKind::NORMAL) const;
     bool is_floor() const;
     bool is_room() const;
     bool is_extra() const;
@@ -83,24 +85,31 @@ public:
     bool is_mirror() const;
     bool is_rune_protection() const;
     bool is_rune_explosion() const;
+    bool is_open() const;
+    bool is_closed_door(bool is_mimic) const;
+    bool is_hidden_door() const;
+    bool is_acceptable_target() const;
     bool has_monster() const;
-    byte get_cost(const MonsterRaceInfo *r_ptr) const;
-    byte get_distance(const MonsterRaceInfo *r_ptr) const;
-    FEAT_IDX get_feat_mimic() const;
-    bool cave_has_flag(TerrainCharacteristics feature_flags) const;
+    uint8_t get_cost(GridFlow gf) const;
+    uint8_t get_distance(GridFlow gf) const;
+    bool has(TerrainCharacteristics tc) const;
     bool is_symbol(const int ch) const;
+    bool is_darkened() const;
+    bool is_empty() const;
+    bool is_clean() const;
+    bool can_drop_item() const;
+    bool has_special_terrain() const;
+    bool can_block_disintegration() const;
+    bool can_generate_monster() const;
     void reset_costs();
     void reset_dists();
     bool has_los() const;
-    TerrainType &get_terrain();
-    const TerrainType &get_terrain() const;
-    TerrainType &get_terrain_mimic();
-    const TerrainType &get_terrain_mimic() const;
-    TerrainType &get_terrain_mimic_raw();
-    const TerrainType &get_terrain_mimic_raw() const;
+    bool has_los_terrain(TerrainKind tk = TerrainKind::NORMAL) const;
+    TerrainType &get_terrain(TerrainKind tk = TerrainKind::NORMAL);
+    const TerrainType &get_terrain(TerrainKind tk = TerrainKind::NORMAL) const;
     void place_closed_curtain();
     void add_info(int grid_info);
-
-private:
-    flow_type get_grid_flow_type(const MonsterRaceInfo *r_ptr) const;
+    void set_terrain_id(short terrain_id, TerrainKind tk = TerrainKind::NORMAL);
+    void set_terrain_id(TerrainTag tag, TerrainKind tk = TerrainKind::NORMAL);
+    void set_door_id(short terrain_id_random);
 };

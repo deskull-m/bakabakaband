@@ -1,6 +1,7 @@
 #pragma once
 
-#include "system/angband.h"
+#include <string>
+#include <tl/optional.hpp>
 
 class PlayerType;
-bool cave_gen(PlayerType *player_ptr, concptr *why);
+tl::optional<std::string> cave_gen(PlayerType *player_ptr);

@@ -1,50 +1,50 @@
 #include "monster/monster-pain-describer.h"
-#include "monster-race/monster-race.h"
-#include "monster-race/race-indice-types.h"
 #include "monster/monster-describer.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "term/z-form.h"
 #include "util/string-processor.h"
 #include <functional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 struct pain_message_type {
     // message_table を選択するかどうかを判定する関数
-    std::function<bool(const MonsterEntity &)> pred;
+    std::function<bool(const MonraceId, const char)> pred;
 
     // percentage, message のペアのリスト
     // (ダメージを受けた後のHP / ダメージを受ける前のHP)[%]が percentage 以上ならそのメッセージが選択される
-    std::map<int, concptr, std::greater<int>> message_table;
+    std::map<int, std::string, std::greater<int>> message_table;
 };
 
 /*!
- * @brief MonsterEntity を引数を受け取り文字列 symbols の中にそのモンスターのシンボルが含まれていれば true を返す関数オブジェクトを生成する
+ * @brief MonsterEntity を引数を受け取り文字列 characters の中にそのモンスターのシンボルが含まれていれば true を返す関数オブジェクトを生成する
  *
- * @param symbols 文字が含まれるか調べる文字列
+ * @param characters 文字が含まれるか調べる文字列
  * @return 生成した関数オブジェクト(ラムダ式)
  */
-static auto d_char_is_any_of(concptr symbols)
+static auto d_char_is_any_of(std::string_view characters)
 {
-    return [symbols](const MonsterEntity &monster) {
-        const auto &monrace = monster.get_monrace();
-        return angband_strchr(symbols, monrace.d_char) != nullptr;
+    return [characters](const MonraceId, const char symbol) {
+        return angband_strchr(characters.data(), symbol) != nullptr;
     };
 }
 
-static bool is_personified(const MonsterEntity &m_info)
+static bool is_personified(const MonraceId monrace_id, const char)
 {
-    switch (m_info.r_idx) {
-    case MonsterRaceId::LAFFEY_II:
+    switch (monrace_id) {
+    case MonraceId::LAFFEY_II:
         return true;
     default:
         return false;
     }
 }
 
-static const std::map<int, concptr, std::greater<int>> pain_messages_common = {
+static const std::map<int, std::string, std::greater<int>> pain_messages_common = {
     { 95, _("は攻撃に肩をすくめた。", " shrugs off the attack.") },
     { 75, _("は痛みでうなった。", " grunts with pain.") },
     { 50, _("は痛みで叫んだ。", " cries out in pain.") },
@@ -84,17 +84,15 @@ static const std::vector<pain_message_type>
                                          { 10, _("は躊躇した。", " hesitates.") },
                                          { 0, _("はくしゃくしゃになった。", " crumples.") },
                                      } },
-        { [](const MonsterEntity &monster) {
-        const auto &monrace = monster.get_monrace();
-        return d_char_is_any_of("JMR")(monster) || !isalpha(monrace.d_char); }, {
-                                                    { 95, _("はほとんど気にとめていない。", " barely notices.") },
-                                                    { 75, _("はシーッと鳴いた。", " hisses.") },
-                                                    { 50, _("は怒って頭を上げた。", " rears up in anger.") },
-                                                    { 35, _("は猛然と威嚇した。", " hisses furiously.") },
-                                                    { 20, _("は身もだえした。", " writhes about.") },
-                                                    { 10, _("は苦痛で身もだえした。", " writhes in agony.") },
-                                                    { 0, _("はぐにゃぐにゃと痙攣した。", " jerks limply.") },
-                                                } },
+        { [](const MonraceId, const char symbol) { return d_char_is_any_of("JMR")(MonraceId::PLAYER, symbol) || !isalpha(symbol); }, {
+                                                                                                                                         { 95, _("はほとんど気にとめていない。", " barely notices.") },
+                                                                                                                                         { 75, _("はシーッと鳴いた。", " hisses.") },
+                                                                                                                                         { 50, _("は怒って頭を上げた。", " rears up in anger.") },
+                                                                                                                                         { 35, _("は猛然と威嚇した。", " hisses furiously.") },
+                                                                                                                                         { 20, _("は身もだえした。", " writhes about.") },
+                                                                                                                                         { 10, _("は苦痛で身もだえした。", " writhes in agony.") },
+                                                                                                                                         { 0, _("はぐにゃぐにゃと痙攣した。", " jerks limply.") },
+                                                                                                                                     } },
         { d_char_is_any_of("f"), {
                                      { 95, _("は攻撃に肩をすくめた。", " shrugs off the attack.") },
                                      { 75, _("は吠えた。", " roars.") },
@@ -176,12 +174,13 @@ static const std::vector<pain_message_type>
                                            { 10, _("は苦痛でもだえ苦しんだ。", " writhes in agony.") },
                                            { 0, _("は弱々しく叫んだ。", " cries out feebly.") },
                                        } },
-        { [](const MonsterEntity &) { return true; }, pain_messages_common },
+        { [](const MonraceId, const char) { return true; }, pain_messages_common },
     };
 
-MonsterPainDescriber::MonsterPainDescriber(PlayerType *player_ptr, const MonsterEntity *m_ptr)
-    : player_ptr(player_ptr)
-    , m_ptr(m_ptr)
+MonsterPainDescriber::MonsterPainDescriber(MonraceId r_idx, char symbol, std::string_view m_name)
+    : r_idx(r_idx)
+    , symbol(symbol)
+    , m_name(m_name)
 {
 }
 
@@ -190,29 +189,26 @@ MonsterPainDescriber::MonsterPainDescriber(PlayerType *player_ptr, const Monster
  * @param dam モンスターが受けたダメージ
  * @return std::string ダメージを受けたモンスターの様子を表す文字列。表示すべき様子が無い場合はnullopt。
  */
-std::optional<std::string> MonsterPainDescriber::describe(int dam)
+tl::optional<std::string> MonsterPainDescriber::describe(int now_hp, int took_damage, bool visible)
 {
-    const auto m_name = monster_desc(player_ptr, this->m_ptr, 0);
-
-    if (dam == 0) {
-        if (this->m_ptr->ml) {
-            return format(_("%s^はダメージを受けていない。", "%s^ is unharmed."), m_name.data());
+    if (took_damage == 0) {
+        if (visible) {
+            return format(_("%s^はダメージを受けていない。", "%s^ is unharmed."), this->m_name.data());
         }
-        return std::nullopt;
+        return tl::nullopt;
     }
 
-    const auto newhp = m_ptr->hp;
-    const auto oldhp = newhp + dam;
-    const auto percentage = std::max((newhp * 100) / oldhp, 0);
+    const auto oldhp = now_hp + took_damage;
+    const auto percentage = std::max((now_hp * 100) / oldhp, 0);
 
     for (const auto &[pred, table] : pain_messages) {
-        if (!pred(*this->m_ptr)) {
+        if (!pred(r_idx, symbol)) {
             continue;
         }
 
-        const auto msg = table.lower_bound(percentage)->second;
-        return format("%s^%s", m_name.data(), msg);
+        const auto &msg = table.lower_bound(percentage)->second;
+        return format("%s^%s", this->m_name.data(), msg.data());
     }
 
-    return std::nullopt;
+    return tl::nullopt;
 }

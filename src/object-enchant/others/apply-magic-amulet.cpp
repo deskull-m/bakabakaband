@@ -11,7 +11,7 @@
 #include "object-enchant/special-object-flags.h"
 #include "object-enchant/trc-types.h"
 #include "sv-definition/sv-amulet-types.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -43,7 +43,7 @@ AmuletEnchanter::AmuletEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPT
  */
 void AmuletEnchanter::apply_magic()
 {
-    if ((this->power == 0) && (randint0(100) < 50)) {
+    if ((this->power == 0) && one_in_(2)) {
         this->power = -1;
     }
 

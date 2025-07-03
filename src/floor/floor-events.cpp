@@ -1,20 +1,16 @@
 #include "floor/floor-events.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
-#include "core/window-redrawer.h"
-#include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
-#include "floor/cave.h"
+#include "floor/dungeon-feeling.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
 #include "game-option/cheat-options.h"
 #include "game-option/disturbance-options.h"
 #include "game-option/map-screen-options.h"
-#include "grid/feature-flag-types.h"
 #include "grid/grid.h"
 #include "main/sound-of-music.h"
 #include "mind/mind-ninja.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
 #include "monster/monster-status.h"
@@ -30,16 +26,15 @@
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
 #include "system/angband-system.h"
-#include "system/baseitem-info.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -66,22 +61,20 @@ static void update_sun_light(PlayerType *player_ptr)
 void day_break(PlayerType *player_ptr)
 {
     msg_print(_("夜が明けた。", "The sun has risen."));
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (player_ptr->wild_mode) {
+    if (AngbandWorld::get_instance().is_wild_mode()) {
         update_sun_light(player_ptr);
         return;
     }
 
-    for (auto y = 0; y < floor_ptr->height; y++) {
-        for (auto x = 0; x < floor_ptr->width; x++) {
-            auto *g_ptr = &floor_ptr->grid_array[y][x];
-            g_ptr->info |= CAVE_GLOW;
-            if (view_perma_grids) {
-                g_ptr->info |= CAVE_MARK;
-            }
-
-            note_spot(player_ptr, y, x);
+    auto &floor = *player_ptr->current_floor_ptr;
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        grid.add_info(CAVE_GLOW);
+        if (view_perma_grids) {
+            grid.add_info(CAVE_MARK);
         }
+
+        note_spot(player_ptr, pos);
     }
 
     update_sun_light(player_ptr);
@@ -90,31 +83,28 @@ void day_break(PlayerType *player_ptr)
 void night_falls(PlayerType *player_ptr)
 {
     msg_print(_("日が沈んだ。", "The sun has fallen."));
-    if (player_ptr->wild_mode) {
+    if (AngbandWorld::get_instance().is_wild_mode()) {
         update_sun_light(player_ptr);
         return;
     }
 
     auto &floor = *player_ptr->current_floor_ptr;
-    for (auto y = 0; y < floor.height; y++) {
-        for (auto x = 0; x < floor.width; x++) {
-            const Pos2D pos(y, x);
-            auto &grid = floor.get_grid(pos);
-            const auto &terrain = grid.get_terrain_mimic();
-            using Tc = TerrainCharacteristics;
-            if (grid.is_mirror() || terrain.flags.has(Tc::QUEST_ENTER) || terrain.flags.has(Tc::ENTRANCE)) {
-                continue;
-            }
-
-            grid.info &= ~(CAVE_GLOW);
-            if (terrain.flags.has_not(Tc::REMEMBER)) {
-                grid.info &= ~(CAVE_MARK);
-                note_spot(player_ptr, y, x);
-            }
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
+        using Tc = TerrainCharacteristics;
+        if (grid.is_mirror() || terrain.flags.has(Tc::QUEST_ENTER) || terrain.flags.has(Tc::ENTRANCE)) {
+            continue;
         }
 
-        glow_deep_lava_and_bldg(player_ptr);
+        grid.info &= ~(CAVE_GLOW);
+        if (terrain.flags.has_not(Tc::REMEMBER)) {
+            grid.info &= ~(CAVE_MARK);
+            note_spot(player_ptr, pos);
+        }
     }
+
+    glow_deep_lava_and_bldg(player_ptr);
 
     update_sun_light(player_ptr);
 }
@@ -128,61 +118,58 @@ static int rating_boost(int delta)
 }
 
 /*!
- * @brief ダンジョンの雰囲気を算出する。
- * / Examine all monsters and unidentified objects, and get the feeling of current dungeon floor
+ * @brief ダンジョンの雰囲気を算出する
+ * @param floor フロアへの参照
  * @return 算出されたダンジョンの雰囲気ランク
  */
-static byte get_dungeon_feeling(PlayerType *player_ptr)
+static int get_dungeon_feeling(const auto &floor)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (!floor_ptr->dun_level) {
+    if (!floor.is_underground()) {
         return 0;
     }
 
-    const int base = 10;
-    int rating = 0;
-    for (MONSTER_IDX i = 1; i < floor_ptr->m_max; i++) {
-        auto *m_ptr = &floor_ptr->m_list[i];
-        MonsterRaceInfo *r_ptr;
-        int delta = 0;
-        if (!m_ptr->is_valid() || m_ptr->is_pet()) {
+    const auto base = 10;
+    auto rating = 0;
+    for (short i = 1; i < floor.m_max; i++) {
+        const auto &monster = floor.m_list[i];
+        auto delta = 0;
+        if (!monster.is_valid() || monster.is_pet()) {
             continue;
         }
 
-        r_ptr = &m_ptr->get_monrace();
-        if (r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-            if (r_ptr->level + 10 > floor_ptr->dun_level) {
-                delta += (r_ptr->level + 10 - floor_ptr->dun_level) * 2 * base;
+        const auto &monrace = monster.get_monrace();
+        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+            if (monrace.level + 10 > floor.dun_level) {
+                delta += (monrace.level + 10 - floor.dun_level) * 2 * base;
             }
-        } else if (r_ptr->level > floor_ptr->dun_level) {
-            delta += (r_ptr->level - floor_ptr->dun_level) * base;
+        } else if (monrace.level > floor.dun_level) {
+            delta += (monrace.level - floor.dun_level) * base;
         }
 
-        if (r_ptr->misc_flags.has(MonsterMiscType::HAS_FRIENDS)) {
-            if (5 <= get_monster_crowd_number(floor_ptr, i)) {
+        if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS)) {
+            if (5 <= get_monster_crowd_number(floor, i)) {
                 delta += 1;
             }
-        } else if (2 <= get_monster_crowd_number(floor_ptr, i)) {
+        } else if (2 <= get_monster_crowd_number(floor, i)) {
             delta += 1;
         }
 
         rating += rating_boost(delta);
     }
 
-    for (MONSTER_IDX i = 1; i < floor_ptr->o_max; i++) {
-        auto *o_ptr = &floor_ptr->o_list[i];
-        int delta = 0;
-        if (!o_ptr->is_valid() || (o_ptr->is_known() && o_ptr->marked.has(OmType::TOUCHED)) || ((o_ptr->ident & IDENT_SENSE) != 0)) {
+    for (const auto &item_ptr : floor.o_list) {
+        auto delta = 0;
+        if (!item_ptr->is_valid() || (item_ptr->is_known() && item_ptr->marked.has(OmType::TOUCHED)) || ((item_ptr->ident & IDENT_SENSE) != 0)) {
             continue;
         }
 
-        if (o_ptr->is_ego()) {
-            const auto &ego = o_ptr->get_ego();
+        if (item_ptr->is_ego()) {
+            const auto &ego = item_ptr->get_ego();
             delta += ego.rating * base;
         }
 
-        if (o_ptr->is_fixed_or_random_artifact()) {
-            PRICE cost = object_value_real(o_ptr);
+        if (item_ptr->is_fixed_or_random_artifact()) {
+            const auto cost = object_value_real(item_ptr.get());
             delta += 10 * base;
             if (cost > 10000L) {
                 delta += 10 * base;
@@ -201,45 +188,45 @@ static byte get_dungeon_feeling(PlayerType *player_ptr)
             }
         }
 
-        if (o_ptr->bi_key.tval() == ItemKindType::DRAG_ARMOR) {
+        if (item_ptr->bi_key.tval() == ItemKindType::DRAG_ARMOR) {
             delta += 30 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::SHIELD, SV_DRAGON_SHIELD)) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::SHIELD, SV_DRAGON_SHIELD)) {
             delta += 5 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::GLOVES, SV_SET_OF_DRAGON_GLOVES)) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::GLOVES, SV_SET_OF_DRAGON_GLOVES)) {
             delta += 5 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::BOOTS, SV_PAIR_OF_DRAGON_GREAVE)) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::BOOTS, SV_PAIR_OF_DRAGON_GREAVE)) {
             delta += 5 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::HELM, SV_DRAGON_HELM)) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::HELM, SV_DRAGON_HELM)) {
             delta += 5 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::SOFT_ARMOR, SV_DRAGON_BIKINI)) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::SOFT_ARMOR, SV_DRAGON_BIKINI)) {
             delta += 5 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_SPEED) && !o_ptr->is_cursed()) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_SPEED) && !item_ptr->is_cursed()) {
             delta += 25 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_LORDLY) && !o_ptr->is_cursed()) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_LORDLY) && !item_ptr->is_cursed()) {
             delta += 15 * base;
         }
 
-        if (o_ptr->bi_key == BaseitemKey(ItemKindType::AMULET, SV_AMULET_THE_MAGI) && !o_ptr->is_cursed()) {
+        if (item_ptr->bi_key == BaseitemKey(ItemKindType::AMULET, SV_AMULET_THE_MAGI) && !item_ptr->is_cursed()) {
             delta += 15 * base;
         }
 
-        const auto &baseitem = o_ptr->get_baseitem();
-        if (!o_ptr->is_cursed() && !o_ptr->is_broken() && baseitem.level > floor_ptr->dun_level) {
-            delta += (baseitem.level - floor_ptr->dun_level) * base;
+        const auto item_level = item_ptr->get_baseitem_level();
+        if (!item_ptr->is_cursed() && !item_ptr->is_broken() && item_level > floor.dun_level) {
+            delta += (item_level - floor.dun_level) * base;
         }
 
         rating += rating_boost(delta);
@@ -287,7 +274,7 @@ static byte get_dungeon_feeling(PlayerType *player_ptr)
 void update_dungeon_feeling(PlayerType *player_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
-    if (!floor.dun_level) {
+    if (!floor.is_underground()) {
         return;
     }
 
@@ -295,31 +282,34 @@ void update_dungeon_feeling(PlayerType *player_ptr)
         return;
     }
 
-    int delay = std::max(10, 150 - player_ptr->skill_fos) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
-    if (w_ptr->game_turn < player_ptr->feeling_turn + delay && !cheat_xtra) {
+    const auto delay = std::max(10, 150 - player_ptr->skill_fos) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
+    const auto &world = AngbandWorld::get_instance();
+    auto &df = DungeonFeeling::get_instance();
+    if (world.game_turn < df.get_turns() + delay && !cheat_xtra) {
         return;
     }
 
-    auto quest_num = floor.get_quest_id();
-    const auto &quest_list = QuestList::get_instance();
+    const auto quest_id = floor.get_quest_id();
+    const auto &quests = QuestList::get_instance();
 
-    auto dungeon_quest = (quest_num == QuestId::OBERON);
-    dungeon_quest |= (quest_num == QuestId::SERPENT);
-    dungeon_quest |= !(quest_list[quest_num].flags & QUEST_FLAG_PRESET);
+    auto dungeon_quest = (quest_id == QuestId::OBERON);
+    dungeon_quest |= (quest_id == QuestId::SERPENT);
+    dungeon_quest |= none_bits(quests.get_quest(quest_id).flags, QUEST_FLAG_PRESET);
 
-    auto feeling_quest = inside_quest(quest_num);
-    feeling_quest &= QuestType::is_fixed(quest_num);
+    auto feeling_quest = inside_quest(quest_id);
+    feeling_quest &= QuestType::is_fixed(quest_id);
     feeling_quest &= !dungeon_quest;
     if (feeling_quest) {
         return;
     }
-    byte new_feeling = get_dungeon_feeling(player_ptr);
-    player_ptr->feeling_turn = w_ptr->game_turn;
-    if (player_ptr->feeling == new_feeling) {
+
+    const auto new_feeling = get_dungeon_feeling(floor);
+    df.set_turns(world.game_turn);
+    if (df.get_feeling() == new_feeling) {
         return;
     }
 
-    player_ptr->feeling = new_feeling;
+    df.set_feeling(new_feeling);
     do_cmd_feeling(player_ptr);
     select_floor_music(player_ptr);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
@@ -338,21 +328,19 @@ void glow_deep_lava_and_bldg(PlayerType *player_ptr)
         return;
     }
 
-    for (auto y = 0; y < floor.height; y++) {
-        for (auto x = 0; x < floor.width; x++) {
-            const auto &grid = floor.get_grid({ y, x });
-            if (grid.get_terrain_mimic().flags.has_not(TerrainCharacteristics::GLOW)) {
+    for (const auto &pos : floor.get_area()) {
+        const auto &grid = floor.get_grid(pos);
+        if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::GLOW)) {
+            continue;
+        }
+
+        for (const auto &d : Direction::directions()) {
+            const auto pos_neighbor = pos + d.vec();
+            if (!floor.contains(pos_neighbor, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
                 continue;
             }
 
-            for (auto i = 0; i < 9; i++) {
-                const Pos2D pos(y + ddy_ddd[i], x + ddx_ddd[i]);
-                if (!in_bounds2(&floor, pos.y, pos.x)) {
-                    continue;
-                }
-
-                floor.get_grid(pos).info |= CAVE_GLOW;
-            }
+            floor.get_grid(pos_neighbor).info |= CAVE_GLOW;
         }
     }
 
@@ -369,37 +357,36 @@ void glow_deep_lava_and_bldg(PlayerType *player_ptr)
 /*
  * Actually erase the entire "lite" array, redrawing every grid
  */
-void forget_lite(FloorType *floor_ptr)
+void forget_lite(FloorType &floor)
 {
-    if (!floor_ptr->lite_n) {
+    if (!floor.lite_n) {
         return;
     }
 
-    for (int i = 0; i < floor_ptr->lite_n; i++) {
-        POSITION y = floor_ptr->lite_y[i];
-        POSITION x = floor_ptr->lite_x[i];
-        floor_ptr->grid_array[y][x].info &= ~(CAVE_LITE);
+    for (int i = 0; i < floor.lite_n; i++) {
+        POSITION y = floor.lite_y[i];
+        POSITION x = floor.lite_x[i];
+        floor.grid_array[y][x].info &= ~(CAVE_LITE);
     }
 
-    floor_ptr->lite_n = 0;
+    floor.lite_n = 0;
 }
 
 /*
  * Clear the viewable space
  */
-void forget_view(FloorType *floor_ptr)
+void forget_view(FloorType &floor)
 {
-    if (!floor_ptr->view_n) {
+    if (!floor.view_n) {
         return;
     }
 
-    for (int i = 0; i < floor_ptr->view_n; i++) {
-        POSITION y = floor_ptr->view_y[i];
-        POSITION x = floor_ptr->view_x[i];
-        Grid *g_ptr;
-        g_ptr = &floor_ptr->grid_array[y][x];
-        g_ptr->info &= ~(CAVE_VIEW);
+    for (int i = 0; i < floor.view_n; i++) {
+        POSITION y = floor.view_y[i];
+        POSITION x = floor.view_x[i];
+        auto &grid = floor.grid_array[y][x];
+        grid.info &= ~(CAVE_VIEW);
     }
 
-    floor_ptr->view_n = 0;
+    floor.view_n = 0;
 }

@@ -1,43 +1,63 @@
 #include "core/object-compressor.h"
 #include "core/window-redrawer.h"
 #include "floor/floor-object.h"
-#include "floor/geometry.h"
 #include "grid/grid.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "term/z-rand.h"
 #include "view/display-messages.h"
-#include <algorithm>
+#include <range/v3/view.hpp>
+#include <utility>
 
-/*!
- * @brief グローバルオブジェクト配列の要素番号i1のオブジェクトを要素番号i2に移動する /
- * Move an object from index i1 to index i2 in the object list
- * @param i1 オブジェクト移動元の要素番号
- * @param i2 オブジェクト移動先の要素番号
- */
-static void compact_objects_aux(FloorType *floor_ptr, OBJECT_IDX i1, OBJECT_IDX i2)
-{
-    if (i1 == i2) {
-        return;
+namespace {
+class ItemCompactionChecker {
+public:
+    ItemCompactionChecker(PlayerType *player_ptr, int try_count)
+        : player_ptr(player_ptr)
+        , try_count(try_count)
+        , level_threshold(5 * try_count)
+        , distance_threshold(5 * (20 - try_count))
+    {
     }
 
-    auto *o_ptr = &floor_ptr->o_list[i1];
+    bool can_delete_for_compaction(const ItemEntity &item) const
+    {
+        if (!item.is_valid() || (item.get_baseitem_level() > this->level_threshold)) {
+            return false;
+        }
 
-    // モンスター所為アイテムリストもしくは床上アイテムリストの要素番号i1をi2に書き換える
-    auto &list = get_o_idx_list_contains(floor_ptr, i1);
-    std::replace(list.begin(), list.end(), i1, i2);
+        if (item.is_held_by_monster() && evaluate_percent(90)) {
+            return false;
+        }
 
-    // 要素番号i1のオブジェクトを要素番号i2に移動
-    floor_ptr->o_list[i2] = floor_ptr->o_list[i1];
-    o_ptr->wipe();
+        const auto &floor = *player_ptr->current_floor_ptr;
+        const auto pos = item.is_held_by_monster() ? floor.m_list[item.held_m_idx].get_position() : item.get_position();
+
+        if (Grid::calc_distance(player_ptr->get_position(), pos) < this->distance_threshold) {
+            return false;
+        }
+
+        if (item.is_fixed_or_random_artifact() && (try_count < 1000)) {
+            return false;
+        }
+
+        return evaluate_percent(10);
+    }
+
+private:
+    PlayerType *player_ptr;
+    int try_count;
+    int level_threshold;
+    int distance_threshold;
+};
 }
 
 /*!
- * @brief グローバルオブジェクト配列から優先度の低いものを削除し、データを圧縮する。 /
- * Compact and Reorder the object list.
+ * @brief アイテム配列から優先度の低いものを削除する。
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param size 最低でも減らしたいオブジェクト数の水準
  * @details
@@ -53,7 +73,6 @@ static void compact_objects_aux(FloorType *floor_ptr, OBJECT_IDX i1, OBJECT_IDX 
  */
 void compact_objects(PlayerType *player_ptr, int size)
 {
-    ItemEntity *o_ptr;
     if (size) {
         msg_print(_("アイテム情報を圧縮しています...", "Compacting objects..."));
         auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -65,57 +84,17 @@ void compact_objects(PlayerType *player_ptr, int size)
         rfu.set_flags(flags_swrf);
     }
 
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    for (int num = 0, cnt = 1; num < size; cnt++) {
-        int cur_lev = 5 * cnt;
-        int cur_dis = 5 * (20 - cnt);
-        for (OBJECT_IDX i = 1; i < floor_ptr->o_max; i++) {
-            o_ptr = &floor_ptr->o_list[i];
-
-            if (!o_ptr->is_valid() || (o_ptr->get_baseitem().level > cur_lev)) {
-                continue;
+    auto &floor = *player_ptr->current_floor_ptr;
+    for (auto deleted_num = 0, try_count = 1; deleted_num < size; try_count++) {
+        const ItemCompactionChecker icc(player_ptr, try_count);
+        std::vector<OBJECT_IDX> delete_i_idx_list;
+        for (const auto &[i_idx, item_ptr] : floor.o_list | ranges::views::enumerate) {
+            if (icc.can_delete_for_compaction(*item_ptr)) {
+                delete_i_idx_list.push_back(static_cast<OBJECT_IDX>(i_idx));
             }
-
-            POSITION y, x;
-            if (o_ptr->is_held_by_monster()) {
-                MonsterEntity *m_ptr;
-                m_ptr = &floor_ptr->m_list[o_ptr->held_m_idx];
-                y = m_ptr->fy;
-                x = m_ptr->fx;
-
-                if (randint0(100) < 90) {
-                    continue;
-                }
-            } else {
-                y = o_ptr->iy;
-                x = o_ptr->ix;
-            }
-
-            if ((cur_dis > 0) && (distance(player_ptr->y, player_ptr->x, y, x) < cur_dis)) {
-                continue;
-            }
-
-            int chance = 90;
-            if (o_ptr->is_fixed_or_random_artifact() && (cnt < 1000)) {
-                chance = 100;
-            }
-
-            if (randint0(100) < chance) {
-                continue;
-            }
-
-            delete_object_idx(player_ptr, i);
-            num++;
-        }
-    }
-
-    for (OBJECT_IDX i = floor_ptr->o_max - 1; i >= 1; i--) {
-        o_ptr = &floor_ptr->o_list[i];
-        if (o_ptr->is_valid()) {
-            continue;
         }
 
-        compact_objects_aux(floor_ptr, floor_ptr->o_max - 1, i);
-        floor_ptr->o_max--;
+        deleted_num += delete_i_idx_list.size();
+        delete_items(player_ptr, std::move(delete_i_idx_list));
     }
 }

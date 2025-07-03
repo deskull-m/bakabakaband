@@ -10,16 +10,16 @@
 #include "mind/mind-blue-mage.h"
 #include "monster-race/race-ability-flags.h"
 #include "mspell/monster-power-table.h"
-#include "object/object-kind-hook.h"
+#include "object/tval-types.h"
 #include "player-base/player-class.h"
 #include "player-info/bluemage-data-type.h"
 #include "player-info/magic-eater-data-type.h"
 #include "smith/object-smith.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
-
 #include <algorithm>
 #include <iterator>
 #include <string>
@@ -36,13 +36,13 @@ struct learnt_spell_table {
  */
 static void dump_magic_eater(PlayerType *player_ptr, FILE *fff)
 {
-    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<magic_eater_data_type>();
+    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
     if (!magic_eater_data) {
         return;
     }
 
     fprintf(fff, _("\n\n  [取り込んだ魔法道具]\n", "\n\n  [Magic devices eaten]\n"));
-
+    const auto &baseitems = BaseitemList::get_instance();
     for (auto tval : { ItemKindType::STAFF, ItemKindType::WAND, ItemKindType::ROD }) {
         switch (tval) {
         case ItemKindType::STAFF:
@@ -66,12 +66,8 @@ static void dump_magic_eater(PlayerType *player_ptr, FILE *fff)
                 continue;
             }
 
-            auto bi_id = lookup_baseitem_id({ tval, i });
-            if (!bi_id) {
-                continue;
-            }
-
-            const auto buf = format("%23s (%2d)", baseitems_info[bi_id].name.data(), item.count);
+            const auto &baseitem = baseitems.lookup_baseitem({ tval, i });
+            const auto buf = format("%23s (%2d)", baseitem.name.data(), item.count);
             desc_list.emplace_back(buf);
         }
 

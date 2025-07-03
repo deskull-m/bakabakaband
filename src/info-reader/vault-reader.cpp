@@ -2,9 +2,7 @@
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "main/angband-headers.h"
-#include "monster-race/monster-race.h"
 #include "room/rooms-vault.h"
-#include "system/monster-race-info.h"
 #include "util/string-processor.h"
 
 /*!
@@ -82,8 +80,9 @@ errr parse_vaults_info(std::string_view buf, angband_header *)
                 }
 
                 const auto &s_tokens = str_split(f, '_', false);
-
                 if (s_tokens.size() == 2 && s_tokens[0] == "MONSTER") {
+                    break;
+                    /*
                     for (const auto &[r_idx, r_ref] : monraces_info) {
                         if (s_tokens[1] == r_ref.tag) {
                             v_ptr->place_monster_list[c] = r_idx;
@@ -94,6 +93,7 @@ errr parse_vaults_info(std::string_view buf, angband_header *)
                         info_set_value(v_ptr->place_monster_list[c], s_tokens[1]);
                     }
                     continue;
+                    */
                 }
 
                 return PARSE_ERROR_INVALID_FLAG;

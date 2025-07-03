@@ -24,15 +24,6 @@
 #include <stdexcept>
 #include <string>
 
-namespace {
-std::vector<char> clear_buffer(int len, std::string_view initial_value)
-{
-    std::vector<char> buf(len + 1, '\0');
-    initial_value.copy(buf.data(), len);
-    return buf;
-}
-}
-
 /*
  * Get some string input at the cursor location.
  * Assume the buffer is initialized to a default string.
@@ -50,7 +41,7 @@ std::vector<char> clear_buffer(int len, std::string_view initial_value)
  * ESCAPE clears the buffer and the window and returns FALSE.
  * RETURN accepts the current buffer contents and returns TRUE.
  */
-std::optional<std::string> askfor(int len, std::string_view initial_value, bool numpad_cursor)
+tl::optional<std::string> askfor(int len, std::string_view initial_value, bool numpad_cursor)
 {
     /*
      * Text color
@@ -59,8 +50,7 @@ std::optional<std::string> askfor(int len, std::string_view initial_value, bool 
      */
     auto color = TERM_YELLOW;
 
-    int y, x;
-    term_locate(&x, &y);
+    auto [x, y] = term_locate();
     if (len < 1) {
         len = 1;
     }
@@ -73,113 +63,73 @@ std::optional<std::string> askfor(int len, std::string_view initial_value, bool 
         len = MAIN_TERM_MIN_COLS - x;
     }
 
-    auto buf = clear_buffer(len, initial_value);
+    std::string buf(initial_value);
     auto pos = 0;
     while (true) {
-        term_erase(x, y, len);
-        term_putstr(x, y, -1, color, buf.data());
+        term_erase(x, y);
+        term_putstr(x, y, -1, color, buf);
         term_gotoxy(x + pos, y);
         const auto skey = inkey_special(numpad_cursor);
         switch (skey) {
         case SKEY_LEFT:
         case KTRL('b'): {
-            auto i = 0;
             color = TERM_WHITE;
             if (0 == pos) {
                 break;
             }
 
-            while (true) {
-                auto next_pos = i + 1;
-#ifdef JP
-                if (iskanji(buf[i])) {
-                    next_pos++;
-                }
-#endif
-                if (next_pos >= pos) {
-                    break;
-                }
-
-                i = next_pos;
-            }
-
-            pos = i;
+            const auto mb_chars = str_find_all_multibyte_chars(buf);
+            pos = mb_chars.contains(pos - 2) ? pos - 2 : pos - 1;
             break;
         }
         case SKEY_RIGHT:
-        case KTRL('f'):
+        case KTRL('f'): {
             color = TERM_WHITE;
-            if ('\0' == buf[pos]) {
+            if (std::cmp_equal(pos, buf.length())) {
                 break;
             }
 
-#ifdef JP
-            if (iskanji(buf[pos])) {
-                pos += 2;
-            } else {
-                pos++;
-            }
-#else
-            pos++;
-#endif
+            const auto mb_chars = str_find_all_multibyte_chars(buf);
+            pos = mb_chars.contains(pos) ? pos + 2 : pos + 1;
             break;
-        case SKEY_TOP:
+        }
+        case SKEY_HOME:
         case KTRL('a'):
             color = TERM_WHITE;
             pos = 0;
             break;
-        case SKEY_BOTTOM:
+        case SKEY_END:
         case KTRL('e'):
             color = TERM_WHITE;
-            pos = std::string_view(buf.data()).length();
+            pos = buf.length();
             break;
         case ESCAPE:
-            return std::nullopt;
+            return tl::nullopt;
         case '\n':
         case '\r':
-            return buf.data();
-        case '\010': {
-            auto i = 0;
+            return buf;
+        case '\010': { // Backspace
             color = TERM_WHITE;
             if (pos == 0) {
                 break;
             }
 
-            while (true) {
-                auto next_pos = i + 1;
-#ifdef JP
-                if (iskanji(buf[i])) {
-                    next_pos++;
-                }
-#endif
-                if (next_pos >= pos) {
-                    break;
-                }
-
-                i = next_pos;
-            }
-
-            pos = i;
+            const auto mb_chars = str_find_all_multibyte_chars(buf);
+            const auto delete_bytes = mb_chars.contains(pos - 2) ? 2 : 1;
+            pos -= delete_bytes;
+            buf.erase(pos, delete_bytes);
+            break;
         }
-            [[fallthrough]];
-        case 0x7F:
+        case 0x7F: // Delete
         case KTRL('d'): {
             color = TERM_WHITE;
-            if (buf[pos] == '\0') {
+            if (std::cmp_equal(pos, buf.length())) {
                 break;
             }
 
-            auto src = pos + 1;
-#ifdef JP
-            if (iskanji(buf[pos])) {
-                src++;
-            }
-#endif
-            auto dst = pos;
-            while ('\0' != (buf[dst++] = buf[src++])) {
-                ;
-            }
-
+            const auto mb_chars = str_find_all_multibyte_chars(buf);
+            const auto delete_bytes = mb_chars.contains(pos) ? 2 : 1;
+            buf.erase(pos, delete_bytes);
             break;
         }
         default: {
@@ -189,34 +139,30 @@ std::optional<std::string> askfor(int len, std::string_view initial_value, bool 
 
             const auto c = static_cast<char>(skey);
             if (color == TERM_YELLOW) {
-                buf = clear_buffer(len, "");
+                buf = "";
                 color = TERM_WHITE;
             }
 
-            const auto str_right_cursor = std::string(buf.data()).substr(pos);
 #ifdef JP
             if (iskanji(c)) {
                 inkey_base = true;
-                char next = inkey();
-                if (pos + 1 < len) {
-                    buf[pos++] = c;
-                    buf[pos++] = next;
-                } else {
-                    bell();
+                const auto next = inkey();
+                if (std::cmp_less(buf.length(), len - 1)) {
+                    buf.insert(pos++, 1, c);
+                    buf.insert(pos++, 1, next);
+                    break;
                 }
-            } else
+            } else if (isprint(c) || iskana(c)) {
+#else
+            if (isprint(c)) {
 #endif
-            {
-                const auto is_print = _(isprint(c) || iskana(c), isprint(c));
-                if (pos < len && is_print) {
-                    buf[pos++] = c;
-                } else {
-                    bell();
+                if (std::cmp_less(buf.length(), len)) {
+                    buf.insert(pos++, 1, c);
+                    break;
                 }
             }
 
-            buf[pos] = '\0';
-            angband_strcat(buf.data(), str_right_cursor, buf.size());
+            bell();
             break;
         }
         }
@@ -233,9 +179,9 @@ std::optional<std::string> askfor(int len, std::string_view initial_value, bool 
  *
  * We clear the input, and return false, on "ESCAPE".
  */
-std::optional<std::string> input_string(std::string_view prompt, int len, std::string_view initial_value, bool numpad_cursor)
+tl::optional<std::string> input_string(std::string_view prompt, int len, std::string_view initial_value, bool numpad_cursor)
 {
-    msg_print(nullptr);
+    msg_erase();
     prt(prompt, 0, 0);
     const auto ask_result = askfor(len, initial_value, numpad_cursor);
     prt("", 0, 0);
@@ -295,7 +241,7 @@ bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, EnumCla
         num_more = 0;
     }
 
-    msg_print(nullptr);
+    msg_erase();
 
     prt(buf, 0, 0);
     if (mode.has_not(UserCheck::NO_HISTORY) && player_ptr->playing) {
@@ -352,9 +298,9 @@ bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, EnumCla
  *
  * Returns TRUE unless the character is "Escape"
  */
-std::optional<char> input_command(std::string_view prompt, bool z_escape)
+tl::optional<char> input_command(std::string_view prompt, bool z_escape)
 {
-    msg_print(nullptr);
+    msg_erase();
     prt(prompt, 0, 0);
     char command;
     if (get_com_no_macros) {
@@ -366,7 +312,7 @@ std::optional<char> input_command(std::string_view prompt, bool z_escape)
     prt("", 0, 0);
     const auto is_z = (command == 'z') || (command == 'Z');
     if ((command == ESCAPE) || (z_escape && is_z)) {
-        return std::nullopt;
+        return tl::nullopt;
     }
 
     return command;
@@ -380,9 +326,8 @@ std::optional<char> input_command(std::string_view prompt, bool z_escape)
  */
 int input_quantity(int max, std::string_view initial_prompt)
 {
-    int amt;
     if (command_arg) {
-        amt = command_arg;
+        int amt = command_arg;
         command_arg = 0;
         if (amt > max) {
             amt = max;
@@ -391,19 +336,9 @@ int input_quantity(int max, std::string_view initial_prompt)
         return amt;
     }
 
-    short code;
-    auto result = repeat_pull(&code);
-    amt = code;
-    if ((max != 1) && result) {
-        if (amt > max) {
-            return max;
-        }
-
-        if (amt < 0) {
-            return 0;
-        }
-
-        return amt;
+    const auto code = repeat_pull();
+    if ((max != 1) && code) {
+        return std::clamp<int>(*code, 0, max);
     }
 
     std::string prompt;
@@ -413,17 +348,18 @@ int input_quantity(int max, std::string_view initial_prompt)
         prompt = format(_("いくつですか (1-%d): ", "Quantity (1-%d): "), max);
     }
 
-    msg_print(nullptr);
+    msg_erase();
     const auto input_amount = input_string(prompt, 6, "1", false);
     if (!input_amount) {
         return 0;
     }
 
+    int amt;
     if (isalpha((*input_amount)[0])) {
         amt = max;
     } else {
         try {
-            amt = std::clamp<int>(std::stoi(*input_amount), 0, max);
+            amt = std::clamp(std::stoi(*input_amount), 0, max);
         } catch (const std::exception &) {
             amt = 0;
         }
@@ -448,15 +384,15 @@ void pause_line(int row)
     prt("", row, 0);
 }
 
-std::optional<int> input_integer(std::string_view prompt, int min, int max, int initial_value)
+tl::optional<int> input_integer(std::string_view prompt, int min, int max, int initial_value)
 {
     std::stringstream ss;
     ss << prompt << "(" << min << "-" << max << "): ";
     auto digit = std::max(std::to_string(min).length(), std::to_string(max).length());
     while (true) {
         const auto input_str = input_string(ss.str(), digit, std::to_string(initial_value), false);
-        if (!input_str.has_value()) {
-            return std::nullopt;
+        if (!input_str) {
+            return tl::nullopt;
         }
 
         try {

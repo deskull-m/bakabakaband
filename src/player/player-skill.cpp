@@ -1,15 +1,13 @@
 #include "player/player-skill.h"
-#include "monster-race/monster-race.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
 #include "player/player-realm.h"
-#include "realm/realm-names-table.h"
 #include "sv-definition/sv-weapon-types.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -169,7 +167,7 @@ bool PlayerSkill::valid_weapon_exp(int weapon_exp)
  */
 PlayerSkillRank PlayerSkill::riding_skill_rank(int riding_exp)
 {
-    if (riding_exp < RIDING_EXP_BEGINNER) {
+    if (RIDING_EXP_UNSKILLED <= riding_exp && riding_exp < RIDING_EXP_BEGINNER) {
         return PlayerSkillRank::UNSKILLED;
     } else if (riding_exp < RIDING_EXP_SKILLED) {
         return PlayerSkillRank::BEGINNER;
@@ -292,7 +290,7 @@ void PlayerSkill::gain_riding_skill_exp_on_gross_eating()
     }
 }
 
-void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonsterRaceInfo *r_ptr)
+void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition &monrace)
 {
     auto now_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
     auto max_exp = class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::RIDING];
@@ -300,10 +298,10 @@ void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonsterRaceInfo *r
         return;
     }
 
-    auto riding_level = monraces_info[this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding].r_idx].level;
+    auto riding_level = this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding].get_monrace().level;
     int inc = 0;
 
-    if ((now_exp / 200 - 5) < r_ptr->level) {
+    if ((now_exp / 200 - 5) < monrace.level) {
         inc += 1;
     }
 
@@ -327,8 +325,8 @@ void PlayerSkill::gain_riding_skill_exp_on_range_attack()
         return;
     }
 
-    const auto *floor_ptr = this->player_ptr->current_floor_ptr;
-    const auto &monster = floor_ptr->m_list[this->player_ptr->riding];
+    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &monster = floor.m_list[this->player_ptr->riding];
     const auto &monrace = monster.get_monrace();
     if (((this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] - (RIDING_EXP_BEGINNER * 2)) / 200 < monrace.level) && one_in_(2)) {
         this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] += 1;
@@ -344,7 +342,7 @@ void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
         return;
     }
 
-    auto riding_level = monraces_info[this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding].r_idx].level;
+    auto riding_level = this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding].get_monrace().level;
 
     if ((dam / 2 + riding_level) <= (now_exp / 30 + 10)) {
         return;
@@ -361,11 +359,12 @@ void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
-void PlayerSkill::gain_spell_skill_exp(int realm, int spell_idx)
+void PlayerSkill::gain_spell_skill_exp(RealmType realm, int spell_idx)
 {
-    auto is_valid_realm = is_magic(realm) ||
-                          (realm == REALM_MUSIC) || (realm == REALM_HEX);
-    is_valid_realm &= (realm == this->player_ptr->realm1) || (realm == this->player_ptr->realm2);
+    PlayerRealm pr(this->player_ptr);
+    auto is_valid_realm = PlayerRealm::is_magic(realm) ||
+                          (realm == RealmType::MUSIC) || (realm == RealmType::HEX);
+    is_valid_realm &= pr.realm1().equals(realm) || pr.realm2().equals(realm);
     const auto is_valid_spell_idx = (0 <= spell_idx) && (spell_idx < 32);
 
     if (!is_valid_realm || !is_valid_spell_idx) {
@@ -375,25 +374,25 @@ void PlayerSkill::gain_spell_skill_exp(int realm, int spell_idx)
     constexpr GainAmountList gain_amount_list_first{ { 60, 8, 2, 1 } };
     constexpr GainAmountList gain_amount_list_second{ { 60, 8, 2, 0 } };
 
-    const auto is_first_realm = (realm == this->player_ptr->realm1);
-    const auto *s_ptr = is_magic(realm) ? &mp_ptr->info[realm - 1][spell_idx] : &technic_info[realm - MIN_TECHNIC][spell_idx];
+    const auto is_first_realm = pr.realm1().equals(realm);
+    const auto &spell = PlayerRealm::get_spell_info(realm, spell_idx);
 
     gain_spell_skill_exp_aux(this->player_ptr, this->player_ptr->spell_exp[spell_idx + (is_first_realm ? 0 : 32)],
-        (is_first_realm ? gain_amount_list_first : gain_amount_list_second), s_ptr->slevel);
+        (is_first_realm ? gain_amount_list_first : gain_amount_list_second), spell.slevel);
 }
 
-void PlayerSkill::gain_continuous_spell_skill_exp(int realm, int spell_idx)
+void PlayerSkill::gain_continuous_spell_skill_exp(RealmType realm, int spell_idx)
 {
     if (((spell_idx < 0) || (32 <= spell_idx)) ||
-        ((realm != REALM_MUSIC) && (realm != REALM_HEX))) {
+        ((realm != RealmType::MUSIC) && (realm != RealmType::HEX))) {
         return;
     }
 
-    const auto *s_ptr = &technic_info[realm - MIN_TECHNIC][spell_idx];
+    const auto &spell = PlayerRealm::get_spell_info(realm, spell_idx);
 
     const GainAmountList gain_amount_list{ 5, (one_in_(2) ? 1 : 0), (one_in_(5) ? 1 : 0), (one_in_(5) ? 1 : 0) };
 
-    gain_spell_skill_exp_aux(this->player_ptr, this->player_ptr->spell_exp[spell_idx], gain_amount_list, s_ptr->slevel);
+    gain_spell_skill_exp_aux(this->player_ptr, this->player_ptr->spell_exp[spell_idx], gain_amount_list, spell.slevel);
 }
 
 PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)
@@ -429,16 +428,17 @@ PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)
  * @param spell_idx 呪文ID
  * @return 経験値
  */
-EXP PlayerSkill::exp_of_spell(int realm, int spell_idx) const
+EXP PlayerSkill::exp_of_spell(RealmType realm, int spell_idx) const
 {
     PlayerClass pc(this->player_ptr);
+    PlayerRealm pr(this->player_ptr);
     if (pc.equals(PlayerClassType::SORCERER)) {
         return SPELL_EXP_MASTER;
     } else if (pc.equals(PlayerClassType::RED_MAGE)) {
         return SPELL_EXP_SKILLED;
-    } else if (realm == this->player_ptr->realm1) {
+    } else if (pr.realm1().equals(realm)) {
         return this->player_ptr->spell_exp[spell_idx];
-    } else if (realm == this->player_ptr->realm2) {
+    } else if (pr.realm2().equals(realm)) {
         return this->player_ptr->spell_exp[spell_idx + 32];
     } else {
         return 0;

@@ -5,8 +5,8 @@
 #include "player/digestion-processor.h"
 #include "player/player-status.h"
 #include "spell-kind/spells-specific-bolt.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
@@ -25,7 +25,7 @@ bool vampirism(PlayerType *player_ptr)
         return false;
     }
 
-    const auto pos = player_ptr->get_neighbor(*dir);
+    const auto pos = player_ptr->get_neighbor(dir);
     const auto &grid = floor.get_grid(pos);
     stop_mouth(player_ptr);
     if (!grid.has_monster()) {
@@ -36,7 +36,7 @@ bool vampirism(PlayerType *player_ptr)
     msg_print(_("あなたはニヤリとして牙をむいた...", "You grin and bare your fangs..."));
 
     int dummy = player_ptr->lev * 2;
-    if (!hypodynamic_bolt(player_ptr, *dir, dummy)) {
+    if (!hypodynamic_bolt(player_ptr, dir, dummy)) {
         msg_print(_("げぇ！ひどい味だ。", "Yechh. That tastes foul."));
         return true;
     }

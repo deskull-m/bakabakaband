@@ -1,17 +1,21 @@
 #pragma once
 
-#include "system/angband.h"
+#include <string>
+#include <string_view>
+#include <tl/optional.hpp>
 
 class PlayerType;
 class MonsterEntity;
+enum class MonraceId : int16_t;
 
 class MonsterPainDescriber {
 public:
-    MonsterPainDescriber(PlayerType *player_ptr, const MonsterEntity *m_ptr);
+    MonsterPainDescriber(MonraceId r_idx, char symbol, std::string_view m_name);
 
-    std::optional<std::string> describe(int dam);
+    tl::optional<std::string> describe(int now_hp, int took_damage, bool visible);
 
 private:
-    PlayerType *player_ptr;
-    const MonsterEntity *m_ptr;
+    MonraceId r_idx;
+    char symbol;
+    std::string m_name;
 };

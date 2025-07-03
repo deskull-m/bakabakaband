@@ -22,7 +22,6 @@
 #include "object/item-use-flags.h"
 #include "player-base/player-class.h"
 #include "system/angband-exceptions.h"
-#include "system/baseitem-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
@@ -59,19 +58,18 @@ bool recharge(PlayerType *player_ptr, int power)
         return false;
     }
 
-    const auto &baseitem = o_ptr->get_baseitem();
-    const auto lev = baseitem.level;
+    const auto item_level = o_ptr->get_baseitem_level();
 
     TIME_EFFECT recharge_amount;
     int recharge_strength;
     auto is_recharge_successful = true;
     const auto tval = o_ptr->bi_key.tval();
     if (tval == ItemKindType::ROD) {
-        recharge_strength = ((power > lev / 2) ? (power - lev / 2) : 0) / 5;
+        recharge_strength = ((power > item_level / 2) ? (power - item_level / 2) : 0) / 5;
         if (one_in_(recharge_strength)) {
             is_recharge_successful = false;
         } else {
-            recharge_amount = (power * damroll(3, 2));
+            recharge_amount = (power * Dice::roll(3, 2));
             if (o_ptr->timeout > recharge_amount) {
                 o_ptr->timeout -= recharge_amount;
             } else {
@@ -80,9 +78,9 @@ bool recharge(PlayerType *player_ptr, int power)
         }
     } else {
         if ((tval == ItemKindType::WAND) && (o_ptr->number > 1)) {
-            recharge_strength = (100 + power - lev - (8 * o_ptr->pval / o_ptr->number)) / 15;
+            recharge_strength = (100 + power - item_level - (8 * o_ptr->pval / o_ptr->number)) / 15;
         } else {
-            recharge_strength = (100 + power - lev - (8 * o_ptr->pval)) / 15;
+            recharge_strength = (100 + power - item_level - (8 * o_ptr->pval)) / 15;
         }
 
         if (recharge_strength < 0) {
@@ -92,7 +90,7 @@ bool recharge(PlayerType *player_ptr, int power)
         if (one_in_(recharge_strength)) {
             is_recharge_successful = false;
         } else {
-            recharge_amount = randnum1<short>(1 + baseitem.pval / 2);
+            recharge_amount = randnum1<short>(1 + o_ptr->get_baseitem_pval() / 2);
             if ((tval == ItemKindType::WAND) && (o_ptr->number > 1)) {
                 recharge_amount += (randint1(recharge_amount * (o_ptr->number - 1))) / 2;
                 if (recharge_amount < 1) {
@@ -121,7 +119,7 @@ bool recharge(PlayerType *player_ptr, int power)
     }
 
     if (o_ptr->is_fixed_artifact()) {
-        const auto item_name = describe_flavor(player_ptr, o_ptr, OD_NAME_ONLY);
+        const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_NAME_ONLY);
         msg_format(_("魔力が逆流した！%sは完全に魔力を失った。", "The recharging backfires - %s is completely drained!"), item_name.data());
         if ((tval == ItemKindType::ROD) && (o_ptr->timeout < 10000)) {
             o_ptr->timeout = (o_ptr->timeout + 100) * 2;
@@ -131,7 +129,7 @@ bool recharge(PlayerType *player_ptr, int power)
         return update_player();
     }
 
-    const auto item_name = describe_flavor(player_ptr, o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto fail_type = 1;
     if (PlayerClass(player_ptr).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */
@@ -205,7 +203,7 @@ bool recharge(PlayerType *player_ptr, int power)
         }
 
         if (tval == ItemKindType::ROD) {
-            o_ptr->timeout = (o_ptr->number - 1) * baseitem.pval;
+            o_ptr->timeout = (o_ptr->number - 1) * o_ptr->get_baseitem_pval();
         }
 
         if (tval == ItemKindType::WAND) {

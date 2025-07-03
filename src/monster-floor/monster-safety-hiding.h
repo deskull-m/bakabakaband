@@ -1,7 +1,8 @@
 #pragma once
 
-#include "system/angband.h"
+#include "util/point-2d.h"
+#include <tl/optional.hpp>
 
 class PlayerType;
-bool find_safety(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION *yp, POSITION *xp);
-bool find_hiding(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION *yp, POSITION *xp);
+tl::optional<Pos2D> find_safety(PlayerType *player_ptr, short m_idx);
+tl::optional<Pos2D> find_hiding(PlayerType *player_ptr, short m_idx);

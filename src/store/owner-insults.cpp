@@ -1,4 +1,4 @@
-﻿#include "store/owner-insults.h"
+#include "store/owner-insults.h"
 #include "core/asking-player.h"
 #include "game-option/birth-options.h"
 #include "store/say-comments.h"
@@ -96,7 +96,7 @@ static int get_haggle(concptr pmt, s32b *poffer, PRICE price, int final)
         sprintf(buf, "%s ", pmt);
     }
 
-    msg_print(NULL);
+    msg_erase();
     GAME_TEXT out_val[160];
     while (TRUE) {
         bool res;
@@ -130,7 +130,7 @@ static int get_haggle(concptr pmt, s32b *poffer, PRICE price, int final)
             }
 
             msg_print(_("値がおかしいです。", "Invalid response."));
-            msg_print(NULL);
+            msg_erase();
             continue;
         }
 

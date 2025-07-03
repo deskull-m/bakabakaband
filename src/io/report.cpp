@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file report.c
  * @brief スコアサーバ転送機能の実装
  * @date 2014/07/14
@@ -8,7 +8,6 @@
 #include "io/report.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
-#include "core/turn-compensator.h"
 #include "core/visuals-reseter.h"
 #include "game-option/special-options.h"
 #include "io-dump/character-dump.h"
@@ -18,11 +17,14 @@
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/player-personality.h"
+#include "player/player-realm.h"
 #include "player/player-status.h"
-#include "realm/realm-names-table.h"
-#include "system/angband-version.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/angband-system.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-record.h"
+#include "system/enums/dungeon/dungeon-id.h"
+#include "system/floor/floor-info.h"
+#include "system/inner-game-data.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
@@ -32,18 +34,16 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
+#include <fstream>
 #include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#ifdef WORLD_SCORE
-#ifdef WINDOWS
-#define CURL_STATICLIB
-#endif
-#include <curl/curl.h>
+std::string screen_dump;
 
-concptr screen_dump = nullptr;
+#ifdef WORLD_SCORE
 
 /*
  * internet resource value
@@ -51,36 +51,9 @@ concptr screen_dump = nullptr;
 #define HTTP_TIMEOUT 30 /*!< デフォルトのタイムアウト時間(秒) / Timeout length (second) */
 
 #ifdef JP
-constexpr auto SCORE_SERVER_SCHEME_HOST = ""; /*!< スコアサーバホスト */
-constexpr auto SCORE_SERVER_PATH = ""; /*< スコアサーバパス */
+// constexpr auto SCORE_SERVER_SCHEME_HOST = ""; /*!< スコアサーバホスト */
+// constexpr auto SCORE_SERVER_PATH = ""; /*< スコアサーバパス */
 #endif
-
-/*!
- * @brief 転送用バッファにフォーマット指定した文字列データを追加する
- * @param buf 追加先バッファの参照ポインタ
- * @param fmt 文字列フォーマット
- * @return 追加後のバッファ容量
- */
-static void buf_sprintf(std::vector<char> &buf, concptr fmt, ...)
-{
-    int ret;
-    char tmpbuf[8192];
-    va_list ap;
-
-    va_start(ap, fmt);
-#if defined(HAVE_VSNPRINTF)
-    ret = vsnprintf(tmpbuf, sizeof(tmpbuf), fmt, ap);
-#else
-    ret = vsprintf(tmpbuf, fmt, ap);
-#endif
-    va_end(ap);
-
-    if (ret < 0) {
-        return;
-    }
-
-    buf.insert(buf.end(), tmpbuf, tmpbuf + ret);
-}
 
 size_t read_callback(char *buffer, size_t size, size_t nitems, void *userdata)
 {
@@ -94,14 +67,13 @@ size_t read_callback(char *buffer, size_t size, size_t nitems, void *userdata)
 }
 
 /*!
- * @brief キャラクタダンプを作って BUFに保存
+ * @brief キャラクタダンプを引数で指定した出力ストリームに書き込む
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param dumpbuf 伝送内容バッファ
+ * @param stream 書き込む出力ストリーム
  * @return エラーコード
  */
-static errr make_dump(PlayerType *player_ptr, std::vector<char> &dumpbuf)
+static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
 {
-    char buf[1024];
     FILE *fff;
     GAME_TEXT file_name[1024];
 
@@ -113,7 +85,7 @@ static errr make_dump(PlayerType *player_ptr, std::vector<char> &dumpbuf)
 #else
         msg_format("Failed to create temporary file %s.", file_name);
 #endif
-        msg_print(nullptr);
+        msg_erase();
         return 1;
     }
 
@@ -121,20 +93,23 @@ static errr make_dump(PlayerType *player_ptr, std::vector<char> &dumpbuf)
     make_character_dump(player_ptr, fff);
     angband_fclose(fff);
 
-    /* Open for read */
-    fff = angband_fopen(file_name, FileOpenMode::READ);
-
-    while (fgets(buf, 1024, fff)) {
-        (void)buf_sprintf(dumpbuf, "%s", buf);
+    // 一時ファイルを削除する前に閉じるためブロックにする
+    {
+        std::ifstream ifs(file_name);
+        stream << ifs.rdbuf();
     }
-    angband_fclose(fff);
+
     fd_kill(file_name);
 
     /* Success */
     return 0;
 }
 
-concptr make_screen_dump(PlayerType *player_ptr)
+/*!
+ * @brief スクリーンダンプを作成する/ Make screen dump to buffer
+ * @return 作成したスクリーンダンプの参照ポインタ
+ */
+std::string make_screen_dump(PlayerType *player_ptr)
 {
     constexpr auto html_head =
         "<html>\n<body text=\"#ffffff\" bgcolor=\"#000000\">\n"
@@ -150,7 +125,7 @@ concptr make_screen_dump(PlayerType *player_ptr)
     bool old_use_graphics = use_graphics;
     if (old_use_graphics) {
         /* Clear -more- prompt first */
-        msg_print(nullptr);
+        msg_erase();
 
         use_graphics = false;
         reset_visuals(player_ptr);
@@ -176,15 +151,14 @@ concptr make_screen_dump(PlayerType *player_ptr)
         }
 
         /* Dump each row */
-        TERM_COLOR a = 0, old_a = 0;
-        auto c = ' ';
+        uint8_t old_a = 0;
+        DisplaySymbol ds(0, ' ');
         for (int x = 0; x < wid - 1; x++) {
             int rv, gv, bv;
             concptr cc = nullptr;
-            /* Get the attr/char */
-            (void)(term_what(x, y, &a, &c));
+            ds = term_what(x, y, ds);
 
-            switch (c) {
+            switch (ds.character) {
             case '&':
                 cc = "&amp;";
                 break;
@@ -202,27 +176,27 @@ concptr make_screen_dump(PlayerType *player_ptr)
                 break;
 #ifdef WINDOWS
             case 0x1f:
-                c = '.';
+                ds.character = '.';
                 break;
             case 0x7f:
-                c = (a == 0x09) ? '%' : '#';
+                ds.character = (ds.color == 0x09) ? '%' : '#';
                 break;
 #endif
             }
 
-            a = a & 0x0F;
-            if ((y == 0 && x == 0) || a != old_a) {
-                rv = angband_color_table[a][1];
-                gv = angband_color_table[a][2];
-                bv = angband_color_table[a][3];
+            ds.color = ds.color & 0x0F;
+            if (((y == 0) && (x == 0)) || (ds.color != old_a)) {
+                rv = angband_color_table[ds.color][1];
+                gv = angband_color_table[ds.color][2];
+                bv = angband_color_table[ds.color][3];
                 screen_ss << format("%s<font color=\"#%02x%02x%02x\">", ((y == 0 && x == 0) ? "" : "</font>"), rv, gv, bv);
-                old_a = a;
+                old_a = ds.color;
             }
 
             if (cc) {
                 screen_ss << cc;
             } else {
-                screen_ss << c;
+                screen_ss << ds.character;
             }
         }
     }
@@ -231,12 +205,10 @@ concptr make_screen_dump(PlayerType *player_ptr)
 
     screen_ss << html_foot;
 
-    concptr ret;
+    std::string ret;
     if (const auto screen_dump_size = screen_ss.tellp();
         (0 <= screen_dump_size) && (screen_dump_size < SCREEN_BUF_MAX_SIZE)) {
-        ret = string_make(screen_ss.str().data());
-    } else {
-        ret = nullptr;
+        ret = screen_ss.str();
     }
 
     if (!old_use_graphics) {
@@ -264,34 +236,35 @@ concptr make_screen_dump(PlayerType *player_ptr)
  */
 bool report_score(PlayerType *player_ptr)
 {
-    std::vector<char> score;
-    std::string personality_desc = ap_ptr->title;
+    std::stringstream score_ss;
+    std::string personality_desc = ap_ptr->title.string();
     personality_desc.append(_(ap_ptr->no ? "の" : "", " "));
 
-    auto realm1_name = PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element) : realm_names[player_ptr->realm1];
-    buf_sprintf(score, "name: %s\n", player_ptr->name);
-    buf_sprintf(score, "version: %s\n", get_version().data());
-    buf_sprintf(score, "score: %d\n", calc_score(player_ptr));
-    buf_sprintf(score, "level: %d\n", player_ptr->lev);
-    buf_sprintf(score, "depth: %d\n", player_ptr->current_floor_ptr->dun_level);
-    buf_sprintf(score, "maxlv: %d\n", player_ptr->max_plv);
-    buf_sprintf(score, "maxdp: %d\n", max_dlv[DUNGEON_ANGBAND]);
-    buf_sprintf(score, "au: %d\n", player_ptr->au);
-    buf_sprintf(score, "turns: %d\n", turn_real(player_ptr, w_ptr->game_turn));
-    buf_sprintf(score, "sex: %d\n", player_ptr->psex);
-    buf_sprintf(score, "race: %s\n", rp_ptr->title);
-    buf_sprintf(score, "class: %s\n", cp_ptr->title);
-    buf_sprintf(score, "seikaku: %s\n", personality_desc.data());
-    buf_sprintf(score, "realm1: %s\n", realm1_name);
-    buf_sprintf(score, "realm2: %s\n", realm_names[player_ptr->realm2]);
-    buf_sprintf(score, "killer: %s\n", player_ptr->died_from.data());
-    buf_sprintf(score, "-----charcter dump-----\n");
+    PlayerRealm pr(player_ptr);
+    const auto &realm1_name = PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
+    score_ss << fmt::format("name: {}\n", player_ptr->name)
+             << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
+             << fmt::format("score: {}\n", calc_score(player_ptr))
+             << fmt::format("level: {}\n", player_ptr->lev)
+             << fmt::format("depth: {}\n", player_ptr->current_floor_ptr->dun_level)
+             << fmt::format("maxlv: {}\n", player_ptr->max_plv)
+             << fmt::format("maxdp: {}\n", DungeonRecords::get_instance().get_record(DungeonId::ANGBAND).get_max_level())
+             << fmt::format("au: {}\n", player_ptr->au);
+    const auto &igd = InnerGameData::get_instance();
+    score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
+             << fmt::format("sex: {}\n", enum2i(player_ptr->psex))
+             << fmt::format("race: {}\n", rp_ptr->title)
+             << fmt::format("class: {}\n", cp_ptr->title)
+             << fmt::format("seikaku: {}\n", personality_desc)
+             << fmt::format("realm1: {}\n", realm1_name)
+             << fmt::format("realm2: {}\n", pr.realm2().get_name())
+             << fmt::format("killer: {}\n", player_ptr->died_from)
+             << "-----charcter dump-----\n";
 
-    make_dump(player_ptr, score);
-    if (screen_dump) {
-        buf_sprintf(score, "-----screen shot-----\n");
-        const std::string_view sv(screen_dump);
-        score.insert(score.end(), sv.begin(), sv.end());
+    make_dump(player_ptr, score_ss);
+    if (!screen_dump.empty()) {
+        score_ss << "-----screen shot-----\n"
+                 << screen_dump;
     }
 
     term_clear();
@@ -310,5 +283,4 @@ bool report_score(PlayerType *player_ptr)
     }
 }
 #else
-concptr screen_dump = nullptr;
 #endif /* WORLD_SCORE */

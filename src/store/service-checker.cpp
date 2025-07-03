@@ -1,5 +1,4 @@
 #include "store/service-checker.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/tr-types.h"
 #include "object/object-value.h"
 #include "object/tval-types.h"
@@ -9,7 +8,7 @@
 #include "sv-definition/sv-scroll-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -101,9 +100,12 @@ static bool check_store_temple(const ItemEntity &item)
         return true;
     case ItemKindType::FIGURINE:
     case ItemKindType::STATUE: {
-        auto *r_ptr = &monraces_info[i2enum<MonsterRaceId>(item.pval)];
-        if (r_ptr->kind_flags.has_not(MonsterKindType::EVIL)) {
-            if ((r_ptr->kind_flags.has(MonsterKindType::GOOD)) || (r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) || (angband_strchr("?!", r_ptr->d_char) != nullptr)) {
+        const auto &monrace = item.get_monrace();
+        if (monrace.kind_flags.has_not(MonsterKindType::EVIL)) {
+            auto can_sell = monrace.kind_flags.has(MonsterKindType::GOOD);
+            can_sell |= monrace.kind_flags.has(MonsterKindType::ANIMAL);
+            can_sell |= monrace.symbol_char_is_any_of("?!");
+            if (can_sell) {
                 return true;
             }
         }
@@ -223,22 +225,22 @@ bool store_will_buy(PlayerType *, const ItemEntity *o_ptr, StoreSaleType store_n
         return false;
     }
 
-    return o_ptr->get_price() > 0;
+    return o_ptr->calc_price() > 0;
 }
 
 static int mass_lite_produce(const PRICE cost)
 {
     int size = 1;
     if (cost <= 5L) {
-        size += damroll(3, 5);
+        size += Dice::roll(3, 5);
     }
 
     if (cost <= 20L) {
-        size += damroll(3, 5);
+        size += Dice::roll(3, 5);
     }
 
     if (cost <= 50L) {
-        size += damroll(2, 2);
+        size += Dice::roll(2, 2);
     }
 
     return size;
@@ -248,20 +250,20 @@ static int mass_scroll_produce(const ItemEntity &item, const PRICE cost)
 {
     int size = 1;
     if (cost <= 60L) {
-        size += damroll(3, 5);
+        size += Dice::roll(3, 5);
     }
 
     if (cost <= 240L) {
-        size += damroll(1, 5);
+        size += Dice::roll(1, 5);
     }
 
     const auto sval = item.bi_key.sval();
     if (sval == SV_SCROLL_STAR_IDENTIFY) {
-        size += damroll(3, 5);
+        size += Dice::roll(3, 5);
     }
 
     if (sval == SV_SCROLL_STAR_REMOVE_CURSE) {
-        size += damroll(1, 4);
+        size += Dice::roll(1, 4);
     }
 
     return size;
@@ -271,11 +273,11 @@ static int mass_book_produce(const PRICE cost)
 {
     int size = 1;
     if (cost <= 50L) {
-        size += damroll(2, 3);
+        size += Dice::roll(2, 3);
     }
 
     if (cost <= 500L) {
-        size += damroll(1, 3);
+        size += Dice::roll(1, 3);
     }
 
     return size;
@@ -289,11 +291,11 @@ static int mass_equipment_produce(const ItemEntity &item, const PRICE cost)
     }
 
     if (cost <= 10L) {
-        size += damroll(3, 5);
+        size += Dice::roll(3, 5);
     }
 
     if (cost <= 100L) {
-        size += damroll(3, 5);
+        size += Dice::roll(3, 5);
     }
 
     return size;
@@ -303,15 +305,15 @@ static int mass_arrow_produce(const PRICE cost)
 {
     int size = 1;
     if (cost <= 5L) {
-        size += damroll(5, 5);
+        size += Dice::roll(5, 5);
     }
 
     if (cost <= 50L) {
-        size += damroll(5, 5);
+        size += Dice::roll(5, 5);
     }
 
     if (cost <= 500L) {
-        size += damroll(5, 5);
+        size += Dice::roll(5, 5);
     }
 
     return size;
@@ -321,11 +323,11 @@ static int mass_figurine_produce(const PRICE cost)
 {
     int size = 1;
     if (cost <= 100L) {
-        size += damroll(2, 2);
+        size += Dice::roll(2, 2);
     }
 
     if (cost <= 1000L) {
-        size += damroll(2, 2);
+        size += Dice::roll(2, 2);
     }
 
     return size;
@@ -339,9 +341,9 @@ static int mass_magic_produce(const PRICE cost, StoreSaleType store_num)
     }
 
     if (cost < 1601L) {
-        size += damroll(1, 5);
+        size += Dice::roll(1, 5);
     } else if (cost < 3201L) {
-        size += damroll(1, 3);
+        size += Dice::roll(1, 3);
     }
 
     return size;
@@ -441,7 +443,7 @@ static byte decide_discount_rate(const PRICE cost)
  */
 void mass_produce(ItemEntity *o_ptr, StoreSaleType store_num)
 {
-    const auto cost = o_ptr->get_price();
+    const auto cost = o_ptr->calc_price();
     int size = switch_mass_production(*o_ptr, cost, store_num);
     auto discount = decide_discount_rate(cost);
     if (o_ptr->is_random_artifact()) {

@@ -10,6 +10,7 @@
 #include "player/player-skill.h"
 #include "spell/spells-status.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/inner-game-data.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include <array>
@@ -119,7 +120,7 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
     player_ptr->expfact = get_expfact(player_ptr);
 
     /* Reset record of race/realm changes */
-    player_ptr->start_race = player_ptr->prace;
+    InnerGameData::get_instance().set_start_race(player_ptr->prace);
     player_ptr->old_race1 = 0L;
     player_ptr->old_race2 = 0L;
     player_ptr->old_realm = 0;
@@ -149,8 +150,8 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
         player_ptr->skill_exp[i] = class_skills_info[pclass].s_start[i];
     }
 
-    player_ptr->hitdie = cp_ptr->c_mhp + ap_ptr->a_mhp;
-    player_ptr->hitdie += is_sorcerer ? rp_ptr->r_mhp / 2 : rp_ptr->r_mhp;
+    const auto r_mhp = is_sorcerer ? rp_ptr->r_mhp / 2 : rp_ptr->r_mhp;
+    player_ptr->hit_dice = Dice(1, r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
     if (roll_hitdie) {
         roll_hitdice(player_ptr, SPOP_NO_UPDATE);
     }

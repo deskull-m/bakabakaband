@@ -3,7 +3,9 @@
 #include "object-enchant/tr-flags.h"
 #include "object-enchant/trg-types.h"
 #include "system/angband.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-key.h"
+#include "util/abstract-map-wrapper.h"
+#include "util/dice.h"
 #include "util/flag-group.h"
 #include <map>
 #include <string>
@@ -18,6 +20,10 @@ enum class RandomArtActType : short;
 class ArtifactType {
 public:
     ArtifactType();
+    ArtifactType(const ArtifactType &) = delete;
+    ArtifactType &operator=(const ArtifactType &) = delete;
+    ArtifactType(ArtifactType &&) = default;
+    ArtifactType &operator=(ArtifactType &&) = delete;
 
     std::string name; /*!< アーティファクト名 / Name */
     std::string text; /*!< アーティファクト解説 / Text */
@@ -27,8 +33,7 @@ public:
     int to_d{}; /*!< ダメージボーナス値 / Bonus to damage */
     ARMOUR_CLASS to_a{}; /*!< ACボーナス値 / Bonus to armor */
     ARMOUR_CLASS ac{}; /*!< 上書きベースAC値 / Base armor */
-    DICE_NUMBER dd{};
-    DICE_SID ds{}; /*!< ダイス値 / Damage when hits */
+    Dice damage_dice; /*!< ダイス値 / Damage when hits */
     WEIGHT weight{}; /*!< 重量 / Weight */
     PRICE cost{}; /*!< 基本価格 / Artifact "cost" */
     TrFlags flags{}; /*! アイテムフラグ / Artifact Flags */
@@ -39,23 +44,44 @@ public:
     FLOOR_IDX floor_id{}; /*! アイテムを落としたフロアのID / Leaved on this location last time */
     RandomArtActType act_idx{}; /*! 発動能力ID / Activative ability index */
     PERCENTAGE broken_rate; /*!< 発動破損率 */
-};
 
-extern std::map<FixedArtifactId, ArtifactType> artifacts_info;
-
-class ArtifactsInfo {
-public:
-    ArtifactsInfo(const ArtifactsInfo &) = delete;
-    ArtifactsInfo(ArtifactsInfo &&) = delete;
-    ArtifactsInfo &operator=(const ArtifactsInfo &) = delete;
-    ArtifactsInfo &operator=(ArtifactsInfo &&) = delete;
-    ~ArtifactsInfo() = default;
-
-    static ArtifactsInfo &get_instance();
-    ArtifactType &get_artifact(const FixedArtifactId id) const;
+    bool can_generate(const BaseitemKey &bi_key) const;
+    tl::optional<BaseitemKey> try_make_instant_artifact(int making_level) const;
 
 private:
-    ArtifactsInfo() = default;
-    static ArtifactsInfo instance;
+    bool can_make_instant_artifact() const;
+    bool evaluate_shallow_instant_artifact(int making_level) const;
+    bool evaluate_rarity() const;
+    bool evaluate_shallow_baseitem(int making_level) const;
+};
+
+class ItemEntity;
+class ArtifactList : public util::AbstractMapWrapper<FixedArtifactId, ArtifactType> {
+public:
+    ArtifactList(const ArtifactList &) = delete;
+    ArtifactList(ArtifactList &&) = delete;
+    ArtifactList &operator=(const ArtifactList &) = delete;
+    ArtifactList &operator=(ArtifactList &&) = delete;
+    ~ArtifactList() = default;
+
+    static ArtifactList &get_instance();
+    const ArtifactType &get_artifact(const FixedArtifactId fa_id) const;
+    ArtifactType &get_artifact(const FixedArtifactId fa_id);
+
+    bool order(const FixedArtifactId id1, const FixedArtifactId id2) const;
+    void emplace(const FixedArtifactId fa_id, ArtifactType &&artifact);
+    void reset_generated_flags();
+    tl::optional<ItemEntity> try_make_instant_artifact(int making_level) const;
+
+private:
+    ArtifactList() = default;
+    static ArtifactList instance;
     static ArtifactType dummy;
+
+    std::map<FixedArtifactId, ArtifactType> artifacts{};
+
+    std::map<FixedArtifactId, ArtifactType> &get_inner_container() override
+    {
+        return this->artifacts;
+    }
 };

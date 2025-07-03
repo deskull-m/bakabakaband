@@ -22,7 +22,6 @@
 #include "core/special-internal-keys.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
-#include "floor/cave.h"
 #include "floor/floor-events.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/wild.h"
@@ -30,6 +29,7 @@
 #include "io/input-key-requester.h"
 #include "main/music-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "market/arena-entry.h"
 #include "market/arena.h"
 #include "market/bounty.h"
 #include "market/building-actions-table.h"
@@ -42,9 +42,9 @@
 #include "market/building-recharger.h"
 #include "market/building-service.h"
 #include "market/building-util.h"
+#include "market/melee-arena.h"
 #include "market/play-gamble.h"
 #include "market/poker.h"
-#include "monster-race/monster-race.h"
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-investor-remover.h"
 #include "object-hook/hook-armor.h"
@@ -59,25 +59,18 @@
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
-
-uint32_t mon_odds[4];
-int battle_odds;
-PRICE kakekin;
-int sel_monster;
-
-bool reinit_wilderness = false;
 
 /*!
  * @brief 町に関するヘルプを表示する / Display town history
@@ -86,7 +79,7 @@ bool reinit_wilderness = false;
 static void town_history(PlayerType *player_ptr)
 {
     screen_save();
-    (void)show_file(player_ptr, true, _("jbldg.txt", "bldg.txt"), 0, 0);
+    FileDisplayer(player_ptr->name).display(true, _("jbldg.txt", "bldg.txt"), 0, 0);
     screen_load();
 }
 
@@ -97,19 +90,19 @@ static void town_history(PlayerType *player_ptr)
  * @param i 実行したい施設のサービステーブルの添字
  * @return 施設から別フロアへ移動するか否か (アリーナ/モンスター闘技場のみtrue)
  */
-static bool bldg_process_command(PlayerType *player_ptr, building_type *bldg, int i)
+static bool bldg_process_command(PlayerType *player_ptr, const building_type &bldg, int i)
 {
     msg_flag = false;
     msg_erase();
     const auto can_be_owner = is_owner(player_ptr, bldg);
-    const auto building_cost = can_be_owner ? bldg->member_costs[i] : bldg->other_costs[i];
-    if (((bldg->action_restr[i] == 1) && !is_member(player_ptr, bldg)) || ((bldg->action_restr[i] == 2) && !can_be_owner)) {
+    const auto building_cost = can_be_owner ? bldg.member_costs[i] : bldg.other_costs[i];
+    if (((bldg.action_restr[i] == 1) && !is_member(player_ptr, bldg)) || ((bldg.action_restr[i] == 2) && !can_be_owner)) {
         msg_print(_("それを選択する権利はありません！", "You have no right to choose that!"));
         return false;
     }
 
-    const auto building_action = bldg->actions[i];
-    if ((building_action != BACT_RECHARGE) && (((bldg->member_costs[i] > player_ptr->au) && can_be_owner) || ((bldg->other_costs[i] > player_ptr->au) && !can_be_owner))) {
+    const auto building_action = bldg.actions[i];
+    if ((building_action != BACT_RECHARGE) && (((bldg.member_costs[i] > player_ptr->au) && can_be_owner) || ((bldg.other_costs[i] > player_ptr->au) && !can_be_owner))) {
         msg_print(_("お金が足りません！", "You do not have the gold!"));
         return false;
     }
@@ -246,11 +239,11 @@ static bool bldg_process_command(PlayerType *player_ptr, building_type *bldg, in
         }
 
         msg_print(_("治すべき突然変異が無い。", "You have no mutations."));
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
-    case BACT_BATTLE:
-        return monster_arena_comm(player_ptr);
+    case BACT_MELEE_ARENA:
+        return melee_arena_comm(player_ptr);
     case BACT_TSUCHINOKO:
         tsuchinoko();
         return false;
@@ -258,7 +251,7 @@ static bool bldg_process_command(PlayerType *player_ptr, building_type *bldg, in
         show_bounty();
         return false;
     case BACT_TARGET:
-        today_target(player_ptr);
+        today_target();
         return false;
     case BACT_KANKIN:
         exchange_cash(player_ptr);
@@ -320,36 +313,38 @@ static bool bldg_process_command(PlayerType *player_ptr, building_type *bldg, in
  */
 void do_cmd_building(PlayerType *player_ptr)
 {
-    if (player_ptr->wild_mode) {
+    if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
     PlayerEnergy energy(player_ptr);
     energy.set_player_turn_energy(100);
     const auto p_pos = player_ptr->get_position();
-    if (!cave_has_flag_bold(player_ptr->current_floor_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::BLDG)) {
+    auto &floor = *player_ptr->current_floor_ptr;
+    if (!floor.has_terrain_characteristics(p_pos, TerrainCharacteristics::BLDG)) {
         msg_print(_("ここには建物はない。", "You see no building here."));
         return;
     }
 
-    int which = player_ptr->current_floor_ptr->get_grid(p_pos).get_terrain().subtype;
+    int which = floor.get_grid(p_pos).get_terrain().subtype;
 
-    building_type *bldg;
-    bldg = &buildings[which];
-
+    auto &bldg = buildings[which];
     reinit_wilderness = false;
-
-    if ((which == 2) && (player_ptr->arena_number < 0)) {
+    const auto &entries = ArenaEntryList::get_instance();
+    if ((which == 2) && entries.get_defeated_entry() && !entries.is_player_true_victor()) {
         msg_print(_("「敗者に用はない。」", "'There's no place here for a LOSER like you!'"));
         return;
     }
 
-    if ((which == 2) && player_ptr->current_floor_ptr->inside_arena) {
-        if (!w_ptr->get_arena() && player_ptr->current_floor_ptr->m_cnt > 0) {
+    auto &fcms = FloorChangeModesStore::get_instace();
+    auto &world = AngbandWorld::get_instance();
+    if ((which == 2) && floor.inside_arena) {
+        if (!world.get_arena() && floor.m_cnt > 0) {
             prt(_("ゲートは閉まっている。モンスターがあなたを待っている！", "The gates are closed.  The monster awaits!"), 0, 0);
         } else {
-            move_floor(player_ptr, CFM_SAVE_FLOORS | CFM_NO_RETURN);
-            player_ptr->current_floor_ptr->inside_arena = false;
+            fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::NO_RETURN });
+            floor.inside_arena = false;
+            player_ptr->leaving = true;
             command_new = SPECIAL_KEY_BUILDING;
             energy.reset_player_turn();
         }
@@ -361,7 +356,7 @@ void do_cmd_building(PlayerType *player_ptr)
 
     auto &system = AngbandSystem::get_instance();
     if (system.is_phase_out()) {
-        move_floor(player_ptr, CFM_SAVE_FLOORS | CFM_NO_RETURN);
+        fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::NO_RETURN });
         player_ptr->leaving = true;
         system.set_phase_out(false);
         command_new = SPECIAL_KEY_BUILDING;
@@ -371,9 +366,9 @@ void do_cmd_building(PlayerType *player_ptr)
 
     player_ptr->oldpy = player_ptr->y;
     player_ptr->oldpx = player_ptr->x;
-    forget_lite(player_ptr->current_floor_ptr);
-    forget_view(player_ptr->current_floor_ptr);
-    w_ptr->character_icky_depth++;
+    forget_lite(floor);
+    forget_view(floor);
+    world.character_icky_depth++;
 
     command_arg = 0;
     command_rep = 0;
@@ -384,10 +379,10 @@ void do_cmd_building(PlayerType *player_ptr)
 
     while (true) {
         prt("", 1, 0);
-        building_prt_gold(player_ptr);
+        building_prt_gold(player_ptr->au);
         const auto command = inkey();
         if (command == ESCAPE) {
-            player_ptr->current_floor_ptr->inside_arena = false;
+            floor.inside_arena = false;
             system.set_phase_out(false);
             break;
         }
@@ -395,7 +390,7 @@ void do_cmd_building(PlayerType *player_ptr)
         auto is_valid_command = false;
         int i;
         for (i = 0; i < 8; i++) {
-            if (bldg->letters[i] && (bldg->letters[i] == command)) {
+            if (bldg.letters[i] && (bldg.letters[i] == command)) {
                 is_valid_command = true;
                 break;
             }
@@ -417,7 +412,7 @@ void do_cmd_building(PlayerType *player_ptr)
         player_ptr->leaving = true;
     }
 
-    w_ptr->character_icky_depth--;
+    world.character_icky_depth--;
     term_clear();
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

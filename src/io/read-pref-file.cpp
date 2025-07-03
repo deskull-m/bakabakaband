@@ -14,10 +14,11 @@
 #include "io/pref-file-expressor.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
-#include "realm/realm-names-table.h"
+#include "player/player-realm.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/buffer-shaper.h"
+#include "util/finalizer.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -57,33 +58,35 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
     int line = -1;
     errr err = 0;
     bool bypass = false;
-    std::vector<char> file_read_buf(FILE_READ_BUFF_SIZE);
     std::string error_line;
-    while (angband_fgets(fp, file_read_buf.data(), file_read_buf.size()) == 0) {
+    while (true) {
+        auto line_str = angband_fgets(fp);
+        if (!line_str) {
+            break;
+        }
         line++;
-        if (!file_read_buf[0]) {
+        if (line_str->empty()) {
             continue;
         }
 
 #ifdef JP
-        if (!iskanji(file_read_buf[0]))
+        if (!iskanji(line_str->front()))
 #endif
-            if (iswspace(file_read_buf[0])) {
+            if (iswspace(line_str->front())) {
                 continue;
             }
 
-        if (file_read_buf[0] == '#') {
+        if (line_str->starts_with('#')) {
             continue;
         }
-        error_line = file_read_buf.data();
+        error_line = *line_str;
 
         /* Process "?:<expr>" */
-        if ((file_read_buf[0] == '?') && (file_read_buf[1] == ':')) {
+        if (line_str->starts_with("?:")) {
             char f;
-            char *s;
-            s = file_read_buf.data() + 2;
-            concptr v = process_pref_file_expr(player_ptr, &s, &f);
-            bypass = streq(v, "0");
+            char *s = line_str->data() + 2;
+            auto v = process_pref_file_expr(player_ptr, &s, &f);
+            bypass = v == "0";
             continue;
         }
 
@@ -92,22 +95,24 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
         }
 
         /* Process "%:<file>" */
-        if (file_read_buf[0] == '%') {
+        if (line_str->starts_with("%:")) {
             static int depth_count = 0;
             if (depth_count > 20) {
                 continue;
             }
 
             depth_count++;
+            std::string_view file(*line_str);
+            file.remove_prefix(2);
             switch (preftype) {
             case PREF_TYPE_AUTOPICK:
-                (void)process_autopick_file(player_ptr, file_read_buf.data() + 2);
+                (void)process_autopick_file(player_ptr, file);
                 break;
             case PREF_TYPE_HISTPREF:
-                (void)process_histpref_file(player_ptr, file_read_buf.data() + 2);
+                (void)process_histpref_file(player_ptr, file);
                 break;
             default:
-                (void)process_pref_file(player_ptr, file_read_buf.data() + 2);
+                (void)process_pref_file(player_ptr, file);
                 break;
             }
 
@@ -115,13 +120,13 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
             continue;
         }
 
-        err = interpret_pref_file(player_ptr, file_read_buf.data());
+        err = interpret_pref_file(player_ptr, line_str->data());
         if (err != 0) {
             if (preftype != PREF_TYPE_AUTOPICK) {
                 break;
             }
 
-            process_autopick_file_command(file_read_buf.data());
+            process_autopick_file_command(line_str->data());
             err = 0;
         }
     }
@@ -132,7 +137,7 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
         const auto &name_str = name.string();
         msg_format(_("ファイル'%s'の%d行でエラー番号%dのエラー。", "Error %d in line %d of file '%s'."), _(name_str.data(), err), line, _(err, name_str.data()));
         msg_format(_("('%s'を解析中)", "Parsing '%s'"), error_line.data());
-        msg_print(nullptr);
+        msg_erase();
     }
 
     angband_fclose(fp);
@@ -157,14 +162,14 @@ errr process_pref_file(PlayerType *player_ptr, std::string_view name, bool only_
 {
     errr err1 = 0;
     if (!only_user_dir) {
-        const auto &path = path_build(ANGBAND_DIR_PREF, name);
+        const auto path = path_build(ANGBAND_DIR_PREF, name);
         err1 = process_pref_file_aux(player_ptr, path, PREF_TYPE_NORMAL);
         if (err1 > 0) {
             return err1;
         }
     }
 
-    const auto &path = path_build(ANGBAND_DIR_USER, name);
+    const auto path = path_build(ANGBAND_DIR_USER, name);
     errr err2 = process_pref_file_aux(player_ptr, path, PREF_TYPE_NORMAL);
     if (err2 < 0 && !err1) {
         return -2;
@@ -181,7 +186,7 @@ errr process_pref_file(PlayerType *player_ptr, std::string_view name, bool only_
  */
 errr process_autopick_file(PlayerType *player_ptr, std::string_view name)
 {
-    const auto &path = path_build(ANGBAND_DIR_USER, name);
+    const auto path = path_build(ANGBAND_DIR_USER, name);
     return process_pref_file_aux(player_ptr, path, PREF_TYPE_AUTOPICK);
 }
 
@@ -195,33 +200,30 @@ errr process_autopick_file(PlayerType *player_ptr, std::string_view name)
  */
 errr process_histpref_file(PlayerType *player_ptr, std::string_view name)
 {
-    bool old_character_xtra = w_ptr->character_xtra;
-    const auto &path = path_build(ANGBAND_DIR_USER, name);
-    w_ptr->character_xtra = true;
+    auto &world = AngbandWorld::get_instance();
+    const auto old_character_xtra = world.character_xtra;
+    const auto path = path_build(ANGBAND_DIR_USER, name);
+    world.character_xtra = true;
     errr err = process_pref_file_aux(player_ptr, path, PREF_TYPE_HISTPREF);
-    w_ptr->character_xtra = old_character_xtra;
+    world.character_xtra = old_character_xtra;
     return err;
 }
 
 /*!
- * @brief prfファイルのフォーマットに従った内容を出力する /
- * Dump a formatted line, using "vstrnfmt()".
+ * @brief prfファイルのフォーマットに従った内容を出力する
  * @param fmt 出力内容
  */
 void auto_dump_printf(FILE *auto_dump_stream, const char *fmt, ...)
 {
     va_list vp;
-    char buf[1024];
     va_start(vp, fmt);
-    (void)vstrnfmt(buf, sizeof(buf), fmt, vp);
+    const auto buf = vformat(fmt, vp);
     va_end(vp);
-    for (auto p = buf; *p; p++) {
-        if (*p == '\n') {
-            auto_dump_line_num++;
-        }
-    }
 
-    fprintf(auto_dump_stream, "%s", buf);
+    // '\n'はSJISのマルチバイト文字のコードに含まれないため、ダメ文字を考慮する必要はない
+    auto_dump_line_num += std::count(buf.begin(), buf.end(), '\n');
+
+    fprintf(auto_dump_stream, "%s", buf.data());
 }
 
 /*!
@@ -233,18 +235,17 @@ void auto_dump_printf(FILE *auto_dump_stream, const char *fmt, ...)
  */
 bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_view mark)
 {
-    char header_mark_str[80];
-    strnfmt(header_mark_str, sizeof(header_mark_str), auto_dump_header, mark.data());
+    const auto header_mark_str = format(auto_dump_header, mark.data());
     remove_auto_dump(path, mark);
     *fpp = angband_fopen(path, FileOpenMode::APPEND);
     if (!fpp) {
         const auto &path_str = path.string();
         msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), path_str.data());
-        msg_print(nullptr);
+        msg_erase();
         return false;
     }
 
-    fprintf(*fpp, "%s\n", header_mark_str);
+    fprintf(*fpp, "%s\n", header_mark_str.data());
     auto_dump_line_num = 0;
     auto_dump_printf(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
     auto_dump_printf(
@@ -258,12 +259,11 @@ bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_v
  */
 void close_auto_dump(FILE **fpp, std::string_view mark)
 {
-    char footer_mark_str[80];
-    strnfmt(footer_mark_str, sizeof(footer_mark_str), auto_dump_footer, mark.data());
+    const auto footer_mark_str = format(auto_dump_footer, mark.data());
     auto_dump_printf(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
     auto_dump_printf(
         *fpp, _("# *警告!!* 後で自動的に削除されるので編集しないでください。\n", "# Don't edit them; changes will be deleted and replaced automatically.\n"));
-    fprintf(*fpp, "%s (%d)\n", footer_mark_str, auto_dump_line_num);
+    fprintf(*fpp, "%s (%d)\n", footer_mark_str.data(), auto_dump_line_num);
     angband_fclose(*fpp);
 }
 
@@ -277,16 +277,18 @@ void close_auto_dump(FILE **fpp, std::string_view mark)
 void load_all_pref_files(PlayerType *player_ptr)
 {
     process_pref_file(player_ptr, "user.prf");
-    process_pref_file(player_ptr, std::string("user-").append(ANGBAND_SYS).append(".prf"));
-    process_pref_file(player_ptr, std::string(rp_ptr->title).append(".prf"));
-    process_pref_file(player_ptr, std::string(cp_ptr->title).append(".prf"));
-    process_pref_file(player_ptr, std::string(player_ptr->base_name).append(".prf"));
-    if (player_ptr->realm1 != REALM_NONE) {
-        process_pref_file(player_ptr, std::string(realm_names[player_ptr->realm1]).append(".prf"));
+    process_pref_file(player_ptr, format("user-%s.prf", ANGBAND_SYS));
+    constexpr auto fmt = "%s.prf";
+    process_pref_file(player_ptr, format(fmt, rp_ptr->title.data()));
+    process_pref_file(player_ptr, format(fmt, cp_ptr->title.data()));
+    process_pref_file(player_ptr, format(fmt, player_ptr->base_name));
+    PlayerRealm pr(player_ptr);
+    if (pr.realm1().is_available()) {
+        process_pref_file(player_ptr, format(fmt, pr.realm1().get_name().data()));
     }
 
-    if (player_ptr->realm2 != REALM_NONE) {
-        process_pref_file(player_ptr, std::string(realm_names[player_ptr->realm2]).append(".prf"));
+    if (pr.realm2().is_available()) {
+        process_pref_file(player_ptr, format(fmt, pr.realm2().get_name().data()));
     }
 
     autopick_load_pref(player_ptr, false);
@@ -297,62 +299,46 @@ void load_all_pref_files(PlayerType *player_ptr)
  */
 bool read_histpref(PlayerType *player_ptr)
 {
-    char buf[80];
-    errr err;
-    int i, j, n;
-    char *s;
-    char histbuf[HISTPREF_LIMIT];
-
     if (!input_check(_("生い立ち設定ファイルをロードしますか? ", "Load background history preference file? "))) {
         return false;
     }
 
-    histbuf[0] = '\0';
-    histpref_buf = histbuf;
-
-    sprintf(buf, _("histedit-%s.prf", "histpref-%s.prf"), player_ptr->base_name);
-    err = process_histpref_file(player_ptr, buf);
-
+    histpref_buf = "";
+    std::stringstream ss;
+    ss << _("histedit-", "histpref-") << player_ptr->base_name << ".prf";
+    auto err = process_histpref_file(player_ptr, ss.str());
     if (0 > err) {
-        strcpy(buf, _("histedit.prf", "histpref.prf"));
-        err = process_histpref_file(player_ptr, buf);
+        err = process_histpref_file(player_ptr, _("histedit.prf", "histpref.prf"));
     }
 
+    const auto finalizer = util::make_finalizer([]() { histpref_buf = tl::nullopt; });
     if (err) {
         msg_print(_("生い立ち設定ファイルの読み込みに失敗しました。", "Failed to load background history preference."));
-        msg_print(nullptr);
-        histpref_buf = nullptr;
-        return false;
-    } else if (!histpref_buf[0]) {
-        msg_print(_("有効な生い立ち設定はこのファイルにありません。", "There does not exist valid background history preference."));
-        msg_print(nullptr);
-        histpref_buf = nullptr;
+        msg_erase();
         return false;
     }
 
-    for (i = 0; i < 4; i++) {
+    if (!histpref_buf || histpref_buf->empty()) {
+        msg_print(_("有効な生い立ち設定はこのファイルにありません。", "There does not exist valid background history preference."));
+        msg_erase();
+        return false;
+    }
+
+    for (auto i = 0; i < 4; i++) {
         player_ptr->history[i][0] = '\0';
     }
 
-    /* loop */
-    for (s = histpref_buf; *s == ' '; s++) {
-        ;
-    }
-
-    n = strlen(s);
-    while ((n > 0) && (s[n - 1] == ' ')) {
-        s[--n] = '\0';
-    }
-
+    histpref_buf = str_trim(*histpref_buf);
     constexpr auto max_line_len = sizeof(player_ptr->history[0]);
-    const auto history_lines = shape_buffer(s, max_line_len);
+    const auto history_lines = shape_buffer(*histpref_buf, max_line_len);
     const auto max_lines = std::min<int>(4, history_lines.size());
     for (auto l = 0; l < max_lines; ++l) {
         angband_strcpy(player_ptr->history[l], history_lines[l], max_line_len);
     }
 
-    for (i = 0; i < 4; i++) {
+    for (auto i = 0; i < 4; i++) {
         /* loop */
+        int j;
         for (j = 0; player_ptr->history[i][j]; j++) {
             ;
         }
@@ -363,6 +349,5 @@ bool read_histpref(PlayerType *player_ptr)
         player_ptr->history[i][59] = '\0';
     }
 
-    histpref_buf = nullptr;
     return true;
 }

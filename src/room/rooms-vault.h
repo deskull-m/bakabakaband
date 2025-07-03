@@ -1,11 +1,12 @@
 #pragma once
 
+#include "system/h-type.h"
+#include <cstdint>
 #include <map>
-#include <stdint.h>
 #include <string>
 #include <vector>
 
-enum class MonsterRaceId : int16_t;
+enum class MonraceId : int16_t;
 
 struct vault_type {
     vault_type() = default;
@@ -21,15 +22,15 @@ struct vault_type {
     int min_depth = 0;
     int max_depth = 999;
     int rarity = 1;
-    std::map<char, int> feature_list;
-    std::map<char, int> feature_ap_list;
-    std::map<char, MonsterRaceId> place_monster_list;
+    std::map<char, FEAT_IDX> feature_list;
+    std::map<char, FEAT_IDX> feature_ap_list;
+    std::map<char, MonraceId> place_monster_list;
 };
 
 extern std::vector<vault_type> vaults_info;
 
-struct dun_data_type;
+class DungeonData;
 class PlayerType;
-bool build_type10(PlayerType *player_ptr, dun_data_type *dd_ptr);
-bool build_fixed_room(PlayerType *player_ptr, dun_data_type *dd_ptr, int typ, bool more_space, int id);
-void build_vault(vault_type *v_ptr, PlayerType *player_ptr, int yval, int xval, int xoffset, int yoffset, int transno);
+bool build_type10(PlayerType *player_ptr, DungeonData *dd_ptr);
+bool build_fixed_room(PlayerType *player_ptr, DungeonData *dd_ptr, int typ, bool more_space, int id);
+void build_vault(PlayerType *player_ptr, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno);

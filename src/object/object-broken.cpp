@@ -11,7 +11,8 @@
 #include "object-enchant/tr-types.h"
 #include "object/tval-types.h"
 #include "sv-definition/sv-potion-types.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -71,7 +72,7 @@ bool BreakerAcid::hates(ItemEntity *o_ptr) const
     case ItemKindType::STAFF:
     case ItemKindType::SCROLL:
     case ItemKindType::CHEST:
-    case ItemKindType::SKELETON:
+    case ItemKindType::FLAVOR_SKELETON:
     case ItemKindType::BOTTLE:
     case ItemKindType::JUNK:
         return true;
@@ -184,7 +185,7 @@ bool ObjectBreaker::can_destroy(ItemEntity *o_ptr) const
  * @return 薬を浴びたモンスターが起こるならばTRUEを返す
  * @details
  * <pre>
- * (1) they are shattered while in the player's p_ptr->inventory_list,
+ * (1) they are shattered while in the player's p_ptr->inventory,
  * due to cold (etc) attacks;
  * (2) they are thrown at a monster, or obstacle;
  * (3) they are shattered by a "cold ball" or other such spell
@@ -207,7 +208,7 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
     auto dt = AttributeType::NONE;
     auto dam = 0;
     auto angry = false;
-    const auto &baseitem = baseitems_info[bi_id];
+    const auto &baseitem = BaseitemList::get_instance().get_baseitem(bi_id);
     switch (*baseitem.bi_key.sval()) {
     case SV_POTION_SALT_WATER:
     case SV_POTION_SLIME_MOLD:
@@ -277,7 +278,7 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
     case SV_POTION_RUINATION:
     case SV_POTION_DETONATIONS:
         dt = AttributeType::SHARDS;
-        dam = damroll(25, 25);
+        dam = Dice::roll(25, 25);
         angry = true;
         break;
     case SV_POTION_DEATH:
@@ -291,20 +292,20 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
         break;
     case SV_POTION_CURE_LIGHT:
         dt = AttributeType::OLD_HEAL;
-        dam = damroll(2, 3);
+        dam = Dice::roll(2, 3);
         break;
     case SV_POTION_CURE_SERIOUS:
         dt = AttributeType::OLD_HEAL;
-        dam = damroll(4, 3);
+        dam = Dice::roll(4, 3);
         break;
     case SV_POTION_CURE_CRITICAL:
     case SV_POTION_CURING:
         dt = AttributeType::OLD_HEAL;
-        dam = damroll(6, 3);
+        dam = Dice::roll(6, 3);
         break;
     case SV_POTION_HEALING:
         dt = AttributeType::OLD_HEAL;
-        dam = damroll(10, 10);
+        dam = Dice::roll(10, 10);
         break;
     case SV_POTION_RESTORE_EXP:
         dt = AttributeType::STAR_HEAL;
@@ -313,22 +314,22 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
         break;
     case SV_POTION_LIFE:
         dt = AttributeType::STAR_HEAL;
-        dam = damroll(50, 50);
+        dam = Dice::roll(50, 50);
         radius = 1;
         break;
     case SV_POTION_STAR_HEALING:
         dt = AttributeType::OLD_HEAL;
-        dam = damroll(50, 50);
+        dam = Dice::roll(50, 50);
         radius = 1;
         break;
     case SV_POTION_RESTORE_MANA:
         dt = AttributeType::MANA;
-        dam = damroll(10, 10);
+        dam = Dice::roll(10, 10);
         radius = 1;
         break;
     case SV_POTION_POLY_SELF:
         dt = AttributeType::NEXUS;
-        dam = damroll(20, 20);
+        dam = Dice::roll(20, 20);
         radius = 1;
         break;
     default:
@@ -345,7 +346,7 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
  * @param o_ptr 矢弾のオブジェクト構造体参照ポインタ
  * @return 破損確率(%)
  * @details
- * Note that artifacts never break, see the "drop_near()" function.
+ * Note that artifacts never break, see the "drop_ammo_near()" function.
  */
 PERCENTAGE breakage_chance(PlayerType *player_ptr, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type)
 {
@@ -388,7 +389,7 @@ PERCENTAGE breakage_chance(PlayerType *player_ptr, ItemEntity *o_ptr, bool has_a
         /* Often break */
     case ItemKindType::LITE:
     case ItemKindType::SCROLL:
-    case ItemKindType::SKELETON:
+    case ItemKindType::FLAVOR_SKELETON:
         return 50;
 
         /* Sometimes break */

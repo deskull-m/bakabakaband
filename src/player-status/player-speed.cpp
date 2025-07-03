@@ -1,9 +1,6 @@
 #include "player-status/player-speed.h"
 #include "artifact/fixed-art-types.h"
-#include "grid/feature-flag-types.h"
-#include "grid/feature.h"
 #include "inventory/inventory-slot-types.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-status.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/tr-types.h"
@@ -14,6 +11,7 @@
 #include "player-info/race-info.h"
 #include "player/attack-defense-types.h"
 #include "player/digestion-processor.h"
+#include "player/player-realm.h"
 #include "player/player-skill.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
@@ -21,13 +19,12 @@
 #include "realm/realm-hex-numbers.h"
 #include "realm/realm-types.h"
 #include "spell-realm/spells-hex.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/player-deceleration.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
@@ -197,11 +194,11 @@ int16_t PlayerSpeed::time_effect_bonus()
         bonus += 10;
     }
 
-    if (this->player_ptr->effects()->deceleration()->is_slow()) {
+    if (this->player_ptr->effects()->deceleration().is_slow()) {
         bonus -= 10;
     }
 
-    if (this->player_ptr->realm1 == REALM_HEX) {
+    if (PlayerRealm(this->player_ptr).is_realm_hex()) {
         if (SpellHex(this->player_ptr).is_spelling_specific(HEX_SHOCK_CLOAK)) {
             bonus += 3;
         }
@@ -269,14 +266,14 @@ int16_t PlayerSpeed::mutation_bonus()
  */
 int16_t PlayerSpeed::riding_bonus()
 {
-    auto *riding_m_ptr = &(this->player_ptr)->current_floor_ptr->m_list[this->player_ptr->riding];
-    int16_t speed = riding_m_ptr->mspeed;
+    const auto &monster = (this->player_ptr)->current_floor_ptr->m_list[this->player_ptr->riding];
+    int16_t speed = monster.mspeed;
     int16_t bonus = 0;
     if (!this->player_ptr->riding) {
         return 0;
     }
 
-    if (riding_m_ptr->mspeed > STANDARD_SPEED) {
+    if (monster.mspeed > STANDARD_SPEED) {
         const auto skill_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
         bonus = (int16_t)((speed - STANDARD_SPEED) * (skill_exp * 3 + this->player_ptr->lev * 160L - 10000L) / (22000L));
         if (bonus < 0) {
@@ -287,11 +284,11 @@ int16_t PlayerSpeed::riding_bonus()
     }
 
     bonus += (this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] + this->player_ptr->lev * 160L) / 3200;
-    if (riding_m_ptr->is_accelerated()) {
+    if (monster.is_accelerated()) {
         bonus += 10;
     }
 
-    if (riding_m_ptr->is_decelerated()) {
+    if (monster.is_decelerated()) {
         bonus -= 10;
     }
 

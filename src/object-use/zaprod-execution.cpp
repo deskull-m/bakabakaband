@@ -19,13 +19,11 @@
 #include "status/experience.h"
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-rod-types.h"
-#include "system/baseitem-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/player-confusion.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -45,7 +43,6 @@ ObjectZapRodEntity::ObjectZapRodEntity(PlayerType *player_ptr)
  */
 void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 {
-    DIRECTION dir = 0;
     auto use_charge = true;
     auto *o_ptr = ref_item(this->player_ptr, i_idx);
     if ((i_idx < 0) && (o_ptr->number > 1)) {
@@ -53,8 +50,10 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         return;
     }
 
+    auto dir = Direction::none();
     if (o_ptr->is_aiming_rod() || !o_ptr->is_aware()) {
-        if (!get_aim_dir(this->player_ptr, &dir)) {
+        dir = get_aim_dir(this->player_ptr);
+        if (!dir) {
             return;
         }
     }
@@ -64,13 +63,13 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         return;
     }
 
-    auto lev = o_ptr->get_baseitem().level;
+    const auto item_level = o_ptr->get_baseitem_level();
     auto chance = this->player_ptr->skill_dev;
-    if (this->player_ptr->effects()->confusion()->is_confused()) {
+    if (this->player_ptr->effects()->confusion().is_confused()) {
         chance = chance / 2;
     }
 
-    auto fail = lev + 5;
+    auto fail = item_level + 5;
     if (chance > fail) {
         fail -= (chance - fail) * 2;
     } else {
@@ -100,11 +99,11 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         }
 
         msg_print(_("うまくロッドを使えなかった。", "You failed to use the rod properly."));
-        sound(SOUND_FAIL);
+        sound(SoundKind::FAIL);
         return;
     }
 
-    const auto &baseitem = o_ptr->get_baseitem();
+    const auto base_pval = o_ptr->get_baseitem_pval();
     if ((o_ptr->number == 1) && (o_ptr->timeout)) {
         if (flush_failure) {
             flush();
@@ -112,7 +111,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
         msg_print(_("このロッドはまだ魔力を充填している最中だ。", "The rod is still charging."));
         return;
-    } else if ((o_ptr->number > 1) && (o_ptr->timeout > baseitem.pval * (o_ptr->number - 1))) {
+    } else if ((o_ptr->number > 1) && (o_ptr->timeout > base_pval * (o_ptr->number - 1))) {
         if (flush_failure) {
             flush();
         }
@@ -121,10 +120,10 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         return;
     }
 
-    sound(SOUND_ZAP);
+    sound(SoundKind::ZAP);
     auto ident = rod_effect(this->player_ptr, *o_ptr->bi_key.sval(), dir, &use_charge, false);
     if (use_charge) {
-        o_ptr->timeout += baseitem.pval;
+        o_ptr->timeout += base_pval;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -141,8 +140,8 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
     o_ptr->mark_as_tried();
     if ((ident != 0) && !o_ptr->is_aware()) {
-        object_aware(this->player_ptr, o_ptr);
-        gain_exp(this->player_ptr, (lev + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
+        object_aware(this->player_ptr, *o_ptr);
+        gain_exp(this->player_ptr, (item_level + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
     }
 
     static constexpr auto flags_swrf = {

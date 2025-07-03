@@ -1,12 +1,12 @@
 #include "mspell/summon-checker.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/monster-race-hook.h"
-#include "monster-race/monster-race.h"
-#include "monster-race/race-indice-types.h"
 #include "monster/monster-util.h"
 #include "player-base/player-race.h"
 #include "spell/summon-types.h"
-#include "system/monster-race-info.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -17,21 +17,21 @@
  * @return 召喚条件が一致するならtrue
  * @details
  */
-bool check_summon_specific(PlayerType *player_ptr, MonsterRaceId summoner_idx, MonsterRaceId r_idx, summon_type type)
+bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, MonraceId r_idx, summon_type type)
 {
-    const auto &monrace = monraces_info[r_idx];
-    const auto &smonrace = monraces_info[summoner_idx];
+    const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
+    const auto &smonrace = MonraceList::get_instance().get_monrace(summoner_idx);
     switch (type) {
     case SUMMON_ANT:
-        return monrace.d_char == 'a';
+        return monrace.symbol_char_is_any_of("a");
     case SUMMON_SPIDER:
-        return monrace.d_char == 'S';
+        return monrace.symbol_char_is_any_of("S");
     case SUMMON_HOUND:
-        return (monrace.d_char == 'C') || (monrace.d_char == 'Z');
+        return monrace.symbol_char_is_any_of("CZ");
     case SUMMON_HYDRA:
-        return monrace.d_char == 'M';
+        return monrace.symbol_char_is_any_of("M");
     case SUMMON_ANGEL:
-        return (monrace.d_char == 'A') && ((monrace.kind_flags.has(MonsterKindType::EVIL)) || (monrace.kind_flags.has(MonsterKindType::GOOD)));
+        return monrace.symbol_char_is_any_of("A") && (monrace.kind_flags.has(MonsterKindType::EVIL) || monrace.kind_flags.has(MonsterKindType::GOOD));
     case SUMMON_DEMON:
         return monrace.kind_flags.has(MonsterKindType::DEMON);
     case SUMMON_UNDEAD:
@@ -39,40 +39,40 @@ bool check_summon_specific(PlayerType *player_ptr, MonsterRaceId summoner_idx, M
     case SUMMON_DRAGON:
         return monrace.kind_flags.has(MonsterKindType::DRAGON);
     case SUMMON_HI_UNDEAD:
-        return (monrace.d_char == 'L') || (monrace.d_char == 'V') || (monrace.d_char == 'W');
+        return monrace.symbol_char_is_any_of("LVW");
     case SUMMON_HI_DRAGON:
-        return monrace.d_char == 'D';
+        return monrace.symbol_char_is_any_of("D");
     case SUMMON_HI_DEMON:
-        return ((monrace.d_char == 'U') || (monrace.d_char == 'H') || (monrace.d_char == 'B')) && (monrace.kind_flags.has(MonsterKindType::DEMON));
+        return monrace.symbol_char_is_any_of("UHB") && monrace.kind_flags.has(MonsterKindType::DEMON);
     case SUMMON_AMBERITES:
         return monrace.kind_flags.has(MonsterKindType::AMBERITE);
     case SUMMON_UNIQUE:
         return monrace.kind_flags.has(MonsterKindType::UNIQUE);
     case SUMMON_MOLD:
-        return monrace.d_char == 'm';
+        return monrace.symbol_char_is_any_of("m");
     case SUMMON_BAT:
-        return monrace.d_char == 'b';
+        return monrace.symbol_char_is_any_of("b");
     case SUMMON_QUYLTHULG:
-        return monrace.d_char == 'Q';
+        return monrace.symbol_char_is_any_of("Q");
     case SUMMON_COIN_MIMIC:
-        return monrace.d_char == '$';
+        return monrace.symbol_char_is_any_of("$");
     case SUMMON_MIMIC:
-        return (monrace.d_char == '!') || (monrace.d_char == '?') || (monrace.d_char == '=') || (monrace.d_char == '$') || (monrace.d_char == '|');
+        return monrace.symbol_char_is_any_of("!?=$|");
     case SUMMON_GOLEM:
-        return (monrace.d_char == 'g');
+        return monrace.symbol_char_is_any_of("g");
     case SUMMON_CYBER:
-        return (monrace.d_char == 'U') && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
+        return monrace.symbol_char_is_any_of("U") && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
     case SUMMON_KIN: {
-        auto summon_kin_type = MonsterRace(summoner_idx).is_valid() ? monraces_info[summoner_idx].d_char : PlayerRace(player_ptr).get_summon_symbol();
-        return (monrace.d_char == summon_kin_type) && (r_idx != MonsterRaceId::HAGURE);
+        const auto summon_kin_type = MonraceList::is_valid(summoner_idx) ? MonraceList::get_instance().get_monrace(summoner_idx).symbol_definition.character : PlayerRace(player_ptr).get_summon_symbol();
+        return (monrace.symbol_definition.character == summon_kin_type) && (r_idx != MonraceId::HAGURE);
     }
     case SUMMON_DAWN:
-        return r_idx == MonsterRaceId::DAWN;
+        return r_idx == MonraceId::DAWN;
     case SUMMON_ANIMAL:
         return monrace.kind_flags.has(MonsterKindType::ANIMAL);
     case SUMMON_ANIMAL_RANGER: {
         auto is_match = monrace.kind_flags.has(MonsterKindType::ANIMAL);
-        is_match &= angband_strchr("abcflqrwBCHIJKMRS", monrace.d_char) != nullptr;
+        is_match &= monrace.symbol_char_is_any_of("abcflqrwBCHIJKMRS");
         is_match &= monrace.kind_flags.has_not(MonsterKindType::DRAGON);
         is_match &= monrace.kind_flags.has_not(MonsterKindType::EVIL);
         is_match &= monrace.kind_flags.has_not(MonsterKindType::UNDEAD);
@@ -82,81 +82,81 @@ bool check_summon_specific(PlayerType *player_ptr, MonsterRaceId summoner_idx, M
         return is_match;
     }
     case SUMMON_SMALL_MOAI:
-        return r_idx == MonsterRaceId::SMALL_MOAI;
+        return r_idx == MonraceId::SMALL_MOAI;
     case SUMMON_PYRAMID:
-        return one_in_(16) ? monrace.d_char == 'z' : r_idx == MonsterRaceId::SCARAB;
+        return one_in_(16) ? monrace.symbol_char_is_any_of("z") : r_idx == MonraceId::SCARAB;
     case SUMMON_PHANTOM:
-        return (r_idx == MonsterRaceId::PHANTOM_B) || (r_idx == MonsterRaceId::PHANTOM_W);
+        return (r_idx == MonraceId::PHANTOM_B) || (r_idx == MonraceId::PHANTOM_W);
     case SUMMON_BLUE_HORROR:
-        return r_idx == MonsterRaceId::BLUE_HORROR;
+        return r_idx == MonraceId::BLUE_HORROR;
     case SUMMON_TOTEM_MOAI:
-        return r_idx == MonsterRaceId::TOTEM_MOAI;
+        return r_idx == MonraceId::TOTEM_MOAI;
     case SUMMON_LIVING:
         return monrace.has_living_flag();
     case SUMMON_HI_DRAGON_LIVING:
-        return (monrace.d_char == 'D') && monrace.has_living_flag();
+        return monrace.symbol_char_is_any_of("D") && monrace.has_living_flag();
     case SUMMON_ELEMENTAL:
-        return monrace.d_char == 'E';
+        return monrace.symbol_char_is_any_of("E");
     case SUMMON_VORTEX:
-        return monrace.d_char == 'v';
+        return monrace.symbol_char_is_any_of("v");
     case SUMMON_HYBRID:
-        return monrace.d_char == 'H';
+        return monrace.symbol_char_is_any_of("H");
     case SUMMON_BIRD:
-        return monrace.d_char == 'B';
+        return monrace.symbol_char_is_any_of("B");
     case SUMMON_KAMIKAZE:
         return monrace.is_explodable();
     case SUMMON_KAMIKAZE_LIVING: {
         return monrace.is_explodable() && monrace.has_living_flag();
     case SUMMON_MANES:
-        return r_idx == MonsterRaceId::MANES;
+        return r_idx == MonraceId::MANES;
     case SUMMON_LOUSE:
-        return r_idx == MonsterRaceId::LOUSE;
+        return r_idx == MonraceId::LOUSE;
     case SUMMON_GUARDIANS:
         return monrace.misc_flags.has(MonsterMiscType::GUARDIAN);
     case SUMMON_KNIGHTS: {
-        auto is_match = r_idx == MonsterRaceId::NOV_PALADIN;
-        is_match |= r_idx == MonsterRaceId::NOV_PALADIN_G;
-        is_match |= r_idx == MonsterRaceId::PALADIN;
-        is_match |= r_idx == MonsterRaceId::W_KNIGHT;
-        is_match |= r_idx == MonsterRaceId::ULTRA_PALADIN;
-        is_match |= r_idx == MonsterRaceId::KNI_TEMPLAR;
+        auto is_match = r_idx == MonraceId::NOV_PALADIN;
+        is_match |= r_idx == MonraceId::NOV_PALADIN_G;
+        is_match |= r_idx == MonraceId::PALADIN;
+        is_match |= r_idx == MonraceId::W_KNIGHT;
+        is_match |= r_idx == MonraceId::ULTRA_PALADIN;
+        is_match |= r_idx == MonraceId::KNI_TEMPLAR;
         return is_match;
     }
     case SUMMON_EAGLES: {
-        auto is_match = monrace.d_char == 'B';
+        auto is_match = monrace.symbol_char_is_any_of("B");
         is_match &= monrace.wilderness_flags.has(MonsterWildernessType::WILD_MOUNTAIN);
         is_match &= monrace.wilderness_flags.has(MonsterWildernessType::WILD_ONLY);
         return is_match;
     }
     case SUMMON_PIRANHAS:
-        return r_idx == MonsterRaceId::PIRANHA;
+        return r_idx == MonraceId::PIRANHA;
     case SUMMON_ARMAGE_GOOD:
-        return (monrace.d_char == 'A') && (monrace.kind_flags.has(MonsterKindType::GOOD));
+        return monrace.symbol_char_is_any_of("A") && monrace.kind_flags.has(MonsterKindType::GOOD);
     case SUMMON_ARMAGE_EVIL:
-        return (monrace.kind_flags.has(MonsterKindType::DEMON)) || ((monrace.d_char == 'A') && (monrace.kind_flags.has(MonsterKindType::EVIL)));
+        return monrace.kind_flags.has(MonsterKindType::DEMON) || (monrace.symbol_char_is_any_of("A") && monrace.kind_flags.has(MonsterKindType::EVIL));
     case SUMMON_APOCRYPHA_FOLLOWERS:
-        return (r_idx == MonsterRaceId::FOLLOWER_WARRIOR) || (r_idx == MonsterRaceId::FOLLOWER_MAGE);
+        return (r_idx == MonraceId::FOLLOWER_WARRIOR) || (r_idx == MonraceId::FOLLOWER_MAGE);
     case SUMMON_APOCRYPHA_DRAGONS:
-        return (monrace.d_char == 'D') && (monrace.level >= 60) && (r_idx != MonsterRaceId::WYRM_COLOURS) && (r_idx != MonsterRaceId::ALDUIN);
+        return monrace.symbol_char_is_any_of("D") && (monrace.level >= 60) && (r_idx != MonraceId::WYRM_COLOURS) && (r_idx != MonraceId::ALDUIN);
     case SUMMON_VESPOID:
-        return r_idx == MonsterRaceId::VESPOID;
+        return r_idx == MonraceId::VESPOID;
     case SUMMON_ANTI_TIGERS: {
-        auto is_match = one_in_(32) ? (monrace.d_char == 'P') : false;
-        is_match |= one_in_(48) ? (monrace.d_char == 'd') : false;
-        is_match |= one_in_(16) ? (monrace.d_char == 'l') : false;
-        is_match |= (r_idx == MonsterRaceId::STAR_VAMPIRE) || (r_idx == MonsterRaceId::SWALLOW) || (r_idx == MonsterRaceId::HAWK);
-        is_match |= (r_idx == MonsterRaceId::LION) || (r_idx == MonsterRaceId::BUFFALO) || (r_idx == MonsterRaceId::FIGHTER) || (r_idx == MonsterRaceId::GOLDEN_EAGLE);
-        is_match |= (r_idx == MonsterRaceId::SHALLOW_PUDDLE) || (r_idx == MonsterRaceId::DEEP_PUDDLE) || (r_idx == MonsterRaceId::SKY_WHALE);
+        auto is_match = one_in_(32) ? monrace.symbol_char_is_any_of("P") : false;
+        is_match |= one_in_(48) ? monrace.symbol_char_is_any_of("d") : false;
+        is_match |= one_in_(16) ? monrace.symbol_char_is_any_of("l") : false;
+        is_match |= (r_idx == MonraceId::STAR_VAMPIRE) || (r_idx == MonraceId::SWALLOW) || (r_idx == MonraceId::HAWK);
+        is_match |= (r_idx == MonraceId::LION) || (r_idx == MonraceId::BUFFALO) || (r_idx == MonraceId::FIGHTER) || (r_idx == MonraceId::GOLDEN_EAGLE);
+        is_match |= (r_idx == MonraceId::SHALLOW_PUDDLE) || (r_idx == MonraceId::DEEP_PUDDLE) || (r_idx == MonraceId::SKY_WHALE);
         return is_match;
     }
     case SUMMON_POWERFUL_EYE_SENIOR:
-        return r_idx == MonsterRaceId::POWERFUL_EYE_SENIOR;
+        return r_idx == MonraceId::POWERFUL_EYE_SENIOR;
         break;
     case SUMMON_TURBAN_KID:
-        return r_idx == MonsterRaceId::TURBAN_KID;
+        return r_idx == MonraceId::TURBAN_KID;
         break;
     case SUMMON_DEAD_UNIQUE: {
-        return monrace.kind_flags.has(MonsterKindType::UNIQUE) && monrace.mob_num == 0;
+        return monrace.is_dead_unique();
     }
     case SUMMON_ALLIANCE: {
         return (monrace.alliance_idx == smonrace.alliance_idx);

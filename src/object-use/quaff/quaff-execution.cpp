@@ -23,7 +23,6 @@
 #include "spell-realm/spells-hex.h"
 #include "spell-realm/spells-song.h"
 #include "status/experience.h"
-#include "system/baseitem-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -54,10 +53,8 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx)
 
     auto item = this->copy_object(i_idx);
     vary_item(this->player_ptr, i_idx, -1);
-    sound(SOUND_QUAFF);
-
+    sound(SoundKind::QUAFF);
     player_ptr->plus_incident(INCIDENT::QUAFF, 1);
-
     auto ident = QuaffEffects(this->player_ptr).influence(item);
     if (PlayerRace(this->player_ptr).equals(PlayerRaceType::SKELETON)) {
         msg_print(_("液体の一部はあなたのアゴを素通りして落ちた！", "Some of the fluid falls through your jaws!"));
@@ -73,8 +70,8 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx)
     this->change_virtue_as_quaff(item);
     item.mark_as_tried();
     if (ident && !item.is_aware()) {
-        object_aware(this->player_ptr, &item);
-        gain_exp(this->player_ptr, (item.get_baseitem().level + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
+        object_aware(this->player_ptr, item);
+        gain_exp(this->player_ptr, (item.get_baseitem_level() + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
     }
 
     static constexpr auto flags = {
@@ -117,7 +114,7 @@ bool ObjectQuaffEntity::can_quaff()
         }
 
         msg_print(_("瓶から水が流れ出てこない！", "The potion doesn't flow out from the bottle."));
-        sound(SOUND_FAIL);
+        sound(SoundKind::FAIL);
         return false;
     }
 
@@ -126,8 +123,7 @@ bool ObjectQuaffEntity::can_quaff()
 
 ItemEntity ObjectQuaffEntity::copy_object(const INVENTORY_IDX i_idx)
 {
-    auto *tmp_o_ptr = ref_item(this->player_ptr, i_idx);
-    auto o_val = *tmp_o_ptr;
+    auto o_val = ref_item(this->player_ptr, i_idx)->clone();
     o_val.number = 1;
     return o_val;
 }
@@ -152,7 +148,7 @@ void ObjectQuaffEntity::moisten(const ItemEntity &o_ref)
         (void)set_food(this->player_ptr, this->player_ptr->food + (o_ref.pval / 10));
         return;
     case PlayerRaceFoodType::MANA:
-    case PlayerRaceFoodType::CORPSE:
+    case PlayerRaceFoodType::MONSTER_REMAINS:
         set_food(this->player_ptr, this->player_ptr->food + ((o_ref.pval) / 20));
         return;
     default:

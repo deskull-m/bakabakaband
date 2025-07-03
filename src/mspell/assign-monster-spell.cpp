@@ -7,7 +7,6 @@
 #include "mspell/assign-monster-spell.h"
 #include "blue-magic/blue-magic-checker.h"
 #include "effect/attribute-types.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster/monster-status.h"
 #include "mspell/mspell-attack/mspell-ball.h"
@@ -23,9 +22,10 @@
 #include "mspell/mspell-status.h"
 #include "mspell/mspell-summon.h"
 #include "mspell/mspell-util.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -33,7 +33,7 @@
 static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
     MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonsterRaceInfo *r_ptr = &monraces_info[m_ptr->r_idx];
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
     if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG)) {
@@ -104,7 +104,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::BA_FIRE:
     case MonsterAbilityType::BA_COLD:
          {
-         auto rad = monster_is_powerful(player_ptr->current_floor_ptr, m_idx) ? 4 : 2;
+         auto rad = monster_is_powerful(*player_ptr->current_floor_ptr, m_idx) ? 4 : 2;
          return MSpellBall(player_ptr, m_idx, ms_type, rad, MONSTER_TO_PLAYER).shoot(y, x);
          }
 
@@ -200,7 +200,7 @@ static MonsterSpellResult monspell_to_monster_impl(
 {
 
     MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonsterRaceInfo *r_ptr = &monraces_info[m_ptr->r_idx];
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
     // クイルスルグは自身を中心に召喚する
     if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG)) {
@@ -270,7 +270,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BA_FIRE:
     case MonsterAbilityType::BA_COLD:
          {
-         auto rad = monster_is_powerful(player_ptr->current_floor_ptr, m_idx) ? 4 : 2;
+         auto rad = monster_is_powerful(*player_ptr->current_floor_ptr, m_idx) ? 4 : 2;
          return MSpellBall(player_ptr, m_idx, t_idx, ms_type, rad, MONSTER_TO_MONSTER).shoot(y, x);
          }
          

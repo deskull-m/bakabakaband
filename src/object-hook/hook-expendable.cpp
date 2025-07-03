@@ -1,7 +1,6 @@
 #include "object-hook/hook-expendable.h"
 #include "artifact/fixed-art-types.h"
 #include "core/window-redrawer.h"
-#include "monster-race/monster-race.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/special-object-flags.h"
 #include "object-enchant/tr-types.h"
@@ -12,9 +11,9 @@
 #include "player-info/mimic-info-table.h"
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-other-types.h"
-#include "system/baseitem-info.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
@@ -51,10 +50,11 @@ bool item_tester_hook_quaff(PlayerType *player_ptr, const ItemEntity *o_ptr)
  * @param o_ptr 破壊可能かを確認したいオブジェクトの構造体参照ポインタ
  * @return オブジェクトが破壊可能ならばTRUEを返す
  */
+
 bool can_player_destroy_object(ItemEntity *o_ptr)
 {
-    auto flags = o_ptr->get_flags();
-    if (flags.has(TR_INDESTRUCTIBLE)) {
+    auto o_flags = o_ptr->get_flags();
+    if (o_flags.has(TR_INDESTRUCTIBLE)) {
         return false;
     }
 

@@ -46,3 +46,4 @@ bool activate_detect_treasure(PlayerType *player_ptr);
 bool activate_create_ammo(PlayerType *player_ptr);
 bool activate_dispel_magic(PlayerType *player_ptr);
 bool activate_huge_stinking_storm(PlayerType *player_ptr);
+bool activate_whistle(PlayerType *player_ptr, const ItemEntity &item);

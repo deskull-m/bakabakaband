@@ -13,9 +13,10 @@
 #include "room/rooms-special.h"
 #include "room/rooms-trap.h"
 #include "room/rooms-vault.h"
-#include "system/dungeon-data-definition.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-data-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "util/probability-table.h"
@@ -28,7 +29,7 @@
  * @note that we restrict the number of "crowded" rooms to reduce the chance of overflowing the monster list during level creation.
  * @return 部屋の生成に成功した場合 TRUE を返す。
  */
-static bool room_build(PlayerType *player_ptr, dun_data_type *dd_ptr, RoomType typ)
+static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ)
 {
     switch (typ) {
     case RoomType::NORMAL:
@@ -89,7 +90,7 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 部屋生成に成功した場合 TRUE を返す。
  */
-bool generate_rooms(PlayerType *player_ptr, dun_data_type *dd_ptr)
+bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
     int crowded = 0;
@@ -99,7 +100,7 @@ bool generate_rooms(PlayerType *player_ptr, dun_data_type *dd_ptr)
     int level_index = std::min(10, div_round(floor_ptr->dun_level, 10));
     std::map<RoomType, int> room_num;
 
-    int dun_rooms = DUN_ROOMS_MAX * area_size * damroll(10, 20) / 12000;
+    int dun_rooms = DUN_ROOMS_MAX * area_size * Dice::roll(10, 20) / 12000;
     if (one_in_(5)) {
         dun_rooms /= randint1(4);
 
@@ -110,8 +111,9 @@ bool generate_rooms(PlayerType *player_ptr, dun_data_type *dd_ptr)
     room_info_type *room_info_ptr = room_info_normal;
 
     for (auto r : ROOM_TYPE_LIST) {
-        if (dungeons_info[floor_ptr->dungeon_idx].room_rate.count(r)) {
-            prob_list[r] = dungeons_info[floor_ptr->dungeon_idx].room_rate[r];
+        auto &dungeon = floor_ptr->get_dungeon_definition();
+        if (dungeon.room_rate.count(r)) {
+            prob_list[r] = dungeon.room_rate.count(r);
         } else if (floor_ptr->dun_level < room_info_ptr[enum2i(r)].min_level) {
             prob_list[r] = 0;
         } else {
@@ -151,7 +153,7 @@ bool generate_rooms(PlayerType *player_ptr, dun_data_type *dd_ptr)
         move_prob_list(RoomType::INNER_FEAT, RoomType::CRYPT, prob_list);
         move_prob_list(RoomType::INNER_FEAT, RoomType::OVAL, prob_list);
     } else if (dungeon.flags.has(DungeonFeatureType::CAVE)) {
-        /*! @details ダンジョンにCAVEフラグがある場合、NORMALの生成枠がFRACAVEに与えられる。/ CAVE dungeon (Orc floor_ptr->grid_array etc.) */
+        /*! @details ダンジョンにCAVEフラグがある場合、NORMALの生成枠がFRACAVEに与えられる。/ CAVE dungeon (Orc floor.grid_array etc.) */
         move_prob_list(RoomType::FRACAVE, RoomType::NORMAL, prob_list);
     } else if (dd_ptr->cavern || dd_ptr->empty_level) {
         /*! @details ダンジョンの基本地形が最初から渓谷かアリーナ型の場合 FRACAVE は生成から除外。 /  No caves when a (random) cavern exists: they look bad */
@@ -198,7 +200,7 @@ bool generate_rooms(PlayerType *player_ptr, dun_data_type *dd_ptr)
         }
     }
 
-    for (auto &r : dungeons_info[floor_ptr->dungeon_idx].fixed_room_list) {
+    for (auto &r : floor_ptr->get_dungeon_definition().fixed_room_list) {
         auto depth = std::get<0>(r);
         auto id = std::get<1>(r);
         auto percentage = std::get<2>(r);

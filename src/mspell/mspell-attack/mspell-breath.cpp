@@ -6,7 +6,6 @@
 #include "main/sound-of-music.h"
 #include "mind/drs-types.h"
 #include "monster-race/race-ability-flags.h"
-#include "monster-race/race-indice-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-update.h"
 #include "mspell/mspell-checker.h"
@@ -14,10 +13,10 @@
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
@@ -27,17 +26,17 @@
  * @param GF_TYPE 魔法効果
  * @return 表示したらTRUE、しなかったらFALSE
  */
-static bool spell_RF4_BREATH_special_message(MonsterRaceId r_idx, AttributeType GF_TYPE, concptr m_name)
+static bool spell_RF4_BREATH_special_message(MonraceId r_idx, AttributeType GF_TYPE, concptr m_name)
 {
-    if (r_idx == MonsterRaceId::JAIAN && GF_TYPE == AttributeType::SOUND) {
+    if (r_idx == MonraceId::JAIAN && GF_TYPE == AttributeType::SOUND) {
         msg_format(_("%s^「ボォエ～～～～～～」", "%s^ sings, 'Booooeeeeee'"), m_name);
         return true;
     }
-    if (r_idx == MonsterRaceId::BOTEI && GF_TYPE == AttributeType::SHARDS) {
+    if (r_idx == MonraceId::BOTEI && GF_TYPE == AttributeType::SHARDS) {
         msg_format(_("%s^「ボ帝ビルカッター！！！」", "%s^ shouts, 'Boty-Build cutter!!!'"), m_name);
         return true;
     }
-    if (r_idx == MonsterRaceId::RAOU && (GF_TYPE == AttributeType::FORCE)) {
+    if (r_idx == MonraceId::RAOU && (GF_TYPE == AttributeType::FORCE)) {
         if (one_in_(2)) {
             msg_format(_("%s^「北斗剛掌波！！」", "%s^ says, 'Hokuto Goh-Sho-Ha!!'"), m_name);
         } else {
@@ -50,17 +49,17 @@ static bool spell_RF4_BREATH_special_message(MonsterRaceId r_idx, AttributeType 
 
 static void message_breath(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, std::string_view type_s, AttributeType GF_TYPE)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor_ptr->m_list[m_idx];
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &monster = floor.m_list[m_idx];
     auto see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    auto known = monster_near_player(floor_ptr, m_idx, t_idx);
+    auto known = monster_near_player(floor, m_idx, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
     const auto m_name = monster_name(player_ptr, m_idx);
     const auto t_name = monster_name(player_ptr, t_idx);
 
-    if (!spell_RF4_BREATH_special_message(m_ptr->r_idx, GF_TYPE, m_name.data())) {
-        if (player_ptr->effects()->blindness()->is_blind()) {
+    if (!spell_RF4_BREATH_special_message(monster.r_idx, GF_TYPE, m_name.data())) {
+        if (player_ptr->effects()->blindness().is_blind()) {
             if (mon_to_player || (mon_to_mon && known && see_either)) {
                 msg_format(_("%s^が何かのブレスを吐いた。", "%s^ breathes."), m_name.data());
             }
@@ -74,11 +73,11 @@ static void message_breath(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_ID
     }
 
     if (mon_to_mon && known && !see_either) {
-        floor_ptr->monster_noise = true;
+        floor.monster_noise = true;
     }
 
     if (known || see_either) {
-        sound(SOUND_BREATH);
+        sound(SoundKind::BREATH);
     }
 }
 

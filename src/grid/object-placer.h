@@ -1,7 +1,9 @@
 #pragma once
 
-#include "system/angband.h"
+#include "system/baseitem/baseitem-allocation.h"
+#include "util/point-2d.h"
+#include <cstdint>
 
 class PlayerType;
-void place_gold(PlayerType *player_ptr, POSITION y, POSITION x);
-void place_object(PlayerType *player_ptr, POSITION y, POSITION x, BIT_FLAGS mode);
+void place_gold(PlayerType *player_ptr, const Pos2D &pos);
+void place_object(PlayerType *player_ptr, const Pos2D &pos, uint32_t mode, BaseitemRestrict restrict = nullptr);

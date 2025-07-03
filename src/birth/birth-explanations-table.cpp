@@ -253,10 +253,13 @@ const std::vector<std::string_view> personality_explanations = {
     _("タフは、ナチュラル・ボーン・ファイターであり、まさにタフという言葉はこの性格の持ち主のためにあります。ちからじまん以上に戦闘能力にすぐれますが、余りも理不尽な猿空間、猿展開に巻き込まれる定めにあります。",
         "\"Tough\" is a just natural born fighter, and the very word \"tough\" is reserved for those with this personality. You can be a better combat skill than mighty, but you are destined to get caught up in too much unreasonable monkey-space and monkey-deployment."),
 
+    _("あなたは寿司を愛するあまり、寿司を食べないと死んでしまいます。寿司の力のためにとんでもない能力を持っていますが、その急激な空腹を満たせるのは世界に散在する寿司だけになります。",
+        "You \"Sushi Eater\" love sushi so much that you will die if you don't eat it. You have incredible abilities thanks to the power of sushi, but the only thing that can satisfy your sudden hunger is sushi scattered around the world."),
+
 };
 
 /*! 魔法領域の詳細解説メッセージテーブル */
-const std::vector<std::string_view> realm_explanations = {
+const std::vector<std::string_view> magic_explanations = {
     _("生命は回復能力に優れた魔法です。治療や防御、感知魔法が多く含まれていますが、攻撃呪文もわずかに持っています。特に高レベルの呪文にはアンデッドを塵に帰す力をあると言われています。",
         "Life magic is very good for healing; it relies mostly on healing, protection and detection spells.  Also life magic has a few attack spells as well.  It's said that some high level spells of life magic can disintegrate Undead monsters into ash."),
 
@@ -286,7 +289,9 @@ const std::vector<std::string_view> realm_explanations = {
 
     _("破邪は「正義」の魔法です。直接敵を傷つける魔法が多く含まれ、特に邪悪な敵に対する力は恐るべきものがあります。しかし、善良な敵にはあまり効果がありません。",
         "Crusade is a magic of 'Justice'.  It includes damage spells, which are greatly effective against foul and evil monsters, but have poor effects against good monsters."),
+};
 
+const std::vector<std::string_view> technic_explanations = {
     _("歌集は、歌によって効果を発揮する魔法です。魔法と同様、使った時に効果のあるものと、歌い続けることによって持続して効果を発揮するものがあります。後者の場合は、MPの続く限り効果を発揮することができますが、同時に歌える歌は1つだけという制限もあります。",
         "Music magic works through the caster singing songs.  There are two types of songs; one which shows effects instantly and another which shows effects continuously until SP runs out.  The latter type has a limit:  only one song can be sung at a time."),
 
@@ -298,7 +303,7 @@ const std::vector<std::string_view> realm_explanations = {
 };
 
 /*! 魔法領域の簡易解説メッセージテーブル */
-const std::vector<std::string_view> realm_subinfo = {
+const std::vector<std::string_view> magic_subinfo = {
     _("感知と防御と回復に優れています", "Good at detection and healing."),
     _("攻撃はできませんが非常に便利です", "Utility and protective spells."),
     _("感知と防御に優れています", "Good at detection and defence."),
@@ -309,6 +314,9 @@ const std::vector<std::string_view> realm_subinfo = {
     _("直接戦闘の補助に優れています", "Support for melee fighting."),
     _("攻撃と防御の両面に優れています", "Good at both offence and defence."),
     _("邪悪な怪物に対する攻撃に優れています", "Destroys evil creatures."),
+};
+
+const std::vector<std::string_view> technic_subinfo = {
     _("様々な魔法効果を持った歌を歌います", "Songs with magical effects."),
     _("打撃攻撃に特殊能力を付加します", "Special abilities for melee."),
     _("敵を邪魔しつつ復讐を狙います", "Good at obstacle and revenge."),

@@ -17,6 +17,7 @@
 #include "cmd-io/cmd-help.h"
 #include "core/asking-player.h"
 #include "game-option/birth-options.h"
+#include "game-option/game-option-page.h"
 #include "io/input-key-acceptor.h"
 #include "locale/japanese.h"
 #include "main/sound-definitions-table.h"
@@ -30,7 +31,6 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "player/process-name.h"
-#include "system/game-option-types.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -42,19 +42,10 @@
 #include "view/display-birth.h" // 暫定。後で消す予定。
 #include "view/display-player-misc-info.h"
 #include "view/display-player.h" // 暫定。後で消す.
+#include "view/display-symbol.h"
 #include "view/display-util.h"
 #include "world/world.h"
 #include <sstream>
-
-/*!
- * オートローラーの内容を描画する間隔 /
- * How often the autoroller will update the display and pause
- * to check for user interuptions.
- * Bigger values will make the autoroller faster, but slower
- * system may have problems because the user can't stop the
- * autoroller for this number of rolls.
- */
-#define AUTOROLLER_STEP 54321L
 
 static void display_initial_birth_message(PlayerType *player_ptr)
 {
@@ -79,7 +70,7 @@ static void display_help_on_sex_select(PlayerType *player_ptr, char c)
         do_cmd_help(player_ptr);
     } else if (c == '=') {
         screen_save();
-        do_cmd_options_aux(player_ptr, OPT_PAGE_BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+        do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
         screen_load();
     } else if (c != '4' && c != '6') {
         bell();
@@ -127,8 +118,7 @@ static bool get_player_sex(PlayerType *player_ptr)
             break;
         }
 
-        char buf[80];
-        strnfmt(buf, sizeof(buf), _("性別を選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a sex (%c-%c) ('=' for options): "), I2A(0), I2A(1));
+        const auto buf = format(_("性別を選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a sex (%c-%c) ('=' for options): "), I2A(0), I2A(1));
         put_str(buf, 10, 10);
         char c = inkey();
         if (c == 'Q') {
@@ -273,37 +263,37 @@ static bool let_player_build_character(PlayerType *player_ptr)
 static void display_initial_options(PlayerType *player_ptr)
 {
     const auto expfact_mod = static_cast<int>(get_expfact(player_ptr)) - 100;
-    int16_t adj[A_MAX];
+    int16_t adj[A_MAX]{};
     for (int i = 0; i < A_MAX; i++) {
         adj[i] = rp_ptr->r_adj[i] + cp_ptr->c_adj[i] + ap_ptr->a_adj[i];
     }
 
-    char buf[80];
     put_str("                                   ", 3, 40);
     put_str(_("修正の合計値", "Your total modification"), 3, 40);
     put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-    strnfmt(buf, sizeof(buf), "%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", adj[0], adj[1], adj[2], adj[3], adj[4], adj[5], expfact_mod);
-    c_put_str(TERM_L_BLUE, buf, 5, 40);
+    const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", adj[0], adj[1], adj[2], adj[3], adj[4], adj[5], expfact_mod);
+    c_put_str(TERM_L_BLUE, stats, 5, 40);
 
     put_str("HD ", 6, 40);
-    strnfmt(buf, sizeof(buf), "%2d", rp_ptr->r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
-    c_put_str(TERM_L_BLUE, buf, 6, 43);
+    const auto hd = format("%2d", rp_ptr->r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
+    c_put_str(TERM_L_BLUE, hd, 6, 43);
 
     put_str(_("隠密", "Stealth"), 6, 47);
+    std::string stealth;
     if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
-        angband_strcpy(buf, "xx", sizeof(buf));
+        stealth = "xx";
     } else {
-        strnfmt(buf, sizeof(buf), "%+2d", rp_ptr->r_stl + cp_ptr->c_stl + ap_ptr->a_stl);
+        stealth = format("%+2d", rp_ptr->r_stl + cp_ptr->c_stl + ap_ptr->a_stl);
     }
-    c_put_str(TERM_L_BLUE, buf, 6, _(52, 55));
+    c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
     put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-    strnfmt(buf, sizeof(buf), _("%2dft", "%2dft"), 10 * rp_ptr->infra);
-    c_put_str(TERM_L_BLUE, buf, 6, _(67, 65));
+    const auto infra = format(_("%2dft", "%2dft"), 10 * rp_ptr->infra);
+    c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
 
     clear_from(10);
     screen_save();
-    do_cmd_options_aux(player_ptr, OPT_PAGE_BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+    do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
     screen_load();
 }
 
@@ -316,16 +306,16 @@ static void display_auto_roller_success_rate(const int col)
     put_str(_("最小値", " Limit"), 2, col + 13);
     put_str(_("現在値", "  Roll"), 2, col + 24);
 
-    char buf[32];
+    std::string prob;
 
     if (autoroll_chance >= 1) {
-        strnfmt(buf, sizeof(buf), _("確率 :  1/%8d00", "Prob :  1/%8d00"), autoroll_chance);
+        prob = format(_("確率 :  1/%8d00", "Prob :  1/%8d00"), autoroll_chance);
     } else if (autoroll_chance == -999) {
-        angband_strcpy(buf, _("確率 :     不可能", "Prob :     Impossible"), sizeof(buf));
+        prob = _("確率 :     不可能", "Prob :     Impossible");
     } else {
-        angband_strcpy(buf, _("確率 :     1/10000以上", "Prob :     >1/10000"), sizeof(buf));
+        prob = _("確率 :     1/10000以上", "Prob :     >1/10000");
     }
-    put_str(buf, 11, col + 10);
+    put_str(prob, 11, col + 10);
 
     put_str(_("注意 : 体格等のオートローラを併用時は、上記確率より困難です。", "Note : Prob may be lower when you use the 'autochara' option."), 22, 5);
 
@@ -398,7 +388,13 @@ static bool decide_body_spec(PlayerType *player_ptr, chara_limit_type chara_limi
 
 static bool display_auto_roller_count(PlayerType *player_ptr, const int col)
 {
-    if ((auto_round % AUTOROLLER_STEP) != 0) {
+    /*!
+     * @details ここで指定された回数だけロールする度にその時の結果を画面に表示する
+     * @todo この定数を定義した時代に比べて、CPUパワーが相当に上がっている.
+     * 表示部で足を引っ張っているので、タイマで数えて0.1秒/表示 くらいで良いと思われる.
+     */
+    constexpr auto roll_results_per_display = 54321;
+    if ((auto_round % roll_results_per_display) != 0) {
         return false;
     }
 
@@ -452,7 +448,7 @@ static bool display_auto_roller_result(PlayerType *player_ptr, bool prev, char *
         (void)display_player(player_ptr, mode);
         term_gotoxy(2, 23);
         const char b1 = '[';
-        term_addch(TERM_WHITE, b1);
+        term_addch({ TERM_WHITE, b1 });
         term_addstr(-1, TERM_WHITE, _("'r' 次の数値", "'r'eroll"));
         if (prev) {
             term_addstr(-1, TERM_WHITE, _(", 'p' 前の数値", ", 'p'revious"));
@@ -466,7 +462,7 @@ static bool display_auto_roller_result(PlayerType *player_ptr, bool prev, char *
 
         term_addstr(-1, TERM_WHITE, _(", Enter この数値に決定", ", or Enter to accept"));
         const char b2 = ']';
-        term_addch(TERM_WHITE, b2);
+        term_addch({ TERM_WHITE, b2 });
         *c = inkey();
         if (*c == 'Q') {
             birth_quit();
@@ -526,14 +522,14 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
         display_auto_roller_success_rate(col);
         exe_auto_roller(player_ptr, chara_limit, col);
         if (autoroller || autochara) {
-            sound(SOUND_LEVEL);
+            sound(SoundKind::LEVEL);
         }
 
         flush();
 
         get_extra(player_ptr, true);
         get_money(player_ptr);
-        player_ptr->chaos_patron = (int16_t)randint0(MAX_PATRON);
+        player_ptr->chaos_patron = randnum0<short>(MAX_PATRON);
 
         char c;
         if (!display_auto_roller_result(player_ptr, prev, &c)) {
@@ -561,7 +557,7 @@ static void set_name_history(PlayerType *player_ptr)
 {
     clear_from(23);
     get_name(player_ptr);
-    process_player_name(player_ptr, w_ptr->creating_savefile);
+    process_player_name(player_ptr, AngbandWorld::get_instance().creating_savefile);
     edit_history(player_ptr);
     get_max_stats(player_ptr);
     initialize_virtues(player_ptr);

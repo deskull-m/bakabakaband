@@ -2,7 +2,6 @@
 #include "core/disturbance.h"
 #include "melee/melee-spell-flags-checker.h"
 #include "melee/melee-spell-util.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
@@ -13,12 +12,11 @@
 #include "player-base/player-class.h"
 #include "player-info/mane-data-type.h"
 #include "spell-realm/spells-hex.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/player-blindness.h"
 #include "timed-effect/timed-effects.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -64,8 +62,8 @@ static void process_special_melee_spell(PlayerType *player_ptr, melee_spell_type
     PlayerClass pc(player_ptr);
     bool is_special_magic = ms_ptr->m_ptr->ml;
     is_special_magic &= ms_ptr->maneable;
-    is_special_magic &= w_ptr->timewalk_m_idx == 0;
-    is_special_magic &= !player_ptr->effects()->blindness()->is_blind();
+    is_special_magic &= AngbandWorld::get_instance().timewalk_m_idx == 0;
+    is_special_magic &= !player_ptr->effects()->blindness().is_blind();
     is_special_magic &= pc.equals(PlayerClassType::IMITATOR);
     is_special_magic &= ms_ptr->thrown_spell != MonsterAbilityType::SPECIAL;
     if (!is_special_magic) {
@@ -113,9 +111,9 @@ bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return false;
     }
 
-    ms_ptr->m_name = monster_desc(player_ptr, ms_ptr->m_ptr, 0x00);
+    ms_ptr->m_name = monster_desc(player_ptr, *ms_ptr->m_ptr, 0x00);
     ms_ptr->thrown_spell = rand_choice(ms_ptr->spells);
-    if (player_ptr->riding && (m_idx == player_ptr->riding)) {
+    if (ms_ptr->m_ptr->is_riding()) {
         disturb(player_ptr, true, true);
     }
 
@@ -123,7 +121,7 @@ bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    ms_ptr->can_remember = is_original_ap_and_seen(player_ptr, ms_ptr->m_ptr);
+    ms_ptr->can_remember = is_original_ap_and_seen(player_ptr, *ms_ptr->m_ptr);
     const auto res = monspell_to_monster(player_ptr, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
     if (!res.valid) {
         return false;

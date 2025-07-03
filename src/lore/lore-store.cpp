@@ -6,13 +6,12 @@
 
 #include "lore/lore-store.h"
 #include "core/window-redrawer.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-info.h"
 #include "system/floor-type-definition.h"
 #include "system/monster-entity.h" //!< @todo 違和感、m_ptr は外から与えることとしたい.
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "tracking/lore-tracker.h"
 
 template <class T>
 static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const EnumClassFlagGroup<T> &r_flags)
@@ -30,75 +29,76 @@ static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const Enum
  * @details
  * Return the number of new flags learnt.  -Mogami-
  */
-int lore_do_probe(PlayerType *player_ptr, MonsterRaceId r_idx)
+int lore_do_probe(PlayerType *player_ptr, MonraceId r_idx)
 {
+    (void)player_ptr;
     int n = 0;
-    auto *r_ptr = &monraces_info[r_idx];
-    if (r_ptr->r_wake != MAX_UCHAR) {
+    auto monrace = &MonraceList::get_instance().get_monrace(r_idx);
+    if (monrace.r_wake != MAX_UCHAR) {
         n++;
     }
-    if (r_ptr->r_ignore != MAX_UCHAR) {
+    if (monrace.r_ignore != MAX_UCHAR) {
         n++;
     }
-    r_ptr->r_wake = r_ptr->r_ignore = MAX_UCHAR;
+    monrace.r_wake = monrace.r_ignore = MAX_UCHAR;
 
     for (auto i = 0; i < 4; i++) {
-        if (r_ptr->blows[i].effect != RaceBlowEffectType::NONE || r_ptr->blows[i].method != RaceBlowMethodType::NONE) {
-            if (r_ptr->r_blows[i] != MAX_UCHAR) {
+        if (monrace.blows[i].effect != RaceBlowEffectType::NONE || monrace.blows[i].method != RaceBlowMethodType::NONE) {
+            if (monrace.r_blows[i] != MAX_UCHAR) {
                 n++;
             }
-            r_ptr->r_blows[i] = MAX_UCHAR;
+            monrace.r_blows[i] = MAX_UCHAR;
         }
     }
 
     using Mdt = MonsterDropType;
-    byte tmp_byte = (r_ptr->drop_flags.has(Mdt::DROP_4D2) ? 8 : 0);
-    tmp_byte += (r_ptr->drop_flags.has(Mdt::DROP_3D2) ? 6 : 0);
-    tmp_byte += (r_ptr->drop_flags.has(Mdt::DROP_2D2) ? 4 : 0);
-    tmp_byte += (r_ptr->drop_flags.has(Mdt::DROP_1D2) ? 2 : 0);
-    tmp_byte += (r_ptr->drop_flags.has(Mdt::DROP_90) ? 1 : 0);
-    tmp_byte += (r_ptr->drop_flags.has(Mdt::DROP_60) ? 1 : 0);
+    byte tmp_byte = (monrace.drop_flags.has(Mdt::DROP_4D2) ? 8 : 0);
+    tmp_byte += (monrace.drop_flags.has(Mdt::DROP_3D2) ? 6 : 0);
+    tmp_byte += (monrace.drop_flags.has(Mdt::DROP_2D2) ? 4 : 0);
+    tmp_byte += (monrace.drop_flags.has(Mdt::DROP_1D2) ? 2 : 0);
+    tmp_byte += (monrace.drop_flags.has(Mdt::DROP_90) ? 1 : 0);
+    tmp_byte += (monrace.drop_flags.has(Mdt::DROP_60) ? 1 : 0);
 
-    if (r_ptr->drop_flags.has_not(Mdt::ONLY_GOLD)) {
-        if (r_ptr->r_drop_item != tmp_byte) {
+    if (monrace.drop_flags.has_not(Mdt::ONLY_GOLD)) {
+        if (monrace.r_drop_item != tmp_byte) {
             n++;
         }
-        r_ptr->r_drop_item = tmp_byte;
+        monrace.r_drop_item = tmp_byte;
     }
-    if (r_ptr->drop_flags.has_not(Mdt::ONLY_ITEM)) {
-        if (r_ptr->r_drop_gold != tmp_byte) {
+    if (monrace.drop_flags.has_not(Mdt::ONLY_ITEM)) {
+        if (monrace.r_drop_gold != tmp_byte) {
             n++;
         }
-        r_ptr->r_drop_gold = tmp_byte;
+        monrace.r_drop_gold = tmp_byte;
     }
 
-    if (r_ptr->r_cast_spell != MAX_UCHAR) {
+    if (monrace.r_cast_spell != MAX_UCHAR) {
         n++;
     }
-    r_ptr->r_cast_spell = MAX_UCHAR;
+    monrace.r_cast_spell = MAX_UCHAR;
 
-    n += count_lore_mflag_group(r_ptr->resistance_flags, r_ptr->r_resistance_flags);
-    n += count_lore_mflag_group(r_ptr->ability_flags, r_ptr->r_ability_flags);
-    n += count_lore_mflag_group(r_ptr->behavior_flags, r_ptr->r_behavior_flags);
-    n += count_lore_mflag_group(r_ptr->drop_flags, r_ptr->r_drop_flags);
-    n += count_lore_mflag_group(r_ptr->feature_flags, r_ptr->r_feature_flags);
-    n += count_lore_mflag_group(r_ptr->special_flags, r_ptr->r_special_flags);
-    n += count_lore_mflag_group(r_ptr->misc_flags, r_ptr->r_misc_flags);
+    n += count_lore_mflag_group(monrace.resistance_flags, monrace.r_resistance_flags);
+    n += count_lore_mflag_group(monrace.ability_flags, monrace.r_ability_flags);
+    n += count_lore_mflag_group(monrace.behavior_flags, monrace.r_behavior_flags);
+    n += count_lore_mflag_group(monrace.drop_flags, monrace.r_drop_flags);
+    n += count_lore_mflag_group(monrace.feature_flags, monrace.r_feature_flags);
+    n += count_lore_mflag_group(monrace.special_flags, monrace.r_special_flags);
+    n += count_lore_mflag_group(monrace.misc_flags, monrace.r_misc_flags);
 
-    r_ptr->r_resistance_flags = r_ptr->resistance_flags;
-    r_ptr->r_ability_flags = r_ptr->ability_flags;
-    r_ptr->r_behavior_flags = r_ptr->behavior_flags;
-    r_ptr->r_drop_flags = r_ptr->drop_flags;
-    r_ptr->r_feature_flags = r_ptr->feature_flags;
-    r_ptr->r_special_flags = r_ptr->special_flags;
-    r_ptr->r_misc_flags = r_ptr->misc_flags;
+    monrace.r_resistance_flags = monrace.resistance_flags;
+    monrace.r_ability_flags = monrace.ability_flags;
+    monrace.r_behavior_flags = monrace.behavior_flags;
+    monrace.r_drop_flags = monrace.drop_flags;
+    monrace.r_feature_flags = monrace.feature_flags;
+    monrace.r_special_flags = monrace.special_flags;
+    monrace.r_misc_flags = monrace.misc_flags;
 
-    if (!r_ptr->r_can_evolve) {
+    if (!monrace.r_can_evolve) {
         n++;
     }
-    r_ptr->r_can_evolve = true;
 
-    if (player_ptr->monster_race_idx == r_idx) {
+    monrace.r_can_evolve = true;
+    if (LoreTracker::get_instance().is_tracking(r_idx)) {
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 
@@ -114,34 +114,33 @@ int lore_do_probe(PlayerType *player_ptr, MonsterRaceId r_idx)
  */
 void lore_treasure(PlayerType *player_ptr, MONSTER_IDX m_idx, ITEM_NUMBER num_item, ITEM_NUMBER num_gold)
 {
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    auto *r_ptr = &m_ptr->get_monrace();
-
-    if (!m_ptr->is_original_ap()) {
+    auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    auto &monrace = monster.get_monrace();
+    if (!monster.is_original_ap()) {
         return;
     }
 
-    if (num_item > r_ptr->r_drop_item) {
-        r_ptr->r_drop_item = num_item;
+    if (num_item > monrace.r_drop_item) {
+        monrace.r_drop_item = num_item;
     }
 
-    if (num_gold > r_ptr->r_drop_gold) {
-        r_ptr->r_drop_gold = num_gold;
+    if (num_gold > monrace.r_drop_gold) {
+        monrace.r_drop_gold = num_gold;
     }
 
-    if (r_ptr->drop_flags.has(MonsterDropType::DROP_GOOD)) {
-        r_ptr->r_drop_flags.set(MonsterDropType::DROP_GOOD);
+    if (monrace.drop_flags.has(MonsterDropType::DROP_GOOD)) {
+        monrace.r_drop_flags.set(MonsterDropType::DROP_GOOD);
     }
 
-    if (r_ptr->drop_flags.has(MonsterDropType::DROP_GREAT)) {
-        r_ptr->r_drop_flags.set(MonsterDropType::DROP_GREAT);
+    if (monrace.drop_flags.has(MonsterDropType::DROP_GREAT)) {
+        monrace.r_drop_flags.set(MonsterDropType::DROP_GREAT);
     }
 
-    if (r_ptr->drop_flags.has(MonsterDropType::DROP_NASTY)) {
-        r_ptr->r_drop_flags.set(MonsterDropType::DROP_NASTY);
+    if (monrace.drop_flags.has(MonsterDropType::DROP_NASTY)) {
+        monrace.r_drop_flags.set(MonsterDropType::DROP_NASTY);
     }
 
-    if (player_ptr->monster_race_idx == m_ptr->r_idx) {
+    if (LoreTracker::get_instance().is_tracking(monster.r_idx)) {
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 }

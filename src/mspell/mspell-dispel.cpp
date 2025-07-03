@@ -26,6 +26,8 @@
 #include "status/shape-changer.h"
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
+#include "system/floor/floor-info.h"
+#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
@@ -43,7 +45,7 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_tsuyoshi(player_ptr, 0, true);
     (void)set_hero(player_ptr, 0, true);
     (void)set_shero(player_ptr, 0, true);
-    (void)set_protevil(player_ptr, 0, true);
+    BodyImprovement(player_ptr).set_protection(0, true);
     (void)set_invuln(player_ptr, 0, true);
     (void)set_wraith_form(player_ptr, 0, true);
     (void)set_pass_wall(player_ptr, 0, true);
@@ -156,9 +158,10 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, PlayerType *player_ptr, M
 
         return res;
     }
-
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &target = floor.m_list[t_idx];
     if (target_type == MONSTER_TO_MONSTER) {
-        if (t_idx == player_ptr->riding) {
+        if (target.is_riding()) {
             dispel_player(player_ptr);
         }
 

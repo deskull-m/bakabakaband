@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <filesystem>
 #include <memory>
 #include <mmsystem.h>
 
@@ -29,24 +30,22 @@ public:
     /*!
      * WAVファイルを開く
      *
-     * @param filename
+     * @param path ファイルパス
      * @retval true 正常に処理された
      * @retval false 処理エラー
      */
-    bool open(char *filename);
+    bool open(const std::filesystem::path &path);
+
     /*!
      * PCMデータ取得
-     * @details 呼び出し元でdelete[]すること
+     *
      * @return PCMデータ
      */
-    BYTE *read_data();
-    const WAVEFORMATEX *get_waveformat()
+    std::vector<uint8_t> retrieve_data();
+
+    const WAVEFORMATEX *get_waveformat() const
     {
         return &waveformatex;
-    }
-    const MMCKINFO *get_data_chunk()
-    {
-        return &data_chunk;
     }
     void close();
 
@@ -56,5 +55,5 @@ protected:
     MMCKINFO fmt_chunk{};
     WAVEFORMATEX waveformatex{};
     MMCKINFO data_chunk{};
-    std::unique_ptr<BYTE[]> buffer;
+    std::vector<uint8_t> buffer;
 };

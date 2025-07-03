@@ -8,8 +8,11 @@
 
 #include "system/item-entity.h"
 #include "artifact/fixed-art-types.h"
+#include "artifact/random-art-bias-types.h"
 #include "artifact/random-art-effects.h"
-#include "monster-race/monster-race.h"
+#include "dungeon/quest.h"
+#include "game-option/birth-options.h"
+#include "game-option/game-play-options.h"
 #include "object-enchant/activation-info-table.h"
 #include "object-enchant/dragon-breaths-table.h"
 #include "object-enchant/item-feeling.h"
@@ -22,21 +25,38 @@
 #include "sv-definition/sv-ring-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
-#include "system/monster-race-info.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-list.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "term/term-color-types.h"
+#include "tracking/baseitem-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
+#include "view/display-messages.h"
+#include "world/world.h"
 #include <algorithm>
-#include <iostream>
+#include <fmt/format.h>
 #include <sstream>
 #include <vector>
 
 ItemEntity::ItemEntity()
     : bi_key(BaseitemKey(ItemKindType::NONE))
-    , fixed_artifact_idx(FixedArtifactId::NONE)
+    , fa_id(FixedArtifactId::NONE)
 {
+}
+
+ItemEntity::ItemEntity(short bi_id)
+{
+    this->generate(bi_id);
+}
+
+ItemEntity::ItemEntity(const BaseitemKey &bi_key)
+{
+    const auto &baseitems = BaseitemList::get_instance();
+    this->generate(baseitems.lookup_baseitem_id(bi_key));
 }
 
 /*!
@@ -49,65 +69,85 @@ void ItemEntity::wipe()
 
 /*!
  * @brief アイテムを複製する
- * @param j_ptr 複製元アイテムへの参照ポインタ
+ * @return 複製したアイテム
  */
-void ItemEntity::copy_from(const ItemEntity *j_ptr)
+ItemEntity ItemEntity::clone() const
 {
-    *this = *j_ptr;
+    return *this;
+}
+
+void ItemEntity::generate(const BaseitemKey &new_bi_key)
+{
+    const auto new_bi_id = BaseitemList::get_instance().lookup_baseitem_id(new_bi_key);
+    this->generate(new_bi_id);
 }
 
 /*!
  * @brief アイテム構造体にベースアイテムを作成する
  * @param bi_id 新たに作成したいベースアイテム情報のID
  */
-void ItemEntity::prep(short new_bi_id)
+void ItemEntity::generate(short new_bi_id)
 {
-    const auto &baseitem = baseitems_info[new_bi_id];
-    auto old_stack_idx = this->stack_idx;
-    this->wipe();
-    this->stack_idx = old_stack_idx;
-    this->bi_id = new_bi_id;
-    this->bi_key = baseitem.bi_key;
-    this->pval = baseitem.pval;
-    this->number = 1;
-    this->weight = baseitem.weight;
-    this->to_h = baseitem.to_h;
-    this->to_d = baseitem.to_d;
-    this->to_a = baseitem.to_a;
-    this->ac = baseitem.ac;
-    this->dd = baseitem.dd;
-    this->ds = baseitem.ds;
+    try {
+        const auto &baseitem = BaseitemList::get_instance().get_baseitem(new_bi_id);
 
-    if (baseitem.act_idx > RandomArtActType::NONE) {
-        this->activation_id = baseitem.act_idx;
-    }
+        auto old_stack_idx = this->stack_idx;
+        this->wipe();
+        this->stack_idx = old_stack_idx;
+        this->bi_id = new_bi_id;
+        this->bi_key = baseitem.bi_key;
+        this->pval = baseitem.pval;
+        this->number = 1;
+        this->weight = baseitem.weight;
+        this->to_h = baseitem.to_h;
+        this->to_d = baseitem.to_d;
+        this->to_a = baseitem.to_a;
+        this->ac = baseitem.ac;
+        this->damage_dice = baseitem.damage_dice;
 
-    if (this->get_baseitem().cost <= 0) {
-        this->ident |= (IDENT_BROKEN);
-    }
+        if (baseitem.act_idx > RandomArtActType::NONE) {
+            this->activation_id = baseitem.act_idx;
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::CURSED)) {
-        this->curse_flags.set(CurseTraitType::CURSED);
-    }
+        if (this->is_worthless()) {
+            this->ident |= (IDENT_BROKEN);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::HEAVY_CURSE)) {
-        this->curse_flags.set(CurseTraitType::HEAVY_CURSE);
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::CURSED)) {
+            this->curse_flags.set(CurseTraitType::CURSED);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::PERMA_CURSE)) {
-        this->curse_flags.set(CurseTraitType::PERMA_CURSE);
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::HEAVY_CURSE)) {
+            this->curse_flags.set(CurseTraitType::HEAVY_CURSE);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE0)) {
-        this->curse_flags.set(get_curse(0, this));
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::PERMA_CURSE)) {
+            this->curse_flags.set(CurseTraitType::PERMA_CURSE);
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE1)) {
-        this->curse_flags.set(get_curse(1, this));
-    }
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE0)) {
+            this->curse_flags.set(get_curse(0, this));
+        }
 
-    if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE2)) {
-        this->curse_flags.set(get_curse(2, this));
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE1)) {
+            this->curse_flags.set(get_curse(1, this));
+        }
+
+        if (baseitem.gen_flags.has(ItemGenerationTraitType::RANDOM_CURSE2)) {
+            this->curse_flags.set(get_curse(2, this));
+        }
+#ifdef WIN_DEBUG
+    } catch (const std::exception) {
+#else
+    } catch (const std::exception &e) {
+#endif
+        msg_format("*** Invalid Item ID: %d ***", new_bi_id);
+#ifdef WIN_DEBUG
+        this->generate(BaseitemKey(ItemKindType::JUNK));
+        return;
+#else
+        throw e;
+#endif
     }
 }
 
@@ -457,7 +497,7 @@ bool ItemEntity::is_offerable() const
         return false;
     }
 
-    return angband_strchr("pht", monraces_info[i2enum<MonsterRaceId>(this->pval)].d_char) != nullptr;
+    return this->get_monrace().is_human();
 }
 
 /*!
@@ -561,11 +601,7 @@ bool ItemEntity::can_pile(const ItemEntity *j_ptr) const
         return false;
     }
 
-    if (this->dd != j_ptr->dd) {
-        return false;
-    }
-
-    if (this->ds != j_ptr->ds) {
+    if (this->damage_dice != j_ptr->damage_dice) {
         return false;
     }
 
@@ -580,51 +616,21 @@ bool ItemEntity::can_pile(const ItemEntity *j_ptr) const
     return true;
 }
 
-/*
- * @brief アイテムの色を取得する
- * @details 未鑑定名のあるアイテム (薬等)は、未鑑定名の割り当てられた色を返す
- * 未鑑定名のないアイテム (魔法書等)はベースアイテム定義そのままを返す
- * その中でモンスターの死体以外は、ベースアイテムの色を返す
- * モンスターの死体は、元モンスターの色を返す
- * 異常アイテム (「何か」)の場合、ベースアイテム定義に基づき黒を返す
+/*!
+ * @brief アイテムのシンボルを取得する
+ * @return シンボル
+ * @details シンボル変更コマンドの影響を受けたくないので毎回ベースアイテムからシンボルを引っ張って返す.
  */
-TERM_COLOR ItemEntity::get_color() const
+DisplaySymbol ItemEntity::get_symbol() const
 {
-    const auto &baseitem = this->get_baseitem();
-    const auto flavor = baseitem.flavor;
-    if (flavor != 0) {
-        return baseitems_info[flavor].cc_config.color;
-    }
-
-    const auto &cc_config = baseitem.cc_config;
-    auto has_attr = this->is_valid();
-    has_attr &= this->is_corpse();
-    has_attr &= cc_config.color == TERM_DARK;
-    if (!has_attr) {
-        return cc_config.color;
-    }
-
-    return monraces_info[i2enum<MonsterRaceId>(this->pval)].x_attr;
-}
-
-/*
- * @brief アイテムシンボルを取得する
- * @details 未鑑定名のないアイテム (魔法書等)はベースアイテム定義そのまま
- * 未鑑定名のあるアイテム (薬等)は、未鑑定名の割り当てられたシンボル
- * 以上について、設定で変更しているシンボルならばそれを、していないならば定義シンボルを返す
- */
-char ItemEntity::get_symbol() const
-{
-    const auto &baseitem = this->get_baseitem();
-    const auto flavor = baseitem.flavor;
-    return flavor ? baseitems_info[flavor].cc_config.character : baseitem.cc_config.character;
+    return { this->get_color(), this->get_character() };
 }
 
 /*!
  * @brief アイテム価格算出のメインルーチン
  * @return 判明している現価格
  */
-int ItemEntity::get_price() const
+int ItemEntity::calc_price() const
 {
     int value;
     const auto is_worthless = this->is_broken() || this->is_cursed();
@@ -685,14 +691,12 @@ int ItemEntity::get_baseitem_price() const
 
 int ItemEntity::calc_figurine_value() const
 {
-    const auto r_idx = i2enum<MonsterRaceId>(this->pval);
-    return MonraceList::get_instance().calc_figurine_value(r_idx);
+    return this->get_monrace().calc_figurine_value();
 }
 
 int ItemEntity::calc_capture_value() const
 {
-    const auto r_idx = i2enum<MonsterRaceId>(this->pval);
-    return MonraceList::get_instance().calc_capture_value(r_idx);
+    return this->get_monrace().calc_capture_value();
 }
 
 /*!
@@ -706,7 +710,7 @@ bool ItemEntity::should_refuse_enchant() const
 
 bool ItemEntity::is_specific_artifact(FixedArtifactId id) const
 {
-    return this->fixed_artifact_idx == id;
+    return this->fa_id == id;
 }
 
 bool ItemEntity::has_unidentified_name() const
@@ -771,7 +775,7 @@ bool ItemEntity::is_corpse() const
 
 bool ItemEntity::is_inscribed() const
 {
-    return this->inscription != std::nullopt;
+    return this->inscription != tl::nullopt;
 }
 
 /*!
@@ -789,9 +793,57 @@ bool ItemEntity::has_activation() const
     return this->get_activation_index() != RandomArtActType::NONE;
 }
 
-BaseitemInfo &ItemEntity::get_baseitem() const
+bool ItemEntity::has_bias() const
 {
-    return baseitems_info[this->bi_id];
+    return this->artifact_bias != RandomArtifactBias::NONE;
+}
+
+bool ItemEntity::is_bounty() const
+{
+    if (this->bi_key.tval() != ItemKindType::MONSTER_REMAINS) {
+        return false;
+    }
+
+    if (vanilla_town) {
+        return false;
+    }
+
+    const auto monrace_id = this->get_monrace_id();
+    if (MonraceList::is_tsuchinoko(monrace_id)) {
+        return true;
+    }
+
+    const auto &world = AngbandWorld::get_instance();
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    if (world.knows_daily_bounty && (monrace.name == world.get_today_bounty().name)) {
+        return true;
+    }
+
+    return monrace.is_bounty(true);
+}
+
+bool ItemEntity::is_target_of(QuestId quest_id) const
+{
+    if (!inside_quest(quest_id)) {
+        return false;
+    }
+
+    const auto &quest = QuestList::get_instance().get_quest(quest_id);
+    if (!quest.has_reward()) {
+        return false;
+    }
+
+    const auto &artifact = quest.get_reward();
+    if (artifact.gen_flags.has(ItemGenerationTraitType::INSTA_ART)) {
+        return false;
+    }
+
+    return this->bi_key == artifact.bi_key;
+}
+
+BaseitemDefinition &ItemEntity::get_baseitem() const
+{
+    return BaseitemList::get_instance().get_baseitem(this->bi_id);
 }
 
 EgoItemDefinition &ItemEntity::get_ego() const
@@ -799,9 +851,14 @@ EgoItemDefinition &ItemEntity::get_ego() const
     return egos_info.at(this->ego_idx);
 }
 
-ArtifactType &ItemEntity::get_fixed_artifact() const
+ArtifactType &ItemEntity::get_fixed_artifact()
 {
-    return ArtifactsInfo::get_instance().get_artifact(this->fixed_artifact_idx);
+    return ArtifactList::get_instance().get_artifact(this->fa_id);
+}
+
+const ArtifactType &ItemEntity::get_fixed_artifact() const
+{
+    return ArtifactList::get_instance().get_artifact(this->fa_id);
 }
 
 TrFlags ItemEntity::get_flags() const
@@ -886,7 +943,353 @@ std::string ItemEntity::explain_activation() const
         return this->build_activation_description();
     }
 
-    return this->bi_key.explain_activation();
+    return _("何も起きない", "Nothing");
+}
+
+/*!
+ * @brief アイテムのpvalがモンスター種族IDを指しているかチェックする
+ * @return モンスター種族IDの意図で使われているか否か
+ */
+bool ItemEntity::has_monrace() const
+{
+    if ((this->pval < 0) || !this->bi_key.is_monster()) {
+        return false;
+    }
+
+    if (!this->bi_key.is(ItemKindType::CAPTURE) && (this->pval == 0)) {
+        return false;
+    }
+
+    const auto &monraces = MonraceList::get_instance();
+    return this->pval < static_cast<short>(monraces.size());
+}
+
+/*!
+ * @brief アイテムのpvalからモンスター種族を引いて返す
+ * @return モンスター種族定義
+ * @details 死体/骨・モンスターボール・人形・像が該当する.
+ */
+const MonraceDefinition &ItemEntity::get_monrace() const
+{
+    if (!this->has_monrace()) {
+        const auto msg = fmt::format("This item is not related to monrace!: {}", this->build_item_info_for_debug());
+        THROW_EXCEPTION(std::logic_error, msg);
+    }
+
+    const auto monrace_id = this->get_monrace_id();
+    return MonraceList::get_instance().get_monrace(monrace_id);
+}
+
+void ItemEntity::track_baseitem() const
+{
+    BaseitemTracker::get_instance().set_trackee(this->bi_id);
+}
+
+/*!
+ * @brief アイテムを同一スロットへ重ねることができるかどうかを返す
+ * @param other 検証したいアイテムへの参照
+ * @return 重ね合わせ可能ならばTRUE
+ */
+bool ItemEntity::is_similar(const ItemEntity &other) const
+{
+    const auto total = this->number + other.number;
+    const auto max_num = this->is_similar_part(other);
+    return (max_num != 0) && (total <= max_num);
+}
+
+/*!
+ * @brief 両オブジェクトをスロットに重ね合わせ可能な最大数を返す
+ * @param other 検証したいアイテムへの参照
+ * @return 重ね合わせ可能なアイテム数
+ */
+int ItemEntity::is_similar_part(const ItemEntity &other) const
+{
+    if (this->bi_id != other.bi_id) {
+        return 0;
+    }
+
+    constexpr auto max_stack_size = 99;
+    auto max_num = max_stack_size;
+    switch (this->bi_key.tval()) {
+    case ItemKindType::CHEST:
+    case ItemKindType::CARD:
+    case ItemKindType::CAPTURE:
+        return 0;
+    case ItemKindType::STATUE: {
+        if (this->bi_key.are_both_statue(other.bi_key) || (this->pval != other.pval)) {
+            return 0;
+        }
+
+        break;
+    }
+    case ItemKindType::FIGURINE:
+    case ItemKindType::MONSTER_REMAINS:
+        if (this->pval != other.pval) {
+            return 0;
+        }
+
+        break;
+    case ItemKindType::FOOD:
+    case ItemKindType::POTION:
+    case ItemKindType::SCROLL:
+        break;
+    case ItemKindType::STAFF:
+        if ((none_bits(this->ident, IDENT_EMPTY) && !this->is_known()) || (none_bits(other.ident, IDENT_EMPTY) && !other.is_known())) {
+            return 0;
+        }
+
+        if (this->pval != other.pval) {
+            return 0;
+        }
+
+        break;
+    case ItemKindType::WAND:
+        if ((none_bits(this->ident, IDENT_EMPTY) && !this->is_known()) || (none_bits(other.ident, IDENT_EMPTY) && !other.is_known())) {
+            return 0;
+        }
+
+        break;
+    case ItemKindType::ROD:
+        max_num = std::min(max_num, MAX_SHORT / this->get_baseitem().pval);
+        break;
+    case ItemKindType::GLOVES:
+        if (this->is_glove_same_temper(&other)) {
+            return 0;
+        }
+
+        if (!this->is_known() || !other.is_known()) {
+            return 0;
+        }
+
+        if (!this->can_pile(&other)) {
+            return 0;
+        }
+
+        break;
+    case ItemKindType::LITE:
+        if (this->fuel != other.fuel) {
+            return 0;
+        }
+
+        if (!this->is_known() || !other.is_known()) {
+            return 0;
+        }
+
+        if (!this->can_pile(&other)) {
+            return 0;
+        }
+
+        break;
+    case ItemKindType::BOW:
+    case ItemKindType::DIGGING:
+    case ItemKindType::HAFTED:
+    case ItemKindType::POLEARM:
+    case ItemKindType::SWORD:
+    case ItemKindType::BOOTS:
+    case ItemKindType::HELM:
+    case ItemKindType::CROWN:
+    case ItemKindType::SHIELD:
+    case ItemKindType::CLOAK:
+    case ItemKindType::SOFT_ARMOR:
+    case ItemKindType::HARD_ARMOR:
+    case ItemKindType::DRAG_ARMOR:
+    case ItemKindType::RING:
+    case ItemKindType::AMULET:
+    case ItemKindType::WHISTLE:
+        if (!this->is_known() || !other.is_known()) {
+            return 0;
+        }
+
+        if (!this->can_pile(&other)) {
+            return 0;
+        }
+
+        break;
+    case ItemKindType::BOLT:
+    case ItemKindType::ARROW:
+    case ItemKindType::SHOT:
+        if (!this->can_pile(&other)) {
+            return 0;
+        }
+
+        break;
+    default:
+        if (!this->is_known() || !other.is_known()) {
+            return 0;
+        }
+
+        break;
+    }
+
+    if (this->art_flags != other.art_flags) {
+        return 0;
+    }
+
+    if (this->curse_flags != other.curse_flags) {
+        return 0;
+    }
+
+    if (any_bits(this->ident, IDENT_BROKEN) != any_bits(other.ident, IDENT_BROKEN)) {
+        return 0;
+    }
+
+    if (this->is_inscribed() && other.is_inscribed() && (this->inscription != other.inscription)) {
+        return 0;
+    }
+
+    if (!stack_force_notes && (this->inscription != other.inscription)) {
+        return 0;
+    }
+
+    if (!stack_force_costs && (this->discount != other.discount)) {
+        return 0;
+    }
+
+    return max_num;
+}
+
+/*!
+ * @brief 店舗に並べた品を同一品であるかどうか判定する
+ * @param other 比較対象アイテムへの参照
+ * @return 同一扱いできるならTRUEを返す
+ */
+bool ItemEntity::is_similar_for_store(const ItemEntity &other) const
+{
+    if (this == &other) {
+        return false;
+    }
+
+    if (this->bi_id != other.bi_id) {
+        return false;
+    }
+
+    if ((this->pval != other.pval) && !this->is_wand_rod()) {
+        return false;
+    }
+
+    if (this->to_h != other.to_h) {
+        return false;
+    }
+
+    if (this->to_d != other.to_d) {
+        return false;
+    }
+
+    if (this->to_a != other.to_a) {
+        return false;
+    }
+
+    if (this->ego_idx != other.ego_idx) {
+        return false;
+    }
+
+    if (this->is_fixed_or_random_artifact() || other.is_fixed_or_random_artifact()) {
+        return false;
+    }
+
+    if (this->art_flags != other.art_flags) {
+        return false;
+    }
+
+    if (this->timeout || other.timeout) {
+        return false;
+    }
+
+    if (this->ac != other.ac) {
+        return false;
+    }
+
+    if (this->damage_dice != other.damage_dice) {
+        return false;
+    }
+
+    const auto tval = this->bi_key.tval();
+    if (tval == ItemKindType::CHEST) {
+        return false;
+    }
+
+    if (tval == ItemKindType::STATUE) {
+        return false;
+    }
+
+    if (tval == ItemKindType::CAPTURE) {
+        return false;
+    }
+
+    if ((tval == ItemKindType::LITE) && (this->fuel != other.fuel)) {
+        return false;
+    }
+
+    if (this->discount != other.discount) {
+        return false;
+    }
+
+    return true;
+}
+
+int ItemEntity::get_baseitem_level() const
+{
+    return this->get_baseitem().level;
+}
+
+short ItemEntity::get_baseitem_pval() const
+{
+    return this->get_baseitem().pval;
+}
+
+bool ItemEntity::is_worthless() const
+{
+    return this->get_baseitem().cost <= 0;
+}
+
+int ItemEntity::get_baseitem_cost() const
+{
+    return this->get_baseitem().cost;
+}
+
+MonraceId ItemEntity::get_monrace_id() const
+{
+    if (!this->has_monrace()) {
+        const auto msg = fmt::format("This item is not related to monrace!: {}", this->build_item_info_for_debug());
+        THROW_EXCEPTION(std::logic_error, msg);
+    }
+
+    return i2enum<MonraceId>(this->pval);
+}
+
+int ItemEntity::get_lite_radius() const
+{
+    const auto flags = this->get_flags();
+    auto radius = 0;
+
+    if (flags.has(TR_LITE_1) && flags.has_not(TR_DARK_SOURCE)) {
+        radius += 1;
+    }
+    if (flags.has(TR_LITE_2) && flags.has_not(TR_DARK_SOURCE)) {
+        radius += 2;
+    }
+    if (flags.has(TR_LITE_3) && flags.has_not(TR_DARK_SOURCE)) {
+        radius += 3;
+    }
+    if (flags.has(TR_LITE_M1)) {
+        radius -= 1;
+    }
+    if (flags.has(TR_LITE_M2)) {
+        radius -= 2;
+    }
+    if (flags.has(TR_LITE_M3)) {
+        radius -= 3;
+    }
+
+    if (this->ego_idx == EgoType::LITE_SHINE) {
+        radius++;
+    }
+    return radius;
+}
+
+Pos2D ItemEntity::get_position() const
+{
+    return { this->iy, this->ix };
 }
 
 std::string ItemEntity::build_timeout_description(const ActivationType &act) const
@@ -947,9 +1350,97 @@ void ItemEntity::mark_as_known()
  */
 void ItemEntity::mark_as_tried() const
 {
-    this->get_baseitem().mark_as_tried();
+    this->get_baseitem().mark_trial(true);
 }
 
+void ItemEntity::set_position(const Pos2D &pos)
+{
+    this->iy = pos.y;
+    this->ix = pos.x;
+}
+
+/*!
+ * @brief 非INSTA_ART型の固定アーティファクトの生成を確率に応じて試行する.
+ * @param dungeon_level ダンジョンの階層
+ * @return 生成に成功したか失敗したか
+ */
+bool ItemEntity::try_become_artifact(int dungeon_level)
+{
+    if (this->number != 1) {
+        return false;
+    }
+
+    for (const auto &[a_idx, artifact] : ArtifactList::get_instance()) {
+        if (!artifact.can_generate(this->bi_key)) {
+            continue;
+        }
+
+        if ((artifact.level > dungeon_level) && !one_in_((artifact.level - dungeon_level) * 2)) {
+            continue;
+        }
+
+        if (!one_in_(artifact.rarity)) {
+            continue;
+        }
+
+        this->fa_id = a_idx;
+        return true;
+    }
+
+    return false;
+}
+
+/*!
+ * @brief 両オブジェクトをスロットに重ね合わせる
+ * @param other 重ね合わせ元アイテムへの参照
+ */
+void ItemEntity::absorb(ItemEntity &other)
+{
+    int max_num = this->is_similar_part(other);
+    int total = this->number + other.number;
+    int diff = (total > max_num) ? total - max_num : 0;
+
+    this->number = (total > max_num) ? max_num : total;
+    if (other.is_known()) {
+        this->mark_as_known();
+    }
+
+    if (((this->ident & IDENT_STORE) || (other.ident & IDENT_STORE)) && (!((this->ident & IDENT_STORE) && (other.ident & IDENT_STORE)))) {
+        if (other.ident & IDENT_STORE) {
+            other.ident &= 0xEF;
+        }
+
+        if (this->ident & IDENT_STORE) {
+            this->ident &= 0xEF;
+        }
+    }
+
+    if (other.is_fully_known()) {
+        this->ident |= (IDENT_FULL_KNOWN);
+    }
+
+    if (other.is_inscribed()) {
+        this->inscription = other.inscription;
+    }
+
+    if (other.feeling) {
+        this->feeling = other.feeling;
+    }
+
+    if (this->discount < other.discount) {
+        this->discount = other.discount;
+    }
+
+    const auto tval = this->bi_key.tval();
+    if (tval == ItemKindType::ROD) {
+        this->pval += other.pval * (other.number - diff) / other.number;
+        this->timeout += other.timeout * (other.number - diff) / other.number;
+    }
+
+    if (tval == ItemKindType::WAND) {
+        this->pval += other.pval * (other.number - diff) / other.number;
+    }
+}
 /*!
  * @brief エゴ光源のフラグを修正する
  *
@@ -1077,4 +1568,50 @@ std::string ItemEntity::build_activation_description_dragon_breath() const
 {
     const auto flags = this->get_flags();
     return DragonBreaths::build_description(flags);
+}
+
+/*
+ * @brief アイテムの色を取得する
+ * @details 未鑑定名のあるアイテム (薬等)は、未鑑定名の割り当てられた色を返す
+ * 未鑑定名のないアイテム (魔法書等)はベースアイテム定義そのままを返す
+ * その中でモンスターの死体以外は、ベースアイテムの色を返す
+ * モンスターの死体は、元モンスターの色を返す
+ * 異常アイテム (「何か」)の場合、ベースアイテム定義に基づき黒を返す
+ */
+uint8_t ItemEntity::get_color() const
+{
+    const auto &baseitem = this->get_baseitem();
+    const auto flavor = baseitem.flavor;
+    if (flavor != 0) {
+        return BaseitemList::get_instance().get_baseitem(flavor).symbol_config.color;
+    }
+
+    const auto &symbol_config = baseitem.symbol_config;
+    auto has_attr = this->is_valid();
+    has_attr &= this->is_corpse();
+    has_attr &= symbol_config.color == TERM_DARK;
+    if (!has_attr) {
+        return symbol_config.color;
+    }
+
+    return this->get_monrace().symbol_config.color;
+}
+
+/*
+ * @brief アイテムシンボルを取得する
+ * @details 未鑑定名のないアイテム (魔法書等)はベースアイテム定義そのまま
+ * 未鑑定名のあるアイテム (薬等)は、未鑑定名の割り当てられたシンボル
+ * 以上について、設定で変更しているシンボルならばそれを、していないならば定義シンボルを返す
+ */
+char ItemEntity::get_character() const
+{
+    const auto &baseitem = this->get_baseitem();
+    const auto flavor = baseitem.flavor;
+    return flavor ? BaseitemList::get_instance().get_baseitem(flavor).symbol_config.character : baseitem.symbol_config.character;
+}
+
+std::string ItemEntity::build_item_info_for_debug() const
+{
+    // とりあえず例外送出の原因となる可能性のあるフィールドのみ出力
+    return fmt::format("tval = {}, sval = {}, pval = {}", enum2i(this->bi_key.tval()), this->bi_key.sval().value_or(-1), this->pval);
 }

@@ -1,11 +1,19 @@
+/*!
+ * @brief 地形特性トークン辞書実装
+ * @author Hourier
+ * @date 2024/12/08
+ */
+
 #include "info-reader/feature-info-tokens-table.h"
+#include "system/enums/terrain/terrain-characteristics.h"
+#include "system/enums/terrain/terrain-tag.h"
 
 /*!
  * @brief 地形属性トークンの定義 / Feature info flags
  */
 const std::unordered_map<std::string_view, TerrainCharacteristics> f_info_flags = {
     { "LOS", TerrainCharacteristics::LOS },
-    { "PROJECT", TerrainCharacteristics::PROJECT },
+    { "PROJECTION", TerrainCharacteristics::PROJECTION },
     { "MOVE", TerrainCharacteristics::MOVE },
     { "PLACE", TerrainCharacteristics::PLACE },
     { "DROP", TerrainCharacteristics::DROP },
@@ -129,4 +137,123 @@ const std::unordered_map<std::string_view, TerrainCharacteristics> f_info_flags 
     { "THORN", TerrainCharacteristics::THORN },
     { "TENTACLE", TerrainCharacteristics::TENTACLE },
 
+};
+
+const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
+    { "NONE", TerrainTag::NONE },
+    { "UNDETECTED", TerrainTag::UNDETECTED },
+    { "FLOOR", TerrainTag::FLOOR },
+    { "RUNE_PROTECTION", TerrainTag::RUNE_PROTECTION },
+    { "RUNE_EXPLOSION", TerrainTag::RUNE_EXPLOSION },
+    { "MIRROR", TerrainTag::MIRROR },
+    { "UP_STAIR", TerrainTag::UP_STAIR },
+    { "DOWN_STAIR", TerrainTag::DOWN_STAIR },
+    { "ENTRANCE", TerrainTag::ENTRANCE },
+    { "RUBBLE", TerrainTag::RUBBLE },
+    { "MAGMA_VEIN", TerrainTag::MAGMA_VEIN },
+    { "QUARTZ_VEIN", TerrainTag::QUARTZ_VEIN },
+    { "GRANITE", TerrainTag::GRANITE_WALL },
+    { "PERMANENT", TerrainTag::PERMANENT_WALL },
+    { "GLASS_FLOOR", TerrainTag::GLASS_FLOOR },
+    { "GLASS_WALL", TerrainTag::GLASS_WALL },
+    { "PERMANENT_GLASS_WALL", TerrainTag::PERMANENT_GLASS_WALL },
+    { "BLACK_MARKET", TerrainTag::BLACK_MARKET },
+    { "TOWN", TerrainTag::TOWN },
+    { "DEEP_WATER", TerrainTag::DEEP_WATER },
+    { "SHALLOW_WATER", TerrainTag::SHALLOW_WATER },
+    { "DEEP_LAVA", TerrainTag::DEEP_LAVA },
+    { "SHALLOW_LAVA", TerrainTag::SHALLOW_LAVA },
+    { "HEAVY_COLD_ZONE", TerrainTag::HEAVY_COLD_ZONE },
+    { "COLD_ZONE", TerrainTag::COLD_ZONE },
+    { "HEAVY_ELECTRICAL_ZONE", TerrainTag::HEAVY_ELECTRICAL_ZONE },
+    { "ELECTRICAL_ZONE", TerrainTag::ELECTRICAL_ZONE },
+    { "DEEP_ACID_PUDDLE", TerrainTag::DEEP_ACID_PUDDLE },
+    { "SHALLOW_ACID_PUDDLE", TerrainTag::SHALLOW_ACID_PUDDLE },
+    { "DEEP_POISONOUS_PUDDLE", TerrainTag::DEEP_POISONOUS_PUDDLE },
+    { "SHALLOW_POISONOUS_PUDDLE", TerrainTag::SHALLOW_POISONOUS_PUDDLE },
+    { "DEEP_DUNG_POOL", TerrainTag::DEEP_DUNG_POOL },
+    { "SHALLOW_DUNG_POOL", TerrainTag::SHALLOW_DUNG_POOL },
+    { "DIRT", TerrainTag::DIRT },
+    { "GRASS", TerrainTag::GRASS },
+    { "BRAKE", TerrainTag::BRAKE },
+    { "FLOWER", TerrainTag::FLOWER },
+    { "TREE", TerrainTag::TREE },
+    { "MOUNTAIN", TerrainTag::MOUNTAIN },
+    { "SWAMP", TerrainTag::SWAMP },
+
+    { "TRAP_TRAPDOOR", TerrainTag::TRAP_TRAPDOOR },
+    { "TRAP_PIT", TerrainTag::TRAP_PIT },
+    { "TRAP_SPIKED_PIT", TerrainTag::TRAP_SPIKED_PIT },
+    { "TRAP_POISON_PIT", TerrainTag::TRAP_POISON_PIT },
+    { "TRAP_TY_CURSE", TerrainTag::TRAP_TY_CURSE },
+    { "TRAP_TELEPORT", TerrainTag::TRAP_TELEPORT },
+    { "TRAP_FIRE", TerrainTag::TRAP_FIRE },
+    { "TRAP_ACID", TerrainTag::TRAP_ACID },
+    { "TRAP_SLOW", TerrainTag::TRAP_SLOW },
+    { "TRAP_LOSE_STR", TerrainTag::TRAP_LOSE_STR },
+    { "TRAP_LOSE_DEX", TerrainTag::TRAP_LOSE_DEX },
+    { "TRAP_LOSE_CON", TerrainTag::TRAP_LOSE_CON },
+    { "TRAP_BLIND", TerrainTag::TRAP_BLIND },
+    { "TRAP_CONFUSE", TerrainTag::TRAP_CONFUSE },
+    { "TRAP_POISON", TerrainTag::TRAP_POISON },
+    { "TRAP_SLEEP", TerrainTag::TRAP_SLEEP },
+    { "TRAP_TRAPS", TerrainTag::TRAP_TRAPS },
+    { "TRAP_ALARM", TerrainTag::TRAP_ALARM },
+
+    { "TRAP_OPEN", TerrainTag::TRAP_OPEN },
+    { "TRAP_PIRANHA", TerrainTag::TRAP_PIRANHA },
+    { "TRAP_ARMAGEDDON", TerrainTag::TRAP_ARMAGEDDON },
+
+    { "PATTERN_START", TerrainTag::PATTERN_START },
+    { "PATTERN_1", TerrainTag::PATTERN_1 },
+    { "PATTERN_2", TerrainTag::PATTERN_2 },
+    { "PATTERN_3", TerrainTag::PATTERN_3 },
+    { "PATTERN_4", TerrainTag::PATTERN_4 },
+    { "PATTERN_END", TerrainTag::PATTERN_END },
+    { "PATTERN_OLD", TerrainTag::PATTERN_OLD },
+    { "PATTERN_EXIT", TerrainTag::PATTERN_EXIT },
+    { "PATTERN_CORRUPTED", TerrainTag::PATTERN_CORRUPTED },
+
+    { "LOCKED_DOOR_1", TerrainTag::LOCKED_DOOR_1 },
+    { "LOCKED_DOOR_2", TerrainTag::LOCKED_DOOR_2 },
+    { "LOCKED_DOOR_3", TerrainTag::LOCKED_DOOR_3 },
+    { "LOCKED_DOOR_4", TerrainTag::LOCKED_DOOR_4 },
+    { "LOCKED_DOOR_5", TerrainTag::LOCKED_DOOR_5 },
+    { "LOCKED_DOOR_6", TerrainTag::LOCKED_DOOR_6 },
+    { "LOCKED_DOOR_7", TerrainTag::LOCKED_DOOR_7 },
+
+    { "JAMMED_DOOR_0", TerrainTag::JAMMED_DOOR_0 },
+    { "JAMMED_DOOR_1", TerrainTag::JAMMED_DOOR_1 },
+    { "JAMMED_DOOR_2", TerrainTag::JAMMED_DOOR_2 },
+    { "JAMMED_DOOR_3", TerrainTag::JAMMED_DOOR_3 },
+    { "JAMMED_DOOR_4", TerrainTag::JAMMED_DOOR_4 },
+    { "JAMMED_DOOR_5", TerrainTag::JAMMED_DOOR_5 },
+    { "JAMMED_DOOR_6", TerrainTag::JAMMED_DOOR_6 },
+    { "JAMMED_DOOR_7", TerrainTag::JAMMED_DOOR_7 },
+
+    { "LOCKED_GLASS_DOOR_1", TerrainTag::LOCKED_GLASS_DOOR_1 },
+    { "LOCKED_GLASS_DOOR_2", TerrainTag::LOCKED_GLASS_DOOR_2 },
+    { "LOCKED_GLASS_DOOR_3", TerrainTag::LOCKED_GLASS_DOOR_3 },
+    { "LOCKED_GLASS_DOOR_4", TerrainTag::LOCKED_GLASS_DOOR_4 },
+    { "LOCKED_GLASS_DOOR_5", TerrainTag::LOCKED_GLASS_DOOR_5 },
+    { "LOCKED_GLASS_DOOR_6", TerrainTag::LOCKED_GLASS_DOOR_6 },
+    { "LOCKED_GLASS_DOOR_7", TerrainTag::LOCKED_GLASS_DOOR_7 },
+
+    { "JAMMED_GLASS_DOOR_0", TerrainTag::JAMMED_GLASS_DOOR_0 },
+    { "JAMMED_GLASS_DOOR_1", TerrainTag::JAMMED_GLASS_DOOR_1 },
+    { "JAMMED_GLASS_DOOR_2", TerrainTag::JAMMED_GLASS_DOOR_2 },
+    { "JAMMED_GLASS_DOOR_3", TerrainTag::JAMMED_GLASS_DOOR_3 },
+    { "JAMMED_GLASS_DOOR_4", TerrainTag::JAMMED_GLASS_DOOR_4 },
+    { "JAMMED_GLASS_DOOR_5", TerrainTag::JAMMED_GLASS_DOOR_5 },
+    { "JAMMED_GLASS_DOOR_6", TerrainTag::JAMMED_GLASS_DOOR_6 },
+    { "JAMMED_GLASS_DOOR_7", TerrainTag::JAMMED_GLASS_DOOR_7 },
+
+    { "OPEN_DOOR", TerrainTag::OPEN_DOOR },
+    { "BROKEN_DOOR", TerrainTag::BROKEN_DOOR },
+    { "CLOSED_DOOR", TerrainTag::CLOSED_DOOR },
+    { "OPEN_GLASS_DOOR", TerrainTag::OPEN_GLASS_DOOR },
+    { "BROKEN_GLASS_DOOR", TerrainTag::BROKEN_GLASS_DOOR },
+    { "CLOSED_GLASS_DOOR", TerrainTag::CLOSED_GLASS_DOOR },
+    { "OPEN_CURTAIN", TerrainTag::OPEN_CURTAIN },
+    { "CLOSED_CURTAIN", TerrainTag::CLOSED_CURTAIN },
 };

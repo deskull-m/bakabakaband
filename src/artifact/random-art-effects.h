@@ -143,6 +143,9 @@ enum class RandomArtActType : short {
     DISPEL_MAGIC = 144,
     DESTRUCTION = 145,
     /* 143 - 245 unused */
+    /* 143 - 243 unused */
+    WHISTLE = 244,
+    CAPTURE_MONSTER = 245,
     FALLING_STAR = 246,
     STRAIN_HASTE = 247,
     TELEPORT_LEVEL = 248,

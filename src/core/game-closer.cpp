@@ -23,7 +23,7 @@
 #include "player/player-sex.h"
 #include "player/process-death.h"
 #include "save/save.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -54,7 +54,7 @@ static void send_world_score_on_closing(PlayerType *player_ptr, bool do_send)
         return;
     }
 
-    player_ptr->wait_report_score = true;
+    AngbandSystem::get_instance().set_awaiting_report_score(true);
     player_ptr->is_dead = false;
     if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
         msg_print(_("セーブ失敗！", "death save failed!"));
@@ -90,7 +90,8 @@ static bool check_death(PlayerType *player_ptr)
 static void kingly(PlayerType *player_ptr)
 {
     bool seppuku = streq(player_ptr->died_from, "Seppuku");
-    player_ptr->current_floor_ptr->dun_level = 0;
+    auto &floor = *player_ptr->current_floor_ptr;
+    floor.dun_level = 0;
     if (!seppuku) {
         /* 引退したときの識別文字 */
         player_ptr->died_from = _("ripe", "Ripe Old Age");
@@ -117,17 +118,17 @@ static void kingly(PlayerType *player_ptr)
 #ifdef JP
     put_str("Veni, Vidi, Vici!", 15, 31);
     put_str("来た、見た、勝った！", 16, 30);
-    put_str(format("偉大なる%s万歳！", sp_ptr->winner), 17, 29);
+    put_str(format("偉大なる%s万歳！", sp_ptr->winner.data()), 17, 29);
 #else
     put_str("Veni, Vidi, Vici!", 15, 31);
     put_str("I came, I saw, I conquered!", 16, 26);
-    put_str(format("All Hail the Mighty %s!", sp_ptr->winner), 17, 27);
+    put_str(format("All Hail the Mighty %s!", sp_ptr->winner.data()), 17, 27);
 #endif
 
     if (!seppuku) {
-        exe_write_diary(player_ptr, DiaryKind::DESCRIPTION, 0, _("ダンジョンの探索から引退した。", "retired exploring dungeons."));
-        exe_write_diary(player_ptr, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
-        exe_write_diary(player_ptr, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
+        exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("ダンジョンの探索から引退した。", "retired exploring dungeons."));
+        exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
+        exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
     }
 
     flush();
@@ -146,12 +147,13 @@ static void kingly(PlayerType *player_ptr)
 void close_game(PlayerType *player_ptr)
 {
     handle_stuff(player_ptr);
-    msg_print(nullptr);
+    msg_erase();
     flush();
     signals_ignore_tstp();
 
-    w_ptr->character_icky_depth = 1;
-    const auto &path = path_build(ANGBAND_DIR_APEX, "scores.raw");
+    auto &world = AngbandWorld::get_instance();
+    world.character_icky_depth = 1;
+    const auto path = path_build(ANGBAND_DIR_APEX, "scores.raw");
     safe_setuid_grab();
     highscore_fd = fd_open(path, O_RDWR);
     safe_setuid_drop();
@@ -161,7 +163,7 @@ void close_game(PlayerType *player_ptr)
     }
 
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
-    if (w_ptr->total_winner) {
+    if (world.total_winner) {
         kingly(player_ptr);
     }
 
@@ -169,8 +171,8 @@ void close_game(PlayerType *player_ptr)
 
     auto do_send = true;
     if (!cheat_save || input_check(_("死んだデータをセーブしますか？ ", "Save death? "))) {
-        w_ptr->update_playtime();
-        w_ptr->sf_play_time += w_ptr->play_time;
+        world.play_time.update();
+        world.sf_play_time += world.play_time.elapsed_sec();
 
         if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
             msg_print(_("セーブ失敗！", "death save failed!"));
@@ -184,7 +186,7 @@ void close_game(PlayerType *player_ptr)
     term_clear();
     if (check_score(player_ptr)) {
         send_world_score_on_closing(player_ptr, do_send);
-        if (!player_ptr->wait_report_score) {
+        if (!AngbandSystem::get_instance().is_awaiting_report_status()) {
             (void)top_twenty(player_ptr);
         }
     } else if (highscore_fd >= 0) {

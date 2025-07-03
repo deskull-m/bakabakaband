@@ -16,22 +16,19 @@
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "main/sound-of-music.h"
-#include "monster-race/monster-race.h"
-#include "object/object-kind-hook.h"
 #include "player-info/class-info.h"
-#include "realm/realm-names-table.h"
+#include "player/player-realm.h"
 #include "spell/spells-execution.h"
 #include "spell/spells-util.h"
-#include "system/angband-version.h"
-#include "system/baseitem-info.h"
+#include "system/angband-system.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
-#include "util/sort.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/fixed-artifacts-spoiler.h"
@@ -62,28 +59,29 @@ static constexpr std::array<std::string_view, 6> wiz_spell_stat = { {
  */
 static auto get_mon_evol_roots()
 {
-    std::set<MonsterRaceId> evol_parents;
-    std::set<MonsterRaceId> evol_children;
-    for (const auto &[r_idx, r_ref] : monraces_info) {
-        if (MonsterRace(r_ref.next_r_idx).is_valid()) {
-            evol_parents.emplace(r_ref.idx);
-            evol_children.emplace(r_ref.next_r_idx);
+    std::set<MonraceId> evol_parents;
+    std::set<MonraceId> evol_children;
+    const auto &monraces = MonraceList::get_instance();
+    for (const auto &[monrace_id, monrace] : monraces) {
+        if (monrace.get_next().is_valid()) {
+            evol_parents.emplace(monrace_id);
+            evol_children.emplace(monrace.next_r_idx);
         }
     }
 
-    auto evol_root_sort = [](MonsterRaceId i1, MonsterRaceId i2) {
-        auto &r1 = monraces_info[i1];
-        auto &r2 = monraces_info[i2];
-        if (r1.level != r2.level) {
-            return r1.level < r2.level;
+    const auto evol_root_sort = [&monraces](MonraceId i1, MonraceId i2) {
+        const auto &monrace1 = monraces.get_monrace(i1);
+        const auto &monrace2 = monraces.get_monrace(i2);
+        if (monrace1.level != monrace2.level) {
+            return monrace2.order_level_strictly(monrace1);
         }
-        if (r1.mexp != r2.mexp) {
-            return r1.mexp < r2.mexp;
+        if (monrace1.mexp != monrace2.mexp) {
+            return monrace1.mexp < monrace2.mexp;
         }
         return i1 <= i2;
     };
 
-    std::set<MonsterRaceId, decltype(evol_root_sort)> evol_roots(evol_root_sort);
+    std::set<MonraceId, decltype(evol_root_sort)> evol_roots(evol_root_sort);
     std::set_difference(evol_parents.begin(), evol_parents.end(), evol_children.begin(), evol_children.end(),
         std::inserter(evol_roots, evol_roots.end()));
 
@@ -94,28 +92,29 @@ static auto get_mon_evol_roots()
  * @brief 進化ツリーをスポイラー出力するメインルーチン
  * @param filename 出力ファイル名
  */
-static SpoilerOutputResultType spoil_mon_evol(std::string_view filename)
+static SpoilerOutputResultType spoil_mon_evol()
 {
-    const auto &path = path_build(ANGBAND_DIR_USER, filename);
+    const auto path = path_build(ANGBAND_DIR_USER, "mon-evol.txt");
     spoiler_file = angband_fopen(path, FileOpenMode::WRITE);
     if (!spoiler_file) {
         return SpoilerOutputResultType::FILE_OPEN_FAILED;
     }
 
     std::stringstream ss;
-    ss << "Monster Spoilers for " << get_version() << '\n';
+    ss << "Monster Spoilers for " << AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL) << '\n';
     spoil_out(ss.str());
     spoil_out("------------------------------------------\n\n");
-    for (auto r_idx : get_mon_evol_roots()) {
-        auto r_ptr = &monraces_info[r_idx];
-        fprintf(spoiler_file, _("[%d]: %s (レベル%d, '%c')\n", "[%d]: %s (Level %d, '%c')\n"), enum2i(r_idx), r_ptr->name.data(), (int)r_ptr->level, r_ptr->d_char);
-
-        for (auto n = 1; MonsterRace(r_ptr->next_r_idx).is_valid(); n++) {
-            fprintf(spoiler_file, "%*s-(%d)-> ", n * 2, "", r_ptr->next_exp);
-            fprintf(spoiler_file, "[%d]: ", enum2i(r_ptr->next_r_idx));
-            r_ptr = &monraces_info[r_ptr->next_r_idx];
-
-            fprintf(spoiler_file, _("%s (レベル%d, '%c')\n", "%s (Level %d, '%c')\n"), r_ptr->name.data(), (int)r_ptr->level, r_ptr->d_char);
+    const auto &monraces = MonraceList::get_instance();
+    for (auto monrace_id : get_mon_evol_roots()) {
+        const auto *monrace_ptr = &monraces.get_monrace(monrace_id);
+        constexpr auto fmt_before = _("[%d]: %s (レベル%d, '%c')\n", "[%d]: %s (Level %d, '%c')\n");
+        fprintf(spoiler_file, fmt_before, enum2i(monrace_id), monrace_ptr->name.data(), monrace_ptr->level, monrace_ptr->symbol_definition.character);
+        for (auto n = 1; monrace_ptr->get_next().is_valid(); n++) {
+            fprintf(spoiler_file, "%*s-(%d)-> ", n * 2, "", monrace_ptr->next_exp);
+            monrace_ptr = &monrace_ptr->get_next();
+            fprintf(spoiler_file, "[%d]: ", enum2i(monrace_ptr->idx));
+            constexpr auto fmt_after = _("%s (レベル%d, '%c')\n", "%s (Level %d, '%c')\n");
+            fprintf(spoiler_file, fmt_after, monrace_ptr->name.data(), monrace_ptr->level, monrace_ptr->symbol_definition.character);
         }
 
         fputc('\n', spoiler_file);
@@ -127,95 +126,102 @@ static SpoilerOutputResultType spoil_mon_evol(std::string_view filename)
 
 static SpoilerOutputResultType spoil_categorized_mon_desc()
 {
-    auto status = spoil_mon_desc("mon-desc-ridable.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->misc_flags.has(MonsterMiscType::RIDING); });
+    auto status = spoil_mon_desc("mon-desc-ridable.txt", [](const MonraceDefinition &monrace) { return monrace.misc_flags.has(MonsterMiscType::RIDING); });
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-wildonly.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_ONLY); });
+        status = spoil_mon_desc("mon-desc-wildonly.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_ONLY); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-town.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_TOWN); });
+        status = spoil_mon_desc("mon-desc-town.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_TOWN); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-shore.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_SHORE); });
+        status = spoil_mon_desc("mon-desc-shore.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_SHORE); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-ocean.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_OCEAN); });
+        status = spoil_mon_desc("mon-desc-ocean.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_OCEAN); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-waste.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_WASTE); });
+        status = spoil_mon_desc("mon-desc-waste.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_WASTE); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-wood.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_WOOD); });
+        status = spoil_mon_desc("mon-desc-wood.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_WOOD); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-volcano.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_VOLCANO); });
+        status = spoil_mon_desc("mon-desc-volcano.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_VOLCANO); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-mountain.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_MOUNTAIN); });
+        status = spoil_mon_desc("mon-desc-mountain.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_MOUNTAIN); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-grass.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_GRASS); });
+        status = spoil_mon_desc("mon-desc-grass.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_GRASS); });
     }
 
     if (status == SpoilerOutputResultType::SUCCESSFUL) {
-        status = spoil_mon_desc("mon-desc-wildall.txt", [](const MonsterRaceInfo *r_ptr) { return r_ptr->wilderness_flags.has(MonsterWildernessType::WILD_ALL); });
+        status = spoil_mon_desc("mon-desc-wildall.txt", [](const MonraceDefinition &monrace) { return monrace.wilderness_flags.has(MonsterWildernessType::WILD_ALL); });
     }
 
     return status;
 }
 
-static SpoilerOutputResultType spoil_player_spell(concptr fname)
+static SpoilerOutputResultType spoil_player_spell()
 {
-    const auto &path = path_build(ANGBAND_DIR_USER, fname);
+    const auto path = path_build(ANGBAND_DIR_USER, "spells.txt");
     spoiler_file = angband_fopen(path, FileOpenMode::WRITE);
     if (!spoiler_file) {
         return SpoilerOutputResultType::FILE_OPEN_FAILED;
     }
 
-    spoil_out(format("Player spells for %s\n", get_version().data()));
+    spoil_out(format("Player spells for %s\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL).data()));
     spoil_out("------------------------------------------\n\n");
 
     PlayerType dummy_p;
     dummy_p.lev = 1;
-    for (auto c = 0; c < PLAYER_CLASS_TYPE_MAX; c++) {
-        auto class_ptr = &class_info[c];
-        spoil_out(format("[[Class: %s]]\n", class_ptr->title));
+    for (const auto pclass : EnumRange(PlayerClassType::WARRIOR, PlayerClassType::MAX)) {
+        spoil_out(format("[[Class: %s]]\n", class_info.at(pclass).title.data()));
 
-        auto magic_ptr = &class_magics_info[c];
+        const auto *magic_ptr = &class_magics_info[enum2i(pclass)];
         std::string book_name = _("なし", "None");
         if (magic_ptr->spell_book != ItemKindType::NONE) {
-            ItemEntity book;
-            auto o_ptr = &book;
-            o_ptr->prep(lookup_baseitem_id({ magic_ptr->spell_book, 0 }));
-            book_name = describe_flavor(&dummy_p, o_ptr, OD_NAME_ONLY);
+            ItemEntity item({ magic_ptr->spell_book, 0 });
+            book_name = describe_flavor(&dummy_p, item, OD_NAME_ONLY);
             auto *s = angband_strchr(book_name.data(), '[');
             if (s != nullptr) {
                 book_name.erase(s - book_name.data());
             }
         }
 
-        constexpr auto mes = "BookType:%s Stat:%s Xtra:%x Type:%d Weight:%d\n";
-        const auto &spell = wiz_spell_stat[magic_ptr->spell_stat];
-        spoil_out(format(mes, book_name.data(), spell.data(), magic_ptr->spell_xtra, magic_ptr->spell_type, magic_ptr->spell_weight));
+        constexpr auto mes = "BookType:%s Stat:%s %s%s%sType:%d Weight:%d\n";
+        const auto &spell_stat_txt = wiz_spell_stat[magic_ptr->spell_stat];
+        auto trainable = magic_ptr->is_spell_trainable ? "Trainable " : "";
+        auto glove = magic_ptr->has_glove_mp_penalty ? "GlovePenalty " : "";
+        auto failcap = magic_ptr->has_magic_fail_rate_cap ? "5%FailCap " : "";
+        auto spell_type = enum2i(magic_ptr->spell_book);
+        spoil_out(format(mes, book_name.data(), spell_stat_txt.data(), glove, failcap, trainable, spell_type, magic_ptr->spell_weight));
         if (magic_ptr->spell_book == ItemKindType::NONE) {
             spoil_out(_("呪文なし\n\n", "No spells.\n\n"));
             continue;
         }
 
-        for (int16_t r = 1; r < MAX_MAGIC; r++) {
-            spoil_out(format("[Realm: %s]\n", realm_names[r]));
+        const auto choices = PlayerRealm::get_realm1_choices(pclass) | PlayerRealm::get_realm2_choices(pclass);
+        const auto is_every_magic = pclass == PlayerClassType::SORCERER || pclass == PlayerClassType::RED_MAGE;
+        for (const auto realm : EnumRange(RealmType::LIFE, RealmType::MAX)) {
+            if (!(is_every_magic && PlayerRealm::is_magic(realm)) && choices.has_not(realm)) {
+                continue;
+            }
+
+            spoil_out(format("[Realm: %s]\n", PlayerRealm::get_name(realm).data()));
             spoil_out("Name                     Lv Cst Dif Exp\n");
             for (SPELL_IDX i = 0; i < 32; i++) {
-                auto spell_ptr = &magic_ptr->info[r][i];
-                const auto spell_name = exe_spell(&dummy_p, r, i, SpellProcessType::NAME);
-                spoil_out(format("%-24s %2d %3d %3d %3d\n", spell_name->data(), spell_ptr->slevel, spell_ptr->smana, spell_ptr->sfail, spell_ptr->sexp));
+                const auto &spell = PlayerRealm::get_spell_info(realm, i, pclass);
+                const auto &spell_name = PlayerRealm::get_spell_name(realm, i);
+                spoil_out(format("%-24s %2d %3d %3d %3d\n", spell_name.data(), spell.slevel, spell.smana, spell.sfail, spell.sexp));
             }
             spoil_out("\n");
         }
@@ -261,13 +267,13 @@ void exe_output_spoilers(void)
             status = spoil_categorized_mon_desc();
             break;
         case '5':
-            status = spoil_mon_info("mon-info.txt");
+            status = spoil_mon_info();
             break;
         case '6':
-            status = spoil_mon_evol("mon-evol.txt");
+            status = spoil_mon_evol();
             break;
         case '7':
-            status = spoil_player_spell("spells.txt");
+            status = spoil_player_spell();
             break;
         default:
             bell();
@@ -318,12 +324,12 @@ SpoilerOutputResultType output_all_spoilers()
         return status;
     }
 
-    status = spoil_mon_info("mon-info.txt");
+    status = spoil_mon_info();
     if (status != SpoilerOutputResultType::SUCCESSFUL) {
         return status;
     }
 
-    status = spoil_mon_evol("mon-evol.txt");
+    status = spoil_mon_evol();
     if (status != SpoilerOutputResultType::SUCCESSFUL) {
         return status;
     }

@@ -3,6 +3,9 @@ name: Build with Autotools
 on:
   workflow_call:
     inputs:
+      runner:
+        type: string
+        required: true
       cxx:
         type: string
         required: true
@@ -12,13 +15,16 @@ on:
       configure-opts:
         type: string
         required: false
+      distcheck:
+        type: boolean
+        required: false
       use-ccache:
         type: boolean
         required: false
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ inputs.runner }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -51,6 +57,8 @@ jobs:
             libncursesw5-dev \
             libcurl4-openssl-dev \
             nkf \
+            libc++-15-dev \
+            libc++abi-15-dev \
 
       - name: Generate configure
         run: ./bootstrap
@@ -61,5 +69,10 @@ jobs:
           CXX: ${{ inputs.cxx }}
           CXXFLAGS: ${{ inputs.cxx-flags }}
 
+      - name: Build with distcheck
+        if: ${{ inputs.distcheck }}
+        run: make DISTCHECK_CONFIGURE_FLAGS="CXX=\"${{ inputs.cxx }}\" CXXFLAGS=\"${{ inputs.cxx-flags }}\" ${{ inputs.configure-opts }}" -j$(nproc) distcheck >/dev/null
+
       - name: Build
+        if: ${{ !inputs.distcheck }}
         run: make -j$(nproc) >/dev/null

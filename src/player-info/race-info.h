@@ -1,9 +1,10 @@
 #pragma once
 
-#include <optional>
+#include <tl/optional.hpp>
 #include <unordered_map>
 #include <vector>
 
+#include "locale/localized-string.h"
 #include "object-enchant/tr-flags.h"
 #include "object-enchant/tr-types.h"
 #include "player-ability/player-ability-types.h"
@@ -41,7 +42,8 @@ enum class PlayerRaceFoodType {
     OIL = 2, //!< 油
     BLOOD = 3, //!< 血
     MANA = 4, //!< 魔力
-    CORPSE = 5, //!< 死体(捧げる)
+    MONSTER_REMAINS = 5, //!< 死体(捧げる)
+    CORPSE = 6, //!< 死体(食べる)
     MAX
 };
 
@@ -51,10 +53,10 @@ enum class PlayerRaceFoodType {
 struct player_race_condition {
     tr_type type{};
     PLAYER_LEVEL level{};
-    std::optional<PlayerClassType> pclass{};
+    tl::optional<PlayerClassType> pclass{};
     bool not_class{};
 
-    player_race_condition(tr_type t, PLAYER_LEVEL l = 1, const std::optional<PlayerClassType> &c = std::nullopt, bool nc = false)
+    player_race_condition(tr_type t, PLAYER_LEVEL l = 1, const tl::optional<PlayerClassType> &c = tl::nullopt, bool nc = false)
         : type(t)
         , level(l)
         , pclass(c)
@@ -67,10 +69,7 @@ struct player_race_condition {
  * @brief プレイヤー種族情報構造体 / Player racial info
  */
 struct player_race_info {
-    concptr title{}; //!< 種族名 / Title of race
-#ifdef JP
-    concptr E_title{}; //!< 英語種族名
-#endif
+    LocalizedString title; //!< 種族名 / Title of race
     concptr symbol{}; //!< 種族シンボル(救援召喚) / Race symbols
     int16_t r_adj[A_MAX]{}; //!< 能力値ボーナス / Racial stat bonuses
 

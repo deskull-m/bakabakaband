@@ -3,14 +3,13 @@
 #include "cmd-action/cmd-attack.h"
 #include "floor/geometry.h"
 #include "game-option/input-options.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "mind/mind-numbers.h"
 #include "player-attack/player-attack.h"
 #include "player/player-move.h"
 #include "spell-kind/earthquake.h"
 #include "spell-kind/spells-detection.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
@@ -35,11 +34,11 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
         }
 
         const auto dir = get_direction(player_ptr);
-        if (!dir || (dir == 5)) {
+        if (!dir.has_direction()) {
             return false;
         }
 
-        const auto pos = player_ptr->get_neighbor(*dir);
+        const auto pos = player_ptr->get_neighbor(dir);
         const auto &floor = *player_ptr->current_floor_ptr;
         const auto &grid = floor.get_grid(pos);
         if (!grid.has_monster()) {
@@ -48,14 +47,14 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
         }
 
         do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
-        if (!player_can_enter(player_ptr, grid.feat, 0) || is_trap(player_ptr, grid.feat)) {
+        if (!player_can_enter(player_ptr, grid.feat, 0) || floor.has_trap_at(pos)) {
             return true;
         }
 
-        const Pos2D pos_new(pos.y + ddy[*dir], pos.x + ddx[*dir]);
+        const auto pos_new = pos + dir.vec();
         const auto &grid_new = floor.get_grid(pos_new);
-        if (player_can_enter(player_ptr, grid_new.feat, 0) && !is_trap(player_ptr, grid_new.feat) && !grid_new.has_monster()) {
-            msg_print(nullptr);
+        if (player_can_enter(player_ptr, grid_new.feat, 0) && !floor.has_trap_at(pos_new) && !grid_new.has_monster()) {
+            msg_erase();
             (void)move_player_effect(player_ptr, pos_new.y, pos_new.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
         }
 
@@ -67,11 +66,11 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
             return false;
         }
 
-        exe_movement(player_ptr, *dir, easy_disarm, true);
+        exe_movement(player_ptr, dir, easy_disarm, true);
         return true;
     }
     case MindBerserkerType::QUAKE:
-        earthquake(player_ptr, player_ptr->y, player_ptr->x, 8 + randint0(5), 0);
+        earthquake(player_ptr, player_ptr->get_position(), 8 + randint0(5));
         return true;
     case MindBerserkerType::MASSACRE:
         massacre(player_ptr);

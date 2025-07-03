@@ -11,7 +11,6 @@
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "player/player-status-flags.h"
-#include "system/baseitem-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
@@ -20,6 +19,7 @@
 #include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
+#include "view/display-symbol.h"
 #include <array>
 #include <vector>
 
@@ -33,8 +33,6 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
 {
     COMMAND_CODE i;
     int j, k, l;
-    ItemEntity *o_ptr;
-    char tmp_val[80];
     COMMAND_CODE out_index[23]{};
     TERM_COLOR out_color[23]{};
     std::array<std::string, 23> out_desc{};
@@ -44,8 +42,8 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     const auto &[wid, hgt] = term_get_size();
     auto len = wid - col - 1;
     for (k = 0, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = &player_ptr->inventory_list[i];
-        auto only_slot = !(player_ptr->select_ring_slot ? is_ring_slot(i) : (item_tester.okay(o_ptr) || any_bits(mode, USE_FULL)));
+        const auto &item = *player_ptr->inventory[i];
+        auto only_slot = !(player_ptr->select_ring_slot ? is_ring_slot(i) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
         auto is_any_hand = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(player_ptr);
         is_any_hand |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(player_ptr);
         auto is_two_handed = is_any_hand && has_two_handed_weapons(player_ptr);
@@ -54,17 +52,17 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
             continue;
         }
 
-        const auto item_name = describe_flavor(player_ptr, o_ptr, 0);
+        const auto item_name = describe_flavor(player_ptr, item, 0);
         if (is_two_handed) {
             out_desc[k] = _("(武器を両手持ち)", "(wielding with two-hands)");
             out_color[k] = TERM_WHITE;
         } else {
             out_desc[k] = item_name;
-            out_color[k] = tval_to_attr[enum2i(o_ptr->bi_key.tval()) % 128];
+            out_color[k] = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
         }
 
         out_index[k] = i;
-        if (o_ptr->timeout) {
+        if (item.timeout) {
             out_color[k] = TERM_L_DARK;
         }
         l = out_desc[k].length() + (2 + _(1, 3));
@@ -92,27 +90,26 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     prepare_label_string(player_ptr, equip_label, USE_EQUIP, item_tester);
     for (j = 0; j < k; j++) {
         i = out_index[j];
-        o_ptr = &player_ptr->inventory_list[i];
+        const auto &item = *player_ptr->inventory[i];
         prt("", j + 1, col ? col - 2 : col);
+        std::string head;
         if (use_menu && target_item) {
             if (j == (target_item - 1)) {
-                angband_strcpy(tmp_val, _("》", "> "), sizeof(tmp_val));
+                head = _("》", "> ");
                 target_item_label = i;
             } else {
-                angband_strcpy(tmp_val, "  ", sizeof(tmp_val));
+                head = "  ";
             }
         } else if (i >= INVEN_MAIN_HAND) {
-            strnfmt(tmp_val, sizeof(tmp_val), "%c)", equip_label[i - INVEN_MAIN_HAND]);
+            head = format("%c)", equip_label[i - INVEN_MAIN_HAND]);
         } else {
-            strnfmt(tmp_val, sizeof(tmp_val), "%c)", index_to_label(i));
+            head = format("%c)", index_to_label(i));
         }
 
-        put_str(tmp_val, j + 1, col);
+        put_str(head, j + 1, col);
         int cur_col = col + 3;
         if (show_item_graph) {
-            const auto a = o_ptr->get_color();
-            const auto c = o_ptr->get_symbol();
-            term_queue_bigchar(cur_col, j + 1, a, c, 0, 0);
+            term_queue_bigchar(cur_col, j + 1, { item.get_symbol(), {} });
             if (use_bigtile) {
                 cur_col++;
             }
@@ -121,8 +118,8 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
         }
 
         if (show_labels) {
-            strnfmt(tmp_val, sizeof(tmp_val), _("%-7s: ", "%-14s: "), mention_use(player_ptr, i));
-            put_str(tmp_val, j + 1, cur_col);
+            const auto label = format(_("%-7s: ", "%-14s: "), mention_use(player_ptr, i));
+            put_str(label, j + 1, cur_col);
             c_put_str(out_color[j], out_desc[j], j + 1, _(cur_col + 9, cur_col + 16));
         } else {
             c_put_str(out_color[j], out_desc[j], j + 1, cur_col);
@@ -132,9 +129,9 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
             continue;
         }
 
-        int wgt = o_ptr->weight * o_ptr->number;
-        strnfmt(tmp_val, sizeof(tmp_val), _("%3d.%1d kg", "%3d.%d lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10));
-        prt(tmp_val, j + 1, wid - 9);
+        auto wgt = item.weight * item.number;
+        const auto weight = format(_("%3d.%1d kg", "%3d.%d lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10));
+        prt(weight, j + 1, wid - 9);
     }
 
     if (j && (j < 23)) {

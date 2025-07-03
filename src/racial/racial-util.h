@@ -56,7 +56,7 @@ struct rc_type {
     bool is_chosen{}; //!< 選択したかどうか
     bool cast{}; //!< パワーが使用されたかどうか
     char choice{}; //!< コマンドキー
-    char out_val[160]{}; //!< 出力文字列用バッファ
+    std::string out_val{}; //!< 出力文字列
     int menu_line{}; //!< 現在選択中の行
 
     /*!

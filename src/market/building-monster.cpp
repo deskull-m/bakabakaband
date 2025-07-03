@@ -3,17 +3,19 @@
 #include "core/stuff-handler.h"
 #include "game-option/game-play-options.h"
 #include "io/input-key-acceptor.h"
-#include "lore/lore-store.h"
 #include "lore/lore-util.h"
-#include "monster-race/monster-race.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "term/z-form.h"
+#include "tracking/lore-tracker.h"
 #include "util/int-char-converter.h"
-#include "util/sort.h"
 #include "util/string-processor.h"
 #include "view/display-lore.h"
+#include "view/display-messages.h"
+#include <algorithm>
 
 /*!
  * @brief 施設でモンスターの情報を知るメインルーチン / research_mon -KMW-
@@ -23,10 +25,7 @@
  */
 bool research_mon(PlayerType *player_ptr)
 {
-    bool notpicked;
     bool recall = false;
-    uint16_t why = 0;
-
     bool all = false;
     bool uniq = false;
     bool norm = false;
@@ -75,9 +74,10 @@ bool research_mon(PlayerType *player_ptr)
     }
 
     prt(buf, 16, 10);
-    std::vector<MonsterRaceId> monraces;
-    for (const auto &[monrace_id, monrace] : monraces_info) {
-        if (!MonsterRace(monrace_id).is_valid()) {
+    std::vector<MonraceId> monrace_ids;
+    auto &monraces = MonraceList::get_instance();
+    for (const auto &[monrace_id, monrace] : monraces) {
+        if (!monrace.is_valid()) {
             continue;
         }
 
@@ -105,7 +105,7 @@ bool research_mon(PlayerType *player_ptr)
                 }
             }
 
-            std::string temp2 = _(monrace.E_name, monrace.name);
+            std::string temp2 = monrace.name.en_string();
             for (auto &ch : temp2) {
                 if (isupper(ch)) {
                     ch = static_cast<char>(tolower(ch));
@@ -113,49 +113,50 @@ bool research_mon(PlayerType *player_ptr)
             }
 
 #ifdef JP
-            if (str_find(temp2, monster_name) || str_find(monrace.name, monster_name))
+            if (str_find(temp2, monster_name) || str_find(monrace.name.string(), monster_name))
 #else
             if (str_find(temp2, monster_name))
 #endif
-                monraces.push_back(monrace_id);
-        } else if (all || (monrace.d_char == sym)) {
-            monraces.push_back(monrace_id);
+                monrace_ids.push_back(monrace_id);
+        } else if (all || (monrace.symbol_definition.character == sym)) {
+            monrace_ids.push_back(monrace_id);
         }
     }
 
-    if (monraces.empty()) {
+    if (monrace_ids.empty()) {
         screen_load();
-
         return false;
     }
 
-    why = 2;
-    char query = 'y';
-
-    if (why) {
-        ang_sort(player_ptr, monraces.data(), &why, monraces.size(), ang_sort_comp_hook, ang_sort_swap_hook);
-    }
+    std::stable_sort(monrace_ids.begin(), monrace_ids.end(), [&monraces](auto x, auto y) { return monraces.order(x, y); });
 
     uint i;
     static int old_sym = '\0';
     static uint old_i = 0;
-    if (old_sym == sym && old_i < monraces.size()) {
+    if (old_sym == sym && old_i < monrace_ids.size()) {
         i = old_i;
     } else {
-        i = monraces.size() - 1;
+        i = monrace_ids.size() - 1;
     }
 
-    notpicked = true;
+    auto &tracker = LoreTracker::get_instance();
+    auto notpicked = true;
+    auto query = 'y';
     while (notpicked) {
-        auto r_idx = monraces[i];
-        roff_top(r_idx);
+        auto monrace_id = monrace_ids[i];
+        roff_top(monrace_id);
         term_addstr(-1, TERM_WHITE, _(" ['r'思い出, ' 'で続行, ESC]", " [(r)ecall, ESC, space to continue]"));
         while (true) {
             if (recall) {
-                lore_do_probe(player_ptr, r_idx);
-                monster_race_track(player_ptr, r_idx);
+                const auto mes = monraces.probe_lore(monrace_id);
+                if (mes) {
+                    msg_print(*mes);
+                    msg_erase();
+                }
+
+                tracker.set_trackee(monrace_id);
                 handle_stuff(player_ptr);
-                screen_roff(player_ptr, r_idx, MONSTER_LORE_RESEARCH);
+                screen_roff(player_ptr, monrace_id, MONSTER_LORE_RESEARCH);
                 notpicked = false;
                 old_sym = sym;
                 old_i = i;
@@ -174,7 +175,7 @@ bool research_mon(PlayerType *player_ptr)
         }
 
         if (query == '-') {
-            if (++i == monraces.size()) {
+            if (++i == monrace_ids.size()) {
                 i = 0;
                 if (!expand_list) {
                     break;
@@ -185,7 +186,7 @@ bool research_mon(PlayerType *player_ptr)
         }
 
         if (i-- == 0) {
-            i = monraces.size() - 1;
+            i = monrace_ids.size() - 1;
             if (!expand_list) {
                 break;
             }

@@ -9,7 +9,9 @@
 #include "player/player-personality-types.h"
 #include "player/player-sex.h"
 #include "system/angband.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/system-variables.h"
+#include "util/dice.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
 #include <array>
@@ -37,13 +39,16 @@ enum class INCIDENT {
     EAT_POISON = 101,
 };
 
+enum class DungeonId;
+enum class ElementRealmType;
 enum class ItemKindType : short;
-enum class PlayerSkillKindType;
 enum class MimicKindType;
+enum class MonraceId : short;
 enum class MonsterAbilityType;
-enum class MonsterRaceId : int16_t;
+enum class PlayerSkillKindType;
+enum class RealmType;
 enum class Virtue : short;
-
+class Direction;
 class FloorType;
 class ItemEntity;
 class TimedEffects;
@@ -61,11 +66,11 @@ public:
     PlayerRaceType prace{}; /* Race index */
     PlayerClassType pclass{}; /* Class index */
     player_personality_type ppersonality{}; /* Personality index */
-    int16_t realm1{}; /* First magic realm */
-    int16_t realm2{}; /* Second magic realm */
-    int16_t element{}; //!< 元素使い領域番号 / Elementalist system index
+    RealmType realm1{}; /* First magic realm */
+    RealmType realm2{}; /* Second magic realm */
+    ElementRealmType element_realm{}; //!< 元素使い領域
 
-    DICE_SID hitdie{}; /* Hit dice (sides) */
+    Dice hit_dice{}; /* Hit dice */
     uint16_t expfact{}; /* Experience factor
                          * Note: was byte, causing overflow for Amberite
                          * characters (such as Amberite Paladins)
@@ -89,11 +94,6 @@ public:
     PLAYER_LEVEL lev{}; /* Level */
 
     int16_t town_num{}; /* Current town number */
-    int16_t arena_number{}; /* monster number in on_defeat_arena_monster -KMW- */
-
-    POSITION wilderness_x{}; /* Coordinates in the wilderness */
-    POSITION wilderness_y{};
-    bool wild_mode{};
 
     int mhp{}; /* Max hit pts */
     int chp{}; /* Cur hit pts */
@@ -115,7 +115,6 @@ public:
 
     uint32_t count{};
 
-    TIME_EFFECT protevil{}; /* Timed -- Protection */
     TIME_EFFECT invuln{}; /* Timed -- Invulnerable */
     TIME_EFFECT ult_res{}; /* Timed -- Ultimate Resistance */
     TIME_EFFECT hero{}; /* Timed -- Heroism */
@@ -175,7 +174,7 @@ public:
 
     TIME_EFFECT word_recall{}; /* Word of recall counter */
     TIME_EFFECT alter_reality{}; /* Alter reality counter */
-    DUNGEON_IDX recall_dungeon{}; /* Dungeon set to be recalled */
+    DungeonId recall_dungeon{}; /* Dungeon set to be recalled */
 
     ENERGY energy_need{}; /* Energy needed for next move */
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */
@@ -200,7 +199,7 @@ public:
     BIT_FLAGS spell_worked2{}; /* bit mask of spells tried and worked */
     BIT_FLAGS spell_forgotten1{}; /* bit mask of spells learned but forgotten */
     BIT_FLAGS spell_forgotten2{}; /* bit mask of spells learned but forgotten */
-    SPELL_IDX spell_order[64]{}; /* order spells learned/remembered/forgotten */
+    std::vector<int> spell_order_learned{}; /* order spells learned */
 
     SUB_EXP spell_exp[64]{}; /* Proficiency of spells */
     std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp{}; /* Proficiency of weapons */
@@ -214,13 +213,9 @@ public:
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
 
-    uint16_t panic_save{}; /* Panic save */
-
-    bool wait_report_score{}; /* Waiting to report score */
     bool is_dead{}; /* Player is dead */
     bool now_damaged{};
     bool ambush_flag{};
-    BIT_FLAGS change_floor_mode{}; /*!<フロア移行処理に関するフラグ / Mode flags for changing floor */
 
     MONSTER_IDX riding{}; /* Riding on a monster of this index */
 
@@ -229,7 +224,6 @@ public:
     BIT_FLAGS8 knowledge{}; /* Knowledge about yourself */
     BIT_FLAGS visit{}; /* Visited towns */
 
-    PlayerRaceType start_race{}; /* Race at birth */
     BIT_FLAGS old_race1{}; /* Record of race changes */
     BIT_FLAGS old_race2{}; /* Record of race changes */
     int16_t old_realm{}; /* Record of realm changes */
@@ -237,17 +231,12 @@ public:
     int16_t pet_follow_distance{}; /* Length of the imaginary "leash" for pets */
     BIT_FLAGS16 pet_extra_flags{}; /* Various flags for controling pets */
 
-    bool knows_daily_bounty{}; //!< 日替わり賞金首を知っているか否か
-
     bool dtrap{}; /* Whether you are on trap-safe grids */
     FLOOR_IDX floor_id{}; /* Current floor location */
 
     bool autopick_autoregister{}; /* auto register is in-use or not */
 
-    byte feeling{}; /* Most recent dungeon feeling */
-    int32_t feeling_turn{}; /* The turn of the last dungeon feeling */
-
-    std::shared_ptr<ItemEntity[]> inventory_list{}; /* The player's inventory */
+    std::vector<std::shared_ptr<ItemEntity>> inventory{}; /* The player's inventory */
     int16_t inven_cnt{}; /* Number of items in inventory */
     int16_t equip_cnt{}; /* Number of items in equipment */
 
@@ -260,13 +249,9 @@ public:
 
     bool monk_notify_aux{};
 
-    bool leaving_dungeon{}; /* True if player is leaving the dungeon */
     bool teleport_town{};
-    bool enter_dungeon{}; /* Just enter the dungeon */
 
     IDX health_who{}; /* Health bar trackee */
-
-    MonsterRaceId monster_race_idx{}; /* Monster race trackee */
 
     short tracking_bi_id{}; /* Object kind trackee */
 
@@ -368,8 +353,7 @@ public:
     BIT_FLAGS see_nocto{}; /* Noctovision */
     bool invoking_midnight_curse{};
 
-    DICE_NUMBER to_dd[2]{}; /* Extra dice/sides */
-    DICE_SID to_ds[2]{};
+    Dice damage_dice_bonus[2]{}; /* Extra damage dice num/sides */
 
     HIT_PROB dis_to_h[2]{}; /*!< 判明している現在の表記上の近接武器命中修正値 /  Known bonus to hit (wield) */
     HIT_PROB dis_to_h_b{}; /*!< 判明している現在の表記上の射撃武器命中修正値 / Known bonus to hit (bow) */
@@ -425,16 +409,22 @@ public:
     GAME_TEXT name[32]{}; /*!< 現在のプレイヤー名 / Current player's character name */
     char base_name[32]{}; /*!< Stripped version of "player_name" */
 
+    void ride_monster(MONSTER_IDX m_idx);
     std::shared_ptr<TimedEffects> effects() const;
     bool is_fully_healthy() const;
-    bool is_vaild_position() const;
     std::string decrease_ability_random();
     std::string decrease_ability_all();
     Pos2D get_position() const;
+    Pos2D get_old_position() const;
+    Pos2D get_neighbor(int dir) const;
+    Pos2D get_neighbor(const Direction &dir) const;
     bool is_located_at_running_destination() const;
     bool is_located_at(const Pos2D &pos) const;
+    bool try_set_position(const Pos2D &pos);
+    void set_position(const Pos2D &pos);
     bool in_saved_floor() const;
-    Pos2D get_neighbor(int dir) const;
+    int calc_life_rating() const;
+    bool try_resist_eldritch_horror() const;
 
 private:
     std::shared_ptr<TimedEffects> timed_effects;

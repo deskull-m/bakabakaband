@@ -2,15 +2,16 @@
 #include "dungeon/dungeon-flag-types.h"
 #include "floor/floor-generator.h"
 #include "game-option/cheat-types.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "room/space-finder.h"
-#include "system/dungeon-data-definition.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
+#include "system/dungeon/dungeon-data-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/enums/terrain/terrain-tag.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
+#include "system/terrain/terrain-list.h"
 #include "wizard/wizard-messages.h"
 
 /*!
@@ -19,77 +20,62 @@
  * @details
  * A special trap is placed at center of the room
  */
-bool build_type14(PlayerType *player_ptr, dun_data_type *dd_ptr)
+bool build_type14(PlayerType *player_ptr, DungeonData *dd_ptr)
 {
-    POSITION y, x, y2, x2, yval, xval;
-    POSITION y1, x1, xsize, ysize;
-
-    bool light;
-
-    Grid *g_ptr;
-    int16_t trap;
-
     /* Pick a room size */
-    y1 = randint1(4);
-    x1 = randint1(11);
-    y2 = randint1(3);
-    x2 = randint1(11);
+    const auto room_seed_y1 = randint1(4);
+    const auto room_seed_x1 = randint1(11);
+    const auto room_seed_y2 = randint1(3);
+    const auto room_seed_x2 = randint1(11);
 
-    xsize = x1 + x2 + 1;
-    ysize = y1 + y2 + 1;
+    const auto xsize = room_seed_x1 + room_seed_x2 + 1;
+    const auto ysize = room_seed_y1 + room_seed_y2 + 1;
 
-    /* Find and reserve some space in the dungeon.  Get center of room. */
-    if (!find_space(player_ptr, dd_ptr, &yval, &xval, ysize + 2, xsize + 2)) {
+    const auto center = find_space(player_ptr, dd_ptr, ysize + 2, xsize + 2);
+    if (!center) {
         return false;
     }
 
     /* Choose lite or dark */
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    light = ((floor_ptr->dun_level <= randint1(25)) && floor_ptr->get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto light = ((floor.dun_level <= randint1(25)) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));
 
     /* Get corner values */
-    y1 = yval - ysize / 2;
-    x1 = xval - xsize / 2;
-    y2 = yval + (ysize - 1) / 2;
-    x2 = xval + (xsize - 1) / 2;
+    const auto y1 = center->y - ysize / 2;
+    const auto x1 = center->x - xsize / 2;
+    const auto y2 = center->y + (ysize - 1) / 2;
+    const auto x2 = center->x + (xsize - 1) / 2;
 
     /* Place a full floor under the room */
-    for (y = y1 - 1; y <= y2 + 1; y++) {
-        for (x = x1 - 1; x <= x2 + 1; x++) {
-            g_ptr = &floor_ptr->grid_array[y][x];
-            place_grid(player_ptr, g_ptr, GB_FLOOR);
-            g_ptr->info |= (CAVE_ROOM);
+    for (auto y = y1 - 1; y <= y2 + 1; y++) {
+        for (auto x = x1 - 1; x <= x2 + 1; x++) {
+            auto &grid = floor.get_grid({ y, x });
+            place_grid(player_ptr, grid, GB_FLOOR);
+            grid.info |= (CAVE_ROOM);
             if (light) {
-                g_ptr->info |= (CAVE_GLOW);
+                grid.info |= (CAVE_GLOW);
             }
         }
     }
 
     /* Walls around the room */
-    for (y = y1 - 1; y <= y2 + 1; y++) {
-        g_ptr = &floor_ptr->grid_array[y][x1 - 1];
-        place_grid(player_ptr, g_ptr, GB_OUTER);
-        g_ptr = &floor_ptr->grid_array[y][x2 + 1];
-        place_grid(player_ptr, g_ptr, GB_OUTER);
-    }
-    for (x = x1 - 1; x <= x2 + 1; x++) {
-        g_ptr = &floor_ptr->grid_array[y1 - 1][x];
-        place_grid(player_ptr, g_ptr, GB_OUTER);
-        g_ptr = &floor_ptr->grid_array[y2 + 1][x];
-        place_grid(player_ptr, g_ptr, GB_OUTER);
+    for (auto y = y1 - 1; y <= y2 + 1; y++) {
+        place_grid(player_ptr, floor.get_grid({ y, x1 - 1 }), GB_OUTER);
+        place_grid(player_ptr, floor.get_grid({ y, x2 + 1 }), GB_OUTER);
     }
 
-    if (floor_ptr->dun_level < 30 + randint1(30)) {
-        trap = feat_trap_piranha;
-    } else {
-        trap = feat_trap_armageddon;
+    for (auto x = x1 - 1; x <= x2 + 1; x++) {
+        place_grid(player_ptr, floor.get_grid({ y1 - 1, x }), GB_OUTER);
+        place_grid(player_ptr, floor.get_grid({ y2 + 1, x }), GB_OUTER);
     }
 
-    /* Place a special trap */
-    g_ptr = &floor_ptr->grid_array[rand_spread(yval, ysize / 4)][rand_spread(xval, xsize / 4)];
-    g_ptr->mimic = g_ptr->feat;
-    g_ptr->feat = trap;
+    const auto trap = floor.dun_level < 30 + randint1(30) ? TerrainTag::TRAP_PIRANHA : TerrainTag::TRAP_ARMAGEDDON;
+    const auto trap_y = rand_spread(center->y, ysize / 4);
+    const auto trap_x = rand_spread(center->x, xsize / 4);
+    auto &grid = floor.get_grid({ trap_y, trap_x });
+    grid.mimic = grid.feat;
+    grid.set_terrain_id(trap);
     constexpr auto fmt = _("%sの部屋が生成されました。", "Room of %s was generated.");
-    msg_format_wizard(player_ptr, CHEAT_DUNGEON, fmt, TerrainList::get_instance()[trap].name.data());
+    msg_format_wizard(player_ptr, CHEAT_DUNGEON, fmt, TerrainList::get_instance().get_terrain(trap).name.data());
     return true;
 }

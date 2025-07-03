@@ -16,16 +16,17 @@
 #include "main/init-error-messages-table.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
-#include "realm/realm-names-table.h"
+#include "player/player-realm.h"
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <sstream>
+#include <string>
 
 static char tmp[8];
 static concptr variant = "ZANGBAND";
@@ -38,89 +39,84 @@ static concptr variant = "ZANGBAND";
  * @param fp
  * @return エラーコード
  */
-static concptr parse_fixed_map_expression(PlayerType *player_ptr, char **sp, char *fp)
+static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp, char *fp)
 {
-    char b1 = '[';
-    char b2 = ']';
+    constexpr char b1 = '[';
+    constexpr char b2 = ']';
 
     char f = ' ';
 
-    char *s;
-    s = (*sp);
+    char *s = (*sp);
 
     while (iswspace(*s)) {
         s++;
     }
 
-    char *b;
-    b = s;
-    concptr v = "?o?o?";
+    char *b = s;
+    std::string v = "?o?o?";
     if (*s == b1) {
-        concptr p;
-        concptr t;
+        std::string t;
         s++;
         t = parse_fixed_map_expression(player_ptr, &s, &f);
-        if (!*t) {
+        if (t.empty()) {
             /* Nothing */
-        } else if (streq(t, "IOR")) {
+        } else if (t == "IOR") {
             v = "0";
             while (*s && (f != b2)) {
                 t = parse_fixed_map_expression(player_ptr, &s, &f);
-                if (*t && !streq(t, "0")) {
+                if (!t.empty() && t != "0") {
                     v = "1";
                 }
             }
-        } else if (streq(t, "AND")) {
+        } else if (t == "AND") {
             v = "1";
             while (*s && (f != b2)) {
                 t = parse_fixed_map_expression(player_ptr, &s, &f);
-                if (*t && streq(t, "0")) {
+                if (!t.empty() && t == "0") {
                     v = "0";
                 }
             }
-        } else if (streq(t, "NOT")) {
+        } else if (t == "NOT") {
             v = "1";
             while (*s && (f != b2)) {
                 t = parse_fixed_map_expression(player_ptr, &s, &f);
-                if (*t && streq(t, "1")) {
+                if (!t.empty() && t == "1") {
                     v = "0";
                 }
             }
-        } else if (streq(t, "EQU")) {
+        } else if (t == "EQU") {
             v = "0";
             if (*s && (f != b2)) {
                 t = parse_fixed_map_expression(player_ptr, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                p = parse_fixed_map_expression(player_ptr, &s, &f);
-                if (streq(t, p)) {
+                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                if (t == p) {
                     v = "1";
                 }
             }
-        } else if (streq(t, "LEQ")) {
+        } else if (t == "LEQ") {
             v = "1";
             if (*s && (f != b2)) {
                 t = parse_fixed_map_expression(player_ptr, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                p = t;
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
-                if (*t && atoi(p) > atoi(t)) {
+                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
                     v = "0";
                 }
             }
-        } else if (streq(t, "GEQ")) {
+        } else if (t == "GEQ") {
             v = "1";
             if (*s && (f != b2)) {
                 t = parse_fixed_map_expression(player_ptr, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                p = t;
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
-                if (*t && atoi(p) < atoi(t)) {
+                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
                     v = "0";
                 }
             }
@@ -176,15 +172,15 @@ static concptr parse_fixed_map_expression(PlayerType *player_ptr, char **sp, cha
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = _(rp_ptr->E_title, rp_ptr->title);
+        v = rp_ptr->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = _(cp_ptr->E_title, cp_ptr->title);
+        v = cp_ptr->title.en_string();
     } else if (streq(b + 1, "REALM1")) {
-        v = _(E_realm_names[player_ptr->realm1], realm_names[player_ptr->realm1]);
+        v = PlayerRealm(player_ptr).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {
-        v = _(E_realm_names[player_ptr->realm2], realm_names[player_ptr->realm2]);
+        v = PlayerRealm(player_ptr).realm2().get_name().en_string();
     } else if (streq(b + 1, "PLAYER")) {
-        static char tmp_player_name[32];
+        char tmp_player_name[32]{};
         char *pn, *tpn;
         for (pn = player_ptr->name, tpn = tmp_player_name; *pn; pn++, tpn++) {
 #ifdef JP
@@ -200,29 +196,22 @@ static concptr parse_fixed_map_expression(PlayerType *player_ptr, char **sp, cha
         *tpn = '\0';
         v = tmp_player_name;
     } else if (streq(b + 1, "TOWN")) {
-        sprintf(tmp, "%d", player_ptr->town_num);
-        v = tmp;
+        v = std::to_string(player_ptr->town_num);
     } else if (streq(b + 1, "LEVEL")) {
-        sprintf(tmp, "%d", player_ptr->lev);
-        v = tmp;
+        v = std::to_string(player_ptr->lev);
     } else if (streq(b + 1, "QUEST_NUMBER")) {
-        sprintf(tmp, "%d", enum2i(player_ptr->current_floor_ptr->quest_number));
-        v = tmp;
+        v = std::to_string(enum2i(player_ptr->current_floor_ptr->quest_number));
     } else if (streq(b + 1, "LEAVING_QUEST")) {
-        sprintf(tmp, "%d", enum2i(leaving_quest));
-        v = tmp;
+        v = std::to_string(enum2i(leaving_quest));
     } else if (prefix(b + 1, "QUEST_TYPE")) {
-        const auto &quest_list = QuestList::get_instance();
-        sprintf(tmp, "%d", enum2i(quest_list[i2enum<QuestId>(atoi(b + 11))].type));
-        v = tmp;
+        const auto &quests = QuestList::get_instance();
+        v = std::to_string(enum2i(quests.get_quest(i2enum<QuestId>(atoi(b + 11))).type));
     } else if (prefix(b + 1, "QUEST")) {
-        const auto &quest_list = QuestList::get_instance();
-        sprintf(tmp, "%d", enum2i(quest_list[i2enum<QuestId>(atoi(b + 6))].status));
-        v = tmp;
+        const auto &quests = QuestList::get_instance();
+        v = std::to_string(enum2i(quests.get_quest(i2enum<QuestId>(atoi(b + 6))).status));
     } else if (prefix(b + 1, "RANDOM")) {
         const auto &system = AngbandSystem::get_instance();
-        auto tmp2 = std::to_string((static_cast<int>(system.get_seed_town()) % std::stoi(b + 7)));
-        v = tmp2.data();
+        v = std::to_string((static_cast<int>(system.get_seed_town()) % std::stoi(b + 7)));
     } else if (streq(b + 1, "VARIANT")) {
         v = variant;
     } else if (streq(b + 1, "WILDERNESS")) {
@@ -255,7 +244,7 @@ static concptr parse_fixed_map_expression(PlayerType *player_ptr, char **sp, cha
  */
 parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, int ymin, int xmin, int ymax, int xmax)
 {
-    const auto &path = path_build(ANGBAND_DIR_EDIT, name);
+    const auto path = path_build(ANGBAND_DIR_EDIT, name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (fp == nullptr) {
         return PARSE_ERROR_GENERIC;
@@ -267,20 +256,22 @@ parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, 
     int x = xmin;
     int y = ymin;
     qtwg_type tmp_qg;
-    char buf[1024]{};
-    qtwg_type *qg_ptr = initialize_quest_generator_type(&tmp_qg, buf, ymin, xmin, ymax, xmax, &y, &x);
-    while (angband_fgets(fp, buf, sizeof(buf)) == 0) {
+    qtwg_type *qg_ptr = initialize_quest_generator_type(&tmp_qg, ymin, xmin, ymax, xmax, &y, &x);
+    while (true) {
+        auto line_str = angband_fgets(fp);
+        if (!line_str) {
+            break;
+        }
         num++;
-        if (!buf[0] || iswspace(buf[0]) || buf[0] == '#') {
+        if (line_str->empty() || iswspace(line_str->front()) || line_str->starts_with(('#'))) {
             continue;
         }
 
-        if ((buf[0] == '?') && (buf[1] == ':')) {
+        if (line_str->starts_with("?:")) {
             char f;
-            char *s;
-            s = buf + 2;
-            concptr v = parse_fixed_map_expression(player_ptr, &s, &f);
-            bypass = streq(v, "0");
+            auto *s = line_str->data() + 2;
+            auto v = parse_fixed_map_expression(player_ptr, &s, &f);
+            bypass = v == "0";
             continue;
         }
 
@@ -288,17 +279,15 @@ parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, 
             continue;
         }
 
+        qg_ptr->buf = line_str->data();
         err = generate_fixed_map_floor(player_ptr, qg_ptr, parse_fixed_map);
         if (err != PARSE_ERROR_NONE) {
+            concptr oops = (((err > 0) && (err < PARSE_ERROR_MAX)) ? err_str[err] : "unknown");
+            msg_format("Error %d (%s) at line %d of '%s'.", err, oops, num, name.data());
+            msg_format(_("'%s'を解析中。", "Parsing '%s'."), line_str->data());
+            msg_erase();
             break;
         }
-    }
-
-    if (err != 0) {
-        concptr oops = (((err > 0) && (err < PARSE_ERROR_MAX)) ? err_str[err] : "unknown");
-        msg_format("Error %d (%s) at line %d of '%s'.", err, oops, num, name.data());
-        msg_format(_("'%s'を解析中。", "Parsing '%s'."), buf);
-        msg_print(nullptr);
     }
 
     angband_fclose(fp);
@@ -346,7 +335,7 @@ static void parse_quest_info_aux(std::string_view file_name, std::set<QuestId> &
         key_list_ref.insert(q);
     };
 
-    const auto &path = path_build(ANGBAND_DIR_EDIT, file_name);
+    const auto path = path_build(ANGBAND_DIR_EDIT, file_name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (fp == nullptr) {
         std::stringstream ss;
@@ -354,12 +343,15 @@ static void parse_quest_info_aux(std::string_view file_name, std::set<QuestId> &
         THROW_EXCEPTION(std::runtime_error, ss.str());
     }
 
-    char buf[4096];
     auto line_num = 0;
-    while (angband_fgets(fp, buf, sizeof(buf)) == 0) {
+    while (true) {
+        const auto line_str = angband_fgets(fp);
+        if (!line_str) {
+            break;
+        }
         line_num++;
 
-        const auto token = str_split(buf, ':', true);
+        const auto token = str_split(*line_str, ':', true);
 
         switch (token[0][0]) {
         case 'Q': {

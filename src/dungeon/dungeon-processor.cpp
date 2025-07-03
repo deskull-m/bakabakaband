@@ -1,5 +1,4 @@
 #include "dungeon/dungeon-processor.h"
-#include "cmd-building/cmd-building.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
 #include "core/object-compressor.h"
@@ -11,6 +10,7 @@
 #include "floor/floor-leaver.h"
 #include "floor/floor-save-util.h"
 #include "floor/floor-save.h"
+#include "floor/wild.h"
 #include "game-option/cheat-options.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/play-record-options.h"
@@ -18,12 +18,9 @@
 #include "io/cursor.h"
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
-#include "market/arena.h"
 #include "mind/mind-ninja.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-compaction.h"
 #include "monster/monster-processor.h"
-#include "monster/monster-status.h"
 #include "monster/monster-util.h"
 #include "pet/pet-util.h"
 #include "player-base/player-class.h"
@@ -32,9 +29,12 @@
 #include "realm/realm-song.h"
 #include "spell-realm/spells-song.h"
 #include "system/angband-system.h"
-#include "system/dungeon-info.h"
-#include "system/floor-type-definition.h"
-#include "system/monster-race-info.h"
+#include "system/building-type-definition.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-record.h"
+#include "system/enums/dungeon/dungeon-id.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
@@ -46,7 +46,8 @@
 
 static void redraw_character_xtra(PlayerType *player_ptr)
 {
-    w_ptr->character_xtra = true;
+    auto &world = AngbandWorld::get_instance();
+    world.character_xtra = true;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
@@ -81,7 +82,7 @@ static void redraw_character_xtra(PlayerType *player_ptr)
     };
     rfu.set_flags(flags_srf);
     handle_stuff(player_ptr);
-    w_ptr->character_xtra = false;
+    world.character_xtra = false;
 }
 
 /*!
@@ -101,37 +102,39 @@ static void redraw_character_xtra(PlayerType *player_ptr)
 void process_dungeon(PlayerType *player_ptr, bool load_game)
 {
     auto &floor = *player_ptr->current_floor_ptr;
+    auto &world = AngbandWorld::get_instance();
     floor.base_level = floor.dun_level;
-    w_ptr->is_loading_now = false;
+    world.is_loading_now = false;
     player_ptr->leaving = false;
 
     command_cmd = 0;
     command_rep = 0;
     command_arg = 0;
-    command_dir = 0;
+    command_dir = Direction::none();
 
-    target_who = 0;
+    Target::clear_last_target();
     player_ptr->pet_t_m_idx = 0;
     player_ptr->riding_t_m_idx = 0;
     player_ptr->ambush_flag = false;
     health_track(player_ptr, 0);
 
     disturb(player_ptr, true, true);
-    auto quest_num = floor.get_quest_id();
-    const auto &quest_list = QuestList::get_instance();
-    auto *questor_ptr = &monraces_info[quest_list[quest_num].r_idx];
-    if (inside_quest(quest_num)) {
-        questor_ptr->misc_flags.set(MonsterMiscType::QUESTOR);
+    const auto quest_id = floor.get_quest_id();
+    auto &quests = QuestList::get_instance();
+    auto &monrace_questor = quests.get_quest(quest_id).get_bounty();
+    if (inside_quest(quest_id)) {
+        monrace_questor.misc_flags.set(MonsterMiscType::QUESTOR);
     }
 
     if (player_ptr->max_plv < player_ptr->lev) {
         player_ptr->max_plv = player_ptr->lev;
     }
 
-    if ((max_dlv[floor.dungeon_idx] < floor.dun_level) && !floor.is_in_quest()) {
-        max_dlv[floor.dungeon_idx] = floor.dun_level;
+    auto &dungeon_record = DungeonRecords::get_instance().get_record(floor.dungeon_id);
+    if ((dungeon_record.get_max_level() < floor.dun_level) && !floor.is_in_quest()) {
+        dungeon_record.set_max_level(floor.dun_level);
         if (record_maxdepth) {
-            exe_write_diary(player_ptr, DiaryKind::MAXDEAPTH, floor.dun_level);
+            exe_write_diary(floor, DiaryKind::MAXDEAPTH, floor.dun_level);
         }
     }
 
@@ -153,20 +156,22 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     handle_stuff(player_ptr);
     term_fresh();
 
-    auto no_feeling_quest = (quest_num == QuestId::OBERON);
-    no_feeling_quest |= (quest_num == QuestId::SERPENT);
-    no_feeling_quest |= none_bits(quest_list[quest_num].flags, QUEST_FLAG_PRESET);
-    if (inside_quest(quest_num) && QuestType::is_fixed(quest_num) && !no_feeling_quest) {
+    auto no_feeling_quest = (quest_id == QuestId::OBERON);
+    no_feeling_quest |= (quest_id == QuestId::SERPENT);
+    no_feeling_quest |= none_bits(quests.get_quest(quest_id).flags, QUEST_FLAG_PRESET);
+    if (inside_quest(quest_id) && QuestType::is_fixed(quest_id) && !no_feeling_quest) {
         do_cmd_feeling(player_ptr);
     }
 
     const auto is_watching = AngbandSystem::get_instance().is_phase_out();
     if (is_watching) {
         if (load_game) {
-            update_gambling_monsters(player_ptr);
+            player_ptr->energy_need = 0;
+            auto &melee_arena = MeleeArena::get_instance();
+            melee_arena.update_gladiators(player_ptr);
         } else {
             msg_print(_("試合開始！", "Ready..Fight!"));
-            msg_print(nullptr);
+            msg_erase();
         }
     }
 
@@ -178,21 +183,20 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         return;
     }
 
-    if (!floor.is_in_quest() && (floor.dungeon_idx == DUNGEON_ANGBAND)) {
+    if (!floor.is_in_quest() && (floor.dungeon_id == DungeonId::ANGBAND)) {
         const auto random_quest_id = floor.get_random_quest_id();
         quest_discovery(random_quest_id);
         floor.quest_number = random_quest_id;
     }
 
     const auto &dungeon = floor.get_dungeon_definition();
-    const auto guardian = dungeon.final_guardian;
-    if ((floor.dun_level == dungeon.maxdepth) && MonsterRace(guardian).is_valid()) {
-        const auto &guardian_ref = monraces_info[guardian];
-        if (guardian_ref.mob_num) {
+    if (dungeon.has_guardian() && (floor.dun_level == dungeon.maxdepth)) {
+        const auto &monrace = dungeon.get_guardian();
+        if (!monrace.is_dead_unique()) {
 #ifdef JP
-            msg_format("この階には%sの主である%sが棲んでいる。", dungeon.name.data(), guardian_ref.name.data());
+            msg_format("この階には%sの主である%sが棲んでいる。", dungeon.name.data(), monrace.name.data());
 #else
-            msg_format("%s^ lives in this level as the keeper of %s.", guardian_ref.name.data(), dungeon.name.data());
+            msg_format("%s^ lives in this level as the keeper of %s.", monrace.name.data(), dungeon.name.data());
 #endif
         }
     }
@@ -203,13 +207,13 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
 
     floor.monster_level = floor.base_level;
     floor.object_level = floor.base_level;
-    w_ptr->is_loading_now = true;
-    if (player_ptr->energy_need > 0 && !is_watching && (floor.dun_level || player_ptr->leaving_dungeon || floor.inside_arena)) {
+    world.is_loading_now = true;
+    if (player_ptr->energy_need > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
         player_ptr->energy_need = 0;
     }
 
-    player_ptr->leaving_dungeon = false;
-    mproc_init(&floor);
+    floor.leave_dungeon(false);
+    floor.reset_mproc();
 
     while (true) {
         if ((floor.m_cnt + 32 > MAX_FLOOR_MONSTERS) && !is_watching) {
@@ -220,12 +224,8 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
             compact_monsters(player_ptr, 0);
         }
 
-        if (floor.o_cnt + 32 > MAX_FLOOR_ITEMS) {
+        if (floor.o_list.size() + 32 > MAX_FLOOR_ITEMS) {
             compact_objects(player_ptr, 64);
-        }
-
-        if (floor.o_cnt + 32 < floor.o_max) {
-            compact_objects(player_ptr, 0);
         }
 
         process_player(player_ptr);
@@ -265,12 +265,13 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
             break;
         }
 
-        w_ptr->game_turn++;
-        if (w_ptr->dungeon_turn < w_ptr->dungeon_turn_limit) {
-            if (!player_ptr->wild_mode || wild_regen) {
-                w_ptr->dungeon_turn++;
-            } else if (player_ptr->wild_mode && !(w_ptr->game_turn % ((MAX_HGT + MAX_WID) / 2))) {
-                w_ptr->dungeon_turn++;
+        world.game_turn++;
+        const auto is_wild_mode = world.is_wild_mode();
+        if (world.dungeon_turn < world.dungeon_turn_limit) {
+            if (!is_wild_mode || wild_regen) {
+                world.dungeon_turn++;
+            } else if (is_wild_mode && !(world.game_turn % ((MAX_HGT + MAX_WID) / 2))) {
+                world.dungeon_turn++;
             }
         }
 
@@ -285,8 +286,8 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         }
     }
 
-    if ((inside_quest(quest_num)) && questor_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        questor_ptr->misc_flags.reset(MonsterMiscType::QUESTOR);
+    if ((inside_quest(quest_id)) && monrace_questor.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+        monrace_questor.misc_flags.reset(MonsterMiscType::QUESTOR);
     }
 
     if (player_ptr->playing && !player_ptr->is_dead) {

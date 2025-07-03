@@ -11,11 +11,11 @@
 #include "player/attack-defense-types.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -42,8 +42,8 @@ void do_cmd_tunnel(PlayerType *player_ptr)
         command_arg = 0;
     }
 
-    int dir;
-    if (!get_rep_dir(player_ptr, &dir)) {
+    const auto dir = get_rep_dir(player_ptr);
+    if (!dir) {
         disturb(player_ptr, false, false);
         return;
     }
@@ -51,7 +51,7 @@ void do_cmd_tunnel(PlayerType *player_ptr)
     auto more = false;
     const auto pos = player_ptr->get_neighbor(dir);
     const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-    const auto &terrain_mimic = grid.get_terrain_mimic();
+    const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
     if (terrain_mimic.flags.has(TerrainCharacteristics::DOOR)) {
         msg_print(_("ドアは掘れない。", "You cannot tunnel through doors."));
     } else if (terrain_mimic.flags.has_not(TerrainCharacteristics::TUNNEL)) {

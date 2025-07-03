@@ -21,7 +21,6 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/monster-race-hook.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
@@ -33,14 +32,16 @@
 #include "spell-kind/spells-random.h"
 #include "status/experience.h"
 #include "system/angband-system.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/player-hallucination.h"
 #include "timed-effect/timed-effects.h"
-#include "util/bit-flags-calculator.h"
+#include "tracking/health-bar-tracker.h"
+#include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <optional>
@@ -85,32 +86,31 @@ MonsterDamageProcessor::MonsterDamageProcessor(PlayerType *player_ptr, MONSTER_I
 }
 
 /*!
- * @brief モンスターのHPをダメージに応じて減算する /
+ * @brief モンスターのHPをダメージに応じて減算する
  * @return モンスターが生きていればfalse、死んだらtrue
+ * @details exp_mon をコピーしているのは、撃破時の経験値を算出する頃にはmonsterが無効モンスターになっているため.
  */
 bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    auto exp_mon = *m_ptr;
-
-    auto exp_dam = (m_ptr->hp > this->dam) ? this->dam : m_ptr->hp;
-
-    this->get_exp_from_mon(&exp_mon, exp_dam);
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto exp_mon = monster.clone();
+    auto exp_dam = (monster.hp > this->dam) ? this->dam : monster.hp;
+    this->get_exp_from_mon(exp_mon, exp_dam);
     if (this->genocide_chaos_patron()) {
         return true;
     }
 
-    m_ptr->hp -= this->dam;
-    m_ptr->dealt_damage += this->dam;
-    if (m_ptr->dealt_damage > m_ptr->max_maxhp * 100) {
-        m_ptr->dealt_damage = m_ptr->max_maxhp * 100;
+    monster.hp -= this->dam;
+    monster.dealt_damage += this->dam;
+    if (monster.dealt_damage > monster.max_maxhp * 100) {
+        monster.dealt_damage = monster.max_maxhp * 100;
     }
 
-    if (w_ptr->wizard) {
-        msg_format(_("合計%d/%dのダメージを与えた。", "You do %d (out of %d) damage."), m_ptr->dealt_damage, m_ptr->maxhp);
+    if (AngbandWorld::get_instance().wizard) {
+        msg_format(_("合計%d/%dのダメージを与えた。", "You do %d (out of %d) damage."), monster.dealt_damage, monster.maxhp);
     }
 
-    if (this->process_dead_exp_virtue(note, &exp_mon)) {
+    if (this->process_dead_exp_virtue(note, exp_mon)) {
         return true;
     }
 
@@ -120,8 +120,8 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 
 bool MonsterDamageProcessor::genocide_chaos_patron()
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    if (!m_ptr->is_valid()) {
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    if (!monster.is_valid()) {
         this->m_idx = 0;
     }
 
@@ -132,37 +132,33 @@ bool MonsterDamageProcessor::genocide_chaos_patron()
     return this->m_idx == 0;
 }
 
-bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, MonsterEntity *exp_mon)
+bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, const MonsterEntity &exp_mon)
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    auto &r_ref = m_ptr->get_real_monrace();
-    if (m_ptr->hp >= 0) {
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    auto &monrace = monster.get_real_monrace();
+    if (monster.hp >= 0) {
         return false;
     }
 
     this->death_special_flag_monster();
-    if (r_ref.r_akills < MAX_SHORT) {
-        r_ref.r_akills++;
-    }
-
     this->increase_kill_numbers();
-    const auto m_name = monster_desc(this->player_ptr, m_ptr, MD_TRUE_NAME);
+    const auto m_name = monster_desc(this->player_ptr, monster, MD_TRUE_NAME);
     this->death_amberites(m_name);
     this->dying_scream(m_name);
-    AvatarChanger ac(player_ptr, m_ptr);
+    AvatarChanger ac(this->player_ptr, monster);
     ac.change_virtue();
-    if (r_ref.kind_flags.has(MonsterKindType::UNIQUE) && record_destroy_uniq) {
+    if (monrace.kind_flags.has(MonsterKindType::UNIQUE) && record_destroy_uniq) {
         std::stringstream ss;
-        ss << r_ref.name << (m_ptr->mflag2.has(MonsterConstantFlagType::CLONED) ? _("(クローン)", "(Clone)") : "");
-        exe_write_diary(this->player_ptr, DiaryKind::UNIQUE, 0, ss.str());
+        ss << monrace.name << (monster.mflag2.has(MonsterConstantFlagType::CLONED) ? _("(クローン)", "(Clone)") : "");
+        exe_write_diary(*this->player_ptr->current_floor_ptr, DiaryKind::UNIQUE, 0, ss.str());
     }
 
-    sound(SOUND_KILL);
+    sound(SoundKind::KILL);
     this->show_kill_message(note, m_name);
     this->show_bounty_message(m_name);
     monster_death(this->player_ptr, this->m_idx, true, this->attribute_flags);
-    this->summon_special_unique();
-    this->get_exp_from_mon(exp_mon, exp_mon->max_maxhp * 2);
+    delete_monster_idx(this->player_ptr, this->m_idx);
+    this->get_exp_from_mon(exp_mon, exp_mon.max_maxhp * 2);
     *this->fear = false;
     return true;
 }
@@ -173,82 +169,69 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, Mons
  */
 void MonsterDamageProcessor::death_special_flag_monster()
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    auto r_idx = m_ptr->r_idx;
-    auto *r_ptr = &monraces_info[r_idx];
-    if (monraces_info[r_idx].misc_flags.has(MonsterMiscType::TANUKI)) {
-        r_ptr = &monraces_info[r_idx];
-        m_ptr->ap_r_idx = r_idx;
-        if (r_ptr->r_sights < MAX_SHORT) {
-            r_ptr->r_sights++;
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    auto monrace_id = monster.r_idx;
+    auto &monrace = monster.get_monrace();
+    if (monrace.misc_flags.has(MonsterMiscType::TANUKI)) {
+        monster.ap_r_idx = monrace_id;
+        if (monrace.r_sights < MAX_SHORT) {
+            monrace.r_sights++;
         }
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
-        auto &real_r_ref = m_ptr->get_real_monrace();
-        r_idx = m_ptr->get_real_monrace_id();
-        if (real_r_ref.r_sights < MAX_SHORT) {
-            real_r_ref.r_sights++;
+    if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+        auto &real_monrace = monster.get_real_monrace();
+        monrace_id = monster.get_real_monrace_id();
+        if (real_monrace.r_sights < MAX_SHORT) {
+            real_monrace.r_sights++;
         }
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::CLONED)) {
+    if (monster.mflag2.has(MonsterConstantFlagType::CLONED)) {
         return;
     }
 
-    if (r_ptr->population_flags.has(MonsterPopulationType::NAZGUL)) {
-        r_ptr->mob_num--;
+    if (monrace.population_flags.has(MonsterPopulationType::NAZGUL)) {
         return;
     }
 
-    if (r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
         return;
     }
 
-    this->death_unique_monster(r_idx);
-}
-
-/*
- * @brief ユニークの死亡処理
- * @param r_idx 死亡したユニークの種族番号
- */
-void MonsterDamageProcessor::death_unique_monster(MonsterRaceId r_idx)
-{
-    monraces_info[r_idx].max_num = 0;
-    auto &monraces = MonraceList::get_instance();
-    if (monraces.can_unify_separate(r_idx)) {
-        monraces.kill_unified_unique(r_idx);
-    }
+    MonraceList::get_instance().kill_unique_monster(monrace_id);
 }
 
 void MonsterDamageProcessor::increase_kill_numbers()
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    auto &r_ref = m_ptr->get_real_monrace();
-    auto is_hallucinated = this->player_ptr->effects()->hallucination()->is_hallucinated();
-    if (((m_ptr->ml == 0) || is_hallucinated) && r_ref.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    auto &monrace = monster.get_real_monrace();
+    monrace.increment_akills();
+
+    const auto is_hallucinated = this->player_ptr->effects()->hallucination().is_hallucinated();
+    if (((monster.ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
         return;
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::KAGE) && (monraces_info[MonsterRaceId::KAGE].r_pkills < MAX_SHORT)) {
-        monraces_info[MonsterRaceId::KAGE].r_pkills++;
-    } else if (r_ref.r_pkills < MAX_SHORT) {
-        r_ref.r_pkills++;
+    auto &monraces = MonraceList::get_instance();
+    if (monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
+        auto &shadower = monraces.get_monrace(MonraceId::KAGE);
+        shadower.increment_pkills();
+        shadower.increment_tkills();
+        shadower.decrement_mob_numbers();
+    } else {
+        monrace.increment_pkills();
+        monrace.increment_tkills();
+        monrace.decrement_mob_numbers();
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::KAGE) && (monraces_info[MonsterRaceId::KAGE].r_tkills < MAX_SHORT)) {
-        monraces_info[MonsterRaceId::KAGE].r_tkills++;
-    } else if (r_ref.r_tkills < MAX_SHORT) {
-        r_ref.r_tkills++;
-    }
-
-    monster_race_track(this->player_ptr, m_ptr->ap_r_idx);
+    LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
 }
 
 void MonsterDamageProcessor::death_amberites(std::string_view m_name)
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    const auto &r_ref = m_ptr->get_real_monrace();
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto &r_ref = monster.get_real_monrace();
     if (r_ref.kind_flags.has_not(MonsterKindType::AMBERITE) || one_in_(2)) {
         return;
     }
@@ -265,19 +248,19 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
 
 void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    const auto &r_ref = m_ptr->get_real_monrace();
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto &r_ref = monster.get_real_monrace();
     if (r_ref.speak_flags.has_none_of({ MonsterSpeakType::SPEAK_ALL, MonsterSpeakType::SPEAK_DEATH })) {
         return;
     }
 
-    const auto death_mes = get_random_line(_("mondeath_j.txt", "mondeath.txt"), enum2i(m_ptr->r_idx));
-    if (death_mes.has_value()) {
-        msg_format("%s^ %s", m_name.data(), death_mes->data());
+    const auto death_message = r_ref.get_message(m_name, MonsterMessageType::SPEAK_DEATH);
+    if (death_message) {
+        msg_print(*death_message);
     }
 
 #ifdef WORLD_SCORE
-    if (m_ptr->r_idx == MonsterRaceId::SERPENT) {
+    if (monster.r_idx == MonraceId::SERPENT) {
         screen_dump = make_screen_dump(this->player_ptr);
     }
 #endif
@@ -285,23 +268,23 @@ void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 
 void MonsterDamageProcessor::show_kill_message(std::string_view note, std::string_view m_name)
 {
-    auto *floor_ptr = this->player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor_ptr->m_list[this->m_idx];
+    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &monster = floor.m_list[this->m_idx];
     if (!note.empty()) {
         msg_format("%s^%s", m_name.data(), note.data());
         return;
     }
 
-    if (!m_ptr->ml) {
+    if (!monster.ml) {
         auto mes = is_echizen(this->player_ptr) ? _("せっかくだから%sを殺した。", "Because it's time, you have killed %s.")
                                                 : _("%sを殺した。", "You have killed %s.");
         msg_format(mes, m_name.data());
         return;
     }
 
-    const auto is_explodable = m_ptr->is_explodable();
-    const auto died_mes = m_ptr->get_died_message();
-    if (m_ptr->has_living_flag()) {
+    const auto is_explodable = monster.is_explodable();
+    const auto died_mes = monster.get_died_message();
+    if (monster.has_living_flag()) {
         if (is_explodable) {
             this->show_explosion_message(died_mes, m_name);
             return;
@@ -334,18 +317,18 @@ void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, s
 
 void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
 {
-    auto *floor_ptr = this->player_ptr->current_floor_ptr;
-    auto *m_ptr = &floor_ptr->m_list[this->m_idx];
-    const auto &r_ref = m_ptr->get_real_monrace();
-    if (r_ref.kind_flags.has_not(MonsterKindType::UNIQUE) || m_ptr->mflag2.has(MonsterConstantFlagType::CLONED) || vanilla_town) {
+    auto &floor = *this->player_ptr->current_floor_ptr;
+    auto &monster = floor.m_list[this->m_idx];
+    const auto &monrace = monster.get_real_monrace();
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || monster.mflag2.has(MonsterConstantFlagType::CLONED) || vanilla_town) {
         return;
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
+    if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         return;
     }
 
-    if (MonsterRace(m_ptr->r_idx).is_bounty(true)) {
+    if (monrace.is_bounty(true)) {
         msg_format(_("%sの首には賞金がかかっている。", "There is a price on %s's head."), m_name.data());
     }
 }
@@ -362,10 +345,10 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
  * experience point of a monster later.
  * </pre>
  */
-void MonsterDamageProcessor::get_exp_from_mon(MonsterEntity *m_ptr, int exp_dam)
+void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int exp_dam)
 {
-    auto *r_ptr = &m_ptr->get_monrace();
-    if (!m_ptr->is_valid() || m_ptr->is_pet() || AngbandSystem::get_instance().is_phase_out()) {
+    const auto &monrace = monster.get_monrace();
+    if (!monster.is_valid() || monster.is_pet() || AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
@@ -374,19 +357,19 @@ void MonsterDamageProcessor::get_exp_from_mon(MonsterEntity *m_ptr, int exp_dam)
      * - Varying speed effects
      * - Get a fraction in proportion of damage point
      */
-    auto new_exp = r_ptr->level * speed_to_energy(m_ptr->mspeed) * exp_dam;
+    auto new_exp = monrace.level * speed_to_energy(monster.mspeed) * exp_dam;
     auto new_exp_frac = 0U;
     auto div_h = 0;
-    auto div_l = (uint)((this->player_ptr->max_plv + 2) * speed_to_energy(r_ptr->speed));
+    auto div_l = (uint)((this->player_ptr->max_plv + 2) * speed_to_energy(monrace.speed));
 
     /* Use (average maxhp * 2) as a denominator */
-    auto compensation = r_ptr->misc_flags.has(MonsterMiscType::FORCE_MAXHP) ? r_ptr->hside * 2 : r_ptr->hside + 1;
-    s64b_mul(&div_h, &div_l, 0, r_ptr->hdice * (ironman_nightmare ? 2 : 1) * compensation);
+    int compensation = monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP) ? monrace.hit_dice.maxroll() * 2 : monrace.hit_dice.floored_expected_value_multiplied_by(2);
+    s64b_mul(&div_h, &div_l, 0, (ironman_nightmare ? 2 : 1) * compensation);
 
     /* Special penalty in the wilderness */
-    if (!this->player_ptr->current_floor_ptr->is_in_dungeon()) {
-        auto is_dungeon_monster = r_ptr->wilderness_flags.has_not(MonsterWildernessType::WILD_ONLY);
-        is_dungeon_monster |= r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE);
+    if (!this->player_ptr->current_floor_ptr->is_underground()) {
+        auto is_dungeon_monster = monrace.wilderness_flags.has_not(MonsterWildernessType::WILD_ONLY);
+        is_dungeon_monster |= monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
         if (is_dungeon_monster) {
             s64b_mul(&div_h, &div_l, 0, 5);
         }
@@ -396,8 +379,8 @@ void MonsterDamageProcessor::get_exp_from_mon(MonsterEntity *m_ptr, int exp_dam)
     s64b_div(&new_exp, &new_exp_frac, div_h, div_l);
 
     /* Special penalty for mutiply-monster */
-    if (r_ptr->misc_flags.has(MonsterMiscType::MULTIPLY) || (m_ptr->r_idx == MonsterRaceId::DAWN)) {
-        int monnum_penarty = r_ptr->r_akills / 400;
+    if (monrace.misc_flags.has(MonsterMiscType::MULTIPLY) || (monster.r_idx == MonraceId::DAWN)) {
+        int monnum_penarty = monrace.r_akills / 400;
         if (monnum_penarty > 8) {
             monnum_penarty = 8;
         }
@@ -409,8 +392,8 @@ void MonsterDamageProcessor::get_exp_from_mon(MonsterEntity *m_ptr, int exp_dam)
     }
 
     /* Special penalty for rest_and_shoot exp scum */
-    if ((m_ptr->dealt_damage > m_ptr->max_maxhp) && (m_ptr->hp >= 0)) {
-        int over_damage = m_ptr->dealt_damage / m_ptr->max_maxhp;
+    if ((monster.dealt_damage > monster.max_maxhp) && (monster.hp >= 0)) {
+        int over_damage = monster.dealt_damage / monster.max_maxhp;
         if (over_damage > 32) {
             over_damage = 32;
         }
@@ -422,88 +405,41 @@ void MonsterDamageProcessor::get_exp_from_mon(MonsterEntity *m_ptr, int exp_dam)
         }
     }
 
-    s64b_mul(&new_exp, &new_exp_frac, 0, r_ptr->mexp);
+    s64b_mul(&new_exp, &new_exp_frac, 0, monrace.mexp);
     gain_exp_64(this->player_ptr, new_exp, new_exp_frac);
 }
 
 void MonsterDamageProcessor::set_redraw()
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (this->player_ptr->health_who == this->m_idx) {
-        rfu.set_flag(MainWindowRedrawingFlag::HEALTH);
-    }
-
-    if (this->player_ptr->riding == this->m_idx) {
-        rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
-    }
-}
-
-/*
- * @brief 特定ユニークを倒した時に更にユニークを特殊召喚する処理
- * @param m_ptr ダメージを与えた特定ユニークの構造体参照ポインタ
- */
-void MonsterDamageProcessor::summon_special_unique()
-{
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    bool is_special_summon = m_ptr->r_idx == MonsterRaceId::IKETA;
-    is_special_summon |= m_ptr->r_idx == MonsterRaceId::DOPPIO;
-    if (!is_special_summon || this->player_ptr->current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
-        delete_monster_idx(this->player_ptr, this->m_idx);
-        return;
-    }
-
-    auto dummy_y = m_ptr->fy;
-    auto dummy_x = m_ptr->fx;
-    auto mode = (BIT_FLAGS)0;
-    if (m_ptr->is_pet()) {
-        mode |= PM_FORCE_PET;
-    }
-
-    MonsterRaceId new_unique_idx;
-    concptr mes;
-    switch (m_ptr->r_idx) {
-    case MonsterRaceId::IKETA:
-        new_unique_idx = MonsterRaceId::BIKETAL;
-        mes = _("「ハァッハッハッハ！！私がバイケタルだ！！」", "Uwa-hahaha!  *I* am Biketal!");
-        break;
-    case MonsterRaceId::DOPPIO:
-        new_unique_idx = MonsterRaceId::DIAVOLO;
-        mes = _("「これは『試練』だ　過去に打ち勝てという『試練』とオレは受けとった」", "This is a 'trial'. I took it as a 'trial' to overcome in the past.");
-        break;
-    default: // バグでなければ入らない.
-        new_unique_idx = MonsterRace::empty_id();
-        mes = "";
-        break;
-    }
-
-    delete_monster_idx(this->player_ptr, this->m_idx);
-    if (summon_named_creature(this->player_ptr, 0, dummy_y, dummy_x, new_unique_idx, mode)) {
-        msg_print(mes);
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
+    if (monster.is_riding()) {
+        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 }
 
 void MonsterDamageProcessor::add_monster_fear()
 {
-    auto *m_ptr = &this->player_ptr->current_floor_ptr->m_list[this->m_idx];
-    if (m_ptr->is_fearful() && (this->dam > 0)) {
-        auto fear_remining = m_ptr->get_remaining_fear() - randint1(this->dam);
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    if (monster.is_fearful() && (this->dam > 0)) {
+        auto fear_remining = monster.get_remaining_fear() - randint1(this->dam);
         if (set_monster_monfear(this->player_ptr, this->m_idx, fear_remining)) {
             *this->fear = false;
         }
     }
 
-    auto *r_ptr = &m_ptr->get_monrace();
-    if (m_ptr->is_fearful() || r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+    const auto &monrace = monster.get_monrace();
+    if (monster.is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
         return;
     }
 
-    int percentage = (100L * m_ptr->hp) / m_ptr->maxhp;
-    if ((randint1(10) < percentage) && ((this->dam < m_ptr->hp) || (randint0(100) >= 80))) {
+    int percentage = (100L * monster.hp) / monster.maxhp;
+    if ((randint1(10) < percentage) && ((this->dam < monster.hp) || evaluate_percent(20))) {
         return;
     }
 
     *this->fear = true;
-    auto fear_condition = (this->dam >= m_ptr->hp) && (percentage > 7);
+    auto fear_condition = (this->dam >= monster.hp) && (percentage > 7);
     auto fear_value = randint1(10) + (fear_condition ? 20 : (11 - percentage) * 5);
     (void)set_monster_monfear(this->player_ptr, this->m_idx, fear_value);
 }

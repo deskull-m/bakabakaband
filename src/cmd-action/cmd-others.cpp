@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @brief その他の小さなコマンド処理群 (探索、汎用グリッド処理、自殺/引退/切腹)
  * @date 2014/01/02
  * @author
@@ -30,11 +30,11 @@
 #include "player/player-move.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "system/terrain-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -62,14 +62,14 @@ void do_cmd_search(PlayerType *player_ptr)
 
 static bool exe_alter(PlayerType *player_ptr)
 {
-    DIRECTION dir;
-    if (!get_rep_dir(player_ptr, &dir, true)) {
+    const auto dir = get_rep_dir(player_ptr, true);
+    if (!dir) {
         return false;
     }
 
     const auto pos = player_ptr->get_neighbor(dir);
     const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-    const auto &terrain = grid.get_terrain_mimic();
+    const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     if (grid.has_monster()) {
         do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
@@ -124,9 +124,9 @@ void do_cmd_alter(PlayerType *player_ptr)
  * @param なし
  * @return 自殺/引退/切腹を実施するならTRUE、キャンセルならFALSE
  */
-static bool decide_suicide(void)
+static bool decide_suicide()
 {
-    if (w_ptr->noscore) {
+    if (AngbandWorld::get_instance().noscore) {
         return true;
     }
 
@@ -139,12 +139,12 @@ static bool decide_suicide(void)
 
 static void accept_winner_message(PlayerType *player_ptr)
 {
-    if (!w_ptr->total_winner || !last_words) {
+    if (!AngbandWorld::get_instance().total_winner || !last_words) {
         return;
     }
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_WINNER);
-    std::optional<std::string> buf;
+    tl::optional<std::string> buf;
     while (true) {
         buf = input_string(_("*勝利*メッセージ: ", "*Winning* message: "), 1024);
         if (!buf.has_value()) {
@@ -171,7 +171,8 @@ void do_cmd_suicide(PlayerType *player_ptr)
 {
     char i;
     flush();
-    if (w_ptr->total_winner) {
+    auto &world = AngbandWorld::get_instance();
+    if (world.total_winner) {
         if (!input_check_strict(player_ptr, _("虚無りますか? ", "Do you want to go to the Nihil War? "), UserCheck::NO_HISTORY)) {
             return;
         }
@@ -199,14 +200,15 @@ void do_cmd_suicide(PlayerType *player_ptr)
     player_ptr->playing = false;
     player_ptr->is_dead = true;
     player_ptr->leaving = true;
-    if (w_ptr->total_winner) {
+    if (world.total_winner) {
         accept_winner_message(player_ptr);
-        w_ptr->add_retired_class(player_ptr->pclass);
+        world.add_retired_class(player_ptr->pclass);
     } else {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
-        exe_write_diary(player_ptr, DiaryKind::DESCRIPTION, 0, _("ダンジョンの探索に飽きて自殺した。", "got tired to commit suicide."));
-        exe_write_diary(player_ptr, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
-        exe_write_diary(player_ptr, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
+        const auto &floor = *player_ptr->current_floor_ptr;
+        exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("ダンジョンの探索に飽きて自殺した。", "got tired to commit suicide."));
+        exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
+        exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
     }
 
     player_ptr->died_from = _("途中終了", "Quitting");

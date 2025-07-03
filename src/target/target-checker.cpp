@@ -16,7 +16,7 @@
 #include "game-option/map-screen-options.h"
 #include "io/cursor.h"
 #include "io/screen-util.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -132,28 +132,4 @@ void verify_panel(PlayerType *player_ptr)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-}
-
-/*
- * Update (if necessary) and verify (if possible) the target.
- * We return TRUE if the target is "okay" and FALSE otherwise.
- */
-bool target_okay(PlayerType *player_ptr)
-{
-    if (target_who < 0) {
-        return true;
-    }
-
-    if (target_who <= 0) {
-        return false;
-    }
-
-    if (!target_able(player_ptr, target_who)) {
-        return false;
-    }
-
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[target_who];
-    target_row = m_ptr->fy;
-    target_col = m_ptr->fx;
-    return true;
 }

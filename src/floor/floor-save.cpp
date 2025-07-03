@@ -11,25 +11,25 @@
 
 #include "floor/floor-save.h"
 #include "core/asking-player.h"
+#include "floor/floor-mode-changer.h"
 #include "floor/floor-save-util.h"
 #include "io/files-util.h"
 #include "io/uid-checker.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
+#include "world/world.h"
 #include <ctime>
 
 static std::string get_saved_floor_name(int level)
 {
-    char ext[32];
-    strnfmt(ext, sizeof(ext), ".F%02d", level);
+    const auto ext = format(".F%02d", level);
     return savefile.string().append(ext);
 }
 
@@ -61,7 +61,7 @@ static void check_saved_tmp_files(const int fd, bool *force)
  * @param force テンポラリファイルが残っていた場合も警告なしで強制的に削除するフラグ
  * @details Make sure that old temporary files are not remaining as gurbages.
  */
-void init_saved_floors(PlayerType *player_ptr, bool force)
+void init_saved_floors(bool force)
 {
     auto fd = -1;
     for (int i = 0; i < MAX_SAVED_FLOORS; i++) {
@@ -81,7 +81,7 @@ void init_saved_floors(PlayerType *player_ptr, bool force)
     latest_visit_mark = 1;
     saved_floor_file_sign = (uint32_t)time(nullptr);
     new_floor_id = 0;
-    player_ptr->change_floor_mode = 0;
+    FloorChangeModesStore::get_instace()->clear();
 }
 
 /*!
@@ -206,21 +206,18 @@ FLOOR_IDX get_unused_floor_id(PlayerType *player_ptr)
 }
 
 /*!
- * @brief フロア移動時にペットを伴った場合の準備処理 / Pre-calculate the racial counters of preserved pets
- * @param player_ptr プレイヤーへの参照ポインタ
- * @details
- * To prevent multiple generation of unique monster who is the minion of player
+ * @brief フロアにいるペットの数を数える
+ * @todo party_mon をPartyMonsters クラスに組み上げてそのオブジェクトメソッドに繰り込む
  */
-void precalc_cur_num_of_pet(PlayerType *player_ptr)
+void precalc_cur_num_of_pet()
 {
-    MonsterEntity *m_ptr;
-    int max_num = player_ptr->wild_mode ? 1 : MAX_PARTY_MON;
-    for (int i = 0; i < max_num; i++) {
-        m_ptr = &party_mon[i];
-        if (!m_ptr->is_valid()) {
+    const auto max_num = AngbandWorld::get_instance().is_wild_mode() ? 1 : MAX_PARTY_MON;
+    for (auto i = 0; i < max_num; i++) {
+        auto &monster = party_mon[i];
+        if (!monster.is_valid()) {
             continue;
         }
 
-        m_ptr->get_real_monrace().cur_num++;
+        monster.get_real_monrace().increment_current_numbers();
     }
 }

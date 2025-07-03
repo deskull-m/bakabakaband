@@ -19,7 +19,7 @@
  * @brief セーブデータに店舗情報を書き込む / Write a "store" record
  * @param store_ptr 店舗情報の参照ポインタ
  */
-void wr_store(store_type *store_ptr)
+void wr_store(Store *store_ptr)
 {
     wr_u32b(store_ptr->store_open);
     wr_s16b(store_ptr->insult_cur);
@@ -29,7 +29,7 @@ void wr_store(store_type *store_ptr)
     wr_s16b(store_ptr->bad_buy);
     wr_s32b(store_ptr->last_visit);
     for (int j = 0; j < store_ptr->stock_num; j++) {
-        wr_item(&store_ptr->stock[j]);
+        wr_item(*store_ptr->stock[j]);
     }
 }
 
@@ -53,7 +53,7 @@ void wr_randomizer(void)
 /*!
  * @brief ゲームオプション情報を書き込む / Write the "options"
  */
-void wr_options(SaveType type)
+void wr_options()
 {
     for (int i = 0; i < 4; i++) {
         wr_u32b(0L);
@@ -66,7 +66,7 @@ void wr_options(SaveType type)
 
     /*** Cheating options ***/
     uint16_t c = 0;
-    if (w_ptr->wizard) {
+    if (AngbandWorld::get_instance().wizard) {
         c |= 0x0002;
     }
 
@@ -114,24 +114,16 @@ void wr_options(SaveType type)
         c |= 0x0020;
     }
 
-    if (type == SaveType::DEBUG) {
-        c |= 0xFFFF;
-    }
-
     wr_u16b(c);
 
     wr_bool(autosave_l);
     wr_bool(autosave_t);
     wr_s16b(autosave_freq);
 
-    for (int i = 0; option_info[i].o_desc; i++) {
-        int os = option_info[i].o_set;
-        int ob = option_info[i].o_bit;
-        if (!option_info[i].o_var) {
-            continue;
-        }
-
-        if (*option_info[i].o_var) {
+    for (auto &option : option_info) {
+        int os = option.flag_position;
+        int ob = option.offset;
+        if (*option.value) {
             g_option_flags[os] |= (1UL << ob);
         } else {
             g_option_flags[os] &= ~(1UL << ob);
@@ -208,7 +200,7 @@ void save_quick_start(void)
 
     /* UNUSED : Was number of random quests */
     wr_byte(0);
-    if (w_ptr->noscore) {
+    if (AngbandWorld::get_instance().noscore) {
         previous_char.quick_ok = false;
     }
 

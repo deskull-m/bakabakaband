@@ -1,9 +1,9 @@
 #include "load/floor-loader.h"
+#include "floor/dungeon-feeling.h"
 #include "floor/floor-generator.h"
 #include "floor/floor-object.h"
 #include "floor/floor-save-util.h"
 #include "game-option/birth-options.h"
-#include "grid/feature.h"
 #include "grid/grid.h"
 #include "io/files-util.h"
 #include "io/uid-checker.h"
@@ -14,19 +14,20 @@
 #include "load/old/item-loader-savefile50.h"
 #include "load/old/load-v1-5-0.h"
 #include "load/old/monster-loader-savefile50.h"
-#include "monster-race/monster-race.h"
+#include "locale/character-encoding.h"
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
 #include "save/floor-writer.h"
 #include "system/angband-system.h"
 #include "system/angband-version.h"
-#include "system/floor-type-definition.h"
+#include "system/enums/terrain/terrain-tag.h"
+#include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
-#include "world/world-object.h"
+#include "util/finalizer.h"
 
 /*!
  * @brief 保存されたフロアを読み込む / Read the saved floor
@@ -40,20 +41,22 @@
  * <li>1.7.0.2で8bitだったGridのfeat,mimicのID値を16bitに拡張する処理。</li>
  * <li>1.7.0.8までに廃止、IDなどを差し替えたクエスト番号を置換する処理。</li>
  * </ul>
+ * 書き込まれるデータ構造は wr_dungeon() と一致していなければならない。
  * The monsters/objects must be loaded in the same order
  * that they were stored, since the actual indexes matter.
  */
 errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     clear_cave(player_ptr);
     player_ptr->x = player_ptr->y = 0;
 
     if (!sf_ptr) {
-        floor_ptr->dun_level = rd_s16b();
-        floor_ptr->base_level = floor_ptr->dun_level;
+        floor.dun_level = rd_s16b();
+        floor.base_level = floor.dun_level;
     } else {
-        if (rd_s16b() != sf_ptr->floor_id) {
+        auto floor_id = rd_s16b();
+        if (floor_id != sf_ptr->floor_id) {
             return 171;
         }
 
@@ -64,7 +67,7 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         if (rd_s16b() != sf_ptr->dun_level) {
             return 171;
         }
-        floor_ptr->dun_level = sf_ptr->dun_level;
+        floor.dun_level = sf_ptr->dun_level;
 
         if (rd_s32b() != sf_ptr->last_visit) {
             return 171;
@@ -83,19 +86,19 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         }
     }
 
-    floor_ptr->base_level = rd_s16b();
-    floor_ptr->num_repro = rd_s16b();
+    floor.base_level = rd_s16b();
+    floor.num_repro = rd_s16b();
 
     player_ptr->y = rd_u16b();
     player_ptr->x = rd_u16b();
 
-    floor_ptr->height = rd_s16b();
-    floor_ptr->width = rd_s16b();
+    floor.height = rd_s16b();
+    floor.width = rd_s16b();
 
-    player_ptr->feeling = rd_byte();
+    DungeonFeeling::get_instance().set_feeling(rd_byte());
 
     auto limit = rd_u16b();
-    std::vector<grid_template_type> templates(limit);
+    std::vector<GridTemplate> templates(limit);
 
     for (auto &ct_ref : templates) {
         ct_ref.info = rd_u16b();
@@ -104,8 +107,8 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         ct_ref.special = rd_s16b();
     }
 
-    POSITION ymax = floor_ptr->height;
-    POSITION xmax = floor_ptr->width;
+    POSITION ymax = floor.height;
+    POSITION xmax = floor.width;
     for (POSITION x = 0, y = 0; y < ymax;) {
         auto count = rd_byte();
 
@@ -117,11 +120,11 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         } while (tmp8u == MAX_UCHAR);
 
         for (int i = count; i > 0; i--) {
-            auto *g_ptr = &floor_ptr->grid_array[y][x];
-            g_ptr->info = templates[id].info;
-            g_ptr->feat = templates[id].feat;
-            g_ptr->mimic = templates[id].mimic;
-            g_ptr->special = templates[id].special;
+            auto &grid = floor.grid_array[y][x];
+            grid.info = templates[id].info;
+            grid.feat = templates[id].feat;
+            grid.mimic = templates[id].mimic;
+            grid.special = templates[id].special;
 
             if (++x >= xmax) {
                 x = 0;
@@ -139,15 +142,15 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
     auto item_loader = ItemLoaderFactory::create_loader();
     for (int i = 1; i < limit; i++) {
-        auto o_idx = o_pop(floor_ptr);
-        if (i != o_idx) {
+        const auto item_idx = floor.pop_empty_index_item();
+        if (i != item_idx) {
             return 152;
         }
 
-        auto &item = floor_ptr->o_list[o_idx];
+        auto &item = *floor.o_list[item_idx];
         item_loader->rd_item(&item);
-        auto &list = get_o_idx_list_contains(floor_ptr, o_idx);
-        list.add(floor_ptr, o_idx, item.stack_idx);
+        auto &list = get_o_idx_list_contains(floor, item_idx);
+        list.add(floor, item_idx, item.stack_idx);
     }
 
     limit = rd_u16b();
@@ -157,16 +160,16 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
     auto monster_loader = MonsterLoaderFactory::create_loader();
     for (auto i = 1; i < limit; i++) {
-        auto m_idx = m_pop(floor_ptr);
+        const auto m_idx = floor.pop_empty_index_monster();
         if (i != m_idx) {
             return 162;
         }
 
-        auto *m_ptr = &floor_ptr->m_list[m_idx];
-        monster_loader->rd_monster(m_ptr);
-        auto *g_ptr = &floor_ptr->grid_array[m_ptr->fy][m_ptr->fx];
-        g_ptr->m_idx = m_idx;
-        m_ptr->get_real_monrace().cur_num++;
+        auto &monster = floor.m_list[m_idx];
+        monster_loader->rd_monster(monster);
+        auto &grid = floor.get_grid(monster.get_position());
+        grid.m_idx = m_idx;
+        monster.get_real_monrace().increment_current_numbers();
     }
 
     return 0;
@@ -187,10 +190,7 @@ static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     x_check = 0L;
 
     auto &system = AngbandSystem::get_instance();
-    system.version_extra = H_VER_EXTRA;
-    system.version_patch = H_VER_PATCH;
-    system.version_minor = H_VER_MINOR;
-    system.version_major = H_VER_MAJOR;
+    system.set_version({ H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH, H_VER_EXTRA });
     loading_savefile_version = SAVEFILE_VERSION;
 
     if (saved_floor_file_sign != rd_u32b()) {
@@ -219,29 +219,30 @@ static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
  */
 bool load_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode)
 {
+    const auto finalizer = util::make_finalizer([backup = loading_character_encoding]() {
+        loading_character_encoding = backup;
+    });
+
     /*
      * Temporary files are always written in system depended kanji
      * code.
      */
 #ifdef JP
 #ifdef EUC
-    kanji_code = 2;
+    loading_character_encoding = CharacterEncoding::EUC_JP;
 #endif
 #ifdef SJIS
-    kanji_code = 3;
+    loading_character_encoding = CharacterEncoding::SHIFT_JIS;
 #endif
 #else
-    kanji_code = 1;
+    loading_character_encoding = CharacterEncoding::US_ASCII;
 #endif
 
     FILE *old_fff = nullptr;
     byte old_xor_byte = 0;
     uint32_t old_v_check = 0;
     uint32_t old_x_check = 0;
-    byte old_h_ver_major = 0;
-    byte old_h_ver_minor = 0;
-    byte old_h_ver_patch = 0;
-    byte old_h_ver_extra = 0;
+    AngbandVersion version_backup{};
     uint32_t old_loading_savefile_version = 0;
     auto &system = AngbandSystem::get_instance();
     if (mode & SLF_SECOND) {
@@ -249,16 +250,12 @@ bool load_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode
         old_xor_byte = load_xor_byte;
         old_v_check = v_check;
         old_x_check = x_check;
-        old_h_ver_major = system.version_major;
-        old_h_ver_minor = system.version_minor;
-        old_h_ver_patch = system.version_patch;
-        old_h_ver_extra = system.version_extra;
+        version_backup = system.get_version();
         old_loading_savefile_version = loading_savefile_version;
     }
 
     auto floor_savefile = savefile.string();
-    char ext[32];
-    strnfmt(ext, sizeof(ext), ".F%02d", (int)sf_ptr->savefile_id);
+    const auto ext = format(".F%02d", (int)sf_ptr->savefile_id);
     floor_savefile.append(ext);
 
     safe_setuid_grab();
@@ -290,14 +287,9 @@ bool load_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode
         load_xor_byte = old_xor_byte;
         v_check = old_v_check;
         x_check = old_x_check;
-        system.version_major = old_h_ver_major;
-        system.version_minor = old_h_ver_minor;
-        system.version_patch = old_h_ver_patch;
-        system.version_extra = old_h_ver_extra;
+        system.set_version(version_backup);
         loading_savefile_version = old_loading_savefile_version;
     }
 
-    byte old_kanji_code = kanji_code;
-    kanji_code = old_kanji_code;
     return is_save_successful;
 }

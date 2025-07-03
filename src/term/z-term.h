@@ -11,9 +11,9 @@
 #include "system/angband.h"
 #include "system/h-basic.h"
 #include <memory>
-#include <optional>
 #include <stack>
 #include <string_view>
+#include <tl/optional.hpp>
 #include <utility>
 #include <vector>
 
@@ -75,8 +75,8 @@ struct term_type {
     TERM_LEN wid{}; //!< Window Width(max 255)
     TERM_LEN hgt{}; //!< Window Height(max 255)
 
-    std::optional<TERM_LEN> centered_wid{};
-    std::optional<TERM_LEN> centered_hgt{};
+    tl::optional<TERM_LEN> centered_wid{};
+    tl::optional<TERM_LEN> centered_hgt{};
 
     TERM_LEN offset_x{};
     TERM_LEN offset_y{};
@@ -119,7 +119,7 @@ struct term_type {
 
 class TermOffsetSetter {
 public:
-    TermOffsetSetter(std::optional<TERM_LEN> x, std::optional<TERM_LEN> y);
+    TermOffsetSetter(tl::optional<TERM_LEN> x, tl::optional<TERM_LEN> y);
     ~TermOffsetSetter();
     TermOffsetSetter(const TermOffsetSetter &) = delete;
     TermOffsetSetter &operator=(const TermOffsetSetter &) = delete;
@@ -134,7 +134,7 @@ private:
 
 class TermCenteredOffsetSetter {
 public:
-    TermCenteredOffsetSetter(std::optional<TERM_LEN> width, std::optional<TERM_LEN> height);
+    TermCenteredOffsetSetter(tl::optional<TERM_LEN> width, tl::optional<TERM_LEN> height);
     ~TermCenteredOffsetSetter();
     TermCenteredOffsetSetter(const TermCenteredOffsetSetter &) = delete;
     TermCenteredOffsetSetter &operator=(const TermCenteredOffsetSetter &) = delete;
@@ -142,10 +142,10 @@ public:
     TermCenteredOffsetSetter &operator=(TermCenteredOffsetSetter &&) = delete;
 
 private:
-    std::optional<TermOffsetSetter> tos;
+    tl::optional<TermOffsetSetter> tos;
     term_type *term;
-    std::optional<TERM_LEN> orig_centered_wid;
-    std::optional<TERM_LEN> orig_centered_hgt;
+    tl::optional<TERM_LEN> orig_centered_wid;
+    tl::optional<TERM_LEN> orig_centered_hgt;
 };
 
 /**** Available Constants ****/
@@ -191,32 +191,33 @@ private:
 /**** Available Variables ****/
 extern term_type *game_term;
 
-errr term_user(int n);
-errr term_xtra(int n, int v);
+class DisplaySymbol;
+class DisplaySymbolPair;
+void term_user();
+void term_xtra(int n, int v);
 
-void term_queue_char(TERM_LEN x, TERM_LEN y, TERM_COLOR a, char c, TERM_COLOR ta, char tc);
-void term_queue_bigchar(TERM_LEN x, TERM_LEN y, TERM_COLOR a, char c, TERM_COLOR ta, char tc);
-void term_queue_line(TERM_LEN x, TERM_LEN y, int n, TERM_COLOR *a, char *c, TERM_COLOR *ta, char *tc);
+void term_queue_char(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pair);
+void term_queue_bigchar(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pair);
 
-errr term_fresh(void);
-errr term_fresh_force(void);
+void term_fresh();
+void term_fresh_force();
 errr term_set_cursor(int v);
 errr term_gotoxy(TERM_LEN x, TERM_LEN y);
-errr term_draw(TERM_LEN x, TERM_LEN y, TERM_COLOR a, char c);
-errr term_addch(TERM_COLOR a, char c);
-errr term_add_bigch(TERM_COLOR a, char c);
+void term_draw(int x, int y, const DisplaySymbol &symbol);
+void term_addch(const DisplaySymbol &symbol);
+void term_add_bigch(const DisplaySymbol &symbol);
 errr term_addstr(int n, TERM_COLOR a, std::string_view sv);
-errr term_putch(TERM_LEN x, TERM_LEN y, TERM_COLOR a, char c);
+void term_putch(TERM_LEN x, TERM_LEN y, const DisplaySymbol &symbol);
 errr term_putstr(TERM_LEN x, TERM_LEN y, int n, TERM_COLOR a, std::string_view sv);
-errr term_erase(TERM_LEN x, TERM_LEN y, std::optional<int> n_opt = std::nullopt);
-errr term_clear(void);
-errr term_redraw(void);
+errr term_erase(TERM_LEN x, TERM_LEN y, tl::optional<int> n_opt = tl::nullopt);
+errr term_clear();
+errr term_redraw();
 errr term_redraw_section(TERM_LEN x1, TERM_LEN y1, TERM_LEN x2, TERM_LEN y2);
 
 errr term_get_cursor(int *v);
 std::pair<int, int> term_get_size();
-errr term_locate(TERM_LEN *x, TERM_LEN *y);
-errr term_what(TERM_LEN x, TERM_LEN y, TERM_COLOR *a, char *c);
+std::pair<int, int> term_locate();
+DisplaySymbol term_what(int x, int y, const DisplaySymbol &ds);
 
 errr term_flush(void);
 errr term_key_push(int k);
@@ -234,7 +235,7 @@ errr term_activate(term_type *t);
 errr term_init(term_type *t, TERM_LEN w, TERM_LEN h, int k);
 
 #ifdef JP
-errr term_putstr_v(TERM_LEN x, TERM_LEN y, int n, byte a, concptr s);
+void term_putstr_v(int x, int y_initial, size_t n, uint8_t color, std::string_view sv);
 #endif
 
 #ifndef WINDOWS

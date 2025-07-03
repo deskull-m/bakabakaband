@@ -1,5 +1,6 @@
 #include "alliance/alliance.h"
 #include "alliance/alliance-jural.h"
+#include "alliance/alliance-khorne.h"
 #include "alliance/alliance-megadeth.h"
 #include "alliance/alliance-shire.h"
 #include "alliance/alliance-tophamhatt.h"
@@ -7,10 +8,10 @@
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
-#include "monster-race/monster-race.h"
 #include "monster-race/race-flags1.h"
-#include "monster-race/race-indice-types.h"
-#include "system/monster-race-info.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -56,6 +57,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::TOPHAMHATT, std::make_unique<AllianceTophamHatt>(AllianceType::TOPHAMHATT, "TOPHAMHATT", _("トップハムハット一族", "Topham Hatt Family"), 1400000L) },
     { AllianceType::TRIOTHEPANCH, std::make_unique<AllianceTrioThePunch>(AllianceType::TRIOTHEPANCH, "TRIOTHEPANCH", _("トリオ・ザ・パンチ", "Trio The Panch"), 50000L) },
     { AllianceType::MEGADETH, std::make_unique<AllianceMegadeth>(AllianceType::MEGADETH, "MEGADETH", _("秘密結社メガデス", "Secret Society Megadeth"), 4000L) },
+    { AllianceType::KHORNE, std::make_unique<AllianceKhorne>(AllianceType::KHORNE, "KHORNE", _("血の神コーン", "Khorne, the Blood God"), 18000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
@@ -92,11 +94,12 @@ void Alliance::panishment([[maybe_unused]] PlayerType &player_ptr)
 
 int64_t Alliance::calcCurrentPower()
 {
+    const auto &monraces = MonraceList::get_instance();
     int64_t res = this->base_power;
-    for (auto &[r_idx, r_ref] : monraces_info) {
+    for (auto &[r_idx, r_ref] : monraces) {
         if (r_ref.alliance_idx == this->id) {
             if (r_ref.mob_num > 0) {
-                res += MonsterRace(r_idx).calc_eval() * r_ref.mob_num;
+                res += monraces.get_monrace(r_idx).calc_power() * r_ref.mob_num;
             }
         }
     }
@@ -164,20 +167,20 @@ int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
 
 bool AllianceKenohgun::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::RAOU].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
 }
 
 bool AllianceFangFamily::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::KING_FANG_FAMILY].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0;
 }
 
 int AllianceFangFamily::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 5, 10);
-    impression -= monraces_info[MonsterRaceId::FANG_FAMILY].r_akills * 5;
-    if (monraces_info[MonsterRaceId::KING_FANG_FAMILY].mob_num == 0) {
+    impression -= MonraceList::get_instance().get_monrace(MonraceId::FANG_FAMILY).r_akills * 5;
+    if (MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0) {
         impression -= 300;
     }
     return impression;
@@ -209,7 +212,7 @@ int AllianceShittoDan::calcImpressionPoint([[maybe_unused]] PlayerType *creature
 
 bool AllianceShittoDan::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::SHITTO_MASK].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::SHITTO_MASK).mob_num == 0;
 }
 
 int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
@@ -244,13 +247,13 @@ int AllianceGO::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) c
 int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     auto impression = 0;
-    if (monraces_info[MonsterRaceId::DOKACHAN].mob_num == 0) {
+    if (MonraceList::get_instance().get_monrace(MonraceId::DOKACHAN).mob_num == 0) {
         impression -= 1000;
     }
-    if (monraces_info[MonsterRaceId::OLDMAN_60TY].mob_num == 0) {
+    if (MonraceList::get_instance().get_monrace(MonraceId::OLDMAN_60TY).mob_num == 0) {
         impression -= 1000;
     }
-    if (monraces_info[MonsterRaceId::BROTHER_45TH].mob_num == 0) {
+    if (MonraceList::get_instance().get_monrace(MonraceId::BROTHER_45TH).mob_num == 0) {
         impression -= 1000;
     }
     return impression;
@@ -258,7 +261,7 @@ int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature
 
 bool AllianceDokachans::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::DOKACHAN].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::DOKACHAN).mob_num == 0;
 }
 
 int AllianceKetholdeth::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
@@ -268,7 +271,7 @@ int AllianceKetholdeth::calcImpressionPoint([[maybe_unused]] PlayerType *creatur
 
 bool AllianceKetholdeth::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::PRINCESS_KETHOLDETH].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::PRINCESS_KETHOLDETH).mob_num == 0;
 }
 
 int AllianceMeldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
@@ -323,12 +326,13 @@ int AllianceAvarinLords::calcImpressionPoint([[maybe_unused]] PlayerType *creatu
 int AllianceGOLAN::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     int impression = 0;
+
     impression += Alliance::calcPlayerPower(*creature_ptr, 15, 12);
-    impression -= monraces_info[MonsterRaceId::GOLAN_COLONEL].r_pkills * 1200;
-    impression -= monraces_info[MonsterRaceId::GOLAN_MAD].r_pkills * 100;
-    impression -= monraces_info[MonsterRaceId::GOLAN_RED_BELET].r_pkills * 60;
-    impression -= monraces_info[MonsterRaceId::GOLAN_OFFICER].r_pkills * 10;
-    impression -= monraces_info[MonsterRaceId::GOLAN_SOLDIER].r_pkills * 2;
+    impression -= MonraceList::get_instance().get_monrace(MonraceId::GOLAN_COLONEL).r_pkills * 1200;
+    impression -= MonraceList::get_instance().get_monrace(MonraceId::GOLAN_MAD).r_pkills * 100;
+    impression -= MonraceList::get_instance().get_monrace(MonraceId::GOLAN_RED_BELET).r_pkills * 60;
+    impression -= MonraceList::get_instance().get_monrace(MonraceId::GOLAN_OFFICER).r_pkills * 10;
+    impression -= MonraceList::get_instance().get_monrace(MonraceId::GOLAN_SOLDIER).r_pkills * 2;
     return impression;
 }
 
@@ -339,7 +343,7 @@ int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] PlayerType *cr
 
 bool AllianceBinzyouBuddhism::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::BINZYOU_MUR].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::BINZYOU_MUR).mob_num == 0;
 }
 
 int AllianceAshinaClan::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
@@ -354,7 +358,7 @@ int AllianceSuren::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr
 
 bool AllianceSuren::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::SUREN].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::SUREN).mob_num == 0;
 }
 
 int AllianceFeanorNoldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
@@ -374,7 +378,7 @@ int AllianceGaichi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_pt
 int AllianceLegendOfSavior::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     auto impression = 0;
-    if (monraces_info[MonsterRaceId::MISUMI].mob_num == 0) {
+    if (MonraceList::get_instance().get_monrace(MonraceId::MISUMI).mob_num == 0) {
         impression = -10000;
     }
     return impression;
@@ -382,7 +386,7 @@ int AllianceLegendOfSavior::calcImpressionPoint([[maybe_unused]] PlayerType *cre
 
 bool AllianceLegendOfSavior::isAnnihilated()
 {
-    return monraces_info[MonsterRaceId::KENSHIROU].mob_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::KENSHIROU).mob_num == 0;
 }
 
 void AllianceLegendOfSavior::panishment(PlayerType &player_ptr)
@@ -393,9 +397,9 @@ void AllianceLegendOfSavior::panishment(PlayerType &player_ptr)
     }
 
     if (one_in_(30)) {
-        int cy, cx;
-        scatter(&player_ptr, &cy, &cx, player_ptr.y, player_ptr.x, 6, PROJECT_NONE);
-        if (summon_named_creature(&player_ptr, 0, cy, cx, MonsterRaceId::KENSHIROU, 0)) {
+        Pos2D m_pos(player_ptr.get_position());
+        m_pos = scatter(&player_ptr, m_pos, 6, PROJECT_NONE);
+        if (summon_named_creature(&player_ptr, 0, m_pos.y, m_pos.x, MonraceId::KENSHIROU, 0)) {
             msg_print(_("「てめえに今日を生きる資格はねえ！」", "You don't deserve to live today!"));
             msg_print(_("ケンシロウはあなたがミスミ老人を殺したことに義憤を覚えて襲ってきた！", "Kenshiro attacked you because you killed old man Misumi!"));
         }

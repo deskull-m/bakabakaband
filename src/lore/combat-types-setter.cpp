@@ -2,7 +2,7 @@
 #include "lore/lore-util.h"
 #include "monster-attack/monster-attack-effect.h"
 #include "monster-attack/monster-attack-table.h"
-#include "system/monster-race-info.h"
+#include "system/monrace/monrace-definition.h"
 #include "term/term-color-types.h"
 
 void set_monster_blow_method(lore_type *lore_ptr, int m)
@@ -46,7 +46,7 @@ void set_monster_blow_method(lore_type *lore_ptr, int m)
         lore_ptr->pc = TERM_L_WHITE;
         break;
     case RaceBlowMethodType::CRUSH:
-        lore_ptr->p = _("体当たりする", "crush");
+        lore_ptr->p = _("押し潰す", "crush");
         lore_ptr->pc = TERM_L_WHITE;
         break;
     case RaceBlowMethodType::ENGULF:
@@ -122,7 +122,6 @@ void set_monster_blow_method(lore_type *lore_ptr, int m)
         break;
 
     case RaceBlowMethodType::NONE:
-    case RaceBlowMethodType::SHOOT:
     case RaceBlowMethodType::MAX:
         break;
     }

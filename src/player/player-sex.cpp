@@ -17,32 +17,19 @@ const player_sex_type *sp_ptr;
  */
 const player_sex_type sex_info[MAX_SEXES] = {
     {
-#ifdef JP
-        "女性",
-        "クイーン",
-#endif
-        "Female",
-        "Queen" },
+        { "女性", "Female" },
+        { "クイーン", "Queen" },
+    },
     {
-#ifdef JP
-        "男性",
-        "キング",
-#endif
-        "Male",
-        "King" },
+        { "両性", "Bisexual" },
+        { "ロード", "Lord" },
+    },
     {
-#ifdef JP
-        "両性",
-        "ロード",
-#endif
-        "Bisexual",
-        "Lord" },
+        { "無性", "Asexual" },
+        { "ロード", "Lord" },
+    },
     {
-#ifdef JP
-        "無性",
-        "ロード",
-#endif
-        "Asexual",
-        "Lord" }
-
+        { "男性", "Male" },
+        { "キング", "King" },
+    },
 };

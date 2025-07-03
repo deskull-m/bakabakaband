@@ -17,19 +17,10 @@
 #include "object-enchant/object-boost.h"
 #include "object-enchant/object-curse.h"
 #include "object-enchant/special-object-flags.h"
-#include "object-enchant/tr-types.h"
-#include "object-enchant/trc-types.h"
-#include "object-enchant/trg-types.h"
-#include "object/object-kind-hook.h"
 #include "player-base/player-class.h"
-#include "player/player-sex.h"
 #include "specific-object/bloody-moon.h"
 #include "system/artifact-type-definition.h"
-#include "system/baseitem-info.h"
-#include "system/floor-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
-#include "util/bit-flags-calculator.h"
 
 /*!
  * @brief 恐怖の仮面への特殊処理
@@ -94,7 +85,7 @@ static void milim_swimsuit(PlayerType *player_ptr, ItemEntity *o_ptr)
 static void invest_special_artifact_abilities(PlayerType *player_ptr, ItemEntity *o_ptr)
 {
     const auto pc = PlayerClass(player_ptr);
-    switch (o_ptr->fixed_artifact_idx) {
+    switch (o_ptr->fa_id) {
     case FixedArtifactId::MURAMASA:
         if (!pc.equals(PlayerClassType::SAMURAI)) {
             o_ptr->art_flags.set(TR_NO_MAGIC);
@@ -170,12 +161,13 @@ static void fixed_artifact_random_abilities(PlayerType *player_ptr, const Artifa
     }
 
     if (artifact.gen_flags.has(ItemGenerationTraitType::XTRA_DICE)) {
+        auto &dice = o_ptr->damage_dice;
         do {
-            o_ptr->dd++;
-        } while (one_in_(o_ptr->dd));
+            dice.num++;
+        } while (one_in_(dice.num));
 
-        if (o_ptr->dd > 9) {
-            o_ptr->dd = 9;
+        if (dice.num > 9) {
+            dice.num = 9;
         }
     }
 }
@@ -228,8 +220,7 @@ void apply_artifact(PlayerType *player_ptr, ItemEntity *o_ptr)
     const auto &artifact = o_ptr->get_fixed_artifact();
     o_ptr->pval = artifact.pval;
     o_ptr->ac = artifact.ac;
-    o_ptr->dd = artifact.dd;
-    o_ptr->ds = artifact.ds;
+    o_ptr->damage_dice = artifact.damage_dice;
     o_ptr->to_a = artifact.to_a;
     o_ptr->to_h = artifact.to_h;
     o_ptr->to_d = artifact.to_d;
@@ -254,168 +245,14 @@ void apply_artifact(PlayerType *player_ptr, ItemEntity *o_ptr)
  */
 bool create_named_art(PlayerType *player_ptr, FixedArtifactId a_idx, POSITION y, POSITION x)
 {
-    auto &artifact = ArtifactsInfo::get_instance().get_artifact(a_idx);
-    if (artifact.name.empty()) {
-        return false;
-    }
-
-    auto bi_id = lookup_baseitem_id(artifact.bi_key);
-    if (bi_id == 0) {
-        return true;
-    }
-
-    ItemEntity forge;
-    auto q_ptr = &forge;
-    q_ptr->prep(bi_id);
-    q_ptr->fixed_artifact_idx = a_idx;
-    apply_artifact(player_ptr, q_ptr);
-    if (drop_near(player_ptr, q_ptr, -1, y, x) == 0) {
+    auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
+    ItemEntity item(artifact.bi_key);
+    item.fa_id = a_idx;
+    apply_artifact(player_ptr, &item);
+    if (drop_near(player_ptr, item, { y, x }) == 0) {
         return false;
     }
 
     artifact.is_generated = true;
     return true;
-}
-
-/*!
- * @brief 非INSTA_ART型の固定アーティファクトの生成を確率に応じて試行する。
- * Mega-Hack -- Attempt to create one of the "Special Objects"
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param o_ptr 生成に割り当てたいオブジェクトの構造体参照ポインタ
- * @return 生成に成功したらTRUEを返す。
- * @details
- * Attempt to change an object into an artifact\n
- * This routine should only be called by "apply_magic()"\n
- * Note -- see "make_artifact_special()" and "apply_magic()"\n
- */
-bool make_artifact(PlayerType *player_ptr, ItemEntity *o_ptr)
-{
-    auto floor_ptr = player_ptr->current_floor_ptr;
-    if (floor_ptr->dun_level == 0) {
-        return false;
-    }
-
-    if (o_ptr->number != 1) {
-        return false;
-    }
-
-    for (const auto &[a_idx, artifact] : artifacts_info) {
-        if (artifact.name.empty()) {
-            continue;
-        }
-
-        if (artifact.is_generated) {
-            continue;
-        }
-
-        if (artifact.gen_flags.has(ItemGenerationTraitType::QUESTITEM)) {
-            continue;
-        }
-
-        if (artifact.gen_flags.has(ItemGenerationTraitType::INSTA_ART)) {
-            continue;
-        }
-
-        if (artifact.bi_key != o_ptr->bi_key) {
-            continue;
-        }
-
-        if (artifact.level > floor_ptr->dun_level) {
-            int d = (artifact.level - floor_ptr->dun_level) * 2;
-            if (!one_in_(d)) {
-                continue;
-            }
-        }
-
-        if (!one_in_(artifact.rarity)) {
-            continue;
-        }
-
-        o_ptr->fixed_artifact_idx = a_idx;
-        return true;
-    }
-
-    return false;
-}
-
-/*!
- * @brief INSTA_ART型の固定アーティファクトの生成を確率に応じて試行する。
- * Mega-Hack -- Attempt to create one of the "Special Objects"
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param o_ptr 生成に割り当てたいオブジェクトの構造体参照ポインタ
- * @return 生成に成功したらTRUEを返す。
- * @details
- * We are only called from "make_object()", and we assume that\n
- * "apply_magic()" is called immediately after we return.\n
- *\n
- * Note -- see "make_artifact()" and "apply_magic()"\n
- */
-bool make_artifact_special(PlayerType *player_ptr, ItemEntity *o_ptr)
-{
-    /*! @note 地上ではキャンセルする / No artifacts in the town */
-    auto floor_ptr = player_ptr->current_floor_ptr;
-    if (floor_ptr->dun_level == 0) {
-        return false;
-    }
-
-    /*! @note get_obj_index_hookによる指定がある場合は生成をキャンセルする / Themed object */
-    if (get_obj_index_hook) {
-        return false;
-    }
-
-    /*! @note 全固定アーティファクト中からIDの若い順に生成対象とその確率を走査する / Check the artifact list (just the "specials") */
-    for (const auto &[a_idx, artifact] : artifacts_info) {
-        /*! @note アーティファクト名が空の不正なデータは除外する / Skip "empty" artifacts */
-        if (artifact.name.empty()) {
-            continue;
-        }
-
-        /*! @note 既に生成回数がカウントされたアーティファクト、QUESTITEMと非INSTA_ARTは除外 / Cannot make an artifact twice */
-        if (artifact.is_generated) {
-            continue;
-        }
-        if (artifact.gen_flags.has(ItemGenerationTraitType::QUESTITEM)) {
-            continue;
-        }
-        if (!(artifact.gen_flags.has(ItemGenerationTraitType::INSTA_ART))) {
-            continue;
-        }
-
-        /*! @note アーティファクト生成階が現在に対して足りない場合は高確率で1/(不足階層*2)を満たさないと生成リストに加えられない */
-        if (artifact.level > floor_ptr->object_level) {
-            /* @note  / Acquire the "out-of-depth factor". Roll for out-of-depth creation. */
-            int d = (artifact.level - floor_ptr->object_level) * 2;
-            if (!one_in_(d)) {
-                continue;
-            }
-        }
-
-        /*! @note 1/(レア度)の確率を満たさないと除外される / Artifact "rarity roll" */
-        if (!one_in_(artifact.rarity)) {
-            continue;
-        }
-
-        /*!
-         * @note INSTA_ART型固定アーティファクトのベースアイテムもチェック対象とする。
-         * ベースアイテムの生成階層が足りない場合1/(不足階層*5)を満たさないと除外される。
-         */
-        const auto bi_id = lookup_baseitem_id(artifact.bi_key);
-        const auto &baseitem = baseitems_info[bi_id];
-        if (baseitem.level > floor_ptr->object_level) {
-            int d = (baseitem.level - floor_ptr->object_level) * 5;
-            if (!one_in_(d)) {
-                continue;
-            }
-        }
-
-        /*! @note 前述の条件を満たしたら、後のIDのアーティファクトはチェックせずすぐ確定し生成処理に移す /
-         * Assign the template. Mega-Hack -- mark the item as an artifact. Hack: Some artifacts get random extra powers. Success. */
-        o_ptr->prep(bi_id);
-
-        o_ptr->fixed_artifact_idx = a_idx;
-        return true;
-    }
-
-    /*! @note 全INSTA_ART固定アーティファクトを試行しても決まらなかった場合 FALSEを返す / Failure */
-    return false;
 }

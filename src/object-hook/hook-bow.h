@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 typedef struct object_type object_type;
 class PlayerType;

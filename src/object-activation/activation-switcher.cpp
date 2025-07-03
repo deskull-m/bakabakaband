@@ -21,6 +21,7 @@
 #include "specific-object/blade-turner.h"
 #include "specific-object/bloody-moon.h"
 #include "specific-object/death-crimson.h"
+#include "specific-object/monster-ball.h"
 #include "specific-object/muramasa.h"
 #include "specific-object/ring-of-power.h"
 #include "specific-object/stone-of-lore.h"
@@ -37,9 +38,9 @@
 #include "status/experience.h"
 #include "status/shape-changer.h"
 #include "status/sight-setter.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
-#include "timed-effect/player-acceleration.h"
+#include "util/dice.h"
 #include "view/display-messages.h"
 
 bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const RandomArtActType index, std::string_view name)
@@ -163,11 +164,11 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::CHARM_OTHERS:
         return activate_charm_others(player_ptr);
     case RandomArtActType::SUMMON_ANIMAL:
-        (void)summon_specific(player_ptr, -1, player_ptr->y, player_ptr->x, player_ptr->lev, SUMMON_ANIMAL_RANGER, PM_ALLOW_GROUP | PM_FORCE_PET);
+        (void)summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->lev, SUMMON_ANIMAL_RANGER, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_PHANTOM:
         msg_print(_("幻霊を召喚した。", "You summon a phantasmal servant."));
-        (void)summon_specific(player_ptr, -1, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_PHANTOM, PM_ALLOW_GROUP | PM_FORCE_PET);
+        (void)summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_PHANTOM, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_ELEMENTAL:
         return cast_summon_elemental(player_ptr, (player_ptr->lev * 3) / 2);
@@ -180,7 +181,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return cast_summon_hound(player_ptr, (player_ptr->lev * 3) / 2);
     case RandomArtActType::SUMMON_DAWN:
         msg_print(_("暁の師団を召喚した。", "You summon the Legion of the Dawn."));
-        (void)summon_specific(player_ptr, -1, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DAWN, PM_ALLOW_GROUP | PM_FORCE_PET);
+        (void)summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DAWN, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_OCTOPUS:
         return cast_summon_octopus(player_ptr);
@@ -193,7 +194,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return activate_cure_lw(player_ptr);
     case RandomArtActType::CURE_MW:
         msg_print(_("深紫色の光を発している...", "It radiates deep purple..."));
-        (void)cure_serious_wounds(player_ptr, 4, 8);
+        (void)cure_serious_wounds(player_ptr, Dice::roll(4, 8));
         return true;
     case RandomArtActType::CURE_POISON: {
         msg_print(_("深青色に輝いている...", "It glows deep blue..."));
@@ -237,7 +238,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return true;
     case RandomArtActType::PROT_EVIL:
         msg_format(_("%sから鋭い音が流れ出た...", "The %s lets out a shrill wail..."), name.data());
-        (void)set_protevil(player_ptr, randint1(25) + player_ptr->lev * 3, false);
+        BodyImprovement(player_ptr).set_protection(randint1(25) + player_ptr->lev * 3);
         return true;
     case RandomArtActType::RESIST_ALL:
         return activate_resistance_elements(player_ptr);
@@ -362,7 +363,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return activate_teleport_level(player_ptr);
     case RandomArtActType::STRAIN_HASTE:
         msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
-        take_hit(player_ptr, DAMAGE_LOSELIFE, damroll(3, 8), _("加速した疲労", "the strain of haste"));
+        take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("加速した疲労", "the strain of haste"));
         (void)mod_acceleration(player_ptr, 25 + randint1(25), false);
         return true;
     case RandomArtActType::FISHING:
@@ -388,6 +389,10 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return destroy_area(player_ptr, player_ptr->y, player_ptr->x, (13) + randint0(5), false);
     case RandomArtActType::HUGE_STINKING_STORM:
         return activate_huge_stinking_storm(player_ptr);
+    case RandomArtActType::WHISTLE:
+        return activate_whistle(player_ptr, *o_ptr);
+    case RandomArtActType::CAPTURE_MONSTER:
+        return exe_monster_capture(player_ptr, *o_ptr);
     default:
         msg_format(_("Unknown activation effect: %d.", "Unknown activation effect: %d."), enum2i(index));
         return false;

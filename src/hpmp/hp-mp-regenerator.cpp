@@ -2,7 +2,6 @@
 #include "cmd-item/cmd-magiceat.h"
 #include "core/window-redrawer.h"
 #include "inventory/inventory-slot-types.h"
-#include "monster-race/monster-race.h"
 #include "monster/monster-status.h"
 #include "player-base/player-class.h"
 #include "player-info/magic-eater-data-type.h"
@@ -10,12 +9,13 @@
 #include "player/attack-defense-types.h"
 #include "player/player-status-table.h"
 #include "player/special-defense-types.h"
-#include "system/floor-type-definition.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/monster-race-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "tracking/health-bar-tracker.h"
 
 /*!<広域マップ移動時の自然回復処理カウンタ（広域マップ1マス毎に20回処理を基本とする）*/
 int wild_regen = 20;
@@ -124,7 +124,7 @@ void regenmana(PlayerType *player_ptr, MANA_POINT upkeep_factor, MANA_POINT rege
  */
 void regenmagic(PlayerType *player_ptr, int regen_amount)
 {
-    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<magic_eater_data_type>();
+    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
     if (!magic_eater_data) {
         return;
     }
@@ -171,36 +171,34 @@ void regenmagic(PlayerType *player_ptr, int regen_amount)
  */
 void regenerate_monsters(PlayerType *player_ptr)
 {
-    for (int i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        auto *m_ptr = &player_ptr->current_floor_ptr->m_list[i];
-        auto *r_ptr = &m_ptr->get_monrace();
-
-        if (!m_ptr->is_valid()) {
+    auto &tracker = HealthBarTracker::get_instance();
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    for (short i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
+        auto &monster = player_ptr->current_floor_ptr->m_list[i];
+        const auto &monrace = monster.get_monrace();
+        if (!monster.is_valid()) {
             continue;
         }
 
-        if (m_ptr->hp < m_ptr->maxhp) {
-            int frac = m_ptr->maxhp / 100;
+        if (monster.hp < monster.maxhp) {
+            int frac = monster.maxhp / 100;
             if (!frac) {
                 if (one_in_(2)) {
                     frac = 1;
                 }
             }
 
-            if (r_ptr->misc_flags.has(MonsterMiscType::REGENERATE)) {
+            if (monrace.misc_flags.has(MonsterMiscType::REGENERATE)) {
                 frac *= 2;
             }
 
-            m_ptr->hp += frac;
-            if (m_ptr->hp > m_ptr->maxhp) {
-                m_ptr->hp = m_ptr->maxhp;
+            monster.hp += frac;
+            if (monster.hp > monster.maxhp) {
+                monster.hp = monster.maxhp;
             }
 
-            auto &rfu = RedrawingFlagsUpdater::get_instance();
-            if (player_ptr->health_who == i) {
-                rfu.set_flag(MainWindowRedrawingFlag::HEALTH);
-            }
-            if (player_ptr->riding == i) {
+            tracker.set_flag_if_tracking(i);
+            if (monster.is_riding()) {
                 rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
             }
         }
@@ -216,7 +214,7 @@ void regenerate_captured_monsters(PlayerType *player_ptr)
 {
     bool heal = false;
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = &player_ptr->inventory_list[i];
+        auto *o_ptr = player_ptr->inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -228,8 +226,7 @@ void regenerate_captured_monsters(PlayerType *player_ptr)
         }
 
         heal = true;
-        const auto r_idx = i2enum<MonsterRaceId>(o_ptr->pval);
-        const auto *r_ptr = &monraces_info[r_idx];
+        const auto &monrace = o_ptr->get_monrace();
         if (o_ptr->captured_monster_current_hp < o_ptr->captured_monster_max_hp) {
             short frac = o_ptr->captured_monster_max_hp / 100;
             if (!frac) {
@@ -238,7 +235,7 @@ void regenerate_captured_monsters(PlayerType *player_ptr)
                 }
             }
 
-            if (r_ptr->misc_flags.has(MonsterMiscType::REGENERATE)) {
+            if (monrace.misc_flags.has(MonsterMiscType::REGENERATE)) {
                 frac *= 2;
             }
 
