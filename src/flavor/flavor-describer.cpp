@@ -27,6 +27,7 @@
 #include "smith/object-smith.h"
 #include "smith/smith-types.h"
 #include "sv-definition/sv-lite-types.h"
+#include "sv-definition/sv-ring-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/floor/floor-info.h"
@@ -129,7 +130,7 @@ static bool should_show_slaying_bonus(const ItemEntity &item)
         const auto &baseitem = item.get_baseitem();
         const auto base_has_no_bonus = (baseitem.to_h == 0) && (baseitem.to_d == 0);
         const auto item_has_bonus = (item.to_h != 0) || (item.to_d != 0);
-        if (base_has_no_bonus && item_has_bonus) {
+        if ((base_has_no_bonus && item_has_bonus) || (item.bi_key.sval() == SV_RING_LAW)) {
             return true;
         }
     }
