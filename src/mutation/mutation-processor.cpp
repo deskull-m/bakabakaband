@@ -55,6 +55,7 @@
 #include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
+#include "world/world-collapsion.h"
 #include "world/world.h"
 
 /*!
@@ -69,6 +70,32 @@ void process_world_aux_sudden_attack(PlayerType *player_ptr)
     if (randint1(100) == 36) {
         for (auto a : alliance_list) {
             a.second->panishment(*player_ptr);
+        }
+    }
+
+    if (wc_ptr->get_collapsion_parcentage() > 66) {
+        auto pow = 100 - wc_ptr->get_collapsion_parcentage();
+        if (pow < 1) {
+            pow = 1;
+        } else if (pow > 30) {
+            pow = 30;
+        }
+
+        if (randint1(1000) < 364 / pow) {
+            switch (randint1(3)) {
+            case 1:
+                msg_print(_("「いやよ～お世界こわれる～」", "No, no, the world is breaking!"));
+                break;
+            case 2:
+                msg_print(_("「こわれるぅ～Foo~」", "Breaking, Foo~"));
+                break;
+            case 3:
+                msg_print(_("「お世界が壊れるわ」（しんみり）", "The world is breaking..."));
+                break;
+            }
+            if (one_in_(5)) {
+                summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_KACHO, PM_NO_KAGE);
+            }
         }
     }
 }

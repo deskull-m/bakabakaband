@@ -66,3 +66,11 @@ void WorldCollapsion::plus_perm_collapsion(int permyriad)
         this->collapse_degree -= static_cast<int32_t>(this->collapse_degree * permyriad / 10000);
     }
 }
+
+/*!
+ * @brief 時空崩壊度比率取得
+ */
+int WorldCollapsion::get_collapsion_parcentage() const
+{
+    return this->collapse_degree / 1000000LL; // 0-100
+}
