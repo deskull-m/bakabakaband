@@ -40524,6 +40524,27 @@ S:1_IN_5 |
 S:HASTE | HEAL | BLINK
 D:神聖なる形而上学的概念すら、その拳で破壊しようとする、まさに悪魔のカラテカだ。
 
+N:2236:『ゲッターエンペラー』
+E:The Getter Emperor
+G:g:R
+I:170:200d140:100:230:0
+W:99:6:195000:0:0
+B:HIT:HURT:35d9
+B:HIT:HURT:35d9
+B:HIT:HURT:35d9
+B:HIT:HURT:35d9
+F:UNIQUE | NONLIVING | NO_FEAR | FORCE_MAXHP | PREVENT_SUDDEN_MAGIC | REFLECTING |
+F:MOVE_BODY | KILL_WALL | IM_FIRE | IM_ELEC | IM_POIS | IM_ACID | IM_COLD |
+F:RES_NETH | RES_WATE | RES_PLAS | RES_NEXU | GOLEM
+F:RES_DISE | RES_WALL | RES_INER | RES_GRAV | NO_STUN | REGENERATE |
+F:NO_CONF | NO_SLEEP | CAN_FLY | ALLIANCE_GETTER
+F:WEIRD_MIND | COLD_BLOOD | BASH_DOOR | POWERFUL |
+S:1_IN_2 |
+S:BO_MANA | BR_MANA | ROCKET
+V:170
+D:その姿形が太陽系を丸ごと覆うという、ゲッターの力が求めて至る最も強大な実現だ。
+D:しかし、虚無なる戦いに身を投じるためにその進化はなおも続いているという。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
