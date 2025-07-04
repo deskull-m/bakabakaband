@@ -169,7 +169,7 @@ void init_dungeon_quests(PlayerType *player_ptr)
     init_flags = INIT_ASSIGN;
     floor.quest_number = QuestId::MELKO;
     parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-    quests.get_quest(QuestId::OBERON).status = QuestStatusType::TAKEN;
+    quests.get_quest(QuestId::MELKO).status = QuestStatusType::TAKEN;
 
     floor.quest_number = QuestId::NONE;
 }
