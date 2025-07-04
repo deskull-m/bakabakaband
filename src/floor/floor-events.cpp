@@ -292,8 +292,7 @@ void update_dungeon_feeling(PlayerType *player_ptr)
     const auto quest_id = floor.get_quest_id();
     const auto &quests = QuestList::get_instance();
 
-    auto dungeon_quest = (quest_id == QuestId::OBERON);
-    dungeon_quest |= (quest_id == QuestId::SERPENT);
+    auto dungeon_quest = (quest_id == QuestId::MELKO);
     dungeon_quest |= none_bits(quests.get_quest(quest_id).flags, QUEST_FLAG_PRESET);
 
     auto feeling_quest = inside_quest(quest_id);
