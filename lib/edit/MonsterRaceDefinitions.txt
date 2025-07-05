@@ -40545,6 +40545,27 @@ V:170
 D:その姿形が太陽系を丸ごと覆うという、ゲッターの力が求めて至る最も強大な実現だ。
 D:しかし、虚無なる戦いに身を投じるためにその進化はなおも続いているという。
 
+N:2237:約束された終末『エムラクール』
+E:Emrakul, the Promised End
+G:#:v
+I:130:133d133:100:140:100
+W:97:5:150000:0:0
+B:WHISPER:CHAOS:12d12
+B:WHISPER:CHAOS:12d12
+B:WHISPER:CHAOS:12d12
+B:WHISPER:CHAOS:12d12
+F:UNIQUE | ELDRITCH_HORROR | RES_TELE |
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | ELDRAZI
+F:ATTR_MULTI | ATTR_ANY |
+F:KILL_WALL | CAN_FLY
+F:ONLY_ITEM | DROP_4D2 | DROP_3D2 | DROP_2D2 | DROP_GREAT | RES_CHAO | RES_DISE |
+F:OPEN_DOOR | BASH_DOOR | REGENERATE | WEIRD_MIND |
+F:SMART | IM_ACID | IM_POIS | IM_FIRE | IM_COLD | NO_CONF | NO_SLEEP | ALLIANCE_ELDRAZI
+S:1_IN_5 |
+S:S_KIN | BR_CHAO | BR_DISE | BR_MANA | HOLD | HAND_DOOM | BR_DISI
+D:人生そのもののように厄介な謎。
+D:$An enigma as vexing as life itself.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
