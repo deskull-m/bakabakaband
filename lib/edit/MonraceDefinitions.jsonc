@@ -140380,5 +140380,94 @@
         ],
         "probability": "1_IN_2"
     }
+},
+{
+    "id": 2237,
+    "name": {
+        "ja": "約束された終末『エムラクール』",
+        "en": "Emrakul, the Promised End"
+    },
+    "symbol": {
+        "character": "#",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "133d133",
+    "vision": 100,
+    "armor_class": 140,
+    "alertness": 100,
+    "level": 97,
+    "rarity": 5,
+    "exp": 150000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "blows": [
+        {
+            "method": "WHISPER",
+            "effect": "CHAOS",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "WHISPER",
+            "effect": "CHAOS",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "WHISPER",
+            "effect": "CHAOS",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "WHISPER",
+            "effect": "CHAOS",
+            "damage_dice": "12d12"
+        }
+    ],
+    "flavor": {
+        "ja": "人生そのもののように厄介な謎。",
+        "en": "An enigma as vexing as life itself."
+    },
+    "alliance": "ELDRAZI",
+    "flags": [
+        "UNIQUE",
+        "ELDRITCH_HORROR",
+        "RES_TELE",
+        "FORCE_MAXHP",
+        "ELDRAZI",
+        "ATTR_MULTI",
+        "ATTR_ANY",
+        "KILL_WALL",
+        "CAN_FLY",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_3D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "RES_CHAO",
+        "RES_DISE",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "REGENERATE",
+        "WEIRD_MIND",
+        "SMART",
+        "IM_ACID",
+        "IM_POIS",
+        "IM_FIRE",
+        "IM_COLD",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "S_KIN",
+            "BR_CHAO",
+            "BR_DISE",
+            "BR_MANA",
+            "HOLD",
+            "HAND_DOOM",
+            "BR_DISI"
+        ],
+        "probability": "1_IN_5"
+    }
 }]
 }
