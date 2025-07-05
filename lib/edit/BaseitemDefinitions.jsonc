@@ -27758,7 +27758,7 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
+    "weight": 200,
     "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
