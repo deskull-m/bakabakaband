@@ -140469,5 +140469,59 @@
         ],
         "probability": "1_IN_5"
     }
+},
+{
+    "id": 2238,
+    "name": {
+        "ja": "自称予言者",
+        "en": "Self-proclaimed prophet"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "4d4",
+    "vision": 6,
+    "armor_class": 1,
+    "alertness": 0,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "blows": [
+        {
+            "method": "BEG",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "INSULT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "SHOW",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "MOAN",
+            "effect": "FLAVOR"
+        }
+    ],
+    "flavor": {
+        "ja": "彼らは毎日のように世界が破滅すると喚き散らしている。彼らにとっては無数に買える宝くじのようなものらしい。",
+        "en": "They cry out every day that the world is coming to an end. For them, it's like buying countless lottery tickets."
+    },
+    "sex": "MALE",
+    "flags": [
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "WILD_TOWN",
+        "WILD_ONLY",
+        "EAT_LOSE_WIS",
+        "HUMAN",
+        "PRIEST",
+        "TAKE_ITEM"
+    ]
 }]
 }
