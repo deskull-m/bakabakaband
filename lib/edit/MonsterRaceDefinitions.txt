@@ -40566,6 +40566,21 @@ S:S_KIN | BR_CHAO | BR_DISE | BR_MANA | HOLD | HAND_DOOM | BR_DISI
 D:人生そのもののように厄介な謎。
 D:$An enigma as vexing as life itself.
 
+N:2238:自称予言者
+E:Self-proclaimed prophet
+G:t:w
+I:110:4d4:6:1:0
+W:0:1:0:0:0
+B:BEG:FLAVOR
+B:INSULT:FLAVOR
+B:SHOW:FLAVOR
+B:MOAN:FLAVOR
+F:MALE | DROP_CORPSE | DROP_SKELETON | WILD_TOWN | WILD_ONLY
+F:EAT_LOSE_WIS | HUMAN | PRIEST
+F:TAKE_ITEM
+D:彼らは毎日のように世界が破滅すると喚き散らしている。彼らにとっては無数に買える宝くじのようなものらしい。
+D:$They cry out every day that the world is coming to an end. For them, it's like buying countless lottery tickets.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
