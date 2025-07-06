@@ -182,8 +182,9 @@ enum tr_type : int {
     TR_VUL_CURSE = 167, //!< 呪力弱点
     TR_MEGATON_COIN = 168, //!< メ ガ ト ン コ イ ン
     TR_ESP_NASTY = 169,
+    TR_SUSHI = 170, //!< アイテムの発動を可能にするフラグ
 
-    TR_FLAG_MAX = 170,
+    TR_FLAG_MAX = 171,
 };
 
 /** 能力値(STR,INT,WIS,DEX,CON,CHR)のpvalを増減させるフラグのリスト */

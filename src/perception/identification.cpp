@@ -723,6 +723,10 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
         info[i++] = _("それはあなたをダンジョンの奥へ引きずり落とす", "It drops you into the dungeon");
     }
 
+    if (flags.has(TR_SUSHI)) {
+        info[i++] = _("それは寿司の一種である", "It is a type of sushi.");
+    }
+
     if (mode & SCROBJ_FAKE_OBJECT) {
         const auto sval = o_ptr->bi_key.sval().value();
         switch (o_ptr->bi_key.tval()) {

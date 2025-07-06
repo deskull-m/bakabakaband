@@ -7057,6 +7057,7 @@ G:,:o
 I:80:49:5000
 A:5/5
 W:5:5:2:5
+F:SUSHI
 D:う～んそれは美味しいそうだ！
 
 N:741:スシの詰め合わせ(いなり抜き)
@@ -7065,6 +7066,7 @@ G:,:o
 I:80:50:3000
 A:5/5
 W:5:5:2:4
+F:SUSHI
 D:う～んそれは美味しそう…いなりが入ってないやん！
 
 N:742:ほぼ食い尽くされたスシの詰め合わせ
@@ -7073,6 +7075,7 @@ G:,:o
 I:80:51:300
 A:5/5
 W:5:5:2:2
+F:SUSHI
 D:寿司がほとんど残ってないやん！
 
 N:743:金の卵
@@ -7683,6 +7686,55 @@ P:0:3d3:0:0:0
 F:SHOW_MODS
 D:それに苦しめられたものの怨念が籠った石だ。
 
+N:816:マグロ寿司
+E:& maguro sushi
+G:,:r
+I:80:62:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:美味しいマグロ寿司だ！力がみなぎる！
+D:$Delicious tuna sushi! You feel empowered!
+
+N:817:サーモン寿司
+E:& Salmon Sushi
+G:,:R
+I:80:63:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:新鮮なサーモン寿司だ！
+D:$Fresh salmon sushi!
+
+N:818:エビ寿司
+E:& Shrimp Sushi
+G:,:w
+I:80:64:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:プリプリのエビ寿司だ！
+D:Plump shrimp sushi!
+
+N:819:玉子寿司
+E:& Egg Sushi
+G:,:y
+I:80:65:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:ふんわり玉子寿司だ！
+D:Fluffy egg sushi!
+
+N:820:イクラ寿司
+E:& Salmon Roe Sushi
+G:,:o
+I:80:66:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:高級イクラ寿司だ！
+D:Premium salmon roe sushi!
 
 
 # D - Black        w - White          s - Gray          o - Orange
