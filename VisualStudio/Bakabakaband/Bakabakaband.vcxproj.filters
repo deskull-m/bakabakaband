@@ -2568,6 +2568,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5566,6 +5569,9 @@
     <ClInclude Include="..\..\src\monster-race\race-flags8.h" />
     <ClInclude Include="..\..\src\world\world-object.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

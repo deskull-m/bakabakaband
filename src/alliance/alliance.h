@@ -150,16 +150,6 @@ public:
     virtual ~AllianceKenohgun() = default;
 };
 
-class AllianceFangFamily : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceFangFamily() = delete;
-    bool isAnnihilated() override;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceFangFamily() = default;
-};
-
 class AllianceKoganRyu : public Alliance {
 public:
     using Alliance::Alliance;

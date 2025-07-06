@@ -24,6 +24,7 @@ hengband_SOURCES = \
 	alliance/alliance-tophamhatt.cpp alliance/alliance-tophamhatt.h \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
+	alliance/alliance-fangfamily.cpp alliance/alliance-fangfamily.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
