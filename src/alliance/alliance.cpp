@@ -1,4 +1,5 @@
 #include "alliance/alliance.h"
+#include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-megadeth.h"
@@ -168,22 +169,6 @@ int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceKenohgun::isAnnihilated()
 {
     return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
-}
-
-bool AllianceFangFamily::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0;
-}
-
-int AllianceFangFamily::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 5, 10);
-    impression -= MonraceList::get_instance().get_monrace(MonraceId::FANG_FAMILY).r_akills * 5;
-    if (MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0) {
-        impression -= 300;
-    }
-    return impression;
 }
 
 int AllianceKoganRyu::calcImpressionPoint(PlayerType *creature_ptr) const
