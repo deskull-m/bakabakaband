@@ -28269,6 +28269,191 @@
       "ja": "それに苦しめられたものの怨念が籠った石だ。",
       "en": ""
     }
+  },
+  {
+    "id": 816,
+    "name": {
+      "ja": "マグロ寿司",
+      "en": "& maguro sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Red"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 62
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 5,
+    "cost": 2,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "美味しいマグロ寿司だ！力がみなぎる！",
+      "en": "Delicious tuna sushi! You feel empowered!"
+    }
+  },
+  {
+    "id": 817,
+    "name": {
+      "ja": "サーモン寿司",
+      "en": "& Salmon Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Light Red"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 63
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 5,
+    "cost": 2,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "新鮮なサーモン寿司だ！",
+      "en": "Fresh salmon sushi!"
+    }
+  },
+  {
+    "id": 818,
+    "name": {
+      "ja": "エビ寿司",
+      "en": "& Shrimp Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "White"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 64
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 5,
+    "cost": 2,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "プリプリのエビ寿司だ！Plump shrimp sushi!",
+      "en": ""
+    }
+  },
+  {
+    "id": 819,
+    "name": {
+      "ja": "玉子寿司",
+      "en": "& Egg Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Yellow"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 65
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 5,
+    "cost": 2,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "ふんわり玉子寿司だ！Fluffy egg sushi!",
+      "en": ""
+    }
+  },
+  {
+    "id": 820,
+    "name": {
+      "ja": "イクラ寿司",
+      "en": "& Salmon Roe Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Orange"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 66
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 5,
+    "cost": 2,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "高級イクラ寿司だ！Premium salmon roe sushi!",
+      "en": ""
+    }
   }
 ]
 }
