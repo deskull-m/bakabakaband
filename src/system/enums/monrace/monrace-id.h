@@ -233,5 +233,6 @@ enum class MonraceId : int16_t {
     KHORNE_CHOSEN = 2003,
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
-
+    POLYGON_SPIN = -1, // TODO: 変愚から後日移植
+    HUNGRY_OLD_MAN = -2 // TODO: 変愚から後日移植
 };
