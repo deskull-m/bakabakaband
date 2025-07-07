@@ -28377,8 +28377,8 @@
       "SUSHI"
     ],
     "flavor": {
-      "ja": "プリプリのエビ寿司だ！Plump shrimp sushi!",
-      "en": ""
+      "ja": "プリプリのエビ寿司だ！",
+      "en": "Plump shrimp sushi!"
     }
   },
   {
@@ -28414,8 +28414,8 @@
       "SUSHI"
     ],
     "flavor": {
-      "ja": "ふんわり玉子寿司だ！Fluffy egg sushi!",
-      "en": ""
+      "ja": "ふんわり玉子寿司だ！",
+      "en": "Fluffy egg sushi!"
     }
   },
   {
@@ -28451,8 +28451,45 @@
       "SUSHI"
     ],
     "flavor": {
-      "ja": "高級イクラ寿司だ！Premium salmon roe sushi!",
-      "en": ""
+      "ja": "高級イクラ寿司だ！",
+      "en": "Premium salmon roe sushi!"
+    }
+  },
+  {
+    "id": 821,
+    "name": {
+      "ja": "稲荷寿司",
+      "en": "& inari Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Orange"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 67
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 5,
+    "cost": 2,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "一部のホモに執着されるほど旨い寿司だ。",
+      "en": "It's sushi so delicious that some homosexuals are obsessed with it."
     }
   }
 ]
