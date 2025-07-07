@@ -7714,7 +7714,7 @@ A:5/5
 W:5:5:2:5
 F:SUSHI
 D:プリプリのエビ寿司だ！
-D:Plump shrimp sushi!
+D:$Plump shrimp sushi!
 
 N:819:玉子寿司
 E:& Egg Sushi
@@ -7724,7 +7724,7 @@ A:5/5
 W:5:5:2:5
 F:SUSHI
 D:ふんわり玉子寿司だ！
-D:Fluffy egg sushi!
+D:$Fluffy egg sushi!
 
 N:820:イクラ寿司
 E:& Salmon Roe Sushi
@@ -7734,7 +7734,7 @@ A:5/5
 W:5:5:2:5
 F:SUSHI
 D:高級イクラ寿司だ！
-D:Premium salmon roe sushi!
+D:$Premium salmon roe sushi!
 
 
 # D - Black        w - White          s - Gray          o - Orange

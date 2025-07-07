@@ -28377,8 +28377,8 @@
       "SUSHI"
     ],
     "flavor": {
-      "ja": "プリプリのエビ寿司だ！Plump shrimp sushi!",
-      "en": ""
+      "ja": "プリプリのエビ寿司だ！",
+      "en": "Plump shrimp sushi!"
     }
   },
   {
@@ -28414,8 +28414,8 @@
       "SUSHI"
     ],
     "flavor": {
-      "ja": "ふんわり玉子寿司だ！Fluffy egg sushi!",
-      "en": ""
+      "ja": "ふんわり玉子寿司だ！",
+      "en": "Fluffy egg sushi!"
     }
   },
   {
@@ -28451,8 +28451,8 @@
       "SUSHI"
     ],
     "flavor": {
-      "ja": "高級イクラ寿司だ！Premium salmon roe sushi!",
-      "en": ""
+      "ja": "高級イクラ寿司だ！",
+      "en": "Premium salmon roe sushi!"
     }
   }
 ]
