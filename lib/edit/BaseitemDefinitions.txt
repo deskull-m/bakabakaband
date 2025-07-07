@@ -7736,6 +7736,16 @@ F:SUSHI
 D:高級イクラ寿司だ！
 D:$Premium salmon roe sushi!
 
+N:821:稲荷寿司
+E:& inari Sushi
+G:,:o
+I:80:67:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:一部のホモに執着されるほど旨い寿司だ。
+D:$It's sushi so delicious that some homosexuals are obsessed with it.
+
 
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
