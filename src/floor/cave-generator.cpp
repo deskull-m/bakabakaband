@@ -200,8 +200,14 @@ static bool make_one_floor(PlayerType *player_ptr, DungeonData *dd_ptr, const Du
     }
 
     // 通路の過剰生成処理
-    if (one_in_(2)) {
-        int num = randint1(100);
+    if (one_in_(8)) {
+        int num = randint1((floor.width * floor.height) / 500);
+        if (one_in_(2)) {
+            num /= 2;
+        }
+        if (one_in_(2)) {
+            num /= 3;
+        }
         for (int i = 0; i < num; i++) {
             dt_ptr = initialize_dt_type(&tmp_dt);
             if (!make_centers(player_ptr, dd_ptr, dungeon, dt_ptr)) {
