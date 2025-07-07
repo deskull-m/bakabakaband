@@ -141,7 +141,7 @@ tl::optional<ItemEntity> make_object(PlayerType *player_ptr, BIT_FLAGS mode, Bas
         }
     }
 
-    if ((one_in_(prob) || any_bits(mode, AM_NASTY))) {
+    if ((one_in_(prob) || any_bits(mode, AM_NASTY)) && !restrict) {
         restrict = kind_is_nasty;
     }
 
