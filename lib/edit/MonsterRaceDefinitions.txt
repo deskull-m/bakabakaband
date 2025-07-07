@@ -27928,8 +27928,8 @@ D:古ウルクの中でも冥王やウトゥムノの諸神の直臣たる家系
 D:それを誇りとして育ち鍛え抜かれた戦士の長だ。
 D:数々の神秘の術を軍事に使うことに長けている。
 
-N:1440:牙一族
-E:Member of the Fang Family
+N:1440:牙一族の小男
+E:Small member of the Fang Family
 G:p:u
 I:112:10d10:20:30:40
 W:19:1:0:60:0:0
@@ -27944,7 +27944,10 @@ F:DROP_90 | FRIENDS | ALLIANCE_FANG-FAMILY | MOB_140
 F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
 F:EVIL
 S:1_IN_4 | SHOOT
-D:華山群狼拳なる集団戦法を駆使する世紀末の蛮族だ。
+D:華山群狼拳なる集団戦法を駆使する世紀末の蛮族だ。大男たちと連携して動く。
+D:$They are a tribe of barbarians from the end of the century
+D:$ who utilize a group combat technique called “Kasan Gunrou Ken.” 
+$:$ They work together with giant men.
 
 N:1441:『牙大王』
 E:The King of Fang Family
@@ -27956,6 +27959,7 @@ B:HIT:HURT:4d15
 B:HIT:HURT:4d15
 B:HIT:HURT:4d15
 R:1440:5d10
+R:2239:3d10
 F:DROP_KIND_1_IN_8_748_0_1d1
 F:DROP_KIND_1_IN_8_749_0_1d1
 F:UNIQUE | MALE | EVIL | HAS_LITE_2 | HUMAN |
@@ -40580,6 +40584,26 @@ F:EAT_LOSE_WIS | HUMAN | PRIEST
 F:TAKE_ITEM
 D:彼らは毎日のように世界が破滅すると喚き散らしている。彼らにとっては無数に買える宝くじのようなものらしい。
 D:$They cry out every day that the world is coming to an end. For them, it's like buying countless lottery tickets.
+
+N:2239:牙一族の巨漢
+E:Giant member of the Fang Family
+G:P:u
+I:110:20d12:20:32:40
+W:21:1:0:60:0:0
+B:PUNCH:HURT:4d5
+B:PUNCH:HURT:4d5
+B:CRUSH:HURT:5d5
+B:CRUSH:HURT:5d5
+F:DROP_KIND_1_IN_8_748_0_1d1
+F:DROP_KIND_1_IN_8_749_0_1d1
+F:MALE | HAS_LITE_2 | HUMAN |
+F:DROP_90 | FRIENDS | ALLIANCE_FANG-FAMILY | MOB_50
+F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:EVIL
+D:華山群狼拳なる集団戦法を駆使する世紀末の蛮族だ。小男たちと連携して襲ってくる。
+D:$They are a tribe of barbarians from the end of the century
+D:$ who utilize a group combat technique called “Kasan Gunrou Ken.”
+$:$ They work together with small men.
 
 # N: serial number : monster name
 # G: symbol : color
