@@ -248,16 +248,19 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     if (terrain.flags.has(TerrainCharacteristics::PLASMA)) {
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に包まれた!", "engulfs you!"), _("に包まれた!", "engulfs you"), calc_plasma_damage_rate, NULL);
+        sound(SoundKind::TERRAIN_DAMAGE);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED)) {
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に汚染された!", "taints you!"),
             _("に汚染された!", "taints you"), calc_chaos_damage_rate_rand, NULL);
+        sound(SoundKind::TERRAIN_DAMAGE);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::VOID)) {
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"),
             _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"), calc_void_damage_rate_rand, NULL);
+        sound(SoundKind::TERRAIN_DAMAGE);
     }
 
     if (get_player_flags(player_ptr, TR_SELF_FIRE) && !has_immune_fire(player_ptr)) {
