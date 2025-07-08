@@ -233,7 +233,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::THORN) && !player_ptr->levitation) {
+    if (terrain.flags.has(TerrainCharacteristics::THORN) && !player_ptr->levitation && !is_invuln(player_ptr)) {
         int damage;
         msg_print(_("棘に体が突き刺さっている！", "Your body is stuck in a thorn!"));
         if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
@@ -246,18 +246,18 @@ void process_player_hp_mp(PlayerType *player_ptr)
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::PLASMA)) {
+    if (terrain.flags.has(TerrainCharacteristics::PLASMA) && !is_invuln(player_ptr)) {
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に包まれた!", "engulfs you!"), _("に包まれた!", "engulfs you"), calc_plasma_damage_rate, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED)) {
+    if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED) && !is_invuln(player_ptr)) {
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に汚染された!", "taints you!"),
             _("に汚染された!", "taints you"), calc_chaos_damage_rate_rand, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::VOID)) {
+    if (terrain.flags.has(TerrainCharacteristics::VOID) && !is_invuln(player_ptr)) {
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"),
             _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"), calc_void_damage_rate_rand, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
