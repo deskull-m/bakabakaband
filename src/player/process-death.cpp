@@ -228,7 +228,12 @@ void print_tomb(PlayerType *player_ptr)
     show_tomb_line(cp_ptr->title, GRAVE_PLAYER_CLASS_ROW);
 
     show_basic_params(player_ptr);
-    show_tomb_detail(player_ptr);
+
+    if (wc_ptr->is_blown_away()) {
+        show_tomb_line(_("世界こわれた", "The world has collapsed"), GRAVE_DEAD_PLACE_ROW);
+    } else {
+        show_tomb_detail(player_ptr);
+    }
 
     time_t ct = time((time_t *)0);
     show_tomb_line(format("%-.24s", ctime(&ct)), GRAVE_DEAD_DATETIME_ROW);
