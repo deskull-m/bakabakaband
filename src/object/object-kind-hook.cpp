@@ -127,6 +127,11 @@ bool kind_is_nasty(short bi_id)
     return BaseitemList::get_instance().get_baseitem(bi_id).flags.has(TR_NASTY);
 }
 
+bool kind_is_sushi(short bi_id)
+{
+    return BaseitemList::get_instance().get_baseitem(bi_id).flags.has(TR_SUSHI);
+}
+
 /*!
  * @brief ベースアイテムが上質として扱われるかどうかを返す。
  * Hack -- determine if a template is "good"

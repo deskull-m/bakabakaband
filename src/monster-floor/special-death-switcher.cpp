@@ -23,6 +23,7 @@
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "object/object-kind-hook.h"
+#include "player/player-status.h"
 #include "spell/summon-types.h"
 #include "sv-definition/sv-food-types.h"
 #include "sv-definition/sv-other-types.h"
@@ -298,6 +299,13 @@ static void on_dead_raal(PlayerType *player_ptr, MonsterDeath *md_ptr)
     }
 }
 
+static void drop_sushi(PlayerType *player_ptr, MonsterDeath *md_ptr)
+{
+    if (auto item = make_object(player_ptr, md_ptr->mo_mode, kind_is_sushi, 10)) {
+        (void)drop_near(player_ptr, *item, md_ptr->get_position());
+    }
+}
+
 static void on_dead_ninja(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
     if (is_seen(player_ptr, *md_ptr->m_ptr)) {
@@ -558,6 +566,10 @@ void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, Attribut
     if (md_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
         on_dead_ninja(player_ptr, md_ptr);
         return;
+    }
+
+    if (is_sushi_eater(player_ptr)) {
+        drop_sushi(player_ptr, md_ptr);
     }
 
     switch (md_ptr->m_ptr->r_idx) {
