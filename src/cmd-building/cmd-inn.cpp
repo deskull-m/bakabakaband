@@ -181,6 +181,7 @@ static bool stay_inn(PlayerType *player_ptr)
     const auto &[prev_day, prev_hour, prev_min] = world.extract_date_time(InnerGameData::get_instance().get_start_race());
     write_diary_stay_inn(player_ptr, prev_hour);
     world.pass_game_turn_by_stay();
+    wc_ptr->plus_timed_world_collapsion(&world, player_ptr, 25000);
     prevent_turn_overflow(player_ptr);
     if ((prev_hour >= 18) && (prev_hour <= 23)) {
         determine_daily_bounty(player_ptr);
