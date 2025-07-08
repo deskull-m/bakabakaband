@@ -35,7 +35,7 @@ void WorldCollapsion::plus_timed_world_collapsion(AngbandWorld *w_ptr, PlayerTyp
     if (w_ptr->total_winner) {
         multi /= 3;
     }
-    this->collapse_degree += std::min(1, static_cast<int>(std::round(std::sqrt(w_ptr->game_turn / 2000) * multi)));
+    this->collapse_degree += std::max(1, static_cast<int>(std::round(std::sqrt(w_ptr->game_turn / 2000)) * multi));
 }
 
 /*!
