@@ -6,22 +6,22 @@ DungeonData::DungeonData(const Pos2DVec &dungeon_size)
     , col_rooms(dungeon_size.x / BLOCK_WID)
     , tunnel_pos(0, 0)
 {
-    constexpr auto max_centers = 100;
+    constexpr auto max_centers = 1000;
     for (auto i = 0; i < max_centers; i++) {
         this->centers.emplace_back(0, 0);
     }
 
-    constexpr auto max_doors = 200;
+    constexpr auto max_doors = 2000;
     for (auto i = 0; i < max_doors; i++) {
         this->doors.emplace_back(0, 0);
     }
 
-    constexpr auto max_walls = 500;
+    constexpr auto max_walls = 5000;
     for (auto i = 0; i < max_walls; i++) {
         this->walls.emplace_back(0, 0);
     }
 
-    constexpr auto max_tunnels = 900;
+    constexpr auto max_tunnels = 9000;
     for (auto i = 0; i < max_tunnels; i++) {
         this->tunnels.emplace_back(0, 0);
     }
