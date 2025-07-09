@@ -38984,14 +38984,14 @@ N:2136:BT-91 マジュー第一形態
 E:BT-91 Beast (first form)
 G:P:g
 I:120:30d50:30:125:15
-W:40:1:6000:0:0
+W:40:1:6000:10000:2240
 B:PUNCH:HURT:6d12
 B:PUNCH:HURT:6d12
 B:PUNCH:HURT:6d12
 B:PUNCH:HURT:6d12
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
 F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
-F:OPEN_DOOR | BASH_DOOR |
+F:OPEN_DOOR | BASH_DOOR | MOB_160
 F:GIANT
 S:1_IN_5 | HEAL | BO_MANA
 D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
@@ -40604,6 +40604,23 @@ D:華山群狼拳なる集団戦法を駆使する世紀末の蛮族だ。小男
 D:$They are a tribe of barbarians from the end of the century
 D:$ who utilize a group combat technique called “Kasan Gunrou Ken.”
 $:$ They work together with small men.
+
+N:2240:BT-91 マジュー第二形態
+E:BT-91 Beast (second form)
+G:P:G
+I:120:40d50:30:125:15
+W:48:1:9000:0:0
+B:PUNCH:HURT:8d12
+B:PUNCH:HURT:8d12
+B:PUNCH:HURT:8d12
+B:PUNCH:HURT:8d12
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
+F:OPEN_DOOR | BASH_DOOR | MOB_100
+F:GIANT
+S:1_IN_4 | HEAL | BO_MANA
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:第二形態では人型にいくらか近くなる。
 
 # N: serial number : monster name
 # G: symbol : color

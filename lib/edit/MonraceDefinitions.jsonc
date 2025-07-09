@@ -134263,8 +134263,8 @@
     "level": 40,
     "rarity": 1,
     "exp": 6000,
-    "next_exp": 0,
-    "next_mon": 0,
+    "next_exp": 10000,
+    "next_mon": 2240,
     "blows": [
         {
             "method": "PUNCH",
@@ -134291,6 +134291,7 @@
         "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。初期の状態ではゴリラに似た長い手をした人型の姿をしている。"
     },
     "alliance": "GAICHI",
+    "mob": 160,
     "flags": [
         "FORCE_MAXHP",
         "DROP_SKELETON",
@@ -140600,5 +140601,72 @@
             "dice": "1d1"
         }
     ]
+},
+{
+    "id": 2240,
+    "name": {
+        "ja": "BT-91 マジュー第二形態",
+        "en": "BT-91 Beast (second form)"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Light Green"
+    },
+    "speed": 10,
+    "hit_point": "40d50",
+    "vision": 30,
+    "armor_class": 125,
+    "alertness": 15,
+    "level": 48,
+    "rarity": 1,
+    "exp": 9000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。第二形態では人型にいくらか近くなる。"
+    },
+    "alliance": "GAICHI",
+    "mob": 100,
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "KILL_BODY",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "GIANT"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA"
+        ],
+        "probability": "1_IN_4"
+    }
 }]
 }
