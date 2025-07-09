@@ -2692,6 +2692,15 @@ G:.:v:LIT
 W:2
 F:LOS | PROJECTION | MOVE | PLACE | DROP | FLOOR | CAN_FLY | TELEPORTABLE
 
+N:331:SNOW_MOUNTAIN
+J:雪山
+E:snow mountain
+G:^:s:LIT
+W:5
+K:UNPERM:*INNER*
+F:REMEMBER | TUNNEL | WALL | PERMANENT | MOUNTAIN | TELEPORTABLE |
+F:PLACE | CAN_FLY | AVOID_RUN
+
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
 # d - Dark Gray    W - Light Gray     v - Violet        y - Yellow
