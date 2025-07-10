@@ -301,7 +301,7 @@ static void on_dead_raal(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
 static void drop_sushi(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
-    if (auto item = make_object(player_ptr, md_ptr->mo_mode, kind_is_sushi, 10)) {
+    if (auto item = make_object(player_ptr, AM_IGNORE_LEVEL, kind_is_sushi, 10)) {
         (void)drop_near(player_ptr, *item, md_ptr->get_position());
     }
 }
