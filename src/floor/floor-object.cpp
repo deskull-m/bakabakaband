@@ -58,6 +58,10 @@ static void object_mention(PlayerType *player_ptr, ItemEntity &item)
 
 static int get_base_floor(const FloorType &floor, BIT_FLAGS mode, tl::optional<int> rq_mon_level)
 {
+    if (any_bits(mode, AM_IGNORE_LEVEL)) {
+        return MAX_DEPTH;
+    }
+
     if (any_bits(mode, AM_GREAT)) {
         if (rq_mon_level.has_value()) {
             return rq_mon_level.value() + 10 + randint1(10);
