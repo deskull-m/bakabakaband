@@ -15,6 +15,7 @@ enum item_am_type : uint32_t {
     AM_NASTY = 0x00000040, /*!< 例のアレなアイテムだけ落とす */
     AM_NO_NEVER_MOVE = 0x00000080, /*!< NEVER_MOVEアイテムは生成外 */
     AM_GOLD = 0x00000100, /*!< 財宝を生成する */
+    AM_IGNORE_LEVEL = 0x00000200, /*!< 基本生成レベル無視 */
 };
 
 // @todo v3.0 正式リリース以降、上記enum をこちらに差し替える.
