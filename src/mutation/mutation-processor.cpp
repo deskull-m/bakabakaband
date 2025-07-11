@@ -94,7 +94,7 @@ void process_world_aux_sudden_attack(PlayerType *player_ptr)
                 break;
             }
             if (one_in_(5)) {
-                summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_KACHO, PM_NO_KAGE);
+                summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_KACHO, PM_IGNORE_LEVEL | PM_NO_KAGE);
             }
         }
     }

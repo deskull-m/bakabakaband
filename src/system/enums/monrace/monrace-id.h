@@ -226,7 +226,7 @@ enum class MonraceId : int16_t {
     GOLAN_COLONEL = 1607,
     GOLAN_MAD = 1608,
     GOLAN_SOLDIER = 1687,
-    KACHO_CAT = 1698,
+    KACHO_CAT = 1688,
     GOLAN_OFFICER = 1692,
     GOLAN_RED_BELET = 1828,
     KACHO_ANGEL = 1844,
