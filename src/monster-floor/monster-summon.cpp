@@ -58,7 +58,11 @@ tl::optional<MONSTER_IDX> summon_specific(PlayerType *player_ptr, POSITION y1, P
     SummonCondition condition(type, mode, summoner_m_idx, hook);
     get_mon_num_prep_summon(player_ptr, condition);
 
-    const auto dlev = floor.is_underground() ? floor.get_level() : WildernessGrids::get_instance().get_player_grid().get_level();
+    auto dlev = MAX_DEPTH;
+    if (!(mode & PM_IGNORE_LEVEL)) {
+        dlev = floor.is_underground() ? floor.get_level() : WildernessGrids::get_instance().get_player_grid().get_level();
+    }
+
     const auto r_idx = get_mon_num(player_ptr, 0, (dlev + lev) / 2 + 5, mode);
     if (!MonraceList::is_valid(r_idx)) {
         return tl::nullopt;
