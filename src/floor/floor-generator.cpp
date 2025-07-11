@@ -17,6 +17,7 @@
 #include "floor/floor-events.h"
 #include "floor/floor-save.h" //!< @todo precalc_cur_num_of_pet() が依存している、違和感.
 #include "floor/floor-util.h"
+#include "floor/object-allocator.h"
 #include "floor/wild.h"
 #include "game-option/birth-options.h"
 #include "game-option/cheat-types.h"
@@ -34,6 +35,7 @@
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
+#include "player/player-status.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -527,6 +529,10 @@ void generate_floor(PlayerType *player_ptr)
             }
         } else {
             why = level_gen(player_ptr);
+        }
+
+        if (is_sushi_eater(player_ptr)) {
+            alloc_object(player_ptr, ALLOC_SET_BOTH, ALLOC_TYP_SUSHI, randnor(floor.width * floor.height / 20, 3));
         }
 
         if (floor.o_list.size() >= MAX_FLOOR_ITEMS) {
