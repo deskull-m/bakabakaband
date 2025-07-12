@@ -109,6 +109,7 @@ public:
     MonraceId idx{};
     LocalizedString name{}; //!< モンスターの名称
     std::string text = ""; //!< 思い出テキストのオフセット / Lore text offset
+    std::string tag = ""; //!< モンスターのタグ / Monster tag
     Dice hit_dice; //!< HPのダイス / Creatures hit dice
     ARMOUR_CLASS ac{}; //!< アーマークラス / Armour Class
     SLEEP_DEGREE sleep{}; //!< 睡眠値 / Inactive counter (base)
