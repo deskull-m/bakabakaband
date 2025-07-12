@@ -295,8 +295,7 @@ static Pos2D coord_trans(const Pos2D &pos_initial, const Pos2DVec &offset, int t
  * @param yoffset 変換基準Y座標
  * @param transno 変換ID
  */
-void build_vault(
-    PlayerType *player_ptr, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno)
+void build_vault(vault_type &vault, PlayerType *player_ptr, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno)
 {
     /* Place dungeon features and objects */
     auto &floor = *player_ptr->current_floor_ptr;
@@ -337,6 +336,18 @@ void build_vault(
 
             /* Part of a vault */
             grid.info |= (CAVE_ROOM | CAVE_ICKY);
+
+            if (vault.feature_list.find(*t) != vault.feature_list.end()) {
+                grid.set_terrain_id(vault.feature_list.find(*t)->second);
+                if (vault.feature_ap_list.find(*t) != vault.feature_ap_list.end()) {
+                    grid.set_terrain_id(vault.feature_ap_list.find(*t)->second, TerrainKind::MIMIC);
+                }
+                if (vault.place_monster_list.find(*t) != vault.place_monster_list.end()) {
+                    const auto monrace_id = vault.place_monster_list.find(*t)->second;
+                    place_specific_monster(player_ptr, y, x, monrace_id, PM_NO_KAGE);
+                }
+                continue;
+            }
 
             /* Analyze the grid */
             switch (*t) {
@@ -958,7 +969,7 @@ bool build_fixed_room(PlayerType *player_ptr, DungeonData *dd_ptr, int typ, bool
     }
 
     msg_format_wizard(player_ptr, CHEAT_DUNGEON, _("固定部屋(%s)を生成しました。", "Fixed room (%s)."), vault.name.data());
-    build_vault(player_ptr, center->y, center->x, vault.hgt, vault.wid, vault.text.data(), x_offset, y_offset, num_transformation);
+    build_vault(vault, player_ptr, center->y, center->x, vault.hgt, vault.wid, vault.text.data(), x_offset, y_offset, num_transformation);
 
     return true;
 }

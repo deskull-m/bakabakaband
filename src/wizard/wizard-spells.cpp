@@ -330,7 +330,7 @@ void wiz_generate_room(PlayerType *player_ptr, int v_idx)
 
         v_idx = val.value();
         vault_type *v_ptr = &vaults_info[v_idx];
-        build_vault(player_ptr, player_ptr->y, player_ptr->x, v_ptr->hgt, v_ptr->wid, v_ptr->text.data(), 0, 0, 0);
+        build_vault(*v_ptr, player_ptr, player_ptr->y, player_ptr->x, v_ptr->hgt, v_ptr->wid, v_ptr->text.data(), 0, 0, 0);
 
         const auto flags = { StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::UN_VIEW, StatusRecalculatingFlag::UN_LITE, StatusRecalculatingFlag::VIEW, StatusRecalculatingFlag::LITE,
             StatusRecalculatingFlag::FLOW, StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::MONSTER_STATUSES };

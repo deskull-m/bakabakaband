@@ -33,4 +33,4 @@ class DungeonData;
 class PlayerType;
 bool build_type10(PlayerType *player_ptr, DungeonData *dd_ptr);
 bool build_fixed_room(PlayerType *player_ptr, DungeonData *dd_ptr, int typ, bool more_space, int id);
-void build_vault(PlayerType *player_ptr, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno);
+void build_vault(vault_type &vault, PlayerType *player_ptr, POSITION yval, POSITION xval, POSITION ymax, POSITION xmax, concptr data, POSITION xoffset, POSITION yoffset, int transno);
