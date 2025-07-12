@@ -143248,8 +143248,8 @@
         },
         {
             "method": "WHISPER",
-            "effect": "CHAOS",
-            "damage_dice": "12d12"
+            "effect": "SANITY_BLAST",
+            "damage_dice": "9d9"
         },
         {
             "method": "WHISPER",
@@ -143258,8 +143258,8 @@
         },
         {
             "method": "WHISPER",
-            "effect": "CHAOS",
-            "damage_dice": "12d12"
+            "effect": "SANITY_BLAST",
+            "damage_dice": "9d9"
         }
     ],
     "flavor": {
