@@ -280,6 +280,10 @@ void set_monster_blow_effect(lore_type *lore_ptr, int m)
         lore_ptr->q = _("脱糞させる", "makes defecates");
         lore_ptr->qc = TERM_UMBER;
         break;
+    case RaceBlowEffectType::SANITY_BLAST:
+        lore_ptr->q = _("狂気へ誘う", "induce insanity");
+        lore_ptr->qc = TERM_UMBER;
+        break;
     case RaceBlowEffectType::CHAOS:
         lore_ptr->q = _("カオスを呼び起こす", "call chaotic.");
         lore_ptr->qc = TERM_VIOLET;
