@@ -143508,5 +143508,74 @@
         ],
         "probability": "1_IN_4"
     }
+},
+{
+    "id": 2241,
+    "name": {
+        "ja": "怪獣の禍『レッドマン』",
+        "en": "Redman the Bane of Monster"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Red"
+    },
+    "speed": 20,
+    "hit_point": "50d130",
+    "vision": 30,
+    "armor_class": 140,
+    "alertness": 0,
+    "level": 72,
+    "rarity": 3,
+    "exp": 26000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "14d10"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "14d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SHATTER",
+            "damage_dice": "16d10"
+        }
+    ],
+    "skill": {
+        "shoot": "20d20",
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_5"
+    },
+    "flavor": {
+        "ja": "どれほどに人類を脅かす怪獣であろうと、彼の「荒野」に連れ去られたが最後だ。その刃を突き立てられ、亡骸は爆発四散することなく、ただ空しく放置されるという。",
+        "en": "No matter how threatening the monsters are to humanity, once they are taken to his “wasteland,” they meet their doom. With his blade thrust into them, their corpses are not blown to pieces, but simply left lying there in vain."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "NONLIVING",
+        "NO_FEAR",
+        "FORCE_MAXHP",
+        "KILL_BODY",
+        "IM_FIRE",
+        "IM_ACID",
+        "NO_STUN",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_SWIM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "WEIRD_MIND"
+    ]
 }]
 }

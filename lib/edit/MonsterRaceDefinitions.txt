@@ -40622,6 +40622,28 @@ S:1_IN_4 | HEAL | BO_MANA
 D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
 D:第二形態では人型にいくらか近くなる。
 
+N:2241:怪獣の禍『レッドマン』
+E:Redman the Bane of Monster
+G:P:r
+I:130:50d130:30:140:0
+W:72:3:26000:0:0
+B:SLASH:HURT:14d10
+B:SLASH:HURT:14d10
+B:PUNCH:SHATTER:16d10
+B:SHOOT:HURT:20d20
+F:UNIQUE | MALE | DROP_CORPSE |
+F:NONLIVING | NO_FEAR | FORCE_MAXHP | PREVENT_SUDDEN_MAGIC |
+F:KILL_BODY | IM_FIRE | IM_ACID |
+F:NO_STUN | REGENERATE | NO_CONF | NO_SLEEP | CAN_SWIM |
+F:OPEN_DOOR | BASH_DOOR | WEIRD_MIND |
+S:1_IN_5 | SHOOT
+D:どれほどに人類を脅かす怪獣であろうと、彼の「荒野」に連れ去られたが最後だ。
+D:その刃を突き立てられ、亡骸は爆発四散することなく、ただ空しく放置されるという。
+D:$No matter how threatening the monsters are to humanity,
+D:$ once they are taken to his “wasteland,” they meet their doom.
+D:$ With his blade thrust into them, their corpses are not blown to pieces,
+D:$ but simply left lying there in vain.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
