@@ -3,6 +3,8 @@
 #include "info-reader/parse-error-types.h"
 #include "main/angband-headers.h"
 #include "room/rooms-vault.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "util/string-processor.h"
 
 /*!
@@ -81,21 +83,25 @@ errr parse_vaults_info(std::string_view buf, angband_header *)
 
                 const auto &s_tokens = str_split(f, '_', false);
                 if (s_tokens.size() == 2 && s_tokens[0] == "MONSTER") {
-                    break;
-                    /*
-                    for (const auto &[r_idx, r_ref] : monraces_info) {
+                    const auto &monraces = MonraceList::get_instance();
+                    for (const auto &[r_idx, r_ref] : monraces) {
                         if (s_tokens[1] == r_ref.tag) {
                             v_ptr->place_monster_list[c] = r_idx;
                             break;
                         }
                     }
                     if (v_ptr->place_monster_list.count(c) == 0) {
-                        info_set_value(v_ptr->place_monster_list[c], s_tokens[1]);
+                        try {
+                            std::stoi(s_tokens[1]);
+                            info_set_value(v_ptr->place_monster_list[c], s_tokens[1]);
+                            break;
+                        } catch (const std::invalid_argument &) {
+                            break;
+                        } catch (const std::out_of_range &) {
+                            break;
+                        }
                     }
-                    continue;
-                    */
                 }
-
                 return PARSE_ERROR_INVALID_FLAG;
             }
         }
