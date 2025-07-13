@@ -35283,14 +35283,14 @@ F:OPEN_DOOR | BASH_DOOR | HAS_LITE_1 | NO_CONF | NO_SLEEP
 D:商売人の弱みを見つけてホモセクハラを行う人間の屑だ。
 D:だが、クレームをつけても仕方のないことをしょっちゅうされてもいる。
 
-N:1897:河童
-E:Kappa
+N:1897:浣腸河童
+E:Enema Kappa
 G:h:g
 I:110:16d12:20:45:30
 W:18:1:0:60:0:0
 B:HIT:HURT:7d3
 B:ENEMA:EXP_40:8d3
-F:AQUATIC | WILD_ALL | RES_WATE | HURT_FIRE
+F:AQUATIC | WILD_ALL | RES_WATE | HURT_FIRE | NASTY
 D:尻子玉を抜かれるぞ！気をつけろ！
 
 N:1898:断罪者『ミラルダ』
@@ -40647,6 +40647,74 @@ D:$No matter how threatening the monsters are to humanity,
 D:$ once they are taken to his “wasteland,” they meet their doom.
 D:$ With his blade thrust into them, their corpses are not blown to pieces,
 D:$ but simply left lying there in vain.
+
+N:2242:河童
+E:Kappa
+G:h:g
+I:120:5d10:20:10:20
+W:5:2:0:30:0:0
+B:PUNCH:HURT:5d1
+B:PUNCH:HURT:5d1
+F:PREVENT_SUDDEN_MAGIC | AQUATIC | COLD_BLOOD |
+F:DROP_CORPSE | RES_WATE | WILD_SHORE | WILD_SWAMP |
+F:EVIL
+S:1_IN_5 |
+S:TELE_TO | 
+D:河や沼の中に住む妖怪だ。それはあなたの尻子玉を引き抜こうと企んでいる。
+D:相撲が大好きで、きゅうりが好物。頭の皿の水がこぼれたり乾いたりして無くなると力が出せなくなる。
+D:$It is a monster that lives in rivers and swamps. It is plotting to pull out your tailbone.
+D:$ It loves sumo wrestling and loves cucumbers. When the water in the bowl on its head spills or dries up, it loses its strength.
+
+N:2243:船幽霊
+E:Funayurei
+G:G:b
+I:120:10d10:20:20:20
+W:25:2:0:100:0:0
+B:WAIL:TERRIFY:1d10
+B:WAIL:TERRIFY:1d10
+F:PREVENT_SUDDEN_MAGIC | AQUATIC | UNDEAD | COLD_BLOOD |
+F:ONLY_ITEM | DROP_1D2 | IM_POIS | RES_DARK | RES_WATE | FRIENDS |
+F:WILD_SHORE | WILD_SWAMP | WILD_OCEAN |
+S:1_IN_8 |
+S:BO_WATE | SCARE |
+D:河や海などの水上に現れる幽霊だ。「柄杓をくれ」と頼んでくるが、底の抜けた柄杓を渡さないと船を沈められてしまう。
+D:$It is a ghost that appears on rivers, seas, and other bodies of water.
+D:$ It asks for a ladle, but if you don't give it a ladle with a hole in the bottom, it will sink your boat.
+
+N:2244:海坊主
+E:Umibozu
+G:P:D
+I:120:100d10:20:100:20
+W:35:4:0:2000:0:0
+B:CRUSH:HURT:10d10
+B:CRUSH:HURT:10d10
+F:PREVENT_SUDDEN_MAGIC | AQUATIC | GIANT | COLD_BLOOD |
+F:IM_ACID | IM_POIS | RES_WATE | WILD_OCEAN | POWERFUL |
+S:1_IN_6 |
+S:BA_WATE |
+D:海に出没する黒い坊主頭の巨人だ。大きさは数メートルから数十メートル。
+D:海中から突然現れ、船を破壊する。
+D:$It is a giant with a black shaved head that appears in the sea. 
+D:$ It ranges in size from several meters to tens of meters. It suddenly appears from the sea and destroys ships.
+
+N:2245:幽体グレーター・クラーケン
+E:Spectral Greater kraken
+G:l:w
+I:125:60d100:40:200:80
+W:79:4:0:35000:0:0
+B:CRUSH:HURT:15d15
+B:CRUSH:HURT:15d15
+B:CRUSH:UN_BONUS:12d10
+B:CRUSH:UN_BONUS:12d10
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | AQUATIC | UNDEAD | WILD_OCEAN | INVISIBLE |
+F:ONLY_ITEM | DROP_3D2 | DROP_4D2 | DROP_GOOD | 
+F:BASH_DOOR | PASS_WALL | POWERFUL | MOVE_BODY | SMART | RES_WATE | RES_DARK |
+F:EVIL | IM_ELEC | NO_CONF | NO_SLEEP | IM_POIS | IM_FIRE |RES_NETH | RES_DISE | RIDING
+S:1_IN_4 | 
+S:CAUSE_4 | TELE_TO | TELE_AWAY |
+S:BA_WATE | DARKNESS | BR_DARK | BR_ACID | BR_POIS | BR_NETH | BR_DISE |
+D:かつて強大な力を誇っていたグレーター・クラーケンの怨霊だ。
+D:$It is the vengeful spirit of the once powerful Greater Kraken.
 
 # N: serial number : monster name
 # G: symbol : color
