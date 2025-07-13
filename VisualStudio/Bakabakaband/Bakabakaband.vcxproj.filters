@@ -2574,6 +2574,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-slaanesh.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-shittodan.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5578,6 +5581,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-slaanesh.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-shittodan.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>
