@@ -178,16 +178,6 @@ public:
     virtual ~AllianceUngoliant() = default;
 };
 
-class AllianceShittoDan : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceShittoDan() = delete;
-    bool isAnnihilated() override;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceShittoDan() = default;
-};
-
 class AllianceGEOrlic : public Alliance {
 public:
     using Alliance::Alliance;

@@ -4,6 +4,7 @@
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-megadeth.h"
 #include "alliance/alliance-shire.h"
+#include "alliance/alliance-shittodan.h"
 #include "alliance/alliance-slaanesh.h"
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
@@ -190,16 +191,6 @@ int AllianceUngoliant::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 8, 30);
     return impression;
-}
-
-int AllianceShittoDan::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
-}
-
-bool AllianceShittoDan::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::SHITTO_MASK).mob_num == 0;
 }
 
 int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
