@@ -16356,6 +16356,8 @@
         "en": "It is minor female demon, vaguely human-like, but with crab-like pincers instead of hands. She wears a rather indecent skimpy leather bikini, moves quickly and casts deadly spells!"
     },
     "sex": "FEMALE",
+    "alliance": "SLAANESH",
+    "mob": 1200,
     "flags": [
         "FORCE_MAXHP",
         "DROP_60",
@@ -23377,6 +23379,8 @@
         "ja": "堕落と快楽の神<スラーネッシュ>のペットで、大きな蠍の尻尾と人間の顔、そして表皮は爬虫類のようだ。",
         "en": "Slaanesh's pet, a large scorpion-like creature with a human face and reptile skin."
     },
+    "alliance": "SLAANESH",
+    "mob": 1000,
     "flags": [
         "BASH_DOOR",
         "EVIL",
@@ -44632,6 +44636,8 @@
         "ja": "禁断の秘密を護るこの悪魔は、余分な腕をもった無毛のミノタウロスのようで、入墨と鼻輪で身を飾っている。この悪魔は堕落と快楽の神<スラーネッシュ>の邪悪な魔法の産物だ。（TRPG ウォーハンマー）",
         "en": "This demonic keeper of forbidden secrets looks like a hairless minotaur with extra arms, decorated with tattoos and nose rings. It is the embodiment of Slaanesh's perverted magic."
     },
+    "alliance": "SLAANESH",
+    "mob": 200,
     "flags": [
         "DEMON",
         "EVIL",
@@ -129086,6 +129092,8 @@
         "ja": "戦鎚世界の混沌神〈スラーネッシュ〉に選ばれた混沌の戦士だ。肉厚の装甲に包まれたその心身は主君の性質に触れ、美しくも卑猥な誘惑を周囲に振きながら、戦いという快楽に耽溺している。"
     },
     "sex": "MALE",
+    "alliance": "SLAANESH",
+    "mob": 700,
     "flags": [
         "FORCE_MAXHP",
         "SMART",

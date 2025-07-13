@@ -231,6 +231,7 @@ enum class MonraceId : int16_t {
     GOLAN_RED_BELET = 1828,
     KACHO_ANGEL = 1844,
     KHORNE_CHOSEN = 2003,
+    SLAANESH_CHOSEN = 2005,
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
     POLYGON_SPIN = -1, // TODO: 変愚から後日移植
