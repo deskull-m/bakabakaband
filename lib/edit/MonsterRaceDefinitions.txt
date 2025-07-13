@@ -40648,6 +40648,70 @@ D:$ once they are taken to his “wasteland,” they meet their doom.
 D:$ With his blade thrust into them, their corpses are not blown to pieces,
 D:$ but simply left lying there in vain.
 
+N:xxxx:河童
+E:Kappa
+G:z:g
+I:120:5d10:20:10:20
+W:5:2:0:30:0:0
+B:CRASH:HURT:5d1
+B:CRASH:HURT:5d1
+F:PREVENT_SUDDEN_MAGIC | AQUATIC | UNDEAD | COLD_BLOOD |
+F:DROP_CORPSE | RES_WATE | WILD_SHORE | WILD_SWAMP |
+F:EVIL
+S:1_IN_5 |
+S:TELE_TO | 
+D:河や沼の中に住む妖怪だ。それはあなたの尻子玉を引き抜こうと企んでいる。
+D:相撲が大好きで、きゅうりが好物。頭の皿の水がこぼれたり乾いたりして無くなると力が出せなくなる。
+河童です。人間と友好的だった逸話と敵対的だった逸話が両方ある妖怪なので、善良かつ友好的と邪悪で二種類にしました。それ以外の性能は同じで、テレポバックで水中に引きずり込んで体当たりしてきます。
+
+N:xxxx:船幽霊
+E:Funayurei
+G:G:b
+I:120:10d10:20:20:20
+W:25:2:0:100:0:0
+B:WAIL:TERRIFY:1d10
+B:WAIL:TERRIFY:1d10
+F:PREVENT_SUDDEN_MAGIC | AQUATIC | UNDEAD | COLD_BLOOD |
+F:ONLY_ITEM | DROP_1D2 | IM_POIS | RES_DARK | RES_WATE | FRIENDS |
+F:WILD_SHORE | WILD_SWAMP | WILD_OCEAN |
+S:1_IN_3 |
+S:BO_WATE | SCARE |
+D:河や海などの水上に現れる幽霊だ。「柄杓をくれ」と頼んでくるが、底の抜けた柄杓を渡さないと船を沈められてしまう。
+船幽霊です。水棲ダークエルフ・ワーロックといった感じです。
+
+N:xxxx:海坊主
+E:Umibozu
+G:P:D
+I:120:100d10:20:100:20
+W:35:4:0:2000:0:0
+B:CRUSH:HURT:10d10
+B:CRUSH:HURT:10d10
+F:PREVENT_SUDDEN_MAGIC | AQUATIC | UNDEAD | COLD_BLOOD |
+F:IM_ACID | IM_POIS | RES_WATE | WILD_OCEAN | POWERFUL |
+S:1_IN_5 |
+S:BA_WATE |
+D:海に出没する黒い坊主頭の巨人だ。大きさは数メートルから数十メートル。
+D:海中から突然現れ、船を破壊する。
+海坊主です。ウォーターボールが使えるバイクロプスといった感じです。
+
+N:xxxx:幽体グレーター・クラーケン
+E:Spectral Greater kraken
+G:l:w
+I:125:60d100:40:200:80
+W:79:4:0:35000:0:0
+B:CRUSH:HURT:15d15
+B:CRUSH:HURT:15d15
+B:CRUSH:UN_BONUS:20d10
+B:CRUSH:UN_BONUS:20d10
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | AQUATIC | UNDEAD | WILD_OCEAN | INVISIBLE |
+F:ONLY_ITEM | DROP_3D2 | DROP_4D2 | DROP_GOOD | 
+F:BASH_DOOR | PASS_WALL | POWERFUL | MOVE_BODY | SMART | RES_WATE | RES_DARK |
+F:EVIL | IM_ELEC | NO_CONF | NO_SLEEP | IM_POIS | IM_FIRE |RES_NETH | RES_DISE | RIDING
+S:1_IN_4 | 
+S:CAUSE_4 | TELE_TO | TELE_AWAY |
+S:BA_WATE | DARKNESS | BR_DARK | BR_ACID | BR_POIS | BR_NETH | BR_DISE |
+D:かつて強大な力を誇っていたグレーター・クラーケンの怨霊だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
