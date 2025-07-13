@@ -49,6 +49,7 @@ enum class AllianceType : int {
     TRIOTHEPANCH = 38, //!< トリオ・ザ・パンチ
     MEGADETH = 39, //!< 秘密結社メガデス
     KHORNE = 40, //!< 血の神コーン
+    SLAANESH = 41, //!< 快楽神スラーネッシュ
     MAX,
 };
 
