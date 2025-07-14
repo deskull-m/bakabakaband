@@ -16097,6 +16097,25 @@ D:  %.##.%  %.##.%
 D:  %....%  %....%  
 D:   %%%%    %%%%   
 
+N:776:GamingDickRoom
+X:18:8:14:14
+F:C:325:325
+F:c:32:325
+D:  %%%%%%%%%%  
+D: %..........% 
+D:%..CCCcCCCC.% 
+D:%.CC......c.% 
+D:%.C.......C..%
+D:%.c..[[&..CC.%
+D:%.C..&[[...c.%
+D:%.C..&..&..C.%
+D:%.C........C.%
+D:%.cC.....CCC.%
+D:%..CCC..CC...%
+D: %...CccC..%% 
+D:  %%......%   
+D:    %%%%%%    
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
