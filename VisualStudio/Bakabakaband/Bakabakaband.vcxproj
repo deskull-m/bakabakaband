@@ -253,6 +253,7 @@
     <ClCompile Include="..\..\src\action\travel-execution.cpp" />
     <ClCompile Include="..\..\src\action\tunnel-execution.cpp" />
     <ClCompile Include="..\..\src\action\weapon-shield.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-chinchintei.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp" />
@@ -1030,6 +1031,7 @@
     <ClInclude Include="..\..\src\action\open-close-execution.h" />
     <ClInclude Include="..\..\src\action\open-util.h" />
     <ClInclude Include="..\..\src\action\run-execution.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-chinchintei.h" />
     <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h" />
     <ClInclude Include="..\..\src\alliance\alliance-jural.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h" />

@@ -1,4 +1,5 @@
 #include "alliance/alliance.h"
+#include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khorne.h"
@@ -150,11 +151,6 @@ int AllianceUtumno::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 30);
     return impression;
-}
-
-int AllianceChinChinTei::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
 }
 
 int AllianceOdio::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const

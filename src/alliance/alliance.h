@@ -123,15 +123,6 @@ public:
     virtual ~AllianceUtumno() = default;
 };
 
-class AllianceChinChinTei : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceChinChinTei() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceChinChinTei() = default;
-};
-
 class AllianceOdio : public Alliance {
 public:
     using Alliance::Alliance;
