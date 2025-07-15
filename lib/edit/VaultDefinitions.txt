@@ -16116,6 +16116,24 @@ D: %...CccC..%%
 D:  %%......%   
 D:    %%%%%%    
 
+N:777:CorpseRoom
+X:18:8:14:14
+F:D:308:308
+D:    %%%%%%    
+D: % %DDDDDD% % 
+D:%D%%ffDDff%%D%
+D: %DDfDDDDfDD% 
+D:  %DDDDDDDD%  
+D:   %%fDDf%%   
+D: %  %fDDf%  % 
+D:%D%%DDDDDD%%D%
+D: %DDD%DD%DDD% 
+D:  %%ffDDff%%  
+D:  %%ffDDff%%  
+D: %DDDDDDDDDD% 
+D:%D%%%%%%%%%%D%
+D: %          % 
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
