@@ -40716,6 +40716,22 @@ S:BA_WATE | DARKNESS | BR_DARK | BR_ACID | BR_POIS | BR_NETH | BR_DISE |
 D:かつて強大な力を誇っていたグレーター・クラーケンの怨霊だ。
 D:$It is the vengeful spirit of the once powerful Greater Kraken.
 
+N:2246:取り立て人『HND△』
+E:Honda Sankakke, the Debt Collector
+G:t:o
+I:110:10d10:20:25:20
+W:0:2:0:0:0
+B:HIT:HURT:1d4
+B:HIT:HURT:1d4
+B:HIT:HURT:1d4
+B:HIT:HURT:1d4
+F:UNIQUE | MALE | EVIL | HAS_LITE_2 | HUMAN | WARRIOR
+F:FORCE_MAXHP | WILD_ALL | DROP_SKELETON | DROP_CORPSE
+F:DROP_1D2 | DROP_GOOD | EAT_POISONOUS | OPEN_DOOR | BASH_DOOR
+F:WILD_TOWN | WILD_ONLY | ONLY_ITEM | NASTY | HOMO_SEXUAL
+D:債務者の弱みにかこつけて、ホモセックスを要求する典型的な町のクズだ。
+D:$He's a typical town scumbag who takes advantage of debtors' weaknesses and demands homosexual sex.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
