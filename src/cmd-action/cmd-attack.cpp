@@ -194,12 +194,8 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
 
     const auto is_confused = effects->confusion().is_confused();
     const auto is_stunned = effects->stun().is_stunned();
-    if (is_female(monrace) && !(is_stunned || is_confused || is_hallucinated || !m_ptr->ml)) {
-        // @todo 「特定の武器を装備している」旨のメソッドを別途作る
-        constexpr auto zantetsu = FixedArtifactId::ZANTETSU;
-        const auto is_main_hand_zantetsu = player_ptr->inventory[INVEN_MAIN_HAND]->is_specific_artifact(zantetsu);
-        const auto is_sub_hand_zantetsu = player_ptr->inventory[INVEN_SUB_HAND]->is_specific_artifact(zantetsu);
-        if (is_main_hand_zantetsu || is_sub_hand_zantetsu) {
+    if (monrace.is_female() && !(is_stunned || is_confused || is_hallucinated || !m_ptr->ml)) {
+        if (player_ptr->is_wielding(FixedArtifactId::ZANTETSU)) {
             sound(SoundKind::ATTACK_FAILED);
             msg_print(_("拙者、おなごは斬れぬ！", "I can not attack women!"));
             return false;
@@ -213,17 +209,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     }
 
     if (!m_ptr->is_hostile() && !(is_stunned || is_confused || is_hallucinated || is_shero(player_ptr) || !m_ptr->ml)) {
-        constexpr auto stormbringer = FixedArtifactId::STORMBRINGER;
-        auto is_stormbringer = false;
-        if (player_ptr->inventory[INVEN_MAIN_HAND]->is_specific_artifact(stormbringer)) {
-            is_stormbringer = true;
-        }
-
-        if (player_ptr->inventory[INVEN_SUB_HAND]->is_specific_artifact(stormbringer)) {
-            is_stormbringer = true;
-        }
-
-        if (is_stormbringer) {
+        if (player_ptr->is_wielding(FixedArtifactId::STORMBRINGER)) {
             msg_format(_("黒い刃は強欲に%sを攻撃した！", "Your black blade greedily attacks %s!"), m_name.data());
             chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
             chg_virtue(player_ptr, Virtue::HONOUR, -1);
