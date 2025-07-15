@@ -4,6 +4,7 @@
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-megadeth.h"
+#include "alliance/alliance-odio.h"
 #include "alliance/alliance-shire.h"
 #include "alliance/alliance-shittodan.h"
 #include "alliance/alliance-slaanesh.h"
@@ -151,11 +152,6 @@ int AllianceUtumno::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 30);
     return impression;
-}
-
-int AllianceOdio::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
 }
 
 int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const

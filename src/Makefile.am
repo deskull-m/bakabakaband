@@ -23,6 +23,7 @@ hengband_SOURCES = \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
 	alliance/alliance-shire.cpp alliance/alliance-shire.h \
 	alliance/alliance-shittodan.cpp alliance/alliance-shittodan.h \
+	alliance/alliance-odio.cpp alliance/alliance-odio.h \
 	alliance/alliance-tophamhatt.cpp alliance/alliance-tophamhatt.h \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
