@@ -16134,6 +16134,24 @@ D: %DDDDDDDDDD%
 D:%D%%%%%%%%%%D%
 D: %          % 
 
+N:778:BloodPool
+X:18:8:14:21
+F:B:296:296
+F:b:297:297
+D:         %%%         
+D:   %%%%%%...%%%%%%   
+D:  %...............%  
+D:  %..bbbbb.bbbbb..%  
+D: %..bbbbbbbbbbbbb..% 
+D: %.bb&....b....&bb.% 
+D:%..bb...BBBBB...bb..%
+D:%..bb.bBbBBBbBb.bb..%
+D: %.bb..bBbBbBb..bb.% 
+D: %.bb&...bBb...&bb.% 
+D: %..bbbb.....bbbb..% 
+D:  %....bbbbbbb....%  
+D:   %%%.........%%%   
+D:      %%%%%%%%%      
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
