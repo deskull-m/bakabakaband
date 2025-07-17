@@ -16153,6 +16153,33 @@ D:  %....bbbbbbb....%
 D:   %%%.........%%%   
 D:      %%%%%%%%%      
 
+N:779:SwampAndForest
+X:18:8:23:14
+F:S:194:194
+D:     %%%%     
+D:    %SSSS%    
+D:   %%SSSS%%   
+D:  %SSSSSSSS%  
+D:  %SS::::SS%  
+D:  %SS&::&SS%  
+D: %SS::[[::SS% 
+D: %SS:&::&:SS% 
+D: %SSS::::SSS% 
+D: %SSS::::SSS% 
+D:%SSSSSSSSSSSS%
+D:%SSSSSSSSSSSS%
+D: %SS::SS::SS% 
+D:%SSS::SS::SSS%
+D:%SS:&::::&:SS%
+D:%SS:::[[:::SS%
+D: %S::::::::S% 
+D: %SSSSSSSSSS% 
+D: %SSSSSSSSSS% 
+D: %::SS::SS::% 
+D:  %::S::S::%  
+D:   %::::::%   
+D:    %%%%%%    
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
