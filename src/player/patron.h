@@ -2,7 +2,9 @@
 
 #include "locale/localized-string.h"
 #include "system/angband.h"
+#include "system/enums/monrace/monrace-id.h"
 #include <string>
+#include <tl/optional.hpp>
 #include <vector>
 
 #define MAX_PATRON 18 /*!< カオスパトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
@@ -62,6 +64,7 @@ class Patron {
 public:
     LocalizedString name; //!< パトロン名
     Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat);
+    Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat, MonraceId monrace_id);
 
     // @note C4458 クラスメンバーの隠蔽 への対応として末尾に「_」を付ける.
     void gain_level_reward(PlayerType *player_ptr_, int chosen_reward);
@@ -71,6 +74,7 @@ private:
     PlayerType *player_ptr = nullptr; //!< プレイヤー参照ポインタ
     std::vector<patron_reward> reward_table; //!< 報酬テーブル
     player_ability_type boost_stat; //!< 強化能力値傾向
+    tl::optional<MonraceId> monrace_id = tl::nullopt; //!< パトロンのモンスターID
 };
 
 extern std::vector<Patron> patron_list;
