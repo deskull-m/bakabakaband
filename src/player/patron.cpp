@@ -30,6 +30,7 @@
 #include "status/base-status.h"
 #include "status/experience.h"
 #include "status/shape-changer.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
@@ -95,7 +96,7 @@ std::vector<Patron> patron_list = {
     Patron({ "コーン", "Khorne" },
         { REW_WRATH, REW_HURT_LOT, REW_HURT_LOT, REW_H_SUMMON, REW_H_SUMMON, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_SER_MONS, REW_SER_DEMO, REW_POLY_SLF,
             REW_POLY_WND, REW_HEAL_FUL, REW_GOOD_OBJ, REW_GOOD_OBJ, REW_CHAOS_WP, REW_GOOD_OBS, REW_GOOD_OBS, REW_GREA_OBJ, REW_GREA_OBS },
-        A_STR),
+        A_STR, MonraceId::KHORNE),
 
     Patron({ "スラーネッシュ", "Slaanesh" },
         { REW_WRATH, REW_PISS_OFF, REW_PISS_OFF, REW_RUIN_ABL, REW_LOSE_ABL, REW_LOSE_EXP, REW_IGNORE, REW_IGNORE, REW_POLY_WND, REW_SER_DEMO, REW_POLY_SLF,
@@ -132,6 +133,14 @@ Patron::Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, 
     : name(std::move(name))
     , reward_table(std::move(reward_table))
     , boost_stat(boost_stat)
+{
+}
+
+Patron::Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat, MonraceId monrace_id)
+    : name(std::move(name))
+    , reward_table(std::move(reward_table))
+    , boost_stat(boost_stat)
+    , monrace_id(monrace_id)
 {
 }
 
