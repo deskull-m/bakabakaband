@@ -16180,6 +16180,25 @@ D:  %::S::S::%
 D:   %::::::%   
 D:    %%%%%%    
 
+N:780:OrganicRoom
+X:18:8:14:24
+F:B:250:250
+D:   %%%%%%%%  %%%%%%%%   
+D:  %........%%........%  
+D:  %.BBBBBB....BBBBBB.%  
+D: %..B....BB..BB....B..% 
+D:%..BB.@...BBBB...@.BB..%
+D:%.BB.....ffBBff.....BB.%
+D:%.BB.....BffffB.....BB.%
+D:%......BBBf[[fBBB......%
+D:%.BB..BBBBBBBBBBBB..BB.%
+D:%..BB.BBBBB..BBBBB.BB..%
+D: %..BBB..........BBB..% 
+D:  %..................%  
+D:   %...%%%%%%%%%%...%   
+D:    %%%          %%%    
+
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
