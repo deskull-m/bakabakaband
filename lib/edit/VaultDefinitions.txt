@@ -16234,6 +16234,24 @@ D: LLLL           LLLL
 D: LLL             LLL 
 D:                     
 
+N:783:Lode
+X:18:8:14:26
+F:M:52:52
+D:    %%%%%%%%%%%%%%%%      
+D:  %%................%     
+D: %......MMMMMMMMM....%    
+D:%..MMMMMMMMMMMMMMMM...%   
+D:%.MMMMMMMMMMMMMMMMMM...%  
+D:%.MMMMMMMMMMMMMMMMMMM...% 
+D:%.MMMMMMMMMMMMMMMMMMMM..% 
+D:%..MMMMMMMMMMMMMMMMMMMM..%
+D: %.....MMMMMMMMMMMMMMMMM.%
+D:  %%.........MMMMMMMMMMM.%
+D:    %..........MMMMMMMMM.%
+D:     %%%%.......MMMMMM...%
+D:         %%%%%%........%% 
+D:               %%%%%%%%   
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
