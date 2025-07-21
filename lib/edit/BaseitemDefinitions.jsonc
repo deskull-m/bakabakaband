@@ -79,7 +79,7 @@
     },
     "symbol": {
       "character": ",",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 80,
@@ -114,7 +114,7 @@
     },
     "symbol": {
       "character": ",",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 80,
@@ -989,7 +989,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 20,
@@ -1064,7 +1064,7 @@
     },
     "symbol": {
       "character": "|",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 23,
@@ -1699,7 +1699,7 @@
     },
     "symbol": {
       "character": "|",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 23,
@@ -1736,7 +1736,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1774,7 +1774,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1811,7 +1811,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1886,7 +1886,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1923,7 +1923,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1997,7 +1997,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -2035,7 +2035,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -2521,7 +2521,7 @@
     },
     "symbol": {
       "character": "/",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 22,
@@ -3744,7 +3744,7 @@
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 36,
@@ -4523,7 +4523,7 @@
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 35,
@@ -5297,7 +5297,7 @@
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -6168,7 +6168,7 @@
     },
     "symbol": {
       "character": "\"",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 40,
@@ -8318,7 +8318,7 @@
     },
     "symbol": {
       "character": "!",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 75,
@@ -9543,7 +9543,7 @@
     },
     "symbol": {
       "character": "!",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 75,
@@ -9793,7 +9793,7 @@
     },
     "symbol": {
       "character": "-",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 65,
@@ -12303,7 +12303,7 @@
     },
     "symbol": {
       "character": "&",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 7,
@@ -12695,7 +12695,7 @@
     },
     "symbol": {
       "character": "-",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 66,
@@ -13975,7 +13975,7 @@
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 94,
@@ -14010,7 +14010,7 @@
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 94,
@@ -14395,7 +14395,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -14982,6 +14982,7 @@
       "RES_SOUND",
       "RES_DISEN",
       "RES_CONF",
+      "RES_TIME",
       "ACTIVATE",
       "IGNORE_ACID",
       "IGNORE_ELEC",
@@ -15591,7 +15592,7 @@
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -15739,7 +15740,7 @@
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -16626,7 +16627,7 @@
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -16665,7 +16666,7 @@
     },
     "symbol": {
       "character": "]",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 33,
@@ -17678,7 +17679,7 @@
     },
     "symbol": {
       "character": "[",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 37,
@@ -17823,7 +17824,7 @@
     },
     "symbol": {
       "character": "[",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 37,
@@ -18885,7 +18886,7 @@
     },
     "symbol": {
       "character": "]",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 32,
@@ -18990,7 +18991,7 @@
     },
     "symbol": {
       "character": "[",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 37,
@@ -19276,7 +19277,7 @@
     },
     "symbol": {
       "character": "`",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 9,
@@ -19556,7 +19557,7 @@
     },
     "symbol": {
       "character": "~",
-      "color": "Dark Gray"
+      "color": "Black"
     },
     "itemkind": {
       "type_value": 10,
@@ -22056,7 +22057,7 @@
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 36,
@@ -22350,7 +22351,7 @@
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 36,
@@ -22793,7 +22794,7 @@
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 107,
@@ -22833,7 +22834,7 @@
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 107,
@@ -25982,7 +25983,7 @@
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -27581,7 +27582,7 @@
     },
     "symbol": {
       "character": " ",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 109,
