@@ -353,16 +353,5 @@ public:
     virtual ~AllianceGaichi() = default;
 };
 
-class AllianceLegendOfSavior : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceLegendOfSavior() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    bool isAnnihilated() override;
-    virtual ~AllianceLegendOfSavior() = default;
-    void panishment(PlayerType &player_ptr) override;
-};
-
 extern const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list;
 extern const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression;
