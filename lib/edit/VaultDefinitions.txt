@@ -16216,6 +16216,24 @@ D:   %'.....'%
 D:   %'$.%.$'%   
 D:    %%% %%%    
 
+N:782:SpiderNetRoom
+X:18:8:14:21
+F:L:255:255
+D:                     
+D: LLL      L      LLL 
+D:  LLLL   LLL   LLLL  
+D:   LLLLLLLLLLLLLLL   
+D:     LLL##L##LLL     
+D:      LL#####LL      
+D:  LLLLLLLL#LLLLLLLL  
+D:     LLLLL#LLLLL     
+D:    LLLLLL#LLLLLL    
+D:   LLLLL LLL LLLLL   
+D:  .LLLL       LLLL.  
+D: LLLL           LLLL 
+D: LLL             LLL 
+D:                     
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
