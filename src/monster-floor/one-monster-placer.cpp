@@ -256,6 +256,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     m_ptr->mflag.clear();
     m_ptr->mflag2.clear();
+    m_ptr->current_floor_ptr = player_ptr->current_floor_ptr;
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
