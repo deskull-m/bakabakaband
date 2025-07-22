@@ -451,9 +451,9 @@ void MonsterEntity::set_hostile()
 
     this->mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
 
-    if(this->alliance_idx != AllianceType::NONE) {
-        for(auto &monster : this->current_floor_ptr->m_list) {
-            if(monster.alliance_idx == this->alliance_idx) {
+    if (this->alliance_idx != AllianceType::NONE) {
+        for (auto &monster : this->current_floor_ptr->m_list) {
+            if (monster.alliance_idx == this->alliance_idx) {
                 monster.mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
             }
         }
