@@ -121,6 +121,11 @@ bool Alliance::isAnnihilated()
     return false;
 }
 
+bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
+{
+    return false;
+}
+
 int AllianceNone::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;

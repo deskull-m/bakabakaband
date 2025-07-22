@@ -69,6 +69,7 @@ public:
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
+    virtual bool isFriendly(PlayerType *creature_ptr) const;
     virtual int calcImpressionPoint(PlayerType *creature_ptr) const = 0;
     virtual ~Alliance() = default;
     int64_t AnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
