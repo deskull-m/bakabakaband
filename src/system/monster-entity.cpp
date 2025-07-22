@@ -1,4 +1,5 @@
 #include "system/monster-entity.h"
+#include "alliance/alliance.h"
 #include "core/speed-table.h"
 #include "game-option/birth-options.h"
 #include "monster-race/race-kind-flags.h"
@@ -561,13 +562,14 @@ std::string MonsterEntity::build_looking_description(bool needs_attitude) const
     const auto attitude = needs_attitude ? this->build_attitude_description() : "";
     const std::string clone(this->mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
     const auto &apparent_monrace = this->get_appearance_monrace();
+    const std::string alliance_name = alliance_list.at(this->alliance_idx)->name;
     if ((apparent_monrace.r_tkills > 0) && this->mflag2.has_not(MonsterConstantFlagType::KAGE)) {
-        constexpr auto fmt = _("レベル%d, %s%s%s", "Level %d, %s%s%s");
-        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data());
+        constexpr auto fmt = _("レベル%d, %s%s%s(%s)", "Level %d, %s%s%s(%s)");
+        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_name.data());
     }
 
-    constexpr auto fmt = _("レベル???, %s%s%s", "Level ???, %s%s%s");
-    return format(fmt, description.data(), attitude.data(), clone.data());
+    constexpr auto fmt = _("レベル???, %s%s%s(%s)", "Level ???, %s%s%s(%s)");
+    return format(fmt, description.data(), attitude.data(), clone.data(), alliance_name.data());
 }
 
 std::string MonsterEntity::build_damage_description() const
