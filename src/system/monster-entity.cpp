@@ -7,6 +7,7 @@
 #include "monster/monster-status.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
@@ -449,6 +450,14 @@ void MonsterEntity::set_hostile()
     }
 
     this->mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+
+    if (this->alliance_idx != AllianceType::NONE) {
+        for (auto &monster : this->current_floor_ptr->m_list) {
+            if (monster.alliance_idx == this->alliance_idx) {
+                monster.mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+            }
+        }
+    }
 }
 
 /*
