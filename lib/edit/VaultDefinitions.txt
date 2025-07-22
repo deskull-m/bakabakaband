@@ -16252,6 +16252,29 @@ D:     %%%%.......MMMMMM...%
 D:         %%%%%%........%% 
 D:               %%%%%%%%   
 
+N:784:HugeTree
+X:18:8:19:18
+F:W:262:262
+D:        %%        
+D:       %..%       
+D:      %%..%%      
+D:     %.%..%.%     
+D:     %.%..%.%     
+D:  %%%..::::..%%%  
+D: %....:....:....% 
+D: %..::.WWWW.::..% 
+D: %.:.WWWWWWWW.:.% 
+D:%..:WWWWWWWWWW:..%
+D:%...WWWWWWWWWW...%
+D:%..:WWWWWWWWWW:..%
+D: %.:.WWWWWWWW.:.% 
+D: %..:WWWWWWWW:..% 
+D: %...:WWWWWW:...% 
+D: %.%.::::::::.%.% 
+D:  % %%.::::.%% %  
+D:      %%::%%      
+D:        %%        
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
