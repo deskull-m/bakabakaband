@@ -114,7 +114,7 @@ public:
     bool inside_arena = false; /* Is character inside on_defeat_arena_monster? */
 
     std::vector<town_vault> vault_list;
-    AllianceType allianceID;
+    AllianceType allianceID = AllianceType::NONE; /*!< 現在のアライアンスID / Current alliance ID */
     int get_level() const;
     Grid &get_grid(const Pos2D pos);
     const Grid &get_grid(const Pos2D pos) const;

@@ -417,6 +417,8 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
 
     DungeonData dd({ floor.height, floor.width });
     auto &dungeon = floor.get_dungeon_definition();
+    floor.allianceID = dungeon.alliance_idx;
+
     constexpr auto chance_empty_floor = 24;
     if (ironman_empty_levels || (dungeon.flags.has(DungeonFeatureType::ARENA) && (empty_levels && one_in_(chance_empty_floor)))) {
         dd.empty_level = true;
