@@ -40748,6 +40748,23 @@ S:SHOOT
 D:$It is the main AT of Gilgames Army and the weapon for 'VOTOMS' worn out along with human lives in the Hundred Years War.
 D:ギルガメス軍の主力ATにして、百年戦争で人命と共に損耗された最低の兵器だ。
 
+N:2248:旗本奴
+E:Hatamoto Yakko
+G:p:u
+I:110:19d10:35:70:4
+W:15:4:0:240:0:0
+B:SLASH:HURT:3d6
+B:SLASH:HURT:3d6
+B:SLASH:HURT:3d6
+B:SLASH:HURT:3d6
+F:MALE | HAS_LITE_1 | SAMURAI | ROGUE
+F:DROP_1D2 | WILD_ALL | DROP_SKELETON | DROP_CORPSE | HUMAN
+F:OPEN_DOOR | BASH_DOOR | EAT_GIVE_STR | EAT_LOSE_INT | EAT_LOSE_WIS
+D:覇府となった徳川幕府の元和偃武の秩序の中に組み入れられながらも、
+D:なおかぶき者の装いを捨てないならず者の下級武士だ。
+D:$He was a low-ranking samurai who was incorporated into the Genwa order of the Tokugawa Shogunate,
+D:$ which had become the supreme government, but still did not abandon his eccentric appearance.
+
 
 # N: serial number : monster name
 # G: symbol : color
