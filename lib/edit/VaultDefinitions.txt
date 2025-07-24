@@ -16275,6 +16275,24 @@ D:  % %%.::::.%% %
 D:      %%::%%      
 D:        %%        
 
+N:785:BarbedWireMeshNet
+X:18:8:14:21
+F:L:251:251
+D:   %%                
+D:  %..%%              
+D: %.....%%            
+D:%..LLL...%           
+D:%.LL.LLL..%%         
+D:%.L....LL...%%       
+D:%.L.&.&.LL....%      
+D:%.L......LLLL..%%    
+D:%.L..&......LL...%   
+D:%.LLL...&..&.LL...%% 
+D:%...LL........LL....%
+D: %...LLLLLLLLLL.....%
+D:  %%...............% 
+D:    %%%%%%%%%%%%%%%  
+
 
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
