@@ -115,7 +115,7 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
     auto is_drop_corpse = one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
-    is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON });
+    is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON, MonsterDropType::DROP_JUNK });
     is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->r_idx == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
     if (!is_drop_corpse) {
         return;
@@ -154,6 +154,12 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
 #ifndef WIN_DEBUG
         throw;
 #endif
+    }
+
+    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_JUNK)) {
+        ItemEntity item_junk({ ItemKindType::MONSTER_REMAINS, SV_JUNK });
+        item_junk.pval = enum2i(md_ptr->m_ptr->r_idx);
+        (void)drop_near(player_ptr, item_junk, md_ptr->get_position());
     }
 }
 

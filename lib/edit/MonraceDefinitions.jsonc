@@ -143965,7 +143965,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "ROBOT"
+        "ROBOT",
+        "DROP_JUNK"
     ]
 }]
 }
