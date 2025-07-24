@@ -143912,5 +143912,60 @@
         "NASTY",
         "HOMO_SEXUAL"
     ]
+},
+{
+    "id": 2247,
+    "name": {
+        "ja": "スコープドッグ",
+        "en": "Scoop dog"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Green"
+    },
+    "speed": -1,
+    "hit_point": "20d12",
+    "vision": 12,
+    "armor_class": 50,
+    "alertness": 10,
+    "level": 26,
+    "rarity": 2,
+    "exp": 130,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "1d20"
+        }
+    ],
+    "skill": {
+        "shoot": "5d5",
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "ギルガメス軍の主力ATにして、百年戦争で人命と共に損耗された最低の兵器だ。",
+        "en": "It is the main AT of Gilgames Army and the weapon for 'VOTOMS' worn out along with human lives in the Hundred Years War."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "FRIENDS",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "ROBOT"
+    ]
 }]
 }
