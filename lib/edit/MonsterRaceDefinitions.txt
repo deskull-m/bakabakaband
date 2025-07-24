@@ -40742,7 +40742,7 @@ B:SHOOT:HURT:5d5
 F:PREVENT_SUDDEN_MAGIC | 
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | FRIENDS
-F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | ROBOT
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | ROBOT | DROP_JUNK
 S:1_IN_3 | 
 S:SHOOT
 D:$It is the main AT of Gilgames Army and the weapon for 'VOTOMS' worn out along with human lives in the Hundred Years War.

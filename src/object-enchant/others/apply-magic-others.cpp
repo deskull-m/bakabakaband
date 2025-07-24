@@ -131,6 +131,7 @@ void OtherItemsEnchanter::generate_corpse()
     const std::unordered_map<int, MonsterDropType> match = {
         { SV_SKELETON, MonsterDropType::DROP_SKELETON },
         { SV_CORPSE, MonsterDropType::DROP_CORPSE },
+        { SV_JUNK, MonsterDropType::DROP_JUNK },
     };
 
     get_mon_num_prep_enum(this->player_ptr, MonraceHook::FIGURINE);

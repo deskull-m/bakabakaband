@@ -420,6 +420,7 @@ const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = 
     { "DROP_GREAT", MonsterDropType::DROP_GREAT },
     { "DROP_CORPSE", MonsterDropType::DROP_CORPSE },
     { "DROP_SKELETON", MonsterDropType::DROP_SKELETON },
+    { "DROP_JUNK", MonsterDropType::DROP_JUNK },
     { "DROP_60", MonsterDropType::DROP_60 },
     { "DROP_90", MonsterDropType::DROP_90 },
     { "DROP_1D2", MonsterDropType::DROP_1D2 },
