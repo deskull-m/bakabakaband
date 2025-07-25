@@ -143968,5 +143968,69 @@
         "ROBOT",
         "DROP_JUNK"
     ]
+},
+{
+    "id": 2248,
+    "name": {
+        "ja": "旗本奴",
+        "en": "Hatamoto Yakko"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "19d10",
+    "vision": 35,
+    "armor_class": 70,
+    "alertness": 4,
+    "level": 15,
+    "rarity": 4,
+    "exp": 240,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        }
+    ],
+    "flavor": {
+        "ja": "覇府となった徳川幕府の元和偃武の秩序の中に組み入れられながらも、なおかぶき者の装いを捨てないならず者の下級武士だ。",
+        "en": "He was a low-ranking samurai who was incorporated into the Genwa order of the Tokugawa Shogunate, which had become the supreme government, but still did not abandon his eccentric appearance."
+    },
+    "sex": "MALE",
+    "flags": [
+        "HAS_LITE_1",
+        "SAMURAI",
+        "ROGUE",
+        "DROP_1D2",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "HUMAN",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EAT_GIVE_STR",
+        "EAT_LOSE_INT",
+        "EAT_LOSE_WIS"
+    ]
 }]
 }
