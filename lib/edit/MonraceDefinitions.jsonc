@@ -118818,6 +118818,7 @@
         "ja": "「百年前の民も、百年後の民も、「神州無敵」と問われて答えるのは、麻呂の名であろう」吉備津彦命とも呼ばれる桃太郎卿は、日ノ本の秩序の源『覇府』との盟で不老を得た最強の剣士だ。"
     },
     "sex": "MALE",
+    "alliance": "HAFU",
     "flags": [
         "UNIQUE",
         "DROP_CORPSE",
@@ -119707,6 +119708,7 @@
     "flavor": {
         "ja": "覇府となった徳川幕府が城に飼いならす、一国を滅ぼすほどの毒を蓄えた巨大な怪鳥だ。"
     },
+    "alliance": "HAFU",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -124476,6 +124478,8 @@
         "ja": "覇府となった徳川幕府の先兵、全身の皮膚を削ぎ落とした「剥き人」となり力士の姿の生き甲冑を身に着けた江戸のサイボーグたちだ。"
     },
     "sex": "MALE",
+    "alliance": "HAFU",
+    "mob": 400,
     "flags": [
         "WEIRD_MIND",
         "BASH_DOOR",
@@ -144017,6 +144021,8 @@
         "en": "He was a low-ranking samurai who was incorporated into the Genwa order of the Tokugawa Shogunate, which had become the supreme government, but still did not abandon his eccentric appearance."
     },
     "sex": "MALE",
+    "alliance": "HAFU",
+    "mob": 1200,
     "flags": [
         "HAS_LITE_1",
         "SAMURAI",
