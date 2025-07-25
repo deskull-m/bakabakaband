@@ -1,6 +1,7 @@
 #include "alliance/alliance.h"
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-fangfamily.h"
+#include "alliance/alliance-hafu.h"
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-legendofsavior.h"
@@ -65,6 +66,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::MEGADETH, std::make_unique<AllianceMegadeth>(AllianceType::MEGADETH, "MEGADETH", _("秘密結社メガデス", "Secret Society Megadeth"), 4000L) },
     { AllianceType::KHORNE, std::make_unique<AllianceKhorne>(AllianceType::KHORNE, "KHORNE", _("血の神コーン", "Khorne, the Blood God"), 18000000L) },
     { AllianceType::SLAANESH, std::make_unique<AllianceSlaanesh>(AllianceType::SLAANESH, "SLAANESH", _("快楽神スラーネッシュ", "Slaanesh, the Prince of Pleasure"), 18000000L) },
+    { AllianceType::HAFU, std::make_shared<AllianceHafu>(AllianceType::HAFU, "HAFU", _("覇府", "Hafu"), 5000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

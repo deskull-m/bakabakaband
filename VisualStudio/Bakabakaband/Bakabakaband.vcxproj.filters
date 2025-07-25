@@ -2586,6 +2586,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-legendofsavior.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hafu.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5602,6 +5605,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-legendofsavior.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hafu.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

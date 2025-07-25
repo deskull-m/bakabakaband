@@ -50,6 +50,7 @@ enum class AllianceType : int {
     MEGADETH = 39, //!< 秘密結社メガデス
     KHORNE = 40, //!< 血の神コーン
     SLAANESH = 41, //!< 快楽神スラーネッシュ
+    HAFU = 42, //!< 覇府
     MAX,
 };
 
