@@ -2888,7 +2888,7 @@ void check_experience(PlayerType *player_ptr)
          * 呼ばれるので順番を最後にする。
          */
         if (level_reward) {
-            patron_list[player_ptr->chaos_patron].gain_level_reward(player_ptr, 0);
+            patron_list[player_ptr->patron].gain_level_reward(player_ptr, 0);
             level_reward = false;
         }
 

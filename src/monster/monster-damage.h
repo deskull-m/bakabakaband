@@ -25,7 +25,7 @@ private:
     bool *fear;
     AttributeFlags attribute_flags{};
     void get_exp_from_mon(const MonsterEntity &monster, int exp_dam);
-    bool genocide_chaos_patron();
+    bool genocide_patron();
     bool process_dead_exp_virtue(std::string_view note, const MonsterEntity &exp_mon);
     void death_special_flag_monster();
     void increase_kill_numbers();

@@ -352,7 +352,7 @@ static void set_virtues(PlayerType *player_ptr)
 static void rd_timed_effects(PlayerType *player_ptr)
 {
     set_timed_effects(player_ptr);
-    player_ptr->chaos_patron = rd_s16b();
+    player_ptr->patron = rd_s16b();
     set_mutations(player_ptr);
     set_virtues(player_ptr);
 }

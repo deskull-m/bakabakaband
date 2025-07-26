@@ -165,7 +165,7 @@ public:
 #define COMMAND_ARG_REST_FULL_HEALING -1 /*!<休憩コマンド引数 … HPとMPが全回復するまで */
     GAME_TURN resting{}; /* Current counter for resting, if any */
 
-    int16_t chaos_patron{};
+    int16_t patron{};
 
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */

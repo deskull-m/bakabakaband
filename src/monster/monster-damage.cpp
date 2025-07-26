@@ -96,7 +96,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
     const auto exp_mon = monster.clone();
     auto exp_dam = (monster.hp > this->dam) ? this->dam : monster.hp;
     this->get_exp_from_mon(exp_mon, exp_dam);
-    if (this->genocide_chaos_patron()) {
+    if (this->genocide_patron()) {
         return true;
     }
 
@@ -118,7 +118,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
     return false;
 }
 
-bool MonsterDamageProcessor::genocide_chaos_patron()
+bool MonsterDamageProcessor::genocide_patron()
 {
     const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
     if (!monster.is_valid()) {

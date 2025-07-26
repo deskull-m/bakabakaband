@@ -74,7 +74,7 @@ constexpr std::array debug_menu_table = {
     std::make_tuple('O', _("オプション設定をダンプ", "Dump current options")),
     std::make_tuple('p', _("ショート・テレポート", "Phase door")),
     std::make_tuple('P', _("プレイヤー設定変更メニュー", "Modify player configurations")),
-    std::make_tuple('r', _("カオスパトロンの報酬", "Get reward of chaos patron")),
+    std::make_tuple('r', _("パトロンの報酬", "Get reward of patron")),
     std::make_tuple('R', _("部屋生成", "Generate room")),
     std::make_tuple('s', _("フロア相当のモンスター生成", "Generate monster which be in target depth")),
     std::make_tuple('S', _("フロア相当のモンスター召喚", "Summon monster which be in target depth")),
@@ -211,7 +211,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_generate_room(player_ptr, command_arg);
         return true;
     case 'r':
-        patron_list[player_ptr->chaos_patron].gain_level_reward(player_ptr, command_arg);
+        patron_list[player_ptr->patron].gain_level_reward(player_ptr, command_arg);
         return true;
     case 'n':
         wiz_summon_specific_monster(player_ptr, i2enum<MonraceId>(command_arg));
