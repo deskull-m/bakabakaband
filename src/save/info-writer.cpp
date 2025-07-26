@@ -189,7 +189,7 @@ void save_quick_start(void)
         wr_s16b((int16_t)previous_char.player_hp[i]);
     }
 
-    wr_s16b(previous_char.chaos_patron);
+    wr_s16b(previous_char.patron);
     for (int i = 0; i < 8; i++) {
         wr_s16b(enum2i(previous_char.vir_types[i]));
     }

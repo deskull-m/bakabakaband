@@ -3401,8 +3401,8 @@ Oremor nhoj いならなばねさ倒を私はにつ勝でムーゲのこ。
 #Z. says: Couldn't we just sit down and talk about it over a couple of beers?
 「それについては、座ってビールを飲みながら話しませんか？」--- R.ゼラズニイ
 #Z. says: Somewhere there must be a gap in the icy blue logic that surrounds us.
-#Chaos patrons are *very* moody!
-カオス守護魔神はとても気まぐれだ！
+#Patrons are *very* moody!
+カオスパトロンはとても気まぐれだ！
 #You gonna meet unique personalities who are even more than a challenge.
 個性的なヤツらに会いに行くのは、挑戦的だ。
 #To be at cross-purposes over your ways with uniques might prove fatal.
@@ -3755,8 +3755,8 @@ Oremor nhoj いならなばねさ倒を私はにつ勝でムーゲのこ。
 ここにある噂のほとんどは、よりレアな馬鹿馬鹿蛮怒のモンスターに関する噂だ。
 #Such a Blade of Chaos (chaotic) is quite a rare and precious finding.
 このようなカオスブレード(混沌)は実にレアで貴重な代物だ。
-#Isn't it a scandal that chaos patrons mostly grant inferior weapon gifts?
-カオスパトロンがほとんど粗悪な武器をくれるという事はスキャンダルな事じゃないかな？
+#Isn't it a scandal that patrons mostly grant inferior weapon gifts?
+パトロンがほとんど粗悪な武器をくれるという事はスキャンダルな事じゃないかな？
 #Precious Blades of Chaos (6d5) are won by defeating a Bloodletter's platoon.
 貴重なカオスブレード(6d5)は血戮悪魔の集団を打ち倒せば獲得する事が出来る。
 #Nether and Life draining are not just the same, as by breath or by touching?

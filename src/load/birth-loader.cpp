@@ -35,7 +35,7 @@ void load_quick_start(void)
         previous_char.player_hp[i] = rd_s16b();
     }
 
-    previous_char.chaos_patron = rd_s16b();
+    previous_char.patron = rd_s16b();
 
     for (int i = 0; i < 8; i++) {
         previous_char.vir_types[i] = i2enum<Virtue>(rd_s16b());
