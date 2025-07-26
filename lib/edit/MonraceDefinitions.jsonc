@@ -70180,7 +70180,9 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "NONLIVING",
-        "RES_TELE"
+        "RES_TELE",
+        "HUMAN",
+        "ROBOT"
     ]
 },
 {
@@ -81478,6 +81480,7 @@
         "NONLIVING",
         "WEIRD_MIND",
         "EVIL",
+        "ROBOT",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -88838,7 +88841,8 @@
     },
     "sex": "MALE",
     "flags": [
-        "DROP_CORPSE",
+        "DROP_JUNK",
+        "ROBOT",
         "NONLIVING",
         "NO_FEAR",
         "FORCE_MAXHP",
@@ -110333,6 +110337,8 @@
         "IM_COLD",
         "IM_POIS",
         "RIDING",
+        "ROBOT",
+        "DROP_JUNK",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -124406,6 +124412,8 @@
         "IM_POIS",
         "IM_ACID",
         "IM_COLD",
+        "ROBOT",
+        "DROP_JUNK",
         "RES_NETH",
         "RES_WATE",
         "RES_PLAS",
@@ -131330,7 +131338,7 @@
     "flavor": {
         "ja": "ザレム地上監察局の実働組織、TUNEDが工作員ガリィの精神的不安定さと叛逆の可能性を厭って作った代替ロボット「ガリィ・レプリカ」だ。オリジナルがそれまでに見せてきた機甲術の忠実なコピーに成功しており、戦闘能力の安定性はオリジナル以上とされている。"
     },
-    "sex": "MALE",
+    "sex": "FEMALE",
     "mob": 9,
     "flags": [
         "DROP_CORPSE",
@@ -131338,7 +131346,8 @@
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GOOD",
-        "HUMAN",
+        "ROBOT",
+        "DROP_JUNK",
         "REFLECTING",
         "SMART",
         "REGENERATE",
@@ -134104,6 +134113,8 @@
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
+        "ROBOT",
+        "DROP_JUNK",
         "IM_POIS",
         "NONLIVING",
         "REFLECTING",
@@ -138018,6 +138029,8 @@
         "SPEAK_ALL",
         "WEIRD_MIND",
         "DIMINISH_MAX_DAMAGE",
+        "ROBOT",
+        "DROP_JUNK",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -139432,7 +139445,9 @@
         "CAN_SWIM",
         "COLD_BLOOD",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "ROBOT",
+        "DROP_JUNK"
     ]
 },
 {
@@ -142052,7 +142067,8 @@
         "BASH_DOOR",
         "IM_FIRE",
         "IM_COLD",
-        "GOLEM",
+        "ROBOT",
+        "DROP_JUNK",
         "IM_ELEC",
         "IM_POIS",
         "CAN_SWIM",
