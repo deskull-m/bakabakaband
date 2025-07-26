@@ -40768,6 +40768,20 @@ D:なおかぶき者の装いを捨てないならず者の下級武士だ。
 D:$He was a low-ranking samurai who was incorporated into the Genwa order of the Tokugawa Shogunate,
 D:$ which had become the supreme government, but still did not abandon his eccentric appearance.
 
+N:2249:なろう最低系主人公
+E:Haremlord OP-kun
+G:t:w
+I:110:1d2:4:1:40
+W:0:2:0:0:10:14
+B:PUNCH:HURT:1d1
+B:PUNCH:HURT:1d1
+F:WILD_TOWN | WILD_ONLY
+F:GOOD | RAND_25 | HUMAN | JOKE
+F:TAKE_ITEM | OPEN_DOOR | DROP_CORPSE | DROP_SKELETON
+D:なんてこった！社会性の多くを欠落した彼は、
+D:神から本来もらうはずのチート能力まで、この世界に来る前にもらい損ねた。
+D:$What a mess! Lacking many of the social skills he should have received from God,
+D:$ he even failed to receive his cheat abilities before coming to this world.
 
 # N: serial number : monster name
 # G: symbol : color
