@@ -16339,6 +16339,31 @@ D: %...####...%
 D:  %%......%%  
 D:    %%%%%%    
 
+N:788:ElectricalZone
+X:18:8:21:21
+F:4:1:1:MONSTER_300
+D:        %% %%        
+D:     %%%..%..%%%     
+D:   %%...........%%   
+D:  %.....4...4.....%  
+D:  %...4.IIIII.4...%  
+D: %....I.......I....% 
+D: %...4I..4.4..I4...% 
+D: %.4.II.4...4.II.4.% 
+D:%...III.......III...%
+D:%..IIII..[[[..IIII..%
+D: %.III....[....III.% 
+D: %.III.4.....4.III.% 
+D: %.4II4..4.4..4II4.% 
+D: %..II.........II..% 
+D: %..II..4...4..II..% 
+D:  %.4I.........I4.%  
+D:  %..II.......II..%  
+D:  %...IIIIIIIII...%  
+D:   %...4IIIII4...%   
+D:    %%%.......%%%    
+D:       %%%%%%%       
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
