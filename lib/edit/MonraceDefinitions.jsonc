@@ -9362,6 +9362,8 @@
         "ja": "<ティーンチ>の下僕の、叫ぶ醜い小型の悪魔だ。",
         "en": "An ugly screaming little demon servant of Tzeentch."
     },
+    "alliance": "TZEENTCH",
+    "mob": 2000,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -12197,6 +12199,8 @@
         "ja": "<ティーンチ>の下僕の、叫ぶ醜い小型の悪魔だ。",
         "en": "An ugly screaming little demon servant of Tzeentch."
     },
+    "alliance": "TZEENTCH",
+    "mob": 1000,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -22543,6 +22547,8 @@
         "ja": "変化と混沌の神<ティーンチ>の下僕だ。逆さになったキノコに似ていて、二本の柔軟な腕がある。",
         "en": "It looks like an inverted mushroom, with two flexible arms."
     },
+    "alliance": "TZEENTCH",
+    "mob": 500,
     "flags": [
         "BASH_DOOR",
         "IM_FIRE",
@@ -44543,6 +44549,8 @@
         "ja": "混沌の魔神<ティーンチ>の最も強力な手下だ。この悪魔は巨大な鳥のようで、頭部は肉食の猛禽類、羽根は幻想的な虹色に彩られている。（TRPG ウォーハンマー）",
         "en": "The most powerful of Tzeentch's servitors. This demon looks like a huge bird-like creature, with the head of a predatory bird and fantastically multi-coloured wings. "
     },
+    "alliance": "TZEENTCH",
+    "mob": 200,
     "flags": [
         "DEMON",
         "EVIL",
@@ -128890,6 +128898,8 @@
         "ja": "戦鎚世界の混沌神〈ティーンチ〉に選ばれた混沌の戦士だ。肉厚の装甲に包まれたその心身は主君の性質に触れ異形に歪み、奇妙な光を放っている。"
     },
     "sex": "MALE",
+    "alliance": "TZEENTCH",
+    "mob": 600,
     "flags": [
         "FORCE_MAXHP",
         "SMART",
