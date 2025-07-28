@@ -12,6 +12,7 @@
 #include "alliance/alliance-slaanesh.h"
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
+#include "alliance/alliance-tzeentch.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
@@ -67,6 +68,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::KHORNE, std::make_unique<AllianceKhorne>(AllianceType::KHORNE, "KHORNE", _("血の神コーン", "Khorne, the Blood God"), 18000000L) },
     { AllianceType::SLAANESH, std::make_unique<AllianceSlaanesh>(AllianceType::SLAANESH, "SLAANESH", _("快楽神スラーネッシュ", "Slaanesh, the Prince of Pleasure"), 18000000L) },
     { AllianceType::HAFU, std::make_shared<AllianceHafu>(AllianceType::HAFU, "HAFU", _("覇府", "Hafu"), 5000000L) },
+    { AllianceType::TZEENTCH, std::make_unique<AllianceSlaanesh>(AllianceType::TZEENTCH, "TZEENTCH", _("変幻の神ティーンチ", "Tzeentch, the God of change"), 18000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

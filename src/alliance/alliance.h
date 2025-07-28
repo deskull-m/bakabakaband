@@ -51,6 +51,7 @@ enum class AllianceType : int {
     KHORNE = 40, //!< 血の神コーン
     SLAANESH = 41, //!< 快楽神スラーネッシュ
     HAFU = 42, //!< 覇府
+    TZEENTCH = 43, //!< 変幻の神ティーンチ
     MAX,
 };
 
