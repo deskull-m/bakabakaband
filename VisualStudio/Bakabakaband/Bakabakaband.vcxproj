@@ -259,6 +259,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-legendofsavior.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-odio.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shire.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shittodan.cpp" />
@@ -1041,6 +1042,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-legendofsavior.h" />
     <ClInclude Include="..\..\src\alliance\alliance-jural.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-nibelung.h" />
     <ClInclude Include="..\..\src\alliance\alliance-odio.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shire.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shittodan.h" />

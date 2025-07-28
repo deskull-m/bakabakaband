@@ -5297,6 +5297,8 @@
         "en": "Night dwarfs collecting new riches for their master, Alberich. "
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
+    "mob": 3000,
     "flags": [
         "ROGUE",
         "FRIENDS",
@@ -19938,6 +19940,7 @@
         "en": "This tiny night dwarf is as greedy for gold as his brother, Alberich."
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -20014,6 +20017,7 @@
         "en": "Alberich's son, born of a mortal woman won with gold."
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -22204,6 +22208,7 @@
         "en": "Made invisible with his magic cap, the greedy dwarf plots for world domination through his riches."
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -131738,6 +131743,8 @@
         "ja": "より狡猾な財の集め方のために洗練された殺戮に長じたニーベルングだ。"
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
+    "mob": 100,
     "flags": [
         "ROGUE",
         "FRIENDS",
