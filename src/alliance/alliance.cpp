@@ -6,6 +6,7 @@
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-legendofsavior.h"
 #include "alliance/alliance-megadeth.h"
+#include "alliance/alliance-nibelung.h"
 #include "alliance/alliance-odio.h"
 #include "alliance/alliance-shire.h"
 #include "alliance/alliance-shittodan.h"
@@ -68,7 +69,8 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::KHORNE, std::make_unique<AllianceKhorne>(AllianceType::KHORNE, "KHORNE", _("血の神コーン", "Khorne, the Blood God"), 18000000L) },
     { AllianceType::SLAANESH, std::make_unique<AllianceSlaanesh>(AllianceType::SLAANESH, "SLAANESH", _("快楽神スラーネッシュ", "Slaanesh, the Prince of Pleasure"), 18000000L) },
     { AllianceType::HAFU, std::make_shared<AllianceHafu>(AllianceType::HAFU, "HAFU", _("覇府", "Hafu"), 5000000L) },
-    { AllianceType::TZEENTCH, std::make_unique<AllianceSlaanesh>(AllianceType::TZEENTCH, "TZEENTCH", _("変幻の神ティーンチ", "Tzeentch, the God of change"), 18000000L) },
+    { AllianceType::TZEENTCH, std::make_unique<AllianceTzeentch>(AllianceType::TZEENTCH, "TZEENTCH", _("変幻の神ティーンチ", "Tzeentch, the God of change"), 18000000L) },
+    { AllianceType::NIBELUNG, std::make_unique<AllianceNibelung>(AllianceType::NIBELUNG, "NIBELUNG", _("ニーベルングの王国", "Kingdom of Nibelung"), 18000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
