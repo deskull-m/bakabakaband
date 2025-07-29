@@ -5297,6 +5297,8 @@
         "en": "Night dwarfs collecting new riches for their master, Alberich. "
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
+    "mob": 3000,
     "flags": [
         "ROGUE",
         "FRIENDS",
@@ -9362,6 +9364,8 @@
         "ja": "<ティーンチ>の下僕の、叫ぶ醜い小型の悪魔だ。",
         "en": "An ugly screaming little demon servant of Tzeentch."
     },
+    "alliance": "TZEENTCH",
+    "mob": 2000,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -12197,6 +12201,8 @@
         "ja": "<ティーンチ>の下僕の、叫ぶ醜い小型の悪魔だ。",
         "en": "An ugly screaming little demon servant of Tzeentch."
     },
+    "alliance": "TZEENTCH",
+    "mob": 1000,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -16356,6 +16362,8 @@
         "en": "It is minor female demon, vaguely human-like, but with crab-like pincers instead of hands. She wears a rather indecent skimpy leather bikini, moves quickly and casts deadly spells!"
     },
     "sex": "FEMALE",
+    "alliance": "SLAANESH",
+    "mob": 1200,
     "flags": [
         "FORCE_MAXHP",
         "DROP_60",
@@ -19932,6 +19940,7 @@
         "en": "This tiny night dwarf is as greedy for gold as his brother, Alberich."
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -20008,6 +20017,7 @@
         "en": "Alberich's son, born of a mortal woman won with gold."
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -22198,6 +22208,7 @@
         "en": "Made invisible with his magic cap, the greedy dwarf plots for world domination through his riches."
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -22541,6 +22552,8 @@
         "ja": "変化と混沌の神<ティーンチ>の下僕だ。逆さになったキノコに似ていて、二本の柔軟な腕がある。",
         "en": "It looks like an inverted mushroom, with two flexible arms."
     },
+    "alliance": "TZEENTCH",
+    "mob": 500,
     "flags": [
         "BASH_DOOR",
         "IM_FIRE",
@@ -23377,6 +23390,8 @@
         "ja": "堕落と快楽の神<スラーネッシュ>のペットで、大きな蠍の尻尾と人間の顔、そして表皮は爬虫類のようだ。",
         "en": "Slaanesh's pet, a large scorpion-like creature with a human face and reptile skin."
     },
+    "alliance": "SLAANESH",
+    "mob": 1000,
     "flags": [
         "BASH_DOOR",
         "EVIL",
@@ -44539,6 +44554,8 @@
         "ja": "混沌の魔神<ティーンチ>の最も強力な手下だ。この悪魔は巨大な鳥のようで、頭部は肉食の猛禽類、羽根は幻想的な虹色に彩られている。（TRPG ウォーハンマー）",
         "en": "The most powerful of Tzeentch's servitors. This demon looks like a huge bird-like creature, with the head of a predatory bird and fantastically multi-coloured wings. "
     },
+    "alliance": "TZEENTCH",
+    "mob": 200,
     "flags": [
         "DEMON",
         "EVIL",
@@ -44632,6 +44649,8 @@
         "ja": "禁断の秘密を護るこの悪魔は、余分な腕をもった無毛のミノタウロスのようで、入墨と鼻輪で身を飾っている。この悪魔は堕落と快楽の神<スラーネッシュ>の邪悪な魔法の産物だ。（TRPG ウォーハンマー）",
         "en": "This demonic keeper of forbidden secrets looks like a hairless minotaur with extra arms, decorated with tattoos and nose rings. It is the embodiment of Slaanesh's perverted magic."
     },
+    "alliance": "SLAANESH",
+    "mob": 200,
     "flags": [
         "DEMON",
         "EVIL",
@@ -70174,7 +70193,9 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "NONLIVING",
-        "RES_TELE"
+        "RES_TELE",
+        "HUMAN",
+        "ROBOT"
     ]
 },
 {
@@ -81472,6 +81493,7 @@
         "NONLIVING",
         "WEIRD_MIND",
         "EVIL",
+        "ROBOT",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -88832,7 +88854,8 @@
     },
     "sex": "MALE",
     "flags": [
-        "DROP_CORPSE",
+        "DROP_JUNK",
+        "ROBOT",
         "NONLIVING",
         "NO_FEAR",
         "FORCE_MAXHP",
@@ -92980,8 +93003,8 @@
 {
     "id": 1440,
     "name": {
-        "ja": "牙一族",
-        "en": "Member of the Fang Family"
+        "ja": "牙一族の小男",
+        "en": "Small member of the Fang Family"
     },
     "symbol": {
         "character": "p",
@@ -93023,7 +93046,8 @@
         "probability": "1_IN_4"
     },
     "flavor": {
-        "ja": "華山群狼拳なる集団戦法を駆使する世紀末の蛮族だ。"
+        "ja": "華山群狼拳なる集団戦法を駆使する世紀末の蛮族だ。大男たちと連携して動く。",
+        "en": "They are a tribe of barbarians from the end of the century who utilize a group combat technique called “Kasan Gunrou Ken.” "
     },
     "sex": "MALE",
     "alliance": "FANG-FAMILY",
@@ -93079,6 +93103,10 @@
         {
             "escorts_id": 1440,
             "escort_num": "5d10"
+        },
+        {
+            "escorts_id": 2239,
+            "escort_num": "3d10"
         }
     ],
     "blows": [
@@ -108788,7 +108816,7 @@
         "color": "Brown"
     },
     "speed": 15,
-    "hit_point": "19d19",
+    "hit_point": "9d9",
     "vision": 20,
     "armor_class": 40,
     "alertness": 40,
@@ -108802,12 +108830,12 @@
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "6d5"
+            "damage_dice": "3d5"
         },
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "6d5"
+            "damage_dice": "3d5"
         }
     ],
     "flavor": {
@@ -108826,14 +108854,15 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "FRIENDS"
     ],
     "skill": {
         "list": [
             "SHRIEK",
             "CAUSE_2"
         ],
-        "probability": "1_IN_4"
+        "probability": "1_IN_7"
     }
 },
 {
@@ -110321,6 +110350,8 @@
         "IM_COLD",
         "IM_POIS",
         "RIDING",
+        "ROBOT",
+        "DROP_JUNK",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -118806,6 +118837,7 @@
         "ja": "「百年前の民も、百年後の民も、「神州無敵」と問われて答えるのは、麻呂の名であろう」吉備津彦命とも呼ばれる桃太郎卿は、日ノ本の秩序の源『覇府』との盟で不老を得た最強の剣士だ。"
     },
     "sex": "MALE",
+    "alliance": "HAFU",
     "flags": [
         "UNIQUE",
         "DROP_CORPSE",
@@ -118846,14 +118878,14 @@
         "character": "A",
         "color": "Orange"
     },
-    "speed": 10,
-    "hit_point": "100d40",
+    "speed": 0,
+    "hit_point": "19d19",
     "vision": 30,
-    "armor_class": 200,
+    "armor_class": 100,
     "alertness": 20,
     "level": 50,
-    "rarity": 5,
-    "exp": 18000,
+    "rarity": 20,
+    "exp": 10000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -118907,7 +118939,8 @@
         "CAN_FLY",
         "ANGEL",
         "NASTY",
-        "HOMO_SEXUAL"
+        "HOMO_SEXUAL",
+        "FORCE_MAXHP"
     ],
     "skill": {
         "list": [
@@ -119694,6 +119727,7 @@
     "flavor": {
         "ja": "覇府となった徳川幕府が城に飼いならす、一国を滅ぼすほどの毒を蓄えた巨大な怪鳥だ。"
     },
+    "alliance": "HAFU",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -122038,8 +122072,8 @@
 {
     "id": 1897,
     "name": {
-        "ja": "河童",
-        "en": "Kappa"
+        "ja": "浣腸河童",
+        "en": "Enema Kappa"
     },
     "symbol": {
         "character": "h",
@@ -122075,7 +122109,8 @@
         "AQUATIC",
         "WILD_ALL",
         "RES_WATE",
-        "HURT_FIRE"
+        "HURT_FIRE",
+        "NASTY"
     ]
 },
 {
@@ -124390,6 +124425,8 @@
         "IM_POIS",
         "IM_ACID",
         "IM_COLD",
+        "ROBOT",
+        "DROP_JUNK",
         "RES_NETH",
         "RES_WATE",
         "RES_PLAS",
@@ -124462,6 +124499,8 @@
         "ja": "覇府となった徳川幕府の先兵、全身の皮膚を削ぎ落とした「剥き人」となり力士の姿の生き甲冑を身に着けた江戸のサイボーグたちだ。"
     },
     "sex": "MALE",
+    "alliance": "HAFU",
+    "mob": 400,
     "flags": [
         "WEIRD_MIND",
         "BASH_DOOR",
@@ -128864,6 +128903,8 @@
         "ja": "戦鎚世界の混沌神〈ティーンチ〉に選ばれた混沌の戦士だ。肉厚の装甲に包まれたその心身は主君の性質に触れ異形に歪み、奇妙な光を放っている。"
     },
     "sex": "MALE",
+    "alliance": "TZEENTCH",
+    "mob": 600,
     "flags": [
         "FORCE_MAXHP",
         "SMART",
@@ -129079,6 +129120,8 @@
         "ja": "戦鎚世界の混沌神〈スラーネッシュ〉に選ばれた混沌の戦士だ。肉厚の装甲に包まれたその心身は主君の性質に触れ、美しくも卑猥な誘惑を周囲に振きながら、戦いという快楽に耽溺している。"
     },
     "sex": "MALE",
+    "alliance": "SLAANESH",
+    "mob": 700,
     "flags": [
         "FORCE_MAXHP",
         "SMART",
@@ -131310,7 +131353,7 @@
     "flavor": {
         "ja": "ザレム地上監察局の実働組織、TUNEDが工作員ガリィの精神的不安定さと叛逆の可能性を厭って作った代替ロボット「ガリィ・レプリカ」だ。オリジナルがそれまでに見せてきた機甲術の忠実なコピーに成功しており、戦闘能力の安定性はオリジナル以上とされている。"
     },
-    "sex": "MALE",
+    "sex": "FEMALE",
     "mob": 9,
     "flags": [
         "DROP_CORPSE",
@@ -131318,7 +131361,8 @@
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GOOD",
-        "HUMAN",
+        "ROBOT",
+        "DROP_JUNK",
         "REFLECTING",
         "SMART",
         "REGENERATE",
@@ -131699,6 +131743,8 @@
         "ja": "より狡猾な財の集め方のために洗練された殺戮に長じたニーベルングだ。"
     },
     "sex": "MALE",
+    "alliance": "NIBELUNG",
+    "mob": 100,
     "flags": [
         "ROGUE",
         "FRIENDS",
@@ -134084,6 +134130,8 @@
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
+        "ROBOT",
+        "DROP_JUNK",
         "IM_POIS",
         "NONLIVING",
         "REFLECTING",
@@ -136961,8 +137009,8 @@
     "level": 40,
     "rarity": 1,
     "exp": 6000,
-    "next_exp": 0,
-    "next_mon": 0,
+    "next_exp": 10000,
+    "next_mon": 2240,
     "escorts": [],
     "blows": [
         {
@@ -136990,6 +137038,7 @@
         "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。初期の状態ではゴリラに似た長い手をした人型の姿をしている。"
     },
     "alliance": "GAICHI",
+    "mob": 160,
     "flags": [
         "FORCE_MAXHP",
         "DROP_SKELETON",
@@ -137997,6 +138046,8 @@
         "SPEAK_ALL",
         "WEIRD_MIND",
         "DIMINISH_MAX_DAMAGE",
+        "ROBOT",
+        "DROP_JUNK",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -138090,7 +138141,7 @@
     "alertness": 0,
     "level": 49,
     "rarity": 3,
-    "exp": 80000,
+    "exp": 28000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -139411,7 +139462,9 @@
         "CAN_SWIM",
         "COLD_BLOOD",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "ROBOT",
+        "DROP_JUNK"
     ]
 },
 {
@@ -142031,7 +142084,8 @@
         "BASH_DOOR",
         "IM_FIRE",
         "IM_COLD",
-        "GOLEM",
+        "ROBOT",
+        "DROP_JUNK",
         "IM_ELEC",
         "IM_POIS",
         "CAN_SWIM",
@@ -143210,5 +143264,862 @@
         ],
         "probability": "1_IN_2"
     }
+},
+{
+    "id": 2237,
+    "name": {
+        "ja": "約束された終末『エムラクール』",
+        "en": "Emrakul, the Promised End"
+    },
+    "symbol": {
+        "character": "#",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "133d133",
+    "vision": 100,
+    "armor_class": 140,
+    "alertness": 100,
+    "level": 97,
+    "rarity": 5,
+    "exp": 150000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "WHISPER",
+            "effect": "CHAOS",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "WHISPER",
+            "effect": "SANITY_BLAST",
+            "damage_dice": "9d9"
+        },
+        {
+            "method": "WHISPER",
+            "effect": "CHAOS",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "WHISPER",
+            "effect": "SANITY_BLAST",
+            "damage_dice": "9d9"
+        }
+    ],
+    "flavor": {
+        "ja": "人生そのもののように厄介な謎。",
+        "en": "An enigma as vexing as life itself."
+    },
+    "alliance": "ELDRAZI",
+    "flags": [
+        "UNIQUE",
+        "ELDRITCH_HORROR",
+        "RES_TELE",
+        "FORCE_MAXHP",
+        "ELDRAZI",
+        "ATTR_MULTI",
+        "ATTR_ANY",
+        "KILL_WALL",
+        "CAN_FLY",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_3D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "RES_CHAO",
+        "RES_DISE",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "REGENERATE",
+        "WEIRD_MIND",
+        "SMART",
+        "IM_ACID",
+        "IM_POIS",
+        "IM_FIRE",
+        "IM_COLD",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "S_KIN",
+            "BR_CHAO",
+            "BR_DISE",
+            "BR_MANA",
+            "HOLD",
+            "HAND_DOOM",
+            "BR_DISI"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2238,
+    "name": {
+        "ja": "自称予言者",
+        "en": "Self-proclaimed prophet"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "4d4",
+    "vision": 6,
+    "armor_class": 1,
+    "alertness": 0,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BEG",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "INSULT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "SHOW",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "MOAN",
+            "effect": "FLAVOR"
+        }
+    ],
+    "flavor": {
+        "ja": "彼らは毎日のように世界が破滅すると喚き散らしている。彼らにとっては無数に買える宝くじのようなものらしい。",
+        "en": "They cry out every day that the world is coming to an end. For them, it's like buying countless lottery tickets."
+    },
+    "sex": "MALE",
+    "flags": [
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "WILD_TOWN",
+        "WILD_ONLY",
+        "EAT_LOSE_WIS",
+        "HUMAN",
+        "PRIEST",
+        "TAKE_ITEM"
+    ]
+},
+{
+    "id": 2239,
+    "name": {
+        "ja": "牙一族の巨漢",
+        "en": "Giant member of the Fang Family"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "20d12",
+    "vision": 20,
+    "armor_class": 32,
+    "alertness": 40,
+    "level": 21,
+    "rarity": 1,
+    "exp": 60,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "5d5"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "5d5"
+        }
+    ],
+    "flavor": {
+        "ja": "華山群狼拳なる集団戦法を駆使する世紀末の蛮族だ。小男たちと連携して襲ってくる。",
+        "en": "They are a tribe of barbarians from the end of the century who utilize a group combat technique called “Kasan Gunrou Ken.”"
+    },
+    "sex": "MALE",
+    "alliance": "FANG-FAMILY",
+    "mob": 50,
+    "flags": [
+        "HAS_LITE_2",
+        "HUMAN",
+        "DROP_90",
+        "FRIENDS",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "EVIL"
+    ],
+    "drop_kind": [
+        {
+            "probability": "1_IN_8",
+            "item_id": "748",
+            "grade": "0",
+            "dice": "1d1"
+        },
+        {
+            "probability": "1_IN_8",
+            "item_id": "749",
+            "grade": "0",
+            "dice": "1d1"
+        }
+    ]
+},
+{
+    "id": 2240,
+    "name": {
+        "ja": "BT-91 マジュー第二形態",
+        "en": "BT-91 Beast (second form)"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Light Green"
+    },
+    "speed": 10,
+    "hit_point": "40d50",
+    "vision": 30,
+    "armor_class": 125,
+    "alertness": 15,
+    "level": 48,
+    "rarity": 1,
+    "exp": 9000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。第二形態では人型にいくらか近くなる。"
+    },
+    "alliance": "GAICHI",
+    "mob": 100,
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "KILL_BODY",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "GIANT"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2241,
+    "name": {
+        "ja": "怪獣の禍『レッドマン』",
+        "en": "Redman the Bane of Monster"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Red"
+    },
+    "speed": 20,
+    "hit_point": "50d130",
+    "vision": 30,
+    "armor_class": 140,
+    "alertness": 0,
+    "level": 72,
+    "rarity": 3,
+    "exp": 26000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "14d10"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "14d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SHATTER",
+            "damage_dice": "16d10"
+        }
+    ],
+    "skill": {
+        "shoot": "20d20",
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_5"
+    },
+    "flavor": {
+        "ja": "どれほどに人類を脅かす怪獣であろうと、彼の「荒野」に連れ去られたが最後だ。その刃を突き立てられ、亡骸は爆発四散することなく、ただ空しく放置されるという。",
+        "en": "No matter how threatening the monsters are to humanity, once they are taken to his “wasteland,” they meet their doom. With his blade thrust into them, their corpses are not blown to pieces, but simply left lying there in vain."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "NONLIVING",
+        "NO_FEAR",
+        "FORCE_MAXHP",
+        "KILL_BODY",
+        "IM_FIRE",
+        "IM_ACID",
+        "NO_STUN",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_SWIM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "WEIRD_MIND"
+    ]
+},
+{
+    "id": 2242,
+    "name": {
+        "ja": "河童",
+        "en": "Kappa"
+    },
+    "symbol": {
+        "character": "h",
+        "color": "Green"
+    },
+    "speed": 10,
+    "hit_point": "5d10",
+    "vision": 20,
+    "armor_class": 10,
+    "alertness": 20,
+    "level": 5,
+    "rarity": 2,
+    "exp": 30,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "5d1"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "5d1"
+        }
+    ],
+    "flavor": {
+        "ja": "河や沼の中に住む妖怪だ。それはあなたの尻子玉を引き抜こうと企んでいる。相撲が大好きで、きゅうりが好物。頭の皿の水がこぼれたり乾いたりして無くなると力が出せなくなる。",
+        "en": "It is a monster that lives in rivers and swamps. It is plotting to pull out your tailbone. It loves sumo wrestling and loves cucumbers. When the water in the bowl on its head spills or dries up, it loses its strength."
+    },
+    "flags": [
+        "AQUATIC",
+        "COLD_BLOOD",
+        "DROP_CORPSE",
+        "RES_WATE",
+        "WILD_SHORE",
+        "WILD_SWAMP",
+        "EVIL"
+    ],
+    "skill": {
+        "list": [
+            "TELE_TO"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2243,
+    "name": {
+        "ja": "船幽霊",
+        "en": "Funayurei"
+    },
+    "symbol": {
+        "character": "G",
+        "color": "Blue"
+    },
+    "speed": 10,
+    "hit_point": "10d10",
+    "vision": 20,
+    "armor_class": 20,
+    "alertness": 20,
+    "level": 25,
+    "rarity": 2,
+    "exp": 100,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "WAIL",
+            "effect": "TERRIFY",
+            "damage_dice": "1d10"
+        },
+        {
+            "method": "WAIL",
+            "effect": "TERRIFY",
+            "damage_dice": "1d10"
+        }
+    ],
+    "flavor": {
+        "ja": "河や海などの水上に現れる幽霊だ。「柄杓をくれ」と頼んでくるが、底の抜けた柄杓を渡さないと船を沈められてしまう。",
+        "en": "It is a ghost that appears on rivers, seas, and other bodies of water. It asks for a ladle, but if you don't give it a ladle with a hole in the bottom, it will sink your boat."
+    },
+    "flags": [
+        "AQUATIC",
+        "UNDEAD",
+        "COLD_BLOOD",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "IM_POIS",
+        "RES_DARK",
+        "RES_WATE",
+        "FRIENDS",
+        "WILD_SHORE",
+        "WILD_SWAMP",
+        "WILD_OCEAN"
+    ],
+    "skill": {
+        "list": [
+            "BO_WATE",
+            "SCARE"
+        ],
+        "probability": "1_IN_8"
+    }
+},
+{
+    "id": 2244,
+    "name": {
+        "ja": "海坊主",
+        "en": "Umibozu"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Dark Gray"
+    },
+    "speed": 10,
+    "hit_point": "100d10",
+    "vision": 20,
+    "armor_class": 100,
+    "alertness": 20,
+    "level": 35,
+    "rarity": 4,
+    "exp": 2000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        }
+    ],
+    "flavor": {
+        "ja": "海に出没する黒い坊主頭の巨人だ。大きさは数メートルから数十メートル。海中から突然現れ、船を破壊する。",
+        "en": "It is a giant with a black shaved head that appears in the sea.  It ranges in size from several meters to tens of meters. It suddenly appears from the sea and destroys ships."
+    },
+    "flags": [
+        "AQUATIC",
+        "GIANT",
+        "COLD_BLOOD",
+        "IM_ACID",
+        "IM_POIS",
+        "RES_WATE",
+        "WILD_OCEAN",
+        "POWERFUL"
+    ],
+    "skill": {
+        "list": [
+            "BA_WATE"
+        ],
+        "probability": "1_IN_6"
+    }
+},
+{
+    "id": 2245,
+    "name": {
+        "ja": "幽体グレーター・クラーケン",
+        "en": "Spectral Greater kraken"
+    },
+    "symbol": {
+        "character": "l",
+        "color": "White"
+    },
+    "speed": 15,
+    "hit_point": "60d100",
+    "vision": 40,
+    "armor_class": 200,
+    "alertness": 80,
+    "level": 79,
+    "rarity": 4,
+    "exp": 35000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "15d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "15d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "UN_BONUS",
+            "damage_dice": "12d10"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "UN_BONUS",
+            "damage_dice": "12d10"
+        }
+    ],
+    "flavor": {
+        "ja": "かつて強大な力を誇っていたグレーター・クラーケンの怨霊だ。",
+        "en": "It is the vengeful spirit of the once powerful Greater Kraken."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "AQUATIC",
+        "UNDEAD",
+        "WILD_OCEAN",
+        "INVISIBLE",
+        "ONLY_ITEM",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "BASH_DOOR",
+        "PASS_WALL",
+        "POWERFUL",
+        "MOVE_BODY",
+        "SMART",
+        "RES_WATE",
+        "RES_DARK",
+        "EVIL",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "IM_POIS",
+        "IM_FIRE",
+        "RES_NETH",
+        "RES_DISE",
+        "RIDING"
+    ],
+    "skill": {
+        "list": [
+            "CAUSE_4",
+            "TELE_TO",
+            "TELE_AWAY",
+            "BA_WATE",
+            "DARKNESS",
+            "BR_DARK",
+            "BR_ACID",
+            "BR_POIS",
+            "BR_NETH",
+            "BR_DISE"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2246,
+    "name": {
+        "ja": "取り立て人『HND△』",
+        "en": "Honda Sankakke, the Debt Collector"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "10d10",
+    "vision": 20,
+    "armor_class": 25,
+    "alertness": 20,
+    "level": 0,
+    "rarity": 2,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        }
+    ],
+    "flavor": {
+        "ja": "債務者の弱みにかこつけて、ホモセックスを要求する典型的な町のクズだ。",
+        "en": "He's a typical town scumbag who takes advantage of debtors' weaknesses and demands homosexual sex."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "EVIL",
+        "HAS_LITE_2",
+        "HUMAN",
+        "WARRIOR",
+        "FORCE_MAXHP",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "DROP_1D2",
+        "DROP_GOOD",
+        "EAT_POISONOUS",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "WILD_TOWN",
+        "WILD_ONLY",
+        "ONLY_ITEM",
+        "NASTY",
+        "HOMO_SEXUAL"
+    ]
+},
+{
+    "id": 2247,
+    "name": {
+        "ja": "スコープドッグ",
+        "en": "Scoop dog"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Green"
+    },
+    "speed": -1,
+    "hit_point": "20d12",
+    "vision": 12,
+    "armor_class": 50,
+    "alertness": 10,
+    "level": 26,
+    "rarity": 2,
+    "exp": 130,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "1d20"
+        }
+    ],
+    "skill": {
+        "shoot": "5d5",
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "ギルガメス軍の主力ATにして、百年戦争で人命と共に損耗された最低の兵器だ。",
+        "en": "It is the main AT of Gilgames Army and the weapon for 'VOTOMS' worn out along with human lives in the Hundred Years War."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "FRIENDS",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "ROBOT",
+        "DROP_JUNK"
+    ]
+},
+{
+    "id": 2248,
+    "name": {
+        "ja": "旗本奴",
+        "en": "Hatamoto Yakko"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "19d10",
+    "vision": 35,
+    "armor_class": 70,
+    "alertness": 4,
+    "level": 15,
+    "rarity": 4,
+    "exp": 240,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d6"
+        }
+    ],
+    "flavor": {
+        "ja": "覇府となった徳川幕府の元和偃武の秩序の中に組み入れられながらも、なおかぶき者の装いを捨てないならず者の下級武士だ。",
+        "en": "He was a low-ranking samurai who was incorporated into the Genwa order of the Tokugawa Shogunate, which had become the supreme government, but still did not abandon his eccentric appearance."
+    },
+    "sex": "MALE",
+    "alliance": "HAFU",
+    "mob": 1200,
+    "flags": [
+        "HAS_LITE_1",
+        "SAMURAI",
+        "ROGUE",
+        "DROP_1D2",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "HUMAN",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EAT_GIVE_STR",
+        "EAT_LOSE_INT",
+        "EAT_LOSE_WIS"
+    ]
+},
+{
+    "id": 2249,
+    "name": {
+        "ja": "なろう最低系主人公",
+        "en": "Haremlord OP-kun"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "1d2",
+    "vision": 4,
+    "armor_class": 1,
+    "alertness": 40,
+    "level": 0,
+    "rarity": 2,
+    "exp": 0,
+    "next_exp": 10,
+    "next_mon": 14,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "1d1"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "1d1"
+        }
+    ],
+    "flavor": {
+        "ja": "なんてこった！社会性の多くを欠落した彼は、神から本来もらうはずのチート能力まで、この世界に来る前にもらい損ねた。",
+        "en": "What a mess! Lacking many of the social skills he should have received from God, he even failed to receive his cheat abilities before coming to this world."
+    },
+    "flags": [
+        "WILD_TOWN",
+        "WILD_ONLY",
+        "GOOD",
+        "RAND_25",
+        "HUMAN",
+        "JOKE",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "DROP_CORPSE",
+        "DROP_SKELETON"
+    ]
 }]
 }
