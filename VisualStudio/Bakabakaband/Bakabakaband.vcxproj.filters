@@ -2592,6 +2592,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-tzeentch.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5614,6 +5617,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-tzeentch.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-nibelung.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

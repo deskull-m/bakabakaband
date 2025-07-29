@@ -52,6 +52,7 @@ enum class AllianceType : int {
     SLAANESH = 41, //!< 快楽神スラーネッシュ
     HAFU = 42, //!< 覇府
     TZEENTCH = 43, //!< 変幻の神ティーンチ
+    NIBELUNG = 44, //!< ニーベルングの王国
     MAX,
 };
 

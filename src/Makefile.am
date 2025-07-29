@@ -30,6 +30,7 @@ hengband_SOURCES = \
 	alliance/alliance-tophamhatt.cpp alliance/alliance-tophamhatt.h \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
+	alliance/alliance-nibelung.cpp alliance/alliance-nibelung.h \
 	alliance/alliance-fangfamily.cpp alliance/alliance-fangfamily.h \
 	alliance/alliance-slaanesh.cpp alliance/alliance-sllanesh.h \
 	\
