@@ -59,5 +59,7 @@ enum class MonsterResistanceType {
     NO_CONF = 55, /* Cannot be confused and resist confusion */
     NO_SLEEP = 56, /* Cannot be slept */
     NO_INSTANTLY_DEATH = 57, /*Cannot be instantly kill*/
+    NO_DEFECATE = 58, /* Cannot be defecated */
+    NO_VOMIT = 59, /* Cannot be vomited */
     MAX, /* Max of Resistances */
 };

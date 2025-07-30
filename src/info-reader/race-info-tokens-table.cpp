@@ -314,7 +314,9 @@ const std::unordered_map<std::string_view, MonsterResistanceType> r_info_flagsr 
     { "NO_STUN", MonsterResistanceType::NO_STUN },
     { "NO_CONF", MonsterResistanceType::NO_CONF },
     { "NO_SLEEP", MonsterResistanceType::NO_SLEEP },
-    { "NO_INSTANTLY_DEATH", MonsterResistanceType::NO_INSTANTLY_DEATH }
+    { "NO_INSTANTLY_DEATH", MonsterResistanceType::NO_INSTANTLY_DEATH },
+    { "NO_DEFECATE", MonsterResistanceType::NO_DEFECATE },
+    { "NO_VOMIT", MonsterResistanceType::NO_VOMIT }
 };
 
 const std::unordered_map<std::string_view, MonsterAuraType> r_info_aura_flags = {
