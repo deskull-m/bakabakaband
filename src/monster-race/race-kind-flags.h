@@ -42,5 +42,6 @@ enum class MonsterKindType {
     GOLEM = 38,
     PUYO = 39,
     ROBOT = 40,
+    YAZYU = 41,
     MAX,
 };

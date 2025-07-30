@@ -86029,7 +86029,8 @@
         "DROP_90",
         "DROP_GOOD",
         "NASTY",
-        "HOMO_SEXUAL"
+        "HOMO_SEXUAL",
+        "YAZYU"
     ]
 },
 {
@@ -86345,7 +86346,8 @@
         "IM_ACID",
         "ONLY_ITEM",
         "DROP_60",
-        "NONLIVING"
+        "NONLIVING",
+        "YAZYU"
     ],
     "skill": {
         "list": [
@@ -89107,7 +89109,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "NO_CONF",
-        "NO_FEAR"
+        "NO_FEAR",
+        "YAZYU"
     ]
 },
 {
@@ -92183,6 +92186,7 @@
         "DROP_CORPSE",
         "NASTY",
         "HOMO_SEXUAL",
+        "YAZYU",
         "NONLIVING",
         "NO_FEAR",
         "FORCE_MAXHP",
@@ -94824,7 +94828,8 @@
         "NEVER_BLOW",
         "ONLY_ITEM",
         "DROP_60",
-        "NONLIVING"
+        "NONLIVING",
+        "YAZYU"
     ]
 },
 {
@@ -110642,7 +110647,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "ELEMENTAL"
+        "ELEMENTAL",
+        "YAZYU"
     ],
     "skill": {
         "list": [
@@ -110707,7 +110713,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "ELEMENTAL"
+        "ELEMENTAL",
+        "YAZYU"
     ],
     "skill": {
         "list": [
@@ -117234,7 +117241,8 @@
         "RES_NETH",
         "RES_TIME",
         "CAN_FLY",
-        "SELF_DARK_2"
+        "SELF_DARK_2",
+        "YAZYU"
     ],
     "skill": {
         "list": [
@@ -132544,7 +132552,8 @@
         "IM_ACID",
         "ONLY_ITEM",
         "DROP_2D2",
-        "NONLIVING"
+        "NONLIVING",
+        "YAZYU"
     ],
     "skill": {
         "list": [
@@ -142798,7 +142807,8 @@
         "BASH_DOOR",
         "NO_CONF",
         "NO_FEAR",
-        "SAMURAI"
+        "SAMURAI",
+        "YAZYU"
     ]
 },
 {
