@@ -263,6 +263,14 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         ss << _("大型の", "large ");
     }
 
+    if (monster.mflag2.has(MonsterConstantFlagType::DEFECATED)) {
+        ss << _("脱糞した", "defecated ");
+    }
+
+    if (monster.mflag2.has(MonsterConstantFlagType::VOMITED)) {
+        ss << _("嘔吐した", "vomited ");
+    }
+
     if (monster.is_pet() && !monster.is_original_ap()) {
         ss << _(replace_monster_name_undefined(name), format("%s?", name.data()));
     } else {

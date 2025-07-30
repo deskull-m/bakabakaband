@@ -730,18 +730,24 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
     const auto m_name = monster_desc(player_ptr, *m_ptr, 0);
     const auto &monrace = m_ptr->get_monrace();
 
-    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) && m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::DEFECATED) &&
+        m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
         (void)drop_near(player_ptr, item, m_ptr->get_position());
+        m_ptr->mflag2.set(MonsterConstantFlagType::DEFECATED);
     }
 
-    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) && m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::VOMITED) &&
+        m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
         (void)drop_near(player_ptr, item, m_ptr->get_position());
+        m_ptr->mflag2.set(MonsterConstantFlagType::VOMITED);
     }
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
