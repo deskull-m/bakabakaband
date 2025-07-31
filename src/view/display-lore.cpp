@@ -277,7 +277,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::GIANT, MonsterKindType::TROLL, MonsterKindType::ORC, MonsterKindType::ANGEL,
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
             MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
-            MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT })) {
+            MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -356,6 +356,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ROBOT)) {
         hook_c_roff(TERM_SLATE, _("ロボット", " robot"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::YAZYU)) {
+        hook_c_roff(TERM_SLATE, _("野獣先輩", " Beast Senior"));
     }
 }
 
