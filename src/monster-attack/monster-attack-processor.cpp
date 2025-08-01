@@ -131,7 +131,8 @@ bool process_monster_attack_to_monster(PlayerType *player_ptr, turn_flags *turn_
     auto do_kill_body = monrace_from.behavior_flags.has(MonsterBehaviorType::KILL_BODY) && monrace_from.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW);
     do_kill_body &= (monrace_from.mexp * monrace_from.level > monrace_to.mexp * monrace_to.level);
     do_kill_body &= !monster_to.is_riding();
-    do_kill_body &= !(monrace_from.alliance_idx != AllianceType::NONE && monrace_from.alliance_idx == monrace_to.alliance_idx && monrace_from.behavior_flags.has_not(MonsterBehaviorType::STUPID));
+    const bool is_same_alliance_intelligent = (monrace_from.alliance_idx != AllianceType::NONE && monrace_from.alliance_idx == monrace_to.alliance_idx && monrace_from.behavior_flags.has_not(MonsterBehaviorType::STUPID));
+    do_kill_body &= !is_same_alliance_intelligent;
     if (do_kill_body || monster_from.is_hostile_to_melee(monster_to) || monster_from.is_confused()) {
         return exe_monster_attack_to_monster(player_ptr, m_idx, grid);
     }
