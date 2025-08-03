@@ -32,6 +32,7 @@ hengband_SOURCES = \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
 	alliance/alliance-nibelung.cpp alliance/alliance-nibelung.h \
 	alliance/alliance-fangfamily.cpp alliance/alliance-fangfamily.h \
+	alliance/alliance-sexy-commando-club.cpp alliance/alliance-sexy-commando-club.h \
 	alliance/alliance-slaanesh.cpp alliance/alliance-sllanesh.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \

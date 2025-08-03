@@ -261,6 +261,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-odio.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-sexy-commando-club.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shire.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shittodan.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-slaanesh.cpp" />
@@ -1044,6 +1045,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nibelung.h" />
     <ClInclude Include="..\..\src\alliance\alliance-odio.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-sexy-commando-club.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shire.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shittodan.h" />
     <ClInclude Include="..\..\src\alliance\alliance-slaanesh.h" />

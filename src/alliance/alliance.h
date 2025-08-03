@@ -53,6 +53,7 @@ enum class AllianceType : int {
     HAFU = 42, //!< 覇府
     TZEENTCH = 43, //!< 変幻の神ティーンチ
     NIBELUNG = 44, //!< ニーベルングの王国
+    SEXY_COMMANDO_CLUB = 45, //!< セクシーコマンドー部
     MAX,
 };
 
