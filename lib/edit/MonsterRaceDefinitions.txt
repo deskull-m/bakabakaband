@@ -40783,6 +40783,21 @@ D:神から本来もらうはずのチート能力まで、この世界に来る
 D:$What a mess! Lacking many of the social skills he should have received from God,
 D:$ he even failed to receive his cheat abilities before coming to this world.
 
+N:2250:ガルシアクローン
+E:Garcia's clone
+G:p:y
+I:116:30d120:25:130:7
+W:44:1:0:5000:0:0
+B:PUNCH:SUPERHURT:1d80
+B:PUNCH:SUPERHURT:1d80
+F:HUMAN | MALE | DROP_CORPSE | DROP_SKELETON | FRIENDS
+F:DROP_60 | DROP_1D2 | DROP_GOOD | OPEN_DOOR | BASH_DOOR | CAN_SWIM
+F:NO_FEAR | NO_CONF | HAS_LITE_1 | KARATEKA | QUANTUM
+D:アメリカが鬼龍と女性金メダリストの遺伝子を掛け合わせて生まれた「格闘マシーン」ガルシアのクローンだ。
+D:「ウ…ウソやろこ…こんなことがこ…こんなことが許されていいのか」
+D:$He is a clone of Garcia, a ‘fighting machine’ created by combining the genes of Kiryu and a female gold medallist.
+D:$ ‘No... This can't be true... How can this be allowed?’
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
