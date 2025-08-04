@@ -7,6 +7,7 @@
 #include "alliance/alliance-legendofsavior.h"
 #include "alliance/alliance-megadeth.h"
 #include "alliance/alliance-nibelung.h"
+#include "alliance/alliance-nurgle.h"
 #include "alliance/alliance-odio.h"
 #include "alliance/alliance-sexy-commando-club.h"
 #include "alliance/alliance-shire.h"
@@ -73,6 +74,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::TZEENTCH, std::make_unique<AllianceTzeentch>(AllianceType::TZEENTCH, "TZEENTCH", _("変幻の神ティーンチ", "Tzeentch, the God of change"), 18000000L) },
     { AllianceType::NIBELUNG, std::make_unique<AllianceNibelung>(AllianceType::NIBELUNG, "NIBELUNG", _("ニーベルングの王国", "Kingdom of Nibelung"), 18000000L) },
     { AllianceType::SEXY_COMMANDO_CLUB, std::make_unique<AllianceSexyCommandoClub>(AllianceType::SEXY_COMMANDO_CLUB, "SEXY-COMMANDO-CLUB", _("セクシーコマンドー部", "Sexy Commando Club"), 18000000L) },
+    { AllianceType::NURGLE, std::make_unique<AllianceNurgle>(AllianceType::NURGLE, "NURGLE", _("腐敗神ナーグル", "Nurgle, the God of Decay"), 18000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
