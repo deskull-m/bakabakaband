@@ -6731,6 +6731,8 @@
         "ja": "それは<ナーグル>の配下の低級悪魔だ。毛のないテディベアのようで、目は歪み、肌は腐敗して死鬼のようだ。",
         "en": "It is a minor demon servitor of Nurgle. It looks like a hairless teddy bear, with twisted eyes and rotting, ghoulish skin."
     },
+    "alliance": "NURGLE",
+    "mob": 2000,
     "flags": [
         "FRIENDS",
         "OPEN_DOOR",
@@ -13560,6 +13562,8 @@
         "ja": "<ナーグル>の腐れ病という名で知られる不治の病によって死んだ不運な人間で、腐乱した悪魔のゾンビになってしまっている。目は一つだけで、一本の青白い角が額に生えている。",
         "en": "An unfortunate individual, who was killed by the incurable disease known as Nurgle's Rot, and was transformed into a rotting demon zombie. It has but one eye, and a single pale horn on its forehead."
     },
+    "alliance": "NURGLE",
+    "mob": 750,
     "flags": [
         "FORCE_MAXHP",
         "DROP_60",
@@ -22388,6 +22392,8 @@
         "ja": "腐敗と疫病の神<ナーグル>の下僕。それは四つ足で歩くが、見かけはナメクジの形をしたゼリーのようだ。頭に二本の触角さえ持っている。げぇ！",
         "en": "It walks on four legs, but mostly resembles a slug-shaped jelly. It even has two disgusting antennae in its head. Yecch!"
     },
+    "alliance": "NURGLE",
+    "mob": 400,
     "flags": [
         "WEIRD_MIND",
         "BASH_DOOR",
@@ -43817,6 +43823,8 @@
         "ja": "この気持ち悪い悪魔はよろめき歩く腐敗した緑色の肉塊のように見え、その後には何十もの口から滴る邪悪な臭いのする粘液が跡を引いている。疫病と腐敗の神<ナーグル>はこのような外道の怪物を作り上げたことを誇りに思っているに違いない！（TRPG ウォーハンマー）",
         "en": "This disgusting demon resembles a shambling pile of rotting green flesh, with dozens of mouths drooling and leaving a trail of foul-smelling goo behind. Nurgle must be proud of himself for having created this atrocity!"
     },
+    "alliance": "NURGLE",
+    "mob": 200,
     "flags": [
         "DEMON",
         "EVIL",
@@ -129061,6 +129069,8 @@
         "ja": "戦鎚世界の混沌神〈ナーグル〉に選ばれた混沌の戦士だ。肉厚の装甲に包まれたその心身は主君の性質に触れ、腐敗と病毒に塗れながら慈悲深き共存を果たしている。"
     },
     "sex": "MALE",
+    "alliance": "NURGLE",
+    "mob": 750,
     "flags": [
         "FORCE_MAXHP",
         "SMART",

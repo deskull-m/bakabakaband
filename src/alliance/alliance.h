@@ -54,6 +54,7 @@ enum class AllianceType : int {
     TZEENTCH = 43, //!< 変幻の神ティーンチ
     NIBELUNG = 44, //!< ニーベルングの王国
     SEXY_COMMANDO_CLUB = 45, //!< セクシーコマンドー部
+    NURGLE = 46, //!< 腐敗神ナーグル
     MAX,
 };
 
