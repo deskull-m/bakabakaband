@@ -30,7 +30,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
 
     // 基本的な戦力による評価（控えめ）
-    impression += Alliance::calcPlayerPower(*creature_ptr, 1, 25);
+    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 25);
 
     // 耐久力を最重視（病気に耐える力）
     impression += (creature_ptr->stat_use[A_CON] - 10) * 6;
@@ -252,6 +252,7 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
  */
 bool AllianceNurgle::isAnnihilated()
 {
+    /*
     // ナーグルは腐敗と再生の神なので非常に滅びにくい
     if (this->calcImpressionPoint(nullptr) <= -300) {
         if (one_in_(50)) { // 2%の確率で一時的な眠り
@@ -260,5 +261,6 @@ bool AllianceNurgle::isAnnihilated()
             return true;
         }
     }
+    */
     return false;
 }
