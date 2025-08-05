@@ -55,6 +55,7 @@ enum class AllianceType : int {
     NIBELUNG = 44, //!< ニーベルングの王国
     SEXY_COMMANDO_CLUB = 45, //!< セクシーコマンドー部
     NURGLE = 46, //!< 腐敗神ナーグル
+    NANMAN = 47, //!< 南蛮
     MAX,
 };
 
