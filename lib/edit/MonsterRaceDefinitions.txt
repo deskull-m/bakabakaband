@@ -40798,6 +40798,22 @@ D:「ウ…ウソやろこ…こんなことがこ…こんなことが許され
 D:$He is a clone of Garcia, a ‘fighting machine’ created by combining the genes of Kiryu and a female gold medallist.
 D:$ ‘No... This can't be true... How can this be allowed?’
 
+N:2251:過去改変能力者『木場活一郎』
+E:Katsuichiro Kiba, the man with the ability to change the past
+G:t:o
+I:108:1d200:10:10:12
+W:0:5:0:300:0:0
+B:WHISPER:TIME:1d1
+B:PUNCH:HURT:1d6
+B:PUNCH:HURT:1d6
+F:EVIL | QUANTUM | DROP_GREAT | DROP_1D2 
+F:UNIQUE | WEIRD_MIND | WILD_TOWN |
+F:OPEN_DOOR | BASH_DOOR | RES_TELE | JOKE | SPEAK_ALL
+D:気をつけろ！彼は過去にさかのぼって、哀れな異常性愛者の母親に自殺教唆を行うことができる！
+D:「まずいよドローン飛ばしてる場合じゃないよ、お…俺は放火殺人犯になっちゃうよ…」
+D:$Be careful! He can go back in time and encourage his poor, sexually deviant mother to commit suicide!
+D:$ ‘This is bad. This is no time to be flying a drone. I'm going to become an arsonist and murderer...’
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

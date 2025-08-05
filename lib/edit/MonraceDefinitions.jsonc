@@ -144209,5 +144209,62 @@
         "KARATEKA",
         "QUANTUM"
     ]
+},
+{
+    "id": 2251,
+    "name": {
+        "ja": "過去改変能力者『木場活一郎』",
+        "en": "Katsuichiro Kiba, the man with the ability to change the past"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "Orange"
+    },
+    "speed": -2,
+    "hit_point": "1d200",
+    "vision": 10,
+    "armor_class": 10,
+    "alertness": 12,
+    "level": 0,
+    "rarity": 5,
+    "exp": 300,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "WHISPER",
+            "effect": "TIME",
+            "damage_dice": "1d1"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "1d6"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "1d6"
+        }
+    ],
+    "flavor": {
+        "ja": "気をつけろ！彼は過去にさかのぼって、哀れな異常性愛者の母親に自殺教唆を行うことができる！「まずいよドローン飛ばしてる場合じゃないよ、お…俺は放火殺人犯になっちゃうよ…」",
+        "en": "Be careful! He can go back in time and encourage his poor, sexually deviant mother to commit suicide! ‘This is bad. This is no time to be flying a drone. I'm going to become an arsonist and murderer...’"
+    },
+    "flags": [
+        "EVIL",
+        "QUANTUM",
+        "DROP_GREAT",
+        "DROP_1D2",
+        "UNIQUE",
+        "WEIRD_MIND",
+        "WILD_TOWN",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "RES_TELE",
+        "JOKE",
+        "SPEAK_ALL"
+    ]
 }]
 }
