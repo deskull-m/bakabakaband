@@ -259,7 +259,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-legendofsavior.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-nanman.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-nurgle.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-odio.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-sexy-commando-club.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shire.cpp" />
@@ -1043,7 +1045,9 @@
     <ClInclude Include="..\..\src\alliance\alliance-legendofsavior.h" />
     <ClInclude Include="..\..\src\alliance\alliance-jural.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-nanman.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nibelung.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-nurgle.h" />
     <ClInclude Include="..\..\src\alliance\alliance-odio.h" />
     <ClInclude Include="..\..\src\alliance\alliance-sexy-commando-club.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shire.h" />
