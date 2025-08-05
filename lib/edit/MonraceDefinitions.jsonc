@@ -66215,6 +66215,7 @@
         "en": "He is the king of Nanman. He was arrested by Zhuge Liang 7 times."
     },
     "sex": "MALE",
+    "alliance": "NANMAN",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -69039,6 +69040,7 @@
         "en": "He is a junior brother of the king of the southerners, Meng Huo."
     },
     "sex": "MALE",
+    "alliance": "NANMAN",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -69100,6 +69102,7 @@
         "en": "She is the wife of king Meng Huo.  She is said to be an avatar of a flame spirit."
     },
     "sex": "FEMALE",
+    "alliance": "NANMAN",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -69173,6 +69176,7 @@
         "en": "He is one of the captains of Nanman.  He comes to help his sister and her husband Meng Huo."
     },
     "sex": "MALE",
+    "alliance": "NANMAN",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -69240,6 +69244,7 @@
         "en": "He is the best wise man of Nanman. His intelligence afflicted the enemy."
     },
     "sex": "MALE",
+    "alliance": "NANMAN",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -69313,6 +69318,7 @@
         "en": "He is one of chiefs of Nanman. He is also a good beast master."
     },
     "sex": "MALE",
+    "alliance": "NANMAN",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -69375,6 +69381,7 @@
         "en": "This giant man is the king of southern Nanman. It is said that he is about 10 feet tall. His army has hard rattan armor."
     },
     "sex": "MALE",
+    "alliance": "NANMAN",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -142627,6 +142634,8 @@
         "ja": "孟獲ら南蛮の王や諸侯に仕える兵卒たちだ。"
     },
     "sex": "MALE",
+    "alliance": "NANMAN",
+    "mob": 1500,
     "flags": [
         "HUMAN",
         "WILD_ALL",
