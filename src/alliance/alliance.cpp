@@ -3,6 +3,7 @@
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-hafu.h"
+#include "alliance/alliance-hide.h"
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-legendofsavior.h"
@@ -79,6 +80,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::NURGLE, std::make_unique<AllianceNurgle>(AllianceType::NURGLE, "NURGLE", _("腐敗神ナーグル", "Nurgle, the God of Decay"), 18000000L) },
     { AllianceType::NANMAN, std::make_unique<AllianceNanman>(AllianceType::NANMAN, "NANMAN", _("南蛮", "Nanman"), 3000000L) },
     { AllianceType::COOKIE_GRANDMA, std::make_unique<AllianceCookieGrandma>(AllianceType::COOKIE_GRANDMA, "COOKIE-GRANDMA", _("クッキーババア", "Cookie Grandma"), 2500000L) },
+    { AllianceType::HIDE, std::make_unique<AllianceHide>(AllianceType::HIDE, "HIDE", _("ひで", "Hide"), 2000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

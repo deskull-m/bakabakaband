@@ -57,6 +57,7 @@ enum class AllianceType : int {
     NURGLE = 46, //!< 腐敗神ナーグル
     NANMAN = 47, //!< 南蛮
     COOKIE_GRANDMA = 48, //!< クッキーババア
+    HIDE = 49, //!< ひで
     MAX,
 };
 
