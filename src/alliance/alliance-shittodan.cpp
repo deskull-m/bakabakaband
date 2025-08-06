@@ -6,7 +6,6 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
-#include "monster-race/race-flags1.h"
 #include "spell/summon-types.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
