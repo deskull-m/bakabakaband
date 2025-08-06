@@ -36,6 +36,7 @@ hengband_SOURCES = \
 	alliance/alliance-slaanesh.cpp alliance/alliance-sllanesh.h \
 	alliance/alliance-nurgle.cpp alliance/alliance-nurgle.h \
 	alliance/alliance-nanman.cpp alliance/alliance-nanman.h \
+	alliance/alliance-cookie-grandma.cpp alliance/alliance-cookie-grandma.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \

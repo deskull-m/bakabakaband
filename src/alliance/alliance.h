@@ -56,6 +56,7 @@ enum class AllianceType : int {
     SEXY_COMMANDO_CLUB = 45, //!< セクシーコマンドー部
     NURGLE = 46, //!< 腐敗神ナーグル
     NANMAN = 47, //!< 南蛮
+    COOKIE_GRANDMA = 48, //!< クッキーババア
     MAX,
 };
 
