@@ -38,6 +38,7 @@ hengband_SOURCES = \
 	alliance/alliance-nanman.cpp alliance/alliance-nanman.h \
 	alliance/alliance-cookie-grandma.cpp alliance/alliance-cookie-grandma.h \
 	alliance/alliance-hide.cpp alliance/alliance-hide.h \
+	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
