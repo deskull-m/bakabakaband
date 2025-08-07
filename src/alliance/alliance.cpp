@@ -2,6 +2,7 @@
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance-fangfamily.h"
+#include "alliance/alliance-gondor.h"
 #include "alliance/alliance-hafu.h"
 #include "alliance/alliance-hide.h"
 #include "alliance/alliance-jural.h"
@@ -80,6 +81,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::NANMAN, std::make_unique<AllianceNanman>(AllianceType::NANMAN, "NANMAN", _("南蛮", "Nanman"), 3000000L) },
     { AllianceType::COOKIE_GRANDMA, std::make_unique<AllianceCookieGrandma>(AllianceType::COOKIE_GRANDMA, "COOKIE-GRANDMA", _("クッキーババア", "Cookie Grandma"), 2500000L) },
     { AllianceType::HIDE, std::make_unique<AllianceHide>(AllianceType::HIDE, "HIDE", _("ひで", "Hide"), 2000000L) },
+    { AllianceType::GONDOR, std::make_unique<AllianceGondor>(AllianceType::GONDOR, "GONDOR", _("ゴンドール", "Gondor"), 8000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

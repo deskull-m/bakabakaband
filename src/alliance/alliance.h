@@ -58,6 +58,7 @@ enum class AllianceType : int {
     NANMAN = 47, //!< 南蛮
     COOKIE_GRANDMA = 48, //!< クッキーババア
     HIDE = 49, //!< ひで
+    GONDOR = 50, //!< ゴンドール
     MAX,
 };
 

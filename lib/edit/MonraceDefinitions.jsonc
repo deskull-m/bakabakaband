@@ -122609,6 +122609,8 @@
         "ja": "「自由の民」の人間の戦士だ。"
     },
     "sex": "MALE",
+    "alliance": "GONDOR",
+    "mob": 1200,
     "flags": [
         "HUMAN",
         "WILD_ALL",
