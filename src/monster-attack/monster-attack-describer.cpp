@@ -269,6 +269,14 @@ void describe_monster_attack_method(MonsterAttackPlayer *monap_ptr)
         break;
     }
 
+    case RaceBlowMethodType::PUTAWAY: {
+        monap_ptr->act = _("しまわれた。", "puts away.");
+        monap_ptr->touched = true;
+        monap_ptr->do_stun = 1;
+        sound(SoundKind::HIT);
+        break;
+    }
+
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:
         break;

@@ -198,6 +198,11 @@ void describe_melee_method(PlayerType *player_ptr, mam_type *mam_ptr)
         mam_ptr->touched = true;
         break;
     }
+    case RaceBlowMethodType::PUTAWAY: {
+        mam_ptr->act = _("%sをしまっちゃった。", "puts %s away.");
+        mam_ptr->touched = true;
+        break;
+    }
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:
         break;
