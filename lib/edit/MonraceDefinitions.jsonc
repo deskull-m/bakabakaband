@@ -103650,7 +103650,8 @@
         "UNIQUE",
         "OPEN_DOOR",
         "EVIL",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "HOME_ONLY"
     ]
 },
 {

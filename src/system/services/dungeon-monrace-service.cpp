@@ -18,6 +18,7 @@
  * @param monrace_id モンスター種族ID
  * @return ダンジョンに出現するならばTRUEを返す
  * @details
+ * 拠点モンスター(HOME_ONLY)の場合、ダンジョンのアライアンスと同じアライアンスに所属するモンスターのみ出現を許可する。
  * 荒野限定(WILD_ONLY)の場合、荒野の山(WILD_MOUNTAIN)に出るモンスターにのみ、ダンジョンの山にも出現を許可する。
  * その他の場合、山と火山以外のダンジョンでは全てのモンスターに出現を許可する。
  * ダンジョンが山の場合は、荒野の山(WILD_MOUNTAIN)に出ない水棲動物(AQUATIC)は許可しない。
@@ -27,6 +28,11 @@ bool DungeonMonraceService::is_suitable_for_dungeon(DungeonId dungeon_id, Monrac
 {
     const auto &dungeon = DungeonList::get_instance().get_dungeon(dungeon_id);
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+
+    if (monrace.misc_flags.has(MonsterMiscType::HOME_ONLY)) {
+        return dungeon.alliance_idx == monrace.alliance_idx;
+    }
+
     if (monrace.wilderness_flags.has(MonsterWildernessType::WILD_ONLY)) {
         return dungeon.mon_wilderness_flags.has(MonsterWildernessType::WILD_MOUNTAIN) && monrace.wilderness_flags.has(MonsterWildernessType::WILD_MOUNTAIN);
     }
