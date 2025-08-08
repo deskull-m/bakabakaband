@@ -59,6 +59,7 @@ enum class AllianceType : int {
     COOKIE_GRANDMA = 48, //!< クッキーババア
     HIDE = 49, //!< ひで
     GONDOR = 50, //!< ゴンドール
+    VALVERDE = 51, //!< バルベルデ共和国
     MAX,
 };
 

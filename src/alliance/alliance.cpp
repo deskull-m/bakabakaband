@@ -20,6 +20,7 @@
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
 #include "alliance/alliance-tzeentch.h"
+#include "alliance/alliance-valverde.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
@@ -82,6 +83,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::COOKIE_GRANDMA, std::make_unique<AllianceCookieGrandma>(AllianceType::COOKIE_GRANDMA, "COOKIE-GRANDMA", _("クッキーババア", "Cookie Grandma"), 2500000L) },
     { AllianceType::HIDE, std::make_unique<AllianceHide>(AllianceType::HIDE, "HIDE", _("ひで", "Hide"), 2000000L) },
     { AllianceType::GONDOR, std::make_unique<AllianceGondor>(AllianceType::GONDOR, "GONDOR", _("ゴンドール", "Gondor"), 8000000L) },
+    { AllianceType::VALVERDE, std::make_unique<AllianceValVerde>(AllianceType::VALVERDE, "VALVERDE", _("バルベルデ共和国", "Republic of Valverde"), 6000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

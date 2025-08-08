@@ -2611,6 +2611,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-gondor.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-valverde.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5652,6 +5655,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-hide.h" />
     <ClInclude Include="..\..\src\alliance\alliance-gondor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-valverde.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

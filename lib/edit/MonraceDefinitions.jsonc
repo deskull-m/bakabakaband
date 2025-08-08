@@ -97733,6 +97733,8 @@
         "ja": "常に政情不安定な母国で傭兵、ゲリラを繰り返している彼らだ。"
     },
     "sex": "MALE",
+    "alliance": "VALVERDE",
+    "mob": 500,
     "flags": [
         "BASH_DOOR",
         "OPEN_DOOR",
@@ -111717,6 +111719,8 @@
         "ja": "政情不安定な社会の中で彼らは汚職で儲ける金にしか興味がない。"
     },
     "sex": "MALE",
+    "alliance": "VALVERDE",
+    "mob": 100,
     "flags": [
         "BASH_DOOR",
         "OPEN_DOOR",
@@ -116736,6 +116740,8 @@
         "ja": "過酷極まる政情不安定な国家の民は、言うまでもなく多くが荒みきっている。"
     },
     "sex": "MALE",
+    "alliance": "VALVERDE",
+    "mob": 2000,
     "flags": [
         "DROP_CORPSE",
         "DROP_SKELETON",
