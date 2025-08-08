@@ -120,6 +120,10 @@ void set_monster_blow_method(lore_type *lore_ptr, int m)
         lore_ptr->p = _("糞を塗ってくる", "paint feces");
         lore_ptr->pc = TERM_SLATE;
         break;
+    case RaceBlowMethodType::PUTAWAY:
+        lore_ptr->p = _("しまっちゃう", "put away");
+        lore_ptr->pc = TERM_L_WHITE;
+        break;
 
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:

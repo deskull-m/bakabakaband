@@ -86,6 +86,7 @@ const std::unordered_map<std::string_view, RaceBlowMethodType> r_info_blow_metho
     { "WHISPER", RaceBlowMethodType::WHISPER },
     { "STAMP", RaceBlowMethodType::STAMP },
     { "FECES", RaceBlowMethodType::FECES },
+    { "PUTAWAY", RaceBlowMethodType::PUTAWAY },
 };
 
 /*!
