@@ -25,6 +25,7 @@ enum class MonsterMiscType {
     VOCIFEROUS = 21,
     DIMINISH_MAX_DAMAGE = 22,
     STALKER = 23,
+    HOME_ONLY = 24,
     MAX
 };
 
