@@ -183,8 +183,9 @@ enum tr_type : int {
     TR_MEGATON_COIN = 168, //!< メ ガ ト ン コ イ ン
     TR_ESP_NASTY = 169,
     TR_SUSHI = 170, //!< アイテムの発動を可能にするフラグ
+    TR_ESP_HOMO = 171, //!< ホモ（レズ）感知
 
-    TR_FLAG_MAX = 171,
+    TR_FLAG_MAX = 172,
 };
 
 /** 能力値(STR,INT,WIS,DEX,CON,CHR)のpvalを増減させるフラグのリスト */

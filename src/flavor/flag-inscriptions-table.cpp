@@ -180,6 +180,7 @@ const std::vector<flag_insc_table> flag_insc_esp2 = {
     { { "死", "L" }, TR_ESP_UNDEAD },
     { { "動", "Z" }, TR_ESP_ANIMAL },
     { { "汚", "N" }, TR_ESP_NASTY },
+    { { "ホ", "H" }, TR_ESP_HOMO },
 };
 
 /*! オブジェクトの特性表示記号テーブルの定義(能力維持) */

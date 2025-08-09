@@ -396,6 +396,9 @@ PRICE flag_cost(const ItemEntity *o_ptr, int plusses)
     if (flags.has(TR_ESP_NASTY)) {
         total += 1000;
     }
+    if (flags.has(TR_ESP_HOMO)) {
+        total += 1000;
+    }
     if (flags.has(TR_ESP_UNDEAD)) {
         total += 1000;
     }

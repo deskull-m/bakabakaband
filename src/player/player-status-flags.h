@@ -57,6 +57,7 @@ BIT_FLAGS has_xtra_might(PlayerType *player_ptr);
 BIT_FLAGS has_esp_evil(PlayerType *player_ptr);
 BIT_FLAGS has_esp_animal(PlayerType *player_ptr);
 BIT_FLAGS has_esp_nasty(PlayerType *player_ptr);
+BIT_FLAGS has_esp_homo(PlayerType *player_ptr);
 BIT_FLAGS has_esp_undead(PlayerType *player_ptr);
 BIT_FLAGS has_esp_demon(PlayerType *player_ptr);
 BIT_FLAGS has_esp_orc(PlayerType *player_ptr);
