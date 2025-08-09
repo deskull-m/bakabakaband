@@ -134,6 +134,7 @@ const std::unordered_map<std::string_view, RaceBlowEffectType> r_info_blow_effec
     { "FLAVOR", RaceBlowEffectType::FLAVOR },
     { "DEFECATE", RaceBlowEffectType::DEFECATE },
     { "SANITY_BLAST", RaceBlowEffectType::SANITY_BLAST },
+    { "LOCKUP", RaceBlowEffectType::LOCKUP },
 };
 
 /*!
