@@ -292,6 +292,10 @@ void set_monster_blow_effect(lore_type *lore_ptr, int m)
         lore_ptr->q = _("カオスを呼び起こす", "call chaotic.");
         lore_ptr->qc = TERM_VIOLET;
         break;
+    case RaceBlowEffectType::LOCKUP:
+        lore_ptr->q = _("閉じ込める", "lock up");
+        lore_ptr->qc = TERM_VIOLET;
+        break;
     case RaceBlowEffectType::FLAVOR:
         // フレーバー打撃には何の効果もないので付加説明もない。
         break;
