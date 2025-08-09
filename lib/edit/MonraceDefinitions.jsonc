@@ -144312,5 +144312,58 @@
         "JOKE",
         "SPEAK_ALL"
     ]
+},
+{
+    "id": 2252,
+    "name": {
+        "ja": "しまっちゃうおじさん",
+        "en": "Uncle Putaway"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Violet"
+    },
+    "speed": 6,
+    "hit_point": "30d25",
+    "vision": 100,
+    "armor_class": 100,
+    "alertness": 0,
+    "level": 49,
+    "rarity": 10,
+    "exp": 2000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "TERRIFY"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "INERTIA"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "PARALYZE"
+        },
+        {
+            "method": "PUTAWAY",
+            "effect": "LOCKUP"
+        }
+    ],
+    "flavor": {
+        "ja": "このすらりとした姿の獣人は、臆病な少年のたくましすぎる妄想が形を成したものだ。",
+        "en": "This slender beastman is the embodiment of a timid boy's overly vivid imagination."
+    },
+    "flags": [
+        "FRIENDS",
+        "DROP_60",
+        "DROP_90",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE"
+    ]
 }]
 }

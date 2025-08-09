@@ -40814,6 +40814,20 @@ D:「まずいよドローン飛ばしてる場合じゃないよ、お…俺は
 D:$Be careful! He can go back in time and encourage his poor, sexually deviant mother to commit suicide!
 D:$ ‘This is bad. This is no time to be flying a drone. I'm going to become an arsonist and murderer...’
 
+N:2252:しまっちゃうおじさん
+E:Uncle Putaway
+G:H:v
+I:116:30d25:100:100:0
+W:49:10:2000:0:0
+B:TOUCH:TERRIFY
+B:TOUCH:INERTIA
+B:TOUCH:PARALYZE
+B:PUTAWAY:LOCKUP
+F:FRIENDS | DROP_60 | DROP_90 | OPEN_DOOR | BASH_DOOR |
+F:DROP_SKELETON | DROP_CORPSE
+D:$This slender beastman is the embodiment of a timid boy's overly vivid imagination.
+D:このすらりとした姿の獣人は、臆病な少年のたくましすぎる妄想が形を成したものだ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
