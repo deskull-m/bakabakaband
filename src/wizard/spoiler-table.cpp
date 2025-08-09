@@ -200,6 +200,7 @@ const std::vector<flag_desc> misc_flags3_desc = {
     { TR_ESP_NONLIVING, _("無生物感知", "Sense Nonliving") },
     { TR_ESP_UNIQUE, _("ユニーク感知", "Sense Unique") },
     { TR_ESP_NASTY, _("クッソ汚いの感知", "Sense Nasty") },
+    { TR_ESP_HOMO, _("ホモ（レズ）感知", "Sense Homosexuals") },
     { TR_SLOW_DIGEST, _("遅消化", "Slow Digestion") },
     { TR_REGEN, _("急速回復", "Regeneration") },
     { TR_WARNING, _("警告", "Warning") },

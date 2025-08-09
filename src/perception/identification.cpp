@@ -503,6 +503,10 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
         info[i++] = _("それはクッソ汚い汚物共を感知する。", "It senses nasty creatures.");
     }
 
+    if (flags.has(TR_ESP_HOMO)) {
+        info[i++] = _("それはホモ（レズ）を感知する。", "It senses homosexuals.");
+    }
+
     if (flags.has(TR_ESP_UNDEAD)) {
         info[i++] = _("それはアンデッドを感知する。", "It senses undead.");
     }

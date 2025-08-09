@@ -275,6 +275,7 @@ static void update_bonuses(PlayerType *player_ptr)
     player_ptr->esp_evil = has_esp_evil(player_ptr);
     player_ptr->esp_animal = has_esp_animal(player_ptr);
     player_ptr->esp_nasty = has_esp_nasty(player_ptr);
+    player_ptr->esp_homo = has_esp_homo(player_ptr);
     player_ptr->esp_undead = has_esp_undead(player_ptr);
     player_ptr->esp_demon = has_esp_demon(player_ptr);
     player_ptr->esp_orc = has_esp_orc(player_ptr);
