@@ -11434,6 +11434,7 @@
         "BASH_DOOR",
         "EVIL",
         "UNDEAD",
+        "SKELETON",
         "IM_COLD",
         "HUMAN",
         "IM_POIS",
