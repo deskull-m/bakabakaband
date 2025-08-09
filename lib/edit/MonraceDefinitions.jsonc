@@ -4314,7 +4314,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ]
 },
 {
@@ -5954,7 +5955,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "HURT_LITE"
+        "HURT_LITE",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -6555,7 +6557,8 @@
         "RES_DARK",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ]
 },
 {
@@ -19755,7 +19758,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ]
 },
 {
@@ -25169,7 +25173,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ]
 },
 {
@@ -25232,7 +25237,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "RIDING"
+        "RIDING",
+        "SKELETON"
     ]
 },
 {
@@ -28584,7 +28590,8 @@
         "RES_NETH",
         "HURT_LITE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -30928,6 +30935,7 @@
         "REGENERATE",
         "DROP_60",
         "DROP_90",
+        "SKELETON",
         "COLD_BLOOD",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -32407,7 +32415,8 @@
         "RES_NETH",
         "HURT_LITE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -34745,7 +34754,8 @@
         "IM_POIS",
         "RES_NETH",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -35553,6 +35563,7 @@
         "FORCE_MAXHP",
         "ONLY_GOLD",
         "DROP_2D2",
+        "SKELETON",
         "COLD_BLOOD",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -38029,6 +38040,7 @@
         "COLD_BLOOD",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "SKELETON",
         "EVIL",
         "UNDEAD",
         "IM_COLD",
@@ -38642,7 +38654,8 @@
         "RES_NETH",
         "RES_TELE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -41259,7 +41272,8 @@
         "RES_TELE",
         "NO_CONF",
         "NO_SLEEP",
-        "RIDING"
+        "RIDING",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -44822,7 +44836,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -44898,7 +44913,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -44973,7 +44989,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "SELF_LITE_1"
+        "SELF_LITE_1",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -51776,7 +51793,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "POWERFUL"
+        "POWERFUL",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -60413,6 +60431,7 @@
         "NO_STUN",
         "IM_COLD",
         "IM_POIS",
+        "SKELETON",
         "NO_CONF",
         "NO_SLEEP",
         "DROP_SKELETON",
@@ -75633,6 +75652,7 @@
         "COLD_BLOOD",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "SKELETON",
         "EVIL",
         "UNDEAD",
         "IM_COLD",
@@ -75940,7 +75960,8 @@
         "RES_NETH",
         "RES_TELE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -80291,7 +80312,8 @@
         "RES_TELE",
         "NO_CONF",
         "NO_SLEEP",
-        "RIDING"
+        "RIDING",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -126259,6 +126281,7 @@
         "NO_FEAR",
         "NO_CONF",
         "CAN_FLY",
+        "SKELETON",
         "IM_COLD",
         "IM_FIRE",
         "IM_POIS",
@@ -129640,7 +129663,8 @@
         "NO_STUN",
         "NONLIVING",
         "RES_TELE",
-        "FRIENDS"
+        "FRIENDS",
+        "SKELETON"
     ]
 },
 {
@@ -131275,7 +131299,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "NASTY"
+        "NASTY",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -132953,7 +132978,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ],
     "skill": {
         "list": [
@@ -143016,7 +143042,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "SKELETON"
     ]
 },
 {
