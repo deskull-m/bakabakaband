@@ -440,8 +440,15 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_YELLOW, _("スモトリの", " sumou wrestler"));
     }
 
-    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
-        hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
+    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD) && lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
+        hook_c_roff(TERM_WHITE, _("スケルトン系アンデッドの", " skeleton undead"));
+    } else {
+        if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
+            hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
+        }
+        if (lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
+            hook_c_roff(TERM_WHITE, _("スケルトンの", " skeleton"));
+        }
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {
