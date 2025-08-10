@@ -99245,7 +99245,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "DROP_GOOD",
-        "DROP_3D2"
+        "DROP_3D2",
+        "UNIQUE"
     ],
     "skill": {
         "list": [
@@ -101236,6 +101237,7 @@
         "STUPID",
         "NO_CONF",
         "NO_SLEEP",
+        "UNIQUE",
         "EVIL",
         "FORCE_MAXHP"
     ],
@@ -139152,10 +139154,10 @@
         "ja": "外道高校球児たちに殺戮野球を教える恐るべき監督だ。「てめーにはおしえてやんねー！くそして寝な！」"
     },
     "sex": "MALE",
-    "mob": 23,
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
+        "UNIQUE",
         "DROP_90",
         "FORCE_MAXHP",
         "NO_STUN",
@@ -140890,6 +140892,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "MULTIPLY",
+        "UNIQUE",
         "WILD_MOUNTAIN",
         "WILD_WASTE",
         "DROP_SKELETON",
