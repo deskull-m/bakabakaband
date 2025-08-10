@@ -264,6 +264,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BR_DISI:
     case MonsterAbilityType::BR_VOID:
     case MonsterAbilityType::BR_ABYSS:
+    case MonsterAbilityType::BR_FECES:
     return spell_RF4_BREATH(player_ptr, ms_type, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF4_BR_ABYSS */
     
     case MonsterAbilityType::BA_ACID:
