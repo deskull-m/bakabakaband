@@ -42,6 +42,7 @@ const std::map<MonsterAbilityType, const monster_power> monster_powers = {
     { MonsterAbilityType::BR_DISI, { 35, 40, 95, 150, 95, A_CON, _("分解のブレス", "breathe disintegration") } },
     { MonsterAbilityType::BR_VOID, { 40, 44, 95, 250, 95, A_CON, _("虚無のブレス", "breathe void") } },
     { MonsterAbilityType::BR_ABYSS, { 40, 44, 95, 250, 95, A_CON, _("深淵のブレス", "breathe abyss") } },
+    { MonsterAbilityType::BR_FECES, { 30, 25, 80, 250, 95, A_CON, _("糞便のブレス", "breathe feces") } },
 
     { MonsterAbilityType::BA_ACID, { 18, 13, 55, 630, 80, A_INT, _("アシッド・ボール", "acid ball") } },
     { MonsterAbilityType::BA_ELEC, { 14, 10, 45, 316, 60, A_INT, _("サンダー・ボール", "lightning ball") } },
@@ -116,6 +117,7 @@ const std::map<MonsterAbilityType, const monster_power> monster_powers = {
     { MonsterAbilityType::S_AMBERITES, { 48, 120, 90, 0, 50, A_INT, _("アンバーの王族の召喚", "summon Lords of Amber") } },
     { MonsterAbilityType::S_UNIQUE, { 50, 150, 95, 0, 50, A_INT, _("ユニークモンスターの召喚", "summon Unique Monsters") } },
     { MonsterAbilityType::S_DEAD_UNIQUE, { 50, 150, 95, 0, 50, A_INT, _("ユニークモンスターの口寄せ", "summon Dead Unique Monsters") } },
+    { MonsterAbilityType::BR_FECES, { 30, 25, 80, 200, 95, A_CON, _("糞便のブレス", "breathe feces") } },
 };
 
 /*!
@@ -156,6 +158,7 @@ const std::map<MonsterAbilityType, concptr> monster_powers_short = {
     { MonsterAbilityType::BR_DISI, _("分解", "Disintegration") },
     { MonsterAbilityType::BR_VOID, _("虚無", "Void") },
     { MonsterAbilityType::BR_ABYSS, _("深淵", "Abyss") },
+    { MonsterAbilityType::BR_FECES, _("糞便", "Feces") },
 
     { MonsterAbilityType::BA_ACID, _("酸", "Acid") },
     { MonsterAbilityType::BA_ELEC, _("電撃", "Lightning") },

@@ -778,7 +778,7 @@ ProcessResult effect_monster_abyss(PlayerType *player_ptr, EffectMonster *em_ptr
  * @em_ptr 魔法効果情報への参照ポインタ
  * @return 効果処理を続けるかどうか
  * @details
- * 今のところは毒と同じ
+ * 糞便のブレス：毒耐性で軽減、汚物で特効ダメージ
  */
 ProcessResult effect_monster_dirt(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
@@ -786,14 +786,47 @@ ProcessResult effect_monster_dirt(PlayerType *player_ptr, EffectMonster *em_ptr)
         em_ptr->obvious = true;
     }
 
-    if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::IMMUNE_POISON)) {
+    // 毒完全耐性があるモンスターは大幅に軽減
+    if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
+        em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
+        em_ptr->dam /= 9;
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+            em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
+        }
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
-    em_ptr->dam /= 9;
-    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::IMMUNE_POISON);
+    // 清浄なモンスター（天使、エレメンタルなど）は追加ダメージ
+    bool is_vulnerable = false;
+    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANGEL)) {
+        is_vulnerable = true;
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::ANGEL);
+        }
+    }
+
+    if (is_vulnerable) {
+        em_ptr->note = _("は汚物にまみれて苦しんでいる！", " writhes in agony from the filth!");
+        em_ptr->dam *= 2;
+    }
+
+    // 一定確率で状態異常付与
+    if (randint0(100) < 30) {
+        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
+            em_ptr->do_conf = (10 + randint1(15));
+            if (em_ptr->note.empty()) {
+                em_ptr->note = _("は混乱したようだ。", " looks confused.");
+            }
+        }
+    }
+
+    if (randint0(100) < 20) {
+        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_STUN)) {
+            em_ptr->do_stun = (5 + randint1(10));
+            if (em_ptr->note.empty()) {
+                em_ptr->note = _("はよろめいている。", " is stunned.");
+            }
+        }
     }
 
     return ProcessResult::PROCESS_CONTINUE;

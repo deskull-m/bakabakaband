@@ -494,7 +494,7 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
     case AttributeType::ABYSS:
         return effect_monster_abyss(player_ptr, em_ptr);
     case AttributeType::DIRT:
-        return effect_monster_abyss(player_ptr, em_ptr);
+        return effect_monster_dirt(player_ptr, em_ptr);
     case AttributeType::STUNGUN:
         return effect_monster_stungun(player_ptr, em_ptr);
     case AttributeType::METEOR:

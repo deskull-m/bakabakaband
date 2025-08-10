@@ -231,6 +231,7 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
     case MonsterAbilityType::BR_DISI:
     case MonsterAbilityType::BR_VOID:
     case MonsterAbilityType::BR_ABYSS:
+    case MonsterAbilityType::BR_FECES:
         return cast_blue_magic_breath(player_ptr, bmc_ptr);
     case MonsterAbilityType::BA_ACID:
     case MonsterAbilityType::BA_ELEC:

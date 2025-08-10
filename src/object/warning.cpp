@@ -472,6 +472,9 @@ bool process_warning(PlayerType *player_ptr, POSITION xx, POSITION yy)
                 if (flags.has(MonsterAbilityType::BR_ABYSS)) {
                     spell_damcalc_by_spellnum(player_ptr, MonsterAbilityType::BR_ABYSS, AttributeType::ABYSS, grid.m_idx, &dam_max0);
                 }
+                if (flags.has(MonsterAbilityType::BR_FECES)) {
+                    spell_damcalc_by_spellnum(player_ptr, MonsterAbilityType::BR_FECES, AttributeType::DIRT, grid.m_idx, &dam_max0);
+                }
             }
             /* Monster melee attacks */
             if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW) || dungeon.flags.has(DungeonFeatureType::NO_MELEE)) {

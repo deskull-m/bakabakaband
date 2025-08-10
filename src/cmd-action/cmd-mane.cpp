@@ -100,6 +100,7 @@ const std::unordered_set<MonsterAbilityType> AIMING_SPELLS = {
     MonsterAbilityType::BR_DISI,
     MonsterAbilityType::BR_VOID,
     MonsterAbilityType::BR_ABYSS,
+    MonsterAbilityType::BR_FECES,
     MonsterAbilityType::BA_ACID,
     MonsterAbilityType::BA_ELEC,
     MonsterAbilityType::BA_FIRE,
@@ -160,7 +161,7 @@ static std::string mane_info(PlayerType *player_ptr, MonsterAbilityType power, i
     const auto power_int = enum2i(power);
     using Mat = MonsterAbilityType;
     EnumClassFlagGroup<Mat> flags{
-        Mat::PSY_SPEAR, Mat::BO_VOID, Mat::BO_ABYSS, Mat::BA_VOID, Mat::BA_ABYSS, Mat::BR_VOID, Mat::BR_ABYSS
+        Mat::PSY_SPEAR, Mat::BO_VOID, Mat::BO_ABYSS, Mat::BA_VOID, Mat::BA_ABYSS, Mat::BR_VOID, Mat::BR_ABYSS, Mat::BR_FECES
     };
     if ((power_int > 2 && power_int < 41) || (power_int > 41 && power_int < 59) || flags.has(power)) {
         return format(" %s%d", KWD_DAM, (int)dam);
@@ -1007,6 +1008,10 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::BR_FECES:
+        msg_print(_("糞便のブレスを吐いた。", "You breathe feces."));
+        fire_breath(player_ptr, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
+        break;
     default:
         msg_print("hoge?");
     }
