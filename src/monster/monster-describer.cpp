@@ -259,6 +259,10 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
     }
 #endif
 
+    if (monster.mflag2.has(MonsterConstantFlagType::ANGER)) {
+        ss << _("怒れる", "angry ");
+    }
+
     if (monster.mflag2.has(MonsterConstantFlagType::LARGE)) {
         ss << _("大型の", "large ");
     }
