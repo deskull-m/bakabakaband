@@ -26,5 +26,6 @@ enum class MonsterConstantFlagType {
     RIDING = 12, /*!< 乗馬中である / riding */
     DEFECATED = 13, /*!< 脱糞した / Defecated */
     VOMITED = 14, /*!< 嘔吐した / Vomited */
+    ANGER = 15, /*!< 怒れる / Anger */
     MAX,
 };
