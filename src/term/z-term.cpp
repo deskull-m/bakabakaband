@@ -702,6 +702,9 @@ static void term_fresh_row_both(TERM_LEN y, int x1, int x2)
     /* 全角文字の２バイト目かどうか */
     int kanji = 0;
 #endif
+    if (x1 < 0) {
+        x1 = 0;
+    }
     /* Scan "modified" columns */
     for (TERM_LEN x = x1; x <= x2; x++) {
         /* See what is currently here */
