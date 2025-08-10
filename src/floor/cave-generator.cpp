@@ -31,6 +31,19 @@
 #include "util/bit-flags-calculator.h"
 #include "wizard/wizard-messages.h"
 
+// シンメトリックなフロア生成（左右対称）
+static void make_symmetric_floor(FloorType &floor)
+{
+    // 左右対称化: 左半分を右半分にコピー
+    for (int y = 0; y < floor.height; ++y) {
+        for (int x = 0; x < floor.width / 2; ++x) {
+            auto &left = floor.get_grid({ y, x });
+            auto &right = floor.get_grid({ y, floor.width - 1 - x });
+            right = left;
+        }
+    }
+}
+
 static void reset_lite_area(FloorType &floor)
 {
     floor.lite_n = 0;
@@ -440,6 +453,12 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
     decide_dungeon_data_allocation(player_ptr, &dd, dungeon);
     if (!allocate_dungeon_data(player_ptr, &dd, dungeon)) {
         return dd.why;
+    }
+
+    constexpr int symmetric_chance = 25;
+    if (one_in_(symmetric_chance)) {
+        make_symmetric_floor(floor);
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
     }
 
     decide_grid_glowing(floor, &dd, dungeon);
