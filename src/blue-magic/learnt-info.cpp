@@ -82,6 +82,7 @@ std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power)
     case MonsterAbilityType::BR_DISI:
     case MonsterAbilityType::BR_VOID:
     case MonsterAbilityType::BR_ABYSS:
+    case MonsterAbilityType::BR_FECES:
     case MonsterAbilityType::BA_NUKE:
     case MonsterAbilityType::BA_CHAO:
     case MonsterAbilityType::BA_ACID:
