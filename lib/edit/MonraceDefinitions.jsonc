@@ -84587,7 +84587,7 @@
     ],
     "skill": {
         "list": [
-            "BR_NUKE"
+            "BR_FECES"
         ],
         "probability": "1_IN_2"
     },
@@ -87269,7 +87269,7 @@
     ],
     "skill": {
         "list": [
-            "BR_NUKE"
+            "BR_FECES"
         ],
         "probability": "1_IN_4"
     }
@@ -87337,7 +87337,7 @@
     ],
     "skill": {
         "list": [
-            "BR_NUKE"
+            "BR_FECES"
         ],
         "probability": "1_IN_4"
     }
@@ -111262,7 +111262,7 @@
     ],
     "skill": {
         "list": [
-            "BR_POIS"
+            "BR_FECES"
         ],
         "probability": "1_IN_4"
     }
@@ -113516,7 +113516,7 @@
     ],
     "skill": {
         "list": [
-            "BR_POIS"
+            "BR_FECES"
         ],
         "probability": "1_IN_7"
     }
@@ -119441,7 +119441,7 @@
     ],
     "skill": {
         "list": [
-            "BR_NUKE"
+            "BR_FECES"
         ],
         "probability": "1_IN_3"
     },
