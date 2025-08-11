@@ -402,7 +402,8 @@ bool alloc_guardian(PlayerType *player_ptr, bool def_val)
 
     const auto &monrace = dungeon.get_guardian();
     auto is_guardian_applicable = dungeon.maxdepth == floor.dun_level;
-    is_guardian_applicable &= monrace.cur_num < monrace.max_num;
+    is_guardian_applicable &= monrace.cur_num < monrace.mob_num;
+    is_guardian_applicable &= monrace.mob_num > 0;
     if (!is_guardian_applicable) {
         return def_val;
     }
