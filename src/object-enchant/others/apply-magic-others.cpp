@@ -131,7 +131,6 @@ void OtherItemsEnchanter::generate_corpse()
     const std::unordered_map<int, MonsterDropType> match = {
         { SV_SKELETON, MonsterDropType::DROP_SKELETON },
         { SV_CORPSE, MonsterDropType::DROP_CORPSE },
-        { SV_JUNK, MonsterDropType::DROP_JUNK },
     };
 
     get_mon_num_prep_enum(this->player_ptr, MonraceHook::FIGURINE);
@@ -139,7 +138,7 @@ void OtherItemsEnchanter::generate_corpse()
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     while (true) {
-        monrace_id = get_mon_num(this->player_ptr, 0, floor.dun_level, PM_NONE);
+        monrace_id = get_mon_num(this->player_ptr, 0, floor.dun_level, PM_NONE | PM_IGNORE_LEVEL);
         const auto &monrace = monraces.get_monrace(monrace_id);
         const auto check = (floor.dun_level < monrace.level) ? (monrace.level - floor.dun_level) : 0;
         const auto sval = this->o_ptr->bi_key.sval();
