@@ -23,7 +23,7 @@ int AllianceHide::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr)
 void AllianceHide::panishment([[maybe_unused]] PlayerType &player_ptr)
 {
     // TODO: ひでの制裁システムを実装
-    msg_print("ひでの制裁が発動した！");
+    // msg_print("ひでの制裁が発動した！");
 }
 
 /*!

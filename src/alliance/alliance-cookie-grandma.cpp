@@ -23,7 +23,7 @@ int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] PlayerType *crea
 void AllianceCookieGrandma::panishment([[maybe_unused]] PlayerType &player_ptr)
 {
     // TODO: クッキーババアの制裁システムを実装
-    msg_print("クッキーババアの制裁が発動した！");
+    // msg_print("クッキーババアの制裁が発動した！");
 }
 
 /*!

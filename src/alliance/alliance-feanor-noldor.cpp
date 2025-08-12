@@ -23,7 +23,7 @@ int AllianceFeanorNoldor::calcImpressionPoint(PlayerType *creature_ptr) const
 void AllianceFeanorNoldor::panishment([[maybe_unused]] PlayerType &player_ptr)
 {
     // TODO: フェアノール統ノルドールの制裁システムを実装
-    msg_print("フェアノール統ノルドールの制裁が発動した！");
+    // msg_print("フェアノール統ノルドールの制裁が発動した！");
 }
 
 /*!

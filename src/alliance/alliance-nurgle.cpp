@@ -136,7 +136,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 void AllianceNurgle::panishment(PlayerType &player_ptr)
 {
     // 印象に応じて段階的な制裁
-    if (this->calcImpressionPoint(&player_ptr) >= -50) {
+    if (this->calcImpressionPoint(&player_ptr) <= -50) {
         // 軽微な制裁：軽い病気
         msg_print("あなたの体に軽い不調を感じる...");
         msg_print("「ナーグルの小さな贈り物だ」");
@@ -149,7 +149,7 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
         return;
     }
 
-    if (this->calcImpressionPoint(&player_ptr) >= -100) {
+    if (this->calcImpressionPoint(&player_ptr) <= -100) {
         // 中程度の制裁：疫病の使者
         msg_print("腐敗の悪臭が漂ってきた...");
         msg_print("「ナーグルの慈悲深い疫病を受けるがよい」");
@@ -175,7 +175,7 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
         */
     }
 
-    if (this->calcImpressionPoint(&player_ptr) >= -150) {
+    if (this->calcImpressionPoint(&player_ptr) <= -150) {
         // 重い制裁：大悪疫
         msg_print("恐ろしい疫病があなたを襲う！");
         msg_print("「ナーグルの偉大なる慈悲を味わうがよい！」");
@@ -211,23 +211,25 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
         */
     }
 
-    // 最重の制裁：腐敗の庭園
-    msg_print("周囲の世界が腐敗し始めた！");
-    msg_print("「我が庭園へようこそ...永遠の腐敗と再生の世界へ」");
+    if (this->calcImpressionPoint(&player_ptr) <= -250) {
+        // 最重の制裁：腐敗の庭園
+        msg_print("周囲の世界が腐敗し始めた！");
+        msg_print("「我が庭園へようこそ...永遠の腐敗と再生の世界へ」");
 
-    // 極限状態異常
-    (void)BadStatusSetter(&player_ptr).set_poison(randint1(200) + 100);
-    (void)BadStatusSetter(&player_ptr).set_cut(randint1(200) + 100);
-    (void)BadStatusSetter(&player_ptr).set_stun(randint1(100) + 50);
+        // 極限状態異常
+        (void)BadStatusSetter(&player_ptr).set_poison(randint1(200) + 100);
+        (void)BadStatusSetter(&player_ptr).set_cut(randint1(200) + 100);
+        (void)BadStatusSetter(&player_ptr).set_stun(randint1(100) + 50);
 
-    // 大ダメージ（腐敗エリア攻撃）
-    project(&player_ptr, 0, 5, player_ptr.y, player_ptr.x,
-        player_ptr.lev * 4, AttributeType::POIS,
-        PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
+        // 大ダメージ（腐敗エリア攻撃）
+        project(&player_ptr, 0, 5, player_ptr.y, player_ptr.x,
+            player_ptr.lev * 4, AttributeType::POIS,
+            PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
-    if (one_in_(2)) {
-        msg_print("あなたの魂まで腐敗の影響を受けている...");
-        (void)BadStatusSetter(&player_ptr).set_paralysis(randint1(20) + 10);
+        if (one_in_(2)) {
+            msg_print("あなたの魂まで腐敗の影響を受けている...");
+            (void)BadStatusSetter(&player_ptr).set_paralysis(randint1(20) + 10);
+        }
     }
 
     // 大軍団召喚
