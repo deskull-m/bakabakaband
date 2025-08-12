@@ -2,6 +2,7 @@
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance-fangfamily.h"
+#include "alliance/alliance-feanor-noldor.h"
 #include "alliance/alliance-gondor.h"
 #include "alliance/alliance-hafu.h"
 #include "alliance/alliance-hide.h"
@@ -354,13 +355,6 @@ int AllianceSuren::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr
 bool AllianceSuren::isAnnihilated()
 {
     return MonraceList::get_instance().get_monrace(MonraceId::SUREN).mob_num == 0;
-}
-
-int AllianceFeanorNoldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 19, 26);
-    return impression;
 }
 
 int AllianceGaichi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
