@@ -786,6 +786,15 @@ ProcessResult effect_monster_dirt(PlayerType *player_ptr, EffectMonster *em_ptr)
         em_ptr->obvious = true;
     }
 
+    if (em_ptr->r_ptr->misc_flags.has(MonsterMiscType::SCATOLOGIST)) {
+        em_ptr->note = _("には完全な耐性がある！", " resists completely.");
+        em_ptr->dam = 0;
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+            em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::SCATOLOGIST);
+        }
+        return ProcessResult::PROCESS_CONTINUE;
+    }
+
     // 毒完全耐性があるモンスターは大幅に軽減
     if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::IMMUNE_POISON)) {
         em_ptr->note = _("にはかなり耐性がある！", " resists a lot.");
