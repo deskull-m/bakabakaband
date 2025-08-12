@@ -117663,6 +117663,7 @@
         "ja": "フィンゴルフィンは客観的に見ても、最終的にノルドールの王統の中で最たる血筋の主となり、ヴァリノールの神々からも覚えめでたく、その子々孫々まで庇護を受けることとなった。その栄えは、ヴァリノールから独立した神統となり、望まずも政敵ともなったフェアノールと全く対照的であり、甲乙はつけがたい。ウトゥムノの伝承の限りでも、メルコールはこの兄弟を末弟フィナルフィンと共に讃えて止まない。なんとなれば、メルコールにとってノルドールはなべてヴァリノール虜囚時代の良き徒弟であったからだ。"
     },
     "sex": "MALE",
+    "alliance": "FINGOLFIN-NOLDOR",
     "flags": [
         "UNIQUE",
         "DROP_CORPSE",
@@ -124682,7 +124683,7 @@
     "alertness": 25,
     "level": 49,
     "rarity": 3,
-    "exp": 550,
+    "exp": 1800,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -144387,6 +144388,76 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE"
+    ]
+},
+{
+    "id": 2252,
+    "name": {
+        "ja": "フィンゴルフィン統の戦士",
+        "en": "Warrior of Fingolfin families"
+    },
+    "symbol": {
+        "character": "h",
+        "color": "Blue"
+    },
+    "speed": 10,
+    "hit_point": "50d50",
+    "vision": 40,
+    "armor_class": 90,
+    "alertness": 25,
+    "level": 49,
+    "rarity": 3,
+    "exp": 1800,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "12d8"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "12d8"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "4d8"
+        }
+    ],
+    "skill": {
+        "shoot": "11d6",
+        "list": [
+            "SHOOT",
+            "BO_COLD"
+        ],
+        "probability": "1_IN_4"
+    },
+    "flavor": {
+        "ja": "ノルドールの分裂の中でも「フェアノールの誓言」及び「マンドスの呪い」を受けるもそれを後悔し、フェアノールと袂を別ったその弟フィンゴルフィンに付き従うノルドールの戦士だ。彼らはヴァリノールに許しを乞いながら、贖いとして戦いの中に身を投じている。"
+    },
+    "sex": "MALE",
+    "alliance": "FINGOLFIN-NOLDOR",
+    "mob": 400,
+    "flags": [
+        "FRIENDS",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "ELF",
+        "WARRIOR",
+        "EVIL",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "SMART",
+        "IM_POIS",
+        "IM_FIRE",
+        "RES_WATE",
+        "RES_NETH"
     ]
 }]
 }
