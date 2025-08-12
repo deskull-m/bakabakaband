@@ -346,15 +346,6 @@ public:
     virtual ~AllianceSuren() = default;
 };
 
-class AllianceFeanorNoldor : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceFeanorNoldor() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceFeanorNoldor() = default;
-};
-
 class AllianceGaichi : public Alliance {
 public:
     using Alliance::Alliance;
