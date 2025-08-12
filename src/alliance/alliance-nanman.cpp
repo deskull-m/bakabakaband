@@ -23,7 +23,7 @@ int AllianceNanman::calcImpressionPoint([[maybe_unused]] PlayerType *creature_pt
 void AllianceNanman::panishment([[maybe_unused]] PlayerType &player_ptr)
 {
     // TODO: 南蛮の制裁システムを実装
-    msg_print("南蛮の制裁が発動した！");
+    // msg_print("南蛮の制裁が発動した！");
 }
 
 /*!
