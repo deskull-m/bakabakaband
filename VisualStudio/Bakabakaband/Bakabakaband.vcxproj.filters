@@ -2617,6 +2617,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-feanor-noldor.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-fingolfin-noldor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5664,6 +5667,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-feanor-noldor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-fingolfin-noldor.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

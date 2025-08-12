@@ -34161,7 +34161,7 @@ B:SLASH:HURT:12d14
 B:SLASH:SUPERHURT:17d14
 F:UNIQUE | MALE | DROP_CORPSE | PREVENT_SUDDEN_MAGIC | FORCE_MAXHP |
 F:ONLY_ITEM | DROP_1D2 | DROP_2D2 | DROP_3D2 | DROP_GREAT | ELF |
-F:REFLECTING | SMART | REGENERATE | OPEN_DOOR
+F:REFLECTING | SMART | REGENERATE | OPEN_DOOR | ALLIANCE_FINGOLFIN-NOLDOR
 F:IM_COLD | IM_FIRE | IM_ELEC | NO_CONF | NO_STUN | GOOD
 F:NO_SLEEP | RES_TELE | RES_NETH | RES_TIME | POWERFUL | CAN_FLY |
 S:1_IN_3 | 
@@ -35905,7 +35905,7 @@ N:1936:フェアノール統の戦士
 E:Warrior of Feanor families
 G:h:R
 I:120:50d50:40:90:25
-W:49:3:0:550:0:0
+W:49:3:0:1800:0:0
 B:SHOOT:HURT:11d6
 B:SLASH:HURT:12d8
 B:SLASH:HURT:12d8
@@ -40825,6 +40825,24 @@ F:FRIENDS | DROP_60 | DROP_90 | OPEN_DOOR | BASH_DOOR |
 F:DROP_SKELETON | DROP_CORPSE
 D:$This slender beastman is the embodiment of a timid boy's overly vivid imagination.
 D:このすらりとした姿の獣人は、臆病な少年のたくましすぎる妄想が形を成したものだ。
+
+N:2252:フィンゴルフィン統の戦士
+E:Warrior of Fingolfin families
+G:h:b
+I:120:50d50:40:90:25
+W:49:3:0:1800:0:0
+B:SHOOT:HURT:11d6
+B:SLASH:HURT:12d8
+B:SLASH:HURT:12d8
+B:KICK:HURT:4d8
+F:MALE | FRIENDS | OPEN_DOOR | BASH_DOOR | ELF | WARRIOR | EVIL
+F:ONLY_ITEM | DROP_1D2 | DROP_SKELETON | DROP_CORPSE | SMART |
+F:IM_POIS | IM_FIRE | RES_WATE | RES_NETH | MOB_400 | ALLIANCE_FINGOLFIN-NOLDOR
+S:1_IN_4
+S:SHOOT | BO_COLD
+D:ノルドールの分裂の中でも「フェアノールの誓言」及び「マンドスの呪い」を受けるもそれを後悔し、
+D:フェアノールと袂を別ったその弟フィンゴルフィンに付き従うノルドールの戦士だ。
+D:彼らはヴァリノールに許しを乞いながら、贖いとして戦いの中に身を投じている。
 
 # N: serial number : monster name
 # G: symbol : color
