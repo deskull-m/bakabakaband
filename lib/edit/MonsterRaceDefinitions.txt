@@ -40844,6 +40844,20 @@ D:ノルドールの分裂の中でも「フェアノールの誓言」及び「
 D:フェアノールと袂を別ったその弟フィンゴルフィンに付き従うノルドールの戦士だ。
 D:彼らはヴァリノールに許しを乞いながら、贖いとして戦いの中に身を投じている。
 
+N:2253:迷宮レイプ！『野牛と化した先輩』
+E:Labyrinth Rape!, Senior Turned into a Wild Bull
+G:H:U
+I:120:25d15:13:25:10
+W:24:3:1000:0:0
+B:BUTT:HURT:6d6
+B:BUTT:HURT:6d6
+B:BUTT:HURT:4d6
+B:BUTT:HURT:4d6
+F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | FORCE_MAXHP |
+F:EVIL | UNIQUE | ANIMAL | NASTY | HOMO_SEXUAL | YAZYU
+D:$It's a beastly senior who's like a Minotaur, with a fake body made of steroids and made even more disgusting by being turned into a beast.
+D:ステロイドで出来た偽りの肉体をさらにクッソ汚い獣化で強化されたミノタウロスの如き野獣先輩だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

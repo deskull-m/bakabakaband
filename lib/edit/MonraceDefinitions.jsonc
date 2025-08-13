@@ -144459,5 +144459,65 @@
         "RES_WATE",
         "RES_NETH"
     ]
+},
+{
+    "id": 2253,
+    "name": {
+        "ja": "迷宮レイプ！『野牛と化した先輩』",
+        "en": "Labyrinth Rape!, Senior Turned into a Wild Bull"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Light Brown"
+    },
+    "speed": 10,
+    "hit_point": "25d15",
+    "vision": 13,
+    "armor_class": 25,
+    "alertness": 10,
+    "level": 24,
+    "rarity": 3,
+    "exp": 1000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "4d6"
+        }
+    ],
+    "flavor": {
+        "ja": "ステロイドで出来た偽りの肉体をさらにクッソ汚い獣化で強化されたミノタウロスの如き野獣先輩だ。",
+        "en": "It's a beastly senior who's like a Minotaur, with a fake body made of steroids and made even more disgusting by being turned into a beast."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "FORCE_MAXHP",
+        "EVIL",
+        "UNIQUE",
+        "ANIMAL",
+        "NASTY",
+        "HOMO_SEXUAL",
+        "YAZYU"
+    ]
 }]
 }
