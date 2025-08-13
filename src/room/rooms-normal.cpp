@@ -6,6 +6,7 @@
 #include "grid/trap.h"
 #include "room/door-definition.h"
 #include "room/rooms-builder.h"
+#include "room/rooms-maze-vault.h"
 #include "room/space-finder.h"
 #include "room/vault-builder.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -898,5 +899,19 @@ bool build_type12(PlayerType *player_ptr, DungeonData *dd_ptr)
         vault_traps(floor, *center, { 4, 4 }, randint0(3) + 2);
     }
 
+    return true;
+}
+
+bool build_nonvault_maze(PlayerType *player_ptr, DungeonData *dd_ptr)
+{
+    auto height = randint1(20) + randint1(20) + 1;
+    auto width = randint1(20) + randint1(20) + 1;
+
+    auto center = find_space(player_ptr, dd_ptr, height + 2, width + 2);
+    if (!center) {
+        return false;
+    }
+
+    build_maze_vault(player_ptr, *center, { height, width }, false);
     return true;
 }
