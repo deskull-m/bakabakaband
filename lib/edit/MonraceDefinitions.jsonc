@@ -347,7 +347,8 @@
         "DROP_CORPSE",
         "WILD_TOWN",
         "WILD_ONLY",
-        "ANIMAL"
+        "ANIMAL",
+        "DOG"
     ]
 },
 {
@@ -1672,6 +1673,7 @@
     },
     "flags": [
         "FRIENDS",
+        "DOG",
         "ANIMAL",
         "WILD_WOOD",
         "WILD_GRASS",
@@ -2562,7 +2564,8 @@
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "DOG"
     ]
 },
 {
@@ -2607,7 +2610,8 @@
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "DOG"
     ]
 },
 {
@@ -2652,7 +2656,8 @@
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "DOG"
     ]
 },
 {
@@ -8371,7 +8376,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "UNIQUE",
-        "FORCE_MAXHP"
+        "FORCE_MAXHP",
+        "DOG"
     ]
 },
 {
@@ -9732,7 +9738,8 @@
         "WILD_WASTE",
         "WILD_MOUNTAIN",
         "ANIMAL",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "DOG"
     ]
 },
 {
@@ -10530,7 +10537,8 @@
         "ANIMAL",
         "IM_COLD",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "DOG"
     ]
 },
 {
@@ -11055,7 +11063,8 @@
         "RAND_50",
         "FRIENDS",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "DOG"
     ]
 },
 {
@@ -12833,7 +12842,8 @@
         "NO_FEAR",
         "FRIENDS",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "DOG"
     ]
 },
 {
@@ -12977,7 +12987,8 @@
         "DROP_CORPSE",
         "BASH_DOOR",
         "ANIMAL",
-        "EVIL"
+        "EVIL",
+        "DOG"
     ]
 },
 {
@@ -13746,7 +13757,8 @@
         "SELF_LITE_2",
         "BASH_DOOR",
         "ANIMAL",
-        "RES_LITE"
+        "RES_LITE",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -13792,7 +13804,8 @@
         "BASH_DOOR",
         "HURT_LITE",
         "ANIMAL",
-        "RES_DARK"
+        "RES_DARK",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -14330,7 +14343,8 @@
         "FRIENDS",
         "INVISIBLE",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "DOG"
     ]
 },
 {
@@ -15681,7 +15695,8 @@
         "BASH_DOOR",
         "HURT_COLD",
         "ANIMAL",
-        "IM_FIRE"
+        "IM_FIRE",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -15737,7 +15752,8 @@
         "HURT_FIRE",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_COLD"
+        "IM_COLD",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -15793,7 +15809,8 @@
         "FRIENDS",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_ELEC"
+        "IM_ELEC",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -15964,7 +15981,8 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "ANIMAL",
-        "RES_TELE"
+        "RES_TELE",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -17387,7 +17405,8 @@
         "BASH_DOOR",
         "HURT_ROCK",
         "ANIMAL",
-        "RES_SHAR"
+        "RES_SHAR",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -17448,7 +17467,8 @@
         "CAN_FLY",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -17567,7 +17587,8 @@
         "CAN_SWIM",
         "WILD_SHORE",
         "ANIMAL",
-        "IM_ACID"
+        "IM_ACID",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -17781,7 +17802,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "EVIL",
-        "FRIENDS"
+        "FRIENDS",
+        "DOG"
     ]
 },
 {
@@ -19491,7 +19513,8 @@
         "RES_NETH",
         "RES_NEXU",
         "RES_DISE",
-        "RES_PLAS"
+        "RES_PLAS",
+        "DOG"
     ]
 },
 {
@@ -22771,7 +22794,8 @@
         "ANIMAL",
         "RES_SOUN",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -22833,7 +22857,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -28275,7 +28300,8 @@
         "IM_POIS",
         "IM_ACID",
         "IM_FIRE",
-        "IM_COLD"
+        "IM_COLD",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -30003,7 +30029,8 @@
         "ANIMAL",
         "RES_GRAV",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -30133,7 +30160,8 @@
         "ANIMAL",
         "RES_INER",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -30195,7 +30223,8 @@
         "ANIMAL",
         "RES_WALL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -42438,7 +42467,8 @@
         "EVIL",
         "IM_FIRE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -42960,7 +42990,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -43023,7 +43054,8 @@
         "ANIMAL",
         "RES_TIME",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -43089,7 +43121,8 @@
         "IM_ELEC",
         "IM_FIRE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -47489,7 +47522,8 @@
         "ANIMAL",
         "RES_CHAO",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -50131,6 +50165,7 @@
         "ATTR_ANY",
         "CAN_FLY",
         "FRIENDS",
+        "DOG",
         "BASH_DOOR",
         "AURA_FIRE",
         "AURA_ELEC",
@@ -51713,7 +51748,8 @@
         "MOVE_BODY",
         "ANIMAL",
         "EVIL",
-        "IM_FIRE"
+        "IM_FIRE",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -52677,6 +52713,7 @@
         "ESCORT",
         "ESCORTS",
         "DROP_CORPSE",
+        "DOG",
         "ONLY_ITEM",
         "DROP_4D2",
         "DROP_2D2",
@@ -53216,7 +53253,8 @@
         "IM_POIS",
         "IM_FIRE",
         "IM_COLD",
-        "RES_DARK"
+        "RES_DARK",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -53608,7 +53646,8 @@
         "NO_FEAR",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_STUN"
+        "NO_STUN",
+        "DOG"
     ]
 },
 {
@@ -53880,7 +53919,8 @@
         "MOVE_BODY",
         "IM_FIRE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -56668,7 +56708,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -61215,7 +61256,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ]
 },
 {
@@ -63858,7 +63900,8 @@
         "IM_FIRE",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "DOG"
     ]
 },
 {
@@ -64031,6 +64074,7 @@
         "ESCORT",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "DOG",
         "NO_FEAR"
     ],
     "skill": {
@@ -80081,7 +80125,8 @@
         "DROP_GOOD",
         "IM_FIRE",
         "RES_NETH",
-        "RES_DARK"
+        "RES_DARK",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -91163,7 +91208,8 @@
         "RES_GRAV",
         "ONLY_GOLD",
         "DROP_4D2",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "DOG"
     ],
     "skill": {
         "list": [
@@ -91664,7 +91710,8 @@
         "NO_SLEEP",
         "WILD_WOOD",
         "WILD_WASTE",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "DOG"
     ]
 },
 {
@@ -113524,6 +113571,7 @@
         "SCATOLOGIST",
         "FRIENDS",
         "CAN_FLY",
+        "DOG",
         "BASH_DOOR",
         "ANIMAL",
         "IM_POIS"
@@ -114133,6 +114181,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "BASH_DOOR",
+        "DOG",
         "ANIMAL",
         "EVIL"
     ]
@@ -118524,7 +118573,8 @@
         "DROP_GOOD",
         "EAT_POISONOUS",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "DOG"
     ]
 },
 {
@@ -121694,7 +121744,8 @@
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "DOG"
     ]
 },
 {
@@ -137379,7 +137430,8 @@
         "HUMAN",
         "ANIMAL",
         "EVIL",
-        "FRIENDS"
+        "FRIENDS",
+        "DOG"
     ]
 },
 {

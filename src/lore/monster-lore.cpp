@@ -233,6 +233,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::YAZYU)) {
         lore_ptr->kind_flags.set(MonsterKindType::YAZYU);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::DOG)) {
+        lore_ptr->kind_flags.set(MonsterKindType::DOG);
+    }
 }
 
 /*!

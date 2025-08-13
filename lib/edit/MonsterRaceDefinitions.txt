@@ -286,7 +286,7 @@ I:110:1d3:20:1:5
 W:0:3:0:6:35
 B:BITE:HURT:1d3
 F:RAND_25 | DROP_SKELETON | DROP_CORPSE | WILD_TOWN | WILD_ONLY
-F:ANIMAL
+F:ANIMAL | DOG
 D:$A thin flea-ridden mutt, growling as you get close.
 D:ノミの住みかのようなやせた犬で、人が近づくと唸る。
 
@@ -698,7 +698,7 @@ G:C:U
 I:110:1d4:10:3:10
 W:1:1:3:40:196
 B:BITE:HURT:1d3
-F:FRIENDS | 
+F:FRIENDS | DOG
 F:ANIMAL | WILD_WOOD | WILD_GRASS | DROP_SKELETON | DROP_CORPSE
 D:$It is a yapping snarling dog, dangerous when in a pack.
 D:それはやかましく唸る犬型の動物で、群れていると危険だ。
@@ -964,7 +964,7 @@ B:BITE:HURT:2d4
 F:UNIQUE | SPEAK_ALL |
 F:FORCE_MAXHP | RAND_25 | DROP_CORPSE
 F:BASH_DOOR | 
-F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR
+F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR | DOG
 D:$A rather vicious dog belonging to Farmer Maggot.  It thinks you are 
 D:$stealing mushrooms.
 D:農夫マゴットが飼っている少々凶暴な犬だ。それはあなたがキノコを盗んだと
@@ -980,7 +980,7 @@ B:BITE:HURT:2d4
 F:UNIQUE | SPEAK_ALL |
 F:FORCE_MAXHP | RAND_25 | DROP_CORPSE
 F:BASH_DOOR | 
-F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR
+F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR | DOG
 D:$A rather vicious dog belonging to Farmer Maggot.  It thinks you are 
 D:$stealing mushrooms.
 D:農夫マゴットが飼っている少々凶暴な犬だ。それはあなたがキノコを盗んだと
@@ -996,7 +996,7 @@ B:BITE:HURT:2d4
 F:UNIQUE | SPEAK_ALL |
 F:FORCE_MAXHP | RAND_25 | DROP_CORPSE
 F:BASH_DOOR | 
-F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR
+F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR | DOG
 D:$A rather vicious dog belonging to Farmer Maggot.  It thinks you are 
 D:$stealing mushrooms.
 D:農夫マゴットが飼っている少々凶暴な犬だ。それはあなたがキノコを盗んだと
@@ -2767,7 +2767,7 @@ W:9:1:30:0:0
 B:BITE:HURT:1d11
 B:BITE:HURT:1d11
 F:BASH_DOOR | WILD_ONLY | WILD_GRASS | WILD_WOOD | DROP_CORPSE
-F:ANIMAL | UNIQUE | FORCE_MAXHP
+F:ANIMAL | UNIQUE | FORCE_MAXHP | DOG
 D:$It has been terrorizing the nearby villages.
 D:奴は近隣の村々を恐怖に落とし入れてきた。
 
@@ -3209,7 +3209,7 @@ B:BITE:HURT:1d7
 F:RAND_25 | 
 F:FRIENDS | 
 F:BASH_DOOR | WILD_WOOD | WILD_WASTE | WILD_MOUNTAIN 
-F:ANIMAL | DROP_CORPSE
+F:ANIMAL | DROP_CORPSE | DOG
 D:$It howls and snaps at you.
 D:それは冒険者に吠えたてては、飛びかかってくる。
 
@@ -3475,7 +3475,7 @@ B:BITE:HURT:1d4
 F:RAND_25 | 
 F:FRIENDS | 
 F:BASH_DOOR | WILD_WASTE |
-F:ANIMAL | IM_COLD | DROP_SKELETON | DROP_CORPSE
+F:ANIMAL | IM_COLD | DROP_SKELETON | DROP_CORPSE | DOG
 D:$A large and muscled wolf from the northern wastes.  Its breath is cold and 
 D:$icy, and its fur is coated in frost.
 D:北の荒れ地からやって来た、大きくて屈強な狼だ。その息は氷のようで、毛皮は
@@ -3635,7 +3635,7 @@ W:12:4:40:0:0
 B:EXPLODE:HURT:6d6
 F:RAND_50 | 
 F:FRIENDS | 
-F:BASH_DOOR | ANIMAL 
+F:BASH_DOOR | ANIMAL | DOG
 D:$An explosive charge has been attached to this poor animal, who 
 D:$has been trained to search for its target and detonate.
 D:この可哀想な動物には爆発物が取り付けられていて、目標を発見して
@@ -4187,7 +4187,7 @@ I:120:9d9:20:20:0
 W:14:2:40:0:0
 B:BITE:HURT:1d5
 B:BITE:HURT:1d5
-F:ANIMAL | NO_FEAR | FRIENDS | DROP_SKELETON | DROP_CORPSE | ALLIANCE_AMBER
+F:ANIMAL | NO_FEAR | FRIENDS | DROP_SKELETON | DROP_CORPSE | ALLIANCE_AMBER | DOG
 D:$Well-trained watchdogs, obedient to death.
 D:よく訓練された番犬で、死ぬまで従順だ。
 
@@ -4235,7 +4235,7 @@ B:BITE:HURT:1d10
 F:RAND_25 | 
 F:FRIENDS | WILD_WOOD | WILD_MOUNTAIN | DROP_SKELETON | DROP_CORPSE
 F:BASH_DOOR | 
-F:ANIMAL | EVIL
+F:ANIMAL | EVIL | DOG
 D:$It is a large wolf with eyes full of cunning.
 D:それはずる賢そうな目をした大きな狼だ。
 
@@ -4479,7 +4479,7 @@ B:BITE:HURT:1d6
 F:PREVENT_SUDDEN_MAGIC |
 F:FRIENDS | SELF_LITE_1 | SELF_LITE_2 |
 F:BASH_DOOR | 
-F:ANIMAL | RES_LITE
+F:ANIMAL | RES_LITE | DOG
 S:1_IN_5 | 
 S:BR_LITE
 D:$A brilliant canine form whose light hurts your eyes, even at this distance.
@@ -4495,7 +4495,7 @@ B:BITE:HURT:1d6
 F:PREVENT_SUDDEN_MAGIC |
 F:FRIENDS |
 F:BASH_DOOR | HURT_LITE | 
-F:ANIMAL | RES_DARK
+F:ANIMAL | RES_DARK | DOG
 S:1_IN_5 | 
 S:BR_DARK
 D:$A hole in the air in the shape of a huge hound.  No light falls upon its 
@@ -4658,7 +4658,7 @@ B:BITE:HURT:1d6
 F:ATTR_CLEAR | 
 F:FRIENDS |
 F:INVISIBLE | BASH_DOOR | 
-F:ANIMAL
+F:ANIMAL | DOG
 D:$A completely translucent hound.
 D:完全に半透明の犬だ。
 
@@ -5058,7 +5058,7 @@ B:BITE:FIRE:2d3
 F:PREVENT_SUDDEN_MAGIC | SELF_LITE_2 |
 F:FRIENDS | 
 F:BASH_DOOR | HURT_COLD |
-F:ANIMAL | IM_FIRE |
+F:ANIMAL | IM_FIRE | DOG
 S:1_IN_10 | 
 S:BR_FIRE
 D:$Flames lick at its feet and its tongue is a blade of fire.  You can feel a 
@@ -5078,7 +5078,7 @@ B:BITE:COLD:1d6
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS | HURT_FIRE |
 F:BASH_DOOR |
-F:ANIMAL | IM_COLD
+F:ANIMAL | IM_COLD | DOG
 S:1_IN_10 | 
 S:BR_COLD
 D:$A hound as tall as a man, this creature appears to be composed of angular 
@@ -5098,7 +5098,7 @@ B:BITE:ELEC:2d3
 F:PREVENT_SUDDEN_MAGIC | SELF_LITE_2 |
 F:FRIENDS |
 F:BASH_DOOR | 
-F:ANIMAL | IM_ELEC
+F:ANIMAL | IM_ELEC | DOG
 S:1_IN_10 | 
 S:BR_ELEC
 D:$Saint Elmo's Fire forms a ghostly halo around this hound, and sparks sting 
@@ -5155,7 +5155,7 @@ B:BITE:HURT:1d8
 F:RAND_25 | 
 F:FRIENDS | 
 F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL| RES_TELE
+F:ANIMAL| RES_TELE | DOG
 S:1_IN_4 | 
 S:BLINK | TELE_TO
 D:$A strange magical member of the canine race, its form seems to shimmer and 
@@ -5597,7 +5597,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS |
 F:BASH_DOOR | HURT_ROCK |
-F:ANIMAL | RES_SHAR
+F:ANIMAL | RES_SHAR | DOG
 S:1_IN_10 | 
 S:BR_SHAR
 D:$A beautiful crystalline shape does not disguise the danger this hound 
@@ -5619,7 +5619,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS | CAN_FLY |
 F:BASH_DOOR |
-F:ANIMAL | IM_POIS
+F:ANIMAL | IM_POIS | DOG
 S:1_IN_10 | 
 S:BR_POIS
 D:$Swirling vapours surround this beast as it floats towards you, seemingly 
@@ -5657,7 +5657,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS | 
 F:BASH_DOOR | CAN_SWIM | WILD_SHORE |
-F:ANIMAL | IM_ACID
+F:ANIMAL | IM_ACID | DOG
 S:1_IN_10 | 
 S:BR_ACID
 D:$Liquid footprints follow this hound as it pads around the dungeon.  An 
@@ -5730,7 +5730,7 @@ B:BITE:HURT:3d6
 B:CLAW:HURT:3d6
 F:RAND_25 | 
 F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL | EVIL | FRIENDS
+F:ANIMAL | EVIL | FRIENDS | DOG
 D:$It is a tracker; half human, half beast.
 D:それは追跡者だ。半分人間で、半分獣だ。
 
@@ -6245,7 +6245,7 @@ B:BITE:HURT:6d1
 B:BITE:HURT:6d1
 F:BASH_DOOR | DEMON | NO_STUN | NO_FEAR
 F:ANIMAL | EVIL | IM_FIRE | NO_SLEEP | NO_CONF 
-F:RES_NETH | RES_NEXU | RES_DISE | RES_PLAS
+F:RES_NETH | RES_NEXU | RES_DISE | RES_PLAS | DOG
 F:ALLIANCE_KHORNE | MOB_1200
 D:$A revolting canine creature, a huge demon hound with a somewhat 
 D:$reptilian head.
@@ -7222,7 +7222,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS | 
 F:BASH_DOOR | 
-F:ANIMAL | RES_SOUN | NO_CONF | NO_SLEEP |
+F:ANIMAL | RES_SOUN | NO_CONF | NO_SLEEP　| DOG
 S:1_IN_5 | 
 S:BR_SOUN
 D:$A blurry canine form which seems to be moving as fast as the eye can 
@@ -7243,7 +7243,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | RES_NEXU |
 F:FRIENDS | 
 F:BASH_DOOR | 
-F:ANIMAL | NO_CONF | NO_SLEEP
+F:ANIMAL | NO_CONF | NO_SLEEP | DOG
 S:1_IN_5 | 
 S:BR_NEXU
 D:$A locus of conflicting points coalesce to form the vague shape of a huge 
@@ -8905,7 +8905,7 @@ F:PREVENT_SUDDEN_MAGIC |
 F:FRIENDS | 
 F:BASH_DOOR | ATTR_MULTI |
 F:ANIMAL | NO_CONF | NO_SLEEP | SELF_LITE_2 |
-F:IM_ELEC | IM_POIS | IM_ACID | IM_FIRE | IM_COLD
+F:IM_ELEC | IM_POIS | IM_ACID | IM_FIRE | IM_COLD | DOG
 S:1_IN_5
 S:BR_ACID | BR_POIS | BR_COLD | BR_FIRE | BR_ELEC
 D:$Shimmering in rainbow hues, this hound is beautiful and deadly. 
@@ -9440,7 +9440,7 @@ B:BITE:HURT:2d12
 B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | FRIENDS |
 F:BASH_DOOR | 
-F:ANIMAL | RES_GRAV | NO_CONF | NO_SLEEP | 
+F:ANIMAL | RES_GRAV | NO_CONF | NO_SLEEP | DOG
 S:1_IN_5 | 
 S:BR_GRAV
 V:133
@@ -9485,7 +9485,7 @@ B:BITE:HURT:2d12
 B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | FRIENDS |
 F:BASH_DOOR | 
-F:ANIMAL | RES_INER | NO_CONF | NO_SLEEP
+F:ANIMAL | RES_INER | NO_CONF | NO_SLEEP | DOG
 S:1_IN_5 | 
 S:BR_INER
 D:$Bizarrely, this hound seems to be hardly moving at all, yet it approaches 
@@ -9506,7 +9506,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS | 
 F:BASH_DOOR |
-F:ANIMAL | RES_WALL | NO_CONF | NO_SLEEP
+F:ANIMAL | RES_WALL | NO_CONF | NO_SLEEP | DOG
 S:1_IN_8 | 
 S:BR_FORC
 D:$A deep brown shape is visible before you, its canine form strikes you with 
@@ -13438,7 +13438,7 @@ B:BITE:HURT:8d13
 F:UNIQUE | DROP_CORPSE | PREVENT_SUDDEN_MAGIC | FORCE_MAXHP
 F:ONLY_ITEM | DROP_2D2 | DROP_GREAT
 F:OPEN_DOOR | BASH_DOOR | MOVE_BODY | RES_NETH | RES_DARK |
-F:ANIMAL | EVIL | IM_FIRE | NO_CONF | NO_SLEEP
+F:ANIMAL | EVIL | IM_FIRE | NO_CONF | NO_SLEEP | DOG
 S:1_IN_3 | BR_NETH | BR_COLD | BR_DARK | S_HOUND | S_UNDEAD
 D:$Garm is a gigantic hound, whose job is to guard that none escapes 
 D:$the tortures of Hel, the Norse place of punishment for the wicked 
@@ -13592,7 +13592,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | SELF_DARK_1 |
 F:FRIENDS | RES_NETH |
 F:OPEN_DOOR | BASH_DOOR | 
-F:ANIMAL | NO_CONF | NO_SLEEP
+F:ANIMAL | NO_CONF | NO_SLEEP | DOG
 S:1_IN_5 | 
 S:BR_NETH
 D:$You feel a soul-tearing chill upon viewing this beast, a ghostly form of 
@@ -13613,7 +13613,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS | 
 F:OPEN_DOOR | BASH_DOOR |
-F:ANIMAL | RES_TIME | NO_CONF | NO_SLEEP
+F:ANIMAL | RES_TIME | NO_CONF | NO_SLEEP | DOG
 S:1_IN_8 | 
 S:BR_TIME
 V:150
@@ -13636,7 +13636,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC |
 F:FRIENDS | RES_PLAS | SELF_LITE_2 |
 F:OPEN_DOOR | BASH_DOOR |
-F:ANIMAL | IM_ELEC | IM_FIRE | NO_CONF | NO_SLEEP
+F:ANIMAL | IM_ELEC | IM_FIRE | NO_CONF | NO_SLEEP | DOG
 S:1_IN_5 | 
 S:BR_PLAS
 V:150
@@ -15081,7 +15081,7 @@ F:ATTR_MULTI | ATTR_ANY |
 F:PREVENT_SUDDEN_MAGIC | 
 F:FRIENDS | 
 F:BASH_DOOR | 
-F:ANIMAL | RES_CHAO | NO_CONF | NO_SLEEP
+F:ANIMAL | RES_CHAO | NO_CONF | NO_SLEEP | DOG
 S:1_IN_5 | 
 S:BR_CHAO
 D:$A constantly changing canine form, this hound rushes towards you as if 
@@ -16001,7 +16001,7 @@ B:BITE:HURT:2d12
 B:CLAW:HURT:3d3
 F:ATTR_MULTI | ATTR_ANY |
 F:PREVENT_SUDDEN_MAGIC | CAN_FLY |
-F:FRIENDS |
+F:FRIENDS | DOG
 F:BASH_DOOR | AURA_FIRE | AURA_ELEC | AURA_COLD | SELF_LITE_2 |
 F:ANIMAL | IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | 
 F:RES_LITE | RES_DARK | RES_SOUN | RES_CHAO | RES_NETH | RES_DISE |
@@ -16573,7 +16573,7 @@ B:BITE:FIRE:3d12
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | DROP_CORPSE | ALLIANCE_AMBER
 F:RAND_25 | FRIENDS | AURA_FIRE |
 F:BASH_DOOR | MOVE_BODY | 
-F:ANIMAL | EVIL | IM_FIRE
+F:ANIMAL | EVIL | IM_FIRE | DOG
 S:1_IN_5 | 
 S:BR_FIRE
 D:$It is a giant dog that glows with heat.  Flames pour from its nostrils.
@@ -16885,7 +16885,7 @@ B:BITE:POISON:24d6
 B:BITE:POISON:24d6
 F:UNIQUE | MALE | SPEAK_ALL | ALLIANCE_MELDOR
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | 
-F:ESCORT | ESCORTS | DROP_CORPSE 
+F:ESCORT | ESCORTS | DROP_CORPSE | DOG
 F:ONLY_ITEM | DROP_4D2 | DROP_2D2 | DROP_GREAT | 
 F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | MOVE_BODY | 
 F:NO_CONF | NO_SLEEP | NO_FEAR | NO_STUN |
@@ -17060,7 +17060,7 @@ F:UNIQUE | SPEAK_ALL | DROP_CORPSE
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | 
 F:ONLY_ITEM | DROP_4D2 | DROP_3D2 | DROP_GREAT | 
 F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | KILL_BODY | 
-F:ANIMAL | EVIL | IM_POIS | IM_FIRE | IM_COLD | RES_DARK |
+F:ANIMAL | EVIL | IM_POIS | IM_FIRE | IM_COLD | RES_DARK | DOG
 S:1_IN_8 | 
 S:BR_DARK | BR_POIS | BR_COLD
 D:$The immensely huge wolf who would swallow the sun to satisfy its 
@@ -17180,7 +17180,7 @@ F:ONLY_ITEM | DROP_4D2 | DROP_2D2 | DROP_GREAT | AURA_FIRE |
 F:SMART | TAKE_ITEM | OPEN_DOOR | BASH_DOOR | KILL_BODY | 
 F:ANIMAL | EVIL | IM_FIRE | IM_POIS | 
 F:NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN |
-F:ALLIANCE_UTUMNO
+F:ALLIANCE_UTUMNO | DOG
 D:$The first guard of Angband, Carcharoth, also known as 'The Red Maw', is 
 D:$the largest wolf to ever walk the earth.  He is highly intelligent and a 
 D:$deadly opponent in combat.
@@ -17284,7 +17284,7 @@ B:CLAW:FIRE:27d19
 F:UNIQUE | FORCE_MAXHP | AURA_FIRE | ANIMAL | EVIL
 F:PREVENT_SUDDEN_MAGIC | DROP_CORPSE
 F:ONLY_ITEM | DROP_3D2 | DROP_4D2 | DROP_GREAT
-F:OPEN_DOOR | BASH_DOOR | MOVE_BODY | IM_FIRE | NO_CONF | NO_SLEEP
+F:OPEN_DOOR | BASH_DOOR | MOVE_BODY | IM_FIRE | NO_CONF | NO_SLEEP | DOG
 S:1_IN_3 | BA_DARK | BR_FIRE | BR_NETH | S_HOUND
 D:$A three-headed hell hound of fearsome aspect.
 D:$  Flame burns merrily from its $hide as it snarls and roars its defiance.
@@ -18169,7 +18169,7 @@ B:CLAW:HURT:3d3
 F:PREVENT_SUDDEN_MAGIC |
 F:FRIENDS | SELF_LITE_1 |
 F:OPEN_DOOR | BASH_DOOR |
-F:ANIMAL | NO_CONF | NO_SLEEP
+F:ANIMAL | NO_CONF | NO_SLEEP | DOG
 S:1_IN_8 |
 S:BR_MANA
 V:150
@@ -19362,7 +19362,7 @@ B:EXPLODE:HURT:30d3
 F:PREVENT_SUDDEN_MAGIC |
 F:FRIENDS |
 F:OPEN_DOOR | BASH_DOOR |
-F:ANIMAL | NO_CONF | NO_SLEEP
+F:ANIMAL | NO_CONF | NO_SLEEP | DOG
 D:$This dog is about to explode.
 D:今にも爆発しそうな犬だ。
 
@@ -20061,7 +20061,7 @@ B:BITE:POISON:5d10
 F:UNIQUE | MALE | SPEAK_ALL | DROP_CORPSE | WILD_WOOD | ALLIANCE_VALINOR
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | RAND_25 | GOOD | FRIENDLY | 
 F:SMART | OPEN_DOOR | BASH_DOOR | MOVE_BODY | RIDING |
-F:ANIMAL | IM_FIRE | IM_POIS | NO_CONF | NO_SLEEP
+F:ANIMAL | IM_FIRE | IM_POIS | NO_CONF | NO_SLEEP | DOG
 D:$As large as a small horse, Huan, the hound of Valinor, has the ability to
 D:$ understand and speak the languages of elves and men.  However, he never
 D:$ speaks in front of Feanor's sons as he's only allowed to speak three times
@@ -20111,7 +20111,7 @@ B:BITE:HURT:2d6
 B:WAIL:TERRIFY
 F:ESCORTS | FORCE_MAXHP | IM_COLD | IM_ACID | ANIMAL |
 F:SMART | ESCORT | FEMALE | 
-F:OPEN_DOOR | BASH_DOOR | 
+F:OPEN_DOOR | BASH_DOOR | DOG
 F:NO_FEAR
 S:1_IN_5 | 
 S:DARKNESS
@@ -24538,7 +24538,7 @@ B:BITE:FIRE:12d11
 B:CLAW:FIRE:12d11
 B:CRUSH:FIRE:30d2
 F:UNIQUE | FORCE_MAXHP | EVIL | ANIMAL | UNDEAD | DROP_CORPSE | NO_FEAR
-F:DROP_2D2 | DROP_GOOD | IM_FIRE | RES_NETH | RES_DARK
+F:DROP_2D2 | DROP_GOOD | IM_FIRE | RES_NETH | RES_DARK | DOG
 R:1237:9d9
 S:1_IN_5 | S_KIN | BR_FIRE | SCARE | HOLD
 D:$This evil dog wasn't born out of nothing.
@@ -27449,7 +27449,7 @@ B:BITE:HURT:1d4
 B:BITE:HURT:1d4
 F:UNIQUE | FORCE_MAXHP | ANIMAL | FEMALE
 F:WILD_TOWN | SPEAK_ALL | CAN_FLY | FRIENDLY | RES_GRAV
-F:ONLY_GOLD | DROP_4D2 | DROP_CORPSE
+F:ONLY_GOLD | DROP_4D2 | DROP_CORPSE | DOG
 S:1_IN_6 | BLINK | TPORT
 D:$Capitalism can never obey this great dog!!
 D:彼女は決して資本の犬ではない。
@@ -27576,7 +27576,7 @@ B:BITE:HURT:1d12
 B:BITE:HURT:1d12
 B:BITE:HURT:1d5
 F:UNIQUE | FORCE_MAXHP | ESCORT | BASH_DOOR
-F:ANIMAL | NO_FEAR | NO_SLEEP | WILD_WOOD | WILD_WASTE | DROP_CORPSE
+F:ANIMAL | NO_FEAR | NO_SLEEP | WILD_WOOD | WILD_WASTE | DROP_CORPSE | DOG
 D:$It is the boss of the pack of man-eating wolves
 D:$ that plunged the city of Paris into the depths of fear.
 D:$  It has reddish hair, a large body, and a short tail like a stump.
@@ -33146,7 +33146,7 @@ B:BITE:DISEASE:1d8
 B:CLAW:DISEASE:3d3
 B:CLAW:DISEASE:3d3
 F:PREVENT_SUDDEN_MAGIC | ALLIANCE_DOKACHANS | MOB_1000 | SCATOLOGIST
-F:FRIENDS | CAN_FLY |
+F:FRIENDS | CAN_FLY | DOG
 F:BASH_DOOR |
 F:ANIMAL | IM_POIS
 S:1_IN_7 | BR_FECES
@@ -33303,7 +33303,7 @@ B:BITE:HURT:2d10
 B:BITE:HURT:2d10
 F:RAND_25 | 
 F:FRIENDS | WILD_WOOD | WILD_MOUNTAIN | DROP_SKELETON | DROP_CORPSE
-F:BASH_DOOR | 
+F:BASH_DOOR | DOG
 F:ANIMAL | EVIL
 D:より古い魔狼の血を維持すべく、
 D:オークの手により品種改良を重ねられた、より大型のワーグだ。
@@ -34378,7 +34378,7 @@ B:BITE:HURT:2d6
 B:BITE:HURT:2d6
 F:UNIQUE | MALE | EVIL | HAS_LITE_2 | HUMAN | NASTY | HOMO_SEXUAL
 F:FORCE_MAXHP | WILD_ALL | DROP_SKELETON | DROP_CORPSE
-F:DROP_1D2 | DROP_GOOD | EAT_POISONOUS | OPEN_DOOR | BASH_DOOR
+F:DROP_1D2 | DROP_GOOD | EAT_POISONOUS | OPEN_DOOR | BASH_DOOR | DOG
 D:後輩をかばい、犬の真似を強いられた先輩だ。
 D:鑑とは言いたいが結局一転攻勢には加わったから屑だ。
 
@@ -35169,7 +35169,7 @@ B:BITE:HURT:5d4
 F:UNIQUE | SPEAK_ALL |
 F:FORCE_MAXHP | RAND_25 | DROP_CORPSE
 F:BASH_DOOR | 
-F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR
+F:ANIMAL | NO_CONF | NO_SLEEP | NO_FEAR | DOG
 
 N:1890:鐘突きの『ズルゴ』
 E:Zurgo Bellstriker
@@ -39054,7 +39054,7 @@ B:BITE:HURT:3d4
 B:CLAW:HURT:3d6
 F:RAND_25 | WILD_TOWN
 F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
-F:HUMAN | ANIMAL | EVIL | FRIENDS
+F:HUMAN | ANIMAL | EVIL | FRIENDS | DOG
 D:人間の顔をした犬。日本でまれによく見かける珍獣だ。
 
 N:2141:天下の大盗賊『盗跖』
