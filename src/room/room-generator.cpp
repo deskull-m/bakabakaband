@@ -70,6 +70,8 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
         return build_fixed_room(player_ptr, dd_ptr, 18, false, -1);
     case RoomType::MAZE:
         return build_nonvault_maze(player_ptr, dd_ptr);
+    case RoomType::HOUSE:
+        return build_fixed_room(player_ptr, dd_ptr, 20, false, -1);
     default:
         return false;
     }
