@@ -19,7 +19,7 @@
 room_info_type room_info_normal[ROOM_TYPE_MAX] = {
     /* Depth */
     /*  0  10  20  30  40  50  60  70  80  90 100  min limit */
-    { { 1, 0, 800, 700, 600, 500, 400, 300, 200, 100, 0 }, 0 }, /*NORMAL   */
+    { { 1, 900, 800, 700, 600, 500, 400, 300, 200, 100, 0 }, 0 }, /*NORMAL   */
     { { 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 }, 1 }, /*OVERLAP  */
     { { 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 }, 3 }, /*CROSS    */
     { { 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 }, 3 }, /*INNER_F  */
@@ -37,6 +37,7 @@ room_info_type room_info_normal[ROOM_TYPE_MAX] = {
     { { 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3 }, 1 }, /*ARCADE   */
     { { 1, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80 }, 1 }, /*FIX      */
     { { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21 }, 1 }, /*PERVO      */
+    { { 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 }, 3 }, /*CROSS    */
 };
 
 /*! 部屋の生成処理順 / Build rooms in descending order of difficulty. */
@@ -49,6 +50,7 @@ RoomType room_build_order[ROOM_TYPE_MAX] = {
     RoomType::PIT,
     RoomType::NEST,
     RoomType::TRAP,
+    RoomType::MAZE,
     RoomType::GLASS,
     RoomType::INNER_FEAT,
     RoomType::PERVO,
