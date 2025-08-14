@@ -40,6 +40,7 @@ hengband_SOURCES = \
 	alliance/alliance-nanman.cpp alliance/alliance-nanman.h \
 	alliance/alliance-cookie-grandma.cpp alliance/alliance-cookie-grandma.h \
 	alliance/alliance-hide.cpp alliance/alliance-hide.h \
+	alliance/alliance-incubetor.cpp alliance/alliance-incubetor.h \
 	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
 	\

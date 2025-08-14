@@ -61,6 +61,7 @@ enum class AllianceType : int {
     GONDOR = 50, //!< ゴンドール
     VALVERDE = 51, //!< バルベルデ共和国
     FINGOLFIN_NOLDOR = 52, //!< フィンゴルフィン統ノルドール
+    INCUBETOR = 53, //!< インキュベーター
     MAX,
 };
 
