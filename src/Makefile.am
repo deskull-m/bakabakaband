@@ -34,6 +34,7 @@ hengband_SOURCES = \
 	alliance/alliance-fangfamily.cpp alliance/alliance-fangfamily.h \
 	alliance/alliance-feanor-noldor.cpp alliance/alliance-feanor-noldor.h \
 	alliance/alliance-fingolfin-noldor.cpp alliance/alliance-fingolfin-noldor.h \
+	alliance/alliance-frieza-clan.cpp alliance/alliance-frieza-clan.h \
 	alliance/alliance-sexy-commando-club.cpp alliance/alliance-sexy-commando-club.h \
 	alliance/alliance-slaanesh.cpp alliance/alliance-sllanesh.h \
 	alliance/alliance-nurgle.cpp alliance/alliance-nurgle.h \

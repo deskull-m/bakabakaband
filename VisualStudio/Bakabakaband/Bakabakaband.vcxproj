@@ -258,6 +258,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-feanor-noldor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-fingolfin-noldor.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-frieza-clan.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-gondor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-hafu.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-hide.cpp" />
@@ -1051,6 +1052,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h" />
     <ClInclude Include="..\..\src\alliance\alliance-feanor-noldor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-fingolfin-noldor.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-frieza-clan.h" />
     <ClInclude Include="..\..\src\alliance\alliance-gondor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-hafu.h" />
     <ClInclude Include="..\..\src\alliance\alliance-hide.h" />

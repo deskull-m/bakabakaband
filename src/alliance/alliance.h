@@ -62,6 +62,7 @@ enum class AllianceType : int {
     VALVERDE = 51, //!< バルベルデ共和国
     FINGOLFIN_NOLDOR = 52, //!< フィンゴルフィン統ノルドール
     INCUBETOR = 53, //!< インキュベーター
+    FRIEZA_CLAN = 54, //!< フリーザ一族
     MAX,
 };
 
