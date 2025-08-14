@@ -31,7 +31,7 @@ enum class DungeonId {
     DARKNESS = 19,
     GLASS = 20,
     VOID_TERRITORY = 23,
-    MAX = 32,
+    MAX = 33,
 };
 
 constexpr EnumRange<DungeonId> DUNGEON_IDS(DungeonId::WILDERNESS, DungeonId::MAX);
