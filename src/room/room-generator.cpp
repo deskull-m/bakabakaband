@@ -113,11 +113,11 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
     }
 
     room_info_type *room_info_ptr = room_info_normal;
+    auto &dungeon = floor_ptr->get_dungeon_definition();
 
     for (auto r : ROOM_TYPE_LIST) {
-        auto &dungeon = floor_ptr->get_dungeon_definition();
         if (dungeon.room_rate.count(r)) {
-            prob_list[r] = dungeon.room_rate.count(r);
+            prob_list[r] = dungeon.room_rate.at(r);
         } else if (floor_ptr->dun_level < room_info_ptr[enum2i(r)].min_level) {
             prob_list[r] = 0;
         } else {
@@ -130,7 +130,6 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
      * かつ「常に通常でない部屋を生成する」フラグがONならば、
      * GRATER_VAULTのみを生成対象とする。 / Ironman sees only Greater Vaults
      */
-    const auto &dungeon = floor_ptr->get_dungeon_definition();
     if (ironman_rooms && dungeon.flags.has_none_of({ DungeonFeatureType::BEGINNER, DungeonFeatureType::CHAMELEON, DungeonFeatureType::SMALLEST })) {
         for (auto r : ROOM_TYPE_LIST) {
             if (r == RoomType::GREATER_VAULT) {
