@@ -65745,6 +65745,7 @@
         "en": "He looks like a brawny human.  However, unlike a man, he has the tail of a monkey.  This tail proves he is a Saiyan.  A Saiyan's fighting power is far superior to a human's and will cause much destruction."
     },
     "sex": "MALE",
+    "alliance": "FRIEZA-CLAN",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -100153,6 +100154,8 @@
         "ja": "フリーザ一族に従い、惑星そのものの略奪や取引を行う「地上げ屋組織」の一員だ。様々な星の生まれのならず者がその一団に加わると言う。"
     },
     "sex": "MALE",
+    "alliance": "FRIEZA-CLAN",
+    "mob": 900,
     "flags": [
         "HUMAN",
         "ONLY_ITEM",
@@ -106680,6 +106683,7 @@
         "ja": "サイヤ人の数少ない生き残りの一人であり、フリーザの軍団に加わる戦士の一人だ。実力はあるが戦闘民族サイヤ人の中では、まだ凡庸な類に入るらしい。"
     },
     "sex": "MALE",
+    "alliance": "FRIEZA-CLAN",
     "flags": [
         "HUMAN",
         "UNIQUE",

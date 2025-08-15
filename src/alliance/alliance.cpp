@@ -4,6 +4,7 @@
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-feanor-noldor.h"
 #include "alliance/alliance-fingolfin-noldor.h"
+#include "alliance/alliance-frieza-clan.h"
 #include "alliance/alliance-gondor.h"
 #include "alliance/alliance-hafu.h"
 #include "alliance/alliance-hide.h"
@@ -89,6 +90,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::VALVERDE, std::make_unique<AllianceValVerde>(AllianceType::VALVERDE, "VALVERDE", _("バルベルデ共和国", "Republic of Valverde"), 6000000L) },
     { AllianceType::FINGOLFIN_NOLDOR, std::make_unique<AllianceFingolfinNoldor>(AllianceType::FINGOLFIN_NOLDOR, "FINGOLFIN-NOLDOR", _("フィンゴルフィン統ノルドール", "Fingolfin Noldor"), 3200000L) },
     { AllianceType::INCUBETOR, std::make_unique<AllianceIncubetor>(AllianceType::INCUBETOR, "INCUBETOR", _("インキュベーター", "Incubetor"), 1500000L) },
+    { AllianceType::FRIEZA_CLAN, std::make_unique<AllianceFriezaClan>(AllianceType::FRIEZA_CLAN, "FRIEZA-CLAN", _("フリーザ一族", "Frieza Clan"), 15000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
