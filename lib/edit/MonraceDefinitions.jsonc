@@ -99752,9 +99752,11 @@
         }
     ],
     "flavor": {
-        "ja": "トップハム・ハット一族が十数代に渡り英国面と暗黒面に染まり続けながら作り上げて来た、災厄を招く蒸気駆動兵器だ。「じこはおこるさ」と明かるげに嘯きながら彼らは今日もあらゆるものへと襲いかかる。"
+        "ja": "トップハム・ハット一族が十数代に渡り英国面と暗黒面に染まり続けながら作り上げて来た、災厄を招く蒸気駆動兵器だ。「じこはおこるさ」と明かるげに嘯きながら彼らは今日もあらゆるものへと襲いかかる。",
+        "en": "This is a steam-powered weapon that brings disaster, created by the TophamHatt Clan over dozens of generations, while continuing to be tainted by both the dark side and Britain side. \"Accidents happen.\" they say cheerfully, as they attack everything in sight today."
     },
     "alliance": "TOPHAMHATT",
+    "mob": 200,
     "flags": [
         "FRIENDS",
         "DROP_CORPSE",
@@ -144574,6 +144576,84 @@
         "NASTY",
         "HOMO_SEXUAL",
         "YAZYU"
+    ]
+},
+{
+    "id": 2254,
+    "name": {
+        "ja": "トップハム・ハット一族の技師",
+        "en": "TophamHatt Clan engineer"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Violet"
+    },
+    "speed": 10,
+    "hit_point": "50d10",
+    "vision": 30,
+    "armor_class": 100,
+    "alertness": 5,
+    "level": 55,
+    "rarity": 3,
+    "exp": 5500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [
+        {
+            "escorts_id": 1544,
+            "escort_num": "2d3"
+        }
+    ],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d2"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d2"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d2"
+        }
+    ],
+    "skill": {
+        "shoot": "9d9",
+        "list": [
+            "HEAL",
+            "S_KIN",
+            "ROCKET",
+            "SHOOT",
+            "BLINK"
+        ],
+        "probability": "1_IN_8"
+    },
+    "flavor": {
+        "ja": "故地の産業発展に寄与した偉大な祖先の遺志もどこへやら、堕落し果てた末裔たちだ。彼らは人面機関車たちでいかに美しい「事故」を引き起こせるかにしか興味を持たない。",
+        "en": "The will of their great ancestors, who contributed to the industrial development of their homeland, has been lost, and their descendants have fallen into complete decadence. They are only interested in how they can cause beautiful “accidents” with their human-faced locomotives."
+    },
+    "sex": "MALE",
+    "alliance": "TOPHAMHATT",
+    "mob": 30,
+    "flags": [
+        "EVIL",
+        "HUMAN",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "IM_ACID",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP",
+        "EAT_CONF",
+        "EAT_INSANITY"
     ]
 }]
 }
