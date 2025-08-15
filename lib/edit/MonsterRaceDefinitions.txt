@@ -29621,10 +29621,14 @@ B:CRUSH:SUPERHURT:9d6
 F:FRIENDS | DROP_CORPSE | BASH_DOOR | NONLIVING
 F:RIDING | DROP_90 | DROP_GOOD | ONLY_ITEM | WEIRD_MIND
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | KILL_WALL | KILL_BODY
-F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | ALLIANCE_TOPHAMHATT
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | ALLIANCE_TOPHAMHATT | MOB_200
 D:トップハム・ハット一族が十数代に渡り英国面と暗黒面に染まり続けながら
 D:作り上げて来た、災厄を招く蒸気駆動兵器だ。
 D:「じこはおこるさ」と明かるげに嘯きながら彼らは今日もあらゆるものへと襲いかかる。
+D:$This is a steam-powered weapon that brings disaster,
+D:$ created by the TophamHatt Clan over dozens of generations,
+D:$ while continuing to be tainted by both the dark side and Britain side.
+D:$ "Accidents happen." they say cheerfully, as they attack everything in sight today.
 
 N:1545:陰毛ゴーレム
 E:Pubic hair golem
@@ -40857,6 +40861,28 @@ F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | FORCE_MAXHP |
 F:EVIL | UNIQUE | ANIMAL | NASTY | HOMO_SEXUAL | YAZYU
 D:$It's a beastly senior who's like a Minotaur, with a fake body made of steroids and made even more disgusting by being turned into a beast.
 D:ステロイドで出来た偽りの肉体をさらにクッソ汚い獣化で強化されたミノタウロスの如き野獣先輩だ。
+
+N:2254:トップハムハット一族の技師
+E:TophamHatt Clan engineer
+G:p:v
+I:120:50d10:30:100:5
+W:55:3:5500:0:0
+B:HIT:HURT:6d2
+B:HIT:HURT:6d2
+B:HIT:HURT:6d2
+B:SHOOT:HURT:9d9
+R:1544:2d3
+F:MALE | EVIL | HUMAN | ALLIANCE_TOPHAMHATT | MOB_30
+F:ONLY_ITEM | DROP_4D2 | DROP_SKELETON | DROP_CORPSE
+F:OPEN_DOOR | BASH_DOOR |
+F:IM_ACID | IM_POIS | NO_CONF | NO_SLEEP | EAT_CONF | EAT_INSANITY |
+S:1_IN_8 | 
+S:HEAL | S_KIN | ROCKET | SHOOT | BLINK
+D:故地の産業発展に寄与した偉大な祖先の遺志もどこへやら、堕落し果てた末裔たちだ。
+D:彼らは人面機関車たちでいかに美しい「事故」を引き起こせるかにしか興味を持たない。
+D:$The will of their great ancestors, who contributed to the industrial development of
+D:$ their homeland, has been lost, and their descendants have fallen into complete decadence.
+D:$ They are only interested in how they can cause beautiful “accidents” with their human-faced locomotives.
 
 # N: serial number : monster name
 # G: symbol : color
