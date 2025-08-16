@@ -40862,7 +40862,7 @@ F:EVIL | UNIQUE | ANIMAL | NASTY | HOMO_SEXUAL | YAZYU
 D:$It's a beastly senior who's like a Minotaur, with a fake body made of steroids and made even more disgusting by being turned into a beast.
 D:ステロイドで出来た偽りの肉体をさらにクッソ汚い獣化で強化されたミノタウロスの如き野獣先輩だ。
 
-N:2254:トップハムハット一族の技師
+N:2254:トップハム・ハット一族の技師
 E:TophamHatt Clan engineer
 G:p:v
 I:120:50d10:30:100:5

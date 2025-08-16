@@ -73,7 +73,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::FEANOR_NOLDOR, std::make_unique<AllianceFeanorNoldor>(AllianceType::FEANOR_NOLDOR, "FEANOR-NOLDOR", _("フェアノール統ノルドール", "Feanor Noldor"), 3500000L) },
     { AllianceType::GAICHI, std::make_unique<AllianceGaichi>(AllianceType::GAICHI, "GAICHI", _("ガイチ帝国", "Gaichi Empire"), 1100000L) },
     { AllianceType::LEGEND_OF_SAVIOR, std::make_unique<AllianceLegendOfSavior>(AllianceType::LEGEND_OF_SAVIOR, "LEGEND-OF-SAVIOR", _("世紀末救世主伝説", "Legend of the Latter-day Savior"), 0L) },
-    { AllianceType::TOPHAMHATT, std::make_unique<AllianceTophamHatt>(AllianceType::TOPHAMHATT, "TOPHAMHATT", _("トップハムハット一族", "Topham Hatt Family"), 1400000L) },
+    { AllianceType::TOPHAMHATT, std::make_unique<AllianceTophamHatt>(AllianceType::TOPHAMHATT, "TOPHAMHATT", _("トップハム・ハット一族", "Topham Hatt Family"), 1400000L) },
     { AllianceType::TRIOTHEPANCH, std::make_unique<AllianceTrioThePunch>(AllianceType::TRIOTHEPANCH, "TRIOTHEPANCH", _("トリオ・ザ・パンチ", "Trio The Panch"), 50000L) },
     { AllianceType::MEGADETH, std::make_unique<AllianceMegadeth>(AllianceType::MEGADETH, "MEGADETH", _("秘密結社メガデス", "Secret Society Megadeth"), 4000L) },
     { AllianceType::KHORNE, std::make_unique<AllianceKhorne>(AllianceType::KHORNE, "KHORNE", _("血の神コーン", "Khorne, the Blood God"), 18000000L) },
