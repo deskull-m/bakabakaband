@@ -785,6 +785,62 @@ static errr set_mon_message(const nlohmann::json &message_data, MonraceDefinitio
 }
 
 /*!
+ * @brief JSON Objectからモンスターの地形変化率をセットする
+ * @param terrain_data 地形変化情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+static errr set_mon_terrain_feature(const nlohmann::json &terrain_data, MonraceDefinition &monrace)
+{
+    if (terrain_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+
+    if (!terrain_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &terrain : terrain_data) {
+        if (!terrain.contains("id") || !terrain.contains("probability")) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        FEAT_IDX feature_id;
+        if (auto err = info_set_integer(terrain["id"], feature_id, true, Range(0, 9999))) {
+            return err;
+        }
+
+        const auto &probability_str = terrain["probability"].get<std::string>();
+
+        // "X_IN_Y" 形式をパース
+        size_t in_pos = probability_str.find("_IN_");
+        if (in_pos == std::string::npos) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        const auto numer_str = probability_str.substr(0, in_pos);
+        const auto denom_str = probability_str.substr(in_pos + 4); // "_IN_" を除去
+
+        int numerator, denominator;
+        try {
+            numerator = std::stoi(numer_str);
+            denominator = std::stoi(denom_str);
+        } catch (...) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        if (numerator <= 0 || denominator <= 0) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        // 分子、分母、地形IDを設定
+        monrace.change_feats.push_back({ numerator, denominator, feature_id });
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief モンスター種族情報(JSON Object)のパース関数
  * @param mon_data モンスターデータの格納されたJSON Object
  * @param head ヘッダ構造体
@@ -931,6 +987,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_message(mon_data["message"], monrace);
     if (err) {
         msg_format(_("モンスターメッセージ読込失敗。ID: '%d'。", "Failed to load monster message. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_terrain_feature(mon_data["terrain_feature"], monrace);
+    if (err) {
+        msg_format(_("モンスター地形変化情報読込失敗。ID: '%d'。", "Failed to load monster terrain feature data. ID: '%d'."), error_idx);
         return err;
     }
 
