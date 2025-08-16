@@ -45,7 +45,7 @@ enum class AllianceType : int {
     FEANOR_NOLDOR = 34, //!< フェアノール統ノルドール
     GAICHI = 35, //!< ガイチ帝国
     LEGEND_OF_SAVIOR = 36, //!< 世紀末救世主伝説
-    TOPHAMHATT = 37, //!< トップハムハット一族
+    TOPHAMHATT = 37, //!< トップハム・ハット一族
     TRIOTHEPANCH = 38, //!< トリオ・ザ・パンチ
     MEGADETH = 39, //!< 秘密結社メガデス
     KHORNE = 40, //!< 血の神コーン
