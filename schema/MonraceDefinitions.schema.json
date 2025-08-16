@@ -803,6 +803,31 @@
                                 }
                             }
                         }
+                    },
+                    "terrain_feature": {
+                        "type": "array",
+                        "description": "地形変化率",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "id",
+                                "probability"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": "変化先地形ID",
+                                    "minimum": 0,
+                                    "maximum": 9999
+                                },
+                                "probability": {
+                                    "type": "string",
+                                    "description": "確率。X_IN_Y形式",
+                                    "pattern": "[1-9][0-9]*_IN_[1-9][0-9]*"
+                                }
+                            }
+                        }
                     }
                 }
             }
