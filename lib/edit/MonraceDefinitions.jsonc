@@ -144657,5 +144657,71 @@
         "EAT_CONF",
         "EAT_INSANITY"
     ]
+},
+{
+    "id": 2255,
+    "name": {
+        "ja": "シルヴァン・レンジャー",
+        "en": "Silvan ranger"
+    },
+    "symbol": {
+        "character": "h",
+        "color": "Light Green"
+    },
+    "speed": 5,
+    "hit_point": "50d30",
+    "vision": 20,
+    "armor_class": 70,
+    "alertness": 20,
+    "level": 38,
+    "rarity": 3,
+    "exp": 500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d8"
+        }
+    ],
+    "skill": {
+        "shoot": "8d6",
+        "list": [
+            "SHOOT",
+            "HEAL"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "森を守護せんとするシルヴァンのエルフだ。",
+        "en": "They are Silvan elves who protect the forest."
+    },
+    "sex": "MALE",
+    "alliance": "SILVAN-ELF",
+    "mob": 550,
+    "flags": [
+        "FRIENDS",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "ELF",
+        "RANGER",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "GOOD",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "SMART",
+        "IM_ACID",
+        "IM_COLD",
+        "RES_WATE",
+        "RES_NETH"
+    ]
 }]
 }
