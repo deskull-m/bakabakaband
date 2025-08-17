@@ -44,6 +44,7 @@ hengband_SOURCES = \
 	alliance/alliance-incubetor.cpp alliance/alliance-incubetor.h \
 	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
+	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
