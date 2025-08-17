@@ -40884,6 +40884,22 @@ D:$The will of their great ancestors, who contributed to the industrial developm
 D:$ their homeland, has been lost, and their descendants have fallen into complete decadence.
 D:$ They are only interested in how they can cause beautiful “accidents” with their human-faced locomotives.
 
+N:2255:シルヴァン・レンジャー
+E:Silvan ranger
+G:h:G
+I:115:50d30:20:70:20
+W:38:3:500:0:0
+B:SHOOT:HURT:8d6
+B:HIT:HURT:10d8
+B:HIT:HURT:10d8
+F:MALE | FRIENDS | OPEN_DOOR | BASH_DOOR | ELF | RANGER | ALLIANCE_SILVAN-ELF | MOB_550
+F:ONLY_ITEM | DROP_1D2 | GOOD | DROP_SKELETON | DROP_CORPSE | SMART |
+F:IM_ACID | IM_COLD | RES_WATE | RES_NETH | MOB_300 | ALLIANCE_VALINOR
+S:1_IN_3
+S:SHOOT | HEAL
+D:$They are Silvan elves who protect the forest.
+D:森を守護せんとするシルヴァンのエルフだ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
