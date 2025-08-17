@@ -20,6 +20,7 @@
 #include "alliance/alliance-sexy-commando-club.h"
 #include "alliance/alliance-shire.h"
 #include "alliance/alliance-shittodan.h"
+#include "alliance/alliance-silvan-elf.h"
 #include "alliance/alliance-slaanesh.h"
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
@@ -91,6 +92,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::FINGOLFIN_NOLDOR, std::make_unique<AllianceFingolfinNoldor>(AllianceType::FINGOLFIN_NOLDOR, "FINGOLFIN-NOLDOR", _("フィンゴルフィン統ノルドール", "Fingolfin Noldor"), 3200000L) },
     { AllianceType::INCUBETOR, std::make_unique<AllianceIncubetor>(AllianceType::INCUBETOR, "INCUBETOR", _("インキュベーター", "Incubetor"), 1500000L) },
     { AllianceType::FRIEZA_CLAN, std::make_unique<AllianceFriezaClan>(AllianceType::FRIEZA_CLAN, "FRIEZA-CLAN", _("フリーザ一族", "Frieza Clan"), 15000000L) },
+    { AllianceType::SILVAN_ELF, std::make_unique<AllianceSilvanElf>(AllianceType::SILVAN_ELF, "SILVAN-ELF", _("シルヴァン・エルフ", "Silvan Elf"), 2800000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

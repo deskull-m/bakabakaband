@@ -273,6 +273,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-sexy-commando-club.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shire.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shittodan.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-silvan-elf.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-slaanesh.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-tophamhatt.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-triothepunch.cpp" />
@@ -1067,6 +1068,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-sexy-commando-club.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shire.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shittodan.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-silvan-elf.h" />
     <ClInclude Include="..\..\src\alliance\alliance-slaanesh.h" />
     <ClInclude Include="..\..\src\alliance\alliance-triothepunch.h" />
     <ClInclude Include="..\..\src\alliance\alliance-tophamhatt.h" />
