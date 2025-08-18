@@ -45,6 +45,7 @@ hengband_SOURCES = \
 	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
 	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
+	alliance/alliance-aryan-family.cpp alliance/alliance-aryan-family.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
