@@ -64,6 +64,7 @@ enum class AllianceType : int {
     INCUBETOR = 53, //!< インキュベーター
     FRIEZA_CLAN = 54, //!< フリーザ一族
     SILVAN_ELF = 55, //!< シルヴァン・エルフ
+    ARYAN_FAMILY = 56, //!< アーリアン・ファミリー
     MAX,
 };
 

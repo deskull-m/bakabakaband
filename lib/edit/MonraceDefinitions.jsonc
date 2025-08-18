@@ -84069,6 +84069,8 @@
         "ja": "全長10フィート近くもあり、強靭で猛毒を持った大トカゲだ。",
         "en": "With a total length of nearly 10 feet, it is a tough and highly poisonous lizard."
     },
+    "alliance": "ARYAN-FAMILY",
+    "mob": 300,
     "flags": [
         "ANIMAL",
         "CAN_SWIM",
@@ -103329,6 +103331,7 @@
         "ja": "かつて妻子を愛し、正義感に溢れる警察官であったこの男は、アーリアン・ファミリーのボス、ビッグ・アイの残酷無比な拷問の果てに狂気の殺戮者になった哀しき過去を持つ。特殊合金のマントをまとう回転攻撃はまさに攻守一体だ。"
     },
     "sex": "MALE",
+    "alliance": "ARYAN-FAMILY",
     "flags": [
         "UNIQUE",
         "HUMAN",
@@ -130641,6 +130644,7 @@
         "ja": "女預言者にして学者、ヒルデガルト・フォン・ビンゲンの末裔であり、大災害で世界が滅びた後のマンハッタンでアーリアン・ファミリーの長を務める残虐無比な支配者だ。"
     },
     "sex": "MALE",
+    "alliance": "ARYAN-FAMILY",
     "flags": [
         "UNIQUE",
         "HUMAN",
