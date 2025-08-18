@@ -40900,6 +40900,20 @@ S:SHOOT | HEAL
 D:$They are Silvan elves who protect the forest.
 D:森を守護せんとするシルヴァンのエルフだ。
 
+N:2256:アーリアン・ファミリーの構成員
+E:Members of the Aryan family
+G:p:D
+I:110:8d8:30:24:10
+W:8:2:26:0:0
+B:HIT:HURT:2d6
+B:HIT:HURT:2d6
+F:MALE | HUMAN |
+F:DROP_1D2 | WILD_ALL | ALLIANCE_ARYAN-FAMILY | MOB_500
+F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:EVIL | ROGUE
+D:世界崩壊後のマンハッタンで抗争を繰り広げる組織のうち、
+D:白人の集団にあたるアーリアン・ファミリーの一員だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
