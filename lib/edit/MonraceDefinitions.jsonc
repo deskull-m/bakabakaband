@@ -85765,7 +85765,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -85822,7 +85822,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -85885,7 +85885,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -85948,7 +85948,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -86011,7 +86011,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -89655,7 +89655,7 @@
         "UNIQUE",
         "FORCE_MAXHP",
         "HUMAN",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "KARATEKA",
         "DROP_1D2",
         "ONLY_ITEM",
@@ -89723,7 +89723,7 @@
         "NO_FEAR",
         "NO_CONF",
         "HAS_LITE_1",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "KARATEKA"
     ]
 },
@@ -99995,7 +99995,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -100757,7 +100757,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -100810,7 +100810,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_90",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -117816,7 +117816,7 @@
         "HOMO_SEXUAL",
         "EVIL",
         "HUMAN",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "FORCE_MAXHP",
         "WILD_TOWN",
         "WILD_ONLY",
@@ -119136,7 +119136,7 @@
     "flags": [
         "UNIQUE",
         "DROP_CORPSE",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "HUMAN",
         "FORCE_MAXHP",
         "WILD_TOWN",
@@ -121232,7 +121232,7 @@
         "WILD_WOOD",
         "HAS_LITE_1",
         "SPEAK_ALL",
-        "QUANTUM"
+        "MONKEY_SPACE"
     ]
 },
 {
@@ -142896,7 +142896,7 @@
         "NO_CONF",
         "NO_SLEEP",
         "HUMAN",
-        "QUANTUM"
+        "MONKEY_SPACE"
     ]
 },
 {
@@ -144341,7 +144341,7 @@
         "NO_CONF",
         "HAS_LITE_1",
         "KARATEKA",
-        "QUANTUM"
+        "MONKEY_SPACE"
     ]
 },
 {
@@ -144388,7 +144388,7 @@
     },
     "flags": [
         "EVIL",
-        "QUANTUM",
+        "MONKEY_SPACE",
         "DROP_GREAT",
         "DROP_1D2",
         "UNIQUE",

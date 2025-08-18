@@ -114,6 +114,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::QUANTUM);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MONKEY_SPACE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MONKEY_SPACE);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ELF)) {
         lore_ptr->kind_flags.set(MonsterKindType::ELF);
     }

@@ -375,6 +375,9 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_VIOLET, _("両性具有であり", " hermaphroditic"));
     }
     */
+    if (lore_ptr->kind_flags.has(MonsterKindType::MONKEY_SPACE)) {
+        hook_c_roff(TERM_L_UMBER, _("猿空間に属する", " belonging to monkey space"));
+    }
 
     if (lore_ptr->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR)) {
         hook_c_roff(TERM_VIOLET, _("狂気を誘う", " sanity-blasting"));
