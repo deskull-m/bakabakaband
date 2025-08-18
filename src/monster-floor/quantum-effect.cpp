@@ -84,7 +84,7 @@ bool process_quantum_effect(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_
 {
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
-    if (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::QUANTUM) && monrace.kind_flags.has_not(MonsterKindType::MONKEY_SPACE)) {
         return false;
     }
     if (!randint0(2)) {

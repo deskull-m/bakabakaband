@@ -975,6 +975,7 @@ bool MonraceDefinition::is_suitable_for_arena() const
 {
     auto is_suitable = this->behavior_flags.has_not(MonsterBehaviorType::NEVER_MOVE);
     is_suitable &= this->misc_flags.has_not(MonsterMiscType::MULTIPLY);
+    is_suitable &= this->kind_flags.has_not(MonsterKindType::MONKEY_SPACE);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::QUANTUM) || this->kind_flags.has(MonsterKindType::UNIQUE);
     is_suitable &= this->feature_flags.has_not(MonsterFeatureType::AQUATIC);
     is_suitable &= this->misc_flags.has_not(MonsterMiscType::CHAMELEON);

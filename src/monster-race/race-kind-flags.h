@@ -45,5 +45,6 @@ enum class MonsterKindType {
     YAZYU = 41,
     SKELETON = 42,
     DOG = 43,
+    MONKEY_SPACE = 44, // 猿空間
     MAX,
 };
