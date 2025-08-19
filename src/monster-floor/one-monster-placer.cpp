@@ -333,6 +333,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     if (is_summoned) {
         m_ptr->parent_m_idx = *summoner_m_idx;
+        if (summoner.get_monrace().kind_flags.has(MonsterKindType::QUYLTHLUG)) {
+            m_ptr->mflag2.set(MonsterConstantFlagType::QUYLTHLUG_BORN);
+        }
     } else {
         m_ptr->parent_m_idx = 0;
     }
