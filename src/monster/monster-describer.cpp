@@ -250,11 +250,15 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
     std::stringstream ss;
 
     if (monster.parent_m_idx > 0) {
-        auto parent_name = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
-        if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
-            ss << parent_name << _("が産んだ", "-born ");
-        } else {
-            ss << parent_name << _("が召喚した", "summoned ");
+        const auto parent_monster = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx];
+        // 親ID＝自身のIDでは主を失った状態なのでスキップ
+        if (parent_monster.r_idx != monster.r_idx) {
+            auto parent_name = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
+            if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+                ss << parent_name << _("が産んだ", "-born ");
+            } else {
+                ss << parent_name << _("が召喚した", "summoned ");
+            }
         }
     }
 
