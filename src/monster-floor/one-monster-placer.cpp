@@ -304,6 +304,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->mflag2.set(MonsterConstantFlagType::LARGE);
     }
 
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(20)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
+    }
+
     if (m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
         m_ptr->sub_align = summoner.sub_align;
     } else if (m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
