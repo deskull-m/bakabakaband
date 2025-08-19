@@ -65,6 +65,7 @@ enum class AllianceType : int {
     FRIEZA_CLAN = 54, //!< フリーザ一族
     SILVAN_ELF = 55, //!< シルヴァン・エルフ
     ARYAN_FAMILY = 56, //!< アーリアン・ファミリー
+    BASAM_EMPIRE = 57, //!< バサム帝国
     MAX,
 };
 
