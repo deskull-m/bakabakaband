@@ -251,12 +251,11 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
 
     if (monster.parent_m_idx > 0) {
         auto parent_name = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
-#ifdef JP
-        ss << parent_name << "が召喚した";
-#endif
-#ifndef JP
-        ss << parent_name << "sumnmoned ";
-#endif
+        if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+            ss << parent_name << _("が産んだ", "-born ");
+        } else {
+            ss << parent_name << _("が召喚した", "summoned ");
+        }
     }
 
 #ifdef JP

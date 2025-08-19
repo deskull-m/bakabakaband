@@ -27,5 +27,6 @@ enum class MonsterConstantFlagType {
     DEFECATED = 13, /*!< 脱糞した / Defecated */
     VOMITED = 14, /*!< 嘔吐した / Vomited */
     ANGER = 15, /*!< 怒れる / Anger */
+    QUYLTHLUG_BORN = 16, /*!< クイルスルグの落とし仔 / Quylthlug born */
     MAX,
 };
