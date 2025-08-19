@@ -248,6 +248,17 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
     const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
     const auto name = get_describing_monster_name(monster, is_hallucinated, mode);
     std::stringstream ss;
+
+    if (monster.parent_m_idx > 0) {
+        auto parent_name = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
+#ifdef JP
+        ss << parent_name << "が召喚した";
+#endif
+#ifndef JP
+        ss << parent_name << "sumnmoned ";
+#endif
+    }
+
 #ifdef JP
     if (monster.mflag2.has(MonsterConstantFlagType::SANTA)) {
         ss << "サンタと化した";
@@ -255,7 +266,7 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
 #endif
 #ifndef JP
     if (monster.mflag2.has(MonsterConstantFlagType::SANTA)) {
-        ss << "Santa turned";
+        ss << "Santa turned ";
     }
 #endif
 
