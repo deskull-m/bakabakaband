@@ -331,8 +331,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     m_ptr->nickname.clear();
     m_ptr->exp = 0;
 
-    if (is_summoned && summoner.is_pet()) {
-        set_bits(mode, PM_FORCE_PET);
+    if (is_summoned) {
         m_ptr->parent_m_idx = *summoner_m_idx;
     } else {
         m_ptr->parent_m_idx = 0;
