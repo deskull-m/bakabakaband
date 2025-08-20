@@ -508,12 +508,12 @@ P:33:67
 
 # Starting position when coming from quest 19
 ?:[EQU $LEAVING_QUEST 19]
-P:19:66
+P:185:106
 
 # Starting position when coming from quest 22
 ?:[EQU $LEAVING_QUEST 22]
-P:63:98
+P:230:140
 
 # Starting position when coming from quest 23
 ?:[EQU $LEAVING_QUEST 23]
-P:63:102
+P:230:145
