@@ -40914,6 +40914,21 @@ F:EVIL | ROGUE
 D:世界崩壊後のマンハッタンで抗争を繰り広げる組織のうち、
 D:白人の集団にあたるアーリアン・ファミリーの一員だ。
 
+N:2257:『オゴレス王』
+E:King Ogreth
+G:p:o
+I:110:80d10:25:80:25
+W:30:2:0:900:0:0
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+F:UNIQUE | MALE | DROP_SKELETON | DROP_CORPSE | ALLIANCE_BASAM-EMPIRE
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | HUMAN
+F:DROP_90 | DROP_1D2 | DROP_GOOD | OPEN_DOOR | BASH_DOOR
+F:EVIL | IM_ELEC | IM_COLD | NO_CONF | NO_SLEEP
+D:バサム帝国に君臨する暴君だ。城塞の最奥に籠っているという。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
