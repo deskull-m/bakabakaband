@@ -194,7 +194,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
 
     const auto is_confused = effects->confusion().is_confused();
     const auto is_stunned = effects->stun().is_stunned();
-    if (monrace.is_female() && !(is_stunned || is_confused || is_hallucinated || !monster.ml)) {
+    if (monster.is_female() && !(is_stunned || is_confused || is_hallucinated || !monster.ml)) {
         if (player_ptr->is_wielding(FixedArtifactId::ZANTETSU)) {
             sound(SoundKind::ATTACK_FAILED);
             msg_print(_("拙者、おなごは斬れぬ！", "I can not attack women!"));

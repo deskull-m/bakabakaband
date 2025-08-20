@@ -107,17 +107,16 @@ static tl::optional<std::string> decide_monster_personal_pronoun(const MonsterEn
 
 static tl::optional<std::string> get_monster_self_pronoun(const MonsterEntity &monster, const BIT_FLAGS mode)
 {
-    const auto &monrace = monster.get_appearance_monrace();
     constexpr BIT_FLAGS self = MD_POSSESSIVE | MD_OBJECTIVE;
     if (!match_bits(mode, self, self)) {
         return tl::nullopt;
     }
 
-    if (monrace.sex == MonsterSex::FEMALE) {
+    if (monster.is_female()) {
         return _("彼女自身", "herself");
     }
 
-    if (monrace.sex == MonsterSex::MALE) {
+    if (monster.is_male()) {
         return _("彼自身", "himself");
     }
 
@@ -275,6 +274,10 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
 
     if (monster.mflag2.has(MonsterConstantFlagType::ANGER)) {
         ss << _("怒れる", "angry ");
+    }
+
+    if (monster.mflag2.has(MonsterConstantFlagType::WAIFUIZED)) {
+        ss << _("美少女化した", "waifuized ");
     }
 
     if (monster.mflag2.has(MonsterConstantFlagType::LARGE)) {

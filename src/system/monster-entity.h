@@ -81,6 +81,8 @@ public:
     bool is_original_ap() const;
     bool is_mimicry() const;
     bool is_valid() const;
+    bool is_male() const;
+    bool is_female() const;
     MonraceId get_real_monrace_id() const;
     MonraceDefinition &get_real_monrace() const;
     MonraceDefinition &get_appearance_monrace() const;
