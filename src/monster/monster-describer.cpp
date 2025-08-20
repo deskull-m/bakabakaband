@@ -113,11 +113,11 @@ static tl::optional<std::string> get_monster_self_pronoun(const MonsterEntity &m
         return tl::nullopt;
     }
 
-    if (monrace.sex == MonsterSex::FEMALE) {
+    if (monrace.is_female()) {
         return _("彼女自身", "herself");
     }
 
-    if (monrace.sex == MonsterSex::MALE) {
+    if (monrace.is_male()) {
         return _("彼自身", "himself");
     }
 

@@ -185,7 +185,7 @@ bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
         return false;
     }
 
-    if (!is_male(monrace)) {
+    if (!monrace.is_male()) {
         return false;
     }
 
@@ -215,7 +215,7 @@ bool vault_aux_les(PlayerType *player_ptr, MonraceId r_idx)
         return false;
     }
 
-    if (!is_female(monrace)) {
+    if (!monrace.is_female()) {
         return false;
     }
 
