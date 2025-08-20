@@ -362,13 +362,17 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
         return false;
     }
 
-    if (see_m) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
-        if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+    const auto m_name = monster_desc(player_ptr, monster, 0);
+    if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+        if (see_m) {
             msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
-        } else {
-            msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
         }
+    } else if (monster.mflag2.has(MonsterConstantFlagType::PET)) {
+        if (see_m) {
+            msg_format(_("%sは消え去った。", "%s^ disappears."), m_name.data());
+        }
+    } else {
+        return false;
     }
 
     if (record_named_pet && monster.is_named_pet()) {
