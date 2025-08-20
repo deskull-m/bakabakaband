@@ -264,6 +264,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-gondor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-hafu.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-hide.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-hionhurn.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-incubetor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-legendofsavior.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
@@ -1060,6 +1061,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-gondor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-hafu.h" />
     <ClInclude Include="..\..\src\alliance\alliance-hide.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-hionhurn.h" />
     <ClInclude Include="..\..\src\alliance\alliance-incubetor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-legendofsavior.h" />
     <ClInclude Include="..\..\src\alliance\alliance-jural.h" />
