@@ -1,6 +1,7 @@
 #include "alliance/alliance.h"
 #include "alliance/alliance-aryan-family.h"
 #include "alliance/alliance-basam-empire.h"
+#include "alliance/alliance-chardros.h"
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance-fangfamily.h"
@@ -99,6 +100,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::ARYAN_FAMILY, std::make_unique<AllianceAryanFamily>(AllianceType::ARYAN_FAMILY, "ARYAN-FAMILY", _("アーリアン・ファミリー", "Aryan Family"), 3400000L) },
     { AllianceType::BASAM_EMPIRE, std::make_unique<AllianceBasamEmpire>(AllianceType::BASAM_EMPIRE, "BASAM-EMPIRE", _("バサム帝国", "Basam Empire"), 4200000L) },
     { AllianceType::HIONHURN, std::make_unique<AllianceHionhurn>(AllianceType::HIONHURN, "HIONHURN", _("ハイオンハーン", "Hionhurn"), 3800000L) },
+    { AllianceType::CHARDROS, std::make_unique<AllianceChardros>(AllianceType::CHARDROS, "CHARDROS", _("チャードロス", "Chardros"), 4000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

@@ -255,6 +255,7 @@
     <ClCompile Include="..\..\src\action\weapon-shield.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-aryan-family.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-basam-empire.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-chardros.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-chinchintei.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-cookie-grandma.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp" />
@@ -1052,6 +1053,7 @@
     <ClInclude Include="..\..\src\action\run-execution.h" />
     <ClInclude Include="..\..\src\alliance\alliance-aryan-family.h" />
     <ClInclude Include="..\..\src\alliance\alliance-basam-empire.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-chardros.h" />
     <ClInclude Include="..\..\src\alliance\alliance-chinchintei.h" />
     <ClInclude Include="..\..\src\alliance\alliance-cookie-grandma.h" />
     <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h" />
