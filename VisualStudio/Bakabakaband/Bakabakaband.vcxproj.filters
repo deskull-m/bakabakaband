@@ -2444,9 +2444,6 @@
     <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-breath.cpp" />
     <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-curse.cpp" />
     <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-ball.cpp" />
-    <ClCompile Include="..\..\src\monster-race\race-sex-const.cpp">
-      <Filter>monster-race</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\room\rooms-pit.cpp">
       <Filter>room</Filter>
     </ClCompile>
@@ -2633,6 +2630,10 @@
       <Filter>alliance</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-basam-empire.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hionhurn.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-chardros.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
   </ItemGroup>
@@ -5700,6 +5701,10 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-basam-empire.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hionhurn.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-chardros.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>
