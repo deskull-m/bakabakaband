@@ -163,6 +163,18 @@ bool MonsterEntity::is_valid() const
     return MonraceList::is_valid(this->r_idx);
 }
 
+bool MonsterEntity::is_male() const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.is_male();
+}
+
+bool MonsterEntity::is_female() const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.is_female() || this->mflag2.has(MonsterConstantFlagType::WAIFUIZED);
+}
+
 MonraceId MonsterEntity::get_real_monrace_id() const
 {
     const auto &monrace = this->get_monrace();

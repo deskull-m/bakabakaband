@@ -107,17 +107,16 @@ static tl::optional<std::string> decide_monster_personal_pronoun(const MonsterEn
 
 static tl::optional<std::string> get_monster_self_pronoun(const MonsterEntity &monster, const BIT_FLAGS mode)
 {
-    const auto &monrace = monster.get_appearance_monrace();
     constexpr BIT_FLAGS self = MD_POSSESSIVE | MD_OBJECTIVE;
     if (!match_bits(mode, self, self)) {
         return tl::nullopt;
     }
 
-    if (monrace.is_female()) {
+    if (monster.is_female()) {
         return _("彼女自身", "herself");
     }
 
-    if (monrace.is_male()) {
+    if (monster.is_male()) {
         return _("彼自身", "himself");
     }
 
