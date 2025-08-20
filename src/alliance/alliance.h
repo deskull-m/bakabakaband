@@ -66,6 +66,7 @@ enum class AllianceType : int {
     SILVAN_ELF = 55, //!< シルヴァン・エルフ
     ARYAN_FAMILY = 56, //!< アーリアン・ファミリー
     BASAM_EMPIRE = 57, //!< バサム帝国
+    HIONHURN = 58, //!< ハイオンハーン
     MAX,
 };
 

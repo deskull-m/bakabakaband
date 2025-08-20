@@ -10,6 +10,7 @@
 #include "alliance/alliance-gondor.h"
 #include "alliance/alliance-hafu.h"
 #include "alliance/alliance-hide.h"
+#include "alliance/alliance-hionhurn.h"
 #include "alliance/alliance-incubetor.h"
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khorne.h"
@@ -97,6 +98,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::SILVAN_ELF, std::make_unique<AllianceSilvanElf>(AllianceType::SILVAN_ELF, "SILVAN-ELF", _("シルヴァン・エルフ", "Silvan Elf"), 2800000L) },
     { AllianceType::ARYAN_FAMILY, std::make_unique<AllianceAryanFamily>(AllianceType::ARYAN_FAMILY, "ARYAN-FAMILY", _("アーリアン・ファミリー", "Aryan Family"), 3400000L) },
     { AllianceType::BASAM_EMPIRE, std::make_unique<AllianceBasamEmpire>(AllianceType::BASAM_EMPIRE, "BASAM-EMPIRE", _("バサム帝国", "Basam Empire"), 4200000L) },
+    { AllianceType::HIONHURN, std::make_unique<AllianceHionhurn>(AllianceType::HIONHURN, "HIONHURN", _("ハイオンハーン", "Hionhurn"), 3800000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
