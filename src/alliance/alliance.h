@@ -68,6 +68,7 @@ enum class AllianceType : int {
     BASAM_EMPIRE = 57, //!< バサム帝国
     HIONHURN = 58, //!< ハイオンハーン
     CHARDROS = 59, //!< チャードロス
+    ARIOCH = 60, //!< アリオッチ
     MAX,
 };
 
