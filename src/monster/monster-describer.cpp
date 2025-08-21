@@ -235,6 +235,7 @@ static std::string add_cameleon_name(const MonsterEntity &monster, const BIT_FLA
 std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, BIT_FLAGS mode)
 {
     const auto pronoun = decide_monster_personal_pronoun(monster, mode);
+    const auto &monrace = monster.get_monrace();
     if (pronoun) {
         return *pronoun;
     }
@@ -255,6 +256,8 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
             auto parent_name = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
             if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
                 ss << parent_name << _("が産んだ", "-born ");
+            } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
+                ss << parent_name << _("が率いる", "leads ");
             } else {
                 ss << parent_name << _("が召喚した", "summoned ");
             }

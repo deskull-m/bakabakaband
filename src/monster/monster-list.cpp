@@ -97,6 +97,10 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
             }
         }
 
+        if (!none_bits(mode, PM_HAVE_MASTER) && monraces.get_monrace(monrace_id).misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
+            continue;
+        }
+
         prob_table.entry_item(monrace_id, entry.prob2);
     }
 

@@ -352,6 +352,7 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
 {
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
+    const auto &monrace = monster.get_monrace();
 
     if (!monster.has_parent()) {
         return false;
@@ -366,6 +367,10 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
     if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
         if (see_m) {
             msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
+        }
+    } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
+        if (see_m) {
+            msg_format(_("%sは主を失い消え去った。", "%s^ disappears without a master."), m_name.data());
         }
     } else if (monster.mflag2.has(MonsterConstantFlagType::PET)) {
         if (see_m) {

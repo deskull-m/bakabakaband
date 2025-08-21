@@ -27,6 +27,7 @@ enum class MonsterMiscType {
     STALKER = 23,
     HOME_ONLY = 24,
     SCATOLOGIST = 25,
+    BREAK_DOWN = 26,
     MAX
 };
 
