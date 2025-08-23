@@ -50,6 +50,7 @@ hengband_SOURCES = \
 	alliance/alliance-basam-empire.cpp alliance/alliance-basam-empire.h \
 	alliance/alliance-chardros.cpp alliance/alliance-chardros.h \
 	alliance/alliance-hionhurn.cpp alliance/alliance-hionhurn.h \
+	alliance/alliance-xiombarg.cpp alliance/alliance-xiombarg.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
