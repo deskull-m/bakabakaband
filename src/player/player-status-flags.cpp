@@ -235,8 +235,10 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_SLAY_GIANT:
     case TR_SLAY_DRAGON:
     case TR_SLAY_MALE:
+    case TR_SLAY_FEMALE:
     case TR_KILL_DRAGON:
     case TR_KILL_MALE:
+    case TR_KILL_FEMALE:
     case TR_VORPAL:
         return check_equipment_flags(player_ptr, tr_flag);
     case TR_EARTHQUAKE:
