@@ -21627,6 +21627,7 @@ F:UNIQUE | MALE | EVIL | HAS_LITE_2 | HUMAN | WARRIOR | ALLIANCE_NANMAN
 F:FORCE_MAXHP | SPEAK_ALL | DROP_SKELETON | DROP_CORPSE |
 F:ONLY_ITEM | DROP_1D2 | DROP_GOOD | OPEN_DOOR | BASH_DOOR |
 F:IM_ACID | IM_ELEC | IM_POIS | HURT_FIRE |
+R:2258:6d8
 D:$This giant man is the king of southern Nanman. It is said that 
 D:$he is about 10 feet tall. His army has hard rattan armor.
 D:南蛮の南にある烏戈国を支配する王で、その身の丈は12尺と言われている。
@@ -40928,6 +40929,25 @@ F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | HUMAN
 F:DROP_90 | DROP_1D2 | DROP_GOOD | OPEN_DOOR | BASH_DOOR
 F:EVIL | IM_ELEC | IM_COLD | NO_CONF | NO_SLEEP
 D:バサム帝国に君臨する暴君だ。城塞の最奥に籠っているという。
+
+N:2258:藤甲兵
+E:Tengjiabing
+G:p:o
+I:110:5d8:20:80:20
+W:9:1:20:0:0
+B:SLASH:HURT:3d4
+B:SLASH:HURT:3d4
+B:SHOOT:HURT:1d5
+F:MALE | HUMAN | WILD_ALL | HAS_LITE_2 | IM_POIS | ALLIANCE_NANMAN | MOB_200
+F:DROP_1D2 | DROP_SKELETON | DROP_CORPSE | HURT_FIRE
+F:OPEN_DOOR | BASH_DOOR | WARRIOR | FRIENDS | CAN_SWIM
+S:1_IN_5 | SHOOT
+D:南蛮の奥地烏戈国の兵士だ。彼らの鎧は烏戈国の藤の蔓を油に浸し乾かすことを繰り返すことで、
+D:鋼も超える強度と水に浮く軽量さを兼ね備える。しかし炎には弱いようだ。
+D:$They are soldiers from the remote southern kingdom.
+D:$ Their armor is made by repeatedly soaking wisteria vines in oil and drying them,
+D:$ giving it a strength that surpasses steel and a lightness that allows it to float on water.
+D:$ However, it seems to be vulnerable to fire.
 
 # N: serial number : monster name
 # G: symbol : color
