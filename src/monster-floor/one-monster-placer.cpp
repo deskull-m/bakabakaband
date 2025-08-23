@@ -399,6 +399,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->get_monrace().kind_flags.set(MonsterKindType::MALE);
     }
 
+    // Set FEMALE kind flag based on monster's sex
+    if (m_ptr->is_female()) {
+        m_ptr->get_monrace().kind_flags.set(MonsterKindType::FEMALE);
+    }
+
     if (ironman_nightmare) {
         auto hp = m_ptr->max_maxhp * 2;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, hp);

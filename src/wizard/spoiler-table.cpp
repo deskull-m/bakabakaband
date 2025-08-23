@@ -86,6 +86,8 @@ const std::vector<flag_desc> slay_flags_desc = {
     { TR_KILL_HUMAN, _("*人間*", "XHuman") },
     { TR_SLAY_MALE, _("男性", "Male") },
     { TR_KILL_MALE, _("*男性*", "XMale") },
+    { TR_SLAY_FEMALE, _("女性", "Female") },
+    { TR_KILL_FEMALE, _("*女性*", "XFemale") },
     { TR_SLAY_UNDEAD, _("アンデッド", "Undead") },
     { TR_KILL_UNDEAD, _("*アンデッド*", "XUndead") },
     { TR_SLAY_DEMON, _("悪魔", "Demon") },
