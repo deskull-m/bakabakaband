@@ -33,6 +33,7 @@
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
@@ -264,6 +265,12 @@ void do_cmd_go_down(PlayerType *player_ptr)
         dungeon_id = terrain.flags.has(TerrainCharacteristics::ENTRANCE) ? i2enum<DungeonId>(grid.special) : DungeonId::ANGBAND;
         if (ironman_downward && (dungeon_id != DungeonId::ANGBAND)) {
             msg_print(_("ダンジョンの入口は塞がれている！", "The entrance of this dungeon is closed!"));
+            return;
+        }
+
+        auto dungeon = DungeonList::get_instance().get_dungeon(dungeon_id);
+        if(dungeon.min_plev > player_ptr->lev) {
+            msg_print(_("あなたは弾き返された。このダンジョンに入るだけの力が備わっていないようだ。", "You are repelled. You lack the strength to enter this dungeon."));
             return;
         }
 
