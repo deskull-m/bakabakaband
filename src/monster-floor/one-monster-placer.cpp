@@ -305,6 +305,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(20)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
+    }
+
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
     }
 
@@ -383,6 +387,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::FAT)) {
+        m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
     if (ironman_nightmare) {

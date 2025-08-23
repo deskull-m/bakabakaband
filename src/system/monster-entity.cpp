@@ -297,6 +297,10 @@ byte MonsterEntity::get_temporary_speed() const
         speed -= 10;
     }
 
+    if (this->mflag2.has(MonsterConstantFlagType::FAT)) {
+        speed -= 5;
+    }
+
     return speed;
 }
 
