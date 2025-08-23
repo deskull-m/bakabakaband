@@ -43,6 +43,8 @@ MULTIPLY mult_slaying(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flag
         { TR_KILL_GOOD, MonsterKindType::GOOD, 35 },
         { TR_SLAY_HUMAN, MonsterKindType::HUMAN, 25 },
         { TR_KILL_HUMAN, MonsterKindType::HUMAN, 40 },
+        { TR_SLAY_MALE, MonsterKindType::MALE, 25 },
+        { TR_KILL_MALE, MonsterKindType::MALE, 40 },
         { TR_SLAY_UNDEAD, MonsterKindType::UNDEAD, 30 },
         { TR_KILL_UNDEAD, MonsterKindType::UNDEAD, 50 },
         { TR_SLAY_DEMON, MonsterKindType::DEMON, 30 },
