@@ -4747,6 +4747,15 @@ F:STR | DEX | SUST_STR | SUST_DEX |
 F:RES_FEAR | FREE_ACT
 D:ヨロシク仮面と言えば親父のブリーフだろう？
 
+N:290:『ヨツンヴァイン』
+E:'Jotunvein'
+I:21:14:0
+W:20:10:250:2500
+P:0:2d10:15:15:0
+F:RIDING | NASTY | KILL_GIANT | ESP_GIANT | KILL_MALE
+D:$Oh, This must be a disaster for the frost giants.  Oh!  Wait a minute ....
+D:おお、これは霜の巨人たちに対する災いのはずだ、おや、ちょっと待てよ？
+
 # N: serial number : item name
 # I: tval : sval : pval
 # W: depth : rarity : weight : cost

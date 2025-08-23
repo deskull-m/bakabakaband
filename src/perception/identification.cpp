@@ -327,6 +327,12 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
         info[i++] = _("それは自然界の動物に対して特に恐るべき力を発揮する。", "It is especially deadly against natural creatures.");
     }
 
+    if (flags.has(TR_KILL_MALE)) {
+        info[i++] = _("それは男にとっての天敵である。", "It is a great bane of male.");
+    } else if (flags.has(TR_SLAY_MALE)) {
+        info[i++] = _("それは男に対して特に恐るべき力を発揮する。", "It is especially deadly against male.");
+    }
+
     if (flags.has(TR_KILL_HUMAN)) {
         info[i++] = _("それは人間にとっての天敵である。", "It is a great bane of humans.");
     }
