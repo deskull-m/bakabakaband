@@ -269,7 +269,7 @@ void do_cmd_go_down(PlayerType *player_ptr)
         }
 
         auto dungeon = DungeonList::get_instance().get_dungeon(dungeon_id);
-        if(dungeon.min_plev > player_ptr->lev) {
+        if (dungeon.min_plev > player_ptr->lev) {
             msg_print(_("あなたは弾き返された。このダンジョンに入るだけの力が備わっていないようだ。", "You are repelled. You lack the strength to enter this dungeon."));
             return;
         }
