@@ -144,6 +144,7 @@ const std::vector<flag_insc_table> flag_insc_kill = {
     { { "デ", "U" }, TR_KILL_DEMON },
     { { "死", "L" }, TR_KILL_UNDEAD },
     { { "動", "Z" }, TR_KILL_ANIMAL },
+    { { "男", "m" }, TR_KILL_MALE },
 };
 
 /*! オブジェクトの特性表示記号テーブルの定義(種族*スレイ*) */
@@ -151,6 +152,7 @@ const std::vector<flag_insc_table> flag_insc_slay = {
     { { "邪", "*" }, TR_SLAY_EVIL, TR_KILL_EVIL },
     { { "善", "A" }, TR_SLAY_GOOD, TR_KILL_GOOD },
     { { "人", "p" }, TR_SLAY_HUMAN, TR_KILL_HUMAN },
+    { { "男", "m" }, TR_SLAY_MALE, TR_KILL_MALE },
     { { "竜", "D" }, TR_SLAY_DRAGON, TR_KILL_DRAGON },
     { { "オ", "o" }, TR_SLAY_ORC, TR_KILL_ORC },
     { { "ト", "T" }, TR_SLAY_TROLL, TR_KILL_TROLL },

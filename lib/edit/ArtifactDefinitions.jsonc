@@ -10996,6 +10996,38 @@
       "ja": "ヨロシク仮面と言えば親父のブリーフだろう？",
       "en": ""
     }
+  },
+  {
+    "id": 290,
+    "name": {
+      "ja": "『ヨツンヴァイン』",
+      "en": ""
+    },
+    "base_item": {
+      "type_value": 21,
+      "subtype_value": 14
+    },
+    "parameter_value": 0,
+    "level": 20,
+    "rarity": 10,
+    "weight": 250,
+    "cost": 2500,
+    "base_ac": 0,
+    "base_dice": "2d10",
+    "hit_bonus": 15,
+    "damage_bonus": 15,
+    "ac_bonus": 0,
+    "flags": [
+      "RIDING",
+      "WARNING",
+      "KILL_GIANT",
+      "ESP_GIANT",
+      "KILL_MALE"
+    ],
+    "flavor": {
+      "ja": "おお、これは霜の巨人たちに対する災いのはずだ、おや、ちょっと待てよ？",
+      "en": "Oh, This must be a disaster for the frost giants.  Oh!  Wait a minute ...."
+    }
   }
 ]
 }
