@@ -54728,7 +54728,8 @@
             "S_MONSTERS",
             "S_UNIQUE",
             "S_HI_UNDEAD",
-            "S_HI_DRAGON"
+            "S_HI_DRAGON",
+            "BA_GRAVITY"
         ],
         "probability": "1_IN_3"
     }

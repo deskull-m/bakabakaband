@@ -190,6 +190,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"BA_VOID", MonsterAbilityType::BA_VOID },
 	{"BA_ABYSS", MonsterAbilityType::BA_ABYSS },
 	{"BA_METEOR", MonsterAbilityType::BA_METEOR },
+	{"BA_GRAVITY", MonsterAbilityType::BA_GRAVITY },
 	{"DRAIN_MANA", MonsterAbilityType::DRAIN_MANA },
 	{"MIND_BLAST", MonsterAbilityType::MIND_BLAST },
 	{"BRAIN_SMASH", MonsterAbilityType::BRAIN_SMASH },

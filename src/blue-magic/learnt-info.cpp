@@ -55,6 +55,7 @@ std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power)
     case MonsterAbilityType::BA_MANA:
     case MonsterAbilityType::BA_DARK:
     case MonsterAbilityType::BA_LITE:
+    case MonsterAbilityType::BA_GRAVITY:
         return set_bluemage_damage(player_ptr, power, plev, KWD_DAM);
     case MonsterAbilityType::ROCKET:
     case MonsterAbilityType::SHOOT:

@@ -17573,8 +17573,8 @@ F:EVIL | IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | RES_DARK
 F:ALLIANCE_UTUMNO | COLLAPSE_82.5
 S:1_IN_3 | 
 S:BRAIN_SMASH | DISPEL |
-S:BA_MANA | BO_MANA | BA_NETH | ANIM_DEAD 
-S:S_MONSTERS | S_UNIQUE | S_HI_UNDEAD | S_HI_DRAGON
+S:BA_MANA | BO_MANA | BA_NETH | ANIM_DEAD
+S:S_MONSTERS | S_UNIQUE | S_HI_UNDEAD | S_HI_DRAGON | BA_GRAVITY
 V:150
 D:$He is the Master of the Pits of Angband.  His figure is like a black 
 D:$mountain crowned with Lightning.  He rages with everlasting anger, his 

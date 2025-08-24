@@ -113,7 +113,11 @@ const std::unordered_map<MonsterAbilityType, MSpellData> ball_list = {
     { MonsterAbilityType::BA_METEOR, { { _("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."),
                                            _("%s^がメテオスウォームの呪文を念じた。", "%s^ invokes a meteor swarm."),
                                            _("%s^が%sに対してメテオスウォームの呪文を念じた。", "%s^ invokes a meteor swarm upon %s.") },
-                                         AttributeType::METEOR } }
+                                         AttributeType::METEOR } },
+    { MonsterAbilityType::BA_GRAVITY, { { _("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."),
+                                            _("%s^が超重力の呪文を念じた。", "%s^ invokes a gravity storm."),
+                                            _("%s^が%sに対して超重力の呪文を念じた。", "%s^ invokes a gravity storm upon %s.") },
+                                          AttributeType::GRAVITY } }
 };
 
 MSpellBall::MSpellBall(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbilityType ability, POSITION rad, int target_type)

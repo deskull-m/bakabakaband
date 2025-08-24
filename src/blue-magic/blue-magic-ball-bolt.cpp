@@ -39,6 +39,7 @@ const std::unordered_map<MonsterAbilityType, blue_magic_ball_type> BLUE_MAIGC_BA
     { MonsterAbilityType::BA_VOID, { AttributeType::VOID_MAGIC, 4, _("虚無の嵐の呪文を念じた。", "You invoke a void storm.") } },
     { MonsterAbilityType::BA_ABYSS, { AttributeType::ABYSS, 4, _("深淵の嵐の呪文を念じた。", "You invoke a abyss storm.") } },
     { MonsterAbilityType::BA_METEOR, { AttributeType::METEOR, 4, _("メテオスウォームの呪文を念じた。", "You invoke a meteor swarm.") } },
+    { MonsterAbilityType::BA_GRAVITY, { AttributeType::GRAVITY, 4, _("超重力の呪文を念じた。", "You invoke a gravity storm.") } },
 };
 
 struct blue_magic_bolt_type {
