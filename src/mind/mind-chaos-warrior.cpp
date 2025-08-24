@@ -75,3 +75,46 @@ void acquire_chaos_weapon(PlayerType *player_ptr)
     item.ego_idx = EgoType::CHAOTIC;
     (void)drop_near(player_ptr, item, player_ptr->get_position());
 }
+
+void acquire_hafted_weapon(PlayerType *player_ptr)
+{
+    ItemEntity item(BaseitemKey(ItemKindType::HAFTED, SV_GREAT_HAMMER));
+    {
+        item.pval = 1;
+        item.to_h = 3 + randint1(18);
+        item.to_d = 3 + randint1(18);
+        item.to_a = randint1(5);
+
+        switch (randint1(21)) {
+        case 1:
+        case 2:
+        case 3:
+            item.ego_idx = EgoType::CHAOTIC;
+            break;
+        case 4:
+        case 5:
+        case 6:
+            item.ego_idx = EgoType::EARTHQUAKES;
+            break;
+        case 7:
+        case 8:
+        case 9:
+            item.ego_idx = EgoType::DEMON;
+            break;
+        case 10:
+        case 11:
+            item.ego_idx = EgoType::KILL_HUMAN;
+            break;
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+            item.ego_idx = EgoType::MORGUL;
+            break;
+        default:
+            // エゴなしの場合はそのまま
+            break;
+        }
+    }
+    (void)drop_near(player_ptr, item, player_ptr->get_position());
+}
