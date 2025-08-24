@@ -21,6 +21,7 @@ POSITION monster_target_y;
 CapturedMonsterType::CapturedMonsterType()
     : r_idx(MonraceId::PLAYER)
 {
+    mflag2.clear();
 }
 
 FallOffHorseEffect::FallOffHorseEffect(PlayerType *player_ptr)
