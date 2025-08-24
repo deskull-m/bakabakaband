@@ -7,6 +7,7 @@
  * @date 2021/05/02
  */
 
+#include "monster/monster-flag-types.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-flags.h"
 #include "object-enchant/trc-types.h"
@@ -61,6 +62,7 @@ public:
     uint8_t captured_monster_speed = 0; /*!< 捕らえたモンスターの速度 */
     short captured_monster_current_hp = 0; /*!< 捕らえたモンスターの現HP */
     short captured_monster_max_hp = 0; /*!< 捕らえたモンスターの最大HP */
+    EnumClassFlagGroup<MonsterConstantFlagType> captured_monster_mflag2{}; /*!< 捕らえたモンスターのフラグ */
     ushort fuel = 0; /*!< 光源の残り寿命 / Extra info fuel or captured monster's current HP */
 
     byte smith_hit = 0; /*!< 鍛冶をした結果上昇した命中値 */
