@@ -21,6 +21,7 @@ hengband_SOURCES = \
 	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
 	alliance/alliance-hafu.cpp alliance/alliance-hafu.h \
 	alliance/alliance-jural.cpp alliance/alliance-jural.h \
+	alliance/alliance-khaine.cpp alliance/alliance-khaine.h \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
 	alliance/alliance-legendofsavior.cpp alliance/alliance-legendofsavior.h \
 	alliance/alliance-mabelode.cpp alliance/alliance-mabelode.h \
