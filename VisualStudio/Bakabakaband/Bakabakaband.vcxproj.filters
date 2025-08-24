@@ -2645,6 +2645,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-mabelode.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp">
+      <Filter>action</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5724,6 +5727,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-mabelode.h">
       <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-khaine.h">
+      <Filter>action</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

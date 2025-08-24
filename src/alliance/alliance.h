@@ -71,6 +71,7 @@ enum class AllianceType : int {
     ARIOCH = 60, //!< アリオッチ
     XIOMBARG = 61, //!< キシオムバーグ
     MABELODE = 62, //!< マベロード
+    KHAINE = 63, //!< カイン
     MAX,
 };
 
