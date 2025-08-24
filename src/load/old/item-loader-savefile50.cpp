@@ -156,6 +156,12 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
         }
     }
 
+    if (any_bits(flags, SaveDataItemFlagType::MFLAGS2)) {
+        rd_FlagGroup(o_ptr->captured_monster_mflag2, rd_byte);
+    } else {
+        o_ptr->captured_monster_mflag2.clear();
+    }
+
     if (any_bits(flags, SaveDataItemFlagType::INSCRIPTION)) {
         o_ptr->inscription = rd_string();
     } else {
