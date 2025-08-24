@@ -12,6 +12,8 @@
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-investor-remover.h"
 #include "object-enchant/object-curse.h"
+#include "object-enchant/object-ego.h"
+#include "object/object-mark-types.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -30,6 +32,7 @@
 #include "status/base-status.h"
 #include "status/experience.h"
 #include "status/shape-changer.h"
+#include "sv-definition/sv-weapon-types.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
@@ -95,7 +98,7 @@ std::vector<Patron> patron_list = {
 
     Patron({ "コーン", "Khorne" },
         { REW_WRATH, REW_HURT_LOT, REW_HURT_LOT, REW_H_SUMMON, REW_H_SUMMON, REW_IGNORE, REW_IGNORE, REW_IGNORE, REW_SER_MONS, REW_SER_DEMO, REW_POLY_SLF,
-            REW_POLY_WND, REW_HEAL_FUL, REW_GOOD_OBJ, REW_GOOD_OBJ, REW_CHAOS_WP, REW_GOOD_OBS, REW_GOOD_OBS, REW_GREA_OBJ, REW_GREA_OBS },
+            REW_POLY_WND, REW_HEAL_FUL, REW_GOOD_OBJ, REW_GOOD_HAFTED, REW_GOOD_HAFTED, REW_GOOD_OBS, REW_GOOD_HAFTED, REW_GOOD_HAFTED, REW_GREA_OBS },
         A_STR, MonraceId::KHORNE),
 
     Patron({ "スラーネッシュ", "Slaanesh" },
@@ -481,6 +484,12 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_DISPEL_C:
             msg_format(_("%sの力が敵を攻撃するのを感じた！", "You can feel the power of %s assault your enemies!"), this->name.data());
             (void)dispel_monsters(this->player_ptr, this->player_ptr->lev * 4);
+            break;
+        case REW_GOOD_HAFTED:
+            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("「殺せ！叩き潰せ！擦り潰せ！」", "'Kill them! Crush them! Grind them into dust!'"));
+            acquire_hafted_weapon(this->player_ptr);
+            reward = _("高級品の鈍器を手に入れた。", "a fine hafted weapon");
             break;
         case REW_IGNORE:
             msg_format(_("%sはあなたを無視した。", "%s ignores you."), this->name.data());
