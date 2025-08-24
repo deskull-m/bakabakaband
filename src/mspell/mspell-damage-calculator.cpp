@@ -231,6 +231,10 @@ static int monspell_damage_base(
         dam = 50 + rlev * 5 / 2;
         dice = Dice(3, rlev);
         break;
+    case MonsterAbilityType::BA_GRAVITY:
+        dam = (rlev * 4) + 50;
+        dice = Dice(10, 10);
+        break;
     case MonsterAbilityType::DRAIN_MANA:
         dam = rlev;
         div = 1;

@@ -113,6 +113,7 @@ const std::unordered_set<MonsterAbilityType> AIMING_SPELLS = {
     MonsterAbilityType::BA_VOID,
     MonsterAbilityType::BA_ABYSS,
     MonsterAbilityType::BA_METEOR,
+    MonsterAbilityType::BA_GRAVITY,
     MonsterAbilityType::DRAIN_MANA,
     MonsterAbilityType::MIND_BLAST,
     MonsterAbilityType::BRAIN_SMASH,
@@ -605,6 +606,10 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     case MonsterAbilityType::BA_METEOR:
         msg_print(_("メテオスウォームの呪文を念じた。", "You cast a meteor swarm."));
         fire_ball(player_ptr, AttributeType::METEOR, dir, damage, 4);
+        break;
+    case MonsterAbilityType::BA_GRAVITY:
+        msg_print(_("超重力の呪文を念じた。", "You invoke a gravity storm."));
+        fire_ball(player_ptr, AttributeType::GRAVITY, dir, damage, 4);
         break;
     case MonsterAbilityType::DRAIN_MANA:
         fire_ball_hide(player_ptr, AttributeType::DRAIN_MANA, dir, randint1(plev * 3) + plev, 0);
