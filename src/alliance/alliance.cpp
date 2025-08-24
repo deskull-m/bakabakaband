@@ -17,6 +17,7 @@
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-legendofsavior.h"
+#include "alliance/alliance-mabelode.h"
 #include "alliance/alliance-megadeth.h"
 #include "alliance/alliance-nanman.h"
 #include "alliance/alliance-nibelung.h"
@@ -105,6 +106,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::CHARDROS, std::make_unique<AllianceChardros>(AllianceType::CHARDROS, "CHARDROS", _("チャードロス", "Chardros"), 4000000L) },
     { AllianceType::ARIOCH, std::make_unique<AllianceArioch>(AllianceType::ARIOCH, "ARIOCH", _("アリオッチ", "Arioch"), 4500000L) },
     { AllianceType::XIOMBARG, std::make_unique<AllianceXiombarg>(AllianceType::XIOMBARG, "XIOMBARG", _("キシオムバーグ", "Xiombarg"), 4800000L) },
+    { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("マベロード", "Mabelode"), 3600000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

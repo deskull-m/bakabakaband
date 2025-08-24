@@ -70,6 +70,7 @@ enum class AllianceType : int {
     CHARDROS = 59, //!< チャードロス
     ARIOCH = 60, //!< アリオッチ
     XIOMBARG = 61, //!< キシオムバーグ
+    MABELODE = 62, //!< マベロード
     MAX,
 };
 
