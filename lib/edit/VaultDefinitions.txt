@@ -16968,6 +16968,33 @@ D:         %..%
 D:         %..%         
 D:          %%          
 
+N:816:LavaPuddle
+X:18:8:24:14
+D: %%%%         
+D:%....%%%%%    
+D:%.vv......%   
+D:%.vvvvvv...%  
+D:%..vvvvv...%  
+D: %.vvvvv....% 
+D: %.vvvvvvv...%
+D: %....vvvvv..%
+D:  %%....vvv..%
+D:   %....vvv..%
+D:    %%%.vvv..%
+D:   %% %..vv..%
+D:  %..%%..vv..%
+D: %.v.%%..vv..%
+D: %.v.%%..vv..%
+D:%.v.% %..vv..%
+D:%.v.%%..vv...%
+D:%.vv...vvv...%
+D:%.vvv..vv...% 
+D:%.vvvvvv...%  
+D: %..vvv....%  
+D: %........%   
+D:  %......%    
+D:   %%%%%%     
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
