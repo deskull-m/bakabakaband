@@ -1,4 +1,5 @@
 #include "alliance/alliance.h"
+#include "alliance/alliance-anor-londo.h"
 #include "alliance/alliance-arioch.h"
 #include "alliance/alliance-aryan-family.h"
 #include "alliance/alliance-basam-empire.h"
@@ -47,6 +48,7 @@
 const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::NONE, std::make_unique<AllianceNone>(AllianceType::NONE, "NONE", _("無所属", "None"), 0) },
     { AllianceType::AMBER, std::make_unique<AllianceAmber>(AllianceType::AMBER, "AMBER", _("アンバー", "Amber"), 350000000L) },
+    { AllianceType::ANOR_LONDO, std::make_unique<AllianceAnorLondo>(AllianceType::ANOR_LONDO, "ANOR-LONDO", _("アノール・ロンド", "Anor Londo"), 15000000L) },
     { AllianceType::COCHAOS, std::make_unique<AllianceCourtOfChaos>(AllianceType::COCHAOS, "COCHAOS", _("混沌の宮廷", "Court of Chaos"), 200000000L) },
     { AllianceType::VALINOR, std::make_unique<AllianceValinor>(AllianceType::VALINOR, "VALINOR", _("ヴァリノール", "Valinor"), 4000000L) },
     { AllianceType::UTUMNO, std::make_unique<AllianceCourtOfChaos>(AllianceType::UTUMNO, "UTUMNO", _("ウトゥムノ", "Utumno"), 3000000L) },

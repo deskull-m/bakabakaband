@@ -18,6 +18,7 @@ hengband_SOURCES = \
 	action/weapon-shield.cpp action/weapon-shield.h \
 	\
 	alliance/alliance.cpp alliance/alliance.h \
+	alliance/alliance-anor-londo.cpp alliance/alliance-anor-londo.h \
 	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
 	alliance/alliance-hafu.cpp alliance/alliance-hafu.h \
 	alliance/alliance-jural.cpp alliance/alliance-jural.h \
