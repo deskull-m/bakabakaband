@@ -177,6 +177,11 @@ void set_ball_types(PlayerType *player_ptr, lore_type *lore_ptr)
     if (lore_ptr->ability_flags.has(MonsterAbilityType::BA_GRAVITY)) {
         add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::BA_GRAVITY, _("超重力%s", "invoke gravity storms%s"), TERM_SLATE);
     }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::SYSTEM_RECOVER)) {
+        add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::SYSTEM_RECOVER, _("システムリカバー%s", "invoke system recovery%s"), TERM_SLATE);
+    }
+
 }
 
 void set_particular_types(PlayerType *player_ptr, lore_type *lore_ptr)

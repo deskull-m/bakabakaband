@@ -124,6 +124,8 @@ std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power)
         return format(" %sd%d+%d", KWD_DURATION, 20 + plev, plev);
     case MonsterAbilityType::HEAL:
         return set_bluemage_damage(player_ptr, power, plev, KWD_HEAL);
+    case MonsterAbilityType::SYSTEM_RECOVER:
+        return format(" %s2", KWD_SPHERE);
     case MonsterAbilityType::INVULNER:
         return format(" %sd7+7", KWD_DURATION);
     case MonsterAbilityType::BLINK:

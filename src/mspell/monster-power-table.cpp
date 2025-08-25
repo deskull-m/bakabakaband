@@ -174,6 +174,7 @@ const std::map<MonsterAbilityType, concptr> monster_powers_short = {
     { MonsterAbilityType::BA_VOID, _("虚無", "Void") },
     { MonsterAbilityType::BA_ABYSS, _("深淵", "Abyss") },
     { MonsterAbilityType::BA_GRAVITY, _("超重力", "Gravity Storm") },
+    { MonsterAbilityType::SYSTEM_RECOVER, _("システムリカバー", "System Recovery") },
     { MonsterAbilityType::DRAIN_MANA, _("魔力吸収", "Drain mana") },
     { MonsterAbilityType::MIND_BLAST, _("精神攻撃", "Mind blast") },
     { MonsterAbilityType::BRAIN_SMASH, _("脳攻撃", "Brain smash") },

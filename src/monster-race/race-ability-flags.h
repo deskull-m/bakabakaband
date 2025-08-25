@@ -111,5 +111,6 @@ enum class MonsterAbilityType {
     BO_LITE = 105, /*!< モンスター能力: 光のボルト（スターライトアロー） / Starlight arrow */
     BR_FECES = 106, /*!< モンスター能力: 糞便のブレス / Breathe Feces */
     BA_GRAVITY = 107, /*!< モンスター能力: 超重力 / Gravity Ball */
+    SYSTEM_RECOVER = 108, /*!< モンスター能力: システムリカバー / System Recover */
     MAX,
 };

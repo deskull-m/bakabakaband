@@ -9,6 +9,7 @@
 #include "blue-magic/blue-magic-checker.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
+#include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "mind/drs-types.h"
 #include "monster-race/race-ability-flags.h"
@@ -697,6 +698,38 @@ MonsterSpellResult spell_RF6_FORGET(PlayerType *player_ptr, MONSTER_IDX m_idx)
     } else if (lose_all_info(player_ptr)) {
         msg_print(_("記憶が薄れてしまった。", "Your memories fade away."));
     }
+
+    auto res = MonsterSpellResult::make_valid();
+    res.learnable = true;
+
+    return res;
+}
+
+/*!
+ * @brief SYSTEM_RECOVERの処理。システムリカバー。 /
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param m_idx 呪文を唱えるモンスターID
+ * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+ * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+ *
+ * 自分を中心に半径2のOLD_HEALの球を発生させる。ラーニング可。
+ */
+MonsterSpellResult spell_SYSTEM_RECOVER(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+{
+    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    bool seen = (!player_ptr->effects()->blindness().is_blind() && monster.ml);
+    const auto m_name = monster_name(player_ptr, m_idx);
+    
+    mspell_cast_msg msg(_("%s^がシステム修復のファンクションを実行した。", "%s^ executes a system recovery function."),
+        _("%s^がシステム修復のファンクションを実行した。", "%s^  executes a system recovery function."), 
+        _("%s^がシステム修復のファンクションを実行した。", "%s^  executes a system recovery function."),
+        _("%s^がシステム修復のファンクションを実行した。", "%s^  executes a system recovery function."));
+
+    monspell_message_base(player_ptr, m_idx, t_idx, msg, !seen, target_type);
+
+    // 自分を中心に半径2のOLD_HEALの球を発生させる
+    auto flg = PROJECT_KILL | PROJECT_ITEM | PROJECT_JUMP;
+    project(player_ptr, m_idx, 2, monster.fy, monster.fx, 0, AttributeType::OLD_HEAL, flg);
 
     auto res = MonsterSpellResult::make_valid();
     res.learnable = true;

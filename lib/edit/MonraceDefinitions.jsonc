@@ -127578,7 +127578,7 @@
             "DRAIN_MANA",
             "SLOW",
             "HASTE",
-            "HEAL"
+            "SYSTEM_RECOVER"
         ],
         "probability": "1_IN_3"
     },
@@ -127625,7 +127625,13 @@
         "NO_FEAR",
         "NONLIVING",
         "BREAK_DOWN"
-    ]
+    ],
+    "skill": {
+        "list": [
+            "SYSTEM_RECOVER"
+        ],
+        "probability": "1_IN_2"
+    }
 },
 {
     "id": 1983,

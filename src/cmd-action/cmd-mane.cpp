@@ -16,6 +16,8 @@
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
+#include "effect/effect-characteristics.h"
+#include "effect/effect-processor.h"
 #include "floor/floor-object.h"
 #include "game-option/disturbance-options.h"
 #include "game-option/text-display-options.h"
@@ -174,6 +176,8 @@ static std::string mane_info(PlayerType *player_ptr, MonsterAbilityType power, i
         return format(" %sd%d+%d", KWD_DURATION, 20 + plev, plev);
     case MonsterAbilityType::HEAL:
         return format(" %s%d", KWD_HEAL, plev * 6);
+    case MonsterAbilityType::SYSTEM_RECOVER:
+        return format(" %s2", KWD_SPHERE);
     case MonsterAbilityType::INVULNER:
         return format(" %sd7+7", KWD_DURATION);
     case MonsterAbilityType::BLINK:
@@ -723,6 +727,12 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         BadStatusSetter bss(player_ptr);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
+        break;
+    }
+    case MonsterAbilityType::SYSTEM_RECOVER: {
+        msg_print(_("システム修復のファンクションを実行した。", "You execute a system recovery function."));
+        auto flg = PROJECT_KILL | PROJECT_ITEM | PROJECT_JUMP;
+        project(player_ptr, 0, 2, player_ptr->y, player_ptr->x, 0, AttributeType::OLD_HEAL, flg);
         break;
     }
     case MonsterAbilityType::INVULNER:

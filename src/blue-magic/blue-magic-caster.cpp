@@ -11,6 +11,8 @@
 #include "blue-magic/blue-magic-summon.h"
 #include "blue-magic/blue-magic-util.h"
 #include "blue-magic/learnt-info.h"
+#include "effect/effect-characteristics.h"
+#include "effect/effect-processor.h"
 #include "hpmp/hp-mp-processor.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster-race/race-flags-resistance.h"
@@ -294,6 +296,12 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         BadStatusSetter bss(player_ptr);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
+        return true;
+    }
+    case MonsterAbilityType::SYSTEM_RECOVER: {
+        msg_print(_("システム修復のファンクションを実行した。", "You execute a system recovery function."));
+        auto flg = PROJECT_KILL | PROJECT_ITEM | PROJECT_JUMP;
+        project(player_ptr, 0, 2, player_ptr->y, player_ptr->x, 0, AttributeType::OLD_HEAL, flg);
         return true;
     }
     case MonsterAbilityType::INVULNER:
