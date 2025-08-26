@@ -3,6 +3,7 @@
 #include "alliance/alliance-arioch.h"
 #include "alliance/alliance-aryan-family.h"
 #include "alliance/alliance-basam-empire.h"
+#include "alliance/alliance-boletaria.h"
 #include "alliance/alliance-chardros.h"
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
@@ -106,6 +107,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::SILVAN_ELF, std::make_unique<AllianceSilvanElf>(AllianceType::SILVAN_ELF, "SILVAN-ELF", _("シルヴァン・エルフ", "Silvan Elf"), 2800000L) },
     { AllianceType::ARYAN_FAMILY, std::make_unique<AllianceAryanFamily>(AllianceType::ARYAN_FAMILY, "ARYAN-FAMILY", _("アーリアン・ファミリー", "Aryan Family"), 3400000L) },
     { AllianceType::BASAM_EMPIRE, std::make_unique<AllianceBasamEmpire>(AllianceType::BASAM_EMPIRE, "BASAM-EMPIRE", _("バサム帝国", "Basam Empire"), 4200000L) },
+    { AllianceType::BOLETARIA, std::make_unique<AllianceBoletaria>(AllianceType::BOLETARIA, "BOLETARIA", _("ボーレタリア", "Boletaria"), 2800000L) },
     { AllianceType::HIONHURN, std::make_unique<AllianceHionhurn>(AllianceType::HIONHURN, "HIONHURN", _("ハイオンハーン", "Hionhurn"), 3800000L) },
     { AllianceType::CHARDROS, std::make_unique<AllianceChardros>(AllianceType::CHARDROS, "CHARDROS", _("チャードロス", "Chardros"), 4000000L) },
     { AllianceType::ARIOCH, std::make_unique<AllianceArioch>(AllianceType::ARIOCH, "ARIOCH", _("アリオッチ", "Arioch"), 4500000L) },

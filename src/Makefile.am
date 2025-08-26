@@ -51,6 +51,7 @@ hengband_SOURCES = \
 	alliance/alliance-arioch.cpp alliance/alliance-arioch.h \
 	alliance/alliance-aryan-family.cpp alliance/alliance-aryan-family.h \
 	alliance/alliance-basam-empire.cpp alliance/alliance-basam-empire.h \
+	alliance/alliance-boletaria.cpp alliance/alliance-boletaria.h \
 	alliance/alliance-chardros.cpp alliance/alliance-chardros.h \
 	alliance/alliance-hionhurn.cpp alliance/alliance-hionhurn.h \
 	alliance/alliance-xiombarg.cpp alliance/alliance-xiombarg.h \
