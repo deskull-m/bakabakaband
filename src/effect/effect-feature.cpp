@@ -258,6 +258,17 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
     case AttributeType::MAKE_TRAP:
         floor.place_trap_at(pos);
         break;
+    case AttributeType::MAKE_WALL:
+        if (!grid.is_clean() || grid.has_monster() || player_ptr->is_located_at(pos)) {
+            break;
+        }
+
+        set_terrain_id_to_grid(player_ptr, pos, TerrainTag::MAGMA_VEIN);
+        if (grid.is_mark()) {
+            obvious = true;
+        }
+
+        break;
     case AttributeType::MAKE_TREE:
         if (!grid.is_clean() || grid.has_monster() || player_ptr->is_located_at(pos)) {
             break;

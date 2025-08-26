@@ -18,12 +18,14 @@
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
 #include "mutation/mutation-investor-remover.h"
+#include "player/eldritch-horror.h"
 #include "player/player-damage.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-resist.h"
 #include "player/player-status.h"
 #include "spell-kind/earthquake.h"
 #include "spell-kind/spells-equipment.h"
+#include "spell-kind/spells-neighbor.h"
 #include "spell-kind/spells-teleport.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
@@ -612,6 +614,22 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             player_defecate(player_ptr);
         }
         break;
+    }
+
+    case RaceBlowEffectType::SANITY_BLAST: {
+        monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
+        if (player_ptr->is_dead) {
+            break;
+        }
+        sanity_blast(player_ptr);
+        break;
+    }
+
+    case RaceBlowEffectType::LOCKUP: { /* AC軽減あり / Player armor reduces total damage */
+        if (player_ptr->anti_tele == 0) {
+            teleport_player(player_ptr, 50, TELEPORT_PASSIVE);
+            wall_creation(player_ptr, player_ptr->y, player_ptr->x);
+        }
     }
 
     case RaceBlowEffectType::MAX:

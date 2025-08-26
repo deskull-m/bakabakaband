@@ -275,6 +275,7 @@ static void update_bonuses(PlayerType *player_ptr)
     player_ptr->esp_evil = has_esp_evil(player_ptr);
     player_ptr->esp_animal = has_esp_animal(player_ptr);
     player_ptr->esp_nasty = has_esp_nasty(player_ptr);
+    player_ptr->esp_homo = has_esp_homo(player_ptr);
     player_ptr->esp_undead = has_esp_undead(player_ptr);
     player_ptr->esp_demon = has_esp_demon(player_ptr);
     player_ptr->esp_orc = has_esp_orc(player_ptr);
@@ -2888,7 +2889,7 @@ void check_experience(PlayerType *player_ptr)
          * 呼ばれるので順番を最後にする。
          */
         if (level_reward) {
-            patron_list[player_ptr->chaos_patron].gain_level_reward(player_ptr, 0);
+            patron_list[player_ptr->patron].gain_level_reward(player_ptr, 0);
             level_reward = false;
         }
 
@@ -3128,7 +3129,7 @@ bool is_shero(PlayerType *player_ptr)
 
 bool is_echizen(PlayerType *player_ptr)
 {
-    return (player_ptr->ppersonality == PERSONALITY_COMBAT) || (player_ptr->inventory[INVEN_BOW]->is_specific_artifact(FixedArtifactId::CRIMSON));
+    return (player_ptr->ppersonality == PERSONALITY_COMBAT) || player_ptr->is_wielding(FixedArtifactId::CRIMSON);
 }
 
 bool is_tough(PlayerType *player_ptr)

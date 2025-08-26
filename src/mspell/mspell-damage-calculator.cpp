@@ -159,6 +159,9 @@ static int monspell_damage_base(
     case MonsterAbilityType::BR_ABYSS:
         dam = ((hp / 3) > 250 ? 250 : (hp / 6));
         break;
+    case MonsterAbilityType::BR_FECES:
+        dam = ((hp / 3) > 250 ? 250 : (hp / 6));
+        break;
     case MonsterAbilityType::BA_ACID:
         if (powerful) {
             dam = (rlev * 4) + 50;
@@ -227,6 +230,10 @@ static int monspell_damage_base(
     case MonsterAbilityType::BA_METEOR:
         dam = 50 + rlev * 5 / 2;
         dice = Dice(3, rlev);
+        break;
+    case MonsterAbilityType::BA_GRAVITY:
+        dam = (rlev * 4) + 50;
+        dice = Dice(10, 10);
         break;
     case MonsterAbilityType::DRAIN_MANA:
         dam = rlev;

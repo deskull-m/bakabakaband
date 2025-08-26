@@ -236,6 +236,7 @@ void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
         }
 
         if (floor.has_los_at({ monster.fy, monster.fx }) && !monster.is_pet()) {
+            monster.mflag2.set(MonsterConstantFlagType::ANGER);
             (void)set_monster_fast(player_ptr, i, monster.get_remaining_acceleration() + 100);
             speed = true;
         }

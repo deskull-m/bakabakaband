@@ -18,12 +18,43 @@ hengband_SOURCES = \
 	action/weapon-shield.cpp action/weapon-shield.h \
 	\
 	alliance/alliance.cpp alliance/alliance.h \
+	alliance/alliance-anor-londo.cpp alliance/alliance-anor-londo.h \
+	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
+	alliance/alliance-hafu.cpp alliance/alliance-hafu.h \
 	alliance/alliance-jural.cpp alliance/alliance-jural.h \
+	alliance/alliance-khaine.cpp alliance/alliance-khaine.h \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
+	alliance/alliance-legendofsavior.cpp alliance/alliance-legendofsavior.h \
+	alliance/alliance-mabelode.cpp alliance/alliance-mabelode.h \
 	alliance/alliance-shire.cpp alliance/alliance-shire.h \
+	alliance/alliance-shittodan.cpp alliance/alliance-shittodan.h \
+	alliance/alliance-odio.cpp alliance/alliance-odio.h \
+	alliance/alliance-tzeentch.cpp alliance/alliance-tzeentch.h \
 	alliance/alliance-tophamhatt.cpp alliance/alliance-tophamhatt.h \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
+	alliance/alliance-nibelung.cpp alliance/alliance-nibelung.h \
+	alliance/alliance-fangfamily.cpp alliance/alliance-fangfamily.h \
+	alliance/alliance-feanor-noldor.cpp alliance/alliance-feanor-noldor.h \
+	alliance/alliance-fingolfin-noldor.cpp alliance/alliance-fingolfin-noldor.h \
+	alliance/alliance-frieza-clan.cpp alliance/alliance-frieza-clan.h \
+	alliance/alliance-sexy-commando-club.cpp alliance/alliance-sexy-commando-club.h \
+	alliance/alliance-slaanesh.cpp alliance/alliance-sllanesh.h \
+	alliance/alliance-nurgle.cpp alliance/alliance-nurgle.h \
+	alliance/alliance-nanman.cpp alliance/alliance-nanman.h \
+	alliance/alliance-cookie-grandma.cpp alliance/alliance-cookie-grandma.h \
+	alliance/alliance-hide.cpp alliance/alliance-hide.h \
+	alliance/alliance-incubetor.cpp alliance/alliance-incubetor.h \
+	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
+	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
+	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
+	alliance/alliance-arioch.cpp alliance/alliance-arioch.h \
+	alliance/alliance-aryan-family.cpp alliance/alliance-aryan-family.h \
+	alliance/alliance-basam-empire.cpp alliance/alliance-basam-empire.h \
+	alliance/alliance-boletaria.cpp alliance/alliance-boletaria.h \
+	alliance/alliance-chardros.cpp alliance/alliance-chardros.h \
+	alliance/alliance-hionhurn.cpp alliance/alliance-hionhurn.h \
+	alliance/alliance-xiombarg.cpp alliance/alliance-xiombarg.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
@@ -871,7 +902,7 @@ hengband_SOURCES = \
 	monster-race/race-misc-flags.h \
 	monster-race/race-population-flags.h \
 	monster-race/race-resistance-mask.cpp monster-race/race-resistance-mask.h \
-	monster-race/race-sex-const.cpp monster-race/race-sex-const.h \
+	monster-race/race-sex-const.h \
 	monster-race/race-speak-flags.h \
 	monster-race/race-special-flags.h \
 	monster-race/race-visual-flags.h \

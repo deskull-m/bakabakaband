@@ -60,6 +60,8 @@ static std::unordered_map<tr_type, tr_type> flag_to_greater_flag = {
     { TR_SLAY_EVIL, TR_KILL_EVIL },
     { TR_SLAY_GOOD, TR_KILL_GOOD },
     { TR_SLAY_HUMAN, TR_KILL_HUMAN },
+    { TR_SLAY_MALE, TR_KILL_MALE },
+    { TR_SLAY_FEMALE, TR_KILL_FEMALE },
     { TR_SLAY_ANIMAL, TR_KILL_ANIMAL },
     { TR_SLAY_DRAGON, TR_KILL_DRAGON },
     { TR_SLAY_ORC, TR_KILL_ORC },
@@ -448,6 +450,8 @@ static void display_slay_info(PlayerType *player_ptr, void (*display_player_equi
     process_one_characteristic(player_ptr, row++, col, _("デーモン倍打:", "Slay Demon  :"), TR_SLAY_DEMON, f, DP_WP);
     process_one_characteristic(player_ptr, row++, col, _("ドラゴン倍打:", "Slay Dragon :"), TR_SLAY_DRAGON, f, DP_WP);
     process_one_characteristic(player_ptr, row++, col, _("人間    倍打:", "Slay Human  :"), TR_SLAY_HUMAN, f, DP_WP);
+    process_one_characteristic(player_ptr, row++, col, _("男性    倍打:", "Slay Male   :"), TR_SLAY_MALE, f, DP_WP);
+    process_one_characteristic(player_ptr, row++, col, _("女性    倍打:", "Slay Female :"), TR_SLAY_FEMALE, f, DP_WP);
     process_one_characteristic(player_ptr, row++, col, _("動物    倍打:", "Slay Animal :"), TR_SLAY_ANIMAL, f, DP_WP);
     process_one_characteristic(player_ptr, row++, col, _("オーク  倍打:", "Slay Orc    :"), TR_SLAY_ORC, f, DP_WP);
     process_one_characteristic(player_ptr, row++, col, _("トロル  倍打:", "Slay Troll  :"), TR_SLAY_TROLL, f, DP_WP);

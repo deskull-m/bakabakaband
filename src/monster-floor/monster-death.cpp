@@ -115,7 +115,7 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
     auto is_drop_corpse = one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
-    is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON });
+    is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON, MonsterDropType::DROP_JUNK });
     is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->r_idx == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
     if (!is_drop_corpse) {
         return;
@@ -154,6 +154,12 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
 #ifndef WIN_DEBUG
         throw;
 #endif
+    }
+
+    if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_JUNK)) {
+        ItemEntity item_junk({ ItemKindType::MONSTER_REMAINS, SV_JUNK });
+        item_junk.pval = enum2i(md_ptr->m_ptr->r_idx);
+        (void)drop_near(player_ptr, item_junk, md_ptr->get_position());
     }
 }
 
@@ -353,7 +359,7 @@ static void on_defeat_last_boss(PlayerType *player_ptr)
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TITLE);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_FINAL_QUEST_CLEAR);
     exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));
-    patron_list[player_ptr->chaos_patron].admire(player_ptr);
+    patron_list[player_ptr->patron].admire(player_ptr);
     msg_print(_("*** おめでとう ***", "*** CONGRATULATIONS ***"));
     msg_print(_("あなたはゲームをコンプリートしました。", "You have won the game!"));
     msg_print(_("準備が整ったら引退(自殺コマンド)しても結構です。", "You may retire (commit suicide) when you are ready."));

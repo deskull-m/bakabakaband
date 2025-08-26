@@ -5,7 +5,7 @@
     "id": 0,
     "name": {
       "ja": "何か",
-      "en": ""
+      "en": "something"
     },
     "symbol": {
       "character": "&",
@@ -40,7 +40,7 @@
     "id": 1,
     "name": {
       "ja": "盲目",
-      "en": ""
+      "en": "Blindness"
     },
     "symbol": {
       "character": ",",
@@ -75,11 +75,11 @@
     "id": 2,
     "name": {
       "ja": "恐怖",
-      "en": ""
+      "en": "Paranoia"
     },
     "symbol": {
       "character": ",",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 80,
@@ -110,11 +110,11 @@
     "id": 3,
     "name": {
       "ja": "混乱",
-      "en": ""
+      "en": "Confusion"
     },
     "symbol": {
       "character": ",",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 80,
@@ -145,7 +145,7 @@
     "id": 4,
     "name": {
       "ja": "幻覚",
-      "en": ""
+      "en": "Hallucination"
     },
     "symbol": {
       "character": ",",
@@ -180,7 +180,7 @@
     "id": 5,
     "name": {
       "ja": "毒消し",
-      "en": ""
+      "en": "Cure Poison"
     },
     "symbol": {
       "character": ",",
@@ -215,7 +215,7 @@
     "id": 6,
     "name": {
       "ja": "盲目治癒",
-      "en": ""
+      "en": "Cure Blindness"
     },
     "symbol": {
       "character": ",",
@@ -250,7 +250,7 @@
     "id": 7,
     "name": {
       "ja": "恐怖除去",
-      "en": ""
+      "en": "Cure Paranoia"
     },
     "symbol": {
       "character": ",",
@@ -285,7 +285,7 @@
     "id": 8,
     "name": {
       "ja": "混乱脱出",
-      "en": ""
+      "en": "Cure Confusion"
     },
     "symbol": {
       "character": ",",
@@ -320,7 +320,7 @@
     "id": 9,
     "name": {
       "ja": "脆弱",
-      "en": ""
+      "en": "Weakness"
     },
     "symbol": {
       "character": ",",
@@ -355,7 +355,7 @@
     "id": 10,
     "name": {
       "ja": "病弱",
-      "en": ""
+      "en": "Unhealth"
     },
     "symbol": {
       "character": ",",
@@ -390,7 +390,7 @@
     "id": 11,
     "name": {
       "ja": "耐久力復活",
-      "en": ""
+      "en": "Restore Constitution"
     },
     "symbol": {
       "character": ",",
@@ -425,7 +425,7 @@
     "id": 12,
     "name": {
       "ja": "全復活",
-      "en": ""
+      "en": "Restoring"
     },
     "symbol": {
       "character": ",",
@@ -460,7 +460,7 @@
     "id": 13,
     "name": {
       "ja": "無知",
-      "en": ""
+      "en": "Stupidity"
     },
     "symbol": {
       "character": ",",
@@ -495,7 +495,7 @@
     "id": 14,
     "name": {
       "ja": "愚鈍",
-      "en": ""
+      "en": "Naivety"
     },
     "symbol": {
       "character": ",",
@@ -530,7 +530,7 @@
     "id": 15,
     "name": {
       "ja": "毒",
-      "en": ""
+      "en": "Poison"
     },
     "symbol": {
       "character": ",",
@@ -565,7 +565,7 @@
     "id": 16,
     "name": {
       "ja": "病気",
-      "en": ""
+      "en": "Sickness"
     },
     "symbol": {
       "character": ",",
@@ -600,7 +600,7 @@
     "id": 17,
     "name": {
       "ja": "麻痺",
-      "en": ""
+      "en": "Paralysis"
     },
     "symbol": {
       "character": ",",
@@ -635,7 +635,7 @@
     "id": 18,
     "name": {
       "ja": "腕力復活",
-      "en": ""
+      "en": "Restore Strength"
     },
     "symbol": {
       "character": ",",
@@ -670,7 +670,7 @@
     "id": 19,
     "name": {
       "ja": "疾病",
-      "en": ""
+      "en": "Disease"
     },
     "symbol": {
       "character": ",",
@@ -705,7 +705,7 @@
     "id": 20,
     "name": {
       "ja": "重傷の治癒",
-      "en": ""
+      "en": "Cure Serious Wounds"
     },
     "symbol": {
       "character": ",",
@@ -740,7 +740,7 @@
     "id": 21,
     "name": {
       "ja": "食料",
-      "en": ""
+      "en": "& Ration~ of Food"
     },
     "symbol": {
       "character": ",",
@@ -775,7 +775,7 @@
     "id": 22,
     "name": {
       "ja": "ビスケット",
-      "en": ""
+      "en": "& Hard Biscuit~"
     },
     "symbol": {
       "character": ",",
@@ -810,7 +810,7 @@
     "id": 23,
     "name": {
       "ja": "乾し肉",
-      "en": ""
+      "en": "& Strip~ of Venison"
     },
     "symbol": {
       "character": ",",
@@ -845,7 +845,7 @@
     "id": 24,
     "name": {
       "ja": "スライムモルド",
-      "en": ""
+      "en": "& Slime Mold~"
     },
     "symbol": {
       "character": ",",
@@ -880,7 +880,7 @@
     "id": 25,
     "name": {
       "ja": "エルフの行糧",
-      "en": ""
+      "en": "& Piece~ of Elvish Waybread"
     },
     "symbol": {
       "character": ",",
@@ -915,7 +915,7 @@
     "id": 26,
     "name": {
       "ja": "高級エール",
-      "en": ""
+      "en": "& Pint~ of Fine Ale"
     },
     "symbol": {
       "character": ",",
@@ -950,7 +950,7 @@
     "id": 27,
     "name": {
       "ja": "高級ワイン",
-      "en": ""
+      "en": "& Pint~ of Fine Wine"
     },
     "symbol": {
       "character": ",",
@@ -985,11 +985,11 @@
     "id": 28,
     "name": {
       "ja": "戦闘用つるはし",
-      "en": ""
+      "en": "& Mattock~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 20,
@@ -1023,7 +1023,7 @@
     "id": 29,
     "name": {
       "ja": "野太刀",
-      "en": ""
+      "en": "& No-dachi~"
     },
     "symbol": {
       "character": "|",
@@ -1060,11 +1060,11 @@
     "id": 30,
     "name": {
       "ja": "折れたダガー",
-      "en": ""
+      "en": "& Broken Dagger~"
     },
     "symbol": {
       "character": "|",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 23,
@@ -1097,7 +1097,7 @@
     "id": 31,
     "name": {
       "ja": "バスタード・ソード",
-      "en": ""
+      "en": "& Bastard Sword~"
     },
     "symbol": {
       "character": "|",
@@ -1134,7 +1134,7 @@
     "id": 32,
     "name": {
       "ja": "シミター",
-      "en": ""
+      "en": "& Scimitar~"
     },
     "symbol": {
       "character": "|",
@@ -1171,7 +1171,7 @@
     "id": 33,
     "name": {
       "ja": "タルワール",
-      "en": ""
+      "en": "& Tulwar~"
     },
     "symbol": {
       "character": "|",
@@ -1209,7 +1209,7 @@
     "id": 34,
     "name": {
       "ja": "ブロード・ソード",
-      "en": ""
+      "en": "& Broad Sword~"
     },
     "symbol": {
       "character": "|",
@@ -1247,7 +1247,7 @@
     "id": 35,
     "name": {
       "ja": "ショート・ソード",
-      "en": ""
+      "en": "& Short Sword~"
     },
     "symbol": {
       "character": "|",
@@ -1284,7 +1284,7 @@
     "id": 36,
     "name": {
       "ja": "カオス・ブレード",
-      "en": ""
+      "en": "& Blade~ of Chaos"
     },
     "symbol": {
       "character": "|",
@@ -1322,7 +1322,7 @@
     "id": 37,
     "name": {
       "ja": "グレート・ソード",
-      "en": ""
+      "en": "& Two-Handed Sword~"
     },
     "symbol": {
       "character": "|",
@@ -1359,7 +1359,7 @@
     "id": 38,
     "name": {
       "ja": "マン・ゴーシュ",
-      "en": ""
+      "en": "& Main Gauche~"
     },
     "symbol": {
       "character": "|",
@@ -1397,7 +1397,7 @@
     "id": 39,
     "name": {
       "ja": "カットラス",
-      "en": ""
+      "en": "& Cutlass~"
     },
     "symbol": {
       "character": "|",
@@ -1434,7 +1434,7 @@
     "id": 40,
     "name": {
       "ja": "首切りソード",
-      "en": ""
+      "en": "& Executioner's Sword~"
     },
     "symbol": {
       "character": "|",
@@ -1471,7 +1471,7 @@
     "id": 41,
     "name": {
       "ja": "カタナ",
-      "en": ""
+      "en": "& Katana~"
     },
     "symbol": {
       "character": "|",
@@ -1508,7 +1508,7 @@
     "id": 42,
     "name": {
       "ja": "ロング・ソード",
-      "en": ""
+      "en": "& Long Sword~"
     },
     "symbol": {
       "character": "|",
@@ -1546,7 +1546,7 @@
     "id": 43,
     "name": {
       "ja": "ダガー",
-      "en": ""
+      "en": "& Dagger~"
     },
     "symbol": {
       "character": "|",
@@ -1583,7 +1583,7 @@
     "id": 44,
     "name": {
       "ja": "レイピア",
-      "en": ""
+      "en": "& Rapier~"
     },
     "symbol": {
       "character": "|",
@@ -1620,7 +1620,7 @@
     "id": 45,
     "name": {
       "ja": "サーベル",
-      "en": ""
+      "en": "& Sabre~"
     },
     "symbol": {
       "character": "|",
@@ -1658,7 +1658,7 @@
     "id": 46,
     "name": {
       "ja": "スモール・ソード",
-      "en": ""
+      "en": "& Small Sword~"
     },
     "symbol": {
       "character": "|",
@@ -1695,11 +1695,11 @@
     "id": 47,
     "name": {
       "ja": "折れた剣",
-      "en": ""
+      "en": "& Broken Sword~"
     },
     "symbol": {
       "character": "|",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 23,
@@ -1732,11 +1732,11 @@
     "id": 48,
     "name": {
       "ja": "鎖つき鉄球",
-      "en": ""
+      "en": "& Ball-and-Chain~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1770,11 +1770,11 @@
     "id": 49,
     "name": {
       "ja": "ムチ",
-      "en": ""
+      "en": "& Whip~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1807,11 +1807,11 @@
     "id": 50,
     "name": {
       "ja": "フレイル",
-      "en": ""
+      "en": "& Flail~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1845,7 +1845,7 @@
     "id": 51,
     "name": {
       "ja": "ヘヴィ・フレイル",
-      "en": ""
+      "en": "& Two-Handed Flail~"
     },
     "symbol": {
       "character": "\\",
@@ -1882,11 +1882,11 @@
     "id": 52,
     "name": {
       "ja": "モーニング・スター",
-      "en": ""
+      "en": "& Morning Star~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1919,11 +1919,11 @@
     "id": 53,
     "name": {
       "ja": "メイス",
-      "en": ""
+      "en": "& Mace~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -1956,7 +1956,7 @@
     "id": 54,
     "name": {
       "ja": "クォータースタッフ",
-      "en": ""
+      "en": "& Quarterstaff~"
     },
     "symbol": {
       "character": "\\",
@@ -1993,11 +1993,11 @@
     "id": 55,
     "name": {
       "ja": "ウォー・ハンマー",
-      "en": ""
+      "en": "& War Hammer~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -2031,11 +2031,11 @@
     "id": 56,
     "name": {
       "ja": "鉛詰めメイス",
-      "en": ""
+      "en": "& Lead-Filled Mace~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -2068,7 +2068,7 @@
     "id": 57,
     "name": {
       "ja": "粉砕のメイス",
-      "en": ""
+      "en": "& Mace~ of Disruption"
     },
     "symbol": {
       "character": "\\",
@@ -2106,7 +2106,7 @@
     "id": 58,
     "name": {
       "ja": "ルツェルン・ハンマー",
-      "en": ""
+      "en": "& Lucerne Hammer~"
     },
     "symbol": {
       "character": "/",
@@ -2143,7 +2143,7 @@
     "id": 59,
     "name": {
       "ja": "ビークド・アックス",
-      "en": ""
+      "en": "& Beaked Axe~"
     },
     "symbol": {
       "character": "/",
@@ -2180,7 +2180,7 @@
     "id": 60,
     "name": {
       "ja": "グレイブ",
-      "en": ""
+      "en": "& Glaive~"
     },
     "symbol": {
       "character": "/",
@@ -2218,7 +2218,7 @@
     "id": 61,
     "name": {
       "ja": "ハルベルト",
-      "en": ""
+      "en": "& Halberd~"
     },
     "symbol": {
       "character": "/",
@@ -2255,7 +2255,7 @@
     "id": 62,
     "name": {
       "ja": "オウル・パイク",
-      "en": ""
+      "en": "& Awl-Pike~"
     },
     "symbol": {
       "character": "/",
@@ -2292,7 +2292,7 @@
     "id": 63,
     "name": {
       "ja": "パイク",
-      "en": ""
+      "en": "& Pike~"
     },
     "symbol": {
       "character": "/",
@@ -2329,7 +2329,7 @@
     "id": 64,
     "name": {
       "ja": "スピア",
-      "en": ""
+      "en": "& Spear~"
     },
     "symbol": {
       "character": "/",
@@ -2367,7 +2367,7 @@
     "id": 65,
     "name": {
       "ja": "トライデント",
-      "en": ""
+      "en": "& Trident~"
     },
     "symbol": {
       "character": "/",
@@ -2405,7 +2405,7 @@
     "id": 66,
     "name": {
       "ja": "ランス",
-      "en": ""
+      "en": "& Lance~"
     },
     "symbol": {
       "character": "/",
@@ -2443,7 +2443,7 @@
     "id": 67,
     "name": {
       "ja": "グレート・アックス",
-      "en": ""
+      "en": "& Great Axe~"
     },
     "symbol": {
       "character": "/",
@@ -2480,7 +2480,7 @@
     "id": 68,
     "name": {
       "ja": "バトル・アックス",
-      "en": ""
+      "en": "& Battle Axe~"
     },
     "symbol": {
       "character": "/",
@@ -2517,11 +2517,11 @@
     "id": 69,
     "name": {
       "ja": "ロッホアーバー・アックス",
-      "en": ""
+      "en": "& Lochaber Axe~"
     },
     "symbol": {
       "character": "/",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 22,
@@ -2554,7 +2554,7 @@
     "id": 70,
     "name": {
       "ja": "ブロード・アックス",
-      "en": ""
+      "en": "& Broad Axe~"
     },
     "symbol": {
       "character": "/",
@@ -2591,7 +2591,7 @@
     "id": 71,
     "name": {
       "ja": "大鎌",
-      "en": ""
+      "en": "& Scythe~"
     },
     "symbol": {
       "character": "/",
@@ -2628,7 +2628,7 @@
     "id": 72,
     "name": {
       "ja": "切り裂きの大鎌",
-      "en": ""
+      "en": "& Scythe~ of Slicing"
     },
     "symbol": {
       "character": "/",
@@ -2666,7 +2666,7 @@
     "id": 73,
     "name": {
       "ja": "ショート・ボウ",
-      "en": ""
+      "en": "& Short Bow~"
     },
     "symbol": {
       "character": "}",
@@ -2703,7 +2703,7 @@
     "id": 74,
     "name": {
       "ja": "ロング・ボウ",
-      "en": ""
+      "en": "& Long Bow~"
     },
     "symbol": {
       "character": "}",
@@ -2740,7 +2740,7 @@
     "id": 75,
     "name": {
       "ja": "ライト・クロスボウ",
-      "en": ""
+      "en": "& Light Crossbow~"
     },
     "symbol": {
       "character": "}",
@@ -2777,7 +2777,7 @@
     "id": 76,
     "name": {
       "ja": "ヘヴィ・クロスボウ",
-      "en": ""
+      "en": "& Heavy Crossbow~"
     },
     "symbol": {
       "character": "}",
@@ -2814,7 +2814,7 @@
     "id": 77,
     "name": {
       "ja": "スリング",
-      "en": ""
+      "en": "& Sling~"
     },
     "symbol": {
       "character": "}",
@@ -2851,7 +2851,7 @@
     "id": 78,
     "name": {
       "ja": "矢",
-      "en": ""
+      "en": "& Arrow~"
     },
     "symbol": {
       "character": "{",
@@ -2888,7 +2888,7 @@
     "id": 79,
     "name": {
       "ja": "追尾の矢",
-      "en": ""
+      "en": "& Seeker Arrow~"
     },
     "symbol": {
       "character": "{",
@@ -2929,7 +2929,7 @@
     "id": 80,
     "name": {
       "ja": "クロスボウの矢",
-      "en": ""
+      "en": "& Bolt~"
     },
     "symbol": {
       "character": "{",
@@ -2966,7 +2966,7 @@
     "id": 81,
     "name": {
       "ja": "追尾クロスボウの矢",
-      "en": ""
+      "en": "& Seeker Bolt~"
     },
     "symbol": {
       "character": "{",
@@ -3007,7 +3007,7 @@
     "id": 82,
     "name": {
       "ja": "丸い小石",
-      "en": ""
+      "en": "& Rounded Pebble~"
     },
     "symbol": {
       "character": "{",
@@ -3044,7 +3044,7 @@
     "id": 83,
     "name": {
       "ja": "鉄弾",
-      "en": ""
+      "en": "& Iron Shot~"
     },
     "symbol": {
       "character": "{",
@@ -3081,7 +3081,7 @@
     "id": 84,
     "name": {
       "ja": "シャベル",
-      "en": ""
+      "en": "& Shovel~"
     },
     "symbol": {
       "character": "\\",
@@ -3119,7 +3119,7 @@
     "id": 85,
     "name": {
       "ja": "ノームのシャベル",
-      "en": ""
+      "en": "& Gnomish Shovel~"
     },
     "symbol": {
       "character": "\\",
@@ -3157,7 +3157,7 @@
     "id": 86,
     "name": {
       "ja": "ドワーフのシャベル",
-      "en": ""
+      "en": "& Dwarven Shovel~"
     },
     "symbol": {
       "character": "\\",
@@ -3195,7 +3195,7 @@
     "id": 87,
     "name": {
       "ja": "つるはし",
-      "en": ""
+      "en": "& Pick~"
     },
     "symbol": {
       "character": "\\",
@@ -3233,7 +3233,7 @@
     "id": 88,
     "name": {
       "ja": "オークのつるはし",
-      "en": ""
+      "en": "& Orcish Pick~"
     },
     "symbol": {
       "character": "\\",
@@ -3271,7 +3271,7 @@
     "id": 89,
     "name": {
       "ja": "ドワーフのつるはし",
-      "en": ""
+      "en": "& Dwarven Pick~"
     },
     "symbol": {
       "character": "\\",
@@ -3309,7 +3309,7 @@
     "id": 90,
     "name": {
       "ja": "エルフのクローク",
-      "en": ""
+      "en": "& Elven Cloak~"
     },
     "symbol": {
       "character": "(",
@@ -3351,7 +3351,7 @@
     "id": 91,
     "name": {
       "ja": "軟革ブーツ",
-      "en": ""
+      "en": "& Pair~ of Soft Leather Boots"
     },
     "symbol": {
       "character": "]",
@@ -3386,7 +3386,7 @@
     "id": 92,
     "name": {
       "ja": "硬革ブーツ",
-      "en": ""
+      "en": "& Pair~ of Hard Leather Boots"
     },
     "symbol": {
       "character": "]",
@@ -3421,7 +3421,7 @@
     "id": 93,
     "name": {
       "ja": "鉄鋲底の靴",
-      "en": ""
+      "en": "& Pair~ of Metal Shod Boots"
     },
     "symbol": {
       "character": "]",
@@ -3456,7 +3456,7 @@
     "id": 94,
     "name": {
       "ja": "硬革帽子",
-      "en": ""
+      "en": "& Hard Leather Cap~"
     },
     "symbol": {
       "character": "]",
@@ -3491,7 +3491,7 @@
     "id": 95,
     "name": {
       "ja": "金属帽子",
-      "en": ""
+      "en": "& Metal Cap~"
     },
     "symbol": {
       "character": "]",
@@ -3526,7 +3526,7 @@
     "id": 96,
     "name": {
       "ja": "鉄ヘルメット",
-      "en": ""
+      "en": "& Iron Helm~"
     },
     "symbol": {
       "character": "]",
@@ -3561,7 +3561,7 @@
     "id": 97,
     "name": {
       "ja": "鋼鉄ヘルメット",
-      "en": ""
+      "en": "& Steel Helm~"
     },
     "symbol": {
       "character": "]",
@@ -3596,7 +3596,7 @@
     "id": 98,
     "name": {
       "ja": "鉄冠",
-      "en": ""
+      "en": "& Iron Crown~"
     },
     "symbol": {
       "character": "]",
@@ -3631,7 +3631,7 @@
     "id": 99,
     "name": {
       "ja": "金の冠",
-      "en": ""
+      "en": "& Golden Crown~"
     },
     "symbol": {
       "character": "]",
@@ -3668,7 +3668,7 @@
     "id": 100,
     "name": {
       "ja": "宝冠",
-      "en": ""
+      "en": "& Jewel Encrusted Crown~"
     },
     "symbol": {
       "character": "]",
@@ -3705,7 +3705,7 @@
     "id": 101,
     "name": {
       "ja": "ローブ",
-      "en": ""
+      "en": "& Robe~"
     },
     "symbol": {
       "character": "(",
@@ -3740,11 +3740,11 @@
     "id": 102,
     "name": {
       "ja": "汚れたボロ服",
-      "en": ""
+      "en": "& Filthy Rag~"
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 36,
@@ -3775,7 +3775,7 @@
     "id": 103,
     "name": {
       "ja": "軟革よろい",
-      "en": ""
+      "en": "Soft Leather Armour~"
     },
     "symbol": {
       "character": "(",
@@ -3810,7 +3810,7 @@
     "id": 104,
     "name": {
       "ja": "鋲付軟革よろい",
-      "en": ""
+      "en": "Soft Studded Leather~"
     },
     "symbol": {
       "character": "(",
@@ -3845,7 +3845,7 @@
     "id": 105,
     "name": {
       "ja": "硬革よろい",
-      "en": ""
+      "en": "Hard Leather Armour~"
     },
     "symbol": {
       "character": "(",
@@ -3880,7 +3880,7 @@
     "id": 106,
     "name": {
       "ja": "鋲付硬革よろい",
-      "en": ""
+      "en": "Hard Studded Leather~"
     },
     "symbol": {
       "character": "(",
@@ -3915,7 +3915,7 @@
     "id": 107,
     "name": {
       "ja": "革製スケイル・メイル",
-      "en": ""
+      "en": "Leather Scale Mail~"
     },
     "symbol": {
       "character": "(",
@@ -3950,7 +3950,7 @@
     "id": 108,
     "name": {
       "ja": "金属製スケイル・メイル",
-      "en": ""
+      "en": "Metal Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -3985,7 +3985,7 @@
     "id": 109,
     "name": {
       "ja": "鎖かたびら",
-      "en": ""
+      "en": "Chain Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4020,7 +4020,7 @@
     "id": 110,
     "name": {
       "ja": "錆びた鎖かたびら",
-      "en": ""
+      "en": "Rusty Chain Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4055,7 +4055,7 @@
     "id": 111,
     "name": {
       "ja": "重鎖かたびら",
-      "en": ""
+      "en": "Augmented Chain Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4090,7 +4090,7 @@
     "id": 112,
     "name": {
       "ja": "強化鎖かたびら",
-      "en": ""
+      "en": "Bar Chain Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4125,7 +4125,7 @@
     "id": 113,
     "name": {
       "ja": "金属製ブリガンダイン・アーマー",
-      "en": ""
+      "en": "Metal Brigandine Armour~"
     },
     "symbol": {
       "character": "[",
@@ -4160,7 +4160,7 @@
     "id": 114,
     "name": {
       "ja": "パーシャル・プレート・メイル",
-      "en": ""
+      "en": "Partial Plate Armour~"
     },
     "symbol": {
       "character": "[",
@@ -4195,7 +4195,7 @@
     "id": 115,
     "name": {
       "ja": "金属製ラメラー・アーマー",
-      "en": ""
+      "en": "Metal Lamellar Armour~"
     },
     "symbol": {
       "character": "[",
@@ -4230,7 +4230,7 @@
     "id": 116,
     "name": {
       "ja": "フル・プレート・メイル",
-      "en": ""
+      "en": "Full Plate Armour~"
     },
     "symbol": {
       "character": "[",
@@ -4265,7 +4265,7 @@
     "id": 117,
     "name": {
       "ja": "強化プレート・アーマー",
-      "en": ""
+      "en": "Ribbed Plate Armour~"
     },
     "symbol": {
       "character": "[",
@@ -4300,7 +4300,7 @@
     "id": 118,
     "name": {
       "ja": "アダマンタイト製プレート・メイル",
-      "en": ""
+      "en": "Adamantite Plate Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4337,7 +4337,7 @@
     "id": 119,
     "name": {
       "ja": "ミスリル製プレート・メイル",
-      "en": ""
+      "en": "Mithril Plate Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4374,7 +4374,7 @@
     "id": 120,
     "name": {
       "ja": "ミスリル製鎖かたびら",
-      "en": ""
+      "en": "Mithril Chain Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4411,7 +4411,7 @@
     "id": 121,
     "name": {
       "ja": "二重鎖かたびら",
-      "en": ""
+      "en": "Double Chain Mail~"
     },
     "symbol": {
       "character": "[",
@@ -4446,7 +4446,7 @@
     "id": 122,
     "name": {
       "ja": "ミラー・シールド",
-      "en": ""
+      "en": "& Mirror Shield~"
     },
     "symbol": {
       "character": "[",
@@ -4484,7 +4484,7 @@
     "id": 123,
     "name": {
       "ja": "クローク",
-      "en": ""
+      "en": "& Cloak~"
     },
     "symbol": {
       "character": "(",
@@ -4519,11 +4519,11 @@
     "id": 124,
     "name": {
       "ja": "影のクローク",
-      "en": ""
+      "en": "& Shadow Cloak~"
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 35,
@@ -4557,7 +4557,7 @@
     "id": 125,
     "name": {
       "ja": "革グローブ",
-      "en": ""
+      "en": "& Set~ of Leather Gloves"
     },
     "symbol": {
       "character": "]",
@@ -4592,7 +4592,7 @@
     "id": 126,
     "name": {
       "ja": "ガントレット",
-      "en": ""
+      "en": "& Set~ of Gauntlets"
     },
     "symbol": {
       "character": "]",
@@ -4627,7 +4627,7 @@
     "id": 127,
     "name": {
       "ja": "セスタス",
-      "en": ""
+      "en": "& Set~ of Cesti"
     },
     "symbol": {
       "character": "]",
@@ -4662,7 +4662,7 @@
     "id": 128,
     "name": {
       "ja": "革製スモール・シールド",
-      "en": ""
+      "en": "& Small Leather Shield~"
     },
     "symbol": {
       "character": ")",
@@ -4697,7 +4697,7 @@
     "id": 129,
     "name": {
       "ja": "革製ラージ・シールド",
-      "en": ""
+      "en": "& Large Leather Shield~"
     },
     "symbol": {
       "character": ")",
@@ -4732,7 +4732,7 @@
     "id": 130,
     "name": {
       "ja": "金属製スモール・シールド",
-      "en": ""
+      "en": "& Small Metal Shield~"
     },
     "symbol": {
       "character": ")",
@@ -4767,7 +4767,7 @@
     "id": 131,
     "name": {
       "ja": "金属製ラージ・シールド",
-      "en": ""
+      "en": "& Large Metal Shield~"
     },
     "symbol": {
       "character": ")",
@@ -4802,7 +4802,7 @@
     "id": 132,
     "name": {
       "ja": "腕力",
-      "en": ""
+      "en": "Strength"
     },
     "symbol": {
       "character": "=",
@@ -4840,7 +4840,7 @@
     "id": 133,
     "name": {
       "ja": "器用さ",
-      "en": ""
+      "en": "Dexterity"
     },
     "symbol": {
       "character": "=",
@@ -4878,7 +4878,7 @@
     "id": 134,
     "name": {
       "ja": "耐久力",
-      "en": ""
+      "en": "Constitution"
     },
     "symbol": {
       "character": "=",
@@ -4916,7 +4916,7 @@
     "id": 135,
     "name": {
       "ja": "電撃",
-      "en": ""
+      "en": "Lightning"
     },
     "symbol": {
       "character": "=",
@@ -4955,7 +4955,7 @@
     "id": 136,
     "name": {
       "ja": "スピード",
-      "en": ""
+      "en": "Speed"
     },
     "symbol": {
       "character": "=",
@@ -4993,7 +4993,7 @@
     "id": 137,
     "name": {
       "ja": "探索",
-      "en": ""
+      "en": "Searching"
     },
     "symbol": {
       "character": "=",
@@ -5031,7 +5031,7 @@
     "id": 138,
     "name": {
       "ja": "テレポート",
-      "en": ""
+      "en": "Teleportation"
     },
     "symbol": {
       "character": "=",
@@ -5069,7 +5069,7 @@
     "id": 139,
     "name": {
       "ja": "遅消化",
-      "en": ""
+      "en": "Slow Digestion"
     },
     "symbol": {
       "character": "=",
@@ -5106,7 +5106,7 @@
     "id": 140,
     "name": {
       "ja": "耐火",
-      "en": ""
+      "en": "Resist Fire"
     },
     "symbol": {
       "character": "=",
@@ -5144,7 +5144,7 @@
     "id": 141,
     "name": {
       "ja": "耐冷",
-      "en": ""
+      "en": "Resist Cold"
     },
     "symbol": {
       "character": "=",
@@ -5182,7 +5182,7 @@
     "id": 142,
     "name": {
       "ja": "浮遊",
-      "en": ""
+      "en": "Levitation"
     },
     "symbol": {
       "character": "=",
@@ -5219,7 +5219,7 @@
     "id": 143,
     "name": {
       "ja": "耐毒",
-      "en": ""
+      "en": "Poison Resistance"
     },
     "symbol": {
       "character": "=",
@@ -5256,7 +5256,7 @@
     "id": 144,
     "name": {
       "ja": "麻痺知らず",
-      "en": ""
+      "en": "Free Action"
     },
     "symbol": {
       "character": "=",
@@ -5293,11 +5293,11 @@
     "id": 145,
     "name": {
       "ja": "脆弱",
-      "en": ""
+      "en": "Weakness"
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -5332,7 +5332,7 @@
     "id": 146,
     "name": {
       "ja": "火炎",
-      "en": ""
+      "en": "Flames"
     },
     "symbol": {
       "character": "=",
@@ -5371,7 +5371,7 @@
     "id": 147,
     "name": {
       "ja": "酸",
-      "en": ""
+      "en": "Acid"
     },
     "symbol": {
       "character": "=",
@@ -5410,7 +5410,7 @@
     "id": 148,
     "name": {
       "ja": "氷",
-      "en": ""
+      "en": "Ice"
     },
     "symbol": {
       "character": "=",
@@ -5449,7 +5449,7 @@
     "id": 149,
     "name": {
       "ja": "苦悩",
-      "en": ""
+      "en": "Woe"
     },
     "symbol": {
       "character": "=",
@@ -5491,7 +5491,7 @@
     "id": 150,
     "name": {
       "ja": "無知",
-      "en": ""
+      "en": "Stupidity"
     },
     "symbol": {
       "character": "=",
@@ -5530,7 +5530,7 @@
     "id": 151,
     "name": {
       "ja": "ダメージ",
-      "en": ""
+      "en": "Damage"
     },
     "symbol": {
       "character": "=",
@@ -5565,7 +5565,7 @@
     "id": 152,
     "name": {
       "ja": "精度",
-      "en": ""
+      "en": "Accuracy"
     },
     "symbol": {
       "character": "=",
@@ -5600,7 +5600,7 @@
     "id": 153,
     "name": {
       "ja": "守り",
-      "en": ""
+      "en": "Protection"
     },
     "symbol": {
       "character": "=",
@@ -5635,7 +5635,7 @@
     "id": 154,
     "name": {
       "ja": "エキサイト・モンスター",
-      "en": ""
+      "en": "Aggravate Monster"
     },
     "symbol": {
       "character": "=",
@@ -5673,7 +5673,7 @@
     "id": 155,
     "name": {
       "ja": "透明物体感知",
-      "en": ""
+      "en": "See Invisible"
     },
     "symbol": {
       "character": "=",
@@ -5710,7 +5710,7 @@
     "id": 156,
     "name": {
       "ja": "腕力維持",
-      "en": ""
+      "en": "Sustain Strength"
     },
     "symbol": {
       "character": "=",
@@ -5747,7 +5747,7 @@
     "id": 157,
     "name": {
       "ja": "知能維持",
-      "en": ""
+      "en": "Sustain Intelligence"
     },
     "symbol": {
       "character": "=",
@@ -5784,7 +5784,7 @@
     "id": 158,
     "name": {
       "ja": "賢さ維持",
-      "en": ""
+      "en": "Sustain Wisdom"
     },
     "symbol": {
       "character": "=",
@@ -5821,7 +5821,7 @@
     "id": 159,
     "name": {
       "ja": "耐久力維持",
-      "en": ""
+      "en": "Sustain Constitution"
     },
     "symbol": {
       "character": "=",
@@ -5858,7 +5858,7 @@
     "id": 160,
     "name": {
       "ja": "器用さ維持",
-      "en": ""
+      "en": "Sustain Dexterity"
     },
     "symbol": {
       "character": "=",
@@ -5895,7 +5895,7 @@
     "id": 161,
     "name": {
       "ja": "魅力維持",
-      "en": ""
+      "en": "Sustain Charisma"
     },
     "symbol": {
       "character": "=",
@@ -5932,7 +5932,7 @@
     "id": 162,
     "name": {
       "ja": "殺戮",
-      "en": ""
+      "en": "Slaying"
     },
     "symbol": {
       "character": "=",
@@ -5969,7 +5969,7 @@
     "id": 163,
     "name": {
       "ja": "知性",
-      "en": ""
+      "en": "Brilliance"
     },
     "symbol": {
       "character": "\"",
@@ -6012,7 +6012,7 @@
     "id": 164,
     "name": {
       "ja": "魅力",
-      "en": ""
+      "en": "Charisma"
     },
     "symbol": {
       "character": "\"",
@@ -6050,7 +6050,7 @@
     "id": 165,
     "name": {
       "ja": "探索",
-      "en": ""
+      "en": "Searching"
     },
     "symbol": {
       "character": "\"",
@@ -6089,7 +6089,7 @@
     "id": 166,
     "name": {
       "ja": "テレポート",
-      "en": ""
+      "en": "Teleportation"
     },
     "symbol": {
       "character": "\"",
@@ -6127,7 +6127,7 @@
     "id": 167,
     "name": {
       "ja": "遅消化",
-      "en": ""
+      "en": "Slow Digestion"
     },
     "symbol": {
       "character": "\"",
@@ -6164,11 +6164,11 @@
     "id": 168,
     "name": {
       "ja": "耐酸",
-      "en": ""
+      "en": "Resist Acid"
     },
     "symbol": {
       "character": "\"",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 40,
@@ -6202,7 +6202,7 @@
     "id": 169,
     "name": {
       "ja": "装飾",
-      "en": ""
+      "en": "Adornment"
     },
     "symbol": {
       "character": "\"",
@@ -6237,7 +6237,7 @@
     "id": 170,
     "name": {
       "ja": "二重リングメイル",
-      "en": ""
+      "en": "Double Ring Mail~"
     },
     "symbol": {
       "character": "[",
@@ -6272,7 +6272,7 @@
     "id": 171,
     "name": {
       "ja": "賢者",
-      "en": ""
+      "en": "the Magi"
     },
     "symbol": {
       "character": "\"",
@@ -6316,7 +6316,7 @@
     "id": 172,
     "name": {
       "ja": "破壊",
-      "en": ""
+      "en": "Destruction"
     },
     "symbol": {
       "character": "\"",
@@ -6366,7 +6366,7 @@
     "id": 173,
     "name": {
       "ja": "武器命中率上昇",
-      "en": ""
+      "en": "Enchant Weapon To-Hit"
     },
     "symbol": {
       "character": "?",
@@ -6401,7 +6401,7 @@
     "id": 174,
     "name": {
       "ja": "武器ダメージ増加",
-      "en": ""
+      "en": "Enchant Weapon To-Dam"
     },
     "symbol": {
       "character": "?",
@@ -6436,7 +6436,7 @@
     "id": 175,
     "name": {
       "ja": "防具強化",
-      "en": ""
+      "en": "Enchant Armor"
     },
     "symbol": {
       "character": "?",
@@ -6471,7 +6471,7 @@
     "id": 176,
     "name": {
       "ja": "鑑定",
-      "en": ""
+      "en": "Identify"
     },
     "symbol": {
       "character": "?",
@@ -6506,7 +6506,7 @@
     "id": 177,
     "name": {
       "ja": "*鑑定*",
-      "en": ""
+      "en": "*Identify*"
     },
     "symbol": {
       "character": "?",
@@ -6541,7 +6541,7 @@
     "id": 178,
     "name": {
       "ja": "噂",
-      "en": ""
+      "en": "Rumour"
     },
     "symbol": {
       "character": "?",
@@ -6576,7 +6576,7 @@
     "id": 179,
     "name": {
       "ja": "ログルス",
-      "en": ""
+      "en": "Logrus"
     },
     "symbol": {
       "character": "?",
@@ -6616,7 +6616,7 @@
     "id": 180,
     "name": {
       "ja": "解呪",
-      "en": ""
+      "en": "Remove Curse"
     },
     "symbol": {
       "character": "?",
@@ -6651,7 +6651,7 @@
     "id": 181,
     "name": {
       "ja": "光",
-      "en": ""
+      "en": "Light"
     },
     "symbol": {
       "character": "?",
@@ -6686,7 +6686,7 @@
     "id": 182,
     "name": {
       "ja": "炎",
-      "en": ""
+      "en": "Fire"
     },
     "symbol": {
       "character": "?",
@@ -6723,7 +6723,7 @@
     "id": 183,
     "name": {
       "ja": "氷",
-      "en": ""
+      "en": "Ice"
     },
     "symbol": {
       "character": "?",
@@ -6760,7 +6760,7 @@
     "id": 184,
     "name": {
       "ja": "サモン・モンスター",
-      "en": ""
+      "en": "Summon Monster"
     },
     "symbol": {
       "character": "?",
@@ -6795,7 +6795,7 @@
     "id": 185,
     "name": {
       "ja": "ショート・テレポート",
-      "en": ""
+      "en": "Phase Door"
     },
     "symbol": {
       "character": "?",
@@ -6830,7 +6830,7 @@
     "id": 186,
     "name": {
       "ja": "テレポート",
-      "en": ""
+      "en": "Teleportation"
     },
     "symbol": {
       "character": "?",
@@ -6865,7 +6865,7 @@
     "id": 187,
     "name": {
       "ja": "テレポート・レベル",
-      "en": ""
+      "en": "Teleport Level"
     },
     "symbol": {
       "character": "?",
@@ -6900,7 +6900,7 @@
     "id": 188,
     "name": {
       "ja": "パニック・モンスター",
-      "en": ""
+      "en": "Monster Confusion"
     },
     "symbol": {
       "character": "?",
@@ -6935,7 +6935,7 @@
     "id": 189,
     "name": {
       "ja": "魔法の地図",
-      "en": ""
+      "en": "Magic Mapping"
     },
     "symbol": {
       "character": "?",
@@ -6970,7 +6970,7 @@
     "id": 190,
     "name": {
       "ja": "守りのルーン",
-      "en": ""
+      "en": "Rune of Protection"
     },
     "symbol": {
       "character": "?",
@@ -7005,7 +7005,7 @@
     "id": 191,
     "name": {
       "ja": "*解呪*",
-      "en": ""
+      "en": "*Remove Curse*"
     },
     "symbol": {
       "character": "?",
@@ -7040,7 +7040,7 @@
     "id": 192,
     "name": {
       "ja": "財宝感知",
-      "en": ""
+      "en": "Treasure Detection"
     },
     "symbol": {
       "character": "?",
@@ -7075,7 +7075,7 @@
     "id": 193,
     "name": {
       "ja": "アイテム感知",
-      "en": ""
+      "en": "Object Detection"
     },
     "symbol": {
       "character": "?",
@@ -7110,7 +7110,7 @@
     "id": 194,
     "name": {
       "ja": "トラップ感知",
-      "en": ""
+      "en": "Trap Detection"
     },
     "symbol": {
       "character": "?",
@@ -7145,7 +7145,7 @@
     "id": 195,
     "name": {
       "ja": "束矢",
-      "en": ""
+      "en": "& Sheaf Arrow~"
     },
     "symbol": {
       "character": "{",
@@ -7182,7 +7182,7 @@
     "id": 196,
     "name": {
       "ja": "ミスリルの弾",
-      "en": ""
+      "en": "& Mithril Shot~"
     },
     "symbol": {
       "character": "{",
@@ -7223,7 +7223,7 @@
     "id": 197,
     "name": {
       "ja": "ドア/階段感知",
-      "en": ""
+      "en": "Door/Stair Location"
     },
     "symbol": {
       "character": "?",
@@ -7258,7 +7258,7 @@
     "id": 198,
     "name": {
       "ja": "獲得",
-      "en": ""
+      "en": "Acquirement"
     },
     "symbol": {
       "character": "?",
@@ -7293,7 +7293,7 @@
     "id": 199,
     "name": {
       "ja": "*獲得*",
-      "en": ""
+      "en": "*Acquirement*"
     },
     "symbol": {
       "character": "?",
@@ -7328,7 +7328,7 @@
     "id": 200,
     "name": {
       "ja": "周辺抹殺",
-      "en": ""
+      "en": "Mass Genocide"
     },
     "symbol": {
       "character": "?",
@@ -7363,7 +7363,7 @@
     "id": 201,
     "name": {
       "ja": "透明物体感知",
-      "en": ""
+      "en": "Detect Invisible"
     },
     "symbol": {
       "character": "?",
@@ -7398,7 +7398,7 @@
     "id": 202,
     "name": {
       "ja": "エキサイト・モンスター",
-      "en": ""
+      "en": "Aggravate Monster"
     },
     "symbol": {
       "character": "?",
@@ -7433,7 +7433,7 @@
     "id": 203,
     "name": {
       "ja": "トラップ創造",
-      "en": ""
+      "en": "Trap Creation"
     },
     "symbol": {
       "character": "?",
@@ -7468,7 +7468,7 @@
     "id": 204,
     "name": {
       "ja": "トラップ/ドア破壊",
-      "en": ""
+      "en": "Trap/Door Destruction"
     },
     "symbol": {
       "character": "?",
@@ -7503,7 +7503,7 @@
     "id": 205,
     "name": {
       "ja": "アーティファクト生成",
-      "en": ""
+      "en": "Artifact Creation"
     },
     "symbol": {
       "character": "?",
@@ -7538,7 +7538,7 @@
     "id": 206,
     "name": {
       "ja": "魔力充填",
-      "en": ""
+      "en": "Recharging"
     },
     "symbol": {
       "character": "?",
@@ -7573,7 +7573,7 @@
     "id": 207,
     "name": {
       "ja": "抹殺",
-      "en": ""
+      "en": "Genocide"
     },
     "symbol": {
       "character": "?",
@@ -7608,7 +7608,7 @@
     "id": 208,
     "name": {
       "ja": "暗闇",
-      "en": ""
+      "en": "Darkness"
     },
     "symbol": {
       "character": "?",
@@ -7643,7 +7643,7 @@
     "id": 209,
     "name": {
       "ja": "対邪悪結界",
-      "en": ""
+      "en": "Protection from Evil"
     },
     "symbol": {
       "character": "?",
@@ -7678,7 +7678,7 @@
     "id": 210,
     "name": {
       "ja": "空腹充足",
-      "en": ""
+      "en": "Satisfy Hunger"
     },
     "symbol": {
       "character": "?",
@@ -7713,7 +7713,7 @@
     "id": 211,
     "name": {
       "ja": "アンデッド退散",
-      "en": ""
+      "en": "Dispel Undead"
     },
     "symbol": {
       "character": "?",
@@ -7748,7 +7748,7 @@
     "id": 212,
     "name": {
       "ja": "*武器強化*",
-      "en": ""
+      "en": "*Enchant Weapon*"
     },
     "symbol": {
       "character": "?",
@@ -7783,7 +7783,7 @@
     "id": 213,
     "name": {
       "ja": "武器呪縛",
-      "en": ""
+      "en": "Curse Weapon"
     },
     "symbol": {
       "character": "?",
@@ -7818,7 +7818,7 @@
     "id": 214,
     "name": {
       "ja": "*防具強化*",
-      "en": ""
+      "en": "*Enchant Armor*"
     },
     "symbol": {
       "character": "?",
@@ -7853,7 +7853,7 @@
     "id": 215,
     "name": {
       "ja": "防具呪縛",
-      "en": ""
+      "en": "Curse Armor"
     },
     "symbol": {
       "character": "?",
@@ -7888,7 +7888,7 @@
     "id": 216,
     "name": {
       "ja": "サモン・アンデッド",
-      "en": ""
+      "en": "Summon Undead"
     },
     "symbol": {
       "character": "?",
@@ -7923,7 +7923,7 @@
     "id": 217,
     "name": {
       "ja": "天恵",
-      "en": ""
+      "en": "Blessing"
     },
     "symbol": {
       "character": "?",
@@ -7958,7 +7958,7 @@
     "id": 218,
     "name": {
       "ja": "聖唱歌",
-      "en": ""
+      "en": "Holy Chant"
     },
     "symbol": {
       "character": "?",
@@ -7993,7 +7993,7 @@
     "id": 219,
     "name": {
       "ja": "聖祈言",
-      "en": ""
+      "en": "Holy Prayer"
     },
     "symbol": {
       "character": "?",
@@ -8028,7 +8028,7 @@
     "id": 220,
     "name": {
       "ja": "帰還の詔",
-      "en": ""
+      "en": "Word of Recall"
     },
     "symbol": {
       "character": "?",
@@ -8063,7 +8063,7 @@
     "id": 221,
     "name": {
       "ja": "*破壊*",
-      "en": ""
+      "en": "*Destruction*"
     },
     "symbol": {
       "character": "?",
@@ -8098,7 +8098,7 @@
     "id": 222,
     "name": {
       "ja": "スライムモルドジュース",
-      "en": ""
+      "en": "Slime Mold Juice"
     },
     "symbol": {
       "character": "!",
@@ -8135,7 +8135,7 @@
     "id": 223,
     "name": {
       "ja": "リンゴジュース",
-      "en": ""
+      "en": "Apple Juice"
     },
     "symbol": {
       "character": "!",
@@ -8172,7 +8172,7 @@
     "id": 224,
     "name": {
       "ja": "水",
-      "en": ""
+      "en": "Water"
     },
     "symbol": {
       "character": "!",
@@ -8209,7 +8209,7 @@
     "id": 225,
     "name": {
       "ja": "腕力",
-      "en": ""
+      "en": "Strength"
     },
     "symbol": {
       "character": "!",
@@ -8244,7 +8244,7 @@
     "id": 226,
     "name": {
       "ja": "脆弱",
-      "en": ""
+      "en": "Weakness"
     },
     "symbol": {
       "character": "!",
@@ -8279,7 +8279,7 @@
     "id": 227,
     "name": {
       "ja": "腕力復活",
-      "en": ""
+      "en": "Restore Strength"
     },
     "symbol": {
       "character": "!",
@@ -8314,11 +8314,11 @@
     "id": 228,
     "name": {
       "ja": "知能",
-      "en": ""
+      "en": "Intelligence"
     },
     "symbol": {
       "character": "!",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 75,
@@ -8349,7 +8349,7 @@
     "id": 229,
     "name": {
       "ja": "無知",
-      "en": ""
+      "en": "Stupidity"
     },
     "symbol": {
       "character": "!",
@@ -8384,7 +8384,7 @@
     "id": 230,
     "name": {
       "ja": "知能復活",
-      "en": ""
+      "en": "Restore Intelligence"
     },
     "symbol": {
       "character": "!",
@@ -8419,7 +8419,7 @@
     "id": 231,
     "name": {
       "ja": "賢さ",
-      "en": ""
+      "en": "Wisdom"
     },
     "symbol": {
       "character": "!",
@@ -8454,7 +8454,7 @@
     "id": 232,
     "name": {
       "ja": "愚鈍",
-      "en": ""
+      "en": "Naivety"
     },
     "symbol": {
       "character": "!",
@@ -8489,7 +8489,7 @@
     "id": 233,
     "name": {
       "ja": "賢さ復活",
-      "en": ""
+      "en": "Restore Wisdom"
     },
     "symbol": {
       "character": "!",
@@ -8524,7 +8524,7 @@
     "id": 234,
     "name": {
       "ja": "魅力",
-      "en": ""
+      "en": "Charisma"
     },
     "symbol": {
       "character": "!",
@@ -8559,7 +8559,7 @@
     "id": 235,
     "name": {
       "ja": "醜悪",
-      "en": ""
+      "en": "Ugliness"
     },
     "symbol": {
       "character": "!",
@@ -8594,7 +8594,7 @@
     "id": 236,
     "name": {
       "ja": "魅力復活",
-      "en": ""
+      "en": "Restore Charisma"
     },
     "symbol": {
       "character": "!",
@@ -8629,7 +8629,7 @@
     "id": 237,
     "name": {
       "ja": "癒し",
-      "en": ""
+      "en": "Curing"
     },
     "symbol": {
       "character": "!",
@@ -8664,7 +8664,7 @@
     "id": 238,
     "name": {
       "ja": "無敵",
-      "en": ""
+      "en": "Invulnerability"
     },
     "symbol": {
       "character": "!",
@@ -8699,7 +8699,7 @@
     "id": 239,
     "name": {
       "ja": "新生",
-      "en": ""
+      "en": "New Life"
     },
     "symbol": {
       "character": "!",
@@ -8734,7 +8734,7 @@
     "id": 240,
     "name": {
       "ja": "重傷の治癒",
-      "en": ""
+      "en": "Cure Serious Wounds"
     },
     "symbol": {
       "character": "!",
@@ -8769,7 +8769,7 @@
     "id": 241,
     "name": {
       "ja": "致命傷の治癒",
-      "en": ""
+      "en": "Cure Critical Wounds"
     },
     "symbol": {
       "character": "!",
@@ -8804,7 +8804,7 @@
     "id": 242,
     "name": {
       "ja": "体力回復",
-      "en": ""
+      "en": "Healing"
     },
     "symbol": {
       "character": "!",
@@ -8839,7 +8839,7 @@
     "id": 243,
     "name": {
       "ja": "耐久力",
-      "en": ""
+      "en": "Constitution"
     },
     "symbol": {
       "character": "!",
@@ -8874,7 +8874,7 @@
     "id": 244,
     "name": {
       "ja": "経験",
-      "en": ""
+      "en": "Experience"
     },
     "symbol": {
       "character": "!",
@@ -8909,7 +8909,7 @@
     "id": 245,
     "name": {
       "ja": "眠り",
-      "en": ""
+      "en": "Sleep"
     },
     "symbol": {
       "character": "!",
@@ -8944,7 +8944,7 @@
     "id": 246,
     "name": {
       "ja": "盲目",
-      "en": ""
+      "en": "Blindness"
     },
     "symbol": {
       "character": "!",
@@ -8979,7 +8979,7 @@
     "id": 247,
     "name": {
       "ja": "酔っ払い",
-      "en": ""
+      "en": "Booze"
     },
     "symbol": {
       "character": "!",
@@ -9014,7 +9014,7 @@
     "id": 248,
     "name": {
       "ja": "毒",
-      "en": ""
+      "en": "Poison"
     },
     "symbol": {
       "character": "!",
@@ -9049,7 +9049,7 @@
     "id": 249,
     "name": {
       "ja": "スピード",
-      "en": ""
+      "en": "Speed"
     },
     "symbol": {
       "character": "!",
@@ -9084,7 +9084,7 @@
     "id": 250,
     "name": {
       "ja": "のろま",
-      "en": ""
+      "en": "Slowness"
     },
     "symbol": {
       "character": "!",
@@ -9119,7 +9119,7 @@
     "id": 251,
     "name": {
       "ja": "器用さ",
-      "en": ""
+      "en": "Dexterity"
     },
     "symbol": {
       "character": "!",
@@ -9154,7 +9154,7 @@
     "id": 252,
     "name": {
       "ja": "器用さ復活",
-      "en": ""
+      "en": "Restore Dexterity"
     },
     "symbol": {
       "character": "!",
@@ -9189,7 +9189,7 @@
     "id": 253,
     "name": {
       "ja": "耐久力復活",
-      "en": ""
+      "en": "Restore Constitution"
     },
     "symbol": {
       "character": "!",
@@ -9224,7 +9224,7 @@
     "id": 254,
     "name": {
       "ja": "記憶喪失",
-      "en": ""
+      "en": "Lose Memories"
     },
     "symbol": {
       "character": "!",
@@ -9259,7 +9259,7 @@
     "id": 255,
     "name": {
       "ja": "塩水",
-      "en": ""
+      "en": "Salt Water"
     },
     "symbol": {
       "character": "!",
@@ -9294,7 +9294,7 @@
     "id": 256,
     "name": {
       "ja": "啓蒙",
-      "en": ""
+      "en": "Enlightenment"
     },
     "symbol": {
       "character": "!",
@@ -9329,7 +9329,7 @@
     "id": 257,
     "name": {
       "ja": "ヒーロー",
-      "en": ""
+      "en": "Heroism"
     },
     "symbol": {
       "character": "!",
@@ -9364,7 +9364,7 @@
     "id": 258,
     "name": {
       "ja": "狂戦士化",
-      "en": ""
+      "en": "Berserk Strength"
     },
     "symbol": {
       "character": "!",
@@ -9399,7 +9399,7 @@
     "id": 259,
     "name": {
       "ja": "恐いもの知らず",
-      "en": ""
+      "en": "Boldness"
     },
     "symbol": {
       "character": "!",
@@ -9434,7 +9434,7 @@
     "id": 260,
     "name": {
       "ja": "経験値復活",
-      "en": ""
+      "en": "Restore Life Levels"
     },
     "symbol": {
       "character": "!",
@@ -9469,7 +9469,7 @@
     "id": 261,
     "name": {
       "ja": "耐火",
-      "en": ""
+      "en": "Resist Heat"
     },
     "symbol": {
       "character": "!",
@@ -9504,7 +9504,7 @@
     "id": 262,
     "name": {
       "ja": "耐冷",
-      "en": ""
+      "en": "Resist Cold"
     },
     "symbol": {
       "character": "!",
@@ -9539,11 +9539,11 @@
     "id": 263,
     "name": {
       "ja": "透明物体感知",
-      "en": ""
+      "en": "Detect Invisible"
     },
     "symbol": {
       "character": "!",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 75,
@@ -9574,7 +9574,7 @@
     "id": 264,
     "name": {
       "ja": "減毒",
-      "en": ""
+      "en": "Slow Poison"
     },
     "symbol": {
       "character": "!",
@@ -9609,7 +9609,7 @@
     "id": 265,
     "name": {
       "ja": "解毒",
-      "en": ""
+      "en": "Neutralize Poison"
     },
     "symbol": {
       "character": "!",
@@ -9644,7 +9644,7 @@
     "id": 266,
     "name": {
       "ja": "魔力復活",
-      "en": ""
+      "en": "Restore Mana"
     },
     "symbol": {
       "character": "!",
@@ -9679,7 +9679,7 @@
     "id": 267,
     "name": {
       "ja": "赤外線視力",
-      "en": ""
+      "en": "Infra-vision"
     },
     "symbol": {
       "character": "!",
@@ -9714,7 +9714,7 @@
     "id": 268,
     "name": {
       "ja": "耐性",
-      "en": ""
+      "en": "Resistance"
     },
     "symbol": {
       "character": "!",
@@ -9754,7 +9754,7 @@
     "id": 269,
     "name": {
       "ja": "光",
-      "en": ""
+      "en": "Light"
     },
     "symbol": {
       "character": "-",
@@ -9789,11 +9789,11 @@
     "id": 270,
     "name": {
       "ja": "懐柔",
-      "en": ""
+      "en": "Tame Monster"
     },
     "symbol": {
       "character": "-",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 65,
@@ -9824,7 +9824,7 @@
     "id": 271,
     "name": {
       "ja": "アイス・ボルト",
-      "en": ""
+      "en": "Frost Bolts"
     },
     "symbol": {
       "character": "-",
@@ -9859,7 +9859,7 @@
     "id": 272,
     "name": {
       "ja": "ファイア・ボルト",
-      "en": ""
+      "en": "Fire Bolts"
     },
     "symbol": {
       "character": "-",
@@ -9894,7 +9894,7 @@
     "id": 273,
     "name": {
       "ja": "岩石溶解",
-      "en": ""
+      "en": "Stone to Mud"
     },
     "symbol": {
       "character": "-",
@@ -9929,7 +9929,7 @@
     "id": 274,
     "name": {
       "ja": "チェンジ・モンスター",
-      "en": ""
+      "en": "Polymorph"
     },
     "symbol": {
       "character": "-",
@@ -9964,7 +9964,7 @@
     "id": 275,
     "name": {
       "ja": "回復モンスター",
-      "en": ""
+      "en": "Heal Monster"
     },
     "symbol": {
       "character": "-",
@@ -9999,7 +9999,7 @@
     "id": 276,
     "name": {
       "ja": "スピード・モンスター",
-      "en": ""
+      "en": "Haste Monster"
     },
     "symbol": {
       "character": "-",
@@ -10034,7 +10034,7 @@
     "id": 277,
     "name": {
       "ja": "スロウ・モンスター",
-      "en": ""
+      "en": "Slow Monster"
     },
     "symbol": {
       "character": "-",
@@ -10069,7 +10069,7 @@
     "id": 278,
     "name": {
       "ja": "パニック・モンスター",
-      "en": ""
+      "en": "Confuse Monster"
     },
     "symbol": {
       "character": "-",
@@ -10104,7 +10104,7 @@
     "id": 279,
     "name": {
       "ja": "スリープ・モンスター",
-      "en": ""
+      "en": "Sleep Monster"
     },
     "symbol": {
       "character": "-",
@@ -10139,7 +10139,7 @@
     "id": 280,
     "name": {
       "ja": "衰弱",
-      "en": ""
+      "en": "Hypodynamia"
     },
     "symbol": {
       "character": "-",
@@ -10174,7 +10174,7 @@
     "id": 281,
     "name": {
       "ja": "トラップ/ドア破壊",
-      "en": ""
+      "en": "Trap/Door Destruction"
     },
     "symbol": {
       "character": "-",
@@ -10209,7 +10209,7 @@
     "id": 282,
     "name": {
       "ja": "マジック・ミサイル",
-      "en": ""
+      "en": "Magic Missile"
     },
     "symbol": {
       "character": "-",
@@ -10244,7 +10244,7 @@
     "id": 283,
     "name": {
       "ja": "クローン・モンスター",
-      "en": ""
+      "en": "Clone Monster"
     },
     "symbol": {
       "character": "-",
@@ -10279,7 +10279,7 @@
     "id": 284,
     "name": {
       "ja": "恐慌モンスター",
-      "en": ""
+      "en": "Scare Monster"
     },
     "symbol": {
       "character": "-",
@@ -10314,7 +10314,7 @@
     "id": 285,
     "name": {
       "ja": "テレポート・アウェイ",
-      "en": ""
+      "en": "Teleport Other"
     },
     "symbol": {
       "character": "-",
@@ -10349,7 +10349,7 @@
     "id": 286,
     "name": {
       "ja": "トラップ解除",
-      "en": ""
+      "en": "Disarming"
     },
     "symbol": {
       "character": "-",
@@ -10384,7 +10384,7 @@
     "id": 287,
     "name": {
       "ja": "サンダー・ボール",
-      "en": ""
+      "en": "Lightning Balls"
     },
     "symbol": {
       "character": "-",
@@ -10421,7 +10421,7 @@
     "id": 288,
     "name": {
       "ja": "アイス・ボール",
-      "en": ""
+      "en": "Cold Balls"
     },
     "symbol": {
       "character": "-",
@@ -10458,7 +10458,7 @@
     "id": 289,
     "name": {
       "ja": "ファイア・ボール",
-      "en": ""
+      "en": "Fire Balls"
     },
     "symbol": {
       "character": "-",
@@ -10495,7 +10495,7 @@
     "id": 290,
     "name": {
       "ja": "悪臭雲",
-      "en": ""
+      "en": "Stinking Cloud"
     },
     "symbol": {
       "character": "-",
@@ -10530,7 +10530,7 @@
     "id": 291,
     "name": {
       "ja": "アシッド・ボール",
-      "en": ""
+      "en": "Acid Balls"
     },
     "symbol": {
       "character": "-",
@@ -10567,7 +10567,7 @@
     "id": 292,
     "name": {
       "ja": "謎",
-      "en": ""
+      "en": "Wonder"
     },
     "symbol": {
       "character": "-",
@@ -10607,7 +10607,7 @@
     "id": 293,
     "name": {
       "ja": "細矢",
-      "en": ""
+      "en": "& Flight Arrow~"
     },
     "symbol": {
       "character": "{",
@@ -10644,7 +10644,7 @@
     "id": 294,
     "name": {
       "ja": "アシッド・ボルト",
-      "en": ""
+      "en": "Acid Bolts"
     },
     "symbol": {
       "character": "-",
@@ -10679,7 +10679,7 @@
     "id": 295,
     "name": {
       "ja": "ドラゴンの火炎",
-      "en": ""
+      "en": "Dragon's Flame"
     },
     "symbol": {
       "character": "-",
@@ -10719,7 +10719,7 @@
     "id": 296,
     "name": {
       "ja": "ドラゴンの冷気",
-      "en": ""
+      "en": "Dragon's Frost"
     },
     "symbol": {
       "character": "-",
@@ -10759,7 +10759,7 @@
     "id": 297,
     "name": {
       "ja": "ドラゴン・ブレス",
-      "en": ""
+      "en": "Dragon's Breath"
     },
     "symbol": {
       "character": "-",
@@ -10799,7 +10799,7 @@
     "id": 298,
     "name": {
       "ja": "分解",
-      "en": ""
+      "en": "Disintegrate"
     },
     "symbol": {
       "character": "-",
@@ -10839,7 +10839,7 @@
     "id": 299,
     "name": {
       "ja": "ロケット",
-      "en": ""
+      "en": "Rockets"
     },
     "symbol": {
       "character": "-",
@@ -10879,7 +10879,7 @@
     "id": 300,
     "name": {
       "ja": "トラップ感知",
-      "en": ""
+      "en": "Trap Location"
     },
     "symbol": {
       "character": "_",
@@ -10914,7 +10914,7 @@
     "id": 301,
     "name": {
       "ja": "財宝感知",
-      "en": ""
+      "en": "Treasure Location"
     },
     "symbol": {
       "character": "_",
@@ -10949,7 +10949,7 @@
     "id": 302,
     "name": {
       "ja": "アイテム感知",
-      "en": ""
+      "en": "Object Location"
     },
     "symbol": {
       "character": "_",
@@ -10984,7 +10984,7 @@
     "id": 303,
     "name": {
       "ja": "テレポート",
-      "en": ""
+      "en": "Teleportation"
     },
     "symbol": {
       "character": "_",
@@ -11019,7 +11019,7 @@
     "id": 304,
     "name": {
       "ja": "地震",
-      "en": ""
+      "en": "Earthquakes"
     },
     "symbol": {
       "character": "_",
@@ -11054,7 +11054,7 @@
     "id": 305,
     "name": {
       "ja": "召喚",
-      "en": ""
+      "en": "Summoning"
     },
     "symbol": {
       "character": "_",
@@ -11089,7 +11089,7 @@
     "id": 306,
     "name": {
       "ja": "光",
-      "en": ""
+      "en": "Light"
     },
     "symbol": {
       "character": "_",
@@ -11124,7 +11124,7 @@
     "id": 307,
     "name": {
       "ja": "*破壊*",
-      "en": ""
+      "en": "*Destruction*"
     },
     "symbol": {
       "character": "_",
@@ -11159,7 +11159,7 @@
     "id": 308,
     "name": {
       "ja": "スターライト",
-      "en": ""
+      "en": "Starlight"
     },
     "symbol": {
       "character": "_",
@@ -11194,7 +11194,7 @@
     "id": 309,
     "name": {
       "ja": "スピード・モンスター",
-      "en": ""
+      "en": "Haste Monsters"
     },
     "symbol": {
       "character": "_",
@@ -11229,7 +11229,7 @@
     "id": 310,
     "name": {
       "ja": "スロウ・モンスター",
-      "en": ""
+      "en": "Slow Monsters"
     },
     "symbol": {
       "character": "_",
@@ -11264,7 +11264,7 @@
     "id": 311,
     "name": {
       "ja": "スリープ・モンスター",
-      "en": ""
+      "en": "Sleep Monsters"
     },
     "symbol": {
       "character": "_",
@@ -11299,7 +11299,7 @@
     "id": 312,
     "name": {
       "ja": "軽傷の治癒",
-      "en": ""
+      "en": "Cure Light Wounds"
     },
     "symbol": {
       "character": "_",
@@ -11334,7 +11334,7 @@
     "id": 313,
     "name": {
       "ja": "透明物体感知",
-      "en": ""
+      "en": "Detect Invisible"
     },
     "symbol": {
       "character": "_",
@@ -11369,7 +11369,7 @@
     "id": 314,
     "name": {
       "ja": "スピード",
-      "en": ""
+      "en": "Speed"
     },
     "symbol": {
       "character": "_",
@@ -11404,7 +11404,7 @@
     "id": 315,
     "name": {
       "ja": "のろま",
-      "en": ""
+      "en": "Slowness"
     },
     "symbol": {
       "character": "_",
@@ -11439,7 +11439,7 @@
     "id": 316,
     "name": {
       "ja": "ドア/階段感知",
-      "en": ""
+      "en": "Door/Stair Location"
     },
     "symbol": {
       "character": "_",
@@ -11474,7 +11474,7 @@
     "id": 317,
     "name": {
       "ja": "解呪",
-      "en": ""
+      "en": "Remove Curse"
     },
     "symbol": {
       "character": "_",
@@ -11509,7 +11509,7 @@
     "id": 318,
     "name": {
       "ja": "邪悪存在感知",
-      "en": ""
+      "en": "Detect Evil"
     },
     "symbol": {
       "character": "_",
@@ -11544,7 +11544,7 @@
     "id": 319,
     "name": {
       "ja": "癒し",
-      "en": ""
+      "en": "Curing"
     },
     "symbol": {
       "character": "_",
@@ -11579,7 +11579,7 @@
     "id": 320,
     "name": {
       "ja": "邪悪存在退散",
-      "en": ""
+      "en": "Dispel Evil"
     },
     "symbol": {
       "character": "_",
@@ -11614,7 +11614,7 @@
     "id": 321,
     "name": {
       "ja": "調査",
-      "en": ""
+      "en": "Probing"
     },
     "symbol": {
       "character": "_",
@@ -11649,7 +11649,7 @@
     "id": 322,
     "name": {
       "ja": "暗闇",
-      "en": ""
+      "en": "Darkness"
     },
     "symbol": {
       "character": "_",
@@ -11684,7 +11684,7 @@
     "id": 323,
     "name": {
       "ja": "抹殺",
-      "en": ""
+      "en": "Genocide"
     },
     "symbol": {
       "character": "_",
@@ -11719,7 +11719,7 @@
     "id": 324,
     "name": {
       "ja": "力",
-      "en": ""
+      "en": "Power"
     },
     "symbol": {
       "character": "_",
@@ -11754,7 +11754,7 @@
     "id": 325,
     "name": {
       "ja": "賢者",
-      "en": ""
+      "en": "the Magi"
     },
     "symbol": {
       "character": "_",
@@ -11789,7 +11789,7 @@
     "id": 326,
     "name": {
       "ja": "鑑定",
-      "en": ""
+      "en": "Perception"
     },
     "symbol": {
       "character": "_",
@@ -11824,7 +11824,7 @@
     "id": 327,
     "name": {
       "ja": "聖浄",
-      "en": ""
+      "en": "Holiness"
     },
     "symbol": {
       "character": "_",
@@ -11859,7 +11859,7 @@
     "id": 328,
     "name": {
       "ja": "周辺感知",
-      "en": ""
+      "en": "Enlightenment"
     },
     "symbol": {
       "character": "_",
@@ -11894,7 +11894,7 @@
     "id": 329,
     "name": {
       "ja": "体力回復",
-      "en": ""
+      "en": "Healing"
     },
     "symbol": {
       "character": "_",
@@ -11929,7 +11929,7 @@
     "id": 330,
     "name": {
       "ja": "[一般祈祷]",
-      "en": ""
+      "en": "[Book of Common Prayer]"
     },
     "symbol": {
       "character": "?",
@@ -11964,7 +11964,7 @@
     "id": 331,
     "name": {
       "ja": "[上級祈祷]",
-      "en": ""
+      "en": "[High Mass]"
     },
     "symbol": {
       "character": "?",
@@ -11999,7 +11999,7 @@
     "id": 332,
     "name": {
       "ja": "[一角獣の書]",
-      "en": ""
+      "en": "[Book of the Unicorn]"
     },
     "symbol": {
       "character": "?",
@@ -12039,7 +12039,7 @@
     "id": 333,
     "name": {
       "ja": "[聖杯の加護]",
-      "en": ""
+      "en": "[Blessings of the Grail]"
     },
     "symbol": {
       "character": "?",
@@ -12079,7 +12079,7 @@
     "id": 334,
     "name": {
       "ja": "[入門書]",
-      "en": ""
+      "en": "[Beginner's Handbook]"
     },
     "symbol": {
       "character": "?",
@@ -12114,7 +12114,7 @@
     "id": 335,
     "name": {
       "ja": "[仙人の書]",
-      "en": ""
+      "en": "[Master Sorcerer's Handbook]"
     },
     "symbol": {
       "character": "?",
@@ -12149,7 +12149,7 @@
     "id": 336,
     "name": {
       "ja": "[紋様仙術]",
-      "en": ""
+      "en": "[Pattern Sorcery]"
     },
     "symbol": {
       "character": "?",
@@ -12189,7 +12189,7 @@
     "id": 337,
     "name": {
       "ja": "[力の魔道書]",
-      "en": ""
+      "en": "[Grimoire of Power]"
     },
     "symbol": {
       "character": "?",
@@ -12229,7 +12229,7 @@
     "id": 338,
     "name": {
       "ja": "小さな木の箱",
-      "en": ""
+      "en": "& Small wooden chest~"
     },
     "symbol": {
       "character": "&",
@@ -12264,7 +12264,7 @@
     "id": 339,
     "name": {
       "ja": "大きな木の箱",
-      "en": ""
+      "en": "& Large wooden chest~"
     },
     "symbol": {
       "character": "&",
@@ -12299,11 +12299,11 @@
     "id": 340,
     "name": {
       "ja": "小さな鉄の箱",
-      "en": ""
+      "en": "& Small iron chest~"
     },
     "symbol": {
       "character": "&",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 7,
@@ -12334,7 +12334,7 @@
     "id": 341,
     "name": {
       "ja": "大きな鉄の箱",
-      "en": ""
+      "en": "& Large iron chest~"
     },
     "symbol": {
       "character": "&",
@@ -12369,7 +12369,7 @@
     "id": 342,
     "name": {
       "ja": "小さな鋼鉄の箱",
-      "en": ""
+      "en": "& Small steel chest~"
     },
     "symbol": {
       "character": "&",
@@ -12404,7 +12404,7 @@
     "id": 343,
     "name": {
       "ja": "大きな鋼鉄の箱",
-      "en": ""
+      "en": "& Large steel chest~"
     },
     "symbol": {
       "character": "&",
@@ -12439,7 +12439,7 @@
     "id": 344,
     "name": {
       "ja": "あばかれた箱",
-      "en": ""
+      "en": "& Ruined chest~"
     },
     "symbol": {
       "character": "&",
@@ -12474,7 +12474,7 @@
     "id": 345,
     "name": {
       "ja": "鉄のくさび",
-      "en": ""
+      "en": "& Iron Spike~"
     },
     "symbol": {
       "character": "~",
@@ -12509,7 +12509,7 @@
     "id": 346,
     "name": {
       "ja": "松明",
-      "en": ""
+      "en": "& Wooden Torch~"
     },
     "symbol": {
       "character": "~",
@@ -12547,7 +12547,7 @@
     "id": 347,
     "name": {
       "ja": "真鍮のランタン",
-      "en": ""
+      "en": "& Brass Lantern~"
     },
     "symbol": {
       "character": "~",
@@ -12586,7 +12586,7 @@
     "id": 348,
     "name": {
       "ja": "油つぼ",
-      "en": ""
+      "en": "& Flask~ of oil"
     },
     "symbol": {
       "character": "!",
@@ -12621,7 +12621,7 @@
     "id": 349,
     "name": {
       "ja": "空のビン",
-      "en": ""
+      "en": "& Empty Bottle~"
     },
     "symbol": {
       "character": "!",
@@ -12656,7 +12656,7 @@
     "id": 350,
     "name": {
       "ja": "壊滅",
-      "en": ""
+      "en": "Havoc"
     },
     "symbol": {
       "character": "-",
@@ -12691,11 +12691,11 @@
     "id": 351,
     "name": {
       "ja": "ドア/階段感知",
-      "en": ""
+      "en": "Door/Stair Location"
     },
     "symbol": {
       "character": "-",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 66,
@@ -12726,7 +12726,7 @@
     "id": 352,
     "name": {
       "ja": "トラップ感知",
-      "en": ""
+      "en": "Trap Location"
     },
     "symbol": {
       "character": "-",
@@ -12761,7 +12761,7 @@
     "id": 353,
     "name": {
       "ja": "調査",
-      "en": ""
+      "en": "Probing"
     },
     "symbol": {
       "character": "-",
@@ -12796,7 +12796,7 @@
     "id": 354,
     "name": {
       "ja": "帰還",
-      "en": ""
+      "en": "Recall"
     },
     "symbol": {
       "character": "-",
@@ -12831,7 +12831,7 @@
     "id": 355,
     "name": {
       "ja": "イルミネーション",
-      "en": ""
+      "en": "Illumination"
     },
     "symbol": {
       "character": "-",
@@ -12866,7 +12866,7 @@
     "id": 356,
     "name": {
       "ja": "光",
-      "en": ""
+      "en": "Light"
     },
     "symbol": {
       "character": "-",
@@ -12901,7 +12901,7 @@
     "id": 357,
     "name": {
       "ja": "サンダー・ボルト",
-      "en": ""
+      "en": "Lightning Bolts"
     },
     "symbol": {
       "character": "-",
@@ -12936,7 +12936,7 @@
     "id": 358,
     "name": {
       "ja": "アイス・ボルト",
-      "en": ""
+      "en": "Frost Bolts"
     },
     "symbol": {
       "character": "-",
@@ -12971,7 +12971,7 @@
     "id": 359,
     "name": {
       "ja": "ファイア・ボルト",
-      "en": ""
+      "en": "Fire Bolts"
     },
     "symbol": {
       "character": "-",
@@ -13006,7 +13006,7 @@
     "id": 360,
     "name": {
       "ja": "チェンジ・モンスター",
-      "en": ""
+      "en": "Polymorph"
     },
     "symbol": {
       "character": "-",
@@ -13041,7 +13041,7 @@
     "id": 361,
     "name": {
       "ja": "スロウ・モンスター",
-      "en": ""
+      "en": "Slow Monster"
     },
     "symbol": {
       "character": "-",
@@ -13076,7 +13076,7 @@
     "id": 362,
     "name": {
       "ja": "スリープ・モンスター",
-      "en": ""
+      "en": "Sleep Monster"
     },
     "symbol": {
       "character": "-",
@@ -13111,7 +13111,7 @@
     "id": 363,
     "name": {
       "ja": "衰弱",
-      "en": ""
+      "en": "Hypodynamia"
     },
     "symbol": {
       "character": "-",
@@ -13146,7 +13146,7 @@
     "id": 364,
     "name": {
       "ja": "テレポート・アウェイ",
-      "en": ""
+      "en": "Teleport Other"
     },
     "symbol": {
       "character": "-",
@@ -13181,7 +13181,7 @@
     "id": 365,
     "name": {
       "ja": "トラップ解除",
-      "en": ""
+      "en": "Disarming"
     },
     "symbol": {
       "character": "-",
@@ -13216,7 +13216,7 @@
     "id": 366,
     "name": {
       "ja": "サンダー・ボール",
-      "en": ""
+      "en": "Lightning Balls"
     },
     "symbol": {
       "character": "-",
@@ -13251,7 +13251,7 @@
     "id": 367,
     "name": {
       "ja": "アイス・ボール",
-      "en": ""
+      "en": "Cold Balls"
     },
     "symbol": {
       "character": "-",
@@ -13286,7 +13286,7 @@
     "id": 368,
     "name": {
       "ja": "ファイア・ボール",
-      "en": ""
+      "en": "Fire Balls"
     },
     "symbol": {
       "character": "-",
@@ -13321,7 +13321,7 @@
     "id": 369,
     "name": {
       "ja": "アシッド・ボール",
-      "en": ""
+      "en": "Acid Balls"
     },
     "symbol": {
       "character": "-",
@@ -13356,7 +13356,7 @@
     "id": 370,
     "name": {
       "ja": "アシッド・ボルト",
-      "en": ""
+      "en": "Acid Bolts"
     },
     "symbol": {
       "character": "-",
@@ -13391,7 +13391,7 @@
     "id": 371,
     "name": {
       "ja": "周辺感知",
-      "en": ""
+      "en": "Enlightenment"
     },
     "symbol": {
       "character": "-",
@@ -13426,7 +13426,7 @@
     "id": 372,
     "name": {
       "ja": "鑑定",
-      "en": ""
+      "en": "Perception"
     },
     "symbol": {
       "character": "-",
@@ -13461,7 +13461,7 @@
     "id": 373,
     "name": {
       "ja": "癒し",
-      "en": ""
+      "en": "Curing"
     },
     "symbol": {
       "character": "-",
@@ -13496,7 +13496,7 @@
     "id": 374,
     "name": {
       "ja": "体力回復",
-      "en": ""
+      "en": "Healing"
     },
     "symbol": {
       "character": "-",
@@ -13531,7 +13531,7 @@
     "id": 375,
     "name": {
       "ja": "全感知",
-      "en": ""
+      "en": "Detection"
     },
     "symbol": {
       "character": "-",
@@ -13566,7 +13566,7 @@
     "id": 376,
     "name": {
       "ja": "全復活",
-      "en": ""
+      "en": "Restoration"
     },
     "symbol": {
       "character": "-",
@@ -13601,7 +13601,7 @@
     "id": 377,
     "name": {
       "ja": "スピード",
-      "en": ""
+      "en": "Speed"
     },
     "symbol": {
       "character": "-",
@@ -13636,7 +13636,7 @@
     "id": 378,
     "name": {
       "ja": "害虫駆除",
-      "en": ""
+      "en": "Pesticide"
     },
     "symbol": {
       "character": "-",
@@ -13671,7 +13671,7 @@
     "id": 379,
     "name": {
       "ja": "[野性の召喚]",
-      "en": ""
+      "en": "[Call of the Wild]"
     },
     "symbol": {
       "character": "?",
@@ -13706,7 +13706,7 @@
     "id": 380,
     "name": {
       "ja": "[自然の秘術]",
-      "en": ""
+      "en": "[Nature Mastery]"
     },
     "symbol": {
       "character": "?",
@@ -13741,7 +13741,7 @@
     "id": 381,
     "name": {
       "ja": "[自然の恵み]",
-      "en": ""
+      "en": "[Nature's Gifts]"
     },
     "symbol": {
       "character": "?",
@@ -13781,7 +13781,7 @@
     "id": 382,
     "name": {
       "ja": "[自然の脅威]",
-      "en": ""
+      "en": "[Nature's Wrath]"
     },
     "symbol": {
       "character": "?",
@@ -13821,7 +13821,7 @@
     "id": 383,
     "name": {
       "ja": "[カオスの徴]",
-      "en": ""
+      "en": "[Sign of Chaos]"
     },
     "symbol": {
       "character": "?",
@@ -13856,7 +13856,7 @@
     "id": 384,
     "name": {
       "ja": "[カオス秘術]",
-      "en": ""
+      "en": "[Chaos Mastery]"
     },
     "symbol": {
       "character": "?",
@@ -13891,7 +13891,7 @@
     "id": 385,
     "name": {
       "ja": "[カオス魔導]",
-      "en": ""
+      "en": "[Chaos Channels]"
     },
     "symbol": {
       "character": "?",
@@ -13931,7 +13931,7 @@
     "id": 386,
     "name": {
       "ja": "[ハルマゲドン大全]",
-      "en": ""
+      "en": "[Armageddon Tome]"
     },
     "symbol": {
       "character": "?",
@@ -13942,7 +13942,7 @@
       "subtype_value": 3
     },
     "parameter_value": 0,
-    "level": 100,
+    "level": 90,
     "weight": 30,
     "cost": 100000,
     "base_ac": 0,
@@ -13952,7 +13952,7 @@
     "ac_bonus": 0,
     "allocations": [
       {
-        "depth": 100,
+        "depth": 90,
         "rarity": 1
       }
     ],
@@ -13971,11 +13971,11 @@
     "id": 387,
     "name": {
       "ja": "[暗黒祈祷]",
-      "en": ""
+      "en": "[Black Prayers]"
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 94,
@@ -14006,11 +14006,11 @@
     "id": 388,
     "name": {
       "ja": "[暗黒大成]",
-      "en": ""
+      "en": "[Black Mass]"
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 94,
@@ -14041,7 +14041,7 @@
     "id": 389,
     "name": {
       "ja": "陶器のかけら",
-      "en": ""
+      "en": "& Shard~ of Pottery"
     },
     "symbol": {
       "character": "~",
@@ -14076,7 +14076,7 @@
     "id": 390,
     "name": {
       "ja": "折れた棒",
-      "en": ""
+      "en": "& Broken Stick~"
     },
     "symbol": {
       "character": "~",
@@ -14111,7 +14111,7 @@
     "id": 391,
     "name": {
       "ja": "頭蓋骨の破片",
-      "en": ""
+      "en": "& Broken Skull~"
     },
     "symbol": {
       "character": "~",
@@ -14146,7 +14146,7 @@
     "id": 392,
     "name": {
       "ja": "骨の破片",
-      "en": ""
+      "en": "& Broken Bone~"
     },
     "symbol": {
       "character": "~",
@@ -14181,7 +14181,7 @@
     "id": 393,
     "name": {
       "ja": "犬の骨",
-      "en": ""
+      "en": "& Canine Skeleton~"
     },
     "symbol": {
       "character": "~",
@@ -14216,7 +14216,7 @@
     "id": 394,
     "name": {
       "ja": "ネズミの骨",
-      "en": ""
+      "en": "& Rodent Skeleton~"
     },
     "symbol": {
       "character": "~",
@@ -14251,7 +14251,7 @@
     "id": 395,
     "name": {
       "ja": "人間の骨",
-      "en": ""
+      "en": "& Human Skeleton~"
     },
     "symbol": {
       "character": "~",
@@ -14286,7 +14286,7 @@
     "id": 396,
     "name": {
       "ja": "ドワーフの骨",
-      "en": ""
+      "en": "& Dwarf Skeleton~"
     },
     "symbol": {
       "character": "~",
@@ -14321,7 +14321,7 @@
     "id": 397,
     "name": {
       "ja": "エルフの骨",
-      "en": ""
+      "en": "& Elf Skeleton~"
     },
     "symbol": {
       "character": "~",
@@ -14356,7 +14356,7 @@
     "id": 398,
     "name": {
       "ja": "ノームの骨",
-      "en": ""
+      "en": "& Gnome Skeleton~"
     },
     "symbol": {
       "character": "~",
@@ -14391,11 +14391,11 @@
     "id": 399,
     "name": {
       "ja": "グレート・ハンマー",
-      "en": ""
+      "en": "& Great Hammer~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -14428,7 +14428,7 @@
     "id": 400,
     "name": {
       "ja": "ブラックドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Black Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14470,7 +14470,7 @@
     "id": 401,
     "name": {
       "ja": "ブルードラゴン・スケイルメイル",
-      "en": ""
+      "en": "Blue Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14512,7 +14512,7 @@
     "id": 402,
     "name": {
       "ja": "ホワイトドラゴン・スケイルメイル",
-      "en": ""
+      "en": "White Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14554,7 +14554,7 @@
     "id": 403,
     "name": {
       "ja": "レッドドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Red Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14596,7 +14596,7 @@
     "id": 404,
     "name": {
       "ja": "グリーンドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Green Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14638,7 +14638,7 @@
     "id": 405,
     "name": {
       "ja": "万色ドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Multi-Hued Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14684,7 +14684,7 @@
     "id": 406,
     "name": {
       "ja": "ドラゴンモドキ・スケイルメイル",
-      "en": ""
+      "en": "Pseudo Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14727,7 +14727,7 @@
     "id": 407,
     "name": {
       "ja": "ロードラゴン・スケイルメイル",
-      "en": ""
+      "en": "Law Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14770,7 +14770,7 @@
     "id": 408,
     "name": {
       "ja": "ブロンズドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Bronze Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14812,7 +14812,7 @@
     "id": 409,
     "name": {
       "ja": "ゴールドドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Gold Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14854,7 +14854,7 @@
     "id": 410,
     "name": {
       "ja": "カオスドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Chaos Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14897,7 +14897,7 @@
     "id": 411,
     "name": {
       "ja": "バランスドラゴン・スケイルメイル",
-      "en": ""
+      "en": "Balance Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14942,7 +14942,7 @@
     "id": 412,
     "name": {
       "ja": "パワードラゴン・スケイルメイル",
-      "en": ""
+      "en": "Power Dragon Scale Mail~"
     },
     "symbol": {
       "character": "[",
@@ -14982,6 +14982,7 @@
       "RES_SOUND",
       "RES_DISEN",
       "RES_CONF",
+      "RES_TIME",
       "ACTIVATE",
       "IGNORE_ACID",
       "IGNORE_ELEC",
@@ -14997,7 +14998,7 @@
     "id": 413,
     "name": {
       "ja": "ドラゴン・ヘルム",
-      "en": ""
+      "en": "& Dragon Helm~"
     },
     "symbol": {
       "character": "]",
@@ -15037,7 +15038,7 @@
     "id": 414,
     "name": {
       "ja": "ドラゴン・シールド",
-      "en": ""
+      "en": "& Dragon Shield~"
     },
     "symbol": {
       "character": "[",
@@ -15077,7 +15078,7 @@
     "id": 415,
     "name": {
       "ja": "死",
-      "en": ""
+      "en": "Death"
     },
     "symbol": {
       "character": "!",
@@ -15112,7 +15113,7 @@
     "id": 416,
     "name": {
       "ja": "破滅",
-      "en": ""
+      "en": "Ruination"
     },
     "symbol": {
       "character": "!",
@@ -15147,7 +15148,7 @@
     "id": 417,
     "name": {
       "ja": "爆発",
-      "en": ""
+      "en": "Detonations"
     },
     "symbol": {
       "character": "!",
@@ -15182,7 +15183,7 @@
     "id": 418,
     "name": {
       "ja": "増強",
-      "en": ""
+      "en": "Augmentation"
     },
     "symbol": {
       "character": "!",
@@ -15217,7 +15218,7 @@
     "id": 419,
     "name": {
       "ja": "*体力回復*",
-      "en": ""
+      "en": "*Healing*"
     },
     "symbol": {
       "character": "!",
@@ -15252,7 +15253,7 @@
     "id": 420,
     "name": {
       "ja": "生命",
-      "en": ""
+      "en": "Life"
     },
     "symbol": {
       "character": "!",
@@ -15287,7 +15288,7 @@
     "id": 421,
     "name": {
       "ja": "自己分析",
-      "en": ""
+      "en": "Self Knowledge"
     },
     "symbol": {
       "character": "!",
@@ -15322,7 +15323,7 @@
     "id": 422,
     "name": {
       "ja": "*啓蒙*",
-      "en": ""
+      "en": "*Enlightenment*"
     },
     "symbol": {
       "character": "!",
@@ -15357,7 +15358,7 @@
     "id": 423,
     "name": {
       "ja": "[暗黒魔導]",
-      "en": ""
+      "en": "[Black Channels]"
     },
     "symbol": {
       "character": "?",
@@ -15397,7 +15398,7 @@
     "id": 424,
     "name": {
       "ja": "[ネクロノミコン]",
-      "en": ""
+      "en": "[Necronomicon]"
     },
     "symbol": {
       "character": "?",
@@ -15437,7 +15438,7 @@
     "id": 425,
     "name": {
       "ja": "恐れ知らず",
-      "en": ""
+      "en": "Fear Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15474,7 +15475,7 @@
     "id": 426,
     "name": {
       "ja": "耐光耐暗",
-      "en": ""
+      "en": "Light and Darkness Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15512,7 +15513,7 @@
     "id": 427,
     "name": {
       "ja": "耐地獄",
-      "en": ""
+      "en": "Nether Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15550,7 +15551,7 @@
     "id": 428,
     "name": {
       "ja": "耐因果混乱",
-      "en": ""
+      "en": "Nexus Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15587,11 +15588,11 @@
     "id": 429,
     "name": {
       "ja": "耐轟音",
-      "en": ""
+      "en": "Sound Resistance"
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -15624,7 +15625,7 @@
     "id": 430,
     "name": {
       "ja": "耐混乱",
-      "en": ""
+      "en": "Confusion Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15661,7 +15662,7 @@
     "id": 431,
     "name": {
       "ja": "耐破片",
-      "en": ""
+      "en": "Shard Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15698,7 +15699,7 @@
     "id": 432,
     "name": {
       "ja": "耐劣化",
-      "en": ""
+      "en": "Disenchantment Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15735,11 +15736,11 @@
     "id": 433,
     "name": {
       "ja": "耐カオス",
-      "en": ""
+      "en": "Chaos Resistance"
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -15773,7 +15774,7 @@
     "id": 434,
     "name": {
       "ja": "耐盲目",
-      "en": ""
+      "en": "Blindness Resistance"
     },
     "symbol": {
       "character": "=",
@@ -15810,7 +15811,7 @@
     "id": 435,
     "name": {
       "ja": "王者の加護",
-      "en": ""
+      "en": "Lordly Protection"
     },
     "symbol": {
       "character": "=",
@@ -15850,7 +15851,7 @@
     "id": 436,
     "name": {
       "ja": "追加攻撃",
-      "en": ""
+      "en": "Extra Attacks"
     },
     "symbol": {
       "character": "=",
@@ -15887,7 +15888,7 @@
     "id": 437,
     "name": {
       "ja": "軽傷の治癒",
-      "en": ""
+      "en": "Cure Light Wounds"
     },
     "symbol": {
       "character": "!",
@@ -15922,7 +15923,7 @@
     "id": 438,
     "name": {
       "ja": "不器用",
-      "en": ""
+      "en": "Clumsiness"
     },
     "symbol": {
       "character": "!",
@@ -15957,7 +15958,7 @@
     "id": 439,
     "name": {
       "ja": "病気",
-      "en": ""
+      "en": "Sickliness"
     },
     "symbol": {
       "character": "!",
@@ -15992,7 +15993,7 @@
     "id": 480,
     "name": {
       "ja": "銅塊",
-      "en": ""
+      "en": "copper"
     },
     "symbol": {
       "character": "$",
@@ -16027,7 +16028,7 @@
     "id": 481,
     "name": {
       "ja": "銅塊",
-      "en": ""
+      "en": "copper"
     },
     "symbol": {
       "character": "$",
@@ -16062,7 +16063,7 @@
     "id": 482,
     "name": {
       "ja": "銅塊",
-      "en": ""
+      "en": "copper"
     },
     "symbol": {
       "character": "$",
@@ -16097,7 +16098,7 @@
     "id": 483,
     "name": {
       "ja": "銀塊",
-      "en": ""
+      "en": "silver"
     },
     "symbol": {
       "character": "$",
@@ -16132,7 +16133,7 @@
     "id": 484,
     "name": {
       "ja": "銀塊",
-      "en": ""
+      "en": "silver"
     },
     "symbol": {
       "character": "$",
@@ -16167,7 +16168,7 @@
     "id": 485,
     "name": {
       "ja": "銀塊",
-      "en": ""
+      "en": "silver"
     },
     "symbol": {
       "character": "$",
@@ -16202,7 +16203,7 @@
     "id": 486,
     "name": {
       "ja": "ガーネット",
-      "en": ""
+      "en": "garnets"
     },
     "symbol": {
       "character": "$",
@@ -16237,7 +16238,7 @@
     "id": 487,
     "name": {
       "ja": "ガーネット",
-      "en": ""
+      "en": "garnets"
     },
     "symbol": {
       "character": "$",
@@ -16272,7 +16273,7 @@
     "id": 488,
     "name": {
       "ja": "金塊",
-      "en": ""
+      "en": "gold"
     },
     "symbol": {
       "character": "$",
@@ -16307,7 +16308,7 @@
     "id": 489,
     "name": {
       "ja": "金塊",
-      "en": ""
+      "en": "gold"
     },
     "symbol": {
       "character": "$",
@@ -16342,7 +16343,7 @@
     "id": 490,
     "name": {
       "ja": "金塊",
-      "en": ""
+      "en": "gold"
     },
     "symbol": {
       "character": "$",
@@ -16377,7 +16378,7 @@
     "id": 491,
     "name": {
       "ja": "オパール",
-      "en": ""
+      "en": "opals"
     },
     "symbol": {
       "character": "$",
@@ -16412,7 +16413,7 @@
     "id": 492,
     "name": {
       "ja": "サファイア",
-      "en": ""
+      "en": "sapphires"
     },
     "symbol": {
       "character": "$",
@@ -16447,7 +16448,7 @@
     "id": 493,
     "name": {
       "ja": "ルビー",
-      "en": ""
+      "en": "rubies"
     },
     "symbol": {
       "character": "$",
@@ -16482,7 +16483,7 @@
     "id": 494,
     "name": {
       "ja": "ダイヤモンド",
-      "en": ""
+      "en": "diamonds"
     },
     "symbol": {
       "character": "$",
@@ -16517,7 +16518,7 @@
     "id": 495,
     "name": {
       "ja": "エメラルド",
-      "en": ""
+      "en": "emeralds"
     },
     "symbol": {
       "character": "$",
@@ -16552,7 +16553,7 @@
     "id": 496,
     "name": {
       "ja": "ミスリル",
-      "en": ""
+      "en": "mithril"
     },
     "symbol": {
       "character": "$",
@@ -16587,7 +16588,7 @@
     "id": 497,
     "name": {
       "ja": "アダマンタイト",
-      "en": ""
+      "en": "adamantite"
     },
     "symbol": {
       "character": "$",
@@ -16622,11 +16623,11 @@
     "id": 498,
     "name": {
       "ja": "冥界の大鉄杖",
-      "en": ""
+      "en": "& Mighty Hammer~"
     },
     "symbol": {
       "character": "\\",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 21,
@@ -16661,11 +16662,11 @@
     "id": 499,
     "name": {
       "ja": "堂々たる鉄冠",
-      "en": ""
+      "en": "& Massive Iron Crown~"
     },
     "symbol": {
       "character": "]",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 33,
@@ -16698,7 +16699,7 @@
     "id": 500,
     "name": {
       "ja": "玻璃瓶",
-      "en": ""
+      "en": "& Phial~"
     },
     "symbol": {
       "character": "!",
@@ -16735,7 +16736,7 @@
     "id": 501,
     "name": {
       "ja": "星",
-      "en": ""
+      "en": "& Star~"
     },
     "symbol": {
       "character": "*",
@@ -16772,7 +16773,7 @@
     "id": 502,
     "name": {
       "ja": "宝石",
-      "en": ""
+      "en": "& Jewel~"
     },
     "symbol": {
       "character": "*",
@@ -16809,7 +16810,7 @@
     "id": 503,
     "name": {
       "ja": "アミュレット",
-      "en": ""
+      "en": "& Amulet~"
     },
     "symbol": {
       "character": "\"",
@@ -16846,7 +16847,7 @@
     "id": 504,
     "name": {
       "ja": "アミュレット",
-      "en": ""
+      "en": "& Amulet~"
     },
     "symbol": {
       "character": "\"",
@@ -16883,7 +16884,7 @@
     "id": 505,
     "name": {
       "ja": "頸飾り",
-      "en": ""
+      "en": "& Necklace~"
     },
     "symbol": {
       "character": "\"",
@@ -16920,7 +16921,7 @@
     "id": 506,
     "name": {
       "ja": "指輪",
-      "en": ""
+      "en": "& Ring~"
     },
     "symbol": {
       "character": "=",
@@ -16957,7 +16958,7 @@
     "id": 507,
     "name": {
       "ja": "指輪",
-      "en": ""
+      "en": "& Ring~"
     },
     "symbol": {
       "character": "=",
@@ -16994,7 +16995,7 @@
     "id": 508,
     "name": {
       "ja": "力の指輪",
-      "en": ""
+      "en": "& Ring~"
     },
     "symbol": {
       "character": "=",
@@ -17031,7 +17032,7 @@
     "id": 509,
     "name": {
       "ja": "力の指輪",
-      "en": ""
+      "en": "& Ring~"
     },
     "symbol": {
       "character": "=",
@@ -17068,7 +17069,7 @@
     "id": 510,
     "name": {
       "ja": "力の指輪",
-      "en": ""
+      "en": "& Ring~"
     },
     "symbol": {
       "character": "=",
@@ -17105,7 +17106,7 @@
     "id": 511,
     "name": {
       "ja": "力の指輪",
-      "en": ""
+      "en": "& Ring~"
     },
     "symbol": {
       "character": "=",
@@ -17143,7 +17144,7 @@
     "id": 512,
     "name": {
       "ja": "[召喚と奇術]",
-      "en": ""
+      "en": "[Conjurings & Tricks]"
     },
     "symbol": {
       "character": "?",
@@ -17178,7 +17179,7 @@
     "id": 513,
     "name": {
       "ja": "[万物のデッキ]",
-      "en": ""
+      "en": "[Deck of Many Things]"
     },
     "symbol": {
       "character": "?",
@@ -17213,7 +17214,7 @@
     "id": 514,
     "name": {
       "ja": "[運命の切札]",
-      "en": ""
+      "en": "[Trumps of Doom]"
     },
     "symbol": {
       "character": "?",
@@ -17253,7 +17254,7 @@
     "id": 515,
     "name": {
       "ja": "[ファイブ・エース]",
-      "en": ""
+      "en": "[Five Aces]"
     },
     "symbol": {
       "character": "?",
@@ -17293,7 +17294,7 @@
     "id": 516,
     "name": {
       "ja": "[初心者教本]",
-      "en": ""
+      "en": "[Cantrips for Beginners]"
     },
     "symbol": {
       "character": "?",
@@ -17328,7 +17329,7 @@
     "id": 517,
     "name": {
       "ja": "[小秘術]",
-      "en": ""
+      "en": "[Minor Arcana]"
     },
     "symbol": {
       "character": "?",
@@ -17363,7 +17364,7 @@
     "id": 518,
     "name": {
       "ja": "[大秘術]",
-      "en": ""
+      "en": "[Major Arcana]"
     },
     "symbol": {
       "character": "?",
@@ -17398,7 +17399,7 @@
     "id": 519,
     "name": {
       "ja": "[秘術大全]",
-      "en": ""
+      "en": "[Manual of Mastery]"
     },
     "symbol": {
       "character": "?",
@@ -17433,7 +17434,7 @@
     "id": 520,
     "name": {
       "ja": "反射",
-      "en": ""
+      "en": "Reflection"
     },
     "symbol": {
       "character": "\"",
@@ -17474,7 +17475,7 @@
     "id": 521,
     "name": {
       "ja": "反魔法",
-      "en": ""
+      "en": "Anti-Magic"
     },
     "symbol": {
       "character": "\"",
@@ -17515,7 +17516,7 @@
     "id": 522,
     "name": {
       "ja": "反テレポート",
-      "en": ""
+      "en": "Anti-Teleportation"
     },
     "symbol": {
       "character": "\"",
@@ -17556,7 +17557,7 @@
     "id": 523,
     "name": {
       "ja": "耐性",
-      "en": ""
+      "en": "Resistance"
     },
     "symbol": {
       "character": "\"",
@@ -17600,7 +17601,7 @@
     "id": 524,
     "name": {
       "ja": "ツヴァイハンダー",
-      "en": ""
+      "en": "& Zweihander~"
     },
     "symbol": {
       "character": "|",
@@ -17637,7 +17638,7 @@
     "id": 525,
     "name": {
       "ja": "短刀",
-      "en": ""
+      "en": "& Tanto~"
     },
     "symbol": {
       "character": "|",
@@ -17674,11 +17675,11 @@
     "id": 526,
     "name": {
       "ja": "スプリント・メイル",
-      "en": ""
+      "en": "Splint Mail~"
     },
     "symbol": {
       "character": "[",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 37,
@@ -17709,7 +17710,7 @@
     "id": 527,
     "name": {
       "ja": "当世具足",
-      "en": ""
+      "en": "Do-maru~"
     },
     "symbol": {
       "character": "[",
@@ -17744,7 +17745,7 @@
     "id": 528,
     "name": {
       "ja": "三叉槍",
-      "en": ""
+      "en": "& Trifurcate Spear~"
     },
     "symbol": {
       "character": "/",
@@ -17782,7 +17783,7 @@
     "id": 529,
     "name": {
       "ja": "三節棍",
-      "en": ""
+      "en": "& Three Piece Rod~"
     },
     "symbol": {
       "character": "\\",
@@ -17819,11 +17820,11 @@
     "id": 530,
     "name": {
       "ja": "大鎧",
-      "en": ""
+      "en": "O-yoroi~"
     },
     "symbol": {
       "character": "[",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 37,
@@ -17854,7 +17855,7 @@
     "id": 531,
     "name": {
       "ja": "毛皮のクローク",
-      "en": ""
+      "en": "& Fur Cloak~"
     },
     "symbol": {
       "character": "(",
@@ -17889,7 +17890,7 @@
     "id": 532,
     "name": {
       "ja": "ラジャタン",
-      "en": ""
+      "en": "& Lajatang~"
     },
     "symbol": {
       "character": "/",
@@ -17926,7 +17927,7 @@
     "id": 533,
     "name": {
       "ja": "ハチェット",
-      "en": ""
+      "en": "& Hatchet~"
     },
     "symbol": {
       "character": "/",
@@ -17963,7 +17964,7 @@
     "id": 535,
     "name": {
       "ja": "サイ皮よろい",
-      "en": ""
+      "en": "Rhino Hide Armour~"
     },
     "symbol": {
       "character": "(",
@@ -17998,7 +17999,7 @@
     "id": 536,
     "name": {
       "ja": "皮ジャケット",
-      "en": ""
+      "en": "& Leather Jacket~"
     },
     "symbol": {
       "character": "(",
@@ -18033,7 +18034,7 @@
     "id": 537,
     "name": {
       "ja": "鎌",
-      "en": ""
+      "en": "& Sickle~"
     },
     "symbol": {
       "character": "/",
@@ -18070,7 +18071,7 @@
     "id": 538,
     "name": {
       "ja": "鉄棒",
-      "en": ""
+      "en": "& Tetsubo~"
     },
     "symbol": {
       "character": "\\",
@@ -18107,7 +18108,7 @@
     "id": 539,
     "name": {
       "ja": "ヌンチャク",
-      "en": ""
+      "en": "& Nunchaku~"
     },
     "symbol": {
       "character": "\\",
@@ -18144,7 +18145,7 @@
     "id": 540,
     "name": {
       "ja": "六尺棒",
-      "en": ""
+      "en": "& Bo Staff~"
     },
     "symbol": {
       "character": "\\",
@@ -18181,7 +18182,7 @@
     "id": 541,
     "name": {
       "ja": "錫杖",
-      "en": ""
+      "en": "& Jo Staff~"
     },
     "symbol": {
       "character": "\\",
@@ -18218,7 +18219,7 @@
     "id": 542,
     "name": {
       "ja": "棍棒",
-      "en": ""
+      "en": "& Club~"
     },
     "symbol": {
       "character": "\\",
@@ -18255,7 +18256,7 @@
     "id": 543,
     "name": {
       "ja": "ブロード・スピア",
-      "en": ""
+      "en": "& Broad Spear~"
     },
     "symbol": {
       "character": "/",
@@ -18293,7 +18294,7 @@
     "id": 544,
     "name": {
       "ja": "コペシュ",
-      "en": ""
+      "en": "& Khopesh~"
     },
     "symbol": {
       "character": "|",
@@ -18330,7 +18331,7 @@
     "id": 545,
     "name": {
       "ja": "フランベルジュ",
-      "en": ""
+      "en": "& Flamberge~"
     },
     "symbol": {
       "character": "|",
@@ -18367,7 +18368,7 @@
     "id": 546,
     "name": {
       "ja": "クレイモア",
-      "en": ""
+      "en": "& Claymore~"
     },
     "symbol": {
       "character": "|",
@@ -18404,7 +18405,7 @@
     "id": 547,
     "name": {
       "ja": "エスパドン",
-      "en": ""
+      "en": "& Espadon~"
     },
     "symbol": {
       "character": "|",
@@ -18441,7 +18442,7 @@
     "id": 548,
     "name": {
       "ja": "青龍刀",
-      "en": ""
+      "en": "& Falchion~"
     },
     "symbol": {
       "character": "|",
@@ -18479,7 +18480,7 @@
     "id": 549,
     "name": {
       "ja": "脇差し",
-      "en": ""
+      "en": "& Wakizashi~"
     },
     "symbol": {
       "character": "|",
@@ -18517,7 +18518,7 @@
     "id": 550,
     "name": {
       "ja": "薙刀",
-      "en": ""
+      "en": "& Naginata~"
     },
     "symbol": {
       "character": "/",
@@ -18554,7 +18555,7 @@
     "id": 551,
     "name": {
       "ja": "フォシャール",
-      "en": ""
+      "en": "& Fauchard~"
     },
     "symbol": {
       "character": "/",
@@ -18592,7 +18593,7 @@
     "id": 552,
     "name": {
       "ja": "ギザルム",
-      "en": ""
+      "en": "& Guisarme~"
     },
     "symbol": {
       "character": "/",
@@ -18629,7 +18630,7 @@
     "id": 553,
     "name": {
       "ja": "ヘヴィ・ランス",
-      "en": ""
+      "en": "& Heavy Lance~"
     },
     "symbol": {
       "character": "/",
@@ -18667,7 +18668,7 @@
     "id": 554,
     "name": {
       "ja": "バゼラード",
-      "en": ""
+      "en": "& Basillard~"
     },
     "symbol": {
       "character": "|",
@@ -18704,7 +18705,7 @@
     "id": 555,
     "name": {
       "ja": "忍者刀",
-      "en": ""
+      "en": "& Ninjato~"
     },
     "symbol": {
       "character": "|",
@@ -18741,7 +18742,7 @@
     "id": 556,
     "name": {
       "ja": "リング・メイル",
-      "en": ""
+      "en": "Ring Mail~"
     },
     "symbol": {
       "character": "[",
@@ -18776,7 +18777,7 @@
     "id": 557,
     "name": {
       "ja": "防護服",
-      "en": ""
+      "en": "Cord Armour~"
     },
     "symbol": {
       "character": "(",
@@ -18811,7 +18812,7 @@
     "id": 558,
     "name": {
       "ja": "紙甲",
-      "en": ""
+      "en": "Paper Armour~"
     },
     "symbol": {
       "character": "(",
@@ -18846,7 +18847,7 @@
     "id": 559,
     "name": {
       "ja": "厚布よろい",
-      "en": ""
+      "en": "Padded Armour~"
     },
     "symbol": {
       "character": "(",
@@ -18881,11 +18882,11 @@
     "id": 560,
     "name": {
       "ja": "星兜",
-      "en": ""
+      "en": "& Kabuto~"
     },
     "symbol": {
       "character": "]",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 32,
@@ -18916,7 +18917,7 @@
     "id": 561,
     "name": {
       "ja": "皮石よろい",
-      "en": ""
+      "en": "Stone and Hide Armour~"
     },
     "symbol": {
       "character": "(",
@@ -18951,7 +18952,7 @@
     "id": 562,
     "name": {
       "ja": "陣笠",
-      "en": ""
+      "en": "& Jingasa~"
     },
     "symbol": {
       "character": "]",
@@ -18986,11 +18987,11 @@
     "id": 563,
     "name": {
       "ja": "胴丸",
-      "en": ""
+      "en": "Haramakido~"
     },
     "symbol": {
       "character": "[",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 37,
@@ -19021,7 +19022,7 @@
     "id": 564,
     "name": {
       "ja": "白熱灯",
-      "en": ""
+      "en": "& Incandescent Light~"
     },
     "symbol": {
       "character": "!",
@@ -19058,7 +19059,7 @@
     "id": 565,
     "name": {
       "ja": "ダイヤモンド・エッジ",
-      "en": ""
+      "en": "& Diamond Edge~"
     },
     "symbol": {
       "character": "|",
@@ -19097,7 +19098,7 @@
     "id": 566,
     "name": {
       "ja": "凡庸",
-      "en": ""
+      "en": "Mundanity"
     },
     "symbol": {
       "character": "?",
@@ -19132,7 +19133,7 @@
     "id": 567,
     "name": {
       "ja": "#の人形",
-      "en": ""
+      "en": "& Magical Figurine~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19167,7 +19168,7 @@
     "id": 568,
     "name": {
       "ja": "#の木の像",
-      "en": ""
+      "en": "& Wooden Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19202,7 +19203,7 @@
     "id": 569,
     "name": {
       "ja": "#の粘土像",
-      "en": ""
+      "en": "& Clay Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19237,7 +19238,7 @@
     "id": 570,
     "name": {
       "ja": "#の石像",
-      "en": ""
+      "en": "& Stone Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19272,11 +19273,11 @@
     "id": 571,
     "name": {
       "ja": "#の鉄の像",
-      "en": ""
+      "en": "& Iron Statue~ of #"
     },
     "symbol": {
       "character": "`",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 9,
@@ -19307,7 +19308,7 @@
     "id": 572,
     "name": {
       "ja": "#の銅像",
-      "en": ""
+      "en": "& Copper Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19342,7 +19343,7 @@
     "id": 573,
     "name": {
       "ja": "#の銀の像",
-      "en": ""
+      "en": "& Silver Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19377,7 +19378,7 @@
     "id": 574,
     "name": {
       "ja": "#の金の像",
-      "en": ""
+      "en": "& Golden Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19412,7 +19413,7 @@
     "id": 575,
     "name": {
       "ja": "#の象牙の像",
-      "en": ""
+      "en": "& Ivory Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19447,7 +19448,7 @@
     "id": 576,
     "name": {
       "ja": "#のミスリル像",
-      "en": ""
+      "en": "& Mithril Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19482,7 +19483,7 @@
     "id": 577,
     "name": {
       "ja": "#の装飾された像",
-      "en": ""
+      "en": "& Ornate Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -19517,7 +19518,7 @@
     "id": 578,
     "name": {
       "ja": "の骨",
-      "en": ""
+      "en": "Skeleton~"
     },
     "symbol": {
       "character": "~",
@@ -19552,11 +19553,11 @@
     "id": 579,
     "name": {
       "ja": "の死体",
-      "en": ""
+      "en": "Corpse~"
     },
     "symbol": {
       "character": "~",
-      "color": "Dark Gray"
+      "color": "Black"
     },
     "itemkind": {
       "type_value": 10,
@@ -19587,7 +19588,7 @@
     "id": 580,
     "name": {
       "ja": "Ｔシャツ",
-      "en": ""
+      "en": "& T-shirt~"
     },
     "symbol": {
       "character": "~",
@@ -19622,7 +19623,7 @@
     "id": 581,
     "name": {
       "ja": "魔術師の杖",
-      "en": ""
+      "en": "& Wizardstaff~"
     },
     "symbol": {
       "character": "\\",
@@ -19660,7 +19661,7 @@
     "id": 582,
     "name": {
       "ja": "フェアノールのランプ",
-      "en": ""
+      "en": "& Feanorian Lamp~"
     },
     "symbol": {
       "character": "~",
@@ -19698,7 +19699,7 @@
     "id": 583,
     "name": {
       "ja": "岩石溶解",
-      "en": ""
+      "en": "Stone to Mud"
     },
     "symbol": {
       "character": "-",
@@ -19733,7 +19734,7 @@
     "id": 584,
     "name": {
       "ja": "ドラゴン・グローブ",
-      "en": ""
+      "en": "& Set~ of Dragon Gloves"
     },
     "symbol": {
       "character": "]",
@@ -19773,7 +19774,7 @@
     "id": 585,
     "name": {
       "ja": "ドラゴン・ブーツ",
-      "en": ""
+      "en": "& Pair~ of Dragon Boots"
     },
     "symbol": {
       "character": "]",
@@ -19813,7 +19814,7 @@
     "id": 586,
     "name": {
       "ja": "腐れの指輪",
-      "en": ""
+      "en": "& Ring~"
     },
     "symbol": {
       "character": "=",
@@ -19851,7 +19852,7 @@
     "id": 587,
     "name": {
       "ja": "テレパシー",
-      "en": ""
+      "en": "Telepathy"
     },
     "symbol": {
       "character": "\"",
@@ -19892,7 +19893,7 @@
     "id": 588,
     "name": {
       "ja": "進化する銃",
-      "en": ""
+      "en": "& Gun~"
     },
     "symbol": {
       "character": "}",
@@ -19930,7 +19931,7 @@
     "id": 589,
     "name": {
       "ja": "石",
-      "en": ""
+      "en": "& Crystal Ball~"
     },
     "symbol": {
       "character": "*",
@@ -19967,7 +19968,7 @@
     "id": 590,
     "name": {
       "ja": "石",
-      "en": ""
+      "en": "& Stone~"
     },
     "symbol": {
       "character": "*",
@@ -20004,7 +20005,7 @@
     "id": 591,
     "name": {
       "ja": "アミュレット",
-      "en": ""
+      "en": "& Amulet~"
     },
     "symbol": {
       "character": "\"",
@@ -20041,7 +20042,7 @@
     "id": 592,
     "name": {
       "ja": "毒針",
-      "en": ""
+      "en": "& Poison Needle~"
     },
     "symbol": {
       "character": "|",
@@ -20082,7 +20083,7 @@
     "id": 593,
     "name": {
       "ja": "モンスター・ボール#",
-      "en": ""
+      "en": "& Capture Ball#"
     },
     "symbol": {
       "character": "~",
@@ -20119,7 +20120,7 @@
     "id": 594,
     "name": {
       "ja": "死の大鎌",
-      "en": ""
+      "en": "& Death Scythe~"
     },
     "symbol": {
       "character": "/",
@@ -20179,7 +20180,7 @@
     "id": 595,
     "name": {
       "ja": "マサル漢方ダイナミック",
-      "en": ""
+      "en": "Masaru Chinese Dynamic"
     },
     "symbol": {
       "character": "!",
@@ -20216,7 +20217,7 @@
     "id": 596,
     "name": {
       "ja": "追加射撃",
-      "en": ""
+      "en": "Extra Shots"
     },
     "symbol": {
       "character": "=",
@@ -20253,7 +20254,7 @@
     "id": 597,
     "name": {
       "ja": "エクスプレスカード",
-      "en": ""
+      "en": "& Card"
     },
     "symbol": {
       "character": "~",
@@ -20290,7 +20291,7 @@
     "id": 598,
     "name": {
       "ja": "能力維持",
-      "en": ""
+      "en": "Sustaining"
     },
     "symbol": {
       "character": "=",
@@ -20334,7 +20335,7 @@
     "id": 599,
     "name": {
       "ja": "消費魔力減少",
-      "en": ""
+      "en": "Mana"
     },
     "symbol": {
       "character": "=",
@@ -20371,7 +20372,7 @@
     "id": 600,
     "name": {
       "ja": "呪文",
-      "en": ""
+      "en": "Spell"
     },
     "symbol": {
       "character": "?",
@@ -20406,7 +20407,7 @@
     "id": 601,
     "name": {
       "ja": "ペット召喚",
-      "en": ""
+      "en": "Summon Pet"
     },
     "symbol": {
       "character": "?",
@@ -20441,7 +20442,7 @@
     "id": 602,
     "name": {
       "ja": "金の首飾り",
-      "en": ""
+      "en": "& Torque~"
     },
     "symbol": {
       "character": "\"",
@@ -20478,7 +20479,7 @@
     "id": 603,
     "name": {
       "ja": "つよしスペシャル",
-      "en": ""
+      "en": "Tsuyoshi Special"
     },
     "symbol": {
       "character": "!",
@@ -20513,7 +20514,7 @@
     "id": 604,
     "name": {
       "ja": "[新弟子用教本]",
-      "en": ""
+      "en": "[Handbook for Pupils]"
     },
     "symbol": {
       "character": "?",
@@ -20548,7 +20549,7 @@
     "id": 605,
     "name": {
       "ja": "[有段者への道]",
-      "en": ""
+      "en": "[Grade Holder's Book]"
     },
     "symbol": {
       "character": "?",
@@ -20583,7 +20584,7 @@
     "id": 606,
     "name": {
       "ja": "[師範代の書]",
-      "en": ""
+      "en": "[Note of Acting Master]"
     },
     "symbol": {
       "character": "?",
@@ -20623,7 +20624,7 @@
     "id": 607,
     "name": {
       "ja": "[悟りの書]",
-      "en": ""
+      "en": "[Spiritual Enlightenment]"
     },
     "symbol": {
       "character": "?",
@@ -20663,7 +20664,7 @@
     "id": 608,
     "name": {
       "ja": "死人返し",
-      "en": ""
+      "en": "Animate Dead"
     },
     "symbol": {
       "character": "_",
@@ -20698,7 +20699,7 @@
     "id": 609,
     "name": {
       "ja": "石",
-      "en": ""
+      "en": "& Levitation Stone~"
     },
     "symbol": {
       "character": "*",
@@ -20735,7 +20736,7 @@
     "id": 610,
     "name": {
       "ja": "勾玉",
-      "en": ""
+      "en": "& Bead~"
     },
     "symbol": {
       "character": "\"",
@@ -20772,7 +20773,7 @@
     "id": 611,
     "name": {
       "ja": "天上のクローク",
-      "en": ""
+      "en": "& Ethereal Cloak~"
     },
     "symbol": {
       "character": "(",
@@ -20813,7 +20814,7 @@
     "id": 612,
     "name": {
       "ja": "鏡",
-      "en": ""
+      "en": "& Mirror~"
     },
     "symbol": {
       "character": "*",
@@ -20852,7 +20853,7 @@
     "id": 613,
     "name": {
       "ja": "矢",
-      "en": ""
+      "en": "& Black Arrow~"
     },
     "symbol": {
       "character": "{",
@@ -20890,7 +20891,7 @@
     "id": 614,
     "name": {
       "ja": "危ない水着",
-      "en": ""
+      "en": "Sexy Swimsuit"
     },
     "symbol": {
       "character": "(",
@@ -20931,7 +20932,7 @@
     "id": 615,
     "name": {
       "ja": "釣り竿",
-      "en": ""
+      "en": "& Fishingpole~"
     },
     "symbol": {
       "character": "/",
@@ -20968,7 +20969,7 @@
     "id": 616,
     "name": {
       "ja": "印籠",
-      "en": ""
+      "en": "& Inro~"
     },
     "symbol": {
       "character": "\"",
@@ -21005,7 +21006,7 @@
     "id": 617,
     "name": {
       "ja": "突然変異",
-      "en": ""
+      "en": "Polymorph"
     },
     "symbol": {
       "character": "!",
@@ -21040,7 +21041,7 @@
     "id": 618,
     "name": {
       "ja": "警告",
-      "en": ""
+      "en": "Warning"
     },
     "symbol": {
       "character": "=",
@@ -21077,7 +21078,7 @@
     "id": 619,
     "name": {
       "ja": "鋼鉄のクロスボウの矢",
-      "en": ""
+      "en": "& Steel Bolt~"
     },
     "symbol": {
       "character": "{",
@@ -21114,7 +21115,7 @@
     "id": 620,
     "name": {
       "ja": "おもちゃのカンヅメ",
-      "en": ""
+      "en": "& Can~ of Toys"
     },
     "symbol": {
       "character": "&",
@@ -21154,7 +21155,7 @@
     "id": 621,
     "name": {
       "ja": "棒",
-      "en": ""
+      "en": "& Stick~"
     },
     "symbol": {
       "character": "\\",
@@ -21191,7 +21192,7 @@
     "id": 622,
     "name": {
       "ja": "弓",
-      "en": ""
+      "en": "& Yumi~"
     },
     "symbol": {
       "character": "}",
@@ -21228,7 +21229,7 @@
     "id": 623,
     "name": {
       "ja": "服",
-      "en": ""
+      "en": "Clothes~"
     },
     "symbol": {
       "character": "(",
@@ -21265,7 +21266,7 @@
     "id": 624,
     "name": {
       "ja": "知能",
-      "en": ""
+      "en": "Intelligence"
     },
     "symbol": {
       "character": "\"",
@@ -21303,7 +21304,7 @@
     "id": 625,
     "name": {
       "ja": "賢さ",
-      "en": ""
+      "en": "Wisdom"
     },
     "symbol": {
       "character": "\"",
@@ -21341,7 +21342,7 @@
     "id": 626,
     "name": {
       "ja": "肉体強化",
-      "en": ""
+      "en": "Reinforce Muscle"
     },
     "symbol": {
       "character": "=",
@@ -21381,7 +21382,7 @@
     "id": 627,
     "name": {
       "ja": "ナイト・シールド",
-      "en": ""
+      "en": "& Knight's Shield~"
     },
     "symbol": {
       "character": ")",
@@ -21416,7 +21417,7 @@
     "id": 628,
     "name": {
       "ja": "衝撃",
-      "en": ""
+      "en": "Striking"
     },
     "symbol": {
       "character": "-",
@@ -21456,7 +21457,7 @@
     "id": 629,
     "name": {
       "ja": "魔力の嵐",
-      "en": ""
+      "en": "Mana Storm"
     },
     "symbol": {
       "character": "_",
@@ -21496,7 +21497,7 @@
     "id": 630,
     "name": {
       "ja": "フロア・リセット",
-      "en": ""
+      "en": "Reset Recall"
     },
     "symbol": {
       "character": "?",
@@ -21531,7 +21532,7 @@
     "id": 631,
     "name": {
       "ja": "[見習い教本]",
-      "en": ""
+      "en": "[Apprentice Handbook]"
     },
     "symbol": {
       "character": "?",
@@ -21566,7 +21567,7 @@
     "id": 632,
     "name": {
       "ja": "[詩人楽曲集]",
-      "en": ""
+      "en": "[Minstrel's Music]"
     },
     "symbol": {
       "character": "?",
@@ -21601,7 +21602,7 @@
     "id": 633,
     "name": {
       "ja": "[リヴェンデルの竪琴]",
-      "en": ""
+      "en": "[Harps of Rivendell]"
     },
     "symbol": {
       "character": "?",
@@ -21641,7 +21642,7 @@
     "id": 634,
     "name": {
       "ja": "[ベレリアンドの詩]",
-      "en": ""
+      "en": "[Lays of Beleriand]"
     },
     "symbol": {
       "character": "?",
@@ -21681,7 +21682,7 @@
     "id": 635,
     "name": {
       "ja": "隼の剣",
-      "en": ""
+      "en": "& Falcon Sword~"
     },
     "symbol": {
       "character": "|",
@@ -21719,7 +21720,7 @@
     "id": 636,
     "name": {
       "ja": "何者かに添削された羊皮紙『冒険者のための中つ国ガイド』",
-      "en": ""
+      "en": "Corrected by someone parchment 'Adventurer's guide to Middle Earth'"
     },
     "symbol": {
       "character": "?",
@@ -21759,7 +21760,7 @@
     "id": 637,
     "name": {
       "ja": "[武芸諸譜]",
-      "en": ""
+      "en": "[Bugei Shofu]"
     },
     "symbol": {
       "character": "?",
@@ -21794,7 +21795,7 @@
     "id": 638,
     "name": {
       "ja": "[柳生武芸帳]",
-      "en": ""
+      "en": "[Yagyuu Bugeichou]"
     },
     "symbol": {
       "character": "?",
@@ -21829,7 +21830,7 @@
     "id": 639,
     "name": {
       "ja": "[五輪書]",
-      "en": ""
+      "en": "[Gorinnosho]"
     },
     "symbol": {
       "character": "?",
@@ -21869,7 +21870,7 @@
     "id": 640,
     "name": {
       "ja": "[北辰一刀流皆伝]",
-      "en": ""
+      "en": "[Hokusin Ittouryuu Kaiden]"
     },
     "symbol": {
       "character": "?",
@@ -21909,7 +21910,7 @@
     "id": 641,
     "name": {
       "ja": "消滅",
-      "en": ""
+      "en": "Annihilation"
     },
     "symbol": {
       "character": "-",
@@ -21944,7 +21945,7 @@
     "id": 642,
     "name": {
       "ja": "反感",
-      "en": ""
+      "en": "Aggravate Monster"
     },
     "symbol": {
       "character": "-",
@@ -21979,7 +21980,7 @@
     "id": 643,
     "name": {
       "ja": "#の写真",
-      "en": ""
+      "en": "& Photograph~ of #"
     },
     "symbol": {
       "character": "~",
@@ -22014,7 +22015,7 @@
     "id": 644,
     "name": {
       "ja": "魔法道具支配",
-      "en": ""
+      "en": "Magic Device Mastery"
     },
     "symbol": {
       "character": "\"",
@@ -22052,11 +22053,11 @@
     "id": 645,
     "name": {
       "ja": "ローブ",
-      "en": ""
+      "en": "& Robe~"
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 36,
@@ -22087,7 +22088,7 @@
     "id": 646,
     "name": {
       "ja": "[闇夜の呪い]",
-      "en": ""
+      "en": "[Dark Incantations]"
     },
     "symbol": {
       "character": "?",
@@ -22122,7 +22123,7 @@
     "id": 647,
     "name": {
       "ja": "[不朽の儀式]",
-      "en": ""
+      "en": "[Immortal Rituals]"
     },
     "symbol": {
       "character": "?",
@@ -22157,7 +22158,7 @@
     "id": 648,
     "name": {
       "ja": "[悪魔の叡知]",
-      "en": ""
+      "en": "[Demonthoughts]"
     },
     "symbol": {
       "character": "?",
@@ -22197,7 +22198,7 @@
     "id": 649,
     "name": {
       "ja": "[劫火の魔書]",
-      "en": ""
+      "en": "[Hellfire Tome]"
     },
     "symbol": {
       "character": "?",
@@ -22237,7 +22238,7 @@
     "id": 650,
     "name": {
       "ja": "援軍",
-      "en": ""
+      "en": "Summon Kin"
     },
     "symbol": {
       "character": "?",
@@ -22272,7 +22273,7 @@
     "id": 651,
     "name": {
       "ja": "魔法の笛",
-      "en": ""
+      "en": "& Magic Whistle~"
     },
     "symbol": {
       "character": "~",
@@ -22309,7 +22310,7 @@
     "id": 652,
     "name": {
       "ja": "アミュレット",
-      "en": ""
+      "en": "& Amulet~"
     },
     "symbol": {
       "character": "\"",
@@ -22346,11 +22347,11 @@
     "id": 653,
     "name": {
       "ja": "黒装束",
-      "en": ""
+      "en": "Black Clothes"
     },
     "symbol": {
       "character": "(",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 36,
@@ -22384,7 +22385,7 @@
     "id": 654,
     "name": {
       "ja": "[徒弟読本]",
-      "en": ""
+      "en": "[Rites of Initiation]"
     },
     "symbol": {
       "character": "?",
@@ -22419,7 +22420,7 @@
     "id": 655,
     "name": {
       "ja": "[戦術指南]",
-      "en": ""
+      "en": "[Ways of War]"
     },
     "symbol": {
       "character": "?",
@@ -22454,7 +22455,7 @@
     "id": 656,
     "name": {
       "ja": "[退魔払邪]",
-      "en": ""
+      "en": "[Exorcism and Dispelling]"
     },
     "symbol": {
       "character": "?",
@@ -22494,7 +22495,7 @@
     "id": 657,
     "name": {
       "ja": "[天神怒罰]",
-      "en": ""
+      "en": "[Wrath of God]"
     },
     "symbol": {
       "character": "?",
@@ -22505,7 +22506,7 @@
       "subtype_value": 3
     },
     "parameter_value": 0,
-    "level": 95,
+    "level": 90,
     "weight": 30,
     "cost": 100000,
     "base_ac": 0,
@@ -22515,7 +22516,7 @@
     "ac_bonus": 0,
     "allocations": [
       {
-        "depth": 95,
+        "depth": 90,
         "rarity": 1
       }
     ],
@@ -22534,7 +22535,7 @@
     "id": 658,
     "name": {
       "ja": "杖",
-      "en": ""
+      "en": "& Staff~"
     },
     "symbol": {
       "character": "_",
@@ -22571,7 +22572,7 @@
     "id": 659,
     "name": {
       "ja": "首飾り",
-      "en": ""
+      "en": "& Amulet~"
     },
     "symbol": {
       "character": "\"",
@@ -22608,7 +22609,7 @@
     "id": 660,
     "name": {
       "ja": "首輪",
-      "en": ""
+      "en": "& Collar Harness~"
     },
     "symbol": {
       "character": "\"",
@@ -22645,7 +22646,7 @@
     "id": 661,
     "name": {
       "ja": "ペンダント",
-      "en": ""
+      "en": "& Pendant~"
     },
     "symbol": {
       "character": "\"",
@@ -22682,7 +22683,7 @@
     "id": 662,
     "name": {
       "ja": "ペンダント",
-      "en": ""
+      "en": "& Pendant~"
     },
     "symbol": {
       "character": "\"",
@@ -22719,7 +22720,7 @@
     "id": 663,
     "name": {
       "ja": "[呪術入門]",
-      "en": ""
+      "en": "[Handbook of Hex]"
     },
     "symbol": {
       "character": "?",
@@ -22754,7 +22755,7 @@
     "id": 664,
     "name": {
       "ja": "[上級呪法]",
-      "en": ""
+      "en": "[High Curse]"
     },
     "symbol": {
       "character": "?",
@@ -22789,11 +22790,11 @@
     "id": 665,
     "name": {
       "ja": "[怨恨呪縛]",
-      "en": ""
+      "en": "[Curse and Spelling]"
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 107,
@@ -22829,11 +22830,11 @@
     "id": 666,
     "name": {
       "ja": "[禁呪法大全]",
-      "en": ""
+      "en": "[Forbidden Cursebook]"
     },
     "symbol": {
       "character": "?",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 107,
@@ -22869,7 +22870,7 @@
     "id": 667,
     "name": {
       "ja": "誰得",
-      "en": ""
+      "en": "Amusement"
     },
     "symbol": {
       "character": "?",
@@ -22904,7 +22905,7 @@
     "id": 668,
     "name": {
       "ja": "*誰得*",
-      "en": ""
+      "en": "*Amusement*"
     },
     "symbol": {
       "character": "?",
@@ -22939,7 +22940,7 @@
     "id": 669,
     "name": {
       "ja": "オーブ",
-      "en": ""
+      "en": "& Orb~"
     },
     "symbol": {
       "character": "*",
@@ -22976,7 +22977,7 @@
     "id": 670,
     "name": {
       "ja": "針",
-      "en": ""
+      "en": "& Needle"
     },
     "symbol": {
       "character": "|",
@@ -23013,7 +23014,7 @@
     "id": 671,
     "name": {
       "ja": "ハープ",
-      "en": ""
+      "en": "& Harp~"
     },
     "symbol": {
       "character": "}",
@@ -23051,7 +23052,7 @@
     "id": 672,
     "name": {
       "ja": "糞便",
-      "en": ""
+      "en": "& feces~"
     },
     "symbol": {
       "character": "~",
@@ -23063,8 +23064,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23088,7 +23089,7 @@
     "id": 673,
     "name": {
       "ja": "吐しゃ物",
-      "en": ""
+      "en": "& vomiting~"
     },
     "symbol": {
       "character": "~",
@@ -23100,8 +23101,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23125,7 +23126,7 @@
     "id": 674,
     "name": {
       "ja": "さっきまで命だったもの",
-      "en": ""
+      "en": "& thing~ living till a while ago"
     },
     "symbol": {
       "character": "~",
@@ -23137,8 +23138,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23162,7 +23163,7 @@
     "id": 675,
     "name": {
       "ja": "#の抱き枕",
-      "en": ""
+      "en": "& waifu pillow~ of #"
     },
     "symbol": {
       "character": "`",
@@ -23174,8 +23175,8 @@
     },
     "parameter_value": 0,
     "level": 5,
-    "weight": 0,
-    "cost": 40,
+    "weight": 40,
+    "cost": 75,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23199,7 +23200,7 @@
     "id": 676,
     "name": {
       "ja": "#の薄い本",
-      "en": ""
+      "en": "& adult content~ of #"
     },
     "symbol": {
       "character": "?",
@@ -23211,8 +23212,8 @@
     },
     "parameter_value": 0,
     "level": 5,
-    "weight": 0,
-    "cost": 6,
+    "weight": 6,
+    "cost": 75,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23236,7 +23237,7 @@
     "id": 677,
     "name": {
       "ja": "#のクソみてェな旗",
-      "en": ""
+      "en": "& damn flag~ of #"
     },
     "symbol": {
       "character": "\\",
@@ -23248,8 +23249,8 @@
     },
     "parameter_value": 0,
     "level": 5,
-    "weight": 0,
-    "cost": 200,
+    "weight": 200,
+    "cost": 75,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23273,7 +23274,7 @@
     "id": 678,
     "name": {
       "ja": "ネオ・つよしスペシャル",
-      "en": ""
+      "en": "Neo-Tsuyoshi Special"
     },
     "symbol": {
       "character": "!",
@@ -23285,8 +23286,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 4,
+    "weight": 4,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23308,7 +23309,7 @@
     "id": 679,
     "name": {
       "ja": "のソウル",
-      "en": ""
+      "en": "Corpse~"
     },
     "symbol": {
       "character": "*",
@@ -23343,7 +23344,7 @@
     "id": 680,
     "name": {
       "ja": "#の糞の像",
-      "en": ""
+      "en": "& Feces Statue~ of #"
     },
     "symbol": {
       "character": "`",
@@ -23355,8 +23356,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 200,
+    "weight": 200,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23380,7 +23381,7 @@
     "id": 681,
     "name": {
       "ja": "胸まであるゴム長",
-      "en": ""
+      "en": "Chest rubber ~"
     },
     "symbol": {
       "character": "(",
@@ -23392,8 +23393,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 80,
+    "weight": 80,
+    "cost": 200,
     "base_ac": 6,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23418,7 +23419,7 @@
     "id": 682,
     "name": {
       "ja": "この世の終わりみたいなパンツ",
-      "en": ""
+      "en": "Underpants reminisced doomsday ~"
     },
     "symbol": {
       "character": "(",
@@ -23430,8 +23431,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 80,
+    "weight": 80,
+    "cost": 200,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23456,7 +23457,7 @@
     "id": 683,
     "name": {
       "ja": "伸縮性のあるボクサー型のパンツ",
-      "en": ""
+      "en": "Elastic Boxer Type Underpants ~"
     },
     "symbol": {
       "character": "(",
@@ -23468,8 +23469,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 80,
+    "weight": 80,
+    "cost": 200,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23493,7 +23494,7 @@
     "id": 684,
     "name": {
       "ja": "#の残気",
-      "en": ""
+      "en": "& Stayed Aura~ of #"
     },
     "symbol": {
       "character": "`",
@@ -23506,7 +23507,7 @@
     "parameter_value": 0,
     "level": 20,
     "weight": 0,
-    "cost": 0,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23530,7 +23531,7 @@
     "id": 685,
     "name": {
       "ja": "ALCのブラウニー",
-      "en": ""
+      "en": "& Brownie~ of ALC"
     },
     "symbol": {
       "character": ",",
@@ -23542,7 +23543,7 @@
     },
     "parameter_value": 1500,
     "level": 0,
-    "weight": 0,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -23567,7 +23568,7 @@
     "id": 686,
     "name": {
       "ja": "人間便器マスク",
-      "en": ""
+      "en": "& Human Toilet Mask~"
     },
     "symbol": {
       "character": "]",
@@ -23579,8 +23580,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 30,
+    "weight": 30,
+    "cost": 100,
     "base_ac": 3,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23604,7 +23605,7 @@
     "id": 687,
     "name": {
       "ja": "永久岩の石碑『やったぜ。 投稿者：変態糞土方』",
-      "en": ""
+      "en": "Parmanent Stone Monument 'I've done. by The Hentai Feces Labor'"
     },
     "symbol": {
       "character": "?",
@@ -23616,8 +23617,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 800,
+    "weight": 800,
+    "cost": 1,
     "base_ac": 0,
     "base_dice": "2d4",
     "hit_bonus": 0,
@@ -23646,7 +23647,7 @@
     "id": 688,
     "name": {
       "ja": "丸太",
-      "en": ""
+      "en": "& Log"
     },
     "symbol": {
       "character": "\\",
@@ -23658,8 +23659,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 400,
+    "weight": 400,
+    "cost": 50,
     "base_ac": 0,
     "base_dice": "2d4",
     "hit_bonus": 0,
@@ -23683,7 +23684,7 @@
     "id": 689,
     "name": {
       "ja": "サングラス",
-      "en": ""
+      "en": "& Pair~ of Sunglassess"
     },
     "symbol": {
       "character": "]",
@@ -23695,8 +23696,8 @@
     },
     "parameter_value": 0,
     "level": 40,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 500,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23720,7 +23721,7 @@
     "id": 690,
     "name": {
       "ja": "永久岩の石碑『ウルトラマン拉致』",
-      "en": ""
+      "en": "Parmanent Stone Monument 'Kidnapping Ultraman'"
     },
     "symbol": {
       "character": "?",
@@ -23732,8 +23733,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 800,
+    "weight": 800,
+    "cost": 1,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -23762,7 +23763,7 @@
     "id": 691,
     "name": {
       "ja": "巨大なコイン",
-      "en": ""
+      "en": "& Huge Coin~"
     },
     "symbol": {
       "character": "$",
@@ -23774,8 +23775,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 2000,
+    "weight": 2000,
+    "cost": 10000,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23800,7 +23801,7 @@
     "id": 692,
     "name": {
       "ja": "魔法を防ぐクローク",
-      "en": ""
+      "en": "& Cloak~ of Magic Resistance"
     },
     "symbol": {
       "character": "(",
@@ -23837,7 +23838,7 @@
     "id": 693,
     "name": {
       "ja": "でりさくらのブロマイド",
-      "en": ""
+      "en": "& bromide~ of Derisakura"
     },
     "symbol": {
       "character": "~",
@@ -23849,8 +23850,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23875,7 +23876,7 @@
     "id": 694,
     "name": {
       "ja": "自己変容",
-      "en": ""
+      "en": "Self-Polymorph"
     },
     "symbol": {
       "character": "!",
@@ -23910,7 +23911,7 @@
     "id": 695,
     "name": {
       "ja": "糞団子",
-      "en": ""
+      "en": "& stalk dung pie~"
     },
     "symbol": {
       "character": "*",
@@ -23922,8 +23923,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23947,7 +23948,7 @@
     "id": 696,
     "name": {
       "ja": "メンシスの檻",
-      "en": ""
+      "en": "& Mensis Cage~"
     },
     "symbol": {
       "character": "]",
@@ -23959,8 +23960,8 @@
     },
     "parameter_value": 0,
     "level": 40,
-    "weight": 0,
-    "cost": 200,
+    "weight": 200,
+    "cost": 500,
     "base_ac": 2,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -23982,7 +23983,7 @@
     "id": 697,
     "name": {
       "ja": "羊皮紙『冥王より'＠'の烙印者たちへ』",
-      "en": ""
+      "en": "parchment 'From Dark Lord to \"@\" Stigmatics'"
     },
     "symbol": {
       "character": "?",
@@ -23994,8 +23995,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 1,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24022,7 +24023,7 @@
     "id": 698,
     "name": {
       "ja": "糞尿レストランのウェルカムドリンク",
-      "en": ""
+      "en": "& welcome drink~ of the Excreta Restaurant"
     },
     "symbol": {
       "character": ",",
@@ -24034,7 +24035,7 @@
     },
     "parameter_value": 1000,
     "level": 0,
-    "weight": 0,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -24059,7 +24060,7 @@
     "id": 699,
     "name": {
       "ja": "アバ茶",
-      "en": ""
+      "en": "& tea~ of Abbacchio"
     },
     "symbol": {
       "character": ",",
@@ -24071,7 +24072,7 @@
     },
     "parameter_value": 1000,
     "level": 0,
-    "weight": 0,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -24096,7 +24097,7 @@
     "id": 700,
     "name": {
       "ja": "巫女服",
-      "en": ""
+      "en": "& Miko shozoku~"
     },
     "symbol": {
       "character": "(",
@@ -24108,8 +24109,8 @@
     },
     "parameter_value": 0,
     "level": 15,
-    "weight": 0,
-    "cost": 30,
+    "weight": 30,
+    "cost": 50,
     "base_ac": 3,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24131,7 +24132,7 @@
     "id": 701,
     "name": {
       "ja": "スクール水着",
-      "en": ""
+      "en": "& School swimsuit~"
     },
     "symbol": {
       "character": "(",
@@ -24143,8 +24144,8 @@
     },
     "parameter_value": 0,
     "level": 20,
-    "weight": 0,
-    "cost": 30,
+    "weight": 30,
+    "cost": 50,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24166,7 +24167,7 @@
     "id": 702,
     "name": {
       "ja": "六尺ふんどし",
-      "en": ""
+      "en": "& Traditional Japanese G-string~"
     },
     "symbol": {
       "character": "(",
@@ -24178,8 +24179,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 80,
+    "weight": 80,
+    "cost": 200,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24203,7 +24204,7 @@
     "id": 703,
     "name": {
       "ja": "火炎放射器",
-      "en": ""
+      "en": "& Flamethrower~"
     },
     "symbol": {
       "character": "}",
@@ -24215,8 +24216,8 @@
     },
     "parameter_value": 0,
     "level": 15,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 9000,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24241,7 +24242,7 @@
     "id": 704,
     "name": {
       "ja": "ダンボール箱",
-      "en": ""
+      "en": "& Cardboard Box~"
     },
     "symbol": {
       "character": "(",
@@ -24253,8 +24254,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 1,
     "base_ac": 1,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24276,7 +24277,7 @@
     "id": 705,
     "name": {
       "ja": "黄衣の頭冠",
-      "en": ""
+      "en": "& Monk's Head Collar~"
     },
     "symbol": {
       "character": "]",
@@ -24288,8 +24289,8 @@
     },
     "parameter_value": 0,
     "level": 35,
-    "weight": 0,
-    "cost": 180,
+    "weight": 180,
+    "cost": 5000,
     "base_ac": 2,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24317,7 +24318,7 @@
     "id": 706,
     "name": {
       "ja": "ロスマリヌス",
-      "en": ""
+      "en": "& Rosmarinus~"
     },
     "symbol": {
       "character": "}",
@@ -24329,8 +24330,8 @@
     },
     "parameter_value": 0,
     "level": 15,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 9000,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24355,7 +24356,7 @@
     "id": 707,
     "name": {
       "ja": "テングの面",
-      "en": ""
+      "en": "& Mask~ of Tengu"
     },
     "symbol": {
       "character": "]",
@@ -24367,7 +24368,7 @@
     },
     "parameter_value": 0,
     "level": 20,
-    "weight": 0,
+    "weight": 75,
     "cost": 75,
     "base_ac": 2,
     "base_dice": "1d3",
@@ -24390,7 +24391,7 @@
     "id": 708,
     "name": {
       "ja": "種もみ",
-      "en": ""
+      "en": "& bag~ of seed fir"
     },
     "symbol": {
       "character": ",",
@@ -24402,7 +24403,7 @@
     },
     "parameter_value": 1000,
     "level": 0,
-    "weight": 255,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -24425,7 +24426,7 @@
     "id": 709,
     "name": {
       "ja": "オーラントの公使の帽子",
-      "en": ""
+      "en": "& Fat official's cap of Allant"
     },
     "symbol": {
       "character": "]",
@@ -24437,8 +24438,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 3,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24462,7 +24463,7 @@
     "id": 710,
     "name": {
       "ja": "隕石の欠片",
-      "en": ""
+      "en": "& Meteorite fragment~"
     },
     "symbol": {
       "character": "~",
@@ -24474,8 +24475,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 2,
-    "cost": 3,
+    "weight": 3,
+    "cost": 10000,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24497,7 +24498,7 @@
     "id": 711,
     "name": {
       "ja": "ハンバーガー",
-      "en": ""
+      "en": "& hamburger"
     },
     "symbol": {
       "character": ",",
@@ -24509,7 +24510,7 @@
     },
     "parameter_value": 3,
     "level": 5,
-    "weight": 5,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -24532,7 +24533,7 @@
     "id": 712,
     "name": {
       "ja": "(解除済)",
-      "en": ""
+      "en": "Disarmed"
     },
     "symbol": {
       "character": "`",
@@ -24544,8 +24545,8 @@
     },
     "parameter_value": 0,
     "level": 32,
-    "weight": 0,
-    "cost": 50,
+    "weight": 50,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24567,7 +24568,7 @@
     "id": 713,
     "name": {
       "ja": "手榴弾",
-      "en": ""
+      "en": "& Hand Grenade~"
     },
     "symbol": {
       "character": "{",
@@ -24579,8 +24580,8 @@
     },
     "parameter_value": 0,
     "level": 25,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 15,
     "base_ac": 0,
     "base_dice": "4d3",
     "hit_bonus": 0,
@@ -24602,7 +24603,7 @@
     "id": 714,
     "name": {
       "ja": "大地震",
-      "en": ""
+      "en": "Huge Earthquake"
     },
     "symbol": {
       "character": "?",
@@ -24614,8 +24615,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24637,7 +24638,7 @@
     "id": 715,
     "name": {
       "ja": "目を象った装飾品",
-      "en": ""
+      "en": "& Eye-shaped ornament~"
     },
     "symbol": {
       "character": "*",
@@ -24649,8 +24650,8 @@
     },
     "parameter_value": 0,
     "level": 90,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 50000,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24674,7 +24675,7 @@
     "id": 716,
     "name": {
       "ja": "の血",
-      "en": ""
+      "en": "& blood of #"
     },
     "symbol": {
       "character": "!",
@@ -24686,8 +24687,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 100,
-    "cost": 500,
+    "weight": 500,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24709,7 +24710,7 @@
     "id": 717,
     "name": {
       "ja": "虚無招来",
-      "en": ""
+      "en": "Call the Void"
     },
     "symbol": {
       "character": "?",
@@ -24721,8 +24722,8 @@
     },
     "parameter_value": 0,
     "level": 80,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24744,7 +24745,7 @@
     "id": 718,
     "name": {
       "ja": "雷",
-      "en": ""
+      "en": "Thunder"
     },
     "symbol": {
       "character": "?",
@@ -24756,8 +24757,8 @@
     },
     "parameter_value": 0,
     "level": 75,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 6000,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24781,7 +24782,7 @@
     "id": 719,
     "name": {
       "ja": "クソデカ枕",
-      "en": ""
+      "en": "& Huge size pillow~"
     },
     "symbol": {
       "character": "&",
@@ -24793,7 +24794,7 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
+    "weight": 5,
     "cost": 5,
     "base_ac": 0,
     "base_dice": "1d6",
@@ -24818,7 +24819,7 @@
     "id": 720,
     "name": {
       "ja": "桃かな？",
-      "en": ""
+      "en": "& peach?~"
     },
     "symbol": {
       "character": ",",
@@ -24830,7 +24831,7 @@
     },
     "parameter_value": 3,
     "level": 5,
-    "weight": 5,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -24855,7 +24856,7 @@
     "id": 721,
     "name": {
       "ja": "植木鉢くんの断片",
-      "en": ""
+      "en": "& Fragment of flowerpot~"
     },
     "symbol": {
       "character": "~",
@@ -24867,7 +24868,7 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
+    "weight": 5,
     "cost": 5,
     "base_ac": 0,
     "base_dice": "1d1",
@@ -24892,7 +24893,7 @@
     "id": 722,
     "name": {
       "ja": "の脳",
-      "en": ""
+      "en": "& brain of #"
     },
     "symbol": {
       "character": "*",
@@ -24904,8 +24905,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 100,
-    "cost": 500,
+    "weight": 500,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -24927,7 +24928,7 @@
     "id": 723,
     "name": {
       "ja": "目力先輩招来",
-      "en": ""
+      "en": "Summon powerfuleye senior"
     },
     "symbol": {
       "character": "?",
@@ -24939,8 +24940,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -24962,7 +24963,7 @@
     "id": 724,
     "name": {
       "ja": "テニスボール",
-      "en": ""
+      "en": "& Tennis ball~"
     },
     "symbol": {
       "character": "*",
@@ -24974,8 +24975,8 @@
     },
     "parameter_value": 5,
     "level": 1,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "1d4",
     "hit_bonus": 0,
@@ -24999,7 +25000,7 @@
     "id": 725,
     "name": {
       "ja": "イチジク浣腸",
-      "en": ""
+      "en": "Ichijiku-enema"
     },
     "symbol": {
       "character": "!",
@@ -25011,8 +25012,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
-    "cost": 4,
+    "weight": 4,
+    "cost": 10,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -25036,7 +25037,7 @@
     "id": 726,
     "name": {
       "ja": "シュールストレミング",
-      "en": ""
+      "en": "& surstromming~"
     },
     "symbol": {
       "character": ",",
@@ -25048,7 +25049,7 @@
     },
     "parameter_value": 3,
     "level": 5,
-    "weight": 5,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -25071,7 +25072,7 @@
     "id": 727,
     "name": {
       "ja": "メンポ",
-      "en": ""
+      "en": "& Menpo~"
     },
     "symbol": {
       "character": "]",
@@ -25083,8 +25084,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -25108,7 +25109,7 @@
     "id": 728,
     "name": {
       "ja": "スタンガン",
-      "en": ""
+      "en": "& Stun gun~"
     },
     "symbol": {
       "character": "}",
@@ -25120,8 +25121,8 @@
     },
     "parameter_value": 0,
     "level": 15,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 600,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25145,7 +25146,7 @@
     "id": 729,
     "name": {
       "ja": "ホモの紅茶",
-      "en": ""
+      "en": "& Homo tea~"
     },
     "symbol": {
       "character": ",",
@@ -25157,7 +25158,7 @@
     },
     "parameter_value": 3,
     "level": 5,
-    "weight": 5,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -25180,7 +25181,7 @@
     "id": 730,
     "name": {
       "ja": "の生き肝",
-      "en": ""
+      "en": "& Living Liver of #"
     },
     "symbol": {
       "character": "~",
@@ -25192,8 +25193,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 100,
-    "cost": 500,
+    "weight": 500,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -25215,7 +25216,7 @@
     "id": 731,
     "name": {
       "ja": "光線銃",
-      "en": ""
+      "en": "& Ray gun~"
     },
     "symbol": {
       "character": "}",
@@ -25227,8 +25228,8 @@
     },
     "parameter_value": 0,
     "level": 15,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25253,7 +25254,7 @@
     "id": 732,
     "name": {
       "ja": "ダークマター",
-      "en": ""
+      "en": "& Dark matter~"
     },
     "symbol": {
       "character": "~",
@@ -25265,8 +25266,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 2,
-    "cost": 3,
+    "weight": 3,
+    "cost": 10000,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -25288,7 +25289,7 @@
     "id": 733,
     "name": {
       "ja": "アンナタールのモノリス",
-      "en": ""
+      "en": "Monolith of Annatar"
     },
     "symbol": {
       "character": "`",
@@ -25300,8 +25301,8 @@
     },
     "parameter_value": 0,
     "level": 50,
-    "weight": 0,
-    "cost": 800,
+    "weight": 800,
+    "cost": 1,
     "base_ac": 0,
     "base_dice": "2d4",
     "hit_bonus": 0,
@@ -25330,7 +25331,7 @@
     "id": 734,
     "name": {
       "ja": "能面",
-      "en": ""
+      "en": "& Noh mask~"
     },
     "symbol": {
       "character": "]",
@@ -25342,7 +25343,7 @@
     },
     "parameter_value": 0,
     "level": 20,
-    "weight": 0,
+    "weight": 75,
     "cost": 75,
     "base_ac": 1,
     "base_dice": "1d3",
@@ -25365,7 +25366,7 @@
     "id": 735,
     "name": {
       "ja": "グルメスパイザー",
-      "en": ""
+      "en": "& Gourmet spyzer~"
     },
     "symbol": {
       "character": "]",
@@ -25377,8 +25378,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 10,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -25400,7 +25401,7 @@
     "id": 736,
     "name": {
       "ja": "カツラ",
-      "en": ""
+      "en": "& Wig~"
     },
     "symbol": {
       "character": "]",
@@ -25412,7 +25413,7 @@
     },
     "parameter_value": 0,
     "level": 20,
-    "weight": 0,
+    "weight": 75,
     "cost": 75,
     "base_ac": 1,
     "base_dice": "1d3",
@@ -25435,7 +25436,7 @@
     "id": 737,
     "name": {
       "ja": "森林生成",
-      "en": ""
+      "en": "Tree creation"
     },
     "symbol": {
       "character": "?",
@@ -25447,8 +25448,8 @@
     },
     "parameter_value": 0,
     "level": 40,
-    "weight": 0,
-    "cost": 5,
+    "weight": 5,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25470,7 +25471,7 @@
     "id": 738,
     "name": {
       "ja": "石棺",
-      "en": ""
+      "en": "& Sarcophagus~"
     },
     "symbol": {
       "character": "&",
@@ -25482,8 +25483,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
-    "cost": 800,
+    "weight": 800,
+    "cost": 50,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25512,7 +25513,7 @@
     "id": 739,
     "name": {
       "ja": "コーラのビン",
-      "en": ""
+      "en": "& Coke bottle~"
     },
     "symbol": {
       "character": "!",
@@ -25524,8 +25525,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25547,7 +25548,7 @@
     "id": 740,
     "name": {
       "ja": "スシの詰め合わせ",
-      "en": ""
+      "en": "& Pack~ of assorted sushi"
     },
     "symbol": {
       "character": ",",
@@ -25559,8 +25560,8 @@
     },
     "parameter_value": 5000,
     "level": 5,
-    "weight": 5,
-    "cost": 2,
+    "weight": 2,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25572,7 +25573,9 @@
         "rarity": 1
       }
     ],
-    "flags": [],
+    "flags": [
+      "SUSHI"
+    ],
     "flavor": {
       "ja": "う～んそれは美味しいそうだ！",
       "en": ""
@@ -25582,7 +25585,7 @@
     "id": 741,
     "name": {
       "ja": "スシの詰め合わせ(いなり抜き)",
-      "en": ""
+      "en": "& Pack~ of assorted sushi(No inari)"
     },
     "symbol": {
       "character": ",",
@@ -25594,8 +25597,8 @@
     },
     "parameter_value": 3000,
     "level": 5,
-    "weight": 5,
-    "cost": 2,
+    "weight": 2,
+    "cost": 4,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25607,7 +25610,9 @@
         "rarity": 1
       }
     ],
-    "flags": [],
+    "flags": [
+      "SUSHI"
+    ],
     "flavor": {
       "ja": "う～んそれは美味しそう…いなりが入ってないやん！",
       "en": ""
@@ -25617,7 +25622,7 @@
     "id": 742,
     "name": {
       "ja": "ほぼ食い尽くされたスシの詰め合わせ",
-      "en": ""
+      "en": "& Almost exhausted Pack~ of assorted sushi"
     },
     "symbol": {
       "character": ",",
@@ -25629,7 +25634,7 @@
     },
     "parameter_value": 300,
     "level": 5,
-    "weight": 5,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -25642,7 +25647,9 @@
         "rarity": 1
       }
     ],
-    "flags": [],
+    "flags": [
+      "SUSHI"
+    ],
     "flavor": {
       "ja": "寿司がほとんど残ってないやん！",
       "en": ""
@@ -25652,7 +25659,7 @@
     "id": 743,
     "name": {
       "ja": "金の卵",
-      "en": ""
+      "en": "& Golden Egg~"
     },
     "symbol": {
       "character": ",",
@@ -25664,8 +25671,8 @@
     },
     "parameter_value": 3000,
     "level": 40,
-    "weight": 5,
-    "cost": 2,
+    "weight": 2,
+    "cost": 30000,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25687,7 +25694,7 @@
     "id": 744,
     "name": {
       "ja": "パン屑",
-      "en": ""
+      "en": "& bread crumb~"
     },
     "symbol": {
       "character": ",",
@@ -25699,7 +25706,7 @@
     },
     "parameter_value": 3,
     "level": 5,
-    "weight": 5,
+    "weight": 2,
     "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
@@ -25722,7 +25729,7 @@
     "id": 745,
     "name": {
       "ja": "ガンダリウム合金製プレート・メイル",
-      "en": ""
+      "en": "Gundarium Alloy Plate Mail~"
     },
     "symbol": {
       "character": "[",
@@ -25734,8 +25741,8 @@
     },
     "parameter_value": 0,
     "level": 75,
-    "weight": 0,
-    "cost": 380,
+    "weight": 380,
+    "cost": 50000,
     "base_ac": 80,
     "base_dice": "2d4",
     "hit_bonus": -2,
@@ -25762,7 +25769,7 @@
     "id": 746,
     "name": {
       "ja": "ソイレント・レーション",
-      "en": ""
+      "en": "& Ration~ of Soylent"
     },
     "symbol": {
       "character": ",",
@@ -25774,8 +25781,8 @@
     },
     "parameter_value": 5000,
     "level": 5,
-    "weight": 5,
-    "cost": 2,
+    "weight": 2,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25797,7 +25804,7 @@
     "id": 747,
     "name": {
       "ja": "カツブシ石",
-      "en": ""
+      "en": "& Katsubushi Stone~"
     },
     "symbol": {
       "character": ",",
@@ -25809,8 +25816,8 @@
     },
     "parameter_value": 5000,
     "level": 5,
-    "weight": 5,
-    "cost": 2,
+    "weight": 2,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25832,7 +25839,7 @@
     "id": 748,
     "name": {
       "ja": "「あべし」",
-      "en": ""
+      "en": "& \"Abeshi\"~"
     },
     "symbol": {
       "character": "?",
@@ -25844,8 +25851,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 5,
-    "cost": 0,
+    "weight": 0,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25867,7 +25874,7 @@
     "id": 749,
     "name": {
       "ja": "「ひでぶ」",
-      "en": ""
+      "en": "& \"Hidebu\"~"
     },
     "symbol": {
       "character": "?",
@@ -25879,8 +25886,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 5,
-    "cost": 0,
+    "weight": 0,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25902,7 +25909,7 @@
     "id": 750,
     "name": {
       "ja": "クッキー",
-      "en": ""
+      "en": "& Cookie~"
     },
     "symbol": {
       "character": ",",
@@ -25914,8 +25921,8 @@
     },
     "parameter_value": 500,
     "level": 0,
-    "weight": 0,
-    "cost": 2,
+    "weight": 2,
+    "cost": 1,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25937,7 +25944,7 @@
     "id": 751,
     "name": {
       "ja": "石炭",
-      "en": ""
+      "en": "& Coal~"
     },
     "symbol": {
       "character": "*",
@@ -25949,8 +25956,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -25972,11 +25979,11 @@
     "id": 752,
     "name": {
       "ja": "秩序",
-      "en": ""
+      "en": "Law"
     },
     "symbol": {
       "character": "=",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 45,
@@ -26016,7 +26023,7 @@
     "id": 753,
     "name": {
       "ja": "KMRカレー",
-      "en": ""
+      "en": "& KMR curry~"
     },
     "symbol": {
       "character": "~",
@@ -26028,8 +26035,8 @@
     },
     "parameter_value": 0,
     "level": 0,
-    "weight": 0,
-    "cost": 3,
+    "weight": 3,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -26053,7 +26060,7 @@
     "id": 754,
     "name": {
       "ja": "壊れた標本",
-      "en": ""
+      "en": "& Broken specimen~"
     },
     "symbol": {
       "character": "~",
@@ -26065,8 +26072,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26088,7 +26095,7 @@
     "id": 755,
     "name": {
       "ja": "子猫の死体",
-      "en": ""
+      "en": "& Kitten carcass~"
     },
     "symbol": {
       "character": "~",
@@ -26100,8 +26107,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26123,7 +26130,7 @@
     "id": 756,
     "name": {
       "ja": "ちぎれた人形",
-      "en": ""
+      "en": "& Torn doll~"
     },
     "symbol": {
       "character": "~",
@@ -26135,8 +26142,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26158,7 +26165,7 @@
     "id": 757,
     "name": {
       "ja": "カラスの死骸",
-      "en": ""
+      "en": "& Crow corpse~"
     },
     "symbol": {
       "character": "~",
@@ -26170,8 +26177,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26193,7 +26200,7 @@
     "id": 758,
     "name": {
       "ja": "天使の羽",
-      "en": ""
+      "en": "& Angel's wing~"
     },
     "symbol": {
       "character": "~",
@@ -26205,8 +26212,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26228,7 +26235,7 @@
     "id": 759,
     "name": {
       "ja": "ドラゴン・ビキニ",
-      "en": ""
+      "en": "& Dragon bikini~"
     },
     "symbol": {
       "character": "(",
@@ -26240,8 +26247,8 @@
     },
     "parameter_value": 0,
     "level": 60,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 10000,
     "base_ac": 0,
     "base_dice": "1d3",
     "hit_bonus": 0,
@@ -26268,7 +26275,7 @@
     "id": 760,
     "name": {
       "ja": "シンダ ライオン",
-      "en": ""
+      "en": "& DEAD LION"
     },
     "symbol": {
       "character": "~",
@@ -26280,8 +26287,8 @@
     },
     "parameter_value": 0,
     "level": 80,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26303,7 +26310,7 @@
     "id": 761,
     "name": {
       "ja": "#の蝋人形",
-      "en": ""
+      "en": "& Wax doll~ of #"
     },
     "symbol": {
       "character": "`",
@@ -26315,7 +26322,7 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
+    "weight": 100,
     "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
@@ -26338,7 +26345,7 @@
     "id": 762,
     "name": {
       "ja": "のジャンク",
-      "en": ""
+      "en": "& Junk~ of #"
     },
     "symbol": {
       "character": "~",
@@ -26350,8 +26357,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 100,
-    "cost": 20,
+    "weight": 20,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -26373,7 +26380,7 @@
     "id": 763,
     "name": {
       "ja": "の糞便",
-      "en": ""
+      "en": "& Feces~ of #"
     },
     "symbol": {
       "character": "~",
@@ -26385,8 +26392,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 100,
-    "cost": 20,
+    "weight": 20,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -26408,7 +26415,7 @@
     "id": 764,
     "name": {
       "ja": "スパム缶",
-      "en": ""
+      "en": "& Spam can~"
     },
     "symbol": {
       "character": ",",
@@ -26420,8 +26427,8 @@
     },
     "parameter_value": 4000,
     "level": 0,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26443,7 +26450,7 @@
     "id": 765,
     "name": {
       "ja": "９番茶",
-      "en": ""
+      "en": "& Bottle~ of No.9 green tea"
     },
     "symbol": {
       "character": ",",
@@ -26455,8 +26462,8 @@
     },
     "parameter_value": 1000,
     "level": 0,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26478,7 +26485,7 @@
     "id": 766,
     "name": {
       "ja": "「バ ジ リ ス ク タ イ ム」",
-      "en": ""
+      "en": "& \"*BASILISK TIME*\"~"
     },
     "symbol": {
       "character": "?",
@@ -26490,8 +26497,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 5,
-    "cost": 0,
+    "weight": 0,
+    "cost": 5,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26513,7 +26520,7 @@
     "id": 767,
     "name": {
       "ja": "かぼちゃマスク",
-      "en": ""
+      "en": "& Pumpkin mask"
     },
     "symbol": {
       "character": "]",
@@ -26525,8 +26532,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -26548,7 +26555,7 @@
     "id": 768,
     "name": {
       "ja": "メイド服",
-      "en": ""
+      "en": "& Maid Costume~"
     },
     "symbol": {
       "character": "(",
@@ -26560,8 +26567,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 60,
+    "weight": 60,
+    "cost": 18,
     "base_ac": 2,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26583,7 +26590,7 @@
     "id": 769,
     "name": {
       "ja": "キチガイレコード",
-      "en": ""
+      "en": "& Kichigai Record~"
     },
     "symbol": {
       "character": "}",
@@ -26595,8 +26602,8 @@
     },
     "parameter_value": 0,
     "level": 15,
-    "weight": 0,
-    "cost": 90,
+    "weight": 90,
+    "cost": 600,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26618,7 +26625,7 @@
     "id": 770,
     "name": {
       "ja": "アロハシャツ",
-      "en": ""
+      "en": "& Aloha Shirt~"
     },
     "symbol": {
       "character": "(",
@@ -26630,8 +26637,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 60,
+    "weight": 60,
+    "cost": 18,
     "base_ac": 1,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26653,7 +26660,7 @@
     "id": 771,
     "name": {
       "ja": "惑星戦士用戦闘ジャケット",
-      "en": ""
+      "en": "& Battle Jacket~ of Planet Warrior"
     },
     "symbol": {
       "character": "(",
@@ -26665,8 +26672,8 @@
     },
     "parameter_value": 0,
     "level": 20,
-    "weight": 0,
-    "cost": 80,
+    "weight": 80,
+    "cost": 3200,
     "base_ac": 15,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -26688,7 +26695,7 @@
     "id": 772,
     "name": {
       "ja": "陰毛",
-      "en": ""
+      "en": "& Pubic hair~"
     },
     "symbol": {
       "character": "~",
@@ -26700,8 +26707,8 @@
     },
     "parameter_value": 0,
     "level": 15,
-    "weight": 0,
-    "cost": 1,
+    "weight": 1,
+    "cost": 0,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26723,7 +26730,7 @@
     "id": 773,
     "name": {
       "ja": "超合金Ｚ",
-      "en": ""
+      "en": "& Ingot~ of Super Z alloy"
     },
     "symbol": {
       "character": "~",
@@ -26735,8 +26742,8 @@
     },
     "parameter_value": 0,
     "level": 50,
-    "weight": 4,
-    "cost": 90,
+    "weight": 90,
+    "cost": 9000,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26758,7 +26765,7 @@
     "id": 774,
     "name": {
       "ja": "リボン",
-      "en": ""
+      "en": "& Ribon~"
     },
     "symbol": {
       "character": "]",
@@ -26770,8 +26777,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -26793,7 +26800,7 @@
     "id": 775,
     "name": {
       "ja": "ターバン",
-      "en": ""
+      "en": "& Turban~"
     },
     "symbol": {
       "character": "]",
@@ -26805,8 +26812,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 2,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -26828,7 +26835,7 @@
     "id": 776,
     "name": {
       "ja": "ファイレクシアの油",
-      "en": ""
+      "en": "& Bottle~ of Phyrexian oil"
     },
     "symbol": {
       "character": "~",
@@ -26840,8 +26847,8 @@
     },
     "parameter_value": 0,
     "level": 50,
-    "weight": 4,
-    "cost": 90,
+    "weight": 90,
+    "cost": 30,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26863,7 +26870,7 @@
     "id": 777,
     "name": {
       "ja": "作業着",
-      "en": ""
+      "en": "& Workwear~"
     },
     "symbol": {
       "character": "(",
@@ -26875,8 +26882,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 3,
     "base_ac": 2,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26898,7 +26905,7 @@
     "id": 778,
     "name": {
       "ja": "シルクハット",
-      "en": ""
+      "en": "& Top hat~"
     },
     "symbol": {
       "character": "]",
@@ -26910,8 +26917,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 15,
+    "weight": 15,
+    "cost": 12,
     "base_ac": 2,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26933,7 +26940,7 @@
     "id": 779,
     "name": {
       "ja": "スーパーファミコンが4000円安くなるクーポン券",
-      "en": ""
+      "en": "& Coupon~ for 4,000 yen off Super Nintendo"
     },
     "symbol": {
       "character": "~",
@@ -26945,8 +26952,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 50,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -26968,7 +26975,7 @@
     "id": 780,
     "name": {
       "ja": "学帽",
-      "en": ""
+      "en": "& School cap~"
     },
     "symbol": {
       "character": "]",
@@ -26980,8 +26987,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 15,
+    "weight": 15,
+    "cost": 12,
     "base_ac": 2,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27003,7 +27010,7 @@
     "id": 781,
     "name": {
       "ja": "アフロのカツラ",
-      "en": ""
+      "en": "& Afro-wig~"
     },
     "symbol": {
       "character": "]",
@@ -27015,8 +27022,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 15,
+    "weight": 15,
+    "cost": 12,
     "base_ac": 1,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27038,7 +27045,7 @@
     "id": 782,
     "name": {
       "ja": "サイコフレームヘルメット",
-      "en": ""
+      "en": "& Psycho-frame Helm~"
     },
     "symbol": {
       "character": "]",
@@ -27050,7 +27057,7 @@
     },
     "parameter_value": 0,
     "level": 20,
-    "weight": 0,
+    "weight": 75,
     "cost": 75,
     "base_ac": 10,
     "base_dice": "1d3",
@@ -27079,7 +27086,7 @@
     "id": 783,
     "name": {
       "ja": "オプーナ購入権利書",
-      "en": ""
+      "en": "& Opoona Purchase Authorization Form~"
     },
     "symbol": {
       "character": "~",
@@ -27091,8 +27098,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 50,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27114,7 +27121,7 @@
     "id": 784,
     "name": {
       "ja": "淫魔の乱舞",
-      "en": ""
+      "en": "& 'Inma No Ranbu'~"
     },
     "symbol": {
       "character": "?",
@@ -27126,8 +27133,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 50,
-    "cost": 900,
+    "weight": 900,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27149,7 +27156,7 @@
     "id": 785,
     "name": {
       "ja": "スカウター",
-      "en": ""
+      "en": "& Scouter~"
     },
     "symbol": {
       "character": "]",
@@ -27161,8 +27168,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 15,
+    "weight": 15,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27186,7 +27193,7 @@
     "id": 786,
     "name": {
       "ja": "地下足袋",
-      "en": ""
+      "en": "& Pair~ of Jika-tabi"
     },
     "symbol": {
       "character": "]",
@@ -27198,8 +27205,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 7,
     "base_ac": 2,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27221,7 +27228,7 @@
     "id": 787,
     "name": {
       "ja": "道着",
-      "en": ""
+      "en": "& Keikogi~"
     },
     "symbol": {
       "character": "(",
@@ -27233,8 +27240,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 3,
     "base_ac": 4,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27256,7 +27263,7 @@
     "id": 788,
     "name": {
       "ja": "軍服",
-      "en": ""
+      "en": "& Military Uniform~"
     },
     "symbol": {
       "character": "(",
@@ -27268,8 +27275,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 3,
     "base_ac": 6,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27291,7 +27298,7 @@
     "id": 789,
     "name": {
       "ja": "軍帽",
-      "en": ""
+      "en": "& Military Cap~"
     },
     "symbol": {
       "character": "]",
@@ -27303,8 +27310,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 15,
+    "weight": 15,
+    "cost": 12,
     "base_ac": 3,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27326,7 +27333,7 @@
     "id": 790,
     "name": {
       "ja": "軍靴",
-      "en": ""
+      "en": "& Pair~ of Military boots"
     },
     "symbol": {
       "character": "]",
@@ -27338,8 +27345,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 7,
     "base_ac": 4,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27361,7 +27368,7 @@
     "id": 791,
     "name": {
       "ja": "つけ猫耳",
-      "en": ""
+      "en": "& Bunny-ears headband~"
     },
     "symbol": {
       "character": "]",
@@ -27373,8 +27380,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27396,7 +27403,7 @@
     "id": 792,
     "name": {
       "ja": "つけうさ耳",
-      "en": ""
+      "en": "& Bunny-ears headband~"
     },
     "symbol": {
       "character": "]",
@@ -27408,8 +27415,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27431,7 +27438,7 @@
     "id": 793,
     "name": {
       "ja": "とんがり帽子",
-      "en": ""
+      "en": "& Pointy hat~"
     },
     "symbol": {
       "character": "]",
@@ -27443,8 +27450,8 @@
     },
     "parameter_value": 0,
     "level": 30,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 2,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27466,7 +27473,7 @@
     "id": 794,
     "name": {
       "ja": "カットダイアモンド",
-      "en": ""
+      "en": "& Cut diamond~"
     },
     "symbol": {
       "character": "~",
@@ -27478,8 +27485,8 @@
     },
     "parameter_value": 0,
     "level": 50,
-    "weight": 4,
-    "cost": 90,
+    "weight": 90,
+    "cost": 7000,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27501,7 +27508,7 @@
     "id": 795,
     "name": {
       "ja": "四八(仮)のハンカチ",
-      "en": ""
+      "en": "& Handkerchief~ of \"48\" (temporary title)"
     },
     "symbol": {
       "character": "~",
@@ -27513,8 +27520,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 50,
-    "cost": 90,
+    "weight": 90,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27536,7 +27543,7 @@
     "id": 796,
     "name": {
       "ja": "#のぬいぐるみ",
-      "en": ""
+      "en": "& Stuffed toy~ of #"
     },
     "symbol": {
       "character": "`",
@@ -27548,8 +27555,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 50,
+    "weight": 50,
+    "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27571,11 +27578,11 @@
     "id": 797,
     "name": {
       "ja": "無",
-      "en": ""
+      "en": "& Nothing~"
     },
     "symbol": {
       "character": " ",
-      "color": "Black"
+      "color": "Dark Gray"
     },
     "itemkind": {
       "type_value": 109,
@@ -27583,8 +27590,8 @@
     },
     "parameter_value": 0,
     "level": 90,
-    "weight": 4,
-    "cost": 0,
+    "weight": 0,
+    "cost": 70000,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27606,7 +27613,7 @@
     "id": 798,
     "name": {
       "ja": "ウドのコーヒー",
-      "en": ""
+      "en": "& Bottle~ of Udo coffee"
     },
     "symbol": {
       "character": ",",
@@ -27618,8 +27625,8 @@
     },
     "parameter_value": 1000,
     "level": 0,
-    "weight": 0,
-    "cost": 10,
+    "weight": 10,
+    "cost": 2,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27641,7 +27648,7 @@
     "id": 799,
     "name": {
       "ja": "ベルマークの紙片",
-      "en": ""
+      "en": "& Piece~ of bellmark"
     },
     "symbol": {
       "character": "?",
@@ -27653,8 +27660,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 10,
-    "cost": 900,
+    "weight": 900,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27676,7 +27683,7 @@
     "id": 800,
     "name": {
       "ja": "冬の花",
-      "en": ""
+      "en": "& Flower~ of winter"
     },
     "symbol": {
       "character": "`",
@@ -27688,8 +27695,8 @@
     },
     "parameter_value": 0,
     "level": 2,
-    "weight": 2,
-    "cost": 90,
+    "weight": 90,
+    "cost": 20,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27711,7 +27718,7 @@
     "id": 801,
     "name": {
       "ja": "マルティスポーター",
-      "en": ""
+      "en": "& Multi sporter~"
     },
     "symbol": {
       "character": "\\",
@@ -27723,8 +27730,8 @@
     },
     "parameter_value": 0,
     "level": 1,
-    "weight": 10,
-    "cost": 50,
+    "weight": 50,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27746,7 +27753,7 @@
     "id": 802,
     "name": {
       "ja": "#の剥製",
-      "en": ""
+      "en": "& Taxidermy~ of #"
     },
     "symbol": {
       "character": "`",
@@ -27758,7 +27765,7 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
+    "weight": 100,
     "cost": 100,
     "base_ac": 0,
     "base_dice": "1d1",
@@ -27781,7 +27788,7 @@
     "id": 803,
     "name": {
       "ja": "ブリーフ",
-      "en": ""
+      "en": "briefs~"
     },
     "symbol": {
       "character": "(",
@@ -27793,7 +27800,7 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
+    "weight": 10,
     "cost": 10,
     "base_ac": 1,
     "base_dice": "1d1",
@@ -27816,7 +27823,7 @@
     "id": 804,
     "name": {
       "ja": "拓也の射精券",
-      "en": ""
+      "en": "& Takuya's ejaculation ticket~"
     },
     "symbol": {
       "character": "?",
@@ -27828,8 +27835,8 @@
     },
     "parameter_value": 3000,
     "level": 10,
-    "weight": 50,
-    "cost": 30,
+    "weight": 30,
+    "cost": 3,
     "base_ac": 0,
     "base_dice": "0d0",
     "hit_bonus": 0,
@@ -27851,7 +27858,7 @@
     "id": 805,
     "name": {
       "ja": "バニースーツ",
-      "en": ""
+      "en": "& bunny suit~"
     },
     "symbol": {
       "character": "(",
@@ -27863,8 +27870,8 @@
     },
     "parameter_value": 0,
     "level": 20,
-    "weight": 0,
-    "cost": 30,
+    "weight": 30,
+    "cost": 50,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27886,7 +27893,7 @@
     "id": 806,
     "name": {
       "ja": "鉢巻",
-      "en": ""
+      "en": "& Head band~"
     },
     "symbol": {
       "character": "]",
@@ -27898,8 +27905,8 @@
     },
     "parameter_value": 0,
     "level": 3,
-    "weight": 0,
-    "cost": 20,
+    "weight": 20,
+    "cost": 30,
     "base_ac": 1,
     "base_dice": "1d1",
     "hit_bonus": 0,
@@ -27921,7 +27928,7 @@
     "id": 807,
     "name": {
       "ja": "モルデンカイネン著『洞察の魔法大全』第1巻",
-      "en": ""
+      "en": "Mordekainen's Magical Compendium of Deep Thought Vol 1."
     },
     "symbol": {
       "character": "?",
@@ -27961,7 +27968,7 @@
     "id": 808,
     "name": {
       "ja": "モルデンカイネン著『洞察の魔法大全』第2巻",
-      "en": ""
+      "en": "Mordekainen's Magical Compendium of Deep Thought Vol 2."
     },
     "symbol": {
       "character": "?",
@@ -28001,7 +28008,7 @@
     "id": 809,
     "name": {
       "ja": "モルデンカイネン著『洞察の魔法大全』第3巻",
-      "en": ""
+      "en": "Mordekainen's Magical Compendium of Deep Thought Vol 3."
     },
     "symbol": {
       "character": "?",
@@ -28041,7 +28048,7 @@
     "id": 810,
     "name": {
       "ja": "アーティファクトの伝承　第1巻　武器編",
-      "en": ""
+      "en": "Artifact Lore, Vol. I \"Ancient Weapons\""
     },
     "symbol": {
       "character": "?",
@@ -28081,7 +28088,7 @@
     "id": 811,
     "name": {
       "ja": "アーティファクトの伝承　第2巻　防具編",
-      "en": ""
+      "en": "Artifact Lore, Vol. II, \"Ancient Armor\""
     },
     "symbol": {
       "character": "?",
@@ -28121,7 +28128,7 @@
     "id": 812,
     "name": {
       "ja": "アーティファクトの伝承　第3巻　アクセサリ編",
-      "en": ""
+      "en": "Artifact Lore, Vol. III, \"Ancient Magical Tools\""
     },
     "symbol": {
       "character": "?",
@@ -28161,7 +28168,7 @@
     "id": 813,
     "name": {
       "ja": "宝の地図",
-      "en": ""
+      "en": "Treasure map"
     },
     "symbol": {
       "character": "?",
@@ -28196,7 +28203,7 @@
     "id": 814,
     "name": {
       "ja": "鉄の甲羅",
-      "en": ""
+      "en": "& Iron turtle shell~"
     },
     "symbol": {
       "character": "(",
@@ -28208,8 +28215,8 @@
     },
     "parameter_value": 0,
     "level": 10,
-    "weight": 0,
-    "cost": 120,
+    "weight": 120,
+    "cost": 1,
     "base_ac": 22,
     "base_dice": "0d0",
     "hit_bonus": -2,
@@ -28231,7 +28238,7 @@
     "id": 815,
     "name": {
       "ja": "尿路結石",
-      "en": ""
+      "en": "& Urinary stone~"
     },
     "symbol": {
       "character": "{",
@@ -28262,6 +28269,228 @@
     "flavor": {
       "ja": "それに苦しめられたものの怨念が籠った石だ。",
       "en": ""
+    }
+  },
+  {
+    "id": 816,
+    "name": {
+      "ja": "マグロ寿司",
+      "en": "& maguro sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Red"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 62
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 2,
+    "cost": 5,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "美味しいマグロ寿司だ！力がみなぎる！",
+      "en": "Delicious tuna sushi! You feel empowered!"
+    }
+  },
+  {
+    "id": 817,
+    "name": {
+      "ja": "サーモン寿司",
+      "en": "& Salmon Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Light Red"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 63
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 2,
+    "cost": 5,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "新鮮なサーモン寿司だ！",
+      "en": "Fresh salmon sushi!"
+    }
+  },
+  {
+    "id": 818,
+    "name": {
+      "ja": "エビ寿司",
+      "en": "& Shrimp Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "White"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 64
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 2,
+    "cost": 5,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "プリプリのエビ寿司だ！",
+      "en": "Plump shrimp sushi!"
+    }
+  },
+  {
+    "id": 819,
+    "name": {
+      "ja": "玉子寿司",
+      "en": "& Egg Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Yellow"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 65
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 2,
+    "cost": 5,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "ふんわり玉子寿司だ！",
+      "en": "Fluffy egg sushi!"
+    }
+  },
+  {
+    "id": 820,
+    "name": {
+      "ja": "イクラ寿司",
+      "en": "& Salmon Roe Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Orange"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 66
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 2,
+    "cost": 5,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "高級イクラ寿司だ！",
+      "en": "Premium salmon roe sushi!"
+    }
+  },
+  {
+    "id": 821,
+    "name": {
+      "ja": "稲荷寿司",
+      "en": "& inari Sushi"
+    },
+    "symbol": {
+      "character": ",",
+      "color": "Orange"
+    },
+    "itemkind": {
+      "type_value": 80,
+      "subtype_value": 67
+    },
+    "parameter_value": 3000,
+    "level": 5,
+    "weight": 2,
+    "cost": 5,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 5,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "SUSHI"
+    ],
+    "flavor": {
+      "ja": "一部のホモに執着されるほど旨い寿司だ。",
+      "en": "It's sushi so delicious that some homosexuals are obsessed with it."
     }
   }
 ]

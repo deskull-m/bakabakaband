@@ -234,7 +234,11 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_SLAY_TROLL:
     case TR_SLAY_GIANT:
     case TR_SLAY_DRAGON:
+    case TR_SLAY_MALE:
+    case TR_SLAY_FEMALE:
     case TR_KILL_DRAGON:
+    case TR_KILL_MALE:
+    case TR_KILL_FEMALE:
     case TR_VORPAL:
         return check_equipment_flags(player_ptr, tr_flag);
     case TR_EARTHQUAKE:
@@ -386,6 +390,8 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
         return has_esp_animal(player_ptr);
     case TR_ESP_NASTY:
         return has_esp_nasty(player_ptr);
+    case TR_ESP_HOMO:
+        return has_esp_homo(player_ptr);
     case TR_ESP_UNDEAD:
         return has_esp_undead(player_ptr);
     case TR_ESP_DEMON:
@@ -478,7 +484,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
         return check_equipment_flags(player_ptr, tr_flag);
     case TR_VUL_CURSE:
         return has_vuln_curse(player_ptr);
-
+    case TR_SUSHI:
     case TR_FLAG_MAX:
         break;
     }
@@ -568,6 +574,16 @@ BIT_FLAGS has_esp_animal(PlayerType *player_ptr)
 BIT_FLAGS has_esp_nasty(PlayerType *player_ptr)
 {
     return common_cause_flags(player_ptr, TR_ESP_NASTY);
+}
+
+/*!
+ * @brief プレイヤーがホモ（レズ）感知を持っているかを返す。
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @return 持っていたら所持前提ビットフラグを返す。
+ */
+BIT_FLAGS has_esp_homo(PlayerType *player_ptr)
+{
+    return common_cause_flags(player_ptr, TR_ESP_HOMO);
 }
 
 /*!

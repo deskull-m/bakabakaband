@@ -45,10 +45,35 @@ enum class AllianceType : int {
     FEANOR_NOLDOR = 34, //!< フェアノール統ノルドール
     GAICHI = 35, //!< ガイチ帝国
     LEGEND_OF_SAVIOR = 36, //!< 世紀末救世主伝説
-    TOPHAMHATT = 37, //!< トップハムハット一族
+    TOPHAMHATT = 37, //!< トップハム・ハット一族
     TRIOTHEPANCH = 38, //!< トリオ・ザ・パンチ
     MEGADETH = 39, //!< 秘密結社メガデス
     KHORNE = 40, //!< 血の神コーン
+    SLAANESH = 41, //!< 快楽神スラーネッシュ
+    HAFU = 42, //!< 覇府
+    TZEENTCH = 43, //!< 変幻の神ティーンチ
+    NIBELUNG = 44, //!< ニーベルングの王国
+    SEXY_COMMANDO_CLUB = 45, //!< セクシーコマンドー部
+    NURGLE = 46, //!< 腐敗神ナーグル
+    NANMAN = 47, //!< 南蛮
+    COOKIE_GRANDMA = 48, //!< クッキーババア
+    HIDE = 49, //!< ひで
+    GONDOR = 50, //!< ゴンドール
+    VALVERDE = 51, //!< バルベルデ共和国
+    FINGOLFIN_NOLDOR = 52, //!< フィンゴルフィン統ノルドール
+    INCUBETOR = 53, //!< インキュベーター
+    FRIEZA_CLAN = 54, //!< フリーザ一族
+    SILVAN_ELF = 55, //!< シルヴァン・エルフ
+    ARYAN_FAMILY = 56, //!< アーリアン・ファミリー
+    BASAM_EMPIRE = 57, //!< バサム帝国
+    HIONHURN = 58, //!< ハイオンハーン
+    CHARDROS = 59, //!< チャードロス
+    ARIOCH = 60, //!< アリオッチ
+    XIOMBARG = 61, //!< キシオムバーグ
+    MABELODE = 62, //!< マベロード
+    KHAINE = 63, //!< カイン
+    ANOR_LONDO = 64, //!< アノール・ロンド
+    BOLETARIA = 65, //!< ボーレタリア
     MAX,
 };
 
@@ -68,6 +93,7 @@ public:
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
+    virtual bool isFriendly(PlayerType *creature_ptr) const;
     virtual int calcImpressionPoint(PlayerType *creature_ptr) const = 0;
     virtual ~Alliance() = default;
     int64_t AnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
@@ -122,24 +148,6 @@ public:
     virtual ~AllianceUtumno() = default;
 };
 
-class AllianceChinChinTei : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceChinChinTei() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceChinChinTei() = default;
-};
-
-class AllianceOdio : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceOdio() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceOdio() = default;
-};
-
 class AllianceKenohgun : public Alliance {
 public:
     using Alliance::Alliance;
@@ -148,16 +156,6 @@ public:
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int calcImpressionPoint(PlayerType *creature_ptr) const override;
     virtual ~AllianceKenohgun() = default;
-};
-
-class AllianceFangFamily : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceFangFamily() = delete;
-    bool isAnnihilated() override;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceFangFamily() = default;
 };
 
 class AllianceKoganRyu : public Alliance {
@@ -185,16 +183,6 @@ public:
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int calcImpressionPoint(PlayerType *creature_ptr) const override;
     virtual ~AllianceUngoliant() = default;
-};
-
-class AllianceShittoDan : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceShittoDan() = delete;
-    bool isAnnihilated() override;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceShittoDan() = default;
 };
 
 class AllianceGEOrlic : public Alliance {
@@ -372,15 +360,6 @@ public:
     virtual ~AllianceSuren() = default;
 };
 
-class AllianceFeanorNoldor : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceFeanorNoldor() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceFeanorNoldor() = default;
-};
-
 class AllianceGaichi : public Alliance {
 public:
     using Alliance::Alliance;
@@ -388,17 +367,6 @@ public:
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int calcImpressionPoint(PlayerType *creature_ptr) const override;
     virtual ~AllianceGaichi() = default;
-};
-
-class AllianceLegendOfSavior : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceLegendOfSavior() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    bool isAnnihilated() override;
-    virtual ~AllianceLegendOfSavior() = default;
-    void panishment(PlayerType &player_ptr) override;
 };
 
 extern const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list;

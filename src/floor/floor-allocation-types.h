@@ -14,4 +14,5 @@ enum dungeon_allocation_type {
     ALLOC_TYP_GOLD = 4, /* Gold */
     ALLOC_TYP_OBJECT = 5, /* Object */
     ALLOC_TYP_INVIS = 6, /* Invisible wall */
+    ALLOC_TYP_SUSHI = 7, /* Sushi */
 };

@@ -97,6 +97,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::BR_DISI:
     case MonsterAbilityType::BR_VOID:
     case MonsterAbilityType::BR_ABYSS:
+    case MonsterAbilityType::BR_FECES:
      return spell_RF4_BREATH(player_ptr, ms_type, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF4_BR_ABYSS */
     
     case MonsterAbilityType::BA_ACID:
@@ -121,6 +122,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::BA_VOID:
     case MonsterAbilityType::BA_ABYSS:
     case MonsterAbilityType::BA_METEOR:
+    case MonsterAbilityType::BA_GRAVITY:
          return MSpellBall(player_ptr, m_idx, ms_type, 4, MONSTER_TO_PLAYER).shoot(y, x);
 
     case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF5_DRAIN_MANA */
@@ -263,6 +265,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BR_DISI:
     case MonsterAbilityType::BR_VOID:
     case MonsterAbilityType::BR_ABYSS:
+    case MonsterAbilityType::BR_FECES:
     return spell_RF4_BREATH(player_ptr, ms_type, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF4_BR_ABYSS */
     
     case MonsterAbilityType::BA_ACID:
@@ -287,6 +290,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BA_VOID:
     case MonsterAbilityType::BA_ABYSS:
     case MonsterAbilityType::BA_METEOR:
+    case MonsterAbilityType::BA_GRAVITY:
          return MSpellBall(player_ptr, m_idx, t_idx, ms_type, 4, MONSTER_TO_MONSTER).shoot(y, x);
 
     case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_DRAIN_MANA */

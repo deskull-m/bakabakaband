@@ -138,7 +138,7 @@ static int process_monk_additional_effect(player_attack_type *pa_ptr, int *stun_
     int special_effect = 0;
     auto *r_ptr = &pa_ptr->m_ptr->get_monrace();
     if (pa_ptr->ma_ptr->effect == MA_KNEE) {
-        if (is_male(*r_ptr)) {
+        if (r_ptr->is_male()) {
             msg_format(_("%sに金的膝蹴りをくらわした！", "You hit %s in the groin with your knee!"), pa_ptr->m_name);
             sound(SoundKind::PAIN);
             special_effect = MA_KNEE;

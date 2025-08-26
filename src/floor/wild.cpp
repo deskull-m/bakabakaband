@@ -300,7 +300,7 @@ static void generate_area(PlayerType *player_ptr, const Pos2D &pos, bool is_bord
 
         for (auto tv : floor.vault_list) {
             const auto vault = &vaults_info[static_cast<int>(tv.id)];
-            build_vault(player_ptr, tv.y, tv.x, vault->hgt, vault->wid, vault->text.data(), tv.yoffset, tv.xoffset, tv.transno);
+            build_vault(*vault, player_ptr, tv.y, tv.x, vault->hgt, vault->wid, vault->text.data(), tv.yoffset, tv.xoffset, tv.transno);
         }
 
         if (!is_corner && !is_border) {

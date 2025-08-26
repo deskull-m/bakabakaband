@@ -41,7 +41,7 @@
  * @return 選択されたモンスター生成種族
  * @details nasty生成 (ゲーム内経過日数に応じて、現在フロアより深いフロアのモンスターを出現させる仕様)は
  */
-MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint32_t mode)
+MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint32_t mode, AllianceType alliance_type)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
     if (max_level > MAX_DEPTH - 1) {
@@ -74,12 +74,12 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
         } // sorted by depth array,
 
         auto monrace_id = entry.index;
+        auto &monrace = monraces.get_monrace(monrace_id);
         if (none_bits(mode, PM_ARENA | PM_CHAMELEON)) {
             if (monraces.is_unified(monrace_id) && monraces.get_monrace(monrace_id).is_dead_unique()) {
                 monrace_id = monraces.select_random_separated_unique_of(monrace_id);
             }
 
-            auto &monrace = monraces.get_monrace(monrace_id);
             if (!monrace.can_generate() && none_bits(mode, PM_CLONE)) {
                 continue;
             }
@@ -93,6 +93,16 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
             }
 
             if (!monraces.is_selectable(monrace_id)) {
+                continue;
+            }
+        }
+
+        if (!none_bits(mode, PM_HAVE_MASTER) && monraces.get_monrace(monrace_id).misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
+            continue;
+        }
+
+        if (any_bits(mode, PM_ALLIANCE_LIMIT)) {
+            if (monrace.alliance_idx != alliance_type) {
                 continue;
             }
         }

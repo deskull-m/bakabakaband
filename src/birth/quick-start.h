@@ -31,7 +31,7 @@ struct birther {
     short stat_max_max[6]{}; /* Maximal "maximal" stat values */
     int player_hp[PY_MAX_LEVEL]{};
 
-    int16_t chaos_patron{}; /*! カオスパトロンのID */
+    int16_t patron{}; /*! パトロンのID */
 
     Virtue vir_types[8]{};
 

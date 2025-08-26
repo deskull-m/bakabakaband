@@ -69,7 +69,7 @@ void starve_player(PlayerType *player_ptr)
         return;
     }
 
-    if (!player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!is_sushi_eater(player_ptr) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(player_ptr, true, true);
         (void)BadStatusSetter(player_ptr).mod_paralysis(1 + randint0(5));
@@ -184,7 +184,11 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
         switch (new_aux) {
         case 0:
             sound(SoundKind::FAINT);
-            msg_print(_("あまりにも空腹で気を失ってしまった！", "You are getting faint from hunger!"));
+            if (is_sushi_eater(player_ptr)) {
+                msg_print(_("そろそろ寿司を食べないと死ぬぜ！", "'I'm gonna die if I don't eat sushi soon!'"));
+            } else {
+                msg_print(_("あまりにも空腹で気を失ってしまった！", "You are getting faint from hunger!"));
+            }
             break;
         case 1:
             sound(SoundKind::WEAK);

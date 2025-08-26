@@ -1,6 +1,8 @@
 #pragma once
 
+#include "monster/monster-flag-types.h"
 #include "system/angband.h"
+#include "util/flag-group.h"
 #include <string>
 
 enum class MonraceId : int16_t;
@@ -13,7 +15,9 @@ public:
     byte speed = STANDARD_SPEED;
     short current_hp = 0;
     short max_hp = 0;
+
     std::string nickname = "";
+    EnumClassFlagGroup<MonsterConstantFlagType> mflag2{};
 };
 
 class FallOffHorseEffect {

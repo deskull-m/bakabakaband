@@ -158,6 +158,7 @@ void add_esp_weak(ItemEntity *o_ptr, bool extra)
         TR_ESP_GOOD,
         TR_ESP_UNIQUE,
         TR_ESP_NASTY,
+        TR_ESP_HOMO,
     };
     const int MAX_ESP_WEAK = sizeof(weak_esp_list) / sizeof(weak_esp_list[0]);
     const int add_count = std::min(MAX_ESP_WEAK, (extra) ? (3 + randint1(randint1(6))) : randint1(3));
@@ -340,6 +341,7 @@ void one_low_esp(ItemEntity *o_ptr)
         TR_ESP_GOOD,
         TR_ESP_UNIQUE,
         TR_ESP_NASTY,
+        TR_ESP_HOMO,
     };
 
     o_ptr->art_flags.set(rand_choice(low_esps));

@@ -4,6 +4,7 @@
  * @author Hourier
  */
 
+#include "alliance/alliance.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"
 #include "dungeon/quest.h"
@@ -92,8 +93,8 @@ static bool check_unique_placeable(const FloorType &floor, MonraceId r_idx, BIT_
 
     auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     auto is_unique = r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->population_flags.has(MonsterPopulationType::NAZGUL);
-    is_unique &= r_ptr->cur_num >= r_ptr->mob_num;
-    is_unique &= r_ptr->cur_num >= r_ptr->max_num;
+    is_unique &= r_ptr->cur_num > 0;
+    is_unique &= r_ptr->mob_num <= 0;
     if (is_unique) {
         return false;
     }
@@ -256,10 +257,15 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     m_ptr->mflag.clear();
     m_ptr->mflag2.clear();
+    m_ptr->current_floor_ptr = player_ptr->current_floor_ptr;
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
         choose_chameleon_polymorph(player_ptr, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
+        m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
+    } else if (any_bits(mode, PM_CHAMELEON_FINAL_SUMMON)) {
+        m_ptr->r_idx = r_idx;
+        m_ptr->ap_r_idx = r_idx;
         m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
     } else {
         m_ptr->r_idx = r_idx;
@@ -298,6 +304,14 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->mflag2.set(MonsterConstantFlagType::LARGE);
     }
 
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(20)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
+    }
+
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(20)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
+    }
+
     if (m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
         m_ptr->sub_align = summoner.sub_align;
     } else if (m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
@@ -325,9 +339,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     m_ptr->nickname.clear();
     m_ptr->exp = 0;
 
-    if (is_summoned && summoner.is_pet()) {
-        set_bits(mode, PM_FORCE_PET);
+    if (is_summoned) {
         m_ptr->parent_m_idx = *summoner_m_idx;
+        if (summoner.get_monrace().kind_flags.has(MonsterKindType::QUYLTHLUG)) {
+            m_ptr->mflag2.set(MonsterConstantFlagType::QUYLTHLUG_BORN);
+        }
     } else {
         m_ptr->parent_m_idx = 0;
     }
@@ -349,6 +365,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
         auto force_hostile = monster_has_hostile_to_player(player_ptr, 0, -1, new_monrace);
         force_hostile |= player_ptr->current_floor_ptr->inside_arena;
+        if (m_ptr->alliance_idx != AllianceType::NONE) {
+            should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player_ptr);
+        }
         if (should_be_friendly && !force_hostile) {
             m_ptr->set_friendly();
         }
@@ -370,6 +389,21 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::FAT)) {
+        m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    }
+
+    // Set MALE kind flag based on monster's sex
+    if (m_ptr->is_male()) {
+        m_ptr->get_monrace().kind_flags.set(MonsterKindType::MALE);
+    }
+
+    // Set FEMALE kind flag based on monster's sex
+    if (m_ptr->is_female()) {
+        m_ptr->get_monrace().kind_flags.set(MonsterKindType::FEMALE);
+    }
+
     if (ironman_nightmare) {
         auto hp = m_ptr->max_maxhp * 2;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, hp);

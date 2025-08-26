@@ -31,6 +31,19 @@
 #include "util/bit-flags-calculator.h"
 #include "wizard/wizard-messages.h"
 
+// シンメトリックなフロア生成（左右対称）
+static void make_symmetric_floor(FloorType &floor)
+{
+    // 左右対称化: 左半分を右半分にコピー
+    for (int y = 0; y < floor.height; ++y) {
+        for (int x = 0; x < floor.width / 2; ++x) {
+            auto &left = floor.get_grid({ y, x });
+            auto &right = floor.get_grid({ y, floor.width - 1 - x });
+            right = left;
+        }
+    }
+}
+
 static void reset_lite_area(FloorType &floor)
 {
     floor.lite_n = 0;
@@ -200,8 +213,14 @@ static bool make_one_floor(PlayerType *player_ptr, DungeonData *dd_ptr, const Du
     }
 
     // 通路の過剰生成処理
-    if (one_in_(2)) {
-        int num = randint1(100);
+    if (one_in_(8)) {
+        int num = randint1((floor.width * floor.height) / 500);
+        if (one_in_(2)) {
+            num /= 2;
+        }
+        if (one_in_(2)) {
+            num /= 3;
+        }
         for (int i = 0; i < num; i++) {
             dt_ptr = initialize_dt_type(&tmp_dt);
             if (!make_centers(player_ptr, dd_ptr, dungeon, dt_ptr)) {
@@ -388,7 +407,7 @@ static void decide_grid_glowing(FloorType &floor, DungeonData *dd_ptr, const Dun
     auto is_empty_or_dark = dd_ptr->empty_level;
     is_empty_or_dark &= !one_in_(chanle_wholly_dark) || (randint1(100) > floor.dun_level);
     is_empty_or_dark &= dungeon.flags.has_not(DungeonFeatureType::DARKNESS);
-    is_empty_or_dark &= dungeon.flags.has(DungeonFeatureType::ALWAY_LIGHT);
+    is_empty_or_dark = dungeon.flags.has(DungeonFeatureType::ALWAYS_LIGHT);
     if (!is_empty_or_dark) {
         return;
     }
@@ -411,6 +430,8 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
 
     DungeonData dd({ floor.height, floor.width });
     auto &dungeon = floor.get_dungeon_definition();
+    floor.allianceID = dungeon.alliance_idx;
+
     constexpr auto chance_empty_floor = 24;
     if (ironman_empty_levels || (dungeon.flags.has(DungeonFeatureType::ARENA) && (empty_levels && one_in_(chance_empty_floor)))) {
         dd.empty_level = true;
@@ -432,6 +453,12 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
     decide_dungeon_data_allocation(player_ptr, &dd, dungeon);
     if (!allocate_dungeon_data(player_ptr, &dd, dungeon)) {
         return dd.why;
+    }
+
+    constexpr int symmetric_chance = 25;
+    if (one_in_(symmetric_chance)) {
+        make_symmetric_floor(floor);
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
     }
 
     decide_grid_glowing(floor, &dd, dungeon);

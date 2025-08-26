@@ -86,6 +86,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::UNDEAD);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SKELETON);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
         lore_ptr->kind_flags.set(MonsterKindType::EVIL);
     }
@@ -110,6 +114,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::QUANTUM);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MONKEY_SPACE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MONKEY_SPACE);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ELF)) {
         lore_ptr->kind_flags.set(MonsterKindType::ELF);
     }
@@ -132,6 +140,10 @@ static void set_race_flags(lore_type *lore_ptr)
 
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SPIDER)) {
         lore_ptr->kind_flags.set(MonsterKindType::SPIDER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ROBOT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::ROBOT);
     }
 
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::WARRIOR)) {
@@ -220,6 +232,14 @@ static void set_race_flags(lore_type *lore_ptr)
 
     if (lore_ptr->r_ptr->misc_flags.has(MonsterMiscType::STALKER)) {
         lore_ptr->misc_flags.set(MonsterMiscType::STALKER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::YAZYU)) {
+        lore_ptr->kind_flags.set(MonsterKindType::YAZYU);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::DOG)) {
+        lore_ptr->kind_flags.set(MonsterKindType::DOG);
     }
 }
 

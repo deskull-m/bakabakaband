@@ -40,5 +40,5 @@
 
 # Town 8 ... GOLAN
 ?:[EQU $TOWN 8]
-%:towns/08_t_GOLAN.txt
+%:towns/08_GOLAN.txt
 

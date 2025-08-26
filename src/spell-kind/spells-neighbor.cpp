@@ -47,6 +47,17 @@ bool tree_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 }
 
 /*!
+ * @brief 壁生成処理(プレイヤー中心に周囲1マス)
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @return 作用が実際にあった場合TRUEを返す
+ */
+bool wall_creation(PlayerType *player_ptr, POSITION y, POSITION x)
+{
+    BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
+    return project(player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_WALL, flg).notice;
+}
+
+/*!
  * @brief 魔法のルーン生成処理(プレイヤー中心に周囲1マス)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 作用が実際にあった場合TRUEを返す

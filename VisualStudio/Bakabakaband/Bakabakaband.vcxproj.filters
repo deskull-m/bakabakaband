@@ -2444,9 +2444,6 @@
     <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-breath.cpp" />
     <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-curse.cpp" />
     <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-ball.cpp" />
-    <ClCompile Include="..\..\src\monster-race\race-sex-const.cpp">
-      <Filter>monster-race</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\room\rooms-pit.cpp">
       <Filter>room</Filter>
     </ClCompile>
@@ -2567,6 +2564,89 @@
     <ClCompile Include="..\..\src\world\world-object.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp">
       <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-slaanesh.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-shittodan.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-chinchintei.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-odio.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-legendofsavior.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hafu.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-tzeentch.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-sexy-commando-club.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-nurgle.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-nanman.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-cookie-grandma.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hide.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-gondor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-valverde.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-feanor-noldor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-fingolfin-noldor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-incubetor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-frieza-clan.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-silvan-elf.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-aryan-family.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-basam-empire.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hionhurn.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-chardros.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-arioch.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-xiombarg.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-mabelode.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp">
+      <Filter>action</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5567,6 +5647,89 @@
     <ClInclude Include="..\..\src\world\world-object.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h">
       <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-slaanesh.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-shittodan.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-chinchintei.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-odio.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-legendofsavior.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hafu.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-tzeentch.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-nibelung.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-sexy-commando-club.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-nurgle.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-nanman.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-cookie-grandma.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hide.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-gondor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-valverde.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-feanor-noldor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-fingolfin-noldor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-incubetor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-frieza-clan.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-silvan-elf.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-aryan-family.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-basam-empire.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hionhurn.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-chardros.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-arioch.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-xiombarg.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-mabelode.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-khaine.h">
+      <Filter>action</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

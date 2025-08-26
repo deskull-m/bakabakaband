@@ -155,6 +155,14 @@ void display_monster_constitutions(lore_type *lore_ptr)
     if (lore_ptr->misc_flags.has(MonsterMiscType::STALKER)) {
         hook_c_roff(TERM_L_RED, format(_("%s^はプレイヤーの背後に忍び寄ることがある。", "%s^ stalks the player.  "), Who::who(lore_ptr->msex).data()));
     }
+
+    if (lore_ptr->misc_flags.has(MonsterMiscType::SCATOLOGIST)) {
+        hook_c_roff(TERM_L_RED, format(_("%s^は糞尿愛好者である。", "%s^ is a scatologist.  "), Who::who(lore_ptr->msex).data()));
+    }
+
+    if (lore_ptr->misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
+        hooked_roff(format(_("%s^は主なしでは存在を維持できない。", "%s^ cannot exist without a master."), Who::who(lore_ptr->msex).data()));
+    }
 }
 
 void display_monster_concrete_weakness(lore_type *lore_ptr)

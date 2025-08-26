@@ -75,6 +75,8 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "SH_FIRE", TR_SH_FIRE },
     { "SH_ELEC", TR_SH_ELEC },
     { "SLAY_HUMAN", TR_SLAY_HUMAN },
+    { "SLAY_MALE", TR_SLAY_MALE },
+    { "SLAY_FEMALE", TR_SLAY_FEMALE },
     { "SH_COLD", TR_SH_COLD },
     { "NO_TELE", TR_NO_TELE },
     { "NO_MAGIC", TR_NO_MAGIC },
@@ -113,8 +115,11 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "KILL_TROLL", TR_KILL_TROLL },
     { "KILL_GIANT", TR_KILL_GIANT },
     { "KILL_HUMAN", TR_KILL_HUMAN },
+    { "KILL_MALE", TR_KILL_MALE },
+    { "KILL_FEMALE", TR_KILL_FEMALE },
     { "ESP_ANIMAL", TR_ESP_ANIMAL },
     { "ESP_NASTY", TR_ESP_NASTY },
+    { "ESP_HOMO", TR_ESP_HOMO },
     { "ESP_UNDEAD", TR_ESP_UNDEAD },
     { "ESP_DEMON", TR_ESP_DEMON },
     { "ESP_ORC", TR_ESP_ORC },
@@ -180,6 +185,7 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "PERSISTENT_CURSE", TR_PERSISTENT_CURSE },
     { "VUL_CURSE", TR_VUL_CURSE },
     { "MEGATON_COIN", TR_MEGATON_COIN },
+    { "SUSHI", TR_SUSHI },
 };
 
 /*!

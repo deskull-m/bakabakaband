@@ -138,7 +138,7 @@ void OtherItemsEnchanter::generate_corpse()
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     while (true) {
-        monrace_id = get_mon_num(this->player_ptr, 0, floor.dun_level, PM_NONE);
+        monrace_id = get_mon_num(this->player_ptr, 0, floor.dun_level, PM_NONE | PM_IGNORE_LEVEL);
         const auto &monrace = monraces.get_monrace(monrace_id);
         const auto check = (floor.dun_level < monrace.level) ? (monrace.level - floor.dun_level) : 0;
         const auto sval = this->o_ptr->bi_key.sval();

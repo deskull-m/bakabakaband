@@ -51,6 +51,7 @@ const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_BEAM_MASK = {
 const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_BIG_BALL_MASK = {
     MonsterAbilityType::BA_CHAO, MonsterAbilityType::BA_LITE, MonsterAbilityType::BA_DARK, MonsterAbilityType::BA_WATE,
     MonsterAbilityType::BA_MANA, MonsterAbilityType::BA_VOID, MonsterAbilityType::BA_ABYSS,MonsterAbilityType::BA_METEOR,
+    MonsterAbilityType::BA_GRAVITY,
 };
 
 /*
@@ -64,6 +65,7 @@ const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_BREATH_MASK = {
     MonsterAbilityType::BR_NEXU, MonsterAbilityType::BR_SHAR, MonsterAbilityType::BR_TIME, MonsterAbilityType::BR_INER,
     MonsterAbilityType::BR_GRAV, MonsterAbilityType::BR_PLAS, MonsterAbilityType::BR_FORC, MonsterAbilityType::BR_MANA,
     MonsterAbilityType::BR_NUKE, MonsterAbilityType::BR_DISI, MonsterAbilityType::BR_VOID, MonsterAbilityType::BR_ABYSS,
+    MonsterAbilityType::BR_FECES
 };
 
 /*

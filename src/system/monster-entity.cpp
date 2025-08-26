@@ -1,4 +1,5 @@
 #include "system/monster-entity.h"
+#include "alliance/alliance.h"
 #include "core/speed-table.h"
 #include "game-option/birth-options.h"
 #include "monster-race/race-kind-flags.h"
@@ -6,6 +7,7 @@
 #include "monster/monster-status.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
@@ -161,6 +163,18 @@ bool MonsterEntity::is_valid() const
     return MonraceList::is_valid(this->r_idx);
 }
 
+bool MonsterEntity::is_male() const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.is_male();
+}
+
+bool MonsterEntity::is_female() const
+{
+    const auto &monrace = this->get_monrace();
+    return monrace.is_female() || this->mflag2.has(MonsterConstantFlagType::WAIFUIZED);
+}
+
 MonraceId MonsterEntity::get_real_monrace_id() const
 {
     const auto &monrace = this->get_monrace();
@@ -281,6 +295,10 @@ byte MonsterEntity::get_temporary_speed() const
 
     if (this->is_decelerated()) {
         speed -= 10;
+    }
+
+    if (this->mflag2.has(MonsterConstantFlagType::FAT)) {
+        speed -= 5;
     }
 
     return speed;
@@ -448,6 +466,14 @@ void MonsterEntity::set_hostile()
     }
 
     this->mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+
+    if (this->alliance_idx != AllianceType::NONE) {
+        for (auto &monster : this->current_floor_ptr->m_list) {
+            if (monster.alliance_idx == this->alliance_idx) {
+                monster.mflag2.reset({ MonsterConstantFlagType::PET, MonsterConstantFlagType::FRIENDLY });
+            }
+        }
+    }
 }
 
 /*
@@ -561,13 +587,14 @@ std::string MonsterEntity::build_looking_description(bool needs_attitude) const
     const auto attitude = needs_attitude ? this->build_attitude_description() : "";
     const std::string clone(this->mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
     const auto &apparent_monrace = this->get_appearance_monrace();
+    const std::string alliance_name = alliance_list.at(this->alliance_idx)->name;
     if ((apparent_monrace.r_tkills > 0) && this->mflag2.has_not(MonsterConstantFlagType::KAGE)) {
-        constexpr auto fmt = _("レベル%d, %s%s%s", "Level %d, %s%s%s");
-        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data());
+        constexpr auto fmt = _("レベル%d, %s%s%s(%s)", "Level %d, %s%s%s(%s)");
+        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_name.data());
     }
 
-    constexpr auto fmt = _("レベル???, %s%s%s", "Level ???, %s%s%s");
-    return format(fmt, description.data(), attitude.data(), clone.data());
+    constexpr auto fmt = _("レベル???, %s%s%s(%s)", "Level ???, %s%s%s(%s)");
+    return format(fmt, description.data(), attitude.data(), clone.data(), alliance_name.data());
 }
 
 std::string MonsterEntity::build_damage_description() const

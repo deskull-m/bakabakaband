@@ -227,6 +227,42 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
+        if ((flags.has(TR_SLAY_MALE)) && monrace.kind_flags.has(MonsterKindType::MALE)) {
+            if (is_original_ap_and_seen(player_ptr, monster)) {
+                monrace.r_kind_flags.set(MonsterKindType::MALE);
+            }
+            if (mult < 17) {
+                mult = 17;
+            }
+        }
+
+        if ((flags.has(TR_KILL_MALE)) && monrace.kind_flags.has(MonsterKindType::MALE)) {
+            if (is_original_ap_and_seen(player_ptr, monster)) {
+                monrace.r_kind_flags.set(MonsterKindType::MALE);
+            }
+            if (mult < 27) {
+                mult = 27;
+            }
+        }
+
+        if ((flags.has(TR_SLAY_FEMALE)) && monrace.kind_flags.has(MonsterKindType::FEMALE)) {
+            if (is_original_ap_and_seen(player_ptr, monster)) {
+                monrace.r_kind_flags.set(MonsterKindType::FEMALE);
+            }
+            if (mult < 17) {
+                mult = 17;
+            }
+        }
+
+        if ((flags.has(TR_KILL_FEMALE)) && monrace.kind_flags.has(MonsterKindType::FEMALE)) {
+            if (is_original_ap_and_seen(player_ptr, monster)) {
+                monrace.r_kind_flags.set(MonsterKindType::FEMALE);
+            }
+            if (mult < 27) {
+                mult = 27;
+            }
+        }
+
         if ((flags.has(TR_SLAY_UNDEAD)) && monrace.kind_flags.has(MonsterKindType::UNDEAD)) {
             if (is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
@@ -336,7 +372,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
 
             auto can_eliminate_smaug = arrow_ptr->is_specific_artifact(FixedArtifactId::BARD_ARROW);
-            can_eliminate_smaug &= player_ptr->inventory[INVEN_BOW]->is_specific_artifact(FixedArtifactId::BARD);
+            can_eliminate_smaug &= player_ptr->is_wielding(FixedArtifactId::BARD);
             can_eliminate_smaug &= monster.r_idx == MonraceId::SMAUG;
             if (can_eliminate_smaug) {
                 mult *= 5;

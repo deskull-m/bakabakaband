@@ -231,6 +231,7 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
     case MonsterAbilityType::BR_DISI:
     case MonsterAbilityType::BR_VOID:
     case MonsterAbilityType::BR_ABYSS:
+    case MonsterAbilityType::BR_FECES:
         return cast_blue_magic_breath(player_ptr, bmc_ptr);
     case MonsterAbilityType::BA_ACID:
     case MonsterAbilityType::BA_ELEC:
@@ -247,6 +248,7 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
     case MonsterAbilityType::BA_VOID:
     case MonsterAbilityType::BA_ABYSS:
     case MonsterAbilityType::BA_METEOR:
+    case MonsterAbilityType::BA_GRAVITY:
         return cast_blue_magic_ball(player_ptr, bmc_ptr);
     case MonsterAbilityType::DRAIN_MANA:
     case MonsterAbilityType::MIND_BLAST:

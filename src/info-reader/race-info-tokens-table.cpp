@@ -86,6 +86,7 @@ const std::unordered_map<std::string_view, RaceBlowMethodType> r_info_blow_metho
     { "WHISPER", RaceBlowMethodType::WHISPER },
     { "STAMP", RaceBlowMethodType::STAMP },
     { "FECES", RaceBlowMethodType::FECES },
+    { "PUTAWAY", RaceBlowMethodType::PUTAWAY },
 };
 
 /*!
@@ -132,6 +133,8 @@ const std::unordered_map<std::string_view, RaceBlowEffectType> r_info_blow_effec
     { "CHAOS", RaceBlowEffectType::CHAOS },
     { "FLAVOR", RaceBlowEffectType::FLAVOR },
     { "DEFECATE", RaceBlowEffectType::DEFECATE },
+    { "SANITY_BLAST", RaceBlowEffectType::SANITY_BLAST },
+    { "LOCKUP", RaceBlowEffectType::LOCKUP },
 };
 
 /*!
@@ -174,7 +177,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"BR_DISI", MonsterAbilityType::BR_DISI },
 	{"BR_VOID", MonsterAbilityType::BR_VOID },
 	{"BR_ABYSS", MonsterAbilityType::BR_ABYSS },
-
+	{"BR_FECES", MonsterAbilityType::BR_FECES },
 	{"BA_ACID", MonsterAbilityType::BA_ACID },
 	{"BA_ELEC", MonsterAbilityType::BA_ELEC },
 	{"BA_FIRE", MonsterAbilityType::BA_FIRE },
@@ -187,6 +190,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"BA_VOID", MonsterAbilityType::BA_VOID },
 	{"BA_ABYSS", MonsterAbilityType::BA_ABYSS },
 	{"BA_METEOR", MonsterAbilityType::BA_METEOR },
+	{"BA_GRAVITY", MonsterAbilityType::BA_GRAVITY },
 	{"DRAIN_MANA", MonsterAbilityType::DRAIN_MANA },
 	{"MIND_BLAST", MonsterAbilityType::MIND_BLAST },
 	{"BRAIN_SMASH", MonsterAbilityType::BRAIN_SMASH },
@@ -313,7 +317,9 @@ const std::unordered_map<std::string_view, MonsterResistanceType> r_info_flagsr 
     { "NO_STUN", MonsterResistanceType::NO_STUN },
     { "NO_CONF", MonsterResistanceType::NO_CONF },
     { "NO_SLEEP", MonsterResistanceType::NO_SLEEP },
-    { "NO_INSTANTLY_DEATH", MonsterResistanceType::NO_INSTANTLY_DEATH }
+    { "NO_INSTANTLY_DEATH", MonsterResistanceType::NO_INSTANTLY_DEATH },
+    { "NO_DEFECATE", MonsterResistanceType::NO_DEFECATE },
+    { "NO_VOMIT", MonsterResistanceType::NO_VOMIT }
 };
 
 const std::unordered_map<std::string_view, MonsterAuraType> r_info_aura_flags = {
@@ -409,6 +415,11 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "ELEMENTAL", MonsterKindType::ELEMENTAL },
     { "GOLEM", MonsterKindType::GOLEM },
     { "PUYO", MonsterKindType::PUYO },
+    { "ROBOT", MonsterKindType::ROBOT },
+    { "YAZYU", MonsterKindType::YAZYU },
+    { "SKELETON", MonsterKindType::SKELETON },
+    { "DOG", MonsterKindType::DOG },
+    { "MONKEY_SPACE", MonsterKindType::MONKEY_SPACE }, // 猿空間
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
@@ -418,6 +429,7 @@ const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = 
     { "DROP_GREAT", MonsterDropType::DROP_GREAT },
     { "DROP_CORPSE", MonsterDropType::DROP_CORPSE },
     { "DROP_SKELETON", MonsterDropType::DROP_SKELETON },
+    { "DROP_JUNK", MonsterDropType::DROP_JUNK },
     { "DROP_60", MonsterDropType::DROP_60 },
     { "DROP_90", MonsterDropType::DROP_90 },
     { "DROP_1D2", MonsterDropType::DROP_1D2 },
@@ -530,6 +542,9 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "WEIRD_MIND", MonsterMiscType::WEIRD_MIND },
     { "VOCIFEROUS", MonsterMiscType::VOCIFEROUS },
     { "STALKER", MonsterMiscType::STALKER },
+    { "HOME_ONLY", MonsterMiscType::HOME_ONLY },
+    { "SCATOLOGIST", MonsterMiscType::SCATOLOGIST },
+    { "BREAK_DOWN", MonsterMiscType::BREAK_DOWN }
 };
 
 const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {

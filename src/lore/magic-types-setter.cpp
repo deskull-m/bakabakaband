@@ -106,6 +106,10 @@ void set_breath_types(PlayerType *player_ptr, lore_type *lore_ptr)
     if (lore_ptr->ability_flags.has(MonsterAbilityType::BR_ABYSS)) {
         add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::BR_ABYSS, _("深淵%s", "abyss%s"), TERM_L_DARK);
     }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::BR_FECES)) {
+        add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::BR_FECES, _("糞便%s", "feces%s"), TERM_UMBER);
+    }
 }
 
 void set_ball_types(PlayerType *player_ptr, lore_type *lore_ptr)
@@ -168,6 +172,10 @@ void set_ball_types(PlayerType *player_ptr, lore_type *lore_ptr)
 
     if (lore_ptr->ability_flags.has(MonsterAbilityType::BA_METEOR)) {
         add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::BA_METEOR, _("メテオスウォーム%s", "invoke meteor swarm%s"), TERM_UMBER);
+    }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::BA_GRAVITY)) {
+        add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::BA_GRAVITY, _("超重力%s", "invoke gravity storms%s"), TERM_SLATE);
     }
 }
 

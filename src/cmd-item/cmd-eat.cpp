@@ -111,14 +111,12 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
     }
 
     const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
-    EXP max_exp = monrace.level * monrace.level * 10;
+    EXP max_exp = monrace.level * monrace.level * 5;
 
     chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
     if (player_ptr->exp < PY_MAX_EXP) {
         EXP ee = (player_ptr->exp / 2) + 10;
-        if (ee > max_exp) {
-            ee = max_exp;
-        }
+        ee = std::min(ee, max_exp);
         msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
         gain_exp(player_ptr, ee);
     }

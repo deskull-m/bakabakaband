@@ -85,6 +85,7 @@ public:
     GAME_TURN generated_turn = 0; /* Turn when level began */
 
     std::vector<std::shared_ptr<ItemEntity>> o_list; /*!< The array of dungeon items [max_o_idx] */
+    bool prevent_repeat_floor_item_idx = false;
 
     std::vector<MonsterEntity> m_list; /*!< The array of dungeon monsters [max_m_idx] */
     MONSTER_IDX m_max = 0; /* Number of allocated monsters */
@@ -114,7 +115,7 @@ public:
     bool inside_arena = false; /* Is character inside on_defeat_arena_monster? */
 
     std::vector<town_vault> vault_list;
-    AllianceType allianceID;
+    AllianceType allianceID = AllianceType::NONE; /*!< 現在のアライアンスID / Current alliance ID */
     int get_level() const;
     Grid &get_grid(const Pos2D pos);
     const Grid &get_grid(const Pos2D pos) const;

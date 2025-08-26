@@ -161,6 +161,9 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
     case SUMMON_ALLIANCE: {
         return (monrace.alliance_idx == smonrace.alliance_idx);
     }
+    case SUMMON_KACHO: {
+        return r_idx == MonraceId::KACHO_CAT || r_idx == MonraceId::KACHO_ANGEL;
+    }
 
     default:
         return false;

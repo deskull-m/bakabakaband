@@ -352,6 +352,7 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
 {
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
+    const auto &monrace = monster.get_monrace();
 
     if (!monster.has_parent()) {
         return false;
@@ -362,9 +363,21 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
         return false;
     }
 
-    if (see_m) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
-        msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
+    const auto m_name = monster_desc(player_ptr, monster, 0);
+    if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+        if (see_m) {
+            msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
+        }
+    } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
+        if (see_m) {
+            msg_format(_("%sは主を失い消え去った。", "%s^ disappears without a master."), m_name.data());
+        }
+    } else if (monster.mflag2.has(MonsterConstantFlagType::PET)) {
+        if (see_m) {
+            msg_format(_("%sは消え去った。", "%s^ disappears."), m_name.data());
+        }
+    } else {
+        return false;
     }
 
     if (record_named_pet && monster.is_named_pet()) {
@@ -728,19 +741,26 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
     const auto &baseitems = BaseitemList::get_instance();
     auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
     const auto m_name = monster_desc(player_ptr, *m_ptr, 0);
+    const auto &monrace = m_ptr->get_monrace();
 
-    if (m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::DEFECATED) &&
+        m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
         (void)drop_near(player_ptr, item, m_ptr->get_position());
+        m_ptr->mflag2.set(MonsterConstantFlagType::DEFECATED);
     }
 
-    if (m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::VOMITED) &&
+        m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
         (void)drop_near(player_ptr, item, m_ptr->get_position());
+        m_ptr->mflag2.set(MonsterConstantFlagType::VOMITED);
     }
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];

@@ -182,8 +182,14 @@ enum tr_type : int {
     TR_VUL_CURSE = 167, //!< 呪力弱点
     TR_MEGATON_COIN = 168, //!< メ ガ ト ン コ イ ン
     TR_ESP_NASTY = 169,
+    TR_SUSHI = 170, //!< アイテムの発動を可能にするフラグ
+    TR_ESP_HOMO = 171, //!< ホモ（レズ）感知
+    TR_SLAY_MALE = 172, //!< 男性スレイ(/男)
+    TR_KILL_MALE = 173, //!< 男性スレイ(X男)
+    TR_SLAY_FEMALE = 174, //!< 女性スレイ(/女)
+    TR_KILL_FEMALE = 175, //!< 女性スレイ(X女)
 
-    TR_FLAG_MAX = 170,
+    TR_FLAG_MAX = 176,
 };
 
 /** 能力値(STR,INT,WIS,DEX,CON,CHR)のpvalを増減させるフラグのリスト */

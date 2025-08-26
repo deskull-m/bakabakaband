@@ -327,6 +327,12 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
         info[i++] = _("それは自然界の動物に対して特に恐るべき力を発揮する。", "It is especially deadly against natural creatures.");
     }
 
+    if (flags.has(TR_KILL_MALE)) {
+        info[i++] = _("それは男にとっての天敵である。", "It is a great bane of male.");
+    } else if (flags.has(TR_SLAY_MALE)) {
+        info[i++] = _("それは男に対して特に恐るべき力を発揮する。", "It is especially deadly against male.");
+    }
+
     if (flags.has(TR_KILL_HUMAN)) {
         info[i++] = _("それは人間にとっての天敵である。", "It is a great bane of humans.");
     }
@@ -501,6 +507,10 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
 
     if (flags.has(TR_ESP_NASTY)) {
         info[i++] = _("それはクッソ汚い汚物共を感知する。", "It senses nasty creatures.");
+    }
+
+    if (flags.has(TR_ESP_HOMO)) {
+        info[i++] = _("それはホモ（レズ）を感知する。", "It senses homosexuals.");
     }
 
     if (flags.has(TR_ESP_UNDEAD)) {
@@ -721,6 +731,10 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
 
     if (flags.has(TR_MEGATON_COIN)) {
         info[i++] = _("それはあなたをダンジョンの奥へ引きずり落とす", "It drops you into the dungeon");
+    }
+
+    if (flags.has(TR_SUSHI)) {
+        info[i++] = _("それは寿司の一種である", "It is a type of sushi.");
     }
 
     if (mode & SCROBJ_FAKE_OBJECT) {

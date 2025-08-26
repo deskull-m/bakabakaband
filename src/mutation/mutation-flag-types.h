@@ -59,7 +59,7 @@ enum class PlayerMutationType {
     ATT_DRAGON = 54, /*!< 突然変異: ドラゴンを引き寄せる */
     WEIRD_MIND = 55, /*!< 突然変異: ランダムなテレパシー */
     NAUSEA = 56, /*!< 突然変異: 落ち着きの無い胃 */
-    CHAOS_GIFT = 57, /*!< 突然変異: カオスパトロン */
+    CHAOS_GIFT = 57, /*!< 突然変異: パトロン */
     WALK_SHAD = 58, /*!< 突然変異: ランダムな現実変容 */
     WARNING = 59, /*!< 突然変異: 警告 */
     INVULN = 60, /*!< 突然変異: ランダムな無敵化 */

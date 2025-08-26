@@ -277,7 +277,8 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::GIANT, MonsterKindType::TROLL, MonsterKindType::ORC, MonsterKindType::ANGEL,
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
             MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
-            MonsterKindType::GOLEM, MonsterKindType::PUYO })) {
+            MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU,
+            MonsterKindType::DOG })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -353,6 +354,18 @@ void display_monster_kind(lore_type *lore_ptr)
     if (lore_ptr->kind_flags.has(MonsterKindType::PUYO)) {
         hook_c_roff(TERM_WHITE, _("ぷよ", " puyo"));
     }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ROBOT)) {
+        hook_c_roff(TERM_SLATE, _("ロボット", " robot"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::YAZYU)) {
+        hook_c_roff(TERM_SLATE, _("野獣先輩", " Beast Senior"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::DOG)) {
+        hook_c_roff(TERM_SLATE, _("犬", " dog"));
+    }
 }
 
 void display_monster_alignment(lore_type *lore_ptr)
@@ -362,6 +375,9 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_VIOLET, _("両性具有であり", " hermaphroditic"));
     }
     */
+    if (lore_ptr->kind_flags.has(MonsterKindType::MONKEY_SPACE)) {
+        hook_c_roff(TERM_L_UMBER, _("猿空間に属する", " belonging to monkey space"));
+    }
 
     if (lore_ptr->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR)) {
         hook_c_roff(TERM_VIOLET, _("狂気を誘う", " sanity-blasting"));
@@ -432,8 +448,15 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_YELLOW, _("スモトリの", " sumou wrestler"));
     }
 
-    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
-        hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
+    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD) && lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
+        hook_c_roff(TERM_WHITE, _("スケルトン系アンデッドの", " skeleton undead"));
+    } else {
+        if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
+            hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
+        }
+        if (lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
+            hook_c_roff(TERM_WHITE, _("スケルトンの", " skeleton"));
+        }
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {

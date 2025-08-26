@@ -244,7 +244,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
             int d;
             for (d = scatter_min; d <= scatter_max; d++) {
                 const auto pos_neighbor = scatter(player_ptr, pos, d, PROJECT_NONE);
-                if (place_monster_one(player_ptr, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode, *m_idx)) {
+                if (place_monster_one(player_ptr, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode | PM_HAVE_MASTER, *m_idx)) {
                     break;
                 }
             }
@@ -279,7 +279,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
 
         (void)place_monster_one(player_ptr, pos_neighbor.y, pos_neighbor.x, monrace_id, mode, *m_idx);
         if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS) || monrace.misc_flags.has(MonsterMiscType::MORE_ESCORT)) {
-            place_monster_group(player_ptr, pos_neighbor, monrace_id, mode, *m_idx);
+            place_monster_group(player_ptr, pos_neighbor, monrace_id, mode | PM_HAVE_MASTER, *m_idx);
         }
     }
 
@@ -402,7 +402,8 @@ bool alloc_guardian(PlayerType *player_ptr, bool def_val)
 
     const auto &monrace = dungeon.get_guardian();
     auto is_guardian_applicable = dungeon.maxdepth == floor.dun_level;
-    is_guardian_applicable &= monrace.cur_num < monrace.max_num;
+    is_guardian_applicable &= monrace.cur_num < monrace.mob_num;
+    is_guardian_applicable &= monrace.mob_num > 0;
     if (!is_guardian_applicable) {
         return def_val;
     }

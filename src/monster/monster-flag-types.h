@@ -24,5 +24,11 @@ enum class MonsterConstantFlagType {
     SANTA = 10, /*!< サンタと化した / Santa turned */
     LARGE = 11, /*!< 大型 / Large */
     RIDING = 12, /*!< 乗馬中である / riding */
+    DEFECATED = 13, /*!< 脱糞した / Defecated */
+    VOMITED = 14, /*!< 嘔吐した / Vomited */
+    ANGER = 15, /*!< 怒れる / Anger */
+    QUYLTHLUG_BORN = 16, /*!< クイルスルグの落とし仔 / Quylthlug born */
+    WAIFUIZED = 17, /*!< 美少女化した / waifuized */
+    FAT = 18, /*!< 肥満した / Fat */
     MAX,
 };

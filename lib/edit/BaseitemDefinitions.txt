@@ -4095,8 +4095,8 @@ N:386:[ハルマゲドン大全]
 E:[Armageddon Tome]
 G:?:r
 I:93:3:0
-W:100:30:100000
-A:100/3
+W:90:30:100000
+A:90/3
 P:0:1d1:0:0:0
 F:IGNORE_ACID | IGNORE_ELEC | IGNORE_FIRE | IGNORE_COLD
 
@@ -4403,7 +4403,7 @@ A:110/64
 P:40:2d4:-3:0:15
 F:RES_ACID | RES_FIRE | RES_COLD | RES_ELEC | RES_POIS | 
 F:RES_NETHER | RES_NEXUS | RES_CHAOS | RES_LITE | RES_DARK |
-F:RES_SHARDS | RES_SOUND | RES_DISEN | RES_CONF |
+F:RES_SHARDS | RES_SOUND | RES_DISEN | RES_CONF | RES_TIME |
 F:ACTIVATE | IGNORE_ACID | IGNORE_ELEC | IGNORE_FIRE | IGNORE_COLD
 U:BA_MISS_3
 D:$A suit with scales of every color, surrounded in a nimbus of perfectly 
@@ -6301,8 +6301,8 @@ N:657:[天神怒罰]
 E:[Wrath of God]
 G:?:w
 I:99:3:0
-W:95:30:100000
-A:95/3
+W:90:30:100000
+A:90/3
 P:0:1d1:0:0:0
 F:IGNORE_ACID | IGNORE_ELEC | IGNORE_FIRE | IGNORE_COLD
 
@@ -6500,7 +6500,7 @@ N:680:#の糞の像
 E:& Feces Statue~ of #
 G:`:U
 I:9:13:0
-W:10:0:200:0
+W:10:0:200:5
 A:5/3
 P:0:1d1:0:0:0
 D:それはまさにそびえたつクソだ！
@@ -6540,7 +6540,7 @@ N:684:#の残気
 E:& Stayed Aura~ of #
 G:`:W
 I:9:14:0
-W:20:0:0:0
+W:20:0:0:100
 A:20/2
 P:0:1d1:0:0:0
 D:強き者が、その場に留まっていた時にしばしば残すものらしい。実際は弱き者でも普通に残ったり残らなかったりするようだ。
@@ -7057,6 +7057,7 @@ G:,:o
 I:80:49:5000
 A:5/5
 W:5:5:2:5
+F:SUSHI
 D:う～んそれは美味しいそうだ！
 
 N:741:スシの詰め合わせ(いなり抜き)
@@ -7065,6 +7066,7 @@ G:,:o
 I:80:50:3000
 A:5/5
 W:5:5:2:4
+F:SUSHI
 D:う～んそれは美味しそう…いなりが入ってないやん！
 
 N:742:ほぼ食い尽くされたスシの詰め合わせ
@@ -7073,6 +7075,7 @@ G:,:o
 I:80:51:300
 A:5/5
 W:5:5:2:2
+F:SUSHI
 D:寿司がほとんど残ってないやん！
 
 N:743:金の卵
@@ -7230,7 +7233,7 @@ N:761:#の蝋人形
 E:& Wax doll~ of #
 G:`:w
 I:9:15:0
-W:10:0:100:0
+W:10:0:100:100
 A:5/3
 P:0:1d1:0:0:0
 D:偉大なるデーモン閣下の裁きを受けた者の成れの果てと言われている。
@@ -7525,7 +7528,7 @@ N:796:#のぬいぐるみ
 E:& Stuffed toy~ of #
 G:`:U
 I:9:16:0
-W:10:0:50:0
+W:10:0:50:100
 A:5/3
 P:0:1d1:0:0:0
 
@@ -7568,7 +7571,7 @@ N:802:#の剥製
 E:& Taxidermy~ of #
 G:`:U
 I:9:17:0
-W:10:0:100:0
+W:10:200:100:100
 A:5/3
 P:0:1d1:0:0:0
 
@@ -7683,6 +7686,65 @@ P:0:3d3:0:0:0
 F:SHOW_MODS
 D:それに苦しめられたものの怨念が籠った石だ。
 
+N:816:マグロ寿司
+E:& maguro sushi
+G:,:r
+I:80:62:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:美味しいマグロ寿司だ！力がみなぎる！
+D:$Delicious tuna sushi! You feel empowered!
+
+N:817:サーモン寿司
+E:& Salmon Sushi
+G:,:R
+I:80:63:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:新鮮なサーモン寿司だ！
+D:$Fresh salmon sushi!
+
+N:818:エビ寿司
+E:& Shrimp Sushi
+G:,:w
+I:80:64:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:プリプリのエビ寿司だ！
+D:$Plump shrimp sushi!
+
+N:819:玉子寿司
+E:& Egg Sushi
+G:,:y
+I:80:65:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:ふんわり玉子寿司だ！
+D:$Fluffy egg sushi!
+
+N:820:イクラ寿司
+E:& Salmon Roe Sushi
+G:,:o
+I:80:66:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:高級イクラ寿司だ！
+D:$Premium salmon roe sushi!
+
+N:821:稲荷寿司
+E:& inari Sushi
+G:,:o
+I:80:67:3000
+A:5/5
+W:5:5:2:5
+F:SUSHI
+D:一部のホモに執着されるほど旨い寿司だ。
+D:$It's sushi so delicious that some homosexuals are obsessed with it.
 
 
 # D - Black        w - White          s - Gray          o - Orange

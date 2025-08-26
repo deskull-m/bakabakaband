@@ -123,6 +123,10 @@ static BIT_FLAGS write_item_flags(const ItemEntity &item)
         set_bits(flags, SaveDataItemFlagType::SMITH);
     }
 
+    if (item.captured_monster_mflag2.count() > 0) {
+        set_bits(flags, SaveDataItemFlagType::MFLAGS2);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -233,6 +237,10 @@ static void write_item_info(const ItemEntity &item, const BIT_FLAGS flags)
 
         wr_byte(item.smith_hit);
         wr_byte(item.smith_damage);
+    }
+
+    if (any_bits(flags, SaveDataItemFlagType::MFLAGS2)) {
+        wr_FlagGroup(item.captured_monster_mflag2, wr_byte);
     }
 }
 

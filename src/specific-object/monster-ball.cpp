@@ -62,6 +62,7 @@ static bool capture_monster(PlayerType *player_ptr, ItemEntity &item)
     item.captured_monster_speed = cap_mon.speed;
     item.captured_monster_current_hp = cap_mon.current_hp;
     item.captured_monster_max_hp = cap_mon.max_hp;
+    item.captured_monster_mflag2 = cap_mon.mflag2;
     inscribe_nickname(item, cap_mon);
     return true;
 }
@@ -117,6 +118,7 @@ static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Dire
     if (item.captured_monster_current_hp > 0) {
         monster.hp = item.captured_monster_current_hp;
     }
+    monster.mflag2 = item.captured_monster_mflag2;
 
     monster.maxhp = monster.max_maxhp;
     restore_monster_nickname(monster, item);

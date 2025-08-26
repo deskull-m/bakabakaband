@@ -120,6 +120,10 @@ void set_monster_blow_method(lore_type *lore_ptr, int m)
         lore_ptr->p = _("糞を塗ってくる", "paint feces");
         lore_ptr->pc = TERM_SLATE;
         break;
+    case RaceBlowMethodType::PUTAWAY:
+        lore_ptr->p = _("しまっちゃう", "put away");
+        lore_ptr->pc = TERM_L_WHITE;
+        break;
 
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:
@@ -280,8 +284,16 @@ void set_monster_blow_effect(lore_type *lore_ptr, int m)
         lore_ptr->q = _("脱糞させる", "makes defecates");
         lore_ptr->qc = TERM_UMBER;
         break;
+    case RaceBlowEffectType::SANITY_BLAST:
+        lore_ptr->q = _("狂気へ誘う", "induce insanity");
+        lore_ptr->qc = TERM_UMBER;
+        break;
     case RaceBlowEffectType::CHAOS:
         lore_ptr->q = _("カオスを呼び起こす", "call chaotic.");
+        lore_ptr->qc = TERM_VIOLET;
+        break;
+    case RaceBlowEffectType::LOCKUP:
+        lore_ptr->q = _("閉じ込める", "lock up");
         lore_ptr->qc = TERM_VIOLET;
         break;
     case RaceBlowEffectType::FLAVOR:

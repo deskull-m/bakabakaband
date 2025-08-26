@@ -1,14 +1,44 @@
 #include "alliance/alliance.h"
+#include "alliance/alliance-anor-londo.h"
+#include "alliance/alliance-arioch.h"
+#include "alliance/alliance-aryan-family.h"
+#include "alliance/alliance-basam-empire.h"
+#include "alliance/alliance-boletaria.h"
+#include "alliance/alliance-chardros.h"
+#include "alliance/alliance-chinchintei.h"
+#include "alliance/alliance-cookie-grandma.h"
+#include "alliance/alliance-fangfamily.h"
+#include "alliance/alliance-feanor-noldor.h"
+#include "alliance/alliance-fingolfin-noldor.h"
+#include "alliance/alliance-frieza-clan.h"
+#include "alliance/alliance-gondor.h"
+#include "alliance/alliance-hafu.h"
+#include "alliance/alliance-hide.h"
+#include "alliance/alliance-hionhurn.h"
+#include "alliance/alliance-incubetor.h"
 #include "alliance/alliance-jural.h"
+#include "alliance/alliance-khaine.h"
 #include "alliance/alliance-khorne.h"
+#include "alliance/alliance-legendofsavior.h"
+#include "alliance/alliance-mabelode.h"
 #include "alliance/alliance-megadeth.h"
+#include "alliance/alliance-nanman.h"
+#include "alliance/alliance-nibelung.h"
+#include "alliance/alliance-nurgle.h"
+#include "alliance/alliance-odio.h"
+#include "alliance/alliance-sexy-commando-club.h"
 #include "alliance/alliance-shire.h"
+#include "alliance/alliance-shittodan.h"
+#include "alliance/alliance-silvan-elf.h"
+#include "alliance/alliance-slaanesh.h"
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
+#include "alliance/alliance-tzeentch.h"
+#include "alliance/alliance-valverde.h"
+#include "alliance/alliance-xiombarg.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
-#include "monster-race/race-flags1.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -19,6 +49,7 @@
 const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::NONE, std::make_unique<AllianceNone>(AllianceType::NONE, "NONE", _("無所属", "None"), 0) },
     { AllianceType::AMBER, std::make_unique<AllianceAmber>(AllianceType::AMBER, "AMBER", _("アンバー", "Amber"), 350000000L) },
+    { AllianceType::ANOR_LONDO, std::make_unique<AllianceAnorLondo>(AllianceType::ANOR_LONDO, "ANOR-LONDO", _("アノール・ロンド", "Anor Londo"), 15000000L) },
     { AllianceType::COCHAOS, std::make_unique<AllianceCourtOfChaos>(AllianceType::COCHAOS, "COCHAOS", _("混沌の宮廷", "Court of Chaos"), 200000000L) },
     { AllianceType::VALINOR, std::make_unique<AllianceValinor>(AllianceType::VALINOR, "VALINOR", _("ヴァリノール", "Valinor"), 4000000L) },
     { AllianceType::UTUMNO, std::make_unique<AllianceCourtOfChaos>(AllianceType::UTUMNO, "UTUMNO", _("ウトゥムノ", "Utumno"), 3000000L) },
@@ -51,13 +82,37 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::BINJO_BUDDHISM, std::make_unique<AllianceBinzyouBuddhism>(AllianceType::BINJO_BUDDHISM, "BINJO-BUDDHISM", _("便乗仏教", "Binjo Buddhism"), 80000L) },
     { AllianceType::ASHINA_CLAN, std::make_unique<AllianceBinzyouBuddhism>(AllianceType::ASHINA_CLAN, "ASHINA-CLAN", _("葦名一門", "Ashina Clan"), 180000L) },
     { AllianceType::SUREN, std::make_unique<AllianceSuren>(AllianceType::SUREN, "SUREN", _("スレン王国", "Suren Kingdom"), 100000L) },
-    { AllianceType::FEANOR_NOLDOR, std::make_unique<AllianceFeanorNoldor>(AllianceType::FEANOR_NOLDOR, "FEANOR-NOLDOR", _("フェアノール統一ノルドール", "Feanor Noldor"), 3500000L) },
+    { AllianceType::FEANOR_NOLDOR, std::make_unique<AllianceFeanorNoldor>(AllianceType::FEANOR_NOLDOR, "FEANOR-NOLDOR", _("フェアノール統ノルドール", "Feanor Noldor"), 3500000L) },
     { AllianceType::GAICHI, std::make_unique<AllianceGaichi>(AllianceType::GAICHI, "GAICHI", _("ガイチ帝国", "Gaichi Empire"), 1100000L) },
     { AllianceType::LEGEND_OF_SAVIOR, std::make_unique<AllianceLegendOfSavior>(AllianceType::LEGEND_OF_SAVIOR, "LEGEND-OF-SAVIOR", _("世紀末救世主伝説", "Legend of the Latter-day Savior"), 0L) },
-    { AllianceType::TOPHAMHATT, std::make_unique<AllianceTophamHatt>(AllianceType::TOPHAMHATT, "TOPHAMHATT", _("トップハムハット一族", "Topham Hatt Family"), 1400000L) },
+    { AllianceType::TOPHAMHATT, std::make_unique<AllianceTophamHatt>(AllianceType::TOPHAMHATT, "TOPHAMHATT", _("トップハム・ハット一族", "Topham Hatt Family"), 1400000L) },
     { AllianceType::TRIOTHEPANCH, std::make_unique<AllianceTrioThePunch>(AllianceType::TRIOTHEPANCH, "TRIOTHEPANCH", _("トリオ・ザ・パンチ", "Trio The Panch"), 50000L) },
     { AllianceType::MEGADETH, std::make_unique<AllianceMegadeth>(AllianceType::MEGADETH, "MEGADETH", _("秘密結社メガデス", "Secret Society Megadeth"), 4000L) },
+    { AllianceType::KHAINE, std::make_unique<AllianceKhaine>(AllianceType::KHAINE, "KHAINE", _("カイン", "Khaine"), 4200000L) },
     { AllianceType::KHORNE, std::make_unique<AllianceKhorne>(AllianceType::KHORNE, "KHORNE", _("血の神コーン", "Khorne, the Blood God"), 18000000L) },
+    { AllianceType::SLAANESH, std::make_unique<AllianceSlaanesh>(AllianceType::SLAANESH, "SLAANESH", _("快楽神スラーネッシュ", "Slaanesh, the Prince of Pleasure"), 18000000L) },
+    { AllianceType::HAFU, std::make_shared<AllianceHafu>(AllianceType::HAFU, "HAFU", _("覇府", "Hafu"), 5000000L) },
+    { AllianceType::TZEENTCH, std::make_unique<AllianceTzeentch>(AllianceType::TZEENTCH, "TZEENTCH", _("変幻の神ティーンチ", "Tzeentch, the God of change"), 18000000L) },
+    { AllianceType::NIBELUNG, std::make_unique<AllianceNibelung>(AllianceType::NIBELUNG, "NIBELUNG", _("ニーベルングの王国", "Kingdom of Nibelung"), 18000000L) },
+    { AllianceType::SEXY_COMMANDO_CLUB, std::make_unique<AllianceSexyCommandoClub>(AllianceType::SEXY_COMMANDO_CLUB, "SEXY-COMMANDO-CLUB", _("セクシーコマンドー部", "Sexy Commando Club"), 18000000L) },
+    { AllianceType::NURGLE, std::make_unique<AllianceNurgle>(AllianceType::NURGLE, "NURGLE", _("腐敗神ナーグル", "Nurgle, the God of Decay"), 18000000L) },
+    { AllianceType::NANMAN, std::make_unique<AllianceNanman>(AllianceType::NANMAN, "NANMAN", _("南蛮", "Nanman"), 3000000L) },
+    { AllianceType::COOKIE_GRANDMA, std::make_unique<AllianceCookieGrandma>(AllianceType::COOKIE_GRANDMA, "COOKIE-GRANDMA", _("クッキーババア", "Cookie Grandma"), 2500000L) },
+    { AllianceType::HIDE, std::make_unique<AllianceHide>(AllianceType::HIDE, "HIDE", _("ひで", "Hide"), 2000000L) },
+    { AllianceType::GONDOR, std::make_unique<AllianceGondor>(AllianceType::GONDOR, "GONDOR", _("ゴンドール", "Gondor"), 8000000L) },
+    { AllianceType::VALVERDE, std::make_unique<AllianceValVerde>(AllianceType::VALVERDE, "VALVERDE", _("バルベルデ共和国", "Republic of Valverde"), 6000000L) },
+    { AllianceType::FINGOLFIN_NOLDOR, std::make_unique<AllianceFingolfinNoldor>(AllianceType::FINGOLFIN_NOLDOR, "FINGOLFIN-NOLDOR", _("フィンゴルフィン統ノルドール", "Fingolfin Noldor"), 3200000L) },
+    { AllianceType::INCUBETOR, std::make_unique<AllianceIncubetor>(AllianceType::INCUBETOR, "INCUBETOR", _("インキュベーター", "Incubetor"), 1500000L) },
+    { AllianceType::FRIEZA_CLAN, std::make_unique<AllianceFriezaClan>(AllianceType::FRIEZA_CLAN, "FRIEZA-CLAN", _("フリーザ一族", "Frieza Clan"), 15000000L) },
+    { AllianceType::SILVAN_ELF, std::make_unique<AllianceSilvanElf>(AllianceType::SILVAN_ELF, "SILVAN-ELF", _("シルヴァン・エルフ", "Silvan Elf"), 2800000L) },
+    { AllianceType::ARYAN_FAMILY, std::make_unique<AllianceAryanFamily>(AllianceType::ARYAN_FAMILY, "ARYAN-FAMILY", _("アーリアン・ファミリー", "Aryan Family"), 3400000L) },
+    { AllianceType::BASAM_EMPIRE, std::make_unique<AllianceBasamEmpire>(AllianceType::BASAM_EMPIRE, "BASAM-EMPIRE", _("バサム帝国", "Basam Empire"), 4200000L) },
+    { AllianceType::BOLETARIA, std::make_unique<AllianceBoletaria>(AllianceType::BOLETARIA, "BOLETARIA", _("ボーレタリア", "Boletaria"), 2800000L) },
+    { AllianceType::HIONHURN, std::make_unique<AllianceHionhurn>(AllianceType::HIONHURN, "HIONHURN", _("ハイオンハーン", "Hionhurn"), 3800000L) },
+    { AllianceType::CHARDROS, std::make_unique<AllianceChardros>(AllianceType::CHARDROS, "CHARDROS", _("チャードロス", "Chardros"), 4000000L) },
+    { AllianceType::ARIOCH, std::make_unique<AllianceArioch>(AllianceType::ARIOCH, "ARIOCH", _("アリオッチ", "Arioch"), 4500000L) },
+    { AllianceType::XIOMBARG, std::make_unique<AllianceXiombarg>(AllianceType::XIOMBARG, "XIOMBARG", _("キシオムバーグ", "Xiombarg"), 4800000L) },
+    { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("マベロード", "Mabelode"), 3600000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
@@ -114,6 +169,11 @@ bool Alliance::isAnnihilated()
     return false;
 }
 
+bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
+{
+    return false;
+}
+
 int AllianceNone::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
@@ -148,16 +208,6 @@ int AllianceUtumno::calcImpressionPoint(PlayerType *creature_ptr) const
     return impression;
 }
 
-int AllianceChinChinTei::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
-}
-
-int AllianceOdio::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
-}
-
 int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
@@ -168,22 +218,6 @@ int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceKenohgun::isAnnihilated()
 {
     return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
-}
-
-bool AllianceFangFamily::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0;
-}
-
-int AllianceFangFamily::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 5, 10);
-    impression -= MonraceList::get_instance().get_monrace(MonraceId::FANG_FAMILY).r_akills * 5;
-    if (MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0) {
-        impression -= 300;
-    }
-    return impression;
 }
 
 int AllianceKoganRyu::calcImpressionPoint(PlayerType *creature_ptr) const
@@ -203,16 +237,6 @@ int AllianceUngoliant::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 8, 30);
     return impression;
-}
-
-int AllianceShittoDan::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
-}
-
-bool AllianceShittoDan::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::SHITTO_MASK).mob_num == 0;
 }
 
 int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
@@ -361,49 +385,9 @@ bool AllianceSuren::isAnnihilated()
     return MonraceList::get_instance().get_monrace(MonraceId::SUREN).mob_num == 0;
 }
 
-int AllianceFeanorNoldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 19, 26);
-    return impression;
-}
-
 int AllianceGaichi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 4, 10);
     return impression;
-}
-
-int AllianceLegendOfSavior::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    auto impression = 0;
-    if (MonraceList::get_instance().get_monrace(MonraceId::MISUMI).mob_num == 0) {
-        impression = -10000;
-    }
-    return impression;
-}
-
-bool AllianceLegendOfSavior::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::KENSHIROU).mob_num == 0;
-}
-
-void AllianceLegendOfSavior::panishment(PlayerType &player_ptr)
-{
-    auto impression = calcImpressionPoint(&player_ptr);
-    if (isAnnihilated() || impression > -100) {
-        return;
-    }
-
-    if (one_in_(30)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 6, PROJECT_NONE);
-        if (summon_named_creature(&player_ptr, 0, m_pos.y, m_pos.x, MonraceId::KENSHIROU, 0)) {
-            msg_print(_("「てめえに今日を生きる資格はねえ！」", "You don't deserve to live today!"));
-            msg_print(_("ケンシロウはあなたがミスミ老人を殺したことに義憤を覚えて襲ってきた！", "Kenshiro attacked you because you killed old man Misumi!"));
-        }
-    }
-
-    return;
 }

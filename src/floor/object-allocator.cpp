@@ -4,6 +4,8 @@
 #include "game-option/birth-options.h"
 #include "game-option/cheat-types.h"
 #include "grid/object-placer.h"
+#include "object-enchant/item-apply-magic.h"
+#include "object/object-kind-hook.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -177,6 +179,9 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
             break;
         case ALLOC_TYP_OBJECT:
             place_object(player_ptr, pos, 0);
+            break;
+        case ALLOC_TYP_SUSHI:
+            place_object(player_ptr, pos, AM_IGNORE_LEVEL, kind_is_sushi);
             break;
         default:
             break;

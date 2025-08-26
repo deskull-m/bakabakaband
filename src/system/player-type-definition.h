@@ -41,6 +41,7 @@ enum class INCIDENT {
 
 enum class DungeonId;
 enum class ElementRealmType;
+enum class FixedArtifactId : short;
 enum class ItemKindType : short;
 enum class MimicKindType;
 enum class MonraceId : short;
@@ -164,7 +165,7 @@ public:
 #define COMMAND_ARG_REST_FULL_HEALING -1 /*!<休憩コマンド引数 … HPとMPが全回復するまで */
     GAME_TURN resting{}; /* Current counter for resting, if any */
 
-    int16_t chaos_patron{};
+    int16_t patron{};
 
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
@@ -328,6 +329,7 @@ public:
     BIT_FLAGS telepathy{}; /* Telepathy */
     BIT_FLAGS esp_animal{};
     BIT_FLAGS esp_nasty{};
+    BIT_FLAGS esp_homo{};
     BIT_FLAGS esp_undead{};
     BIT_FLAGS esp_demon{};
     BIT_FLAGS esp_orc{};
@@ -412,6 +414,7 @@ public:
     void ride_monster(MONSTER_IDX m_idx);
     std::shared_ptr<TimedEffects> effects() const;
     bool is_fully_healthy() const;
+    bool is_wielding(FixedArtifactId fa_id) const;
     std::string decrease_ability_random();
     std::string decrease_ability_all();
     Pos2D get_position() const;
