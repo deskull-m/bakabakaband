@@ -40949,6 +40949,20 @@ D:$ Their armor is made by repeatedly soaking wisteria vines in oil and drying t
 D:$ giving it a strength that surpasses steel and a lightness that allows it to float on water.
 D:$ However, it seems to be vulnerable to fire.
 
+N:2259:オゴレス王の兵卒
+E:Pawn of King Ogreth
+G:p:o
+I:110:9d4:20:16:5
+W:6:3:0:6:0:0
+B:SLASH:HURT:1d6
+B:SLASH:HURT:1d6
+B:SLASH:HURT:1d6
+F:MALE | HAS_LITE_1 | HUMAN | ALLIANCE_BASAM-EMPIRE | MOB_120
+F:FRIENDS | DROP_60 | WILD_ALL | WARRIOR
+F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+D:暴君オゴレスに付き従う兵士たちだ。
+D:$They are the soldiers who follow the tyrant Ogores.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
