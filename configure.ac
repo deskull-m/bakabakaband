@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(hengband, 3.0.0.0)
+AC_INIT(bakabakaband, 0.0.1.0)
 
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_HEADERS(src/autoconf.h)
@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE(tar-pax)
 AM_SILENT_RULES([yes])
 
 AC_ARG_WITH(setgid,
-[  --with-setgid=NAME      install hengband as group NAME],
+[  --with-setgid=NAME      install bakabakaband as group NAME],
 [case "${withval}" in
   no) GAMEGROUP="";;
   yes) AC_MSG_ERROR(missing argument for --with-setgid);;
@@ -27,19 +27,19 @@ fi
 
 dnl overwrite the path with an user-specified value
 AC_ARG_WITH(libpath,
-[  --with-libpath=path     specify the path to the Hengband lib folder],
+[  --with-libpath=path     specify the path to the Bakabakaband lib folder],
 [game_libpath="$withval"])
 
 AC_ARG_WITH(varpath,
-[  --with-varpath=path     specify the path to the Hengband var folder],
+[  --with-varpath=path     specify the path to the Bakabakaband var folder],
 [game_varpath="$withval"],
 [game_varpath="$game_libpath"])
 
-AC_DEFINE_UNQUOTED(DEFAULT_LIB_PATH, "$game_libpath", [Path to the Hengband lib folder])
+AC_DEFINE_UNQUOTED(DEFAULT_LIB_PATH, "$game_libpath", [Path to the Bakabakaband lib folder])
 DEFAULT_LIB_PATH="$game_libpath"
 AC_SUBST(DEFAULT_LIB_PATH)
 
-AC_DEFINE_UNQUOTED(DEFAULT_VAR_PATH, "$game_varpath", [Path to the Hengband var folder])
+AC_DEFINE_UNQUOTED(DEFAULT_VAR_PATH, "$game_varpath", [Path to the Bakabakaband var folder])
 DEFAULT_VAR_PATH="$game_varpath"
 AC_SUBST(DEFAULT_VAR_PATH)
 
