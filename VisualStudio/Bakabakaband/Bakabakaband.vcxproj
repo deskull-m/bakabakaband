@@ -257,6 +257,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-arioch.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-aryan-family.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-basam-empire.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-boletaria.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-chardros.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-chinchintei.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-cookie-grandma.cpp" />
@@ -1060,6 +1061,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-arioch.h" />
     <ClInclude Include="..\..\src\alliance\alliance-aryan-family.h" />
     <ClInclude Include="..\..\src\alliance\alliance-basam-empire.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-boletaria.h" />
     <ClInclude Include="..\..\src\alliance\alliance-chardros.h" />
     <ClInclude Include="..\..\src\alliance\alliance-chinchintei.h" />
     <ClInclude Include="..\..\src\alliance\alliance-cookie-grandma.h" />
