@@ -70332,6 +70332,8 @@
         "en": "Formerly one of Lord Gwyn's Silver Knights, he fought the demons from the Bed of Chaos and accompanied the lord to the Kiln of the First Flame.  Now burned beyond recognition and clad in charred armor, he wanders the world for eternity."
     },
     "sex": "MALE",
+    "alliance": "ANOR-LONDO",
+    "mob": 150,
     "flags": [
         "FORCE_MAXHP",
         "SMART",
@@ -95402,6 +95404,8 @@
         "ja": "太陽の光の王グウィンの無き後、アノール・ロンドを守護する銀色の騎士だ。"
     },
     "sex": "MALE",
+    "alliance": "ANOR-LONDO",
+    "mob": 350,
     "flags": [
         "FORCE_MAXHP",
         "SMART",
@@ -103572,6 +103576,7 @@
     "flavor": {
         "ja": "太陽の光の王グウィンの忠実にして酷薄な処刑人だ。。その巨大な大鎚で罪人をすり潰すことに喜びを覚える残忍さを持っている。"
     },
+    "alliance": "ANOR-LONDO",
     "flags": [
         "DEMON",
         "GIANT",
@@ -141426,6 +141431,7 @@
         "ja": "原初の火より王のソウルを見いだし、火の時代を興した神話の偉大なる王だ。その力をいまだ失わぬ姿のままの彼が、今あなたの前にいる！"
     },
     "sex": "MALE",
+    "alliance": "ANOR-LONDO",
     "flags": [
         "UNIQUE",
         "HAS_LITE_2",
