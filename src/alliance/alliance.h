@@ -74,6 +74,7 @@ enum class AllianceType : int {
     KHAINE = 63, //!< カイン
     ANOR_LONDO = 64, //!< アノール・ロンド
     BOLETARIA = 65, //!< ボーレタリア
+    IDE = 66, //!< イデ
     MAX,
 };
 
