@@ -15,6 +15,7 @@
 #include "alliance/alliance-hafu.h"
 #include "alliance/alliance-hide.h"
 #include "alliance/alliance-hionhurn.h"
+#include "alliance/alliance-ide.h"
 #include "alliance/alliance-incubetor.h"
 #include "alliance/alliance-jural.h"
 #include "alliance/alliance-khaine.h"
@@ -99,6 +100,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::NANMAN, std::make_unique<AllianceNanman>(AllianceType::NANMAN, "NANMAN", _("南蛮", "Nanman"), 3000000L) },
     { AllianceType::COOKIE_GRANDMA, std::make_unique<AllianceCookieGrandma>(AllianceType::COOKIE_GRANDMA, "COOKIE-GRANDMA", _("クッキーババア", "Cookie Grandma"), 2500000L) },
     { AllianceType::HIDE, std::make_unique<AllianceHide>(AllianceType::HIDE, "HIDE", _("ひで", "Hide"), 2000000L) },
+    { AllianceType::IDE, std::make_unique<AllianceIde>(AllianceType::IDE, "IDE", _("イデ", "Ide"), 500000000L) },
     { AllianceType::GONDOR, std::make_unique<AllianceGondor>(AllianceType::GONDOR, "GONDOR", _("ゴンドール", "Gondor"), 8000000L) },
     { AllianceType::VALVERDE, std::make_unique<AllianceValVerde>(AllianceType::VALVERDE, "VALVERDE", _("バルベルデ共和国", "Republic of Valverde"), 6000000L) },
     { AllianceType::FINGOLFIN_NOLDOR, std::make_unique<AllianceFingolfinNoldor>(AllianceType::FINGOLFIN_NOLDOR, "FINGOLFIN-NOLDOR", _("フィンゴルフィン統ノルドール", "Fingolfin Noldor"), 3200000L) },
