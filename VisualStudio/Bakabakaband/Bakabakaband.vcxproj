@@ -271,6 +271,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-hionhurn.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-ide.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-incubetor.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-ketholdeth.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-legendofsavior.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
@@ -1077,6 +1078,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-hionhurn.h" />
     <ClInclude Include="..\..\src\alliance\alliance-ide.h" />
     <ClInclude Include="..\..\src\alliance\alliance-incubetor.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-ketholdeth.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khaine.h" />
     <ClInclude Include="..\..\src\alliance\alliance-legendofsavior.h" />
     <ClInclude Include="..\..\src\alliance\alliance-jural.h" />
