@@ -144993,5 +144993,53 @@
         "DROP_SKELETON",
         "DROP_CORPSE"
     ]
+},
+{
+    "id": 2260,
+    "name": {
+        "ja": "勇士『ちんこちっちゃい』",
+        "en": "Brave warrior, Tinydick"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Yellow"
+    },
+    "speed": -2,
+    "hit_point": "14d10",
+    "vision": 20,
+    "armor_class": 10,
+    "alertness": 10,
+    "level": 15,
+    "rarity": 2,
+    "exp": 120,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d5"
+        }
+    ],
+    "flavor": {
+        "ja": "全裸騎士団の中でも特に勇猛果敢な戦士だ。しかしその名の通りちんこはちっちゃいそうだ。",
+        "en": "He's one of the most valiant and daring warriors among the Naked Knights. But true to his name, his dick is apparently tiny."
+    },
+    "sex": "MALE",
+    "alliance": "NAKED-KNIGHTS",
+    "flags": [
+        "HUMAN",
+        "FRIENDS",
+        "UNIQUE",
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "GOOD",
+        "HOMO_SEXUAL",
+        "PALADIN"
+    ]
 }]
 }

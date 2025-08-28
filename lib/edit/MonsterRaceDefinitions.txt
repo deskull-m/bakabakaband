@@ -40963,6 +40963,21 @@ F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
 D:暴君オゴレスに付き従う兵士たちだ。
 D:$They are the soldiers who follow the tyrant Ogores.
 
+N:2260:勇士『ちんこちっちゃい』
+E:Brave warrior, Tinydick
+G:p:y
+I:108:14d10:20:10:10
+W:15:2:0:120:0:0
+B:HIT:HURT:6d5
+F:MALE | HUMAN | FRIENDS | UNIQUE | ALLIANCE_NAKED-KNIGHTS
+F:PREVENT_SUDDEN_MAGIC | DROP_1D2 | 
+F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:GOOD | HOMO_SEXUAL | PALADIN
+D:全裸騎士団の中でも特に勇猛果敢な戦士だ。
+D:しかしその名の通りちんこはちっちゃいそうだ。
+D:$He's one of the most valiant and daring warriors among the Naked Knights.
+D:$ But true to his name, his dick is apparently tiny.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
