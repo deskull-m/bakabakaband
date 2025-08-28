@@ -15,8 +15,8 @@
 #include "view/display-messages.h"
 
 namespace {
-const EnumClassFlagGroup<CurseTraitType> TRC_SPECIAL_MASK({ CurseTraitType::TY_CURSE, CurseTraitType::AGGRAVATE });
-const EnumClassFlagGroup<CurseTraitType> TRC_HEAVY_MASK({ CurseTraitType::TY_CURSE, CurseTraitType::AGGRAVATE, CurseTraitType::DRAIN_EXP, CurseTraitType::ADD_H_CURSE, CurseTraitType::CALL_DEMON, CurseTraitType::CALL_DRAGON, CurseTraitType::CALL_UNDEAD, CurseTraitType::TELEPORT });
+const EnumClassFlagGroup<CurseTraitType> TRC_SPECIAL_MASK({ CurseTraitType::TY_CURSE, CurseTraitType::AGGRAVATE, CurseTraitType::NASTY_AGGRAVATE });
+const EnumClassFlagGroup<CurseTraitType> TRC_HEAVY_MASK({ CurseTraitType::TY_CURSE, CurseTraitType::AGGRAVATE, CurseTraitType::DRAIN_EXP, CurseTraitType::ADD_H_CURSE, CurseTraitType::CALL_DEMON, CurseTraitType::CALL_DRAGON, CurseTraitType::CALL_UNDEAD, CurseTraitType::TELEPORT, CurseTraitType::NASTY_AGGRAVATE });
 }
 
 /*!

@@ -42,7 +42,6 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
-#include "world/world.h"
 
 /*!
  * @brief 死亡召喚に使用するモード選択

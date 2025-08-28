@@ -101,7 +101,7 @@ enum tr_type : int {
     TR_TELEPORT = 90, /* Item teleports player */
     TR_AGGRAVATE = 91, /* Item aggravates monsters */
     TR_BLESSED = 92, /* Item is Blessed */
-    TR_XXX_93 = 93, //!< 未使用 / Unused
+    TR_NASTY_AGGRAVATE = 93, /* Item aggravates only nasty monsters */
     TR_XXX_94 = 94, //!< 未使用 / Unused
     TR_KILL_GOOD = 95, //!< 善良スレイ(X善)
 

@@ -23594,7 +23594,8 @@
       }
     ],
     "flags": [
-      "NASTY"
+      "NASTY",
+      "NASTY_AGGRAVATE"
     ],
     "flavor": {
       "ja": "顔を保護はできるようだが、そこに小便されても知らんぞ。",

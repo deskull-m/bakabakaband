@@ -192,21 +192,12 @@ static void drop_artifact_from_unique(PlayerType *player_ptr, MonsterDeath *md_p
  */
 bool drop_single_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr, FixedArtifactId a_idx)
 {
-    const auto &world = AngbandWorld::get_instance();
     auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
     if (artifact.is_generated) {
         return false;
     }
 
-    if (!create_named_art(player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x)) {
-        return false;
-    }
-
-    if (world.character_dungeon) {
-        artifact.floor_id = player_ptr->floor_id;
-    }
-
-    return true;
+    return create_named_art(player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x);
 }
 
 static tl::optional<short> drop_dungeon_final_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr)

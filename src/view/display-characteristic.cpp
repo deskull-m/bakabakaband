@@ -606,6 +606,7 @@ static void display_curse_info(PlayerType *player_ptr, void (*display_player_equ
     process_one_characteristic(player_ptr, row++, col, _("打撃力低下  :", "Low Melee   :"), TR_LOW_MELEE, f, 0);
     process_one_characteristic(player_ptr, row++, col, _("AC低下      :", "Low AC      :"), TR_LOW_AC, f, 0);
     process_one_characteristic(player_ptr, row++, col, _("狂戦士化    :", "Berserk Rage:"), TR_BERS_RAGE, f, 0);
+    process_one_characteristic(player_ptr, row++, col, _("皆のおもちゃ:", "Nasty Aggra.:"), TR_NASTY_AGGRAVATE, f, 0);
 }
 
 /*!

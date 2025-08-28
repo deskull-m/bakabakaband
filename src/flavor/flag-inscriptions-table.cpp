@@ -97,6 +97,7 @@ const std::vector<flag_insc_table> flag_insc_misc = {
     { { "射", "Xs" }, TR_XTRA_SHOTS },
     { { "瞬", "Te" }, TR_TELEPORT },
     { { "怒", "Ag" }, TR_AGGRAVATE },
+    { { "玩", "Na" }, TR_NASTY_AGGRAVATE },
     { { "祝", "Bs" }, TR_BLESSED },
     { { "忌", "Ty" }, TR_TY_CURSE },
     { { "呪", "C-" }, TR_ADD_L_CURSE },
