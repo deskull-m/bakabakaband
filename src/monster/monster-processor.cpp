@@ -193,6 +193,10 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     mark_monsters_present(player_ptr);
 
     turn_flags_ptr->aware = process_stealth(player_ptr, m_idx);
+    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.mflag2.has(MonsterConstantFlagType::FRIENDLY)) {
+        return;
+    }
+
     if (vanish_summoned_children(player_ptr, m_idx, turn_flags_ptr->see_m)) {
         return;
     }
