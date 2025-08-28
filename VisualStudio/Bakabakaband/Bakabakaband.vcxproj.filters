@@ -2653,6 +2653,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-ide.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-valinor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5739,6 +5742,9 @@
     <ClInclude Include="..\..\src\alliance\alliance-anor-londo.h" />
     <ClInclude Include="..\..\src\alliance\alliance-boletaria.h" />
     <ClInclude Include="..\..\src\alliance\alliance-ide.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-valinor.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

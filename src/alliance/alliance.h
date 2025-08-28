@@ -131,15 +131,6 @@ public:
     virtual ~AllianceCourtOfChaos() = default;
 };
 
-class AllianceValinor : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceValinor() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceValinor() = default;
-};
-
 class AllianceUtumno : public Alliance {
 public:
     using Alliance::Alliance;

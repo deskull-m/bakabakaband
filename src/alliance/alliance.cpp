@@ -35,6 +35,7 @@
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
 #include "alliance/alliance-tzeentch.h"
+#include "alliance/alliance-valinor.h"
 #include "alliance/alliance-valverde.h"
 #include "alliance/alliance-xiombarg.h"
 #include "effect/effect-characteristics.h"
@@ -194,14 +195,6 @@ int AllianceCourtOfChaos::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
-    return impression;
-}
-
-int AllianceValinor::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += (creature_ptr->alignment > 0) ? creature_ptr->alignment : -creature_ptr->alignment * 3;
-    impression += Alliance::calcPlayerPower(*creature_ptr, -16, 30);
     return impression;
 }
 
