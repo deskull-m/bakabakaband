@@ -18,6 +18,7 @@
 #include "alliance/alliance-ide.h"
 #include "alliance/alliance-incubetor.h"
 #include "alliance/alliance-jural.h"
+#include "alliance/alliance-ketholdeth.h"
 #include "alliance/alliance-khaine.h"
 #include "alliance/alliance-khorne.h"
 #include "alliance/alliance-legendofsavior.h"
@@ -297,16 +298,6 @@ int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature
 bool AllianceDokachans::isAnnihilated()
 {
     return MonraceList::get_instance().get_monrace(MonraceId::DOKACHAN).mob_num == 0;
-}
-
-int AllianceKetholdeth::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
-}
-
-bool AllianceKetholdeth::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::PRINCESS_KETHOLDETH).mob_num == 0;
 }
 
 int AllianceMeldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
