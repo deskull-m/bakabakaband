@@ -212,6 +212,7 @@ const std::vector<flag_desc> misc_flags3_desc = {
     { TR_XTRA_SHOTS, _("追加射撃", "+1 Extra Shot") }, /* always +1? */
     { TR_DRAIN_EXP, _("経験値吸収", "Drains Experience") },
     { TR_AGGRAVATE, _("反感", "Aggravate") },
+    { TR_NASTY_AGGRAVATE, _("皆様のおもちゃ", "Nasty Aggravate") },
     { TR_BLESSED, _("祝福", "Blessed Blade") },
     { TR_DEC_MANA, _("消費魔力減少", "Decrease Mana Consumption Rate") },
     { TR_EASY_SPELL, _("呪文失敗率減少", "Easy Spell") },

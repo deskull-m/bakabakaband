@@ -50,6 +50,10 @@ static void add_negative_flags(ItemEntity *o_ptr)
         o_ptr->art_flags.set(TR_AGGRAVATE);
     }
 
+    if (one_in_(8)) {
+        o_ptr->art_flags.set(TR_NASTY_AGGRAVATE);
+    }
+
     if (one_in_(3)) {
         o_ptr->art_flags.set(TR_DRAIN_EXP);
     }

@@ -45,6 +45,7 @@ enum aggravate_state {
     AGGRAVATE_NONE = 0x00000000L,
     AGGRAVATE_S_FAIRY = 0x00000001L,
     AGGRAVATE_NORMAL = 0x00000002L,
+    NASTY_AGGRAVATE = 0x00000004L,
 };
 
 class PlayerType;
@@ -149,3 +150,4 @@ bool has_good_luck(PlayerType *player_ptr);
 BIT_FLAGS player_aggravate_state(PlayerType *player_ptr);
 melee_type player_melee_type(PlayerType *player_ptr);
 bool has_aggravate(PlayerType *player_ptr);
+bool has_aggravate_nasty(PlayerType *player_ptr);

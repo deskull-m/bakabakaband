@@ -5,7 +5,7 @@ enum class CurseTraitType {
     CURSED = 0,
     HEAVY_CURSE = 1,
     PERMA_CURSE = 2,
-    XXX1 = 3,
+    NASTY_AGGRAVATE = 3,
     TY_CURSE = 4,
     AGGRAVATE = 5,
     DRAIN_EXP = 6,
