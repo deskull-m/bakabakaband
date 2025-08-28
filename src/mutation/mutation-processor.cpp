@@ -63,10 +63,6 @@
  */
 void process_world_aux_sudden_attack(PlayerType *player_ptr)
 {
-    if (randint1(10000) == 1919) {
-        summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_TURBAN_KID, PM_AMBUSH);
-    }
-
     if (randint1(100) == 36) {
         for (auto a : alliance_list) {
             a.second->panishment(*player_ptr);
