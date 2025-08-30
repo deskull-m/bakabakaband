@@ -24,6 +24,7 @@
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "world/world-collapsion.h"
 #include <algorithm>
 #include <sstream>
 #include <string>
@@ -223,6 +224,8 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
             sprintf(tmp, "NORMAL");
         }
         v = tmp;
+    } else if (streq(b + 1, "WORLD_COLLAPSE")) {
+        v = std::to_string(wc_ptr->collapse_degree);
     } else if (streq(b + 1, "IRONMAN_DOWNWARD")) {
         v = (ironman_downward ? "1" : "0");
     }
