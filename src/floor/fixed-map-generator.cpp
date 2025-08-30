@@ -450,6 +450,9 @@ parse_error_type generate_fixed_map_floor(PlayerType *player_ptr, qtwg_type *qtw
     }
 
     if (qtwg_ptr->buf[0] == 'V') {
+        if (init_flags & INIT_ONLY_FEATURES) {
+            return PARSE_ERROR_NONE;
+        }
         return parse_line_vault(player_ptr->current_floor_ptr, qtwg_ptr->buf);
     }
 
