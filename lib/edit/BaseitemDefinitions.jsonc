@@ -26686,7 +26686,9 @@
         "rarity": 1
       }
     ],
-    "flags": [],
+    "flags": [
+      "STANDARDIZED"
+    ],
     "flavor": {
       "ja": "フリーザ軍が制式装備している超質ラバー製の鎧だ。",
       "en": ""

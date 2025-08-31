@@ -741,6 +741,10 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
         info[i++] = _("それは寿司の一種である", "It is a type of sushi.");
     }
 
+    if (flags.has(TR_STANDARDIZED)) {
+        info[i++] = _("それは規格品である", "It is a standardized item.");
+    }
+
     if (mode & SCROBJ_FAKE_OBJECT) {
         const auto sval = o_ptr->bi_key.sval().value();
         switch (o_ptr->bi_key.tval()) {

@@ -221,4 +221,5 @@ const std::vector<flag_desc> misc_flags3_desc = {
     { TR_RIDING, _("乗馬適正", "Riding") },
     { TR_INVULN_ARROW, _("射撃無効", "Immune Arrow") },
     { TR_NASTY, _("クッソ汚い", "Nasty") },
+    { TR_STANDARDIZED, _("規格品", "Standardized") },
 };
