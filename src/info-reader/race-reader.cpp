@@ -841,6 +841,62 @@ static errr set_mon_terrain_feature(const nlohmann::json &terrain_data, MonraceD
 }
 
 /*!
+ * @brief JSON Objectからモンスターのモンスター自然生成率をセットする
+ * @param spawn_data 自然生成情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+static errr set_mon_spawn_creature(const nlohmann::json &spawn_data, MonraceDefinition &monrace)
+{
+    if (spawn_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+
+    if (!spawn_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &spawn : spawn_data) {
+        if (!spawn.contains("id") || !spawn.contains("probability")) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        MonraceId monrace_id;
+        if (auto err = info_set_integer(spawn["id"], monrace_id, true, Range(0, 9999))) {
+            return err;
+        }
+
+        const auto &probability_str = spawn["probability"].get<std::string>();
+
+        // "X_IN_Y" 形式をパース
+        size_t in_pos = probability_str.find("_IN_");
+        if (in_pos == std::string::npos) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        const auto numer_str = probability_str.substr(0, in_pos);
+        const auto denom_str = probability_str.substr(in_pos + 4); // "_IN_" を除去
+
+        int numerator, denominator;
+        try {
+            numerator = std::stoi(numer_str);
+            denominator = std::stoi(denom_str);
+        } catch (...) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        if (numerator <= 0 || denominator <= 0) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        // 分子、分母、モンスターIDを設定
+        monrace.spawn_monsters.push_back({ numerator, denominator, monrace_id });
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief モンスター種族情報(JSON Object)のパース関数
  * @param mon_data モンスターデータの格納されたJSON Object
  * @param head ヘッダ構造体
@@ -992,6 +1048,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_terrain_feature(mon_data["terrain_feature"], monrace);
     if (err) {
         msg_format(_("モンスター地形変化情報読込失敗。ID: '%d'。", "Failed to load monster terrain feature data. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_spawn_creature(mon_data["spawn_creature"], monrace);
+    if (err) {
+        msg_format(_("モンスター自然生成情報読み込み失敗。ID: '%d'。", "Failed to load monster spawn creature data. ID: '%d'."), error_idx);
         return err;
     }
 
