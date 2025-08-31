@@ -216,7 +216,7 @@ I:110:1d2:30:1:10
 W:0:3:0:5:62
 B:CLAW:HURT:1d3
 F:RAND_25 | WILD_GRASS | WILD_TOWN | WILD_ONLY
-F:ANIMAL | DROP_CORPSE | DROP_SKELETON
+F:ANIMAL | DROP_CORPSE | DROP_SKELETON | CAT
 D:$A skinny little furball with sharp claws and a menacing look.
 D:鋭い爪と哀れな容貌を持ったやせこけた小さなネコだ。
 
@@ -476,7 +476,7 @@ G:f:s
 I:111:20d20:50:15:4
 W:0:255:0:0:0
 B:HIT:HURT:1d3
-F:UNIQUE | MALE | ANIMAL | SPEAK_ALL
+F:UNIQUE | MALE | ANIMAL | SPEAK_ALL | CAT
 F:FORCE_MAXHP | DROP_CORPSE | WILD_TOWN | WILD_ONLY
 F:DROP_90 | DROP_GOOD | HUMAN |
 F:OPEN_DOOR | BASH_DOOR | HAS_LITE_1 |
@@ -1026,7 +1026,7 @@ B:CLAW:HURT:2d2
 B:CLAW:HURT:2d3
 F:UNIQUE | 
 F:FORCE_MAXHP | DROP_SKELETON
-F:BASH_DOOR | 
+F:BASH_DOOR | CAT
 F:ANIMAL | NO_CONF | NO_SLEEP
 D:$A striped housecat who enjoys hunting. 
 D:それは狩りを楽しむ縞のある家猫だ。
@@ -1098,7 +1098,7 @@ W:2:2:10:80:198
 B:CLAW:HURT:1d6
 B:CLAW:HURT:1d6
 F:BASH_DOOR | WILD_ALL | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | CAT
 D:$A larger than normal feline, hissing loudly.  Its velvet paws conceal a
 D:$ fistful of needles.
 D:通常のネコより体が大きくて大きな声で鳴く。
@@ -3235,7 +3235,7 @@ W:10:2:25:150:230
 B:CLAW:HURT:1d8
 B:CLAW:HURT:1d8
 F:BASH_DOOR | WILD_WOOD | WILD_GRASS | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL | EAT_SPEED | EAT_GIVE_DEX
+F:ANIMAL | EAT_SPEED | EAT_GIVE_DEX | CAT
 D:$A large black cat, stalking you with intent.  It thinks you're its next 
 D:$meal.
 D:欲望を持って忍び寄る大きな黒いネコ科の生物だ。それは冒険者を食料ぐらいに
@@ -3266,7 +3266,7 @@ B:CLAW:HURT:1d11
 B:CLAW:HURT:1d11
 B:BITE:HURT:1d4
 F:BASH_DOOR | UNIQUE | FORCE_MAXHP | NO_CONF | NO_SLEEP
-F:ANIMAL | MALE | SPEAK_ALL | DROP_CORPSE | EAT_SPEED
+F:ANIMAL | MALE | SPEAK_ALL | DROP_CORPSE | EAT_SPEED | CAT
 D:$Fast-moving, with a taste for tuna sandwiches.
 D:素早く動く。ツナサンドが大好き。
 
@@ -3650,7 +3650,7 @@ W:12:1:40:0:0
 B:CLAW:HURT:1d5
 B:CLAW:HURT:1d5
 B:BITE:HURT:1d8
-F:ANIMAL | WEIRD_MIND | FRIENDS | RAND_25 | IM_FIRE | EVIL
+F:ANIMAL | WEIRD_MIND | FRIENDS | RAND_25 | IM_FIRE | EVIL | CAT
 D:$It is as large as a tiger, its yellow eyes are pupilless.
 D:トラと同じくらい大きくて、その黄色い目には瞳がない。
 
@@ -3795,7 +3795,7 @@ B:CLAW:HURT:1d8
 B:CLAW:HURT:1d8
 B:BITE:HURT:1d6
 F:BASH_DOOR | WILD_GRASS | WILD_WOOD | WILD_MOUNTAIN
-F:ANIMAL | DROP_SKELETON | DROP_CORPSE
+F:ANIMAL | DROP_SKELETON | DROP_CORPSE | CAT
 D:$One of the largest of its species, a sleek orange and black shape creeps 
 D:$towards you, ready to pounce.
 D:その種の中で最も大きなものの一つで、オレンジと黒のまだらのなめらかな
@@ -5638,7 +5638,7 @@ B:CLAW:HURT:1d10
 B:BITE:HURT:1d10
 B:BITE:HURT:1d10
 F:BASH_DOOR | WILD_WOOD | WILD_GRASS |
-F:ANIMAL | DROP_SKELETON | DROP_CORPSE | EAT_SPEED
+F:ANIMAL | DROP_SKELETON | DROP_CORPSE | EAT_SPEED | CAT
 D:$A fierce and dangerous cat, its huge tusks and sharp claws would pierce 
 D:$even the strongest armour.
 D:獰猛で危険なネコであり、その巨大な牙と鋭い爪は最強の鎧でさえも切り
@@ -6929,7 +6929,7 @@ B:HIT:HURT:1d10
 B:HIT:HURT:1d10
 B:HIT:HURT:1d10
 F:INVISIBLE | BASH_DOOR | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | CAT
 D:$It is a huge black panther, clubbed tentacles sprouting from its shoulders.
 D:それは巨大な豹で、その肩からはハサミの付いた触手が生えている。
 
@@ -15033,7 +15033,7 @@ F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP |
 F:ESCORT | ESCORTS | EVIL |
 F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | 
 F:INVISIBLE | OPEN_DOOR | BASH_DOOR | 
-F:IM_FIRE | IM_COLD | IM_POIS | NO_CONF | NO_SLEEP
+F:IM_FIRE | IM_COLD | IM_POIS | NO_CONF | NO_SLEEP | CAT
 S:1_IN_3 | 
 S:TELE_TO | HEAL | S_KIN
 D:$"Beauty -- coolness -- aloofness -- philosophical repose -- 
@@ -19945,7 +19945,7 @@ W:17:3:60:0:0
 B:HIT:HURT:2d5
 B:HIT:HURT:2d5
 F:MALE | EVIL | PREVENT_SUDDEN_MAGIC | DROP_1D2 | ANIMAL |
-F:SMART | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:SMART | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | CAT
 S:1_IN_3 |
 S:SCARE | CAUSE_2 | S_MONSTER
 D:$This cat has a second tail.  There are fables about old cats becoming
@@ -24994,7 +24994,7 @@ B:SLASH:HURT:8d8
 B:SLASH:HURT:8d8
 B:SLASH:HURT:45d1
 F:MALE | PREVENT_SUDDEN_MAGIC | ANIMAL
-F:REGENERATE | OPEN_DOOR | MOVE_BODY | TAKE_ITEM | DROP_CORPSE 
+F:REGENERATE | OPEN_DOOR | MOVE_BODY | TAKE_ITEM | DROP_CORPSE | CAT
 F:IM_ACID | IM_ELEC | IM_COLD | IM_FIRE | IM_POIS
 S:1_IN_4 | HASTE | HEAL | CAUSE_2
 D:$A fairy cat that walks on two legs and understands human language.
@@ -25010,7 +25010,7 @@ G:f:s
 I:112:37d6:22:22:22
 W:22:2:22:0:0
 F:FORCE_MAXHP | NEVER_MOVE | EMPTY_MIND | RES_SHAR
-F:NO_CONF | NO_SLEEP | NO_FEAR | NEVER_BLOW
+F:NO_CONF | NO_SLEEP | NO_FEAR | NEVER_BLOW | CAT
 S:1_IN_6 | TELE_TO | S_KIN
 D:$It's a cat figurine made of pottery!
 D:$  When it beckons, you will get a lot of money!
@@ -25263,7 +25263,7 @@ B:PUNCH:HURT:9d11
 B:PUNCH:ELEC:12d12
 F:UNIQUE | FORCE_MAXHP | FEMALE | EVIL | ANIMAL | POWERFUL
 F:DROP_CORPSE | DROP_GOOD | DROP_4D2 | ONLY_ITEM | KILL_BODY
-F:BASH_DOOR | NO_CONF | NO_FEAR | NO_SLEEP | IM_ELEC
+F:BASH_DOOR | NO_CONF | NO_FEAR | NO_SLEEP | IM_ELEC | CAT
 S:1_IN_4 | BO_ELEC | BA_ELEC | BR_ELEC | BLINK | HOLD | CAUSE_3
 D:$She is angry and her eyes are full of vengeance.
 D:$  That's because her lover was killed.
@@ -25617,7 +25617,7 @@ W:4:1:0:45:0:0
 B:CLAW:HURT:2d2
 B:CLAW:HURT:2d3
 F:DROP_CORPSE | DROP_SKELETON
-F:ANIMAL | NO_CONF | NO_SLEEP | GOOD | NASTY
+F:ANIMAL | NO_CONF | NO_SLEEP | GOOD | NASTY | CAT
 D:クッソ間抜けな顔つきだがどこか憎めない猫だ。
 
 N:1302:メガデス戦闘員
@@ -26777,7 +26777,7 @@ I:110:20d15:15:20:15
 W:17:3:50:0:0
 B:BITE:HURT:3d4
 B:BITE:HURT:3d4
-F:BASH_DOOR | WILD_GRASS | ANIMAL | PASS_WALL
+F:BASH_DOOR | WILD_GRASS | ANIMAL | PASS_WALL | CAT
 D:$This terrifying tiger used to escape nightly from the folding screen
 D:$ in a lord's mansion and eat people.
 D:$  So the lord asked a child priest to get rid of the tiger.
@@ -27387,7 +27387,7 @@ I:120:16d15:20:55:5
 W:23:2:160:0:0
 B:CLAW:HURT:2d9
 B:BITE:HURT:2d9
-F:WILD_GRASS | WILD_WASTE | FRIENDS | ANIMAL | DROP_CORPSE | DROP_SKELETON
+F:WILD_GRASS | WILD_WASTE | FRIENDS | ANIMAL | DROP_CORPSE | DROP_SKELETON | CAT
 D:$It is often called the king of beasts.
 D:百獣の王だ。
 
@@ -31990,7 +31990,7 @@ W:20:3:0:60:0:0
 B:CLAW:HURT:3d5
 B:CLAW:HURT:3d5
 F:MALE | NASTY | HOMO_SEXUAL | HUMAN | PREVENT_SUDDEN_MAGIC | DROP_1D2 | ANIMAL | RAND_25
-F:STUPID | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | COLLAPSE-OVER_30.000 | FRIENDS
+F:STUPID | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | COLLAPSE-OVER_30.000 | FRIENDS | CAT
 S:1_IN_7 |
 S:SHRIEK | CAUSE_2
 D:猫かな？……んな訳ねえだろ。猫耳つけただけの全裸のデブの中年ホモだ(半ギレマジレス)
@@ -34280,7 +34280,7 @@ I:120:18d15:20:58:5
 W:22:2:0:180:0:0
 B:CLAW:HURT:2d10
 B:BITE:HURT:2d10
-F:WILD_GRASS | WILD_WASTE | FRIENDS | ANIMAL | DROP_CORPSE | DROP_SKELETON
+F:WILD_GRASS | WILD_WASTE | FRIENDS | ANIMAL | DROP_CORPSE | DROP_SKELETON | CAT
 D:古きプレインズウォーカーの郷愁を誘い、今なお愛着を感じさせるクリーチャーだ。
 D:「お前それサバンナでも同じこと言えんの？」
 
@@ -36027,7 +36027,7 @@ B:EXPLODE:FIRE:15d3
 F:PREVENT_SUDDEN_MAGIC |
 F:FRIENDS |
 F:OPEN_DOOR | BASH_DOOR |
-F:ANIMAL | NO_CONF | NO_SLEEP
+F:ANIMAL | NO_CONF | NO_SLEEP | CAT
 D:$This cat is about to have an accident.
 D:今にも事故を起こしそうな猫だ。
 
@@ -36675,7 +36675,7 @@ B:GAZE:CONFUSE
 B:GAZE:EXP_10
 B:GAZE:UN_BONUS
 F:FRIENDS | ANIMAL | CAN_SWIM | WEIRD_MIND | ELDRITCH_HORROR |
-F:RES_LITE | NO_FEAR | NO_CONF
+F:RES_LITE | NO_FEAR | NO_CONF | CAT
 D:虚無な目つきと赤いリボンが印象的な二足歩行の白猫だ。
 D:あの仕事を選ばない大女優とは似ても似つかない。
 
@@ -39384,7 +39384,7 @@ F:UNIQUE | MALE
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | 
 F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | 
 F:INVISIBLE | OPEN_DOOR | BASH_DOOR | 
-F:IM_FIRE | IM_COLD | IM_ACID | NO_CONF | NO_SLEEP
+F:IM_FIRE | IM_COLD | IM_ACID | NO_CONF | NO_SLEEP | CAT
 S:1_IN_5 | 
 S:TELE_TO | BA_DARK | HOLD | SLOW 
 D:血に塗れたルクレチアの地で、倒すべき敵から逃れようとする臆病者を咎める
@@ -39783,7 +39783,7 @@ B:HIT:HURT:3d8
 F:UNIQUE | MALE | HUMAN | ANIMAL
 F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
 F:ONLY_ITEM | DROP_2D2 | DROP_GOOD | 
-F:OPEN_DOOR | BASH_DOOR
+F:OPEN_DOOR | BASH_DOOR | CAT
 F:GOOD | IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | RES_CHAO
 F:NO_CONF | NO_SLEEP | NO_FEAR
 S:1_IN_6
