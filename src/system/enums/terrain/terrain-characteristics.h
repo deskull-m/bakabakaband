@@ -76,5 +76,6 @@ enum class TerrainCharacteristics {
     SLOW = 116, /*!< 減速地形である */
     THORN = 117, /*!< 棘地形である */
     TENTACLE = 118, /*!< 触手地形である */
+    ICE = 119, /*!< 氷である */
     MAX,
 };

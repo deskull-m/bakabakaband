@@ -136,7 +136,7 @@ const std::unordered_map<std::string_view, TerrainCharacteristics> f_info_flags 
     { "SLOW", TerrainCharacteristics::SLOW },
     { "THORN", TerrainCharacteristics::THORN },
     { "TENTACLE", TerrainCharacteristics::TENTACLE },
-
+    { "ICE", TerrainCharacteristics::ICE },
 };
 
 const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
