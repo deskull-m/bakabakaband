@@ -17118,6 +17118,26 @@ D:%..%       %..%
 D: %.%       %.% 
 D:  %         %  
 
+N:823:LavaLake
+X:18:8:16:17
+D: %%     %%    %  
+D:%..%%  %..%  %.% 
+D:%....%%%...%%..% 
+D:%.vv.......%...% 
+D:%..vvvvvvvv...%  
+D: %..vwww.vvv..%  
+D: %..vvw.[.vvv.%  
+D:  %..vvv.wwvvv.% 
+D:   %...vvvvvvv.% 
+D:    %%.vv....vv.%
+D:    %.vv..%%..v.%
+D:   %.....%  %.v.%
+D:  %....%%   %.v.%
+D: %...%%     %...%
+D:%...%       %..% 
+D: %%%         %%  
+
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
