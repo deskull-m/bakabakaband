@@ -57,6 +57,11 @@ void ItemMagicApplier::execute()
         return;
     }
 
+    const auto flags = this->o_ptr->get_flags();
+    if (flags.has(TR_STANDARDIZED)) {
+        return;
+    }
+
     auto enchanter = EnchanterFactory::create_enchanter(this->player_ptr, this->o_ptr, this->lev, power);
     enchanter->apply_magic();
     if (this->o_ptr->is_ego()) {

@@ -485,6 +485,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_VUL_CURSE:
         return has_vuln_curse(player_ptr);
     case TR_SUSHI:
+    case TR_STANDARDIZED:
     case TR_FLAG_MAX:
         break;
     }
