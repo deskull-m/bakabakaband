@@ -420,6 +420,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "YAZYU", MonsterKindType::YAZYU },
     { "SKELETON", MonsterKindType::SKELETON },
     { "DOG", MonsterKindType::DOG },
+    { "CAT", MonsterKindType::CAT },
     { "MONKEY_SPACE", MonsterKindType::MONKEY_SPACE }, // 猿空間
 };
 
