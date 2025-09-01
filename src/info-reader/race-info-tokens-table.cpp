@@ -546,6 +546,7 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "STALKER", MonsterMiscType::STALKER },
     { "HOME_ONLY", MonsterMiscType::HOME_ONLY },
     { "SCATOLOGIST", MonsterMiscType::SCATOLOGIST },
+    { "MASOCHIST", MonsterMiscType::MASOCHIST },
     { "BREAK_DOWN", MonsterMiscType::BREAK_DOWN }
 };
 

@@ -100,6 +100,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
         return true;
     }
 
+    this->process_masochist_reaction();
     monster.hp -= this->dam;
     monster.dealt_damage += this->dam;
     if (monster.dealt_damage > monster.max_maxhp * 100) {
@@ -442,4 +443,33 @@ void MonsterDamageProcessor::add_monster_fear()
     auto fear_condition = (this->dam >= monster.hp) && (percentage > 7);
     auto fear_value = randint1(10) + (fear_condition ? 20 : (11 - percentage) * 5);
     (void)set_monster_monfear(this->player_ptr, this->m_idx, fear_value);
+}
+
+/*!
+ * @brief マゾヒストモンスターの特殊反応処理
+ * @details マゾヒストはダメージを受けると興奮し、一定確率で少量回復する
+ */
+void MonsterDamageProcessor::process_masochist_reaction()
+{
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto &monrace = monster.get_monrace();
+
+    if (!monrace.misc_flags.has(MonsterMiscType::MASOCHIST)) {
+        return;
+    }
+
+    if (one_in_(3) && this->dam < std::min(monster.maxhp / 10, 40)) {
+        (void)set_monster_monfear(this->player_ptr, this->m_idx, 0);
+        *this->fear = false;
+
+        // 一定確率で少量回復
+        if (monster.hp > 0) {
+            auto heal_amount = randint1(this->dam / 4 + 1);
+            monster.hp = std::min(monster.hp + heal_amount, monster.maxhp);
+
+            if (monster.ml) {
+                msg_format(_("%s^は苦痛に悦んでいる！", "%s^ seems to enjoy the pain!"), monster.get_monrace().name.data());
+            }
+        }
+    }
 }
