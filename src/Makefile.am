@@ -26,6 +26,7 @@ hengband_SOURCES = \
 	alliance/alliance-ketholdeth.cpp alliance/alliance-ketholdeth.h \
 	alliance/alliance-khaine.cpp alliance/alliance-khaine.h \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
+	alliance/alliance-kogan-ryu.cpp alliance/alliance-kogan-ryu.h \
 	alliance/alliance-legendofsavior.cpp alliance/alliance-legendofsavior.h \
 	alliance/alliance-mabelode.cpp alliance/alliance-mabelode.h \
 	alliance/alliance-shire.cpp alliance/alliance-shire.h \

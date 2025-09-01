@@ -899,6 +899,7 @@
     <ClCompile Include="..\..\src\term\z-term.cpp" />
     <ClCompile Include="..\..\src\term\z-util.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-eldrazi.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-kogan-ryu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\action\action-limited.h" />
@@ -1946,6 +1947,7 @@
     <ClInclude Include="..\..\src\term\z-term.h" />
     <ClInclude Include="..\..\src\term\z-util.h" />
     <ClInclude Include="..\..\src\alliance\alliance-eldrazi.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-kogan-ryu.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\angband.rc" />
