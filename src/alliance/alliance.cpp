@@ -28,6 +28,7 @@
 #include "alliance/alliance-megadeth.h"
 #include "alliance/alliance-nanman.h"
 #include "alliance/alliance-nibelung.h"
+#include "alliance/alliance-numenor.h"
 #include "alliance/alliance-nurgle.h"
 #include "alliance/alliance-odio.h"
 #include "alliance/alliance-sexy-commando-club.h"
@@ -256,13 +257,6 @@ void AllianceTurbanKids::panishment(PlayerType &player_ptr)
 int AllianceNakedKnights::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
-}
-
-int AllianceNumenor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 20);
-    return impression;
 }
 
 int AllianceGO::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
