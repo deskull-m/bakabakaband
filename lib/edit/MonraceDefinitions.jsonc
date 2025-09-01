@@ -16409,7 +16409,8 @@
         "EVIL",
         "DEMON",
         "IM_POIS",
-        "IM_FIRE"
+        "IM_FIRE",
+        "MASOCHIST"
     ],
     "skill": {
         "list": [
@@ -23441,7 +23442,8 @@
     "flags": [
         "BASH_DOOR",
         "EVIL",
-        "DEMON"
+        "DEMON",
+        "MASOCHIST"
     ]
 },
 {
@@ -44738,7 +44740,8 @@
         "IM_POIS",
         "NO_CONF",
         "RES_CHAO",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "MASOCHIST"
     ],
     "skill": {
         "list": [
@@ -93401,6 +93404,7 @@
         "HUMAN",
         "NASTY",
         "DROP_2D2",
+        "MASOCHIST",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -129338,7 +129342,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
-        "PALADIN"
+        "PALADIN",
+        "MASOCHIST"
     ],
     "skill": {
         "list": [
