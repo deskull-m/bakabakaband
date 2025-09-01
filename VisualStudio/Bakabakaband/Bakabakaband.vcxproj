@@ -281,6 +281,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-mabelode.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nanman.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-numenor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nurgle.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-odio.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-sexy-commando-club.cpp" />
@@ -1090,6 +1091,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-mabelode.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nanman.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nibelung.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-numenor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nurgle.h" />
     <ClInclude Include="..\..\src\alliance\alliance-odio.h" />
     <ClInclude Include="..\..\src\alliance\alliance-sexy-commando-club.h" />
