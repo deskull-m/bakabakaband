@@ -7,6 +7,7 @@
 #include "alliance/alliance-chardros.h"
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
+#include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-feanor-noldor.h"
 #include "alliance/alliance-fingolfin-noldor.h"
@@ -21,6 +22,7 @@
 #include "alliance/alliance-ketholdeth.h"
 #include "alliance/alliance-khaine.h"
 #include "alliance/alliance-khorne.h"
+#include "alliance/alliance-kogan-ryu.h"
 #include "alliance/alliance-legendofsavior.h"
 #include "alliance/alliance-mabelode.h"
 #include "alliance/alliance-megadeth.h"
@@ -216,18 +218,6 @@ int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceKenohgun::isAnnihilated()
 {
     return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
-}
-
-int AllianceKoganRyu::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 18);
-    return impression;
-}
-
-int AllianceEldrazi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
 }
 
 int AllianceUngoliant::calcImpressionPoint(PlayerType *creature_ptr) const

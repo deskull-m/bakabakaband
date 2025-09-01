@@ -261,6 +261,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-chardros.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-chinchintei.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-cookie-grandma.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-eldrazi.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-feanor-noldor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-fingolfin-noldor.cpp" />
@@ -273,6 +274,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-incubetor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-ketholdeth.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-kogan-ryu.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-legendofsavior.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp" />
@@ -1068,6 +1070,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-chardros.h" />
     <ClInclude Include="..\..\src\alliance\alliance-chinchintei.h" />
     <ClInclude Include="..\..\src\alliance\alliance-cookie-grandma.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-eldrazi.h" />
     <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h" />
     <ClInclude Include="..\..\src\alliance\alliance-feanor-noldor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-fingolfin-noldor.h" />
@@ -1080,6 +1083,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-incubetor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-ketholdeth.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khaine.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-kogan-ryu.h" />
     <ClInclude Include="..\..\src\alliance\alliance-legendofsavior.h" />
     <ClInclude Include="..\..\src\alliance\alliance-jural.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h" />
