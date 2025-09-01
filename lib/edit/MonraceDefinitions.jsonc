@@ -145065,5 +145065,66 @@
         "HOMO_SEXUAL",
         "PALADIN"
     ]
+},
+{
+    "id": 2261,
+    "name": {
+        "ja": "虎眼流内弟子『山崎九郎右衛門』",
+        "en": "Kurouemon Yamazaki, In-house Disciple of Kogan-ryu"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Red"
+    },
+    "speed": 2,
+    "hit_point": "39d20",
+    "vision": 35,
+    "armor_class": 90,
+    "alertness": 4,
+    "level": 34,
+    "rarity": 4,
+    "exp": 1500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "SUPERHURT",
+            "damage_dice": "12d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "SUPERHURT",
+            "damage_dice": "12d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "9d6"
+        }
+    ],
+    "flavor": {
+        "ja": "「虎子」と呼ばれる虎眼流の将来を担うと言われる内弟子の一人だ。彼の柔軟な肉体操作と裏拳一つでも人体を破壊するその腕前は、虎眼流の典型的強さに至っている。「なまくらと申したか」「時折このような妄想にふけるのを見て見ぬふりをする情が虎眼流剣士たちにも存在した」",
+        "en": "He is one of the inner disciples known as “Koshi”-- Tiger Child said to be the future of the Kogan-ryu.  His flexible body control and skill—capable of destroying  a human body with a single backfist—have reached the quintessential strength of the Kogan-ryu. 'Did you call us dullards?' \"Occasionally, the Kogan-ryu swordsmen would turn a blind eye to his indulgence in such delusions.\""
+    },
+    "sex": "MALE",
+    "alliance": "KOGAN-RYU",
+    "flags": [
+        "HAS_LITE_1",
+        "DROP_2D2",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "HUMAN",
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "SAMURAI",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EAT_GIVE_STR",
+        "EAT_LOSE_INT",
+        "EAT_LOSE_WIS"
+    ]
 }]
 }
