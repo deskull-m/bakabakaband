@@ -7,6 +7,7 @@
 #include "alliance/alliance-chardros.h"
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
+#include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-feanor-noldor.h"
 #include "alliance/alliance-fingolfin-noldor.h"
@@ -223,11 +224,6 @@ int AllianceKoganRyu::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 15, 18);
     return impression;
-}
-
-int AllianceEldrazi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
 }
 
 int AllianceUngoliant::calcImpressionPoint(PlayerType *creature_ptr) const
