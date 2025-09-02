@@ -159,6 +159,7 @@ hengband_SOURCES = \
 	cmd-io/cmd-menu-content-table.cpp cmd-io/cmd-menu-content-table.h \
 	cmd-io/cmd-process-screen.cpp cmd-io/cmd-process-screen.h \
 	cmd-io/cmd-save.cpp cmd-io/cmd-save.h \
+	cmd-io/cmd-text-command.cpp cmd-io/cmd-text-command.h \
 	cmd-io/diary-subtitle-table.cpp cmd-io/diary-subtitle-table.h \
 	cmd-io/macro-util.cpp cmd-io/macro-util.h \
 	\

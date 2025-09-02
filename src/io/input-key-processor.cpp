@@ -30,6 +30,7 @@
 #include "cmd-io/cmd-macro.h"
 #include "cmd-io/cmd-process-screen.h"
 #include "cmd-io/cmd-save.h"
+#include "cmd-io/cmd-text-command.h"
 #include "cmd-item/cmd-destroy.h"
 #include "cmd-item/cmd-eat.h"
 #include "cmd-item/cmd-equipment.h"
@@ -675,6 +676,10 @@ void process_command(PlayerType *player_ptr)
     }
     case KTRL('V'): {
         spoil_random_artifact(player_ptr);
+        break;
+    }
+    case KTRL('E'): {
+        do_cmd_text_command(player_ptr);
         break;
     }
     case '`': {
