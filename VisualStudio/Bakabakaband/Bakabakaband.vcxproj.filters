@@ -2660,6 +2660,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\cmd-io\cmd-text-command.cpp">
+      <Filter>cmd-io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5754,6 +5757,9 @@
     <ClInclude Include="..\..\src\alliance\alliance-numenor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khaine.h">
       <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h">
+      <Filter>cmd-io</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
