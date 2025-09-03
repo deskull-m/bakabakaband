@@ -49,6 +49,7 @@ const std::unordered_map<MonsterAbilityType, blue_magic_breath_type> BLUE_MAGIC_
     { MonsterAbilityType::BR_VOID, { AttributeType::VOID_MAGIC, _("虚無のブレスを吐いた。", "You breathe void.") } },
     { MonsterAbilityType::BR_ABYSS, { AttributeType::ABYSS, _("深淵のブレスを吐いた。", "You breathe abyss.") } },
     { MonsterAbilityType::BR_FECES, { AttributeType::DIRT, _("糞便のブレスを吐いた。", "You breathe feces.") } },
+    { MonsterAbilityType::BR_SPIDER_STRING, { AttributeType::SPIDER_STRING, _("蜘蛛糸のブレスを吐いた。", "You breathe spider string.") } },
 };
 }
 
