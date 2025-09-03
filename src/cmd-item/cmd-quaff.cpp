@@ -22,6 +22,8 @@
 #include "timed-effect/player-confusion.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
+#include "view/display-messages.h"
+#include "status/bad-status-setter.h"
 #include "world/world.h"
 
 /*!
@@ -93,6 +95,6 @@ void do_cmd_rectal_absorption(PlayerType *player_ptr)
     // 混乱状態になる可能性
     if (one_in_(3)) {
         msg_print(_("変態行為により精神が混乱した！", "Your mind is confused by the perverted act!"));
-        (void)set_confused(player_ptr, player_ptr->effects()->confusion().current() + randint1(10) + 10);
+        (void)BadStatusSetter(player_ptr).set_confusion(randint1(30) + 30);
     }
 }
