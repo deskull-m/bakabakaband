@@ -63,10 +63,6 @@ void do_cmd_rectal_absorption(PlayerType *player_ptr)
         return;
     }
 
-    if (!SpellHex(player_ptr).is_spelling_specific(HEX_INHALE) && cmd_limit_arena(player_ptr)) {
-        return;
-    }
-
     PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの薬を直腸吸収しますか? ", "Which potion do you want to absorb rectally? ");
