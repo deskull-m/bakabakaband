@@ -700,3 +700,40 @@ void effect_player_abyss(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
+
+void effect_player_spider_string(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
+{
+    if (player_ptr->effects()->blindness().is_blind()) {
+        msg_print(_("何かネバネバしたもので攻撃された！", "You are hit by something sticky!"));
+    } else {
+        msg_print(_("蜘蛛糸に絡まれた！", "You are entangled in spider webs!"));
+    }
+
+    // 蜘蛛糸に対する抵抗はない（新しい属性なので）
+    // ダメージはほとんどないが、行動阻害が主効果
+    ep_ptr->dam = std::max(ep_ptr->dam / 10, 1);
+
+    BadStatusSetter bss(player_ptr);
+
+    // 移動速度低下（糸に絡まる）
+    if (!check_multishadow(player_ptr)) {
+        const auto plus_slow = randnum1<short>((ep_ptr->dam > 50) ? 20 : (ep_ptr->dam / 3 + 5));
+        (void)bss.mod_deceleration(plus_slow, false);
+
+        // 高確率で混乱（パニック状態）
+        if (one_in_(3)) {
+            (void)bss.mod_confusion(randnum1<short>(10));
+        }
+
+        // 低確率で麻痺（完全に絡まった状態）
+        if (one_in_(10)) {
+            (void)bss.mod_paralysis(randnum1<short>(3));
+            msg_print(_("蜘蛛糸に完全に身動きを封じられた！", "You are completely bound by the spider webs!"));
+        }
+    }
+
+    // 装備品に影響（糸で汚れる）
+    inventory_damage(player_ptr, BreakerAcid(), 5);
+
+    ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+}

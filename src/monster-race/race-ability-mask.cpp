@@ -65,7 +65,7 @@ const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_BREATH_MASK = {
     MonsterAbilityType::BR_NEXU, MonsterAbilityType::BR_SHAR, MonsterAbilityType::BR_TIME, MonsterAbilityType::BR_INER,
     MonsterAbilityType::BR_GRAV, MonsterAbilityType::BR_PLAS, MonsterAbilityType::BR_FORC, MonsterAbilityType::BR_MANA,
     MonsterAbilityType::BR_NUKE, MonsterAbilityType::BR_DISI, MonsterAbilityType::BR_VOID, MonsterAbilityType::BR_ABYSS,
-    MonsterAbilityType::BR_FECES
+    MonsterAbilityType::BR_FECES, MonsterAbilityType::BR_SPIDER_STRING
 };
 
 /*

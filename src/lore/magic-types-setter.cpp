@@ -110,6 +110,10 @@ void set_breath_types(PlayerType *player_ptr, lore_type *lore_ptr)
     if (lore_ptr->ability_flags.has(MonsterAbilityType::BR_FECES)) {
         add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::BR_FECES, _("糞便%s", "feces%s"), TERM_UMBER);
     }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::BR_SPIDER_STRING)) {
+        add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::BR_SPIDER_STRING, _("蜘蛛糸%s", "spider string%s"), TERM_WHITE);
+    }
 }
 
 void set_ball_types(PlayerType *player_ptr, lore_type *lore_ptr)

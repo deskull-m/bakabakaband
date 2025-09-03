@@ -30,6 +30,7 @@ ProcessResult effect_monster_gravity(PlayerType *player_ptr, EffectMonster *em_p
 ProcessResult effect_monster_disintegration(PlayerType *player_ptr, EffectMonster *em_ptr);
 ProcessResult effect_monster_icee_bolt(PlayerType *player_ptr, EffectMonster *em_ptr);
 ProcessResult effect_monster_dirt(PlayerType *player_ptr, EffectMonster *em_ptr);
+ProcessResult effect_monster_spider_string(PlayerType *player_ptr, EffectMonster *em_ptr);
 ProcessResult effect_monster_stungun(PlayerType *player_ptr, EffectMonster *em_ptr);
 ProcessResult effect_monster_void(PlayerType *player_ptr, EffectMonster *em_ptr);
 ProcessResult effect_monster_abyss(PlayerType *player_ptr, EffectMonster *em_ptr);

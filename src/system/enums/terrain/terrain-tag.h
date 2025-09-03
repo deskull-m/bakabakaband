@@ -123,4 +123,6 @@ enum class TerrainTag {
     CLOSED_GLASS_DOOR,
     OPEN_CURTAIN,
     CLOSED_CURTAIN,
+
+    SPIDER_SILK_NET,
 };

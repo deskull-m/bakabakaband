@@ -125,6 +125,7 @@ const std::unordered_map<MonsterAbilityType, MSpellData> breath_list = {
     make_breath_elemental(MonsterAbilityType::BR_VOID, AttributeType::VOID_MAGIC, _("虚無", "void")),
     make_breath_elemental(MonsterAbilityType::BR_ABYSS, AttributeType::ABYSS, _("深淵", "abyss")),
     make_breath_elemental(MonsterAbilityType::BR_FECES, AttributeType::DIRT, _("糞便", "feces")),
+    make_breath_elemental(MonsterAbilityType::BR_SPIDER_STRING, AttributeType::SPIDER_STRING, _("蜘蛛糸", "spider string")),
 };
 
 /*!
