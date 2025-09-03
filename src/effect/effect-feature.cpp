@@ -493,6 +493,18 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         break;
     }
+    case AttributeType::SPIDER_STRING: {
+        if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
+            break;
+        } else if (dam) {
+            if (!terrain.flags.has(TerrainCharacteristics::FLOOR)) {
+                break;
+            }
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SPIDER_SILK_NET);
+        }
+
+        break;
+    }
     default: {
         break;
     }

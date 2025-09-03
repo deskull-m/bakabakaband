@@ -99,7 +99,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::BR_ABYSS:
     case MonsterAbilityType::BR_FECES:
      return spell_RF4_BREATH(player_ptr, ms_type, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF4_BR_ABYSS */
-    
+
     case MonsterAbilityType::BA_ACID:
     case MonsterAbilityType::BA_ELEC:
     case MonsterAbilityType::BA_FIRE:
@@ -267,7 +267,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BR_ABYSS:
     case MonsterAbilityType::BR_FECES:
     return spell_RF4_BREATH(player_ptr, ms_type, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF4_BR_ABYSS */
-    
+
     case MonsterAbilityType::BA_ACID:
     case MonsterAbilityType::BA_ELEC:
     case MonsterAbilityType::BA_FIRE:
@@ -276,7 +276,7 @@ static MonsterSpellResult monspell_to_monster_impl(
          auto rad = monster_is_powerful(*player_ptr->current_floor_ptr, m_idx) ? 4 : 2;
          return MSpellBall(player_ptr, m_idx, t_idx, ms_type, rad, MONSTER_TO_MONSTER).shoot(y, x);
          }
-         
+
     case MonsterAbilityType::BA_POIS:
     case MonsterAbilityType::BA_NETH:
     case MonsterAbilityType::BA_NUKE:
@@ -317,7 +317,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BO_ABYSS:
     case MonsterAbilityType::BO_METEOR:
     case MonsterAbilityType::BO_LITE:
-    case MonsterAbilityType::MISSILE: 
+    case MonsterAbilityType::MISSILE:
          return MSpellBolt(player_ptr, m_idx, t_idx, ms_type, MONSTER_TO_MONSTER).shoot(y, x);
 
     case MonsterAbilityType::SCARE: return spell_RF5_SCARE(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_SCARE */
