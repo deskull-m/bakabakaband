@@ -253,6 +253,7 @@
     <ClCompile Include="..\..\src\action\travel-execution.cpp" />
     <ClCompile Include="..\..\src\action\tunnel-execution.cpp" />
     <ClCompile Include="..\..\src\action\weapon-shield.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-amber.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-anor-londo.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-arioch.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-aryan-family.cpp" />
@@ -1064,6 +1065,7 @@
     <ClInclude Include="..\..\src\action\open-close-execution.h" />
     <ClInclude Include="..\..\src\action\open-util.h" />
     <ClInclude Include="..\..\src\action\run-execution.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-amber.h" />
     <ClInclude Include="..\..\src\alliance\alliance-anor-londo.h" />
     <ClInclude Include="..\..\src\alliance\alliance-arioch.h" />
     <ClInclude Include="..\..\src\alliance\alliance-aryan-family.h" />

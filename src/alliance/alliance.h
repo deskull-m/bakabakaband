@@ -113,14 +113,7 @@ public:
     virtual ~AllianceNone() = default;
 };
 
-class AllianceAmber : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceAmber() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceAmber() = default;
-};
+class AllianceAmber;
 
 class AllianceCourtOfChaos : public Alliance {
 public:
