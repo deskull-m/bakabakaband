@@ -7748,6 +7748,28 @@ D:一部のホモに執着されるほど旨い寿司だ。
 D:$It's sushi so delicious that some homosexuals are obsessed with it.
 
 
+##### Anal Plugs #####
+
+N:823:快楽:シリコンの
+E:Pleasure:Silicone
+G:":v
+I:41:0:0
+W:10:8:50
+A:10/4
+P:0:0d0:0:0:1
+D:$This perverted silicone anal plug provides enhanced pleasure when inserted.
+D:この変態的なシリコン製尻栓は挿入時に快楽を高めてくれる。
+
+N:824:振動:電動の
+E:Vibrating:Electric
+G:":R
+I:41:1:0
+W:20:6:100
+A:20/3
+P:0:0d0:0:0:2
+D:$This electric anal plug vibrates intensely, providing both pleasure and healing.
+D:この電動尻栓は激しく振動し、快楽と同時に治癒効果をもたらす。
+
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
 # d - Dark Gray    W - Light Gray     v - Violet        y - Yellow

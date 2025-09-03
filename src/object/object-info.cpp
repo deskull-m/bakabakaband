@@ -129,6 +129,8 @@ int16_t wield_slot(PlayerType *player_ptr, const ItemEntity *o_ptr)
     case ItemKindType::AMULET:
     case ItemKindType::WHISTLE:
         return INVEN_NECK;
+    case ItemKindType::ANAL_PLUG:
+        return INVEN_ASSHOLE;
     case ItemKindType::LITE:
         return INVEN_LITE;
     case ItemKindType::DRAG_ARMOR:

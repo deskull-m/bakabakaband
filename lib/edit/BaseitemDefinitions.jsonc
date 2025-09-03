@@ -28495,6 +28495,84 @@
       "ja": "一部のホモに執着されるほど旨い寿司だ。",
       "en": "It's sushi so delicious that some homosexuals are obsessed with it."
     }
+  },
+  {
+    "id": 823,
+    "name": {
+      "ja": "快楽",
+      "en": "Pleasure"
+    },
+    "symbol": {
+      "character": "\"",
+      "color": "Violet"
+    },
+    "itemkind": {
+      "type_value": 41,
+      "subtype_value": 0
+    },
+    "parameter_value": 0,
+    "level": 10,
+    "weight": 8,
+    "cost": 50,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 1,
+    "allocations": [
+      {
+        "depth": 10,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "CHR",
+      "HIDE_TYPE"
+    ],
+    "flavor": {
+      "ja": "この変態的なシリコン製尻栓は挿入時に快楽を高めてくれる。",
+      "en": "This perverted silicone anal plug provides enhanced pleasure when inserted."
+    }
+  },
+  {
+    "id": 824,
+    "name": {
+      "ja": "振動",
+      "en": "Vibrating"
+    },
+    "symbol": {
+      "character": "\"",
+      "color": "Light Red"
+    },
+    "itemkind": {
+      "type_value": 41,
+      "subtype_value": 1
+    },
+    "parameter_value": 0,
+    "level": 20,
+    "weight": 6,
+    "cost": 100,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 2,
+    "allocations": [
+      {
+        "depth": 20,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "CHR",
+      "CON",
+      "RES_ELEC",
+      "ACTIVATE"
+    ],
+    "flavor": {
+      "ja": "この電動尻栓は激しく振動し、快楽と同時に治癒効果をもたらす。",
+      "en": "This electric anal plug vibrates intensely, providing both pleasure and healing."
+    }
   }
 ]
 }
