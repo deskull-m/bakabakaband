@@ -32,13 +32,12 @@ bool research_mon(PlayerType *player_ptr)
     screen_save();
     constexpr auto prompt = _("モンスターの文字を入力して下さい(記号 or ^A全,^Uユ,^N非ユ,^M名前):",
         "Enter character to be identified(^A:All,^U:Uniqs,^N:Non uniqs,^M:Name): ");
-    const auto sym_opt = input_command(prompt, false);
-    if (!sym_opt.has_value()) {
+    const auto sym = input_command(prompt);
+    if (!sym) {
         screen_load();
         return false;
     }
 
-    const auto sym = sym_opt.value();
     IDX ident_i;
     for (ident_i = 0; ident_info[ident_i]; ++ident_i) {
         if (sym == ident_info[ident_i][0]) {
@@ -158,7 +157,7 @@ bool research_mon(PlayerType *player_ptr)
                 handle_stuff(player_ptr);
                 screen_roff(player_ptr, monrace_id, MONSTER_LORE_RESEARCH);
                 notpicked = false;
-                old_sym = sym;
+                old_sym = *sym;
                 old_i = i;
             }
 
