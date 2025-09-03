@@ -1,4 +1,5 @@
 #include "alliance/alliance.h"
+#include "alliance/alliance-amber.h"
 #include "alliance/alliance-anor-londo.h"
 #include "alliance/alliance-arioch.h"
 #include "alliance/alliance-aryan-family.h"
@@ -186,13 +187,6 @@ bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
 int AllianceNone::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
-}
-
-int AllianceAmber::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
-    return impression;
 }
 
 int AllianceCourtOfChaos::calcImpressionPoint(PlayerType *creature_ptr) const

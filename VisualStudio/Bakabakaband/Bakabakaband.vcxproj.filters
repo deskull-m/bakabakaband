@@ -2663,6 +2663,9 @@
     <ClCompile Include="..\..\src\cmd-io\cmd-text-command.cpp">
       <Filter>cmd-io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-amber.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5760,6 +5763,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h">
       <Filter>cmd-io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-amber.h">
+      <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
