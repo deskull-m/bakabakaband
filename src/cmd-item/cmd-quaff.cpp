@@ -18,12 +18,12 @@
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
 #include "status/action-setter.h"
+#include "status/bad-status-setter.h"
 #include "system/player-type-definition.h"
 #include "timed-effect/player-confusion.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-#include "status/bad-status-setter.h"
 #include "world/world.h"
 
 /*!
@@ -83,7 +83,7 @@ void do_cmd_rectal_absorption(PlayerType *player_ptr)
     }
 
     // 通常の薬効果を発動（ただし効果は若干異なる可能性）
-    ObjectQuaffEntity(player_ptr).execute(i_idx);
+    ObjectQuaffEntity(player_ptr).execute(i_idx, true);
 
     // 変態行為による追加効果
     msg_print(_("あなたは異常な快感を感じている...", "You feel abnormal pleasure..."));

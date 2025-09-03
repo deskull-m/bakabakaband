@@ -47,7 +47,7 @@ QuaffEffects::QuaffEffects(PlayerType *player_ptr)
 {
 }
 
-bool QuaffEffects::influence(const ItemEntity &item)
+bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
 {
     if (item.bi_key.tval() != ItemKindType::POTION) {
         return false;
@@ -55,21 +55,34 @@ bool QuaffEffects::influence(const ItemEntity &item)
 
     switch (*item.bi_key.sval()) {
     case SV_POTION_WATER:
-        msg_print(_("口の中がさっぱりした。", "That was refreshing."));
-        msg_print(_("のどの渇きが少しおさまった。", "You feel less thirsty."));
-        return true;
+        if (!is_rectal) {
+            msg_print(_("口の中がさっぱりした。", "That was refreshing."));
+            msg_print(_("のどの渇きが少しおさまった。", "You feel less thirsty."));
+            return true;
+        }
+        return false;
     case SV_POTION_APPLE_JUICE:
-        msg_print(_("甘くてサッパリとしていて、とてもおいしい。", "It's sweet, refreshing and very tasty."));
-        msg_print(_("のどの渇きが少しおさまった。", "You feel less thirsty."));
-        return true;
+        if (!is_rectal) {
+            msg_print(_("甘くてサッパリとしていて、とてもおいしい。", "It's sweet, refreshing and very tasty."));
+            msg_print(_("のどの渇きが少しおさまった。", "You feel less thirsty."));
+            return true;
+        }
+        return false;
     case SV_POTION_SLIME_MOLD:
-        msg_print(_("なんとも不気味な味だ。", "That was strange."));
-        msg_print(_("のどの渇きが少しおさまった。", "You feel less thirsty."));
-        return true;
+        if (!is_rectal) {
+            msg_print(_("なんとも不気味な味だ。", "That was strange."));
+            msg_print(_("のどの渇きが少しおさまった。", "You feel less thirsty."));
+            return true;
+        }
+        return false;
     case SV_POTION_SLOWNESS:
         return BadStatusSetter(this->player_ptr).set_deceleration(randint1(25) + 15, false);
     case SV_POTION_SALT_WATER:
-        return this->salt_water();
+        if (!is_rectal) {
+            return this->salt_water();
+        } else {
+            return false;
+        }
     case SV_POTION_POISON:
         return this->poison();
     case SV_POTION_BLINDNESS:
@@ -204,21 +217,26 @@ bool QuaffEffects::influence(const ItemEntity &item)
         return this->polymorph();
 
     case SV_POTION_ICHIZIKU_ENEMA:
-        msg_print(_("うぇ！思わず吐いてしまった。", "The potion makes you vomit!"));
-
-        switch (PlayerRace(this->player_ptr).food()) {
-        case PlayerRaceFoodType::RATION:
-        case PlayerRaceFoodType::WATER:
-        case PlayerRaceFoodType::BLOOD:
-            (void)set_food(player_ptr, PY_FOOD_STARVE - 1);
-            break;
-        default:
-            break;
+        if (is_rectal) {
+            player_defecate(player_ptr);
+            return true;
+        } else {
+            msg_print(_("うぇ！思わず吐いてしまった。", "The potion makes you vomit!"));
+            switch (PlayerRace(this->player_ptr).food()) {
+            case PlayerRaceFoodType::RATION:
+            case PlayerRaceFoodType::WATER:
+            case PlayerRaceFoodType::BLOOD:
+                (void)set_food(player_ptr, PY_FOOD_STARVE - 1);
+                break;
+            default:
+                break;
+            }
+            (void)BadStatusSetter(player_ptr).set_poison(0);
+            BadStatusSetter(player_ptr).mod_paralysis(4);
+            msg_print(_("この薬は直腸に注入するものらしい。", "The potion seems to be injected into the rectum"));
+            return true;
         }
-        (void)BadStatusSetter(player_ptr).set_poison(0);
-        BadStatusSetter(player_ptr).mod_paralysis(4);
-        msg_print(_("この薬は直腸に注入するものらしい。", "The potion seems to be injected into the rectum"));
-        return true;
+
     default:
         return false;
     }

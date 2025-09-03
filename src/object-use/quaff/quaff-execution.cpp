@@ -45,7 +45,7 @@ ObjectQuaffEntity::ObjectQuaffEntity(PlayerType *player_ptr)
  * 効果発動のあと、食料タイプによって空腹度を少し充足する。
  * 但し骸骨は除く
  */
-void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx)
+void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
 {
     if (!this->can_influence()) {
         return;
@@ -55,7 +55,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx)
     vary_item(this->player_ptr, i_idx, -1);
     sound(SoundKind::QUAFF);
     player_ptr->plus_incident(INCIDENT::QUAFF, 1);
-    auto ident = QuaffEffects(this->player_ptr).influence(item);
+    auto ident = QuaffEffects(this->player_ptr).influence(item, is_rectal);
     if (PlayerRace(this->player_ptr).equals(PlayerRaceType::SKELETON)) {
         msg_print(_("液体の一部はあなたのアゴを素通りして落ちた！", "Some of the fluid falls through your jaws!"));
         (void)potion_smash_effect(this->player_ptr, 0, this->player_ptr->y, this->player_ptr->x, item.bi_id);

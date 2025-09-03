@@ -6,7 +6,7 @@ class QuaffEffects {
 public:
     QuaffEffects(PlayerType *player_ptr);
 
-    bool influence(const ItemEntity &item);
+    bool influence(const ItemEntity &item, const bool is_rectal);
 
 private:
     PlayerType *player_ptr;
