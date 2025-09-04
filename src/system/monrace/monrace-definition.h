@@ -242,6 +242,7 @@ public:
     bool is_suitable_for_horror_pit() const;
     bool is_suitable_for_mimic_nest() const;
     bool is_suitable_for_dog_nest() const;
+    bool is_suitable_for_cat_nest() const;
     bool is_suitable_for_chapel_nest() const;
     bool is_suitable_for_jelly_nest() const;
     bool is_suitable_for_animal_nest() const;

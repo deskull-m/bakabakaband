@@ -1,4 +1,5 @@
 #include "alliance/alliance.h"
+#include "alliance/alliance-amber.h"
 #include "alliance/alliance-anor-londo.h"
 #include "alliance/alliance-arioch.h"
 #include "alliance/alliance-aryan-family.h"
@@ -7,6 +8,8 @@
 #include "alliance/alliance-chardros.h"
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
+#include "alliance/alliance-court-of-chaos.h"
+#include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-feanor-noldor.h"
 #include "alliance/alliance-fingolfin-noldor.h"
@@ -15,15 +18,19 @@
 #include "alliance/alliance-hafu.h"
 #include "alliance/alliance-hide.h"
 #include "alliance/alliance-hionhurn.h"
+#include "alliance/alliance-ide.h"
 #include "alliance/alliance-incubetor.h"
 #include "alliance/alliance-jural.h"
+#include "alliance/alliance-ketholdeth.h"
 #include "alliance/alliance-khaine.h"
 #include "alliance/alliance-khorne.h"
+#include "alliance/alliance-kogan-ryu.h"
 #include "alliance/alliance-legendofsavior.h"
 #include "alliance/alliance-mabelode.h"
 #include "alliance/alliance-megadeth.h"
 #include "alliance/alliance-nanman.h"
 #include "alliance/alliance-nibelung.h"
+#include "alliance/alliance-numenor.h"
 #include "alliance/alliance-nurgle.h"
 #include "alliance/alliance-odio.h"
 #include "alliance/alliance-sexy-commando-club.h"
@@ -34,11 +41,14 @@
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
 #include "alliance/alliance-tzeentch.h"
+#include "alliance/alliance-valinor.h"
 #include "alliance/alliance-valverde.h"
 #include "alliance/alliance-xiombarg.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
+#include "monster-floor/place-monster-types.h"
+#include "spell/summon-types.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -99,6 +109,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::NANMAN, std::make_unique<AllianceNanman>(AllianceType::NANMAN, "NANMAN", _("南蛮", "Nanman"), 3000000L) },
     { AllianceType::COOKIE_GRANDMA, std::make_unique<AllianceCookieGrandma>(AllianceType::COOKIE_GRANDMA, "COOKIE-GRANDMA", _("クッキーババア", "Cookie Grandma"), 2500000L) },
     { AllianceType::HIDE, std::make_unique<AllianceHide>(AllianceType::HIDE, "HIDE", _("ひで", "Hide"), 2000000L) },
+    { AllianceType::IDE, std::make_unique<AllianceIde>(AllianceType::IDE, "IDE", _("イデ", "Ide"), 500000000L) },
     { AllianceType::GONDOR, std::make_unique<AllianceGondor>(AllianceType::GONDOR, "GONDOR", _("ゴンドール", "Gondor"), 8000000L) },
     { AllianceType::VALVERDE, std::make_unique<AllianceValVerde>(AllianceType::VALVERDE, "VALVERDE", _("バルベルデ共和国", "Republic of Valverde"), 6000000L) },
     { AllianceType::FINGOLFIN_NOLDOR, std::make_unique<AllianceFingolfinNoldor>(AllianceType::FINGOLFIN_NOLDOR, "FINGOLFIN-NOLDOR", _("フィンゴルフィン統ノルドール", "Fingolfin Noldor"), 3200000L) },
@@ -179,28 +190,6 @@ int AllianceNone::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr)
     return 0;
 }
 
-int AllianceAmber::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
-    return impression;
-}
-
-int AllianceCourtOfChaos::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
-    return impression;
-}
-
-int AllianceValinor::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += (creature_ptr->alignment > 0) ? creature_ptr->alignment : -creature_ptr->alignment * 3;
-    impression += Alliance::calcPlayerPower(*creature_ptr, -16, 30);
-    return impression;
-}
-
 int AllianceUtumno::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
@@ -220,18 +209,6 @@ bool AllianceKenohgun::isAnnihilated()
     return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
 }
 
-int AllianceKoganRyu::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 18);
-    return impression;
-}
-
-int AllianceEldrazi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
-}
-
 int AllianceUngoliant::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
@@ -246,21 +223,28 @@ int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_p
     return impression;
 }
 
+/**
+ * @note ターバンのガキ共は印象値の正負を一切持たない。
+ */
 int AllianceTurbanKids::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
 }
 
+/**
+ * @note ターバンのガキ共は無条件に一定確率でプレイヤーを襲う。
+ */
+void AllianceTurbanKids::panishment(PlayerType &player_ptr)
+{
+    if (one_in_(19)) {
+        summon_specific(&player_ptr, player_ptr.y, player_ptr.x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
+    }
+    return;
+}
+
 int AllianceNakedKnights::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
-}
-
-int AllianceNumenor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 20);
-    return impression;
 }
 
 int AllianceGO::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
@@ -286,16 +270,6 @@ int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature
 bool AllianceDokachans::isAnnihilated()
 {
     return MonraceList::get_instance().get_monrace(MonraceId::DOKACHAN).mob_num == 0;
-}
-
-int AllianceKetholdeth::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
-}
-
-bool AllianceKetholdeth::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::PRINCESS_KETHOLDETH).mob_num == 0;
 }
 
 int AllianceMeldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const

@@ -35,5 +35,6 @@ private:
     void show_explosion_message(std::string_view died_mes, std::string_view m_name);
     void show_bounty_message(std::string_view m_name);
     void set_redraw();
+    void process_masochist_reaction();
     void add_monster_fear();
 };

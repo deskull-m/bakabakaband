@@ -339,6 +339,9 @@ PRICE flag_cost(const ItemEntity *o_ptr, int plusses)
     if (flags.has(TR_AGGRAVATE)) {
         total -= 7500;
     }
+    if (flags.has(TR_NASTY_AGGRAVATE)) {
+        total -= 7500;
+    }
     if (flags.has(TR_SH_FIRE)) {
         total += 5000;
     }
@@ -518,6 +521,11 @@ PRICE flag_cost(const ItemEntity *o_ptr, int plusses)
     if (flags.has(TR_AGGRAVATE)) {
         total -= 10000;
     }
+
+    if (flags.has(TR_NASTY_AGGRAVATE)) {
+        total -= 10000;
+    }
+
     if (flags.has(TR_BLESSED)) {
         total += 750;
     }

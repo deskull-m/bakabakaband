@@ -371,10 +371,10 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_TELEPORT:
         return check_equipment_flags(player_ptr, tr_flag);
     case TR_AGGRAVATE:
+    case TR_NASTY_AGGRAVATE:
         return 0;
     case TR_BLESSED:
         return has_bless_blade(player_ptr);
-    case TR_XXX_93:
     case TR_XXX_94:
     case TR_KILL_GOOD:
     case TR_KILL_ANIMAL:
@@ -485,6 +485,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_VUL_CURSE:
         return has_vuln_curse(player_ptr);
     case TR_SUSHI:
+    case TR_STANDARDIZED:
     case TR_FLAG_MAX:
         break;
     }
@@ -1097,6 +1098,9 @@ void update_curses(PlayerType *player_ptr)
         const auto flags = o_ptr->get_flags();
         if (flags.has(TR_AGGRAVATE)) {
             player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
+        }
+        if (flags.has(TR_NASTY_AGGRAVATE)) {
+            player_ptr->cursed.set(CurseTraitType::NASTY_AGGRAVATE);
         }
         if (flags.has(TR_DRAIN_EXP)) {
             player_ptr->cursed.set(CurseTraitType::DRAIN_EXP);
@@ -1817,19 +1821,33 @@ bool has_good_luck(PlayerType *player_ptr)
     return (player_ptr->ppersonality == PERSONALITY_LUCKY) || (player_ptr->muta.has(PlayerMutationType::GOOD_LUCK));
 }
 
+/**
+ * @brief プレイヤーが怒りを買う呪いを持っているかどうかを返す。
+ * @note 馬鹿馬鹿独自仕様
+ */
 BIT_FLAGS player_aggravate_state(PlayerType *player_ptr)
 {
-    if (player_ptr->cursed.has(CurseTraitType::AGGRAVATE)) {
-        if ((PlayerRace(player_ptr).equals(PlayerRaceType::S_FAIRY)) && (player_ptr->ppersonality != PERSONALITY_SEXY)) {
-            return AGGRAVATE_S_FAIRY;
-        }
-        return AGGRAVATE_NORMAL;
+    auto flags = 0L;
+    if (player_ptr->cursed.has(CurseTraitType::NASTY_AGGRAVATE)) {
+        flags |= NASTY_AGGRAVATE;
     }
 
-    return AGGRAVATE_NONE;
+    if (player_ptr->cursed.has(CurseTraitType::AGGRAVATE)) {
+        if ((PlayerRace(player_ptr).equals(PlayerRaceType::S_FAIRY)) && (player_ptr->ppersonality != PERSONALITY_SEXY)) {
+            return flags | AGGRAVATE_S_FAIRY;
+        }
+        return flags | AGGRAVATE_NORMAL;
+    }
+
+    return flags;
 }
 
 bool has_aggravate(PlayerType *player_ptr)
 {
-    return player_aggravate_state(player_ptr) == AGGRAVATE_NORMAL;
+    return player_aggravate_state(player_ptr) & AGGRAVATE_NORMAL;
+}
+
+bool has_aggravate_nasty(PlayerType *player_ptr)
+{
+    return player_aggravate_state(player_ptr) & NASTY_AGGRAVATE;
 }

@@ -16,7 +16,7 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
 #define H_VER_MAJOR 0 //!< ゲームのバージョン定義(メジャー番号)
 #define H_VER_MINOR 0 //!< ゲームのバージョン定義(マイナー番号)
 #define H_VER_PATCH 1 //!< ゲームのバージョン定義(パッチ番号)
-#define H_VER_EXTRA 0 //!< ゲームのバージョン定義(エクストラ番号)
+#define H_VER_EXTRA 1 //!< ゲームのバージョン定義(エクストラ番号)
 
 /*!
  * @brief セーブファイルのバージョン(3.0.0から導入)

@@ -37,3 +37,4 @@ void effect_player_icee(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
 void effect_player_hand_doom(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
 void effect_player_void(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
 void effect_player_abyss(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
+void effect_player_spider_string(PlayerType *player_ptr, EffectPlayerType *ep_ptr);

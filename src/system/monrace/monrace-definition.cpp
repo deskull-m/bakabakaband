@@ -615,6 +615,13 @@ bool MonraceDefinition::is_suitable_for_dog_nest() const
     return is_suitable;
 }
 
+bool MonraceDefinition::is_suitable_for_cat_nest() const
+{
+    auto is_suitable = this->is_suitable_for_special_room();
+    is_suitable &= this->symbol_char_is_any_of("f");
+    return is_suitable;
+}
+
 bool MonraceDefinition::is_suitable_for_chapel_nest() const
 {
     auto is_suitable = this->is_suitable_for_special_room();

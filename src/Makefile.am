@@ -18,12 +18,17 @@ hengband_SOURCES = \
 	action/weapon-shield.cpp action/weapon-shield.h \
 	\
 	alliance/alliance.cpp alliance/alliance.h \
+	alliance/alliance-amber.cpp alliance/alliance-amber.h \
+	alliance/alliance-court-of-chaos.cpp alliance/alliance-court-of-chaos.h \
 	alliance/alliance-anor-londo.cpp alliance/alliance-anor-londo.h \
 	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
+	alliance/alliance-eldrazi.cpp alliance/alliance-eldrazi.h \
 	alliance/alliance-hafu.cpp alliance/alliance-hafu.h \
 	alliance/alliance-jural.cpp alliance/alliance-jural.h \
+	alliance/alliance-ketholdeth.cpp alliance/alliance-ketholdeth.h \
 	alliance/alliance-khaine.cpp alliance/alliance-khaine.h \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
+	alliance/alliance-kogan-ryu.cpp alliance/alliance-kogan-ryu.h \
 	alliance/alliance-legendofsavior.cpp alliance/alliance-legendofsavior.h \
 	alliance/alliance-mabelode.cpp alliance/alliance-mabelode.h \
 	alliance/alliance-shire.cpp alliance/alliance-shire.h \
@@ -34,6 +39,7 @@ hengband_SOURCES = \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
 	alliance/alliance-nibelung.cpp alliance/alliance-nibelung.h \
+	alliance/alliance-numenor.cpp alliance/alliance-numenor.h \
 	alliance/alliance-fangfamily.cpp alliance/alliance-fangfamily.h \
 	alliance/alliance-feanor-noldor.cpp alliance/alliance-feanor-noldor.h \
 	alliance/alliance-fingolfin-noldor.cpp alliance/alliance-fingolfin-noldor.h \
@@ -44,6 +50,7 @@ hengband_SOURCES = \
 	alliance/alliance-nanman.cpp alliance/alliance-nanman.h \
 	alliance/alliance-cookie-grandma.cpp alliance/alliance-cookie-grandma.h \
 	alliance/alliance-hide.cpp alliance/alliance-hide.h \
+	alliance/alliance-ide.cpp alliance/alliance-ide.h \
 	alliance/alliance-incubetor.cpp alliance/alliance-incubetor.h \
 	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
@@ -55,6 +62,7 @@ hengband_SOURCES = \
 	alliance/alliance-chardros.cpp alliance/alliance-chardros.h \
 	alliance/alliance-hionhurn.cpp alliance/alliance-hionhurn.h \
 	alliance/alliance-xiombarg.cpp alliance/alliance-xiombarg.h \
+	alliance/alliance-valinor.cpp alliance/alliance-valinor.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
@@ -153,6 +161,7 @@ hengband_SOURCES = \
 	cmd-io/cmd-menu-content-table.cpp cmd-io/cmd-menu-content-table.h \
 	cmd-io/cmd-process-screen.cpp cmd-io/cmd-process-screen.h \
 	cmd-io/cmd-save.cpp cmd-io/cmd-save.h \
+	cmd-io/cmd-text-command.cpp cmd-io/cmd-text-command.h \
 	cmd-io/diary-subtitle-table.cpp cmd-io/diary-subtitle-table.h \
 	cmd-io/macro-util.cpp cmd-io/macro-util.h \
 	\

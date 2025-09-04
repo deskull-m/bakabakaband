@@ -119,7 +119,8 @@
         "WILD_ONLY",
         "ANIMAL",
         "DROP_CORPSE",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "CAT"
     ]
 },
 {
@@ -950,6 +951,7 @@
         "UNIQUE",
         "ANIMAL",
         "SPEAK_ALL",
+        "CAT",
         "FORCE_MAXHP",
         "DROP_CORPSE",
         "WILD_TOWN",
@@ -2745,6 +2747,7 @@
         "FORCE_MAXHP",
         "DROP_SKELETON",
         "BASH_DOOR",
+        "CAT",
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP"
@@ -2974,7 +2977,8 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "CAT"
     ]
 },
 {
@@ -9828,7 +9832,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "EAT_SPEED",
-        "EAT_GIVE_DEX"
+        "EAT_GIVE_DEX",
+        "CAT"
     ]
 },
 {
@@ -9930,7 +9935,8 @@
         "ANIMAL",
         "SPEAK_ALL",
         "DROP_CORPSE",
-        "EAT_SPEED"
+        "EAT_SPEED",
+        "CAT"
     ]
 },
 {
@@ -11115,7 +11121,8 @@
         "FRIENDS",
         "RAND_25",
         "IM_FIRE",
-        "EVIL"
+        "EVIL",
+        "CAT"
     ]
 },
 {
@@ -11557,7 +11564,8 @@
         "WILD_MOUNTAIN",
         "ANIMAL",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "CAT"
     ]
 },
 {
@@ -16401,7 +16409,8 @@
         "EVIL",
         "DEMON",
         "IM_POIS",
-        "IM_FIRE"
+        "IM_FIRE",
+        "MASOCHIST"
     ],
     "skill": {
         "list": [
@@ -17531,7 +17540,8 @@
         "ANIMAL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "EAT_SPEED"
+        "EAT_SPEED",
+        "CAT"
     ]
 },
 {
@@ -21818,7 +21828,8 @@
         "INVISIBLE",
         "BASH_DOOR",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "CAT"
     ]
 },
 {
@@ -23431,7 +23442,8 @@
     "flags": [
         "BASH_DOOR",
         "EVIL",
-        "DEMON"
+        "DEMON",
+        "MASOCHIST"
     ]
 },
 {
@@ -44728,7 +44740,8 @@
         "IM_POIS",
         "NO_CONF",
         "RES_CHAO",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "MASOCHIST"
     ],
     "skill": {
         "list": [
@@ -47386,7 +47399,8 @@
         "IM_COLD",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "CAT"
     ],
     "skill": {
         "list": [
@@ -63448,7 +63462,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "CAT"
     ],
     "skill": {
         "list": [
@@ -81844,6 +81859,7 @@
         "MOVE_BODY",
         "TAKE_ITEM",
         "DROP_CORPSE",
+        "CAT",
         "IM_ACID",
         "IM_ELEC",
         "IM_COLD",
@@ -81892,7 +81908,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "NEVER_BLOW"
+        "NEVER_BLOW",
+        "CAT"
     ],
     "skill": {
         "list": [
@@ -82870,7 +82887,8 @@
         "NO_CONF",
         "NO_FEAR",
         "NO_SLEEP",
-        "IM_ELEC"
+        "IM_ELEC",
+        "CAT"
     ],
     "skill": {
         "list": [
@@ -84281,7 +84299,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "GOOD",
-        "NASTY"
+        "NASTY",
+        "CAT"
     ]
 },
 {
@@ -87144,7 +87163,8 @@
         "NO_FEAR",
         "UNIQUE",
         "DROP_GREAT",
-        "DROP_1D2"
+        "DROP_1D2",
+        "FRIENDLY_STANDBY"
     ]
 },
 {
@@ -88669,7 +88689,8 @@
         "BASH_DOOR",
         "WILD_GRASS",
         "ANIMAL",
-        "PASS_WALL"
+        "PASS_WALL",
+        "CAT"
     ]
 },
 {
@@ -90992,7 +91013,8 @@
         "FRIENDS",
         "ANIMAL",
         "DROP_CORPSE",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "CAT"
     ]
 },
 {
@@ -93382,6 +93404,7 @@
         "HUMAN",
         "NASTY",
         "DROP_2D2",
+        "MASOCHIST",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -108992,7 +109015,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "FRIENDS"
+        "FRIENDS",
+        "CAT"
     ],
     "skill": {
         "list": [
@@ -118181,7 +118205,8 @@
         "FRIENDS",
         "ANIMAL",
         "DROP_CORPSE",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "CAT"
     ]
 },
 {
@@ -125233,7 +125258,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "CAT"
     ]
 },
 {
@@ -127796,7 +127822,8 @@
         "ELDRITCH_HORROR",
         "RES_LITE",
         "NO_FEAR",
-        "NO_CONF"
+        "NO_CONF",
+        "CAT"
     ]
 },
 {
@@ -129315,7 +129342,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
-        "PALADIN"
+        "PALADIN",
+        "MASOCHIST"
     ],
     "skill": {
         "list": [
@@ -138723,7 +138751,8 @@
         "IM_COLD",
         "IM_ACID",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "CAT"
     ],
     "skill": {
         "list": [
@@ -140339,6 +140368,7 @@
         "DROP_GOOD",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "CAT",
         "GOOD",
         "IM_ACID",
         "IM_FIRE",
@@ -144991,6 +145021,115 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE"
+    ]
+},
+{
+    "id": 2260,
+    "name": {
+        "ja": "勇士『ちんこちっちゃい』",
+        "en": "Brave warrior, Tinydick"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Yellow"
+    },
+    "speed": -2,
+    "hit_point": "14d10",
+    "vision": 20,
+    "armor_class": 10,
+    "alertness": 10,
+    "level": 15,
+    "rarity": 2,
+    "exp": 120,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d5"
+        }
+    ],
+    "flavor": {
+        "ja": "全裸騎士団の中でも特に勇猛果敢な戦士だ。しかしその名の通りちんこはちっちゃいそうだ。",
+        "en": "He's one of the most valiant and daring warriors among the Naked Knights. But true to his name, his dick is apparently tiny."
+    },
+    "sex": "MALE",
+    "alliance": "NAKED-KNIGHTS",
+    "flags": [
+        "HUMAN",
+        "FRIENDS",
+        "UNIQUE",
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "GOOD",
+        "HOMO_SEXUAL",
+        "PALADIN"
+    ]
+},
+{
+    "id": 2261,
+    "name": {
+        "ja": "虎眼流内弟子『山崎九郎右衛門』",
+        "en": "Kurouemon Yamazaki, In-house Disciple of Kogan-ryu"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Red"
+    },
+    "speed": 2,
+    "hit_point": "39d20",
+    "vision": 35,
+    "armor_class": 90,
+    "alertness": 4,
+    "level": 34,
+    "rarity": 4,
+    "exp": 1500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "SUPERHURT",
+            "damage_dice": "12d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "SUPERHURT",
+            "damage_dice": "12d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "9d6"
+        }
+    ],
+    "flavor": {
+        "ja": "「虎子」と呼ばれる虎眼流の将来を担うと言われる内弟子の一人だ。彼の柔軟な肉体操作と裏拳一つでも人体を破壊するその腕前は、虎眼流の典型的強さに至っている。「なまくらと申したか」「時折このような妄想にふけるのを見て見ぬふりをする情が虎眼流剣士たちにも存在した」",
+        "en": "He is one of the inner disciples known as “Koshi”-- Tiger Child said to be the future of the Kogan-ryu.  His flexible body control and skill—capable of destroying  a human body with a single backfist—have reached the quintessential strength of the Kogan-ryu. 'Did you call us dullards?' \"Occasionally, the Kogan-ryu swordsmen would turn a blind eye to his indulgence in such delusions.\""
+    },
+    "sex": "MALE",
+    "alliance": "KOGAN-RYU",
+    "flags": [
+        "HAS_LITE_1",
+        "DROP_2D2",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "HUMAN",
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "SAMURAI",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EAT_GIVE_STR",
+        "EAT_LOSE_INT",
+        "EAT_LOSE_WIS"
     ]
 }]
 }

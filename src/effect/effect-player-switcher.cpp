@@ -158,6 +158,9 @@ void switch_effects_player(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     case AttributeType::ABYSS:
         effect_player_abyss(player_ptr, ep_ptr);
         return;
+    case AttributeType::SPIDER_STRING:
+        effect_player_spider_string(player_ptr, ep_ptr);
+        return;
     default: {
         ep_ptr->dam = 0;
         return;

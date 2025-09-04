@@ -304,7 +304,8 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->mflag2.set(MonsterConstantFlagType::LARGE);
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(20)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
     }
 

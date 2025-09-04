@@ -136,7 +136,8 @@ const std::unordered_map<std::string_view, TerrainCharacteristics> f_info_flags 
     { "SLOW", TerrainCharacteristics::SLOW },
     { "THORN", TerrainCharacteristics::THORN },
     { "TENTACLE", TerrainCharacteristics::TENTACLE },
-
+    { "ICE", TerrainCharacteristics::ICE },
+    { "SPIDER_SILK_NET", TerrainCharacteristics::SPIDER_SILK_NET },
 };
 
 const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
@@ -256,4 +257,5 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "CLOSED_GLASS_DOOR", TerrainTag::CLOSED_GLASS_DOOR },
     { "OPEN_CURTAIN", TerrainTag::OPEN_CURTAIN },
     { "CLOSED_CURTAIN", TerrainTag::CLOSED_CURTAIN },
+    { "SPIDER_SILK_NET", TerrainTag::SPIDER_SILK_NET },
 };

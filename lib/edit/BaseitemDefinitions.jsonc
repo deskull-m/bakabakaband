@@ -23594,7 +23594,8 @@
       }
     ],
     "flags": [
-      "NASTY"
+      "NASTY",
+      "NASTY_AGGRAVATE"
     ],
     "flavor": {
       "ja": "顔を保護はできるようだが、そこに小便されても知らんぞ。",
@@ -26685,7 +26686,9 @@
         "rarity": 1
       }
     ],
-    "flags": [],
+    "flags": [
+      "STANDARDIZED"
+    ],
     "flavor": {
       "ja": "フリーザ軍が制式装備している超質ラバー製の鎧だ。",
       "en": ""

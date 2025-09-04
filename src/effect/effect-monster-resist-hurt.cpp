@@ -841,6 +841,75 @@ ProcessResult effect_monster_dirt(PlayerType *player_ptr, EffectMonster *em_ptr)
     return ProcessResult::PROCESS_CONTINUE;
 }
 
+ProcessResult effect_monster_spider_string(PlayerType *player_ptr, EffectMonster *em_ptr)
+{
+    if (em_ptr->seen) {
+        em_ptr->obvious = true;
+    }
+
+    // 蜘蛛型モンスターは蜘蛛糸に完全耐性
+    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::SPIDER)) {
+        em_ptr->note = _("には完全な耐性がある！", " resists completely.");
+        em_ptr->dam = 0;
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+            em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::SPIDER);
+        }
+        return ProcessResult::PROCESS_CONTINUE;
+    }
+
+    // 無機物系モンスターは糸が効かない
+    bool is_vulnerable = true;
+    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ELEMENTAL) ||
+        em_ptr->r_ptr->kind_flags.has(MonsterKindType::NONLIVING)) {
+        em_ptr->note = _("にはあまり効果がない。", " is not affected much.");
+        em_ptr->dam /= 3;
+        is_vulnerable = false;
+    }
+
+    // 動物系・人間系は特に蜘蛛糸に弱い
+    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL) ||
+        em_ptr->r_ptr->kind_flags.has(MonsterKindType::HUMAN)) {
+        is_vulnerable = true;
+        if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+            if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
+                em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::ANIMAL);
+            }
+            if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::HUMAN)) {
+                em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::HUMAN);
+            }
+        }
+    }
+
+    if (is_vulnerable) {
+        em_ptr->note = _("は蜘蛛糸に絡まって身動きが取れない！", " is entangled in spider webs!");
+        em_ptr->dam = std::max(em_ptr->dam, 1); // 最低1ダメージは与える
+    }
+
+    // 蜘蛛糸効果で行動阻害（スロウ効果）
+    /* TODO
+    if (randint0(100) < 50) {
+        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_SLOW)) {
+            em_ptr->do_slow = (10 + randint1(20));
+            if (em_ptr->note.empty()) {
+                em_ptr->note = _("の動きが鈍くなった。", " moves slower.");
+            }
+        }
+    }
+    */
+
+    // 高確率で混乱（糸に絡まってパニック）
+    if (randint0(100) < 40) {
+        if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_CONF)) {
+            em_ptr->do_conf = (5 + randint1(10));
+            if (em_ptr->note.empty()) {
+                em_ptr->note = _("は混乱したようだ。", " looks confused.");
+            }
+        }
+    }
+
+    return ProcessResult::PROCESS_CONTINUE;
+}
+
 ProcessResult effect_monster_stungun(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {

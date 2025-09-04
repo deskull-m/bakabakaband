@@ -9,7 +9,7 @@ public:
     ObjectQuaffEntity(PlayerType *player_ptr);
     virtual ~ObjectQuaffEntity() = default;
 
-    void execute(INVENTORY_IDX i_idx);
+    void execute(INVENTORY_IDX i_idx, bool is_rectal = false);
 
 private:
     PlayerType *player_ptr;

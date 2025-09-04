@@ -101,7 +101,7 @@ enum tr_type : int {
     TR_TELEPORT = 90, /* Item teleports player */
     TR_AGGRAVATE = 91, /* Item aggravates monsters */
     TR_BLESSED = 92, /* Item is Blessed */
-    TR_XXX_93 = 93, //!< 未使用 / Unused
+    TR_NASTY_AGGRAVATE = 93, /* Item aggravates only nasty monsters */
     TR_XXX_94 = 94, //!< 未使用 / Unused
     TR_KILL_GOOD = 95, //!< 善良スレイ(X善)
 
@@ -188,8 +188,9 @@ enum tr_type : int {
     TR_KILL_MALE = 173, //!< 男性スレイ(X男)
     TR_SLAY_FEMALE = 174, //!< 女性スレイ(/女)
     TR_KILL_FEMALE = 175, //!< 女性スレイ(X女)
+    TR_STANDARDIZED = 176, //!< 規格品
 
-    TR_FLAG_MAX = 176,
+    TR_FLAG_MAX = 177,
 };
 
 /** 能力値(STR,INT,WIS,DEX,CON,CHR)のpvalを増減させるフラグのリスト */

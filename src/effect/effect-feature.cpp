@@ -117,6 +117,26 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
                 obvious = true;
             }
         }
+    } else if (terrain.flags.has(TerrainCharacteristics::ICE)) {
+        concptr message;
+        switch (typ) {
+        case AttributeType::FIRE:
+        case AttributeType::PLASMA:
+            message = _("溶けた", " melted.");
+            break;
+        default:
+            message = nullptr;
+            break;
+        }
+        if (message) {
+            msg_format(_("氷は%s。", "The ice %s"), message);
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::FLOOR);
+
+            /* Observe */
+            if (grid.is_mark()) {
+                obvious = true;
+            }
+        }
     }
 
     /* Analyze the type */
@@ -469,6 +489,18 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SHALLOW_DUNG_POOL);
         } else if (dam) {
             set_terrain_id_to_grid(player_ptr, pos, TerrainTag::DEEP_DUNG_POOL);
+        }
+
+        break;
+    }
+    case AttributeType::SPIDER_STRING: {
+        if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
+            break;
+        } else if (dam) {
+            if (!terrain.flags.has(TerrainCharacteristics::FLOOR)) {
+                break;
+            }
+            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SPIDER_SILK_NET);
         }
 
         break;

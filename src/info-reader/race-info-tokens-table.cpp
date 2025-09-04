@@ -178,6 +178,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"BR_VOID", MonsterAbilityType::BR_VOID },
 	{"BR_ABYSS", MonsterAbilityType::BR_ABYSS },
 	{"BR_FECES", MonsterAbilityType::BR_FECES },
+	{"BR_SPIDER_STRING", MonsterAbilityType::BR_SPIDER_STRING },
 	{"BA_ACID", MonsterAbilityType::BA_ACID },
 	{"BA_ELEC", MonsterAbilityType::BA_ELEC },
 	{"BA_FIRE", MonsterAbilityType::BA_FIRE },
@@ -363,6 +364,7 @@ const std::unordered_map<std::string_view, MonsterBehaviorType> r_info_behavior_
     { "STUPID", MonsterBehaviorType::STUPID },
     { "SMART", MonsterBehaviorType::SMART },
     { "FRIENDLY", MonsterBehaviorType::FRIENDLY },
+    { "FRIENDLY_STANDBY", MonsterBehaviorType::FRIENDLY_STANDBY },
 };
 
 const std::unordered_map<std::string_view, MonsterVisualType> r_info_visual_flags = {
@@ -419,6 +421,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "YAZYU", MonsterKindType::YAZYU },
     { "SKELETON", MonsterKindType::SKELETON },
     { "DOG", MonsterKindType::DOG },
+    { "CAT", MonsterKindType::CAT },
     { "MONKEY_SPACE", MonsterKindType::MONKEY_SPACE }, // 猿空間
 };
 
@@ -544,6 +547,7 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "STALKER", MonsterMiscType::STALKER },
     { "HOME_ONLY", MonsterMiscType::HOME_ONLY },
     { "SCATOLOGIST", MonsterMiscType::SCATOLOGIST },
+    { "MASOCHIST", MonsterMiscType::MASOCHIST },
     { "BREAK_DOWN", MonsterMiscType::BREAK_DOWN }
 };
 

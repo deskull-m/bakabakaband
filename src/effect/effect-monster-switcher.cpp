@@ -497,6 +497,8 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
         return effect_monster_dirt(player_ptr, em_ptr);
     case AttributeType::STUNGUN:
         return effect_monster_stungun(player_ptr, em_ptr);
+    case AttributeType::SPIDER_STRING:
+        return effect_monster_spider_string(player_ptr, em_ptr);
     case AttributeType::METEOR:
         return effect_monster_meteor(player_ptr, em_ptr);
     default: {

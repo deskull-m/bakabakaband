@@ -101,6 +101,7 @@ const std::unordered_set<MonsterAbilityType> AIMING_SPELLS = {
     MonsterAbilityType::BR_VOID,
     MonsterAbilityType::BR_ABYSS,
     MonsterAbilityType::BR_FECES,
+    MonsterAbilityType::BR_SPIDER_STRING,
     MonsterAbilityType::BA_ACID,
     MonsterAbilityType::BA_ELEC,
     MonsterAbilityType::BA_FIRE,
@@ -1016,6 +1017,10 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     case MonsterAbilityType::BR_FECES:
         msg_print(_("糞便のブレスを吐いた。", "You breathe feces."));
         fire_breath(player_ptr, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
+        break;
+    case MonsterAbilityType::BR_SPIDER_STRING:
+        msg_print(_("蜘蛛糸のブレスを吐いた。", "You breathe spider string."));
+        fire_breath(player_ptr, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
         break;
     default:
         msg_print("hoge?");

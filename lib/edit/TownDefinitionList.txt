@@ -42,3 +42,6 @@
 ?:[EQU $TOWN 8]
 %:towns/08_GOLAN.txt
 
+# Town 8 ... Shitto Azito
+?:[EQU $TOWN 9]
+%:towns/09_ShittoAzito.txt

@@ -11019,7 +11019,7 @@
     "ac_bonus": 0,
     "flags": [
       "RIDING",
-      "WARNING",
+      "NASTY",
       "KILL_GIANT",
       "ESP_GIANT",
       "KILL_MALE"
@@ -11027,6 +11027,41 @@
     "flavor": {
       "ja": "おお、これは霜の巨人たちに対する災いのはずだ、おや、ちょっと待てよ？",
       "en": "Oh, This must be a disaster for the frost giants.  Oh!  Wait a minute ...."
+    }
+  },
+  {
+    "id": 291,
+    "name": {
+      "ja": "変態香霖の",
+      "en": ""
+    },
+    "base_item": {
+      "type_value": 36,
+      "subtype_value": 19
+    },
+    "parameter_value": 3,
+    "level": 20,
+    "rarity": 10,
+    "weight": 60,
+    "cost": 20000,
+    "base_ac": 1,
+    "base_dice": "1d1",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "flags": [
+      "SPEED",
+      "CON",
+      "SUST_CON",
+      "NASTY",
+      "RES_CHAOS",
+      "RES_FEAR",
+      "FREE_ACT",
+      "NASTY_AGGRAVATE"
+    ],
+    "flavor": {
+      "ja": "この黒歴史を忘れてはならない。これは、まだ幻想郷が少女の園と誤解していた者たちが、彼の存在を持て余し、あるいは妬み生みだした怨念だ。",
+      "en": ""
     }
   }
 ]

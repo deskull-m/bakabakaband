@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\main-win.cpp" />
@@ -2645,8 +2645,29 @@
     <ClCompile Include="..\..\src\alliance\alliance-mabelode.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-anor-londo.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-boletaria.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-ide.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-valinor.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-ketholdeth.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-eldrazi.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-kogan-ryu.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-numenor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp">
-      <Filter>action</Filter>
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cmd-io\cmd-text-command.cpp">
+      <Filter>cmd-io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-amber.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-court-of-chaos.cpp">
+      <Filter>alliance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5728,8 +5749,29 @@
     <ClInclude Include="..\..\src\alliance\alliance-mabelode.h">
       <Filter>alliance</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-anor-londo.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-boletaria.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-ide.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-valinor.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-ketholdeth.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-eldrazi.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-kogan-ryu.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-numenor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khaine.h">
-      <Filter>action</Filter>
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h">
+      <Filter>cmd-io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-amber.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-court-of-chaos.h">
+      <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

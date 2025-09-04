@@ -193,6 +193,10 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     mark_monsters_present(player_ptr);
 
     turn_flags_ptr->aware = process_stealth(player_ptr, m_idx);
+    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.mflag2.has(MonsterConstantFlagType::FRIENDLY)) {
+        return;
+    }
+
     if (vanish_summoned_children(player_ptr, m_idx, turn_flags_ptr->see_m)) {
         return;
     }
@@ -394,6 +398,7 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx モンスターID
  * @return 寝たままならFALSE、起きているor起きたらTRUE
+ * @note 馬鹿馬鹿独自仕様あり
  */
 bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
@@ -403,7 +408,11 @@ bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    if (!has_aggravate(player_ptr)) {
+    bool awaken = false;
+    awaken |= has_aggravate(player_ptr);
+    awaken |= has_aggravate_nasty(player_ptr) && monrace.kind_flags.has(MonsterKindType::NASTY);
+
+    if (!awaken) {
         return false;
     }
 

@@ -4756,6 +4756,15 @@ F:RIDING | NASTY | KILL_GIANT | ESP_GIANT | KILL_MALE
 D:$Oh, This must be a disaster for the frost giants.  Oh!  Wait a minute ....
 D:おお、これは霜の巨人たちに対する災いのはずだ、おや、ちょっと待てよ？
 
+N:291:変態香霖の
+E:of Korin the Pervert
+I:36:19:3
+W:20:10:60:20000
+P:1:1d1:0:0:0
+F:SPEED | CON | SUST_CON | NASTY
+F:RES_CHAOS | RES_FEAR | FREE_ACT | NASTY_AGGRAVATE
+D:この黒歴史を忘れてはならない。これは、まだ幻想郷が少女の園と誤解していた者たちが、彼の存在を持て余し、あるいは妬み生みだした怨念だ。
+
 # N: serial number : item name
 # I: tval : sval : pval
 # W: depth : rarity : weight : cost

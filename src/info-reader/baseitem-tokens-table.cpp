@@ -102,6 +102,7 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "DRAIN_EXP", TR_DRAIN_EXP },
     { "TELEPORT", TR_TELEPORT },
     { "AGGRAVATE", TR_AGGRAVATE },
+    { "NASTY_AGGRAVATE", TR_NASTY_AGGRAVATE },
     { "BLESSED", TR_BLESSED },
     /* { "XXX3", TR_XXX3 }, Fake flag for Smith */
     /* { "XXX4", TR_XXX4 }, Fake flag for Smith */
@@ -186,6 +187,7 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "VUL_CURSE", TR_VUL_CURSE },
     { "MEGATON_COIN", TR_MEGATON_COIN },
     { "SUSHI", TR_SUSHI },
+    { "STANDARDIZED", TR_STANDARDIZED },
 };
 
 /*!

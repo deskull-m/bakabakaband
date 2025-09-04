@@ -649,6 +649,10 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
         info[i++] = _("それは付近のモンスターを怒らせる。", "It aggravates nearby creatures.");
     }
 
+    if ((flags.has(TR_NASTY_AGGRAVATE)) || o_ptr->curse_flags.has(CurseTraitType::NASTY_AGGRAVATE)) {
+        info[i++] = _("それは装備していると皆様のおもちゃです。", "It causes that 'You are everyone's plaything.'");
+    }
+
     if ((flags.has(TR_DRAIN_EXP)) || o_ptr->curse_flags.has(CurseTraitType::DRAIN_EXP)) {
         info[i++] = _("それは経験値を吸い取る。", "It drains experience.");
     }
@@ -735,6 +739,10 @@ bool screen_object(PlayerType *player_ptr, ItemEntity *o_ptr, BIT_FLAGS mode)
 
     if (flags.has(TR_SUSHI)) {
         info[i++] = _("それは寿司の一種である", "It is a type of sushi.");
+    }
+
+    if (flags.has(TR_STANDARDIZED)) {
+        info[i++] = _("それは規格品である", "It is a standardized item.");
     }
 
     if (mode & SCROBJ_FAKE_OBJECT) {
