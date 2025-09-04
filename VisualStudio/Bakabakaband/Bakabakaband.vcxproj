@@ -262,6 +262,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-chardros.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-chinchintei.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-cookie-grandma.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-court-of-chaos.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-eldrazi.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-feanor-noldor.cpp" />
@@ -1074,6 +1075,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-chardros.h" />
     <ClInclude Include="..\..\src\alliance\alliance-chinchintei.h" />
     <ClInclude Include="..\..\src\alliance\alliance-cookie-grandma.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-court-of-chaos.h" />
     <ClInclude Include="..\..\src\alliance\alliance-eldrazi.h" />
     <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h" />
     <ClInclude Include="..\..\src\alliance\alliance-feanor-noldor.h" />
