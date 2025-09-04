@@ -19,6 +19,7 @@ hengband_SOURCES = \
 	\
 	alliance/alliance.cpp alliance/alliance.h \
 	alliance/alliance-amber.cpp alliance/alliance-amber.h \
+	alliance/alliance-court-of-chaos.cpp alliance/alliance-court-of-chaos.h \
 	alliance/alliance-anor-londo.cpp alliance/alliance-anor-londo.h \
 	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
 	alliance/alliance-eldrazi.cpp alliance/alliance-eldrazi.h \

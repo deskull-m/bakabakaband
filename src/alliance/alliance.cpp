@@ -8,6 +8,7 @@
 #include "alliance/alliance-chardros.h"
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
+#include "alliance/alliance-court-of-chaos.h"
 #include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-feanor-noldor.h"
@@ -187,13 +188,6 @@ bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
 int AllianceNone::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
-}
-
-int AllianceCourtOfChaos::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
-    return impression;
 }
 
 int AllianceUtumno::calcImpressionPoint(PlayerType *creature_ptr) const
