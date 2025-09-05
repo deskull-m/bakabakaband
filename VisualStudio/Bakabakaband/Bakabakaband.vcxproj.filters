@@ -2669,6 +2669,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-court-of-chaos.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-utumno.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5771,6 +5774,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-court-of-chaos.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-utumno.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

@@ -41,6 +41,7 @@
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
 #include "alliance/alliance-tzeentch.h"
+#include "alliance/alliance-utumno.h"
 #include "alliance/alliance-valinor.h"
 #include "alliance/alliance-valverde.h"
 #include "alliance/alliance-xiombarg.h"
@@ -188,13 +189,6 @@ bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
 int AllianceNone::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
-}
-
-int AllianceUtumno::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 30);
-    return impression;
 }
 
 int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
