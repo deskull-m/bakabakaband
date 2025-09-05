@@ -41000,6 +41000,25 @@ D:$ a human body with a single backfist—have reached the quintessential streng
 D:$ 'Did you call us dullards?'
 D:$ "Occasionally, the Kogan-ryu swordsmen would turn a blind eye to his indulgence in such delusions."
 
+N:2262:老王『オーラント』
+E:Old King Allant
+G:p:w
+I:122:77d40:10:140:50
+W:55:3:24000:0:0
+B:HIT:HURT:10d15
+B:HIT:HURT:10d15
+B:HIT:SUPERHURT:8d15
+B:TOUCH:EXP_VAMP:10d6
+F:UNIQUE | MALE | FORCE_MAXHP | DROP_60 | DROP_GOOD | HUMAN | DEMON
+F:DROP_1D2 | OPEN_DOOR | BASH_DOOR | POWERFUL | ALLIANCE_BOLETARIA
+F:TAKE_ITEM | EVIL | NO_FEAR | NO_CONF | NO_SLEEP |
+F:CAN_SWIM | DROP_CORPSE | HAS_LITE_2 |
+D:小国ボーレタリアの王でありながら、野心か絶望からか、世界を色のない霧に覆い尽くした元凶だ。
+D:「貴様も見てきただろう。もとより、世界とは悲劇だ」
+D:$Though king of the small nation of Boretaria, driven by ambition or despair,
+D:$ he is the very cause that shrouded the world in a colorless mist.
+D:$ "Surely you have seen for yourself... The pain and suffering that fills this world!"
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
