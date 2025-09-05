@@ -113,15 +113,6 @@ public:
     virtual ~AllianceNone() = default;
 };
 
-class AllianceUtumno : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceUtumno() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceUtumno() = default;
-};
-
 class AllianceKenohgun : public Alliance {
 public:
     using Alliance::Alliance;
