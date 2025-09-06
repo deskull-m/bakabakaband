@@ -61,6 +61,7 @@ hengband_SOURCES = \
 	alliance/alliance-boletaria.cpp alliance/alliance-boletaria.h \
 	alliance/alliance-chardros.cpp alliance/alliance-chardros.h \
 	alliance/alliance-hionhurn.cpp alliance/alliance-hionhurn.h \
+	alliance/alliance-ungoliant.cpp alliance/alliance-ungoliant.h \
 	alliance/alliance-xiombarg.cpp alliance/alliance-xiombarg.h \
 	alliance/alliance-valinor.cpp alliance/alliance-valinor.h \
 	\

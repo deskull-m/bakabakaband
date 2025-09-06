@@ -41,6 +41,7 @@
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
 #include "alliance/alliance-tzeentch.h"
+#include "alliance/alliance-ungoliant.h"
 #include "alliance/alliance-utumno.h"
 #include "alliance/alliance-valinor.h"
 #include "alliance/alliance-valverde.h"
@@ -201,13 +202,6 @@ int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceKenohgun::isAnnihilated()
 {
     return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
-}
-
-int AllianceUngoliant::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 8, 30);
-    return impression;
 }
 
 int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
