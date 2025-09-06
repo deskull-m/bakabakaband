@@ -295,6 +295,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-triothepunch.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-megadeth.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-tzeentch.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-ungoliant.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-utumno.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-valinor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-valverde.cpp" />
@@ -1109,6 +1110,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-tophamhatt.h" />
     <ClInclude Include="..\..\src\alliance\alliance-megadeth.h" />
     <ClInclude Include="..\..\src\alliance\alliance-tzeentch.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-ungoliant.h" />
     <ClInclude Include="..\..\src\alliance\alliance-utumno.h" />
     <ClInclude Include="..\..\src\alliance\alliance-valinor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-valverde.h" />
