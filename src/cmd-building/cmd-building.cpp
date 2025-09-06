@@ -56,6 +56,8 @@
 #include "spell-kind/spells-polymorph.h"
 #include "spell-kind/spells-world.h"
 #include "spell/spells-status.h"
+#include "store/cmd-store.h"
+#include "store/store-util.h"
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
@@ -92,6 +94,7 @@ static void town_history(PlayerType *player_ptr)
  */
 static bool bldg_process_command(PlayerType *player_ptr, const building_type &bldg, int i)
 {
+    auto &world = AngbandWorld::get_instance();
     msg_flag = false;
     msg_erase();
     const auto can_be_owner = is_owner(player_ptr, bldg);
@@ -302,6 +305,46 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         }
         return false;
 
+    case BACT_SHOP_GENERAL:
+        do_cmd_store(player_ptr, StoreSaleType::GENERAL);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_ARMOURY:
+        do_cmd_store(player_ptr, StoreSaleType::ARMOURY);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_WEAPON:
+        do_cmd_store(player_ptr, StoreSaleType::WEAPON);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_TEMPLE:
+        do_cmd_store(player_ptr, StoreSaleType::TEMPLE);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_ALCHEMIST:
+        do_cmd_store(player_ptr, StoreSaleType::ALCHEMIST);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_MAGIC:
+        do_cmd_store(player_ptr, StoreSaleType::MAGIC);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_BLACK:
+        do_cmd_store(player_ptr, StoreSaleType::BLACK);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_HOME:
+        do_cmd_store(player_ptr, StoreSaleType::HOME);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_BOOK:
+        do_cmd_store(player_ptr, StoreSaleType::BOOK);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_MUSEUM:
+        do_cmd_store(player_ptr, StoreSaleType::MUSEUM);
+        world.character_icky_depth = 1;
+        return false;
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid building action is specified!");
     }
@@ -374,10 +417,10 @@ void do_cmd_building(PlayerType *player_ptr)
     command_rep = 0;
     command_new = 0;
 
-    display_buikding_service(player_ptr, bldg);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
 
     while (true) {
+        display_buikding_service(player_ptr, bldg);
         prt("", 1, 0);
         building_prt_gold(player_ptr->au);
         const auto command = inkey();
