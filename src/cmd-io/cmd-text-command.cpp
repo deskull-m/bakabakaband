@@ -9,10 +9,15 @@
 #include "core/stuff-handler.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
+#include "player-status/player-energy.h"
+#include "spell-kind/spells-sight.h"
+#include "spell/spells-status.h"
+#include "status/buff-setter.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
+#include "util/probability-table.h"
 #include "view/display-messages.h"
 
 #include <algorithm>
@@ -20,6 +25,7 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 // コマンドマッピング用の構造体
 struct TextCommand {
@@ -73,7 +79,62 @@ static std::vector<TextCommand> get_text_commands()
             [](PlayerType *player_ptr) {
                 do_cmd_suicide(player_ptr);
             },
-            _("自殺する", "suicide") }
+            _("自殺する", "suicide") },
+        { { "dance", "踊る", "ダンス", "おどる" },
+            [](PlayerType *player_ptr) {
+                // 踊るアクション
+                msg_print(_("あなたは楽しそうに踊り始めた！", "You start dancing joyfully!"));
+
+                // ランダムな踊りメッセージ
+                std::vector<std::string> dance_messages_jp = {
+                    "あなたは優雅にワルツを踊った。",
+                    "あなたは情熱的にタンゴを踊った。",
+                    "あなたは軽やかにスキップした。",
+                    "あなたは力強くステップを踏んだ。",
+                    "あなたはくるくると回転した。",
+                    "あなたは陽気にジグを踊った。"
+                };
+
+                std::vector<std::string> dance_messages_en = {
+                    "You dance a graceful waltz.",
+                    "You dance a passionate tango.",
+                    "You skip lightly.",
+                    "You take powerful steps.",
+                    "You spin around and around.",
+                    "You dance a merry jig."
+                };
+
+                int choice = randint0(dance_messages_jp.size());
+
+#ifdef JP
+                msg_print(dance_messages_jp[choice].c_str());
+#else
+                msg_print(dance_messages_en[choice].c_str());
+#endif
+
+                // 少しの体力消費
+                if (player_ptr->csp > 1) {
+                    player_ptr->csp--;
+                    auto &rfu = RedrawingFlagsUpdater::get_instance();
+                    rfu.set_flag(MainWindowRedrawingFlag::MP);
+                }
+
+                // 時間消費
+                PlayerEnergy(player_ptr).set_player_turn_energy(50);
+
+                // 周囲のモンスターが反応する可能性
+                if (one_in_(3)) {
+                    msg_print(_("あなたの踊りに周囲が注目している。", "Your dancing attracts attention."));
+                    aggravate_monsters(player_ptr, 0);
+                }
+
+                // 稀にポジティブ効果
+                if (one_in_(10)) {
+                    msg_print(_("素晴らしい踊りで気分が高揚した！", "Your wonderful dance lifts your spirits!"));
+                    set_hero(player_ptr, player_ptr->blessed + randint1(10), false);
+                }
+            },
+            _("踊る", "Dance") }
     };
 }
 
