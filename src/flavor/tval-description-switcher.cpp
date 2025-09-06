@@ -128,6 +128,22 @@ static std::pair<std::string, std::string> describe_amulet(const ItemEntity &ite
     }
 }
 
+static std::pair<std::string, std::string> describe_anal_plug(const ItemEntity &item, const describe_option_type &opt)
+{
+    const auto &baseitem = item.get_baseitem();
+    if (opt.aware && (item.is_fixed_artifact() || baseitem.gen_flags.has(ItemGenerationTraitType::INSTA_ART))) {
+        return { baseitem.name, "" };
+    }
+
+    if (!opt.flavor) {
+        return { _("%の尻栓", "& Anal Plug~ of %"), "" };
+    } else if (opt.aware) {
+        return { _("%の#尻栓", "& # Anal Plug~ of %"), flavor_name_of(item, opt) };
+    } else {
+        return { _("#尻栓", "& # Anal Plug~"), flavor_name_of(item, opt) };
+    }
+}
+
 static std::pair<std::string, std::string> describe_ring(const ItemEntity &item, const describe_option_type &opt)
 {
     const auto &baseitem = item.get_baseitem();
@@ -412,6 +428,8 @@ std::pair<std::string, std::string> switch_tval_description(const ItemEntity &it
         return { basename, "" };
     case ItemKindType::AMULET:
         return describe_amulet(item, opt);
+    case ItemKindType::ANAL_PLUG:
+        return describe_anal_plug(item, opt);
     case ItemKindType::RING:
         return describe_ring(item, opt);
     case ItemKindType::CARD:

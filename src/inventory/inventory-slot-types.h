@@ -16,11 +16,12 @@ enum inventory_slot_type : short {
     INVEN_HEAD = 33, /*!< アイテムスロット…頭部 */
     INVEN_ARMS = 34, /*!< アイテムスロット…腕部 */
     INVEN_FEET = 35, /*!< アイテムスロット…脚部 */
+    INVEN_ASSHOLE = 36, /*!< アイテムスロット…尻の穴 */
     INVEN_AMMO = 23, /*!< used for get_random_ego()  */
-    INVEN_TOTAL = 36, /*!< Total number of inventory slots (hard-coded). */
+    INVEN_TOTAL = 37, /*!< Total number of inventory slots (hard-coded). */
     INVEN_NONE = 1000, /*!< アイテムスロット非選択状態 */
     INVEN_FORCE = 1111, /*!< inventory slot for selecting force (hard-coded). */
 };
 
 /** 装備スロットの範囲  */
-constexpr auto INVEN_WIELDING_SLOTS = EnumRangeInclusive(INVEN_MAIN_HAND, INVEN_FEET);
+constexpr auto INVEN_WIELDING_SLOTS = EnumRangeInclusive(INVEN_MAIN_HAND, INVEN_ASSHOLE);

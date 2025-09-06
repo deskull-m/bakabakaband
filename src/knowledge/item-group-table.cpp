@@ -12,7 +12,7 @@
  * Description of each monster group.
  */
 const std::vector<std::string> ITEM_KIND_NAMES_GROUP = { _("キノコ", "Mushrooms"), _("薬", "Potions"), _("油つぼ", "Flasks"), _("巻物", "Scrolls"),
-    _("指輪", "Rings"), _("アミュレット", "Amulets"), _("笛", "Whistles"), _("光源", "Lanterns"), _("魔法棒", "Wands"), _("杖", "Staffs"), _("ロッド", "Rods"),
+    _("指輪", "Rings"), _("アミュレット", "Amulets"), _("尻栓", "Anal Plugs"), _("笛", "Whistles"), _("光源", "Lanterns"), _("魔法棒", "Wands"), _("杖", "Staffs"), _("ロッド", "Rods"),
     _("カード", "Cards"), _("モンスター・ボール", "Capture Balls"), _("読み物", "Reading matter"), _("くさび", "Spikes"), _("箱", "Boxes"), _("人形", "Figurines"),
     _("像", "Statues"), _("ゴミ", "Junk"), _("空のビン", "Bottles"), _("骨", "Skeletons"), _("死体", "Corpses"), _("刀剣類", "Swords"),
     _("鈍器", "Blunt Weapons"), _("長柄武器", "Polearms"), _("採掘道具", "Diggers"), _("飛び道具", "Bows"), _("弾", "Shots"), _("矢", "Arrows"),
@@ -30,6 +30,7 @@ const std::vector<ItemKindType> ITEM_KINDS_GROUP = {
     ItemKindType::SCROLL,
     ItemKindType::RING,
     ItemKindType::AMULET,
+    ItemKindType::ANAL_PLUG,
     ItemKindType::WHISTLE,
     ItemKindType::LITE,
     ItemKindType::WAND,

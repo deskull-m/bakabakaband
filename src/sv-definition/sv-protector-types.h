@@ -57,3 +57,8 @@ enum sv_gloves_type {
     SV_SET_OF_DRAGON_GLOVES = 3,
     SV_SET_OF_CESTI = 5,
 };
+
+enum sv_asshole_type {
+    SV_ASSHOLE_1 = 0,
+    SV_ASSHOLE_2 = 1,
+};

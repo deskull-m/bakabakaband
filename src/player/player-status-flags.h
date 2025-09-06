@@ -18,15 +18,16 @@ enum flag_cause : uint32_t {
     FLAG_CAUSE_INVEN_HEAD = 0x01U << 9, /*!< アイテムスロット…頭部 */
     FLAG_CAUSE_INVEN_ARMS = 0x01U << 10, /*!< アイテムスロット…腕部 */
     FLAG_CAUSE_INVEN_FEET = 0x01U << 11, /*!< アイテムスロット…脚部 */
-    FLAG_CAUSE_RACE = 0x01U << 12, /*!< 種族上の体得 */
-    FLAG_CAUSE_CLASS = 0x01U << 13, /*!< 職業上の体得 */
-    FLAG_CAUSE_PERSONALITY = 0x01U << 14, /*!< 性格上の体得 */
-    FLAG_CAUSE_MAGIC_TIME_EFFECT = 0x01U << 15, /*!< 魔法による時限効果 */
-    FLAG_CAUSE_MUTATION = 0x01U << 16, /*!< 変異による効果 */
-    FLAG_CAUSE_STANCE = 0x01U << 17, /*!< 構えによる効果 */
-    FLAG_CAUSE_RIDING = 0x01U << 18, /*!< 乗馬による効果 */
-    FLAG_CAUSE_INVEN_PACK = 0x01U << 19, /*!< その他インベントリによる効果 重量超過等 */
-    FLAG_CAUSE_ACTION = 0x01U << 20, /*!< ACTIONによる効果 探索モード等 */
+    FLAG_CAUSE_INVEN_ASSHOLE = 0x01U << 12, /*!< アイテムスロット…尻の穴 */
+    FLAG_CAUSE_RACE = 0x01U << 13, /*!< 種族上の体得 */
+    FLAG_CAUSE_CLASS = 0x01U << 14, /*!< 職業上の体得 */
+    FLAG_CAUSE_PERSONALITY = 0x01U << 15, /*!< 性格上の体得 */
+    FLAG_CAUSE_MAGIC_TIME_EFFECT = 0x01U << 16, /*!< 魔法による時限効果 */
+    FLAG_CAUSE_MUTATION = 0x01U << 17, /*!< 変異による効果 */
+    FLAG_CAUSE_STANCE = 0x01U << 18, /*!< 構えによる効果 */
+    FLAG_CAUSE_RIDING = 0x01U << 19, /*!< 乗馬による効果 */
+    FLAG_CAUSE_INVEN_PACK = 0x01U << 20, /*!< その他インベントリによる効果 重量超過等 */
+    FLAG_CAUSE_ACTION = 0x01U << 21, /*!< ACTIONによる効果 探索モード等 */
     FLAG_CAUSE_MAX = 0x01U << 21
 };
 
