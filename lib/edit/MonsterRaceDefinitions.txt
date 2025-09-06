@@ -41019,6 +41019,25 @@ D:$Though king of the small nation of Boretaria, driven by ambition or despair,
 D:$ he is the very cause that shrouded the world in a colorless mist.
 D:$ "Surely you have seen for yourself... The pain and suffering that fills this world!"
 
+N:2263:『塔の騎士』
+E:The Tower Knight of Boletaria
+G:P:s
+I:110:25d100:20:150:10
+W:45:1:7000:0:0
+B:HIT:HURT:10d5
+B:HIT:HURT:10d5
+B:HIT:HURT:10d5
+B:CRUSH:SUPERHURT:30d1
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | IM_FIRE | IM_COLD | IM_POIS | MALE | GIANT | DEMON
+F:ONLY_ITEM | DROP_1D2 | DROP_2D2 | RES_NETH | KILL_BODY | ALLIANCE_BOLETARIA
+F:COLD_BLOOD | OPEN_DOOR | BASH_DOOR | EVIL | UNIQUE
+D:色のない霧で滅びた王国、ボーレタリアのデーモンだ。
+D:かつてその地で名を馳せた勇壮な騎士の姿をしているが、
+D:その異常な巨体はデーモンのそれだ。
+D:$The Demon of Boretaria, a kingdom destroyed by colorless mist.
+D:$ It takes the form of a valiant knight who once made a name for himself in that land,
+D:$ yet its monstrously oversized body is unmistakably demonic.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
