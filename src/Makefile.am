@@ -37,6 +37,7 @@ hengband_SOURCES = \
 	alliance/alliance-odio.cpp alliance/alliance-odio.h \
 	alliance/alliance-tzeentch.cpp alliance/alliance-tzeentch.h \
 	alliance/alliance-tophamhatt.cpp alliance/alliance-tophamhatt.h \
+	alliance/alliance-turban-kids.cpp alliance/alliance-turban-kids.h \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
 	alliance/alliance-nibelung.cpp alliance/alliance-nibelung.h \
