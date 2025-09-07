@@ -41038,6 +41038,24 @@ D:$The Demon of Boretaria, a kingdom destroyed by colorless mist.
 D:$ It takes the form of a valiant knight who once made a name for himself in that land,
 D:$ yet its monstrously oversized body is unmistakably demonic.
 
+N:2264:追突事故の主犯『DB』
+E:DB, the Primary perpetrator of the rear-end collision
+G:t:o
+I:110:10d10:20:25:20
+W:0:2:0:0:0
+B:HIT:HURT:1d4
+B:HIT:HURT:1d4
+B:HIT:HURT:1d4
+B:HIT:HURT:1d4
+F:UNIQUE | MALE | EVIL | HAS_LITE_2 | HUMAN
+F:FORCE_MAXHP | WILD_ALL | DROP_SKELETON | DROP_CORPSE
+F:DROP_1D2 | DROP_GOOD | EAT_POISONOUS | OPEN_DOOR | BASH_DOOR
+F:WILD_TOWN | WILD_ONLY | ONLY_ITEM | NASTY | HOMO_SEXUAL
+D:黒塗りの高級車へぶつけてしまった主犯でありながら、責任を先輩に押し付け、頭も下げない傲慢な後輩だ。
+D:$He's the arrogant junior who caused the accident by crashing into the Black-painted luxury car,
+D:$ yet he shifted the blame onto his senior and refused to apologize.
+
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
