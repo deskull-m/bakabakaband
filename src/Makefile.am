@@ -25,6 +25,7 @@ hengband_SOURCES = \
 	alliance/alliance-eldrazi.cpp alliance/alliance-eldrazi.h \
 	alliance/alliance-hafu.cpp alliance/alliance-hafu.h \
 	alliance/alliance-jural.cpp alliance/alliance-jural.h \
+	alliance/alliance-kenohgun.cpp alliance/alliance-kenohgun.h \
 	alliance/alliance-ketholdeth.cpp alliance/alliance-ketholdeth.h \
 	alliance/alliance-khaine.cpp alliance/alliance-khaine.h \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
