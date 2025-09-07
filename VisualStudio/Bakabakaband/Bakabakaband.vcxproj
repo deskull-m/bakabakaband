@@ -274,6 +274,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-hionhurn.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-ide.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-incubetor.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-kenohgun.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-ketholdeth.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-kogan-ryu.cpp" />
@@ -1089,6 +1090,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-hionhurn.h" />
     <ClInclude Include="..\..\src\alliance\alliance-ide.h" />
     <ClInclude Include="..\..\src\alliance\alliance-incubetor.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-kenohgun.h" />
     <ClInclude Include="..\..\src\alliance\alliance-ketholdeth.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khaine.h" />
     <ClInclude Include="..\..\src\alliance\alliance-kogan-ryu.h" />

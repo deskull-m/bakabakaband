@@ -21,6 +21,7 @@
 #include "alliance/alliance-ide.h"
 #include "alliance/alliance-incubetor.h"
 #include "alliance/alliance-jural.h"
+#include "alliance/alliance-kenohgun.h"
 #include "alliance/alliance-ketholdeth.h"
 #include "alliance/alliance-khaine.h"
 #include "alliance/alliance-khorne.h"
@@ -190,18 +191,6 @@ bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
 int AllianceNone::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;
-}
-
-int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
-{
-    int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 20);
-    return impression;
-}
-
-bool AllianceKenohgun::isAnnihilated()
-{
-    return MonraceList::get_instance().get_monrace(MonraceId::RAOU).mob_num == 0;
 }
 
 int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
