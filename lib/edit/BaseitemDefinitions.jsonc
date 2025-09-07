@@ -28497,6 +28497,41 @@
     }
   },
   {
+    "id": 822,
+    "name": {
+      "ja": "金属製タワー・シールド",
+      "en": "& Tower Metal Shield~"
+    },
+    "symbol": {
+      "character": ")",
+      "color": "Gray"
+    },
+    "itemkind": {
+      "type_value": 34,
+      "subtype_value": 8
+    },
+    "parameter_value": 0,
+    "level": 20,
+    "weight": 200,
+    "cost": 200,
+    "base_ac": 15,
+    "base_dice": "2d9",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 20,
+        "rarity": 1
+      }
+    ],
+    "flags": [],
+    "flavor": {
+      "ja": "構えれば全身をかばうことができるほど大型の金属盾だ。重量は重いがきわめて堅牢な保護をもたらす。",
+      "en": "This large metal shield can protect your entire body when raised.Though heavy, it provides exceptionally sturdy protection."
+    }
+  },
+  {
     "id": 823,
     "name": {
       "ja": "快楽",
@@ -28525,10 +28560,7 @@
         "rarity": 1
       }
     ],
-    "flags": [
-      "CHR",
-      "HIDE_TYPE"
-    ],
+    "flags": [],
     "flavor": {
       "ja": "この変態的なシリコン製尻栓は挿入時に快楽を高めてくれる。",
       "en": "This perverted silicone anal plug provides enhanced pleasure when inserted."
@@ -28563,12 +28595,7 @@
         "rarity": 1
       }
     ],
-    "flags": [
-      "CHR",
-      "CON",
-      "RES_ELEC",
-      "ACTIVATE"
-    ],
+    "flags": [],
     "flavor": {
       "ja": "この電動尻栓は激しく振動し、快楽と同時に治癒効果をもたらす。",
       "en": "This electric anal plug vibrates intensely, providing both pleasure and healing."
