@@ -41055,6 +41055,23 @@ D:黒塗りの高級車へぶつけてしまった主犯でありながら、責
 D:$He's the arrogant junior who caused the accident by crashing into the Black-painted luxury car,
 D:$ yet he shifted the blame onto his senior and refused to apologize.
 
+N:2265:ボーレタリアの隠密
+E:Spy of Boletaria
+G:p:D
+I:130:14d20:20:60:10
+W:34:2:0:700:0:0
+B:HIT:POISON:8d4
+B:HIT:LOSE_STR:8d4
+B:HIT:LOSE_STR:8d4
+B:SHOOT:HIT:8d4
+F:MALE | HUMAN | DEMON | ALLIANCE_BOLETARIA | MOB_40
+F:DROP_1D2 | IM_POIS | IM_ACID
+F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | ROGUE
+F:EVIL | NO_CONF | NO_SLEEP | EAT_GIVE_DEX | EAT_POISONOUS
+S:1_IN_4 | SHOOT | BLINK
+D:$He is a shadow subordinate of King Allant of Boletaria.
+D:$ Like the other vassals, his soul has been stolen, turning him into a puppet.
+D:ボーレタリア王オーラントの影の配下だ。他の臣下と同様ソウルを奪われ傀儡と化している。
 
 # N: serial number : monster name
 # G: symbol : color
