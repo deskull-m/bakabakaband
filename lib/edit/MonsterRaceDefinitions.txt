@@ -41073,6 +41073,23 @@ D:$He is a shadow subordinate of King Allant of Boletaria.
 D:$ Like the other vassals, his soul has been stolen, turning him into a puppet.
 D:ボーレタリア王オーラントの影の配下だ。他の臣下と同様ソウルを奪われ傀儡と化している。
 
+N:2266:虎眼流内弟子『宗像進八郎』
+E:Shinpachiro Munakata, In-house Disciple of Kogan-ryu
+G:p:r
+I:113:38d20:35:100:4
+W:34:4:0:1500:0:0
+B:SLASH:SUPERHURT:11d4
+B:SLASH:SUPERHURT:11d4
+B:SLASH:HURT:9d7
+F:MALE | HAS_LITE_1 |
+F:DROP_2D2 | WILD_ALL | DROP_SKELETON | DROP_CORPSE | HUMAN | UNIQUE | FORCE_MAXHP | SAMURAI | YAKUZA
+F:OPEN_DOOR | BASH_DOOR | EAT_GIVE_STR | EAT_LOSE_INT | EAT_LOSE_WIS | ALLIANCE_KOGAN-RYU
+D:「虎子」と呼ばれる虎眼流の将来を担うと言われる内弟子の一人だ。
+D:元掛川宿の侠客であり、その壮絶な過去の中でつけた無数の傷を身に持っている。
+D:$He is one of the inner disciples known as “Koshi”-- Tiger Child
+D:$ said to be the future of the Kogan-ryu.
+D:$ A former outlaw of Kakegawa Post Station, bearing countless scars from his turbulent past.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
