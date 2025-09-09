@@ -41073,6 +41073,26 @@ D:$He is a shadow subordinate of King Allant of Boletaria.
 D:$ Like the other vassals, his soul has been stolen, turning him into a puppet.
 D:ボーレタリア王オーラントの影の配下だ。他の臣下と同様ソウルを奪われ傀儡と化している。
 
+N:2266:剣の騎士『アリオッチ』
+E:Arioch, the Knight of the Swords
+G:p:W
+I:128:69d100:100:140:15
+W:80:1:39000:0:0
+B:SLASH:HURT:15d15
+B:SLASH:HURT:15d15
+B:SLASH:HURT:15d15
+B:SLASH:HURT:15d15
+F:UNIQUE | MALE | SMART | DEMON | RES_TELE | HAS_LITE_2
+F:OPEN_DOOR | BASH_DOOR | DROP_CORPSE | DROP_SKELETON
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | NO_CONF | NO_SLEEP | HUMAN |
+F:DROP_4D2 | DROP_1D2 | DROP_GOOD | DROP_60 | DROP_90 | ONLY_ITEM |
+F:EVIL | IM_COLD | IM_POIS | IM_ACID | IM_ELEC | IM_FIRE | REGENERATE
+S:1_IN_4 |
+S:SCARE | CONF | TPORT | TELE_TO | DRAIN_MANA | BRAIN_SMASH |
+S:TELE_AWAY | CAUSE_4 | S_MONSTERS |
+S:S_DEMON | TELE_LEVEL | FORGET | HEAL
+D:混沌の神々の一柱だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
