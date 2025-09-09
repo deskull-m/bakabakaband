@@ -40,6 +40,7 @@ hengband_SOURCES = \
 	alliance/alliance-turban-kids.cpp alliance/alliance-turban-kids.h \
 	alliance/alliance-triothepunch.cpp alliance/alliance-triothepunch.h \
 	alliance/alliance-megadeth.cpp alliance/alliance-megadeth.h \
+	alliance/alliance-naked-knights.cpp alliance/alliance-naked-knights.h \
 	alliance/alliance-nibelung.cpp alliance/alliance-nibelung.h \
 	alliance/alliance-numenor.cpp alliance/alliance-numenor.h \
 	alliance/alliance-fangfamily.cpp alliance/alliance-fangfamily.h \

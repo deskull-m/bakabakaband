@@ -282,6 +282,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khorne.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-mabelode.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-naked-knights.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nanman.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-numenor.cpp" />
@@ -1099,6 +1100,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-jural.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khorne.h" />
     <ClInclude Include="..\..\src\alliance\alliance-mabelode.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-naked-knights.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nanman.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nibelung.h" />
     <ClInclude Include="..\..\src\alliance\alliance-numenor.h" />

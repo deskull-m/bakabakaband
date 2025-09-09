@@ -29,6 +29,7 @@
 #include "alliance/alliance-legendofsavior.h"
 #include "alliance/alliance-mabelode.h"
 #include "alliance/alliance-megadeth.h"
+#include "alliance/alliance-naked-knights.h"
 #include "alliance/alliance-nanman.h"
 #include "alliance/alliance-nibelung.h"
 #include "alliance/alliance-numenor.h"
@@ -41,6 +42,7 @@
 #include "alliance/alliance-slaanesh.h"
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
+#include "alliance/alliance-turban-kids.h"
 #include "alliance/alliance-tzeentch.h"
 #include "alliance/alliance-ungoliant.h"
 #include "alliance/alliance-utumno.h"
@@ -198,11 +200,6 @@ int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_p
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 30);
     return impression;
-}
-
-int AllianceNakedKnights::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
-{
-    return 0;
 }
 
 int AllianceGO::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const

@@ -2681,6 +2681,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-turban-kids.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-naked-knights.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5795,6 +5798,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-turban-kids.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-naked-knights.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>
