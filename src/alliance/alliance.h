@@ -122,17 +122,6 @@ public:
     virtual ~AllianceGEOrlic() = default;
 };
 
-#include "alliance-turban-kids.h"
-
-class AllianceNakedKnights : public Alliance {
-public:
-    using Alliance::Alliance;
-    AllianceNakedKnights() = delete;
-    EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    virtual ~AllianceNakedKnights() = default;
-};
-
 class AllianceGO : public Alliance {
 public:
     using Alliance::Alliance;
