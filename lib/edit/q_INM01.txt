@@ -1,0 +1,89 @@
+
+# Name
+Q:$37:N:Yakuza Blackmail! The Sports Club Members' Counterattack
+Q:37:N:極道脅迫！体育部員たちの逆襲
+
+# Definition
+Q:$37:Q:6:0:0:0:5:0:0:0:6
+Q:37:Q:6:0:0:0:5:0:0:0:6
+
+# Description for quest
+?:[LEQ $QUEST1 2]
+Q:$37:T:After the game, the soccer club members headed home. Perhaps due to exhaustion,
+Q:$37:T:they unfortunately rear-ended a black luxury car.
+Q:$37:T:Taking full responsibility to protect your junior,
+Q:$37:T:what settlement terms did the car's owner, yakuza member Tanioka,
+Q:$37:T:impose on you...?
+Q:37:T:試合を終えて家路へ向かうサッカー部員達。
+Q:37:T:疲れからか、不幸にも黒塗りの高級車に追突してしまう。
+Q:37:T:後輩をかばいすべての責任を負ったあなたに対し、
+Q:37:T:車の主、暴力団員谷岡が言い渡した示談の条件とは・・・
+?:1
+
+# Description for quest reward
+?:[EQU $QUEST1 3]
+Q:$37:T:Don't forget. The Shimokitazawa Yakuza Member Murder Case
+Q:37:T:忘れるな。下北沢暴力団員殺害事件。
+?:1
+
+# Description for quest failed
+?:[EQU $QUEST1 5]
+Q:$37:T:It seems like this INM was too difficult for you.
+Q:37:T:この淫夢はあなたには難しかったようですね。
+?:1
+
+# Floor with HTN スクショで見えにくいから追い剥ぎ
+F:a:FLOOR:8:44
+
+# Floor with DBいないから見習い戦士
+F:b:FLOOR:8:43
+
+# Floor with あずま寿し
+F:A:FLOOR:8:1643
+
+# Floor with DBイカ
+F:d:SHALLOW_WATER:8:1341
+
+# Floor with TNOK
+F:t:THRONE:8:1342
+
+# Floor with 観葉植物くん
+F:Y:FLOOR:8:1294
+
+# Floor with 黒塗りの高級車
+F:g:FLOOR:8:1299
+
+# GLASS_WALL
+F:+:GLASS_WALL:8
+
+# STONE_BRIDGE
+F:s:STONE_BRIDGE:8
+
+# THRONE
+F:T:THRONE:8
+
+# SHALLOW_WATER
+F:~:SHALLOW_WATER:8
+
+
+# Dungeon layout
+D:XXXXXXXXXXXX
+D:X.~X.....tYX
+D:X.~+.......X
+D:X.dX.......X
+D:X.~X.......X
+D:X.~+..a.b..X
+D:X.dX.......X
+D:X.~XXXXDXXXX
+D:X.~X......gX
+D:X.~XXXXDDXXX
+D:X.~~d~~ss~~X
+D:X..........X
+D:X..........X
+D:X..........X
+D:X<........AX
+D:XXXXXXXXXXXX
+
+# Starting position
+P:4:7
+
