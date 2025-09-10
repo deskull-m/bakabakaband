@@ -19,22 +19,39 @@ hengband_SOURCES = \
 	\
 	alliance/alliance.cpp alliance/alliance.h \
 	alliance/alliance-amber.cpp alliance/alliance-amber.h \
+	alliance/alliance-angartha.cpp alliance/alliance-angartha.h \
 	alliance/alliance-court-of-chaos.cpp alliance/alliance-court-of-chaos.h \
 	alliance/alliance-anor-londo.cpp alliance/alliance-anor-londo.h \
+	alliance/alliance-ashina-clan.cpp alliance/alliance-ashina-clan.h \
+	alliance/alliance-avarin-lords.cpp alliance/alliance-avarin-lords.h \
+	alliance/alliance-binzyou-buddhism.cpp alliance/alliance-binzyou-buddhism.h \
 	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
+	alliance/alliance-dokachans.cpp alliance/alliance-dokachans.h \
 	alliance/alliance-eldrazi.cpp alliance/alliance-eldrazi.h \
+	alliance/alliance-gaichi.cpp alliance/alliance-gaichi.h \
+	alliance/alliance-ge-orlic.cpp alliance/alliance-ge-orlic.h \
+	alliance/alliance-getter.cpp alliance/alliance-getter.h \
+	alliance/alliance-go.cpp alliance/alliance-go.h \
+	alliance/alliance-golan.cpp alliance/alliance-golan.h \
 	alliance/alliance-hafu.cpp alliance/alliance-hafu.h \
+	alliance/alliance-hakushin-karate.cpp alliance/alliance-hakushin-karate.h \
 	alliance/alliance-jural.cpp alliance/alliance-jural.h \
 	alliance/alliance-kenohgun.cpp alliance/alliance-kenohgun.h \
 	alliance/alliance-ketholdeth.cpp alliance/alliance-ketholdeth.h \
 	alliance/alliance-khaine.cpp alliance/alliance-khaine.h \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
+	alliance/alliance-king.cpp alliance/alliance-king.h \
 	alliance/alliance-kogan-ryu.cpp alliance/alliance-kogan-ryu.h \
 	alliance/alliance-legendofsavior.cpp alliance/alliance-legendofsavior.h \
 	alliance/alliance-mabelode.cpp alliance/alliance-mabelode.h \
+	alliance/alliance-meldor.cpp alliance/alliance-meldor.h \
 	alliance/alliance-shire.cpp alliance/alliance-shire.h \
 	alliance/alliance-shittodan.cpp alliance/alliance-shittodan.h \
+	alliance/alliance-none.cpp alliance/alliance-none.h \
 	alliance/alliance-odio.cpp alliance/alliance-odio.h \
+	alliance/alliance-phyrexia.cpp alliance/alliance-phyrexia.h \
+	alliance/alliance-pure-mirrodin.cpp alliance/alliance-pure-mirrodin.h \
+	alliance/alliance-suren.cpp alliance/alliance-suren.h \
 	alliance/alliance-tzeentch.cpp alliance/alliance-tzeentch.h \
 	alliance/alliance-tophamhatt.cpp alliance/alliance-tophamhatt.h \
 	alliance/alliance-turban-kids.cpp alliance/alliance-turban-kids.h \
@@ -56,6 +73,7 @@ hengband_SOURCES = \
 	alliance/alliance-ide.cpp alliance/alliance-ide.h \
 	alliance/alliance-incubetor.cpp alliance/alliance-incubetor.h \
 	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
+	alliance/alliance-utumno.cpp alliance/alliance-utumno.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
 	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
 	alliance/alliance-arioch.cpp alliance/alliance-arioch.h \
