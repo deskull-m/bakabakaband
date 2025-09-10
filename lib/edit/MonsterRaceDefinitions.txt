@@ -41090,6 +41090,27 @@ D:$He is one of the inner disciples known as “Koshi”-- Tiger Child
 D:$ said to be the future of the Kogan-ryu.
 D:$ A former outlaw of Kakegawa Post Station, bearing countless scars from his turbulent past.
 
+N:2267:ガイチ軍最終兵器『ＭＯＡ』
+E:MOA, Ultimate Weapon of Gaichi
+G:l:r
+I:110:40d20:30:200:10
+W:60:2:40000:0:0
+B:SHOOT:HURT:30d13
+F:UNIQUE | FORCE_MAXHP | BASH_DOOR | KILL_BODY | KILL_WALL | CAN_FLY | RAND_25
+F:NO_CONF | NO_SLEEP | NO_STUN | NO_FEAR | HAS_LITE_2 | NEVER_BLOW | ALLIANCE_GAICHI
+F:POWERFUL | NONLIVING | PREVENT_SUDDEN_MAGIC
+F:EVIL | DROP_4D2 | DROP_3D2 | DROP_2D2 | DROP_GREAT
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | RES_PLAS
+S:1_IN_3 |  BA_ELEC | SHOOT
+S:BO_MANA | BO_PLAS | ROCKET | PSY_SPEAR
+D:ガイチ軍が月面で製造する最終兵器、双胴型の宇宙戦艦だ。
+D:中央砲口から放たれる粒子砲は、推定１０万キロメートルを超える彼方から地球の人類を粛清し屈服させるほどの威力を持つ。
+D:$ The Gaichi Empire's ultimate weapon manufactured on the lunar surface
+D:$ is a twin-hulled space battleship.
+D:$ The particle cannon fired from the central muzzle possesses enough destructive power
+D:$ to purge and subjugate humanity on Earth from a distance estimated
+D:$ to exceed 100,000 kilometers.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
