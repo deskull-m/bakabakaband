@@ -145471,5 +145471,71 @@
         "EAT_LOSE_INT",
         "EAT_LOSE_WIS"
     ]
+},
+{
+    "id": 2267,
+    "name": {
+        "ja": "ガイチ軍最終兵器『ＭＯＡ』",
+        "en": "MOA, Ultimate Weapon of Gaichi"
+    },
+    "symbol": {
+        "character": "l",
+        "color": "Red"
+    },
+    "speed": 0,
+    "hit_point": "40d20",
+    "vision": 30,
+    "armor_class": 200,
+    "alertness": 10,
+    "level": 60,
+    "rarity": 2,
+    "exp": 40000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "skill": {
+        "shoot": "30d13",
+        "list": [
+            "BA_ELEC",
+            "SHOOT",
+            "BO_MANA",
+            "BO_PLAS",
+            "ROCKET",
+            "PSY_SPEAR"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "ガイチ軍が月面で製造する最終兵器、双胴型の宇宙戦艦だ。中央砲口から放たれる粒子砲は、推定１０万キロメートルを超える彼方から地球の人類を粛清し屈服させるほどの威力を持つ。",
+        "en": " The Gaichi Empire's ultimate weapon manufactured on the lunar surface is a twin-hulled space battleship. The particle cannon fired from the central muzzle possesses enough destructive power to purge and subjugate humanity on Earth from a distance estimated to exceed 100,000 kilometers."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "BASH_DOOR",
+        "KILL_BODY",
+        "KILL_WALL",
+        "CAN_FLY",
+        "RAND_25",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_STUN",
+        "NO_FEAR",
+        "HAS_LITE_2",
+        "NEVER_BLOW",
+        "POWERFUL",
+        "NONLIVING",
+        "EVIL",
+        "DROP_4D2",
+        "DROP_3D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "RES_PLAS"
+    ]
 }]
 }
