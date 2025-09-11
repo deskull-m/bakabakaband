@@ -419,7 +419,7 @@ void do_cmd_building(PlayerType *player_ptr)
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
     while (true) {
-        display_buikding_service(player_ptr, bldg);
+        display_building_service(player_ptr, bldg);
         prt("", 1, 0);
         building_prt_gold(player_ptr->au);
         const auto command = inkey();
