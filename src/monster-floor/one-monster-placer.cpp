@@ -309,7 +309,8 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(20)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        monrace.misc_flags.has(MonsterMiscType::NO_WAIFUZATION) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
     }
 
