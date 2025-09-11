@@ -145538,5 +145538,84 @@
         "IM_POIS",
         "RES_PLAS"
     ]
+},
+{
+    "id": 2268,
+    "name": {
+        "ja": "セーヌ川の汚物エレメンタル",
+        "en": "Ooze elemental of Seine River"
+    },
+    "symbol": {
+        "character": "E",
+        "color": "Light Brown"
+    },
+    "speed": 3,
+    "hit_point": "118d23",
+    "vision": 10,
+    "armor_class": 180,
+    "alertness": 90,
+    "level": 47,
+    "rarity": 3,
+    "exp": 4000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "ACID",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "ACID",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "ACID",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "4d12"
+        }
+    ],
+    "flavor": {
+        "ja": "それは下手な年経た汚物エレメンタルよりさらに絶望的に汚い。周辺住民の心根を現したかのようだ。",
+        "en": "It's even more hopelessly filthy than a poorly elder ooze elemental. It seemed to reflect the hearts of the local residents."
+    },
+    "flags": [
+        "POWERFUL",
+        "COLD_BLOOD",
+        "WILD_SHORE",
+        "WILD_SWAMP",
+        "JOKE",
+        "KILL_ITEM",
+        "KILL_BODY",
+        "BASH_DOOR",
+        "EVIL",
+        "IM_ACID",
+        "IM_FIRE",
+        "CAN_SWIM",
+        "NONLIVING",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "RES_TELE",
+        "ELEMENTAL"
+    ],
+    "skill": {
+        "list": [
+            "BR_ACID",
+            "BA_ACID",
+            "BR_NUKE"
+        ],
+        "probability": "1_IN_5"
+    }
 }]
 }
