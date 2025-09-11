@@ -149,7 +149,7 @@
 
 # 極道脅迫！体育部員たちの逆襲
 ?:[EQU $QUEST_NUMBER 37]
-%:q_INM01.txt
+%:quests/037_INM01.txt
 
 # Random quests (always adressed with number 40)
 # ランダムクエスト
