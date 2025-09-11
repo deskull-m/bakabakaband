@@ -418,7 +418,6 @@ void do_cmd_building(PlayerType *player_ptr)
     command_new = 0;
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
-
     while (true) {
         display_buikding_service(player_ptr, bldg);
         prt("", 1, 0);
