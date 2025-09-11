@@ -4,11 +4,11 @@ Q:$37:N:Yakuza Blackmail! The Sports Club Members' Counterattack
 Q:37:N:極道脅迫！体育部員たちの逆襲
 
 # Definition
-Q:$37:Q:6:0:0:0:5:0:0:0:6
-Q:37:Q:6:0:0:0:5:0:0:0:6
+Q:$37:Q:1:0:0:1:25:1342:0:0:6
+Q:37:Q:1:0:0:1:25:1342:0:0:6
 
 # Description for quest
-?:[LEQ $QUEST1 2]
+?:[LEQ $QUEST37 2]
 Q:$37:T:After the game, the soccer club members headed home. Perhaps due to exhaustion,
 Q:$37:T:they unfortunately rear-ended a black luxury car.
 Q:$37:T:Taking full responsibility to protect your junior,
@@ -21,22 +21,22 @@ Q:37:T:車の主、暴力団員谷岡が言い渡した示談の条件とは・�
 ?:1
 
 # Description for quest reward
-?:[EQU $QUEST1 3]
+?:[EQU $QUEST37 3]
 Q:$37:T:Don't forget. The Shimokitazawa Yakuza Member Murder Case
 Q:37:T:忘れるな。下北沢暴力団員殺害事件。
 ?:1
 
 # Description for quest failed
-?:[EQU $QUEST1 5]
+?:[EQU $QUEST37 5]
 Q:$37:T:It seems like this INM was too difficult for you.
 Q:37:T:この淫夢はあなたには難しかったようですね。
 ?:1
 
-# Floor with HTN スクショで見えにくいから追い剥ぎ
-F:a:FLOOR:8:44
+# Floor with HTN
+F:a:FLOOR:8:1379
 
-# Floor with DBいないから見習い戦士
-F:b:FLOOR:8:43
+# Floor with DB
+F:b:FLOOR:8:2264
 
 # Floor with あずま寿し
 F:A:FLOOR:8:1643
@@ -65,19 +65,22 @@ F:T:THRONE:8
 # SHALLOW_WATER
 F:~:SHALLOW_WATER:8
 
+# Object 10 levels out of depth
+F:O:FLOOR:8:0:*10
+
 
 # Dungeon layout
 D:XXXXXXXXXXXX
-D:X.~X.....tYX
-D:X.~+.......X
-D:X.dX.......X
+D:XO~X......YX
+D:XO~+....t..X
+D:XOdX.......X
 D:X.~X.......X
 D:X.~+..a.b..X
 D:X.dX.......X
 D:X.~XXXXDXXXX
-D:X.~X......gX
+D:X.~XO.....gX
 D:X.~XXXXDDXXX
-D:X.~~d~~ss~~X
+D:X.~~~d~ss~dX
 D:X..........X
 D:X..........X
 D:X..........X

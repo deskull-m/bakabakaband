@@ -20,7 +20,7 @@ Q:36:T:いじめは良くないので全員を叩きのめしてきてくださ�
 # Description for quest reward
 ?:[EQU $QUEST36 3]
 Q:$36:T:Impressive!! Your reward is waiting for you outside.
-Q:36:T:素晴らしい!! 褒美を外に置いておきました。
+Q:36:T:素晴らしい!! ご褒美を外に置いておきました。
 ?:1
 
 # Description for quest failed
