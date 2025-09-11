@@ -41111,6 +41111,28 @@ D:$ The particle cannon fired from the central muzzle possesses enough destructi
 D:$ to purge and subjugate humanity on Earth from a distance estimated
 D:$ to exceed 100,000 kilometers.
 
+N:2268:セーヌ川の汚物エレメンタル
+E:Ooze elemental of Seine River
+G:E:U
+I:113:118d23:10:180:90
+W:47:3:4000:0:0
+B:TOUCH:ACID:4d12
+B:TOUCH:ACID:4d12
+B:TOUCH:ACID:4d12
+B:BITE:POISON:4d12
+F:PREVENT_SUDDEN_MAGIC | POWERFUL
+F:COLD_BLOOD | WILD_SHORE | WILD_SWAMP | JOKE
+F:KILL_ITEM | KILL_BODY | BASH_DOOR |
+F:EVIL | IM_ACID | IM_FIRE | CAN_SWIM | NONLIVING |
+F:IM_COLD | IM_ELEC | IM_POIS |
+F:NO_CONF | NO_SLEEP | NO_FEAR | RES_TELE | ELEMENTAL
+S:1_IN_5 |
+S:BR_ACID | BA_ACID | BR_NUKE
+D:それは下手な年経た汚物エレメンタルよりさらに絶望的に汚い。
+D:周辺住民の心根を現したかのようだ。
+D:$It's even more hopelessly filthy than a poorly elder ooze elemental.
+D:$ It seemed to reflect the hearts of the local residents.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
