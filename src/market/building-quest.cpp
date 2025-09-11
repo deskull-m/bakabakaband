@@ -3,6 +3,7 @@
 #include "dungeon/quest.h"
 #include "floor/wild.h"
 #include "info-reader/fixed-map-parser.h"
+#include "io/input-key-acceptor.h"
 #include "market/building-util.h"
 #include "monster/monster-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -69,6 +70,9 @@ void castle_quest(PlayerType *player_ptr)
     const auto quest_id = i2enum<QuestId>(floor.get_grid(player_ptr->get_position()).special);
     if (!inside_quest(quest_id)) {
         put_str(_("今のところクエストはありません。", "I don't have a quest for you at the moment."), 8, 0);
+        prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
+        (void)inkey();
+        prt("", 0, 0);
         return;
     }
 
@@ -90,6 +94,9 @@ void castle_quest(PlayerType *player_ptr)
 
         if (quest.type != QuestKindType::KILL_LEVEL || quest.dungeon == DungeonId::WILDERNESS) {
             put_str(_("クエストを終わらせたら戻って来て下さい。", "Return when you have completed your quest."), 12, 0);
+            prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
+            (void)inkey();
+            prt("", 0, 0);
             return;
         }
 
@@ -100,6 +107,9 @@ void castle_quest(PlayerType *player_ptr)
 
         clear_bldg(4, 18);
         msg_print(_("放棄しました。", "You gave up."));
+        prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
+        (void)inkey();
+        prt("", 0, 0);
         msg_erase();
         record_quest_final_status(&quest, player_ptr->lev, QuestStatusType::FAILED);
     }
@@ -108,10 +118,16 @@ void castle_quest(PlayerType *player_ptr)
         print_questinfo(player_ptr, quest_id, false);
         quest.status = QuestStatusType::FAILED_DONE;
         reinit_wilderness = true;
+        prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
+        (void)inkey();
+        prt("", 0, 0);
         return;
     }
 
     if (quest.status != QuestStatusType::UNTAKEN) {
+        prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
+        (void)inkey();
+        prt("", 0, 0);
         return;
     }
 
@@ -119,6 +135,9 @@ void castle_quest(PlayerType *player_ptr)
     reinit_wilderness = true;
     if (quest.type != QuestKindType::KILL_ANY_LEVEL) {
         print_questinfo(player_ptr, quest_id, true);
+        prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
+        (void)inkey();
+        prt("", 0, 0);
         return;
     }
 
@@ -145,4 +164,7 @@ void castle_quest(PlayerType *player_ptr)
     msg_format("Your quest: kill %d %s", quest.max_num, name);
 #endif
     print_questinfo(player_ptr, quest_id, true);
+    prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
+    (void)inkey();
+    prt("", 0, 0);
 }
