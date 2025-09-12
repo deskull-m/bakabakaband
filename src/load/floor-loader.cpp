@@ -105,6 +105,13 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         ct_ref.feat = rd_s16b();
         ct_ref.mimic = rd_s16b();
         ct_ref.special = rd_s16b();
+
+        // セーブファイルバージョン29以降でterrain_descriptionを読み込み
+        if (!loading_savefile_version_is_older_than(29)) {
+            ct_ref.terrain_description = rd_string();
+        } else {
+            ct_ref.terrain_description = "";
+        }
     }
 
     POSITION ymax = floor.height;
@@ -125,6 +132,7 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
             grid.feat = templates[id].feat;
             grid.mimic = templates[id].mimic;
             grid.special = templates[id].special;
+            grid.terrain_description = templates[id].terrain_description;
 
             if (++x >= xmax) {
                 x = 0;
