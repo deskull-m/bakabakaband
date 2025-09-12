@@ -131,12 +131,13 @@ void castle_quest(PlayerType *player_ptr)
         return;
     }
 
-    quest.status = QuestStatusType::TAKEN;
     reinit_wilderness = true;
     if (quest.type != QuestKindType::KILL_ANY_LEVEL) {
         print_questinfo(player_ptr, quest_id, true);
-        prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
-        (void)inkey();
+        if (!input_check(_("このクエストを受けますか？", "Are you sure to take this quest? "))) {
+            return;
+        }
+        quest.status = QuestStatusType::TAKEN;
         prt("", 0, 0);
         return;
     }
@@ -164,7 +165,10 @@ void castle_quest(PlayerType *player_ptr)
     msg_format("Your quest: kill %d %s", quest.max_num, name);
 #endif
     print_questinfo(player_ptr, quest_id, true);
-    prt(_("何かキーを押して下さい。", "Hit any key."), 0, 0);
-    (void)inkey();
+    if (!input_check(_("このクエストを受けますか？", "Are you sure to take this quest? "))) {
+        return;
+    }
+    quest.status = QuestStatusType::TAKEN;
     prt("", 0, 0);
+    return;
 }
