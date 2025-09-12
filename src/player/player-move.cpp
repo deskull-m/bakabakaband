@@ -137,6 +137,13 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
         const auto nm_idx = grid_new.m_idx;
         player_ptr->y = pos_new.y;
         player_ptr->x = pos_new.x;
+
+        // 地形に刻まれた説明があれば表示
+        if (!grid_new.description().empty()) {
+            msg_format(_("%sにメッセージが刻まれている: ", "You see a message on %s: "), terrain_new.name.data());
+            msg_print(grid_new.description());
+        }
+
         if (!(mpe_mode & MPE_DONT_SWAP_MON)) {
             grid_new.m_idx = om_idx;
             grid_old.m_idx = nm_idx;
