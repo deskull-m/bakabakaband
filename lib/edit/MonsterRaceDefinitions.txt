@@ -41133,6 +41133,24 @@ D:周辺住民の心根を現したかのようだ。
 D:$It's even more hopelessly filthy than a poorly elder ooze elemental.
 D:$ It seemed to reflect the hearts of the local residents.
 
+N:2269:『バイオ兵器コア』
+E:The Core of Bio Weapon
+G:X:v
+I:130:65d100:30:30:0
+W:80:3:70000:0:0
+F:UNIQUE | DROP_CORPSE | RES_TELE
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | NEVER_MOVE | NEVER_BLOW |
+F:ONLY_ITEM | DROP_4D2 | DROP_2D2 | DROP_GREAT | STUPID |
+F:NONLIVING | ALLIANCE_GAICHI
+F:NO_CONF | NO_SLEEP | NO_FEAR
+S:1_IN_2
+S:S_KIN
+R:2136:3d6
+R:2156:3d6
+R:2157:3d6
+D:ガイチ軍が火星で生み出した恐るべきバイオ兵器の源だ。
+D:$This is the source of the terrifying biological weapon created by the Gaichi Empire on Mars.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
