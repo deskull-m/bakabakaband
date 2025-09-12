@@ -145617,5 +145617,68 @@
         ],
         "probability": "1_IN_5"
     }
+},
+{
+    "id": 2269,
+    "name": {
+        "ja": "『バイオ兵器コア』",
+        "en": "The Core of Bio Weapon"
+    },
+    "symbol": {
+        "character": "X",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "65d100",
+    "vision": 30,
+    "armor_class": 30,
+    "alertness": 0,
+    "level": 80,
+    "rarity": 3,
+    "exp": 70000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [
+        {
+            "escorts_id": 2136,
+            "escort_num": "3d6"
+        },
+        {
+            "escorts_id": 2156,
+            "escort_num": "3d6"
+        },
+        {
+            "escorts_id": 2157,
+            "escort_num": "3d6"
+        }
+    ],
+    "flavor": {
+        "ja": "ガイチ軍が火星で生み出した恐るべきバイオ兵器の源だ。",
+        "en": "This is the source of the terrifying biological weapon created by the Gaichi Empire on Mars."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "RES_TELE",
+        "FORCE_MAXHP",
+        "NEVER_MOVE",
+        "NEVER_BLOW",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "STUPID",
+        "NONLIVING",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "S_KIN"
+        ],
+        "probability": "1_IN_2"
+    }
 }]
 }
