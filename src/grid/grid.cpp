@@ -51,6 +51,7 @@ bool GridTemplate::matches(const Grid &grid) const
     is_matched &= this->feat == grid.feat;
     is_matched &= this->mimic == grid.mimic;
     is_matched &= this->special == grid.special;
+    is_matched &= this->terrain_description == grid.terrain_description;
     return is_matched;
 }
 

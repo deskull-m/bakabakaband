@@ -67,6 +67,8 @@ public:
     std::map<GridFlow, uint8_t> dists; //!< Distance from player
     byte when{}; /* Hack -- when cost was computed */
 
+    std::string terrain_description; /* Description of the grid */
+
     static int calc_distance(const Pos2D &pos1, const Pos2D &pos2);
 
     short get_terrain_id(TerrainKind tk = TerrainKind::NORMAL) const;
@@ -112,4 +114,9 @@ public:
     void set_terrain_id(short terrain_id, TerrainKind tk = TerrainKind::NORMAL);
     void set_terrain_id(TerrainTag tag, TerrainKind tk = TerrainKind::NORMAL);
     void set_door_id(short terrain_id_random);
+
+    std::string description() const
+    {
+        return this->terrain_description;
+    }
 };
