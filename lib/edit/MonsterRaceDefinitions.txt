@@ -41151,6 +41151,60 @@ R:2157:3d6
 D:ガイチ軍が火星で生み出した恐るべきバイオ兵器の源だ。
 D:$This is the source of the terrifying biological weapon created by the Gaichi Empire on Mars.
 
+N:2270:SS-80(X) モノケロス
+E:SS-80(X) Atlas
+G:{:U
+I:102:50d10:30:70:10
+W:54:2:0:13000:0:0
+B:SHOOT:HURT:60d5
+F:NEVER_MOVE | COLD_BLOOD
+F:EMPTY_MIND | NONLIVING
+F:NO_CONF | NO_SLEEP | NO_FEAR | NO_STUN | ALLIANCE_GAICHI | MOB_64
+S:1_IN_1
+S:SHOOT
+D:月面戦争に用いられた大口径の野砲だ。
+
+N:2271:GX-77(X) ムンクス
+E:GX-77(X) Charlie
+G:p:B
+I:110:8d30:40:80:60
+W:36:2:0:1200:0:0
+B:HIT:HURT:2d4
+B:HIT:HURT:2d4
+B:HIT:HURT:2d4
+B:SHOOT:HURT:16d4
+F:MALE | PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | DROP_1D2 | SMART
+F:DROP_CORPSE | DROP_SKELETON | CAN_SWIM | FRIENDS | ALLIANCE_GAICHI | MOB_1200
+S:1_IN_2 |
+S:SHOOT
+D:月面の過酷な環境で争うために作られたパワードスーツをまとう兵士だ。
+
+N:2272:GX-87(X) ダーベック
+E:GX-87(X) Kilroy
+G:p:B
+I:108:13d30:40:120:60
+W:36:2:0:1200:0:0
+B:HIT:HURT:4d4
+B:HIT:HURT:4d4
+B:HIT:HURT:4d4
+B:SHOOT:HURT:24d4
+F:MALE | PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | DROP_1D2 | SMART
+F:DROP_CORPSE | DROP_SKELETON | CAN_SWIM | FRIENDS | ALLIANCE_GAICHI | MOB_800
+S:1_IN_3 |
+S:SHOOT | ROCKET
+D:月面の過酷な環境で争うために作られたパワードスーツをまとう兵士だ。
+
+N:2273:M-77(X) ヤマアラシ
+E:M-77(X) Trigger
+G:.:w
+I:110:100d12:30:120:0
+W:36:5:0:50:0:0
+F:CHAR_CLEAR
+F:NEVER_MOVE | NEVER_BLOW | FORCE_MAXHP | ALLIANCE_GAICHI | MOB_120
+F:EMPTY_MIND | INVISIBLE | COLD_BLOOD
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
+D:侵入者を防ぐ障壁を張る地雷の一種だという。惑星進出時代の月面戦争に用いられているらしい。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

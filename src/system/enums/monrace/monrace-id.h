@@ -237,6 +237,10 @@ enum class MonraceId : int16_t {
     KHORNE = 2234,
     GAICHI_MOA = 2267,
     BIO_CORE = 2269,
+    SS_80_X_ATRAS = 2270,
+    GX_77_X_CHARLIE = 2271,
+    GX_87_X_KILROY = 2272,
+    M_77_X_TRIGGER = 2273,
     POLYGON_SPIN = -1, // TODO: 変愚から後日移植
     HUNGRY_OLD_MAN = -2 // TODO: 変愚から後日移植
 };
