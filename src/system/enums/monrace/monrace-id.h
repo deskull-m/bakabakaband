@@ -235,6 +235,8 @@ enum class MonraceId : int16_t {
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
     KHORNE = 2234,
+    GAICHI_MOA = 2267,
+    BIO_CORE = 2269,
     POLYGON_SPIN = -1, // TODO: 変愚から後日移植
     HUNGRY_OLD_MAN = -2 // TODO: 変愚から後日移植
 };
