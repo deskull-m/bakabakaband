@@ -145685,7 +145685,7 @@
     "id": 2270,
     "name": {
         "ja": "SS-80(X) モノケロス",
-        "en": "SS-80 Atlas"
+        "en": "SS-80(X) Atlas"
     },
     "symbol": {
         "character": "{",
@@ -145729,7 +145729,7 @@
     "id": 2271,
     "name": {
         "ja": "GX-77(X) ムンクス",
-        "en": "GX-77 Charlie"
+        "en": "GX-77(X) Charlie"
     },
     "symbol": {
         "character": "p",
@@ -145790,7 +145790,7 @@
     "id": 2272,
     "name": {
         "ja": "GX-87(X) ダーベック",
-        "en": "GX-87 Kilroy"
+        "en": "GX-87(X) Kilroy"
     },
     "symbol": {
         "character": "p",
@@ -145852,7 +145852,7 @@
     "id": 2273,
     "name": {
         "ja": "M-77(X) ヤマアラシ",
-        "en": "M-77 Trigger"
+        "en": "M-77(X) Trigger"
     },
     "symbol": {
         "character": ".",
@@ -145887,5 +145887,77 @@
         "NO_FEAR",
         "NONLIVING"
     ]
+},
+{
+    "id": 2274,
+    "name": {
+        "ja": "『核姫』",
+        "en": "Nuclear Princess"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "49d6",
+    "vision": 100,
+    "armor_class": 100,
+    "alertness": 30,
+    "level": 43,
+    "rarity": 1,
+    "exp": 22000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "BITE",
+            "effect": "LOSE_CON"
+        }
+    ],
+    "flavor": {
+        "ja": "川越市に流れつく核兵器から生まれた姫だ。生まれた時から被爆いるため、三週間に一回は「皮膚脱ぎ」を行い、人の皮膚を取り替えないといけない。あなたの皮を狙っているようだ。",
+        "en": "She is a princess born from nuclear weapons that flowed into Kawagoe City. Having been exposed to radiation since birth, she must perform a “skin shedding” ritual every three weeks, replacing her skin with that of humans. It seems she has her sights set on your skin."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "ONLY_ITEM",
+        "RES_CHAO",
+        "RES_TELE",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "HAS_LITE_2",
+        "HUMAN",
+        "FORCE_MAXHP",
+        "NO_CONF",
+        "NO_SLEEP",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "DROP_60",
+        "DROP_90",
+        "EVIL",
+        "IM_POIS",
+        "IM_ACID",
+        "REGENERATE",
+        "OPEN_DOOR",
+        "BASH_DOOR"
+    ],
+    "skill": {
+        "list": [
+            "BR_NUKE"
+        ],
+        "probability": "1_IN_5"
+    }
 }]
 }
