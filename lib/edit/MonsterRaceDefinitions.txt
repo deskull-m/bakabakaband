@@ -41205,6 +41205,28 @@ F:EMPTY_MIND | INVISIBLE | COLD_BLOOD
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 D:侵入者を防ぐ障壁を張る地雷の一種だという。惑星進出時代の月面戦争に用いられているらしい。
 
+N:2274:『核姫』
+E:Nuclear Princess
+G:H:v
+I:130:49d6:100:100:30
+W:43:1:22000:0:0
+B:BITE:POISON:8d15
+B:BITE:POISON:8d15
+B:BITE:LOSE_CON
+F:UNIQUE | FEMALE | ONLY_ITEM | RES_CHAO | RES_TELE
+F:DROP_CORPSE | DROP_SKELETON | HAS_LITE_2 | HUMAN |
+F:PREVENT_SUDDEN_MAGIC | FORCE_MAXHP | NO_CONF | NO_SLEEP |
+F:DROP_4D2 | DROP_GOOD | DROP_60 | DROP_90 |
+F:EVIL | IM_POIS | IM_ACID | REGENERATE | OPEN_DOOR | BASH_DOOR |
+S:1_IN_5 |
+S:BR_NUKE
+D:$She is a princess born from nuclear weapons that flowed into Kawagoe City.
+D:$ Having been exposed to radiation since birth, she must perform a “skin shedding” ritual every three weeks, replacing her skin with that of humans.
+D:$ It seems she has her sights set on your skin.
+D:川越市に流れつく核兵器から生まれた姫だ。
+D:生まれた時から被爆いるため、三週間に一回は「皮膚脱ぎ」を行い、人の皮膚を取り替えないといけない。
+D:あなたの皮を狙っているようだ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
