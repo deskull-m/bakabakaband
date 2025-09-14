@@ -41137,6 +41137,26 @@ D:川越市に流れつく核兵器から生まれた姫だ。
 D:生まれた時から被爆いるため、三週間に一回は「皮膚脱ぎ」を行い、人の皮膚を取り替えないといけない。
 D:あなたの皮を狙っているようだ。
 
+N:2275:伝承の収集者『タミヨウ』
+E:Tamiyo, Collector of Tales
+G:h:g
+I:127:10d100:100:90:40
+W:46:7:10000:0:0
+F:UNIQUE | FEMALE | CAN_FLY
+F:FORCE_MAXHP | SPEAK_ALL | SMART | REGENERATE |
+F:NO_CONF | NO_STUN | NEVER_BLOW | FRIENDLY
+F:IM_ACID | IM_ELEC | IM_FIRE | IM_POIS | IM_COLD |
+F:RES_LITE | RES_NETH | RES_SHAR | RES_SOUN | RES_CHAO | RES_NEXU | RES_DISE |
+F:ONLY_ITEM | DROP_1D2 | DROP_GREAT |
+F:TAKE_ITEM | DROP_CORPSE | GOOD
+S:1_IN_3 |
+S:S_MONSTER | S_MONSTERS | TPORT | HASTE | BLINK | HEAL
+D:$She is a member of the Moonfolk of Kamigawa, a race of Planeswalkers
+D:$ who traverse the multiverse. She has written that she wishes to
+D:$ gather more knowledge from all worlds and store it in her homeland.
+D:彼女は神河の空民と呼ばれる種族であり、多元宇宙を渡るプレインズウォーカーだ。
+D:あらゆる世界の知識をより集め、己が故郷に保管したいと書にしたためている。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

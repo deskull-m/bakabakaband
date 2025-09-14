@@ -145959,5 +145959,73 @@
         ],
         "probability": "1_IN_5"
     }
+},
+{
+    "id": 2275,
+    "name": {
+        "ja": "伝承の収集者『タミヨウ』",
+        "en": "Tamiyo, Collector of Tales"
+    },
+    "symbol": {
+        "character": "h",
+        "color": "Green"
+    },
+    "speed": 17,
+    "hit_point": "10d100",
+    "vision": 100,
+    "armor_class": 90,
+    "alertness": 40,
+    "level": 46,
+    "rarity": 7,
+    "exp": 10000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "flavor": {
+        "ja": "彼女は神河の空民と呼ばれる種族であり、多元宇宙を渡るプレインズウォーカーだ。あらゆる世界の知識をより集め、己が故郷に保管したいと書にしたためている。",
+        "en": "She is a member of the Moonfolk of Kamigawa, a race of Planeswalkers who traverse the multiverse. She has written that she wishes to gather more knowledge from all worlds and store it in her homeland."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "CAN_FLY",
+        "FORCE_MAXHP",
+        "SPEAK_ALL",
+        "SMART",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_STUN",
+        "NEVER_BLOW",
+        "FRIENDLY",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_FIRE",
+        "IM_POIS",
+        "IM_COLD",
+        "RES_LITE",
+        "RES_NETH",
+        "RES_SHAR",
+        "RES_SOUN",
+        "RES_CHAO",
+        "RES_NEXU",
+        "RES_DISE",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_GREAT",
+        "TAKE_ITEM",
+        "DROP_CORPSE",
+        "GOOD"
+    ],
+    "skill": {
+        "list": [
+            "S_MONSTER",
+            "S_MONSTERS",
+            "TPORT",
+            "HASTE",
+            "BLINK",
+            "HEAL"
+        ],
+        "probability": "1_IN_3"
+    }
 }]
 }
