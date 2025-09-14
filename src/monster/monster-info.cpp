@@ -122,6 +122,18 @@ bool monster_can_cross_terrain(PlayerType *player_ptr, FEAT_IDX feat, const Monr
         }
     }
 
+    if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED)) {
+        if (monrace.resistance_flags.has_none_of(RFR_EFF_RESIST_CHAOS_MASK)) {
+            return false;
+        }
+    }
+
+    if (terrain.flags.has(TerrainCharacteristics::VOID)) {
+        if (monrace.resistance_flags.has_none_of(RFR_EFF_RESIST_VOID_MASK)) {
+            return false;
+        }
+    }
+
     return true;
 }
 

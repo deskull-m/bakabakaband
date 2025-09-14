@@ -17,3 +17,4 @@ extern const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_RESIST_SHARDS_MAS
 extern const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_RESIST_CHAOS_MASK;
 extern const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_RESIST_NEXUS_MASK;
 extern const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_IMMUNE_ELEMENT_MASK;
+extern const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_RESIST_VOID_MASK;
