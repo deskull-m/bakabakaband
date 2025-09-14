@@ -7,6 +7,7 @@ enum class BirthKind {
     RACE,
     CLASS,
     PERSONALITY,
+    PATRON,
     AUTO_ROLLER,
 };
 

@@ -9,7 +9,8 @@
 
 #define MAX_PATRON 18 /*!< パトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
 
-enum class PatronType : int {
+enum class PatronType : int16_t {
+    NONE = -1, //!< なし
     KHORNE = 11, //!< コーン
     GETTER = 16, //!< ゲッター
 };

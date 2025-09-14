@@ -140,6 +140,7 @@ hengband_SOURCES = \
 	birth/birth-select-race.cpp birth/birth-select-race.h \
 	birth/birth-select-class.cpp birth/birth-select-class.h \
 	birth/birth-select-personality.cpp birth/birth-select-personality.h \
+	birth/birth-select-patron.cpp birth/birth-select-patron.h \
 	birth/auto-roller.cpp birth/auto-roller.h \
 	birth/birth-wizard.cpp birth/birth-wizard.h \
 	\
