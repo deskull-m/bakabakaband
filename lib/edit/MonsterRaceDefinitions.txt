@@ -41157,6 +41157,40 @@ D:$ gather more knowledge from all worlds and store it in her homeland.
 D:彼女は神河の空民と呼ばれる種族であり、多元宇宙を渡るプレインズウォーカーだ。
 D:あらゆる世界の知識をより集め、己が故郷に保管したいと書にしたためている。
 
+#JZ#
+N:2276:『間宮夫人』
+E:Madam Mamiya
+G:G:v
+I:114:19d100:30:120:5
+W:38:3:9500:0:0
+B:TOUCH:EXP_80
+B:TOUCH:PARALYZE
+B:HIT:FIRE:15d6
+B:HIT:FIRE:15d6
+F:UNIQUE | FEMALE | UNDEAD | NONLIVING
+F:FORCE_MAXHP | CAN_FLY | PASS_WALL
+F:ONLY_ITEM | DROP_1D2 | DROP_2D2 | DROP_GOOD | 
+F:OPEN_DOOR | BASH_DOOR | SELF_LITE_2 | RES_CHAO | RES_NETH
+F:EVIL | IM_ACID | IM_COLD | IM_POIS | NO_CONF | NO_SLEEP
+S:1_IN_3 |
+S:HOLD | SCARE | CAUSE_3 | BR_FIRE | BO_FIRE | BO_ELEC | BO_PLAS
+S:S_UNDEAD
+D:$She is the vengeful spirit of the wife of Ichiro Mamiya,
+D:$ Japan's master fresco painter.
+D:$ After an unforeseen accident caused the death of her own child 
+D:$ during her lifetime, she lost her mind.
+D:$ She repeatedly committed the heinous act of burning other 
+D:$ people's children in an incinerator before ultimately 
+D:$ taking her own life.
+D:$ Her terrifying form is always surrounded
+D:$ by the ghosts of the children she sacrificed.
+
+Translated with DeepL.com (free version)
+D:日本のフレスコ画巨匠、間宮一郎の妻であった怨霊だ。
+D:生前、不慮の事故で己が子を死なせてしまって以来、精神を病み、
+D:他人の子供たちを焼却炉で焼く凶行を繰り返した挙句に自ら命を絶った。
+D:その恐ろしい姿には常に犠牲になった子の亡霊が取り巻いている。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
