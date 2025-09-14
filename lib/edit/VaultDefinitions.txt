@@ -17424,6 +17424,23 @@ D:           %.%
 D:           %.%
 D:            % 
 
+N:837:LavaPool
+X:18:8:14:14
+D:       %      
+D:  %   %.%     
+D: %.%  %..% %  
+D: %.% %...%%.% 
+D: %.%%%#.#%%.% 
+D: %#........#% 
+D:%..vvvwwvvv..%
+D:%..vvvwwvvv..%
+D: %#........#% 
+D: %.%%%#.#%%.% 
+D: %.% %...%%.% 
+D: %.%  %..% %  
+D:  %   %.%     
+D:       %      
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
