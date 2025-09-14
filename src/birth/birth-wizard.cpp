@@ -4,6 +4,7 @@
 #include "birth/birth-body-spec.h"
 #include "birth/birth-explanations-table.h"
 #include "birth/birth-select-class.h"
+#include "birth/birth-select-patron.h"
 #include "birth/birth-select-personality.h"
 #include "birth/birth-select-race.h"
 #include "birth/birth-select-realm.h"
@@ -24,6 +25,7 @@
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
+#include "player-info/class-types.h"
 #include "player-info/race-info.h"
 #include "player/patron.h"
 #include "player/player-personality.h"
@@ -233,6 +235,33 @@ static bool let_player_select_personality(PlayerType *player_ptr)
     return true;
 }
 
+static bool let_player_select_patron(PlayerType *player_ptr)
+{
+    // 混沌の戦士以外はパトロンを選択しない
+    if (player_ptr->pclass != PlayerClassType::CHAOS_WARRIOR) {
+        player_ptr->patron = randnum0<short>(MAX_PATRON);
+        return true;
+    }
+
+    player_ptr->patron = 0; // 初期値
+    while (true) {
+        if (!get_player_patron(player_ptr)) {
+            return false;
+        }
+
+        clear_from(10);
+        put_str(_("パトロンが選択されました。", "Patron selected."), 12, 3);
+
+        if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+            break;
+        }
+
+        display_player_name(player_ptr, true);
+    }
+
+    return true;
+}
+
 static bool let_player_build_character(PlayerType *player_ptr)
 {
     if (!get_player_sex(player_ptr)) {
@@ -252,6 +281,10 @@ static bool let_player_build_character(PlayerType *player_ptr)
     }
 
     if (!let_player_select_personality(player_ptr)) {
+        return false;
+    }
+
+    if (!let_player_select_patron(player_ptr)) {
         return false;
     }
 
@@ -529,7 +562,6 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
 
         get_extra(player_ptr, true);
         get_money(player_ptr);
-        player_ptr->patron = randnum0<short>(MAX_PATRON);
 
         char c;
         if (!display_auto_roller_result(player_ptr, prev, &c)) {

@@ -333,6 +333,7 @@
     <ClCompile Include="..\..\src\birth\auto-roller.cpp" />
     <ClCompile Include="..\..\src\birth\birth-body-spec.cpp" />
     <ClCompile Include="..\..\src\birth\birth-select-class.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-select-patron.cpp" />
     <ClCompile Include="..\..\src\birth\birth-select-personality.cpp" />
     <ClCompile Include="..\..\src\birth\birth-select-race.cpp" />
     <ClCompile Include="..\..\src\birth\birth-select-realm.cpp" />
@@ -1156,6 +1157,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-valinor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-valverde.h" />
     <ClInclude Include="..\..\src\alliance\alliance-xiombarg.h" />
+    <ClInclude Include="..\..\src\birth\birth-select-patron.h" />
     <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
     <ClInclude Include="..\..\src\external-lib\include-json.h" />

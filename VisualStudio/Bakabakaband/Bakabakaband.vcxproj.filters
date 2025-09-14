@@ -2735,6 +2735,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-suren.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\birth\birth-select-patron.cpp">
+      <Filter>birth</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5907,6 +5910,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-suren.h">
       <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\birth\birth-select-patron.h">
+      <Filter>birth</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
