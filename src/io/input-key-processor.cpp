@@ -682,6 +682,10 @@ void process_command(PlayerType *player_ptr)
         spoil_random_artifact(player_ptr);
         break;
     }
+    case KTRL('C'): {
+        do_cmd_inscribe_terrain(player_ptr);
+        break;
+    }
     case KTRL('E'): {
         do_cmd_text_command(player_ptr);
         break;
