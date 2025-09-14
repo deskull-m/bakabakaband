@@ -146027,5 +146027,88 @@
         ],
         "probability": "1_IN_3"
     }
+},
+{
+    "id": 2276,
+    "name": {
+        "ja": "『間宮夫人』",
+        "en": "Madam Mamiya"
+    },
+    "symbol": {
+        "character": "G",
+        "color": "Violet"
+    },
+    "speed": 4,
+    "hit_point": "19d100",
+    "vision": 30,
+    "armor_class": 120,
+    "alertness": 5,
+    "level": 38,
+    "rarity": 3,
+    "exp": 9500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EXP_80"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "PARALYZE"
+        },
+        {
+            "method": "HIT",
+            "effect": "FIRE",
+            "damage_dice": "15d6"
+        },
+        {
+            "method": "HIT",
+            "effect": "FIRE",
+            "damage_dice": "15d6"
+        }
+    ],
+    "flavor": {
+        "ja": "日本のフレスコ画巨匠、間宮一郎の妻であった怨霊だ。生前、不慮の事故で己が子を死なせてしまって以来、精神を病み、他人の子供たちを焼却炉で焼く凶行を繰り返した挙句に自ら命を絶った。その恐ろしい姿には常に犠牲になった子の亡霊が取り巻いている。",
+        "en": "She is the vengeful spirit of the wife of Ichiro Mamiya, Japan's master fresco painter. After an unforeseen accident caused the death of her own child  during her lifetime, she lost her mind. She repeatedly committed the heinous act of burning other  people's children in an incinerator before ultimately  taking her own life. Her terrifying form is always surrounded by the ghosts of the children she sacrificed."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "UNDEAD",
+        "NONLIVING",
+        "FORCE_MAXHP",
+        "CAN_FLY",
+        "PASS_WALL",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "SELF_LITE_2",
+        "RES_CHAO",
+        "RES_NETH",
+        "EVIL",
+        "IM_ACID",
+        "IM_COLD",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "HOLD",
+            "SCARE",
+            "CAUSE_3",
+            "BR_FIRE",
+            "BO_FIRE",
+            "BO_ELEC",
+            "BO_PLAS",
+            "S_UNDEAD"
+        ],
+        "probability": "1_IN_3"
+    }
 }]
 }
