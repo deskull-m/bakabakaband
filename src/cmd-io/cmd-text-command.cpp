@@ -7,15 +7,21 @@
 #include "cmd-action/cmd-others.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
+#include "floor/floor-object.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
+#include "object/tval-types.h"
 #include "player-status/player-energy.h"
 #include "spell-kind/spells-sight.h"
 #include "spell/spells-status.h"
 #include "status/buff-setter.h"
+#include "sv-definition/sv-junk-types.h"
+#include "system/baseitem/baseitem-key.h"
+#include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
+#include "timed-effect/timed-effects.h"
 #include "util/int-char-converter.h"
 #include "util/probability-table.h"
 #include "view/display-messages.h"
@@ -80,6 +86,76 @@ static std::vector<TextCommand> get_text_commands()
                 do_cmd_suicide(player_ptr);
             },
             _("自殺する", "suicide") },
+        { { "defecate", "脱糞", "うんち", "うんこ" },
+            [](PlayerType *player_ptr) {
+                // 脱糞アクション
+                msg_print(_("あなたは脱糞した！", "You defecated!"));
+
+                // ランダムな脱糞メッセージ
+                std::vector<std::string> defecate_messages_jp = {
+                    "ブリブリブリブリュリュリュリュリュリュ！！！！！！ブツチチブブブチチチチブリリイリブブブブゥゥゅ！！！",
+                    "スッキリした。",
+                    "お腹が軽くなった感じがする。",
+                    "なんてこった、ここは公共の場所なのに...",
+                    "緊急事態だったんだ！",
+                    "野生の本能が目覚めた。"
+                };
+
+                std::vector<std::string> defecate_messages_en = {
+                    "Blibb blab bloobooroo, toogie urnf!",
+                    "You feel refreshed.",
+                    "Your stomach feels lighter.",
+                    "Oh no, this is a public place...",
+                    "It was an emergency!",
+                    "Your wild instincts have awakened."
+                };
+
+                int choice = randint0(defecate_messages_jp.size());
+
+#ifdef JP
+                msg_print(defecate_messages_jp[choice].c_str());
+#else
+                msg_print(defecate_messages_en[choice].c_str());
+#endif
+
+                ItemEntity dung_item(BaseitemKey(ItemKindType::JUNK, SV_JUNK_FECES)); // ベースアイテム ID 672 = 糞便
+                dung_item.number = 1;
+
+                // プレイヤーの足下に落とす
+                Pos2D pos(player_ptr->y, player_ptr->x);
+                drop_near(player_ptr, dung_item, pos);
+
+                msg_print(_("糞便が足下に落ちた。", "Dung has dropped at your feet."));
+
+                // 体力を少し消費
+                if (player_ptr->chp > 1) {
+                    player_ptr->chp--;
+                    auto &rfu = RedrawingFlagsUpdater::get_instance();
+                    rfu.set_flag(MainWindowRedrawingFlag::HP);
+                }
+
+                // 時間消費
+                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+
+                // 周囲のモンスターが嫌悪感を示す可能性
+                if (one_in_(4)) {
+                    msg_print(_("あなたの行為に周囲が困惑している。", "Your actions confuse those around you."));
+                    aggravate_monsters(player_ptr, 0);
+                } else if (one_in_(8)) {
+                    msg_print(_("なんとも言えない臭いが漂っている...", "An indescribable smell wafts through the air..."));
+                }
+
+                // 稀に状態異常
+                /* TODO: 混乱は面白いが、あまりにも理不尽なので一旦コメントアウト
+                if (one_in_(20)) {
+                    msg_print(_("恥ずかしさで顔が真っ赤になった。", "Your face turns red with embarrassment."));
+                    // 混乱状態を付与
+                    auto &timed_effects = player_ptr->effects();
+                    timed_effects.confusion().set(timed_effects.confusion().current() + randint1(5));
+                }
+                */
+            },
+            _("脱糞する", "Defecate") },
         { { "dance", "踊る", "ダンス", "おどる" },
             [](PlayerType *player_ptr) {
                 // 踊るアクション
