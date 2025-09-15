@@ -170,7 +170,6 @@ static void accept_winner_message(PlayerType *player_ptr)
  */
 void do_cmd_suicide(PlayerType *player_ptr)
 {
-    char i;
     flush();
     auto &world = AngbandWorld::get_instance();
     if (world.total_winner) {
@@ -181,16 +180,6 @@ void do_cmd_suicide(PlayerType *player_ptr)
         if (!input_check(_("何もかも諦めますか? ", "Do you give up everything? "))) {
             return;
         }
-    }
-
-    /* Special Verification for suicide */
-    prt(_("確認のため '@' を押して下さい。", "Please verify SUICIDE by typing the '@' sign: "), 0, 0);
-
-    flush();
-    i = inkey();
-    prt("", 0, 0);
-    if (i != '@') {
-        return;
     }
 
     if (!decide_suicide()) {
