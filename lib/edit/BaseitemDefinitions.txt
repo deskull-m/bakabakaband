@@ -7780,6 +7780,16 @@ P:0:0d0:0:0:2
 D:$This electric anal plug vibrates intensely, providing both pleasure and healing.
 D:この電動尻栓は激しく振動し、快楽と同時に治癒効果をもたらす。
 
+N:825:ビール瓶
+E:! Beer bottle~
+G:":R
+I:41:10:0
+W:20:6:100
+A:20/3
+P:0:0d0:0:0:2
+F:INSTA_ART
+
+
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
 # d - Dark Gray    W - Light Gray     v - Violet        y - Yellow

@@ -4765,6 +4765,14 @@ F:SPEED | CON | SUST_CON | NASTY
 F:RES_CHAOS | RES_FEAR | FREE_ACT | NASTY_AGGRAVATE
 D:この黒歴史を忘れてはならない。これは、まだ幻想郷が少女の園と誤解していた者たちが、彼の存在を持て余し、あるいは妬み生みだした怨念だ。
 
+N:292:農夫ジョルジェ・マルティノヴィッチの
+E:of Farmer Djordje Martinovic
+I:41:10:-3
+W:20:6:100
+A:20/3
+F:AGGRAVATE | NASTY | SUST_CHR | RES_NEXUS | RES_CHAOS | STEALTH | CHR
+D:このビール瓶と背徳行為は、彼の尻穴のみならず、やがて国家までも破壊した。
+
 # N: serial number : item name
 # I: tval : sval : pval
 # W: depth : rarity : weight : cost

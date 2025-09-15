@@ -28600,6 +28600,43 @@
       "ja": "この電動尻栓は激しく振動し、快楽と同時に治癒効果をもたらす。",
       "en": "This electric anal plug vibrates intensely, providing both pleasure and healing."
     }
+  },
+  {
+    "id": 825,
+    "name": {
+      "ja": "ビール瓶",
+      "en": "! Beer bottle~"
+    },
+    "symbol": {
+      "character": "\"",
+      "color": "Light Red"
+    },
+    "itemkind": {
+      "type_value": 41,
+      "subtype_value": 10
+    },
+    "parameter_value": 0,
+    "level": 20,
+    "weight": 6,
+    "cost": 100,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 2,
+    "allocations": [
+      {
+        "depth": 20,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "INSTA_ART"
+    ],
+    "flavor": {
+      "ja": "",
+      "en": ""
+    }
   }
 ]
 }
