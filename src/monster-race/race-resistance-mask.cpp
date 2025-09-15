@@ -50,6 +50,11 @@ const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_RESIST_NEXUS_MASK = {
     MonsterResistanceType::RESIST_ALL,
 };
 
+const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_RESIST_VOID_MASK = {
+    MonsterResistanceType::RESIST_VOID_MAGIC,
+    MonsterResistanceType::RESIST_ALL,
+};
+
 const EnumClassFlagGroup<MonsterResistanceType> RFR_EFF_IMMUNE_ELEMENT_MASK = {
     MonsterResistanceType::IMMUNE_ACID,
     MonsterResistanceType::IMMUNE_ELEC,
