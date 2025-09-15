@@ -65,6 +65,7 @@ const std::vector<grouper> group_artifact_list = {
     { { ItemKindType::LITE }, _("光源", "Light Sources") },
     { { ItemKindType::AMULET }, _("アミュレット", "Amulets") },
     { { ItemKindType::RING }, _("指輪", "Rings") },
+    { { ItemKindType::ANAL_PLUG }, _("ケツ穴", "Anal") },
 };
 
 const std::vector<flag_desc> stat_flags_desc = { { TR_STR, _("腕力", "STR") }, { TR_INT, _("知能", "INT") }, { TR_WIS, _("賢さ", "WIS") },

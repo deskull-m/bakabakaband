@@ -11063,6 +11063,40 @@
       "ja": "この黒歴史を忘れてはならない。これは、まだ幻想郷が少女の園と誤解していた者たちが、彼の存在を持て余し、あるいは妬み生みだした怨念だ。",
       "en": ""
     }
+  },
+  {
+    "id": 292,
+    "name": {
+      "ja": "農夫ジョルジェ・マルティノヴィッチの",
+      "en": ""
+    },
+    "base_item": {
+      "type_value": 41,
+      "subtype_value": 10
+    },
+    "parameter_value": -3,
+    "level": 20,
+    "rarity": 6,
+    "weight": 100,
+    "cost": 0,
+    "base_ac": 0,
+    "base_dice": "1d1",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "flags": [
+      "AGGRAVATE",
+      "NASTY",
+      "SUST_CHR",
+      "RES_NEXUS",
+      "RES_CHAOS",
+      "STEALTH",
+      "CHR"
+    ],
+    "flavor": {
+      "ja": "このビール瓶と背徳行為は、彼の尻穴のみならず、やがて国家までも破壊した。",
+      "en": ""
+    }
   }
 ]
 }
