@@ -16,6 +16,7 @@ enum class PlayerSkillKindType {
     SHIELD = 3,
     GROSS_EATING = 4,
     SCATOLOGY = 5,
+    ARMOR = 6,
     MAX,
 };
 
@@ -70,6 +71,7 @@ public:
     void gain_riding_skill_exp_on_range_attack();
     void gain_riding_skill_exp_on_fall_off_check(int dam);
     void gain_scatology_skill_exp();
+    void gain_armor_skill_exp();
     void gain_spell_skill_exp(RealmType realm, int spell_idx);
     void gain_continuous_spell_skill_exp(RealmType realm, int spell_idx);
     PlayerSkillRank gain_spell_skill_exp_over_learning(int spell_idx);
