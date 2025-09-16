@@ -4,6 +4,7 @@
  */
 
 #include "cmd-io/cmd-text-command.h"
+#include "cmd-action/cmd-attack.h"
 #include "cmd-action/cmd-others.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
@@ -210,7 +211,13 @@ static std::vector<TextCommand> get_text_commands()
                     set_hero(player_ptr, player_ptr->blessed + randint1(10), false);
                 }
             },
-            _("踊る", "Dance") }
+            _("踊る", "Dance") },
+        { { "headbutt", "頭突き", "ずつき", "あたまづき" },
+            [](PlayerType *player_ptr) {
+                // 実際の頭突き攻撃処理を実行
+                do_cmd_headbutt(player_ptr);
+            },
+            _("頭突き", "Headbutt") }
     };
 }
 
