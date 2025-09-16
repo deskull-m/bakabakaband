@@ -146110,5 +146110,98 @@
         ],
         "probability": "1_IN_3"
     }
+},
+{
+    "id": 2277,
+    "name": {
+        "ja": "無限力『イデ』",
+        "en": "Ide, The Infinity Power"
+    },
+    "symbol": {
+        "character": "E",
+        "color": "Violet"
+    },
+    "speed": 43,
+    "hit_point": "210d103",
+    "vision": 100,
+    "armor_class": 100,
+    "alertness": 20,
+    "level": 107,
+    "rarity": 3,
+    "exp": 200000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        }
+    ],
+    "flavor": {
+        "ja": "イデは宇宙に存在してきた過去の知的生命の無数の意志集合そのものだ。「善き力」で宇宙が満ちることを望むが、その空疎な願望は恐らく永遠に満たされることがない。なぜならば、それは現存する宇宙の知的生命が直接争うことはおろか、住み分けによって争いを避けることすら許さぬという、あまりに潔癖なものだからだ。あなたがあなたで有り続けたいならば、この絶望的存在を討ち滅ぼし、因果律そのものを解体しなければならない。さもなくば、この独善的意志の宇宙再構築の試み、即ち「イデの発動」より一切が消滅し、あなたも含めた全ての生命は、因果地平の彼方に連れ去られて、その一部に溶け込んでしまうだろう。"
+    },
+    "alliance": "IDE",
+    "flags": [
+        "UNIQUE",
+        "STUPID",
+        "FORCE_MAXHP",
+        "PASS_WALL",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "REGENERATE",
+        "CAN_FLY",
+        "GOOD",
+        "IM_ACID",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_FIRE",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "RES_NEXU",
+        "RES_NETH",
+        "RES_CHAO",
+        "RES_WATE",
+        "POWERFUL"
+    ],
+    "skill": {
+        "list": [
+            "TELE_AWAY",
+            "TELE_TO",
+            "TELE_LEVEL",
+            "TPORT",
+            "BO_MANA",
+            "BA_MANA",
+            "BR_MANA",
+            "BA_LITE",
+            "DISPEL",
+            "PSY_SPEAR",
+            "INVULNER",
+            "BRAIN_SMASH"
+        ],
+        "probability": "1_IN_2"
+    }
 }]
 }

@@ -41184,12 +41184,37 @@ D:$ people's children in an incinerator before ultimately
 D:$ taking her own life.
 D:$ Her terrifying form is always surrounded
 D:$ by the ghosts of the children she sacrificed.
-
-Translated with DeepL.com (free version)
 D:日本のフレスコ画巨匠、間宮一郎の妻であった怨霊だ。
 D:生前、不慮の事故で己が子を死なせてしまって以来、精神を病み、
 D:他人の子供たちを焼却炉で焼く凶行を繰り返した挙句に自ら命を絶った。
 D:その恐ろしい姿には常に犠牲になった子の亡霊が取り巻いている。
+
+N:2277:無限力『イデ』
+E:Ide, The Infinity Power
+G:E:v
+I:153:210d103:100:100:20
+W:107:3:200000:0:0
+B:ENGULF:EXP_VAMP:2d66
+B:ENGULF:EXP_VAMP:2d66
+B:ENGULF:EXP_VAMP:2d66
+B:ENGULF:EXP_VAMP:2d66
+F:UNIQUE | STUPID
+F:FORCE_MAXHP | PASS_WALL |
+F:ONLY_ITEM | DROP_4D2 | DROP_2D2 | DROP_GREAT | ALLIANCE_IDE
+F:SMART | OPEN_DOOR | BASH_DOOR | REGENERATE | CAN_FLY |
+F:GOOD | IM_ACID | IM_COLD | IM_POIS | IM_FIRE | IM_ELEC | NO_CONF |
+F:NO_SLEEP | RES_NEXU | RES_NETH | RES_CHAO | RES_WATE | POWERFUL |
+S:1_IN_2 |
+S:TELE_AWAY | TELE_TO | TELE_LEVEL | TPORT |
+S:BO_MANA | BA_MANA | BR_MANA | BA_LITE
+S:DISPEL | PSY_SPEAR | INVULNER | BRAIN_SMASH
+D:イデは宇宙に存在してきた過去の知的生命の無数の意志集合そのものだ。
+D:「善き力」で宇宙が満ちることを望むが、その空疎な願望は恐らく永遠に満たされることがない。
+D:なぜならば、それは現存する宇宙の知的生命が直接争うことはおろか、
+D:住み分けによって争いを避けることすら許さぬという、あまりに潔癖なものだからだ。
+D:あなたがあなたで有り続けたいならば、この絶望的存在を討ち滅ぼし、因果律そのものを解体しなければならない。
+D:さもなくば、この独善的意志の宇宙再構築の試み、即ち「イデの発動」より一切が消滅し、
+D:あなたも含めた全ての生命は、因果地平の彼方に連れ去られて、その一部に溶け込んでしまうだろう。
 
 # N: serial number : monster name
 # G: symbol : color
