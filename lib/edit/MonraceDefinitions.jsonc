@@ -146203,5 +146203,71 @@
         ],
         "probability": "1_IN_2"
     }
+},
+{
+    "id": 2278,
+    "name": {
+        "ja": "腐れ谷の『不潔な巨像』",
+        "en": "Dirty Colossus of Valley of Defilement"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Light Green"
+    },
+    "speed": -1,
+    "hit_point": "10d160",
+    "vision": 20,
+    "armor_class": 116,
+    "alertness": 10,
+    "level": 40,
+    "rarity": 3,
+    "exp": 4000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SPIT",
+            "effect": "POISON",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "SPIT",
+            "effect": "POISON",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "SPIT",
+            "effect": "BLIND"
+        }
+    ],
+    "skill": {
+        "shoot": "30d6",
+        "list": [
+            "SHOOT",
+            "BR_POIS"
+        ],
+        "probability": "1_IN_5"
+    },
+    "flavor": {
+        "ja": "ボーレタリアの腐れ谷に潜む、文字通り不潔な巨躯を持った人影だ。その身には臭気と共に無数の虫がたかり、意志があるようにあなたにも襲い掛かってくる！"
+    },
+    "alliance": "BOLETARIA",
+    "flags": [
+        "EMPTY_MIND",
+        "BASH_DOOR",
+        "RES_DARK",
+        "GOLEM",
+        "DEMON",
+        "IM_COLD",
+        "IM_POIS",
+        "RES_CHAO",
+        "RES_SOUN",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "FORCE_MAXHP"
+    ]
 }]
 }
