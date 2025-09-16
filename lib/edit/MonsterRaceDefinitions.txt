@@ -41216,6 +41216,22 @@ D:あなたがあなたで有り続けたいならば、この絶望的存在を
 D:さもなくば、この独善的意志の宇宙再構築の試み、即ち「イデの発動」より一切が消滅し、
 D:あなたも含めた全ての生命は、因果地平の彼方に連れ去られて、その一部に溶け込んでしまうだろう。
 
+N:2278:腐れ谷の『不潔な巨像』
+E:Dirty Colossus of Valley of Defilement
+G:g:G
+I:109:10d160:20:116:10
+W:40:3:4000:0:0
+B:SHOOT:HURT:30d6
+B:SPIT:POISON:10d10
+B:SPIT:POISON:10d10
+B:SPIT:BLIND
+F:EMPTY_MIND | BASH_DOOR | RES_DARK | GOLEM | DEMON | ALLIANCE_BOLETARIA
+F:IM_COLD | IM_POIS | RES_CHAO | RES_SOUN | NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | FORCE_MAXHP
+S:1_IN_5
+S:SHOOT | BR_POIS
+D:ボーレタリアの腐れ谷に潜む、文字通り不潔な巨躯を持った人影だ。
+D:その身には臭気と共に無数の虫がたかり、意志があるようにあなたにも襲い掛かってくる！
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
