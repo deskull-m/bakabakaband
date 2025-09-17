@@ -241,6 +241,7 @@ enum class MonraceId : int16_t {
     GX_77_X_CHARLIE = 2271,
     GX_87_X_KILROY = 2272,
     M_77_X_TRIGGER = 2273,
+    IDE = 2277,
     POLYGON_SPIN = -1, // TODO: 変愚から後日移植
     HUNGRY_OLD_MAN = -2 // TODO: 変愚から後日移植
 };
