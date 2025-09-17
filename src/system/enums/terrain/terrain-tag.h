@@ -126,5 +126,4 @@ enum class TerrainTag {
 
     SPIDER_SILK_NET,
     PORTAL,
-    
 };

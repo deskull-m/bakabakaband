@@ -28,7 +28,6 @@
 #include "player/attack-defense-types.h"
 #include "player/player-move.h"
 #include "player/player-status.h"
-#include "system/dungeon/dungeon-list.h"
 #include "player/special-defense-types.h"
 #include "spell-realm/spells-hex.h"
 #include "spell-realm/spells-song.h"
@@ -85,6 +84,11 @@ void do_cmd_go_up(PlayerType *player_ptr)
     const auto &grid = floor.get_grid({ player_ptr->y, player_ptr->x });
     const auto &terrain = grid.get_terrain();
     PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+
+    if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
+        do_cmd_go_portal(player_ptr);
+        return;
+    }
 
     if (terrain.flags.has_not(TerrainCharacteristics::LESS)) {
         msg_print(_("ここには上り階段が見当たらない。", "I see no up staircase here."));
@@ -209,6 +213,12 @@ void do_cmd_go_down(PlayerType *player_ptr)
     auto &floor = *player_ptr->current_floor_ptr;
     auto &grid = floor.grid_array[player_ptr->y][player_ptr->x];
     auto &terrain = grid.get_terrain();
+
+    if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
+        do_cmd_go_portal(player_ptr);
+        return;
+    }
+
     if (terrain.flags.has_not(TerrainCharacteristics::MORE)) {
         msg_print(_("ここには下り階段が見当たらない。", "I see no down staircase here."));
         return;
@@ -531,7 +541,7 @@ void do_cmd_go_portal(PlayerType *player_ptr)
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid({ player_ptr->y, player_ptr->x });
     const auto &terrain = grid.get_terrain();
-    
+
     if (terrain.flags.has_not(TerrainCharacteristics::PORTAL)) {
         msg_print(_("ここにはポータルが見当たらない。", "I see no portal here."));
         return;
@@ -553,12 +563,12 @@ void do_cmd_go_portal(PlayerType *player_ptr)
     // ランダムで他のダンジョンを選択
     const auto &dungeons = DungeonList::get_instance();
     std::vector<DungeonId> available_dungeons;
-    
+
     for (auto d_idx = DungeonId::ANGBAND; d_idx < DungeonId::MAX; d_idx = static_cast<DungeonId>(static_cast<int>(d_idx) + 1)) {
         if (d_idx == current_dungeon || d_idx == DungeonId::WILDERNESS) {
             continue;
         }
-        
+
         const auto &dungeon = dungeons.get_dungeon(d_idx);
         // 現在の階層がダンジョンの範囲内かチェック
         if (current_level <= dungeon.maxdepth) {
@@ -573,10 +583,10 @@ void do_cmd_go_portal(PlayerType *player_ptr)
 
     // ランダムに選択
     const auto target_dungeon = available_dungeons[randint0(available_dungeons.size())];
-    
+
     // エネルギー消費
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    
+
     // オートセーブ
     if (autosave_l) {
         do_cmd_save_game(player_ptr, true);
@@ -585,7 +595,7 @@ void do_cmd_go_portal(PlayerType *player_ptr)
     // 階層移動処理
     player_ptr->leaving = true;
     floor.set_dungeon_index(target_dungeon);
-    
+
     const auto &target_dungeon_info = dungeons.get_dungeon(target_dungeon);
     msg_format(_("%sに転移した！", "You are transferred to %s!"), target_dungeon_info.name.data());
 }

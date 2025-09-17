@@ -346,10 +346,6 @@ void process_command(PlayerType *player_ptr)
 
         break;
     }
-    case 'P': {
-        do_cmd_go_portal(player_ptr);
-        break;
-    }
     case 'o': {
         do_cmd_open(player_ptr);
         break;
