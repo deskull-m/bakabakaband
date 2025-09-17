@@ -125,4 +125,5 @@ enum class TerrainTag {
     CLOSED_CURTAIN,
 
     SPIDER_SILK_NET,
+    PORTAL,
 };

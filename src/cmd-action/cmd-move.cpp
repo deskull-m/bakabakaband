@@ -85,6 +85,11 @@ void do_cmd_go_up(PlayerType *player_ptr)
     const auto &terrain = grid.get_terrain();
     PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
+    if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
+        do_cmd_go_portal(player_ptr);
+        return;
+    }
+
     if (terrain.flags.has_not(TerrainCharacteristics::LESS)) {
         msg_print(_("ここには上り階段が見当たらない。", "I see no up staircase here."));
         return;
@@ -208,6 +213,12 @@ void do_cmd_go_down(PlayerType *player_ptr)
     auto &floor = *player_ptr->current_floor_ptr;
     auto &grid = floor.grid_array[player_ptr->y][player_ptr->x];
     auto &terrain = grid.get_terrain();
+
+    if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
+        do_cmd_go_portal(player_ptr);
+        return;
+    }
+
     if (terrain.flags.has_not(TerrainCharacteristics::MORE)) {
         msg_print(_("ここには下り階段が見当たらない。", "I see no down staircase here."));
         return;
@@ -519,4 +530,72 @@ void do_cmd_rest(PlayerType *player_ptr)
     rfu.set_flag(MainWindowRedrawingFlag::ACTION);
     handle_stuff(player_ptr);
     term_fresh();
+}
+
+/*!
+ * @brief ポータルを使って他ダンジョンの同階層に移動する処理
+ * @param player_ptr プレイヤーへの参照ポインタ
+ */
+void do_cmd_go_portal(PlayerType *player_ptr)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &grid = floor.get_grid({ player_ptr->y, player_ptr->x });
+    const auto &terrain = grid.get_terrain();
+
+    if (terrain.flags.has_not(TerrainCharacteristics::PORTAL)) {
+        msg_print(_("ここにはポータルが見当たらない。", "I see no portal here."));
+        return;
+    }
+
+    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+
+    if (!confirm_leave_level(player_ptr, false)) {
+        return;
+    }
+
+    msg_print(_("ポータルに足を踏み入れた。", "You step into the portal."));
+    sound(SoundKind::STAIRWAY);
+
+    // 現在のダンジョンと階層を記録
+    const auto current_dungeon = floor.dungeon_id;
+    const auto current_level = floor.dun_level;
+
+    // ランダムで他のダンジョンを選択
+    const auto &dungeons = DungeonList::get_instance();
+    std::vector<DungeonId> available_dungeons;
+
+    for (auto d_idx = DungeonId::ANGBAND; d_idx < DungeonId::MAX; d_idx = static_cast<DungeonId>(static_cast<int>(d_idx) + 1)) {
+        if (d_idx == current_dungeon || d_idx == DungeonId::WILDERNESS) {
+            continue;
+        }
+
+        const auto &dungeon = dungeons.get_dungeon(d_idx);
+        // 現在の階層がダンジョンの範囲内かチェック
+        if (current_level <= dungeon.maxdepth) {
+            available_dungeons.push_back(d_idx);
+        }
+    }
+
+    if (available_dungeons.empty()) {
+        msg_print(_("ポータルは反応しなかった。", "The portal does not respond."));
+        return;
+    }
+
+    // ランダムに選択
+    const auto target_dungeon = available_dungeons[randint0(available_dungeons.size())];
+
+    // エネルギー消費
+    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+
+    // オートセーブ
+    if (autosave_l) {
+        do_cmd_save_game(player_ptr, true);
+    }
+
+    // 階層移動処理
+    player_ptr->leaving = true;
+    floor.set_dungeon_index(target_dungeon);
+
+    const auto &target_dungeon_info = dungeons.get_dungeon(target_dungeon);
+    msg_format(_("%sに転移した！", "You are transferred to %s!"), target_dungeon_info.name.data());
 }
