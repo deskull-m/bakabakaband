@@ -259,4 +259,5 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "OPEN_CURTAIN", TerrainTag::OPEN_CURTAIN },
     { "CLOSED_CURTAIN", TerrainTag::CLOSED_CURTAIN },
     { "SPIDER_SILK_NET", TerrainTag::SPIDER_SILK_NET },
+    { "PORTAL", TerrainTag::PORTAL },
 };

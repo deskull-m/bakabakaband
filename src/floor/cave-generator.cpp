@@ -241,6 +241,15 @@ static bool make_one_floor(PlayerType *player_ptr, DungeonData *dd_ptr, const Du
         return false;
     }
 
+    // ポータル配置処理（1/3の確率で1～2個配置）
+    if (one_in_(3)) {
+        const auto portal_num = randint1(2);
+        if (!alloc_stairs(player_ptr, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
+            // ポータル配置失敗は警告のみで処理継続
+            msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("ポータル生成に失敗", "Failed to generate portals."));
+        }
+    }
+
     return true;
 }
 
@@ -258,6 +267,15 @@ static bool switch_making_floor(PlayerType *player_ptr, DungeonData *dd_ptr, con
         if (!alloc_stairs(player_ptr, terrains.get_terrain_id(TerrainTag::UP_STAIR), 1, 3)) {
             dd_ptr->why = _("迷宮ダンジョンの上り階段生成に失敗", "Failed to alloc down stairs in maze dungeon.");
             return false;
+        }
+
+        // 迷宮ダンジョンでもポータル配置処理（1/3の確率で1～2個配置）
+        if (one_in_(3)) {
+            const auto portal_num = randint1(2);
+            if (!alloc_stairs(player_ptr, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
+                // ポータル配置失敗は警告のみで処理継続
+                msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("迷宮ダンジョンのポータル生成に失敗", "Failed to generate portals in maze dungeon."));
+            }
         }
 
         return true;
