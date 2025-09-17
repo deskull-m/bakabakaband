@@ -138,6 +138,7 @@ const std::unordered_map<std::string_view, TerrainCharacteristics> f_info_flags 
     { "TENTACLE", TerrainCharacteristics::TENTACLE },
     { "ICE", TerrainCharacteristics::ICE },
     { "SPIDER_SILK_NET", TerrainCharacteristics::SPIDER_SILK_NET },
+    { "PORTAL", TerrainCharacteristics::PORTAL },
 };
 
 const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {

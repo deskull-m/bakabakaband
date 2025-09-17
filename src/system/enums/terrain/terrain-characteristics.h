@@ -78,5 +78,6 @@ enum class TerrainCharacteristics {
     TENTACLE = 118, /*!< 触手地形である */
     ICE = 119, /*!< 氷である */
     SPIDER_SILK_NET = 120, /*!< 蜘蛛糸地形である */
+    PORTAL = 121, /*!< 他ダンジョンへのポータル地形である */
     MAX,
 };
