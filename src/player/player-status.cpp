@@ -1650,6 +1650,12 @@ static ARMOUR_CLASS calc_base_ac(PlayerType *player_ptr)
         ac += player_ptr->skill_exp[PlayerSkillKindType::SHIELD] * (1 + player_ptr->lev / 22) / 2000;
     }
 
+    // 装甲技能による防御力ボーナス（鎧装備時）
+    const auto o_ptr_body = player_ptr->inventory[INVEN_BODY].get();
+    if (o_ptr_body->is_valid() && (o_ptr_body->bi_key.tval() == ItemKindType::HARD_ARMOR)) {
+        ac += player_ptr->skill_exp[PlayerSkillKindType::ARMOR] * (1 + player_ptr->lev / 25) / 2500;
+    }
+
     return ac;
 }
 

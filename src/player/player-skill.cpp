@@ -215,6 +215,8 @@ concptr PlayerSkill::skill_name(PlayerSkillKindType skill)
         return _("悪食", "Gross Eating");
     case PlayerSkillKindType::SCATOLOGY:
         return _("スカトロジー", "Scatology");
+    case PlayerSkillKindType::ARMOR:
+        return _("装甲", "Armor");
     case PlayerSkillKindType::MAX:
         break;
     }
@@ -297,6 +299,14 @@ void PlayerSkill::gain_scatology_skill_exp()
     if (this->player_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::SCATOLOGY]) {
         const GainAmountList gain_amount_list{ 30, 3, 1, (one_in_(4) ? 1 : 0) };
         gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY], gain_amount_list);
+    }
+}
+
+void PlayerSkill::gain_armor_skill_exp()
+{
+    if (this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::ARMOR]) {
+        const GainAmountList gain_amount_list{ 50, 5, 1, (one_in_(3) ? 1 : 0) };
+        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR], gain_amount_list);
     }
 }
 
