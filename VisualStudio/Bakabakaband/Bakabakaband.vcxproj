@@ -297,6 +297,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-meldor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-naked-knights.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nanman.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-nanto-orthodox.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-nibelung.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-none.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-numenor.cpp" />
@@ -1133,6 +1134,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-meldor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-naked-knights.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nanman.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-nanto-orthodox.h" />
     <ClInclude Include="..\..\src\alliance\alliance-new.h" />
     <ClInclude Include="..\..\src\alliance\alliance-nibelung.h" />
     <ClInclude Include="..\..\src\alliance\alliance-none.h" />

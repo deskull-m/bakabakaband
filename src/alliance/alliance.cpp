@@ -44,6 +44,7 @@
 #include "alliance/alliance-meldor.h"
 #include "alliance/alliance-naked-knights.h"
 #include "alliance/alliance-nanman.h"
+#include "alliance/alliance-nanto-orthodox.h"
 #include "alliance/alliance-nibelung.h"
 #include "alliance/alliance-none.h"
 #include "alliance/alliance-numenor.h"
@@ -89,6 +90,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::CHINCHINTEI, std::make_unique<AllianceChinChinTei>(AllianceType::CHINCHINTEI, "CHINCHINTEI", _("ちんちん亭", "Chin-Chin-Tei"), 191919L) },
     { AllianceType::ODIO, std::make_unique<AllianceOdio>(AllianceType::ODIO, "ODIO", _("オディオ", "Odio"), 300000L) },
     { AllianceType::KENOHGUN, std::make_unique<AllianceKenohgun>(AllianceType::KENOHGUN, "KENOHGUN", _("拳王軍", "Kenohgun"), 100000L) },
+    { AllianceType::NANTO_ORTHODOX, std::make_unique<AllianceNantoOrthodox>(AllianceType::NANTO_ORTHODOX, "NANTO-ORTHODOX", _("南斗正統派", "Nanto Orthodox"), 100000L) },
     { AllianceType::FANG_FAMILY, std::make_unique<AllianceFangFamily>(AllianceType::FANG_FAMILY, "FANG-FAMILY", _("牙一族", "Fang Family"), 4000L) },
     { AllianceType::KOGAN_RYU, std::make_unique<AllianceKoganRyu>(AllianceType::KOGAN_RYU, "KOGAN-RYU", _("虎眼流", "Kogan Ryu"), 10000L) },
     { AllianceType::ELDRAZI, std::make_unique<AllianceEldrazi>(AllianceType::ELDRAZI, "ELDRAZI", _("エルドラージ", "Eldrazi"), 120000000L) },

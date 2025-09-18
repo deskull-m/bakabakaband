@@ -2738,6 +2738,9 @@
     <ClCompile Include="..\..\src\birth\birth-select-patron.cpp">
       <Filter>birth</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-nanto-orthodox.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5913,6 +5916,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\birth\birth-select-patron.h">
       <Filter>birth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-nanto-orthodox.h">
+      <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
