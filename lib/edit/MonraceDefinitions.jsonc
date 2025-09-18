@@ -144857,7 +144857,12 @@
     "exp": 900,
     "next_exp": 0,
     "next_mon": 0,
-    "escorts": [],
+    "escorts": [
+        {
+            "escorts_id": 2279,
+            "escort_num": "8d1"
+        }
+    ],
     "blows": [
         {
             "method": "HIT",
@@ -146268,6 +146273,72 @@
         "NO_FEAR",
         "NONLIVING",
         "FORCE_MAXHP"
+    ]
+},
+{
+    "id": 2279,
+    "name": {
+        "ja": "オゴレス王の親衛隊",
+        "en": "Life Guard of King Ogreth"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Green"
+    },
+    "speed": 0,
+    "hit_point": "80d12",
+    "vision": 25,
+    "armor_class": 120,
+    "alertness": 25,
+    "level": 30,
+    "rarity": 2,
+    "exp": 1200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        }
+    ],
+    "flavor": {
+        "ja": "オゴレス王の身辺を守る最強の戦力だ。"
+    },
+    "sex": "MALE",
+    "alliance": "BASAM-EMPIRE",
+    "mob": 8,
+    "flags": [
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "FORCE_MAXHP",
+        "HUMAN",
+        "DROP_90",
+        "DROP_1D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL",
+        "IM_ELEC",
+        "IM_COLD",
+        "NO_CONF",
+        "NO_SLEEP"
     ]
 }]
 }
