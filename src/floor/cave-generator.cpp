@@ -410,6 +410,10 @@ static bool allocate_dungeon_data(PlayerType *player_ptr, DungeonData *dd_ptr, c
     alloc_object(player_ptr, ALLOC_SET_BOTH, ALLOC_TYP_OBJECT, randnor(alloc_item, 3));
     constexpr auto alloc_gold = 15;
     alloc_object(player_ptr, ALLOC_SET_BOTH, ALLOC_TYP_GOLD, randnor(alloc_gold, 3));
+
+    // 特定階層でのダイスベースアイテム生成
+    alloc_specific_floor_items(player_ptr);
+
     floor.object_level = floor.base_level;
     if (alloc_guardian(player_ptr, true)) {
         return true;

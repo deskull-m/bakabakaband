@@ -15,4 +15,5 @@ enum dungeon_allocation_type {
     ALLOC_TYP_OBJECT = 5, /* Object */
     ALLOC_TYP_INVIS = 6, /* Invisible wall */
     ALLOC_TYP_SUSHI = 7, /* Sushi */
+    ALLOC_TYP_SPECIFIC_ITEMS = 8, /* Specific floor items with dice */
 };

@@ -11,6 +11,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "util/dice.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -427,6 +428,27 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
         info_set_value(r_type, tokens[1]);
         info_set_value(r_rate, tokens[2]);
         dungeon->room_rate[i2enum<RoomType>(r_type)] = r_rate;
+        return PARSE_ERROR_NONE;
+    }
+
+    // K:floor:probability:dice_num:dice_sides:item_id - 特定階層でのダイスベースアイテム生成指定
+    if (tokens[0] == "K") {
+        if (tokens.size() < 6) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+        int floor_level, probability, dice_num, dice_sides, item_id;
+        info_set_value(floor_level, tokens[1]);
+        info_set_value(probability, tokens[2]);
+        info_set_value(dice_num, tokens[3]);
+        info_set_value(dice_sides, tokens[4]);
+        info_set_value(item_id, tokens[5]);
+
+        FloorItemGenerationRule rule;
+        rule.probability = probability;
+        rule.dice = Dice(dice_num, dice_sides);
+        rule.item_id = item_id;
+
+        dungeon->specific_item_generation_map[floor_level] = rule;
         return PARSE_ERROR_NONE;
     }
 
