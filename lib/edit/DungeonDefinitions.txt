@@ -19,6 +19,8 @@
 # F:<flags>
 # M:<monster flags>
 # S:<monster spells>
+# K:<floor>:<probability>:<dice_num>:<dice_sides>:<item_id> - Specific floor item generation with dice
+# Z:<floor>:<vault_id> - Specific floor vault generation
 
 # Note on the MONSTER_DIV_ dungeon flag
 # It defines the percentage of monsters affected by the restrictions
@@ -65,6 +67,7 @@ F:LAKE_WATER | LAKE_LAVA | LAKE_RUBBLE | LAKE_TREE | ARCADE
 F:LAKE_ACID | ACID_RIVER | LAKE_POISONOUS | POISONOUS_RIVER
 F:MONSTER_RATE_150
 F:MONSTER_DIV_64
+K:20:3:6:6:42
 
 N:2:イークの洞穴
 E:Yeek cave
@@ -472,5 +475,16 @@ F:MONSTER_RATE_12
 # F:<flags>
 # M:<monster flags>
 # S:<monster spells>
+
+# K: line - Specific floor item generation with dice
+# K:<floor>:<probability>:<dice_num>:<dice_sides>:<item_id>
+# <floor>: Floor level (1-127)
+# <probability>: Generation probability (0-100)
+# <dice_num>: Number of dice (1-10)
+# <dice_sides>: Number of sides per die (1-100)
+# <item_id>: Specific item type ID to generate
+#   You can find item IDs in BaseitemDefinitions.txt
+#   Example IDs: 1=ダガー, 23=長剣, 365=治癒のポーション, etc.
+# Example: K:10:50:2:4:365 = 50% chance to generate 2d4 healing potions on floor 10
 
 

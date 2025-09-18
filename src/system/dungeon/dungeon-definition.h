@@ -23,6 +23,7 @@
 #include "room/room-types.h"
 #include "room/vault-builder.h"
 #include "system/angband.h"
+#include "util/dice.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
 #include "util/probability-table.h"
@@ -65,6 +66,15 @@ enum class DungeonMode {
     NAND = 2,
     OR = 3,
     NOR = 4,
+};
+
+/*!
+ * @brief 特定階層でのアイテム生成ルール
+ */
+struct FloorItemGenerationRule {
+    int probability; /*!< 生成確率 (0-100) */
+    Dice dice; /*!< 生成個数のダイス (xdy形式) */
+    int item_id; /*!< 生成するアイテム種類ID */
 };
 
 /* A structure for the != dungeon types */
@@ -130,6 +140,7 @@ public:
 
     std::vector<std::tuple<int, int, int>> fixed_room_list; // 削除か合流予定
     std::map<int, VaultTypeId> specific_vault_map; /*!< 特定階層で生成するVault: <階層, VaultTypeId> */
+    std::map<int, FloorItemGenerationRule> specific_item_generation_map; /*!< 特定階層でのアイテム生成ルール: <階層, 生成ルール> */
 
     std::map<RoomType, int> room_rate; /* ダンジョン独自の部屋生成率 */
     AllianceType alliance_idx = AllianceType::NONE; /*!< 支配アライアンス */
