@@ -68,6 +68,7 @@ hengband_SOURCES = \
 	alliance/alliance-slaanesh.cpp alliance/alliance-sllanesh.h \
 	alliance/alliance-nurgle.cpp alliance/alliance-nurgle.h \
 	alliance/alliance-nanman.cpp alliance/alliance-nanman.h \
+	alliance/alliance-nanto-orthodox.cpp alliance/alliance-nanto-orthodox.h \
 	alliance/alliance-cookie-grandma.cpp alliance/alliance-cookie-grandma.h \
 	alliance/alliance-hide.cpp alliance/alliance-hide.h \
 	alliance/alliance-ide.cpp alliance/alliance-ide.h \
