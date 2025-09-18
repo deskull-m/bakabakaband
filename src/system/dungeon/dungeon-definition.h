@@ -21,6 +21,7 @@
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
 #include "room/room-types.h"
+#include "room/vault-builder.h"
 #include "system/angband.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
@@ -127,7 +128,8 @@ public:
     int monster_rate = 100; //!< トラップ生成比率
     int trap_rate = 100; //!< トラップ生成比率
 
-    std::vector<std::tuple<int, int, int>> fixed_room_list;
+    std::vector<std::tuple<int, int, int>> fixed_room_list; // 削除か合流予定
+    std::map<int, VaultTypeId> specific_vault_map; /*!< 特定階層で生成するVault: <階層, VaultTypeId> */
 
     std::map<RoomType, int> room_rate; /* ダンジョン独自の部屋生成率 */
     AllianceType alliance_idx = AllianceType::NONE; /*!< 支配アライアンス */

@@ -430,5 +430,17 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
         return PARSE_ERROR_NONE;
     }
 
+    // Z:floor:vault_id - 特定階層で生成するVault指定
+    if (tokens[0] == "Z") {
+        if (tokens.size() < 3) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+        int floor_level, vault_id;
+        info_set_value(floor_level, tokens[1]);
+        info_set_value(vault_id, tokens[2]);
+        dungeon->specific_vault_map[floor_level] = i2enum<VaultTypeId>(vault_id);
+        return PARSE_ERROR_NONE;
+    }
+
     return PARSE_ERROR_UNDEFINED_DIRECTIVE;
 }
