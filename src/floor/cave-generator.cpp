@@ -22,6 +22,8 @@
 #include "room/rooms-maze-vault.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
+#include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -42,6 +44,32 @@ static void make_symmetric_floor(FloorType &floor)
             right = left;
         }
     }
+}
+
+/*!
+ * @brief BEGINNER持ち以外のダンジョンからランダムに1つを選択する
+ * @return 選択されたダンジョンID、適切なダンジョンがない場合はnullopt
+ */
+static tl::optional<DungeonId> select_random_non_beginner_dungeon()
+{
+    std::vector<DungeonId> non_beginner_dungeons;
+    const auto &dungeon_list = DungeonList::get_instance();
+
+    // 全ダンジョンをチェックしてBEGINNER持ち以外を収集
+    for (auto dungeon_id = i2enum<DungeonId>(1); enum2i(dungeon_id) <= DUNGEON_MAX; dungeon_id = i2enum<DungeonId>(enum2i(dungeon_id) + 1)) {
+        const auto &dungeon = dungeon_list.get_dungeon(dungeon_id);
+        if (dungeon.flags.has_not(DungeonFeatureType::BEGINNER)) {
+            non_beginner_dungeons.push_back(dungeon_id);
+        }
+    }
+
+    if (non_beginner_dungeons.empty()) {
+        return tl::nullopt;
+    }
+
+    // ランダムに1つ選択
+    const auto selected_index = randint0(non_beginner_dungeons.size());
+    return non_beginner_dungeons[selected_index];
 }
 
 static void reset_lite_area(FloorType &floor)
@@ -191,7 +219,7 @@ static void make_only_tunnel_points(const FloorType &floor, DungeonData *dd_ptr)
 static bool make_one_floor(PlayerType *player_ptr, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_ROOM)) {
+    if (dungeon.flags.has(DungeonFeatureType::NO_ROOM)) {
         make_only_tunnel_points(floor, dd_ptr);
     } else {
         if (!generate_rooms(player_ptr, dd_ptr)) {
@@ -450,8 +478,23 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
     reset_lite_area(floor);
     get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook());
 
+    // 鉄獄（ANGBAND）では一定確率で他のダンジョンの生成処理を使用
+    constexpr auto chance_random_dungeon = 10; // 10%の確率
+    if (floor.dungeon_id == DungeonId::ANGBAND && one_in_(chance_random_dungeon)) {
+        if (auto random_dungeon_id = select_random_non_beginner_dungeon()) {
+            floor.dungeon_generated_id = *random_dungeon_id;
+            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+                format(_("鉄獄で他ダンジョンの生成処理を使用: %s", "Using random dungeon generation in Angband: %s"),
+                    floor.get_generated_dungeon_definition().name.data()));
+        } else {
+            floor.dungeon_generated_id = floor.dungeon_id;
+        }
+    } else {
+        floor.dungeon_generated_id = floor.dungeon_id;
+    }
+
     DungeonData dd({ floor.height, floor.width });
-    auto &dungeon = floor.get_dungeon_definition();
+    auto &dungeon = floor.get_generated_dungeon_definition();
     floor.allianceID = dungeon.alliance_idx;
 
     constexpr auto chance_empty_floor = 24;

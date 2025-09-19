@@ -269,7 +269,7 @@ void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHoo
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
-    const auto &dungeon = floor.get_dungeon_definition();
+    const auto &dungeon = floor.get_generated_dungeon_definition();
     MonraceFilterDebugInfo mfdi;
     for (auto &entry : table) {
         const auto monrace_id = entry.index;

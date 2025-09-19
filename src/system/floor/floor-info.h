@@ -73,6 +73,7 @@ class FloorType {
 public:
     FloorType();
     DungeonId dungeon_id{};
+    DungeonId dungeon_generated_id{}; /*!< 実際の生成処理に使用するダンジョンID */
     std::vector<std::vector<Grid>> grid_array;
     DEPTH dun_level = 0; /*!< 現在の実ダンジョン階層 base_level の参照元となる / Current dungeon level */
     DEPTH base_level = 0; /*!< 基本生成レベル、後述のobject_level, monster_levelの参照元となる / Base dungeon level */
@@ -127,6 +128,7 @@ public:
     void set_dungeon_index(DungeonId id);
     void reset_dungeon_index();
     const DungeonDefinition &get_dungeon_definition() const; //!< @details 定義データなので非const 版の使用は禁止.
+    const DungeonDefinition &get_generated_dungeon_definition() const; //!< @details 生成処理用ダンジョン定義取得.
     QuestId get_random_quest_id(tl::optional<int> level_opt = tl::nullopt) const;
     QuestId get_quest_id(const int bonus = 0) const;
     bool has_los_at(const Pos2D &pos) const;

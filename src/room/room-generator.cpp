@@ -98,7 +98,7 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
 bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
-    auto &dungeon = floor_ptr->get_dungeon_definition();
+    auto &dungeon = floor_ptr->get_generated_dungeon_definition();
 
     // 特定階層でのVault生成チェック
     if (dungeon.specific_vault_map.count(floor_ptr->dun_level)) {
@@ -218,7 +218,7 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
         }
     }
 
-    for (auto &r : floor_ptr->get_dungeon_definition().fixed_room_list) {
+    for (auto &r : floor_ptr->get_generated_dungeon_definition().fixed_room_list) {
         auto depth = std::get<0>(r);
         auto id = std::get<1>(r);
         auto percentage = std::get<2>(r);

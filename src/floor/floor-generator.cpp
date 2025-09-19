@@ -319,7 +319,7 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr)
 {
     constexpr auto chance_small_floor = 10;
     auto &floor = *player_ptr->current_floor_ptr;
-    const auto &dungeon = floor.get_dungeon_definition();
+    const auto &dungeon = floor.get_generated_dungeon_definition();
     int level_height, level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
