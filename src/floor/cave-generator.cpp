@@ -511,6 +511,14 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
 
     make_aqua_streams(player_ptr, &dd, dungeon);
     make_perm_walls(player_ptr);
+
+    // 地形生成完了後、モンスター・アイテム配置前に左右対称化
+    constexpr int symmetric_chance = 25;
+    if (one_in_(symmetric_chance)) {
+        make_symmetric_floor(floor);
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
+    }
+
     if (!check_place_necessary_objects(player_ptr, &dd)) {
         return dd.why;
     }
@@ -518,12 +526,6 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
     decide_dungeon_data_allocation(player_ptr, &dd, dungeon);
     if (!allocate_dungeon_data(player_ptr, &dd, dungeon)) {
         return dd.why;
-    }
-
-    constexpr int symmetric_chance = 25;
-    if (one_in_(symmetric_chance)) {
-        make_symmetric_floor(floor);
-        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
     }
 
     decide_grid_glowing(floor, &dd, dungeon);
