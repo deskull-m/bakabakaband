@@ -992,7 +992,7 @@ bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode
 
 void place_grid(PlayerType *player_ptr, Grid &grid, grid_bold_type gb_type)
 {
-    const auto &dungeon = player_ptr->current_floor_ptr->get_dungeon_definition();
+    const auto &dungeon = player_ptr->current_floor_ptr->get_generated_dungeon_definition();
     switch (gb_type) {
     case GB_FLOOR: {
         grid.set_terrain_id(dungeon.select_floor_terrain_id());

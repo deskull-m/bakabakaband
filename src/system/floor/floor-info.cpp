@@ -107,6 +107,11 @@ const DungeonDefinition &FloorType::get_dungeon_definition() const
     return DungeonList::get_instance().get_dungeon(this->dungeon_id);
 }
 
+const DungeonDefinition &FloorType::get_generated_dungeon_definition() const
+{
+    return DungeonList::get_instance().get_dungeon(this->dungeon_generated_id);
+}
+
 /*!
  * @brief 新しく入ったダンジョンの階層に固定されているランダムクエストを探し出しIDを返す。
  * @param player_ptr プレイヤーへの参照ポインタ

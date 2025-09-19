@@ -202,7 +202,7 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
 void alloc_specific_floor_items(PlayerType *player_ptr)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    const auto &dungeon = floor.get_dungeon_definition();
+    const auto &dungeon = floor.get_generated_dungeon_definition();
 
     // 現在の階層に特定のアイテム生成ルールがあるかチェック
     if (!dungeon.specific_item_generation_map.count(floor.dun_level)) {
