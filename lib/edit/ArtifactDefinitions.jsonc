@@ -11226,6 +11226,38 @@
       "ja": "このビール瓶と背徳行為は、彼の尻穴のみならず、やがて国家までも破壊した。",
       "en": ""
     }
+  },
+  {
+    "id": 293,
+    "name": {
+      "ja": "時の",
+      "en": ""
+    },
+    "base_item": {
+      "type_value": 32,
+      "subtype_value": 19
+    },
+    "parameter_value": 0,
+    "level": 5,
+    "rarity": 4,
+    "weight": 12,
+    "cost": 40000,
+    "base_ac": 2,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 10,
+    "flags": [
+      "HIDE_TYPE",
+      "XTRA_H_RES",
+      "RES_TIME",
+      "ACTIVATE"
+    ],
+    "flavor": {
+      "ja": "DIOとの決戦に必要かも知れない学帽だ。",
+      "en": ""
+    },
+    "activate": "THE_WORLD"
   }
 ]
 }
