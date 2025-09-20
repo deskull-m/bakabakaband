@@ -41248,6 +41248,19 @@ F:DROP_90 | DROP_1D2 | DROP_GOOD | OPEN_DOOR | BASH_DOOR
 F:EVIL | IM_ELEC | IM_COLD | NO_CONF | NO_SLEEP
 D:オゴレス王の身辺を守る最強の戦力だ。
 
+N:2280:アルパカ
+E:Alpaca
+G:q:w
+I:110:8d8:20:25:25
+W:3:1:20:0:0
+B:SPIT:CONFUSE:1d4
+F:WILD_WASTE |
+F:ANIMAL | DROP_SKELETON | DROP_CORPSE | RIDING
+D:$This gentle, fluffy creature has soft wool and big, curious eyes.
+D:$ It occasionally spits when agitated but is generally peaceful.
+D:柔らかな毛とつぶらな瞳をした温厚でふわふわした動物。
+D:興奮すると時々つばを吐くが、基本的には穏やかな性格だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
