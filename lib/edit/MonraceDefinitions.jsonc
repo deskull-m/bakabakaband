@@ -146340,5 +146340,45 @@
         "NO_CONF",
         "NO_SLEEP"
     ]
+},
+{
+    "id": 2280,
+    "name": {
+        "ja": "アルパカ",
+        "en": "Alpaca"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "8d8",
+    "vision": 20,
+    "armor_class": 25,
+    "alertness": 25,
+    "level": 3,
+    "rarity": 1,
+    "exp": 20,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SPIT",
+            "effect": "CONFUSE",
+            "damage_dice": "1d4"
+        }
+    ],
+    "flavor": {
+        "ja": "柔らかな毛とつぶらな瞳をした温厚でふわふわした動物。興奮すると時々つばを吐くが、基本的には穏やかな性格だ。",
+        "en": "This gentle, fluffy creature has soft wool and big, curious eyes. It occasionally spits when agitated but is generally peaceful."
+    },
+    "flags": [
+        "WILD_WASTE",
+        "ANIMAL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "RIDING"
+    ]
 }]
 }
