@@ -30,7 +30,8 @@
     "flavor": {
       "ja": "小さな水晶の瓶で、ガラドリエルの泉に映ったエアレンディルの星(シルマリル)の光が閉じ込めてある。その不滅の光はあらゆる暗闇を追い払う。",
       "en": "A small crystal phial, with the light of Earendil's Star contained inside.Its light is imperishable, and near it darkness cannot endure."
-    }
+    },
+    "activate": "LIGHT"
   },
   {
     "id": 2,
@@ -63,7 +64,8 @@
     "flavor": {
       "ja": "輝く『西方国の星』で、エレンディルの家系に伝わる家宝だ。銀の鎖に白い宝石がついている。",
       "en": "The shining Star of the West, a famed heirloom of Elendil's house."
-    }
+    },
+    "activate": "MAP_LIGHT"
   },
   {
     "id": 3,
@@ -100,7 +102,8 @@
     "flavor": {
       "ja": "金の鎖に取り付けられた、この宇宙の創世に深い関わりを持つ真紅の宝石。（R.ゼラズニイ、真世界アンバーシリーズ 3～10巻）",
       "en": "This ruby pendant in a simple setting with a heavy gold chain is deeplyrelated to the creation of this universe.(R.Zelazny, 'The Chronicles of Amber', vol.3-10)"
-    }
+    },
+    "activate": "JUDGE"
   },
   {
     "id": 4,
@@ -132,7 +135,8 @@
     "flavor": {
       "ja": "ブロンズの燃えるような首飾りで、邪悪な者をかわして退散させる強力な呪文が込められている。",
       "en": "A fiery circle of bronze, with mighty spells to ward off evil."
-    }
+    },
+    "activate": "PROT_EVIL"
   },
   {
     "id": 5,
@@ -176,7 +180,8 @@
     "flavor": {
       "ja": "ヴァラールの島に渡り中つ国に戻ることのなかったヴァンヤール族の上級王イングウェの家系伝来の家宝。イングウェに対抗できる邪悪なものはいなかった。",
       "en": "The ancient heirloom of Ingwe, high lord of the Vanyar, against whom nothingof evil could stand."
-    }
+    },
+    "activate": "DISP_EVIL"
   },
   {
     "id": 6,
@@ -286,7 +291,8 @@
     "flavor": {
       "ja": "混沌の王子マーリンがログルスから生み出した意思を持った腕輪だ。普段は目に見えないが脈動して危険を知らせてくれる。装備するものが命ずると形を変えて敵の首を締めることができる。（R.ゼラズニイ、真世界アンバーシリーズ 6～10巻）",
       "en": "This bracelet has its own will.  It was created by Merlin, a prince of Chaosand son of Corwin.  The bracelet is invisible, but it sometimes ripples orconstricts to warn its owner of danger.  When commanded by its owner, itcan morph to strangle an enemy's neck.(R.Zelazny, 'The Chronicles of Amber', vol.6-10)"
-    }
+    },
+    "activate": "HYPODYNAMIA_1"
   },
   {
     "id": 9,
@@ -320,7 +326,8 @@
     "flavor": {
       "ja": "ヴァラールの中でも最も素早くかつ勇猛なトゥルカスの宝だ。",
       "en": "The treasure of Tulkas, most fleet and wrathful of the Valar."
-    }
+    },
+    "activate": "XTRA_SPEED"
   },
   {
     "id": 10,
@@ -364,7 +371,8 @@
     "flavor": {
       "ja": "炎のように輝くルビーがはめられた火の指輪で、エルフにより作られサウロンから隠された三つの力の指輪のうちの一つだ。",
       "en": "The Ring of Fire, set with a ruby that glows like flame.  Narya is oneof the three Rings of Power created by the Elves and hidden by them fromSauron."
-    }
+    },
+    "activate": "BA_FIRE_2"
   },
   {
     "id": 11,
@@ -411,7 +419,8 @@
     "flavor": {
       "ja": "冷気の凝縮した真っ白な宝石がはめられた指輪だ。エルフにより作られサウロンから隠された三つの力の指輪のうちの一つだ。",
       "en": "The Ring of Adamant, with a pure white stone as centerpiece.  Nenya is oneof the three Rings of Power created by the Elves and hidden by them fromSauron."
-    }
+    },
+    "activate": "BA_COLD_3"
   },
   {
     "id": 12,
@@ -460,7 +469,8 @@
     "flavor": {
       "ja": "星の様に輝く透き通ったサファイアの指輪だ。エルフにより作られサウロンから隠された三つの力の指輪のうちの一つだ。",
       "en": "The Ring of Sapphire, with clear blue gems that shine like stars,glittering untouchable despite all that Morgoth ever wrought.  Vilya isone of the three Rings of Power created by the Elves and hidden by themfrom Sauron."
-    }
+    },
+    "activate": "BA_ELEC_3"
   },
   {
     "id": 13,
@@ -519,7 +529,8 @@
     "flavor": {
       "ja": "「一つの指輪は全てを統べ、一つの指輪はすべてを見つけ、一つの指輪はすべてを捕えてくらやみのなかにつなぎとめる。」重厚な金の指輪で、モルドールの忌まわしい言葉でルーン文字が刻んである。このイシルドゥアの禍の力はあまりにも強大なので、普通の者はそれを身に付けるだけで歪められ支配されてしまう。",
       "en": "\"One Ring to rule them all, One Ring to find them, One Ring to bringthem all and in the darkness bind them.\"  Made of massive gold, andset with runes in the foul speech of Mordor, Isildur's Bane possessespowers so great that it inevitably twists and masters any earthly beingwho wears it."
-    }
+    },
+    "activate": "BIZARRE"
   },
   {
     "id": 14,
@@ -562,7 +573,8 @@
     "flavor": {
       "ja": "安っぽい金メッキの指輪で、へけけな言葉でルーン文字が刻んである。このわけわからん禍の力はあまりにも強大なので、普通の者はそれを身に付けるだけで歪められ支配されてしまう。",
       "en": "Adorned, showy gilding,set with runes in the strange speech of Heheh, with power so great that itinevitably twists and masters any earthly being who wears it."
-    }
+    },
+    "activate": "BIZARRE"
   },
   {
     "id": 15,
@@ -596,7 +608,8 @@
     "flavor": {
       "ja": "この白く輝く不滅の水晶球は、古くはヌメノールの歴代の王に、後にはエレンディルをはじめとする流浪の民によって、離れた土地の間の高速通信に用いられた「遠望」の石だ。",
       "en": "A shining white ball of unbreakable crystal, the ancient palantiri,or 'far-watchers', were used by kings of Numenor and later by the Exilesfor rapid communication between distant lands."
-    }
+    },
+    "activate": "DETECT_UNIQUE"
   },
   {
     "id": 16,
@@ -631,7 +644,8 @@
     "flavor": {
       "ja": "「―そこは街全体が魔物の住処と化していた。そのとき思わず使った銃―クリムゾンが越前を助け、そして、たたかうごとに、クリムゾンはより強力な武器へと進化していった。―」(デスクリムゾン，エコールソフトウェア)",
       "en": "\"-- In there, the whole town had turned into monsters' nest.This gun gotten by Echizen unexpectedly, 'Crimson', helpedhim in his missions, and it evolved into greater weaponafter his every battle. --\"(Ecole Software, 'DEATH CRIMSON')"
-    }
+    },
+    "activate": "CRIMSON"
   },
   {
     "id": 17,
@@ -661,7 +675,8 @@
     "flavor": {
       "ja": "この大きなエメラルドの中の緑の深淵をのぞき込む時、あなたの精神は知識の心象と恐るべき理解によって満たされる。",
       "en": "A great emerald that fills your mind with images of knowledge and dreadfulunderstanding as you stare into its depths."
-    }
+    },
+    "activate": "LORE"
   },
   {
     "id": 18,
@@ -695,7 +710,8 @@
     "flavor": {
       "ja": "「まことの銀」で作られた首飾りで、身に付ける者を助けて守るイシリエンの静かな魔法が秘められている。",
       "en": "A slim neckpiece of True-silver, with quiet spells of Ithilien to aid andprotect the wearer."
-    }
+    },
+    "activate": "PESTICIDE"
   },
   {
     "id": 19,
@@ -733,7 +749,8 @@
     "flavor": {
       "ja": "永遠不滅のアダマンタイトで作られた鎧で、あらゆる邪悪な力や破壊的な魔法を跳ね返す霊力を秘め、着用者の生命力を守ることにかけては何物にも優る。",
       "en": "A suit of imperishable adamant, with conquerable strength to endure eviland disruptive magics, that protects the life force of its wearer likenothing else can."
-    }
+    },
+    "activate": "CURE_1000"
   },
   {
     "id": 20,
@@ -846,7 +863,8 @@
     "flavor": {
       "ja": "聖杯守護の騎士パルジファルの息子、ローエングリンの輝く鎧だ。身に付ける者はあらゆる邪悪なものを退け聖杯の加護を得る。(ワーグナー、「パルジファル」)",
       "en": "The shining armor of Lohengrin the son of Parsifal.The Holy Grail gives divine protection from all evils to the wearer.(W.R.Wagner, 'Parsifal')"
-    }
+    },
+    "activate": "CHOIR_SINGS"
   },
   {
     "id": 23,
@@ -885,7 +903,8 @@
     "flavor": {
       "ja": "真世界アンバーのアーデンの森を守るジュリアンの銀の鎧だ。",
       "en": "The silver armor of Julian who defends the forest of Arden."
-    }
+    },
+    "activate": "GENOCIDE"
   },
   {
     "id": 24,
@@ -960,7 +979,8 @@
     "flavor": {
       "ja": "重要な部分が二重になった、手と足もカバーする鎖帷子だ。精神と肉体を強化する魔法がかかっており、いかなる障害も着用者の道を妨げることは出来ない。",
       "en": "A hauberk, leggings, and sleeves of interlocking steel rings, strategicallyreinforced at vital locations with a second layer of chain.  Magics toenhance body and mind lie within, and no door can bar the wearer's path."
-    }
+    },
+    "activate": "DEST_DOOR"
   },
   {
     "id": 26,
@@ -1036,7 +1056,8 @@
     "flavor": {
       "ja": "「霧の宝石」を意味する名を持つ、この革の胴鎧は、暗闇に隠れる秘密の手段に、その見かけよりも遥かに適している。",
       "en": "Familar with the secret ways hidden in darkness, this leather cuirass istruly more than it appears."
-    }
+    },
+    "activate": "PHASE_DOOR"
   },
   {
     "id": 28,
@@ -1104,7 +1125,8 @@
     "flavor": {
       "ja": "トロルを打ち倒すために作られた巨大な戦鎚だ。",
       "en": "It's a large warhammer to slay trolls."
-    }
+    },
+    "activate": "HERO"
   },
   {
     "id": 30,
@@ -1251,7 +1273,8 @@
     "flavor": {
       "ja": "雷神インドラの兜だ。",
       "en": "This is the helm of Indra, the god of thunderstorms."
-    }
+    },
+    "activate": "BA_ELEC_3"
   },
   {
     "id": 34,
@@ -1346,7 +1369,8 @@
     "flavor": {
       "ja": "魔法使いの女王ベルシエル王妃の、真夜中の色をしたサークレットだ。恐ろしく大きな肉体的代償と引き替えに卓越した眼力と知覚を授ける。",
       "en": "The midnight-hued steel circlet of the sorceress-queen Beruthiel, whichgrants extraordinary powers of sight and awareness at a terrible physicalcost."
-    }
+    },
+    "activate": "DETECT_ALL_MONS"
   },
   {
     "id": 36,
@@ -1485,7 +1509,8 @@
     "flavor": {
       "ja": "トゥーリン・トゥランバールの伝説の竜兜で、モルゴスの手下どもにとっては恐怖の対象である。",
       "en": "The legendary dragon helm of Turin Turambar, a object of dread to theservants of Morgoth."
-    }
+    },
+    "activate": "TERROR"
   },
   {
     "id": 40,
@@ -1521,7 +1546,8 @@
     "flavor": {
       "ja": "並外れた精神力と知覚とを授ける、鍛鉄製の名高い兜だ。その名はシンダール語で「密かなる目の兜」を意味する。",
       "en": "A famous helm of forged iron granting extraordinary powers of mind andawareness."
-    }
+    },
+    "activate": "DETECT_ALL"
   },
   {
     "id": 41,
@@ -1563,7 +1589,8 @@
     "flavor": {
       "ja": "なんとも恐ろしい、不気味で、おどろおどろしく、髪が逆立ち、血も凍り、ぞっとして鳥肌が立つような仮面だ。仮面の奥の瞳に睨まれれば、怖くて逃げ出さずにはいられない。",
       "en": "You run out of adjectives to describe the dread this mask inspires:terrifying, scary, creepy, bloodcurdling, hair-rising, frightening, ...."
-    }
+    },
+    "activate": "TERROR"
   },
   {
     "id": 42,
@@ -1608,7 +1635,8 @@
     "flavor": {
       "ja": "アンバーの王位の象徴である、多数の宝石で飾られた金の王冠だ。これをめぐって骨肉の争いが王子たちの間で繰り広げられた。",
       "en": "Wrought of silver with seven high points each topped by a gem, this crownis the symbol of the throne of Amber.  The Princes of Amber scrambled forit violently."
-    }
+    },
+    "activate": "CURE_700"
   },
   {
     "id": 43,
@@ -1674,7 +1702,8 @@
     "flavor": {
       "ja": "精霊達が争う渦中の地ヴァリノールの英雄が身に付けていたマントだ。",
       "en": "A cape worn by a hero from Valinor, a land utterly beyond the strifeof Elements."
-    }
+    },
+    "activate": "RESIST_ALL"
   },
   {
     "id": 45,
@@ -1711,7 +1740,8 @@
     "flavor": {
       "ja": "静寂と隠密の偉大なる力を持つエルフの灰色の外套であり、着用者にはシンダールの知識と思慮を与える。",
       "en": "This elven-grey mantle possesses great powers of tranquility and ofconcealment, and grants the wearer the knowledge and understanding ofthe Sindar."
-    }
+    },
+    "activate": "ID_PLAIN"
   },
   {
     "id": 46,
@@ -1747,7 +1777,8 @@
     "flavor": {
       "ja": "半透明で真珠のような灰色のクロークで、魔力を秘めた輝くエルフのルーン文字が水面に映った月のごとく、静かにそしてはっきりと浮かび上がっている。",
       "en": "A sable-hued cloak, with glowing elven-runes to restore magic showing calmand clear as moonlight on still water."
-    }
+    },
+    "activate": "RECHARGE"
   },
   {
     "id": 47,
@@ -1815,7 +1846,8 @@
     "flavor": {
       "ja": "秩序の勢力の静かなる使者が着ていた、紺碧の絹のマントだ。",
       "en": "A crystal-blue cape of fine silk worn by a silent messenger ofthe forces of Law. Somehow, its wearer is always able to escapetrouble."
-    }
+    },
+    "activate": "TELEPORT"
   },
   {
     "id": 49,
@@ -1855,7 +1887,8 @@
     "flavor": {
       "ja": "自ら永遠の寿命を手放し、死を逃れえぬ者達の内では最も美しい者となったルシエン王女のクロークは、たなびく漆黒の闇を無数の小さなダイアモンドが飾っている。身に付ける者は王女の知識と力が自らの内に蘇ってくるのを感じる。",
       "en": "The opaque midnight folds, inset with a multitude of tiny diamonds, ofthis cloak swirl around you and you feel a hint, a fragment of theknowledge and power to restore that lay in Luthien, the most beautifulbeing that ever knew death."
-    }
+    },
+    "activate": "REST_LIFE"
   },
   {
     "id": 50,
@@ -1989,7 +2022,8 @@
     "flavor": {
       "ja": "この篭手は使用者の道を照らすほど明るく輝き、非常に短い周期で魔法の矢を放つことができる。",
       "en": "These gloves glow so brightly as to light the way for their owner and castmagical bolts with great frequency."
-    }
+    },
+    "activate": "BO_MISS_1"
   },
   {
     "id": 54,
@@ -2021,7 +2055,8 @@
     "flavor": {
       "ja": "シンダール語で「跳ねる炎の拳」の名を持つこの篭手は炎に包まれており、身に付ける者は火の球を撃ち出すことも出来る。",
       "en": "A fiery set of gauntlets that can even shoot fire from the user'shands."
-    }
+    },
+    "activate": "BO_FIRE_1"
   },
   {
     "id": 55,
@@ -2085,7 +2120,8 @@
     "flavor": {
       "ja": "シンダール語で「鋭き拳」を意味する名を持つこの籠手は常に火花を散らしていて、電撃の矢を放つことができる。",
       "en": "A set of handgear with sparks surrounding it, able to firebolts of electricity."
-    }
+    },
+    "activate": "BO_ELEC_1"
   },
   {
     "id": 57,
@@ -2117,7 +2153,8 @@
     "flavor": {
       "ja": "シンダール語で「水の拳」を意味する名を持つこの籠手は常に酸でてかっていて、酸の矢を放つことができる。",
       "en": "A set of handgear so corrosive that it may fire bolts of acid."
-    }
+    },
+    "activate": "BO_ACID_1"
   },
   {
     "id": 58,
@@ -2197,7 +2234,8 @@
     "flavor": {
       "ja": "フェアノール亡き後中つ国のノルドールを率いて冥王と戦った上級王フィンゴルフィンの篭手だ。彼はただ一人でモルゴスに戦いを挑み、その体に永遠に痛み続ける八つの傷を刻みつけた。",
       "en": "The hand-sheathing of Fingolfin, warrior-king of Elves and Men, who gaveMorgoth seven mighty wounds and pain that will last forever."
-    }
+    },
+    "activate": "BO_MANA"
   },
   {
     "id": 60,
@@ -2227,7 +2265,8 @@
     "flavor": {
       "ja": "この素晴らしい皮靴は、シルマリルの生みの親であり、かつて最強のエルダールであったフェアノールの韋駄天の靴で、モルゴスに隷属させられた中つ国を奪い返す彼の英雄的挑戦の助けとなった。",
       "en": "This wondrous pair of leather boots once sped Feanor, creator of theSimarils and the mightiest of the Eldar, along the Grinding Ice and toMiddle Earth at last."
-    }
+    },
+    "activate": "SPEED"
   },
   {
     "id": 61,
@@ -2263,7 +2302,8 @@
     "flavor": {
       "ja": "フローラはほとんどの時間アンバーの宮殿を離れていて、影の世界で新しいボーイフレンドを見つけては楽しんでいる。彼女のブーツには身に付けた者を魅力的に見せる魔法がかかっている。",
       "en": "Flora is away from Amber's palace most of the time and enjoys findingnew boyfriends in the parallel worlds that are shadows of Amber.  Herboots are enchanted with magic to make the wearer more attractive."
-    }
+    },
+    "activate": "CURE_POISON"
   },
   {
     "id": 62,
@@ -2448,7 +2488,8 @@
     "flavor": {
       "ja": "「焔の牙」を意味する名を持つこの燃え盛る短剣は、その刃から焔の球を迸らせる力をもつ。",
       "en": "A fiery dagger finely balanced for deadly throws."
-    }
+    },
+    "activate": "FIRE_BALL_AND_RESISTANCE"
   },
   {
     "id": 67,
@@ -2483,7 +2524,8 @@
     "flavor": {
       "ja": "「白き牙」を意味する名を持つこの短剣は必殺の冷気をもって敵を凍てつかせ、刃からは氷の球を迸らせる力をもつ。",
       "en": "A frosty dagger finely balanced for deadly throws."
-    }
+    },
+    "activate": "COLD_BALL_AND_RESISTANCE"
   },
   {
     "id": 68,
@@ -2518,7 +2560,8 @@
     "flavor": {
       "ja": "「闇夜の牙」を意味する名を持つ、この短剣は雷光に覆われ、その刃から雷の球を迸らせる力をもつ。",
       "en": "A dagger covered in sparks and finely balanced for deadly throws."
-    }
+    },
+    "activate": "ELEC_BALL_AND_RESISTANCE"
   },
   {
     "id": 69,
@@ -2552,7 +2595,8 @@
     "flavor": {
       "ja": "シンダール語で「地獄の輝き」を意味する名を持つ大型のダガーで、毒で輝いているが装備するものは何故か毒の影響を受けない。",
       "en": "A large stiletto dagger that glistens with odorless poison, to which thewearer seems oddly immune."
-    }
+    },
+    "activate": "POIS_BALL_AND_RESISTANCE"
   },
   {
     "id": 70,
@@ -2592,7 +2636,8 @@
     "flavor": {
       "ja": "小悪魔的魅力をふりまくフィオナは、見かけによらず策略と魔法に長けている。",
       "en": "Fiona is good at plots and magic although she hasdevilish charm."
-    }
+    },
+    "activate": "BA_COLD_1"
   },
   {
     "id": 71,
@@ -3107,7 +3152,8 @@
     "flavor": {
       "ja": "ノルドールの上級王フィンゴルフィンの武器。氷の柱の如く輝いている。かつてモルゴスは期せずしてこの剣に対峙し深い傷を刻み込まれた。彼はこの剣の力を再び思い知ることになるだろう。",
       "en": "The weapon of Fingolfin, High King of the Noldor; it shines like a columnof ice lit by light unquenchable.  Morgoth came but unwillingly to meet itof old; his lame foot will remind him of its might should he meet it again."
-    }
+    },
+    "activate": "BA_COLD_2"
   },
   {
     "id": 83,
@@ -3149,7 +3195,8 @@
     "flavor": {
       "ja": "名高き「西方の焔」であり、折れたる剣としても知られるこの剣は、エレンディルが倒れるのと供に折れたが、一つの指輪が発見された後鍛え直されアラゴルンのものとなった。焔の気により輝くこの剣は振るう者を強くし、サウロンのいかなる手下もその刃に耐えることはできない。",
       "en": "The famed \"Flame of the West\", the sword that was broken and is forgedagain.  It glows with the essence of fire, its wearer is mighty in combat,and no creature of Sauron can withstand it.  It will never be stained orbroken even in defeat."
-    }
+    },
+    "activate": "BA_FIRE_1"
   },
   {
     "id": 84,
@@ -3201,7 +3248,8 @@
     "flavor": {
       "ja": "夜の剣グレイスワンダーと対をなす昼の剣で、トランプの魔力が込められている。「それは黄金の素晴らしい打出し模様が施された、長い濃緑色の鞘だった。そこから突き出ている剣の柄は金メッキされているらしく、柄頭には素晴らしいエメラルドが取り付けられていた。僕は剣を手に取り半ばまで抜いてみた。…刀身には輝く模様が描かれていた。その模様は---そうだ、 <パターン>の一部だ。グレイスワンダーの模様は<パターン>の起点付近の一部分だったが、これは終点の部分だ。」（R.ゼラズニイ、真世界アンバー９「影の騎士」）",
       "en": "The day sword included mana of Trump, which is a companion tothe night sword Grayswandir."
-    }
+    },
+    "activate": "ESCAPE"
   },
   {
     "id": 85,
@@ -3558,7 +3606,8 @@
     "flavor": {
       "ja": "戦いを決意した黄金館の王セオデンが手にとったこの鋭い斧は、スマウグの硬い鱗でさえ貫き通し敵の精神を無防備に晒け出させる。",
       "en": "The narrow axe head of this weapon, finely balanced by a crow's beak,would pierce even the armour of Smaug, and its wielder becomes aware ofthe minds of their enemies."
-    }
+    },
+    "activate": "DRAIN_2"
   },
   {
     "id": 94,
@@ -3717,7 +3766,8 @@
     "flavor": {
       "ja": "主神オーディンが世界樹の枝から作り上げた槍で、魔力を込めたルーン文字が刻まれている。（北欧神話）",
       "en": "The spear which Odin created from a branch of the world tree.  Magicalrunes have been carved into the shaft."
-    }
+    },
+    "activate": "BA_ELEC_2"
   },
   {
     "id": 98,
@@ -3767,7 +3817,8 @@
     "flavor": {
       "ja": "聖剣伝説において聖槍として知られているこの槍を持つ者は世界を支配すると言われている。（ワーグナー、「パルジファル」他）",
       "en": "It is said that the person wielding this spear which is known asthe Holy Lance can rule all over the world."
-    }
+    },
+    "activate": "STONE_MUD"
   },
   {
     "id": 99,
@@ -3926,7 +3977,8 @@
     "flavor": {
       "ja": "西方の地から中つ国に渡り、サンゴロドリムの門に集結した軍勢を率いるマイア、旗手エオンウェの斧だ。この武器は氷の如き気勢でアンデッドを打ち倒し、ただ一言の言葉で邪悪な軍勢を追い散らすことが出来る。そして心身両面に於いて持つ者にマイアの如き力を授ける。",
       "en": "The axe of Eonwe, leader of the Hosts of the West before the gates ofThangorodrim, strikes with icy wrath at the undead, disperses hosts ofevil at a word, and grants Maia-like powers of body and mind."
-    }
+    },
+    "activate": "MASS_GENO"
   },
   {
     "id": 103,
@@ -4008,7 +4060,8 @@
     "flavor": {
       "ja": "アルノールの野伏の頭領ケルサインが使っていた、素晴らしい作りの両刃の戦斧。",
       "en": "A superbly crafted double-bladed axe that slays the creatures of earth andallows rapid recovery from their blows."
-    }
+    },
+    "activate": "HERO"
   },
   {
     "id": 105,
@@ -4167,7 +4220,8 @@
     "flavor": {
       "ja": "水の王であるヴァラ、ウルモの恐ろしい武器。マンウェ自身を除けば善き勢力の内で最強であるウルモは、アンデッドの恐るべき力さえ嘲笑い、酸のエレメントの究極的支配力を持つ。",
       "en": "The awesome weapon of the Vala Ulmo, Lord of Waters. Mightest of all thepowers of good save Manwe himself, Ulmo laughs in scorn at the dread powersof the undead, and is utterly in command of the element of water."
-    }
+    },
+    "activate": "TELE_AWAY"
   },
   {
     "id": 109,
@@ -4210,7 +4264,8 @@
     "flavor": {
       "ja": "内に秘めた激しいエレメントの力で白熱している大鎌で、ダンジョンを行き来する能力を持っている。",
       "en": "With elemental powers whose struggles turn this weapon red and purestwhite, this shining reaper bears within it a power of going forth andreturning."
-    }
+    },
+    "activate": "RECALL"
   },
   {
     "id": 110,
@@ -4257,7 +4312,8 @@
     "flavor": {
       "ja": "ホークムーンの持つ黒の剣、『暁の剣』は薔薇色の光を放ち、異世界より『暁の軍団』を召集する力がある。",
       "en": "Forged in the farthest East by a race of mighty spellcasters, thisshiny pale sword gleams with the rays of rising sun as you invokeits power of commanding legions of powerful immortal warriors..."
-    }
+    },
+    "activate": "SUMMON_DAWN"
   },
   {
     "id": 111,
@@ -4345,7 +4401,8 @@
     "flavor": {
       "ja": "このフレイルは先端を振り回すことで見るものを惑わせる。そして振り降ろせば炎の流星となって敵を打つ。",
       "en": "A flail whose head befuddles those who stare as you whirl it around, andbecomes a fiery comet as you bring it down."
-    }
+    },
+    "activate": "CONFUSE"
   },
   {
     "id": 113,
@@ -4385,7 +4442,8 @@
     "flavor": {
       "ja": "古のベレゴストで名を馳せたドワーフの英雄、クズーリンの武器で長く失われていたものだ。柄に力のルーン文字が刻まれ、重厚な先端部には炎と火花が轟々と音を立て渦巻いている。",
       "en": "The long-lost weapon of Kzurin, Dwarven champion of ancient Belegost,with runes of strength in its handle, and flames and sparks that roar andcrackle around its massive head."
-    }
+    },
+    "activate": "BA_ELEC_2"
   },
   {
     "id": 114,
@@ -4458,7 +4516,8 @@
     "flavor": {
       "ja": "大きなルビーの球が鎖の先に付けられた、古の名高き戦鎚だ。その真紅の輝きは敵に振り下ろされれば、永き時を経た今でも燠火の如く再び怒りに燃え上がる。",
       "en": "A famed battle-lord of old with a ruddy head, colored as embers are thatcan yet rise up in wrath."
-    }
+    },
+    "activate": "BA_FIRE_2"
   },
   {
     "id": 116,
@@ -4490,7 +4549,8 @@
     "flavor": {
       "ja": "持つ者を激しい電光で包む大きな角鎚だ。強烈なスパークが指や眉の間で火花を散らせるが手にしている者は全く影響を受けない。",
       "en": "A great ridged mace that calls around you a nimbus of living lightning;you remain utterly untouched even as fat sparks arc around yourfingers and eyebrows."
-    }
+    },
+    "activate": "SPEED"
   },
   {
     "id": 117,
@@ -4620,7 +4680,8 @@
     "flavor": {
       "ja": "「秀でし輝き」を意味する名を持つ、伝説のイスタリの黄金に輝くスタッフだ。この魔法使の友は、多くの隠された物事に対する、鋭い視点と鮮明な知識をもたらす。",
       "en": "The radiant golden staff of an Istari of legend, this wizard's companiongrants keen sight and the knowledge of many hidden things."
-    }
+    },
+    "activate": "ID_PLAIN"
   },
   {
     "id": 120,
@@ -4670,7 +4731,8 @@
     "flavor": {
       "ja": "ガンダルフがかつて使っていた長く丈夫な杖。節くれ立った表面には地のエレメントの力を呼び起こす荒削りなルーン文字が刻まれ、影に生きる者はその打撃に耐えることは出来ない。",
       "en": "The staff of the great wizard Gandalf.It is tall and sturdy, with rough-hewn runes that invoke the element ofEarth, and which strikes down all creatures who live in the shadow ofmountains."
-    }
+    },
+    "activate": "DETECT_XTRA"
   },
   {
     "id": 121,
@@ -4760,7 +4822,8 @@
     "flavor": {
       "ja": "メネルタルマの高僧が使っていた大鎚で、月の光のように冷たく輝いている。その打撃は敵の肉体だけでなく精神をも打ち砕くことができる。",
       "en": "Wielded by the High Priest of Meneltarma, this great hammer gleams coldlyas though moonlit, and it can strike as mighty a blow spiritually asphysically."
-    }
+    },
+    "activate": "DRAIN_2"
   },
   {
     "id": 123,
@@ -4899,7 +4962,8 @@
     "flavor": {
       "ja": "トランプの魔力を自分の物にし、新たな宇宙を創造しようとしたアンバーの王子ブランドが使っていたクロスボウだ。その魔力により装備するものは非常に素早く行動できる。",
       "en": "The magic power of this crossbow of Brand, the prince of Amber, will enableyou to move faster."
-    }
+    },
+    "activate": "BRAND_FIRE_BOLTS"
   },
   {
     "id": 127,
@@ -4932,7 +4996,8 @@
     "flavor": {
       "ja": "柔軟な革で作られたこの胴鎧には、モルゴスの軍勢に包囲されても勇敢に闘い抜いた不落の要塞ヒムリングの記憶が刻み込まれている。",
       "en": "Contained within this studded cuirass of pliable leather is the memory ofunvanquished Himring, defiant fortress surrounded by the legions of Morgoth."
-    }
+    },
+    "activate": "PROT_EVIL"
   },
   {
     "id": 128,
@@ -4978,7 +5043,8 @@
     "flavor": {
       "ja": "三種の神器の一つ。出雲の国で素戔嗚尊(すさのおのみこと)により見出され、後に日本武尊(やまとたけるのみこと)の剣となる。使う者を様々な危機から守る霊力が備わっている。",
       "en": "It is one of the three imperial spiritual artifacts of Japan.Susanoo found this tsurugi, a straight double-edged sword, at Izumo.Many years later, Yamato Takeru received it as a gift.The tsurugi's spiritual power guards its owner from many dangers."
-    }
+    },
+    "activate": "ESCAPE"
   },
   {
     "id": 129,
@@ -5017,7 +5083,8 @@
     "flavor": {
       "ja": "様々な色彩が凝縮した重厚なドラゴンの鱗で作られた鎧だ。怒りのエネルギーを脈打ち、着るものは荒々しい稲光のエネルギーを直に感じる。",
       "en": "A massive suit of heavy dragon scales deeply saturated with many colors.It throbs with angry energies, and you feel the raw elemental might ofuntamed Lightning as you put it on."
-    }
+    },
+    "activate": "CAST_BA_STAR"
   },
   {
     "id": 130,
@@ -5070,7 +5137,8 @@
     "flavor": {
       "ja": "あらゆる色彩の鱗に被われたアダマンタイトの鎧で、完璧にコントロールされた地、水、火、風および霊的な力が調和し渾然一体となり、輝く護光となってこの鎧を包んでいる。",
       "en": "A suit of adamant, set with scales of every color, surrounded in a nimbusof perfectly untramelled yet inextricably intermingled and utterly masteredpowers elemental and ethereal."
-    }
+    },
+    "activate": "BLADETURNER"
   },
   {
     "id": 131,
@@ -5113,7 +5181,8 @@
     "flavor": {
       "ja": "南方ではインカヌスの名で知られる大賢者ガンダルフのローブだ。様々なエレメントから身を護るこのローブのおかげで、南の熱暑、北の氷結、ドル・グルドゥアの酸の沼でさえも、かの挑戦的なマイアの任務を妨げる事はなかったのだ。",
       "en": "The robe of the great wizard Gandalf, also known as Incanus in thelands of the South. It is proof against elements, for neither theheat of the South, nor the ice of the North, nor the acidy pits of DolGuldur were able to hold back the defiant Maia in the pursuit ofhis mission"
-    }
+    },
+    "activate": "BO_MANA"
   },
   {
     "id": 132,
@@ -5151,7 +5220,8 @@
     "flavor": {
       "ja": "古のヌメノールの王達が用いていた重厚な黄金の王冠で、知恵を授け敵を退ける素晴らしい宝石が取りつけられている。",
       "en": "A crown of massive gold, set with wondrous jewels of thought and warding,worn by the kings of ancient Numenor."
-    }
+    },
+    "activate": "PROT_EVIL"
   },
   {
     "id": 133,
@@ -5186,7 +5256,8 @@
     "flavor": {
       "ja": "「最後にただ一人フーリンが残った。かれは盾を捨て、両手に鉞を掴んで振り回した。鉞はゴズモグを護衛するトロルたちの黒い血を流す度に血煙を上げ、フーリンは一人斬る毎に「アウレ　エントゥルヴァ！　昼再び来らん！」と叫んだと歌に歌われている。七十度彼はこの叫びを上げた。しかし遂にかれはモルゴスの命令により生きながら捕らえられた。」(J.R.R.トールキン、田中明子訳、シルマリルの物語)",
       "en": "\"Hurin [...] wielded the axe two-handed, and it is sung that the axesmoked in the black blood of the troll-guard of Gothmog, until it withered,and each time that he slew Hurin cried 'Aure entuluva! Day shall comeagain!'. Seventy times he uttered that cry, but they took him at lastalive, by the command of Morgoth...\""
-    }
+    },
+    "activate": "HERO_SPEED"
   },
   {
     "id": 134,
@@ -5358,7 +5429,8 @@
     "flavor": {
       "ja": "ノルドールの最後の上級王、ギル=ガラドの伝説の盾だ。彼はバラド=ドゥアの門まで敵を討ち破って進み、ゴルゴロスの地にさえ光をもたらした。「天が広野の無数の星は、その銀の盾に、映りたり。」",
       "en": "The legendary shield of Gil-Galad, who fought his way to the gates ofthe Dark Tower, and with whom came light even to Gorgoroth."
-    }
+    },
+    "activate": "BLINDING_LIGHT"
   },
   {
     "id": 139,
@@ -5486,7 +5558,8 @@
     "flavor": {
       "ja": "金色に光り輝くイェンダー印のプラチナカードだ。まるで億万長者になった気分がする。限度額まで使い込もう。",
       "en": "Yaaaaaaaaay! Platinum card of Yendorian Express!!!Wait a minute, you can not pay any more with this card.You must think of another way of using it."
-    }
+    },
+    "activate": "RECHARGE_XTRA"
   },
   {
     "id": 142,
@@ -5553,7 +5626,8 @@
     "flavor": {
       "ja": "黄金と黒鋼の無数のより糸で編み上げられた重厚な金の首飾りで、大きな金の猟犬の装飾が両端に取り付けられている。",
       "en": "A massive golden torque, made of innumerable strands of gold and steelintermingled, with great golden hounds set at either end."
-    }
+    },
+    "activate": "SCARE_AREA"
   },
   {
     "id": 144,
@@ -5595,7 +5669,8 @@
     "flavor": {
       "ja": "「魔物に遭うては魔物を斬り、神に遭うては神を斬る。」伝説の刀匠村正が全身全霊を込めて鍛えたこの妖刀は数え切れない人間の血を啜ってきた。その刃は血に飢え、常に獲物を求めている。",
       "en": "\"If you encounter a demon, you will cut the demon.  If you encounter a godyou will cut the god.\"  Muramasa, the legendary swordsmith, forged thissword.  It always wants more blood, even though it has already drained theblood of many."
-    }
+    },
+    "activate": "MURAMASA"
   },
   {
     "id": 145,
@@ -5681,7 +5756,8 @@
     "flavor": {
       "ja": "装備した者を吸血鬼に変えてしまうというディオの石仮面だ。",
       "en": "It is the stone mask of Dio Brando that turns the wearer into a vampire."
-    }
+    },
+    "activate": "TERROR"
   },
   {
     "id": 147,
@@ -5716,7 +5792,8 @@
     "flavor": {
       "ja": "浮遊の力を与えてくれる青く仄光る宝石だ。",
       "en": "This glowing blue gem allows the wielder to levitate."
-    }
+    },
+    "activate": "BA_MANA"
   },
   {
     "id": 148,
@@ -5793,7 +5870,8 @@
     "flavor": {
       "ja": "玉祖命が造り、のちに邇邇芸命に授けられた勾玉だ。身に着ける者を様々な危機から守る霊力が備わっている。",
       "en": ""
-    }
+    },
+    "activate": "RECALL"
   },
   {
     "id": 150,
@@ -5864,7 +5942,8 @@
     "flavor": {
       "ja": "",
       "en": ""
-    }
+    },
+    "activate": "DISP_EVIL"
   },
   {
     "id": 152,
@@ -6162,7 +6241,8 @@
     "flavor": {
       "ja": "太公望はこの釣り竿を用いて釣りを楽しむのが日課であったが、結局は彼自身が周の文王に釣られてしまったのであった。",
       "en": "Taikobo's daily routine was to fish with this fishing rod.  Eventually,Taikobo was himself caught by Zhou Wen Wang."
-    }
+    },
+    "activate": "FISHING"
   },
   {
     "id": 160,
@@ -6274,7 +6354,8 @@
     "flavor": {
       "ja": "あの著名な考古学者ジョーンズ博士のムチだ。必ずや、スーパーアクションを可能にするだろう。",
       "en": "This is the whip of the famous archaeologist Prof. Jones."
-    }
+    },
+    "activate": "TELEKINESIS"
   },
   {
     "id": 163,
@@ -6316,7 +6397,8 @@
     "flavor": {
       "ja": "ケルトの英雄クーフーリンの、海竜の骨から削られた長槍だ。つねに目映く発せられるその閃光は敵の目をくらまし、逆に所有者の視力を守る。",
       "en": "This is spear of the Celtic hero, Cuchulainn.  Carved from the bone ofa sea dragon, it protects the sight of the wielder and can flash to dazzlean opponent."
-    }
+    },
+    "activate": "BA_STAR"
   },
   {
     "id": 164,
@@ -6361,7 +6443,8 @@
     "flavor": {
       "ja": "仙名を清源妙道真君、神仙族きっての武神である二郎真君の三尖刀だ。彼は悪竜や魔神、自然の妖魔を多数討伐した。",
       "en": ""
-    }
+    },
+    "activate": "SUMMON_HOUND"
   },
   {
     "id": 165,
@@ -6436,7 +6519,8 @@
     "flavor": {
       "ja": "毎週月曜日の20:45に絶大な力を発揮するらしい。",
       "en": ""
-    }
+    },
+    "activate": "INROU"
   },
   {
     "id": 167,
@@ -6534,7 +6618,8 @@
     "flavor": {
       "ja": "角柱二本の互いの端が、細い縄で結ばれている。武器としては見るからに貧相だが、 防火をその任とする衛士たちが使った、由緒正しい武器だといわれている。",
       "en": "It is two wooden prisms joined by a thin rope.  Though a poor weapon,firefighters use such devices as percussion instruments to warn others ofdanger."
-    }
+    },
+    "activate": "AGGRAVATE"
   },
   {
     "id": 170,
@@ -6565,7 +6650,8 @@
     "flavor": {
       "ja": "消火作業にあたって、士気を鼓舞すべく振りたてられた杖だ。杖の先に隊のマーク入りの円盤があり、その下側から長い帯状の飾りが幾本ものびている。この杖は隊の象徴であり、最も勇気あるものが扱うとされた。",
       "en": "It is a short staff with an attached flag.  The opposite end of the stafffrom the flag has a disk with the mark of a firefighting squad.  Staffslike this were used to rally firefighters to sites of fires in Edo periodJapan.  The bearers, matoimachi, of such staffs were noted for theircourage."
-    }
+    },
+    "activate": "HERO"
   },
   {
     "id": 171,
@@ -7139,7 +7225,8 @@
     "flavor": {
       "ja": "いみじくも「王の怒り」と名付けられた、灰色マント王シンゴルの美しい剣だ。その刃は氷の如く輝き、悪魔の心臓をも凍てつかせる。金銀の細工が施されたその柄を手にすれば、しなやかな身のこなしと軽やかな足取を感じられるだろう。",
       "en": "The beautiful sword of Thingol, justly named \"King's Ire\".  It glistensicy enough to freeze the hearts of demons, and you feel supple andlightfooted as you clasp its hilt of gold and silver inlay."
-    }
+    },
+    "activate": "BA_COLD_2"
   },
   {
     "id": 185,
@@ -7171,7 +7258,8 @@
     "flavor": {
       "ja": "シンダール語で「白き拳」を意味する名を持つこの籠手は常に冷たく輝き、氷の矢を放つことができる。",
       "en": "A set of handgear so icy as to be able to fire frost bolts."
-    }
+    },
+    "activate": "BO_COLD_1"
   },
   {
     "id": 186,
@@ -7208,7 +7296,8 @@
     "flavor": {
       "ja": "かつて偉大なる船乗りエアレンディルが身に付けていた輝く盾だ。「輝く盾にはあらゆる危害や傷害をさけるルーン文字を刻み込んだ。」(J.R.R.トールキン、瀬田貞二・田中明子訳 新版指輪物語)",
       "en": "A shining shield, once borne by the great mariner Earendil, \"scored withrunes to keep all wounds and harm from him\"."
-    }
+    },
+    "activate": "CURING"
   },
   {
     "id": 187,
@@ -7248,7 +7337,8 @@
     "flavor": {
       "ja": "上級王ギル=ガラドの強力な槍で、「雪の切先」として名高い。「その剣は長く、その槍は鋭く、輝く兜は、遠くより望みえたり。」とエルフの歌に歌われるこの槍には、サウロンのいかなる忌まわしい下僕どもも太刀打ちできなかった。",
       "en": "The mighty spear of Gil-galad, famed as \"Snow-point\" in the songs of Elves,against which all the foul corruptions of Sauron dashed in vain."
-    }
+    },
+    "activate": "BA_COLD_2"
   },
   {
     "id": 188,
@@ -7283,7 +7373,8 @@
     "flavor": {
       "ja": "某国サーカス団で使用された由緒正しい猛獣使いの証だ。このムチの音はどんな猛獣でも震え上がらせることができる。",
       "en": "This is the whip of a venerable beastmaster from a country circus.  Thecrack of this whip can shake any beast."
-    }
+    },
+    "activate": "CHARM_ANIMAL"
   },
   {
     "id": 189,
@@ -7620,7 +7711,8 @@
     "flavor": {
       "ja": "",
       "en": ""
-    }
+    },
+    "activate": "TELEPORT"
   },
   {
     "id": 199,
@@ -7649,7 +7741,8 @@
     "flavor": {
       "ja": "",
       "en": ""
-    }
+    },
+    "activate": "BLOODY_MOON"
   },
   {
     "id": 200,
@@ -7718,7 +7811,8 @@
     "flavor": {
       "ja": "玄武、白虎、朱雀とともに四獣と呼ばれる青龍の鱗鎧を身に纏えば、神の如き守護の力が得られる。",
       "en": "This blue dragon scale armor has been blessed by the azure dragon thatguards the east and the three other guardians, Byakko, Genbu, and Suzaku.Even a god would be envious of the protection this armor provides."
-    }
+    },
+    "activate": "RESIST_ALL"
   },
   {
     "id": 202,
@@ -7763,7 +7857,8 @@
     "flavor": {
       "ja": "「是に天つ神、諸の命以ちて、伊邪那岐命、伊邪那美命、二柱の神に、『是の多陀用弊流国を修め理り固め成せ。』と詔りて、天の沼矛を賜ひて、言依さし賜ひき。故、二柱の神、天の浮橋に立たして、その沼矛を指し下ろして画きたまへば、塩許々袁々呂々迩画き鳴して引き上げたまふ時、其の矛の末より垂り落つる塩、累なり積もりて島と成りき。是れ淤能碁呂島なり。」(古事記)。",
       "en": "From the bridge between heaven and earth, Izanagi and Izanami churned thesea with this jeweled weapon.  The first land sprung up from where dropsof salty water fell from the weapon's tip."
-    }
+    },
+    "activate": "BA_WATER"
   },
   {
     "id": 203,
@@ -7844,7 +7939,8 @@
     "flavor": {
       "ja": "遥か東の国のスモー戦士が身につける正装だ。その豪華な宝飾は力強さを感じさせる。",
       "en": "It is the traditional garb for a Sumo wrestler.  Just touching it makes youfeel stronger."
-    }
+    },
+    "activate": "SHIKOFUMI"
   },
   {
     "id": 205,
@@ -7876,7 +7972,8 @@
     "flavor": {
       "ja": "ガチャピンと対をなす赤い獣の毛皮のクロークだ。",
       "en": "This is the fur cloak of Mook, a red Yeti and Gachapin's friend."
-    }
+    },
+    "activate": "RESIST_COLD"
   },
   {
     "id": 206,
@@ -7947,7 +8044,8 @@
     "flavor": {
       "ja": "天地魔界のバランスを保つ使命を持つ竜の騎士に代々伝わるオリハルコンの剣で、竜騎将バランが所有している。",
       "en": ""
-    }
+    },
+    "activate": "BA_ELEC_3"
   },
   {
     "id": 208,
@@ -7988,7 +8086,8 @@
     "flavor": {
       "ja": "バトルハンマー氏族のドワーフの長にして、伝説の都ミスリル・ホールの王、ブルーノー・バトルハンマーの生涯最高傑作だ。「なるほどね」ドリッズドは、ハンマーをブルーノーに返した。「古いハンマーか。あの子にはちょうどいいかもな。ミスリルや、アダマンタイトや、ダイアモンドをわざわざ使ってあるくらいだものな」（富士見書房「アイスウインド・サーガ１魔石の復活」 R・A・サルヴァトーレ著、風見潤訳）",
       "en": ""
-    }
+    },
+    "activate": "HERO"
   },
   {
     "id": 209,
@@ -8026,7 +8125,8 @@
     "flavor": {
       "ja": "半幽体化した不思議な茨の鞭だ。所有者の精神力を攻撃力に変換し、波紋の力で身を守ることができる。身につけると遠い場所の出来事がわかる。",
       "en": "It's a glam, semi-ghosted whip of thorns.You can convert the mental power of the owner into attack powerand protect yourself with the power of ripples.When you wear it, you can see what happened in a distant place."
-    }
+    },
+    "activate": "DETECT_UNIQUE"
   },
   {
     "id": 210,
@@ -8104,7 +8204,8 @@
     "flavor": {
       "ja": "アザヌルビザールの戦いにおいて、スロール王の仇を討つためアゾグに決闘を挑んだナインが使っていたつるはしだ。「するとその時、くろがね連山の一族がやって来て、遂に戦局を一変させたのである。戦場に遅れて新たに到着したグロールの息子ナインの率いる、鎖かたびらに身を固めた戦士たちは『アゾグ！アゾグ！』と呼ばわり、前に立ちはだかる者があればつるはしで当たるをさいわい斬り倒しながら、オークたちの間をモリアの入口に向かって突進していった。」",
       "en": "Wielded by Nain of the Iron Hills at the Battle of Azanulbizar, this greatmattock brought victory to the Dwarves over Azog's Orcs - though Nainhimself fell at the last, even with victory already assured."
-    }
+    },
+    "activate": "STONE_MUD"
   },
   {
     "id": 212,
@@ -8147,7 +8248,8 @@
     "flavor": {
       "ja": "この正視するもかなわぬ眩い炎のムチをひとたび手に取れば、バルログの長ゴズモグは戦において負け知らずであった。",
       "en": "With this unbearably bright whip of flame, the Balrog Gothmog has becomeknown for never having lost in combat."
-    }
+    },
+    "activate": "BA_FIRE_2"
   },
   {
     "id": 213,
@@ -8186,7 +8288,8 @@
     "flavor": {
       "ja": "その昔、蛸を引き連れて岸和田の地を守るために戦かったという蛸法師こと地蔵大菩薩の化身が使っていた六環の錫杖だ。「…その時。一人の法師がどこからともなく現れて、何万という敵に飛びかかり、手に持った錫杖をぶんぶんと振り廻して敵兵を薙ぎ倒す、その勢いの凄まじいこと。天が稲光し、地が揺れ動くようやったそうな。」",
       "en": "It is a walking stick bound with six rings of bronze.  According to legend,an incarnation of Jizo Daibosatsu carried this staff when he defendedKishiwada castle with the assistance of a horde of octopuses he had calledfrom the sea."
-    }
+    },
+    "activate": "SUMMON_OCTOPUS"
   },
   {
     "id": 214,
@@ -8225,7 +8328,8 @@
     "flavor": {
       "ja": "もっとも偉大なドワーフの司祭のひとり、青き衣の『フンディン』の武器である。所有者の肉体と魂魄を護り抜き、死してなお生にすがりつこうとする者どもを打ち滅ぼす。",
       "en": "The weapon of one of the great dwarven priests, with powersto preserve body and soul, and the bane of thosewho seek life beyond death."
-    }
+    },
+    "activate": "DISP_EVIL"
   },
   {
     "id": 215,
@@ -8260,7 +8364,8 @@
     "flavor": {
       "ja": "漆黒の宝玉がつけられた頸飾りだ。身に付けると自分が暗闇の中にいるのを感じる。",
       "en": "It is a necklace decorated with jet-black jewels.  Wear it and feel yourselfin the dark."
-    }
+    },
+    "activate": "BA_DARK"
   },
   {
     "id": 216,
@@ -8338,7 +8443,8 @@
     "flavor": {
       "ja": "これを身につけたプレイヤーは呪いをはね返すことができる。",
       "en": ""
-    }
+    },
+    "activate": "DISP_CURSE_XTRA"
   },
   {
     "id": 218,
@@ -8378,7 +8484,8 @@
     "flavor": {
       "ja": "地獄の囚人を拘束する首輪だ。多くの囚人の怨念が込められている。",
       "en": "It is one of the restraining collars used for the prisoners in Hell.  Thespite of many prisoners is palpable when near the collar."
-    }
+    },
+    "activate": "BA_DARK"
   },
   {
     "id": 219,
@@ -8424,7 +8531,8 @@
     "flavor": {
       "ja": "",
       "en": ""
-    }
+    },
+    "activate": "CURE_MANA_FULL"
   },
   {
     "id": 220,
@@ -8528,7 +8636,8 @@
     "flavor": {
       "ja": "この燃えるような色のクロスボウは、発射するボルトに炎の力を与えることができる。",
       "en": "This fiery-colored crossbow can cause the bolts it fires to burst intoflame upon impact."
-    }
+    },
+    "activate": "BRAND_FIRE_BOLTS"
   },
   {
     "id": 223,
@@ -8636,7 +8745,8 @@
     "flavor": {
       "ja": "これは、医学の神アスクレピオスの奇跡の六尺棒だ。どんな怪我もたちまち癒してしまう。",
       "en": "This is the staff of Asclepius, a hero and god of medicine in Greekmythology."
-    }
+    },
+    "activate": "REST_ALL"
   },
   {
     "id": 226,
@@ -8916,7 +9026,8 @@
     "flavor": {
       "ja": "豫章新喩縣男子，見田中有六七女，皆衣毛衣，不知是鳥。匍匐往得其一女所解毛衣，取藏之，即往就諸鳥。諸鳥各飛去，一鳥獨不得去。男子取以為婦。生三女。其母后使女問父，知衣在積稻下，得之，衣而飛去，後復以迎三女，女亦得飛去。(捜神記)",
       "en": "This is a heavenly cloak of the maiden which was stolenby a man, when she was having a bath at a lake with herfriend maidens."
-    }
+    },
+    "activate": "RECALL"
   },
   {
     "id": 234,
@@ -9281,7 +9392,8 @@
     "flavor": {
       "ja": "飛流直下三千尺と謳われる廬山の大瀑布によって鍛え上げられた青銅の鎧だ。伝説のアテナの守護戦士が身にまとい、アテナに降りかかる数々の危機を救ったと言われる。パーツを組み立てると緑龍の形に組みあがる。身にまとうと龍星座の小宇宙を感じることができる。",
       "en": "A suit of scales, gleaming in rich engraved bronze. It shapes likea green dragon if putting its parts together. You can feel a cosmoof Draco when you wear it."
-    }
+    },
+    "activate": "CAST_OFF"
   },
   {
     "id": 244,
@@ -9325,7 +9437,8 @@
     "flavor": {
       "ja": "この聖なる鞭は、錬金術師の知恵と乙女の代償によって生み出され、退魔の血族ベルモンド家代々の手で振るわれてきた。その力は邪悪な夜の一族に対する呪詛そのものであり、汚れた魂を過たず撃ち滅ぼすだろう。",
       "en": "This holy whip was generated by an alchemist's wisdom and a maiden'ssacrifice.  It has been wielded by generations of the Belmont family, thevampire hunters, and is the great bane of any with an unclean soul."
-    }
+    },
+    "activate": "GRAND_CROSS"
   },
   {
     "id": 245,
@@ -9360,7 +9473,8 @@
     "flavor": {
       "ja": "「運命のオーブを持っていきなさい。わたしは運命のオーブから人間の手に触れてはならぬ未来を告げる力を取り除きました。しかしながら運命のオーブの他の力は，あなたの思い通りにしてかまいません。あなたはチュールの名のもとイェンダーの魔除けを探さねばなりません。あなたの進む道がチュールの導きにより開かれますように。わたしの妹よ」(ノルン，JNethack)",
       "en": "\"You may take the Orb of Fate with you.I have removed from it the power to foretell the future,for that power no mortal should have.Its other abilities, however, you have at your disposal.You must now begin in Tyr's name to search for the Amulet of Yendor.May your steps be guided by Tyr, my child.\" (Norn, Nethack)"
-    }
+    },
+    "activate": "TELEPORT_LEVEL"
   },
   {
     "id": 246,
@@ -9399,7 +9513,8 @@
     "flavor": {
       "ja": "ドワーフの姫、鋼鉄参謀ユーミルの研究の成果だ。超振動クリスタルが高い防御力をもたらしているらしい。",
       "en": "A result of Steel Staff Ymir's research project, this swimsuit, powered bya hyper vibration crystal, provides much more protection than you mightexpect."
-    }
+    },
+    "activate": "STRAIN_HASTE"
   },
   {
     "id": 247,
@@ -9472,7 +9587,8 @@
     "flavor": {
       "ja": "辻斬りにあった乞食坊主が切られたことにすら気づかず、念仏を唱えながら七丁も歩いた後に絶命したという妖刀だ。持ち主に災いをもたらすと言われ、その主たる所有者であった岩本虎眼の死により「虎殺」の銘が加えられた。",
       "en": "It is the terrible katana, by which, a poor priestdid not notice that he is slashed and dead afterwalking long way with speling Nenbustu.After death of Kogan Iwamoto, added 'Toragoroshi' tothe head of its inscription."
-    }
+    },
+    "activate": "ARTS_FALLING_STAR"
   },
   {
     "id": 249,
@@ -9615,7 +9731,8 @@
     "flavor": {
       "ja": "蜃気楼の塔の奥で英雄を待ち続ける輝ける剣だ。その刃は数多くの赤衣の者達に握られ、悪しき者たちを屠り続けてきた。(ファイナルファンタジー1)",
       "en": "A shining sword that keeps waiting for a hero in the back of the Mirage Tower.The blade was held by many red robes and continued to slaughter the evil ones.(Square, \"Final Fantasy\", 1987)"
-    }
+    },
+    "activate": "BLINDING_LIGHT"
   },
   {
     "id": 253,
@@ -9657,7 +9774,8 @@
     "flavor": {
       "ja": "この黒光りするバットには使用者のたゆまぬ愛が込められている。これは魔法の擬音で死せりし者の人生をやり直させることができる。",
       "en": "This glowing black bat is filled with the unremitting love of the user.This is a magical onomatopoeia that can redo the life of the dead."
-    }
+    },
+    "activate": "ANIM_DEAD"
   },
   {
     "id": 254,
@@ -9692,7 +9810,8 @@
     "flavor": {
       "ja": "太陽を追った巨人、夸父の杖だ。まだ生きているこの木の杖はいずれ桃林になるだろう。",
       "en": "This is the staff of Kuafu, the sun-chasing giant.Still alive, the wood of this staff will someday grow into a forest ofpeach trees."
-    }
+    },
+    "activate": "TREE_CREATION"
   },
   {
     "id": 255,
@@ -9735,7 +9854,8 @@
     "flavor": {
       "ja": "ラ・マンチャに生まれたドン・キホーテは強大なる巨人『風車』を打ち倒そうとした勇敢な騎士だ。そんな彼の携えたランスは、どんな恐怖にも立ち向かうだけの勇気が込められている。",
       "en": "Don Quixote born in La Mancha is the brave knighttrying to defeat the colossal giant \"Windmill\".The lance he carried has the courage to face any fear."
-    }
+    },
+    "activate": "BERSERK"
   },
   {
     "id": 256,
@@ -9810,7 +9930,8 @@
     "flavor": {
       "ja": "ダビデは手を袋に入れて、その中から一つの石を取り、石投げで投げて、ペリシテびとの額を撃ったので、石はその額に突き入り、うつむきに地に倒れた。（サムエル記上17:49 『聖書 [口語]』日本聖書協会、1955年）",
       "en": "Then David put his hand in his bag and took out a stone;and he slung it and struck the Philistine in his forehead,so that the stone sank into his forehead,and he fell on his face to the earth.(Books of Samuel 17:49)"
-    }
+    },
+    "activate": "HERO"
   },
   {
     "id": 258,
@@ -9971,7 +10092,8 @@
     "flavor": {
       "ja": "「黒の牙」を意味する名を持つこの暗澹とした短剣は、その刃から酸の球を迸らせる力をもつ。",
       "en": "An acidic dagger finely balanced for deadly throws."
-    }
+    },
+    "activate": "ACID_BALL_AND_RESISTANCE"
   },
   {
     "id": 262,
@@ -10004,7 +10126,8 @@
     "flavor": {
       "ja": "伝令神ヘルメスの有翼のサンダルだ。身につけると空を飛ぶことができる。",
       "en": "You can fly if wearing these winged sandals of Hermes."
-    }
+    },
+    "activate": "PHASE_DOOR"
   },
   {
     "id": 263,
@@ -10047,7 +10170,8 @@
     "flavor": {
       "ja": "破壊神シヴァが持つ三又槍だ。3つの穂先はそれぞれシヴァの力である、意志(欲望)、行動、知恵をあらわす。シヴァはこの槍を用いて、アシュラ族の3人の魔神『トリプラースラ』がつくった「鉄でできた町」「銀でできた町」「金でできた町」を一晩で焼き払った。",
       "en": "It is the trident Shiva used to burn down, with one blow, the iron fort,silver fort, and gold fort created by the three asura brothers known as\"Tripurasura\".  Each of the spear's three tips represents one of Shiva'spowers:  will, action, and wisdom."
-    }
+    },
+    "activate": "BA_FIRE_2"
   },
   {
     "id": 264,
@@ -10085,7 +10209,8 @@
     "flavor": {
       "ja": "魔力を帯びた刃を持つアサメだ。斬りつけた敵に様々な効果をもたらすだろう。",
       "en": "This athame has a magical blade which provides some nasty effect to your enemies."
-    }
+    },
+    "activate": "ELBERETH"
   },
   {
     "id": 265,
@@ -10376,7 +10501,8 @@
     "flavor": {
       "ja": "遥か東の国の盗賊が身につける仕事着だ。その漆黒の装いは闇に溶け込み、いかなる体の動きをも邪魔しない。",
       "en": "It is the jet-black wear worn by a thief in the far east.  The wearerblends easily into any shadows and never finds his or her movementshindered."
-    }
+    },
+    "activate": "DETECT_TREASURE"
   },
   {
     "id": 273,
@@ -10499,7 +10625,8 @@
     "flavor": {
       "ja": "「よくやった！ 私は無理ではないかと恐れていたのだ！「ダイアナの長弓を持って戻ってきたな！「私は今，かのケンタウロスが別の大蠍を選ぶことを恐れている．それはいつかなされるだろう，しかし，その前にお前がビーナスのためにイェンダーの魔除けを取り戻すことができれば，我々は永遠に安泰だ．「ダイアナの長弓を持って行くがいい．魔除けを探す冒険の助けとなるだろう．」(勇者オリオン，JNethack)",
       "en": ""
-    }
+    },
+    "activate": "CREATE_AMMO"
   },
   {
     "id": 277,
@@ -10609,7 +10736,8 @@
     "flavor": {
       "ja": "サルマンがイスタリであった頃、自らの象徴にも用いた金属的光沢を持つ鋭角の多い杖だ。「自由の民」にとって堕落者、裏切り者と謗られる彼の実態は、長い戦乱の歴史の中であらゆる種族の混血となった「化外の民」の多くの庇護者であり、エダインの高貴な血による再興を目指すガンダルフの、ただ政敵であるに過ぎなかった。",
       "en": ""
-    }
+    },
+    "activate": "DETECT_XTRA"
   },
   {
     "id": 280,
@@ -10715,7 +10843,8 @@
     "flavor": {
       "ja": "くさそう。後なんかもう絶望的にきたない。",
       "en": ""
-    }
+    },
+    "activate": "HUGE_STINKING_STORM"
   },
   {
     "id": 283,
