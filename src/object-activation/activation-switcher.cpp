@@ -393,6 +393,8 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return activate_whistle(player_ptr, *o_ptr);
     case RandomArtActType::CAPTURE_MONSTER:
         return exe_monster_capture(player_ptr, *o_ptr);
+    case RandomArtActType::THE_WORLD:
+        return time_walk(player_ptr);
     default:
         msg_format(_("Unknown activation effect: %d.", "Unknown activation effect: %d."), enum2i(index));
         return false;

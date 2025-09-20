@@ -157,5 +157,6 @@ enum class RandomArtActType : short {
     BLOODY_MOON = 254,
     CRIMSON = 255,
     HUGE_STINKING_STORM = 256,
+    THE_WORLD = 257,
     MAX,
 };
