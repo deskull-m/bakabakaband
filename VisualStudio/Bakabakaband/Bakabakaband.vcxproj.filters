@@ -2669,6 +2669,78 @@
     <ClCompile Include="..\..\src\alliance\alliance-court-of-chaos.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-utumno.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-ungoliant.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-kenohgun.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-turban-kids.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-naked-knights.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-angartha.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-ashina-clan.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-avarin-lords.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-binzyou-buddhism.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-dokachans.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-gaichi.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-ge-orlic.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-getter.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-go.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-golan.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hakushin-karate.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-king.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-meldor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-none.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-phyrexia.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-pure-mirrodin.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-suren.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\birth\birth-select-patron.cpp">
+      <Filter>birth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-nanto-orthodox.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5771,6 +5843,81 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-court-of-chaos.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-utumno.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-ungoliant.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-kenohgun.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-turban-kids.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-naked-knights.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-angartha.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-ashina-clan.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-avarin-lords.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-binzyou-buddhism.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-dokachans.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-gaichi.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-ge-orlic.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-getter.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-go.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-golan.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hakushin-karate.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-king.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-meldor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-new.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-none.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-phyrexia.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-pure-mirrodin.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-suren.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\birth\birth-select-patron.h">
+      <Filter>birth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-nanto-orthodox.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7747,6 +7747,48 @@ F:SUSHI
 D:一部のホモに執着されるほど旨い寿司だ。
 D:$It's sushi so delicious that some homosexuals are obsessed with it.
 
+N:822:金属製タワー・シールド
+E:& Tower Metal Shield~
+G:):s
+I:34:8:0
+W:20:200:200
+A:20/1
+P:15:2d9:0:0:0
+D:$This large metal shield can protect your entire body when raised.
+D:$ Though heavy, it provides exceptionally sturdy protection.
+D:構えれば全身をかばうことができるほど大型の金属盾だ。重量は重いがきわめて堅牢な保護をもたらす。
+
+##### Anal Plugs #####
+
+N:823:快楽:シリコンの
+E:Pleasure:Silicone
+G:":v
+I:41:0:0
+W:10:8:50
+A:10/4
+P:0:0d0:0:0:1
+D:$This perverted silicone anal plug provides enhanced pleasure when inserted.
+D:この変態的なシリコン製尻栓は挿入時に快楽を高めてくれる。
+
+N:824:振動:電動の
+E:Vibrating:Electric
+G:":R
+I:41:1:0
+W:20:6:100
+A:20/3
+P:0:0d0:0:0:2
+D:$This electric anal plug vibrates intensely, providing both pleasure and healing.
+D:この電動尻栓は激しく振動し、快楽と同時に治癒効果をもたらす。
+
+N:825:ビール瓶
+E:! Beer bottle~
+G:":R
+I:41:10:0
+W:20:6:100
+A:20/3
+P:0:0d0:0:0:2
+F:INSTA_ART
+
 
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown

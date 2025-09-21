@@ -953,6 +953,84 @@ static errr set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDefiniti
 }
 
 /*!
+ * @brief JSON Objectからモンスターの死亡時召喚情報をセットする
+ * @param dead_spawn_data 死亡時召喚情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+static errr set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, MonraceDefinition &monrace)
+{
+    if (dead_spawn_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+
+    if (!dead_spawn_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &dead_spawn : dead_spawn_data) {
+        if (!dead_spawn.contains("id") || !dead_spawn.contains("probability") || !dead_spawn.contains("dice")) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        MonraceId monrace_id;
+        if (auto err = info_set_integer(dead_spawn["id"], monrace_id, true, Range(0, 9999))) {
+            return err;
+        }
+
+        const auto &probability_str = dead_spawn["probability"].get<std::string>();
+
+        // "X_IN_Y" 形式をパース
+        size_t in_pos = probability_str.find("_IN_");
+        if (in_pos == std::string::npos) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        const auto numer_str = probability_str.substr(0, in_pos);
+        const auto denom_str = probability_str.substr(in_pos + 4); // "_IN_" を除去
+
+        int numerator, denominator;
+        try {
+            numerator = std::stoi(numer_str);
+            denominator = std::stoi(denom_str);
+        } catch (...) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        if (numerator <= 0 || denominator <= 0) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        // ダイス情報の解析 ("XdY" 形式)
+        const auto &dice_str = dead_spawn["dice"].get<std::string>();
+        size_t d_pos = dice_str.find('d');
+        if (d_pos == std::string::npos) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        const auto dice_num_str = dice_str.substr(0, d_pos);
+        const auto dice_side_str = dice_str.substr(d_pos + 1);
+
+        int dice_num, dice_side;
+        try {
+            dice_num = std::stoi(dice_num_str);
+            dice_side = std::stoi(dice_side_str);
+        } catch (...) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        if (dice_num <= 0 || dice_side <= 0) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        // 分子、分母、モンスターID、ダイス面数、ダイス個数を設定
+        monrace.dead_spawns.push_back({ numerator, denominator, monrace_id, dice_side, dice_num });
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief モンスター種族情報(JSON Object)のパース関数
  * @param mon_data モンスターデータの格納されたJSON Object
  * @param head ヘッダ構造体
@@ -1114,6 +1192,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_spawn_item(mon_data["spawn_item"], monrace);
     if (err) {
         msg_format(_("モンスター自然生成アイテム情報読み込み失敗。ID: '%d'。", "Failed to load monster spawn item data. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_dead_spawns(mon_data["dead_spawn"], monrace);
+    if (err) {
+        msg_format(_("モンスター死亡時召喚情報読み込み失敗。ID: '%d'。", "Failed to load monster dead spawn data. ID: '%d'."), error_idx);
         return err;
     }
 

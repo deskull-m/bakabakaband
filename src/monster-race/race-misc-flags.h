@@ -29,6 +29,7 @@ enum class MonsterMiscType {
     SCATOLOGIST = 25,
     MASOCHIST = 26,
     BREAK_DOWN = 27,
+    NO_WAIFUZATION = 28,
     MAX
 };
 

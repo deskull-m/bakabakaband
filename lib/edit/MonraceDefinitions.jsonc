@@ -100906,6 +100906,7 @@
         "FRIENDS",
         "DROP_CORPSE",
         "DROP_NASTY",
+        "NO_WAIFUZATION",
         "WILD_WOOD",
         "HAS_LITE_1",
         "EVIL",
@@ -144856,7 +144857,12 @@
     "exp": 900,
     "next_exp": 0,
     "next_mon": 0,
-    "escorts": [],
+    "escorts": [
+        {
+            "escorts_id": 2279,
+            "escort_num": "8d1"
+        }
+    ],
     "blows": [
         {
             "method": "HIT",
@@ -145130,6 +145136,1249 @@
         "EAT_GIVE_STR",
         "EAT_LOSE_INT",
         "EAT_LOSE_WIS"
+    ]
+},
+{
+    "id": 2262,
+    "name": {
+        "ja": "老王『オーラント』",
+        "en": "Old King Allant"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "White"
+    },
+    "speed": 12,
+    "hit_point": "77d40",
+    "vision": 10,
+    "armor_class": 140,
+    "alertness": 50,
+    "level": 55,
+    "rarity": 3,
+    "exp": 24000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d15"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d15"
+        },
+        {
+            "method": "HIT",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_VAMP",
+            "damage_dice": "10d6"
+        }
+    ],
+    "flavor": {
+        "ja": "小国ボーレタリアの王でありながら、野心か絶望からか、世界を色のない霧に覆い尽くした元凶だ。「貴様も見てきただろう。もとより、世界とは悲劇だ」",
+        "en": "Though king of the small nation of Boretaria, driven by ambition or despair, he is the very cause that shrouded the world in a colorless mist. \"Surely you have seen for yourself... The pain and suffering that fills this world!\""
+    },
+    "sex": "MALE",
+    "alliance": "BOLETARIA",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "DROP_60",
+        "DROP_GOOD",
+        "HUMAN",
+        "DEMON",
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "POWERFUL",
+        "TAKE_ITEM",
+        "EVIL",
+        "NO_FEAR",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_SWIM",
+        "DROP_CORPSE",
+        "HAS_LITE_2"
+    ]
+},
+{
+    "id": 2263,
+    "name": {
+        "ja": "『塔の騎士』",
+        "en": "The Tower Knight of Boletaria"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Gray"
+    },
+    "speed": 0,
+    "hit_point": "25d100",
+    "vision": 20,
+    "armor_class": 150,
+    "alertness": 10,
+    "level": 45,
+    "rarity": 1,
+    "exp": 7000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d5"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d5"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d5"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "30d1"
+        }
+    ],
+    "flavor": {
+        "ja": "色のない霧で滅びた王国、ボーレタリアのデーモンだ。かつてその地で名を馳せた勇壮な騎士の姿をしているが、その異常な巨体はデーモンのそれだ。",
+        "en": "The Demon of Boretaria, a kingdom destroyed by colorless mist. It takes the form of a valiant knight who once made a name for himself in that land, yet its monstrously oversized body is unmistakably demonic."
+    },
+    "sex": "MALE",
+    "alliance": "BOLETARIA",
+    "flags": [
+        "FORCE_MAXHP",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "GIANT",
+        "DEMON",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_2D2",
+        "RES_NETH",
+        "KILL_BODY",
+        "COLD_BLOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL",
+        "UNIQUE"
+    ]
+},
+{
+    "id": 2264,
+    "name": {
+        "ja": "追突事故の主犯『DB』",
+        "en": "DB, the Primary perpetrator of the rear-end collision"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "10d10",
+    "vision": 20,
+    "armor_class": 25,
+    "alertness": 20,
+    "level": 0,
+    "rarity": 2,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        }
+    ],
+    "flavor": {
+        "ja": "黒塗りの高級車へぶつけてしまった主犯でありながら、責任を先輩に押し付け、頭も下げない傲慢な後輩だ。",
+        "en": "He's the arrogant junior who caused the accident by crashing into the Black-painted luxury car, yet he shifted the blame onto his senior and refused to apologize."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "EVIL",
+        "HAS_LITE_2",
+        "HUMAN",
+        "FORCE_MAXHP",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "DROP_1D2",
+        "DROP_GOOD",
+        "EAT_POISONOUS",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "WILD_TOWN",
+        "WILD_ONLY",
+        "ONLY_ITEM",
+        "NASTY",
+        "HOMO_SEXUAL"
+    ]
+},
+{
+    "id": 2265,
+    "name": {
+        "ja": "ボーレタリアの隠密",
+        "en": "Spy of Boletaria"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Dark Gray"
+    },
+    "speed": 20,
+    "hit_point": "14d20",
+    "vision": 20,
+    "armor_class": 60,
+    "alertness": 10,
+    "level": 34,
+    "rarity": 2,
+    "exp": 700,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "POISON",
+            "damage_dice": "8d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "LOSE_STR",
+            "damage_dice": "8d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "LOSE_STR",
+            "damage_dice": "8d4"
+        }
+    ],
+    "skill": {
+        "shoot": "8d4",
+        "list": [
+            "SHOOT",
+            "BLINK"
+        ],
+        "probability": "1_IN_4"
+    },
+    "flavor": {
+        "ja": "ボーレタリア王オーラントの影の配下だ。他の臣下と同様ソウルを奪われ傀儡と化している。",
+        "en": "He is a shadow subordinate of King Allant of Boletaria. Like the other vassals, his soul has been stolen, turning him into a puppet."
+    },
+    "sex": "MALE",
+    "alliance": "BOLETARIA",
+    "mob": 40,
+    "flags": [
+        "HUMAN",
+        "DEMON",
+        "DROP_1D2",
+        "IM_POIS",
+        "IM_ACID",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ROGUE",
+        "EVIL",
+        "NO_CONF",
+        "NO_SLEEP",
+        "EAT_GIVE_DEX",
+        "EAT_POISONOUS"
+    ]
+},
+{
+    "id": 2266,
+    "name": {
+        "ja": "虎眼流内弟子『宗像進八郎』",
+        "en": "Shinpachiro Munakata, In-house Disciple of Kogan-ryu"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Red"
+    },
+    "speed": 3,
+    "hit_point": "38d20",
+    "vision": 35,
+    "armor_class": 100,
+    "alertness": 4,
+    "level": 34,
+    "rarity": 4,
+    "exp": 1500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "SUPERHURT",
+            "damage_dice": "11d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "SUPERHURT",
+            "damage_dice": "11d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "9d7"
+        }
+    ],
+    "flavor": {
+        "ja": "「虎子」と呼ばれる虎眼流の将来を担うと言われる内弟子の一人だ。元掛川宿の侠客であり、その壮絶な過去の中でつけた無数の傷を身に持っている。",
+        "en": "He is one of the inner disciples known as “Koshi”-- Tiger Child said to be the future of the Kogan-ryu. A former outlaw of Kakegawa Post Station, bearing countless scars from his turbulent past."
+    },
+    "sex": "MALE",
+    "alliance": "KOGAN-RYU",
+    "flags": [
+        "HAS_LITE_1",
+        "DROP_2D2",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "HUMAN",
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "SAMURAI",
+        "YAKUZA",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EAT_GIVE_STR",
+        "EAT_LOSE_INT",
+        "EAT_LOSE_WIS"
+    ]
+},
+{
+    "id": 2267,
+    "name": {
+        "ja": "ガイチ軍最終兵器『ＭＯＡ』",
+        "en": "MOA, Ultimate Weapon of Gaichi"
+    },
+    "symbol": {
+        "character": "l",
+        "color": "Red"
+    },
+    "speed": 0,
+    "hit_point": "40d20",
+    "vision": 30,
+    "armor_class": 200,
+    "alertness": 10,
+    "level": 60,
+    "rarity": 2,
+    "exp": 40000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "skill": {
+        "shoot": "30d13",
+        "list": [
+            "BA_ELEC",
+            "SHOOT",
+            "BO_MANA",
+            "BO_PLAS",
+            "ROCKET",
+            "PSY_SPEAR"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "ガイチ軍が月面で製造する最終兵器、双胴型の宇宙戦艦だ。中央砲口から放たれる粒子砲は、推定１０万キロメートルを超える彼方から地球の人類を粛清し屈服させるほどの威力を持つ。",
+        "en": " The Gaichi Empire's ultimate weapon manufactured on the lunar surface is a twin-hulled space battleship. The particle cannon fired from the central muzzle possesses enough destructive power to purge and subjugate humanity on Earth from a distance estimated to exceed 100,000 kilometers."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "BASH_DOOR",
+        "KILL_BODY",
+        "KILL_WALL",
+        "CAN_FLY",
+        "RAND_25",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_STUN",
+        "NO_FEAR",
+        "HAS_LITE_2",
+        "NEVER_BLOW",
+        "POWERFUL",
+        "NONLIVING",
+        "EVIL",
+        "DROP_4D2",
+        "DROP_3D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "RES_PLAS"
+    ]
+},
+{
+    "id": 2268,
+    "name": {
+        "ja": "セーヌ川の汚物エレメンタル",
+        "en": "Ooze elemental of Seine River"
+    },
+    "symbol": {
+        "character": "E",
+        "color": "Light Brown"
+    },
+    "speed": 3,
+    "hit_point": "118d23",
+    "vision": 10,
+    "armor_class": 180,
+    "alertness": 90,
+    "level": 47,
+    "rarity": 3,
+    "exp": 4000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "ACID",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "ACID",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "ACID",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "4d12"
+        }
+    ],
+    "flavor": {
+        "ja": "それは下手な年経た汚物エレメンタルよりさらに絶望的に汚い。周辺住民の心根を現したかのようだ。",
+        "en": "It's even more hopelessly filthy than a poorly elder ooze elemental. It seemed to reflect the hearts of the local residents."
+    },
+    "flags": [
+        "POWERFUL",
+        "COLD_BLOOD",
+        "WILD_SHORE",
+        "WILD_SWAMP",
+        "JOKE",
+        "KILL_ITEM",
+        "KILL_BODY",
+        "BASH_DOOR",
+        "EVIL",
+        "IM_ACID",
+        "IM_FIRE",
+        "CAN_SWIM",
+        "NONLIVING",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "RES_TELE",
+        "ELEMENTAL"
+    ],
+    "skill": {
+        "list": [
+            "BR_ACID",
+            "BA_ACID",
+            "BR_NUKE"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2269,
+    "name": {
+        "ja": "『バイオ兵器コア』",
+        "en": "The Core of Bio Weapon"
+    },
+    "symbol": {
+        "character": "X",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "65d100",
+    "vision": 30,
+    "armor_class": 30,
+    "alertness": 0,
+    "level": 80,
+    "rarity": 3,
+    "exp": 70000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [
+        {
+            "escorts_id": 2136,
+            "escort_num": "3d6"
+        },
+        {
+            "escorts_id": 2156,
+            "escort_num": "3d6"
+        },
+        {
+            "escorts_id": 2157,
+            "escort_num": "3d6"
+        }
+    ],
+    "flavor": {
+        "ja": "ガイチ軍が火星で生み出した恐るべきバイオ兵器の源だ。",
+        "en": "This is the source of the terrifying biological weapon created by the Gaichi Empire on Mars."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "RES_TELE",
+        "FORCE_MAXHP",
+        "NEVER_MOVE",
+        "NEVER_BLOW",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "STUPID",
+        "NONLIVING",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "S_KIN"
+        ],
+        "probability": "1_IN_2"
+    }
+},
+{
+    "id": 2270,
+    "name": {
+        "ja": "SS-80(X) モノケロス",
+        "en": "SS-80(X) Atlas"
+    },
+    "symbol": {
+        "character": "{",
+        "color": "Light Brown"
+    },
+    "speed": -8,
+    "hit_point": "50d10",
+    "vision": 30,
+    "armor_class": 70,
+    "alertness": 10,
+    "level": 54,
+    "rarity": 2,
+    "exp": 13000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "skill": {
+        "shoot": "60d5",
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_1"
+    },
+    "flavor": {
+        "ja": "月面戦争に用いられた大口径の野砲だ。"
+    },
+    "alliance": "GAICHI",
+    "mob": 64,
+    "flags": [
+        "NEVER_MOVE",
+        "COLD_BLOOD",
+        "EMPTY_MIND",
+        "NONLIVING",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NO_STUN"
+    ]
+},
+{
+    "id": 2271,
+    "name": {
+        "ja": "GX-77(X) ムンクス",
+        "en": "GX-77(X) Charlie"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Light Blue"
+    },
+    "speed": 0,
+    "hit_point": "8d30",
+    "vision": 40,
+    "armor_class": 80,
+    "alertness": 60,
+    "level": 36,
+    "rarity": 2,
+    "exp": 1200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d4"
+        }
+    ],
+    "skill": {
+        "shoot": "16d4",
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_2"
+    },
+    "flavor": {
+        "ja": "月面の過酷な環境で争うために作られたパワードスーツをまとう兵士だ。"
+    },
+    "sex": "MALE",
+    "alliance": "GAICHI",
+    "mob": 1200,
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_1D2",
+        "SMART",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "CAN_SWIM",
+        "FRIENDS"
+    ]
+},
+{
+    "id": 2272,
+    "name": {
+        "ja": "GX-87(X) ダーベック",
+        "en": "GX-87(X) Kilroy"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Light Blue"
+    },
+    "speed": -2,
+    "hit_point": "13d30",
+    "vision": 40,
+    "armor_class": 120,
+    "alertness": 60,
+    "level": 36,
+    "rarity": 2,
+    "exp": 1200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d4"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d4"
+        }
+    ],
+    "skill": {
+        "shoot": "24d4",
+        "list": [
+            "SHOOT",
+            "ROCKET"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "月面の過酷な環境で争うために作られたパワードスーツをまとう兵士だ。"
+    },
+    "sex": "MALE",
+    "alliance": "GAICHI",
+    "mob": 800,
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_1D2",
+        "SMART",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "CAN_SWIM",
+        "FRIENDS"
+    ]
+},
+{
+    "id": 2273,
+    "name": {
+        "ja": "M-77(X) ヤマアラシ",
+        "en": "M-77(X) Trigger"
+    },
+    "symbol": {
+        "character": ".",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "100d12",
+    "vision": 30,
+    "armor_class": 120,
+    "alertness": 0,
+    "level": 36,
+    "rarity": 5,
+    "exp": 50,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "flavor": {
+        "ja": "侵入者を防ぐ障壁を張る地雷の一種だという。惑星進出時代の月面戦争に用いられているらしい。"
+    },
+    "alliance": "GAICHI",
+    "mob": 120,
+    "flags": [
+        "CHAR_CLEAR",
+        "NEVER_MOVE",
+        "NEVER_BLOW",
+        "FORCE_MAXHP",
+        "EMPTY_MIND",
+        "INVISIBLE",
+        "COLD_BLOOD",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING"
+    ]
+},
+{
+    "id": 2274,
+    "name": {
+        "ja": "『核姫』",
+        "en": "Nuclear Princess"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "49d6",
+    "vision": 100,
+    "armor_class": 100,
+    "alertness": 30,
+    "level": 43,
+    "rarity": 1,
+    "exp": 22000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "BITE",
+            "effect": "LOSE_CON"
+        }
+    ],
+    "flavor": {
+        "ja": "川越市に流れつく核兵器から生まれた姫だ。生まれた時から被爆いるため、三週間に一回は「皮膚脱ぎ」を行い、人の皮膚を取り替えないといけない。あなたの皮を狙っているようだ。",
+        "en": "She is a princess born from nuclear weapons that flowed into Kawagoe City. Having been exposed to radiation since birth, she must perform a “skin shedding” ritual every three weeks, replacing her skin with that of humans. It seems she has her sights set on your skin."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "ONLY_ITEM",
+        "RES_CHAO",
+        "RES_TELE",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "HAS_LITE_2",
+        "HUMAN",
+        "FORCE_MAXHP",
+        "NO_CONF",
+        "NO_SLEEP",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "DROP_60",
+        "DROP_90",
+        "EVIL",
+        "IM_POIS",
+        "IM_ACID",
+        "REGENERATE",
+        "OPEN_DOOR",
+        "BASH_DOOR"
+    ],
+    "skill": {
+        "list": [
+            "BR_NUKE"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2275,
+    "name": {
+        "ja": "伝承の収集者『タミヨウ』",
+        "en": "Tamiyo, Collector of Tales"
+    },
+    "symbol": {
+        "character": "h",
+        "color": "Green"
+    },
+    "speed": 17,
+    "hit_point": "10d100",
+    "vision": 100,
+    "armor_class": 90,
+    "alertness": 40,
+    "level": 46,
+    "rarity": 7,
+    "exp": 10000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "flavor": {
+        "ja": "彼女は神河の空民と呼ばれる種族であり、多元宇宙を渡るプレインズウォーカーだ。あらゆる世界の知識をより集め、己が故郷に保管したいと書にしたためている。",
+        "en": "She is a member of the Moonfolk of Kamigawa, a race of Planeswalkers who traverse the multiverse. She has written that she wishes to gather more knowledge from all worlds and store it in her homeland."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "CAN_FLY",
+        "FORCE_MAXHP",
+        "SPEAK_ALL",
+        "SMART",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_STUN",
+        "NEVER_BLOW",
+        "FRIENDLY",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_FIRE",
+        "IM_POIS",
+        "IM_COLD",
+        "RES_LITE",
+        "RES_NETH",
+        "RES_SHAR",
+        "RES_SOUN",
+        "RES_CHAO",
+        "RES_NEXU",
+        "RES_DISE",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_GREAT",
+        "TAKE_ITEM",
+        "DROP_CORPSE",
+        "GOOD"
+    ],
+    "skill": {
+        "list": [
+            "S_MONSTER",
+            "S_MONSTERS",
+            "TPORT",
+            "HASTE",
+            "BLINK",
+            "HEAL"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2276,
+    "name": {
+        "ja": "『間宮夫人』",
+        "en": "Madam Mamiya"
+    },
+    "symbol": {
+        "character": "G",
+        "color": "Violet"
+    },
+    "speed": 4,
+    "hit_point": "19d100",
+    "vision": 30,
+    "armor_class": 120,
+    "alertness": 5,
+    "level": 38,
+    "rarity": 3,
+    "exp": 9500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EXP_80"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "PARALYZE"
+        },
+        {
+            "method": "HIT",
+            "effect": "FIRE",
+            "damage_dice": "15d6"
+        },
+        {
+            "method": "HIT",
+            "effect": "FIRE",
+            "damage_dice": "15d6"
+        }
+    ],
+    "flavor": {
+        "ja": "日本のフレスコ画巨匠、間宮一郎の妻であった怨霊だ。生前、不慮の事故で己が子を死なせてしまって以来、精神を病み、他人の子供たちを焼却炉で焼く凶行を繰り返した挙句に自ら命を絶った。その恐ろしい姿には常に犠牲になった子の亡霊が取り巻いている。",
+        "en": "She is the vengeful spirit of the wife of Ichiro Mamiya, Japan's master fresco painter. After an unforeseen accident caused the death of her own child  during her lifetime, she lost her mind. She repeatedly committed the heinous act of burning other  people's children in an incinerator before ultimately  taking her own life. Her terrifying form is always surrounded by the ghosts of the children she sacrificed."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "UNDEAD",
+        "NONLIVING",
+        "FORCE_MAXHP",
+        "CAN_FLY",
+        "PASS_WALL",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "SELF_LITE_2",
+        "RES_CHAO",
+        "RES_NETH",
+        "EVIL",
+        "IM_ACID",
+        "IM_COLD",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "HOLD",
+            "SCARE",
+            "CAUSE_3",
+            "BR_FIRE",
+            "BO_FIRE",
+            "BO_ELEC",
+            "BO_PLAS",
+            "S_UNDEAD"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2277,
+    "name": {
+        "ja": "無限力『イデ』",
+        "en": "Ide, The Infinity Power"
+    },
+    "symbol": {
+        "character": "E",
+        "color": "Violet"
+    },
+    "speed": 43,
+    "hit_point": "210d103",
+    "vision": 100,
+    "armor_class": 100,
+    "alertness": 20,
+    "level": 107,
+    "rarity": 3,
+    "exp": 200000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "EXP_VAMP",
+            "damage_dice": "2d66"
+        }
+    ],
+    "flavor": {
+        "ja": "イデは宇宙に存在してきた過去の知的生命の無数の意志集合そのものだ。「善き力」で宇宙が満ちることを望むが、その空疎な願望は恐らく永遠に満たされることがない。なぜならば、それは現存する宇宙の知的生命が直接争うことはおろか、住み分けによって争いを避けることすら許さぬという、あまりに潔癖なものだからだ。あなたがあなたで有り続けたいならば、この絶望的存在を討ち滅ぼし、因果律そのものを解体しなければならない。さもなくば、この独善的意志の宇宙再構築の試み、即ち「イデの発動」より一切が消滅し、あなたも含めた全ての生命は、因果地平の彼方に連れ去られて、その一部に溶け込んでしまうだろう。"
+    },
+    "alliance": "IDE",
+    "flags": [
+        "UNIQUE",
+        "STUPID",
+        "FORCE_MAXHP",
+        "PASS_WALL",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_2D2",
+        "DROP_GREAT",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "REGENERATE",
+        "CAN_FLY",
+        "GOOD",
+        "IM_ACID",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_FIRE",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "RES_NEXU",
+        "RES_NETH",
+        "RES_CHAO",
+        "RES_WATE",
+        "POWERFUL"
+    ],
+    "skill": {
+        "list": [
+            "TELE_AWAY",
+            "TELE_TO",
+            "TELE_LEVEL",
+            "TPORT",
+            "BO_MANA",
+            "BA_MANA",
+            "BR_MANA",
+            "BA_LITE",
+            "DISPEL",
+            "PSY_SPEAR",
+            "INVULNER",
+            "BRAIN_SMASH"
+        ],
+        "probability": "1_IN_2"
+    }
+},
+{
+    "id": 2278,
+    "name": {
+        "ja": "腐れ谷の『不潔な巨像』",
+        "en": "Dirty Colossus of Valley of Defilement"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Light Green"
+    },
+    "speed": -1,
+    "hit_point": "10d160",
+    "vision": 20,
+    "armor_class": 116,
+    "alertness": 10,
+    "level": 40,
+    "rarity": 3,
+    "exp": 4000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SPIT",
+            "effect": "POISON",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "SPIT",
+            "effect": "POISON",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "SPIT",
+            "effect": "BLIND"
+        }
+    ],
+    "skill": {
+        "shoot": "30d6",
+        "list": [
+            "SHOOT",
+            "BR_POIS"
+        ],
+        "probability": "1_IN_5"
+    },
+    "flavor": {
+        "ja": "ボーレタリアの腐れ谷に潜む、文字通り不潔な巨躯を持った人影だ。その身には臭気と共に無数の虫がたかり、意志があるようにあなたにも襲い掛かってくる！"
+    },
+    "alliance": "BOLETARIA",
+    "flags": [
+        "EMPTY_MIND",
+        "BASH_DOOR",
+        "RES_DARK",
+        "GOLEM",
+        "DEMON",
+        "IM_COLD",
+        "IM_POIS",
+        "RES_CHAO",
+        "RES_SOUN",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "FORCE_MAXHP"
+    ]
+},
+{
+    "id": 2279,
+    "name": {
+        "ja": "オゴレス王の親衛隊",
+        "en": "Life Guard of King Ogreth"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Green"
+    },
+    "speed": 0,
+    "hit_point": "80d12",
+    "vision": 25,
+    "armor_class": 120,
+    "alertness": 25,
+    "level": 30,
+    "rarity": 2,
+    "exp": 1200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "6d10"
+        }
+    ],
+    "flavor": {
+        "ja": "オゴレス王の身辺を守る最強の戦力だ。"
+    },
+    "sex": "MALE",
+    "alliance": "BASAM-EMPIRE",
+    "mob": 8,
+    "flags": [
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "FORCE_MAXHP",
+        "HUMAN",
+        "DROP_90",
+        "DROP_1D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL",
+        "IM_ELEC",
+        "IM_COLD",
+        "NO_CONF",
+        "NO_SLEEP"
+    ]
+},
+{
+    "id": 2280,
+    "name": {
+        "ja": "アルパカ",
+        "en": "Alpaca"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "8d8",
+    "vision": 20,
+    "armor_class": 25,
+    "alertness": 25,
+    "level": 3,
+    "rarity": 1,
+    "exp": 20,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SPIT",
+            "effect": "CONFUSE",
+            "damage_dice": "1d4"
+        }
+    ],
+    "flavor": {
+        "ja": "柔らかな毛とつぶらな瞳をした温厚でふわふわした動物。興奮すると時々つばを吐くが、基本的には穏やかな性格だ。",
+        "en": "This gentle, fluffy creature has soft wool and big, curious eyes. It occasionally spits when agitated but is generally peaceful."
+    },
+    "flags": [
+        "WILD_WASTE",
+        "ANIMAL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "RIDING"
     ]
 }]
 }

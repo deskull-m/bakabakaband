@@ -1,6 +1,7 @@
 #include "floor/object-allocator.h"
 #include "dungeon/quest.h"
 #include "floor/floor-generator-util.h"
+#include "floor/floor-object.h"
 #include "game-option/birth-options.h"
 #include "game-option/cheat-types.h"
 #include "grid/object-placer.h"
@@ -10,10 +11,12 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
+#include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "term/z-rand.h"
 #include "wizard/wizard-messages.h"
 #include <range/v3/view.hpp>
 
@@ -183,8 +186,71 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
         case ALLOC_TYP_SUSHI:
             place_object(player_ptr, pos, AM_IGNORE_LEVEL, kind_is_sushi);
             break;
+        case ALLOC_TYP_SPECIFIC_ITEMS:
+            // This case is handled by alloc_specific_floor_items function
+            break;
         default:
             break;
+        }
+    }
+}
+
+/*!
+ * @brief 特定階層でのダイスベースアイテム生成 / Generate items on specific floors using dice rules
+ * @param player_ptr プレイヤーへの参照ポインタ
+ */
+void alloc_specific_floor_items(PlayerType *player_ptr)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto &dungeon = floor.get_generated_dungeon_definition();
+
+    // 現在の階層に特定のアイテム生成ルールがあるかチェック
+    if (!dungeon.specific_item_generation_map.count(floor.dun_level)) {
+        return;
+    }
+
+    const auto &rule = dungeon.specific_item_generation_map.at(floor.dun_level);
+
+    // 確率チェック
+    if (!evaluate_percent(rule.probability)) {
+        return;
+    }
+
+    // ダイスロールで生成数を決定
+    const int num_items = rule.dice.roll();
+
+    // アイテムを生成
+    for (int i = 0; i < num_items; i++) {
+        // 特定のアイテムIDでアイテムを作成
+        ItemEntity item(static_cast<short>(rule.item_id));
+        item.generate(static_cast<short>(rule.item_id));
+
+        // 適切な位置を探してアイテムを配置
+        int dummy = 0;
+        Pos2D pos(0, 0);
+
+        while (dummy < SAFE_MAX_ATTEMPTS) {
+            dummy++;
+            pos.y = randint0(floor.height);
+            pos.x = randint0(floor.width);
+            const auto &grid = floor.get_grid(pos);
+
+            if (!grid.is_floor() || !grid.o_idx_list.empty() || grid.has_monster()) {
+                continue;
+            }
+
+            if (player_ptr->is_located_at(pos)) {
+                continue;
+            }
+
+            // アイテムを床に配置
+            drop_near(player_ptr, item, pos, false);
+            break;
+        }
+
+        if (dummy >= SAFE_MAX_ATTEMPTS) {
+            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+                _("特定階層アイテムの配置に失敗しました。", "Failed to place specific floor item."));
         }
     }
 }

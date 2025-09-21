@@ -73,6 +73,9 @@ concptr mention_use(PlayerType *player_ptr, int i)
     case INVEN_FEET:
         p = _("  足", "On feet");
         break;
+    case INVEN_ASSHOLE:
+        p = _(" 尻穴 ", "In asshole");
+        break;
     default:
         p = _("ザック", "In pack");
         break;
@@ -149,6 +152,9 @@ concptr describe_use(PlayerType *player_ptr, int i)
         break;
     case INVEN_FEET:
         p = _("足にはいている", "wearing on your feet");
+        break;
+    case INVEN_ASSHOLE:
+        p = _("尻の穴に挿入している", "inserted in your asshole");
         break;
     default:
         p = _("ザックに入っている", "carrying in your pack");

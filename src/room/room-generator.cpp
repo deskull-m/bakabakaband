@@ -19,6 +19,7 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
+#include "util/enum-converter.h"
 #include "util/probability-table.h"
 #include "wizard/wizard-messages.h"
 
@@ -97,6 +98,21 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
 bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
+    auto &dungeon = floor_ptr->get_generated_dungeon_definition();
+
+    // 特定階層でのVault生成チェック
+    if (dungeon.specific_vault_map.count(floor_ptr->dun_level)) {
+        const auto vault_id = dungeon.specific_vault_map.at(floor_ptr->dun_level);
+        if (build_fixed_room(player_ptr, dd_ptr, 7, false, enum2i(vault_id))) {
+            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+                _("特定階層Vaultを生成", "Generated specific floor vault"));
+        } else {
+            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+                _("特定階層Vaultを生成失敗", "Failed generating specific floor vault"));
+            return false;
+        }
+    }
+
     int crowded = 0;
     std::map<RoomType, int> prob_list;
     int rooms_built = 0;
@@ -113,7 +129,6 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
     }
 
     room_info_type *room_info_ptr = room_info_normal;
-    auto &dungeon = floor_ptr->get_dungeon_definition();
 
     for (auto r : ROOM_TYPE_LIST) {
         if (dungeon.room_rate.count(r)) {
@@ -203,7 +218,7 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
         }
     }
 
-    for (auto &r : floor_ptr->get_dungeon_definition().fixed_room_list) {
+    for (auto &r : floor_ptr->get_generated_dungeon_definition().fixed_room_list) {
         auto depth = std::get<0>(r);
         auto id = std::get<1>(r);
         auto percentage = std::get<2>(r);

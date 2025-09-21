@@ -523,6 +523,7 @@ bool MonraceDefinition::is_suitable_for_figurine() const
     is_suitable &= this->population_flags.has_not(MonsterPopulationType::NAZGUL);
     is_suitable &= this->misc_flags.has_not(MonsterMiscType::FORCE_DEPTH);
     is_suitable &= this->population_flags.has_none_of({ MonsterPopulationType::ONLY_ONE, MonsterPopulationType::BUNBUN_STRIKER });
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -565,6 +566,7 @@ bool MonraceDefinition::is_suitable_for_orc_pit() const
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->kind_flags.has(MonsterKindType::ORC);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::UNDEAD);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -573,6 +575,7 @@ bool MonraceDefinition::is_suitable_for_troll_pit() const
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->kind_flags.has(MonsterKindType::TROLL);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::UNDEAD);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -582,6 +585,7 @@ bool MonraceDefinition::is_suitable_for_giant_pit() const
     is_suitable &= this->kind_flags.has(MonsterKindType::GIANT);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::GOOD);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::UNDEAD);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -590,6 +594,7 @@ bool MonraceDefinition::is_suitable_for_demon_pit() const
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->kind_flags.has(MonsterKindType::DEMON);
     is_suitable &= this->behavior_flags.has_not(MonsterBehaviorType::KILL_BODY) || this->behavior_flags.has(MonsterBehaviorType::NEVER_BLOW);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -598,6 +603,7 @@ bool MonraceDefinition::is_suitable_for_horror_pit() const
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR);
     is_suitable &= this->behavior_flags.has_not(MonsterBehaviorType::KILL_BODY) || this->behavior_flags.has(MonsterBehaviorType::NEVER_BLOW);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -605,6 +611,7 @@ bool MonraceDefinition::is_suitable_for_mimic_nest() const
 {
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->symbol_char_is_any_of("!$&(/=?[\\|][`~>+");
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -612,6 +619,7 @@ bool MonraceDefinition::is_suitable_for_dog_nest() const
 {
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->symbol_char_is_any_of("CZ");
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -619,6 +627,7 @@ bool MonraceDefinition::is_suitable_for_cat_nest() const
 {
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->symbol_char_is_any_of("f");
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -626,6 +635,7 @@ bool MonraceDefinition::is_suitable_for_chapel_nest() const
 {
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->kind_flags.has_not(MonsterKindType::EVIL);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -635,6 +645,7 @@ bool MonraceDefinition::is_suitable_for_jelly_nest() const
     is_suitable &= this->behavior_flags.has_not(MonsterBehaviorType::KILL_BODY) && this->behavior_flags.has(MonsterBehaviorType::NEVER_BLOW);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::EVIL);
     is_suitable &= this->symbol_char_is_any_of("ijm,");
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -642,6 +653,7 @@ bool MonraceDefinition::is_suitable_for_animal_nest() const
 {
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->kind_flags.has(MonsterKindType::ANIMAL);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -649,6 +661,7 @@ bool MonraceDefinition::is_suitable_for_undead_nest() const
 {
     auto is_suitable = this->is_suitable_for_special_room();
     is_suitable &= this->kind_flags.has(MonsterKindType::UNDEAD);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -660,6 +673,7 @@ bool MonraceDefinition::is_suitable_for_dragon_nest(const EnumClassFlagGroup<Mon
     auto flags = RF_ABILITY_BREATH_MASK;
     flags.reset(dragon_breaths);
     is_suitable &= this->ability_flags.has_none_of(flags) && this->ability_flags.has_all_of(dragon_breaths);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -669,6 +683,7 @@ bool MonraceDefinition::is_suitable_for_good_nest(char symbol) const
     is_suitable &= this->behavior_flags.has_not(MonsterBehaviorType::KILL_BODY) || this->behavior_flags.has(MonsterBehaviorType::NEVER_BLOW);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::EVIL);
     is_suitable &= this->symbol_definition.matches_character(symbol);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -678,6 +693,7 @@ bool MonraceDefinition::is_suitable_for_evil_nest(char symbol) const
     is_suitable &= this->behavior_flags.has_not(MonsterBehaviorType::KILL_BODY) || this->behavior_flags.has(MonsterBehaviorType::NEVER_BLOW);
     is_suitable &= this->kind_flags.has_not(MonsterKindType::GOOD);
     is_suitable &= this->symbol_definition.matches_character(symbol);
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
     return is_suitable;
 }
 
@@ -770,8 +786,12 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
 #ifdef JP
     return format("%sについてさらに詳しくなった気がする。", this->name.data());
 #else
+    const char *preamble = "You now know more about ";
+    if (this->kind_flags.has(MonsterKindType::UNIQUE)) {
+        return format("%s%s.", preamble, this->name.data());
+    }
     const auto nm = pluralize(this->name);
-    return format("You now know more about %s.", nm.data());
+    return format("%s%s.", preamble, nm.data());
 #endif
 }
 

@@ -39,6 +39,7 @@
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
+#include "view/object-describer.h"
 #include "world/world.h"
 
 /*!
@@ -169,7 +170,6 @@ static void accept_winner_message(PlayerType *player_ptr)
  */
 void do_cmd_suicide(PlayerType *player_ptr)
 {
-    char i;
     flush();
     auto &world = AngbandWorld::get_instance();
     if (world.total_winner) {
@@ -180,16 +180,6 @@ void do_cmd_suicide(PlayerType *player_ptr)
         if (!input_check(_("何もかも諦めますか? ", "Do you give up everything? "))) {
             return;
         }
-    }
-
-    /* Special Verification for suicide */
-    prt(_("確認のため '@' を押して下さい。", "Please verify SUICIDE by typing the '@' sign: "), 0, 0);
-
-    flush();
-    i = inkey();
-    prt("", 0, 0);
-    if (i != '@') {
-        return;
     }
 
     if (!decide_suicide()) {
@@ -212,4 +202,37 @@ void do_cmd_suicide(PlayerType *player_ptr)
     }
 
     player_ptr->died_from = _("途中終了", "Quitting");
+}
+
+/*!
+ * @brief 地形に説明を書き込むコマンド / Inscribe description on terrain
+ */
+void do_cmd_inscribe_terrain(PlayerType *player_ptr)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &grid = floor.get_grid(player_ptr->get_position());
+
+    // 現在の説明を表示
+    if (!grid.terrain_description.empty()) {
+        msg_format(_("現在の書き込み: %s", "Current description: %s"), grid.terrain_description.c_str());
+    } else {
+        msg_print(_("この地形には何も書かれていない。", "This terrain has no description."));
+    }
+
+    // input_stringを使用した文字列入力
+    tl::optional<std::string> desc_opt = input_string(_("書き込み: ", "Description: "),
+        78, grid.terrain_description, false);
+
+    if (!desc_opt) {
+        msg_print(_("キャンセルしました。", "Cancelled."));
+        return;
+    }
+
+    grid.terrain_description = desc_opt.value();
+
+    if (desc_opt.value().empty()) {
+        msg_print(_("説明を消去した。", "Description cleared."));
+    } else {
+        msg_format(_("「%s」と書き込んだ。", "Inscribed '%s'."), desc_opt.value().data());
+    }
 }

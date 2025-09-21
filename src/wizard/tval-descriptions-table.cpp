@@ -23,6 +23,7 @@ const std::vector<tval_desc> tval_desc_list = {
     { ItemKindType::SOFT_ARMOR, _("軽鎧", "Soft Armor") },
     { ItemKindType::RING, _("指輪", "Ring") },
     { ItemKindType::AMULET, _("アミュレット", "Amulet") },
+    { ItemKindType::ANAL_PLUG, _("尻栓", "Anal Plug") },
     { ItemKindType::LITE, _("光源", "Lite") },
     { ItemKindType::POTION, _("薬", "Potion") },
     { ItemKindType::SCROLL, _("巻物", "Scroll") },

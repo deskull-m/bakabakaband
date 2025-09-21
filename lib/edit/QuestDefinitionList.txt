@@ -147,6 +147,10 @@
 ?:[EQU $QUEST_NUMBER 36]
 %:q0seinourawaza.txt
 
+# 極道脅迫！体育部員たちの逆襲
+?:[EQU $QUEST_NUMBER 37]
+%:quests/037_INM01.txt
+
 # Random quests (always adressed with number 40)
 # ランダムクエスト
 ?:[EQU $QUEST_NUMBER 40]

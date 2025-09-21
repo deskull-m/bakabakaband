@@ -1,6 +1,9 @@
 #include "alliance/alliance-ide.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
 /*!
@@ -42,5 +45,5 @@ void AllianceIde::panishment([[maybe_unused]] PlayerType &player_ptr)
  */
 bool AllianceIde::isAnnihilated()
 {
-    return false;
+    return MonraceList::get_instance().get_monrace(MonraceId::IDE).mob_num == 0;
 }

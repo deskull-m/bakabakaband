@@ -25,6 +25,7 @@
 #include "game-option/play-record-options.h"
 #include "grid/grid.h"
 #include "info-reader/fixed-map-parser.h"
+#include "io/files-util.h"
 #include "io/write-diary.h"
 #include "market/arena-entry.h"
 #include "monster-floor/monster-generator.h"
@@ -318,7 +319,7 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr)
 {
     constexpr auto chance_small_floor = 10;
     auto &floor = *player_ptr->current_floor_ptr;
-    const auto &dungeon = floor.get_dungeon_definition();
+    const auto &dungeon = floor.get_generated_dungeon_definition();
     int level_height, level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
@@ -363,7 +364,34 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr)
 void wipe_generate_random_floor_flags(FloorType &floor)
 {
     for (const auto &pos : floor.get_area()) {
-        floor.get_grid(pos).info &= ~(CAVE_MASK);
+        auto &grid = floor.get_grid(pos);
+        grid.info &= ~(CAVE_MASK);
+    }
+
+    // 一定件数の噂をランダムに散りばめる
+    const int rumor_count = randint0(10);
+    for (int i = 0; i < rumor_count; i++) {
+        // ランダムな位置を選択
+        const int max_attempts = 100; // 無限ループ防止
+        for (int attempt = 0; attempt < max_attempts; attempt++) {
+            const int y = randint0(floor.height);
+            const int x = randint0(floor.width);
+            auto &grid = floor.get_grid({ y, x });
+
+            // 移動可能で、まだ噂が刻まれていない地形に配置
+            if (grid.get_terrain().has(TerrainCharacteristics::MOVE) && grid.terrain_description.empty()) {
+#ifdef JP
+                constexpr auto max_try_count = 10;
+                auto rumor = get_random_line_ja_only("rumors_j.txt", 0, max_try_count).value_or("嘘の噂もある。");
+#else
+                auto rumor = get_random_line("rumors.txt", 0).value_or("Some rumors are wrong.");
+#endif
+                if (!rumor.empty()) {
+                    grid.terrain_description = rumor;
+                    break; // 配置成功、次の噂へ
+                }
+            }
+        }
     }
 
     if (floor.is_underground()) {
@@ -406,6 +434,7 @@ void clear_cave(PlayerType *player_ptr)
             grid.reset_costs();
             grid.reset_dists();
             grid.when = 0;
+            grid.terrain_description = "";
         }
     }
 

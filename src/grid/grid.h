@@ -11,6 +11,7 @@
 #include "spell/spells-util.h"
 #include "system/angband.h"
 #include "util/point-2d.h"
+#include <string>
 #include <tl/optional.hpp>
 
 enum class AttributeType;
@@ -28,6 +29,7 @@ public:
         , mimic(mimic)
         , special(special)
         , occurrence(occurrence)
+        , terrain_description("")
     {
     }
 
@@ -36,6 +38,7 @@ public:
     FEAT_IDX mimic;
     short special;
     uint16_t occurrence;
+    std::string terrain_description;
 
     bool matches(const Grid &grid) const;
 };

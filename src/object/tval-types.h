@@ -48,6 +48,7 @@ enum class ItemKindType : short {
     DRAG_ARMOR = 38, /* Dragon Scale Mail */
     LITE = 39, /* Lites (including Specials) */
     AMULET = 40, /* Amulets (including Specials) */
+    ANAL_PLUG = 41, /* Anal plugs (perverted items) */
     RING = 45, /* Rings (including Specials) */
     CARD = 50,
     STAFF = 55,

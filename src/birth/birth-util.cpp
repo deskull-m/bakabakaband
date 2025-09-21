@@ -43,6 +43,9 @@ void birth_help_option(PlayerType *player_ptr, char c, BirthKind bk)
     case BirthKind::PERSONALITY:
         help_file = _("jraceclas.txt#ThePersonalities", "raceclas.txt#ThePersonalities");
         break;
+    case BirthKind::PATRON:
+        help_file = _("jraceclas.txt#ThePatrons", "raceclas.txt#ThePatrons");
+        break;
     case BirthKind::AUTO_ROLLER:
         help_file = _("jbirth.txt#AutoRoller", "birth.txt#AutoRoller");
         break;
