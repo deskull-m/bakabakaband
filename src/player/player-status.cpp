@@ -1656,6 +1656,23 @@ static ARMOUR_CLASS calc_base_ac(PlayerType *player_ptr)
         ac += player_ptr->skill_exp[PlayerSkillKindType::ARMOR] * (1 + player_ptr->lev / 25) / 2500;
     }
 
+    // 回避技能による防御力ボーナス（軽装備時）
+    auto equipment_weight = 0;
+    equipment_weight += player_ptr->inventory[INVEN_BODY]->weight;
+    equipment_weight += player_ptr->inventory[INVEN_HEAD]->weight;
+    equipment_weight += player_ptr->inventory[INVEN_OUTER]->weight;
+    equipment_weight += player_ptr->inventory[INVEN_ARMS]->weight;
+    equipment_weight += player_ptr->inventory[INVEN_FEET]->weight;
+
+    // 装備重量が軽い（300ポンド以下）時に回避技能ボーナス
+    if (equipment_weight <= 300) {
+        auto evasion_bonus = player_ptr->skill_exp[PlayerSkillKindType::EVASION] * (1 + player_ptr->lev / 20) / 3000;
+        // 装備がより軽いほどボーナスが大きくなる（最大で2倍）
+        auto weight_ratio = (300 - equipment_weight) / 300.0;
+        evasion_bonus = static_cast<int>(evasion_bonus * (1.0 + weight_ratio));
+        ac += evasion_bonus;
+    }
+
     return ac;
 }
 

@@ -57,6 +57,7 @@ private:
     void process_monster_attack_evasion();
     void describe_attack_evasion();
     void gain_armor_exp();
+    void gain_evasion_exp();
     void increase_blow_type_seen(const int ap_cnt);
     void postprocess_monster_blows();
     void process_thief_teleport(const SpellHex &spell_hex);

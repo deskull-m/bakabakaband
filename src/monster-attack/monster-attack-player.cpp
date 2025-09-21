@@ -416,6 +416,7 @@ void MonsterAttackPlayer::process_monster_attack_evasion()
     case RaceBlowMethodType::CHARGE:
         this->describe_attack_evasion();
         this->gain_armor_exp();
+        this->gain_evasion_exp();
         this->damage = 0;
         return;
     default:
@@ -468,6 +469,23 @@ void MonsterAttackPlayer::gain_armor_exp()
 
     this->player_ptr->skill_exp[PlayerSkillKindType::SHIELD] = std::min<short>(max, cur + increment);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+}
+
+void MonsterAttackPlayer::gain_evasion_exp()
+{
+    // 装備重量が軽い（300ポンド以下）時のみ回避技能の経験値を獲得
+    auto equipment_weight = 0;
+    equipment_weight += this->player_ptr->inventory[INVEN_BODY]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_HEAD]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_OUTER]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_ARMS]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_FEET]->weight;
+
+    if (equipment_weight > 300) {
+        return;
+    }
+
+    PlayerSkill(this->player_ptr).gain_evasion_skill_exp();
 }
 
 /*!
