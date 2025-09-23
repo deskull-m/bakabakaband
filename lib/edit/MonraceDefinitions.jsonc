@@ -146380,5 +146380,80 @@
         "DROP_CORPSE",
         "RIDING"
     ]
+},
+{
+    "id": 2281,
+    "name": {
+        "ja": "ＫＩＮＧ『シン』",
+        "en": "Shin the KING"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Light Gray"
+    },
+    "speed": 12,
+    "hit_point": "50d100",
+    "vision": 50,
+    "armor_class": 140,
+    "alertness": 10,
+    "level": 58,
+    "rarity": 2,
+    "exp": 30000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "10d10"
+        }
+    ],
+    "flavor": {
+        "ja": "南斗聖拳の一派、南斗孤鷲拳の使い手にして、殉星を背負う男だ。悪魔がほほ笑む時代と言われる世紀末の中で、暴力組織「ＫＩＮＧ」を結成し、核戦争後の関東の支配者となったが、その凶行の裏には愛ゆえの葛藤があった。",
+        "en": "A practitioner of the Nanto-Kosyuken, a branch of the Nanto-Seiken, and a man who bears the burden of a fallen star. In the apocalyptic era known as the time when demons smile, he formed the violent organization “KING” and became the ruler of post-nuclear war Kanto. Yet behind his atrocities lay a conflict born of love."
+    },
+    "sex": "MALE",
+    "alliance": "KING",
+    "flags": [
+        "UNIQUE",
+        "HAS_LITE_2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "HUMAN",
+        "FORCE_MAXHP",
+        "NO_CONF",
+        "NO_SLEEP",
+        "DROP_2D2",
+        "DROP_1D2",
+        "DROP_GOOD",
+        "ONLY_ITEM",
+        "CAN_SWIM",
+        "GOOD",
+        "EVIL",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_FIRE",
+        "REGENERATE"
+    ]
 }]
 }
