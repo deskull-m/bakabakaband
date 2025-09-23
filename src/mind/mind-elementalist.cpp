@@ -737,8 +737,8 @@ bool get_element_power(PlayerType *player_ptr, SPELL_IDX *sn, bool only_browse)
         if (choice == ESCAPE) {
             choice = ' ';
         } else {
-            const auto new_choice = input_command(prompt, true);
-            if (!new_choice.has_value()) {
+            const auto new_choice = input_command(prompt);
+            if (!new_choice) {
                 break;
             }
 
