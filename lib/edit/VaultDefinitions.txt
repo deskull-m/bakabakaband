@@ -17637,6 +17637,23 @@ D:        %...%
 D:        %...%        
 D:         %%%         
 
+N:847:SmallPit
+X:18:8:14:13
+D:      %      
+D:     %.%     
+D:     %.%     
+D:   %%%.%%%   
+D:  %.......%  
+D: %....#....% 
+D: %.#.#@#.#.% 
+D:%...f###f...%
+D:%.#.fffff.#.%
+D:%...#...#...%
+D: %.#.....#.% 
+D:  %..#.#..%  
+D:   %%...%%   
+D:     %%%     
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
