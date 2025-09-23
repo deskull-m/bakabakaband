@@ -41261,6 +41261,30 @@ D:$ It occasionally spits when agitated but is generally peaceful.
 D:柔らかな毛とつぶらな瞳をした温厚でふわふわした動物。
 D:興奮すると時々つばを吐くが、基本的には穏やかな性格だ。
 
+N:2281:ＫＩＮＧ『シン』
+E:Shin the KING
+G:p:W
+I:122:50d100:50:140:10
+W:58:2:30000:0:0
+B:KICK:HURT:12d12
+B:KICK:HURT:12d12
+B:KICK:SUPERHURT:10d10
+B:KICK:SUPERHURT:10d10
+F:UNIQUE | MALE | HAS_LITE_2 |
+F:OPEN_DOOR | BASH_DOOR | DROP_CORPSE | DROP_SKELETON | HUMAN |
+F:FORCE_MAXHP | NO_CONF | NO_SLEEP |
+F:DROP_2D2 | DROP_1D2 | DROP_GOOD | ONLY_ITEM | CAN_SWIM | ALLIANCE_KING
+F:GOOD | EVIL | IM_COLD | IM_POIS | IM_ACID | IM_ELEC | IM_FIRE | REGENERATE |
+D:$A practitioner of the Nanto-Kosyuken,
+D:$ a branch of the Nanto-Seiken,
+D:$ and a man who bears the burden of a fallen star.
+D:$ In the apocalyptic era known as the time when demons smile,
+D:$ he formed the violent organization “KING” and became the ruler of
+D:$ post-nuclear war Kanto. Yet behind his atrocities lay a conflict born of love.
+D:南斗聖拳の一派、南斗孤鷲拳の使い手にして、殉星を背負う男だ。
+D:悪魔がほほ笑む時代と言われる世紀末の中で、暴力組織「ＫＩＮＧ」を結成し、
+D:核戦争後の関東の支配者となったが、その凶行の裏には愛ゆえの葛藤があった。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
