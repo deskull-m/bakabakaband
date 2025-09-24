@@ -418,6 +418,7 @@ static void update_upper_lower_or_floor_id(saved_floor_type *sf_ptr)
 
 static void exe_leave_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 {
+    auto &floor = *player_ptr->current_floor_ptr;
     auto *grid_ptr = set_grid_by_leaving_floor(player_ptr);
     jump_floors(player_ptr);
     exit_to_wilderness(player_ptr);
@@ -435,9 +436,9 @@ static void exe_leave_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
     get_out_monster(player_ptr);
     sf_ptr->last_visit = AngbandWorld::get_instance().game_turn;
-    forget_lite(*player_ptr->current_floor_ptr);
-    forget_view(*player_ptr->current_floor_ptr);
-    clear_mon_lite(*player_ptr->current_floor_ptr);
+    floor.forget_lite();
+    forget_view(floor);
+    clear_mon_lite(floor);
     if (save_floor(player_ptr, sf_ptr, 0)) {
         return;
     }
