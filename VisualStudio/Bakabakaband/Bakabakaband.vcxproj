@@ -305,6 +305,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-odio.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-phyrexia.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-pure-mirrodin.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-seitei.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-sexy-commando-club.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shire.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-shittodan.cpp" />
@@ -1143,6 +1144,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-odio.h" />
     <ClInclude Include="..\..\src\alliance\alliance-phyrexia.h" />
     <ClInclude Include="..\..\src\alliance\alliance-pure-mirrodin.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-seitei.h" />
     <ClInclude Include="..\..\src\alliance\alliance-sexy-commando-club.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shire.h" />
     <ClInclude Include="..\..\src\alliance\alliance-shittodan.h" />
