@@ -41285,6 +41285,26 @@ D:南斗聖拳の一派、南斗孤鷲拳の使い手にして、殉星を背負
 D:悪魔がほほ笑む時代と言われる世紀末の中で、暴力組織「ＫＩＮＧ」を結成し、
 D:核戦争後の関東の支配者となったが、その凶行の裏には愛ゆえの葛藤があった。
 
+N:2282:ＫＩＮＧ兵
+E:Soldier of KING
+G:p:o
+I:110:10d11:20:40:40
+W:19:1:0:70:0:0
+B:PUNCH:HURT:2d5
+B:PUNCH:SUPERHURT:2d5
+B:PUNCH:HURT:3d5
+F:MALE | HAS_LITE_2 | HUMAN |
+F:DROP_90 | FRIENDS | ALLIANCE_KING | MOB_1000
+F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:EVIL
+F:DROP_KIND_1_IN_10_748_0_1d1
+F:DROP_KIND_1_IN_10_749_0_1d1
+S:1_IN_4 | SHOOT
+D:$They are members of KING, which rules over the entire Kanto region at the end of the century.
+D:$ Their banner bears the emblem of the Bloody Cross, a cross shaped like the Southern Cross.
+D:世紀末の関東一円を支配するＫＩＮＧの構成員だ。
+D:南十字星を象った十字の紋章「ブラッディークロス」を旗印にしている。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
