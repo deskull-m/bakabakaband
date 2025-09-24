@@ -7789,6 +7789,15 @@ A:20/3
 P:0:0d0:0:0:2
 F:INSTA_ART
 
+N:826:ＤＸブラギガス
+E:DX Bragigas~
+G:`:R
+I:41:11:0
+W:20:6:100
+A:20/3
+P:0:0d0:0:0:2
+F:INSTA_ART
+
 
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
