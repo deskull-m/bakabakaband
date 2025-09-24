@@ -118,8 +118,8 @@ public:
     std::vector<town_vault> vault_list;
     AllianceType allianceID = AllianceType::NONE; /*!< 現在のアライアンスID / Current alliance ID */
     int get_level() const;
-    Grid &get_grid(const Pos2D pos);
-    const Grid &get_grid(const Pos2D pos) const;
+    Grid &get_grid(const Pos2D &pos);
+    const Grid &get_grid(const Pos2D &pos) const;
     Rect2D get_area(FloorBoundary fb = FloorBoundary::OUTER_WALL_INCLUSIVE) const;
     bool is_entering_dungeon() const;
     bool is_leaving_dungeon() const;
