@@ -11,7 +11,6 @@
 #include "io/write-diary.h"
 #include "mind/mind-mirror-master.h"
 #include "mind/mind-ninja.h"
-#include "monster-floor/monster-lite.h"
 #include "monster-floor/monster-remover.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
@@ -437,7 +436,7 @@ static void exe_leave_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     sf_ptr->last_visit = AngbandWorld::get_instance().game_turn;
     floor.forget_lite();
     floor.forget_view();
-    clear_mon_lite(floor);
+    floor.forget_mon_lite();
     if (save_floor(player_ptr, sf_ptr, 0)) {
         return;
     }
