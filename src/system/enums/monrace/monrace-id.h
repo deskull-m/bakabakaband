@@ -228,6 +228,10 @@ enum class MonraceId : int16_t {
     GOLAN_SOLDIER = 1687,
     KACHO_CAT = 1688,
     GOLAN_OFFICER = 1692,
+    MR_HEART = 1704,
+    KING_SPADE = 1762,
+    KING_DIA = 1763,
+    KING_CLUB = 1764,
     GOLAN_RED_BELET = 1828,
     KACHO_ANGEL = 1844,
     KHORNE_CHOSEN = 2003,
@@ -242,6 +246,8 @@ enum class MonraceId : int16_t {
     GX_87_X_KILROY = 2272,
     M_77_X_TRIGGER = 2273,
     IDE = 2277,
+    KING_SHIN = 2281,
+    KING_SOLDIER = 2282,
     POLYGON_SPIN = -1, // TODO: 変愚から後日移植
     HUNGRY_OLD_MAN = -2 // TODO: 変愚から後日移植
 };

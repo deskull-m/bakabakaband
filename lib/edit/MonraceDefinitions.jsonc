@@ -113772,7 +113772,7 @@
 {
     "id": 1762,
     "name": {
-        "ja": "KINGの四重臣『スペード』",
+        "ja": "ＫＩＮＧの四重臣『スペード』",
         "en": "Spade, Big Four of KING"
     },
     "symbol": {
@@ -113780,13 +113780,13 @@
         "color": "Brown"
     },
     "speed": 0,
-    "hit_point": "25d10",
+    "hit_point": "25d30",
     "vision": 20,
-    "armor_class": 25,
+    "armor_class": 65,
     "alertness": 20,
-    "level": 14,
+    "level": 30,
     "rarity": 2,
-    "exp": 100,
+    "exp": 3000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -113794,30 +113794,31 @@
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "1d15"
+            "damage_dice": "4d15"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "1d15"
+            "damage_dice": "4d15"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "1d15"
+            "damage_dice": "4d15"
         }
     ],
     "skill": {
-        "shoot": "2d15",
+        "shoot": "4d15",
         "list": [
             "SHOOT"
         ],
         "probability": "1_IN_2"
     },
     "flavor": {
-        "ja": "サザンクロスの支配組織、KINGの重鎮の一人だ。ボウガンを愛用し、今日より明日を選ぶ老人の種もみを奪う極悪人である。"
+        "ja": "サザンクロスの支配組織、ＫＩＮＧの重鎮の一人だ。ボウガンを愛用し、今日より明日を選ぶ老人の種もみを奪う極悪人である。"
     },
     "sex": "MALE",
+    "alliance": "KING",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -113853,7 +113854,7 @@
 {
     "id": 1763,
     "name": {
-        "ja": "KINGの四重臣『ダイヤ』",
+        "ja": "ＫＩＮＧの四重臣『ダイヤ』",
         "en": "Diamond, Big Four of KING"
     },
     "symbol": {
@@ -113861,13 +113862,13 @@
         "color": "Brown"
     },
     "speed": 0,
-    "hit_point": "25d10",
+    "hit_point": "25d30",
     "vision": 20,
-    "armor_class": 25,
+    "armor_class": 65,
     "alertness": 20,
-    "level": 14,
+    "level": 30,
     "rarity": 2,
-    "exp": 100,
+    "exp": 3000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -113875,23 +113876,24 @@
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "4d16"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "4d16"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "4d16"
         }
     ],
     "flavor": {
-        "ja": "サザンクロスの支配組織、KINGの重鎮の一人だ。棒術の使い手で、無辜の親子の命を残酷に弄ぶ極悪人である。"
+        "ja": "サザンクロスの支配組織、ＫＩＮＧの重鎮の一人だ。棒術の使い手で、無辜の親子の命を残酷に弄ぶ極悪人である。"
     },
     "sex": "MALE",
+    "alliance": "KING",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -113927,7 +113929,7 @@
 {
     "id": 1764,
     "name": {
-        "ja": "KINGの四重臣『クラブ』",
+        "ja": "ＫＩＮＧの四重臣『クラブ』",
         "en": "Club, Big Four of KING"
     },
     "symbol": {
@@ -113939,9 +113941,9 @@
     "vision": 20,
     "armor_class": 25,
     "alertness": 20,
-    "level": 14,
+    "level": 31,
     "rarity": 2,
-    "exp": 100,
+    "exp": 3000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -113949,23 +113951,24 @@
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "5d15"
         },
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "5d15"
         },
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "5d15"
         }
     ],
     "flavor": {
-        "ja": "サザンクロスの支配組織、KINGの重鎮の一人だ。鉤爪の使い手で、逃げ回る奴隷をいたぶり尽くす極悪人である。"
+        "ja": "サザンクロスの支配組織、ＫＩＮＧの重鎮の一人だ。鉤爪の使い手で、逃げ回る奴隷をいたぶり尽くす極悪人である。"
     },
     "sex": "MALE",
+    "alliance": "KING",
     "flags": [
         "UNIQUE",
         "EVIL",
