@@ -4783,6 +4783,14 @@ F:ACTIVATE
 U:THE_WORLD
 D:DIOとの決戦に必要かも知れない学帽だ。
 
+N:294:ブラギガスあきの
+E:of That Toshiaki
+I:41:11:-3
+W:20:6:100
+A:20/3
+F:PERMA_CURSE
+D:それはお尻に挿れると楽しい。らしい。知らんわ。
+
 # N: serial number : item name
 # I: tval : sval : pval
 # W: depth : rarity : weight : cost
