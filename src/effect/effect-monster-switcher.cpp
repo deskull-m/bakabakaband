@@ -276,6 +276,32 @@ ProcessResult effect_monster_genocide(PlayerType *player_ptr, EffectMonster *em_
     return ProcessResult::PROCESS_CONTINUE;
 }
 
+ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonster *em_ptr)
+{
+    if (em_ptr->seen) {
+        em_ptr->obvious = true;
+    }
+
+    // MALE かつ HUMAN のモンスターのみが対象
+    auto &monrace = *em_ptr->r_ptr;
+    if (!monrace.is_male() || !monrace.kind_flags.has(MonsterKindType::HUMAN)) {
+        em_ptr->skipped = true;
+        return ProcessResult::PROCESS_CONTINUE;
+    }
+
+    std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
+    if (genocide_aux(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+        if (em_ptr->seen_msg) {
+            msg_format(_("%sは社会から抹殺された！", "%s^ has been socially eliminated!"), em_ptr->m_name);
+        }
+        chg_virtue(player_ptr, Virtue::VITALITY, -1);
+        return ProcessResult::PROCESS_TRUE;
+    }
+
+    em_ptr->skipped = true;
+    return ProcessResult::PROCESS_CONTINUE;
+}
+
 ProcessResult effect_monster_photo(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
     if (em_ptr->is_player()) {
@@ -481,6 +507,8 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
         return effect_monster_engetsu(player_ptr, em_ptr);
     case AttributeType::GENOCIDE:
         return effect_monster_genocide(player_ptr, em_ptr);
+    case AttributeType::SOCIAL_GENOCIDE:
+        return effect_monster_social_genocide(player_ptr, em_ptr);
     case AttributeType::PHOTO:
         return effect_monster_photo(player_ptr, em_ptr);
     case AttributeType::CRUSADE:

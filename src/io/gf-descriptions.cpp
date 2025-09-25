@@ -95,6 +95,7 @@ const std::vector<named_num> gf_descriptions = {
     { "GF_ATTACK", AttributeType::ATTACK },
     { "GF_ENGETSU", AttributeType::ENGETSU },
     { "GF_GENOCIDE", AttributeType::GENOCIDE },
+    { "GF_SOCIAL_GENOCIDE", AttributeType::SOCIAL_GENOCIDE },
     { "GF_PHOTO", AttributeType::PHOTO },
     { "GF_CONTROL_DEMON", AttributeType::CONTROL_DEMON },
     { "GF_LAVA_FLOW", AttributeType::LAVA_FLOW },
