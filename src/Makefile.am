@@ -42,6 +42,7 @@ hengband_SOURCES = \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
 	alliance/alliance-king.cpp alliance/alliance-king.h \
 	alliance/alliance-kogan-ryu.cpp alliance/alliance-kogan-ryu.h \
+	alliance/alliance-seitei.cpp alliance/alliance-seitei.h \
 	alliance/alliance-legendofsavior.cpp alliance/alliance-legendofsavior.h \
 	alliance/alliance-mabelode.cpp alliance/alliance-mabelode.h \
 	alliance/alliance-meldor.cpp alliance/alliance-meldor.h \

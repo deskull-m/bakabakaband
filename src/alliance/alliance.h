@@ -76,6 +76,7 @@ enum class AllianceType : int {
     BOLETARIA = 65, //!< ボーレタリア
     IDE = 66, //!< イデ
     NANTO_ORTHODOX = 67, //!< 南斗正統派
+    SEITEI = 68, //!< 聖帝軍
     MAX,
 };
 
