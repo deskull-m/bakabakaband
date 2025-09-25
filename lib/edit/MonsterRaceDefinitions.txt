@@ -25515,7 +25515,7 @@ N:1298:催眠おじさん
 E:Hypnotic uncle
 G:p:r
 I:109:14d11:20:30:20
-W:20:2:0:50:5000:1426
+W:20:2:0:50:12000:2283
 B:CRAWL:HURT:4d10
 B:DROOL:HURT:4d10
 F:MALE | 
@@ -41304,6 +41304,23 @@ D:$They are members of KING, which rules over the entire Kanto region at the end
 D:$ Their banner bears the emblem of the Bloody Cross, a cross shaped like the Southern Cross.
 D:世紀末の関東一円を支配するＫＩＮＧの構成員だ。
 D:南十字星を象った十字の紋章「ブラッディークロス」を旗印にしている。
+
+N:2283:デスアクメおじさん
+E:Death acme uncle
+G:p:r
+I:130:40d20:20:90:20
+W:49:2:0:10000:0:0
+B:CRAWL:HURT:8d10
+B:DROOL:HURT:8d10
+B:CRUSH:HURT:8d10
+B:CRAWL:HURT:8d10
+F:MALE | 
+F:DROP_1D2 | WILD_ALL | HUMAN |
+F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | 
+F:EVIL | HAS_LITE_2 | NASTY
+S:1_IN_3 | 
+S:CONF | BLIND | HOLD | SLOW
+D:HENTAI行為にガチのリョナ的殺意がこもった本気でやべえおじさんだ！今の内に逃げろ！
 
 # N: serial number : monster name
 # G: symbol : color

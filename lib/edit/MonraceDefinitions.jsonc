@@ -84125,8 +84125,8 @@
     "level": 20,
     "rarity": 2,
     "exp": 50,
-    "next_exp": 5000,
-    "next_mon": 1426,
+    "next_exp": 12000,
+    "next_mon": 2283,
     "escorts": [],
     "blows": [
         {
@@ -146536,5 +146536,74 @@
             "dice": "1d1"
         }
     ]
+},
+{
+    "id": 2283,
+    "name": {
+        "ja": "デスアクメおじさん",
+        "en": "Death acme uncle"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Red"
+    },
+    "speed": 20,
+    "hit_point": "40d20",
+    "vision": 20,
+    "armor_class": 90,
+    "alertness": 20,
+    "level": 49,
+    "rarity": 2,
+    "exp": 10000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRAWL",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "DROOL",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "CRAWL",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        }
+    ],
+    "flavor": {
+        "ja": "HENTAI行為にガチのリョナ的殺意がこもった本気でやべえおじさんだ！今の内に逃げろ！"
+    },
+    "sex": "MALE",
+    "flags": [
+        "DROP_1D2",
+        "WILD_ALL",
+        "HUMAN",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "EVIL",
+        "HAS_LITE_2",
+        "NASTY"
+    ],
+    "skill": {
+        "list": [
+            "CONF",
+            "BLIND",
+            "HOLD",
+            "SLOW"
+        ],
+        "probability": "1_IN_3"
+    }
 }]
 }
