@@ -68,6 +68,7 @@ static void add_personality_flags(PlayerType *player_ptr, TrFlags &flags)
     if (player_ptr->ppersonality == PERSONALITY_SEXY) {
         flags.set(TR_AGGRAVATE);
     }
+
     if (player_ptr->ppersonality == PERSONALITY_CHARGEMAN) {
         flags.set(TR_RES_CONF);
     }

@@ -1,6 +1,7 @@
 #include "racial/race-racial-command-setter.h"
 #include "cmd-action/cmd-spell.h"
 #include "player-info/race-info.h"
+#include "player/player-personality-types.h"
 #include "racial/racial-util.h"
 #include "system/player-type-definition.h"
 
@@ -361,5 +362,17 @@ void set_race_racial_command(PlayerType *player_ptr, rc_type *rc_ptr)
 
     default:
         break;
+    }
+
+    // 性格ベースのレイシャル能力
+    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+        rpi_type rpi(_("社会的抹殺", "Social Genocide"));
+        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2 + 30);
+        rpi.text = _("男性の人間モンスターを社会的に抹殺するボルトを放つ。", "Fires a bolt that socially eliminates male human monsters.");
+        rpi.min_level = 1;
+        rpi.cost = 10;
+        rpi.stat = A_CHR;
+        rpi.fail = 5;
+        rc_ptr->add_power(rpi, RC_IDX_RACE_1);
     }
 }

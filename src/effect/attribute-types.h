@@ -114,6 +114,7 @@ enum class AttributeType : int {
     MONSTER_MELEE = 126, /*!< 属性取得用: モンスターの近接攻撃>*/
     QUANTUM_VANISH = 127, /*!< 属性取得用: 量子消滅>*/
     SPIDER_STRING = 128, /*!< 属性取得用: 蜘蛛糸>*/
+    SOCIAL_GENOCIDE = 129, /*!< 魔法効果: 社会的抹殺*/
     MAX /*!< 欠番を無視した最大サイズ (直上の値+1) */
 };
 

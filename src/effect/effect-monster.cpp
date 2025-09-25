@@ -92,6 +92,7 @@ static ProcessResult is_affective(EffectMonster *em_ptr)
     case AttributeType::OLD_CONF:
     case AttributeType::OLD_POLY:
     case AttributeType::GENOCIDE:
+    case AttributeType::SOCIAL_GENOCIDE:
     case AttributeType::E_GENOCIDE:
         return ProcessResult::PROCESS_CONTINUE;
     default:
