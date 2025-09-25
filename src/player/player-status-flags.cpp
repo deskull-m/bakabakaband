@@ -1089,6 +1089,9 @@ void update_curses(PlayerType *player_ptr)
     if (player_ptr->ppersonality == PERSONALITY_SEXY) {
         player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
     }
+    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+        player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
+    }
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         o_ptr = player_ptr->inventory[i].get();
