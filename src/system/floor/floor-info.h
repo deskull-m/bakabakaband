@@ -161,7 +161,6 @@ public:
     void set_redraw_at(const Pos2D &pos);
     void set_view_at(const Pos2D &pos);
     void set_view();
-    void set_note_and_redraw_at(const Pos2D &pos);
     void set_note_and_redraw();
     std::vector<Pos2D> reset_lite();
     std::vector<Pos2D> reset_view();
@@ -175,8 +174,6 @@ public:
     void place_trap_at(const Pos2D &pos);
 
 private:
-    static int decide_selection_count();
-
     bool entering_dungeon = false;
     bool leaving_dungeon = false;
 
@@ -195,4 +192,8 @@ private:
     short redraw_n = 0; //!< Array of grids for delayed visual updating
     std::array<int, REDRAW_MAX> redraw_y{};
     std::array<int, REDRAW_MAX> redraw_x{};
+
+    static int decide_selection_count();
+
+    void set_note_and_redraw_at(const Pos2D &pos);
 };
