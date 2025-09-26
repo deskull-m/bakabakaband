@@ -114,7 +114,7 @@ public:
     const DungeonDefinition &get_dungeon_definition() const; //!< @details 定義データなので非const 版の使用は禁止.
     const DungeonDefinition &get_generated_dungeon_definition() const; //!< @details 生成処理用ダンジョン定義取得.
     QuestId get_random_quest_id(tl::optional<int> level_opt = tl::nullopt) const;
-    QuestId get_quest_id(int bonus = 0) const;
+    QuestId get_quest_id(const int bonus = 0) const;
     bool has_los_at(const Pos2D &pos) const;
     bool has_los_terrain_at(const Pos2D &pos) const;
     bool has_terrain_characteristics(const Pos2D &pos, TerrainCharacteristics tc) const;
