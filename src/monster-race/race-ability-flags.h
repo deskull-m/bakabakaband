@@ -100,17 +100,18 @@ enum class MonsterAbilityType {
     S_AMBERITES = 94, /* Summon Amberites */
     S_UNIQUE = 95, /* Summon Unique Monster */
     S_DEAD_UNIQUE = 96, /* Summon Dead Unique Monster */
-    BO_VOID = 97, /*!< モンスター能力: ヴォイド・ボルト / Void Bolt */
-    BO_ABYSS = 98, /*!< モンスター能力: アビス・ボルト / Abyss Bolt */
-    BR_VOID = 99, /*!< モンスター能力: 虚無のブレス / Breathe Void */
-    BR_ABYSS = 100, /*!< モンスター能力: 深淵のブレス / Breathe Abyss */
-    BA_VOID = 101, /*!< モンスター能力: 虚無のボール / Void Ball */
-    BA_ABYSS = 102, /*!< モンスター能力: 深淵のボール / Abyss Ball */
-    BA_METEOR = 103, /*!< モンスター能力: 隕石のボール / Meteor Ball */
-    BO_METEOR = 104, /*!< モンスター能力: 隕石のボルト / Meteor Bolt */
-    BO_LITE = 105, /*!< モンスター能力: 光のボルト（スターライトアロー） / Starlight arrow */
-    BR_FECES = 106, /*!< モンスター能力: 糞便のブレス / Breathe Feces */
-    BR_SPIDER_STRING = 107, /*!< モンスター能力: 蜘蛛糸のブレス / Breathe Spider String */
-    BA_GRAVITY = 108, /*!< モンスター能力: 超重力 / Gravity Ball */
+    S_NASTY = 97, /* Summon Nasty Monster */
+    BO_VOID = 98, /*!< モンスター能力: ヴォイド・ボルト / Void Bolt */
+    BO_ABYSS = 99, /*!< モンスター能力: アビス・ボルト / Abyss Bolt */
+    BR_VOID = 100, /*!< モンスター能力: 虚無のブレス / Breathe Void */
+    BR_ABYSS = 101, /*!< モンスター能力: 深淵のブレス / Breathe Abyss */
+    BA_VOID = 102, /*!< モンスター能力: 虚無のボール / Void Ball */
+    BA_ABYSS = 103, /*!< モンスター能力: 深淵のボール / Abyss Ball */
+    BA_METEOR = 104, /*!< モンスター能力: 隕石のボール / Meteor Ball */
+    BO_METEOR = 105, /*!< モンスター能力: 隕石のボルト / Meteor Bolt */
+    BO_LITE = 106, /*!< モンスター能力: 光のボルト（スターライトアロー） / Starlight arrow */
+    BR_FECES = 107, /*!< モンスター能力: 糞便のブレス / Breathe Feces */
+    BR_SPIDER_STRING = 108, /*!< モンスター能力: 蜘蛛糸のブレス / Breathe Spider String */
+    BA_GRAVITY = 109, /*!< モンスター能力: 超重力 / Gravity Ball */
     MAX,
 };

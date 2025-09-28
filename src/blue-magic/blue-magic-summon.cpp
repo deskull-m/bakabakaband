@@ -287,3 +287,19 @@ bool cast_blue_summon_dead_unique(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     return true;
 }
+
+bool cast_blue_summon_nasty(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("汚い怪物を召喚した！", "You summon nasty monsters!"));
+    for (int k = 0; k < 2 + bmc_ptr->plev / 20; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_NASTY, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚された汚い怪物は怒っている！", "The summoned nasty monsters are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
