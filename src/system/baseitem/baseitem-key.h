@@ -86,6 +86,7 @@ public:
     bool is_monster() const;
     bool is_never_move() const;
     bool are_both_statue(const BaseitemKey &other) const;
+    bool is_special() const;
 
 private:
     ItemKindType type_value;
