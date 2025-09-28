@@ -146605,5 +146605,72 @@
         ],
         "probability": "1_IN_3"
     }
+},
+{
+    "id": 2284,
+    "name": {
+        "ja": "超電磁空手の達人『刀耳』",
+        "en": "Toji, Master of Super Electromagnetic Karate"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Light Gray"
+    },
+    "speed": 15,
+    "hit_point": "60d110",
+    "vision": 30,
+    "armor_class": 180,
+    "alertness": 0,
+    "level": 61,
+    "rarity": 3,
+    "exp": 26000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "12d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "12d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "SHATTER",
+            "damage_dice": "13d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "SHATTER",
+            "damage_dice": "13d10"
+        }
+    ],
+    "flavor": {
+        "ja": "人類が宇宙に進出する時代になり、サイボーグ体を手に入れてなお「空手」を追求する武闘派集団が存在する。刀耳はその中でも大きな流派の一つである超電磁空手の使い手であり「虐殺士」と呼ばれる域にまで達した超大型サイボーグだ。",
+        "en": "In an era where humanity has ventured into space, a militant group exists that continues to pursue “karate” even after acquiring cyborg bodies. Toji is a practitioner of Super Electromagnetic Karate,  one of the major schools within this group, and is a super-sized cyborg who has reached the level known as a \"Massacre Warrior\"."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "GIANT",
+        "NO_FEAR",
+        "FORCE_MAXHP",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "KARATEKA",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_SWIM",
+        "COLD_BLOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR"
+    ]
 }]
 }
