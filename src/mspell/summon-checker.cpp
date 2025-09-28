@@ -164,6 +164,9 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
     case SUMMON_KACHO: {
         return r_idx == MonraceId::KACHO_CAT || r_idx == MonraceId::KACHO_ANGEL;
     }
+    case SUMMON_NASTY: {
+        return monrace.kind_flags.has(MonsterKindType::NASTY);
+    }
 
     default:
         return false;

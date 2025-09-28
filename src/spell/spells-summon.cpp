@@ -139,6 +139,39 @@ bool cast_summon_undead(PlayerType *player_ptr, int power)
     return true;
 }
 
+/*!
+ * @brief クッソ汚い奴ら召喚の処理
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param power 召喚パワー
+ * @return 召喚できたらTRUEを返す
+ */
+bool cast_summon_nasty(PlayerType *player_ptr, int power)
+{
+    bool pet = one_in_(3);
+    summon_type type = SUMMON_NASTY;
+
+    BIT_FLAGS mode = 0L;
+    if (!pet || ((player_ptr->lev > 24) && one_in_(3))) {
+        mode |= PM_ALLOW_GROUP;
+    }
+    if (pet) {
+        mode |= PM_FORCE_PET;
+    } else {
+        mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
+    }
+
+    if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, power, type, mode)) {
+        msg_print(_("悪臭が漂い始めた。それは汚物と腐敗の匂いを運んでいる...",
+            "A foul stench begins to drift, carrying the smell of filth and corruption..."));
+        if (pet) {
+            msg_print(_("クッソ汚い奴らがあなたに仕えるため現れた！", "Filthy creatures appear to serve you!"));
+        } else {
+            msg_print(_("クッソ汚い奴らが現れた。あなたを汚すために！", "Filthy creatures appear to defile you!"));
+        }
+    }
+    return true;
+}
+
 bool cast_summon_hound(PlayerType *player_ptr, int power)
 {
     BIT_FLAGS mode = PM_ALLOW_GROUP;

@@ -11,6 +11,7 @@ class PlayerType;
 bool trump_summoning(PlayerType *player_ptr, int num, bool pet, POSITION y, POSITION x, DEPTH lev, summon_type type, BIT_FLAGS mode);
 bool cast_summon_demon(PlayerType *player_ptr, int power);
 bool cast_summon_undead(PlayerType *player_ptr, int power);
+bool cast_summon_nasty(PlayerType *player_ptr, int power);
 bool cast_summon_hound(PlayerType *player_ptr, int power);
 bool cast_summon_elemental(PlayerType *player_ptr, int power);
 bool cast_summon_octopus(PlayerType *player_ptr);

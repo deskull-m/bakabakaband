@@ -411,6 +411,8 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_DEAD_UNIQUE:
         return -1;
+    case MonsterAbilityType::S_NASTY:
+        return -1;
     case MonsterAbilityType::MAX:
         return -1;
     }

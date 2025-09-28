@@ -159,7 +159,7 @@ static bool spell_annoy(MonsterAbilityType spell)
  */
 static bool spell_summon(MonsterAbilityType spell)
 {
-    return spell_in_between(spell, MonsterAbilityType::S_KIN, MonsterAbilityType::S_DEAD_UNIQUE);
+    return spell_in_between(spell, MonsterAbilityType::S_KIN, MonsterAbilityType::S_NASTY);
 }
 
 /*!

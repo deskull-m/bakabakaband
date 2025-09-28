@@ -58,4 +58,5 @@ enum summon_type : int {
     SUMMON_DEAD_UNIQUE = 74, /*!< 召喚タイプ: 撃破済みユニーク */
     SUMMON_ALLIANCE = 75, /*!< 召喚タイプ: 同アライアンス */
     SUMMON_KACHO = 76, /*!< 召喚タイプ: クッソ汚い課長 */
+    SUMMON_NASTY = 77, /*!< 召喚タイプ: クッソ汚い奴ら */
 };
