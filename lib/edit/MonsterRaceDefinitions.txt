@@ -41322,6 +41322,27 @@ S:1_IN_3 |
 S:CONF | BLIND | HOLD | SLOW
 D:HENTAI行為にガチのリョナ的殺意がこもった本気でやべえおじさんだ！今の内に逃げろ！
 
+N:2284:超電磁空手の達人『刀耳』
+E:Toji, Master of Super Electromagnetic Karate
+G:P:W
+I:125:60d110:30:180:0
+W:61:3:26000:0:0
+B:PUNCH:HURT:12d10
+B:PUNCH:HURT:12d10
+B:KICK:SHATTER:13d10
+B:KICK:SHATTER:13d10
+F:UNIQUE | MALE | DROP_CORPSE | GIANT
+F:NO_FEAR | FORCE_MAXHP |
+F:IM_FIRE | IM_COLD | IM_POIS | KARATEKA
+F:REGENERATE | NO_CONF | NO_SLEEP | CAN_SWIM |
+F:COLD_BLOOD | OPEN_DOOR | BASH_DOOR |
+D:$In an era where humanity has ventured into space,
+D:$ a militant group exists that continues to pursue “karate” even after acquiring cyborg bodies.
+D:$ Toji is a practitioner of Super Electromagnetic Karate, 
+D:$ one of the major schools within this group, and is a super-sized cyborg who has reached the level known as a "Massacre Warrior".
+D:人類が宇宙に進出する時代になり、サイボーグ体を手に入れてなお「空手」を追求する武闘派集団が存在する。
+D:刀耳はその中でも大きな流派の一つである超電磁空手の使い手であり「虐殺士」と呼ばれる域にまで達した超大型サイボーグだ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
