@@ -90,6 +90,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::SKELETON);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::CANCER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::CANCER);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
         lore_ptr->kind_flags.set(MonsterKindType::EVIL);
     }
