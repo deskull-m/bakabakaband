@@ -122,6 +122,7 @@ const std::map<MonsterAbilityType, const monster_power> monster_powers = {
     { MonsterAbilityType::S_DEAD_UNIQUE, { 50, 150, 95, 0, 50, A_INT, _("ユニークモンスターの口寄せ", "summon Dead Unique Monsters") } },
     { MonsterAbilityType::S_NASTY, { 35, 60, 80, 0, 40, A_INT, _("汚いモンスターの召喚", "summon nasty monsters") } },
     { MonsterAbilityType::S_GOLEM, { 30, 50, 75, 0, 35, A_INT, _("ゴーレムの召喚", "summon golems") } },
+    { MonsterAbilityType::S_CATS, { 25, 40, 70, 0, 30, A_INT, _("猫の召喚", "summon cats") } },
     { MonsterAbilityType::BR_FECES, { 30, 25, 80, 200, 95, A_CON, _("糞便のブレス", "breathe feces") } },
     { MonsterAbilityType::BR_SPIDER_STRING, { 25, 20, 75, 150, 95, A_CON, _("蜘蛛糸のブレス", "breathe spider string") } },
 };
@@ -244,4 +245,5 @@ const std::map<MonsterAbilityType, concptr> monster_powers_short = {
     { MonsterAbilityType::S_DEAD_UNIQUE, _("黄泉のユニーク", "Dead unique monsters") },
     { MonsterAbilityType::S_NASTY, _("汚い怪物", "Nasty monsters") },
     { MonsterAbilityType::S_GOLEM, _("ゴーレム", "Golems") },
+    { MonsterAbilityType::S_CATS, _("ネコ", "Cats") },
 };
