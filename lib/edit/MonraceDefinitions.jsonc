@@ -146744,5 +146744,64 @@
             "dice": "1d1"
         }
     ]
+},
+{
+    "id": 2286,
+    "name": {
+        "ja": "ベルシエルの白猫",
+        "en": "White cat of Beruthiel"
+    },
+    "symbol": {
+        "character": "f",
+        "color": "White"
+    },
+    "speed": 3,
+    "hit_point": "12d16",
+    "vision": 20,
+    "armor_class": 32,
+    "alertness": 40,
+    "level": 20,
+    "rarity": 3,
+    "exp": 60,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "2d5"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "2d5"
+        }
+    ],
+    "flavor": {
+        "ja": "ゴンドールの王妃、黒きヌメノール人とも噂されたべルシエル王妃の使い魔たちだ。彼女の眼となり、各地で人々の秘密を暴き出そうとしているという。",
+        "en": "These are the familiars of Queen Berthiel of Gondor, rumored to be a Black Númenórean. They are said to be her eyes, seeking to uncover the secrets of people across the land."
+    },
+    "sex": "MALE",
+    "mob": 88,
+    "flags": [
+        "EVIL",
+        "DROP_1D2",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "CAT"
+    ],
+    "skill": {
+        "list": [
+            "SCARE",
+            "CAUSE_2",
+            "CAUSE_1",
+            "HOLD"
+        ],
+        "probability": "1_IN_4"
+    }
 }]
 }
