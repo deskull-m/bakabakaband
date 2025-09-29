@@ -116,5 +116,6 @@ enum class MonsterAbilityType {
     BR_SPIDER_STRING = 110, /*!< モンスター能力: 蜘蛛糸のブレス / Breathe Spider String */
     BA_GRAVITY = 111, /*!< モンスター能力: 超重力 / Gravity Ball */
     S_CATS = 112, /* Summon Cats */
+    S_PUYO = 113, /* Summon Puyo */
     MAX,
 };

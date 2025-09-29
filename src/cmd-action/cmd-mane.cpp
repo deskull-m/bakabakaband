@@ -1058,6 +1058,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_PUYO: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("ぷよを召喚した！", "You summon puyo!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PUYO, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
     case MonsterAbilityType::BR_FECES:
         msg_print(_("糞便のブレスを吐いた。", "You breathe feces."));
         fire_breath(player_ptr, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
