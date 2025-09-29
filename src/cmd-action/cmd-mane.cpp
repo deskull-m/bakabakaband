@@ -986,6 +986,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_CHOASIANS: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("混沌の王族を召喚した！", "You summon Lords of Chaos!"));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CHOASIANS, (mode | PM_ALLOW_UNIQUE));
+        }
+        break;
+    }
     case MonsterAbilityType::S_UNIQUE: {
         int count = 0;
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();

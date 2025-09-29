@@ -46,6 +46,8 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("UHB") && monrace.kind_flags.has(MonsterKindType::DEMON);
     case SUMMON_AMBERITES:
         return monrace.kind_flags.has(MonsterKindType::AMBERITE);
+    case SUMMON_CHOASIANS:
+        return monrace.kind_flags.has(MonsterKindType::CHOASIAN);
     case SUMMON_UNIQUE:
         return monrace.kind_flags.has(MonsterKindType::UNIQUE);
     case SUMMON_MOLD:

@@ -363,6 +363,8 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_high_dragon(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_AMBERITES:
         return cast_blue_summon_amberite(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_CHOASIANS:
+        return cast_blue_summon_choasian(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_UNIQUE:
         return cast_blue_summon_unique(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_DEAD_UNIQUE:

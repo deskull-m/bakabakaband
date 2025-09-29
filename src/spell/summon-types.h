@@ -19,7 +19,7 @@ enum summon_type : int {
     SUMMON_MOLD = 33, /*!< 召喚タイプ: カビ */
     SUMMON_BAT = 34, /*!< 召喚タイプ: コウモリ */
     SUMMON_QUYLTHULG = 35, /*!< 召喚タイプ: クイルスルグ */
-    SUMMON_XXX1 = 36, /*!< 召喚タイプ: 未使用 */
+    SUMMON_CHOASIANS = 36, /*!< 召喚タイプ: 混沌の王族 */
     SUMMON_COIN_MIMIC = 37, /*!< 召喚タイプ: クリーピング・コイン */
     SUMMON_MIMIC = 38, /*!< 召喚タイプ: ミミック */
     SUMMON_CYBER = 39, /*!< 召喚タイプ: サイバーデーモン */

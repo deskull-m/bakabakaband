@@ -16,6 +16,7 @@ const std::vector<std::string> MONSTER_KINDS_GROUP = {
     _("乗馬可能なモンスター", "Ridable monsters"),
     _("賞金首", "Wanted monsters"),
     _("アンバーの王族", "Amberite"),
+    _("混沌の王族", "Chaosian"),
     _("アリ", "Ant"),
     _("コウモリ", "Bat"),
     _("ムカデ", "Centipede"),

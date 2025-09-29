@@ -251,6 +251,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_HI_UNDEAD", MonsterAbilityType::S_HI_UNDEAD },
 	{"S_HI_DRAGON", MonsterAbilityType::S_HI_DRAGON },
 	{"S_AMBERITES", MonsterAbilityType::S_AMBERITES },
+	{"S_CHOASIANS", MonsterAbilityType::S_CHOASIANS },
 	{"S_UNIQUE", MonsterAbilityType::S_UNIQUE },
 	{"S_DEAD_UNIQUE", MonsterAbilityType::S_DEAD_UNIQUE },
 };
@@ -389,6 +390,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "EVIL", MonsterKindType::EVIL },
     { "ANIMAL", MonsterKindType::ANIMAL },
     { "AMBERITE", MonsterKindType::AMBERITE },
+    { "CHOASIAN", MonsterKindType::CHOASIAN },
     { "GOOD", MonsterKindType::GOOD },
     { "NONLIVING", MonsterKindType::NONLIVING },
     { "ANGEL", MonsterKindType::ANGEL },
