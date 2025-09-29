@@ -55,6 +55,7 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
     const auto grp_skeleton = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Skeletons");
     const auto grp_zombie = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Zombies");
     const auto grp_cancer = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Crabs");
+    const auto grp_fungas = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Fungi");
 
     const auto &monraces = MonraceList::get_instance();
     std::vector<MonraceId> monrace_ids;
@@ -96,6 +97,10 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
             }
         } else if (grp_cancer) {
             if (monrace.kind_flags.has_not(MonsterKindType::CANCER)) {
+                continue;
+            }
+        } else if (grp_fungas) {
+            if (monrace.kind_flags.has_not(MonsterKindType::FUNGAS)) {
                 continue;
             }
         } else {
