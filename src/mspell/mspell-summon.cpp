@@ -1085,3 +1085,45 @@ MonsterSpellResult spell_RF6_S_NASTY(PlayerType *player_ptr, POSITION y, POSITIO
 
     return res;
 }
+
+/*!
+ * @brief RF6_S_GOLEMの処理。ゴーレム召喚。 /
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param y 対象の地点のy座標
+ * @param x 対象の地点のx座標
+ * @param m_idx 呪文を唱えるモンスターID
+ * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+ * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+ * @return ダメージ量を返す。
+ */
+MonsterSpellResult spell_RF6_S_GOLEM(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+{
+    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+        _("%s^が魔法でゴーレムを召喚した！", "%s^ magically summons golems!"),
+        _("%s^が魔法でゴーレムを召喚した！", "%s^ magically summons golems!"));
+
+    const bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+    const bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
+
+    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto rlev = monster_level_idx(floor, m_idx);
+    auto count = 0;
+    for (auto k = 0; k < std::min(1, rlev / 25); k++) {
+        count += summon_specific(player_ptr, y, x, rlev, SUMMON_GOLEM, (PM_ALLOW_GROUP)) ? 1 : 0;
+    }
+
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
+        msg_format(_("ゴーレムが間近にひしめく音が聞こえる。", "You hear many golems crowding nearby."));
+    }
+
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+        floor.monster_noise = true;
+    }
+
+    auto res = MonsterSpellResult::make_valid();
+    res.learnable = target_type == MONSTER_TO_PLAYER;
+
+    return res;
+}
