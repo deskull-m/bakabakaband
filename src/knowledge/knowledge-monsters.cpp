@@ -51,6 +51,9 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
     const auto grp_riding = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Riding");
     const auto grp_wanted = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Wanted");
     const auto grp_amberite = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Amberites");
+    const auto grp_chaosian = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Chaosians");
+    const auto grp_skeleton = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Skeletons");
+    const auto grp_zombie = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Zombies");
 
     const auto &monraces = MonraceList::get_instance();
     std::vector<MonraceId> monrace_ids;
@@ -76,6 +79,18 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
             }
         } else if (grp_amberite) {
             if (monrace.kind_flags.has_not(MonsterKindType::AMBERITE)) {
+                continue;
+            }
+        } else if (grp_chaosian) {
+            if (monrace.kind_flags.has_not(MonsterKindType::CHOASIAN)) {
+                continue;
+            }
+        } else if (grp_skeleton) {
+            if (monrace.kind_flags.has_not(MonsterKindType::SKELETON)) {
+                continue;
+            }
+        } else if (grp_zombie) {
+            if (monrace.kind_flags.has_not(MonsterKindType::ZOMBIE)) {
                 continue;
             }
         } else {

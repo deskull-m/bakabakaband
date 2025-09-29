@@ -50,5 +50,6 @@ enum class MonsterKindType {
     MALE = 46,
     FEMALE = 47,
     CHOASIAN = 48, // 混沌の王族
+    ZOMBIE = 49, // ゾンビ
     MAX,
 };
