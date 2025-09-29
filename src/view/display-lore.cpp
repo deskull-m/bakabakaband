@@ -474,6 +474,10 @@ void display_monster_alignment(lore_type *lore_ptr)
         if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
             hook_c_roff(TERM_L_GREEN, _("菌類の", " fungus"));
         }
+
+        if (lore_ptr->kind_flags.has(MonsterKindType::MIMIC)) {
+            hook_c_roff(TERM_YELLOW, _("ミミックの", " mimic"));
+        }
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {
