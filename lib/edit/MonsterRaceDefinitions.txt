@@ -41361,6 +41361,21 @@ D:$These are the soldiers who follow the "Seitei" Sauzer.
 D:$ They abduct innocent children and force them into labor to build the "Seitei-Jyuziryou".
 D:聖帝サウザーに付き従う兵士たちだ。聖帝十字陵建造の労役のために、無垢な子供たちを拉致し強制労働に従事させている。
 
+N:2286:ベルシエルの白猫
+E:White cat of Beruthiel
+G:f:w
+I:113:12d16:20:32:40
+W:20:3:60:0:0
+B:CLAW:HURT:2d5
+B:CLAW:HURT:2d5
+F:MALE | EVIL | DROP_1D2 | MOB_88
+F:SMART | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | CAT
+S:1_IN_4 |
+S:SCARE | CAUSE_2 | CAUSE_1 | HOLD
+D:$These are the familiars of Queen Berthiel of Gondor, rumored to be a Black Númenórean.
+D:$ They are said to be her eyes, seeking to uncover the secrets of people across the land.
+D:ゴンドールの王妃、黒きヌメノール人とも噂されたべルシエル王妃の使い魔たちだ。
+D:彼女の眼となり、各地で人々の秘密を暴き出そうとしているという。
 
 # N: serial number : monster name
 # G: symbol : color
