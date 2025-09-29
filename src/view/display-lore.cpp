@@ -482,6 +482,10 @@ void display_monster_alignment(lore_type *lore_ptr)
         if (lore_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
             hook_c_roff(TERM_L_BLUE, _("イクシツザチトルの", " ixitxachitl"));
         }
+
+        if (lore_ptr->kind_flags.has(MonsterKindType::NAGA)) {
+            hook_c_roff(TERM_ORANGE, _("ナーガの", " naga"));
+        }
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {
