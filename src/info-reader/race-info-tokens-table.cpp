@@ -419,6 +419,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "ELEMENTAL", MonsterKindType::ELEMENTAL },
     { "GOLEM", MonsterKindType::GOLEM },
     { "PUYO", MonsterKindType::PUYO },
+    { "INSECT", MonsterKindType::INSECT },
     { "ROBOT", MonsterKindType::ROBOT },
     { "YAZYU", MonsterKindType::YAZYU },
     { "SKELETON", MonsterKindType::SKELETON },

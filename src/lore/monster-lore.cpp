@@ -218,6 +218,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::PUYO);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::INSECT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::INSECT);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ANGEL)) {
         lore_ptr->kind_flags.set(MonsterKindType::ANGEL);
     }
