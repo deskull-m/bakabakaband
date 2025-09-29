@@ -20,6 +20,7 @@
 #include "room/lake-types.h"
 #include "room/room-generator.h"
 #include "room/rooms-maze-vault.h"
+#include "system/angband-system.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
@@ -31,6 +32,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
+#include "util/rng-xoshiro.h"
 #include "wizard/wizard-messages.h"
 
 // シンメトリックなフロア生成（左右対称）
@@ -470,10 +472,26 @@ static void decide_grid_glowing(FloorType &floor, DungeonData *dd_ptr, const Dun
 /*!
  * @brief ダンジョン生成のメインルーチン
  * @param player_ptr プレイヤーへの参照ポインタ
+ * @param seed 乱数の種（オプショナル）。指定された場合は固定ダンジョンを生成
  * @return ダンジョン生成が全て無事に成功したらnullopt、何かエラーがあったらその文字列
  */
-tl::optional<std::string> cave_gen(PlayerType *player_ptr)
+tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t> seed)
 {
+    // 乱数種の保存と復元用
+    Xoshiro128StarStar::state_type original_state{};
+    bool seed_was_fixed = false;
+
+    // 乱数種が指定された場合は固定
+    if (seed) {
+        auto &rng = AngbandSystem::get_instance().get_rng();
+        original_state = rng.get_state(); // 現在の乱数状態を保存
+        rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
+        seed_was_fixed = true;
+        msg_format_wizard(player_ptr, CHEAT_DUNGEON,
+            _("乱数種を固定してダンジョンを生成: 0x%08X", "Generating dungeon with fixed seed: 0x%08X"),
+            *seed);
+    }
+
     auto &floor = *player_ptr->current_floor_ptr;
     reset_lite_area(floor);
     get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook());
@@ -506,6 +524,10 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
     check_arena_floor(player_ptr, &dd);
     gen_caverns_and_lakes(player_ptr, dungeon, &dd);
     if (!switch_making_floor(player_ptr, &dd, dungeon)) {
+        // 乱数状態を復元
+        if (seed_was_fixed) {
+            AngbandSystem::get_instance().get_rng().set_state(original_state);
+        }
         return dd.why;
     }
 
@@ -520,14 +542,29 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
     }
 
     if (!check_place_necessary_objects(player_ptr, &dd)) {
+        // 乱数状態を復元
+        if (seed_was_fixed) {
+            AngbandSystem::get_instance().get_rng().set_state(original_state);
+        }
         return dd.why;
     }
 
     decide_dungeon_data_allocation(player_ptr, &dd, dungeon);
     if (!allocate_dungeon_data(player_ptr, &dd, dungeon)) {
+        // 乱数状態を復元
+        if (seed_was_fixed) {
+            AngbandSystem::get_instance().get_rng().set_state(original_state);
+        }
         return dd.why;
     }
 
     decide_grid_glowing(floor, &dd, dungeon);
+
+    // 乱数状態を復元
+    if (seed_was_fixed) {
+        AngbandSystem::get_instance().get_rng().set_state(original_state);
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("乱数状態を復元", "Random state restored"));
+    }
+
     return tl::nullopt;
 }
