@@ -54,5 +54,6 @@ enum class MonsterKindType {
     INSECT = 50, // 昆虫
     CANCER = 51, // カニ
     FUNGAS = 52, // 菌類
+    MIMIC = 53, // ミミック
     MAX,
 };
