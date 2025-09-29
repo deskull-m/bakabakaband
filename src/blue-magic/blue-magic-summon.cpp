@@ -350,3 +350,19 @@ bool cast_blue_summon_cats(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     return true;
 }
+
+bool cast_blue_summon_puyo(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("ぷよを召喚した！", "You summon puyo!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 25; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_PUYO, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚されたぷよは怒っている！", "The summoned puyo are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}

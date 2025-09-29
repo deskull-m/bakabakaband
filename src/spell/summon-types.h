@@ -60,4 +60,5 @@ enum summon_type : int {
     SUMMON_KACHO = 76, /*!< 召喚タイプ: クッソ汚い課長 */
     SUMMON_NASTY = 77, /*!< 召喚タイプ: クッソ汚い奴ら */
     SUMMON_CATS = 78, /*!< 召喚タイプ: ネコ */
+    SUMMON_PUYO = 79, /*!< 召喚タイプ: ぷよ */
 };
