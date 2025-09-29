@@ -191,6 +191,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::S_UNIQUE: return spell_RF6_S_UNIQUE(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_UNIQUE */
     case MonsterAbilityType::S_DEAD_UNIQUE: return spell_RF6_S_DEAD_UNIQUE(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_DEAD_UNIQUE */
     case MonsterAbilityType::S_NASTY: return spell_RF6_S_NASTY(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_NASTY */
+    case MonsterAbilityType::S_GOLEM: return spell_RF6_S_GOLEM(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_GOLEM */
     default: break;
     }
     // clang-format on
@@ -360,6 +361,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::S_UNIQUE: return spell_RF6_S_UNIQUE(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_UNIQUE */
     case MonsterAbilityType::S_DEAD_UNIQUE: return spell_RF6_S_DEAD_UNIQUE(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_DEAD_UNIQUE */
     case MonsterAbilityType::S_NASTY: return spell_RF6_S_NASTY(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_NASTY */
+    case MonsterAbilityType::S_GOLEM: return spell_RF6_S_GOLEM(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_GOLEM */
     default: break;
     }
     // clang-format on
