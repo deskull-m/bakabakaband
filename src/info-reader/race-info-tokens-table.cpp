@@ -426,6 +426,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "CANCER", MonsterKindType::CANCER },
     { "FUNGAS", MonsterKindType::FUNGAS },
     { "MIMIC", MonsterKindType::MIMIC },
+    { "IXITXACHITL", MonsterKindType::IXITXACHITL },
     { "ZOMBIE", MonsterKindType::ZOMBIE },
     { "DOG", MonsterKindType::DOG },
     { "CAT", MonsterKindType::CAT },

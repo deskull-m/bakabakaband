@@ -102,6 +102,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::MIMIC);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::IXITXACHITL);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
         lore_ptr->kind_flags.set(MonsterKindType::EVIL);
     }
