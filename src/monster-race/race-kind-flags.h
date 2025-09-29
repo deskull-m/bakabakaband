@@ -52,5 +52,6 @@ enum class MonsterKindType {
     CHOASIAN = 48, // 混沌の王族
     ZOMBIE = 49, // ゾンビ
     INSECT = 50, // 昆虫
+    CANCER = 51, // カニ
     MAX,
 };
