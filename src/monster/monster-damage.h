@@ -30,6 +30,7 @@ private:
     void death_special_flag_monster();
     void increase_kill_numbers();
     void death_amberites(std::string_view m_name);
+    void death_choasians(std::string_view m_name);
     void dying_scream(std::string_view m_name);
     void show_kill_message(std::string_view note, std::string_view m_name);
     void show_explosion_message(std::string_view died_mes, std::string_view m_name);

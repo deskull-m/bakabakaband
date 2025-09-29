@@ -467,6 +467,10 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_VIOLET, _("アンバーの王族の", " Amberite"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::CHOASIAN)) {
+        hook_c_roff(TERM_L_RED, _("混沌の王族の", " Chaosian"));
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::HENTAI)) {
         hook_c_roff(TERM_L_RED, _("それなんてエロゲな", " comming from HENTAI world"));
     }

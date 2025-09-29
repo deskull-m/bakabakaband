@@ -8,6 +8,8 @@
 #include "avatar/avatar-changer.h"
 #include "core/speed-table.h"
 #include "core/stuff-handler.h"
+#include "effect/effect-characteristics.h"
+#include "effect/effect-processor.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
 #include "io/files-util.h"
@@ -26,10 +28,14 @@
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "mutation/mutation-investor-remover.h"
 #include "object-enchant/object-curse.h"
+#include "player/eldritch-horror.h"
 #include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "spell-kind/spells-random.h"
+#include "spell-kind/spells-teleport.h"
+#include "status/bad-status-setter.h"
 #include "status/experience.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -145,6 +151,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     this->increase_kill_numbers();
     const auto m_name = monster_desc(this->player_ptr, monster, MD_TRUE_NAME);
     this->death_amberites(m_name);
+    this->death_choasians(m_name);
     this->dying_scream(m_name);
     AvatarChanger ac(this->player_ptr, monster);
     ac.change_virtue();
@@ -245,6 +252,47 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
     do {
         stop_ty = activate_ty_curse(this->player_ptr, stop_ty, &count);
     } while (--curses);
+}
+
+void MonsterDamageProcessor::death_choasians(std::string_view m_name)
+{
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto &r_ref = monster.get_real_monrace();
+    if (r_ref.kind_flags.has_not(MonsterKindType::CHOASIAN) || one_in_(3)) {
+        return;
+    }
+
+    auto chaos_effects = 2 + randint1(3);
+    msg_format(_("%s^は死の際に混沌の力を解き放った！", "%s^ unleashes chaotic forces upon death!"), m_name.data());
+
+    // 混沌の効果：装備品の変化、テレポート、変身、突然変異など
+    for (auto i = 0; i < chaos_effects; i++) {
+        switch (randint1(5)) {
+        case 1:
+            // 装備品のランダムな変化
+            curse_equipment(this->player_ptr, 50, 25);
+            break;
+        case 2:
+            // テレポート
+            teleport_player(this->player_ptr, 100, TELEPORT_NONMAGICAL);
+            break;
+        case 3:
+            // 一時的な混乱
+            sanity_blast(player_ptr, m_idx);
+            break;
+        case 4:
+            // 突然変異のチャンス
+            if (one_in_(3)) {
+                gain_mutation(this->player_ptr, 0);
+            }
+            break;
+        case 5:
+            // ランダムな属性ダメージ
+            project(this->player_ptr, 0, 2, this->player_ptr->y, this->player_ptr->x,
+                randint1(100), static_cast<AttributeType>(randint1(15) + 1), PROJECT_KILL);
+            break;
+        }
+    }
 }
 
 void MonsterDamageProcessor::dying_scream(std::string_view m_name)

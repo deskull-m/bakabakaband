@@ -49,5 +49,6 @@ enum class MonsterKindType {
     MONKEY_SPACE = 45, // 猿空間
     MALE = 46,
     FEMALE = 47,
+    CHOASIAN = 48, // 混沌の王族
     MAX,
 };

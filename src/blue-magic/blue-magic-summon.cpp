@@ -241,6 +241,21 @@ bool cast_blue_summon_amberite(PlayerType *player_ptr, bmc_type *bmc_ptr)
     return true;
 }
 
+bool cast_blue_summon_choasian(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("混沌の王族を召喚した！", "You summon a Lord of Chaos!"));
+    if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_CHOASIANS,
+            (bmc_ptr->g_mode | bmc_ptr->p_mode | bmc_ptr->u_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚された混沌の王族は怒っている！", "The summoned Lord of Chaos is angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
 bool cast_blue_summon_unique(PlayerType *player_ptr, bmc_type *bmc_ptr)
 {
     int count = 0;
