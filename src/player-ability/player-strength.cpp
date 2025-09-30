@@ -105,6 +105,7 @@ int16_t PlayerStrength::stance_bonus()
  * * 変異による腕力修正値
  * * 変異MUT3_HYPER_STRで加算(+4)
  * * 変異MUT3_PUNYで減算(-4)
+ * * 変異MUT3_WEAK_LOWER_BODYで加算(+2)
  */
 int16_t PlayerStrength::mutation_bonus()
 {
@@ -117,6 +118,10 @@ int16_t PlayerStrength::mutation_bonus()
 
         if (this->player_ptr->muta.has(PlayerMutationType::PUNY)) {
             result -= 4;
+        }
+
+        if (this->player_ptr->muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+            result += 2;
         }
     }
 

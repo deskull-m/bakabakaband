@@ -515,6 +515,11 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_which = PlayerMutationType::BI_SEXUAL;
         glm_ptr->muta_desc = _("あなたは同性への興味を失った。", "You have lost interest in the same sex.");
         break;
+    case 206:
+    case 207:
+        glm_ptr->muta_which = PlayerMutationType::WEAK_LOWER_BODY;
+        glm_ptr->muta_desc = _("下半身が普通の強さに戻った。", "Your lower body returns to normal strength.");
+        break;
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;
         break;

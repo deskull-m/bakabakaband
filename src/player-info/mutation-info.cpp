@@ -337,6 +337,10 @@ void set_mutation_info(PlayerType *player_ptr, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたの足は短い突起だ。(加速-3)", "Your legs are short stubs (-3 speed)."));
     }
 
+    if (player_ptr->muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+        self_ptr->info_list.emplace_back(_("あなたは上半身に比べて下半身が貧弱すぎる。(腕力+2, 加速-2)", "Your lower body is too weak compared to your upper body (+2 STR, -2 speed)."));
+    }
+
     if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {
         self_ptr->info_list.emplace_back(_("あなたの血管には電流が流れている。", "Electricity is running through your veins."));
     }
