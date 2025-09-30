@@ -486,6 +486,10 @@ void display_monster_alignment(lore_type *lore_ptr)
         if (lore_ptr->kind_flags.has(MonsterKindType::NAGA)) {
             hook_c_roff(TERM_ORANGE, _("ナーガの", " naga"));
         }
+
+        if (lore_ptr->kind_flags.has(MonsterKindType::PERVERT)) {
+            hook_c_roff(TERM_VIOLET, _("変質者の", " pervert"));
+        }
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {

@@ -59,6 +59,7 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
     const auto grp_mimic = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Mimics");
     const auto grp_ixitxachitl = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Ixitxachitls");
     const auto grp_naga = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Nagas");
+    const auto grp_pervert = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Perverts");
 
     const auto &monraces = MonraceList::get_instance();
     std::vector<MonraceId> monrace_ids;
@@ -116,6 +117,10 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
             }
         } else if (grp_naga) {
             if (monrace.kind_flags.has_not(MonsterKindType::NAGA)) {
+                continue;
+            }
+        } else if (grp_pervert) {
+            if (monrace.kind_flags.has_not(MonsterKindType::PERVERT)) {
                 continue;
             }
         } else {
