@@ -117,5 +117,6 @@ enum class MonsterAbilityType {
     BA_GRAVITY = 111, /*!< モンスター能力: 超重力 / Gravity Ball */
     S_CATS = 112, /* Summon Cats */
     S_PUYO = 113, /* Summon Puyo */
+    S_HOMO = 114, /* Summon Homo */
     MAX,
 };

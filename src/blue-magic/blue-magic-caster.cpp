@@ -377,6 +377,8 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_cats(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_PUYO:
         return cast_blue_summon_puyo(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_HOMO:
+        return cast_blue_summon_homo(player_ptr, bmc_ptr);
     default:
         msg_print("hoge?");
         return true;
