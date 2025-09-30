@@ -57,5 +57,6 @@ enum class MonsterKindType {
     MIMIC = 53, // ミミック
     IXITXACHITL = 54, // イクシツザチトル
     NAGA = 55, // ナーガ
+    PERVERT = 56, // 変質者
     MAX,
 };
