@@ -344,6 +344,10 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
             fprintf(out_file, _(" あなたの足は短い突起だ。(加速-3)\n", " Your legs are short stubs (-3 speed).\n"));
         }
 
+        if (player_ptr->muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+            fprintf(out_file, _(" あなたは上半身に比べて下半身が貧弱すぎる。(腕力+2, 加速-2)\n", " Your lower body is too weak compared to your upper body (+2 STR, -2 speed).\n"));
+        }
+
         if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {
             fprintf(out_file, _(" あなたの血管には電流が流れている。\n", " Electricity runs through your veins.\n"));
         }

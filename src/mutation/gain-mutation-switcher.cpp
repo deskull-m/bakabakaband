@@ -522,6 +522,11 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_which = PlayerMutationType::BI_SEXUAL;
         glm_ptr->muta_desc = _("あなたは男女問わず欲情するようになった。", "You have become lustful for both men and women.");
         break;
+    case 206:
+    case 207:
+        glm_ptr->muta_which = PlayerMutationType::WEAK_LOWER_BODY;
+        glm_ptr->muta_desc = _("これマジ？上半身に比べて下半身が貧弱すぎるだろ…", "It's really? Your under body too weak compared to your upper body.");
+        break;
 
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;

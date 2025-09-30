@@ -238,6 +238,7 @@ int16_t PlayerSpeed::stance_bonus()
  * ** 変異MUT3_XTRA_FATなら減算(-2)
  * ** 変異MUT3_XTRA_LEGなら加算(+3)
  * ** 変異MUT3_SHORT_LEGなら減算(-3)
+ * ** 変異MUT3_WEAK_LOWER_BODYなら減算(-2)
  */
 int16_t PlayerSpeed::mutation_bonus()
 {
@@ -253,6 +254,10 @@ int16_t PlayerSpeed::mutation_bonus()
 
     if (muta.has(PlayerMutationType::SHORT_LEG)) {
         bonus -= 3;
+    }
+
+    if (muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+        bonus -= 2;
     }
 
     return bonus;
