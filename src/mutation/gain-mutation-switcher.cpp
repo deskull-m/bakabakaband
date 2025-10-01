@@ -259,6 +259,9 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_desc = _("周囲の空間が不安定になった気がする。", "You feel the universe is less stable around you.");
         break;
     case 100:
+        glm_ptr->muta_which = PlayerMutationType::IKISUGI;
+        glm_ptr->muta_desc = _("あなたは時々イキすぎるようになった。", "You sometimes climax too much.");
+        break;
     case 101:
     case 102:
         glm_ptr->muta_which = PlayerMutationType::NORMALITY;

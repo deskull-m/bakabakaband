@@ -165,6 +165,10 @@ void set_mutation_info(PlayerType *player_ptr, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたは制御できない強烈な屁をこく。", "You are subject to uncontrollable flatulence."));
     }
 
+    if (player_ptr->muta.has(PlayerMutationType::IKISUGI)) {
+        self_ptr->info_list.emplace_back(_("あなたは時々イキすぎる。", "You sometimes climax too much."));
+    }
+
     if (player_ptr->muta.has(PlayerMutationType::PROD_MANA)) {
         self_ptr->info_list.emplace_back(_("あなたは制御不能な魔法のエネルギーを発している。", "You produce magical energy uncontrollably."));
     }

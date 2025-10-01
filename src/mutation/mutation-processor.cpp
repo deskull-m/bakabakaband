@@ -179,6 +179,14 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         fire_ball(player_ptr, AttributeType::POIS, Direction::self(), player_ptr->lev, 3);
     }
 
+    if (player_ptr->muta.has(PlayerMutationType::IKISUGI) && (randint1(3000) == 13)) {
+        disturb(player_ptr, false, true);
+        msg_print(_("ンアアアアー！", "NAAAAAAAH!"));
+        msg_erase();
+        fire_ball(player_ptr, AttributeType::SOUND, Direction::self(), player_ptr->lev, 3);
+        aggravate_monsters(player_ptr, 0);
+    }
+
     if (player_ptr->muta.has(PlayerMutationType::DEFECATION) && (randint1(1500) == 13)) {
         player_defecate(player_ptr);
     }

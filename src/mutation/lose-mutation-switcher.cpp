@@ -256,6 +256,9 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_desc = _("周囲の空間が安定した気がする。", "You feel the universe is more stable around you.");
         break;
     case 100:
+        glm_ptr->muta_which = PlayerMutationType::IKISUGI;
+        glm_ptr->muta_desc = _("もうイキすぎることはなくなった。", "You no longer climax too much.");
+        break;
     case 101:
     case 102:
         glm_ptr->muta_which = PlayerMutationType::NORMALITY;
