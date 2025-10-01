@@ -518,7 +518,7 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
     case 206:
     case 207:
         glm_ptr->muta_which = PlayerMutationType::WEAK_LOWER_BODY;
-        glm_ptr->muta_desc = _("下半身が普通の強さに戻った。", "Your lower body returns to normal strength.");
+        glm_ptr->muta_desc = _("あなたは下半身の筋トレも怠らず行った。", "You have not neglected your lower body workouts.");
         break;
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;
