@@ -370,6 +370,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::S_GOLEM: return spell_RF6_S_GOLEM(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_GOLEM */
     case MonsterAbilityType::S_CATS: return spell_RF6_S_CATS(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_CATS */
     case MonsterAbilityType::S_PUYO: return spell_RF6_S_PUYO(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_PUYO */
+    case MonsterAbilityType::S_HOMO: return spell_RF6_S_HOMO(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_HOMO */
     default: break;
     }
     // clang-format on
