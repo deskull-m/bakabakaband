@@ -41364,11 +41364,30 @@ D:聖帝サウザーに付き従う兵士たちだ。聖帝十字陵建造の労
 N:2286:ベルシエルの白猫
 E:White cat of Beruthiel
 G:f:w
+I:120:20d16:20:32:40
+W:25:3:140:0:0
+B:CLAW:HURT:4d5
+B:CLAW:HURT:4d5
+F:MALE | EVIL | DROP_1D2 | MOB_10
+F:SMART | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | CAT
+S:1_IN_3 |
+S:SCARE | CAUSE_3 | CAUSE_2 | HOLD | BRAIN_SMASH | FORGET
+R:2287:9d1
+D:$These are the familiars of Queen Berthiel of Gondor, rumored to be a Black Númenórean.
+D:$ They are said to be her eyes, seeking to uncover the secrets of people across the land.
+D:$ Her white cat is said to be the one who rules over black cats in particular.
+D:ゴンドールの王妃、黒きヌメノール人とも噂されたべルシエル王妃の使い魔たちだ。
+D:彼女の眼となり、各地で人々の秘密を暴き出そうとしているという。
+D:彼女の白猫は特に黒猫を統べる存在だという。
+
+N:2287:ベルシエルの黒猫
+E:Black cat of Beruthiel
+G:f:D
 I:113:12d16:20:32:40
 W:20:3:60:0:0
 B:CLAW:HURT:2d5
 B:CLAW:HURT:2d5
-F:MALE | EVIL | DROP_1D2 | MOB_88
+F:MALE | EVIL | DROP_1D2 | MOB_90
 F:SMART | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE | CAT
 S:1_IN_4 |
 S:SCARE | CAUSE_2 | CAUSE_1 | HOLD

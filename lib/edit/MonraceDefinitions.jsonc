@@ -146755,6 +146755,72 @@
         "character": "f",
         "color": "White"
     },
+    "speed": 10,
+    "hit_point": "20d16",
+    "vision": 20,
+    "armor_class": 32,
+    "alertness": 40,
+    "level": 25,
+    "rarity": 3,
+    "exp": 140,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [
+        {
+            "escorts_id": 2287,
+            "escort_num": "9d1"
+        }
+    ],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        }
+    ],
+    "flavor": {
+        "ja": "ゴンドールの王妃、黒きヌメノール人とも噂されたべルシエル王妃の使い魔たちだ。彼女の眼となり、各地で人々の秘密を暴き出そうとしているという。彼女の白猫は特に黒猫を統べる存在だという。",
+        "en": "These are the familiars of Queen Berthiel of Gondor, rumored to be a Black Númenórean. They are said to be her eyes, seeking to uncover the secrets of people across the land. Her white cat is said to be the one who rules over black cats in particular."
+    },
+    "sex": "MALE",
+    "mob": 10,
+    "flags": [
+        "EVIL",
+        "DROP_1D2",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "CAT"
+    ],
+    "skill": {
+        "list": [
+            "SCARE",
+            "CAUSE_3",
+            "CAUSE_2",
+            "HOLD",
+            "BRAIN_SMASH",
+            "FORGET"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2287,
+    "name": {
+        "ja": "ベルシエルの黒猫",
+        "en": "Black cat of Beruthiel"
+    },
+    "symbol": {
+        "character": "f",
+        "color": "Dark Gray"
+    },
     "speed": 3,
     "hit_point": "12d16",
     "vision": 20,
@@ -146783,7 +146849,7 @@
         "en": "These are the familiars of Queen Berthiel of Gondor, rumored to be a Black Númenórean. They are said to be her eyes, seeking to uncover the secrets of people across the land."
     },
     "sex": "MALE",
-    "mob": 88,
+    "mob": 90,
     "flags": [
         "EVIL",
         "DROP_1D2",
