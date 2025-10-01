@@ -305,6 +305,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::LARGE) && one_in_(18)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::SMALL);
+    }
+
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
     } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
@@ -395,6 +400,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+        m_ptr->max_maxhp *= (randint1(2) + 4) / 8;
+        m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
+    }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::FAT)) {
         m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
@@ -435,6 +444,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
         m_ptr->mspeed -= randint1(3);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+        m_ptr->mspeed += randint1(2) + 1;
     }
 
     if (any_bits(mode, PM_HASTE)) {
