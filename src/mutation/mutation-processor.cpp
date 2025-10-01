@@ -232,6 +232,22 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         }
     }
 
+    if (player_ptr->muta.has(PlayerMutationType::ATT_NASTY) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
+        bool pet = one_in_(6);
+        BIT_FLAGS mode = PM_ALLOW_GROUP;
+
+        if (pet) {
+            mode |= PM_FORCE_PET;
+        } else {
+            mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
+        }
+
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_NASTY, mode)) {
+            msg_print(_("あなたはクッソ汚い輩を引き寄せた！", "You have attracted nasty creatures!"));
+            disturb(player_ptr, false, true);
+        }
+    }
+
     if (player_ptr->muta.has(PlayerMutationType::SPEED_FLUX) && one_in_(6000)) {
         disturb(player_ptr, false, true);
         if (one_in_(2)) {

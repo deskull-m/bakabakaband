@@ -263,6 +263,9 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_desc = _("あなたは時々イキすぎるようになった。", "You sometimes climax too much.");
         break;
     case 101:
+        glm_ptr->muta_which = PlayerMutationType::ATT_NASTY;
+        glm_ptr->muta_desc = _("あなたはクッソ汚い輩を引きつけるようになった。", "You attract nasty creatures.");
+        break;
     case 102:
         glm_ptr->muta_which = PlayerMutationType::NORMALITY;
         glm_ptr->muta_desc = _("あなたは奇妙なほど普通になった気がする。", "You feel strangely normal.");

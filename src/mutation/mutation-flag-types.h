@@ -105,5 +105,6 @@ enum class PlayerMutationType {
     BI_SEXUAL = 99, /*!< 突然変異: 両性愛 */
     WEAK_LOWER_BODY = 100, /*!< 突然変異: 貧弱な下半身 */
     IKISUGI = 101, /*!< 突然変異: イキすぎ */
+    ATT_NASTY = 102, /*!< 突然変異: クッソ汚い輩を引きつける */
     MAX,
 };

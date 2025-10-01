@@ -176,6 +176,10 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
             fprintf(out_file, _(" あなたは時々イキすぎる。\n", " You sometimes climax too much.\n"));
         }
 
+        if (player_ptr->muta.has(PlayerMutationType::ATT_NASTY)) {
+            fprintf(out_file, _(" あなたはクッソ汚い輩を引きつける。\n", " You attract nasty creatures.\n"));
+        }
+
         if (player_ptr->muta.has(PlayerMutationType::PROD_MANA)) {
             fprintf(out_file, _(" あなたは制御不能な魔法のエネルギーを発している。\n", " You produce magical energy uncontrollably.\n"));
         }
