@@ -291,6 +291,10 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         ss << _("肥満した", "fat ");
     }
 
+    if (monster.mflag2.has(MonsterConstantFlagType::GAUNT)) {
+        ss << _("やせ衰えた", "gaunt ");
+    }
+
     if (monster.mflag2.has(MonsterConstantFlagType::DEFECATED)) {
         ss << _("脱糞した", "defecated ");
     }
