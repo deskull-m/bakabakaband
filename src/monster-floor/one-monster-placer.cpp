@@ -307,6 +307,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
+    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+               monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
+               m_ptr->mflag2.has_not(MonsterConstantFlagType::FAT) && one_in_(25)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::GAUNT);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
@@ -395,6 +399,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+        m_ptr->max_maxhp *= (randint1(3) + 4) / 8;
+        m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
+    }
 
     // Set MALE kind flag based on monster's sex
     if (m_ptr->is_male()) {
@@ -424,6 +432,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     }
 
     m_ptr->set_individual_speed(floor.inside_arena);
+
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+        m_ptr->mspeed -= randint1(3);
+    }
 
     if (any_bits(mode, PM_HASTE)) {
         (void)set_monster_fast(player_ptr, g_ptr->m_idx, 100);

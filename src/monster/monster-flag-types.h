@@ -30,5 +30,6 @@ enum class MonsterConstantFlagType {
     QUYLTHLUG_BORN = 16, /*!< クイルスルグの落とし仔 / Quylthlug born */
     WAIFUIZED = 17, /*!< 美少女化した / waifuized */
     FAT = 18, /*!< 肥満した / Fat */
+    GAUNT = 19, /*!< やせ衰えた / Gaunt */
     MAX,
 };
