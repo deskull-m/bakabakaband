@@ -260,6 +260,9 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_desc = _("もうイキすぎることはなくなった。", "You no longer climax too much.");
         break;
     case 101:
+        glm_ptr->muta_which = PlayerMutationType::ATT_NASTY;
+        glm_ptr->muta_desc = _("もうクッソ汚い輩を引きつけることはなくなった。", "You no longer attract nasty creatures.");
+        break;
     case 102:
         glm_ptr->muta_which = PlayerMutationType::NORMALITY;
         glm_ptr->muta_desc = _("普通に奇妙な感じがする。", "You feel normally strange.");
