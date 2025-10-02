@@ -84063,6 +84063,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "STUPID",
+        "PERVERT",
         "EVIL",
         "NASTY"
     ]
@@ -84145,6 +84146,7 @@
     },
     "sex": "MALE",
     "flags": [
+        "PERVERT",
         "DROP_1D2",
         "WILD_ALL",
         "HUMAN",
@@ -84650,6 +84652,7 @@
         "HUMAN",
         "FORCE_MAXHP",
         "RES_TELE",
+        "PERVERT",
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GREAT",
@@ -84734,6 +84737,7 @@
         "HUMAN",
         "NASTY",
         "UNIQUE",
+        "PERVERT",
         "FORCE_MAXHP",
         "ONLY_ITEM",
         "DROP_4D2",
@@ -87348,7 +87352,8 @@
         "HOMO_SEXUAL",
         "DROP_2D2",
         "DROP_GOOD",
-        "SCATOLOGIST"
+        "SCATOLOGIST",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -87417,7 +87422,8 @@
         "HOMO_SEXUAL",
         "DROP_2D2",
         "DROP_GOOD",
-        "SCATOLOGIST"
+        "SCATOLOGIST",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -87544,7 +87550,8 @@
         "DROP_2D2",
         "DROP_3D2",
         "DROP_4D2",
-        "DROP_GREAT"
+        "DROP_GREAT",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -92235,6 +92242,7 @@
         "DROP_2D2",
         "WILD_ALL",
         "HUMAN",
+        "PERVERT",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -96588,7 +96596,8 @@
         "OPEN_DOOR",
         "DROP_CORPSE",
         "DROP_SKELETON",
-        "NASTY"
+        "NASTY",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -97694,7 +97703,8 @@
         "IM_COLD",
         "IM_FIRE",
         "IM_POIS",
-        "CAN_SWIM"
+        "CAN_SWIM",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -108668,7 +108678,8 @@
         "RES_TELE",
         "NO_STUN",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -108741,7 +108752,8 @@
         "DROP_GOOD",
         "EAT_POISONOUS",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "PERVERT"
     ]
 },
 {
@@ -108847,7 +108859,8 @@
         "HOMO_SEXUAL",
         "NASTY",
         "WILD_WOOD",
-        "WILD_MOUNTAIN"
+        "WILD_MOUNTAIN",
+        "PERVERT"
     ]
 },
 {
@@ -108900,7 +108913,8 @@
         "HOMO_SEXUAL",
         "NASTY",
         "WILD_WOOD",
-        "WILD_MOUNTAIN"
+        "WILD_MOUNTAIN",
+        "PERVERT"
     ]
 },
 {
@@ -109094,6 +109108,7 @@
         "BASH_DOOR",
         "FORCE_MAXHP",
         "UNIQUE",
+        "PERVERT",
         "WILD_WOOD",
         "WILD_MOUNTAIN",
         "NO_SLEEP",
@@ -110522,7 +110537,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "FRIENDS"
+        "FRIENDS",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -112203,7 +112219,8 @@
         "RAND_25",
         "RAND_50",
         "EAT_LOSE_INT",
-        "HUMAN"
+        "HUMAN",
+        "PERVERT"
     ]
 },
 {
@@ -115622,7 +115639,8 @@
         "BASH_DOOR",
         "HAS_LITE_1",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ]
 },
 {
@@ -115675,7 +115693,8 @@
         "BASH_DOOR",
         "HAS_LITE_1",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ]
 },
 {
@@ -115854,6 +115873,7 @@
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_GOOD",
+        "PERVERT",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -117206,7 +117226,8 @@
         "DROP_CORPSE",
         "NO_STUN",
         "NO_SLEEP",
-        "NO_CONF"
+        "NO_CONF",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -117873,7 +117894,8 @@
         "BASH_DOOR",
         "HAS_LITE_1",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ]
 },
 {
@@ -119555,6 +119577,7 @@
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "PERVERT",
         "EVIL",
         "NASTY",
         "HOMO_SEXUAL",
@@ -146585,6 +146608,7 @@
     },
     "sex": "MALE",
     "flags": [
+        "PERVERT",
         "DROP_1D2",
         "WILD_ALL",
         "HUMAN",
