@@ -287,6 +287,10 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         ss << _("大型の", "large ");
     }
 
+    if (monster.mflag2.has(MonsterConstantFlagType::SMALL)) {
+        ss << _("小柄な", "small ");
+    }
+
     if (monster.mflag2.has(MonsterConstantFlagType::FAT)) {
         ss << _("肥満した", "fat ");
     }

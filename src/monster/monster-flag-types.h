@@ -31,5 +31,6 @@ enum class MonsterConstantFlagType {
     WAIFUIZED = 17, /*!< 美少女化した / waifuized */
     FAT = 18, /*!< 肥満した / Fat */
     GAUNT = 19, /*!< やせ衰えた / Gaunt */
+    SMALL = 20, /*!< 小柄な / Small */
     MAX,
 };
