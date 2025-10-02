@@ -13,6 +13,7 @@
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance-court-of-chaos.h"
+#include "alliance/alliance-diabolique.h"
 #include "alliance/alliance-dokachans.h"
 #include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
@@ -148,8 +149,9 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::HIONHURN, std::make_unique<AllianceHionhurn>(AllianceType::HIONHURN, "HIONHURN", _("ハイオンハーン", "Hionhurn"), 3800000L) },
     { AllianceType::CHARDROS, std::make_unique<AllianceChardros>(AllianceType::CHARDROS, "CHARDROS", _("チャードロス", "Chardros"), 4000000L) },
     { AllianceType::ARIOCH, std::make_unique<AllianceArioch>(AllianceType::ARIOCH, "ARIOCH", _("アリオッチ", "Arioch"), 4500000L) },
-    { AllianceType::XIOMBARG, std::make_unique<AllianceXiombarg>(AllianceType::XIOMBARG, "XIOMBARG", _("キシオムバーグ", "Xiombarg"), 4800000L) },
-    { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("マベロード", "Mabelode"), 3600000L) },
+    { AllianceType::XIOMBARG, std::make_unique<AllianceXiombarg>(AllianceType::XIOMBARG, "XIOMBARG", _("\u30ad\u30b7\u30aa\u30e0\u30d0\u30fc\u30b0", "Xiombarg"), 4800000L) },
+    { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("\u30de\u30d9\u30ed\u30fc\u30c9", "Mabelode"), 3600000L) },
+    { AllianceType::DIABOLIQUE, std::make_unique<AllianceDiabolique>(AllianceType::DIABOLIQUE, "DIABOLIQUE", _("\u30c7\u30a2\u30dc\u30ea\u30ab", "Diabolique"), 5000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
