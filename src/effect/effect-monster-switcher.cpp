@@ -282,8 +282,22 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
         em_ptr->obvious = true;
     }
 
-    // MALE かつ HUMAN のモンスターのみが対象
     auto &monrace = *em_ptr->r_ptr;
+
+    // 変質者モンスターには8倍弱点
+    if (monrace.kind_flags.has(MonsterKindType::PERVERT)) {
+        auto dam = em_ptr->dam * 8;
+        std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
+        if (genocide_aux(player_ptr, em_ptr->g_ptr->m_idx, dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+            if (em_ptr->seen_msg) {
+                msg_format(_("%sは変質者として社会から完全に抹殺された！", "%s^ has been completely eliminated from society as a pervert!"), em_ptr->m_name);
+            }
+            chg_virtue(player_ptr, Virtue::VITALITY, -1);
+            return ProcessResult::PROCESS_TRUE;
+        }
+    }
+
+    // MALE かつ HUMAN のモンスターのみが対象
     if (!monrace.is_male() || !monrace.kind_flags.has(MonsterKindType::HUMAN)) {
         em_ptr->skipped = true;
         return ProcessResult::PROCESS_CONTINUE;
