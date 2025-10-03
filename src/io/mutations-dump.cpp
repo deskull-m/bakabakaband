@@ -180,6 +180,10 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
             fprintf(out_file, _(" あなたはクッソ汚い輩を引きつける。\n", " You attract nasty creatures.\n"));
         }
 
+        if (player_ptr->muta.has(PlayerMutationType::ATT_PERVERT)) {
+            fprintf(out_file, _(" あなたは変質者を引きつける。\n", " You attract perverts.\n"));
+        }
+
         if (player_ptr->muta.has(PlayerMutationType::PROD_MANA)) {
             fprintf(out_file, _(" あなたは制御不能な魔法のエネルギーを発している。\n", " You produce magical energy uncontrollably.\n"));
         }

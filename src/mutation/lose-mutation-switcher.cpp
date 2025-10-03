@@ -526,6 +526,10 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_which = PlayerMutationType::WEAK_LOWER_BODY;
         glm_ptr->muta_desc = _("あなたは下半身の筋トレも怠らず行った。", "You have not neglected your lower body workouts.");
         break;
+    case 208:
+        glm_ptr->muta_which = PlayerMutationType::ATT_PERVERT;
+        glm_ptr->muta_desc = _("もう変質者を引きつけることはなくなった。", "You no longer attract perverts.");
+        break;
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;
         break;
