@@ -248,7 +248,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         }
     }
 
-    if (player_ptr->muta.has(PlayerMutationType::ATT_PERVERT) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
+    if (has_pervert_attraction(player_ptr) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
         bool pet = one_in_(6);
         BIT_FLAGS mode = PM_ALLOW_GROUP;
 

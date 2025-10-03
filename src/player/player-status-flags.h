@@ -148,6 +148,7 @@ bool has_not_monk_weapon(PlayerType *player_ptr, int i);
 bool is_wielding_icky_weapon(PlayerType *player_ptr, int i);
 bool is_wielding_icky_riding_weapon(PlayerType *player_ptr, int i);
 bool has_good_luck(PlayerType *player_ptr);
+bool has_pervert_attraction(PlayerType *player_ptr);
 BIT_FLAGS player_aggravate_state(PlayerType *player_ptr);
 melee_type player_melee_type(PlayerType *player_ptr);
 bool has_aggravate(PlayerType *player_ptr);

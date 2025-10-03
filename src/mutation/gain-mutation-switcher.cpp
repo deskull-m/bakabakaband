@@ -535,6 +535,10 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         break;
     case 208:
         glm_ptr->muta_which = PlayerMutationType::ATT_PERVERT;
+        if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+            glm_ptr->muta_which = PlayerMutationType::MAX;
+            break;
+        }
         glm_ptr->muta_desc = _("あなたは変質者を引きつけるようになった。", "You attract perverts.");
         break;
 

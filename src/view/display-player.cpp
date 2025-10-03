@@ -282,7 +282,7 @@ static std::string decide_current_floor(PlayerType *player_ptr)
  */
 tl::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
 {
-    auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr)) && display_mutations;
+    auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr) || has_pervert_attraction(player_ptr)) && display_mutations;
     auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
     {
         TermOffsetSetter tos(0, 0);

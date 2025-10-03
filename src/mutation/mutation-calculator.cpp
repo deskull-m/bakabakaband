@@ -41,6 +41,9 @@ int calc_mutant_regenerate_mod(PlayerType *player_ptr)
     if (player_ptr->ppersonality == PERSONALITY_LUCKY) {
         count--;
     }
+    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+        count--;
+    }
 
     if (PlayerRace(player_ptr).equals(PlayerRaceType::BEASTMAN)) {
         count -= 10;
