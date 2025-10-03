@@ -1824,6 +1824,11 @@ bool has_good_luck(PlayerType *player_ptr)
     return (player_ptr->ppersonality == PERSONALITY_LUCKY) || (player_ptr->muta.has(PlayerMutationType::GOOD_LUCK));
 }
 
+bool has_pervert_attraction(PlayerType *player_ptr)
+{
+    return (player_ptr->ppersonality == PERSONALITY_MESUGAKI) || (player_ptr->muta.has(PlayerMutationType::ATT_PERVERT));
+}
+
 /**
  * @brief プレイヤーが怒りを買う呪いを持っているかどうかを返す。
  * @note 馬鹿馬鹿独自仕様

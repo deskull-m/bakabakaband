@@ -528,6 +528,11 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         break;
     case 208:
         glm_ptr->muta_which = PlayerMutationType::ATT_PERVERT;
+        if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+            glm_ptr->muta_desc = _("メスガキの変質者引きつけは治療対象外だ。", "Mesugaki's pervert attraction is not curable.");
+            glm_ptr->muta_which = PlayerMutationType::MAX;
+            break;
+        }
         glm_ptr->muta_desc = _("もう変質者を引きつけることはなくなった。", "You no longer attract perverts.");
         break;
     default:
