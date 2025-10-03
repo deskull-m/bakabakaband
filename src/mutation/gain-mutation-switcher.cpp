@@ -533,6 +533,10 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_which = PlayerMutationType::WEAK_LOWER_BODY;
         glm_ptr->muta_desc = _("これマジ？上半身に比べて下半身が貧弱すぎるだろ…", "It's really? Your under body too weak compared to your upper body.");
         break;
+    case 208:
+        glm_ptr->muta_which = PlayerMutationType::ATT_PERVERT;
+        glm_ptr->muta_desc = _("あなたは変質者を引きつけるようになった。", "You attract perverts.");
+        break;
 
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;
