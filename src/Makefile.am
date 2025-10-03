@@ -27,6 +27,7 @@ hengband_SOURCES = \
 	alliance/alliance-binzyou-buddhism.cpp alliance/alliance-binzyou-buddhism.h \
 	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
 	alliance/alliance-dokachans.cpp alliance/alliance-dokachans.h \
+	alliance/alliance-diabolique.cpp alliance/alliance-diabolique.h \
 	alliance/alliance-eldrazi.cpp alliance/alliance-eldrazi.h \
 	alliance/alliance-gaichi.cpp alliance/alliance-gaichi.h \
 	alliance/alliance-ge-orlic.cpp alliance/alliance-ge-orlic.h \

@@ -77,6 +77,7 @@ enum class AllianceType : int {
     IDE = 66, //!< イデ
     NANTO_ORTHODOX = 67, //!< 南斗正統派
     SEITEI = 68, //!< 聖帝軍
+    DIABOLIQUE = 69, //!< デアボリカ
     MAX,
 };
 
@@ -111,6 +112,7 @@ protected:
 #include "alliance-ashina-clan.h"
 #include "alliance-avarin-lords.h"
 #include "alliance-binzyou-buddhism.h"
+#include "alliance-diabolique.h"
 #include "alliance-dokachans.h"
 #include "alliance-gaichi.h"
 #include "alliance-ge-orlic.h"
