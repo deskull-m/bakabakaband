@@ -636,3 +636,12 @@ std::string MonsterEntity::build_attitude_description() const
 
     return "";
 }
+
+int MonsterEntity::get_ac() const
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(this->r_idx);
+    if (this->mflag2.has(MonsterConstantFlagType::NAKED)) {
+        return 0;
+    }
+    return monrace.ac;
+}

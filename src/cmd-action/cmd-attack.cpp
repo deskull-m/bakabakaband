@@ -111,7 +111,7 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
 
     player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
     if (!is_hit) {
         sound(SoundKind::MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), m_name.data());
@@ -183,7 +183,7 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
 
     player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -274,7 +274,7 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
 
     player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -649,7 +649,7 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
 
     player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);

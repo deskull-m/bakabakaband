@@ -1002,7 +1002,6 @@ bool test_hit_fire(PlayerType *player_ptr, int chance, const MonsterEntity &mons
 {
     int k;
     ARMOUR_CLASS ac;
-    const auto &monrace = monster.get_monrace();
 
     /* Percentile dice */
     k = randint1(100);
@@ -1032,7 +1031,7 @@ bool test_hit_fire(PlayerType *player_ptr, int chance, const MonsterEntity &mons
         return false;
     }
 
-    ac = monrace.ac;
+    ac = monster.get_ac();
     ac = ac * (8 - sniper_concent) / 8;
 
     if (monster.r_idx == MonraceId::GOEMON && !monster.is_asleep()) {
