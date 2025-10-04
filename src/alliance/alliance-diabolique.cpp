@@ -33,7 +33,22 @@ int AllianceDiabolique::calcImpressionPoint(PlayerType *creature_ptr) const
 
 bool AllianceDiabolique::isAnnihilated()
 {
-    return false; // TODO: デアボリカの指導者モンスターが全滅した場合
+    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_GOLDO).mob_num != 0) {
+        return false;
+    }
+    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_KAENOH).mob_num != 0) {
+        return false;
+    }
+    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_AZURITE).mob_num != 0) {
+        return false;
+    }
+    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_FATRAS).mob_num != 0) {
+        return false;
+    }
+    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_PENGZU).mob_num != 0) {
+        return false;
+    }
+    return true;
 }
 
 void AllianceDiabolique::panishment(PlayerType &player_ptr)
