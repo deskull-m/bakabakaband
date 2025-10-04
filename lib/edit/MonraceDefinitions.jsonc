@@ -3393,6 +3393,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "DROP_60",
         "DROP_CORPSE",
@@ -4476,6 +4477,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "TAKE_ITEM",
         "DROP_60",
@@ -6254,6 +6256,7 @@
         "WILD_SHORE",
         "RAND_25",
         "DROP_60",
+        "NAGA",
         "TAKE_ITEM",
         "BASH_DOOR",
         "DROP_CORPSE",
@@ -13414,6 +13417,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "DROP_60",
         "DROP_1D2",
@@ -13654,6 +13658,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "DROP_60",
         "DROP_1D2",
@@ -23315,6 +23320,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "CAN_FLY",
         "ONLY_ITEM",
         "DROP_90",
@@ -58680,6 +58686,7 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
+        "NAGA",
         "ONLY_ITEM",
         "DROP_90",
         "DROP_2D2",
