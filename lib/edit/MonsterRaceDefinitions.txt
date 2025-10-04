@@ -41406,6 +41406,29 @@ D:$ They are said to be her eyes, seeking to uncover the secrets of people acros
 D:ゴンドールの王妃、黒きヌメノール人とも噂されたべルシエル王妃の使い魔たちだ。
 D:彼女の眼となり、各地で人々の秘密を暴き出そうとしているという。
 
+N:2288:王妃『べルシエル』
+E:Queen Beruthiel
+G:p:v
+I:118:20d100:30:40:5
+W:39:3:9000:0:0
+B:GAZE:EXP_80:6d6
+B:GAZE:PARALYZE
+F:UNIQUE | FEMALE | DROP_CORPSE
+F:FORCE_MAXHP
+F:ONLY_ITEM | DROP_1D2 | DROP_2D2 | DROP_GOOD | 
+F:SMART | OPEN_DOOR | BASH_DOOR | SELF_LITE_2 | NEVER_MOVE
+F:EVIL | IM_ACID | IM_FIRE | IM_POIS | NO_CONF | NO_SLEEP
+A:35:100
+S:1_IN_1 | 
+S:HOLD | SCARE | CAUSE_3 | SLOW | BLINK | TPORT
+S:S_MONSTERS | S_DEMON | S_CAT
+D:$She was the queen during the reign of Tarannon, King of Gondor.
+D:$ Yet she was not loved by her husband, and it is said she kept a cat as her servant and plotted various wicked deeds.
+D:$ Her true name, it is said, was buried in the darkness of history.
+D:ゴンドール王タランノンの代の王妃だ。
+D:だが、夫には愛されず、猫を下僕にして様々な悪しき事を企んでいたと言われ、
+D:その真の名は歴史の闇に葬られた。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

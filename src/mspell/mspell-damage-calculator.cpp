@@ -415,7 +415,7 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_GOLEM:
         return -1;
-    case MonsterAbilityType::S_CATS:
+    case MonsterAbilityType::S_CAT:
         return -1;
     case MonsterAbilityType::S_PUYO:
         return -1;
