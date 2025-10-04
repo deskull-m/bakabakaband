@@ -146900,5 +146900,77 @@
         ],
         "probability": "1_IN_4"
     }
+},
+{
+    "id": 2288,
+    "name": {
+        "ja": "王妃『べルシエル』",
+        "en": "Queen Beruthiel"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Violet"
+    },
+    "speed": 8,
+    "hit_point": "20d100",
+    "vision": 30,
+    "armor_class": 40,
+    "alertness": 5,
+    "level": 39,
+    "rarity": 3,
+    "exp": 9000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "GAZE",
+            "effect": "EXP_80",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "GAZE",
+            "effect": "PARALYZE"
+        }
+    ],
+    "flavor": {
+        "ja": "ゴンドール王タランノンの代の王妃だ。だが、夫には愛されず、猫を下僕にして様々な悪しき事を企んでいたと言われ、その真の名は歴史の闇に葬られた。",
+        "en": "She was the queen during the reign of Tarannon, King of Gondor. Yet she was not loved by her husband, and it is said she kept a cat as her servant and plotted various wicked deeds. Her true name, it is said, was buried in the darkness of history."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "FORCE_MAXHP",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "SELF_LITE_2",
+        "NEVER_MOVE",
+        "EVIL",
+        "IM_ACID",
+        "IM_FIRE",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "HOLD",
+            "SCARE",
+            "CAUSE_3",
+            "SLOW",
+            "BLINK",
+            "TPORT",
+            "S_MONSTERS",
+            "S_DEMON",
+            "S_CAT"
+        ],
+        "probability": "1_IN_1"
+    }
 }]
 }
