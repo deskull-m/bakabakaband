@@ -115,7 +115,7 @@ enum class MonsterAbilityType {
     BR_FECES = 109, /*!< モンスター能力: 糞便のブレス / Breathe Feces */
     BR_SPIDER_STRING = 110, /*!< モンスター能力: 蜘蛛糸のブレス / Breathe Spider String */
     BA_GRAVITY = 111, /*!< モンスター能力: 超重力 / Gravity Ball */
-    S_CATS = 112, /* Summon Cats */
+    S_CAT = 112, /* Summon Cats */
     S_PUYO = 113, /* Summon Puyo */
     S_HOMO = 114, /* Summon Homo */
     S_PERVERT = 115, /* 変質者召喚 */

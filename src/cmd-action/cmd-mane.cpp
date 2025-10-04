@@ -1047,7 +1047,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
-    case MonsterAbilityType::S_CATS: {
+    case MonsterAbilityType::S_CAT: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;

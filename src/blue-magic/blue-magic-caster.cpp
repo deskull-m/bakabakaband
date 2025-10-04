@@ -373,7 +373,7 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_nasty(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_GOLEM:
         return cast_blue_summon_golem(player_ptr, bmc_ptr);
-    case MonsterAbilityType::S_CATS:
+    case MonsterAbilityType::S_CAT:
         return cast_blue_summon_cats(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_PERVERT:
         return cast_blue_summon_perverts(player_ptr, bmc_ptr);
