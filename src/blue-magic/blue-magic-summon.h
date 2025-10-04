@@ -27,5 +27,6 @@ bool cast_blue_summon_dead_unique(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_nasty(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_golem(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_cats(PlayerType *player_ptr, bmc_type *bmc_ptr);
+bool cast_blue_summon_perverts(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_puyo(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_homo(PlayerType *player_ptr, bmc_type *bmc_ptr);

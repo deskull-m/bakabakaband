@@ -1058,6 +1058,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_PERVERT: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("変質者を召喚した！", "You summon perverts!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PERVERTS, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
     case MonsterAbilityType::S_PUYO: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
         if (!pos) {

@@ -123,6 +123,7 @@ const std::map<MonsterAbilityType, const monster_power> monster_powers = {
     { MonsterAbilityType::S_NASTY, { 35, 60, 80, 0, 40, A_INT, _("汚いモンスターの召喚", "summon nasty monsters") } },
     { MonsterAbilityType::S_GOLEM, { 30, 50, 75, 0, 35, A_INT, _("ゴーレムの召喚", "summon golems") } },
     { MonsterAbilityType::S_CATS, { 25, 40, 70, 0, 30, A_INT, _("猫の召喚", "summon cats") } },
+    { MonsterAbilityType::S_PERVERT, { 30, 45, 75, 0, 35, A_INT, _("変質者の召喚", "summon perverts") } },
     { MonsterAbilityType::S_HOMO, { 25, 40, 70, 0, 30, A_INT, _("ホモの召喚", "summon homos") } },
     { MonsterAbilityType::S_PUYO, { 20, 35, 65, 0, 25, A_INT, _("ぷよの召喚", "summon puyo") } },
     { MonsterAbilityType::BR_FECES, { 30, 25, 80, 200, 95, A_CON, _("糞便のブレス", "breathe feces") } },
@@ -248,6 +249,7 @@ const std::map<MonsterAbilityType, concptr> monster_powers_short = {
     { MonsterAbilityType::S_NASTY, _("汚い怪物", "Nasty monsters") },
     { MonsterAbilityType::S_GOLEM, _("ゴーレム", "Golems") },
     { MonsterAbilityType::S_CATS, _("ネコ", "Cats") },
+    { MonsterAbilityType::S_PERVERT, _("変質者", "Perverts") },
     { MonsterAbilityType::S_PUYO, _("ぷよ", "Puyo") },
     { MonsterAbilityType::S_HOMO, _("ホモ", "Homos") },
 };
