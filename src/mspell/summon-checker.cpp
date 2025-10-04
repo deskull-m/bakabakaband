@@ -68,6 +68,8 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.kind_flags.has(MonsterKindType::PUYO);
     case SUMMON_HOMO:
         return monrace.kind_flags.has(MonsterKindType::HOMO_SEXUAL);
+    case SUMMON_PERVERTS:
+        return monrace.kind_flags.has(MonsterKindType::PERVERT);
     case SUMMON_CYBER:
         return monrace.symbol_char_is_any_of("U") && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
     case SUMMON_KIN: {

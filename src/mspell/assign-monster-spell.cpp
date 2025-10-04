@@ -196,6 +196,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::S_GOLEM: return spell_RF6_S_GOLEM(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_GOLEM */
     case MonsterAbilityType::S_CATS: return spell_RF6_S_CATS(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_CATS */
     case MonsterAbilityType::S_PUYO: return spell_RF6_S_PUYO(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_PUYO */
+    case MonsterAbilityType::S_PERVERT: return spell_RF6_S_PERVERTS(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_PERVERT */
     default: break;
     }
     // clang-format on
@@ -371,6 +372,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::S_CATS: return spell_RF6_S_CATS(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_CATS */
     case MonsterAbilityType::S_PUYO: return spell_RF6_S_PUYO(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_PUYO */
     case MonsterAbilityType::S_HOMO: return spell_RF6_S_HOMO(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_HOMO */
+    case MonsterAbilityType::S_PERVERT: return spell_RF6_S_PERVERTS(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_PERVERT */
     default: break;
     }
     // clang-format on
