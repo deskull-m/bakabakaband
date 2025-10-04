@@ -141,7 +141,7 @@ static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr
     } else if (PlayerClass(player_ptr).equals(PlayerClassType::NINJA) && ((pa_ptr->backstab || pa_ptr->surprise_attack) && !monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL))) {
         success_hit = true;
     } else {
-        success_hit = test_hit_norm(player_ptr, chance, monrace.ac, pa_ptr->m_ptr->ml);
+        success_hit = test_hit_norm(player_ptr, chance, pa_ptr->m_ptr->get_ac(), pa_ptr->m_ptr->ml);
     }
 
     if ((pa_ptr->mode == HISSATSU_MAJIN) && one_in_(2)) {
