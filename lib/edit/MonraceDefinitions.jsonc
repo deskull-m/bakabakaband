@@ -146979,5 +146979,92 @@
         ],
         "probability": "1_IN_1"
     }
+},
+{
+    "id": 2289,
+    "name": {
+        "ja": "家康所用巨具足『金陀美』",
+        "en": "Kindami, Ieyasu's Personal Heavy Armor "
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Yellow"
+    },
+    "speed": 21,
+    "hit_point": "100d100",
+    "vision": 80,
+    "armor_class": 130,
+    "alertness": 0,
+    "level": 72,
+    "rarity": 3,
+    "exp": 82000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        }
+    ],
+    "flavor": {
+        "ja": "「履くか家康、あいや、信康よ、桶狭間合戦以来の巨具足！」現在の覇府の長たる内大臣家康の巨具足だ。その火焔は大坂城をも焼いた。",
+        "en": "Put them on, Ieyasu—no, Nobuyasu! These giant armor since the Battle of Okehazama! These are the giant armor of Ieyasu, the current head of Hafu,  the Minister of the Interior. Their flames even burned Osaka Castle."
+    },
+    "alliance": "HAFU",
+    "flags": [
+        "UNIQUE",
+        "NONLIVING",
+        "NO_FEAR",
+        "FORCE_MAXHP",
+        "REFLECTING",
+        "MOVE_BODY",
+        "KILL_WALL",
+        "IM_FIRE",
+        "IM_ELEC",
+        "IM_POIS",
+        "IM_ACID",
+        "IM_COLD",
+        "RES_NETH",
+        "RES_WATE",
+        "RES_PLAS",
+        "RES_NEXU",
+        "GOLEM",
+        "RES_DISE",
+        "RES_WALL",
+        "RES_INER",
+        "RES_GRAV",
+        "NO_STUN",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_FLY",
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "POWERFUL"
+    ],
+    "skill": {
+        "list": [
+            "BR_FIRE"
+        ],
+        "probability": "1_IN_4"
+    }
 }]
 }
