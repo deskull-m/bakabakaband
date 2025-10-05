@@ -735,6 +735,7 @@
     <ClCompile Include="..\..\src\target\target-preparation.cpp" />
     <ClCompile Include="..\..\src\target\target-setter.cpp" />
     <ClCompile Include="..\..\src\target\target.cpp" />
+    <ClCompile Include="..\..\src\terrain\terrain-processor.cpp" />
     <ClCompile Include="..\..\src\timed-effect\player-acceleration.cpp" />
     <ClCompile Include="..\..\src\timed-effect\player-blindness.cpp" />
     <ClCompile Include="..\..\src\timed-effect\player-confusion.cpp" />
@@ -1649,6 +1650,7 @@
     <ClInclude Include="..\..\src\target\target-types.h" />
     <ClInclude Include="..\..\src\target\target.h" />
     <ClInclude Include="..\..\src\term\screen-processor.h" />
+    <ClInclude Include="..\..\src\terrain\terrain-processor.h" />
     <ClInclude Include="..\..\src\timed-effect\player-blindness.h" />
     <ClInclude Include="..\..\src\timed-effect\player-confusion.h" />
     <ClInclude Include="..\..\src\timed-effect\player-cut.h" />
