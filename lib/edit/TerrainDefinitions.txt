@@ -2749,6 +2749,14 @@ K:DESTROYED:DEEP_WATER
 F:POWER_40 | LOS | REMEMBER | TUNNEL | WALL | HURT_ROCK | CAN_PASS |
 F:HURT_DISI | GLASS
 
+N:337:VOLCANIC_CRATER
+J:噴火口
+E:volcanic crater
+G:^:r:LIT
+W:10
+F:LOS | PROJECTION | PLACE | REMEMBER | LAVA | CAN_FLY | TELEPORTABLE
+F:C-PRIORITY_50
+
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
 # d - Dark Gray    W - Light Gray     v - Violet        y - Yellow
