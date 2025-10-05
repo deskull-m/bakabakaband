@@ -2757,6 +2757,14 @@ W:10
 F:LOS | PROJECTION | PLACE | REMEMBER | LAVA | CAN_FLY | TELEPORTABLE
 F:C-PRIORITY_50
 
+N:338:SUMMONING_CIRCLE
+J:召喚陣
+E:summoning circle
+G:*:v:LIT
+W:15
+F:LOS | PROJECTION | MOVE | PLACE | REMEMBER | GLOW | CAN_FLY | TELEPORTABLE
+F:C-PRIORITY_60
+
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
 # d - Dark Gray    W - Light Gray     v - Violet        y - Yellow
