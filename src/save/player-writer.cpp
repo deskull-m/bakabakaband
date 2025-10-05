@@ -1,4 +1,5 @@
 #include "save/player-writer.h"
+#include "combat/martial-arts-style.h"
 #include "floor/dungeon-feeling.h"
 #include "game-option/birth-options.h"
 #include "market/arena-entry.h"
@@ -108,6 +109,9 @@ void wr_player(PlayerType *player_ptr)
         // resreved skills
         wr_s16b(0);
     }
+
+    // Save martial arts style
+    wr_s16b(static_cast<int16_t>(player_ptr->martial_arts_style));
 
     std::visit(PlayerClassSpecificDataWriter(), player_ptr->class_specific_data);
 

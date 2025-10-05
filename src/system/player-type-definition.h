@@ -1,5 +1,6 @@
 #pragma once
 
+#include "combat/martial-arts-style.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/trc-types.h"
 #include "player-ability/player-ability-types.h"
@@ -206,6 +207,7 @@ public:
     std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp{}; /* Proficiency of weapons */
     std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp_max{}; /* Maximum proficiency of weapons */
     std::map<PlayerSkillKindType, SUB_EXP> skill_exp{}; /* Proficiency of misc. skill */
+    MartialArtsStyleType martial_arts_style{ MartialArtsStyleType::TRADITIONAL }; /* Martial arts fighting style */
 
     ClassSpecificData class_specific_data;
 

@@ -8,6 +8,7 @@
 #include "autopick/autopick-pref-processor.h"
 #include "cmd-action/cmd-hissatsu.h"
 #include "cmd-action/cmd-mane.h"
+#include "cmd-action/cmd-martial-arts.h"
 #include "cmd-action/cmd-mind.h"
 #include "cmd-action/cmd-move.h"
 #include "cmd-action/cmd-open-close.h"
@@ -378,6 +379,10 @@ void process_command(PlayerType *player_ptr)
             do_cmd_study(player_ptr);
         }
 
+        break;
+    }
+    case 'X': {
+        do_cmd_martial_arts_style(player_ptr);
         break;
     }
     case 'b': {

@@ -359,6 +359,7 @@
     <ClCompile Include="..\..\src\blue-magic\learnt-info.cpp" />
     <ClCompile Include="..\..\src\blue-magic\learnt-power-getter.cpp" />
     <ClCompile Include="..\..\src\cmd-action\cmd-attack.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-martial-arts.cpp" />
     <ClCompile Include="..\..\src\cmd-action\cmd-move.cpp" />
     <ClCompile Include="..\..\src\cmd-action\cmd-open-close.cpp" />
     <ClCompile Include="..\..\src\cmd-action\cmd-racial.cpp" />
@@ -367,6 +368,7 @@
     <ClCompile Include="..\..\src\cmd-action\cmd-tunnel.cpp" />
     <ClCompile Include="..\..\src\action\movement-execution.cpp" />
     <ClCompile Include="..\..\src\cmd-io\cmd-text-command.cpp" />
+    <ClCompile Include="..\..\src\combat\martial-arts-style.cpp" />
     <ClCompile Include="..\..\src\core\score-util.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-incident.cpp" />
@@ -1164,7 +1166,9 @@
     <ClInclude Include="..\..\src\alliance\alliance-valverde.h" />
     <ClInclude Include="..\..\src\alliance\alliance-xiombarg.h" />
     <ClInclude Include="..\..\src\birth\birth-select-patron.h" />
+    <ClInclude Include="..\..\src\cmd-action\cmd-martial-arts.h" />
     <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h" />
+    <ClInclude Include="..\..\src\combat\martial-arts-style.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
     <ClInclude Include="..\..\src\external-lib\include-json.h" />
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
