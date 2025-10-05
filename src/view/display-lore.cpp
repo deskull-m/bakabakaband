@@ -415,6 +415,10 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_ORANGE, _("戦士の", " warrior"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::SOLDIER)) {
+        hook_c_roff(TERM_L_BLUE, _("兵士の", " soldier"));
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::ROGUE)) {
         hook_c_roff(TERM_L_DARK, _("盗賊の", " rogue"));
     }

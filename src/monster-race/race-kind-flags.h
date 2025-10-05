@@ -58,5 +58,6 @@ enum class MonsterKindType {
     IXITXACHITL = 54, // イクシツザチトル
     NAGA = 55, // ナーガ
     PERVERT = 56, // 変質者
+    SOLDIER = 57,
     MAX,
 };
