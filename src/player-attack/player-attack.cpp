@@ -10,6 +10,7 @@
 #include "cmd-action/cmd-attack.h"
 #include "combat/attack-accuracy.h"
 #include "combat/attack-criticality.h"
+#include "combat/martial-arts-style.h"
 #include "combat/martial-arts-table.h"
 #include "combat/slaying.h"
 #include "floor/geometry.h"

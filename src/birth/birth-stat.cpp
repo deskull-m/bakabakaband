@@ -1,5 +1,6 @@
 #include "birth/birth-stat.h"
 #include "birth/auto-roller.h"
+#include "combat/martial-arts-style.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -149,6 +150,9 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
         player_ptr->skill_exp[i] = class_skills_info[pclass].s_start[i];
     }
+
+    // 武術スタイルの初期設定
+    player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
 
     const auto r_mhp = is_sorcerer ? rp_ptr->r_mhp / 2 : rp_ptr->r_mhp;
     player_ptr->hit_dice = Dice(1, r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);

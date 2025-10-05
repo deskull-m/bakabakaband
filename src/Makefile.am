@@ -161,6 +161,7 @@ hengband_SOURCES = \
 	cmd-action/cmd-attack.cpp cmd-action/cmd-attack.h \
 	cmd-action/cmd-hissatsu.cpp cmd-action/cmd-hissatsu.h \
 	cmd-action/cmd-mane.cpp cmd-action/cmd-mane.h \
+	cmd-action/cmd-martial-arts.cpp cmd-action/cmd-martial-arts.h \
 	cmd-action/cmd-mind.cpp cmd-action/cmd-mind.h \
 	cmd-action/cmd-move.cpp cmd-action/cmd-move.h \
 	cmd-action/cmd-open-close.cpp cmd-action/cmd-open-close.h \
@@ -212,6 +213,7 @@ hengband_SOURCES = \
 	combat/aura-counterattack.cpp combat/aura-counterattack.h \
 	combat/hallucination-attacks-table.cpp combat/hallucination-attacks-table.h \
 	combat/martial-arts-table.cpp combat/martial-arts-table.h \
+	combat/martial-arts-style.cpp combat/martial-arts-style.h \
 	combat/attack-accuracy.cpp combat/attack-accuracy.h \
 	combat/slaying.cpp combat/slaying.h \
 	combat/combat-options-type.h \
