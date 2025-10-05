@@ -41429,6 +41429,29 @@ D:ゴンドール王タランノンの代の王妃だ。
 D:だが、夫には愛されず、猫を下僕にして様々な悪しき事を企んでいたと言われ、
 D:その真の名は歴史の闇に葬られた。
 
+N:2289:家康所用巨具足『金陀美』
+E:Kindami, Ieyasu's Personal Heavy Armor 
+G:g:y
+I:131:100d100:80:130:0
+W:72:3:82000:0:0
+B:HIT:HURT:20d9
+B:HIT:HURT:20d9
+B:HIT:HURT:20d9
+B:HIT:HURT:20d9
+F:UNIQUE | NONLIVING | NO_FEAR | FORCE_MAXHP | REFLECTING | ALLIANCE_HAFU
+F:MOVE_BODY | KILL_WALL | IM_FIRE | IM_ELEC | IM_POIS | IM_ACID | IM_COLD |
+F:RES_NETH | RES_WATE | RES_PLAS | RES_NEXU | GOLEM
+F:RES_DISE | RES_WALL | RES_INER | RES_GRAV | NO_STUN | REGENERATE |
+F:NO_CONF | NO_SLEEP | CAN_FLY |
+F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | POWERFUL |
+S:1_IN_4 |
+S:BR_FIRE
+D:$Put them on, Ieyasu—no, Nobuyasu! These giant armor since the Battle of Okehazama!
+D:$ These are the giant armor of Ieyasu, the current head of Hafu, 
+D:$ the Minister of the Interior. Their flames even burned Osaka Castle.
+D:「履くか家康、あいや、信康よ、桶狭間合戦以来の巨具足！」
+D:現在の覇府の長たる内大臣家康の巨具足だ。その火焔は大坂城をも焼いた。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
