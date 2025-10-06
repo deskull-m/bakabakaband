@@ -216,11 +216,10 @@ bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
     bool result = false;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.m_list[i];
-        const auto &monrace = monster.get_monrace();
         if (!monster.is_valid()) {
             continue;
         }
-        if (monrace.kind_flags.has_not(MonsterKindType::UNDEAD)) {
+        if (!monster.is_undead()) {
             continue;
         }
         if (monster.cdis > MAX_PLAYER_SIGHT) {

@@ -34,7 +34,7 @@ static bool effect_monster_away_resist(PlayerType *player_ptr, EffectMonster *em
 
 ProcessResult effect_monster_away_undead(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNDEAD)) {
+    if (!em_ptr->m_ptr->is_undead()) {
         em_ptr->skipped = true;
         em_ptr->dam = 0;
         return ProcessResult::PROCESS_CONTINUE;
@@ -97,7 +97,7 @@ ProcessResult effect_monster_away_all(PlayerType *player_ptr, EffectMonster *em_
 
 ProcessResult effect_monster_turn_undead(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNDEAD)) {
+    if (!em_ptr->m_ptr->is_undead()) {
         em_ptr->skipped = true;
         em_ptr->dam = 0;
         return ProcessResult::PROCESS_CONTINUE;
@@ -170,7 +170,7 @@ ProcessResult effect_monster_turn_all(EffectMonster *em_ptr)
 
 ProcessResult effect_monster_disp_undead(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNDEAD)) {
+    if (!em_ptr->m_ptr->is_undead()) {
         em_ptr->skipped = true;
         em_ptr->dam = 0;
         return ProcessResult::PROCESS_CONTINUE;
