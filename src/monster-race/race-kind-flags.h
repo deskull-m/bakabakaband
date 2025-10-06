@@ -54,10 +54,11 @@ enum class MonsterKindType {
     INSECT = 50, // 昆虫
     CANCER = 51, // カニ
     FUNGAS = 52, // 菌類
-    MIMIC = 53, // ミミック
-    IXITXACHITL = 54, // イクシツザチトル
-    NAGA = 55, // ナーガ
-    PERVERT = 56, // 変質者
-    SOLDIER = 57,
+    TURTLE = 53, // 亀
+    MIMIC = 54, // ミミック
+    IXITXACHITL = 55, // イクシツザチトル
+    NAGA = 56, // ナーガ
+    PERVERT = 57, // 変質者
+    SOLDIER = 58,
     MAX,
 };
