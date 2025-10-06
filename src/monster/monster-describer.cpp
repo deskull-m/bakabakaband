@@ -299,6 +299,10 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         ss << _("やせ衰えた", "gaunt ");
     }
 
+    if (monster.mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+        ss << _("ゾンビと化した", "zombified ");
+    }
+
     if (monster.mflag2.has(MonsterConstantFlagType::NAKED)) {
         ss << _("全裸の", "naked ");
     }
