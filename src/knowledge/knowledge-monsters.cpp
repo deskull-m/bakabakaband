@@ -56,6 +56,7 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
     const auto grp_zombie = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Zombies");
     const auto grp_cancer = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Crabs");
     const auto grp_fungas = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Fungi");
+    const auto grp_turtle = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Turtles");
     const auto grp_mimic = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Mimics");
     const auto grp_ixitxachitl = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Ixitxachitls");
     const auto grp_naga = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Nagas");
@@ -105,6 +106,10 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
             }
         } else if (grp_fungas) {
             if (monrace.kind_flags.has_not(MonsterKindType::FUNGAS)) {
+                continue;
+            }
+        } else if (grp_turtle) {
+            if (monrace.kind_flags.has_not(MonsterKindType::TURTLE)) {
                 continue;
             }
         } else if (grp_mimic) {
