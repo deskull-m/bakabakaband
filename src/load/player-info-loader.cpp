@@ -361,6 +361,15 @@ static void set_timed_effects(PlayerType *player_ptr)
     player_ptr->tim_reflect = rd_s16b();
     player_ptr->multishadow = rd_s16b();
     player_ptr->dustrobe = rd_s16b();
+
+    if (!loading_savefile_version_is_older_than(37)) {
+        player_ptr->tim_res_lite = rd_s16b();
+        player_ptr->tim_res_dark = rd_s16b();
+        player_ptr->tim_res_fear = rd_s16b();
+        player_ptr->tim_emission = rd_s16b();
+        player_ptr->tim_exorcism = rd_s16b();
+        player_ptr->tim_imm_dark = rd_s16b();
+    }
 }
 
 static void set_mutations(PlayerType *player_ptr)

@@ -94,7 +94,7 @@ ProcessResult effect_monster_control_undead(PlayerType *player_ptr, EffectMonste
         em_ptr->dam -= player_ptr->virtues[vir - 1] / 20;
     }
 
-    if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || !em_ptr->m_ptr->is_undead()) {
+    if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || !em_ptr->m_ptr->has_undead_flag()) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {

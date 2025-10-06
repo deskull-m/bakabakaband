@@ -219,7 +219,7 @@ bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
         if (!monster.is_valid()) {
             continue;
         }
-        if (!monster.is_undead()) {
+        if (!monster.has_undead_flag()) {
             continue;
         }
         if (monster.cdis > MAX_PLAYER_SIGHT) {
