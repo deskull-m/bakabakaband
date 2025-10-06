@@ -11033,7 +11033,8 @@
         "AQUATIC",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "IXITXACHITL"
     ]
 },
 {
@@ -16869,7 +16870,8 @@
         "AQUATIC",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "IXITXACHITL"
     ],
     "skill": {
         "list": [
@@ -21477,7 +21479,8 @@
         "RES_NETH",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "IXITXACHITL"
     ],
     "skill": {
         "list": [
