@@ -324,6 +324,12 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
+        monrace.kind_flags.has_not(MonsterKindType::UNDEAD) && one_in_(50)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::ZOMBIFIED);
+    }
+
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.misc_flags.has(MonsterMiscType::NO_WAIFUZATION) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
     }
@@ -416,6 +422,12 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
         m_ptr->max_maxhp *= (randint1(3) + 4) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+        m_ptr->max_maxhp *= (randint1(3) + 5) / 8;
+        m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
+        // ゾンビ化したモンスターにUNDEADフラグを付与
+        m_ptr->get_monrace().kind_flags.set(MonsterKindType::UNDEAD);
     }
 
     // Set MALE kind flag based on monster's sex

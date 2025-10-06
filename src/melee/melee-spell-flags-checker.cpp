@@ -113,7 +113,7 @@ static void check_darkness(PlayerType *player_ptr, melee_spell_type *ms_ptr)
     }
 
     const auto vs_ninja = PlayerClass(player_ptr).equals(PlayerClassType::NINJA) && !ms_ptr->t_ptr->is_hostile();
-    auto can_use_lite_area = vs_ninja && ms_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNDEAD);
+    auto can_use_lite_area = vs_ninja && !ms_ptr->m_ptr->is_undead();
     can_use_lite_area &= ms_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
     can_use_lite_area &= ms_ptr->r_ptr->brightness_flags.has_none_of(dark_mask);
     if (ms_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID)) {

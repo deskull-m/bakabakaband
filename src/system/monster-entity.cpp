@@ -317,6 +317,25 @@ bool MonsterEntity::has_living_flag(bool is_apperance) const
 }
 
 /*!
+ * @brief モンスターがアンデッドかどうかを返す
+ * @return 種族または個体がアンデッドならばtrue
+ */
+bool MonsterEntity::is_undead() const
+{
+    // 種族データでアンデッドフラグがあるか確認
+    if (this->get_monrace().kind_flags.has(MonsterKindType::UNDEAD)) {
+        return true;
+    }
+
+    // 個体フラグでZOMBIFIED状態の場合（ZOMBIFIEDモンスターは自動的にUNDEADフラグを持つ）
+    if (this->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+        return true;
+    }
+
+    return false;
+}
+
+/*!
  * @brief モンスターが自爆するか否か
  * @return 自爆するならtrue
  */
