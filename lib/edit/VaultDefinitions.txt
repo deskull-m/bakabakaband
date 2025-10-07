@@ -18147,6 +18147,39 @@ D: %...fffffffff..%
 D:  %%%.........%% 
 D:     %%%%%%%%%   
 
+N:873:LavaCrack
+X:18:8:30:14
+D:      %%      
+D:     %..%     
+D:     %..%     
+D:     %...%    
+D:     %...%    
+D:     %&...%   
+D:    %.v....%  
+D:    %.v....%  
+D:   %..v....%  
+D:  %...v..&.%  
+D:  %....v...%  
+D:  %...vv...%  
+D:  %...vw....% 
+D: %....ww....% 
+D: %.&.vwww...% 
+D: %...vww....% 
+D: %...vvw...%  
+D:  %...vw..%   
+D:  %...vv..%   
+D:   %%.vv..%   
+D:   %..vv..%   
+D:   %.&.v.%    
+D:   %...v.%    
+D:    %.vv.%    
+D:    %.vv.%    
+D:    %....%    
+D:     %..%     
+D:     %..%     
+D:      %.%     
+D:       %      
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
