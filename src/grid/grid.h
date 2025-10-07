@@ -53,7 +53,8 @@ enum grid_bold_type {
     GB_OUTER_NOPERM,
     GB_SOLID,
     GB_SOLID_PERM,
-    GB_SOLID_NOPERM
+    GB_SOLID_NOPERM,
+    GB_WATER
 };
 
 class DisplaySymbol;

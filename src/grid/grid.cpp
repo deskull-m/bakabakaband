@@ -1045,6 +1045,12 @@ void place_grid(PlayerType *player_ptr, Grid &grid, grid_bold_type gb_type)
         grid.info |= CAVE_SOLID;
         break;
     }
+    case GB_WATER: {
+        grid.set_terrain_id(TerrainTag::DEEP_WATER);
+        grid.info &= ~(CAVE_MASK);
+        grid.info |= CAVE_SOLID;
+        break;
+    }
     default:
         // 未知の値が渡されたら何もしない。
         return;
