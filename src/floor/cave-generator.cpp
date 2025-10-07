@@ -571,9 +571,9 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
     make_aqua_streams(player_ptr, &dd, dungeon);
     make_perm_walls(player_ptr);
 
-    // 環状水路の生成（1/8の確率）
-    constexpr int waterway_chance = 1;
-    if (one_in_(waterway_chance) && !dd.empty_level) {
+    // 環状水路の生成（WATERWAYフラグを持つダンジョンで1/8の確率）
+    constexpr int waterway_chance = 8;
+    if (dungeon.flags.has(DungeonFeatureType::WATERWAY) && one_in_(waterway_chance) && !dd.empty_level) {
         generate_circular_waterway(player_ptr);
         msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("環状水路を生成。", "Circular waterway generated."));
     }
