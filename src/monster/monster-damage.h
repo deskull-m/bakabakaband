@@ -37,5 +37,6 @@ private:
     void show_bounty_message(std::string_view m_name);
     void set_redraw();
     void process_masochist_reaction();
+    void process_sadist_reaction();
     void add_monster_fear();
 };

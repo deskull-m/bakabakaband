@@ -561,6 +561,7 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "HOME_ONLY", MonsterMiscType::HOME_ONLY },
     { "SCATOLOGIST", MonsterMiscType::SCATOLOGIST },
     { "MASOCHIST", MonsterMiscType::MASOCHIST },
+    { "SADIST", MonsterMiscType::SADIST },
     { "BREAK_DOWN", MonsterMiscType::BREAK_DOWN },
     { "NO_WAIFUZATION", MonsterMiscType::NO_WAIFUZATION },
 };

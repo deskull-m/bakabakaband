@@ -521,3 +521,30 @@ void MonsterDamageProcessor::process_masochist_reaction()
         }
     }
 }
+
+/*!
+ * @brief サディストモンスターの特殊反応処理
+ * @details サディストは他者に苦痛を与えると興奮し、攻撃力が一時的に上昇する
+ */
+void MonsterDamageProcessor::process_sadist_reaction()
+{
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto &monrace = monster.get_monrace();
+
+    if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
+        return;
+    }
+
+    // SADISTモンスターがプレイヤーにダメージを与えた場合の興奮状態
+    if (this->dam > 0 && one_in_(4)) {
+        (void)set_monster_monfear(this->player_ptr, this->m_idx, 0);
+        *this->fear = false;
+
+        // 一時的な加速効果付与（興奮状態）
+        (void)set_monster_fast(this->player_ptr, this->m_idx, monster.get_remaining_acceleration() + 100);
+
+        if (monster.ml) {
+            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
+        }
+    }
+}
