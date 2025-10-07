@@ -6,5 +6,6 @@ enum class MonsterFeatureType {
     CAN_FLY = 2,
     PASS_WALL = 3,
     KILL_WALL = 4,
+    RAILWAY_ONLY = 5,
     MAX,
 };

@@ -79,5 +79,6 @@ enum class TerrainCharacteristics {
     ICE = 119, /*!< 氷である */
     SPIDER_SILK_NET = 120, /*!< 蜘蛛糸地形である */
     PORTAL = 121, /*!< 他ダンジョンへのポータル地形である */
+    RAILWAY = 122, /*!< 線路地形である */
     MAX,
 };
