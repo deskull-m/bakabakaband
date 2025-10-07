@@ -61,4 +61,5 @@ private:
     void increase_blow_type_seen(const int ap_cnt);
     void postprocess_monster_blows();
     void process_thief_teleport(const SpellHex &spell_hex);
+    void process_sadist_reaction();
 };

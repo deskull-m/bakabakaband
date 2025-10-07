@@ -23,10 +23,13 @@
 #include "monster-attack/monster-attack-effect.h"
 #include "monster-attack/monster-attack-switcher.h"
 #include "monster-attack/monster-attack-table.h"
+#include "monster-race/race-behavior-flags.h"
+#include "monster-race/race-misc-flags.h"
 #include "monster/monster-damage.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
+#include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/smart-learn-types.h"
 #include "object-hook/hook-armor.h"
@@ -248,6 +251,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     this->calc_player_cut();
     this->process_player_stun();
     this->monster_explode();
+    this->process_sadist_reaction();
     process_aura_counterattack(this->player_ptr, this);
     return true;
 }
@@ -542,5 +546,30 @@ void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
     } else {
         msg_print(_("泥棒は笑って逃げた！", "The thief flees laughing!"));
         teleport_away(this->player_ptr, this->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
+    }
+}
+
+/*!
+ * @brief サディストモンスターの特殊反応処理
+ * @details サディストはプレイヤーに苦痛を与えると興奮し、攻撃力が一時的に上昇する
+ */
+void MonsterAttackPlayer::process_sadist_reaction()
+{
+    const auto &monrace = this->m_ptr->get_monrace();
+
+    if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
+        return;
+    }
+
+    // プレイヤーにダメージを与えた場合の興奮状態
+    if (this->damage > 0 && one_in_(4)) {
+        (void)set_monster_monfear(this->player_ptr, this->m_idx, 0);
+
+        // 一時的な攻撃力上昇（怒り状態付与）
+        this->m_ptr->mflag2.set(MonsterConstantFlagType::ANGER);
+
+        if (this->m_ptr->ml) {
+            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), this->m_name);
+        }
     }
 }
