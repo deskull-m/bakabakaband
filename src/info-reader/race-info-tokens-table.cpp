@@ -487,6 +487,7 @@ const std::unordered_map<std::string_view, MonsterFeatureType> r_info_feature_fl
     { "AQUATIC", MonsterFeatureType::AQUATIC },
     { "CAN_SWIM", MonsterFeatureType::CAN_SWIM },
     { "CAN_FLY", MonsterFeatureType::CAN_FLY },
+    { "RAILWAY_ONLY", MonsterFeatureType::RAILWAY_ONLY },
 };
 
 const std::unordered_map<std::string_view, MonsterPopulationType> r_info_population_flags = {

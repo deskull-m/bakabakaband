@@ -86,6 +86,13 @@ bool monster_can_cross_terrain(PlayerType *player_ptr, FEAT_IDX feat, const Monr
         return false;
     }
 
+    /* Railway only monsters can only move on railways */
+    if (monrace.feature_flags.has(MonsterFeatureType::RAILWAY_ONLY)) {
+        if (terrain.flags.has_not(TerrainCharacteristics::RAILWAY)) {
+            return false;
+        }
+    }
+
     if (terrain.flags.has(TerrainCharacteristics::LAVA)) {
         if (monrace.resistance_flags.has_none_of(RFR_EFF_IM_FIRE_MASK)) {
             return false;
