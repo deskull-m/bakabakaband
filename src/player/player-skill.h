@@ -18,6 +18,7 @@ enum class PlayerSkillKindType {
     SCATOLOGY = 5,
     ARMOR = 6,
     EVASION = 7,
+    ASSHOLE = 8,
     MAX,
 };
 
@@ -74,6 +75,7 @@ public:
     void gain_scatology_skill_exp();
     void gain_armor_skill_exp();
     void gain_evasion_skill_exp();
+    void gain_asshole_skill_exp();
     void gain_spell_skill_exp(RealmType realm, int spell_idx);
     void gain_continuous_spell_skill_exp(RealmType realm, int spell_idx);
     PlayerSkillRank gain_spell_skill_exp_over_learning(int spell_idx);
