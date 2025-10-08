@@ -711,7 +711,7 @@ I:110:2d5:10:3:10
 W:1:1:6:5:49
 B:BITE:HURT:1d5
 F:WEIRD_MIND | BASH_DOOR | DROP_CORPSE |
-F:ANIMAL | WILD_GRASS | EAT_POISONOUS
+F:ANIMAL | WILD_GRASS | EAT_POISONOUS | INSECT
 D:$A large ant with powerful mandibles.
 D:強い顎を持った大きなアリだ。
 
@@ -910,7 +910,7 @@ B:BITE:HURT:1d8
 F:RAND_25 | 
 F:WEIRD_MIND | DROP_CORPSE | EAT_ACIDIC
 F:BASH_DOOR | WILD_WOOD | WILD_GRASS |
-F:ANIMAL
+F:ANIMAL | INSECT
 D:$It is about three feet long.
 D:それは大きさが 1 メートル近くもある。
 
@@ -1306,7 +1306,7 @@ I:110:3d6:8:16:80
 W:3:1:9:40:168
 B:BITE:HURT:1d7
 F:WEIRD_MIND | BASH_DOOR | WILD_GRASS
-F:ANIMAL | DROP_CORPSE
+F:ANIMAL | DROP_CORPSE | INSECT
 D:$It is about two feet long and has sharp pincers.
 D:それは大きさが 60 センチ近くあり、さらに鋭い顎も持っている。
 
@@ -2724,7 +2724,7 @@ W:9:2:22:500:408
 B:BITE:HURT:1d5
 B:STING:LOSE_STR:1d4
 F:WEIRD_MIND | BASH_DOOR | WILD_ALL | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | INSECT
 D:$It is large and has venomous mandibles.
 D:それは大きくて強力な顎を持っている。
 
@@ -3882,7 +3882,7 @@ I:110:13d8:10:40:30
 W:13:2:38:400:378
 B:BITE:HURT:3d4
 F:WEIRD_MIND | BASH_DOOR | CAN_FLY | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | INSECT
 D:$It is a vicious insect with a tough carapace.
 D:それは頑丈な甲羅を持った凶暴な昆虫だ。
 
@@ -6098,7 +6098,7 @@ B:CLAW:HURT:1d12
 B:CLAW:HURT:1d12
 F:RAND_25 | WILD_ALL | DROP_CORPSE |
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL | CAN_FLY
+F:ANIMAL | CAN_FLY | INSECT
 D:$It is a giant beetle with vicious claws.
 D:それは恐ろしげなハサミを持った巨大なクワガタだ。
 
@@ -6294,7 +6294,7 @@ W:23:1:85:1000:421
 B:BITE:HURT:4d5
 F:RAND_25 | 
 F:WEIRD_MIND | BASH_DOOR | WILD_ALL | DROP_CORPSE
-F:ANIMAL | CAN_FLY
+F:ANIMAL | CAN_FLY | INSECT
 D:$It is looking for prey.
 D:それは生け贄を探している。
 
@@ -6781,7 +6781,7 @@ W:25:2:85:0:0
 B:BITE:LOSE_STR:4d4
 F:RAND_25 | WILD_ALL |
 F:WEIRD_MIND | BASH_DOOR | DROP_CORPSE
-F:ANIMAL | CAN_FLY | EAT_LOSE_STR
+F:ANIMAL | CAN_FLY | EAT_LOSE_STR | INSECT
 D:$A giant beetle with poisonous mandibles.
 D:有毒な顎を持った巨大な甲虫だ。
 
@@ -6834,7 +6834,7 @@ W:26:1:90:800:469
 B:BITE:HURT:2d12
 F:RAND_25 | KILL_BODY | DROP_CORPSE
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL
+F:ANIMAL | INSECT
 D:$It is an ant encased in shaggy grey fur.
 D:灰色の毛に覆われたアリだ。
 
@@ -7073,7 +7073,7 @@ W:27:1:95:800:474
 B:BITE:HURT:3d4
 B:SPIT:FIRE:4d5
 F:WEIRD_MIND | BASH_DOOR | WILD_VOLCANO | DROP_CORPSE
-F:ANIMAL | IM_FIRE | CAN_FLY | EAT_FIRE_RES
+F:ANIMAL | IM_FIRE | CAN_FLY | EAT_FIRE_RES | INSECT
 D:$It is a giant beetle wreathed in flames.
 D:それは火炎に取り巻かれた巨大な甲虫だ。
 
@@ -8006,7 +8006,7 @@ W:30:2:80:1000:473
 B:BITE:ELEC:5d5
 F:RAND_25 | WILD_ALL | DROP_CORPSE
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL | IM_ELEC
+F:ANIMAL | IM_ELEC | INSECT
 D:$It is a giant ant that crackles with energy.
 D:それはエネルギーが火花をたてている巨大なアリだ。
 
@@ -8077,7 +8077,7 @@ W:30:3:90:1200:548
 B:BITE:HURT:2d12
 F:RAND_25 | KILL_BODY | FRIENDS | DROP_CORPSE
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL
+F:ANIMAL | INSECT
 D:$An armoured form moving with purpose.  Powerful on its own, flee when 
 D:$hordes of them march.
 D:硬い甲羅を持ったアリで、一定の指揮に従って行動している。単独でも強いが、
@@ -8092,7 +8092,7 @@ W:30:2:200:800:478
 B:BITE:HURT:5d8
 B:BITE:HURT:5d8
 F:WEIRD_MIND | BASH_DOOR | WILD_GRASS | DROP_CORPSE
-F:ANIMAL | CAN_FLY
+F:ANIMAL | CAN_FLY | INSECT
 D:$It is a beetle with deadly sharp cutting mandibles and a rock-hard 
 D:$carapace.
 D:それは恐ろしく鋭い切れ味の顎と、岩のように硬い甲羅を持った甲虫だ。
@@ -8177,7 +8177,7 @@ W:31:3:190:2000:586
 B:BITE:HURT:5d4
 B:WAIL:TERRIFY:5d6
 F:WEIRD_MIND | BASH_DOOR | WILD_ALL | DROP_CORPSE
-F:ANIMAL | CAN_FLY
+F:ANIMAL | CAN_FLY | INSECT
 D:$It is a giant beetle that produces a chilling sound.
 D:それは寒気を催すような羽音を立てる巨大な甲虫だ。
 
@@ -9557,7 +9557,7 @@ B:BITE:FIRE:3d12
 B:BITE:FIRE:3d12
 F:FORCE_MAXHP | KILL_BODY | FRIENDS | DROP_CORPSE
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL | IM_FIRE
+F:ANIMAL | IM_FIRE | INSECT
 D:$A giant ant covered in shaggy fur.  Its powerful jaws glow with heat.
 D:全身が毛で覆われた巨大なアリだ。その強力な顎は熱に輝いている。
 
@@ -10234,7 +10234,7 @@ F:FORCE_MAXHP |
 F:ESCORT | ESCORTS | CAN_FLY |
 F:ONLY_ITEM | DROP_2D2 | DROP_GOOD | 
 F:WEIRD_MIND | OPEN_DOOR | BASH_DOOR | 
-F:ANIMAL | NO_CONF | NO_SLEEP
+F:ANIMAL | NO_CONF | NO_SLEEP | INSECT
 S:1_IN_2 | 
 S:S_ANT
 D:$She's upset because you hurt her children.
@@ -10343,7 +10343,7 @@ B:GAZE:PARALYZE
 F:ATTR_MULTI |
 F:FORCE_MAXHP | 
 F:WEIRD_MIND | BASH_DOOR | AURA_ELEC | DROP_CORPSE
-F:ANIMAL | IM_ELEC | CAN_FLY
+F:ANIMAL | IM_ELEC | CAN_FLY | INSECT
 D:$It is a giant beetle, whose carapace shimmers with vibrant energies.
 D:それは巨大な甲虫で、その甲羅は充満したエネルギーで輝いている。
 
@@ -20760,7 +20760,7 @@ F:FORCE_MAXHP | KILL_WALL |
 F:ONLY_ITEM | DROP_2D2 | DROP_4D2 | DROP_GOOD | 
 F:OPEN_DOOR | BASH_DOOR | POWERFUL | MOVE_BODY | 
 F:EVIL | IM_ACID | IM_FIRE | IM_POIS | ANIMAL |
-F:NO_CONF | NO_SLEEP | NO_FEAR
+F:NO_CONF | NO_SLEEP | NO_FEAR | INSECT
 S:1_IN_3 |
 S:BR_ACID | BR_POIS | S_KIN
 D:$A hulking creature with massive pincers.  The Defiler oozes acidic 
@@ -24208,8 +24208,7 @@ I:120:10d69:25:70:20
 W:40:1:350:0:0
 B:KICK:HURT:3d12
 B:BITE:HURT:3d12
-F:WEIRD_MIND | ANIMAL | BASH_DOOR | DROP_60 | FRIENDS | DROP_CORPSE
-F:RES_DARK | RES_NETH
+F:WEIRD_MIND | ANIMAL | BASH_DOOR | DROP_60 | FRIENDS | DROP_CORPSE | INSECT
 D:$It will keep you rolling to hell!
 D:それはあなたを地獄まで転がしつつけるだろう！
 
@@ -26077,7 +26076,7 @@ I:115:1d1:4:1:0
 W:4:2:0:30:0:0
 F:NEVER_BLOW 
 F:EMPTY_MIND | DROP_CORPSE |
-F:NO_CONF | NO_SLEEP | NO_FEAR
+F:NO_CONF | NO_SLEEP | NO_FEAR | INSECT
 S:1_IN_6 | 
 S:SHRIEK
 D:真夏の夜の淫夢に欠かせぬ偉大なる助優兄貴たちだ。でもうるせえ！（半ギレ）
@@ -37959,8 +37958,8 @@ F:UNIQUE | DROP_CORPSE |
 F:FORCE_MAXHP |
 F:ONLY_ITEM | DROP_2D2 | DROP_GOOD | 
 F:OPEN_DOOR | BASH_DOOR | POWERFUL | KILL_BODY | 
-F:EVIL | IM_ACID | IM_FIRE | IM_POIS | ANIMAL |
-F:NO_CONF | NO_SLEEP | NO_FEAR
+F:EVIL | IM_ACID | IM_FIRE | IM_POIS |
+F:NO_CONF | NO_SLEEP | NO_FEAR | INSECT
 D:あなたの舌を引きちぎろうとする、スタンドの昆虫だ。
 
 N:2071:墓石ゴーレム
