@@ -37,5 +37,6 @@ enum class DungeonFeatureType {
     ALWAY_ARENA,
     ALWAYS_LIGHT,
     ALWAY_MAX_SIZE,
+    WATERWAY,
     MAX,
 };

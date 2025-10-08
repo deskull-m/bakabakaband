@@ -135,6 +135,43 @@ static void place_cave_contents(PlayerType *player_ptr, DungeonData *dd_ptr, con
     }
 }
 
+/*!
+ * @brief 環状水路を生成する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @details マップの外周に沿ってマンハッタン距離で水地形の環状路を生成する
+ */
+static void generate_circular_waterway(PlayerType *player_ptr)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto margin = 2; // 外壁からのマージン
+
+    // 環状水路の座標を計算
+    const auto start_y = margin;
+    const auto end_y = floor.height - margin - 1;
+    const auto start_x = margin;
+    const auto end_x = floor.width - margin - 1;
+
+    // 上辺: 左から右へ
+    for (int x = start_x; x <= end_x; x++) {
+        place_bold(player_ptr, start_y, x, GB_WATER);
+    }
+
+    // 右辺: 上から下へ（角を重複させないため start_y+1 から）
+    for (int y = start_y + 1; y <= end_y; y++) {
+        place_bold(player_ptr, y, end_x, GB_WATER);
+    }
+
+    // 下辺: 右から左へ（角を重複させないため end_x-1 から）
+    for (int x = end_x - 1; x >= start_x; x--) {
+        place_bold(player_ptr, end_y, x, GB_WATER);
+    }
+
+    // 左辺: 下から上へ（角を重複させないため end_y-1 から start_y+1 まで）
+    for (int y = end_y - 1; y > start_y; y--) {
+        place_bold(player_ptr, y, start_x, GB_WATER);
+    }
+}
+
 static bool decide_tunnel_planned_site(PlayerType *player_ptr, DungeonData *dd_ptr, const DungeonDefinition &dungeon, dt_type *dt_ptr, int i)
 {
     dd_ptr->tunn_n = 0;
@@ -533,6 +570,13 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
 
     make_aqua_streams(player_ptr, &dd, dungeon);
     make_perm_walls(player_ptr);
+
+    // 環状水路の生成（WATERWAYフラグを持つダンジョンで1/8の確率）
+    constexpr int waterway_chance = 8;
+    if (dungeon.flags.has(DungeonFeatureType::WATERWAY) && one_in_(waterway_chance) && !dd.empty_level) {
+        generate_circular_waterway(player_ptr);
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("環状水路を生成。", "Circular waterway generated."));
+    }
 
     // 地形生成完了後、モンスター・アイテム配置前に左右対称化
     constexpr int symmetric_chance = 25;
