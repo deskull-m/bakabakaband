@@ -300,12 +300,16 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         }
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(15)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(100)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::HUGE);
+    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+               m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(15)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::LARGE);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::LARGE) && one_in_(18)) {
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::LARGE) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(18)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::SMALL);
     }
 
@@ -407,7 +411,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->max_maxhp = new_monrace.hit_dice.roll();
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+        m_ptr->max_maxhp *= (randint1(8) + 15) / 8;
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    } else if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
@@ -459,6 +466,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     m_ptr->set_individual_speed(floor.inside_arena);
 
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+        m_ptr->mspeed -= randint1(2) + 2;
+    }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
         m_ptr->mspeed -= randint1(3);
     }

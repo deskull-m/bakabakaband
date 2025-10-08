@@ -283,7 +283,9 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         ss << _("美少女化した", "waifuized ");
     }
 
-    if (monster.mflag2.has(MonsterConstantFlagType::LARGE)) {
+    if (monster.mflag2.has(MonsterConstantFlagType::HUGE)) {
+        ss << _("超大型の", "huge ");
+    } else if (monster.mflag2.has(MonsterConstantFlagType::LARGE)) {
         ss << _("大型の", "large ");
     }
 
