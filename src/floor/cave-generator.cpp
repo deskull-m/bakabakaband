@@ -74,14 +74,6 @@ static tl::optional<DungeonId> select_random_non_beginner_dungeon()
     return non_beginner_dungeons[selected_index];
 }
 
-static void reset_lite_area(FloorType &floor)
-{
-    floor.lite_n = 0;
-    floor.mon_lite_n = 0;
-    floor.redraw_n = 0;
-    floor.view_n = 0;
-}
-
 static void check_arena_floor(PlayerType *player_ptr, DungeonData *dd_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
@@ -530,7 +522,7 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
     }
 
     auto &floor = *player_ptr->current_floor_ptr;
-    reset_lite_area(floor);
+    floor.reset_lite_area();
     get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook());
 
     // 鉄獄（ANGBAND）では一定確率で他のダンジョンの生成処理を使用
