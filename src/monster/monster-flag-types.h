@@ -34,5 +34,6 @@ enum class MonsterConstantFlagType {
     SMALL = 20, /*!< 小柄な / Small */
     NAKED = 21, /*!< 全裸の / Naked */
     ZOMBIFIED = 22, /*!< ゾンビ化した / Zombified */
+    HUGE = 23, /*!< 超大型 / Huge */
     MAX,
 };
