@@ -309,6 +309,10 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         ss << _("全裸の", "naked ");
     }
 
+    if (monster.mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        ss << _("違法改造の", "illegally modified ");
+    }
+
     if (monster.mflag2.has(MonsterConstantFlagType::DEFECATED)) {
         ss << _("脱糞した", "defecated ");
     }

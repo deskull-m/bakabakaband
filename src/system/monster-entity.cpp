@@ -662,5 +662,9 @@ int MonsterEntity::get_ac() const
     if (this->mflag2.has(MonsterConstantFlagType::NAKED)) {
         return 0;
     }
-    return monrace.ac;
+    auto ac = monrace.ac;
+    if (this->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        ac += randint1(10) + 5; // +6～+15のACボーナス
+    }
+    return ac;
 }

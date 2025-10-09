@@ -338,6 +338,13 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
     }
 
+    // 違法改造フラグの付与
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        (monrace.kind_flags.has(MonsterKindType::GOLEM) || monrace.kind_flags.has(MonsterKindType::ROBOT)) &&
+        one_in_(40)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+    }
+
     if (m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
         m_ptr->sub_align = summoner.sub_align;
     } else if (m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
@@ -436,6 +443,10 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         // ゾンビ化したモンスターにUNDEADフラグを付与
         m_ptr->get_monrace().kind_flags.set(MonsterKindType::UNDEAD);
     }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        m_ptr->max_maxhp *= (randint1(3) + 10) / 8; // 1.5倍～1.75倍のHPボーナス
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    }
 
     // Set MALE kind flag based on monster's sex
     if (m_ptr->is_male()) {
@@ -474,6 +485,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
         m_ptr->mspeed += randint1(2) + 1;
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        m_ptr->mspeed += randint1(5) + 3; // +3～+7の加速ボーナス
     }
 
     if (any_bits(mode, PM_HASTE)) {
