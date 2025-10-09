@@ -277,8 +277,13 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::DOG)) {
         lore_ptr->kind_flags.set(MonsterKindType::DOG);
     }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::CAT)) {
         lore_ptr->kind_flags.set(MonsterKindType::CAT);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::APE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::APE);
     }
 }
 
