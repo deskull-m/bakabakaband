@@ -74,14 +74,6 @@ static tl::optional<DungeonId> select_random_non_beginner_dungeon()
     return non_beginner_dungeons[selected_index];
 }
 
-static void reset_lite_area(FloorType &floor)
-{
-    floor.lite_n = 0;
-    floor.mon_lite_n = 0;
-    floor.redraw_n = 0;
-    floor.view_n = 0;
-}
-
 static void check_arena_floor(PlayerType *player_ptr, DungeonData *dd_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
