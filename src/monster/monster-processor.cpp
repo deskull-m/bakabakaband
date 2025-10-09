@@ -17,6 +17,9 @@
 #include "cmd-io/cmd-dump.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"
+#include "effect/attribute-types.h"
+#include "effect/effect-characteristics.h"
+#include "effect/effect-processor.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
@@ -508,6 +511,22 @@ void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
     can_do_special &= !AngbandSystem::get_instance().is_phase_out();
     can_do_special &= monrace.freq_spell != 0;
     can_do_special &= randint1(100) <= monrace.freq_spell;
+
+    // 違法改造モンスターの自滅処理
+    if (monster.mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED) && one_in_(50)) {
+        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto pos = monster.get_position();
+        msg_format(_("%sが突然機能停止し、爆発した！", "%s suddenly malfunctions and explodes!"), m_name.data());
+
+        // 破片のボール攻撃
+        project(player_ptr, m_idx, 2, pos.y, pos.x, monrace.level + randint1(monrace.level), AttributeType::SHARDS,
+            PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+
+        // モンスターを削除
+        delete_monster_idx(player_ptr, m_idx);
+        return;
+    }
+
     if (!can_do_special) {
         return;
     }
