@@ -1721,7 +1721,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "WILD_GRASS",
-        "EAT_POISONOUS"
+        "EAT_POISONOUS",
+        "INSECT"
     ]
 },
 {
@@ -2385,7 +2386,8 @@
         "BASH_DOOR",
         "WILD_WOOD",
         "WILD_GRASS",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -3591,7 +3593,8 @@
         "BASH_DOOR",
         "WILD_GRASS",
         "ANIMAL",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "INSECT"
     ]
 },
 {
@@ -8269,7 +8272,8 @@
         "BASH_DOOR",
         "WILD_ALL",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -11896,7 +11900,8 @@
         "BASH_DOOR",
         "CAN_FLY",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -19050,7 +19055,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -19745,7 +19751,8 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -21432,7 +21439,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "CAN_FLY",
-        "EAT_LOSE_STR"
+        "EAT_LOSE_STR",
+        "INSECT"
     ]
 },
 {
@@ -21598,7 +21606,8 @@
         "DROP_CORPSE",
         "WEIRD_MIND",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -22394,7 +22403,8 @@
         "ANIMAL",
         "IM_FIRE",
         "CAN_FLY",
-        "EAT_FIRE_RES"
+        "EAT_FIRE_RES",
+        "INSECT"
     ]
 },
 {
@@ -25457,7 +25467,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_ELEC"
+        "IM_ELEC",
+        "INSECT"
     ]
 },
 {
@@ -25692,7 +25703,8 @@
         "DROP_CORPSE",
         "WEIRD_MIND",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -25738,7 +25750,8 @@
         "WILD_GRASS",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -25981,7 +25994,8 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -30549,7 +30563,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_FIRE"
+        "IM_FIRE",
+        "INSECT"
     ]
 },
 {
@@ -32731,7 +32746,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "INSECT"
     ],
     "skill": {
         "list": [
@@ -33053,7 +33069,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "IM_ELEC",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -66555,7 +66572,8 @@
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "INSECT"
     ],
     "skill": {
         "list": [
@@ -79059,8 +79077,7 @@
         "DROP_60",
         "FRIENDS",
         "DROP_CORPSE",
-        "RES_DARK",
-        "RES_NETH"
+        "INSECT"
     ]
 },
 {
@@ -86522,7 +86539,8 @@
         "DROP_CORPSE",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "INSECT"
     ],
     "skill": {
         "list": [
@@ -133423,10 +133441,10 @@
         "IM_ACID",
         "IM_FIRE",
         "IM_POIS",
-        "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "INSECT"
     ]
 },
 {
