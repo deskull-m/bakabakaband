@@ -61,5 +61,6 @@ enum class MonsterKindType {
     PERVERT = 57, // 変質者
     SOLDIER = 58,
     APE = 59, // 類人猿
+    HORSE = 60, // 馬
     MAX,
 };
