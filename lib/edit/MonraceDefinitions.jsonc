@@ -2704,7 +2704,8 @@
         "DROP_CORPSE",
         "BASH_DOOR",
         "EAT_POISONOUS",
-        "ANIMAL"
+        "ANIMAL",
+        "FROG"
     ]
 },
 {
@@ -5804,7 +5805,8 @@
         "DROP_CORPSE",
         "EAT_POISONOUS",
         "EAT_LOSE_STR",
-        "ANIMAL"
+        "ANIMAL",
+        "FROG"
     ]
 },
 {
