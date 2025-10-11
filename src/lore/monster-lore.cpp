@@ -297,6 +297,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BEHOLDER)) {
         lore_ptr->kind_flags.set(MonsterKindType::BEHOLDER);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::YEEK)) {
+        lore_ptr->kind_flags.set(MonsterKindType::YEEK);
+    }
 }
 
 /*!

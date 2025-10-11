@@ -64,5 +64,6 @@ enum class MonsterKindType {
     HORSE = 60, // 馬
     FROG = 61, // カエル
     BEHOLDER = 62, // ビホルダー
+    YEEK = 63, // イーク
     MAX,
 };
