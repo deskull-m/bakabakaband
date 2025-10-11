@@ -198,7 +198,7 @@ int64_t Alliance::calcCurrentPower()
         }
     }
     if (this->isAnnihilated()) {
-        res /= this->AnihilatedPowerdownDiv;
+        res /= this->AnnihilatedPowerdownDiv;
     }
     return res;
 }
