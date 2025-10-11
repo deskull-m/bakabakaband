@@ -41483,6 +41483,25 @@ D:$It is a demon that forces out filth or makes others force it out,
 D:$ scheming to destroy the anus itself.
 D:汚物をひり出したり、ひり出させたりして肛門破壊まで目論む悪魔だ。
 
+N:2292:超能力蛙
+E:Psychic frog
+G:R:B
+I:110:18d8:12:16:50
+W:23:3:350:0:0
+B:GAZE:LOSE_INT:2d5
+F:RAND_50 | WILD_ONLY | WILD_SHORE | WILD_SWAMP |
+F:BASH_DOOR | DROP_CORPSE | EAT_POISONOUS | RES_WATE
+F:ANIMAL | FROG | CAN_FLY
+S:1_IN_5 | BRAIN_SMASH | SLOW
+D:$True to its name, it's a frog with various psychic powers.
+D:$ It feeds on human minds to grow.
+D:その名の通り様々な超能力を持ったカエルだ。
+D:人の精神を喰らい成長するという。
+
+
+
+
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
