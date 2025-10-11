@@ -2523,7 +2523,8 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "ANIMAL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK"
     ]
 },
 {
@@ -6867,7 +6868,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK"
     ]
 },
 {
@@ -8846,7 +8848,8 @@
         "HAS_LITE_1",
         "ANIMAL",
         "IM_ACID",
-        "NO_FEAR"
+        "NO_FEAR",
+        "YEEK"
     ]
 },
 {
@@ -8910,7 +8913,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "EVIL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK"
     ],
     "skill": {
         "list": [
@@ -11240,7 +11244,8 @@
         "EVIL",
         "IM_ACID",
         "DROP_CORPSE",
-        "EAT_NEXUS"
+        "EAT_NEXUS",
+        "YEEK"
     ],
     "skill": {
         "list": [
@@ -11965,7 +11970,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "EVIL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK"
     ],
     "skill": {
         "list": [
@@ -68227,6 +68233,7 @@
         "WILD_ONLY",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "YEEK",
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP"
@@ -132640,7 +132647,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "IM_ACID",
-        "NO_FEAR"
+        "NO_FEAR",
+        "YEEK"
     ]
 },
 {
@@ -132908,7 +132916,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "RES_TELE",
-        "RES_NETH"
+        "RES_NETH",
+        "YEEK"
     ],
     "skill": {
         "list": [
@@ -142471,7 +142480,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "RES_TELE",
-        "RES_NETH"
+        "RES_NETH",
+        "YEEK"
     ],
     "skill": {
         "list": [
