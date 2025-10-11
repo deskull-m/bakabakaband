@@ -110176,6 +110176,7 @@
         "UNIQUE",
         "NEVER_MOVE",
         "FORCE_MAXHP",
+        "FROG",
         "IM_ACID",
         "IM_POIS",
         "IM_COLD",
@@ -121720,6 +121721,7 @@
     "flags": [
         "UNIQUE",
         "STUPID",
+        "FROG",
         "FORCE_MAXHP",
         "WILD_ALL",
         "DROP_CORPSE",
@@ -142184,7 +142186,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "NO_CONF",
-        "NO_FEAR"
+        "NO_FEAR",
+        "FROG"
     ],
     "skill": {
         "list": [
