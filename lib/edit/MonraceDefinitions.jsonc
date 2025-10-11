@@ -34230,7 +34230,8 @@
         "EVIL",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEHOLDER"
     ],
     "skill": {
         "list": [
@@ -38568,7 +38569,8 @@
         "EVIL",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEHOLDER"
     ],
     "skill": {
         "list": [
@@ -47720,6 +47722,7 @@
         "EVIL",
         "UNDEAD",
         "CAN_FLY",
+        "BEHOLDER",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -76377,6 +76380,7 @@
         "EVIL",
         "UNDEAD",
         "CAN_FLY",
+        "BEHOLDER",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -76459,7 +76463,8 @@
         "EVIL",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEHOLDER"
     ],
     "skill": {
         "list": [
