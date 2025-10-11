@@ -293,6 +293,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FROG)) {
         lore_ptr->kind_flags.set(MonsterKindType::FROG);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BEHOLDER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BEHOLDER);
+    }
 }
 
 /*!
