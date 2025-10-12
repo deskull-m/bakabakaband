@@ -442,6 +442,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "BEHOLDER", MonsterKindType::BEHOLDER }, // ビホルダー
     { "YEEK", MonsterKindType::YEEK }, // イーク
     { "AQUATIC_MAMMAL", MonsterKindType::AQUATIC_MAMMAL }, // 水棲哺乳類
+    { "FISH", MonsterKindType::FISH }, // 魚類
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {

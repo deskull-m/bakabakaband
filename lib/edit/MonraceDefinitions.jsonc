@@ -3360,7 +3360,8 @@
         "AQUATIC",
         "ANIMAL",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH"
     ]
 },
 {
@@ -4189,7 +4190,8 @@
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH"
     ]
 },
 {
@@ -9300,6 +9302,7 @@
         "NO_SLEEP",
         "WILD_ALL",
         "RES_WATE",
+        "FISH",
         "FRIENDS",
         "AQUATIC",
         "ANIMAL"
@@ -11044,7 +11047,8 @@
         "IM_POIS",
         "RES_WATE",
         "WILD_ALL",
-        "IXITXACHITL"
+        "IXITXACHITL",
+        "FISH"
     ]
 },
 {
@@ -16311,7 +16315,8 @@
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH"
     ]
 },
 {
@@ -16884,7 +16889,8 @@
         "IM_POIS",
         "RES_WATE",
         "WILD_ALL",
-        "IXITXACHITL"
+        "IXITXACHITL",
+        "FISH"
     ],
     "skill": {
         "list": [
@@ -17931,7 +17937,8 @@
         "RAND_25",
         "IM_ELEC",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "FISH"
     ]
 },
 {
@@ -18740,6 +18747,7 @@
         "EMPTY_MIND",
         "BASH_DOOR",
         "AQUATIC",
+        "FISH",
         "IM_POIS",
         "RES_WATE",
         "NO_STUN",
@@ -21498,7 +21506,8 @@
         "IM_POIS",
         "RES_WATE",
         "WILD_ALL",
-        "IXITXACHITL"
+        "IXITXACHITL",
+        "FISH"
     ],
     "skill": {
         "list": [
