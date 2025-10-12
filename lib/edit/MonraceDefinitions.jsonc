@@ -17877,6 +17877,7 @@
         "RAND_25",
         "FORCE_MAXHP",
         "RES_WATE",
+        "AQUATIC_MAMMAL",
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL"
@@ -18909,6 +18910,7 @@
         "AQUATIC",
         "WILD_OCEAN",
         "RES_WATE",
+        "AQUATIC_MAMMAL",
         "ANIMAL"
     ]
 },
@@ -33587,6 +33589,7 @@
     "flags": [
         "FORCE_MAXHP",
         "CAN_FLY",
+        "AQUATIC_MAMMAL",
         "DROP_60",
         "DROP_90",
         "DROP_2D2",
@@ -67092,6 +67095,7 @@
         "DROP_CORPSE",
         "AQUATIC",
         "ANIMAL",
+        "AQUATIC_MAMMAL",
         "FORCE_MAXHP",
         "ONLY_ITEM",
         "DROP_2D2",
@@ -111597,6 +111601,7 @@
         "FORCE_MAXHP",
         "CAN_FLY",
         "UNIQUE",
+        "AQUATIC_MAMMAL",
         "DROP_CORPSE",
         "QUANTUM",
         "DROP_GOOD",

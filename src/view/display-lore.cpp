@@ -278,7 +278,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
             MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
             MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU,
-            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK })) {
+            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -393,6 +393,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::YEEK)) {
         hook_c_roff(TERM_YELLOW, _("イーク", " yeek"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::AQUATIC_MAMMAL)) {
+        hook_c_roff(TERM_L_BLUE, _("水棲哺乳類", " aquatic mammal"));
     }
 }
 

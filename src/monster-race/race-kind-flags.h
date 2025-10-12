@@ -65,5 +65,6 @@ enum class MonsterKindType {
     FROG = 61, // カエル
     BEHOLDER = 62, // ビホルダー
     YEEK = 63, // イーク
+    AQUATIC_MAMMAL = 64, // 水棲哺乳類
     MAX,
 };
