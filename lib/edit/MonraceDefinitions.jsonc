@@ -147318,5 +147318,59 @@
         ],
         "probability": "1_IN_5"
     }
+},
+{
+    "id": 2293,
+    "name": {
+        "ja": "地獄ピラニア",
+        "en": "Hell piranha"
+    },
+    "symbol": {
+        "character": "l",
+        "color": "Red"
+    },
+    "speed": 10,
+    "hit_point": "15d12",
+    "vision": 40,
+    "armor_class": 50,
+    "alertness": 15,
+    "level": 25,
+    "rarity": 3,
+    "exp": 120,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "12d3"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "12d3"
+        }
+    ],
+    "flavor": {
+        "ja": "地獄産のより凶悪なピラニアだ。",
+        "en": "A more vicious piranha from hell."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "WILD_ALL",
+        "RES_WATE",
+        "FISH",
+        "DEMON",
+        "FRIENDS",
+        "AQUATIC",
+        "ANIMAL",
+        "SMART",
+        "IM_ACID",
+        "IM_ELEC",
+        "RES_COLD",
+        "RES_POIS",
+        "RES_NETH"
+    ]
 }]
 }
