@@ -16,3 +16,14 @@ int AllianceGOLAN::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr
     impression -= MonraceList::get_instance().get_monrace(MonraceId::GOLAN_SOLDIER).r_pkills * 2;
     return impression;
 }
+
+/*!
+ * @brief GOLANアライアンスの壊滅判定
+ * @return 壊滅しているかどうか
+ * @details 総帥『カーネル』が存在しない場合に壊滅する
+ */
+bool AllianceGOLAN::isAnnihilated()
+{
+    // 総帥『カーネル』が存在しない場合、GOLANは壊滅する
+    return MonraceList::get_instance().get_monrace(MonraceId::GOLAN_COLONEL).cur_num == 0;
+}
