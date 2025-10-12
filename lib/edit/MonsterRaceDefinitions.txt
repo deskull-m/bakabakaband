@@ -1231,7 +1231,7 @@ G:l:B
 I:120:2d6:20:8:5
 W:3:1:9:40:187
 B:BITE:HURT:13d1
-F:FRIENDS | AQUATIC | ANIMAL | WILD_ALL | RES_WATE
+F:FRIENDS | AQUATIC | ANIMAL | WILD_ALL | RES_WATE | FISH
 D:$Bloodthirsty fish who can smell your blood from a great distance.
 D:この血に飢えた魚はあなたの血の匂いを遠くから嗅ぎ分ける。
 
@@ -1488,7 +1488,7 @@ I:120:5d12:14:10:20
 W:4:2:15:0:0
 B:STING:HURT:7d1
 B:STING:HURT:7d1
-F:ANIMAL | AQUATIC | WILD_ALL | RES_WATE
+F:ANIMAL | AQUATIC | WILD_ALL | RES_WATE | FISH
 D:$An animal with a swordlike "beak".
 D:それは剣のような"鉤鼻"を持った魚だ。
 
@@ -3071,7 +3071,7 @@ I:120:6d9:30:30:10
 W:10:2:40:0:0
 B:BITE:HURT:9d1
 B:BITE:HURT:9d1
-F:NO_SLEEP | WILD_ALL | RES_WATE |
+F:NO_SLEEP | WILD_ALL | RES_WATE | FISH
 F:FRIENDS | AQUATIC | ANIMAL
 D:$A very large and bloodthirsty fish.
 D:非常に大型で血に飢えた魚だ。
@@ -3617,7 +3617,7 @@ I:110:12d8:20:30:20
 W:12:1:40:600:406
 B:STING:POISON:2d5
 B:STING:POISON:2d5
-F:ANIMAL | EVIL | AQUATIC | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL
+F:ANIMAL | EVIL | AQUATIC | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL | FISH
 D:$A devil ray of the depths.
 D:深海に棲む悪魔のエイだ。
 
@@ -5240,7 +5240,7 @@ I:120:10d10:20:50:10
 W:18:1:68:400:386
 B:BITE:HURT:3d5
 B:BITE:HURT:3d5
-F:ANIMAL | AQUATIC | WILD_ALL | RES_WATE
+F:ANIMAL | AQUATIC | WILD_ALL | RES_WATE | FISH
 D:$Fast moving hunter of the depths, when this creature moves, 
 D:$everybody in water is in danger!
 D:素早く動く深海のハンターだ。
@@ -5421,7 +5421,7 @@ I:110:10d10:20:40:20
 W:19:1:80:0:0
 B:STING:POISON:2d7
 B:STING:POISON:2d7
-F:ANIMAL | EVIL | AQUATIC | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL
+F:ANIMAL | EVIL | AQUATIC | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL | FISH
 S:1_IN_6
 S:TELE_TO | HEAL | SCARE | CAUSE_2 | BLIND | S_MONSTER
 D:$A devil ray of the depths, with priestly magic.
@@ -5743,7 +5743,7 @@ W:20:2:145:2500:2033
 B:TOUCH:ELEC:2d7
 B:TOUCH:ELEC:7d2
 B:TOUCH:ELEC:2d7
-F:AQUATIC | ANIMAL | RAND_25 | IM_ELEC | RES_WATE | WILD_ALL |
+F:AQUATIC | ANIMAL | RAND_25 | IM_ELEC | RES_WATE | WILD_ALL | FISH
 D:$This cute little serpentine creature can create a deadly voltage. 
 D:$Better watch out!
 D:この小さな曲がりくねった生き物は致命的な電圧を発する事ができる。
@@ -5988,7 +5988,7 @@ I:110:20d10:20:30:30
 W:21:1:200:0:0
 B:BITE:POISON:5d5
 B:BITE:POISON:5d5
-F:EMPTY_MIND | BASH_DOOR | AQUATIC | 
+F:EMPTY_MIND | BASH_DOOR | AQUATIC | FISH
 F:IM_POIS | RES_WATE | NO_STUN | WILD_ALL | FORCE_MAXHP
 S:1_IN_7 | 
 S:BR_POIS
@@ -6793,7 +6793,7 @@ I:110:22d22:20:50:20
 W:26:1:120:0:0
 B:STING:POISON:2d8
 B:STING:EXP_VAMP:2d8
-F:ANIMAL | EVIL | AQUATIC | RES_NETH | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL
+F:ANIMAL | EVIL | AQUATIC | RES_NETH | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL | FISH
 S:1_IN_6
 S:HEAL | SCARE | CAUSE_3 | BLIND | FORGET | HASTE
 D:$A devil ray of the depths, with vampiric powers.
