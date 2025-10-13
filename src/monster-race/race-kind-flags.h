@@ -67,5 +67,6 @@ enum class MonsterKindType {
     YEEK = 63, // イーク
     AQUATIC_MAMMAL = 64, // 水棲哺乳類
     FISH = 65, // 魚類
+    BIRD = 66, // 鳥
     MAX,
 };
