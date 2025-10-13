@@ -69,5 +69,6 @@ enum class MonsterKindType {
     FISH = 65, // 魚類
     BIRD = 66, // 鳥
     WALL = 67, // 壁
+    PLANT = 68, // 植物
     MAX,
 };
