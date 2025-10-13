@@ -25,6 +25,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/terrain/terrain-characteristics.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -32,8 +33,11 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
+#include "util/probability-table.h"
 #include "util/rng-xoshiro.h"
+#include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+#include <vector>
 
 // シンメトリックなフロア生成（左右対称）
 static void make_symmetric_floor(FloorType &floor)
@@ -596,6 +600,11 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
 
     decide_grid_glowing(floor, &dd, dungeon);
 
+    // VESTIGEフラグを持つダンジョンで地形をランダムに差し替える
+    if (dungeon.flags.has(DungeonFeatureType::VESTIGE)) {
+        apply_vestige_terrain_replacement(player_ptr);
+    }
+
     // 乱数状態を復元
     if (seed_was_fixed) {
         AngbandSystem::get_instance().get_rng().set_state(original_state);
@@ -603,4 +612,52 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
     }
 
     return tl::nullopt;
+}
+
+/*!
+ * @brief VESTIGEフラグを持つダンジョンで地形をランダムに差し替える
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @details フロア全体を走査し、4%の確率でPERMANENTフラグを持たない地形をランダムに差し替える
+ */
+void apply_vestige_terrain_replacement(PlayerType *player_ptr)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &terrains = TerrainList::get_instance();
+
+    // PERMANENTフラグを持たない地形IDのリストを作成
+    std::vector<int> replaceable_terrain_ids;
+    for (const auto &terrain : terrains) {
+        if (terrain.flags.has_not(TerrainCharacteristics::PERMANENT)) {
+            replaceable_terrain_ids.push_back(terrain.idx);
+        }
+    }
+
+    if (replaceable_terrain_ids.empty()) {
+        return; // 差し替え可能な地形がない場合は何もしない
+    }
+
+    // フロア全体を走査して地形を差し替え
+    constexpr int replacement_chance = 25; // 4% = 1/25
+    int replacement_count = 0;
+
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        const auto &current_terrain = terrains.get_terrain(grid.feat);
+
+        // PERMANENTフラグを持つ地形はスキップ
+        if (current_terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
+            continue;
+        }
+
+        // 4%の確率で地形を差し替え
+        if (one_in_(replacement_chance)) {
+            const auto terrain = rand_choice(replaceable_terrain_ids);
+            set_terrain_id_to_grid(player_ptr, pos, terrain);
+            replacement_count++;
+        }
+    }
+
+    msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+        format(_("VESTIGE効果: %d箇所の地形を差し替えました", "VESTIGE effect: Replaced %d terrain features"),
+            replacement_count));
 }
