@@ -309,6 +309,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FISH)) {
         lore_ptr->kind_flags.set(MonsterKindType::FISH);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BIRD)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BIRD);
+    }
 }
 
 /*!

@@ -2478,6 +2478,7 @@
     "flags": [
         "CAN_FLY",
         "WILD_MOUNTAIN",
+        "BIRD",
         "RAND_50",
         "DROP_CORPSE",
         "ANIMAL",
@@ -2936,6 +2937,7 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "WILD_GRASS",
+        "BIRD",
         "WILD_WOOD"
     ]
 },
@@ -3279,6 +3281,7 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "WILD_GRASS",
+        "BIRD",
         "WILD_WOOD"
     ]
 },
@@ -7656,6 +7659,7 @@
         "CAN_FLY",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
+        "BIRD",
         "RAND_25",
         "ANIMAL",
         "EVIL"
@@ -8497,6 +8501,7 @@
         "WILD_WASTE",
         "WILD_MOUNTAIN",
         "WILD_WOOD",
+        "BIRD",
         "DROP_CORPSE"
     ]
 },
