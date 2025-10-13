@@ -278,7 +278,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
             MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
             MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU,
-            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL, MonsterKindType::FISH, MonsterKindType::BIRD })) {
+            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL, MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -405,6 +405,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::BIRD)) {
         hook_c_roff(TERM_L_UMBER, _("鳥", " bird"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WALL)) {
+        hook_c_roff(TERM_L_DARK, _("壁", " wall"));
     }
 }
 
