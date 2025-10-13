@@ -237,6 +237,8 @@ static bool run_test(PlayerType *player_ptr)
                     notice = false;
                 } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(player_ptr) || is_invuln(player_ptr))) {
                     notice = false;
+                } else if (terrain.flags.has(TerrainCharacteristics::VOID) && is_invuln(player_ptr)) {
+                    notice = false;
                 } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (player_ptr->levitation || player_ptr->can_swim || (calc_inventory_weight(player_ptr) <= calc_weight_limit(player_ptr)))) {
                     notice = false;
                 }
