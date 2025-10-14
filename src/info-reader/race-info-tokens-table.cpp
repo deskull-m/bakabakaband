@@ -447,6 +447,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "WALL", MonsterKindType::WALL }, // 壁
     { "PLANT", MonsterKindType::PLANT }, // 植物
     { "FUNGUS", MonsterKindType::FUNGUS }, // 菌類
+    { "TURTLE", MonsterKindType::TURTLE }, // 亀
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
