@@ -1008,7 +1008,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
-        "PLANT",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -1921,7 +1921,7 @@
         "IM_POIS",
         "WILD_SWAMP",
         "DROP_CORPSE",
-        "PLANT",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -2299,7 +2299,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
-        "PLANT",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -3455,7 +3455,6 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -3644,7 +3643,6 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -5173,7 +5171,6 @@
         "CAN_SWIM",
         "STUPID",
         "EMPTY_MIND",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -5427,7 +5424,6 @@
         "EMPTY_MIND",
         "IM_POIS",
         "CAN_SWIM",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -7122,7 +7118,6 @@
         "IM_ACID",
         "IM_POIS",
         "CAN_SWIM",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9152,7 +9147,6 @@
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9460,7 +9454,6 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9557,7 +9550,6 @@
         "IM_POIS",
         "ATTR_MULTI",
         "CAN_SWIM",
-        "PLANT",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
