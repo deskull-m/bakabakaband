@@ -78,6 +78,7 @@ enum class MonraceId : int16_t {
     SANTA = 733,
     LORD_CHAOS = 737,
     NIGHTWALKER = 768,
+    SARUMAN = 771,
     SHADOWLORD = 774,
     JABBERWOCK = 778,
     SHAMBLER = 786,
