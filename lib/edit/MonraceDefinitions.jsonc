@@ -41595,7 +41595,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "RIDING"
+        "RIDING",
+        "TURTLE"
     ],
     "skill": {
         "list": [
@@ -59309,6 +59310,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "FORCE_MAXHP",
+        "TURTLE",
         "DROP_1D2",
         "DROP_2D2",
         "ONLY_ITEM",
@@ -61228,7 +61230,8 @@
     "flags": [
         "DROP_CORPSE",
         "RAND_50",
-        "ANIMAL"
+        "ANIMAL",
+        "TURTLE"
     ]
 },
 {
@@ -129702,7 +129705,8 @@
     "flags": [
         "WEIRD_MIND",
         "DROP_CORPSE",
-        "SOLDIER"
+        "SOLDIER",
+        "TURTLE"
     ]
 },
 {
@@ -135577,7 +135581,8 @@
         "BASH_DOOR",
         "EAT_GIVE_INT",
         "EAT_LOSE_STR",
-        "EVIL"
+        "EVIL",
+        "TURTLE"
     ],
     "skill": {
         "list": [
