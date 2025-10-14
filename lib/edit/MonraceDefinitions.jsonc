@@ -1057,7 +1057,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -1376,7 +1377,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -2850,7 +2852,8 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -4290,7 +4293,8 @@
         "DROP_CORPSE",
         "BASH_DOOR",
         "WILD_ALL",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -5058,7 +5062,8 @@
         "BASH_DOOR",
         "EAT_POISONOUS",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "SNAKE"
     ]
 },
 {
@@ -5716,7 +5721,8 @@
         "BASH_DOOR",
         "EAT_POISONOUS",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "SNAKE"
     ]
 },
 {
@@ -8452,7 +8458,8 @@
         "EAT_BLIND",
         "EAT_POISONOUS",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "SNAKE"
     ]
 },
 {
@@ -81926,6 +81933,7 @@
     "sex": "MALE",
     "flags": [
         "ANIMAL",
+        "FAIRY",
         "REGENERATE",
         "OPEN_DOOR",
         "MOVE_BODY",
@@ -82797,7 +82805,8 @@
         "FRIENDLY",
         "HAS_LITE_1",
         "IM_POIS",
-        "RES_LITE"
+        "RES_LITE",
+        "FAIRY"
     ],
     "skill": {
         "list": [
@@ -101485,6 +101494,7 @@
     },
     "sex": "MALE",
     "flags": [
+        "FAIRY",
         "CAN_FLY",
         "UNIQUE",
         "FORCE_MAXHP",
@@ -139193,6 +139203,7 @@
         "FRIENDS",
         "DROP_90",
         "TAKE_ITEM",
+        "FAIRY",
         "HURT_FIRE",
         "CAN_FLY",
         "FRIENDLY",
