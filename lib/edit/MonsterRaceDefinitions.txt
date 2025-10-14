@@ -494,7 +494,7 @@ B:HIT:HURT:1d6
 B:HIT:HURT:1d6
 F:NEVER_MOVE | 
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | PLANT
+F:IM_POIS | FUNGUS
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$A small strange growth.
 D:小さい奇妙なカビだ。
@@ -769,7 +769,7 @@ I:110:1d1:4:1:0
 W:2:1:3:0:0
 F:NEVER_MOVE | NEVER_BLOW | 
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | WILD_SWAMP | DROP_CORPSE | PLANT |
+F:IM_POIS | WILD_SWAMP | DROP_CORPSE | FUNGUS |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 S:1_IN_4 | 
 S:SHRIEK
@@ -881,7 +881,7 @@ W:2:1:3:10:72
 B:SPORE:TERRIFY:2d5
 F:NEVER_MOVE | WILD_SWAMP |
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | PLANT |
+F:IM_POIS | FUNGUS |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$Yum!  It looks quite tasty.
 D:うーん！それはとてもおいしそうに見える。
@@ -1258,7 +1258,7 @@ W:3:1:4:20:108
 B:SPORE:POISON:2d8
 F:NEVER_MOVE | WILD_SWAMP |
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | PLANT |
+F:IM_POIS | 
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$Yum!  It looks quite tasty.
 D:うーん！それはとてもおいしそうに見える。
@@ -1319,7 +1319,7 @@ W:3:1:11:50:113
 B:HIT:HURT:1d8
 F:NEVER_MOVE | 
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | PLANT |
+F:IM_POIS | 
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$It is a strange growth on the dungeon floor.
 D:それはダンジョンの床に生えている奇妙なカビだ。
@@ -1775,7 +1775,7 @@ B:SPORE:LOSE_CON:1d3
 B:SPORE:LOSE_CON:1d3
 B:SPORE:LOSE_CON:1d3
 F:NEVER_MOVE | CAN_SWIM |
-F:STUPID | EMPTY_MIND | PLANT |
+F:STUPID | EMPTY_MIND | 
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$Yum!  It looks quite tasty.
 D:うーん！それはとてもおいしそうに見える。
@@ -1848,7 +1848,7 @@ W:6:1:20:50:146
 B:HIT:CONFUSE:1d5
 F:NEVER_MOVE | 
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | CAN_SWIM | PLANT |
+F:IM_POIS | CAN_SWIM |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$A strange brown growth on the dungeon floor.
 D:ダンジョンの床に生えている奇妙な茶色のカビだ。
@@ -2382,7 +2382,7 @@ W:8:2:28:100:190
 B:HIT:TERRIFY:1d5
 F:NEVER_MOVE | 
 F:STUPID | EMPTY_MIND | 
-F:IM_ACID | IM_POIS | CAN_SWIM | PLANT |
+F:IM_ACID | IM_POIS | CAN_SWIM |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$It is a strange growth on the dungeon floor.
 D:それはダンジョンの床に生えている奇妙なカビだ。
@@ -3014,7 +3014,7 @@ W:10:2:3:0:0
 B:SPORE:HURT:1d1
 F:ATTR_CLEAR | 
 F:NEVER_MOVE | INVISIBLE | COLD_BLOOD | MULTIPLY | 
-F:STUPID | EMPTY_MIND | CAN_SWIM | PLANT |
+F:STUPID | EMPTY_MIND | CAN_SWIM |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$Yum!  It looks quite tasty.
 D:うーん！それはとてもおいしそうに見える。
@@ -3112,7 +3112,7 @@ W:10:2:32:80:192
 B:HIT:POISON:1d3
 F:NEVER_MOVE | CAN_SWIM |
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | PLANT |
+F:IM_POIS | 
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$It is a strange hairy growth on the dungeon floor.
 D:それはダンジョンの床に生えている奇妙なカビで毛が生えている。
@@ -3140,7 +3140,7 @@ W:10:2:40:500:324
 B:TOUCH:UN_BONUS:1d6
 F:NEVER_MOVE | 
 F:STUPID | EMPTY_MIND | RES_DISE |
-F:IM_POIS | ATTR_MULTI | CAN_SWIM | PLANT |
+F:IM_POIS | ATTR_MULTI | CAN_SWIM |
 F:NO_CONF | NO_SLEEP | NO_FEAR | SELF_LITE_1 |
 S:1_IN_11 | 
 S:DRAIN_MANA

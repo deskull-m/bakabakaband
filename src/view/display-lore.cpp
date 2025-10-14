@@ -278,7 +278,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
             MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
             MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU,
-            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL, MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL, MonsterKindType::PLANT })) {
+            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL, MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL, MonsterKindType::PLANT, MonsterKindType::FUNGUS })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -413,6 +413,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::PLANT)) {
         hook_c_roff(TERM_L_GREEN, _("植物", " plant"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FUNGUS)) {
+        hook_c_roff(TERM_YELLOW, _("菌類", " fungus"));
     }
 }
 
