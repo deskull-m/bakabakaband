@@ -223,6 +223,7 @@ enum class MonraceId : int16_t {
     BINZYOU_MUR = 1587,
     PRINCESS_KETHOLDETH = 1590,
     SUREN = 1810,
+    FEANOR = 1811,
     // GOLAN
     GOLAN_COLONEL = 1607,
     GOLAN_MAD = 1608,
