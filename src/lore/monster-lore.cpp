@@ -333,6 +333,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SNAKE)) {
         lore_ptr->kind_flags.set(MonsterKindType::SNAKE);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FAIRY)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FAIRY);
+    }
 }
 
 /*!

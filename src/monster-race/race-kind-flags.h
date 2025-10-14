@@ -72,5 +72,6 @@ enum class MonsterKindType {
     PLANT = 68, // 植物
     FUNGUS = 69, // 菌類
     SNAKE = 70, // 蛇
+    FAIRY = 71, // 妖精
     MAX,
 };
