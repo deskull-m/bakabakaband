@@ -509,7 +509,7 @@ B:BITE:HURT:1d3
 B:CRUSH:HURT:1d3
 F:RAND_50 | WILD_ALL |
 F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | SNAKE
 D:$It is about eight feet long.
 D:それは長さが 2.5 メートル近くもある。
 
@@ -610,7 +610,7 @@ B:BITE:HURT:1d7
 B:CRUSH:HURT:1d9
 F:RAND_25 | CAN_SWIM |
 F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | SNAKE
 D:$It is about eight feet long.
 D:それは長さが 2.5 メートル近くもある。
 
@@ -1055,7 +1055,7 @@ B:BITE:HURT:1d7
 B:CRUSH:HURT:2d5
 F:RAND_25 | CAN_SWIM | WILD_ALL | DROP_SKELETON | DROP_CORPSE
 F:BASH_DOOR | 
-F:ANIMAL
+F:ANIMAL | SNAKE
 D:$It is about ten feet long.
 D:それは長さが 3 メートル近くもある。
 
@@ -1516,7 +1516,7 @@ B:BITE:HURT:1d8
 B:CRUSH:HURT:1d10
 F:RAND_25 | CAN_SWIM | DROP_SKELETON | DROP_CORPSE
 F:BASH_DOOR | WILD_ALL |
-F:ANIMAL
+F:ANIMAL | SNAKE
 D:$It is about ten feet long.
 D:それは長さが 3 メートル近くもある。
 
@@ -1745,7 +1745,7 @@ W:5:1:15:30:119
 B:BITE:POISON:2d6
 F:RAND_50 | CAN_SWIM | WILD_ALL | DROP_SKELETON | DROP_CORPSE
 F:BASH_DOOR | EAT_POISONOUS
-F:ANIMAL | IM_POIS
+F:ANIMAL | IM_POIS | SNAKE
 D:$It has a copper head and sharp venomous fangs.
 D:それは毒のある鋭い牙を持っている。
 
@@ -1945,7 +1945,7 @@ W:6:1:20:80:171
 B:BITE:POISON:2d6
 F:RAND_50 | CAN_SWIM | WILD_ALL | DROP_SKELETON | DROP_CORPSE
 F:BASH_DOOR | EAT_POISONOUS |
-F:ANIMAL | IM_POIS
+F:ANIMAL | IM_POIS | SNAKE
 D:$It is recognized by the hard-scaled end of its body that is often rattled 
 D:$to frighten its prey.
 D:それは尻尾に硬い殻を持ったヘビで、その殻をガラガラとならして獲物を脅かす。
@@ -2777,7 +2777,7 @@ B:SPIT:BLIND:1d5
 B:BITE:POISON:3d4
 F:RAND_50 | WILD_SWAMP | WILD_WOOD | DROP_SKELETON | DROP_CORPSE
 F:BASH_DOOR | CAN_SWIM | EAT_BLIND | EAT_POISONOUS
-F:ANIMAL | IM_POIS
+F:ANIMAL | IM_POIS | SNAKE
 D:$It is a large snake with a hooded face.
 D:それは頭巾のような頭をした大きなヘビだ。
 

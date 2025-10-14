@@ -329,6 +329,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::TURTLE)) {
         lore_ptr->kind_flags.set(MonsterKindType::TURTLE);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SNAKE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SNAKE);
+    }
 }
 
 /*!
