@@ -234,6 +234,7 @@ enum class MonraceId : int16_t {
     KING_SPADE = 1762,
     KING_DIA = 1763,
     KING_CLUB = 1764,
+    FINGOLFIN = 1825,
     GOLAN_RED_BELET = 1828,
     KACHO_ANGEL = 1844,
     DIABOLIQUE_GOLDO = 1861,
