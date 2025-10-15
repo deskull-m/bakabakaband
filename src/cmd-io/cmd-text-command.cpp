@@ -11,11 +11,14 @@
 #include "floor/floor-object.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
+#include "monster-floor/monster-summon.h"
+#include "monster-floor/place-monster-types.h"
 #include "object/tval-types.h"
 #include "player-status/player-energy.h"
 #include "player/player-damage.h"
 #include "spell-kind/spells-sight.h"
 #include "spell/spells-status.h"
+#include "spell/summon-types.h"
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "sv-definition/sv-junk-types.h"
@@ -272,7 +275,37 @@ static std::vector<TextCommand> get_text_commands()
                 // 時間消費
                 PlayerEnergy(player_ptr).set_player_turn_energy(100);
             },
-            _("ひでぶ", "Hidebu") }
+            _("ひでぶ", "Hidebu") },
+        { { "しゃぶれよ", "shabureyо", "しゃぶれ", "shabare" },
+            [](PlayerType *player_ptr) {
+                // しゃぶれよコマンド - 敵対的ホモを召喚
+                msg_print(_("何がしゃぶれだあ、お前がしゃぶれよ", "What do you mean 'suck it', you suck it yourself!"));
+
+                // 敵対的ホモを召喚（HOMO_SEXUALフラグを持つモンスターを敵対的に召喚）
+                int count = 0;
+                for (int k = 0; k < 2 + randint1(3); k++) {
+                    // プレイヤー周辺に敵対的にホモを召喚
+                    if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->lev,
+                            SUMMON_HOMO, PM_NO_PET)) {
+                        count++;
+                    }
+                }
+
+                if (count > 0) {
+                    if (count == 1) {
+                        msg_print(_("敵対的なホモが現れた！", "A hostile homosexual appears!"));
+                    } else {
+                        msg_print(_("敵対的なホモたちが現れた！", "Hostile homosexuals appear!"));
+                    }
+                    msg_print(_("彼らは非常に怒っているようだ...", "They seem very angry..."));
+                } else {
+                    msg_print(_("何かが起こりそうだったが、何も起こらなかった。", "Something was about to happen, but nothing did."));
+                }
+
+                // 時間消費
+                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+            },
+            _("しゃぶれよ", "Suck it") }
     };
 }
 
