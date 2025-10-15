@@ -20597,6 +20597,7 @@
         "COLD_BLOOD",
         "REGENERATE",
         "CAN_FLY",
+        "VAMPIRE",
         "EVIL",
         "ANIMAL",
         "UNDEAD",
@@ -23115,6 +23116,7 @@
         "COLD_BLOOD",
         "DROP_60",
         "DROP_1D2",
+        "VAMPIRE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "REGENERATE",
@@ -28797,6 +28799,7 @@
     },
     "flags": [
         "FORCE_MAXHP",
+        "VAMPIRE",
         "DROP_4D2",
         "COLD_BLOOD",
         "OPEN_DOOR",
@@ -28877,6 +28880,7 @@
     },
     "flags": [
         "FORCE_MAXHP",
+        "VAMPIRE",
         "DROP_4D2",
         "CAN_FLY",
         "RES_NETH",
@@ -35734,6 +35738,7 @@
     "flags": [
         "FORCE_MAXHP",
         "CAN_FLY",
+        "VAMPIRE",
         "DROP_60",
         "DROP_4D2",
         "COLD_BLOOD",
@@ -45503,6 +45508,7 @@
     "alliance": "MELDOR",
     "flags": [
         "UNIQUE",
+        "VAMPIRE",
         "FORCE_MAXHP",
         "SMART",
         "SPEAK_ALL",
@@ -101494,7 +101500,6 @@
     },
     "sex": "MALE",
     "flags": [
-        "FAIRY",
         "CAN_FLY",
         "UNIQUE",
         "FORCE_MAXHP",
