@@ -147405,5 +147405,59 @@
         "RES_POIS",
         "RES_NETH"
     ]
+},
+{
+    "id": 2294,
+    "name": {
+        "ja": "マナー講師",
+        "en": "Etiquette Instructor"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "2d8",
+    "vision": 10,
+    "armor_class": 8,
+    "alertness": 99,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        }
+    ],
+    "flavor": {
+        "ja": "殺せ、必ず殺せ、生かして返すな。",
+        "en": "Kill them. Kill them all. Don't let any live to return."
+    },
+    "sex": "MALE",
+    "flags": [
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "ROGUE",
+        "DROP_60",
+        "WILD_TOWN",
+        "HUMAN",
+        "WILD_SWAMP",
+        "WILD_WOOD",
+        "WILD_GRASS",
+        "WILD_MOUNTAIN",
+        "WILD_ONLY",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL"
+    ]
 }]
 }
