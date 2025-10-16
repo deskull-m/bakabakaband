@@ -90,6 +90,7 @@ enum class MonraceId : int16_t {
     WYRM_POWER = 847,
     JORMUNGAND = 854,
     SAURON = 858,
+    ANNATAR = 858, // アンナタール（サウロンの別名）
     UNICORN_ORD = 859,
     OBERON = 860,
     MORGOTH = 861,
