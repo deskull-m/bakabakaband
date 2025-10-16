@@ -48,7 +48,8 @@ int AllianceKhorne::calcImpressionPoint(PlayerType *creature_ptr) const
 
 bool AllianceKhorne::isAnnihilated()
 {
-    return false; // TODO: MonraceList::get_instance().get_monrace(MonraceId::KHORNE_GOD).mob_num == 0;
+    const auto &monrace_list = MonraceList::get_instance();
+    return monrace_list.get_monrace(MonraceId::KHORNE).cur_num == 0;
 }
 
 void AllianceKhorne::panishment(PlayerType &player_ptr)
