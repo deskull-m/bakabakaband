@@ -37,6 +37,7 @@
 #include "util/rng-xoshiro.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+#include "world/world-collapsion.h"
 #include <vector>
 
 // シンメトリックなフロア生成（左右対称）
@@ -605,6 +606,9 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
         apply_vestige_terrain_replacement(player_ptr);
     }
 
+    // 時空崩壊度に応じて虚空地形を配置
+    apply_void_terrain_placement(player_ptr);
+
     // 乱数状態を復元
     if (seed_was_fixed) {
         AngbandSystem::get_instance().get_rng().set_state(original_state);
@@ -660,4 +664,70 @@ void apply_vestige_terrain_replacement(PlayerType *player_ptr)
     msg_print_wizard(player_ptr, CHEAT_DUNGEON,
         format(_("VESTIGE効果: %d箇所の地形を差し替えました", "VESTIGE effect: Replaced %d terrain features"),
             replacement_count));
+}
+
+/*!
+ * @brief 時空崩壊度に応じて虚空地形を配置する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @details 時空崩壊度が70%を超えると、線形的に増加する確率で地形を虚空に置き換える
+ */
+void apply_void_terrain_placement(PlayerType *player_ptr)
+{
+    // 時空崩壊度が70%（70,000,000百万分率）を超えているかチェック
+    const int32_t collapse_threshold = 70000000; // 70%
+    if (wc_ptr->collapse_degree <= collapse_threshold) {
+        return;
+    }
+
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &terrains = TerrainList::get_instance();
+
+    // 時空崩壊度から配置率を計算
+    // 70%時点で3%、100%時点で30%まで線形的に増加
+    const int32_t excess_collapse = wc_ptr->collapse_degree - collapse_threshold;
+    const int32_t max_excess = 100000000 - collapse_threshold; // 30%分の範囲
+
+    // 配置率を計算（3%～30%の範囲で線形補間）
+    int placement_rate_percent = 3 + (27 * excess_collapse / max_excess); // 3%～30%
+
+    // 上限チェック
+    if (placement_rate_percent > 30) {
+        placement_rate_percent = 30;
+    }
+
+    // ゼロ除算回避
+    if (placement_rate_percent <= 0) {
+        placement_rate_percent = 1;
+    }
+
+    const int placement_chance = 100 / placement_rate_percent; // 確率の逆数
+
+    // 虚空地形のID (VOID_ZONE = 236)
+    constexpr int void_terrain_id = 236;
+
+    int placement_count = 0;
+
+    // フロア全体を走査して地形を虚空に置き換え
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        const auto &current_terrain = terrains.get_terrain(grid.feat);
+
+        // PERMANENTフラグを持つ地形はスキップ
+        if (current_terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
+            continue;
+        }
+
+        // 計算された確率で地形を虚空に置き換え
+        if (one_in_(placement_chance)) {
+            set_terrain_id_to_grid(player_ptr, pos, void_terrain_id);
+            placement_count++;
+        }
+    }
+
+    msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+        format(_("時空崩壊効果: %d箇所を虚空地形に置き換えました（崩壊度: %d.%06d%%、配置率: %d%%）",
+                   "World collapse effect: Replaced %d terrain features with void (collapse: %d.%06d%%, rate: %d%%)"),
+            placement_count,
+            wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000,
+            placement_rate_percent));
 }
