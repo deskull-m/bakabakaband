@@ -18351,7 +18351,7 @@ D:%..%  %%%%  %..%
 D:%.%          %.%
 D: %            % 
 
-N:0:GlassTriangle
+N:881:GlassTriangle
 X:18:8:19:20
 D:         %%         
 D:        %..%        
