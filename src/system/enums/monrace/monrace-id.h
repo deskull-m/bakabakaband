@@ -248,6 +248,7 @@ enum class MonraceId : int16_t {
     SLAANESH_CHOSEN = 2005,
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
+    GWYN = 2203, // 太陽の光の王『グウィン』
     KHORNE = 2234,
     GAICHI_MOA = 2267,
     BIO_CORE = 2269,

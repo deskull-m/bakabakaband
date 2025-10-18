@@ -1,6 +1,7 @@
 #include "alliance/alliance-anor-londo.h"
-#include "player-base/player-class.h"
-#include "player-base/player-race.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
 /*!
@@ -36,9 +37,10 @@ void AllianceAnorLondo::panishment([[maybe_unused]] PlayerType &player_ptr)
 
 /*!
  * @brief アノール・ロンドのアライアンスが壊滅したかどうか判定する
- * @return 壊滅フラグ
+ * @return 壊滅フラグ - 太陽の光の王グウィンが死亡した場合true
  */
 bool AllianceAnorLondo::isAnnihilated()
 {
-    return false;
+    const auto &monrace_list = MonraceList::get_instance();
+    return monrace_list.get_monrace(MonraceId::GWYN).cur_num == 0;
 }
