@@ -697,6 +697,26 @@ bool MonraceDefinition::is_suitable_for_evil_nest(char symbol) const
     return is_suitable;
 }
 
+bool MonraceDefinition::is_suitable_for_gay_nest(void) const
+{
+    auto is_suitable = this->is_suitable_for_special_room();
+    is_suitable &= this->behavior_flags.has_not(MonsterBehaviorType::KILL_BODY) || this->behavior_flags.has(MonsterBehaviorType::NEVER_BLOW);
+    is_suitable &= this->kind_flags.has(MonsterKindType::HOMO_SEXUAL);
+    is_suitable &= this->is_male();
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
+    return is_suitable;
+}
+
+bool MonraceDefinition::is_suitable_for_les_nest(void) const
+{
+    auto is_suitable = this->is_suitable_for_special_room();
+    is_suitable &= this->behavior_flags.has_not(MonsterBehaviorType::KILL_BODY) || this->behavior_flags.has(MonsterBehaviorType::NEVER_BLOW);
+    is_suitable &= this->kind_flags.has(MonsterKindType::HOMO_SEXUAL);
+    is_suitable &= this->is_female();
+    is_suitable &= this->alliance_idx == AllianceType::NONE;
+    return is_suitable;
+}
+
 void MonraceDefinition::init_sex(uint32_t value)
 {
     const auto sex_tmp = i2enum<MonsterSex>(value);
