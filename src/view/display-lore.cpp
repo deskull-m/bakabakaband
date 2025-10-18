@@ -278,7 +278,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
             MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
             MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU,
-            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL, MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL, MonsterKindType::PLANT, MonsterKindType::FUNGUS, MonsterKindType::TURTLE, MonsterKindType::SNAKE, MonsterKindType::FAIRY, MonsterKindType::VAMPIRE })) {
+            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL, MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL, MonsterKindType::PLANT, MonsterKindType::FUNGUS, MonsterKindType::TURTLE, MonsterKindType::SNAKE, MonsterKindType::FAIRY, MonsterKindType::VAMPIRE, MonsterKindType::BEAR })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -433,6 +433,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::VAMPIRE)) {
         hook_c_roff(TERM_L_DARK, _("吸血鬼", " vampire"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BEAR)) {
+        hook_c_roff(TERM_UMBER, _("熊", " bear"));
     }
 }
 

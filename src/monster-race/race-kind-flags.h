@@ -74,5 +74,6 @@ enum class MonsterKindType {
     SNAKE = 70, // 蛇
     FAIRY = 71, // 妖精
     VAMPIRE = 72, // 吸血鬼
+    BEAR = 73, // 熊
     MAX,
 };
