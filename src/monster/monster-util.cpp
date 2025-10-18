@@ -248,6 +248,10 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
         return is_suitable_for_dungeon && monrace.is_suitable_for_demon_pit();
     case MonraceHook::DARK_ELF:
         return is_suitable_for_dungeon && MonraceList::is_dark_elf(monrace_id) && monrace.is_suitable_for_special_room();
+    case MonraceHook::GAY:
+        return is_suitable_for_dungeon && monrace.is_suitable_for_gay_nest();
+    case MonraceHook::LES:
+        return is_suitable_for_dungeon && monrace.is_suitable_for_les_nest();
     default:
         THROW_EXCEPTION(std::logic_error, format("Invalid monrace hook type is specified! %d", enum2i(hook)));
     }
