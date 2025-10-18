@@ -438,6 +438,26 @@ void display_monster_kind(lore_type *lore_ptr)
     if (lore_ptr->kind_flags.has(MonsterKindType::BEAR)) {
         hook_c_roff(TERM_UMBER, _("熊", " bear"));
     }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
+        hook_c_roff(TERM_L_GREEN, _("菌類の", " fungus"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MIMIC)) {
+        hook_c_roff(TERM_YELLOW, _("ミミックの", " mimic"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
+        hook_c_roff(TERM_L_BLUE, _("イクシツザチトルの", " ixitxachitl"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::NAGA)) {
+        hook_c_roff(TERM_ORANGE, _("ナーガの", " naga"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::PERVERT)) {
+        hook_c_roff(TERM_VIOLET, _("変質者の", " pervert"));
+    }
 }
 
 void display_monster_alignment(lore_type *lore_ptr)
@@ -524,40 +544,8 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_YELLOW, _("スモトリの", " sumou wrestler"));
     }
 
-    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD) && lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
-        hook_c_roff(TERM_WHITE, _("スケルトン系アンデッドの", " skeleton undead"));
-    } else if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD) && lore_ptr->kind_flags.has(MonsterKindType::ZOMBIE)) {
-        hook_c_roff(TERM_L_DARK, _("ゾンビ系アンデッドの", " zombie undead"));
-    } else {
-        if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
-            hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
-        }
-        if (lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
-            hook_c_roff(TERM_WHITE, _("スケルトンの", " skeleton"));
-        }
-        if (lore_ptr->kind_flags.has(MonsterKindType::ZOMBIE)) {
-            hook_c_roff(TERM_L_DARK, _("ゾンビの", " zombie"));
-        }
-
-        if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
-            hook_c_roff(TERM_L_GREEN, _("菌類の", " fungus"));
-        }
-
-        if (lore_ptr->kind_flags.has(MonsterKindType::MIMIC)) {
-            hook_c_roff(TERM_YELLOW, _("ミミックの", " mimic"));
-        }
-
-        if (lore_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
-            hook_c_roff(TERM_L_BLUE, _("イクシツザチトルの", " ixitxachitl"));
-        }
-
-        if (lore_ptr->kind_flags.has(MonsterKindType::NAGA)) {
-            hook_c_roff(TERM_ORANGE, _("ナーガの", " naga"));
-        }
-
-        if (lore_ptr->kind_flags.has(MonsterKindType::PERVERT)) {
-            hook_c_roff(TERM_VIOLET, _("変質者の", " pervert"));
-        }
+    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
+        hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {
