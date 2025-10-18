@@ -7772,6 +7772,7 @@
         "FORCE_MAXHP",
         "UNIQUE",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL",
         "WILD_ONLY",
         "WILD_WOOD",
@@ -8563,6 +8564,7 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL"
     ]
 },
@@ -9370,7 +9372,8 @@
         "ANIMAL",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "BEAR"
     ]
 },
 {
@@ -9513,6 +9516,7 @@
         "WILD_WOOD",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL",
         "WILD_ONLY"
     ]
@@ -66265,6 +66269,7 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL",
         "EVIL",
         "WILD_WOOD",
