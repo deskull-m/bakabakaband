@@ -1,4 +1,7 @@
 #include "alliance/alliance-basam-empire.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
 int AllianceBasamEmpire::calcImpressionPoint(PlayerType *creature_ptr) const
@@ -6,4 +9,15 @@ int AllianceBasamEmpire::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 13, 24);
     return impression;
+}
+
+/*!
+ * @brief バサム帝国のアライアンスが壊滅したかどうか判定する
+ * @return 壊滅フラグ
+ * @details 『オゴレス王』が存在しない場合に壊滅する
+ */
+bool AllianceBasamEmpire::isAnnihilated()
+{
+    // 『オゴレス王』が存在しない場合、バサム帝国は壊滅する
+    return MonraceList::get_instance().get_monrace(MonraceId::OGRES_KING).cur_num == 0;
 }
