@@ -250,6 +250,7 @@ enum class MonraceId : int16_t {
     BUNBUN_STRIKERS = 2152,
     GWYN = 2203, // 太陽の光の王『グウィン』
     KHORNE = 2234,
+    OGRES_KING = 2257, // 『オゴレス王』
     GAICHI_MOA = 2267,
     BIO_CORE = 2269,
     SS_80_X_ATRAS = 2270,
