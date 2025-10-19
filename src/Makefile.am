@@ -688,6 +688,7 @@ hengband_SOURCES = \
 	info-reader/skill-reader.cpp info-reader/skill-reader.h \
 	info-reader/spell-reader.cpp info-reader/spell-reader.h \
 	info-reader/vault-reader.cpp info-reader/vault-reader.h \
+	info-reader/vault-info-tokens-table.h \
 	\
 	inventory/floor-item-getter.cpp inventory/floor-item-getter.h \
 	inventory/inventory-curse.cpp inventory/inventory-curse.h \
@@ -1205,6 +1206,7 @@ hengband_SOURCES = \
 	room/space-finder.cpp room/space-finder.h \
 	room/treasure-deployment.cpp room/treasure-deployment.h \
 	room/vault-builder.cpp room/vault-builder.h \
+	room/vault-flag-types.h \
 	\
 	save/floor-writer.cpp save/floor-writer.h \
 	save/info-writer.cpp save/info-writer.h \
