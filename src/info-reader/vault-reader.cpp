@@ -1,10 +1,12 @@
 #include "info-reader/vault-reader.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
+#include "info-reader/vault-info-tokens-table.h"
 #include "main/angband-headers.h"
 #include "room/rooms-vault.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "util/flag-group.h"
 #include "util/string-processor.h"
 
 /*!
@@ -132,6 +134,24 @@ errr parse_vaults_info(std::string_view buf, angband_header *)
 
             if (s_tokens.size() == 2 && s_tokens[0] == "RARITY") {
                 info_set_value(v_ptr->rarity, s_tokens[1]);
+                continue;
+            }
+
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+    } else if (tokens[0] == "O") {
+        // O:vault_options
+        if (tokens.size() < 2 || tokens[1].size() == 0) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        const auto &flags = str_split(tokens[1], '|', true, 10);
+        for (const auto &f : flags) {
+            if (f.size() == 0) {
+                continue;
+            }
+
+            if (EnumClassFlagGroup<VaultFeatureType>::grab_one_flag(v_ptr->flags, vault_flags, f)) {
                 continue;
             }
 

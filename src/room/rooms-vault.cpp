@@ -20,6 +20,7 @@
 #include "room/rooms-maze-vault.h"
 #include "room/space-finder.h"
 #include "room/treasure-deployment.h"
+#include "room/vault-flag-types.h"
 #include "store/store.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
@@ -937,6 +938,11 @@ bool build_fixed_room(PlayerType *player_ptr, DungeonData *dd_ptr, int typ, bool
 
     auto &vault = vaults_info[result];
     auto num_transformation = randint0(8);
+
+    /* Check NO_ROTATION flag */
+    if (vault.flags.has(VaultFeatureType::NO_ROTATION)) {
+        num_transformation = 0;
+    }
 
     /* calculate offsets */
     auto x = vault.wid;
