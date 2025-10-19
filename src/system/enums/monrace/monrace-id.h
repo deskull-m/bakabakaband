@@ -246,6 +246,7 @@ enum class MonraceId : int16_t {
     DIABOLIQUE_PENGZU = 1995,
     KHORNE_CHOSEN = 2003,
     SLAANESH_CHOSEN = 2005,
+    BIG_EYE = 2028, // アーリアン・ファミリーのボス『ビッグ・アイ』
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
     GWYN = 2203, // 太陽の光の王『グウィン』
