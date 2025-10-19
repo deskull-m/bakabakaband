@@ -494,7 +494,7 @@ B:HIT:HURT:1d6
 B:HIT:HURT:1d6
 F:NEVER_MOVE | 
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | FUNGUS
+F:IM_POIS | FUNGUS | OOZE
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$A small strange growth.
 D:小さい奇妙なカビだ。
@@ -570,7 +570,7 @@ I:110:2d5:12:7:10
 W:1:1:3:7:41
 B:TOUCH:HURT:1d5
 F:RAND_50 | RAND_25 | CAN_SWIM |
-F:EMPTY_MIND | DROP_CORPSE | EAT_CONF
+F:EMPTY_MIND | DROP_CORPSE | EAT_CONF | OOZE
 D:$It is a smallish, slimy, icky creature.
 D:それはドロドロしてベトベトした小さなモンスターだ。
 
@@ -583,7 +583,7 @@ W:2:1:3:7:41
 B:TOUCH:HURT:1d5
 F:ATTR_CLEAR | CAN_SWIM |
 F:RAND_50 | RAND_25 | 
-F:INVISIBLE | EMPTY_MIND | DROP_CORPSE | EAT_CONF
+F:INVISIBLE | EMPTY_MIND | DROP_CORPSE | EAT_CONF | OOZE
 D:$It is a smallish, slimy, icky, blobby creature.
 D:それは汚らしいドロドロネバネバした小さな塊のようなモンスターだ。
 
@@ -788,7 +788,7 @@ B:DROOL:FLAVOR
 B:DROOL:FLAVOR
 F:RAND_50 | DROP_90 | CAN_SWIM | DROP_CORPSE
 F:EMPTY_MIND | TAKE_ITEM | KILL_BODY | EAT_CONF |
-F:IM_POIS
+F:IM_POIS | OOZE
 D:$It is a smallish, slimy, icky, hungry creature.
 D:それはドロドロしてベトベトして貪欲な小さいモンスターだ。
 
@@ -1319,7 +1319,7 @@ W:3:1:11:50:113
 B:HIT:HURT:1d8
 F:NEVER_MOVE | 
 F:STUPID | EMPTY_MIND | 
-F:IM_POIS | 
+F:IM_POIS | OOZE |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$It is a strange growth on the dungeon floor.
 D:それはダンジョンの床に生えている奇妙なカビだ。
@@ -1703,7 +1703,7 @@ I:110:4d8:14:12:15
 W:5:1:10:30:132
 B:TOUCH:HURT:1d8
 F:RAND_50 | CAN_SWIM | DROP_CORPSE
-F:EMPTY_MIND | EAT_CONF
+F:EMPTY_MIND | EAT_CONF | OOZE
 D:$It is a smallish, slimy, icky, nasty creature.
 D:それはドロドロしてベトベトして不潔な小さいモンスターだ。
 
@@ -2137,7 +2137,7 @@ I:110:5d8:14:12:20
 W:7:2:18:50:155
 B:TOUCH:ACID:2d6
 F:RAND_50 | CAN_SWIM | DROP_CORPSE | SELF_LITE_2 |
-F:EMPTY_MIND | EAT_ACIDIC
+F:EMPTY_MIND | EAT_ACIDIC | OOZE |
 F:IM_ACID
 D:$It is a smallish, slimy, icky, acidic creature.
 D:それはドロドロしてベトベトした酸に満ちている小さなモンスターだ。
@@ -2510,7 +2510,7 @@ W:9:3:24:0:0
 B:TOUCH:HURT:1d4
 B:CRAWL:ACID:2d5
 F:RAND_50 | 
-F:EMPTY_MIND | CAN_SWIM | DROP_CORPSE | EAT_ACIDIC | EAT_POISONOUS
+F:EMPTY_MIND | CAN_SWIM | DROP_CORPSE | EAT_ACIDIC | EAT_POISONOUS | OOZE |
 F:IM_POIS
 S:1_IN_11 | 
 S:DRAIN_MANA

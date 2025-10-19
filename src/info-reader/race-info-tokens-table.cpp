@@ -453,6 +453,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "VAMPIRE", MonsterKindType::VAMPIRE }, // 吸血鬼
     { "BEAR", MonsterKindType::BEAR }, // 熊
     { "VORTEX", MonsterKindType::VORTEX }, // ボルテックス
+    { "OOZE", MonsterKindType::OOZE }, // ウーズ
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
