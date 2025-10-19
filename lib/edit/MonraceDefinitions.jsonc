@@ -1009,6 +1009,7 @@
         "EMPTY_MIND",
         "IM_POIS",
         "FUNGUS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -1246,7 +1247,8 @@
         "CAN_SWIM",
         "EMPTY_MIND",
         "DROP_CORPSE",
-        "EAT_CONF"
+        "EAT_CONF",
+        "OOZE"
     ]
 },
 {
@@ -1289,7 +1291,8 @@
         "INVISIBLE",
         "EMPTY_MIND",
         "DROP_CORPSE",
-        "EAT_CONF"
+        "EAT_CONF",
+        "OOZE"
     ]
 },
 {
@@ -1988,7 +1991,8 @@
         "TAKE_ITEM",
         "KILL_BODY",
         "EAT_CONF",
-        "IM_POIS"
+        "IM_POIS",
+        "OOZE"
     ]
 },
 {
@@ -3646,6 +3650,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -4923,7 +4928,8 @@
         "CAN_SWIM",
         "DROP_CORPSE",
         "EMPTY_MIND",
-        "EAT_CONF"
+        "EAT_CONF",
+        "OOZE"
     ]
 },
 {
@@ -6366,6 +6372,7 @@
         "SELF_LITE_2",
         "EMPTY_MIND",
         "EAT_ACIDIC",
+        "OOZE",
         "IM_ACID"
     ]
 },
@@ -7573,6 +7580,7 @@
         "DROP_CORPSE",
         "EAT_ACIDIC",
         "EAT_POISONOUS",
+        "OOZE",
         "IM_POIS"
     ],
     "skill": {

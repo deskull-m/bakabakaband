@@ -75,7 +75,7 @@ enum class MonsterKindType {
     FAIRY = 71, // 妖精
     VAMPIRE = 72, // 吸血鬼
     BEAR = 73, // 熊
-    MONKEY = 74, // 猿
-    VORTEX = 75, // ボルテックス
+    VORTEX = 74, // ボルテックス
+    OOZE = 75, // ウーズ
     MAX,
 };

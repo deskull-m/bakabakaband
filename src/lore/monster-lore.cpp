@@ -349,6 +349,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::VORTEX)) {
         lore_ptr->kind_flags.set(MonsterKindType::VORTEX);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::OOZE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::OOZE);
+    }
 }
 
 /*!
