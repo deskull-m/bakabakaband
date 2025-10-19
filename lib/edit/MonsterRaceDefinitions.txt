@@ -41515,7 +41515,7 @@ N:2294:マナー講師
 E:Etiquette Instructor
 G:t:w
 I:110:2d8:10:8:99
-W:0:1:0:0:0
+W:0:1:0:10:2295
 B:TOUCH:EAT_GOLD
 B:TOUCH:EAT_GOLD
 F:MALE | DROP_CORPSE | DROP_SKELETON | ROGUE
@@ -41525,6 +41525,23 @@ F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR |
 F:EVIL
 D:$Kill them. Kill them all. Don't let any live to return.
 D:殺せ、必ず殺せ、生かして返すな。
+
+N:2295:失礼クリエイター
+E:Etiquette Creater
+G:t:w
+I:110:2d10:10:8:99
+W:0:1:0:0:0
+B:TOUCH:EAT_GOLD
+B:TOUCH:EAT_GOLD
+B:TOUCH:EAT_GOLD
+B:TOUCH:EAT_GOLD
+F:MALE | DROP_CORPSE | DROP_SKELETON | ROGUE
+F:DROP_60 | WILD_TOWN | HUMAN |
+F:WILD_SWAMP | WILD_WOOD | WILD_GRASS | WILD_MOUNTAIN | WILD_ONLY
+F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR |
+F:EVIL
+D:$Just kill me. Kill me, no matter what.
+D:いいから殺せ。とにかく殺せ。
 
 # N: serial number : monster name
 # G: symbol : color
