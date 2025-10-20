@@ -77,5 +77,6 @@ enum class MonsterKindType {
     BEAR = 73, // 熊
     VORTEX = 74, // ボルテックス
     OOZE = 75, // ウーズ
+    DINOSAUR = 76, // 恐竜
     MAX,
 };

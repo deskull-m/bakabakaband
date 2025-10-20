@@ -20514,7 +20514,8 @@
         "MOVE_BODY",
         "DROP_CORPSE",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "DINOSAUR"
     ]
 },
 {
@@ -23709,6 +23710,7 @@
         "DROP_GREAT",
         "ONLY_ITEM",
         "ROGUE",
+        "DINOSAUR",
         "EVIL",
         "SPEAK_ALL",
         "SMART",
@@ -25342,6 +25344,7 @@
         "EVIL",
         "ANIMAL",
         "UNDEAD",
+        "DINOSAUR",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -41686,6 +41689,7 @@
         "EVIL",
         "UNDEAD",
         "ANIMAL",
+        "DINOSAUR",
         "RES_NETH",
         "RES_NEXU",
         "RES_TELE",
@@ -68405,6 +68409,7 @@
         "CAN_SWIM",
         "DROP_CORPSE",
         "ANIMAL",
+        "DINOSAUR",
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
@@ -91422,6 +91427,7 @@
         "POWERFUL",
         "REGENERATE",
         "RIDING",
+        "DINOSAUR",
         "MOVE_BODY",
         "CAN_SWIM",
         "OPEN_DOOR",
