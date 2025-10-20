@@ -353,6 +353,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::OOZE)) {
         lore_ptr->kind_flags.set(MonsterKindType::OOZE);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::DINOSAUR)) {
+        lore_ptr->kind_flags.set(MonsterKindType::DINOSAUR);
+    }
 }
 
 /*!
