@@ -252,6 +252,7 @@ enum class MonraceId : int16_t {
     GWYN = 2203, // 太陽の光の王『グウィン』
     KHORNE = 2234,
     OGRES_KING = 2257, // 『オゴレス王』
+    OLD_KING_ALLANT = 2262, // 老王『オーラント』
     GAICHI_MOA = 2267,
     BIO_CORE = 2269,
     SS_80_X_ATRAS = 2270,
