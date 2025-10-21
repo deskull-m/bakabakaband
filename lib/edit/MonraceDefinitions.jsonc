@@ -147560,5 +147560,83 @@
         "BASH_DOOR",
         "EVIL"
     ]
+},
+{
+    "id": 2295,
+    "name": {
+        "ja": "『Longcat』",
+        "en": "The Longcat"
+    },
+    "symbol": {
+        "character": "f",
+        "color": "White"
+    },
+    "speed": 8,
+    "hit_point": "20d110",
+    "vision": 20,
+    "armor_class": 120,
+    "alertness": 70,
+    "level": 43,
+    "rarity": 4,
+    "exp": 24000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "9d6"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "9d6"
+        }
+    ],
+    "flavor": {
+        "ja": "馬鹿馬鹿しいほど大きく、神々しく、そして長い、天を衝くほどに長い猫だ。",
+        "en": " The cat so absurdly large, so majestic, and so long—long enough to pierce the heavens."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "DROP_90",
+        "DROP_60",
+        "BASH_DOOR",
+        "POWERFUL",
+        "MOVE_BODY",
+        "RIDING",
+        "SELF_LITE_2",
+        "FRIENDLY",
+        "CAT",
+        "IM_FIRE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "IM_POIS"
+    ],
+    "skill": {
+        "list": [
+            "BR_LITE",
+            "BA_LITE"
+        ],
+        "probability": "1_IN_6"
+    }
 }]
 }
