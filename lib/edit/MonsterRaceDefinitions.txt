@@ -41543,6 +41543,25 @@ F:EVIL
 D:$Just kill me. Kill me, no matter what.
 D:いいから殺せ。とにかく殺せ。
 
+N:2295:『Longcat』
+E:The Longcat
+G:f:w
+I:118:20d110:20:120:70
+W:43:4:24000:0:0
+B:CLAW:HURT:4d10
+B:CLAW:HURT:4d10
+B:BITE:HURT:9d6
+B:BITE:HURT:9d6
+F:UNIQUE | MALE |
+F:FORCE_MAXHP | DROP_CORPSE |
+F:ONLY_ITEM | DROP_3D2 | DROP_4D2 | DROP_GOOD | DROP_90 | DROP_60 |
+F:BASH_DOOR | POWERFUL | MOVE_BODY | RIDING | SELF_LITE_2 |
+F:FRIENDLY | CAT | IM_FIRE | NO_CONF | NO_SLEEP | IM_POIS
+S:1_IN_6 |
+S:BR_LITE | BA_LITE
+D:$ The cat so absurdly large, so majestic, and so long—long enough to pierce the heavens.
+D:馬鹿馬鹿しいほど大きく、神々しく、そして長い、天を衝くほどに長い猫だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
