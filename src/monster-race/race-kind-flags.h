@@ -79,5 +79,6 @@ enum class MonsterKindType {
     OOZE = 75, // ウーズ
     DINOSAUR = 76, // 恐竜
     LICH = 77, // リッチ
+    GHOST = 78, // 幽霊
     MAX,
 };

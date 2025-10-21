@@ -361,6 +361,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::LICH)) {
         lore_ptr->kind_flags.set(MonsterKindType::LICH);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GHOST)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GHOST);
+    }
 }
 
 /*!
