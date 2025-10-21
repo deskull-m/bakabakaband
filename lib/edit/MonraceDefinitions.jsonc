@@ -2091,8 +2091,7 @@
         "EAT_GIVE_STR",
         "EAT_LOSE_INT",
         "EAT_LOSE_WIS",
-        "WARRIOR",
-        "BERSERK"
+        "WARRIOR"
     ]
 },
 {
@@ -9060,7 +9059,6 @@
     "flags": [
         "ELF",
         "WARRIOR",
-        "BERSERK",
         "DROP_1D2",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -11120,7 +11118,8 @@
         "FRIENDS",
         "BASH_DOOR",
         "ANIMAL",
-        "DOG"
+        "DOG",
+        "EXPLOSIVE"
     ]
 },
 {
@@ -15009,7 +15008,6 @@
     "sex": "MALE",
     "flags": [
         "HUMAN",
-        "WARRIOR",
         "BERSERK",
         "NO_FEAR",
         "NO_STUN",
@@ -17239,6 +17237,7 @@
         "EMPTY_MIND",
         "INVISIBLE",
         "COLD_BLOOD",
+        "EXPLOSIVE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -19446,7 +19445,6 @@
         "HUMAN",
         "DROP_1D2",
         "WARRIOR",
-        "BERSERK",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -29569,6 +29567,7 @@
         "FORCE_MAXHP",
         "UNIQUE",
         "REFLECTING",
+        "EXPLOSIVE",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "BASH_DOOR",
@@ -31851,6 +31850,7 @@
         "INVISIBLE",
         "COLD_BLOOD",
         "RES_TIME",
+        "EXPLOSIVE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -56948,6 +56948,7 @@
     "flags": [
         "CHAR_CLEAR",
         "ATTR_CLEAR",
+        "EXPLOSIVE",
         "NEVER_MOVE",
         "IM_POIS",
         "NONLIVING",

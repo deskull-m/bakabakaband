@@ -281,7 +281,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE,
             MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL,
             MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL, MonsterKindType::PLANT, MonsterKindType::FUNGUS, MonsterKindType::TURTLE, MonsterKindType::SNAKE,
-            MonsterKindType::FAIRY, MonsterKindType::VAMPIRE, MonsterKindType::BEAR, MonsterKindType::VORTEX, MonsterKindType::OOZE, MonsterKindType::DINOSAUR, MonsterKindType::LICH, MonsterKindType::GHOST, MonsterKindType::BERSERK })) {
+            MonsterKindType::FAIRY, MonsterKindType::VAMPIRE, MonsterKindType::BEAR, MonsterKindType::VORTEX, MonsterKindType::OOZE, MonsterKindType::DINOSAUR, MonsterKindType::LICH, MonsterKindType::GHOST, MonsterKindType::BERSERK, MonsterKindType::EXPLOSIVE })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -464,6 +464,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::BERSERK)) {
         hook_c_roff(TERM_RED, _("狂戦士", " berserk"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::EXPLOSIVE)) {
+        hook_c_roff(TERM_ORANGE, _("爆発物", " explosive"));
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
