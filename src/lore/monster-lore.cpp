@@ -369,6 +369,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BERSERK)) {
         lore_ptr->kind_flags.set(MonsterKindType::BERSERK);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::EXPLOSIVE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::EXPLOSIVE);
+    }
 }
 
 /*!
