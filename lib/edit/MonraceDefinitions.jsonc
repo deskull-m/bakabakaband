@@ -2091,7 +2091,8 @@
         "EAT_GIVE_STR",
         "EAT_LOSE_INT",
         "EAT_LOSE_WIS",
-        "WARRIOR"
+        "WARRIOR",
+        "BERSERK"
     ]
 },
 {
@@ -9059,6 +9060,7 @@
     "flags": [
         "ELF",
         "WARRIOR",
+        "BERSERK",
         "DROP_1D2",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -15008,6 +15010,7 @@
     "flags": [
         "HUMAN",
         "WARRIOR",
+        "BERSERK",
         "NO_FEAR",
         "NO_STUN",
         "BASH_DOOR",
@@ -19443,6 +19446,7 @@
         "HUMAN",
         "DROP_1D2",
         "WARRIOR",
+        "BERSERK",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
