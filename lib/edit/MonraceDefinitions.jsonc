@@ -1422,6 +1422,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EAT_POISONOUS",
@@ -1470,6 +1471,7 @@
     "flags": [
         "DROP_60",
         "WILD_ALL",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -4885,6 +4887,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -6541,6 +6544,7 @@
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
+        "KOBOLD",
         "FORCE_MAXHP",
         "ESCORT",
         "ESCORTS",
@@ -71689,6 +71693,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71734,6 +71739,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71779,6 +71785,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71824,6 +71831,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71869,6 +71877,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71921,6 +71930,7 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "KOBOLD",
         "EVIL",
         "IM_POIS",
         "EAT_POISONOUS",

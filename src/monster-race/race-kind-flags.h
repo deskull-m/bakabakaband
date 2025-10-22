@@ -85,5 +85,6 @@ enum class MonsterKindType {
     RAT = 81, // ネズミ
     MINOTAUR = 82, // ミノタウロス
     SKAVEN = 83, // スケイヴン
+    KOBOLD = 84, // コボルド
     MAX,
 };
