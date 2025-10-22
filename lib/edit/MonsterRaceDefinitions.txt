@@ -35720,7 +35720,7 @@ G:I:y
 I:120:2d4:40:20:10
 W:9:5:0:22:0:0
 B:HIT:HURT:1d5
-F:CAN_FLY | WILD_ALL | RES_POIS | FEMALE
+F:CAN_FLY | WILD_ALL | RES_POIS | FEMALE | FAIRY
 D:小さな妖精の姿をした天のネイティアルだ。
 
 #[DSKL] 完結はしないんだ悔しくもないし仕方ないんだ。
@@ -37227,7 +37227,7 @@ G:p:y
 I:114:15d4:40:20:10
 W:18:5:0:220:0:0
 B:HIT:HURT:3d5
-F:CAN_FLY | WILD_ALL | RES_POIS | FEMALE | BASH_DOOR | OPEN_DOOR
+F:CAN_FLY | WILD_ALL | RES_POIS | FEMALE | BASH_DOOR | OPEN_DOOR | FAIRY
 S:1_IN_4 | BA_ELEC
 D:東洋の天女の姿をした天のネイティアルだ。あなたの頭上に稲妻を落としてくる。
 

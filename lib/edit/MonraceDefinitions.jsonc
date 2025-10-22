@@ -124470,7 +124470,8 @@
     "flags": [
         "CAN_FLY",
         "WILD_ALL",
-        "RES_POIS"
+        "RES_POIS",
+        "FAIRY"
     ]
 },
 {
@@ -130574,7 +130575,8 @@
         "WILD_ALL",
         "RES_POIS",
         "BASH_DOOR",
-        "OPEN_DOOR"
+        "OPEN_DOOR",
+        "FAIRY"
     ],
     "skill": {
         "list": [
