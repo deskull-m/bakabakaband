@@ -460,6 +460,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "BERSERK", MonsterKindType::BERSERK }, // 狂戦士
     { "EXPLOSIVE", MonsterKindType::EXPLOSIVE }, // 爆発物
     { "RAT", MonsterKindType::RAT }, // ネズミ
+    { "MINOTAUR", MonsterKindType::MINOTAUR }, // ミノタウロス
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {

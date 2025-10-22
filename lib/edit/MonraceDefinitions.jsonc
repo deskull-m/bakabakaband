@@ -36918,6 +36918,7 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "MINOTAUR",
         "EVIL"
     ]
 },
@@ -43504,6 +43505,7 @@
         "DROP_GOOD",
         "BASH_DOOR",
         "DROP_CORPSE",
+        "MINOTAUR",
         "EVIL",
         "IM_FIRE",
         "IM_POIS",
@@ -66728,6 +66730,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "FORCE_MAXHP",
+        "MINOTAUR",
         "EVIL",
         "UNIQUE"
     ]
@@ -115574,6 +115577,7 @@
         "BASH_DOOR",
         "POWERFUL",
         "NONLIVING",
+        "MINOTAUR",
         "EVIL",
         "DEMON",
         "IM_FIRE",
