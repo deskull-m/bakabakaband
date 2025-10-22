@@ -385,6 +385,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SKAVEN)) {
         lore_ptr->kind_flags.set(MonsterKindType::SKAVEN);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::KOBOLD)) {
+        lore_ptr->kind_flags.set(MonsterKindType::KOBOLD);
+    }
 }
 
 /*!
