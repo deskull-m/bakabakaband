@@ -14,5 +14,5 @@ int AllianceMeldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_pt
 bool AllianceMeldor::isAnnihilated()
 {
     const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::ANNATAR).cur_num == 0;
+    return monrace_list.get_monrace(MonraceId::ANNATAR).mob_num == 0;
 }

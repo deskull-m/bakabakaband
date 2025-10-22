@@ -19,5 +19,5 @@ int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_p
 bool AllianceGEOrlic::isAnnihilated()
 {
     // 銀河皇帝『カル・ダームIII世』が存在しない場合、オーリック朝銀河帝国は壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::CALDARM).cur_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::CALDARM).mob_num == 0;
 }

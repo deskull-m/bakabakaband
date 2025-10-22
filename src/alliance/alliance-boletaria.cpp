@@ -44,5 +44,5 @@ void AllianceBoletaria::panishment([[maybe_unused]] PlayerType &player_ptr)
 bool AllianceBoletaria::isAnnihilated()
 {
     // 老王『オーラント』が存在しない場合、ボーレタリアは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::OLD_KING_ALLANT).cur_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::OLD_KING_ALLANT).mob_num == 0;
 }
