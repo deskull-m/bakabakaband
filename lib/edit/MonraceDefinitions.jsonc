@@ -7733,6 +7733,7 @@
         "DROP_90",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "SKAVEN",
         "OPEN_DOOR",
         "WILD_WASTE",
         "WILD_SWAMP"
@@ -10902,6 +10903,7 @@
     "flags": [
         "WILD_SWAMP",
         "WILD_WASTE",
+        "SKAVEN",
         "DROP_90",
         "HAS_LITE_2",
         "OPEN_DOOR",
@@ -71132,6 +71134,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "SKAVEN",
         "OPEN_DOOR",
         "WILD_WASTE",
         "WILD_SWAMP",
@@ -73252,6 +73255,7 @@
     "flags": [
         "WILD_SWAMP",
         "WILD_WASTE",
+        "SKAVEN",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
