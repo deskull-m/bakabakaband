@@ -127,6 +127,7 @@ enum class MonraceId : int16_t {
     CHEST_MIMIC_02 = 965,
     LUIGI = 966,
     JAIAN = 967,
+    AR_PHARAZON = 978,
     FENGHUANG = 988,
     SUKE = 1001,
     KAKU = 1002,
