@@ -19,6 +19,6 @@ int AllianceAmber::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceAmber::isAnnihilated()
 {
     // アンバーの王『オベロン』が存在しない場合、アンバーは壊滅する
-    // return MonraceList::get_instance().get_monrace(MonraceId::OBERON).cur_num == 0;
+    // return MonraceList::get_instance().get_monrace(MonraceId::OBERON).mob_num == 0;
     return false;
 }

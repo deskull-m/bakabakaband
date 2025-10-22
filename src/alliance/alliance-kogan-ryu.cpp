@@ -19,5 +19,5 @@ int AllianceKoganRyu::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceKoganRyu::isAnnihilated()
 {
     // 濃尾無双『岩本虎眼』が存在しない場合、虎眼流は壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::IWAMOTO_KOGAN).cur_num == 0;
+    return MonraceList::get_instance().get_monrace(MonraceId::IWAMOTO_KOGAN).mob_num == 0;
 }
