@@ -1334,7 +1334,8 @@
         "CAN_SWIM",
         "ANIMAL",
         "DROP_CORPSE",
-        "EAT_CONF"
+        "EAT_CONF",
+        "RAT"
     ]
 },
 {
@@ -4107,7 +4108,8 @@
     "flags": [
         "RAND_25",
         "MULTIPLY",
-        "ANIMAL"
+        "ANIMAL",
+        "RAT"
     ]
 },
 {
@@ -5522,7 +5524,8 @@
     "flags": [
         "EVIL",
         "ANIMAL",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "RAT"
     ],
     "skill": {
         "list": [

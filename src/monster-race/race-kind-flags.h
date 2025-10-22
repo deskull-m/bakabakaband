@@ -82,5 +82,6 @@ enum class MonsterKindType {
     GHOST = 78, // 幽霊
     BERSERK = 79, // 狂戦士
     EXPLOSIVE = 80, // 爆発物
+    RAT = 81, // ネズミ
     MAX,
 };
