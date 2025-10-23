@@ -155,6 +155,19 @@ enum class MonraceId : int16_t {
     ALIEN_JURAL = 1082,
     JURAL_WITCHKING = 1089,
     IWAMOTO_KOGAN = 1096,
+    // Amberites
+    JASRA = 642, // ブランドの情婦『ジャスラ』
+    RINALDO = 660, // ブランドの息子『リナルド』
+    DWORKIN = 763, // 線の巨匠『ドワーキン』
+    BRAND = 773, // アンバーの狂気の夢想家『ブランド』
+    BLEYS = 789, // ごまかしの名手『ブレイズ』
+    FIONA = 791, // 女魔術師『フィオナ』
+    JULIAN = 794, // アーデンの森の主『ジュリアン』
+    CAINE = 799, // 陰謀家『ケイン』
+    GERARD = 807, // アンバーの強者『ジェラード』
+    ERIC = 813, // 王位簒奪者『エリック』
+    CORWIN = 820, // アヴァロンの主『コーウィン』
+    BENEDICT = 824, // 理想の戦士『ベネディクト』
     MIDDLE_AQUA_FIRST = 1152,
     LARGE_AQUA_FIRST = 1153,
     EXTRA_LARGE_AQUA_FIRST = 1154,
