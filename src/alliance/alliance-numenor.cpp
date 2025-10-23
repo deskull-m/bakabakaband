@@ -8,6 +8,16 @@ int AllianceNumenor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_p
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 20);
+
+    // ヌメノール・アライアンスに属するモンスターの撃破による印象値減少
+    const auto &monrace_list = MonraceList::get_instance();
+
+    // 黄金王『アル=ファラゾン』の撃破による大幅減点
+    impression -= monrace_list.get_monrace(MonraceId::AR_PHARAZON).r_akills * 700;
+
+    // ヌメノール装甲歩兵の撃破による減点
+    impression -= monrace_list.get_monrace(MonraceId::NUMENOR_INFANTRY).r_akills * 10;
+
     return impression;
 }
 
