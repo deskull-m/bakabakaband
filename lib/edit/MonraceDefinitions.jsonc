@@ -147662,5 +147662,91 @@
         ],
         "probability": "1_IN_6"
     }
+},
+{
+    "id": 2296,
+    "name": {
+        "ja": "炎鎖の『アングラス』",
+        "en": "Angrath, the Flame-Chained"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Red"
+    },
+    "speed": 17,
+    "hit_point": "12d150",
+    "vision": 20,
+    "armor_class": 120,
+    "alertness": 40,
+    "level": 47,
+    "rarity": 7,
+    "exp": 11000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "9d7"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "9d7"
+        }
+    ],
+    "flavor": {
+        "ja": "彼は四つの大きな角に、常に赤熱した体をしている大きなミノタウロスのプレインズウォーカーだ。基本的に争わない理知的な性格だが、自分の邪魔立てするもの、娘たちを害するものには容赦がない。",
+        "en": "He is a Planeswalker in the form of a massive Minotaur, with four large horns and a body perpetually glowing red-hot. Though fundamentally intelligent and non-confrontational, he shows no mercy to those who stand in his way or harm his daughters."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "CAN_FLY",
+        "FORCE_MAXHP",
+        "SMART",
+        "REGENERATE",
+        "MINOTAUR",
+        "NO_CONF",
+        "NO_STUN",
+        "FRIENDLY",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_FIRE",
+        "IM_POIS",
+        "RES_LITE",
+        "RES_NETH",
+        "RES_SHAR",
+        "RES_SOUN",
+        "RES_CHAO",
+        "RES_NEXU",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "AURA_FIRE",
+        "TAKE_ITEM",
+        "DROP_CORPSE"
+    ],
+    "skill": {
+        "list": [
+            "S_MONSTER",
+            "S_MONSTERS",
+            "BA_FIRE",
+            "BR_FIRE",
+            "BO_FIRE"
+        ],
+        "probability": "1_IN_6"
+    }
 }]
 }
