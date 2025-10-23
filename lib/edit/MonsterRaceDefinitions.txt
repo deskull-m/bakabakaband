@@ -41562,6 +41562,31 @@ S:BR_LITE | BA_LITE
 D:$ The cat so absurdly large, so majestic, and so long—long enough to pierce the heavens.
 D:馬鹿馬鹿しいほど大きく、神々しく、そして長い、天を衝くほどに長い猫だ。
 
+N:2296:炎鎖の『アングラス』
+E:Angrath, the Flame-Chained
+G:H:r
+I:127:12d150:20:120:40
+W:47:7:11000:0:0
+B:PUNCH:HURT:8d10
+B:PUNCH:HURT:8d10
+B:KICK:HURT:9d7
+B:KICK:HURT:9d7
+F:UNIQUE | MALE | CAN_FLY
+F:FORCE_MAXHP | SMART | REGENERATE | MINOTAUR
+F:NO_CONF | NO_STUN | FRIENDLY
+F:IM_ACID | IM_ELEC | IM_FIRE | IM_POIS |
+F:RES_LITE | RES_NETH | RES_SHAR | RES_SOUN | RES_CHAO | RES_NEXU
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | AURA_FIRE
+F:TAKE_ITEM | DROP_CORPSE
+S:1_IN_6 |
+S:S_MONSTER | S_MONSTERS | BA_FIRE | BR_FIRE | BO_FIRE
+D:$He is a Planeswalker in the form of a massive Minotaur,
+D:$ with four large horns and a body perpetually glowing red-hot.
+D:$ Though fundamentally intelligent and non-confrontational,
+D:$ he shows no mercy to those who stand in his way or harm his daughters.
+D:彼は四つの大きな角に、常に赤熱した体をしている大きなミノタウロスのプレインズウォーカーだ。
+D:基本的に争わない理知的な性格だが、自分の邪魔立てするもの、娘たちを害するものには容赦がない。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
