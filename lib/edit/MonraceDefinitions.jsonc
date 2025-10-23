@@ -12693,6 +12693,7 @@
         "CAN_FLY",
         "WEIRD_MIND",
         "BASH_DOOR",
+        "INSECT",
         "ANIMAL",
         "IM_COLD"
     ],
@@ -14704,6 +14705,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "CAN_FLY",
+        "INSECT",
         "ANIMAL",
         "IM_POIS"
     ],
@@ -16522,6 +16524,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_MOUNTAIN",
+        "INSECT",
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP"
@@ -16613,6 +16616,7 @@
         "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
+        "INSECT",
         "WEIRD_MIND",
         "BASH_DOOR",
         "CAN_FLY",
@@ -16762,6 +16766,7 @@
         "WILD_MOUNTAIN",
         "WEIRD_MIND",
         "BASH_DOOR",
+        "INSECT",
         "ANIMAL",
         "IM_FIRE",
         "RES_SOUN",
