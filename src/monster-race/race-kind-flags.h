@@ -86,5 +86,6 @@ enum class MonsterKindType {
     MINOTAUR = 82, // ミノタウロス
     SKAVEN = 83, // スケイヴン
     KOBOLD = 84, // コボルド
+    OGRE = 85, // オーガ
     MAX,
 };
