@@ -223,6 +223,7 @@ enum class MonraceId : int16_t {
     CHEST_MIMIC_11 = 1531,
     SHITTO_MASK = 1546,
     JURAL_MONS = 1583,
+    NUMENOR_INFANTRY = 1586, // ヌメノール装甲歩兵
     BINZYOU_MUR = 1587,
     PRINCESS_KETHOLDETH = 1590,
     SUREN = 1810,
