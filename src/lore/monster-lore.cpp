@@ -389,6 +389,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::KOBOLD)) {
         lore_ptr->kind_flags.set(MonsterKindType::KOBOLD);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::OGRE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::OGRE);
+    }
 }
 
 /*!
