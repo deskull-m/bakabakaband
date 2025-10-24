@@ -41587,6 +41587,18 @@ D:$ he shows no mercy to those who stand in his way or harm his daughters.
 D:彼は四つの大きな角に、常に赤熱した体をしている大きなミノタウロスのプレインズウォーカーだ。
 D:基本的に争わない理知的な性格だが、自分の邪魔立てするもの、娘たちを害するものには容赦がない。
 
+N:2297:糞の壁
+E:Feces wall
+G:#:u
+I:120:1d1:20:0:0
+W:24:1:10:0:0
+B:EXPLODE:POISON:15d8
+F:CAN_FLY | SELF_LITE_2 | NASTY | WALL
+F:EMPTY_MIND | NEVER_MOVE | NEVER_BLOW | HURT_COLD |
+F:NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
+D:$Touch it and it shatters into dust, but you'll be covered in filth.
+D:触れれば脆くも飛び散るが、あなたがエンガジョなことになる。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

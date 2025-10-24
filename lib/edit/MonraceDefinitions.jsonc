@@ -147766,5 +147766,52 @@
         ],
         "probability": "1_IN_6"
     }
+},
+{
+    "id": 2297,
+    "name": {
+        "ja": "糞の壁",
+        "en": "Feces wall"
+    },
+    "symbol": {
+        "character": "#",
+        "color": "Brown"
+    },
+    "speed": 10,
+    "hit_point": "1d1",
+    "vision": 20,
+    "armor_class": 0,
+    "alertness": 0,
+    "level": 24,
+    "rarity": 1,
+    "exp": 10,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "EXPLODE",
+            "effect": "POISON",
+            "damage_dice": "15d8"
+        }
+    ],
+    "flavor": {
+        "ja": "触れれば脆くも飛び散るが、あなたがエンガジョなことになる。",
+        "en": "Touch it and it shatters into dust, but you'll be covered in filth."
+    },
+    "flags": [
+        "CAN_FLY",
+        "SELF_LITE_2",
+        "NASTY",
+        "WALL",
+        "EMPTY_MIND",
+        "NEVER_MOVE",
+        "NEVER_BLOW",
+        "HURT_COLD",
+        "NO_FEAR",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING"
+    ]
 }]
 }
