@@ -55,6 +55,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
         case MonsterAbilityType::S_HI_DRAGON:
         case MonsterAbilityType::S_AMBERITES:
         case MonsterAbilityType::S_CHOASIANS:
+        case MonsterAbilityType::S_WALL:
         case MonsterAbilityType::S_UNIQUE:
             x = m_ptr->fx;
             y = m_ptr->fy;
@@ -197,6 +198,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::S_CAT: return spell_RF6_S_CATS(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_CATS */
     case MonsterAbilityType::S_PUYO: return spell_RF6_S_PUYO(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_PUYO */
     case MonsterAbilityType::S_PERVERT: return spell_RF6_S_PERVERTS(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_PERVERT */
+    case MonsterAbilityType::S_WALL: return spell_RF6_S_WALL(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_WALL */
     default: break;
     }
     // clang-format on
@@ -231,6 +233,7 @@ static MonsterSpellResult monspell_to_monster_impl(
         case MonsterAbilityType::S_HI_DRAGON:
         case MonsterAbilityType::S_AMBERITES:
         case MonsterAbilityType::S_CHOASIANS:
+        case MonsterAbilityType::S_WALL:
         case MonsterAbilityType::S_UNIQUE:
             x = m_ptr->fx;
             y = m_ptr->fy;
@@ -373,6 +376,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::S_PUYO: return spell_RF6_S_PUYO(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_PUYO */
     case MonsterAbilityType::S_HOMO: return spell_RF6_S_HOMO(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_HOMO */
     case MonsterAbilityType::S_PERVERT: return spell_RF6_S_PERVERTS(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_PERVERT */
+    case MonsterAbilityType::S_WALL: return spell_RF6_S_WALL(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_WALL */
     default: break;
     }
     // clang-format on

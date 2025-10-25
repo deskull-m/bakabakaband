@@ -407,6 +407,8 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_AMBERITES:
         return -1;
+    case MonsterAbilityType::S_WALL:
+        return -1;
     case MonsterAbilityType::S_UNIQUE:
         return -1;
     case MonsterAbilityType::S_DEAD_UNIQUE:
