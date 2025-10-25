@@ -240,10 +240,16 @@ void wr_player(PlayerType *player_ptr)
     }
 
     wr_s32b(int32_t(player_ptr->incident.size()));
-    std::map<INCIDENT, int32_t>::iterator it;
-    for (it = player_ptr->incident.begin(); it != player_ptr->incident.end(); it++) {
-        wr_s32b((int32_t)it->first);
-        wr_s32b(it->second);
+    for (const auto &it : player_ptr->incident) {
+        wr_s32b((int32_t)it.first);
+        wr_s32b(it.second);
+    }
+
+    // Save incident_tree (string-keyed, tree-structured incidents)
+    wr_s32b(int32_t(player_ptr->incident_tree.size()));
+    for (const auto &it : player_ptr->incident_tree) {
+        wr_string(it.first);
+        wr_s32b(it.second);
     }
 
     wr_s16b(player_ptr->ele_attack);

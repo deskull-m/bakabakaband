@@ -50,6 +50,19 @@ void PlayerType::plus_incident(INCIDENT incidentID, int num)
     this->incident[incidentID] += num;
 }
 
+/*
+ * @brief ツリー構造インシデント数加算
+ * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）
+ * @param num 加算量
+ */
+void PlayerType::plus_incident_tree(const std::string &incident_id, int num)
+{
+    if (this->incident_tree.count(incident_id) == 0) {
+        this->incident_tree[incident_id] = 0;
+    }
+    this->incident_tree[incident_id] += num;
+}
+
 /*!
  * @brief モンスターに乗る
  * @param m_idx 乗るモンスターのID（0で降りる）
