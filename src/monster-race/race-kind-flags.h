@@ -88,5 +88,6 @@ enum class MonsterKindType {
     KOBOLD = 84, // コボルド
     OGRE = 85, // オーガ
     BOVINE = 86, // 牛
+    MERFOLK = 87, // マーフォーク
     MAX,
 };

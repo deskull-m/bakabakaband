@@ -397,6 +397,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BOVINE)) {
         lore_ptr->kind_flags.set(MonsterKindType::BOVINE);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MERFOLK)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MERFOLK);
+    }
 }
 
 /*!
