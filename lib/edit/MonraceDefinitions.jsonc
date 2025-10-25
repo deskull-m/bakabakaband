@@ -36939,7 +36939,6 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "MINOTAUR",
-        "BOVINE",
         "EVIL"
     ]
 },
@@ -43527,7 +43526,6 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "MINOTAUR",
-        "BOVINE",
         "EVIL",
         "IM_FIRE",
         "IM_POIS",
@@ -66757,7 +66755,6 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "MINOTAUR",
-        "BOVINE",
         "EVIL",
         "UNIQUE"
     ]
@@ -115621,7 +115618,6 @@
         "POWERFUL",
         "NONLIVING",
         "MINOTAUR",
-        "BOVINE",
         "EVIL",
         "DEMON",
         "IM_FIRE",
@@ -144878,7 +144874,6 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "FORCE_MAXHP",
-        "BOVINE",
         "EVIL",
         "UNIQUE",
         "ANIMAL",
@@ -147752,7 +147747,6 @@
         "SMART",
         "REGENERATE",
         "MINOTAUR",
-        "BOVINE",
         "NO_CONF",
         "NO_STUN",
         "FRIENDLY",
@@ -147830,5 +147824,91 @@
         "NO_SLEEP",
         "NONLIVING"
     ]
+},
+{
+    "id": 2298,
+    "name": {
+        "ja": "大悪魔『アスモデウス』",
+        "en": "Asmodeus the Archfiend"
+    },
+    "symbol": {
+        "character": "U",
+        "color": "Violet"
+    },
+    "speed": 30,
+    "hit_point": "30d266",
+    "vision": 20,
+    "armor_class": 160,
+    "alertness": 50,
+    "level": 88,
+    "rarity": 2,
+    "exp": 90000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "GAZE",
+            "effect": "EXP_VAMP",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "GAZE",
+            "effect": "TERRIFY",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "FIRE",
+            "damage_dice": "20d5"
+        }
+    ],
+    "flavor": {
+        "ja": "アスモデウスは多元宇宙の様々な世界で大悪魔として謳われている。しかし、彼の特に偉大な尊号は九層地獄バートルの統治者、そして邪悪なる秩序の顕現たることだ。",
+        "en": "Asmodeus is celebrated as a great demon across the multiverse's myriad worlds. Yet his most exalted titles are Ruler of the Ninth Circle of Hell,"
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "SPEAK_ALL",
+        "CAN_FLY",
+        "FORCE_MAXHP",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "MOVE_BODY",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GREAT",
+        "IM_FIRE",
+        "RES_PLAS",
+        "RES_NETH",
+        "AURA_FIRE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING",
+        "EVIL",
+        "DEMON",
+        "IM_COLD",
+        "IM_POIS"
+    ],
+    "skill": {
+        "list": [
+            "TELE_TO",
+            "SCARE",
+            "HOLD",
+            "BRAIN_SMASH",
+            "S_DEMON",
+            "S_HI_UNDEAD",
+            "S_UNDEAD",
+            "BR_FIRE",
+            "BR_NETH",
+            "S_CYBER",
+            "HAND_DOOM",
+            "ANIM_DEAD"
+        ],
+        "probability": "1_IN_3"
+    }
 }]
 }
