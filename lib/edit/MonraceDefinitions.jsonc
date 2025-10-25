@@ -10388,6 +10388,7 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "RES_WATE",
+        "MERFOLK",
         "ANIMAL",
         "RIDING"
     ]
@@ -58821,6 +58822,7 @@
         "AQUATIC",
         "RES_WATE",
         "NAGA",
+        "MERFOLK",
         "ONLY_ITEM",
         "DROP_90",
         "DROP_2D2",
@@ -82695,6 +82697,7 @@
         "CAN_SWIM",
         "WILD_SHORE",
         "NEVER_MOVE",
+        "MERFOLK",
         "ONLY_ITEM",
         "DROP_GOOD",
         "DROP_1D2",
