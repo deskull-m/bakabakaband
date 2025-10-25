@@ -362,5 +362,6 @@ void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, 
     }
 
     player_ptr->plus_incident(INCIDENT::WALK, 1);
+    player_ptr->plus_incident_tree("WALK", 1);
     (void)move_player_effect(player_ptr, pos.y, pos.x, mpe_mode);
 }
