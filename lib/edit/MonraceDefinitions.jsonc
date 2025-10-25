@@ -24128,7 +24128,8 @@
         "ANIMAL",
         "IM_POIS",
         "RIDING",
-        "EAT_BLIND"
+        "EAT_BLIND",
+        "BOVINE"
     ]
 },
 {
@@ -25896,7 +25897,8 @@
         "DROP_CORPSE",
         "EVIL",
         "RIDING",
-        "EAT_POISONOUS"
+        "EAT_POISONOUS",
+        "BOVINE"
     ],
     "skill": {
         "list": [
@@ -36937,6 +36939,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "MINOTAUR",
+        "BOVINE",
         "EVIL"
     ]
 },
@@ -43524,6 +43527,7 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "MINOTAUR",
+        "BOVINE",
         "EVIL",
         "IM_FIRE",
         "IM_POIS",
@@ -66753,6 +66757,7 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "MINOTAUR",
+        "BOVINE",
         "EVIL",
         "UNIQUE"
     ]
@@ -82547,6 +82552,7 @@
         "WEIRD_MIND",
         "RIDING",
         "TAKE_ITEM",
+        "BOVINE",
         "IM_COLD",
         "RES_WATE",
         "RES_TIME",
@@ -115615,6 +115621,7 @@
         "POWERFUL",
         "NONLIVING",
         "MINOTAUR",
+        "BOVINE",
         "EVIL",
         "DEMON",
         "IM_FIRE",
@@ -144871,6 +144878,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "FORCE_MAXHP",
+        "BOVINE",
         "EVIL",
         "UNIQUE",
         "ANIMAL",
@@ -147744,6 +147752,7 @@
         "SMART",
         "REGENERATE",
         "MINOTAUR",
+        "BOVINE",
         "NO_CONF",
         "NO_STUN",
         "FRIENDLY",
