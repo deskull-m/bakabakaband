@@ -14649,6 +14649,7 @@
     },
     "flags": [
         "FORCE_MAXHP",
+        "WALL",
         "DROP_1D2",
         "DROP_4D2",
         "STUPID",
@@ -57575,7 +57576,8 @@
         "IM_FIRE",
         "IM_ELEC",
         "IM_POIS",
-        "RES_SHAR"
+        "RES_SHAR",
+        "WALL"
     ]
 },
 {
@@ -57809,7 +57811,8 @@
         "IM_ELEC",
         "IM_POIS",
         "IM_FIRE",
-        "RES_SHAR"
+        "RES_SHAR",
+        "WALL"
     ]
 },
 {
@@ -85105,6 +85108,7 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_STUN",
+        "WALL",
         "IM_ACID",
         "IM_ELEC",
         "IM_POIS",
@@ -114823,6 +114827,7 @@
         "COLD_BLOOD",
         "EMPTY_MIND",
         "FORCE_MAXHP",
+        "WALL",
         "BASH_DOOR",
         "IM_COLD",
         "IM_ACID",
@@ -121237,7 +121242,8 @@
         "IM_FIRE",
         "IM_ELEC",
         "IM_POIS",
-        "RES_SHAR"
+        "RES_SHAR",
+        "WALL"
     ]
 },
 {
@@ -122224,7 +122230,8 @@
         "REFLECTING",
         "NO_CONF",
         "NO_SLEEP",
-        "CAN_FLY"
+        "CAN_FLY",
+        "WALL"
     ]
 },
 {
@@ -137859,6 +137866,7 @@
     "flags": [
         "CAN_FLY",
         "SELF_LITE_2",
+        "WALL",
         "EMPTY_MIND",
         "NEVER_MOVE",
         "NEVER_BLOW",
@@ -147796,7 +147804,7 @@
         }
     ],
     "flavor": {
-        "ja": "触れれば脆くも飛び散るが、あなたがエンガジョなことになる。",
+        "ja": "触れれば脆くも飛び散るが、あなたがエンガチョなことになる。",
         "en": "Touch it and it shatters into dust, but you'll be covered in filth."
     },
     "flags": [

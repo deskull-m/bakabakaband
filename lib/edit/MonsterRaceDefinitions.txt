@@ -4716,7 +4716,7 @@ W:16:4:80:800:541
 B:TOUCH:ACID:1d10
 B:TOUCH:ACID:1d10
 B:TOUCH:ACID:1d10
-F:FORCE_MAXHP | 
+F:FORCE_MAXHP | WALL
 F:DROP_1D2 | DROP_4D2 | 
 F:STUPID | EMPTY_MIND | COLD_BLOOD |
 F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | CAN_SWIM |
@@ -18305,7 +18305,7 @@ B:TOUCH:ACID:8d8
 B:TOUCH:PARALYZE:3d3
 F:NEVER_MOVE | MULTIPLY | ONLY_GOLD | DROP_90 | ANIMAL | HURT_ROCK |
 F:NO_FEAR | NO_SLEEP | NO_CONF | NO_STUN | EMPTY_MIND | COLD_BLOOD |
-F:IM_COLD | IM_FIRE | IM_ELEC | IM_POIS | RES_SHAR
+F:IM_COLD | IM_FIRE | IM_ELEC | IM_POIS | RES_SHAR | WALL
 D:$Just a normal wall, boring gray rock. But wait! It seems to be growing...
 D:ただの普通の壁だ。見なれた灰色の岩でできている。
 D:いや、ちょっと待てよ？だんだん大きくなってくるような…。
@@ -18368,7 +18368,7 @@ B:TOUCH:FIRE:5d5
 B:TOUCH:PARALYZE:3d3
 F:NEVER_MOVE | MULTIPLY | ONLY_GOLD | DROP_60 | DROP_90 | EMPTY_MIND |
 F:ANIMAL | HURT_ROCK | NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN |
-F:IM_ACID | IM_ELEC | IM_POIS | IM_FIRE | RES_SHAR
+F:IM_ACID | IM_ELEC | IM_POIS | IM_FIRE | RES_SHAR | WALL
 D:$It's just a block of dark rock. But wait! It seems to be growing...
 D:普通の黒い岩の壁だ。しかしちょっと待てよ？だんだん大きくなってくるような…
 
@@ -25709,7 +25709,7 @@ I:100:15d25:15:120:10
 W:25:2:0:100:0:0
 B:CRUSH:HURT:4d5
 F:ONLY_GOLD | DROP_60 | DROP_90 | EMPTY_MIND |
-F:NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN |
+F:NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN | WALL
 F:IM_ACID | IM_ELEC | IM_POIS | IM_FIRE | IM_POIS
 D:盾魔道士テヨが扱いを得意とする、身を守るための光の壁だ
 
@@ -33340,7 +33340,7 @@ G:#:s
 I:120:15d400:20:200:20
 W:50:4:0:500:0:0
 B:CRUSH:HURT:10d6
-F:COLD_BLOOD | EMPTY_MIND | FORCE_MAXHP
+F:COLD_BLOOD | EMPTY_MIND | FORCE_MAXHP | WALL
 F:BASH_DOOR | IM_COLD | IM_ACID | IM_FIRE | IM_ELEC | IM_POIS | NONLIVING |
 F:HURT_ROCK | NO_CONF | NO_SLEEP | CAN_FLY | RES_SHAR
 D:それは256回攻撃を打ち込めば破壊できる。
@@ -34916,7 +34916,7 @@ B:ENGULF:EXP_40:8d8
 B:ENGULF:EXP_40:8d8
 F:NEVER_MOVE | MULTIPLY | ONLY_GOLD | DROP_90 | HURT_ROCK |
 F:NO_FEAR | NO_SLEEP | NO_CONF | NO_STUN | EMPTY_MIND | COLD_BLOOD |
-F:IM_ACID | IM_FIRE | IM_ELEC | IM_POIS | RES_SHAR
+F:IM_ACID | IM_FIRE | IM_ELEC | IM_POIS | RES_SHAR | WALL
 D:血は漆喰よりも濃し。
 
 N:1876:地獄の樹
@@ -35159,7 +35159,7 @@ I:120:50d40:20:160:0
 W:60:4:0:3500:0:0
 F:COLD_BLOOD | EMPTY_MIND | NEVER_MOVE | NEVER_BLOW | RES_ALL
 F:BASH_DOOR | CAN_FLY | REFLECTING
-F:NO_CONF | NO_SLEEP | CAN_FLY
+F:NO_CONF | NO_SLEEP | CAN_FLY | WALL
 D:$It provides what every discerning mage requires—time to think.
 D:それは洞察力のある魔道士すべてが求めるものを与えてくれる。考える時間だ。
 
@@ -39015,7 +39015,7 @@ G:#:r
 I:120:1d1:20:0:0
 W:24:1:10:0:0
 B:EXPLODE:FIRE:15d8
-F:CAN_FLY | SELF_LITE_2 |
+F:CAN_FLY | SELF_LITE_2 | WALL
 F:EMPTY_MIND | NEVER_MOVE | NEVER_BLOW | HURT_COLD |
 F:IM_FIRE | NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
 D:触れれば脆くも崩れるが、あなたを焼き尽くすだろう。
@@ -41597,7 +41597,7 @@ F:CAN_FLY | SELF_LITE_2 | NASTY | WALL
 F:EMPTY_MIND | NEVER_MOVE | NEVER_BLOW | HURT_COLD |
 F:NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
 D:$Touch it and it shatters into dust, but you'll be covered in filth.
-D:触れれば脆くも飛び散るが、あなたがエンガジョなことになる。
+D:触れれば脆くも飛び散るが、あなたがエンガチョなことになる。
 
 # N: serial number : monster name
 # G: symbol : color
