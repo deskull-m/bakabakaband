@@ -1099,6 +1099,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         msg_print(_("蜘蛛糸のブレスを吐いた。", "You breathe spider string."));
         fire_breath(player_ptr, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
         break;
+    case MonsterAbilityType::S_WALL: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("壁を召喚した！", "You summon walls!"));
+        for (auto k = 0; k < 1; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_WALL, (mode | u_mode));
+        }
+        break;
+    }
     default:
         msg_print("hoge?");
     }

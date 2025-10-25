@@ -63,4 +63,5 @@ enum summon_type : int {
     SUMMON_PUYO = 79, /*!< 召喚タイプ: ぷよ */
     SUMMON_HOMO = 80, /*!< 召喚タイプ: ホモ */
     SUMMON_PERVERTS = 81, /*!< 召喚タイプ: 変質者 */
+    SUMMON_WALL = 82, /*!< 召喚タイプ: 壁 */
 };

@@ -442,4 +442,8 @@ void set_summon_types(lore_type *lore_ptr)
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_DEAD_UNIQUE)) {
         lore_ptr->lore_msgs.emplace_back(_("ユニーク・モンスター口寄せ", "animate Unique Monsters"), TERM_VIOLET);
     }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_WALL)) {
+        lore_ptr->lore_msgs.emplace_back(_("壁召喚", "summon walls"), TERM_L_WHITE);
+    }
 }

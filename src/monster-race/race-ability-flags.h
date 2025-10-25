@@ -119,5 +119,6 @@ enum class MonsterAbilityType {
     S_PUYO = 113, /* Summon Puyo */
     S_HOMO = 114, /* Summon Homo */
     S_PERVERT = 115, /* 変質者召喚 */
+    S_WALL = 116, /* 壁召喚 */
     MAX,
 };
