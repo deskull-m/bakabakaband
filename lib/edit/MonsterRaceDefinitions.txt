@@ -11503,7 +11503,7 @@ B:BUTT:HURT:4d6
 B:BUTT:HURT:4d6
 B:BUTT:HURT:2d6
 B:BUTT:HURT:2d6
-F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | MINOTAUR | BOVINE
+F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | MINOTAUR
 F:EVIL
 D:$It is a cross between a human and a bull.
 D:それは人間と雄牛の混血したモンスターだ。
@@ -13670,7 +13670,7 @@ B:HIT:HURT:10d10
 F:UNIQUE | MALE | SPEAK_ALL |
 F:FORCE_MAXHP | 
 F:ONLY_ITEM | DROP_1D2 | DROP_4D2 | DROP_GOOD | 
-F:BASH_DOOR | DROP_CORPSE | MINOTAUR | BOVINE
+F:BASH_DOOR | DROP_CORPSE | MINOTAUR
 F:EVIL | IM_FIRE | IM_POIS | RES_WALL | NO_CONF | NO_SLEEP
 S:1_IN_6 | 
 S:SLOW | SHOOT | BO_MANA | BO_PLAS | BA_ELEC | 
@@ -20777,7 +20777,7 @@ B:BUTT:HURT:4d6
 B:BUTT:HURT:4d6
 B:BUTT:HURT:2d6
 B:BUTT:HURT:2d6
-F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | FORCE_MAXHP | MINOTAUR | BOVINE |
+F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | FORCE_MAXHP | MINOTAUR |
 F:EVIL | UNIQUE
 D:$It is a cross between a human and a bull.
 D:それは人間と雄牛の混血したモンスターだ。
@@ -33531,7 +33531,7 @@ B:HIT:SUPERHURT:7d10
 B:HIT:SUPERHURT:7d10
 F:FORCE_MAXHP | 
 F:ONLY_ITEM | DROP_1D2 | 
-F:OPEN_DOOR | BASH_DOOR | POWERFUL | NONLIVING | MINOTAUR | BOVINE |
+F:OPEN_DOOR | BASH_DOOR | POWERFUL | NONLIVING | MINOTAUR |
 F:EVIL | DEMON | IM_FIRE | NO_CONF | NO_SLEEP
 D:イザリスの混沌から生まれた存在、大斧を奮う牛の頭をしたデーモンだ。
 
@@ -40777,7 +40777,7 @@ B:BUTT:HURT:6d6
 B:BUTT:HURT:6d6
 B:BUTT:HURT:4d6
 B:BUTT:HURT:4d6
-F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | FORCE_MAXHP | BOVINE |
+F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | FORCE_MAXHP |
 F:EVIL | UNIQUE | ANIMAL | NASTY | HOMO_SEXUAL | YAZYU
 D:$It's a beastly senior who's like a Minotaur, with a fake body made of steroids and made even more disgusting by being turned into a beast.
 D:ステロイドで出来た偽りの肉体をさらにクッソ汚い獣化で強化されたミノタウロスの如き野獣先輩だ。
@@ -41572,7 +41572,7 @@ B:PUNCH:HURT:8d10
 B:KICK:HURT:9d7
 B:KICK:HURT:9d7
 F:UNIQUE | MALE | CAN_FLY
-F:FORCE_MAXHP | SMART | REGENERATE | MINOTAUR | BOVINE
+F:FORCE_MAXHP | SMART | REGENERATE | MINOTAUR
 F:NO_CONF | NO_STUN | FRIENDLY
 F:IM_ACID | IM_ELEC | IM_FIRE | IM_POIS |
 F:RES_LITE | RES_NETH | RES_SHAR | RES_SOUN | RES_CHAO | RES_NEXU
@@ -41598,6 +41598,30 @@ F:EMPTY_MIND | NEVER_MOVE | NEVER_BLOW | HURT_COLD |
 F:NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
 D:$Touch it and it shatters into dust, but you'll be covered in filth.
 D:触れれば脆くも飛び散るが、あなたがエンガチョなことになる。
+
+N:2298:大悪魔『アスモデウス』
+E:Asmodeus the Archfiend
+G:U:v
+I:140:30d266:20:160:50
+W:88:2:90000:0:0
+B:GAZE:EXP_VAMP:8d15
+B:GAZE:TERRIFY:8d15
+B:TOUCH:FIRE:20d5
+F:MALE | UNIQUE | SPEAK_ALL | CAN_FLY |
+F:FORCE_MAXHP | OPEN_DOOR | BASH_DOOR | MOVE_BODY |
+F:ONLY_ITEM | DROP_2D2 | DROP_3D2 | DROP_4D2 | DROP_GREAT |
+F:IM_FIRE | RES_PLAS | RES_NETH | AURA_FIRE |
+F:NO_CONF | NO_SLEEP | NONLIVING | EVIL | DEMON |
+F:IM_COLD | IM_POIS
+S:1_IN_3 |
+S:TELE_TO | SCARE | HOLD | BRAIN_SMASH |
+S:S_DEMON | S_HI_UNDEAD | S_UNDEAD |
+S:BR_FIRE | BR_NETH | S_CYBER | HAND_DOOM | ANIM_DEAD
+D:$Asmodeus is celebrated as a great demon across the multiverse's myriad worlds.
+D:$ Yet his most exalted titles are Ruler of the Ninth Circle of Hell,
+$:$ Baator, and Manifestation of the Evil Order.
+D:アスモデウスは多元宇宙の様々な世界で大悪魔として謳われている。
+D:しかし、彼の特に偉大な尊号は九層地獄バートルの統治者、そして邪悪なる秩序の顕現たることだ。
 
 # N: serial number : monster name
 # G: symbol : color
