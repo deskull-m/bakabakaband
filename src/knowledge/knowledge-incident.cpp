@@ -18,8 +18,8 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
         return;
     }
 
-    if (player_ptr->incident.count(INCIDENT::WALK)) {
-        fprintf(fff, _("あなたはこれまで%d歩進んだ。\n", "You walked %d steps\n"), player_ptr->incident[INCIDENT::WALK]);
+    if (player_ptr->incident_tree.count("WALK")) {
+        fprintf(fff, _("あなたはこれまで%d歩進んだ。\n", "You walked %d steps\n"), player_ptr->incident_tree["WALK"]);
     }
     if (player_ptr->incident.count(INCIDENT::LEAVE_FLOOR)) {
         fprintf(fff, _("あなたはこれまで%d回フロアを移動した。\n", "You moved %d floors\n"), player_ptr->incident[INCIDENT::LEAVE_FLOOR]);

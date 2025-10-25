@@ -58,6 +58,7 @@ class PlayerType {
 public:
     PlayerType();
     void plus_incident(INCIDENT incidentID, int num);
+    void plus_incident_tree(const std::string &incident_id, int num);
     bool is_true_winner() const;
 
     FloorType *current_floor_ptr{};
@@ -84,7 +85,8 @@ public:
     int16_t prestige{}; /* Prestige */
     int32_t death_count{}; /* Death count */
 
-    std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント */
+    std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
+    std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
     PRICE au{}; /* Current Gold */
 

@@ -424,6 +424,16 @@ static void rd_player_status(PlayerType *player_ptr)
             player_ptr->incident[(INCIDENT)id] = count;
         }
     }
+
+    // Load incident_tree (string-keyed, tree-structured incidents)
+    if (!loading_savefile_version_is_older_than(31)) {
+        int32_t num = rd_s32b();
+        for (int32_t i = 0; i < num; i++) {
+            std::string key = rd_string();
+            int32_t count = rd_s32b();
+            player_ptr->incident_tree[key] = count;
+        }
+    }
 }
 
 void rd_player_info(PlayerType *player_ptr)
