@@ -349,6 +349,8 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_hound(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_HYDRA:
         return cast_blue_summon_hydra(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_INSECT:
+        return cast_blue_summon_insect(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_ANGEL:
         return cast_blue_summon_angel(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_DEMON:

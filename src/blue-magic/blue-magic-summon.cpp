@@ -413,3 +413,18 @@ bool cast_blue_summon_wall(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     return true;
 }
+
+bool cast_blue_summon_insect(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("昆虫を召喚した！", "You summon insects!"));
+    if (summon_specific(
+            player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_INSECT, (bmc_ptr->g_mode | bmc_ptr->p_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚された昆虫は怒っている！", "The summoned insects are angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
