@@ -436,6 +436,8 @@ screen and (min-resolution: 192dpi) {
     display: flex;
     flex-direction: row;
     padding: 1.5rem;
+    align-items: center;
+    justify-content: center;
 }
 
 /* レスポンシブ対応：モバイル向け */
@@ -464,10 +466,10 @@ screen and (min-resolution: 192dpi) {
 }
 
 #article-list {
-    font-size: 90%;
+    font-size: 100%;
     line-height: 120%;
-    width: 70%;
-    max-width: 200rem;
+    width: 60%;
+    max-width: 50rem;
 }
 
 /* レスポンシブ対応：タブレット・モバイル向け */
@@ -601,7 +603,7 @@ a.button-link:hover {
 }
 
 .button {
-    width: 100%;
+    width: 110%;
     font-size: 1.1rem;
     line-height: 1.2rem;
     display: flex;
