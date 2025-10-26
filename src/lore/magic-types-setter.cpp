@@ -446,4 +446,8 @@ void set_summon_types(lore_type *lore_ptr)
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_WALL)) {
         lore_ptr->lore_msgs.emplace_back(_("壁召喚", "summon walls"), TERM_L_WHITE);
     }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_INSECT)) {
+        lore_ptr->lore_msgs.emplace_back(_("虫召喚", "summon insects"), TERM_UMBER);
+    }
 }
