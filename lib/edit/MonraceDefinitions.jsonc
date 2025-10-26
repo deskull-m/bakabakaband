@@ -1203,6 +1203,7 @@
     "flags": [
         "RAND_50",
         "DROP_SKELETON",
+        "INSECT",
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
@@ -2036,6 +2037,7 @@
         "DROP_SKELETON",
         "WEIRD_MIND",
         "BASH_DOOR",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -3247,7 +3249,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -3697,7 +3700,8 @@
         "BASH_DOOR",
         "WILD_ALL",
         "DROP_SKELETON",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -11739,7 +11743,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "INSECT"
     ]
 },
 {
@@ -14097,7 +14102,8 @@
         "BASH_DOOR",
         "WILD_ALL",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "INSECT"
     ]
 },
 {
@@ -20927,7 +20933,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "INSECT"
     ]
 },
 {
@@ -28540,7 +28547,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "INSECT"
     ]
 },
 {
@@ -70326,6 +70334,7 @@
         "IM_POIS",
         "RES_DARK",
         "RES_NETH",
+        "INSECT",
         "RES_PLAS",
         "RES_SHAR",
         "RES_SOUN",
@@ -81711,7 +81720,8 @@
         "ONLY_ITEM",
         "DROP_GOOD",
         "DROP_4D2",
-        "DROP_2D2"
+        "DROP_2D2",
+        "INSECT"
     ],
     "skill": {
         "list": [

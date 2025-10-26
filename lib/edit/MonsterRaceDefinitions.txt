@@ -550,7 +550,7 @@ I:110:3d5:7:10:40
 W:1:1:4:0:0
 B:BITE:HURT:1d5
 B:STING:HURT:1d5
-F:RAND_50 | DROP_SKELETON |
+F:RAND_50 | DROP_SKELETON | INSECT
 F:WEIRD_MIND | BASH_DOOR | WILD_ALL |
 F:ANIMAL
 D:$It is about four feet long and carnivorous.
@@ -804,7 +804,7 @@ I:120:4d4:5:4:10
 W:2:1:4:6:67
 B:CRAWL:HURT:1d3
 F:RAND_50 | WILD_ALL | DROP_SKELETON
-F:WEIRD_MIND | BASH_DOOR | 
+F:WEIRD_MIND | BASH_DOOR | INSECT
 F:ANIMAL
 D:$It is about four feet long and carnivorous.
 D:それは長さが 1.5 メートル近くもある肉食生物だ。
@@ -1193,7 +1193,7 @@ W:3:1:8:15:77
 B:CRAWL:HURT:1d4
 F:RAND_50 | DROP_SKELETON
 F:WEIRD_MIND | BASH_DOOR | WILD_ALL |
-F:ANIMAL
+F:ANIMAL | INSECT
 D:$It is about four feet long and carnivorous.
 D:それは長さが 1.5 メートル近くもある肉食生物だ。
 
@@ -1333,7 +1333,7 @@ W:3:1:14:150:276
 B:CRAWL:HURT:1d4
 F:RAND_25 | 
 F:WEIRD_MIND | BASH_DOOR | WILD_ALL | DROP_SKELETON
-F:ANIMAL
+F:ANIMAL | INSECT
 D:$It is about four feet long and carnivorous.
 D:それは長さが 1.5 メートル近くもある肉食生物だ。
 
@@ -3822,7 +3822,7 @@ B:BITE:HURT:2d4
 B:BITE:HURT:2d4
 B:STING:HURT:2d4
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL | DROP_SKELETON
+F:ANIMAL | DROP_SKELETON | INSECT
 D:$It is a vast armoured centipede with massive mandibles and a spiked tail.
 D:それは頑丈な顎と尖った尻尾を持った、防御力の高い巨大なムカデだ。
 
@@ -4550,7 +4550,7 @@ B:BITE:HURT:2d4
 B:STING:HURT:2d4
 F:ATTR_CLEAR | 
 F:INVISIBLE | WEIRD_MIND | BASH_DOOR | WILD_ALL |
-F:ANIMAL | DROP_SKELETON
+F:ANIMAL | DROP_SKELETON | INSECT
 D:$It is about four feet long and carnivorous.
 D:それは長さが 1.5 メートル近くもある肉食生物だ。
 
@@ -6593,7 +6593,7 @@ B:STING:PARALYZE:2d6
 B:STING:PARALYZE:2d6
 F:RAND_25 | 
 F:WEIRD_MIND | BASH_DOOR | DROP_SKELETON
-F:ANIMAL | IM_POIS
+F:ANIMAL | IM_POIS | INSECT
 D:$A hideous centipede covered in slime and with glowing tentacles around its 
 D:$head.
 D:ベトベトした粘膜に覆われた巨大なムカデで、頭の周りには光を発する
@@ -8901,7 +8901,7 @@ B:STING:PARALYZE:2d6
 B:STING:PARALYZE:2d6
 F:RAND_25 | FRIENDS | DROP_SKELETON
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL | IM_POIS
+F:ANIMAL | IM_POIS | INSECT
 D:$A hideous centipede covered in slime and with glowing tentacles around its 
 D:$head.
 D:ベトベトした粘膜に覆われた巨大なムカデで、頭の周りには光を発する
@@ -21791,7 +21791,7 @@ F:FORCE_MAXHP | UNIQUE | EVIL | ANIMAL | EMPTY_MIND |
 F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | DROP_CORPSE |
 F:OPEN_DOOR | BASH_DOOR | CAN_SWIM | KILL_ITEM | KILL_BODY |
 F:NO_CONF | NO_STUN | NO_SLEEP | NO_FEAR | REFLECTING |
-F:IM_ACID | IM_FIRE | IM_POIS | RES_DARK | RES_NETH |
+F:IM_ACID | IM_FIRE | IM_POIS | RES_DARK | RES_NETH | INSECT
 F:RES_PLAS | RES_SHAR | RES_SOUN | RES_WALL | RES_DISE | RES_GRAV |
 S:1_IN_4
 S:SHRIEK | S_KIN
@@ -24848,7 +24848,7 @@ B:GAZE:ACID:7d14
 F:FORCE_MAXHP | ANIMAL | RAND_50 | RAND_25 | WEIRD_MIND | CAN_FLY | POWERFUL
 F:IM_ACID | IM_COLD | IM_POIS | RES_DISE | RES_WALL | RES_GRAV | RES_TELE
 F:NO_CONF | NO_STUN | NO_SLEEP | NO_FEAR
-F:ONLY_ITEM | DROP_GOOD | DROP_4D2 | DROP_2D2
+F:ONLY_ITEM | DROP_GOOD | DROP_4D2 | DROP_2D2 | INSECT
 S:1_IN_3 | BA_ACID
 D:$It is the final evolution of a dragon insect,
 D:$ a magnificent centipede that is taller and longer than the WTC.
