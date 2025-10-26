@@ -41623,6 +41623,26 @@ $:$ Baator, and Manifestation of the Evil Order.
 D:アスモデウスは多元宇宙の様々な世界で大悪魔として謳われている。
 D:しかし、彼の特に偉大な尊号は九層地獄バートルの統治者、そして邪悪なる秩序の顕現たることだ。
 
+N:2299:ヴァーミンロード
+E:Vermin Lord
+G:p:v
+I:120:60d11:30:100:5
+W:40:2:3000:0:0
+B:TOUCH:EXP_20:8d2
+B:TOUCH:EXP_20:8d2
+B:TOUCH:EXP_20:8d2
+F:MALE | HUMAN | EVIL | PRIEST
+F:FORCE_MAXHP | CAN_FLY |
+F:IM_COLD | IM_ACID | IM_ELEC | IM_POIS | RES_NETH | RES_SHAR | RES_SOUN
+F:ONLY_ITEM | DROP_90 | DROP_4D2 |
+F:OPEN_DOOR | BASH_DOOR |
+F:NO_STUN | NO_CONF | NO_SLEEP |
+S:1_IN_4 |
+S:HEAL | S_INSECT
+D:$A vile priest who dwells alongside countless vermin.
+D:無数の害虫たちと共に在る忌まわしい司祭だ。
+
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

@@ -147923,5 +147923,80 @@
         ],
         "probability": "1_IN_3"
     }
+},
+{
+    "id": 2299,
+    "name": {
+        "ja": "ヴァーミンロード",
+        "en": "Vermin Lord"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Violet"
+    },
+    "speed": 17,
+    "hit_point": "60d11",
+    "vision": 20,
+    "armor_class": 100,
+    "alertness": 10,
+    "level": 40,
+    "rarity": 2,
+    "exp": 3000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EXP_20",
+            "damage_dice": "8d2"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_20",
+            "damage_dice": "8d2"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_20",
+            "damage_dice": "8d2"
+        }
+    ],
+    "flavor": {
+        "ja": "無数の害虫たちと共に在る忌まわしい司祭だ。",
+        "en": "A vile priest who dwells alongside countless vermin."
+    },
+    "sex": "MALE",
+    "flags": [
+        "HUMAN",
+        "EVIL",
+        "PRIEST",
+        "FORCE_MAXHP",
+        "CAN_FLY",
+        "IM_COLD",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_POIS",
+        "RES_NETH",
+        "RES_SHAR",
+        "RES_SOUN",
+        "ONLY_ITEM",
+        "DROP_90",
+        "DROP_4D2",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "NO_STUN",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "S_INSECT",
+            "CAUSE_3"
+        ],
+        "probability": "1_IN_4"
+    }
 }]
 }
