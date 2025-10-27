@@ -20,6 +20,34 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
 
     if (player_ptr->incident_tree.count("WALK")) {
         fprintf(fff, _("あなたはこれまで%d歩進んだ。\n", "You walked %d steps\n"), player_ptr->incident_tree["WALK"]);
+
+        // 8方向の歩数を表示
+        static constexpr struct {
+            const char *key;
+            const char *name_jp;
+            const char *name_en;
+        } directions[8] = {
+            { "WALK/N", "北", "north" },
+            { "WALK/NE", "北東", "northeast" },
+            { "WALK/E", "東", "east" },
+            { "WALK/SE", "南東", "southeast" },
+            { "WALK/S", "南", "south" },
+            { "WALK/SW", "南西", "southwest" },
+            { "WALK/W", "西", "west" },
+            { "WALK/NW", "北西", "northwest" },
+        };
+
+        for (const auto &dir : directions) {
+            if (player_ptr->incident_tree.count(dir.key)) {
+                fprintf(fff, _("    %sに%d歩\n", "    %d steps to %s\n"),
+#ifdef JP
+                    dir.name_jp, player_ptr->incident_tree[dir.key]
+#else
+                    player_ptr->incident_tree[dir.key], dir.name_en
+#endif
+                );
+            }
+        }
     }
     if (player_ptr->incident.count(INCIDENT::LEAVE_FLOOR)) {
         fprintf(fff, _("あなたはこれまで%d回フロアを移動した。\n", "You moved %d floors\n"), player_ptr->incident[INCIDENT::LEAVE_FLOOR]);
