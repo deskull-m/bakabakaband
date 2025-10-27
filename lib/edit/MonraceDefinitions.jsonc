@@ -15472,7 +15472,8 @@
         "BASH_DOOR",
         "MOVE_BODY",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -20407,7 +20408,8 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -23688,7 +23690,8 @@
         "ANIMAL",
         "IM_POIS",
         "WILD_SHORE",
-        "WILD_SWAMP"
+        "WILD_SWAMP",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -34845,6 +34848,7 @@
         "UNIQUE",
         "CAN_SWIM",
         "FORCE_MAXHP",
+        "HYDRA",
         "ONLY_GOLD",
         "DROP_2D2",
         "DROP_4D2",
@@ -35169,7 +35173,8 @@
         "MOVE_BODY",
         "ANIMAL",
         "IM_POIS",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -36558,7 +36563,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "IM_FIRE",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -40489,7 +40495,8 @@
         "ANIMAL",
         "IM_FIRE",
         "CAN_SWIM",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -45512,6 +45519,7 @@
         "ANIMAL",
         "IM_FIRE",
         "IM_POIS",
+        "HYDRA",
         "NO_CONF",
         "NO_SLEEP",
         "CAN_SWIM"
@@ -55705,6 +55713,7 @@
         "FORCE_MAXHP",
         "DROP_CORPSE",
         "ANIMAL",
+        "HYDRA",
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_3D2",
@@ -110654,6 +110663,7 @@
     "flags": [
         "WILD_SHORE",
         "WILD_SWAMP",
+        "HYDRA",
         "ONLY_GOLD",
         "DROP_2D2",
         "DROP_4D2",
@@ -122412,6 +122422,7 @@
         "SMART",
         "DROP_CORPSE",
         "RIDING",
+        "HYDRA",
         "ONLY_GOLD",
         "DROP_3D2",
         "DROP_4D2",
@@ -124405,6 +124416,7 @@
         "DROP_90",
         "DROP_GREAT",
         "ONLY_ITEM",
+        "HYDRA",
         "SPEAK_ALL",
         "RES_TELE",
         "CAN_SWIM",
