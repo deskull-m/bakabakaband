@@ -405,6 +405,10 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SHARK)) {
         lore_ptr->kind_flags.set(MonsterKindType::SHARK);
     }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::HYDRA)) {
+        lore_ptr->kind_flags.set(MonsterKindType::HYDRA);
+    }
 }
 
 /*!

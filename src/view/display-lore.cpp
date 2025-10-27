@@ -281,7 +281,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE,
             MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL,
             MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL, MonsterKindType::PLANT, MonsterKindType::FUNGUS, MonsterKindType::TURTLE, MonsterKindType::SNAKE,
-            MonsterKindType::FAIRY, MonsterKindType::VAMPIRE, MonsterKindType::BEAR, MonsterKindType::VORTEX, MonsterKindType::OOZE, MonsterKindType::DINOSAUR, MonsterKindType::LICH, MonsterKindType::GHOST, MonsterKindType::BERSERK, MonsterKindType::EXPLOSIVE, MonsterKindType::RAT, MonsterKindType::MINOTAUR, MonsterKindType::SKAVEN, MonsterKindType::KOBOLD, MonsterKindType::OGRE, MonsterKindType::BOVINE, MonsterKindType::MERFOLK, MonsterKindType::SHARK })) {
+            MonsterKindType::FAIRY, MonsterKindType::VAMPIRE, MonsterKindType::BEAR, MonsterKindType::VORTEX, MonsterKindType::OOZE, MonsterKindType::DINOSAUR, MonsterKindType::LICH, MonsterKindType::GHOST, MonsterKindType::BERSERK, MonsterKindType::EXPLOSIVE, MonsterKindType::RAT, MonsterKindType::MINOTAUR, MonsterKindType::SKAVEN, MonsterKindType::KOBOLD, MonsterKindType::OGRE, MonsterKindType::BOVINE, MonsterKindType::MERFOLK, MonsterKindType::SHARK, MonsterKindType::HYDRA })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
@@ -500,6 +500,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::SHARK)) {
         hook_c_roff(TERM_L_BLUE, _("サメ", " shark"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HYDRA)) {
+        hook_c_roff(TERM_L_GREEN, _("ヒドラ", " hydra"));
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
