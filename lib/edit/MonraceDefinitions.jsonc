@@ -14981,7 +14981,8 @@
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "SHARK"
     ]
 },
 {
@@ -16369,7 +16370,8 @@
         "AQUATIC",
         "WILD_ALL",
         "RES_WATE",
-        "FISH"
+        "FISH",
+        "SHARK"
     ]
 },
 {
@@ -20343,7 +20345,8 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
-        "ANIMAL"
+        "ANIMAL",
+        "SHARK"
     ]
 },
 {
@@ -25444,6 +25447,7 @@
         "UNIQUE",
         "DROP_CORPSE",
         "MOVE_BODY",
+        "SHARK",
         "WILD_OCEAN",
         "BASH_DOOR",
         "IM_COLD",
@@ -95365,7 +95369,8 @@
         "BASH_DOOR",
         "RES_WATE",
         "RES_TELE",
-        "RIDING"
+        "RIDING",
+        "SHARK"
     ]
 },
 {
@@ -99607,7 +99612,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_STUN",
-        "NONLIVING"
+        "NONLIVING",
+        "SHARK"
     ],
     "spawn_creature": [
         {
@@ -121358,7 +121364,8 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
-        "ANIMAL"
+        "ANIMAL",
+        "SHARK"
     ]
 },
 {
@@ -121410,7 +121417,8 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
-        "ANIMAL"
+        "ANIMAL",
+        "SHARK"
     ]
 },
 {
@@ -122712,6 +122720,7 @@
         "ATTR_ANY",
         "QUANTUM",
         "CAN_FLY",
+        "SHARK",
         "ELDRITCH_HORROR",
         "FRIENDS",
         "PASS_WALL",
@@ -147934,11 +147943,11 @@
         "character": "p",
         "color": "Violet"
     },
-    "speed": 17,
+    "speed": 10,
     "hit_point": "60d11",
-    "vision": 20,
+    "vision": 30,
     "armor_class": 100,
-    "alertness": 10,
+    "alertness": 5,
     "level": 40,
     "rarity": 2,
     "exp": 3000,
@@ -147983,7 +147992,6 @@
         "ONLY_ITEM",
         "DROP_90",
         "DROP_4D2",
-        "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
         "NO_STUN",
@@ -147993,8 +148001,7 @@
     "skill": {
         "list": [
             "HEAL",
-            "S_INSECT",
-            "CAUSE_3"
+            "S_INSECT"
         ],
         "probability": "1_IN_4"
     }
