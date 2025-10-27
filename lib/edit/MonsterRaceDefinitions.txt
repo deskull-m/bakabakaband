@@ -41642,6 +41642,24 @@ S:HEAL | S_INSECT
 D:$A vile priest who dwells alongside countless vermin.
 D:無数の害虫たちと共に在る忌まわしい司祭だ。
 
+N:2300:ローランの銀獣
+E:Loran Silverbeast
+G:H:w
+I:128:13d40:20:90:10
+W:41:4:2000:0:0
+B:SLASH:POISON:12d4
+B:BITE:LOSE_CON:3d4
+B:BITE:LOSE_CON:3d4
+B:SLASH:POISON:12d4
+F:MALE |
+F:DROP_1D2 |
+F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:EVIL | NO_CONF | NO_SLEEP
+D:$An even more monstrous humanoid beast believed to
+D:$ be connected to the ancient civilization of Yharnam.
+D:$ It harbors a giant centipede-like parasite within its body.
+D:ヤーナムの古代文明に関わると思われる、さらに異形なる人型の魔獣だ。
+D:その内部に巨大なムカデのような寄生虫を飼っている。
 
 # N: serial number : monster name
 # G: symbol : color

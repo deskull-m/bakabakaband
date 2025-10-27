@@ -148026,59 +148026,60 @@
 {
     "id": 2300,
     "name": {
-        "ja": "汚いイタズラ小僧のコピー",
-        "en": "Filthy street urchin"
+        "ja": "ローランの銀獣",
+        "en": "Loran Silverbeast"
     },
     "symbol": {
-        "character": "t",
-        "color": "Dark Gray"
+        "character": "H",
+        "color": "White"
     },
-    "speed": 0,
-    "hit_point": "1d4",
-    "vision": 4,
-    "armor_class": 1,
-    "alertness": 40,
-    "level": 0,
-    "rarity": 2,
-    "exp": 0,
-    "next_exp": 10,
-    "next_mon": 14,
+    "speed": 18,
+    "hit_point": "13d40",
+    "vision": 20,
+    "armor_class": 90,
+    "alertness": 10,
+    "level": 41,
+    "rarity": 4,
+    "exp": 2000,
+    "next_exp": 0,
+    "next_mon": 0,
     "escorts": [],
     "blows": [
         {
-            "method": "BEG",
-            "effect": "FLAVOR"
+            "method": "SLASH",
+            "effect": "POISON",
+            "damage_dice": "12d4"
         },
         {
-            "method": "TOUCH",
-            "effect": "EAT_GOLD"
+            "method": "BITE",
+            "effect": "LOSE_CON",
+            "damage_dice": "3d4"
+        },
+        {
+            "method": "BITE",
+            "effect": "LOSE_CON",
+            "damage_dice": "3d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "POISON",
+            "damage_dice": "12d4"
         }
     ],
     "flavor": {
-        "ja": "彼は汚らしくて本当に頭に来る奴だ。",
-        "en": "He looks squalid and thoroughly revolting."
+        "ja": "ヤーナムの古代文明に関わると思われる、さらに異形なる人型の魔獣だ。その内部に巨大なムカデのような寄生虫を飼っている。",
+        "en": "An even more monstrous humanoid beast believed to be connected to the ancient civilization of Yharnam. It harbors a giant centipede-like parasite within its body."
     },
     "sex": "MALE",
     "flags": [
-        "EVIL",
-        "WILD_TOWN",
-        "WILD_ONLY",
-        "RAND_25",
-        "FRIENDS",
-        "HUMAN",
-        "ROGUE",
-        "TAKE_ITEM",
+        "DROP_1D2",
         "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
         "DROP_CORPSE",
-        "DROP_SKELETON"
-    ],
-    "drop_kind": [
-        {
-            "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
-            "dice": "1d1"
-        }
+        "EVIL",
+        "NO_CONF",
+        "NO_SLEEP"
     ]
 }]
 }
