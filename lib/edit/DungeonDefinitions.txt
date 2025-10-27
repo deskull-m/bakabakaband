@@ -43,6 +43,7 @@ V:2.8.1
 
 N:0:荒野
 E:Wilderness
+T:WILDERNESS
 D:荒野
 D:$wilderness
 P:0:0
@@ -56,6 +57,7 @@ F:MONSTER_DIV_0
 
 N:1:鉄獄
 E:Angband
+T:ANGBAND
 D:$the entrance to the Dungeon of Angband
 D:鉄獄への入り口
 P:40:57
@@ -71,6 +73,7 @@ K:20:3:6:6:42
 
 N:2:イークの洞穴
 E:Yeek cave
+T:YEEK_CAVE
 D:$the entrance to the cave leading to the Yeek's den
 D:イークの住みかへと続く小さな洞穴
 P:48:5
@@ -84,6 +87,7 @@ R:1:100
 
 N:3:モリア
 E:Moria
+T:MORIA
 D:$Orc dominated mines in Moria.
 D:オークが支配するモリアの鉱山
 P:45:30
@@ -108,6 +112,7 @@ F:MONSTER_DIV_64 | FINAL_GUARDIAN_1034 | FINAL_OBJECT_354
 
 N:5:竜の住みか
 E:Dragon's lair
+T:DRAGONS_LAIR
 D:$a big tunnel leading to a Dragon's Lair
 D:竜の住みかへ続く大きく、薄暗い恐るべきトンネル
 P:28:74
@@ -123,6 +128,7 @@ M:DRAGON | R_CHAR_dD
 # Vecna is there, guarding Soulsword
 N:6:墓地
 E:Graveyard
+T:GRAVEYARD
 D:$a hole to the Graveyard underground
 D:墓地の地下への穴
 P:19:85
@@ -136,6 +142,7 @@ M:UNDEAD | NONLIVING
 
 N:7:森
 E:Forest
+T:FOREST
 D:$a path leading to a elven forest
 D:エルフの森へ続く草の道
 P:53:63
@@ -148,6 +155,7 @@ M:ANIMAL | ELF | WILD_WOOD | GOOD
 
 N:8:火山
 E:Volcano
+T:VOLCANO
 D:$a hole to the center of the Volcano
 D:火山の中心への穴
 P:53:13
@@ -160,6 +168,7 @@ M:IM_FIRE | CAN_FLY | WILD_VOLCANO
 
 N:9:地獄
 E:Hell
+T:HELL
 D:$the stairway to Hell
 D:地獄への階段
 P:62:94
@@ -172,6 +181,7 @@ M:IM_FIRE | EVIL
 
 N:10:天界
 E:Heaven
+T:HEAVEN
 D:$the way to Heaven
 D:天界へと通じる道
 P:2:94
@@ -184,6 +194,7 @@ M:GOOD
 # Wrath
 N:11:ヌメノール
 E:Numenor
+T:NUMENOR
 D:$a submerged way to the exodus Numenor from Arda
 D:アルダより脱した地ヌメノールへの水没した道
 P:27:30
@@ -196,6 +207,7 @@ M:CAN_SWIM | CAN_FLY | AQUATIC | WILD_OCEAN
 
 N:12:城
 E:Castle
+T:CASTLE
 D:$the entrance to the Castle
 D:城
 P:34:88
@@ -210,6 +222,7 @@ M:DEMON | R_CHAR_phHg
 # Cth and Razorback
 N:13:ルルイエ
 E:R'lyeh
+T:RLYEH
 D:$a way to R'lyeh
 D:ルルイエ
 P:3:40
@@ -223,6 +236,7 @@ M:DEMON | ELDRITCH_HORROR
 
 N:14:山
 E:Mountain
+T:MOUNTAIN
 D:$a way leading to the mountain
 D:山
 P:46:76
@@ -235,6 +249,7 @@ M:TROLL | GIANT | CAN_FLY | ANIMAL | WILD_MOUNTAIN | R_CHAR_OYH
 
 N:15:金鉱
 E:Mine
+T:MINE
 D:$the entrance to the Mine
 D:金鉱
 P:23:49
@@ -249,6 +264,7 @@ F:MONSTER_RATE_12
 
 N:16:反魔法の洞窟
 E:Anti-magic cave
+T:ANTI_MAGIC_CAVE
 D:$the entrance to the cave filled with anti-magic cloud
 D:反魔法の洞窟
 P:6:84
@@ -261,6 +277,7 @@ F:MONSTER_DIV_0 | NO_MAGIC
 
 N:17:反攻撃の洞窟
 E:Anti-melee cave
+T:ANTI_MELEE_CAVE
 D:$the entrance to the cave filled with restricting magical field
 D:反攻撃の洞窟
 P:45:47
@@ -273,6 +290,7 @@ F:MONSTER_DIV_0 | NO_MELEE
 
 N:18:カメレオン洞
 E:Chameleon cave
+T:CHAMELEON_CAVE
 D:$the entrance to the chameleon's den
 D:カメレオンだけが棲息する洞窟
 P:52:94
@@ -286,6 +304,7 @@ M:CHAMELEON
 
 N:19:暗闇の洞窟
 E:Dark cave
+T:DARK_CAVE
 D:$the dark entrance to the cave filled with magical darkness
 D:暗闇の洞窟
 P:12:57
@@ -299,6 +318,7 @@ F:MONSTER_DIV_64 | DARKNESS | FINAL_GUARDIAN_803
 
 N:20:ガラスの城
 E:Glass castle
+T:GLASS_CASTLE
 D:$the entrance to the glass castle
 D:ガラスの城
 P:40:37
@@ -312,6 +332,7 @@ S:BR_LITE | BR_DARK | BA_DARK | BA_LITE
 
 N:21:下北沢
 E:Shimokitazawa
+T:SHIMOKITAZAWA
 D:$Sacred place for gays
 D:ホモの聖地
 P:48:88
@@ -327,6 +348,7 @@ Z:50:213
 
 N:22:百合天国☆
 E:Yuri Heaven
+T:YURI_HEAVEN
 D:$Voice drama plan space
 D:43名くらいで集まって出来たヴォイスドラマ企画空間
 P:50:84
@@ -339,6 +361,7 @@ F:FINAL_GUARDIAN_1308
 
 N:23:虚空領域
 E:Void Territory
+T:VOID_TERRITORY
 D:$Void Territory
 D:忘却界や猿空間とも言われる論理すら歪む空間
 P:39:45
@@ -350,6 +373,7 @@ F:MONSTER_DIV_64
 
 N:24:聖杯の迷宮
 E:H.Grail Dun
+T:HOLY_GRAIL_DUNGEON
 D:聖杯の生み出す悪夢の迷宮
 D:$Labyrinth of the nightmare to bring about of the Holy Grail
 P:50:3
@@ -368,6 +392,7 @@ R:17:3600
 
 N:25:ソープロ農場
 E:StP Farm
+T:STP_FARM
 D:戦いから追放されたすべての者が行き着く農場
 D:$A farm where all those exiled from battle end up
 W:1:50:0:0:14:160:75:20:0x0000:0x0000
@@ -380,6 +405,7 @@ F:MONSTER_DIV_0 | NO_MAGIC | NO_MELEE | DIFFICULT_RECALL | ALWAYS_LIGHT
 
 N:26:ア ナ ル 鉄獄
 E:*Dark Ring*
+T:DARK_RING
 D:$the ass holl to the cave filled with nasty darkness
 D:ア ナ ル 鉄獄
 P:41:55
@@ -397,6 +423,7 @@ R:8:1000
 
 N:27:砂漠
 E:Desert
+T:DESERT
 D:広大なる砂漠
 D:$Vast desert
 P:38:29
@@ -408,6 +435,7 @@ M:ANIMAL
 
 N:28:雪原
 E:Snow Field
+T:SNOW_FIELD
 D:広大なる雪原
 D:$Vast snow field
 P:2:73
@@ -419,6 +447,7 @@ M:ANIMAL
 
 N:29:GOLAN本部
 E:GOLAN.H.Q.
+T:GOLAN_HQ
 D:GOLAN本部
 D:$Head Quarter of GOLAN
 P:45:33
@@ -431,6 +460,7 @@ M:HUMAN
 
 N:30:ドルアーガの塔
 E:The Tower of Druaga
+T:TOWER_OF_DRUAGA
 D:$The Tower of Druaga
 D:ドルアーガの塔
 P:52:91
@@ -443,6 +473,7 @@ M:R_CHAR_phHg
 
 N:31:モリヤの鉱山
 E:Mine of Moriya
+T:MINE_OF_MORIYA
 D:$the entrance to the Mine of Moriya
 D:モリヤの鉱山
 P:41:71
@@ -457,6 +488,7 @@ F:MONSTER_RATE_12
 
 N:32:ぷよぷよ地獄
 E:Puyopuyo Hell
+T:PUYOPUYO_HELL
 D:$Puyopuyo Hell
 D:ぷよぷよ地獄
 P:49:24
