@@ -148081,5 +148081,77 @@
         "NO_CONF",
         "NO_SLEEP"
     ]
+},
+{
+    "id": 2301,
+    "name": {
+        "ja": "仮面巨人",
+        "en": "Giant Dad"
+    },
+    "symbol": {
+        "character": "z",
+        "color": "Yellow"
+    },
+    "speed": 10,
+    "hit_point": "10d100",
+    "vision": 25,
+    "armor_class": 100,
+    "alertness": 10,
+    "level": 44,
+    "rarity": 2,
+    "exp": 1200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d8"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d8"
+        }
+    ],
+    "flavor": {
+        "ja": "不死の使命を忘れ、黒い森の庭で永遠に互いに背中から斬りつけあっているロードランの亡者共だ。",
+        "en": "The undead of Lordran, who forgot their immortal mission, slash at each other's backs forever in the Darkroot Garden."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "SPEAK_ALL",
+        "HUMAN",
+        "UNDEAD",
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "FRIENDS",
+        "EVIL",
+        "IM_ACID",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP"
+    ]
 }]
 }

@@ -41661,6 +41661,27 @@ D:$ It harbors a giant centipede-like parasite within its body.
 D:ヤーナムの古代文明に関わると思われる、さらに異形なる人型の魔獣だ。
 D:その内部に巨大なムカデのような寄生虫を飼っている。
 
+N:2301:仮面巨人
+E:Giant Dad
+G:z:y
+I:120:10d100:25:100:10
+W:44:2:1200:0:0
+B:SLASH:HURT:6d6
+B:SLASH:HURT:6d6
+B:SLASH:HURT:3d8
+B:SLASH:HURT:3d8
+F:UNIQUE | MALE | SPEAK_ALL | HUMAN | UNDEAD
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_2D2 | DROP_GOOD | 
+F:OPEN_DOOR | BASH_DOOR | FRIENDS
+F:EVIL | IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | 
+F:NO_CONF | NO_SLEEP
+D:$The undead of Lordran, who forgot their immortal mission,
+D:$ slash at each other's backs forever in the Darkroot Garden.
+D:不死の使命を忘れ、黒い森の庭で永遠に互いに
+D:背中から斬りつけあっているロードランの亡者共だ。
+
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
