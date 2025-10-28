@@ -232,6 +232,8 @@ enum class MonraceId : int16_t {
     INARIMAN_2 = 1519,
     INARIMAN_3 = 1520,
     CHEST_MIMIC_03 = 1529,
+    LEGOLAS = 1940, // 緑葉の『レゴラス』
+    THRANDUIL = 1946, // 森エルフの王『スランドゥイル』
     CHEST_MIMIC_04 = 1530,
     CHEST_MIMIC_11 = 1531,
     SHITTO_MASK = 1546,
