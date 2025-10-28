@@ -6,6 +6,8 @@
 
 #include "core/show-file.h"
 #include "io-dump/dump-util.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/dungeon-list.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include <string>
@@ -49,6 +51,31 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
             }
         }
     }
+
+    // ダンジョンに入った回数を表示
+    if (player_ptr->incident_tree.count("ENTER_DUNGEON")) {
+        fprintf(fff, _("\nあなたはこれまで%d回ダンジョンに入った。\n", "\nYou have entered dungeons %d times.\n"), player_ptr->incident_tree["ENTER_DUNGEON"]);
+
+        // 各ダンジョンへの入場回数を表示
+        const auto &dungeons = DungeonList::get_instance();
+        for (const auto &entry : player_ptr->incident_tree) {
+            if (entry.first.find("ENTER_DUNGEON/") == 0 && entry.first.length() > 14) {
+                const char *dungeon_tag = entry.first.c_str() + 14; // "ENTER_DUNGEON/" の後
+
+                // タグからダンジョン名を検索
+                std::string dungeon_name = _("不明なダンジョン", "Unknown Dungeon");
+                for (const auto &[dungeon_id, dungeon_ptr] : dungeons) {
+                    if (dungeon_ptr->tag == dungeon_tag) {
+                        dungeon_name = dungeon_ptr->name;
+                        break;
+                    }
+                }
+
+                fprintf(fff, _("    %s: %d回\n", "    %s: %d times\n"), dungeon_name.c_str(), entry.second);
+            }
+        }
+    }
+
     if (player_ptr->incident.count(INCIDENT::LEAVE_FLOOR)) {
         fprintf(fff, _("あなたはこれまで%d回フロアを移動した。\n", "You moved %d floors\n"), player_ptr->incident[INCIDENT::LEAVE_FLOOR]);
     }
