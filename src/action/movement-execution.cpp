@@ -361,7 +361,6 @@ void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, 
         mpe_mode |= MPE_BREAK_TRAP;
     }
 
-    player_ptr->plus_incident(INCIDENT::WALK, 1);
     player_ptr->plus_incident_tree("WALK", 1);
 
     static constexpr const char *dir_names[10] = {

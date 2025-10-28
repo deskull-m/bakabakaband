@@ -164,7 +164,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
                 exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::SELL, 0, sold_item_name);
             }
 
-            player_ptr->plus_incident(INCIDENT::STORE_SELL, 1);
+            player_ptr->plus_incident_tree("STORE_SELL", 1);
 
             if (!((tval == ItemKindType::FIGURINE) && (value > 0))) {
                 purchase_analyze(player_ptr, price, value, dummy);
