@@ -178,6 +178,16 @@ errr parse_dungeons_info(std::string_view buf, angband_header *)
         return PARSE_ERROR_NONE;
     }
 
+    // T:tag
+    if (tokens[0] == "T") {
+        if (tokens.size() < 2 || tokens[1].size() == 0) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        dungeon->tag = tokens[1];
+        return PARSE_ERROR_NONE;
+    }
+
     // D:text_ja
     // D:$text_en
     if (tokens[0] == "D") {
