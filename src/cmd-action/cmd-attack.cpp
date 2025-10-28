@@ -109,7 +109,7 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
     int bonus = player_ptr->to_h_m + (player_ptr->lev * 6 / 5);
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
     is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
     if (!is_hit) {
@@ -181,7 +181,7 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
 
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
     is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
@@ -272,7 +272,7 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
 
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
     is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
@@ -450,7 +450,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         PlayerSkill(player_ptr).gain_riding_skill_exp_on_melee_attack(monrace);
     }
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_ACT_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_ACT_COUNT", 1);
 
     player_ptr->riding_t_m_idx = grid.m_idx;
     bool fear = false;
@@ -647,7 +647,7 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
 
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
     is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 

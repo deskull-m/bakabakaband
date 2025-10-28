@@ -198,7 +198,7 @@ static bool stay_inn(PlayerType *player_ptr)
 
     display_stay_result(player_ptr, prev_hour);
 
-    player_ptr->plus_incident(INCIDENT::STAY_INN, 1);
+    player_ptr->plus_incident_tree("STAY_INN", 1);
 
     return true;
 }

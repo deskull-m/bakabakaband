@@ -296,7 +296,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     disturb(player_ptr, false, true);
 
     cave_alter_feat(player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::HIT_TRAP);
-    player_ptr->plus_incident(INCIDENT::TRAPPED, 1);
+    player_ptr->plus_incident_tree("TRAPPED", 1);
 
     /* Analyze */
     switch (trap_feat_type) {
