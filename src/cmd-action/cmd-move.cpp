@@ -315,6 +315,13 @@ void do_cmd_go_down(PlayerType *player_ptr)
     if (!floor.is_underground()) {
         floor.enter_dungeon(true);
         down_num = dungeon.mindepth;
+
+        // ダンジョンに入った回数を記録
+        player_ptr->plus_incident_tree("ENTER_DUNGEON", 1);
+        if (!dungeon.tag.empty()) {
+            const auto dungeon_key = format("ENTER_DUNGEON/%s", dungeon.tag.c_str());
+            player_ptr->plus_incident_tree(dungeon_key.data(), 1);
+        }
     }
 
     if (record_stair && !floor.is_in_quest()) {
