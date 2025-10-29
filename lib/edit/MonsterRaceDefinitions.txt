@@ -41705,6 +41705,24 @@ D:$ Within the reach of Iluvatar's power, there is no fate unknown to him.
 D:ヴァリノールの強き諸力、ヴァラールの中でも運命の一切を司ると言われている存在だ。
 D:彼の主イルーヴァタールの力の及ぶ限り、彼の知らぬ運命はない。
 
+N:2303:行方不明になっていた『マック』
+E:Mac, who had been missing
+G:g:v
+I:113:40d15:12:80:10
+W:30:4:2000:0:0
+B:HIT:HURT:4d8
+B:HIT:HURT:4d8
+B:SHOOT:HURT:10d5
+F:ONLY_GOLD | DROP_2D2 | UNIQUE | FORCE_MAXHP
+F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | REFLECTING | 
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | ROBOT
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
+S:1_IN_3 | HOLD | SHOOT
+D:$He was a Repliroid under Irregular Hunter X,
+D:$ but became a pitiful man brainwashed during Dr. Doppler's rebellion.
+D:イレギュラーハンターエックスの部下だったレプリロイドだが、
+D:ドクタードップラーの叛乱の中で洗脳された哀れな男だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
