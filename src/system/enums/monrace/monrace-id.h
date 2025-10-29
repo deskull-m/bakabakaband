@@ -259,6 +259,10 @@ enum class MonraceId : int16_t {
     GOLAN_RED_BELET = 1828,
     KACHO_ANGEL = 1844,
     DIABOLIQUE_GOLDO = 1861,
+    KAMAKURAKUN = 1986, // 忍者『カマクラくん』
+    SANTOS = 1987, // タフガイ『サントス』
+    ROSESABU = 1988, // 剣士『ロースサブ』
+    MASTER_CHEN = 1989, // 師匠『チンさん』
     DIABOLIQUE_KAENOH = 1975,
     DIABOLIQUE_AZURITE = 1993,
     DIABOLIQUE_FATRAS = 1994,
