@@ -148252,5 +148252,70 @@
         ],
         "probability": "1_IN_3"
     }
+},
+{
+    "id": 2303,
+    "name": {
+        "ja": "行方不明になっていた『マック』",
+        "en": "Mac, who had been missing"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Violet"
+    },
+    "speed": 3,
+    "hit_point": "40d15",
+    "vision": 12,
+    "armor_class": 80,
+    "alertness": 10,
+    "level": 30,
+    "rarity": 4,
+    "exp": 2000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d8"
+        }
+    ],
+    "skill": {
+        "shoot": "10d5",
+        "list": [
+            "HOLD",
+            "SHOOT"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "イレギュラーハンターエックスの部下だったレプリロイドだが、ドクタードップラーの叛乱の中で洗脳された哀れな男だ。",
+        "en": "He was a Repliroid under Irregular Hunter X, but became a pitiful man brainwashed during Dr. Doppler's rebellion."
+    },
+    "flags": [
+        "ONLY_GOLD",
+        "DROP_2D2",
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "REFLECTING",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "ROBOT",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING"
+    ]
 }]
 }
