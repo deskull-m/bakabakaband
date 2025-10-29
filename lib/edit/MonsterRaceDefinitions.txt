@@ -41681,6 +41681,29 @@ D:$ slash at each other's backs forever in the Darkroot Garden.
 D:不死の使命を忘れ、黒い森の庭で永遠に互いに
 D:背中から斬りつけあっているロードランの亡者共だ。
 
+N:2302:運命の司『ナーモ・マンドス』
+E:Namo Mandos, Doomsman of the Valar
+G:P:D
+I:130:65d100:40:190:10
+W:82:3:80000:0:0
+B:TOUCH:EXP_VAMP:5d12
+B:TOUCH:EXP_VAMP:5d12
+B:HIT:PARALYZE:10d10
+B:HIT:HURT:10d10
+F:UNIQUE | MALE | SPEAK_ALL | RES_NETH | NO_FEAR | GOOD |
+F:FORCE_MAXHP | SMART | REFLECTING
+F:ONLY_ITEM | DROP_3D2 | DROP_4D2 | DROP_GREAT | CAN_FLY |
+F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | POWERFUL | MOVE_BODY | 
+F:IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | RES_LITE | RES_TELE
+F:NO_CONF | NO_SLEEP | ALLIANCE_VALINOR
+S:1_IN_3 | 
+S:BO_MANA | BA_NETH | CAUSE_4 | BRAIN_SMASH
+S:BR_NETH | PSY_SPEAR | S_MONSTERS | HEAL | HAND_DOOM
+S:S_ANGEL | BR_MANA | BR_COLD | INVULNER | BA_LITE | BO_LITE
+D:$The mighty powers of Valinor, beings said to govern all destinies among the Valar.
+D:$ Within the reach of Iluvatar's power, there is no fate unknown to him.
+D:ヴァリノールの強き諸力、ヴァラールの中でも運命の一切を司ると言われている存在だ。
+D:彼の主イルーヴァタールの力の及ぶ限り、彼の知らぬ運命はない。
 
 # N: serial number : monster name
 # G: symbol : color
