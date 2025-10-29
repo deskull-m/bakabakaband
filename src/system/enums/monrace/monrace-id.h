@@ -48,6 +48,7 @@ enum class MonraceId : int16_t {
     COLBRAN = 435,
     MITHRIL_GOLEM = 464,
     THORONDOR = 468,
+    SHELOB = 481, // 闇の蜘蛛『シェロブ』
     GHOUL_KING = 483,
     NINJA = 485,
     BICLOPS = 490,
@@ -84,6 +85,7 @@ enum class MonraceId : int16_t {
     SHAMBLER = 786,
     TIAMAT = 795,
     BLACK_REAVER = 798,
+    UNGOLIANT = 808, // 光なき闇の大蜘蛛『ウンゴリアント』
     UNMAKER = 815,
     CYBER = 816,
     ANGMAR = 825,
