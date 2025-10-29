@@ -22,6 +22,24 @@ int AllianceDiabolique::calcImpressionPoint(PlayerType *creature_ptr) const
     // プレイヤーレベルによる基本印象値
     impression += creature_ptr->lev * 10;
 
+    // デアボリカのロードたちを殺害した場合の大幅減点（レベル×10）
+    const auto &monrace_list = MonraceList::get_instance();
+    if (monrace_list.get_monrace(MonraceId::DIABOLIQUE_GOLDO).r_pkills > 0) {
+        impression -= 620; // 光のロードデアボリカ『ゴルドー』を殺害
+    }
+    if (monrace_list.get_monrace(MonraceId::DIABOLIQUE_KAENOH).r_pkills > 0) {
+        impression -= 650; // 炎のロードデアボリカ『火炎王』を殺害
+    }
+    if (monrace_list.get_monrace(MonraceId::DIABOLIQUE_AZURITE).r_pkills > 0) {
+        impression -= 660; // 闇のロードデアボリカ『アズライト』を殺害
+    }
+    if (monrace_list.get_monrace(MonraceId::DIABOLIQUE_FATRAS).r_pkills > 0) {
+        impression -= 710; // 雲のロードデアボリカ『ファトラ』を殺害
+    }
+    if (monrace_list.get_monrace(MonraceId::DIABOLIQUE_PENGZU).r_pkills > 0) {
+        impression -= 790; // 房中のロードデアボリカ『彭祖』を殺害
+    }
+
     // 邪悪な行為への評価
     // TODO: 邪悪な行為、デーモン召喚、闇の魔法使用などでボーナス
 
