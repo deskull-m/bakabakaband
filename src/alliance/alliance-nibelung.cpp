@@ -27,7 +27,10 @@
 #include "spell-realm/spells-crusade.h"
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -109,6 +112,24 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // レベルボーナス
     point += creature_ptr->lev / 3;
+
+    // ニーベルング族のメンバーを殺害した場合の減点
+    const auto &monrace_list = MonraceList::get_instance();
+
+    // ユニークモンスター
+    if (monrace_list.get_monrace(MonraceId::MIME).r_pkills > 0) {
+        point -= 240; // ニーベルング族の『ミーメ』を殺害 (レベル24 × 10)
+    }
+    if (monrace_list.get_monrace(MonraceId::HAGEN).r_pkills > 0) {
+        point -= 240; // アルベリヒの息子『ハーゲン』を殺害 (レベル24 × 10)
+    }
+    if (monrace_list.get_monrace(MonraceId::ALBERICH).r_pkills > 0) {
+        point -= 270; // ニーベルング族の王『アルベリヒ』を殺害 (レベル27 × 10)
+    }
+
+    // 一般モンスター（複数撃破の可能性があるため、撃破数に応じて減点）
+    point -= monrace_list.get_monrace(MonraceId::NIBELUNG).r_pkills * 6; // ニーベルングを殺害 (レベル6 × 1 per kill)
+    point -= monrace_list.get_monrace(MonraceId::NIBELUNG_ASSASSIN).r_pkills * 19; // ニーベルングの暗殺者を殺害 (レベル19 × 1 per kill)
 
     return point;
 }
@@ -234,5 +255,6 @@ void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
  */
 bool AllianceNibelung::isAnnihilated()
 {
-    return false;
+    // ニーベルング族の王『アルベリヒ』が存在しない場合、ニーベルングの王国は壊滅する
+    return MonraceList::get_instance().get_monrace(MonraceId::ALBERICH).mob_num == 0;
 }

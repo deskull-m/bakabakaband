@@ -17,6 +17,7 @@ enum class MonraceId : int16_t {
     SWORDFISH = 88,
     NOV_PALADIN = 97,
     NOV_PRIEST_G = 109,
+    NIBELUNG = 111, // ニーベルング
     SILVER_COINS = 117,
     D_ELF = 122,
     MANES = 128,
@@ -40,10 +41,13 @@ enum class MonraceId : int16_t {
     ARCH_VILE = 357,
     JADE_MONK = 370,
     D_ELF_WARLOCK = 375,
+    MIME = 382, // ニーベルング族の『ミーメ』
+    HAGEN = 383, // アルベリヒの息子『ハーゲン』
     MENELDOR = 384,
     PHANTOM_B = 385,
     D_ELF_DRUID = 400,
     GWAIHIR = 410,
+    ALBERICH = 419, // ニーベルング族の王『アルベリヒ』
     ADAMANT_COINS = 423,
     COLBRAN = 435,
     MITHRIL_GOLEM = 464,
@@ -274,6 +278,7 @@ enum class MonraceId : int16_t {
     KHORNE_CHOSEN = 2003,
     SLAANESH_CHOSEN = 2005,
     BIG_EYE = 2028, // アーリアン・ファミリーのボス『ビッグ・アイ』
+    NIBELUNG_ASSASSIN = 2047, // ニーベルングの暗殺者
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
     GWYN = 2203, // 太陽の光の王『グウィン』
