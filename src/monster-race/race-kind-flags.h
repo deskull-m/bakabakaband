@@ -92,5 +92,6 @@ enum class MonsterKindType {
     SHARK = 88, // サメ
     HYDRA = 89, // ヒドラ
     SHIP = 90, // 船舶
+    SLUG = 91, // ナメクジ
     MAX,
 };

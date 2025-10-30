@@ -471,6 +471,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "SHARK", MonsterKindType::SHARK }, // サメ
     { "HYDRA", MonsterKindType::HYDRA }, // ヒドラ
     { "SHIP", MonsterKindType::SHIP }, // 船舶
+    { "SLUG", MonsterKindType::SLUG }, // ナメクジ
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {

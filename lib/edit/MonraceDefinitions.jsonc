@@ -5787,7 +5787,8 @@
         "CAN_SWIM",
         "WILD_ALL",
         "DROP_CORPSE",
-        "EAT_ACIDIC"
+        "EAT_ACIDIC",
+        "SLUG"
     ],
     "skill": {
         "list": [
@@ -141894,7 +141895,8 @@
         "DROP_CORPSE",
         "EAT_ACIDIC",
         "SELF_LITE_1",
-        "FRIENDS"
+        "FRIENDS",
+        "SLUG"
     ],
     "skill": {
         "list": [
