@@ -255,5 +255,6 @@ void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
  */
 bool AllianceNibelung::isAnnihilated()
 {
-    return false;
+    // ニーベルング族の王『アルベリヒ』が存在しない場合、ニーベルングの王国は壊滅する
+    return MonraceList::get_instance().get_monrace(MonraceId::ALBERICH).mob_num == 0;
 }
