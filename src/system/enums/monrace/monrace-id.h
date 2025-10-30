@@ -253,6 +253,10 @@ enum class MonraceId : int16_t {
     PRINCESS_KETHOLDETH = 1590,
     SUREN = 1810,
     FEANOR = 1811,
+    PAWN_OF_KING_SUREN = 1813, // スレン王の兵卒
+    GREAT_PAWN_OF_KING_SUREN = 1814, // スレン王の重兵卒
+    KNIGHT_OF_KING_SUREN = 1815, // スレン王の騎士
+    GREAT_KNIGHT_OF_KING_SUREN = 1816, // スレン王の重騎士
     // GOLAN
     GOLAN_COLONEL = 1607,
     GOLAN_MAD = 1608,
