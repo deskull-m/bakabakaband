@@ -1563,6 +1563,7 @@
         "NEVER_MOVE",
         "CAN_FLY",
         "DROP_CORPSE",
+        "EYE",
         "HURT_LITE",
         "NO_FEAR",
         "EAT_SLEEP"
@@ -3835,6 +3836,7 @@
         "CAN_FLY",
         "DROP_CORPSE",
         "SELF_LITE_1",
+        "EYE",
         "HURT_LITE",
         "NO_FEAR",
         "EAT_MANA",
@@ -4978,6 +4980,7 @@
         "ATTR_ANY",
         "RES_DISE",
         "DROP_CORPSE",
+        "EYE",
         "NEVER_MOVE",
         "CAN_FLY",
         "EAT_MANA",
