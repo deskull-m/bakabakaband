@@ -6,7 +6,16 @@
 
 int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
-    return 0;
+    int result = 0;
+    const auto &monraces = MonraceList::get_instance();
+
+    // 便乗仏教大僧正『MUR』 (レベル40)
+    result -= monraces.get_monrace(MonraceId::BINZYOU_MUR).r_pkills * 400;
+
+    // 便乗仏教修行僧 (レベル23)
+    result -= monraces.get_monrace(MonraceId::BINZYOU_BUDDHISM_MONK).r_pkills * 10;
+
+    return result;
 }
 
 bool AllianceBinzyouBuddhism::isAnnihilated()
