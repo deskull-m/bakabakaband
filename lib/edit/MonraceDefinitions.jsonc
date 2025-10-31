@@ -4718,7 +4718,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_90",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "ALIEN"
     ]
 },
 {
@@ -65940,6 +65941,7 @@
         "RES_TELE",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "ALIEN",
         "FORCE_MAXHP",
         "KILL_WALL",
         "HUMAN",
@@ -69956,7 +69958,8 @@
         "FRIENDS",
         "DROP_CORPSE",
         "WILD_WOOD",
-        "HAS_LITE_1"
+        "HAS_LITE_1",
+        "ALIEN"
     ]
 },
 {
@@ -70425,6 +70428,7 @@
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GOOD",
+        "ALIEN",
         "OPEN_DOOR",
         "BASH_DOOR"
     ]
@@ -100425,7 +100429,8 @@
         "BASH_DOOR",
         "CAN_FLY",
         "WARRIOR",
-        "EVIL"
+        "EVIL",
+        "ALIEN"
     ],
     "skill": {
         "list": [
@@ -106959,6 +106964,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "ALIEN",
         "OPEN_DOOR",
         "BASH_DOOR",
         "CAN_FLY",
@@ -125225,7 +125231,8 @@
         "WILD_WASTE",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "EAT_BERSERKER"
+        "EAT_BERSERKER",
+        "ALIEN"
     ]
 },
 {
@@ -148375,6 +148382,7 @@
         "DROP_CORPSE",
         "DROP_SKELETON",
         "KARATEKA",
+        "ALIEN",
         "DROP_60",
         "DROP_1D2",
         "OPEN_DOOR",

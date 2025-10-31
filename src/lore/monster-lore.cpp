@@ -266,6 +266,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::EYE);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ALIEN)) {
+        lore_ptr->kind_flags.set(MonsterKindType::ALIEN);
+    }
+
     if (lore_ptr->r_ptr->misc_flags.has(MonsterMiscType::FORCE_DEPTH)) {
         lore_ptr->misc_flags.set(MonsterMiscType::FORCE_DEPTH);
     }
