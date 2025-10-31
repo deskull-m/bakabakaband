@@ -41723,6 +41723,23 @@ D:$ but became a pitiful man brainwashed during Dr. Doppler's rebellion.
 D:イレギュラーハンターエックスの部下だったレプリロイドだが、
 D:ドクタードップラーの叛乱の中で洗脳された哀れな男だ。
 
+N:2304:ナメック星人の若者
+E:Young Namekian
+G:h:G
+I:115:45d12:30:50:10
+W:39:2:600:0:0
+B:KICK:SUPERHURT:4d2
+B:PUNCH:SUPERHURT:4d2
+B:KICK:SUPERHURT:4d5
+B:PUNCH:SUPERHURT:4d2
+F:GOOD | DROP_CORPSE | DROP_SKELETON | KARATEKA
+F:DROP_60 | DROP_1D2 | OPEN_DOOR | BASH_DOOR | IM_ELEC | HAS_LITE_2
+F:IM_FIRE | IM_COLD | IM_POIS | NO_FEAR | NO_CONF | NO_SLEEP
+S:1_IN_6 | BO_MANA
+D:$A warrior of a peaceful race living a tranquil life on their homeworld.
+D:$ They are resisting Frieza's invasion.
+D:母星で平穏な暮らしを重ねる善良な種族の戦士だ。フリーザの侵略に抗っている。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

@@ -148322,5 +148322,77 @@
         "NO_FEAR",
         "NONLIVING"
     ]
+},
+{
+    "id": 2304,
+    "name": {
+        "ja": "ナメック星人の若者",
+        "en": "Young Namekian"
+    },
+    "symbol": {
+        "character": "h",
+        "color": "Light Green"
+    },
+    "speed": 5,
+    "hit_point": "45d12",
+    "vision": 30,
+    "armor_class": 50,
+    "alertness": 10,
+    "level": 39,
+    "rarity": 2,
+    "exp": 600,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d2"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d2"
+        },
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d2"
+        }
+    ],
+    "flavor": {
+        "ja": "母星で平穏な暮らしを重ねる善良な種族の戦士だ。フリーザの侵略に抗っている。",
+        "en": "A warrior of a peaceful race living a tranquil life on their homeworld. They are resisting Frieza's invasion."
+    },
+    "flags": [
+        "GOOD",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "KARATEKA",
+        "DROP_60",
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "IM_ELEC",
+        "HAS_LITE_2",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "NO_FEAR",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "BO_MANA"
+        ],
+        "probability": "1_IN_6"
+    }
 }]
 }
