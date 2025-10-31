@@ -247,6 +247,7 @@ enum class MonraceId : int16_t {
     CHEST_MIMIC_04 = 1530,
     CHEST_MIMIC_11 = 1531,
     SHITTO_MASK = 1546,
+    HUMAN_FACE_LOCOMOTIVE = 1544, // 人面機関車
     JURAL_MONS = 1583,
     NUMENOR_INFANTRY = 1586, // ヌメノール装甲歩兵
     BINZYOU_MUR = 1587,
@@ -257,6 +258,7 @@ enum class MonraceId : int16_t {
     GREAT_PAWN_OF_KING_SUREN = 1814, // スレン王の重兵卒
     KNIGHT_OF_KING_SUREN = 1815, // スレン王の騎士
     GREAT_KNIGHT_OF_KING_SUREN = 1816, // スレン王の重騎士
+    TOPHAMHATT_ENGINEER = 2254, // トップハム・ハット一族の技師
     // GOLAN
     GOLAN_COLONEL = 1607,
     GOLAN_MAD = 1608,
