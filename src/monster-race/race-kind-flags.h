@@ -95,5 +95,6 @@ enum class MonsterKindType {
     SLUG = 91, // ナメクジ
     EYE = 92, // 目
     ALIEN = 93, // 異星人
+    GRANDMA = 94, // ババア
     MAX,
 };

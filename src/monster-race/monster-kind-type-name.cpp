@@ -197,6 +197,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("目", "eye");
     case MonsterKindType::ALIEN:
         return _("異星人", "alien");
+    case MonsterKindType::GRANDMA:
+        return _("ババア", "grandma");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
