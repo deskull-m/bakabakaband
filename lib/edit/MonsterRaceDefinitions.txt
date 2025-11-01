@@ -41740,6 +41740,20 @@ D:$A warrior of a peaceful race living a tranquil life on their homeworld.
 D:$ They are resisting Frieza's invasion.
 D:母星で平穏な暮らしを重ねる善良な種族の戦士だ。フリーザの侵略に抗っている。
 
+N:2305:反物質おばあちゃん
+E:Antimatter grandma
+G:p:w
+I:110:10d5:10:30:10
+W:45:2:0:5:0:0
+B:EXPLODE:HURT:15d10
+F:FEMALE | GRANDMA | EVIL | ATTR_MULTI
+F:RAND_25 | DROP_SKELETON | DROP_CORPSE | ALLIANCE_COOKIE-GRANDMA | MOB_500
+F:OPEN_DOOR | BASH_DOOR
+F:SPAWN_ITEM_11_IN_1000_750
+F:DROP_KIND_1_IN_1_750_0_10d5
+D:クッキーを作ることが全てである時空から、クッキーを作る目的のためだけに
+D:この世界に来訪したおばあちゃんだ。対消滅エネルギーをもってクッキーを生み出そうとしている。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
