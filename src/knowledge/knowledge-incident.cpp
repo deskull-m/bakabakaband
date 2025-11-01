@@ -6,6 +6,8 @@
 
 #include "core/show-file.h"
 #include "io-dump/dump-util.h"
+#include "monster-race/monster-kind-type-name.h"
+#include "monster-race/race-kind-flags.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/player-type-definition.h"
@@ -111,7 +113,23 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
         fprintf(fff, _("あなたはこれまで%d回宿屋に宿泊した。\n", "You have stayed inn %d times. \n"), player_ptr->incident_tree["STAY_INN"]);
     }
     if (player_ptr->incident_tree.count("KILL")) {
-        fprintf(fff, _("あなたはこれまで%d体のモンスターを倒した。\n", "You have killed %d monsters.\n"), player_ptr->incident_tree["kill"]);
+        fprintf(fff, _("あなたはこれまで%d体のモンスターを倒した。\n", "You have killed %d monsters.\n"), player_ptr->incident_tree["KILL"]);
+
+        // Display kills by MonsterKindType
+        for (size_t i = 0; i < static_cast<size_t>(MonsterKindType::MAX); i++) {
+            const std::string key = "KILL/" + std::to_string(i);
+            if (player_ptr->incident_tree.count(key)) {
+                const auto kind = static_cast<MonsterKindType>(i);
+                const auto kind_name = get_monster_kind_type_name(kind);
+                fprintf(fff, _("    %sを%d体殺した\n", "    killed %d %s\n"),
+#ifdef JP
+                    kind_name.c_str(), player_ptr->incident_tree[key]
+#else
+                    player_ptr->incident_tree[key], kind_name.c_str()
+#endif
+                );
+            }
+        }
     }
     if (player_ptr->incident_tree.count("EAT")) {
         fprintf(fff, _("あなたはこれまで%d回食事を摂った。\n", "You have eaten %d times.\n"), player_ptr->incident_tree["EAT"]);
