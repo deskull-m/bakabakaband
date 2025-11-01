@@ -312,6 +312,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-shittodan.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-silvan-elf.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-slaanesh.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-soukaiya.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-suren.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-tophamhatt.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-triothepunch.cpp" />
@@ -1156,6 +1157,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-shittodan.h" />
     <ClInclude Include="..\..\src\alliance\alliance-silvan-elf.h" />
     <ClInclude Include="..\..\src\alliance\alliance-slaanesh.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-soukaiya.h" />
     <ClInclude Include="..\..\src\alliance\alliance-suren.h" />
     <ClInclude Include="..\..\src\alliance\alliance-triothepunch.h" />
     <ClInclude Include="..\..\src\alliance\alliance-tophamhatt.h" />

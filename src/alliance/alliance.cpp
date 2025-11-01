@@ -59,6 +59,7 @@
 #include "alliance/alliance-shittodan.h"
 #include "alliance/alliance-silvan-elf.h"
 #include "alliance/alliance-slaanesh.h"
+#include "alliance/alliance-soukaiya.h"
 #include "alliance/alliance-suren.h"
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
@@ -152,6 +153,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::XIOMBARG, std::make_unique<AllianceXiombarg>(AllianceType::XIOMBARG, "XIOMBARG", _("\u30ad\u30b7\u30aa\u30e0\u30d0\u30fc\u30b0", "Xiombarg"), 4800000L) },
     { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("\u30de\u30d9\u30ed\u30fc\u30c9", "Mabelode"), 3600000L) },
     { AllianceType::DIABOLIQUE, std::make_unique<AllianceDiabolique>(AllianceType::DIABOLIQUE, "DIABOLIQUE", _("\u30c7\u30a2\u30dc\u30ea\u30ab", "Diabolique"), 5000000L) },
+    { AllianceType::SOUKAIYA, std::make_unique<AllianceSoukaiya>(AllianceType::SOUKAIYA, "SOUKAIYA", _("ソウカイヤ", "Soukaiya"), 3000000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

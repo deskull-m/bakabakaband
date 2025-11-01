@@ -78,6 +78,7 @@ enum class AllianceType : int {
     NANTO_ORTHODOX = 67, //!< 南斗正統派
     SEITEI = 68, //!< 聖帝軍
     DIABOLIQUE = 69, //!< デアボリカ
+    SOUKAIYA = 70, //!< ソウカイヤ
     MAX,
 };
 
