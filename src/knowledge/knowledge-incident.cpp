@@ -4,6 +4,7 @@
  * @author Deskull
  */
 
+#include "alliance/alliance.h"
 #include "core/show-file.h"
 #include "io-dump/dump-util.h"
 #include "monster-race/monster-kind-type-name.h"
@@ -128,6 +129,34 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
                     player_ptr->incident_tree[key], kind_name.c_str()
 #endif
                 );
+            }
+        }
+
+        // Display kills by Alliance
+        fprintf(fff, _("\n", "\n"));
+        bool has_alliance_kills = false;
+        for (const auto &entry : player_ptr->incident_tree) {
+            if (entry.first.find("KILL_ALLIANCE/") == 0) {
+                has_alliance_kills = true;
+                break;
+            }
+        }
+
+        if (has_alliance_kills) {
+            for (const auto &[alliance_type, alliance_ptr] : alliance_list) {
+                if (alliance_type == AllianceType::NONE) {
+                    continue;
+                }
+                const std::string key = "KILL_ALLIANCE/" + std::to_string(static_cast<int>(alliance_type));
+                if (player_ptr->incident_tree.count(key)) {
+                    fprintf(fff, _("    %sに属する者を%d体殺した\n", "    killed %d members of %s\n"),
+#ifdef JP
+                        alliance_ptr->name.c_str(), player_ptr->incident_tree[key]
+#else
+                        player_ptr->incident_tree[key], alliance_ptr->name.c_str()
+#endif
+                    );
+                }
             }
         }
     }
