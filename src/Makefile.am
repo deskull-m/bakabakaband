@@ -79,6 +79,7 @@ hengband_SOURCES = \
 	alliance/alliance-utumno.cpp alliance/alliance-utumno.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
 	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
+	alliance/alliance-soukaiya.cpp alliance/alliance-soukaiya.h \
 	alliance/alliance-arioch.cpp alliance/alliance-arioch.h \
 	alliance/alliance-aryan-family.cpp alliance/alliance-aryan-family.h \
 	alliance/alliance-basam-empire.cpp alliance/alliance-basam-empire.h \
