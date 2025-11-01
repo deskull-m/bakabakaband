@@ -110,6 +110,9 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
     if (player_ptr->incident_tree.count("STAY_INN")) {
         fprintf(fff, _("あなたはこれまで%d回宿屋に宿泊した。\n", "You have stayed inn %d times. \n"), player_ptr->incident_tree["STAY_INN"]);
     }
+    if (player_ptr->incident_tree.count("KILL")) {
+        fprintf(fff, _("あなたはこれまで%d体のモンスターを倒した。\n", "You have killed %d monsters.\n"), player_ptr->incident_tree["kill"]);
+    }
     if (player_ptr->incident_tree.count("EAT")) {
         fprintf(fff, _("あなたはこれまで%d回食事を摂った。\n", "You have eaten %d times.\n"), player_ptr->incident_tree["EAT"]);
         if (player_ptr->incident_tree.count("EAT_FECES")) {
