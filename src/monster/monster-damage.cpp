@@ -226,6 +226,12 @@ void MonsterDamageProcessor::increase_kill_numbers()
         }
     }
 
+    // Record kills by Alliance
+    if (monrace.alliance_idx != AllianceType::NONE) {
+        const std::string key = "KILL_ALLIANCE/" + std::to_string(static_cast<int>(monrace.alliance_idx));
+        this->player_ptr->plus_incident_tree(key, 1);
+    }
+
     const auto is_hallucinated = this->player_ptr->effects()->hallucination().is_hallucinated();
     if (((monster.ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
         return;
