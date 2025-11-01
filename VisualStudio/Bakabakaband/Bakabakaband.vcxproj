@@ -394,6 +394,7 @@
     <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-soft-armor.cpp" />
     <ClCompile Include="..\..\src\object-enchant\others\apply-magic-lite.cpp" />
     <ClCompile Include="..\..\src\monster-race\monster-kind-mask.cpp" />
+    <ClCompile Include="..\..\src\monster-race\monster-kind-type-name.cpp" />
     <ClCompile Include="..\..\src\monster-race\race-resistance-mask.cpp" />
     <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-dragon-armor.cpp" />
     <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-hard-armor.cpp" />
@@ -1196,6 +1197,7 @@
     <ClInclude Include="..\..\src\market\melee-arena.h" />
     <ClInclude Include="..\..\src\monster-race\monster-aura-types.h" />
     <ClInclude Include="..\..\src\monster-race\monster-kind-mask.h" />
+    <ClInclude Include="..\..\src\monster-race\monster-kind-type-name.h" />
     <ClInclude Include="..\..\src\monster-race\race-behavior-flags.h" />
     <ClInclude Include="..\..\src\monster-race\race-brightness-flags.h" />
     <ClInclude Include="..\..\src\monster-race\race-brightness-mask.h" />

@@ -215,6 +215,16 @@ void MonsterDamageProcessor::increase_kill_numbers()
     auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
     auto &monrace = monster.get_real_monrace();
     monrace.increment_akills();
+    this->player_ptr->plus_incident_tree("KILL", 1);
+
+    // Record kills by MonsterKindType
+    for (size_t i = 0; i < static_cast<size_t>(MonsterKindType::MAX); i++) {
+        const auto kind = static_cast<MonsterKindType>(i);
+        if (monrace.kind_flags.has(kind)) {
+            const std::string key = "KILL/" + std::to_string(i);
+            this->player_ptr->plus_incident_tree(key, 1);
+        }
+    }
 
     const auto is_hallucinated = this->player_ptr->effects()->hallucination().is_hallucinated();
     if (((monster.ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
