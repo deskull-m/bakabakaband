@@ -7,6 +7,7 @@
 #include "alliance/alliance.h"
 #include "core/show-file.h"
 #include "io-dump/dump-util.h"
+#include "monster-attack/monster-attack-table.h"
 #include "monster-race/monster-kind-type-name.h"
 #include "monster-race/race-kind-flags.h"
 #include "system/dungeon/dungeon-definition.h"
@@ -197,6 +198,49 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
     }
     if (player_ptr->incident_tree.count("USE_RACIAL")) {
         fprintf(fff, _("あなたはこれまで%d回種族能力を使用した。\n", "You have used racial power %d times.\n"), player_ptr->incident_tree["USE_RACIAL"]);
+    }
+    if (player_ptr->incident_tree.count("HIT_BY_MONSTER")) {
+        fprintf(fff, _("あなたはこれまで%d回モンスターの打撃を受けた。\n", "You have been hit by monsters %d times.\n"), player_ptr->incident_tree["HIT_BY_MONSTER"]);
+
+        // Display hits by method
+        for (int i = 0; i < static_cast<int>(RaceBlowMethodType::MAX); i++) {
+            const auto method = static_cast<RaceBlowMethodType>(i);
+            if (method == RaceBlowMethodType::NONE || method == RaceBlowMethodType::MAX) {
+                continue;
+            }
+            const std::string tag = get_blow_method_tag(method);
+            const std::string key = "HIT_BY_MONSTER/METHOD/" + tag;
+            if (player_ptr->incident_tree.count(key)) {
+                const std::string name = get_blow_method_name(method);
+                fprintf(fff, _("    %d回 %s\n", "    %d times by %s\n"),
+#ifdef JP
+                    player_ptr->incident_tree[key], name.c_str()
+#else
+                    player_ptr->incident_tree[key], tag.c_str()
+#endif
+                );
+            }
+        }
+
+        // Display hits by effect
+        for (int i = 0; i < static_cast<int>(RaceBlowEffectType::MAX); i++) {
+            const auto effect = static_cast<RaceBlowEffectType>(i);
+            if (effect == RaceBlowEffectType::NONE || effect == RaceBlowEffectType::MAX) {
+                continue;
+            }
+            const std::string tag = get_blow_effect_tag(effect);
+            const std::string key = "HIT_BY_MONSTER/EFFECT/" + tag;
+            if (player_ptr->incident_tree.count(key)) {
+                const std::string name = get_blow_effect_name(effect);
+                fprintf(fff, _("    %d回 %s\n", "    %d times by %s\n"),
+#ifdef JP
+                    player_ptr->incident_tree[key], name.c_str()
+#else
+                    player_ptr->incident_tree[key], tag.c_str()
+#endif
+                );
+            }
+        }
     }
     angband_fclose(fff);
 
