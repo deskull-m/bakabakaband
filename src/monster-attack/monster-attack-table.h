@@ -53,3 +53,9 @@ struct mbe_info_type {
 };
 
 extern const mbe_info_type mbe_info[static_cast<int>(RaceBlowEffectType::MAX)];
+
+#include <string>
+std::string get_blow_method_name(RaceBlowMethodType method);
+std::string get_blow_method_tag(RaceBlowMethodType method);
+std::string get_blow_effect_name(RaceBlowEffectType effect);
+std::string get_blow_effect_tag(RaceBlowEffectType effect);

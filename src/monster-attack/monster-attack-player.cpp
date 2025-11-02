@@ -184,6 +184,19 @@ bool MonsterAttackPlayer::process_monster_blows()
                 continue;
             }
 
+            // モンスターの打撃を受けた回数を記録
+            this->player_ptr->plus_incident_tree("HIT_BY_MONSTER", 1);
+
+            // 打撃手段ごとの記録
+            const std::string method_tag = get_blow_method_tag(this->method);
+            const std::string method_key = "HIT_BY_MONSTER/METHOD/" + method_tag;
+            this->player_ptr->plus_incident_tree(method_key, 1);
+
+            // 打撃効果ごとの記録
+            const std::string effect_tag = get_blow_effect_tag(this->effect);
+            const std::string effect_key = "HIT_BY_MONSTER/EFFECT/" + effect_tag;
+            this->player_ptr->plus_incident_tree(effect_key, 1);
+
             // 撃退失敗時は落馬処理、変わり身のテレポート処理を行う。
             check_fall_off_horse(this->player_ptr, this);
 
