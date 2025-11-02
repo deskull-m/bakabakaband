@@ -230,7 +230,8 @@ void MonsterDamageProcessor::increase_kill_numbers()
 
     // Record kills by Alliance
     if (monrace.alliance_idx != AllianceType::NONE) {
-        const std::string key = "KILL_ALLIANCE/" + std::to_string(static_cast<int>(monrace.alliance_idx));
+        const std::string tag = get_alliance_type_tag(monrace.alliance_idx);
+        const std::string key = "KILL/ALLIANCE/" + tag;
         this->player_ptr->plus_incident_tree(key, 1);
     }
 

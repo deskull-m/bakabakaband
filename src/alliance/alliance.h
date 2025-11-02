@@ -132,3 +132,5 @@ protected:
 
 extern const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list;
 extern const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression;
+
+std::string get_alliance_type_tag(AllianceType alliance_type);

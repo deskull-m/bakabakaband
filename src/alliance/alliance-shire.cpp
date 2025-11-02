@@ -13,19 +13,20 @@ int AllianceTheShire::calcImpressionPoint([[maybe_unused]] PlayerType *creature_
     impression += Alliance::calcPlayerPower(*creature_ptr, -10, 1);
 
     // THE-SHIRE所属モンスターの殺害による印象値減少
-    const std::string kill_key = "KILL_ALLIANCE/" + std::to_string(static_cast<int>(AllianceType::THE_SHIRE));
+    const std::string shire_tag = get_alliance_type_tag(AllianceType::THE_SHIRE);
+    const std::string kill_key = "KILL/ALLIANCE/" + shire_tag;
     if (creature_ptr->incident_tree.count(kill_key)) {
         impression -= creature_ptr->incident_tree.at(kill_key) * 10; // 1体につき-10
     }
 
-    // 邪悪なモンスター殺害による印象値増加（EVIL = 11）
-    const std::string evil_kill_key = "KILL/EVIL";
+    // 邪悪なモンスター殺害による印象値増加
+    const std::string evil_kill_key = "KILL/RACE/EVIL";
     if (creature_ptr->incident_tree.count(evil_kill_key)) {
         impression += creature_ptr->incident_tree.at(evil_kill_key) * 1; // 1体につき+1
     }
 
-    // 善良なモンスター殺害による印象値減少（GOOD = 12）
-    const std::string good_kill_key = "KILL/GOOD";
+    // 善良なモンスター殺害による印象値減少
+    const std::string good_kill_key = "KILL/RACE/GOOD";
     if (creature_ptr->incident_tree.count(good_kill_key)) {
         impression -= creature_ptr->incident_tree.at(good_kill_key) * 2; // 1体につき-2
     }
