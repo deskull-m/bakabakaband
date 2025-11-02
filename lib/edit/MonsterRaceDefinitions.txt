@@ -41754,6 +41754,20 @@ F:DROP_KIND_1_IN_1_750_0_10d5
 D:クッキーを作ることが全てである時空から、クッキーを作る目的のためだけに
 D:この世界に来訪したおばあちゃんだ。対消滅エネルギーをもってクッキーを生み出そうとしている。
 
+N:2306:竜の巣窟の『ダーク』
+E:Dirk the Daring of Dragon's Lair
+G:p:u
+I:110:3d6:20:0:25
+W:10:10:0:10:0:0
+B:HIT:HURT:2d5
+B:SHOOT:HIT:1d5
+F:UNIQUE | DROP_CORPSE | MALE | HUMAN
+F:DROP_SKELETON
+S:SHOOT | 1_IN_4
+D:$He always ends up getting instantly
+D:$ turned to dust at the entrance to the giant dragon Shinji's lair.
+D:彼はいつも巨竜シンジのねぐらの入り口で即骨になっているという。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
