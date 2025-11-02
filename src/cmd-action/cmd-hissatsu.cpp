@@ -345,6 +345,7 @@ void do_cmd_hissatsu(PlayerType *player_ptr)
         return;
     }
 
+    player_ptr->plus_incident_tree("USE_HISSATSU", 1);
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     player_ptr->csp -= spell.smana;
     if (player_ptr->csp < 0) {

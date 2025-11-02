@@ -511,6 +511,7 @@ void do_cmd_racial_power(PlayerType *player_ptr)
         return;
     }
 
+    player_ptr->plus_incident_tree("USE_RACIAL", 1);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     const auto &flags_mwrf = {
         MainWindowRedrawingFlag::HP,

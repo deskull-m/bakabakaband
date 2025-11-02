@@ -55,6 +55,7 @@ bool exe_open(PlayerType *player_ptr, POSITION y, POSITION x)
     if (!terrain.power) {
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
         sound(SoundKind::OPENDOOR);
+        player_ptr->plus_incident_tree("OPEN_DOOR", 1);
         return false;
     }
 
@@ -86,6 +87,7 @@ bool exe_open(PlayerType *player_ptr, POSITION y, POSITION x)
     msg_print(_("鍵をはずした。", "You have picked the lock."));
     cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
     sound(SoundKind::OPENDOOR);
+    player_ptr->plus_incident_tree("OPEN_DOOR", 1);
     gain_exp(player_ptr, 1);
     return false;
 }
@@ -128,6 +130,7 @@ bool exe_close(PlayerType *player_ptr, POSITION y, POSITION x)
         msg_print(_("ドアは壊れてしまっている。", "The door appears to be broken."));
     } else {
         sound(SoundKind::SHUTDOOR);
+        player_ptr->plus_incident_tree("CLOSE_DOOR", 1);
     }
 
     return more;

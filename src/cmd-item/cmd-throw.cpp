@@ -82,5 +82,6 @@ bool ThrowCommand::do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken)
     ote.check_boomerang_throw();
     ote.process_boomerang_back();
     ote.drop_thrown_item();
+    this->player_ptr->plus_incident_tree("THROW", 1);
     return true;
 }
