@@ -22,6 +22,7 @@
 #include "monster-floor/monster-remover.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
+#include "monster-race/monster-kind-type-name.h"
 #include "monster-race/monster-race-hook.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
@@ -221,7 +222,8 @@ void MonsterDamageProcessor::increase_kill_numbers()
     for (size_t i = 0; i < static_cast<size_t>(MonsterKindType::MAX); i++) {
         const auto kind = static_cast<MonsterKindType>(i);
         if (monrace.kind_flags.has(kind)) {
-            const std::string key = "KILL/" + std::to_string(i);
+            const std::string tag = get_monster_kind_type_tag(kind);
+            const std::string key = "KILL/RACE/" + tag;
             this->player_ptr->plus_incident_tree(key, 1);
         }
     }

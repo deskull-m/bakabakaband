@@ -118,9 +118,10 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
 
         // Display kills by MonsterKindType
         for (size_t i = 0; i < static_cast<size_t>(MonsterKindType::MAX); i++) {
-            const std::string key = "KILL/" + std::to_string(i);
+            const auto kind = static_cast<MonsterKindType>(i);
+            const std::string tag = get_monster_kind_type_tag(kind);
+            const std::string key = "KILL/RACE/" + tag;
             if (player_ptr->incident_tree.count(key)) {
-                const auto kind = static_cast<MonsterKindType>(i);
                 const auto kind_name = get_monster_kind_type_name(kind);
                 fprintf(fff, _("    %sを%d体殺した\n", "    killed %d %s\n"),
 #ifdef JP
