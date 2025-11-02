@@ -133985,7 +133985,8 @@
         "HURT_FIRE",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "PAPER"
     ]
 },
 {

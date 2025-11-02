@@ -273,6 +273,10 @@ void display_monster_never_move(lore_type *lore_ptr)
 
 void display_monster_kind(lore_type *lore_ptr)
 {
+    if (lore_ptr->kind_flags.has(MonsterKindType::PAPER)) {
+        hook_c_roff(TERM_WHITE, _("紙で出来た", " made of paper"));
+    }
+
     if (lore_ptr->kind_flags.has_none_of({ MonsterKindType::DRAGON, MonsterKindType::DEMON,
             MonsterKindType::GIANT, MonsterKindType::TROLL, MonsterKindType::ORC, MonsterKindType::ANGEL,
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,

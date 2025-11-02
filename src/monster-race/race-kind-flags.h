@@ -96,5 +96,6 @@ enum class MonsterKindType {
     EYE = 92, // 目
     ALIEN = 93, // 異星人
     GRANDMA = 94, // ババア
+    PAPER = 95, // 紙で出来た
     MAX,
 };

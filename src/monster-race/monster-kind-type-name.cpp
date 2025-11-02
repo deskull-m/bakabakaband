@@ -199,6 +199,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("異星人", "alien");
     case MonsterKindType::GRANDMA:
         return _("ババア", "grandma");
+    case MonsterKindType::PAPER:
+        return _("紙で出来た", "made of paper");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -398,6 +400,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "ALIEN";
     case MonsterKindType::GRANDMA:
         return "GRANDMA";
+    case MonsterKindType::PAPER:
+        return "PAPER";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
