@@ -530,6 +530,7 @@ void do_cmd_rest(PlayerType *player_ptr)
         chg_virtue(player_ptr, Virtue::DILIGENCE, -1);
     }
 
+    player_ptr->plus_incident_tree("REST", 1);
     player_ptr->resting = command_arg;
     player_ptr->action = ACTION_REST;
     auto &rfu = RedrawingFlagsUpdater::get_instance();

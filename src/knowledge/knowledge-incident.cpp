@@ -174,6 +174,30 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
     if (player_ptr->incident_tree.count("QUAFF")) {
         fprintf(fff, _("あなたはこれまで薬を%d回服用した。\n", "You have taken the drug %d times.\n"), player_ptr->incident_tree["QUAFF"]);
     }
+    if (player_ptr->incident_tree.count("OPEN_DOOR")) {
+        fprintf(fff, _("あなたはこれまで%d回扉を開いた。\n", "You have opened door %d times.\n"), player_ptr->incident_tree["OPEN_DOOR"]);
+    }
+    if (player_ptr->incident_tree.count("CLOSE_DOOR")) {
+        fprintf(fff, _("あなたはこれまで%d回扉を閉じた。\n", "You have closed door %d times.\n"), player_ptr->incident_tree["CLOSE_DOOR"]);
+    }
+    if (player_ptr->incident_tree.count("TUNNEL")) {
+        fprintf(fff, _("あなたはこれまで%d回掘削を行った。\n", "You have tunneled %d times.\n"), player_ptr->incident_tree["TUNNEL"]);
+    }
+    if (player_ptr->incident_tree.count("REST")) {
+        fprintf(fff, _("あなたはこれまで%d回休憩を取った。\n", "You have rested %d times.\n"), player_ptr->incident_tree["REST"]);
+    }
+    if (player_ptr->incident_tree.count("CAST_SPELL")) {
+        fprintf(fff, _("あなたはこれまで%d回魔法を唱えた。\n", "You have cast spell %d times.\n"), player_ptr->incident_tree["CAST_SPELL"]);
+    }
+    if (player_ptr->incident_tree.count("USE_MIND")) {
+        fprintf(fff, _("あなたはこれまで%d回特殊能力を使用した。\n", "You have used mind power %d times.\n"), player_ptr->incident_tree["USE_MIND"]);
+    }
+    if (player_ptr->incident_tree.count("USE_HISSATSU")) {
+        fprintf(fff, _("あなたはこれまで%d回必殺技を使用した。\n", "You have used hissatsu %d times.\n"), player_ptr->incident_tree["USE_HISSATSU"]);
+    }
+    if (player_ptr->incident_tree.count("USE_RACIAL")) {
+        fprintf(fff, _("あなたはこれまで%d回種族能力を使用した。\n", "You have used racial power %d times.\n"), player_ptr->incident_tree["USE_RACIAL"]);
+    }
     angband_fclose(fff);
 
     FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("これまでの出来事", "Incidents"));

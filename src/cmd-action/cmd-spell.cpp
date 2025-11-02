@@ -1121,6 +1121,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
             return false;
         }
 
+        player_ptr->plus_incident_tree("CAST_SPELL", 1);
         if (randint1(100) < chance) {
             chg_virtue(player_ptr, Virtue::CHANCE, 1);
         }

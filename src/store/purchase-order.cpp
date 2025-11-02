@@ -259,6 +259,7 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
     player_ptr->au -= res.value();
     store_prt_gold(player_ptr->au);
     object_aware(player_ptr, item);
+    player_ptr->plus_incident_tree("STORE_BUY", 1);
 
     msg_print(_("{}を ${}で購入しました。", "You bought {} for {} gold."), purchased_item_name, res.value());
     record_item_name = purchased_item_name;
