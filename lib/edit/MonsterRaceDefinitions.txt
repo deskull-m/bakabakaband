@@ -38045,7 +38045,7 @@ B:HIT:HURT:1d3
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
 F:IM_COLD | IM_ELEC | IM_POIS | GOLEM
 F:HURT_ROCK | NONLIVING | HURT_FIRE
-F:NO_CONF | NO_SLEEP | NO_FEAR
+F:NO_CONF | NO_SLEEP | NO_FEAR | PAPER
 D:$It is a cheap animated statue made out of paper.
 D:それは生命を吹き込まれた安っぽい巨像で、大して強度もない紙でできている。
 

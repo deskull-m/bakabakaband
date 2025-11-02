@@ -475,6 +475,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "EYE", MonsterKindType::EYE }, // 目
     { "ALIEN", MonsterKindType::ALIEN }, // 異星人
     { "GRANDMA", MonsterKindType::GRANDMA }, // ババア
+    { "PAPER", MonsterKindType::PAPER }, // 紙で出来た
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
