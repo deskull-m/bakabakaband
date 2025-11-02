@@ -214,3 +214,17 @@ bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return false;
 }
+
+/*!
+ * @brief AllianceTypeからタグを取得する
+ * @param alliance_type AllianceType
+ * @return タグ文字列
+ */
+std::string get_alliance_type_tag(AllianceType alliance_type)
+{
+    auto it = alliance_list.find(alliance_type);
+    if (it != alliance_list.end()) {
+        return it->second->tag;
+    }
+    return "UNKNOWN";
+}
