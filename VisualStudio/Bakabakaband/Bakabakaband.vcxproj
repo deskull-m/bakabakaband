@@ -324,6 +324,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-valinor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-valverde.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-xiombarg.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-yeek-kingdom.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance.cpp" />
     <ClCompile Include="..\..\src\artifact\artifact-info.cpp" />
     <ClCompile Include="..\..\src\artifact\fixed-art-generator.cpp" />
@@ -1169,6 +1170,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-valinor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-valverde.h" />
     <ClInclude Include="..\..\src\alliance\alliance-xiombarg.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-yeek-kingdom.h" />
     <ClInclude Include="..\..\src\birth\birth-select-patron.h" />
     <ClInclude Include="..\..\src\cmd-action\cmd-martial-arts.h" />
     <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h" />

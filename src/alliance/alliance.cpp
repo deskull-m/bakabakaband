@@ -154,6 +154,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("\u30de\u30d9\u30ed\u30fc\u30c9", "Mabelode"), 3600000L) },
     { AllianceType::DIABOLIQUE, std::make_unique<AllianceDiabolique>(AllianceType::DIABOLIQUE, "DIABOLIQUE", _("\u30c7\u30a2\u30dc\u30ea\u30ab", "Diabolique"), 5000000L) },
     { AllianceType::SOUKAIYA, std::make_unique<AllianceSoukaiya>(AllianceType::SOUKAIYA, "SOUKAIYA", _("ソウカイヤ", "Soukaiya"), 3000000L) },
+    { AllianceType::YEEK_KINGDOM, std::make_unique<AllianceYeekKingdom>(AllianceType::YEEK_KINGDOM, "YEEK-KINGDOM", _("イークの王国", "Yeek Kingdom"), 15000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
