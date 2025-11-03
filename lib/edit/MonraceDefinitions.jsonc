@@ -85403,7 +85403,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "RIDING"
+        "RIDING",
+        "PHYREXIAN"
     ],
     "dead_spawn": [
         {
@@ -85469,7 +85470,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "RIDING"
+        "RIDING",
+        "PHYREXIAN"
     ]
 },
 {
@@ -85523,7 +85525,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "RIDING"
+        "RIDING",
+        "PHYREXIAN"
     ]
 },
 {
@@ -92845,7 +92848,8 @@
         "NO_FEAR",
         "NONLIVING",
         "RIDING",
-        "TANK"
+        "TANK",
+        "PHYREXIAN"
     ]
 },
 {
@@ -111725,6 +111729,7 @@
         "IM_ELEC",
         "IM_POIS",
         "NONLIVING",
+        "PHYREXIAN",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -111997,6 +112002,7 @@
         "NONLIVING",
         "RIDING",
         "TANK",
+        "PHYREXIAN",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -116488,6 +116494,7 @@
         "NONLIVING",
         "NO_FEAR",
         "FORCE_MAXHP",
+        "PHYREXIAN",
         "KILL_BODY",
         "IM_FIRE",
         "IM_COLD",
@@ -117749,6 +117756,7 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "DROP_SKELETON",
+        "PHYREXIAN",
         "FORCE_MAXHP",
         "MOVE_BODY",
         "TAKE_ITEM",
@@ -118682,6 +118690,7 @@
         "DROP_GOOD",
         "DRAGON",
         "HUMAN",
+        "PHYREXIAN",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -119952,6 +119961,7 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "DROP_SKELETON",
+        "PHYREXIAN",
         "FORCE_MAXHP",
         "KILL_BODY",
         "TAKE_ITEM",
@@ -120121,6 +120131,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
+        "PHYREXIAN",
         "IM_POIS"
     ]
 },
@@ -120308,6 +120319,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DRAGON",
+        "PHYREXIAN",
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
@@ -120562,6 +120574,7 @@
         "CAN_FLY",
         "UNIQUE",
         "ANIMAL",
+        "PHYREXIAN",
         "IM_POIS"
     ],
     "spawn_creature": [
@@ -122229,6 +122242,7 @@
         "BASH_DOOR",
         "SMART",
         "EVIL",
+        "PHYREXIAN",
         "SHIP",
         "NO_CONF",
         "NO_SLEEP",
@@ -122349,6 +122363,7 @@
         "SELF_LITE_1",
         "SELF_LITE_2",
         "ANGEL",
+        "PHYREXIAN",
         "ONLY_ITEM",
         "DROP_3D2",
         "DROP_4D2",
@@ -130930,6 +130945,7 @@
         "DROP_CORPSE",
         "HAS_LITE_1",
         "EVIL",
+        "PHYREXIAN",
         "NO_FEAR"
     ]
 },
