@@ -203,6 +203,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("紙で出来た", "made of paper");
     case MonsterKindType::DEEPONE:
         return _("深きもの", "deep one");
+    case MonsterKindType::PHYREXIAN:
+        return _("ファイレクシア人", "phyrexian");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -406,6 +408,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "PAPER";
     case MonsterKindType::DEEPONE:
         return "DEEPONE";
+    case MonsterKindType::PHYREXIAN:
+        return "PHYREXIAN";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }

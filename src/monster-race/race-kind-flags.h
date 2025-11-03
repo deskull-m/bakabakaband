@@ -98,5 +98,6 @@ enum class MonsterKindType {
     GRANDMA = 94, // ババア
     PAPER = 95, // 紙で出来た
     DEEPONE = 96, // 深きもの
+    PHYREXIAN = 97, // ファイレクシア人
     MAX,
 };
