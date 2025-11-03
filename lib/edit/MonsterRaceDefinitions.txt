@@ -41768,6 +41768,28 @@ D:$He always ends up getting instantly
 D:$ turned to dust at the entrance to the giant dragon Shinji's lair.
 D:彼はいつも巨竜シンジのねぐらの入り口で即骨になっているという。
 
+N:2307:異端の法務官『ウラブラスク』
+E:Urabrask, Heretic Praetor
+G:H:r
+I:126:50d98:20:120:100
+W:61:7:22500:0:0
+B:CLAW:FIRE:12d12
+B:CLAW:FIRE:12d12
+B:CLAW:HURT:8d12
+B:BITE:HURT:10d12
+F:UNIQUE | DROP_CORPSE | FORCE_MAXHP | ALLIANCE_PHYREXIA | PHYREXIAN
+F:RES_TELE | AURA_FIRE | SELF_LITE_2 |
+F:ONLY_ITEM | DROP_2D2 | DROP_3D2 | DROP_4D2 | DROP_GOOD |
+F:SMART | OPEN_DOOR | BASH_DOOR | CAN_FLY | POWERFUL |
+F:EVIL | IM_FIRE | IM_ELEC | NO_CONF | NO_SLEEP
+F:NO_FEAR | NO_STUN
+S:1_IN_4 |
+S:BR_FIRE | BA_FIRE | BO_MANA
+D:$One of the new Phyrexian Praetor. He works silently in the “Silent Furnace,”
+D:$ Dvoicing dissent against Elish Noon's expansionist policies.
+D:新ファイレクシアの法務官の一人だ。「静かなる焼炉」で黙々と仕事をこなし、
+D:エリシュ・ノーンの拡張路線に異議を唱えている。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
