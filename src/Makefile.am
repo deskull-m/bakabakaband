@@ -89,6 +89,7 @@ hengband_SOURCES = \
 	alliance/alliance-ungoliant.cpp alliance/alliance-ungoliant.h \
 	alliance/alliance-xiombarg.cpp alliance/alliance-xiombarg.h \
 	alliance/alliance-valinor.cpp alliance/alliance-valinor.h \
+	alliance/alliance-yeek-kingdom.cpp alliance/alliance-yeek-kingdom.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \

@@ -2768,6 +2768,11 @@
     <ClCompile Include="..\..\src\alliance\alliance-valinor.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-soukaiya.cpp" />
+    <ClCompile Include="..\..\src\monster-race\monster-kind-type-name.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-yeek-kingdom.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5970,6 +5975,11 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-valinor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-soukaiya.h" />
+    <ClInclude Include="..\..\src\monster-race\monster-kind-type-name.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-yeek-kingdom.h">
       <Filter>alliance</Filter>
     </ClInclude>
   </ItemGroup>

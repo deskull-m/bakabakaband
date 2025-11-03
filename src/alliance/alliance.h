@@ -79,6 +79,7 @@ enum class AllianceType : int {
     SEITEI = 68, //!< 聖帝軍
     DIABOLIQUE = 69, //!< デアボリカ
     SOUKAIYA = 70, //!< ソウカイヤ
+    YEEK_KINGDOM = 71, //!< イークの王国
     MAX,
 };
 
@@ -129,6 +130,7 @@ protected:
 #include "alliance-pure-mirrodin.h"
 #include "alliance-suren.h"
 #include "alliance-turban-kids.h"
+#include "alliance-yeek-kingdom.h"
 
 extern const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list;
 extern const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression;
