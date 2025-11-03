@@ -148533,5 +148533,88 @@
         "HUMAN",
         "DROP_SKELETON"
     ]
+},
+{
+    "id": 2307,
+    "name": {
+        "ja": "異端の法務官『ウラブラスク』",
+        "en": "Urabrask, Heretic Praetor"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Red"
+    },
+    "speed": 16,
+    "hit_point": "50d98",
+    "vision": 20,
+    "armor_class": 120,
+    "alertness": 100,
+    "level": 61,
+    "rarity": 7,
+    "exp": 22500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "FIRE",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "CLAW",
+            "effect": "FIRE",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "10d12"
+        }
+    ],
+    "flavor": {
+        "ja": "新ファイレクシアの法務官の一人だ。「静かなる焼炉」で黙々と仕事をこなし、エリシュ・ノーンの拡張路線に異議を唱えている。",
+        "en": "One of the new Phyrexian Praetor. He works silently in the “Silent Furnace,” Dvoicing dissent against Elish Noon's expansionist policies."
+    },
+    "alliance": "PHYREXIA",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "FORCE_MAXHP",
+        "PHYREXIAN",
+        "RES_TELE",
+        "AURA_FIRE",
+        "SELF_LITE_2",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "CAN_FLY",
+        "POWERFUL",
+        "EVIL",
+        "IM_FIRE",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NO_STUN"
+    ],
+    "skill": {
+        "list": [
+            "BR_FIRE",
+            "BA_FIRE",
+            "BO_MANA"
+        ],
+        "probability": "1_IN_4"
+    }
 }]
 }
