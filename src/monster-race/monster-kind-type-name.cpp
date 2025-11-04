@@ -207,6 +207,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("ファイレクシア人", "phyrexian");
     case MonsterKindType::HORROR:
         return _("ホラー", "horror");
+    case MonsterKindType::WORM:
+        return _("ワーム", "worm");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -414,6 +416,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "PHYREXIAN";
     case MonsterKindType::HORROR:
         return "HORROR";
+    case MonsterKindType::WORM:
+        return "WORM";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }

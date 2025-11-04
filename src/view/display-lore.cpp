@@ -564,6 +564,10 @@ void display_monster_kind(lore_type *lore_ptr)
     if (lore_ptr->kind_flags.has(MonsterKindType::HORROR)) {
         hook_c_roff(TERM_RED, _("ホラー", " horror"));
     }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WORM)) {
+        hook_c_roff(TERM_YELLOW, _("ワーム", " worm"));
+    }
 }
 
 void display_monster_alignment(lore_type *lore_ptr)
