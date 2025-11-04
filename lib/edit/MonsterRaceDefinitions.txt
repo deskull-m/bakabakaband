@@ -4886,7 +4886,7 @@ F:CAN_FLY |
 F:RAND_25 | 
 F:ONLY_ITEM | DROP_1D2 | 
 F:SMART | INVISIBLE | COLD_BLOOD | BASH_DOOR | 
-F:EVIL | DEMON | IM_FIRE | RES_TELE | HORROR
+F:EVIL | DEMON | IM_FIRE | RES_TELE
 S:1_IN_10 | 
 S:BLINK | TPORT | TELE_TO | TELE_LEVEL | BLIND | CONF | SCARE | BO_FIRE
 D:$The lawful evil master's favourite pet.
@@ -6578,7 +6578,7 @@ B:TOUCH:DR_MANA:2d6
 F:FEMALE | 
 F:RAND_50 | DROP_1D2 | 
 F:INVISIBLE | COLD_BLOOD | TAKE_ITEM | PASS_WALL | CAN_FLY |
-F:EVIL | UNDEAD | IM_COLD | IM_POIS | RES_NETH | NO_CONF | NO_SLEEP | HORROR
+F:EVIL | UNDEAD | IM_COLD | IM_POIS | RES_NETH | NO_CONF | NO_SLEEP
 S:1_IN_15 | TPORT | DRAIN_MANA | SHRIEK
 D:$It is a ghostly woman's form that wails mournfully.
 D:それは悲しげに泣き叫ぶ、女性の姿をしたゴーストだ。
@@ -6593,7 +6593,7 @@ B:STING:PARALYZE:2d6
 B:STING:PARALYZE:2d6
 F:RAND_25 | 
 F:WEIRD_MIND | BASH_DOOR | DROP_SKELETON
-F:ANIMAL | IM_POIS | INSECT
+F:ANIMAL | IM_POIS | INSECT | WORM
 D:$A hideous centipede covered in slime and with glowing tentacles around its 
 D:$head.
 D:ベトベトした粘膜に覆われた巨大なムカデで、頭の周りには光を発する
@@ -6766,7 +6766,7 @@ B:CRAWL:ACID:2d4
 B:BITE:HURT:1d10
 B:BITE:POISON:1d6
 F:BASH_DOOR | EVIL | CAN_SWIM | WILD_SWAMP
-F:ANIMAL | IM_ACID | DROP_CORPSE | EAT_ACIDIC
+F:ANIMAL | IM_ACID | DROP_CORPSE | EAT_ACIDIC | WORM
 D:$A huge wormlike shape dripping acid, twisted by evil sorcery into a foul 
 D:$monster that breeds on death.
 D:酸に満ちたイモムシのような姿をした大変巨大なモンスターだ。
@@ -8901,7 +8901,7 @@ B:STING:PARALYZE:2d6
 B:STING:PARALYZE:2d6
 F:RAND_25 | FRIENDS | DROP_SKELETON
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL | IM_POIS | INSECT
+F:ANIMAL | IM_POIS | INSECT | WORM
 D:$A hideous centipede covered in slime and with glowing tentacles around its 
 D:$head.
 D:ベトベトした粘膜に覆われた巨大なムカデで、頭の周りには光を発する
@@ -14049,7 +14049,7 @@ F:SMART | KILL_WALL | CAN_SWIM |
 F:ONLY_ITEM | DROP_1D2 | DROP_2D2 | DROP_GOOD | 
 F:COLD_BLOOD | OPEN_DOOR | BASH_DOOR | 
 F:EVIL | UNDEAD | IM_FIRE | IM_COLD | IM_POIS | RES_DARK | RES_TELE |
-F:HURT_LITE | RES_NETH | NO_CONF | NO_SLEEP
+F:HURT_LITE | RES_NETH | NO_CONF | NO_SLEEP | WORM
 S:1_IN_4 | 
 S:BLIND | SCARE | BRAIN_SMASH | 
 S:BO_MANA | BO_NETH | BA_NETH | 

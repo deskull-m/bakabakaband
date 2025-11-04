@@ -100,5 +100,6 @@ enum class MonsterKindType {
     DEEPONE = 96, // 深きもの
     PHYREXIAN = 97, // ファイレクシア人
     HORROR = 98, // ホラー
+    WORM = 99, // ワーム
     MAX,
 };
