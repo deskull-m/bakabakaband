@@ -650,7 +650,7 @@ W:1:1:4:5:58
 B:CRAWL:POISON:1d5
 F:RAND_50 | RAND_25 | CAN_SWIM |
 F:STUPID | WEIRD_MIND | MULTIPLY | 
-F:ANIMAL | IM_POIS | HURT_LITE | NO_FEAR
+F:ANIMAL | IM_POIS | HURT_LITE | NO_FEAR | WORM
 D:$It is a large slimy mass of worms.
 D:それはベトベトしたイモムシの大群だ。
 
@@ -1041,7 +1041,7 @@ B:CRAWL:ACID:1d6
 F:RAND_50 | RAND_25 | 
 F:STUPID | WEIRD_MIND | MULTIPLY | 
 F:ANIMAL | IM_ACID | CAN_SWIM | 
-F:HURT_LITE | NO_FEAR
+F:HURT_LITE | NO_FEAR | WORM
 D:$It is a large slimy mass of worms.
 D:それはベトベトしたイモムシの大群だ。
 
@@ -1346,7 +1346,7 @@ W:3:2:5:10:89
 B:CRAWL:LOSE_DEX:1d5
 F:RAND_50 | RAND_25 | CAN_SWIM |
 F:STUPID | WEIRD_MIND | MULTIPLY | EAT_LOSE_DEX |
-F:ANIMAL | HURT_LITE | NO_FEAR
+F:ANIMAL | HURT_LITE | NO_FEAR | WORM
 D:$It is a large slimy mass of worms.
 D:それはベトベトしたイモムシの大群だ。
 
@@ -1361,7 +1361,7 @@ F:ATTR_CLEAR | CAN_SWIM |
 F:RAND_50 | RAND_25 | 
 F:STUPID | WEIRD_MIND | INVISIBLE | MULTIPLY | 
 F:ANIMAL | EAT_CONF | EAT_POISONOUS
-F:IM_POIS | HURT_LITE | NO_FEAR
+F:IM_POIS | HURT_LITE | NO_FEAR | WORM
 D:$It is a disgusting mass of poisonous worms.
 D:それは毒を持った汚らわしいイモムシの大群だ。
 
@@ -1502,7 +1502,7 @@ B:CRAWL:COLD:1d7
 F:RAND_50 | RAND_25 | 
 F:STUPID | WEIRD_MIND | COLD_BLOOD | MULTIPLY | 
 F:ANIMAL | IM_COLD | CAN_SWIM |
-F:HURT_LITE | NO_FEAR
+F:HURT_LITE | NO_FEAR | WORM
 D:$It is a large slimy mass of worms.
 D:それはベトベトしたイモムシの大群だ。
 
@@ -1732,7 +1732,7 @@ B:CRAWL:FIRE:1d9
 F:RAND_50 | RAND_25 | 
 F:STUPID | EMPTY_MIND | MULTIPLY | BASH_DOOR | 
 F:ANIMAL | IM_FIRE | CAN_SWIM |
-F:HURT_LITE | NO_FEAR
+F:HURT_LITE | NO_FEAR | WORM
 D:$It is a large slimy mass of worms.
 D:それはベトベトしたイモムシの大群だ。
 
@@ -3506,7 +3506,7 @@ W:12:4:6:0:0
 B:TOUCH:EXP_10
 F:RAND_50 | RAND_25 | CAN_SWIM |
 F:STUPID | WEIRD_MIND | MULTIPLY | BASH_DOOR | 
-F:ANIMAL | HURT_LITE | RES_NETH | NO_FEAR
+F:ANIMAL | HURT_LITE | RES_NETH | NO_FEAR | WORM
 D:$It is a disgusting mass of dark worms.
 D:それは忌まわしい暗黒のイモムシの大群だ。
 
@@ -3519,7 +3519,7 @@ W:12:4:7:0:0
 B:CRAWL:EXP_10
 F:RAND_50 | RAND_25 | 
 F:STUPID | WEIRD_MIND | MULTIPLY | BASH_DOOR | EVIL | CAN_SWIM |
-F:ANIMAL | HURT_LITE | RES_DARK | NO_FEAR | KILL_WALL | COLD_BLOOD | INVISIBLE
+F:ANIMAL | HURT_LITE | RES_DARK | NO_FEAR | KILL_WALL | COLD_BLOOD | INVISIBLE | WORM
 D:$Even more disgusting dark worms, their essence that of unbeing.
 D:非存在がその本質である、ぞっとする暗黒のイモムシだ。
 
@@ -6593,7 +6593,7 @@ B:STING:PARALYZE:2d6
 B:STING:PARALYZE:2d6
 F:RAND_25 | 
 F:WEIRD_MIND | BASH_DOOR | DROP_SKELETON
-F:ANIMAL | IM_POIS | INSECT | WORM
+F:ANIMAL | IM_POIS | INSECT
 D:$A hideous centipede covered in slime and with glowing tentacles around its 
 D:$head.
 D:ベトベトした粘膜に覆われた巨大なムカデで、頭の周りには光を発する
@@ -7544,7 +7544,7 @@ B:HIT:HURT:1d8
 B:BITE:ACID:2d8
 B:STING:POISON:1d8
 F:BASH_DOOR | DROP_CORPSE | EAT_ACIDIC | EAT_POISONOUS |
-F:ANIMAL | IM_ACID | IM_POIS | CAN_SWIM
+F:ANIMAL | IM_ACID | IM_POIS | CAN_SWIM | WORM
 D:$It is a massive worm form, many feet in length.  Its vast maw drips acid 
 D:$and poison.
 D:それはたくさんの足を持ったイモムシだ。その巨大な胃袋は酸と毒に満ちている。
@@ -8901,7 +8901,7 @@ B:STING:PARALYZE:2d6
 B:STING:PARALYZE:2d6
 F:RAND_25 | FRIENDS | DROP_SKELETON
 F:WEIRD_MIND | BASH_DOOR | 
-F:ANIMAL | IM_POIS | INSECT | WORM
+F:ANIMAL | IM_POIS | INSECT
 D:$A hideous centipede covered in slime and with glowing tentacles around its 
 D:$head.
 D:ベトベトした粘膜に覆われた巨大なムカデで、頭の周りには光を発する
@@ -11320,7 +11320,7 @@ W:40:3:30:0:0
 B:CRAWL:UN_BONUS:1d4
 F:RAND_50 | RES_DISE | ATTR_MULTI | CAN_SWIM |
 F:STUPID | WEIRD_MIND | MULTIPLY | BASH_DOOR | 
-F:ANIMAL | HURT_LITE | NO_FEAR | SELF_LITE_1
+F:ANIMAL | HURT_LITE | NO_FEAR | SELF_LITE_1 | WORM
 D:$It is a strange mass of squirming worms.  Magical energy crackles 
 D:$around its disgusting form.
 D:それはのたくる奇妙なイモムシの大群だ。この忌まわしい
@@ -17885,7 +17885,7 @@ W:15:4:7:0:0
 B:EXPLODE:FIRE:5d5
 F:RAND_50 | RAND_25 | CAN_SWIM |
 F:STUPID | WEIRD_MIND | MULTIPLY | BASH_DOOR | 
-F:ANIMAL | HURT_LITE | NO_FEAR
+F:ANIMAL | HURT_LITE | NO_FEAR | WORM
 D:$A seething mass of thick, glowing worms.
 D:光るイモムシの密集した沸き返る塊だ。
 
@@ -21429,7 +21429,7 @@ W:15:1:50:0:0
 B:BITE:HURT:4d2
 B:BITE:HURT:4d2
 B:BITE:HURT:4d2
-F:FORCE_MAXHP | DROP_CORPSE | RIDING |
+F:FORCE_MAXHP | DROP_CORPSE | RIDING | WORM
 F:COLD_BLOOD | BASH_DOOR | KILL_WALL | ANIMAL | EVIL |
 F:IM_ELEC | IM_ACID | IM_FIRE | RES_DARK | RES_NETH 
 D:$Their arrival marks the end of Yawgmoth's subtlety.
@@ -21723,7 +21723,7 @@ W:56:3:4000:0:0
 B:BITE:CONFUSE:6d8
 B:BITE:CONFUSE:6d8
 B:CRUSH:CONFUSE:5d10
-F:OPEN_DOOR | BASH_DOOR |
+F:OPEN_DOOR | BASH_DOOR | WORM
 F:ANIMAL | KILL_BODY | DROP_CORPSE | ONLY_GOLD | DROP_4D2 |
 F:FRIENDS | NO_SLEEP | NO_CONF | NO_STUN |
 F:IM_ACID | IM_POIS | RES_SOUN
@@ -25770,7 +25770,7 @@ B:CRUSH:EXP_40:12d6
 F:DEAD_SPAWN_1_IN_1_1316_1d1
 F:DEAD_SPAWN_1_IN_1_1317_1d1
 F:BASH_DOOR | REFLECTING | KILL_ITEM | MOB_80 | ALLIANCE_PHYREXIA
-F:IM_FIRE | IM_COLD | IM_ELEC | IM_ACID | IM_POIS
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_ACID | IM_POIS | WORM
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | RIDING | PHYREXIAN
 D:ファイレクシアの生み出した恐るべき兵器の中でも傑作の一つだ。
 D:真っ二つに破壊されてなお平然と稼働する。
@@ -25783,7 +25783,7 @@ W:40:255:0:1500:0:0
 B:CRUSH:SUPERHURT:8d6
 B:CRUSH:POISON:12d6
 F:BASH_DOOR | REFLECTING | KILL_ITEM | MOB_80 | ALLIANCE_PHYREXIA
-F:IM_FIRE | IM_COLD | IM_ELEC | IM_ACID | IM_POIS
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_ACID | IM_POIS | WORM
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | RIDING | PHYREXIAN
 D:ファイレクシアの生み出した恐るべき兵器の中でも傑作の一つだ。
 D:真っ二つに破壊されてなお平然と稼働する。
@@ -25796,7 +25796,7 @@ W:40:255:0:1500:0:0
 B:CRUSH:SUPERHURT:8d6
 B:CRUSH:EXP_40:12d6
 F:BASH_DOOR | REFLECTING | KILL_ITEM | MOB_80 | ALLIANCE_PHYREXIA
-F:IM_FIRE | IM_COLD | IM_ELEC | IM_ACID | IM_POIS
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_ACID | IM_POIS | WORM
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | RIDING | PHYREXIAN
 D:ファイレクシアの生み出した恐るべき兵器の中でも傑作の一つだ。
 D:真っ二つに破壊されてなお平然と稼働する。
