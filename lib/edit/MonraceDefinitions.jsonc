@@ -1525,7 +1525,8 @@
         "ANIMAL",
         "IM_POIS",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -2815,7 +2816,8 @@
         "IM_ACID",
         "CAN_SWIM",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -3747,7 +3749,8 @@
         "EAT_LOSE_DEX",
         "ANIMAL",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -3796,7 +3799,8 @@
         "EAT_POISONOUS",
         "IM_POIS",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -4261,7 +4265,8 @@
         "IM_COLD",
         "CAN_SWIM",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -5038,7 +5043,8 @@
         "IM_FIRE",
         "CAN_SWIM",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -9451,7 +9457,8 @@
         "DEMON",
         "IM_FIRE",
         "NO_FEAR",
-        "NO_CONF"
+        "NO_CONF",
+        "HORROR"
     ]
 },
 {
@@ -10703,7 +10710,8 @@
         "ANIMAL",
         "HURT_LITE",
         "RES_NETH",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -10752,7 +10760,8 @@
         "NO_FEAR",
         "KILL_WALL",
         "COLD_BLOOD",
-        "INVISIBLE"
+        "INVISIBLE",
+        "WORM"
     ]
 },
 {
@@ -12308,7 +12317,8 @@
         "DEMON",
         "IM_FIRE",
         "NO_FEAR",
-        "NO_CONF"
+        "NO_CONF",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -21491,7 +21501,8 @@
         "ANIMAL",
         "IM_ACID",
         "DROP_CORPSE",
-        "EAT_ACIDIC"
+        "EAT_ACIDIC",
+        "WORM"
     ]
 },
 {
@@ -22310,7 +22321,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "COLD_BLOOD",
-        "HURT_LITE"
+        "HURT_LITE",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -24086,7 +24098,8 @@
         "ANIMAL",
         "IM_ACID",
         "IM_POIS",
-        "CAN_SWIM"
+        "CAN_SWIM",
+        "WORM"
     ]
 },
 {
@@ -36389,7 +36402,8 @@
         "ANIMAL",
         "HURT_LITE",
         "NO_FEAR",
-        "SELF_LITE_1"
+        "SELF_LITE_1",
+        "WORM"
     ]
 },
 {
@@ -38313,7 +38327,8 @@
         "DEMON",
         "IM_FIRE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -40266,6 +40281,7 @@
         "HURT_LITE",
         "POWERFUL",
         "ELDRITCH_HORROR",
+        "HORROR",
         "IM_ACID",
         "IM_FIRE",
         "RES_PLAS",
@@ -44726,7 +44742,8 @@
         "HURT_LITE",
         "RES_NETH",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "WORM"
     ],
     "skill": {
         "list": [
@@ -56052,7 +56069,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -69119,6 +69137,7 @@
         "FORCE_MAXHP",
         "DROP_CORPSE",
         "RIDING",
+        "WORM",
         "COLD_BLOOD",
         "BASH_DOOR",
         "KILL_WALL",
@@ -70129,6 +70148,7 @@
     "flags": [
         "OPEN_DOOR",
         "BASH_DOOR",
+        "WORM",
         "ANIMAL",
         "KILL_BODY",
         "DROP_CORPSE",
@@ -85399,6 +85419,7 @@
         "IM_ELEC",
         "IM_ACID",
         "IM_POIS",
+        "WORM",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -85466,6 +85487,7 @@
         "IM_ELEC",
         "IM_ACID",
         "IM_POIS",
+        "WORM",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -85521,6 +85543,7 @@
         "IM_ELEC",
         "IM_ACID",
         "IM_POIS",
+        "WORM",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
