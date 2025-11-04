@@ -36771,7 +36771,7 @@ D:ファトラは妖艶で泰然とした態度の紅一点にして、最も古
 D:彼女は温和で他のデアボリカを慮るのみならず、定命の者にも無為な殺戮や圧政を行わなった話を聞かない。
 D:しばしば調停者として同族の軋轢や放縦の後始末をして窘めることもある。
 
-N:1995:房中のロードデアボリカ『彭祖』
+N:1995:房中のロードデアボリカ『彭房中
 E:PengZu, Lord Diabolique of Chamber
 G:U:G
 I:131:72d100:40:165:10
@@ -41789,6 +41789,28 @@ D:$One of the new Phyrexian Praetor. He works silently in the “Silent Furnace,
 D:$ Dvoicing dissent against Elish Noon's expansionist policies.
 D:新ファイレクシアの法務官の一人だ。「静かなる焼炉」で黙々と仕事をこなし、
 D:エリシュ・ノーンの拡張路線に異議を唱えている。
+
+N:2308:飢餓の声『ヴォリンクレックス』
+E:Vorinclex, Voice of Hunger
+G:H:g
+I:125:50d100:40:135:10
+W:62:2:0:42000:0:0
+B:PUNCH:HURT:9d10
+B:PUNCH:HURT:9d10
+B:HIT:SHATTER:10d9
+B:HIT:SHATTER:10d9
+F:UNIQUE | MALE | ALLIANCE_PHYREXIA | PHYREXIAN
+F:FORCE_MAXHP | CAN_SWIM
+F:ONLY_ITEM | DROP_4D2 | DROP_2D2 | DROP_GOOD | 
+F:OPEN_DOOR | BASH_DOOR
+F:EVIL | IM_COLD | IM_FIRE | IM_ACID | RES_NEXU | RES_NETH | RES_SOUN | IM_ACID | 
+F:IM_ELEC | NO_CONF | NO_SLEEP | POWERFUL | RES_CHAO
+S:1_IN_4 | 
+S:HASTE | HEAL
+D:$One of the new Phyrexian Praetor. Standing at the apex of the “Vicious Swarm”.
+D:$ He desires the Phyrexian oil's monstrous ecosystem to spread unchecked across the Multiverse.
+D:新ファイレクシアの法務官の一人だ。「悪意の大群」の頂点にあり、
+D:ファイレクシアの油による異形の生態系が、なすがまま多元宇宙に広がる事を望んでいる。
 
 # N: serial number : monster name
 # G: symbol : color

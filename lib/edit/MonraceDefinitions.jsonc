@@ -128815,7 +128815,7 @@
 {
     "id": 1995,
     "name": {
-        "ja": "房中のロードデアボリカ『彭祖』",
+        "ja": "房中のロードデアボリカ『彭房中",
         "en": "PengZu, Lord Diabolique of Chamber"
     },
     "symbol": {
@@ -148636,6 +148636,88 @@
             "BR_FIRE",
             "BA_FIRE",
             "BO_MANA"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2308,
+    "name": {
+        "ja": "飢餓の声『ヴォリンクレックス』",
+        "en": "Vorinclex, Voice of Hunger"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Green"
+    },
+    "speed": 15,
+    "hit_point": "50d100",
+    "vision": 40,
+    "armor_class": 135,
+    "alertness": 10,
+    "level": 62,
+    "rarity": 2,
+    "exp": 42000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "9d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "9d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "SHATTER",
+            "damage_dice": "10d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "SHATTER",
+            "damage_dice": "10d9"
+        }
+    ],
+    "flavor": {
+        "ja": "新ファイレクシアの法務官の一人だ。「悪意の大群」の頂点にあり、ファイレクシアの油による異形の生態系が、なすがまま多元宇宙に広がる事を望んでいる。",
+        "en": "One of the new Phyrexian Praetor. Standing at the apex of the “Vicious Swarm”. He desires the Phyrexian oil's monstrous ecosystem to spread unchecked across the Multiverse."
+    },
+    "sex": "MALE",
+    "alliance": "PHYREXIA",
+    "flags": [
+        "UNIQUE",
+        "PHYREXIAN",
+        "FORCE_MAXHP",
+        "CAN_SWIM",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL",
+        "IM_COLD",
+        "IM_FIRE",
+        "IM_ACID",
+        "RES_NEXU",
+        "RES_NETH",
+        "RES_SOUN",
+        "IM_ACID",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "POWERFUL",
+        "RES_CHAO"
+    ],
+    "skill": {
+        "list": [
+            "HASTE",
+            "HEAL"
         ],
         "probability": "1_IN_4"
     }
