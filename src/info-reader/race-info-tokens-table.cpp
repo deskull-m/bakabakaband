@@ -478,6 +478,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "PAPER", MonsterKindType::PAPER }, // 紙で出来た
     { "DEEPONE", MonsterKindType::DEEPONE }, // 深きもの
     { "PHYREXIAN", MonsterKindType::PHYREXIAN }, // ファイレクシア人
+    { "HORROR", MonsterKindType::HORROR }, // ホラー
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
