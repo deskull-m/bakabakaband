@@ -480,6 +480,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "PHYREXIAN", MonsterKindType::PHYREXIAN }, // ファイレクシア人
     { "HORROR", MonsterKindType::HORROR }, // ホラー
     { "WORM", MonsterKindType::WORM }, // ワーム
+    { "OCTOPUS", MonsterKindType::OCTOPUS }, // タコ
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {

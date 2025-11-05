@@ -13580,7 +13580,8 @@
         "AQUATIC",
         "ANIMAL",
         "WILD_ALL",
-        "RIDING"
+        "RIDING",
+        "OCTOPUS"
     ]
 },
 {
@@ -68798,6 +68799,7 @@
         "ANIMAL",
         "CAN_SWIM",
         "WEIRD_MIND",
+        "OCTOPUS",
         "IM_POIS",
         "RES_DARK",
         "NO_FEAR",
