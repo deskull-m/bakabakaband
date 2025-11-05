@@ -209,6 +209,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("ホラー", "horror");
     case MonsterKindType::WORM:
         return _("ワーム", "worm");
+    case MonsterKindType::OCTOPUS:
+        return _("タコ", "octopus");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -418,6 +420,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "HORROR";
     case MonsterKindType::WORM:
         return "WORM";
+    case MonsterKindType::OCTOPUS:
+        return "OCTOPUS";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
