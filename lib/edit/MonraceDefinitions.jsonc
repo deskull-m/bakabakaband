@@ -26369,6 +26369,7 @@
         "IM_COLD",
         "MOVE_BODY",
         "RIDING",
+        "SQUID",
         "FORCE_MAXHP",
         "WILD_OCEAN"
     ],
@@ -86801,6 +86802,7 @@
         "RES_WATE",
         "ANIMAL",
         "NO_CONF",
+        "SQUID",
         "NO_SLEEP",
         "NO_FEAR",
         "DROP_CORPSE",
@@ -86871,6 +86873,7 @@
         "RES_WATE",
         "ANIMAL",
         "NO_CONF",
+        "SQUID",
         "NO_SLEEP",
         "NO_FEAR",
         "DROP_CORPSE",
