@@ -3,6 +3,9 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "spell/summon-types.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
 /**
@@ -10,10 +13,24 @@
  * @param creature_ptr プレイヤーへの参照ポインタ
  * @return 印象値
  * @note イークを多く倒しているほど印象が悪くなる
+ * @note ボルドールやオルファックスを殺害した場合は大幅なペナルティ
  */
 int AllianceYeekKingdom::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
+
+    // ボルドールとオルファックスの殺害状況を確認
+    const auto &monrace_list = MonraceList::get_instance();
+    const auto boldor_kills = monrace_list.get_monrace(MonraceId::BOLDOR).r_akills;
+    const auto orfax_kills = monrace_list.get_monrace(MonraceId::ORFAX).r_akills;
+
+    // ボルドールまたはオルファックスを殺害した場合、大幅に印象値を下げる
+    if (boldor_kills > 0) {
+        impression -= 1000; // ボルドール殺害による大幅なペナルティ
+    }
+    if (orfax_kills > 0) {
+        impression -= 1000; // オルファックス殺害による大幅なペナルティ
+    }
 
     // イーク種族を倒した数に応じて印象が悪化
     const std::string yeek_kill_key = "KILL/RACE/YEEK";
@@ -28,6 +45,20 @@ int AllianceYeekKingdom::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     return impression;
+}
+
+/**
+ * @brief イークの王国が壊滅しているかを判定する
+ * @return ボルドールとオルファックスの両方が死亡している場合にtrue
+ */
+bool AllianceYeekKingdom::isAnnihilated()
+{
+    // ボルドールとオルファックスの両方が死亡した場合、同盟は壊滅
+    const auto &monrace_list = MonraceList::get_instance();
+    const auto boldor_dead = monrace_list.get_monrace(MonraceId::BOLDOR).r_akills > 0;
+    const auto orfax_dead = monrace_list.get_monrace(MonraceId::ORFAX).r_akills > 0;
+
+    return boldor_dead && orfax_dead;
 }
 
 /**

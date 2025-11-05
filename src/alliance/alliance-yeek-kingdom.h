@@ -7,6 +7,7 @@ public:
     AllianceYeekKingdom() = delete;
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int calcImpressionPoint(PlayerType *creature_ptr) const override;
+    bool isAnnihilated() override;
     void panishment(PlayerType &player_ptr) override;
     virtual ~AllianceYeekKingdom() = default;
 };

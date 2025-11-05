@@ -25,12 +25,14 @@ enum class MonraceId : int16_t {
     PHANTOM_W = 152,
     WOUNDED_BEAR = 159,
     D_ELF_MAGE = 178,
+    ORFAX = 180, // ボルドールの息子『オルファックス』
     D_ELF_WARRIOR = 182,
     BLUE_HORROR = 189,
     GOLD_COINS = 195,
     MASTER_YEEK = 224,
     PRIEST = 225,
     D_ELF_PRIEST = 226,
+    BOLDOR = 237, // イークの大王『ボルドール』
     MITHRIL_COINS = 239,
     PINK_HORROR = 242,
     IMP = 296,
