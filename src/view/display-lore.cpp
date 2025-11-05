@@ -288,8 +288,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::FAIRY, MonsterKindType::VAMPIRE, MonsterKindType::BEAR, MonsterKindType::VORTEX, MonsterKindType::OOZE,
             MonsterKindType::DINOSAUR, MonsterKindType::LICH, MonsterKindType::GHOST, MonsterKindType::BERSERK, MonsterKindType::EXPLOSIVE,
             MonsterKindType::RAT, MonsterKindType::MINOTAUR, MonsterKindType::SKAVEN, MonsterKindType::KOBOLD, MonsterKindType::OGRE, MonsterKindType::BOVINE, MonsterKindType::MERFOLK,
-            MonsterKindType::SHARK, MonsterKindType::HYDRA, MonsterKindType::SHIP, MonsterKindType::SLUG, MonsterKindType::EYE, MonsterKindType::ALIEN, MonsterKindType::GRANDMA,
-            MonsterKindType::DEEPONE, MonsterKindType::PHYREXIAN, MonsterKindType::HORROR, MonsterKindType::WORM })) {
+            MonsterKindType::SHARK, MonsterKindType::HYDRA, MonsterKindType::SHIP, MonsterKindType::SLUG, MonsterKindType::EYE, MonsterKindType::ALIEN, MonsterKindType::GRANDMA })) {
         hooked_roff(_("モンスター", " creature"));
         return;
     }
