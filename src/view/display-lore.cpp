@@ -576,6 +576,10 @@ void display_monster_kind(lore_type *lore_ptr)
     if (lore_ptr->kind_flags.has(MonsterKindType::SQUID)) {
         hook_c_roff(TERM_L_BLUE, _("イカ", " squid"));
     }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FACE)) {
+        hook_c_roff(TERM_L_RED, _("顔面", " face"));
+    }
 }
 
 void display_monster_alignment(lore_type *lore_ptr)

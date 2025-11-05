@@ -86708,7 +86708,8 @@
         "ONLY_ITEM",
         "DROP_60",
         "NONLIVING",
-        "YAZYU"
+        "YAZYU",
+        "FACE"
     ],
     "skill": {
         "list": [
@@ -114789,7 +114790,8 @@
         "IM_ACID",
         "ONLY_ITEM",
         "DROP_60",
-        "NONLIVING"
+        "NONLIVING",
+        "FACE"
     ],
     "skill": {
         "list": [
@@ -133077,6 +133079,7 @@
         "CAN_FLY",
         "NASTY",
         "NEVER_BLOW",
+        "FACE",
         "IM_COLD",
         "IM_FIRE",
         "IM_POIS",
