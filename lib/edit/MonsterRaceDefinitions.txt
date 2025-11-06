@@ -41812,6 +41812,28 @@ D:$ He desires the Phyrexian oil's monstrous ecosystem to spread unchecked acros
 D:新ファイレクシアの法務官の一人だ。「悪意の大群」の頂点にあり、
 D:ファイレクシアの油による異形の生態系が、なすがまま多元宇宙に広がる事を望んでいる。
 
+N:2309:発展の暴君『ジン＝ギタクシアス』
+E:Jin-Gitaxias, Progress Tyrant
+G:H:B
+I:130:47d100:20:130:10
+W:63:3:32000:0:0
+B:CLAW:HURT:10d10
+B:CLAW:HURT:10d10
+B:HIT:LOSE_INT:8d10
+B:HIT:LOSE_CON:8d10
+F:UNIQUE | MALE |
+F:FORCE_MAXHP | SMART | CAN_FLY | AURA_COLD | ALLIANCE_PHYREXIA | PHYREXIAN
+F:ONLY_ITEM | DROP_1D2 | DROP_GREAT 
+F:COLD_BLOOD | OPEN_DOOR | BASH_DOOR | REGENERATE | 
+F:EVIL | IM_FIRE | IM_COLD | IM_POIS | RES_NETH | RES_DARK | RES_LITE
+F:NO_CONF | NO_SLEEP | RES_TIME | RES_TELE | REFLECTING |
+S:1_IN_4 | 
+S:SCARE | S_KIN | HAND_DOOM | BRAIN_SMASH | FORGET | BO_MANA
+D:$One of the new Phyrexian Praetor. Standing at the pinnacle of
+D:$ the “Progress Engine” he conducts horrific experiments across the multiverse to make Phyrexia greater.
+D:新ファイレクシアの法務官の一人だ。「発展の動力源」の頂点にあり、
+D:ファイレクシアをより偉大な存在にするために、悍ましい実験を多元宇宙で繰り返している。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
