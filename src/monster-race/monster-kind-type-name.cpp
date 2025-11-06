@@ -215,6 +215,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("イカ", "squid");
     case MonsterKindType::FACE:
         return _("顔面", "face");
+    case MonsterKindType::HAND:
+        return _("手", "hand");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -430,6 +432,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "SQUID";
     case MonsterKindType::FACE:
         return "FACE";
+    case MonsterKindType::HAND:
+        return "HAND";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
