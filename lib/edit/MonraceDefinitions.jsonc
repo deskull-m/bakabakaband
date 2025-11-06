@@ -5363,6 +5363,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DWARF",
+        "NIBELUNG",
         "HURT_LITE",
         "RES_DARK",
         "RES_DISE",
@@ -20111,6 +20112,7 @@
         "BASH_DOOR",
         "EVIL",
         "DWARF",
+        "NIBELUNG",
         "IM_FIRE",
         "IM_COLD",
         "NO_CONF",
@@ -22386,6 +22388,7 @@
         "SPEAK_ALL",
         "ROGUE",
         "DWARF",
+        "NIBELUNG",
         "FORCE_MAXHP",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -132298,6 +132301,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DWARF",
+        "NIBELUNG",
         "HURT_LITE",
         "RES_DARK",
         "RES_DISE",
@@ -148733,6 +148737,94 @@
         "list": [
             "HASTE",
             "HEAL"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2309,
+    "name": {
+        "ja": "発展の暴君『ジン＝ギタクシアス』",
+        "en": "Jin-Gitaxias, Progress Tyrant"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Light Blue"
+    },
+    "speed": 20,
+    "hit_point": "47d100",
+    "vision": 20,
+    "armor_class": 130,
+    "alertness": 10,
+    "level": 63,
+    "rarity": 3,
+    "exp": 32000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "LOSE_INT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "LOSE_CON",
+            "damage_dice": "8d10"
+        }
+    ],
+    "flavor": {
+        "ja": "新ファイレクシアの法務官の一人だ。「発展の動力源」の頂点にあり、ファイレクシアをより偉大な存在にするために、悍ましい実験を多元宇宙で繰り返している。",
+        "en": "One of the new Phyrexian Praetor. Standing at the pinnacle of the “Progress Engine” he conducts horrific experiments across the multiverse to make Phyrexia greater."
+    },
+    "sex": "MALE",
+    "alliance": "PHYREXIA",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "SMART",
+        "CAN_FLY",
+        "AURA_COLD",
+        "PHYREXIAN",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_GREAT",
+        "COLD_BLOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "REGENERATE",
+        "EVIL",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "RES_NETH",
+        "RES_DARK",
+        "RES_LITE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "RES_TIME",
+        "RES_TELE",
+        "REFLECTING"
+    ],
+    "skill": {
+        "list": [
+            "SCARE",
+            "S_KIN",
+            "HAND_DOOM",
+            "BRAIN_SMASH",
+            "FORGET",
+            "BO_MANA"
         ],
         "probability": "1_IN_4"
     }
