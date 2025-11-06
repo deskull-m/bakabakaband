@@ -584,6 +584,10 @@ void display_monster_kind(lore_type *lore_ptr)
     if (lore_ptr->kind_flags.has(MonsterKindType::HAND)) {
         hook_c_roff(TERM_L_WHITE, _("手", " hand"));
     }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MINDFLAYER)) {
+        hook_c_roff(TERM_VIOLET, _("マインドフレア", " mindflayer"));
+    }
 }
 
 void display_monster_alignment(lore_type *lore_ptr)

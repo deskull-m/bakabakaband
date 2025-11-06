@@ -24349,7 +24349,8 @@
         "BASH_DOOR",
         "EVIL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "MINDFLAYER"
     ],
     "skill": {
         "list": [
@@ -132357,7 +132358,8 @@
         "BASH_DOOR",
         "EVIL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "MINDFLAYER"
     ],
     "skill": {
         "list": [
@@ -142308,7 +142310,8 @@
         "EVIL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "MINDFLAYER"
     ],
     "skill": {
         "list": [
