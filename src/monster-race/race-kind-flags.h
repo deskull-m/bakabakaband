@@ -106,5 +106,6 @@ enum class MonsterKindType {
     FACE = 102, // 顔面
     HAND = 103, // 手
     MINDFLAYER = 104, // マインドフレア
+    NIBELUNG = 105, // ニーベルング
     MAX,
 };
