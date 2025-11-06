@@ -188,3 +188,37 @@ tl::optional<int> Store::carry(ItemEntity &item)
     *this->stock[slot] = item.clone();
     return slot;
 }
+
+/*!
+ * @brief 店舗タイプから対応するタグ文字列を取得する
+ * @param store_type 店舗タイプ
+ * @return タグ文字列
+ */
+std::string get_store_sale_type_tag(StoreSaleType store_type)
+{
+    switch (store_type) {
+    case StoreSaleType::GENERAL:
+        return "GENERAL";
+    case StoreSaleType::ARMOURY:
+        return "ARMOURY";
+    case StoreSaleType::WEAPON:
+        return "WEAPON";
+    case StoreSaleType::TEMPLE:
+        return "TEMPLE";
+    case StoreSaleType::ALCHEMIST:
+        return "ALCHEMIST";
+    case StoreSaleType::MAGIC:
+        return "MAGIC";
+    case StoreSaleType::BLACK:
+        return "BLACK";
+    case StoreSaleType::HOME:
+        return "HOME";
+    case StoreSaleType::BOOK:
+        return "BOOK";
+    case StoreSaleType::MUSEUM:
+        return "MUSEUM";
+    case StoreSaleType::MAX:
+        return "UNKNOWN";
+    }
+    return "UNKNOWN";
+}

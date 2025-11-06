@@ -111,6 +111,36 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
     if (player_ptr->incident_tree.count("STORE_SELL")) {
         fprintf(fff, _("あなたはこれまで%d回アイテムを売却した。\n", "You have sold item %d times. \n"), player_ptr->incident_tree["STORE_SELL"]);
     }
+
+    // 店舗に入った回数を表示
+    if (player_ptr->incident_tree.count("STORE/ENTER")) {
+        fprintf(fff, _("\nあなたはこれまで%d回店舗に入った。\n", "\nYou have entered stores %d times.\n"), player_ptr->incident_tree["STORE/ENTER"]);
+
+        // 各店舗への入場回数を表示
+        static const struct {
+            const char *tag;
+            const char *name;
+        } store_types[] = {
+            { "GENERAL", _("雑貨屋", "General Store") },
+            { "ARMOURY", _("防具屋", "Armoury") },
+            { "WEAPON", _("武器屋", "Weapon Smiths") },
+            { "TEMPLE", _("寺院", "Temple") },
+            { "ALCHEMIST", _("錬金術の店", "Alchemy Shop") },
+            { "MAGIC", _("魔道具屋", "Magic Shop") },
+            { "BLACK", _("ブラック・マーケット", "Black Market") },
+            { "HOME", _("我が家", "Home") },
+            { "BOOK", _("書店", "Book Store") },
+            { "MUSEUM", _("博物館", "Museum") },
+        };
+
+        for (const auto &store : store_types) {
+            const std::string key = "STORE/ENTER/" + std::string(store.tag);
+            if (player_ptr->incident_tree.count(key)) {
+                fprintf(fff, _("    %s: %d回\n", "    %s: %d times\n"), store.name, player_ptr->incident_tree[key]);
+            }
+        }
+    }
+
     if (player_ptr->incident_tree.count("STAY_INN")) {
         fprintf(fff, _("あなたはこれまで%d回宿屋に宿泊した。\n", "You have stayed inn %d times. \n"), player_ptr->incident_tree["STAY_INN"]);
     }

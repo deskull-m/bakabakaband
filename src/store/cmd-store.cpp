@@ -122,6 +122,12 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     st_ptr = &towns_info[player_ptr->town_num].get_store(store_num);
     ot_ptr = &owners.at(store_num)[st_ptr->owner];
     store_top = 0;
+
+    // 店舗に入ったインシデントを記録
+    player_ptr->plus_incident_tree("STORE/ENTER", 1);
+    const std::string store_tag = get_store_sale_type_tag(store_num);
+    player_ptr->plus_incident_tree("STORE/ENTER/" + store_tag, 1);
+
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
     display_store(player_ptr, store_num);
     leave_store = false;
