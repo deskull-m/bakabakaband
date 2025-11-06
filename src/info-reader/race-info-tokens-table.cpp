@@ -484,6 +484,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "SQUID", MonsterKindType::SQUID }, // イカ
     { "FACE", MonsterKindType::FACE }, // 顔面
     { "HAND", MonsterKindType::HAND }, // 手
+    { "MINDFLAYER", MonsterKindType::MINDFLAYER }, // マインドフレア
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {

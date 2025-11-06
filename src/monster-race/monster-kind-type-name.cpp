@@ -217,6 +217,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("顔面", "face");
     case MonsterKindType::HAND:
         return _("手", "hand");
+    case MonsterKindType::MINDFLAYER:
+        return _("マインドフレア", "mindflayer");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -434,6 +436,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "FACE";
     case MonsterKindType::HAND:
         return "HAND";
+    case MonsterKindType::MINDFLAYER:
+        return "MINDFLAYER";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }

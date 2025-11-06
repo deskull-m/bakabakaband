@@ -105,5 +105,6 @@ enum class MonsterKindType {
     SQUID = 101, // イカ
     FACE = 102, // 顔面
     HAND = 103, // 手
+    MINDFLAYER = 104, // マインドフレア
     MAX,
 };
