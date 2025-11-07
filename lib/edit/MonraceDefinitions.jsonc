@@ -13130,7 +13130,8 @@
         "OPEN_DOOR",
         "GOOD",
         "HAS_LITE_1",
-        "ROGUE"
+        "ROGUE",
+        "GNOME"
     ],
     "skill": {
         "list": [
@@ -14384,6 +14385,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
+        "GNOME",
         "EVIL"
     ],
     "skill": {
@@ -29519,7 +29521,8 @@
         "HURT_LITE",
         "EVIL",
         "OPEN_DOOR",
-        "HAS_LITE_1"
+        "HAS_LITE_1",
+        "GNOME"
     ],
     "skill": {
         "list": [
@@ -39904,7 +39907,8 @@
         "OPEN_DOOR",
         "UNDEAD",
         "RES_NETH",
-        "HAS_LITE_1"
+        "HAS_LITE_1",
+        "GNOME"
     ],
     "skill": {
         "list": [
@@ -41411,6 +41415,7 @@
         "TAKE_ITEM",
         "SMART",
         "ROGUE",
+        "GNOME",
         "EVIL",
         "OPEN_DOOR",
         "NO_FEAR",
@@ -93727,6 +93732,7 @@
         "IM_ELEC",
         "IM_POIS",
         "FRIENDS",
+        "GNOME",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
