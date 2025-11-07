@@ -2495,6 +2495,7 @@
         "CAN_FLY",
         "WILD_MOUNTAIN",
         "BIRD",
+        "HARPY",
         "RAND_50",
         "DROP_CORPSE",
         "ANIMAL",
@@ -7704,6 +7705,7 @@
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
         "BIRD",
+        "HARPY",
         "RAND_25",
         "ANIMAL",
         "EVIL"
@@ -82771,6 +82773,7 @@
         "WILD_SHORE",
         "NEVER_MOVE",
         "MERFOLK",
+        "HARPY",
         "ONLY_ITEM",
         "DROP_GOOD",
         "DROP_1D2",
@@ -95600,6 +95603,7 @@
     "flags": [
         "NEVER_MOVE",
         "NEVER_BLOW",
+        "HARPY",
         "NONLIVING",
         "IM_POIS",
         "WILD_SWAMP",

@@ -109,5 +109,6 @@ enum class MonsterKindType {
     NIBELUNG = 105, // ニーベルング
     GNOME = 106, // ノーム
     KRAKEN = 107, // クラーケン
+    HARPY = 108, // ハーピー
     MAX,
 };
