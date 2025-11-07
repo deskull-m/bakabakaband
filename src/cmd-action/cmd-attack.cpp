@@ -672,6 +672,10 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
         ItemEntity item;
         msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
         msg_erase();
+
+        // 脱糞させたインシデントを記録
+        player_ptr->plus_incident_tree("ATTACK_EXE_COUNT/DEFECATION", 1);
+
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
         (void)drop_near(player_ptr, item, player_ptr->get_position());
     }
