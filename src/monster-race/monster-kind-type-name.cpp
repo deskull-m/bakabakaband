@@ -223,6 +223,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("ニーベルング", "nibelung");
     case MonsterKindType::GNOME:
         return _("ノーム", "gnome");
+    case MonsterKindType::KRAKEN:
+        return _("クラーケン", "kraken");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -446,6 +448,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "NIBELUNG";
     case MonsterKindType::GNOME:
         return "GNOME";
+    case MonsterKindType::KRAKEN:
+        return "KRAKEN";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
