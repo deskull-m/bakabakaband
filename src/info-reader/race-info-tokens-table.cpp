@@ -488,6 +488,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "NIBELUNG", MonsterKindType::NIBELUNG }, // ニーベルング
     { "GNOME", MonsterKindType::GNOME }, // ノーム
     { "KRAKEN", MonsterKindType::KRAKEN }, // クラーケン
+    { "HARPY", MonsterKindType::HARPY }, // ハーピー
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
