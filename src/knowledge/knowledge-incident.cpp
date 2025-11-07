@@ -86,6 +86,11 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
     if (player_ptr->incident_tree.count("ATTACK_ACT_COUNT")) {
         fprintf(fff, _("あなたはこれまで%d回攻撃動作を行い、%d回攻撃を実行した。\n", "You have prepared %d attack action and execute %d attacks. \n"),
             player_ptr->incident_tree["ATTACK_ACT_COUNT"], player_ptr->incident_tree["ATTACK_EXE_COUNT"]);
+
+        // 脱糞させた回数を表示
+        if (player_ptr->incident_tree.count("ATTACK_EXE_COUNT/DEFECATION")) {
+            fprintf(fff, _("    うち%d回モンスターを脱糞させた。\n", "    of which %d times caused monsters to defecate.\n"), player_ptr->incident_tree["ATTACK_EXE_COUNT/DEFECATION"]);
+        }
     }
     if (player_ptr->incident_tree.count("SHOOT")) {
         fprintf(fff, _("あなたはこれまで%d回射撃を行った。\n", "You have fired %d times. \n"), player_ptr->incident_tree["SHOOT"]);
