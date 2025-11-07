@@ -41834,6 +41834,18 @@ D:$ the “Progress Engine” he conducts horrific experiments across the multiv
 D:新ファイレクシアの法務官の一人だ。「発展の動力源」の頂点にあり、
 D:ファイレクシアをより偉大な存在にするために、悍ましい実験を多元宇宙で繰り返している。
 
+N:2310:巨大カニ
+E:Giant crab
+G:c:r
+I:120:6d10:3:40:20
+W:9:1:4:0:0
+B:SLASH:HURT:1d10
+F:RAND_50 | WILD_ALL | DROP_SKELETON
+F:WEIRD_MIND | BASH_DOOR | CANCER | CAN_SWIM
+F:ANIMAL
+D:$It's a giant crab wielding scissors sharp enough to slice off a person's head.
+D:それは人の首をちょん切れる程のハサミをもった大きなカニだ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

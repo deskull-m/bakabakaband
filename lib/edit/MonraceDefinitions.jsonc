@@ -148838,5 +148838,48 @@
         ],
         "probability": "1_IN_4"
     }
+},
+{
+    "id": 2310,
+    "name": {
+        "ja": "巨大カニ",
+        "en": "Giant crab"
+    },
+    "symbol": {
+        "character": "c",
+        "color": "Red"
+    },
+    "speed": 10,
+    "hit_point": "6d10",
+    "vision": 3,
+    "armor_class": 40,
+    "alertness": 20,
+    "level": 9,
+    "rarity": 1,
+    "exp": 4,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "1d10"
+        }
+    ],
+    "flavor": {
+        "ja": "それは人の首をちょん切れる程のハサミをもった大きなカニだ。",
+        "en": "It's a giant crab wielding scissors sharp enough to slice off a person's head."
+    },
+    "flags": [
+        "RAND_50",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "WEIRD_MIND",
+        "BASH_DOOR",
+        "CANCER",
+        "CAN_SWIM",
+        "ANIMAL"
+    ]
 }]
 }
