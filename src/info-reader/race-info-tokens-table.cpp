@@ -490,6 +490,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "KRAKEN", MonsterKindType::KRAKEN }, // クラーケン
     { "HARPY", MonsterKindType::HARPY }, // ハーピー
     { "ALARM", MonsterKindType::ALARM }, // 警報機
+    { "DEER", MonsterKindType::DEER }, // 鹿
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {

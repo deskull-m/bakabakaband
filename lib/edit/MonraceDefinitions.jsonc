@@ -63932,7 +63932,8 @@
         "NO_STUN",
         "NO_CONF",
         "NO_SLEEP",
-        "RIDING"
+        "RIDING",
+        "DEER"
     ],
     "skill": {
         "list": [
@@ -103166,7 +103167,8 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "DEER"
     ]
 },
 {
@@ -148885,6 +148887,97 @@
         "CANCER",
         "CAN_SWIM",
         "ANIMAL"
+    ]
+},
+{
+    "id": 2311,
+    "name": {
+        "ja": "子鹿",
+        "en": "Young deer"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "4d8",
+    "vision": 2,
+    "armor_class": 15,
+    "alertness": 10,
+    "level": 3,
+    "rarity": 1,
+    "exp": 2,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        }
+    ],
+    "flavor": {
+        "ja": "柔らかな茶色の毛と輝く瞳を持つ、小さく優雅な子鹿だ。",
+        "en": "A small, graceful young deer with soft brown fur and bright eyes."
+    },
+    "flags": [
+        "RAND_25",
+        "WILD_WOOD",
+        "WILD_GRASS",
+        "FRIENDLY",
+        "ANIMAL",
+        "DEER",
+        "DROP_SKELETON",
+        "DROP_CORPSE"
+    ]
+},
+{
+    "id": 2312,
+    "name": {
+        "ja": "白鹿",
+        "en": "White deer"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Light Gray"
+    },
+    "speed": 10,
+    "hit_point": "8d10",
+    "vision": 4,
+    "armor_class": 20,
+    "alertness": 15,
+    "level": 8,
+    "rarity": 2,
+    "exp": 10,
+    "next_exp": 50,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "2d6"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "1d8"
+        }
+    ],
+    "flavor": {
+        "ja": "気高い佇まいと異世界的な優雅さを持つ、壮麗な白鹿だ。",
+        "en": "A magnificent white deer with a noble bearing and an otherworldly grace."
+    },
+    "flags": [
+        "RAND_25",
+        "WILD_WOOD",
+        "WILD_GRASS",
+        "ANIMAL",
+        "DEER",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "GOOD"
     ]
 }]
 }

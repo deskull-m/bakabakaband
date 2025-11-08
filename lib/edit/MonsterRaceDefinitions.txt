@@ -19952,7 +19952,7 @@ F:FORCE_MAXHP | ONLY_ITEM | DROP_1D2 | DROP_2D2 |
 F:OPEN_DOOR | SMART | POWERFUL | CAN_SWIM |
 F:IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | RES_TELE |
 F:RES_DISE | RES_NETH | RES_PLAS |
-F:NO_STUN | NO_CONF | NO_SLEEP | RIDING
+F:NO_STUN | NO_CONF | NO_SLEEP | RIDING | DEER
 S:1_IN_6 |
 S:BLIND | SHRIEK | DISPEL | INVULNER | S_ANGEL
 V:133
@@ -30357,7 +30357,7 @@ B:CRUSH:HURT:4d5
 B:CRUSH:HURT:4d5
 B:KICK:HURT:4d5
 F:BASH_DOOR | FRIENDS | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | DEER
 D:下手な肉食獣では歯が立たない、巨大な角を持った大鹿だ。
 D:とある次元に混乱を引き起こした畜生にも劣るプレインズウォーカーが
 D:あらゆるものをこれに変化させる異常性癖を発露している。
@@ -41845,6 +41845,29 @@ F:WEIRD_MIND | BASH_DOOR | CANCER | CAN_SWIM
 F:ANIMAL
 D:$It's a giant crab wielding scissors sharp enough to slice off a person's head.
 D:それは人の首をちょん切れる程のハサミをもった大きなカニだ。
+
+N:2311:子鹿
+E:Young deer
+G:q:u
+I:110:4d8:2:15:10
+W:3:1:2:0:0
+B:KICK:HURT:1d4
+F:RAND_25 | WILD_WOOD | WILD_GRASS | FRIENDLY
+F:ANIMAL | DEER | DROP_SKELETON | DROP_CORPSE
+D:$A small, graceful young deer with soft brown fur and bright eyes.
+D:柔らかな茶色の毛と輝く瞳を持つ、小さく優雅な子鹿だ。
+
+N:2312:白鹿
+E:White deer
+G:q:W
+I:120:8d10:4:20:15
+W:8:2:10:50:0
+B:BUTT:HURT:2d6
+B:KICK:HURT:1d8
+F:RAND_25 | WILD_WOOD | WILD_GRASS
+F:ANIMAL | DEER | DROP_SKELETON | DROP_CORPSE | GOOD
+D:$A magnificent white deer with a noble bearing and an otherworldly grace.
+D:気高い佇まいと異世界的な優雅さを持つ、壮麗な白鹿だ。
 
 # N: serial number : monster name
 # G: symbol : color

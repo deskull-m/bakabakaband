@@ -229,6 +229,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("ハーピー", "harpy");
     case MonsterKindType::ALARM:
         return _("警報機", "alarm");
+    case MonsterKindType::DEER:
+        return _("鹿", "deer");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -458,6 +460,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "HARPY";
     case MonsterKindType::ALARM:
         return "ALARM";
+    case MonsterKindType::DEER:
+        return "DEER";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
