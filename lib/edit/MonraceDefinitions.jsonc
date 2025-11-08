@@ -2354,6 +2354,7 @@
     "flags": [
         "NEVER_MOVE",
         "CAN_SWIM",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
@@ -3203,6 +3204,7 @@
         "CAN_SWIM",
         "STUPID",
         "EMPTY_MIND",
+        "OOZE",
         "IM_POIS",
         "HURT_LITE",
         "NO_CONF",
@@ -3522,6 +3524,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -4029,6 +4032,7 @@
     "flags": [
         "NEVER_MOVE",
         "COLD_BLOOD",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
@@ -4857,6 +4861,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
@@ -6350,6 +6355,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "HURT_LITE",
@@ -10656,6 +10662,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "SELF_LITE_1",
@@ -11810,6 +11817,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -12500,7 +12508,8 @@
         "CAN_SWIM",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "OOZE"
     ]
 },
 {
@@ -40286,7 +40295,7 @@
         "SPEAK_ALL",
         "BASH_DOOR",
         "EVIL",
-        "DEMON",
+        "OOZE",
         "NO_CONF",
         "NO_FEAR",
         "NO_SLEEP",
@@ -40297,7 +40306,6 @@
         "HURT_LITE",
         "POWERFUL",
         "ELDRITCH_HORROR",
-        "HORROR",
         "IM_ACID",
         "IM_FIRE",
         "RES_PLAS",
