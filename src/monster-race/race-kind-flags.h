@@ -110,5 +110,6 @@ enum class MonsterKindType {
     GNOME = 106, // ノーム
     KRAKEN = 107, // クラーケン
     HARPY = 108, // ハーピー
+    ALARM = 109, // 警報機
     MAX,
 };

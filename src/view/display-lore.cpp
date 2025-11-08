@@ -604,6 +604,10 @@ void display_monster_kind(lore_type *lore_ptr)
     if (lore_ptr->kind_flags.has(MonsterKindType::HARPY)) {
         hook_c_roff(TERM_L_UMBER, _("ハーピー", " harpy"));
     }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ALARM)) {
+        hook_c_roff(TERM_L_RED, _("警報機", " alarm"));
+    }
 }
 
 void display_monster_alignment(lore_type *lore_ptr)

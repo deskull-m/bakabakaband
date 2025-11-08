@@ -1927,6 +1927,7 @@
     "flags": [
         "NEVER_MOVE",
         "NEVER_BLOW",
+        "ALARM",
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
@@ -21062,6 +21063,7 @@
         "BASH_DOOR",
         "NONLIVING",
         "NEVER_MOVE",
+        "ALARM",
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
@@ -82773,7 +82775,6 @@
         "WILD_SHORE",
         "NEVER_MOVE",
         "MERFOLK",
-        "HARPY",
         "ONLY_ITEM",
         "DROP_GOOD",
         "DROP_1D2",
@@ -95603,8 +95604,8 @@
     "flags": [
         "NEVER_MOVE",
         "NEVER_BLOW",
-        "HARPY",
         "NONLIVING",
+        "ALARM",
         "IM_POIS",
         "WILD_SWAMP",
         "DROP_CORPSE",
