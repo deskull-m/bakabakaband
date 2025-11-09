@@ -107998,7 +107998,8 @@
         "DROP_CORPSE",
         "EVIL",
         "ANIMAL",
-        "HUMAN"
+        "HUMAN",
+        "HIPPO"
     ],
     "skill": {
         "list": [
@@ -122784,7 +122785,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "HIPPO"
     ],
     "skill": {
         "list": [
@@ -149052,6 +149054,52 @@
         "DROP_CORPSE",
         "ANIMAL",
         "ELEPHANT"
+    ]
+},
+{
+    "id": 2314,
+    "name": {
+        "ja": "カバ",
+        "en": "Hippopotamus"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Brown"
+    },
+    "speed": -2,
+    "hit_point": "10d18",
+    "vision": 6,
+    "armor_class": 60,
+    "alertness": 20,
+    "level": 14,
+    "rarity": 3,
+    "exp": 150,
+    "next_exp": 400,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "3d10"
+        }
+    ],
+    "flavor": {
+        "ja": "強力な顎と厚い皮を持つ巨大なカバだ。",
+        "en": "A massive hippopotamus with powerful jaws and thick hide."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "CAN_SWIM",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ANIMAL",
+        "HIPPO"
     ]
 }]
 }
