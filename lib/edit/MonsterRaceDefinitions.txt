@@ -674,7 +674,7 @@ I:110:3d4:20:4:15
 W:1:1:4:20:82
 B:BITE:HURT:1d3
 F:ANIMAL | CAN_SWIM | WILD_MOUNTAIN
-F:DROP_CORPSE
+F:DROP_CORPSE | LIZARD
 D:$It is a small lizard with a hardened hide.
 D:それは小さなトカゲで硬い皮を持っている。
 
@@ -1398,7 +1398,7 @@ G:R:u
 I:110:3d6:8:16:80
 W:4:1:9:30:134
 B:BITE:HURT:1d10
-F:ANIMAL | CAN_SWIM | DROP_CORPSE
+F:ANIMAL | CAN_SWIM | DROP_CORPSE | LIZARD
 D:$It is an armoured lizard with a powerful bite.
 D:硬い皮を持ったトカゲで噛む力が強い。
 
@@ -2169,7 +2169,7 @@ I:110:4d8:20:16:30
 W:7:2:35:200:249
 B:BITE:HURT:1d8
 B:BITE:HURT:1d8
-F:ANIMAL | CAN_SWIM | WILD_ALL | DROP_CORPSE
+F:ANIMAL | CAN_SWIM | WILD_ALL | DROP_CORPSE | LIZARD
 D:$It is a black lizard with overlapping scales and a powerful jaw.
 D:それは硬い皮と強力な顎を持った黒いトカゲだ。
 
@@ -3156,7 +3156,7 @@ W:10:2:150:1200:504
 B:CLAW:HURT:1d4
 B:CLAW:HURT:1d4
 B:BITE:HURT:1d5
-F:FORCE_MAXHP | CAN_FLY | DROP_CORPSE |
+F:FORCE_MAXHP | CAN_FLY | DROP_CORPSE | LIZARD
 F:DROP_60 | BASH_DOOR | DRAGON | EAT_BLIND | RES_LITE | RES_DARK
 S:1_IN_11 |
 S:CONF | SCARE | BR_LITE | BR_DARK
@@ -4785,7 +4785,7 @@ B:HIT:HURT:4d4
 F:MALE | CAN_SWIM | IM_ACID | HAS_LITE_1 |
 F:FRIENDS | DROP_60 | WILD_SHORE |
 F:OPEN_DOOR | BASH_DOOR | DROP_CORPSE
-F:EVIL 
+F:EVIL | LIZARD 
 D:$Intelligent lizard beings from the depths.
 D:深淵からやってきた知性を持ったトカゲだ。
 
@@ -5499,7 +5499,7 @@ R:290:3d6
 F:MALE | CAN_SWIM | IM_ACID | IM_POIS | WILD_SHORE |
 F:DROP_60 | DROP_1D2 | DROP_CORPSE
 F:OPEN_DOOR | BASH_DOOR | 
-F:EVIL | FORCE_MAXHP
+F:EVIL | FORCE_MAXHP | LIZARD
 D:$A lizardman leader.
 D:彼はリザードマン達の王だ。
 
@@ -41880,6 +41880,29 @@ F:BASH_DOOR | FRIENDS | DROP_SKELETON | DROP_CORPSE
 F:ANIMAL | ELEPHANT
 D:$A massive African elephant with enormous ears and long ivory tusks.
 D:巨大な耳と長い象牙を持つ、大型のアフリカ象だ。
+
+N:2314:小さなトカゲ
+E:Small lizard
+G:R:g
+I:110:2d4:3:8:10
+W:1:1:2:5:0
+B:BITE:HURT:1d2
+F:RAND_25 | WILD_ALL | CAN_SWIM
+F:ANIMAL | LIZARD | DROP_CORPSE
+D:$A small, harmless lizard basking in the sun.
+D:日向ぼっこをしている小さく無害なトカゲだ。
+
+N:2315:大トカゲ
+E:Giant lizard
+G:R:s
+I:110:8d10:6:20:15
+W:8:2:25:80:0
+B:BITE:HURT:2d8
+B:CLAW:HURT:1d6
+F:BASH_DOOR | WILD_ALL | CAN_SWIM
+F:ANIMAL | LIZARD | DROP_CORPSE | DROP_SKELETON
+D:$A large lizard with sharp claws and powerful jaws.
+D:鋭い爪と強力な顎を持つ大型のトカゲだ。
 
 # N: serial number : monster name
 # G: symbol : color
