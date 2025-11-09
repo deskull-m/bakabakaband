@@ -46147,7 +46147,8 @@
         "EVIL",
         "DEMON",
         "NONLIVING",
-        "ELDRITCH_HORROR"
+        "ELDRITCH_HORROR",
+        "AVATAR"
     ],
     "skill": {
         "list": [
@@ -119034,7 +119035,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "EVIL",
-        "NONLIVING"
+        "NONLIVING",
+        "AVATAR"
     ],
     "skill": {
         "list": [
@@ -141027,6 +141029,7 @@
         "RIDING",
         "FORCE_MAXHP",
         "DROP_CORPSE",
+        "LIZARD",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_4D2",
@@ -149045,94 +149048,6 @@
         "DROP_CORPSE",
         "ANIMAL",
         "ELEPHANT"
-    ]
-},
-{
-    "id": 2314,
-    "name": {
-        "ja": "小さなトカゲ",
-        "en": "Small lizard"
-    },
-    "symbol": {
-        "character": "R",
-        "color": "Green"
-    },
-    "speed": 0,
-    "hit_point": "2d4",
-    "vision": 3,
-    "armor_class": 8,
-    "alertness": 10,
-    "level": 1,
-    "rarity": 1,
-    "exp": 2,
-    "next_exp": 5,
-    "next_mon": 0,
-    "escorts": [],
-    "blows": [
-        {
-            "method": "BITE",
-            "effect": "HURT",
-            "damage_dice": "1d2"
-        }
-    ],
-    "flavor": {
-        "ja": "日向ぼっこをしている小さく無害なトカゲだ。",
-        "en": "A small, harmless lizard basking in the sun."
-    },
-    "flags": [
-        "RAND_25",
-        "WILD_ALL",
-        "CAN_SWIM",
-        "ANIMAL",
-        "LIZARD",
-        "DROP_CORPSE"
-    ]
-},
-{
-    "id": 2315,
-    "name": {
-        "ja": "大トカゲ",
-        "en": "Giant lizard"
-    },
-    "symbol": {
-        "character": "R",
-        "color": "Gray"
-    },
-    "speed": 0,
-    "hit_point": "8d10",
-    "vision": 6,
-    "armor_class": 20,
-    "alertness": 15,
-    "level": 8,
-    "rarity": 2,
-    "exp": 25,
-    "next_exp": 80,
-    "next_mon": 0,
-    "escorts": [],
-    "blows": [
-        {
-            "method": "BITE",
-            "effect": "HURT",
-            "damage_dice": "2d8"
-        },
-        {
-            "method": "CLAW",
-            "effect": "HURT",
-            "damage_dice": "1d6"
-        }
-    ],
-    "flavor": {
-        "ja": "鋭い爪と強力な顎を持つ大型のトカゲだ。",
-        "en": "A large lizard with sharp claws and powerful jaws."
-    },
-    "flags": [
-        "BASH_DOOR",
-        "WILD_ALL",
-        "CAN_SWIM",
-        "ANIMAL",
-        "LIZARD",
-        "DROP_CORPSE",
-        "DROP_SKELETON"
     ]
 }]
 }
