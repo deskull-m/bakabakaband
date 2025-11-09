@@ -30666,7 +30666,8 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "ELEPHANT"
     ]
 },
 {
@@ -39399,7 +39400,8 @@
         "DROP_CORPSE",
         "BASH_DOOR",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "ELEPHANT"
     ]
 },
 {
@@ -39986,7 +39988,6 @@
         "UNIQUE",
         "SPEAK_ALL",
         "EVIL",
-        "DEMON",
         "FORCE_MAXHP",
         "NEVER_MOVE",
         "ELDRITCH_HORROR",
@@ -39998,7 +39999,8 @@
         "HURT_ROCK",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -49210,6 +49212,7 @@
         "MOVE_BODY",
         "EVIL",
         "RIDING",
+        "ELEPHANT",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -148990,6 +148993,52 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "GOOD"
+    ]
+},
+{
+    "id": 2313,
+    "name": {
+        "ja": "象",
+        "en": "Elephant"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Gray"
+    },
+    "speed": 0,
+    "hit_point": "25d15",
+    "vision": 6,
+    "armor_class": 30,
+    "alertness": 25,
+    "level": 18,
+    "rarity": 3,
+    "exp": 200,
+    "next_exp": 500,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "3d12"
+        }
+    ],
+    "flavor": {
+        "ja": "巨大な耳と長い象牙を持つ、大型のアフリカ象だ。",
+        "en": "A massive African elephant with enormous ears and long ivory tusks."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "FRIENDS",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ANIMAL",
+        "ELEPHANT"
     ]
 }]
 }
