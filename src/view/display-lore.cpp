@@ -282,7 +282,7 @@ void display_monster_kind(lore_type *lore_ptr)
             MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
             MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
             MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU,
-            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::DEER, MonsterKindType::ELEPHANT,
+            MonsterKindType::DOG, MonsterKindType::CAT, MonsterKindType::APE, MonsterKindType::HORSE, MonsterKindType::DEER, MonsterKindType::ELEPHANT, MonsterKindType::LIZARD,
             MonsterKindType::INSECT, MonsterKindType::FROG, MonsterKindType::BEHOLDER, MonsterKindType::YEEK, MonsterKindType::AQUATIC_MAMMAL,
             MonsterKindType::FISH, MonsterKindType::BIRD, MonsterKindType::WALL, MonsterKindType::PLANT, MonsterKindType::FUNGUS, MonsterKindType::TURTLE, MonsterKindType::SNAKE,
             MonsterKindType::FAIRY, MonsterKindType::VAMPIRE, MonsterKindType::BEAR, MonsterKindType::VORTEX, MonsterKindType::OOZE,
@@ -399,6 +399,10 @@ void display_monster_kind(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELEPHANT)) {
         hook_c_roff(TERM_SLATE, _("象", " elephant"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::LIZARD)) {
+        hook_c_roff(TERM_GREEN, _("トカゲ", " lizard"));
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::FROG)) {
