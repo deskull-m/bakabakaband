@@ -112,5 +112,6 @@ enum class MonsterKindType {
     HARPY = 108, // ハーピー
     ALARM = 109, // 警報機
     DEER = 110, // 鹿
+    ELEPHANT = 111, // 象
     MAX,
 };
