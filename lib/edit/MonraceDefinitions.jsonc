@@ -1772,6 +1772,7 @@
     },
     "flags": [
         "ANIMAL",
+        "BAT",
         "CAN_FLY",
         "WILD_WOOD",
         "WILD_SWAMP",
@@ -5505,6 +5506,7 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "CAN_FLY",
         "WILD_MOUNTAIN",
         "WILD_WOOD",
@@ -11940,6 +11942,7 @@
     },
     "flags": [
         "ANIMAL",
+        "BAT",
         "EVIL",
         "FRIENDS",
         "CAN_FLY",
@@ -18310,6 +18313,7 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "SELF_LITE_1",
         "BASH_DOOR",
         "CAN_FLY",
@@ -19820,6 +19824,7 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "SELF_LITE_1",
         "BASH_DOOR",
         "CAN_FLY",
@@ -20685,6 +20690,7 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "COLD_BLOOD",
         "REGENERATE",
         "CAN_FLY",

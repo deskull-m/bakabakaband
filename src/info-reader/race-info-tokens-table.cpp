@@ -496,6 +496,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "AVATAR", MonsterKindType::AVATAR }, // アヴァター
     { "NIGHTSHADE", MonsterKindType::NIGHTSHADE }, // ナイトシェード
     { "HIPPO", MonsterKindType::HIPPO }, // カバ
+    { "BAT", MonsterKindType::BAT }, // コウモリ
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
