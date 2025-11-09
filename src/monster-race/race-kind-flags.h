@@ -115,5 +115,6 @@ enum class MonsterKindType {
     ELEPHANT = 111, // 象
     LIZARD = 112, // トカゲ
     AVATAR = 113, // アヴァター
+    NIGHTSHADE = 114, // ナイトシェード
     MAX,
 };
