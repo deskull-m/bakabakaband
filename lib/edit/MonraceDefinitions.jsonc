@@ -38961,6 +38961,7 @@
         "CAN_FLY",
         "ONLY_ITEM",
         "DROP_60",
+        "GHOST",
         "TAKE_ITEM",
         "INVISIBLE",
         "COLD_BLOOD",
@@ -40610,6 +40611,7 @@
         "ONLY_ITEM",
         "DROP_90",
         "DROP_4D2",
+        "PRIEST",
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -40681,6 +40683,7 @@
     "flags": [
         "FORCE_MAXHP",
         "RAND_25",
+        "GHOST",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_4D2",
@@ -48822,6 +48825,7 @@
     "sex": "MALE",
     "flags": [
         "UNIQUE",
+        "GHOST",
         "FORCE_MAXHP",
         "SPEAK_ALL",
         "CAN_FLY",
