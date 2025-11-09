@@ -31593,7 +31593,7 @@ B:CRUSH:HURT:6d8
 B:CRUSH:HURT:6d8
 F:DROP_2D2 | WILD_MOUNTAIN |
 F:OPEN_DOOR | BASH_DOOR | DROP_CORPSE
-F:EVIL | ANIMAL | HUMAN 
+F:EVIL | ANIMAL | HUMAN | HIPPO 
 S:1_IN_4 | 
 S:HEAL | BR_FIRE | BA_FIRE | 
 D:カバの口中に人間の頭部を持つ、間抜けとも不気味とも言える姿の合成人間だ。
@@ -35258,7 +35258,7 @@ B:CRUSH:HURT:2d8
 B:CRUSH:UN_POWER
 F:DROP_2D2 | WILD_MOUNTAIN |
 F:OPEN_DOOR | BASH_DOOR | DROP_CORPSE
-F:ANIMAL
+F:ANIMAL | HIPPO
 S:1_IN_4 | SLOW
 D:魔力を吸い上げる力を持つ不思議なカバだ。
 
@@ -41880,6 +41880,19 @@ F:BASH_DOOR | FRIENDS | DROP_SKELETON | DROP_CORPSE
 F:ANIMAL | ELEPHANT
 D:$A massive African elephant with enormous ears and long ivory tusks.
 D:巨大な耳と長い象牙を持つ、大型のアフリカ象だ。
+
+N:2314:カバ
+E:Hippopotamus
+G:q:u
+I:108:10d18:6:60:20
+W:14:3:150:400:0
+B:BITE:HURT:4d12
+B:CRUSH:HURT:3d10
+F:BASH_DOOR | CAN_SWIM | DROP_SKELETON | DROP_CORPSE
+F:ANIMAL | HIPPO
+D:$A massive hippopotamus with powerful jaws and thick hide.
+D:強力な顎と厚い皮を持つ巨大なカバだ。
+
 
 # N: serial number : monster name
 # G: symbol : color
