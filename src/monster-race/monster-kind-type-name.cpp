@@ -237,6 +237,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("トカゲ", "lizard");
     case MonsterKindType::AVATAR:
         return _("アヴァター", "avatar");
+    case MonsterKindType::NIGHTSHADE:
+        return _("ナイトシェード", "nightshade");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -474,6 +476,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "LIZARD";
     case MonsterKindType::AVATAR:
         return "AVATAR";
+    case MonsterKindType::NIGHTSHADE:
+        return "NIGHTSHADE";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
