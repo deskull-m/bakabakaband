@@ -205,6 +205,15 @@ enum class MonraceId : int16_t {
     FOLLOWER_WARRIOR = 1210,
     FOLLOWER_MAGE = 1211,
     MIRAAK = 1212,
+
+    // 芦名一門 (Ashina Clan)
+    GENICHIRO_ASHINA = 1123, // 巴流『葦名弦一郎』
+    NAOMORI_KAWARADA = 1313, // 侍大将『川原田直盛』
+    ASHINA_ASHIGARU = 1479, // 葦名の足軽
+    ASHINA_RYU_DISCIPLE = 1488, // 葦名流門弟
+    TARO_SOLDIER = 1489, // 太郎兵
+    CHAINED_OGRE_ASHINA = 1490, // 葦名の赤鬼
+    SHIGENORI_YAMAUCHI = 1726, // 組頭『山内重則』
     SCARAB = 1220,
     IMHOTEP = 1221,
     EDGE = 1245,
