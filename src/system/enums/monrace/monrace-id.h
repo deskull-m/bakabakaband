@@ -139,6 +139,11 @@ enum class MonraceId : int16_t {
     CHEST_MIMIC_02 = 965,
     LUIGI = 966,
     JAIAN = 967,
+
+    // アヴァリ諸侯同盟 (Avarin Lords)
+    EOL_DARK_ELF_SMITH = 976, // ダークエルフの鍛冶師『エオル』
+    MAEGLIN_BETRAYER = 977, // ゴンドリンを裏切りし『マイグリン』
+
     AR_PHARAZON = 978,
     FENGHUANG = 988,
     SUKE = 1001,
@@ -250,6 +255,7 @@ enum class MonraceId : int16_t {
     CHEST_MIMIC_11 = 1531,
     SHITTO_MASK = 1546,
     HUMAN_FACE_LOCOMOTIVE = 1544, // 人面機関車
+    AVARIN_RANGER = 1566, // アヴァリ族のレンジャー
     JURAL_MONS = 1583,
     NUMENOR_INFANTRY = 1586, // ヌメノール装甲歩兵
     BINZYOU_MUR = 1587,
