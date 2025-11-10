@@ -96715,7 +96715,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "UNIQUE",
-        "DEMON",
+        "AVATAR",
         "HURT_ROCK",
         "NO_STUN",
         "NO_SLEEP",
@@ -97466,7 +97466,7 @@
         "BASH_DOOR",
         "SELF_DARK_2",
         "SELF_DARK_1",
-        "DEMON",
+        "AVATAR",
         "NO_STUN",
         "NO_SLEEP",
         "NO_FEAR"
@@ -104461,6 +104461,7 @@
         "FORCE_MAXHP",
         "SMART",
         "REFLECTING",
+        "AVATAR",
         "ONLY_ITEM",
         "DROP_3D2",
         "DROP_4D2",
@@ -104479,9 +104480,7 @@
         "RES_DARK",
         "RES_TELE",
         "NO_CONF",
-        "NO_SLEEP",
-        "ANGEL",
-        "DEMON"
+        "NO_SLEEP"
     ],
     "skill": {
         "list": [
@@ -104661,7 +104660,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "UNIQUE",
-        "DEMON",
+        "AVATAR",
         "HURT_ROCK",
         "NO_STUN",
         "NO_SLEEP",
@@ -109684,6 +109683,7 @@
         "BASH_DOOR",
         "EVIL",
         "CAN_FLY",
+        "AVATAR",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -109859,6 +109859,7 @@
         "RES_TELE",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "AVATAR",
         "EVIL",
         "CAN_FLY",
         "IM_ACID",
