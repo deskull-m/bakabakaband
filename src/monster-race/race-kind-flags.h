@@ -118,5 +118,6 @@ enum class MonsterKindType {
     NIGHTSHADE = 114, // ナイトシェード
     HIPPO = 115, // カバ
     BAT = 116, // コウモリ
+    PLANESWALKER = 117, // プレインズウォーカー
     MAX,
 };
