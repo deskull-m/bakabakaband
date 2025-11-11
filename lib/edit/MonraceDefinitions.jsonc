@@ -96295,6 +96295,7 @@
         "FORCE_MAXHP",
         "ANIMAL",
         "ELDRAZI",
+        "BOAR",
         "POWERFUL",
         "REGENERATE",
         "RIDING",
@@ -114756,7 +114757,8 @@
         "ANIMAL",
         "EVIL",
         "WILD_WOOD",
-        "WILD_MOUNTAIN"
+        "WILD_MOUNTAIN",
+        "BOAR"
     ]
 },
 {
@@ -142618,7 +142620,8 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "BOAR"
     ]
 },
 {

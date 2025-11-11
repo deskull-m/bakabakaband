@@ -119,5 +119,6 @@ enum class MonsterKindType {
     HIPPO = 115, // カバ
     BAT = 116, // コウモリ
     PLANESWALKER = 117, // プレインズウォーカー
+    BOAR = 118, // 猪
     MAX,
 };
