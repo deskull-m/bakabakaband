@@ -5612,6 +5612,7 @@
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
+        "ARCHER",
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -6765,6 +6766,7 @@
         "FORCE_MAXHP",
         "SPEAK_ALL",
         "HUMAN",
+        "ARCHER",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_GREAT",
@@ -11072,6 +11074,7 @@
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
+        "ARCHER",
         "DROP_1D2",
         "OPEN_DOOR",
         "BASH_DOOR",
