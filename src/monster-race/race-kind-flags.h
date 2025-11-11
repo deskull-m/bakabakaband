@@ -122,5 +122,6 @@ enum class MonsterKindType {
     BOAR = 118, // 猪
     ARCHER = 119, // アーチャー
     RABBIT = 120, // 兎
+    PEASANT = 121, // 農民
     MAX,
 };
