@@ -243,6 +243,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("カバ", "hippo");
     case MonsterKindType::BAT:
         return _("コウモリ", "bat");
+    case MonsterKindType::PLANESWALKER:
+        return _("プレインズウォーカー", "planeswalker");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -486,6 +488,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "HIPPO";
     case MonsterKindType::BAT:
         return "BAT";
+    case MonsterKindType::PLANESWALKER:
+        return "PLANESWALKER";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
