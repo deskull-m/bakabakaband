@@ -162,7 +162,8 @@
         "WILD_ONLY",
         "FRIENDLY",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "BIRD"
     ]
 },
 {
@@ -204,7 +205,8 @@
         "WILD_WOOD",
         "WILD_GRASS",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "BIRD"
     ]
 },
 {
@@ -85420,6 +85422,7 @@
         "FRIENDS",
         "DROP_CORPSE",
         "RABBIT",
+        "HUMAN",
         "WILD_WOOD",
         "HAS_LITE_1"
     ]
