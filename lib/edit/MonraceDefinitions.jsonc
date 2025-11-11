@@ -246,7 +246,8 @@
         "WILD_WOOD",
         "ANIMAL",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "RABBIT"
     ]
 },
 {
@@ -10306,7 +10307,8 @@
         "BASH_DOOR",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "RABBIT"
     ],
     "skill": {
         "list": [
@@ -85417,6 +85419,7 @@
         "BASH_DOOR",
         "FRIENDS",
         "DROP_CORPSE",
+        "RABBIT",
         "WILD_WOOD",
         "HAS_LITE_1"
     ]
@@ -90790,7 +90793,8 @@
         "FRIENDS",
         "ANIMAL",
         "EVIL",
-        "WILD_ALL"
+        "WILD_ALL",
+        "RABBIT"
     ]
 },
 {
@@ -103096,6 +103100,7 @@
         "DROP_CORPSE",
         "ANIMAL",
         "EVIL",
+        "RABBIT",
         "FORCE_MAXHP",
         "NO_STUN",
         "NO_FEAR",
@@ -122127,7 +122132,8 @@
         "BASH_DOOR",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "RABBIT"
     ]
 },
 {
@@ -128158,6 +128164,7 @@
         "DROP_2D2",
         "DROP_1D2",
         "DROP_GOOD",
+        "RABBIT",
         "DROP_CORPSE",
         "DROP_SKELETON"
     ]
@@ -138722,6 +138729,7 @@
         "FORCE_MAXHP",
         "EMPTY_MIND",
         "SMART",
+        "RABBIT",
         "CAN_FLY",
         "RAND_25",
         "NEVER_BLOW",
