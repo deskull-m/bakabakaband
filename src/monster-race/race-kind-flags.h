@@ -121,5 +121,6 @@ enum class MonsterKindType {
     PLANESWALKER = 117, // プレインズウォーカー
     BOAR = 118, // 猪
     ARCHER = 119, // アーチャー
+    RABBIT = 120, // 兎
     MAX,
 };
