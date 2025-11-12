@@ -62,6 +62,7 @@
         "EVIL",
         "WILD_TOWN",
         "WILD_ONLY",
+        "RABBLE",
         "RAND_25",
         "FRIENDS",
         "HUMAN",
@@ -457,6 +458,7 @@
         "RAND_25",
         "EAT_LOSE_INT",
         "HUMAN",
+        "RABBLE",
         "TAKE_ITEM"
     ],
     "drop_kind": [
@@ -508,6 +510,7 @@
         "RAND_25",
         "EAT_LOSE_CHR",
         "HUMAN",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR"
@@ -561,6 +564,7 @@
         "RAND_25",
         "EAT_LOSE_WIS",
         "HUMAN",
+        "RABBLE",
         "TAKE_ITEM"
     ]
 },
@@ -600,6 +604,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "HUMAN",
+        "RABBLE",
         "RAND_25",
         "WILD_TOWN",
         "WILD_ONLY",
@@ -658,6 +663,7 @@
         "RAND_25",
         "WILD_TOWN",
         "WILD_ONLY",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "EAT_LOSE_CON",
@@ -712,7 +718,7 @@
     "flags": [
         "DROP_CORPSE",
         "DROP_SKELETON",
-        "ROGUE",
+        "RABBLE",
         "DROP_60",
         "WILD_TOWN",
         "HUMAN",
@@ -771,7 +777,8 @@
         "WILD_ONLY",
         "TAKE_ITEM",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "RABBLE"
     ]
 },
 {
@@ -809,14 +816,13 @@
     "sex": "MALE",
     "flags": [
         "HAS_LITE_1",
-        "PEASANT",
         "RAND_50",
         "HUMAN",
         "ONLY_GOLD",
         "DROP_60",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ROGUE",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -87650,6 +87656,7 @@
         "HAS_LITE_2",
         "HUMAN",
         "FRIENDLY",
+        "RABBLE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "NO_FEAR",

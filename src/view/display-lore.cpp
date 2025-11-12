@@ -404,6 +404,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::RABBLE)) {
+        hook_c_roff(TERM_L_DARK, _("賤民", " rabble"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::APE)) {
         hook_c_roff(TERM_SLATE, _("類人猿", " ape"));
         has_specific_kind = true;
