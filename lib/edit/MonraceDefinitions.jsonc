@@ -970,6 +970,7 @@
         "DROP_90",
         "DROP_GOOD",
         "HUMAN",
+        "NOBLE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "HAS_LITE_1",
@@ -12071,7 +12072,8 @@
         "ANIMAL",
         "EVIL",
         "IM_ACID",
-        "YEEK"
+        "YEEK",
+        "NOBLE"
     ],
     "skill": {
         "list": [
@@ -17277,7 +17279,8 @@
         "BASH_DOOR",
         "EVIL",
         "FORCE_MAXHP",
-        "LIZARD"
+        "LIZARD",
+        "NOBLE"
     ]
 },
 {
@@ -19604,7 +19607,8 @@
         "IM_FIRE",
         "IM_ELEC",
         "IM_POIS",
-        "RES_NETH"
+        "RES_NETH",
+        "NOBLE"
     ],
     "skill": {
         "list": [
@@ -48774,6 +48778,7 @@
         "DROP_SKELETON",
         "HAS_LITE_2",
         "HUMAN",
+        "NOBLE",
         "FORCE_MAXHP",
         "NO_CONF",
         "NO_SLEEP",
@@ -51253,6 +51258,7 @@
         "NO_CONF",
         "NO_SLEEP",
         "HUMAN",
+        "NOBLE",
         "DROP_4D2",
         "DROP_1D2",
         "DROP_GOOD",
@@ -145345,6 +145351,7 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "HUMAN",
+        "NOBLE",
         "DROP_90",
         "DROP_1D2",
         "DROP_GOOD",
@@ -145644,6 +145651,7 @@
         "DROP_GOOD",
         "HUMAN",
         "DEMON",
+        "NOBLE",
         "DROP_1D2",
         "OPEN_DOOR",
         "BASH_DOOR",
