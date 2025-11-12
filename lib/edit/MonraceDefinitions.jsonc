@@ -149146,5 +149146,54 @@
         "ANIMAL",
         "HIPPO"
     ]
+},
+{
+    "id": 2315,
+    "name": {
+        "ja": "『マーフィーズゴースト』",
+        "en": "Murphy's Ghost"
+    },
+    "symbol": {
+        "character": "z",
+        "color": "Gray"
+    },
+    "speed": -2,
+    "hit_point": "15d50",
+    "vision": 10,
+    "armor_class": 10,
+    "alertness": 99,
+    "level": 1,
+    "rarity": 20,
+    "exp": 4450,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "HIT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "HIT",
+            "effect": "FLAVOR"
+        }
+    ],
+    "flavor": {
+        "ja": "それは正体不明の存在だ。",
+        "en": "It is the UNSEEN ENTITY."
+    },
+    "flags": [
+        "EVIL",
+        "UNDEAD",
+        "NONLIVING",
+        "ONLY_GOLD",
+        "DROP_2D2",
+        "UNIQUE",
+        "FORCE_MAXHP"
+    ]
 }]
 }
