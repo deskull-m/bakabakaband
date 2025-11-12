@@ -299,7 +299,7 @@
         "DROP_CORPSE",
         "ONLY_GOLD",
         "DROP_60",
-        "RANGER",
+        "PEASANT",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR"
@@ -413,7 +413,8 @@
         "HAS_LITE_1",
         "NO_CONF",
         "NO_SLEEP",
-        "HOBBIT"
+        "HOBBIT",
+        "PEASANT"
     ]
 },
 {
@@ -808,6 +809,7 @@
     "sex": "MALE",
     "flags": [
         "HAS_LITE_1",
+        "PEASANT",
         "RAND_50",
         "HUMAN",
         "ONLY_GOLD",
@@ -96960,6 +96962,7 @@
         "WILD_ONLY",
         "WILD_WOOD",
         "HUMAN",
+        "PEASANT",
         "RAND_25",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -117250,6 +117253,7 @@
     "flags": [
         "DROP_CORPSE",
         "DROP_SKELETON",
+        "PEASANT",
         "DROP_60",
         "WILD_TOWN",
         "HUMAN",
@@ -121095,6 +121099,7 @@
         "DROP_CORPSE",
         "WILD_TOWN",
         "WILD_ONLY",
+        "PEASANT",
         "RAND_25",
         "EAT_LOSE_CHR",
         "HUMAN",
@@ -137294,6 +137299,7 @@
         "GOOD",
         "HAS_LITE_1",
         "HUMAN",
+        "PEASANT",
         "FORCE_MAXHP",
         "WILD_ALL",
         "DROP_SKELETON",
@@ -137357,6 +137363,7 @@
         "GOOD",
         "HAS_LITE_1",
         "HUMAN",
+        "PEASANT",
         "FORCE_MAXHP",
         "WILD_ALL",
         "DROP_SKELETON",

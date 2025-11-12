@@ -298,6 +298,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::RABBIT);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::PEASANT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::PEASANT);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::APE)) {
         lore_ptr->kind_flags.set(MonsterKindType::APE);
     }

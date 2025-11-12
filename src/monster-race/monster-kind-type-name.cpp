@@ -101,6 +101,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("猫", "cat");
     case MonsterKindType::RABBIT:
         return _("兎", "rabbit");
+    case MonsterKindType::PEASANT:
+        return _("農民", "peasant");
     case MonsterKindType::MONKEY_SPACE:
         return _("猿空間", "monkey space");
     case MonsterKindType::MALE:
@@ -352,6 +354,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "CAT";
     case MonsterKindType::RABBIT:
         return "RABBIT";
+    case MonsterKindType::PEASANT:
+        return "PEASANT";
     case MonsterKindType::MONKEY_SPACE:
         return "MONKEY_SPACE";
     case MonsterKindType::MALE:
