@@ -228,11 +228,13 @@ enum class MonraceId : int16_t {
     BIG_RAVEN = 1268,
     MELKO = 1287,
     STOLENMAN = 1288,
+    KOMODO_DRAGON = 1297, // コモドドラゴン
     DOKACHAN = 1307,
     OLDMAN_60TY = 1353,
     BROTHER_45TH = 1354,
     YENDOR_WIZARD_1 = 1360,
     YENDOR_WIZARD_2 = 1361,
+    RAVEN_THE_GRIEF = 1602, // 悲しみのレイベン
     DOPPIO = 1366,
     DIAVOLO = 1367,
     MANIMANI = 1368,
@@ -307,6 +309,7 @@ enum class MonraceId : int16_t {
     BUNBUN_STRIKERS = 2152,
     GWYN = 2203, // 太陽の光の王『グウィン』
     KHORNE = 2234,
+    ARYAN_FAMILY_MEMBER = 2256, // アーリアン・ファミリーの構成員
     OGRES_KING = 2257, // 『オゴレス王』
     OLD_KING_ALLANT = 2262, // 老王『オーラント』
     GAICHI_MOA = 2267,
