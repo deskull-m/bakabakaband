@@ -41893,6 +41893,18 @@ F:ANIMAL | HIPPO
 D:$A massive hippopotamus with powerful jaws and thick hide.
 D:強力な顎と厚い皮を持つ巨大なカバだ。
 
+N:2315:『マーフィーズゴースト』
+E:Murphy's Ghost
+G:z:s
+I:108:15d50:10:10:99
+W:1:20:4450:0:0
+B:HIT:FLAVOR
+B:HIT:FLAVOR
+B:HIT:FLAVOR
+F:EVIL | UNDEAD | NONLIVING | ONLY_GOLD | DROP_2D2 | UNIQUE | FORCE_MAXHP
+D:$It is the UNSEEN ENTITY.
+D:それは正体不明の存在だ。
+
 
 # N: serial number : monster name
 # G: symbol : color
