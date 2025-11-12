@@ -409,6 +409,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::NOBLE)) {
+        hook_c_roff(TERM_VIOLET, _("貴族", " noble"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::APE)) {
         hook_c_roff(TERM_SLATE, _("類人猿", " ape"));
         has_specific_kind = true;

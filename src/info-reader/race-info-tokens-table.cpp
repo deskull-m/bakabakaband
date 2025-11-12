@@ -440,6 +440,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "RABBIT", MonsterKindType::RABBIT },
     { "PEASANT", MonsterKindType::PEASANT },
     { "RABBLE", MonsterKindType::RABBLE },
+    { "NOBLE", MonsterKindType::NOBLE },
     { "MONKEY_SPACE", MonsterKindType::MONKEY_SPACE }, // 猿空間
     { "APE", MonsterKindType::APE }, // 類人猿
     { "HORSE", MonsterKindType::HORSE }, // 馬
