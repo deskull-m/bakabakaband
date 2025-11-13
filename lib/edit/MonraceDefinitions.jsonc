@@ -4647,7 +4647,8 @@
         "AQUATIC",
         "ANIMAL",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH"
     ]
 },
 {
@@ -4796,6 +4797,7 @@
         "RAND_50",
         "RAND_25",
         "DROP_60",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
@@ -4894,6 +4896,7 @@
         "CAN_SWIM",
         "IM_ACID",
         "HURT_LITE",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -5181,6 +5184,7 @@
         "COLD_BLOOD",
         "NO_CONF",
         "NO_SLEEP",
+        "MIMIC",
         "EVIL",
         "IM_COLD",
         "IM_FIRE",
@@ -5236,6 +5240,7 @@
         "CAN_SWIM",
         "STUPID",
         "EMPTY_MIND",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -5283,6 +5288,7 @@
         "DROP_CORPSE",
         "FRIENDS",
         "DROP_60",
+        "PRIEST",
         "OPEN_DOOR",
         "BASH_DOOR"
     ],
@@ -5341,6 +5347,7 @@
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
+        "WARRIOR",
         "FRIENDS",
         "DROP_60",
         "WILD_ALL",
@@ -5398,6 +5405,7 @@
         "BASH_DOOR",
         "DWARF",
         "NIBELUNG",
+        "RABBLE",
         "HURT_LITE",
         "RES_DARK",
         "RES_DISE",
@@ -5491,6 +5499,8 @@
         "EMPTY_MIND",
         "IM_POIS",
         "CAN_SWIM",
+        "FUNGUS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -5577,9 +5587,9 @@
     },
     "flags": [
         "EVIL",
-        "ANIMAL",
         "DROP_CORPSE",
-        "RAT"
+        "RAT",
+        "HUMAN"
     ],
     "skill": {
         "list": [
@@ -5692,6 +5702,7 @@
         "DROP_1D2",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "MIMIC",
         "ANIMAL",
         "IM_POIS",
         "NO_CONF",
@@ -5836,8 +5847,7 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "EAT_ACIDIC",
-        "SLUG",
-        "LEECH"
+        "SLUG"
     ],
     "skill": {
         "list": [
@@ -5931,6 +5941,7 @@
     "sex": "MALE",
     "flags": [
         "DROP_90",
+        "ELF",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -5997,7 +6008,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "KOBOLD"
     ]
 },
 {
@@ -6114,7 +6126,8 @@
         "IM_COLD",
         "RES_NETH",
         "COLD_BLOOD",
-        "EMPTY_MIND"
+        "EMPTY_MIND",
+        "ZOMBIE"
     ]
 },
 {
@@ -6157,6 +6170,7 @@
         "DROP_CORPSE",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "SOLDIER",
         "EVIL",
         "ORC",
         "HURT_LITE",
@@ -6291,7 +6305,8 @@
         "DROP_CORPSE",
         "HURT_LITE",
         "NO_FEAR",
-        "EAT_BLIND"
+        "EAT_BLIND",
+        "EYE"
     ],
     "skill": {
         "list": [
@@ -6602,6 +6617,7 @@
         "SPEAK_ALL",
         "KOBOLD",
         "FORCE_MAXHP",
+        "NOBLE",
         "ESCORT",
         "ESCORTS",
         "DROP_SKELETON",
@@ -6719,6 +6735,7 @@
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_GREAT",
+        "NOBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -6913,7 +6930,8 @@
         "DROP_CORPSE",
         "EVIL",
         "ORC",
-        "RES_DARK"
+        "RES_DARK",
+        "SOLDIER"
     ]
 },
 {
@@ -7051,6 +7069,8 @@
     "flags": [
         "RAND_25",
         "SELF_LITE_1",
+        "LIZARD",
+        "ELEMENTAL",
         "ANIMAL",
         "IM_FIRE",
         "CAN_SWIM",
@@ -7155,6 +7175,7 @@
         "CAN_FLY",
         "WILD_WOOD",
         "WILD_MOUNTAIN",
+        "APE",
         "DROP_CORPSE"
     ]
 },
@@ -7194,6 +7215,7 @@
         "NEVER_MOVE",
         "STUPID",
         "EMPTY_MIND",
+        "OOZE",
         "IM_ACID",
         "IM_POIS",
         "CAN_SWIM",
@@ -7247,6 +7269,7 @@
         "DROP_CORPSE",
         "HAS_LITE_2",
         "HUMAN",
+        "PALADIN",
         "FRIENDS",
         "DROP_60",
         "OPEN_DOOR",
@@ -7345,7 +7368,8 @@
         "EVIL",
         "ORC",
         "HURT_LITE",
-        "RES_DARK"
+        "RES_DARK",
+        "SOLDIER"
     ]
 },
 {
@@ -7446,7 +7470,8 @@
         "NO_FEAR",
         "CAN_FLY",
         "WILD_WOOD",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "BIRD"
     ]
 },
 {
@@ -7495,7 +7520,8 @@
         "GHOST",
         "NO_FEAR",
         "EMPTY_MIND",
-        "CAN_FLY"
+        "CAN_FLY",
+        "WARRIOR"
     ]
 },
 {
@@ -7546,10 +7572,10 @@
         "RES_DARK",
         "HURT_LITE",
         "EVIL",
-        "DEMON",
         "OPEN_DOOR",
         "TAKE_ITEM",
-        "CAN_SWIM"
+        "CAN_SWIM",
+        "BEAST"
     ]
 },
 {
@@ -7600,7 +7626,8 @@
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
         "ANIMAL",
-        "IM_COLD"
+        "IM_COLD",
+        "APE"
     ]
 },
 {
@@ -7692,6 +7719,7 @@
     "flags": [
         "RAND_25",
         "MULTIPLY",
+        "RAT",
         "ANIMAL",
         "IM_POIS"
     ]
@@ -7743,7 +7771,6 @@
         "CAN_FLY",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
-        "BIRD",
         "HARPY",
         "RAND_25",
         "ANIMAL",
@@ -7899,7 +7926,8 @@
         "AQUATIC",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "JELLYFISH"
     ]
 },
 {
@@ -19166,8 +19194,7 @@
         "EVIL",
         "EMPTY_MIND",
         "COLD_BLOOD",
-        "FRIENDS",
-        "LEECH"
+        "FRIENDS"
     ]
 },
 {
@@ -21661,8 +21688,7 @@
         "RES_WATE",
         "WILD_ALL",
         "IXITXACHITL",
-        "FISH",
-        "LEECH"
+        "FISH"
     ],
     "skill": {
         "list": [
@@ -98966,7 +98992,8 @@
         "EMPTY_MIND",
         "AQUATIC",
         "WILD_SHORE",
-        "WILD_OCEAN"
+        "WILD_OCEAN",
+        "JELLYFISH"
     ]
 },
 {
@@ -115643,7 +115670,8 @@
         "EMPTY_MIND",
         "CAN_FLY",
         "RAND_50",
-        "RAND_25"
+        "RAND_25",
+        "JELLYFISH"
     ]
 },
 {
@@ -125801,8 +125829,7 @@
         "RES_DARK",
         "HURT_LITE",
         "NO_CONF",
-        "NO_SLEEP",
-        "LEECH"
+        "NO_SLEEP"
     ],
     "skill": {
         "list": [
@@ -137898,7 +137925,9 @@
         "IM_COLD",
         "FORCE_MAXHP",
         "IM_ELEC",
-        "IM_POIS"
+        "IM_POIS",
+        "JELLYFISH",
+        "MIMIC"
     ]
 },
 {
