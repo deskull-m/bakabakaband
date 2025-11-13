@@ -109,6 +109,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("貴族", "noble");
     case MonsterKindType::BEAST:
         return _("ビースト", "beast");
+    case MonsterKindType::LEECH:
+        return _("ヒル", "leech");
     case MonsterKindType::MONKEY_SPACE:
         return _("猿空間", "monkey space");
     case MonsterKindType::MALE:
@@ -368,6 +370,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "NOBLE";
     case MonsterKindType::BEAST:
         return "BEAST";
+    case MonsterKindType::LEECH:
+        return "LEECH";
     case MonsterKindType::MONKEY_SPACE:
         return "MONKEY_SPACE";
     case MonsterKindType::MALE:
