@@ -1172,7 +1172,8 @@
         "WILD_SHORE",
         "WILD_SWAMP",
         "WILD_MOUNTAIN",
-        "ANIMAL"
+        "ANIMAL",
+        "LIZARD"
     ]
 },
 {
@@ -1663,7 +1664,8 @@
         "SELF_LITE_1",
         "ANIMAL",
         "NO_FEAR",
-        "IM_ELEC"
+        "IM_ELEC",
+        "INSECT"
     ]
 },
 {
@@ -1835,7 +1837,8 @@
         "RAND_25",
         "WILD_GRASS",
         "WILD_WOOD",
-        "WILD_SWAMP"
+        "WILD_SWAMP",
+        "WORM"
     ]
 },
 {
@@ -1885,6 +1888,7 @@
         "IM_POIS",
         "IM_COLD",
         "UNIQUE",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -20530,6 +20534,7 @@
         "IM_FIRE",
         "IM_POIS",
         "IM_COLD",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -21242,6 +21247,7 @@
         "WEIRD_MIND",
         "RES_DISE",
         "DROP_CORPSE",
+        "BEAST",
         "IM_ACID",
         "IM_POIS",
         "NO_CONF"
@@ -22003,7 +22009,8 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAT"
+        "CAT",
+        "BEAST"
     ]
 },
 {
@@ -103429,6 +103436,7 @@
         "IM_COLD",
         "NASTY",
         "HOMO_SEXUAL",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -103507,6 +103515,7 @@
         "IM_POIS",
         "IM_COLD",
         "UNIQUE",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
