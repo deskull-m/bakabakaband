@@ -8715,7 +8715,8 @@
         "FRIENDS",
         "CAN_FLY",
         "WILD_ALL",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -8812,7 +8813,8 @@
         "BASH_DOOR",
         "CAN_FLY",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "INSECT"
     ]
 },
 {
@@ -8865,7 +8867,8 @@
         "NO_SLEEP",
         "IM_POIS",
         "IM_COLD",
-        "NO_FEAR"
+        "NO_FEAR",
+        "BEAST"
     ]
 },
 {
@@ -9038,7 +9041,8 @@
         "ANIMAL",
         "EVIL",
         "IM_ACID",
-        "YEEK"
+        "YEEK",
+        "NOBLE"
     ],
     "skill": {
         "list": [
@@ -9102,7 +9106,8 @@
         "IM_POIS",
         "IM_COLD",
         "RES_NETH",
-        "COLD_BLOOD"
+        "COLD_BLOOD",
+        "ZOMBIE"
     ],
     "skill": {
         "list": [
@@ -9212,6 +9217,7 @@
         "FRIENDS",
         "WILD_WASTE",
         "DROP_SKELETON",
+        "BEAST",
         "OPEN_DOOR",
         "BASH_DOOR",
         "HURT_LITE",
@@ -9261,6 +9267,7 @@
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9311,6 +9318,7 @@
         "MULTIPLY",
         "STUPID",
         "EMPTY_MIND",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9374,6 +9382,7 @@
         "DROP_GOOD",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "WARRIOR",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -9570,6 +9579,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9661,6 +9671,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "FUNGUS",
         "STUPID",
         "EMPTY_MIND",
         "RES_DISE",
@@ -9778,6 +9789,7 @@
     "flags": [
         "OPEN_DOOR",
         "BASH_DOOR",
+        "FAIRY",
         "EVIL",
         "DEMON",
         "IM_FIRE",
@@ -9838,6 +9850,7 @@
         "DROP_1D2",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "MIMIC",
         "ANIMAL",
         "IM_POIS",
         "NO_CONF",
@@ -9926,6 +9939,7 @@
         "CAN_FLY",
         "MULTIPLY",
         "WEIRD_MIND",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -10020,6 +10034,7 @@
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "CITIZEN",
         "EVIL",
         "DROP_SKELETON",
         "ROGUE"
@@ -92745,6 +92760,7 @@
     },
     "flags": [
         "DROP_90",
+        "CITIZEN",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
@@ -117313,10 +117329,10 @@
     "flags": [
         "DROP_CORPSE",
         "DROP_SKELETON",
-        "PEASANT",
         "DROP_60",
         "WILD_TOWN",
         "HUMAN",
+        "CITIZEN",
         "WILD_SWAMP",
         "WILD_WOOD",
         "WILD_GRASS",
@@ -128705,6 +128721,7 @@
         "DROP_CORPSE",
         "DROP_SKELETON",
         "UNIQUE",
+        "CITIZEN",
         "DROP_GOOD",
         "DROP_2D2",
         "FORCE_MAXHP",
@@ -140579,6 +140596,7 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "CITIZEN",
         "BASH_DOOR",
         "OPEN_DOOR",
         "HAS_LITE_2",

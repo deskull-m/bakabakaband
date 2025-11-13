@@ -429,6 +429,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::CITIZEN)) {
+        hook_c_roff(TERM_L_GREEN, _("市民", " citizen"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::APE)) {
         hook_c_roff(TERM_SLATE, _("類人猿", " ape"));
         has_specific_kind = true;
