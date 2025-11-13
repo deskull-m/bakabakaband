@@ -2167,7 +2167,6 @@
         "DROP_60",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ROGUE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -2465,7 +2464,9 @@
         "DROP_CORPSE",
         "ANIMAL",
         "IM_FIRE",
-        "EAT_FIRE_RES"
+        "EAT_FIRE_RES",
+        "LIZARD",
+        "ELEMENTAL"
     ]
 },
 {
@@ -3171,6 +3172,7 @@
         "TAKE_ITEM",
         "EVIL",
         "UNDEAD",
+        "GHOST",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -3364,6 +3366,7 @@
         "CAN_FLY",
         "MULTIPLY",
         "WEIRD_MIND",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -3493,6 +3496,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -3595,7 +3599,7 @@
         "HAS_LITE_1",
         "DROP_60",
         "HOBBIT",
-        "ROGUE",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -3913,7 +3917,8 @@
         "CAN_FLY",
         "NONLIVING",
         "SELF_LITE_1",
-        "SELF_LITE_2"
+        "SELF_LITE_2",
+        "ELEMENTAL"
     ]
 },
 {
@@ -4106,6 +4111,7 @@
         "BASH_DOOR",
         "ANIMAL",
         "IM_POIS",
+        "MIMIC",
         "NO_CONF",
         "NO_SLEEP"
     ]
@@ -4387,7 +4393,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "SKELETON"
+        "SKELETON",
+        "KOBOLD"
     ]
 },
 {
@@ -4442,7 +4449,8 @@
         "DROP_CORPSE",
         "WILD_WOOD",
         "HAS_LITE_1",
-        "RANGER"
+        "ALIEN",
+        "SOLDIER"
     ]
 },
 {
@@ -4549,8 +4557,7 @@
         "WILD_SHORE",
         "EVIL",
         "IM_ACID",
-        "EAT_ACIDIC",
-        "WARRIOR"
+        "EAT_ACIDIC"
     ]
 },
 {
@@ -4595,7 +4602,8 @@
         "AQUATIC",
         "WEIRD_MIND",
         "RAND_25",
-        "RES_WATE"
+        "RES_WATE",
+        "LEECH"
     ]
 },
 {
@@ -5828,7 +5836,8 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "EAT_ACIDIC",
-        "SLUG"
+        "SLUG",
+        "LEECH"
     ],
     "skill": {
         "list": [
@@ -19157,7 +19166,8 @@
         "EVIL",
         "EMPTY_MIND",
         "COLD_BLOOD",
-        "FRIENDS"
+        "FRIENDS",
+        "LEECH"
     ]
 },
 {
@@ -21651,7 +21661,8 @@
         "RES_WATE",
         "WILD_ALL",
         "IXITXACHITL",
-        "FISH"
+        "FISH",
+        "LEECH"
     ],
     "skill": {
         "list": [
@@ -22009,8 +22020,7 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAT",
-        "BEAST"
+        "CAT"
     ]
 },
 {
@@ -125791,7 +125801,8 @@
         "RES_DARK",
         "HURT_LITE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "LEECH"
     ],
     "skill": {
         "list": [

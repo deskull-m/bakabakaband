@@ -126,5 +126,6 @@ enum class MonsterKindType {
     RABBLE = 122, // 賤民
     NOBLE = 123, // 貴族
     BEAST = 124, // ビースト
+    LEECH = 125, // ヒル
     MAX,
 };
