@@ -128,5 +128,6 @@ enum class MonsterKindType {
     BEAST = 124, // ビースト
     LEECH = 125, // ヒル
     JELLYFISH = 126, // クラゲ
+    CITIZEN = 127, // 市民
     MAX,
 };
