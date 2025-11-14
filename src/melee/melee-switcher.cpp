@@ -203,6 +203,11 @@ void describe_melee_method(PlayerType *player_ptr, mam_type *mam_ptr)
         mam_ptr->touched = true;
         break;
     }
+    case RaceBlowMethodType::CHOKE: {
+        mam_ptr->act = _("%sの絞めた。", "chokes %s.");
+        mam_ptr->touched = true;
+        break;
+    }
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:
         break;
