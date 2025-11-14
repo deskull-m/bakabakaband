@@ -10143,7 +10143,8 @@
         "IM_POIS",
         "NO_SLEEP",
         "NO_CONF",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "BEAST"
     ]
 },
 {
@@ -10196,7 +10197,8 @@
         "COLD_BLOOD",
         "EVIL",
         "NEVER_MOVE",
-        "MULTIPLY"
+        "MULTIPLY",
+        "OOZE"
     ]
 },
 {
@@ -10432,6 +10434,7 @@
         "COLD_BLOOD",
         "WILD_ONLY",
         "WILD_WOOD",
+        "TREEFOLK",
         "EMPTY_MIND",
         "UNIQUE",
         "DROP_CORPSE",
@@ -17126,6 +17129,7 @@
     },
     "flags": [
         "DROP_CORPSE",
+        "TREEFOLK",
         "DROP_60",
         "NO_SLEEP",
         "NO_CONF",
@@ -42133,6 +42137,7 @@
         "FORCE_MAXHP",
         "FRIENDLY",
         "HURT_FIRE",
+        "TREEFOLK",
         "ONLY_ITEM",
         "DROP_4D2",
         "DROP_GOOD",
@@ -42482,6 +42487,7 @@
         "DROP_CORPSE",
         "SPEAK_ALL",
         "HURT_FIRE",
+        "TREEFOLK",
         "FORCE_MAXHP",
         "ONLY_ITEM",
         "DROP_4D2",
@@ -92188,6 +92194,7 @@
         "ANIMAL",
         "HURT_FIRE",
         "NEVER_MOVE",
+        "TREEFOLK",
         "DROP_90",
         "IM_POIS",
         "RES_WATE",
