@@ -10495,7 +10495,8 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "RES_WATE",
-        "MERFOLK",
+        "HORSE",
+        "FISH",
         "ANIMAL",
         "RIDING"
     ]
@@ -10550,6 +10551,7 @@
         "EVIL",
         "ORC",
         "UNDEAD",
+        "ZOMBIE",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -10608,6 +10610,7 @@
         "ANIMAL",
         "RIDING",
         "BASH_DOOR",
+        "BEAST",
         "IM_POIS",
         "IM_COLD",
         "IM_ELEC",
@@ -10648,6 +10651,7 @@
     },
     "flags": [
         "RAND_50",
+        "SNAKE",
         "BASH_DOOR",
         "CAN_SWIM",
         "WILD_WOOD",
@@ -10912,6 +10916,7 @@
         "ESCORT",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "WARRIOR",
         "DROP_2D2",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -11021,6 +11026,7 @@
         "SKAVEN",
         "DROP_90",
         "HAS_LITE_2",
+        "PRIEST",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -11088,7 +11094,8 @@
         "EVIL",
         "EAT_MANA",
         "EAT_CONF",
-        "EAT_SLEEP"
+        "EAT_SLEEP",
+        "EYE"
     ],
     "skill": {
         "list": [
@@ -11147,6 +11154,7 @@
         "HAS_LITE_2",
         "HUMAN",
         "ARCHER",
+        "WARRIOR",
         "DROP_1D2",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -11342,6 +11350,7 @@
         "ONLY_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "BEAST",
         "EVIL",
         "IM_FIRE",
         "ANIMAL",
@@ -11396,6 +11405,7 @@
         "HAS_LITE_2",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "PRIEST",
         "ANIMAL",
         "EVIL",
         "IM_ACID",
@@ -11458,6 +11468,7 @@
         "HAS_LITE_2",
         "HUMAN",
         "DROP_1D2",
+        "PRIEST",
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -11513,6 +11524,8 @@
     },
     "sex": "MALE",
     "flags": [
+        "ELF",
+        "PRIEST",
         "ONLY_ITEM",
         "DROP_1D2",
         "SMART",
@@ -11573,6 +11586,7 @@
         "RAND_50",
         "RAND_25",
         "NONLIVING",
+        "ELEMENTAL",
         "EMPTY_MIND",
         "INVISIBLE",
         "COLD_BLOOD",
@@ -11681,6 +11695,7 @@
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
+        "ZOMBIE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -11908,7 +11923,8 @@
         "CAN_SWIM",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "OOZE"
     ]
 },
 {
@@ -12234,6 +12250,7 @@
         "DROP_2D2",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "MIMIC",
         "ANIMAL",
         "IM_POIS",
         "NO_CONF",
@@ -12275,6 +12292,7 @@
     "sex": "MALE",
     "flags": [
         "HUMAN",
+        "MAGE",
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -12343,6 +12361,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "PRIEST",
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -12465,6 +12484,7 @@
         "NEVER_MOVE",
         "NONLIVING",
         "NO_FEAR",
+        "MIMIC",
         "STUPID",
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -12531,6 +12551,7 @@
         "EAT_POISONOUS",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "SOLDIER",
         "EVIL",
         "ORC",
         "HURT_LITE",
@@ -12630,10 +12651,12 @@
     "flags": [
         "RAND_50",
         "RAND_25",
+        "JOKE",
         "MULTIPLY",
         "WEIRD_MIND",
         "BASH_DOOR",
         "CAN_FLY",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -12679,6 +12702,7 @@
         "ATTR_CLEAR",
         "NEVER_MOVE",
         "FORCE_MAXHP",
+        "MIMIC",
         "EMPTY_MIND",
         "INVISIBLE",
         "COLD_BLOOD",
@@ -12727,7 +12751,8 @@
     "flags": [
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "MERFOLK"
     ]
 },
 {
@@ -12771,7 +12796,8 @@
         "OPEN_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "EAT_BLIND"
+        "EAT_BLIND",
+        "LIZARD"
     ]
 },
 {
@@ -12865,6 +12891,7 @@
         "WILD_ALL",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "RABBLE",
         "EVIL",
         "ORC",
         "HURT_LITE",
@@ -12919,6 +12946,7 @@
     },
     "flags": [
         "RAND_50",
+        "OOZE",
         "MULTIPLY",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -12975,6 +13003,8 @@
         "MULTIPLY",
         "EVIL",
         "CAN_SWIM",
+        "OOZE",
+        "EYE",
         "IM_POIS",
         "EMPTY_MIND",
         "NO_FEAR",
@@ -13225,7 +13255,7 @@
         "OPEN_DOOR",
         "GOOD",
         "HAS_LITE_1",
-        "ROGUE",
+        "RABBLE",
         "GNOME"
     ],
     "skill": {
@@ -13270,6 +13300,7 @@
     "flags": [
         "RAND_50",
         "CAN_FLY",
+        "INSECT",
         "WEIRD_MIND",
         "MULTIPLY",
         "ANIMAL"
@@ -13332,6 +13363,7 @@
         "ESCORT",
         "DROP_1D2",
         "DROP_GOOD",
+        "WARRIOR",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -13496,7 +13528,8 @@
         "IM_FIRE",
         "NO_FEAR",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEAST"
     ],
     "skill": {
         "list": [
@@ -13547,6 +13580,7 @@
     },
     "sex": "MALE",
     "flags": [
+        "HUMAN",
         "WILD_ALL",
         "FRIENDS",
         "DROP_60",
@@ -13714,6 +13748,7 @@
         "STUPID",
         "RES_TELE",
         "CAN_SWIM",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -13779,6 +13814,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "IM_COLD",
+        "ZOMBIE",
         "EVIL",
         "DEMON",
         "UNDEAD",
@@ -13900,6 +13936,7 @@
         "DROP_CORPSE",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "RAT",
         "ANIMAL",
         "EVIL"
     ],
@@ -14054,6 +14091,8 @@
         "WEIRD_MIND",
         "NO_FEAR",
         "CAN_FLY",
+        "SKELETON",
+        "FACE",
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
@@ -14106,6 +14145,7 @@
         "COLD_BLOOD",
         "ANIMAL",
         "EVIL",
+        "ALIEN",
         "NO_SLEEP",
         "NO_CONF",
         "CAN_FLY",
@@ -14385,6 +14425,7 @@
         "CAN_FLY",
         "RIDING",
         "BASH_DOOR",
+        "BEAST",
         "ANIMAL",
         "IM_COLD",
         "IM_ELEC",
@@ -14596,8 +14637,8 @@
         "BASH_DOOR",
         "KILL_WALL",
         "DROP_SKELETON",
-        "ANIMAL",
         "EVIL",
+        "INSECT",
         "IM_POIS",
         "HURT_ROCK",
         "NO_CONF",
@@ -14660,7 +14701,8 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "NO_CONF",
-        "EAT_ACIDIC"
+        "EAT_ACIDIC",
+        "BEAST"
     ]
 },
 {
@@ -14716,6 +14758,7 @@
     "flags": [
         "WILD_ALL",
         "DROP_90",
+        "WARRIOR",
         "OPEN_DOOR",
         "BASH_DOOR",
         "ESCORT",
@@ -14772,6 +14815,7 @@
     "flags": [
         "FORCE_MAXHP",
         "WALL",
+        "OOZE",
         "DROP_1D2",
         "DROP_4D2",
         "STUPID",
