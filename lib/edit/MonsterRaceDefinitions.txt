@@ -41920,7 +41920,7 @@ D:$That is the essence of Sigma,
 D:$ the first Irregular that caused the Repliroids' rampage.
 D:$ It is a virus that exists not only digitally but also in reality,
 D:$ capable of forming wireframe heads and carrying out destructive operations.
-D:レプリロイド暴走の元凶となった最初のイレギュラー、シグマの本質だ。
+D:最初のレプリロイド大規模反乱の元凶となったイレギュラー、シグマの本質だ。
 D:電子上のみならず、物理的に存在するウイルスであり、ワイヤーフレームの頭部を形成して、破壊工作を行うこともできる。
 
 # N: serial number : monster name
