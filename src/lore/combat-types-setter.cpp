@@ -124,6 +124,10 @@ void set_monster_blow_method(lore_type *lore_ptr, int m)
         lore_ptr->p = _("しまっちゃう", "put away");
         lore_ptr->pc = TERM_L_WHITE;
         break;
+    case RaceBlowMethodType::CHOKE:
+        lore_ptr->p = _("絞める", "choke");
+        lore_ptr->pc = TERM_L_RED;
+        break;
 
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:

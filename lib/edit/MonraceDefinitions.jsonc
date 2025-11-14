@@ -5436,7 +5436,7 @@
     "escorts": [],
     "blows": [
         {
-            "method": "CRUSH",
+            "method": "CHOKE",
             "effect": "HURT",
             "damage_dice": "1d10"
         }

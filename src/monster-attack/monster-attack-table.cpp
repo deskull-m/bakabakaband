@@ -265,6 +265,8 @@ std::string get_blow_method_name(RaceBlowMethodType method)
         return "糞塗り";
     case RaceBlowMethodType::PUTAWAY:
         return "収納";
+    case RaceBlowMethodType::CHOKE:
+        return "絞殺";
     case RaceBlowMethodType::MAX:
         return "不明";
     }
@@ -341,6 +343,8 @@ std::string get_blow_method_tag(RaceBlowMethodType method)
         return "FECES";
     case RaceBlowMethodType::PUTAWAY:
         return "PUTAWAY";
+    case RaceBlowMethodType::CHOKE:
+        return "CHOKE";
     case RaceBlowMethodType::MAX:
         return "UNKNOWN";
     }
