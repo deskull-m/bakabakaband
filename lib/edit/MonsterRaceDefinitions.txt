@@ -41905,6 +41905,23 @@ F:EVIL | UNDEAD | NONLIVING | ONLY_GOLD | DROP_2D2 | UNIQUE | FORCE_MAXHP
 D:$It is the UNSEEN ENTITY.
 D:それは正体不明の存在だ。
 
+N:2316:シグマウイルス
+E:Sigma Virus
+G:*:G
+I:120:30d30:10:20:0
+W:34:1:1500:0:0
+B:ENGULF:CONFUSE:10d8
+F:CAN_FLY | SELF_LITE_2 |
+F:AURA_ELEC | VIRUS | QUANTUM
+F:IM_ELEC | NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
+S:1_IN_5
+S:BO_ELEC | BO_MANA | MISSILE
+D:$That is the essence of Sigma,
+D:$ the first Irregular that caused the Repliroids' rampage.
+D:$ It is a virus that exists not only digitally but also in reality,
+D:$ capable of forming wireframe heads and carrying out destructive operations.
+D:レプリロイド暴走の元凶となった最初のイレギュラー、シグマの本質だ。
+D:電子上のみならず、物理的に存在するウイルスであり、ワイヤーフレームの頭部を形成して、破壊工作を行うこともできる。
 
 # N: serial number : monster name
 # G: symbol : color
