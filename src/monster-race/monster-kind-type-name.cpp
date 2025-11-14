@@ -117,6 +117,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("市民", "citizen");
     case MonsterKindType::TREEFOLK:
         return _("ツリーフォーク", "treefolk");
+    case MonsterKindType::VIRUS:
+        return _("ウイルス", "virus");
     case MonsterKindType::MONKEY_SPACE:
         return _("猿空間", "monkey space");
     case MonsterKindType::MALE:
@@ -384,6 +386,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "CITIZEN";
     case MonsterKindType::TREEFOLK:
         return "TREEFOLK";
+    case MonsterKindType::VIRUS:
+        return "VIRUS";
     case MonsterKindType::MONKEY_SPACE:
         return "MONKEY_SPACE";
     case MonsterKindType::MALE:

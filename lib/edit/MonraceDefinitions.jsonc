@@ -149321,5 +149321,58 @@
         "UNIQUE",
         "FORCE_MAXHP"
     ]
+},
+{
+    "id": 2316,
+    "name": {
+        "ja": "シグマウイルス",
+        "en": "Sigma Virus"
+    },
+    "symbol": {
+        "character": "*",
+        "color": "Light Green"
+    },
+    "speed": 10,
+    "hit_point": "30d30",
+    "vision": 10,
+    "armor_class": 20,
+    "alertness": 0,
+    "level": 34,
+    "rarity": 1,
+    "exp": 1500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "ENGULF",
+            "effect": "CONFUSE",
+            "damage_dice": "10d8"
+        }
+    ],
+    "flavor": {
+        "ja": "レプリロイド暴走の元凶となった最初のイレギュラー、シグマの本質だ。電子上のみならず、物理的に存在するウイルスであり、ワイヤーフレームの頭部を形成して、破壊工作を行うこともできる。",
+        "en": "That is the essence of Sigma, the first Irregular that caused the Repliroids' rampage. It is a virus that exists not only digitally but also in reality, capable of forming wireframe heads and carrying out destructive operations."
+    },
+    "flags": [
+        "CAN_FLY",
+        "SELF_LITE_2",
+        "AURA_ELEC",
+        "VIRUS",
+        "QUANTUM",
+        "IM_ELEC",
+        "NO_FEAR",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING"
+    ],
+    "skill": {
+        "list": [
+            "BO_ELEC",
+            "BO_MANA",
+            "MISSILE"
+        ],
+        "probability": "1_IN_5"
+    }
 }]
 }
