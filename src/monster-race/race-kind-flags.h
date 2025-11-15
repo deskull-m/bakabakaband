@@ -131,5 +131,6 @@ enum class MonsterKindType {
     CITIZEN = 127, // 市民
     TREEFOLK = 128, // ツリーフォーク
     VIRUS = 129, // ウイルス
+    SPHINX = 130, // スフィンクス
     MAX,
 };
