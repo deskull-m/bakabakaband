@@ -4865,7 +4865,7 @@ I:110:60d5:20:80:20
 W:17:2:80:0:0
 B:CLAW:HURT:2d6
 B:CLAW:HURT:2d6
-F:RIDING |
+F:RIDING | SPHINX
 F:ONLY_GOLD | DROP_1D2 | CAN_FLY | DROP_CORPSE |
 F:OPEN_DOOR | BASH_DOOR | WILD_MOUNTAIN
 F:ANIMAL
@@ -24668,7 +24668,7 @@ W:85:1:82000:0:0
 B:BITE:HURT:15d15
 B:BITE:HURT:15d15
 B:BITE:POISON:15d15
-F:UNIQUE | MALE | RES_TELE |
+F:UNIQUE | MALE | RES_TELE
 F:BASH_DOOR | DROP_CORPSE | DROP_SKELETON | ANIMAL
 F:FORCE_MAXHP | NO_CONF | NO_SLEEP
 F:DROP_4D2 | DROP_3D2 | DROP_GREAT | ONLY_ITEM |
@@ -41916,11 +41916,10 @@ F:AURA_ELEC | VIRUS | QUANTUM
 F:IM_ELEC | NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
 S:1_IN_5
 S:BO_ELEC | BO_MANA | MISSILE
-D:$That is the essence of Sigma,
-D:$ the first Irregular that caused the Repliroids' rampage.
+D:$That is the essence of Sigma, the Irregular who sparked the first large-scale Repliroid rebellion in history.
 D:$ It is a virus that exists not only digitally but also in reality,
 D:$ capable of forming wireframe heads and carrying out destructive operations.
-D:最初のレプリロイド大規模反乱の元凶となったイレギュラー、シグマの本質だ。
+D:史上最初のレプリロイド大規模反乱の元凶となったイレギュラー、シグマの本質だ。
 D:電子上のみならず、物理的に存在するウイルスであり、ワイヤーフレームの頭部を形成して、破壊工作を行うこともできる。
 
 # N: serial number : monster name
