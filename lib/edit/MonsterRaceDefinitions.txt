@@ -41922,6 +41922,25 @@ D:$ capable of forming wireframe heads and carrying out destructive operations.
 D:史上最初のレプリロイド大規模反乱の元凶となったイレギュラー、シグマの本質だ。
 D:電子上のみならず、物理的に存在するウイルスであり、ワイヤーフレームの頭部を形成して、破壊工作を行うこともできる。
 
+N:2317:『デーモンの炎司祭』
+E:The Demon Firesage
+G:U:r
+I:110:40d50:20:90:20
+W:43:2:0:4700:0:0
+B:HIT:SUPERHURT:6d10
+B:HIT:SUPERHURT:6d10
+F:FORCE_MAXHP | 
+F:ONLY_ITEM | DROP_1D2 | UNIQUE
+F:OPEN_DOOR | BASH_DOOR | POWERFUL | NONLIVING |
+F:EVIL | DEMON | IM_COLD | IM_ACID | IM_POIS | NO_CONF | NO_SLEEP
+S:1_IN_5
+S:BA_FIRE | BO_MANA | HOLD
+D:$One of the demons born from the chaos of Izalith.
+D:$ It makes its home in the subterranean ruins.
+D:イザリスの混沌から生まれ出でたデーモンの一体だ。地底の遺跡に居を構えている。
+
+
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
