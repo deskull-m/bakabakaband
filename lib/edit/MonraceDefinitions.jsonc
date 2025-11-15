@@ -15488,6 +15488,7 @@
         "EMPTY_MIND",
         "AURA_COLD",
         "HURT_FIRE",
+        "ELEMENTAL",
         "IM_COLD",
         "NO_FEAR",
         "NO_CONF",
@@ -15533,6 +15534,7 @@
         "EMPTY_MIND",
         "AURA_FIRE",
         "HURT_COLD",
+        "ELEMENTAL",
         "IM_FIRE",
         "NO_FEAR",
         "NO_CONF",
@@ -15577,6 +15579,7 @@
         "SELF_LITE_2",
         "EMPTY_MIND",
         "AURA_ELEC",
+        "ELEMENTAL",
         "IM_ELEC",
         "NO_FEAR",
         "NO_CONF",
@@ -15684,7 +15687,8 @@
         "CAN_SWIM",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "WILD_SWAMP"
+        "WILD_SWAMP",
+        "PLANT"
     ]
 },
 {
@@ -15729,6 +15733,7 @@
         "EMPTY_MIND",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "ELEMENTAL",
         "EVIL",
         "IM_POIS",
         "CAN_FLY",
@@ -15779,6 +15784,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
+        "SCORPION",
         "ANIMAL",
         "DROP_SKELETON"
     ]
@@ -19465,6 +19471,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
+        "SCORPION",
         "ANIMAL",
         "DROP_SKELETON"
     ]
@@ -23731,6 +23738,7 @@
     "mob": 1000,
     "flags": [
         "BASH_DOOR",
+        "SCORPION",
         "EVIL",
         "DEMON",
         "MASOCHIST"
@@ -29355,6 +29363,7 @@
         "BASH_DOOR",
         "WILD_ALL",
         "DROP_SKELETON",
+        "SCORPION",
         "ANIMAL"
     ]
 },
