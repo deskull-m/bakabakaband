@@ -463,6 +463,15 @@ void process_player_hp_mp(PlayerType *player_ptr)
         regen_amount = 0;
     }
 
+    // Apply hygiene-based regeneration modifier
+    if (regen_amount > 0 && terrain.hygiene != 0) {
+        const int hygiene_modifier = 100 + terrain.hygiene;
+        regen_amount = (regen_amount * hygiene_modifier) / 100;
+        if (regen_amount < 0) {
+            regen_amount = 0;
+        }
+    }
+
     regen_amount = (regen_amount * player_ptr->mutant_regenerate_mod) / 100;
     if ((player_ptr->chp < player_ptr->mhp) && !cave_no_regen) {
         regenhp(player_ptr, regen_amount);
