@@ -123,6 +123,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("スフィンクス", "sphinx");
     case MonsterKindType::SCORPION:
         return _("蜥", "scorpion");
+    case MonsterKindType::MINDCRAFTER:
+        return _("超能力者", "mindcrafter");
     case MonsterKindType::MONKEY_SPACE:
         return _("猿空間", "monkey space");
     case MonsterKindType::MALE:
@@ -396,6 +398,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "SPHINX";
     case MonsterKindType::SCORPION:
         return "SCORPION";
+    case MonsterKindType::MINDCRAFTER:
+        return "MINDCRAFTER";
     case MonsterKindType::MONKEY_SPACE:
         return "MONKEY_SPACE";
     case MonsterKindType::MALE:
