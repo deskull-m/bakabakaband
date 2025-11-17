@@ -107,6 +107,31 @@ int32_t rd_s32b()
 }
 
 /*!
+ * @brief ロードファイルポインタから符号なし64bit値を読み込む
+ */
+uint64_t rd_u64b()
+{
+    uint64_t val = sf_get();
+    val |= (static_cast<uint64_t>(sf_get()) << 8);
+    val |= (static_cast<uint64_t>(sf_get()) << 16);
+    val |= (static_cast<uint64_t>(sf_get()) << 24);
+    val |= (static_cast<uint64_t>(sf_get()) << 32);
+    val |= (static_cast<uint64_t>(sf_get()) << 40);
+    val |= (static_cast<uint64_t>(sf_get()) << 48);
+    val |= (static_cast<uint64_t>(sf_get()) << 56);
+
+    return val;
+}
+
+/*!
+ * @brief ロードファイルポインタから符号つき64bit値を読み込む
+ */
+int64_t rd_s64b()
+{
+    return static_cast<int64_t>(rd_u64b());
+}
+
+/*!
  * @brief ロードファイルポインタから文字列を読み込む
  */
 std::string rd_string()

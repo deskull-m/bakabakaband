@@ -12,6 +12,7 @@
  */
 
 #include "save/save.h"
+#include "alliance/alliance.h"
 #include "core/object-compressor.h"
 #include "dungeon/quest.h"
 #include "inventory/inventory-slot-types.h"
@@ -21,6 +22,7 @@
 #include "locale/character-encoding.h"
 #include "monster/monster-compaction.h"
 #include "player/player-status.h"
+#include "save/alliance-writer.h"
 #include "save/floor-writer.h"
 #include "save/info-writer.h"
 #include "save/item-writer.h"
@@ -178,6 +180,8 @@ static bool wr_savefile_new(PlayerType *player_ptr)
     wr_s32b(wc_ptr->collapse_degree);
     wr_FlagGroup(world.sf_winner, wr_byte);
     wr_FlagGroup(world.sf_retired, wr_byte);
+
+    wr_alliance_base_power();
 
     wr_player(player_ptr);
     tmp16u = PY_MAX_LEVEL;

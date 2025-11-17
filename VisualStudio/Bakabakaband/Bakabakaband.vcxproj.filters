@@ -2773,6 +2773,12 @@
     <ClCompile Include="..\..\src\alliance\alliance-yeek-kingdom.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\load\alliance-loader.cpp">
+      <Filter>load</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\save\alliance-writer.cpp">
+      <Filter>save</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -5981,6 +5987,12 @@
     <ClInclude Include="..\..\src\monster-race\monster-kind-type-name.h" />
     <ClInclude Include="..\..\src\alliance\alliance-yeek-kingdom.h">
       <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\load\alliance-loader.h">
+      <Filter>load</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\save\alliance-writer.h">
+      <Filter>save</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,4 +14,6 @@ void wr_u16b(uint16_t v);
 void wr_s16b(int16_t v);
 void wr_u32b(uint32_t v);
 void wr_s32b(int32_t v);
+void wr_u64b(uint64_t v);
+void wr_s64b(int64_t v);
 void wr_string(std::string_view sv);

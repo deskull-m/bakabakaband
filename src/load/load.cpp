@@ -16,6 +16,7 @@
 #include "io/files-util.h"
 #include "io/report.h"
 #include "io/uid-checker.h"
+#include "load/alliance-loader.h"
 #include "load/dummy-loader.h"
 #include "load/dungeon-loader.h"
 #include "load/extra-loader.h"
@@ -116,6 +117,7 @@ static void load_player_world(PlayerType *player_ptr)
     rd_total_play_time();
     rd_world_info();
     rd_winner_class();
+    rd_alliance_base_power();
     rd_base_info(player_ptr);
     rd_player_info(player_ptr);
     preserve_mode = rd_bool();

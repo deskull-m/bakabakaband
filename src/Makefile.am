@@ -751,6 +751,7 @@ hengband_SOURCES = \
 	knowledge/lighting-level-table.cpp knowledge/lighting-level-table.h \
 	knowledge/monster-group-table.cpp knowledge/monster-group-table.h \
 	\
+	load/alliance-loader.cpp load/alliance-loader.h \
 	load/birth-loader.cpp load/birth-loader.h \
 	load/dummy-loader.cpp load/dummy-loader.h \
 	load/dungeon-loader.cpp load/dungeon-loader.h \
@@ -1211,6 +1212,7 @@ hengband_SOURCES = \
 	room/vault-builder.cpp room/vault-builder.h \
 	room/vault-flag-types.h \
 	\
+	save/alliance-writer.cpp save/alliance-writer.h \
 	save/floor-writer.cpp save/floor-writer.h \
 	save/info-writer.cpp save/info-writer.h \
 	save/item-writer.cpp save/item-writer.h \
