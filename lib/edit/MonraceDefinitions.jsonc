@@ -149452,5 +149452,65 @@
         ],
         "probability": "1_IN_5"
     }
+},
+{
+    "id": 2318,
+    "name": {
+        "ja": "猿空間",
+        "en": "Monkey Space"
+    },
+    "symbol": {
+        "character": ".",
+        "color": "Black"
+    },
+    "speed": 0,
+    "hit_point": "21d20",
+    "vision": 30,
+    "armor_class": 14,
+    "alertness": 20,
+    "level": 40,
+    "rarity": 2,
+    "exp": 2800,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "ENGULF",
+            "effect": "CONFUSE",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "TIME",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "CHAOS",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "SANITY_BLAST",
+            "damage_dice": "4d6"
+        }
+    ],
+    "flavor": {
+        "ja": "この大いなる矛盾の塊はあなたを愚弄し尽くすだろう！今の内に逃げろ！",
+        "en": "This colossal mass of contradictions will utterly mock you! Flee while you can!"
+    },
+    "flags": [
+        "PASS_WALL",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING",
+        "CAN_FLY",
+        "QUANTUM",
+        "AVATAR",
+        "IM_ACID",
+        "RES_DARK",
+        "RAND_25"
+    ]
 }]
 }

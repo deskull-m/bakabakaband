@@ -41939,6 +41939,19 @@ D:$One of the demons born from the chaos of Izalith.
 D:$ It makes its home in the subterranean ruins.
 D:イザリスの混沌から生まれ出でたデーモンの一体だ。地底の遺跡に居を構えている。
 
+N:2318:猿空間
+E:Monkey Space
+G:.:d
+I:110:21d20:30:14:20
+W:40:2:2800:0:0
+B:ENGULF:CONFUSE:4d6
+B:ENGULF:TIME:4d6
+B:ENGULF:CHAOS:4d6
+B:ENGULF:SANITY_BLAST:4d6
+F:PASS_WALL | NO_CONF | NO_SLEEP | NONLIVING | CAN_FLY | QUANTUM | AVATAR
+F:IM_ACID | RES_DARK | RAND_25
+D:$This colossal mass of contradictions will utterly mock you! Flee while you can!
+D:この大いなる矛盾の塊はあなたを愚弄し尽くすだろう！今の内に逃げろ！
 
 
 # N: serial number : monster name
