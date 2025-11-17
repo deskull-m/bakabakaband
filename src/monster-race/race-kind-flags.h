@@ -134,5 +134,6 @@ enum class MonsterKindType {
     SPHINX = 130, // スフィンクス
     SCORPION = 131, // 蜥
     MINDCRAFTER = 132, // 超能力者
+    TANUKI = 133, // 狸
     MAX,
 };
