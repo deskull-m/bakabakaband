@@ -376,7 +376,9 @@
     <ClCompile Include="..\..\src\knowledge\knowledge-incident.cpp" />
     <ClCompile Include="..\..\src\external-lib\fmt\format.cc" />
     <ClCompile Include="..\..\src\io\macro-configurations-store.cpp" />
+    <ClCompile Include="..\..\src\load\alliance-loader.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-movement-direction-list.cpp" />
+    <ClCompile Include="..\..\src\save\alliance-writer.cpp" />
     <ClCompile Include="..\..\src\system\floor\wilderness-grid.cpp" />
     <ClCompile Include="..\..\src\system\services\dungeon-monrace-service.cpp" />
     <ClCompile Include="..\..\src\system\services\dungeon-service.cpp" />
@@ -1178,7 +1180,9 @@
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
     <ClInclude Include="..\..\src\external-lib\include-json.h" />
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
+    <ClInclude Include="..\..\src\load\alliance-loader.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-movement-direction-list.h" />
+    <ClInclude Include="..\..\src\save\alliance-writer.h" />
     <ClInclude Include="..\..\src\system\enums\terrain\terrain-kind.h" />
     <ClInclude Include="..\..\src\system\enums\terrain\wilderness-terrain.h" />
     <ClInclude Include="..\..\src\system\floor\wilderness-grid.h" />

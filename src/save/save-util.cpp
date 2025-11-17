@@ -79,6 +79,31 @@ void wr_s32b(int32_t v)
 }
 
 /*!
+ * @brief 符号なし64ビットをファイルに書き込む
+ * @param v 書き込む符号なし64bit値
+ */
+void wr_u64b(uint64_t v)
+{
+    wr_byte((byte)(v & 0xFF));
+    wr_byte((byte)((v >> 8) & 0xFF));
+    wr_byte((byte)((v >> 16) & 0xFF));
+    wr_byte((byte)((v >> 24) & 0xFF));
+    wr_byte((byte)((v >> 32) & 0xFF));
+    wr_byte((byte)((v >> 40) & 0xFF));
+    wr_byte((byte)((v >> 48) & 0xFF));
+    wr_byte((byte)((v >> 56) & 0xFF));
+}
+
+/*!
+ * @brief 符号あり64ビットをファイルに書き込む
+ * @param v 書き込む符号あり64bit値
+ */
+void wr_s64b(int64_t v)
+{
+    wr_u64b((uint64_t)v);
+}
+
+/*!
  * @brief 文字列をファイルに書き込む
  * @param str 書き込む文字列
  */

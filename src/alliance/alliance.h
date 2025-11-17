@@ -105,6 +105,16 @@ public:
     int64_t AnnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
     virtual void panishment(PlayerType &player_ptr);
 
+    // base_powerを変更するメソッド
+    void set_base_power(int64_t new_power)
+    {
+        base_power = new_power;
+    }
+    int64_t get_base_power() const
+    {
+        return base_power;
+    }
+
 protected:
     static int calcPlayerPower(PlayerType const &player_ptr, const int bias, const int base_level);
 };
