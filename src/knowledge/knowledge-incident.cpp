@@ -234,6 +234,9 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
     if (player_ptr->incident_tree.count("USE_RACIAL")) {
         fprintf(fff, _("あなたはこれまで%d回種族能力を使用した。\n", "You have used racial power %d times.\n"), player_ptr->incident_tree["USE_RACIAL"]);
     }
+    if (player_ptr->incident_tree.count("DEFECATE")) {
+        fprintf(fff, _("あなたはこれまで%d回脱糞した。\n", "You have defecated %d times.\n"), player_ptr->incident_tree["DEFECATE"]);
+    }
     if (player_ptr->incident_tree.count("HIT_BY_MONSTER")) {
         fprintf(fff, _("あなたはこれまで%d回モンスターの打撃を受けた。\n", "You have been hit by monsters %d times.\n"), player_ptr->incident_tree["HIT_BY_MONSTER"]);
 
