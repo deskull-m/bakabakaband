@@ -136,5 +136,6 @@ enum class MonsterKindType {
     MINDCRAFTER = 132, // 超能力者
     TANUKI = 133, // 狸
     CHAMELEON = 134, // カメレオン
+    SQUIRREL = 135, // リス
     MAX,
 };
