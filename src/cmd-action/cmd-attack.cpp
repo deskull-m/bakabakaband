@@ -182,6 +182,7 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
     player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
+    player_ptr->plus_incident_tree("HEADBUTT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
     is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 

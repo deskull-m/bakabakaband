@@ -237,6 +237,9 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
     if (player_ptr->incident_tree.count("DEFECATE")) {
         fprintf(fff, _("あなたはこれまで%d回脱糞した。\n", "You have defecated %d times.\n"), player_ptr->incident_tree["DEFECATE"]);
     }
+    if (player_ptr->incident_tree.count("HEADBUTT")) {
+        fprintf(fff, _("あなたはこれまで%d回頭突きした。\n", "You have headbutted %d times.\n"), player_ptr->incident_tree["HEADBUTT"]);
+    }
     if (player_ptr->incident_tree.count("HIT_BY_MONSTER")) {
         fprintf(fff, _("あなたはこれまで%d回モンスターの打撃を受けた。\n", "You have been hit by monsters %d times.\n"), player_ptr->incident_tree["HIT_BY_MONSTER"]);
 
