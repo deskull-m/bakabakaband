@@ -657,4 +657,7 @@ void player_defecate(PlayerType *player_ptr)
     msg_erase();
     item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
     (void)drop_near(player_ptr, item, player_ptr->get_position());
+
+    // 脱糞した数をインシデントに記録
+    player_ptr->plus_incident_tree("DEFECATE", 1);
 }
