@@ -17,10 +17,11 @@ void rd_alliance_base_power()
     // アライアンスの数を読み込む
     const auto alliance_count = rd_u16b();
 
-    // 各アライアンスのbase_powerを読み込む
+    // 各アライアンスのbase_powerとnatural_recoveryを読み込む
     for (uint16_t i = 0; i < alliance_count; i++) {
         const auto alliance_type_value = rd_s16b();
         const auto base_power = rd_s64b();
+        const auto natural_recovery = rd_s64b();
 
         const auto alliance_type = i2enum<AllianceType>(alliance_type_value);
 
@@ -28,6 +29,7 @@ void rd_alliance_base_power()
         auto it = alliance_list.find(alliance_type);
         if (it != alliance_list.end()) {
             it->second->base_power = base_power;
+            it->second->natural_recovery = natural_recovery;
         }
     }
 
