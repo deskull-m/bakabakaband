@@ -45,6 +45,7 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "window/main-window-row-column.h"
+#include "world/world-alliance-processor.h"
 #include "world/world-collapsion.h"
 #include "world/world-movement-processor.h"
 #include "world/world.h"
@@ -97,6 +98,7 @@ void WorldTurnProcessor::process_world()
     process_terrain_effects(this->player_ptr);
     process_world_aux_mutation(this->player_ptr);
     process_world_aux_sudden_attack(this->player_ptr);
+    process_alliance_recovery(this->player_ptr);
     execute_cursed_items_effect(this->player_ptr);
     recharge_magic_items(this->player_ptr);
     sense_inventory1(this->player_ptr);

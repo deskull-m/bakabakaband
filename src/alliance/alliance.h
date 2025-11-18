@@ -95,7 +95,8 @@ public:
     std::string tag; //!< タグ
     std::string name; //!< 陣営名
     int64_t base_power; //!< 基本勢力指数
-    Alliance(AllianceType id, std::string tag, std::string name, int64_t base_power);
+    int64_t natural_recovery; //!< 自然回復量（10ターンごと）
+    Alliance(AllianceType id, std::string tag, std::string name, int64_t base_power, int64_t natural_recovery = 0);
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
@@ -113,6 +114,16 @@ public:
     int64_t get_base_power() const
     {
         return base_power;
+    }
+
+    // natural_recoveryを変更するメソッド
+    void set_natural_recovery(int64_t new_recovery)
+    {
+        natural_recovery = new_recovery;
+    }
+    int64_t get_natural_recovery() const
+    {
+        return natural_recovery;
     }
 
 protected:
