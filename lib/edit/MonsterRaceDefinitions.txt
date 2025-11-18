@@ -41953,6 +41953,18 @@ F:IM_ACID | RES_DARK | RAND_25
 D:$This colossal mass of contradictions will utterly mock you! Flee while you can!
 D:この大いなる矛盾の塊はあなたを愚弄し尽くすだろう！今の内に逃げろ！
 
+N:2319:リス
+E:Squirrel
+G:r:o
+I:110:1d2:5:3:10
+W:0:1:1:2:50
+B:BITE:HURT:1d3
+F:RAND_50 | WILD_GRASS | WILD_WOOD |
+F:CAN_SWIM |
+F:ANIMAL | DROP_CORPSE | SQUIRREL
+D:$A small furry rodent with a bushy tail.
+D:ふさふさした尾を持つ小さな毛むくじゃらの齧歯類だ。
+
 
 # N: serial number : monster name
 # G: symbol : color
