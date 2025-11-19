@@ -445,6 +445,7 @@ public:
     FloorType *get_floor() const override;
     ACTION_ENERGY get_energy_need() const override;
     void set_energy_need(ACTION_ENERGY energy) override;
+    int get_level() const override;
 
 private:
     std::shared_ptr<TimedEffects> timed_effects;

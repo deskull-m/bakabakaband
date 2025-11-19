@@ -317,3 +317,8 @@ void PlayerType::set_energy_need(ACTION_ENERGY energy)
 {
     this->energy_need = energy;
 }
+
+int PlayerType::get_level() const
+{
+    return this->lev;
+}

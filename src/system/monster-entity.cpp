@@ -709,3 +709,12 @@ void MonsterEntity::set_energy_need(ACTION_ENERGY energy)
 {
     this->energy_need = energy;
 }
+
+int MonsterEntity::get_level() const
+{
+    // 個体レベルが設定されていればそれを使用、未設定なら種族レベルを使用
+    if (this->level > 0) {
+        return this->level;
+    }
+    return this->get_monrace().level / 2;
+}
