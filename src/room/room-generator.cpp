@@ -72,6 +72,8 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::MAZE:
         return build_nonvault_maze(player_ptr, dd_ptr);
     case RoomType::HOUSE:
+        return build_fixed_room(player_ptr, dd_ptr, 19, false, -1);
+    case RoomType::THRONE_ROOM:
         return build_fixed_room(player_ptr, dd_ptr, 20, false, -1);
     default:
         return false;
@@ -154,10 +156,11 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
             }
         }
     } else if (dungeon.flags.has(DungeonFeatureType::NO_VAULT)) {
-        /*! @details ダンジョンにNO_VAULTフラグがあるならば、LESSER_VAULT / GREATER_VAULT/ RANDOM_VAULTを除外 / Forbidden vaults */
+        /*! @details ダンジョンにNO_VAULTフラグがあるならば、LESSER_VAULT / GREATER_VAULT/ RANDOM_VAULT / THRONE_ROOMを除外 / Forbidden vaults */
         prob_list[RoomType::LESSER_VAULT] = 0;
         prob_list[RoomType::GREATER_VAULT] = 0;
         prob_list[RoomType::RANDOM_VAULT] = 0;
+        prob_list[RoomType::THRONE_ROOM] = 0;
     }
 
     /*! @details ダンジョンにBEGINNERフラグがあるならば、FIXED_ROOMを除外 / Forbidden vaults */
@@ -202,6 +205,7 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
         case RoomType::NEST:
         case RoomType::PIT:
         case RoomType::LESSER_VAULT:
+        case RoomType::THRONE_ROOM:
         case RoomType::TRAP_PIT:
         case RoomType::GLASS:
         case RoomType::ARCADE:
