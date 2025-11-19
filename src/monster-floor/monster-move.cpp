@@ -464,6 +464,13 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
             monster.energy_need += ENERGY_NEED();
         }
 
+        // SLOW地形での減速処理（飛行モンスターは影響を受けない）
+        auto is_slowed_by_terrain = terrain.flags.has(TerrainCharacteristics::SLOW);
+        is_slowed_by_terrain &= monrace.feature_flags.has_not(MonsterFeatureType::CAN_FLY);
+        if (is_slowed_by_terrain) {
+            monster.energy_need += ENERGY_NEED() / 2;
+        }
+
         if (!update_riding_monster(player_ptr, turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {
             break;
         }
