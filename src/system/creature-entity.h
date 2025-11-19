@@ -86,4 +86,10 @@ public:
      * @param energy エネルギー値
      */
     virtual void set_energy_need(ACTION_ENERGY energy) = 0;
+
+    /*!
+     * @brief クリーチャーのレベルを取得
+     * @return レベル値
+     */
+    virtual int get_level() const = 0;
 };

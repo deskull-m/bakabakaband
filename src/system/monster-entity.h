@@ -63,6 +63,7 @@ public:
     POSITION target_x{}; /*!< モンスターの攻撃目標対象X座標 /  Can attack !los player */
     std::string nickname{}; /*!< ペットに与えられた名前 / Monster's Nickname */
     EXP exp{}; /*!< モンスターの現在所持経験値 */
+    int16_t level{}; /*!< モンスターの個体レベル（0の場合は種族レベルを使用） / Monster's individual level (0 = use race level) */
 
     /* TODO: クローン、ペット、有効化は意義が異なるので別変数に切り離すこと。save/loadのバージョン更新が面倒そうだけど */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" - Some bit-flags for the "smart" field */
@@ -139,6 +140,7 @@ public:
     FloorType *get_floor() const override;
     ACTION_ENERGY get_energy_need() const override;
     void set_energy_need(ACTION_ENERGY energy) override;
+    int get_level() const override;
 
 private:
     tl::optional<bool> order_pet_named(const MonsterEntity &other) const;
