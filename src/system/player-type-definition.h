@@ -10,6 +10,7 @@
 #include "player/player-personality-types.h"
 #include "player/player-sex.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
@@ -54,7 +55,7 @@ class Direction;
 class FloorType;
 class ItemEntity;
 class TimedEffects;
-class PlayerType {
+class PlayerType : public CreatureEntity {
 public:
     PlayerType();
     void plus_incident(INCIDENT incidentID, int num);
@@ -218,7 +219,7 @@ public:
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
 
-    bool is_dead{}; /* Player is dead */
+    bool is_dead_{}; /* Player is dead */
     bool now_damaged{};
     bool ambush_flag{};
 
@@ -421,7 +422,7 @@ public:
     bool is_wielding(FixedArtifactId fa_id) const;
     std::string decrease_ability_random();
     std::string decrease_ability_all();
-    Pos2D get_position() const;
+    Pos2D get_position() const override;
     Pos2D get_old_position() const;
     Pos2D get_neighbor(int dir) const;
     Pos2D get_neighbor(const Direction &dir) const;
@@ -432,6 +433,18 @@ public:
     bool in_saved_floor() const;
     int calc_life_rating() const;
     bool try_resist_eldritch_horror() const;
+
+    // CreatureEntityインターフェースの実装
+    POSITION get_x() const override;
+    POSITION get_y() const override;
+    int get_current_hp() const override;
+    int get_max_hp() const override;
+    int get_speed() const override;
+    bool is_valid() const override;
+    bool is_dead() const override;
+    FloorType *get_floor() const override;
+    ACTION_ENERGY get_energy_need() const override;
+    void set_energy_need(ACTION_ENERGY energy) override;
 
 private:
     std::shared_ptr<TimedEffects> timed_effects;

@@ -955,7 +955,7 @@ void sweep_monster_process(PlayerType *player_ptr)
             monster.mflag2.set(MonsterConstantFlagType::NOFLOW);
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead || player_ptr->leaving) {
+        if (!player_ptr->playing || player_ptr->is_dead() || player_ptr->leaving) {
             return;
         }
     }

@@ -561,7 +561,7 @@ void exe_player_attack_to_monster(PlayerType *player_ptr, POSITION y, POSITION x
 
     /* Attack once for each legal blow */
     int num = 0;
-    while ((num++ < pa_ptr->num_blow) && !player_ptr->is_dead) {
+    while ((num++ < pa_ptr->num_blow) && !player_ptr->is_dead()) {
 
         player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
 

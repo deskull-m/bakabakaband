@@ -107,7 +107,7 @@ void rd_global_configurations(PlayerType *player_ptr)
     world.total_winner = rd_u16b();
     world.noscore = rd_u16b();
 
-    player_ptr->is_dead = rd_bool();
+    player_ptr->is_dead_ = rd_bool();
 
     DungeonFeeling::get_instance().set_feeling(rd_byte());
     rd_world_info(player_ptr);

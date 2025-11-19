@@ -130,7 +130,7 @@ bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
     ms_ptr->dam = res.dam;
     process_special_melee_spell(player_ptr, ms_ptr);
     process_rememberance(ms_ptr);
-    if (player_ptr->is_dead && (ms_ptr->r_ptr->r_deaths < MAX_SHORT) && !player_ptr->current_floor_ptr->inside_arena) {
+    if (player_ptr->is_dead() && (ms_ptr->r_ptr->r_deaths < MAX_SHORT) && !player_ptr->current_floor_ptr->inside_arena) {
         ms_ptr->r_ptr->r_deaths++;
     }
 

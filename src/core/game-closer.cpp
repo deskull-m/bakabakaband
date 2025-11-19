@@ -55,7 +55,7 @@ static void send_world_score_on_closing(PlayerType *player_ptr, bool do_send)
     }
 
     AngbandSystem::get_instance().set_awaiting_report_score(true);
-    player_ptr->is_dead = false;
+    player_ptr->is_dead_ = false;
     if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
         msg_print(_("セーブ失敗！", "death save failed!"));
     }
@@ -68,7 +68,7 @@ static void send_world_score_on_closing(PlayerType *player_ptr, bool do_send)
  */
 static bool check_death(PlayerType *player_ptr)
 {
-    if (player_ptr->is_dead || wc_ptr->is_blown_away()) {
+    if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
         return true;
     }
 

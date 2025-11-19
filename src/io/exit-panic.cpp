@@ -36,7 +36,7 @@ void exit_game_panic(PlayerType *player_ptr)
     prt("", 0, 0);
     disturb(player_ptr, true, true);
     if (player_ptr->chp < 0) {
-        player_ptr->is_dead = false;
+        player_ptr->is_dead_ = false;
     }
 
     AngbandSystem::get_instance().set_panic_save(true);

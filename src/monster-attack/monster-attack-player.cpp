@@ -232,7 +232,7 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
     }
 
     const auto is_neighbor = Grid::calc_distance(this->player_ptr->get_position(), this->m_ptr->get_position()) <= 1;
-    return this->player_ptr->playing && !this->player_ptr->is_dead && is_neighbor && !this->player_ptr->leaving;
+    return this->player_ptr->playing && !this->player_ptr->is_dead() && is_neighbor && !this->player_ptr->leaving;
 }
 
 /*!
@@ -536,11 +536,11 @@ void MonsterAttackPlayer::postprocess_monster_blows()
     musou_counterattack(this->player_ptr, this);
     this->process_thief_teleport(spell_hex);
     auto &monrace = this->m_ptr->get_monrace();
-    if (this->player_ptr->is_dead && (monrace.r_deaths < MAX_SHORT) && !this->player_ptr->current_floor_ptr->inside_arena) {
+    if (this->player_ptr->is_dead() && (monrace.r_deaths < MAX_SHORT) && !this->player_ptr->current_floor_ptr->inside_arena) {
         monrace.r_deaths++;
     }
 
-    if (this->m_ptr->ml && this->fear && this->alive && !this->player_ptr->is_dead) {
+    if (this->m_ptr->ml && this->fear && this->alive && !this->player_ptr->is_dead()) {
         sound(SoundKind::FLEE);
         msg_format(_("%s^は恐怖で逃げ出した！", "%s^ flees in terror!"), this->m_name);
     }
@@ -550,7 +550,7 @@ void MonsterAttackPlayer::postprocess_monster_blows()
 
 void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
 {
-    if (!this->blinked || !this->alive || this->player_ptr->is_dead) {
+    if (!this->blinked || !this->alive || this->player_ptr->is_dead()) {
         return;
     }
 

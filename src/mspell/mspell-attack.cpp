@@ -170,7 +170,7 @@ static bool check_mspell_continuation(PlayerType *player_ptr, msa_type *msa_ptr)
     }
 
     set_mspell_list(msa_ptr);
-    if (msa_ptr->mspells.empty() || !player_ptr->playing || player_ptr->is_dead || player_ptr->leaving) {
+    if (msa_ptr->mspells.empty() || !player_ptr->playing || player_ptr->is_dead() || player_ptr->leaving) {
         return false;
     }
 
@@ -355,7 +355,7 @@ bool make_attack_spell(PlayerType *player_ptr, MONSTER_IDX m_idx)
     msa_ptr->dam = monspell_res.dam;
     check_mspell_imitation(player_ptr, msa_ptr);
     remember_mspell(msa_ptr);
-    if (player_ptr->is_dead && (msa_ptr->r_ptr->r_deaths < MAX_SHORT) && !player_ptr->current_floor_ptr->inside_arena) {
+    if (player_ptr->is_dead() && (msa_ptr->r_ptr->r_deaths < MAX_SHORT) && !player_ptr->current_floor_ptr->inside_arena) {
         msa_ptr->r_ptr->r_deaths++;
     }
 

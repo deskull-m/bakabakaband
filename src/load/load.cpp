@@ -287,7 +287,7 @@ static errr rd_savefile(PlayerType *player_ptr)
 static bool reset_save_data(PlayerType *player_ptr, bool *new_game)
 {
     *new_game = true;
-    player_ptr->is_dead = false;
+    player_ptr->is_dead_ = false;
     AngbandWorld::get_instance().sf_lives++;
     return true;
 }
@@ -334,7 +334,7 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
 {
     auto what = "generic";
     AngbandWorld::get_instance().game_turn = 0;
-    player_ptr->is_dead = false;
+    player_ptr->is_dead_ = false;
     if (savefile.empty()) {
         return true;
     }
@@ -422,7 +422,7 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
         return on_read_save_data_not_supported(player_ptr, new_game);
     }
 
-    if (player_ptr->is_dead || wc_ptr->is_blown_away()) {
+    if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
         return reset_save_data(player_ptr, new_game);
     }
 

@@ -299,7 +299,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
 {
     const auto old_chp = player_ptr->chp;
     const auto hp_warning_threshold = (player_ptr->mhp * hitpoint_warn / 10);
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return 0;
     }
 
@@ -384,7 +384,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         handle_stuff(player_ptr);
         player_ptr->leaving = true;
         if (!cheat_immortal) {
-            player_ptr->is_dead = true;
+            player_ptr->is_dead_ = true;
         }
 
         if (floor.inside_arena) {
