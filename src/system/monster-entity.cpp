@@ -668,3 +668,44 @@ int MonsterEntity::get_ac() const
     }
     return ac;
 }
+
+// CreatureEntityインターフェースの実装
+POSITION MonsterEntity::get_x() const
+{
+    return this->fx;
+}
+
+POSITION MonsterEntity::get_y() const
+{
+    return this->fy;
+}
+
+int MonsterEntity::get_current_hp() const
+{
+    return this->hp;
+}
+
+int MonsterEntity::get_max_hp() const
+{
+    return this->maxhp;
+}
+
+int MonsterEntity::get_speed() const
+{
+    return this->mspeed;
+}
+
+FloorType *MonsterEntity::get_floor() const
+{
+    return this->current_floor_ptr;
+}
+
+ACTION_ENERGY MonsterEntity::get_energy_need() const
+{
+    return this->energy_need;
+}
+
+void MonsterEntity::set_energy_need(ACTION_ENERGY energy)
+{
+    this->energy_need = energy;
+}

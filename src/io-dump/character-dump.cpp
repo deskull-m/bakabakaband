@@ -137,7 +137,7 @@ static void dump_aux_quest(PlayerType *player_ptr, FILE *fff)
  */
 static void dump_aux_last_message(PlayerType *player_ptr, FILE *fff)
 {
-    if (!player_ptr->is_dead) {
+    if (!player_ptr->is_dead()) {
         return;
     }
 

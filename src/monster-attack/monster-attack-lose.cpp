@@ -29,7 +29,7 @@ void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -61,7 +61,7 @@ void calc_blow_lose_strength(PlayerType *player_ptr, MonsterAttackPlayer *monap_
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -82,7 +82,7 @@ void calc_blow_lose_intelligence(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -103,7 +103,7 @@ void calc_blow_lose_wisdom(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -124,7 +124,7 @@ void calc_blow_lose_dexterity(PlayerType *player_ptr, MonsterAttackPlayer *monap
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -145,7 +145,7 @@ void calc_blow_lose_constitution(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -166,7 +166,7 @@ void calc_blow_lose_charisma(PlayerType *player_ptr, MonsterAttackPlayer *monap_
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -209,7 +209,7 @@ void calc_blow_lose_all(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 100;
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 

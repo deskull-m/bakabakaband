@@ -172,7 +172,7 @@ static void display_player_stats(PlayerType *player_ptr)
 static tl::optional<std::string> search_death_cause(PlayerType *player_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
-    if (!player_ptr->is_dead) {
+    if (!player_ptr->is_dead()) {
         return tl::nullopt;
     }
 

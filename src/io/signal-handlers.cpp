@@ -69,7 +69,7 @@ static void handle_signal_simple(int sig)
 
     signal_count++;
     auto &floor = *p_ptr->current_floor_ptr;
-    if (p_ptr->is_dead) {
+    if (p_ptr->is_dead()) {
         p_ptr->died_from = _("強制終了", "Abortion");
         floor.forget_lite();
         floor.forget_view();
@@ -83,7 +83,7 @@ static void handle_signal_simple(int sig)
         floor.forget_mon_lite();
         p_ptr->playing = false;
         if (!cheat_immortal) {
-            p_ptr->is_dead = true;
+            p_ptr->is_dead_ = true;
         }
         p_ptr->leaving = true;
         close_game(p_ptr);

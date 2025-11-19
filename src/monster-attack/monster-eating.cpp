@@ -83,7 +83,7 @@ bool check_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
         return false;
     }
 
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return false;
     }
 

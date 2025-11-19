@@ -817,7 +817,7 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
     world.noscore |= 0x0001;
     msg_erase();
 
-    player_ptr->is_dead = false;
+    player_ptr->is_dead_ = false;
     (void)life_stream(player_ptr, false, false);
     (void)restore_mana(player_ptr, true);
     (void)recall_player(player_ptr, 0);

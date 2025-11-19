@@ -414,7 +414,7 @@ void process_player(PlayerType *player_ptr)
             }
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead) {
+        if (!player_ptr->playing || player_ptr->is_dead()) {
             player_ptr->timewalk = false;
             break;
         }

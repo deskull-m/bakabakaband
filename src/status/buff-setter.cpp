@@ -115,7 +115,7 @@ bool set_acceleration(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -172,7 +172,7 @@ bool set_shield(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -220,7 +220,7 @@ bool set_magicdef(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -268,7 +268,7 @@ bool set_blessed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -316,7 +316,7 @@ bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -369,7 +369,7 @@ bool set_mimic(PlayerType *player_ptr, TIME_EFFECT v, MimicKindType mimic_race_i
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -433,7 +433,7 @@ bool set_shero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -490,7 +490,7 @@ bool set_wraith_form(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -552,7 +552,7 @@ bool set_tsuyoshi(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 

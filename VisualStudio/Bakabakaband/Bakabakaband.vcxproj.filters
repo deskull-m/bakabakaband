@@ -6000,6 +6000,9 @@
     <ClInclude Include="..\..\src\world\world-alliance-processor.h">
       <Filter>world</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\system\creature-entity.h">
+      <Filter>system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />

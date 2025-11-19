@@ -107,7 +107,7 @@ static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *mona
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 1000;
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -137,7 +137,7 @@ static void calc_blow_blind(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return;
     }
 
@@ -161,7 +161,7 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return;
     }
 
@@ -184,7 +184,7 @@ static void calc_blow_fear(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return;
     }
 
@@ -204,7 +204,7 @@ static void calc_blow_paralysis(PlayerType *player_ptr, MonsterAttackPlayer *mon
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return;
     }
 
@@ -232,7 +232,7 @@ static void calc_blow_drain_exp(PlayerType *player_ptr, MonsterAttackPlayer *mon
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 1000;
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -272,7 +272,7 @@ static void calc_blow_drain_life(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -313,7 +313,7 @@ static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-    if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
         return;
     }
 
@@ -372,7 +372,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     case RaceBlowEffectType::EAT_GOLD:
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-        if (monap_ptr->m_ptr->is_confused() || player_ptr->is_dead || check_multishadow(player_ptr)) {
+        if (monap_ptr->m_ptr->is_confused() || player_ptr->is_dead() || check_multishadow(player_ptr)) {
             break;
         }
 
@@ -391,7 +391,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
 
     case RaceBlowEffectType::EAT_FOOD: {
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-        if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+        if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
             break;
         }
 
@@ -401,7 +401,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
     case RaceBlowEffectType::EAT_LITE: {
         monap_ptr->o_ptr = player_ptr->inventory[INVEN_LITE].get();
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-        if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+        if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
             break;
         }
 
@@ -525,7 +525,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     case RaceBlowEffectType::STUN:
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-        if (player_ptr->is_dead) {
+        if (player_ptr->is_dead()) {
             break;
         }
         process_stun_attack(player_ptr, monap_ptr);
@@ -551,7 +551,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         if (randint1(5) < 3) {
             monap_ptr->obvious = true;
             if (!has_chaos_resist) {
-                if (player_ptr->is_dead || check_multishadow(player_ptr)) {
+                if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
                     return;
                 }
 
@@ -574,7 +574,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             }
         }
         if (!one_in_(10)) {
-            if (player_ptr->is_dead) {
+            if (player_ptr->is_dead()) {
                 return;
             }
             monap_ptr->obvious = true;
@@ -586,7 +586,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         }
 
         if (one_in_(2)) {
-            if (player_ptr->is_dead) {
+            if (player_ptr->is_dead()) {
                 return;
             }
             monap_ptr->obvious = true;
@@ -596,7 +596,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
                 teleport_player(player_ptr, 50, TELEPORT_PASSIVE);
             }
         } else if (!has_chaos_resist) {
-            if (player_ptr->is_dead) {
+            if (player_ptr->is_dead()) {
                 return;
             }
             monap_ptr->obvious = true;
@@ -618,7 +618,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
 
     case RaceBlowEffectType::SANITY_BLAST: {
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc);
-        if (player_ptr->is_dead) {
+        if (player_ptr->is_dead()) {
             break;
         }
         sanity_blast(player_ptr);

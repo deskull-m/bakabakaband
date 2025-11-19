@@ -227,13 +227,13 @@ static bool wr_savefile_new(PlayerType *player_ptr)
 
     wr_s16b(player_ptr->pet_follow_distance);
     wr_s16b(player_ptr->pet_extra_flags);
-    if (AngbandSystem::get_instance().is_awaiting_report_status() || !player_ptr->is_dead) {
+    if (AngbandSystem::get_instance().is_awaiting_report_status() || !player_ptr->is_dead()) {
         wr_string(screen_dump);
     } else {
         wr_string("");
     }
 
-    if (!player_ptr->is_dead) {
+    if (!player_ptr->is_dead()) {
         if (!wr_dungeon(player_ptr)) {
             return false;
         }

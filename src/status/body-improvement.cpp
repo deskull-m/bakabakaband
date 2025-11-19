@@ -40,7 +40,7 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return;
     }
 
@@ -88,7 +88,7 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -152,7 +152,7 @@ bool set_tim_regen(PlayerType *player_ptr, short v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -200,7 +200,7 @@ bool set_tim_reflect(PlayerType *player_ptr, short v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -248,7 +248,7 @@ bool set_pass_wall(PlayerType *player_ptr, short v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 

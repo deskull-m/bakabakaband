@@ -124,7 +124,7 @@ static errr rd_dungeon(PlayerType *player_ptr)
 
 errr restore_dungeon(PlayerType *player_ptr)
 {
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         auto &quests = QuestList::get_instance();
         for (const auto quest_id : RANDOM_QUEST_ID_RANGE) {
             quests.get_quest(quest_id).get_bounty().misc_flags.reset(MonsterMiscType::QUESTOR);
