@@ -41965,6 +41965,18 @@ F:ANIMAL | DROP_CORPSE | SQUIRREL
 D:$A small furry rodent with a bushy tail.
 D:ふさふさした尾を持つ小さな毛むくじゃらの齧歯類だ。
 
+N:2320:毒チワワ
+E:Poison Chihuahua
+G:C:v
+I:120:3d5:40:12:0
+W:3:2:10:0:0
+B:BITE:POISON:1d6
+B:BITE:POISON:1d6
+F:BASH_DOOR | WILD_ALL | DROP_SKELETON | DROP_CORPSE
+F:ANIMAL | DOG | DEMON
+D:$A beloved pet among the nobility of the demon realm.
+D:$ Yet it possesses venom potent enough to kill a commoner with a single bite.
+D:魔界の貴族に人気の可愛らしいペットだ。だが一噛みで一般人を殺せる毒を持つ。
 
 # N: serial number : monster name
 # G: symbol : color
