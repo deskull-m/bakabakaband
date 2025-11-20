@@ -208,6 +208,13 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "TRAP_OPEN", TerrainTag::TRAP_OPEN },
     { "TRAP_PIRANHA", TerrainTag::TRAP_PIRANHA },
     { "TRAP_ARMAGEDDON", TerrainTag::TRAP_ARMAGEDDON },
+    { "TRAP_LAVA", TerrainTag::TRAP_LAVA },
+    { "TRAP_DUNG_POOL", TerrainTag::TRAP_DUNG_POOL },
+    { "TRAP_FIRE_STORM", TerrainTag::TRAP_FIRE_STORM },
+    { "TRAP_ICE_STORM", TerrainTag::TRAP_ICE_STORM },
+    { "TRAP_CHAOS_STORM", TerrainTag::TRAP_CHAOS_STORM },
+    { "TRAP_JUMP_VOID", TerrainTag::TRAP_JUMP_VOID },
+    { "TRAP_LAND_MINE", TerrainTag::TRAP_LAND_MINE },
 
     { "PATTERN_START", TerrainTag::PATTERN_START },
     { "PATTERN_1", TerrainTag::PATTERN_1 },
