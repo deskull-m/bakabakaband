@@ -149601,5 +149601,54 @@
         "DOG",
         "DEMON"
     ]
+},
+{
+    "id": 2321,
+    "name": {
+        "ja": "田所・バーニング",
+        "en": "Tadokoro Burning"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Brown"
+    },
+    "speed": 10,
+    "hit_point": "25d15",
+    "vision": 13,
+    "armor_class": 30,
+    "alertness": 10,
+    "level": 19,
+    "rarity": 3,
+    "exp": 75,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "4d6"
+        }
+    ],
+    "flavor": {
+        "ja": "ある狂人の生み出した野獣先輩らしき何かだ。意地でも流行らせろ、いややっぱ流行らせるな。",
+        "en": "It's some kind of Beast Senior-like thing created by a madman. Make it trend no matter what—no, scratch that, don't make it trend."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "FRIENDS",
+        "EVIL",
+        "HUMAN",
+        "NASTY",
+        "HOMO_SEXUAL",
+        "YAZYU"
+    ]
 }]
 }

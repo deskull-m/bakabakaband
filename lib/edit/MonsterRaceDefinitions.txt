@@ -41978,6 +41978,19 @@ D:$A beloved pet among the nobility of the demon realm.
 D:$ Yet it possesses venom potent enough to kill a commoner with a single bite.
 D:魔界の貴族に人気の可愛らしいペットだ。だが一噛みで一般人を殺せる毒を持つ。
 
+N:2321:田所・バーニング
+E:Tadokoro Burning
+G:p:u
+I:120:25d15:13:30:10
+W:19:3:75:0:0
+B:PUNCH:HURT:4d6
+B:PUNCH:HURT:4d6
+F:BASH_DOOR | DROP_SKELETON | DROP_CORPSE | FRIENDS
+F:EVIL | HUMAN | NASTY | HOMO_SEXUAL | YAZYU
+D:$It's some kind of Beast Senior-like thing created by a madman.
+D:$ Make it trend no matter what—no, scratch that, don't make it trend.
+D:ある狂人の生み出した野獣先輩らしき何かだ。意地でも流行らせろ、いややっぱ流行らせるな。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
