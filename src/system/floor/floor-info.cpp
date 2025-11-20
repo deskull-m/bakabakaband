@@ -463,7 +463,14 @@ TerrainTag FloorType::select_random_trap() const
     const auto &terrains = TerrainList::get_instance();
     while (true) {
         const auto tag = terrains.select_normal_trap();
-        if (terrains.get_terrain(tag).flags.has_not(TerrainCharacteristics::MORE)) {
+        const auto &terrain = terrains.get_terrain(tag);
+
+        // POWER値による階層制限チェック
+        if (terrain.power > 0 && this->dun_level < terrain.power) {
+            continue;
+        }
+
+        if (terrain.flags.has_not(TerrainCharacteristics::MORE)) {
             return tag;
         }
 
