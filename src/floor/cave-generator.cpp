@@ -555,6 +555,12 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
         msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("アリーナレベルを生成。", "Arena level."));
     }
 
+    // ALWAY_ARENAフラグがある場合は常にアリーナ地形にする
+    if (dungeon.flags.has(DungeonFeatureType::ALWAY_ARENA)) {
+        dd.empty_level = true;
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("常時アリーナレベルを生成。", "Always arena level."));
+    }
+
     check_arena_floor(player_ptr, &dd);
     gen_caverns_and_lakes(player_ptr, dungeon, &dd);
     if (!switch_making_floor(player_ptr, &dd, dungeon)) {
