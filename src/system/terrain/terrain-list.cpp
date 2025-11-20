@@ -33,6 +33,7 @@ TerrainList::TerrainList()
         TerrainTag::TRAP_SLEEP,
         TerrainTag::TRAP_TRAPS,
         TerrainTag::TRAP_ALARM,
+        TerrainTag::TRAP_ARMAGEDDON
     };
 }
 
