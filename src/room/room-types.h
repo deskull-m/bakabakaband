@@ -25,7 +25,8 @@ enum class RoomType {
     PERVO = 17, /*!<部屋型ID:変態部屋 / pervo theme fixed room */
     MAZE = 18, /*!<部屋型ID:迷路(非Vault)*/
     HOUSE = 19, /*!<部屋型ID:家屋*/
-    MAX = 20, /*!<部屋型ID最大数 */
+    THRONE_ROOM = 20, /*!<部屋型ID:王座の間 / Throne room (fixed vault ID 20) */
+    MAX = 21, /*!<部屋型ID最大数 */
 };
 
 constexpr int ROOM_TYPE_MAX = enum2i(RoomType::MAX);
