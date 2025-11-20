@@ -33,7 +33,15 @@ TerrainList::TerrainList()
         TerrainTag::TRAP_SLEEP,
         TerrainTag::TRAP_TRAPS,
         TerrainTag::TRAP_ALARM,
-        TerrainTag::TRAP_ARMAGEDDON
+        TerrainTag::TRAP_ARMAGEDDON,
+        TerrainTag::TRAP_PIRANHA,
+        TerrainTag::TRAP_LAVA,
+        TerrainTag::TRAP_DUNG_POOL,
+        TerrainTag::TRAP_FIRE_STORM,
+        TerrainTag::TRAP_ICE_STORM,
+        TerrainTag::TRAP_CHAOS_STORM,
+        TerrainTag::TRAP_JUMP_VOID,
+        TerrainTag::TRAP_LAND_MINE
     };
 }
 
