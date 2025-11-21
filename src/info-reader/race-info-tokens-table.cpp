@@ -519,6 +519,16 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "SQUIRREL", MonsterKindType::SQUIRREL }, // リス
 };
 
+const std::unordered_map<std::string_view, MonsterEraType> r_info_era_flags = {
+    { "PREHISTORIC", MonsterEraType::PREHISTORIC }, // 先史時代級
+    { "ANCIENT", MonsterEraType::ANCIENT }, // 古代級
+    { "MEDIEVAL", MonsterEraType::MEDIEVAL }, // 中世級
+    { "EARLY_MODERN", MonsterEraType::EARLY_MODERN }, // 近代級
+    { "MODERN", MonsterEraType::MODERN }, // 現代級
+    { "INFORMATION_AGE", MonsterEraType::INFORMATION_AGE }, // 情報化時代級
+    { "NANOTECH", MonsterEraType::NANOTECH }, // ナノテク級
+};
+
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
     { "ONLY_GOLD", MonsterDropType::ONLY_GOLD },
     { "ONLY_ITEM", MonsterDropType::ONLY_ITEM },

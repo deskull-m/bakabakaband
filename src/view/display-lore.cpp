@@ -15,6 +15,7 @@
 #include "lore/monster-lore.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-flags.h"
+#include "monster-race/race-era-flags.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -806,6 +807,34 @@ void display_monster_kind(lore_type *lore_ptr)
 
 void display_monster_alignment(lore_type *lore_ptr)
 {
+    if (lore_ptr->era_flags.has(MonsterEraType::PREHISTORIC)) {
+        hook_c_roff(TERM_L_UMBER, _("先史時代級の", " prehistoric-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::ANCIENT)) {
+        hook_c_roff(TERM_YELLOW, _("古代級の", " ancient-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::MEDIEVAL)) {
+        hook_c_roff(TERM_L_BLUE, _("中世級の", " medieval-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::EARLY_MODERN)) {
+        hook_c_roff(TERM_L_GREEN, _("近代級の", " early-modern-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::MODERN)) {
+        hook_c_roff(TERM_L_WHITE, _("現代級の", " modern-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::INFORMATION_AGE)) {
+        hook_c_roff(TERM_L_BLUE, _("情報化時代級の", " information-age"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::NANOTECH)) {
+        hook_c_roff(TERM_VIOLET, _("ナノテク級の", " nanotech-era"));
+    }
+
     /* TODO 再定義
     if (lore_ptr->msex == monster_sex::MSEX_MALE && lore_ptr->msex == monster_sex::MSEX_FEMALE) {
         hook_c_roff(TERM_VIOLET, _("両性具有であり", " hermaphroditic"));

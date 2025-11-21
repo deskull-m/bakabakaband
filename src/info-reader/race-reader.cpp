@@ -50,6 +50,10 @@ static bool grab_one_basic_flag(MonraceDefinition &monrace, std::string_view wha
         return true;
     }
 
+    if (EnumClassFlagGroup<MonsterEraType>::grab_one_flag(monrace.era_flags, r_info_era_flags, what)) {
+        return true;
+    }
+
     if (EnumClassFlagGroup<MonsterDropType>::grab_one_flag(monrace.drop_flags, r_info_drop_flags, what)) {
         return true;
     }

@@ -92783,7 +92783,8 @@
         "COLD_BLOOD",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "SOLDIER"
+        "SOLDIER",
+        "INFORMATION_AGE"
     ]
 },
 {
