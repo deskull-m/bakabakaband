@@ -217,6 +217,8 @@ std::string get_store_sale_type_tag(StoreSaleType store_type)
         return "BOOK";
     case StoreSaleType::MUSEUM:
         return "MUSEUM";
+    case StoreSaleType::MELINLAITO:
+        return "MELINLAITO";
     case StoreSaleType::MAX:
         return "UNKNOWN";
     }

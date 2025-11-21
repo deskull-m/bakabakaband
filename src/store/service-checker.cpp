@@ -201,6 +201,8 @@ static bool switch_store_check(const ItemEntity &item, StoreSaleType store_num)
         return check_store_magic(item);
     case StoreSaleType::BOOK:
         return check_store_book(item);
+    case StoreSaleType::MELINLAITO:
+        return item.bi_key.tval() == ItemKindType::POTION;
     default:
         return true;
     }
