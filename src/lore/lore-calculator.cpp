@@ -90,6 +90,9 @@ void set_flags_for_full_knowledge(lore_type *lore_ptr)
     lore_ptr->ability_flags = lore_ptr->r_ptr->ability_flags;
     lore_ptr->aura_flags = lore_ptr->r_ptr->aura_flags;
     lore_ptr->behavior_flags = lore_ptr->r_ptr->behavior_flags;
+    lore_ptr->visual_flags = lore_ptr->r_ptr->visual_flags;
+    lore_ptr->kind_flags = lore_ptr->r_ptr->kind_flags;
+    lore_ptr->era_flags = lore_ptr->r_ptr->era_flags;
     lore_ptr->resistance_flags = lore_ptr->r_ptr->resistance_flags;
     lore_ptr->feature_flags = lore_ptr->r_ptr->feature_flags;
     lore_ptr->drop_flags = lore_ptr->r_ptr->drop_flags;

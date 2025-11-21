@@ -374,6 +374,9 @@ static void rd_lore(MonraceDefinition &monrace)
         rd_FlagGroup(monrace.r_aura_flags, rd_byte);
         rd_FlagGroup(monrace.r_behavior_flags, rd_byte);
         rd_FlagGroup(monrace.r_kind_flags, rd_byte);
+        if (!loading_savefile_version_is_older_than(33)) {
+            rd_FlagGroup(monrace.r_era_flags, rd_byte);
+        }
         rd_FlagGroup(monrace.r_drop_flags, rd_byte);
         rd_FlagGroup(monrace.r_feature_flags, rd_byte);
         rd_FlagGroup(monrace.r_special_flags, rd_byte);
@@ -405,6 +408,7 @@ static void rd_lore(MonraceDefinition &monrace)
     monrace.r_behavior_flags &= monrace.behavior_flags;
     monrace.r_drop_flags &= monrace.drop_flags;
     monrace.r_kind_flags &= monrace.kind_flags;
+    monrace.r_era_flags &= monrace.era_flags;
     monrace.r_feature_flags &= monrace.feature_flags;
     monrace.r_special_flags &= monrace.special_flags;
     monrace.r_misc_flags &= monrace.misc_flags;

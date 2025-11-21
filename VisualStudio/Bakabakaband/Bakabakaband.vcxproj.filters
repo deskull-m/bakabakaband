@@ -2782,6 +2782,9 @@
     <ClCompile Include="..\..\src\world\world-alliance-processor.cpp">
       <Filter>world</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\monster-race\monster-era-type-name.cpp">
+      <Filter>monster-race</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -6002,6 +6005,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\system\creature-entity.h">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\monster-race\race-era-flags.h">
+      <Filter>monster-race</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\monster-race\monster-era-type-name.h">
+      <Filter>monster-race</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
