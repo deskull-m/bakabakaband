@@ -347,6 +347,10 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         do_cmd_store(player_ptr, StoreSaleType::MELINLAITO);
         world.character_icky_depth = 1;
         return false;
+    case BACT_SHOP_HUNAHYANDA_WEAPON:
+        do_cmd_store(player_ptr, StoreSaleType::HUNAHYANDA);
+        world.character_icky_depth = 1;
+        return false;
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid building action is specified!");
     }

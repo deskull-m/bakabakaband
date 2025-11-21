@@ -251,5 +251,9 @@ const std::unordered_map<StoreSaleType, std::vector<owner_type>> owners = {
     { StoreSaleType::MELINLAITO,
         {
             { _("生命の攻究者『メリンライト』", "Melinlaito the Life Investigator"), 140000, 110, PlayerRaceType::BALROG, 40 },
+        } },
+    { StoreSaleType::HUNAHYANDA,
+        {
+            { _("辺土SATSUGAI流開祖『フナヒヤンダ』", "Hunahyanda, the Limbo SATSUGAI Style"), 30000, 115, PlayerRaceType::DWARF, 30 },
         } }
 };

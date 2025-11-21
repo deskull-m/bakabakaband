@@ -25,6 +25,7 @@ const std::vector<StoreSaleType> stores = {
     StoreSaleType::BLACK,
     StoreSaleType::BOOK,
     StoreSaleType::MELINLAITO,
+    StoreSaleType::HUNAHYANDA,
 };
 
 /*
