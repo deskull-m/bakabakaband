@@ -136,6 +136,7 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
             { "HOME", _("我が家", "Home") },
             { "BOOK", _("書店", "Book Store") },
             { "MUSEUM", _("博物館", "Museum") },
+            { "MELINLAITO", _("メリンライトの薬品庫", "Melinlaito's Apothecary") },
         };
 
         for (const auto &store : store_types) {

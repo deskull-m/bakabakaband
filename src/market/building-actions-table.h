@@ -63,5 +63,6 @@ enum ba_actions {
     BACT_SHOP_HOME = 56,
     BACT_SHOP_BOOK = 57,
     BACT_SHOP_MUSEUM = 58,
-    MAX_BACT = 59,
+    BACT_SHOP_MELINLAITO_POTION = 59,
+    MAX_BACT = 60,
 };
