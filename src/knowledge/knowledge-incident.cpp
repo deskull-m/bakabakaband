@@ -137,6 +137,7 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
             { "BOOK", _("書店", "Book Store") },
             { "MUSEUM", _("博物館", "Museum") },
             { "MELINLAITO", _("メリンライトの薬品庫", "Melinlaito's Apothecary") },
+            { "HUNAHYANDA", _("フナヒヤンダの武器蔵", "Hunahyanda's Armory") },
         };
 
         for (const auto &store : store_types) {

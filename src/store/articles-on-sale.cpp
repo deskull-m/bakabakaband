@@ -104,6 +104,15 @@ const std::map<StoreSaleType, std::vector<BaseitemKey>> store_regular_sale_table
             { ItemKindType::POTION, SV_POTION_HEROISM },
             { ItemKindType::POTION, SV_POTION_RESTORE_MANA },
         } },
+    { StoreSaleType::HUNAHYANDA,
+        {
+            { ItemKindType::SWORD, SV_BLADE_OF_CHAOS },
+            { ItemKindType::POLEARM, SV_SCYTHE_OF_SLICING },
+            { ItemKindType::HAFTED, SV_MACE_OF_DISRUPTION },
+            { ItemKindType::SWORD, SV_ZWEIHANDER },
+            { ItemKindType::POLEARM, SV_LANCE },
+            { ItemKindType::SWORD, SV_EXECUTIONERS_SWORD },
+        } },
 };
 
 /*!
@@ -598,5 +607,53 @@ const std::map<StoreSaleType, std::vector<BaseitemKey>> store_sale_table = {
             { ItemKindType::POTION, SV_POTION_NEO_TSUYOSHI },
             { ItemKindType::POTION, SV_POTION_TSUYOSHI },
             { ItemKindType::POTION, SV_POTION_POLYMORPH },
+        } },
+
+    { StoreSaleType::HUNAHYANDA,
+        {
+            { ItemKindType::SWORD, SV_KATANA },
+            { ItemKindType::SWORD, SV_KATANA },
+            { ItemKindType::SWORD, SV_LONG_SWORD },
+            { ItemKindType::SWORD, SV_LONG_SWORD },
+
+            { ItemKindType::SWORD, SV_BROAD_SWORD },
+            { ItemKindType::SWORD, SV_BROAD_SWORD },
+            { ItemKindType::SWORD, SV_BASTARD_SWORD },
+            { ItemKindType::SWORD, SV_BASTARD_SWORD },
+
+            { ItemKindType::SWORD, SV_TWO_HANDED_SWORD },
+            { ItemKindType::SWORD, SV_TWO_HANDED_SWORD },
+            { ItemKindType::SWORD, SV_BLADE_OF_CHAOS },
+            { ItemKindType::SWORD, SV_BLADE_OF_CHAOS },
+
+            { ItemKindType::SWORD, SV_ZWEIHANDER },
+            { ItemKindType::SWORD, SV_ZWEIHANDER },
+            { ItemKindType::SWORD, SV_EXECUTIONERS_SWORD },
+            { ItemKindType::SWORD, SV_EXECUTIONERS_SWORD },
+
+            { ItemKindType::POLEARM, SV_SPEAR },
+            { ItemKindType::POLEARM, SV_SPEAR },
+            { ItemKindType::POLEARM, SV_PIKE },
+            { ItemKindType::POLEARM, SV_PIKE },
+
+            { ItemKindType::POLEARM, SV_LANCE },
+            { ItemKindType::POLEARM, SV_LANCE },
+            { ItemKindType::POLEARM, SV_SCYTHE_OF_SLICING },
+            { ItemKindType::POLEARM, SV_SCYTHE_OF_SLICING },
+            { ItemKindType::POLEARM, SV_HEAVY_LANCE },
+            { ItemKindType::POLEARM, SV_HEAVY_LANCE },
+
+            { ItemKindType::HAFTED, SV_WAR_HAMMER },
+            { ItemKindType::HAFTED, SV_WAR_HAMMER },
+            { ItemKindType::HAFTED, SV_GREAT_HAMMER },
+            { ItemKindType::HAFTED, SV_GREAT_HAMMER },
+
+            { ItemKindType::HAFTED, SV_MACE_OF_DISRUPTION },
+            { ItemKindType::HAFTED, SV_MACE_OF_DISRUPTION },
+
+            { ItemKindType::SWORD, SV_HAYABUSA },
+            { ItemKindType::POLEARM, SV_TRIFURCATE_SPEAR },
+            { ItemKindType::POLEARM, SV_DEATH_SCYTHE },
+            { ItemKindType::HAFTED, SV_WIZSTAFF },
         } }
 };
