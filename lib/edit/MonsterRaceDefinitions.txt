@@ -41991,6 +41991,22 @@ D:$It's some kind of Beast Senior-like thing created by a madman.
 D:$ Make it trend no matter what—no, scratch that, don't make it trend.
 D:ある狂人の生み出した野獣先輩らしき何かだ。意地でも流行らせろ、いややっぱ流行らせるな。
 
+N:2322:ウォッチマン
+E:Watchman
+G:r:u
+I:111:20d8:20:40:30
+W:19:2:80:0:0
+B:HIT:HURT:4d5
+B:HIT:HURT:4d5
+B:SHOOT:HURT:5d5
+F:DROP_1D2
+F:OPEN_DOOR | BASH_DOOR | NO_CONF | NO_SLEEP | DROP_CORPSE |
+F:EVIL | IM_POIS | RABBIT
+S:1_IN_3 | SHOOT | HOLD
+D:$It's a rabbit-like humanoid carrying a large clock.
+D:大きな時計を抱えた兎の亜人だ。
+
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness

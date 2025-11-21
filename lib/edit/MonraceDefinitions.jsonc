@@ -149651,5 +149651,62 @@
         "HOMO_SEXUAL",
         "YAZYU"
     ]
+},
+{
+    "id": 2322,
+    "name": {
+        "ja": "ウォッチマン",
+        "en": "Watchman"
+    },
+    "symbol": {
+        "character": "r",
+        "color": "Brown"
+    },
+    "speed": 1,
+    "hit_point": "20d8",
+    "vision": 20,
+    "armor_class": 40,
+    "alertness": 30,
+    "level": 19,
+    "rarity": 2,
+    "exp": 80,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        }
+    ],
+    "skill": {
+        "shoot": "5d5",
+        "list": [
+            "SHOOT",
+            "HOLD"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "大きな時計を抱えた兎の亜人だ。",
+        "en": "It's a rabbit-like humanoid carrying a large clock."
+    },
+    "flags": [
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "NO_CONF",
+        "NO_SLEEP",
+        "DROP_CORPSE",
+        "EVIL",
+        "IM_POIS",
+        "RABBIT"
+    ]
 }]
 }
