@@ -65,7 +65,7 @@ public:
     std::map<int, DisplaySymbol> symbol_definitions; //!< デフォルトの地形シンボル (色/文字).
     std::map<int, DisplaySymbol> symbol_configs; //!< 設定変更後の地形シンボル (色/文字).
     int change_priority;
-    int hygiene;
+    int hygiene = 0;
 
     static bool has(TerrainCharacteristics tc, TerrainAction ta);
 
