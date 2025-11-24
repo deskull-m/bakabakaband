@@ -457,6 +457,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
             exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, note);
         }
 
+        player_ptr->death_count++;
         exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
         death_save(player_ptr);
