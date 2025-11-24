@@ -471,6 +471,24 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
             player_ptr->plus_incident_tree(death_key, 1);
         }
 
+        // クエスト中に死亡した場合、クエストを失敗状態にする
+        if (!is_seppuku_by_won && inside_quest(q_idx)) {
+            auto &quests = QuestList::get_instance();
+            auto &quest = quests.get_quest(q_idx);
+            if (quest.status == QuestStatusType::TAKEN) {
+                record_quest_final_status(&quest, player_ptr->lev, QuestStatusType::FAILED);
+                if (quest.type == QuestKindType::RANDOM) {
+                    if (record_rand_quest) {
+                        exe_write_diary_quest(player_ptr, DiaryKind::RAND_QUEST_F, q_idx);
+                    }
+                } else {
+                    if (record_fix_quest) {
+                        exe_write_diary_quest(player_ptr, DiaryKind::FIX_QUEST_F, q_idx);
+                    }
+                }
+            }
+        }
+
         exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
         death_save(player_ptr);
