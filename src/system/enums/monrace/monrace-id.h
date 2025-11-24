@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 enum class MonraceId : int16_t {
     PLAYER = 0,
     FILTHY_URCHIN = 1,

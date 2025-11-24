@@ -46,7 +46,7 @@ enum class ElementRealmType;
 enum class FixedArtifactId : short;
 enum class ItemKindType : short;
 enum class MimicKindType;
-enum class MonraceId : short;
+enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
 enum class RealmType;
@@ -216,6 +216,7 @@ public:
 
     int player_hp[PY_MAX_LEVEL]{};
     std::string died_from{}; /* What killed the player */
+    MonraceId killer_monrace_id{}; /* MonraceId of the killer */
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
 
