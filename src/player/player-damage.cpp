@@ -58,6 +58,7 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -68,6 +69,7 @@
 #include "term/term-color-types.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -295,7 +297,7 @@ static void death_save(PlayerType *player_ptr)
  * the game when he dies, since the "You die." message is shown before
  * setting the player to "dead".
  */
-int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_view hit_from)
+int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_view hit_from, MonraceId killer_monrace_id)
 {
     const auto old_chp = player_ptr->chp;
     const auto hp_warning_threshold = (player_ptr->mhp * hitpoint_warn / 10);
@@ -458,6 +460,17 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         }
 
         player_ptr->death_count++;
+        player_ptr->killer_monrace_id = killer_monrace_id;
+
+        // インシデントに死亡回数を記録
+        player_ptr->plus_incident_tree("DEAD", 1);
+
+        // モンスターに殺された場合はDEAD/(ID)を記録
+        if (killer_monrace_id != MonraceId::PLAYER && killer_monrace_id != static_cast<MonraceId>(0)) {
+            const std::string death_key = "DEAD/" + std::to_string(enum2i(killer_monrace_id));
+            player_ptr->plus_incident_tree(death_key, 1);
+        }
+
         exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
         death_save(player_ptr);

@@ -12,9 +12,15 @@
 #include "monster-race/race-kind-flags.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
+#include <algorithm>
 #include <string>
+#include <vector>
 
 void do_cmd_knowledge_incident(PlayerType *player_ptr)
 {
@@ -285,6 +291,43 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
             }
         }
     }
+
+    // 死亡回数を表示
+    if (player_ptr->incident_tree.count("DEAD")) {
+        fprintf(fff, _("\nあなたはこれまで%d回死亡した。\n", "\nYou have died %d times.\n"), player_ptr->incident_tree["DEAD"]);
+
+        // 死因となったモンスターを表示
+        const auto &monraces = MonraceList::get_instance();
+        std::vector<std::pair<int, int>> death_list; // (MonraceId, count)のペア
+
+        for (const auto &entry : player_ptr->incident_tree) {
+            if (entry.first.find("DEAD/") == 0 && entry.first.length() > 5) {
+                try {
+                    int monrace_id = std::stoi(entry.first.substr(5));
+                    death_list.push_back({ monrace_id, entry.second });
+                } catch (...) {
+                    // パース失敗は無視
+                }
+            }
+        }
+
+        if (!death_list.empty()) {
+            // 死亡回数でソート（降順）
+            std::sort(death_list.begin(), death_list.end(),
+                [](const auto &a, const auto &b) { return a.second > b.second; });
+
+            fprintf(fff, _("    死因:\n", "    Killed by:\n"));
+            for (const auto &[monrace_id_int, count] : death_list) {
+                const auto monrace_id = i2enum<MonraceId>(monrace_id_int);
+                if (MonraceList::is_valid(monrace_id)) {
+                    const auto &monrace = monraces.get_monrace(monrace_id);
+                    fprintf(fff, _("        %s: %d回\n", "        %s: %d times\n"),
+                        monrace.name.data(), count);
+                }
+            }
+        }
+    }
+
     angband_fclose(fff);
 
     FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("これまでの出来事", "Incidents"));
