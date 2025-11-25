@@ -115,12 +115,13 @@ static void place_cave_contents(PlayerType *player_ptr, DungeonData *dd_ptr, con
         destroy_level(player_ptr);
     }
 
-    if (dungeon.has_river_flag() && one_in_(3) && (randint1(floor.dun_level) > 5)) {
+    const auto always_river = dungeon.flags.has(DungeonFeatureType::ALWAYS_RIVER);
+    if (always_river || (dungeon.has_river_flag() && one_in_(3) && (randint1(floor.dun_level) > 5))) {
         add_river(floor, dd_ptr);
     }
 
     // 追加でさらに川を増やす。
-    if (one_in_(4)) {
+    if (always_river || one_in_(4)) {
         while (!one_in_(3)) {
             add_river(floor, dd_ptr);
         }

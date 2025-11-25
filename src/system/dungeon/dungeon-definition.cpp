@@ -155,7 +155,8 @@ int DungeonDefinition::calc_cavern_terrains() const
  */
 tl::optional<std::pair<TerrainTag, TerrainTag>> DungeonDefinition::decide_river_terrains(int threshold) const
 {
-    if (this->flags.has(DungeonFeatureType::WATER_RIVER) && (randint1(MAX_DEPTH * 2) - 1 > threshold)) {
+    const auto always_river = this->flags.has(DungeonFeatureType::ALWAYS_RIVER);
+    if (this->flags.has(DungeonFeatureType::WATER_RIVER) && (always_river || (randint1(MAX_DEPTH * 2) - 1 > threshold))) {
         return std::make_pair<TerrainTag, TerrainTag>(TerrainTag::DEEP_WATER, TerrainTag::SHALLOW_WATER);
     }
 
