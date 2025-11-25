@@ -517,6 +517,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "BOAR", MonsterKindType::BOAR }, // 猪
     { "ARCHER", MonsterKindType::ARCHER }, // アーチャー
     { "SQUIRREL", MonsterKindType::SQUIRREL }, // リス
+    { "BARD", MonsterKindType::BARD }, // 呀遊詩人
 };
 
 const std::unordered_map<std::string_view, MonsterEraType> r_info_era_flags = {
