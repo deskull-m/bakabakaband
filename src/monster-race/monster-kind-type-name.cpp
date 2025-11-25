@@ -281,6 +281,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("アーチャー", "archer");
     case MonsterKindType::SQUIRREL:
         return _("リス", "squirrel");
+    case MonsterKindType::BARD:
+        return _("吟遊詩人", "bard");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -562,6 +564,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "ARCHER";
     case MonsterKindType::SQUIRREL:
         return "SQUIRREL";
+    case MonsterKindType::BARD:
+        return "BARD";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
