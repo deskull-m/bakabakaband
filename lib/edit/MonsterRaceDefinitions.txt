@@ -42006,6 +42006,18 @@ S:1_IN_3 | SHOOT | HOLD
 D:$It's a rabbit-like humanoid carrying a large clock.
 D:大きな時計を抱えた兎の亜人だ。
 
+N:2323:苦花
+E:Bitterblossom
+G:#:s
+I:109:6d8:10:1:0
+W:22:1:230:0:0
+F:NEVER_MOVE | NEVER_BLOW |
+F:EMPTY_MIND | STUPID | PLANT
+F:NO_CONF | NO_SLEEP | NO_FEAR
+S:1_IN_6 |
+S:S_FAIRY
+D:$It is a bewitching flower found in the land of Lorwyn that draws fairies.
+D:それはローウィンの地で見られる、妖精を引き寄せる妖しい花だ。
 
 # N: serial number : monster name
 # G: symbol : color

@@ -149710,5 +149710,47 @@
         "IM_POIS",
         "RABBIT"
     ]
+},
+{
+    "id": 2323,
+    "name": {
+        "ja": "苦花",
+        "en": "Bitterblossom"
+    },
+    "symbol": {
+        "character": "#",
+        "color": "Gray"
+    },
+    "speed": -1,
+    "hit_point": "6d8",
+    "vision": 10,
+    "armor_class": 1,
+    "alertness": 0,
+    "level": 22,
+    "rarity": 1,
+    "exp": 230,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "flavor": {
+        "ja": "それはローウィンの地で見られる、妖精を引き寄せる妖しい花だ。",
+        "en": "It is a bewitching flower found in the land of Lorwyn that draws fairies."
+    },
+    "flags": [
+        "NEVER_MOVE",
+        "NEVER_BLOW",
+        "EMPTY_MIND",
+        "STUPID",
+        "PLANT",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "S_FAIRY"
+        ],
+        "probability": "1_IN_6"
+    }
 }]
 }
