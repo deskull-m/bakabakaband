@@ -393,6 +393,8 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_HYDRA:
         return -1;
+    case MonsterAbilityType::S_FAIRY:
+        return -1;
     case MonsterAbilityType::S_ANGEL:
         return -1;
     case MonsterAbilityType::S_DEMON:

@@ -403,6 +403,10 @@ void set_summon_types(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("ヒドラ召喚", "summon hydras"), TERM_L_GREEN);
     }
 
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_FAIRY)) {
+        lore_ptr->lore_msgs.emplace_back(_("フェアリー召喚", "summon fairies"), TERM_L_BLUE);
+    }
+
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_ANGEL)) {
         lore_ptr->lore_msgs.emplace_back(_("天使一体召喚", "summon an angel"), TERM_YELLOW);
     }

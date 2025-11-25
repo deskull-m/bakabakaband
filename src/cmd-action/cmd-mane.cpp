@@ -909,6 +909,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_FAIRY: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("フェアリーを召喚した。", "You summon fairies."));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_FAIRY, mode);
+        }
+        break;
+    }
     case MonsterAbilityType::S_INSECT: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
         if (!pos) {
