@@ -42019,6 +42019,23 @@ S:S_FAIRY
 D:$It is a bewitching flower found in the land of Lorwyn that draws fairies.
 D:それはローウィンの地で見られる、妖精を引き寄せる妖しい花だ。
 
+N:2324:ローウィンのフェアリー
+E:Fairy of Lorwyn
+G:I:b
+I:120:5d10:12:30:10
+W:12:2:45:0:0
+B:STING:HURT:1d5
+B:STING:HURT:1d5
+B:STING:HURT:1d5
+B:SHOOT:HURT:1d5
+F:WEIRD_MIND | FRIENDS | CAN_FLY | WILD_ALL |
+F:FAIRY
+S:1_IN_4 | SHOOT | BLIND | SLOW | CONF | SCARE
+D:$The fairies of Lorwyn harvest the dreams of sentient beings for Queen Oona.
+D:$ They are not warlike, but they delight in mischief that is no laughing matter.
+D:ローウィンのフェアリーは女王ウーナのために知的生命体の夢を収穫する。
+D:好戦的ではないが、冗談にならない悪戯を好む。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
