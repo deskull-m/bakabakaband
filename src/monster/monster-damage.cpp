@@ -497,7 +497,8 @@ void MonsterDamageProcessor::add_monster_fear()
     }
 
     const auto &monrace = monster.get_monrace();
-    if (monster.is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+    if (monster.is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
+        monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
         return;
     }
 

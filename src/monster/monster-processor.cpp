@@ -28,6 +28,7 @@
 #include "io/write-diary.h"
 #include "melee/melee-postprocess.h"
 #include "melee/melee-spell.h"
+#include "monster-attack/monster-attack-player.h"
 #include "monster-floor/monster-direction.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-move.h"
@@ -250,6 +251,17 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     process_special(player_ptr, m_idx);
     process_sound(player_ptr, m_idx);
     process_speak(player_ptr, m_idx, oy, ox, turn_flags_ptr->aware);
+
+    // 狂乱状態のモンスターは魔法を使わず、プレイヤーに隣接していれば攻撃のみを行う
+    if (monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        const auto dy = std::abs(monster.fy - player_ptr->y);
+        const auto dx = std::abs(monster.fx - player_ptr->x);
+        if (dy <= 1 && dx <= 1 && turn_flags_ptr->aware) {
+            MonsterAttackPlayer(player_ptr, m_idx).make_attack_normal();
+        }
+        return;
+    }
+
     if (cast_spell(player_ptr, m_idx, turn_flags_ptr->aware)) {
         return;
     }
@@ -727,6 +739,12 @@ bool cast_spell(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware)
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &monster_from = floor.m_list[m_idx];
     const auto &monrace = monster_from.get_monrace();
+
+    // 狂乱状態のモンスターは魔法を使わない
+    if (monster_from.mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        return false;
+    }
+
     if ((monrace.freq_spell == 0) || (randint1(100) > monrace.freq_spell)) {
         return false;
     }

@@ -36,5 +36,6 @@ enum class MonsterConstantFlagType {
     ZOMBIFIED = 22, /*!< ゾンビ化した / Zombified */
     HUGE = 23, /*!< 超大型 / Huge */
     ILLEGAL_MODIFIED = 24, /*!< 違法改造の / Illegally Modified */
+    FRENZY = 25, /*!< 狂乱した / Frenzied */
     MAX,
 };

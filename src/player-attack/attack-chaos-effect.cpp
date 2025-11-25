@@ -104,7 +104,7 @@ static void attack_stun(PlayerType *player_ptr, player_attack_type *pa_ptr, bool
 static void attack_scare(PlayerType *player_ptr, player_attack_type *pa_ptr, bool can_resist = true)
 {
     auto &monrace = *pa_ptr->r_ptr;
-    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::FRENZY)) {
         if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_FEAR);
         }

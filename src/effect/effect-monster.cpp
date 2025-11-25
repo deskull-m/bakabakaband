@@ -471,7 +471,8 @@ static void effect_damage_piles_confusion(PlayerType *player_ptr, EffectMonster 
  */
 static void effect_damage_piles_fear(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (em_ptr->do_fear == 0 || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+    if (em_ptr->do_fear == 0 || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
+        em_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::FRENZY)) {
         return;
     }
 

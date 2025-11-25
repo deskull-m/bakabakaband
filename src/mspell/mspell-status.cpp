@@ -277,7 +277,7 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, PlayerType *player_ptr, MO
         return res;
     }
 
-    resist = (monrace_target.resistance_flags.has(MonsterResistanceType::NO_FEAR));
+    resist = (monrace_target.resistance_flags.has(MonsterResistanceType::NO_FEAR) || monster_target.mflag2.has(MonsterConstantFlagType::FRENZY));
     saving_throw = (monrace_target.level > randint1((rlev - 10) < 1 ? 1 : (rlev - 10)) + 10);
 
     mspell_cast_msg_bad_status_to_monster msg(_("%s^が恐ろしげな幻覚を作り出した。", "%s^ casts a fearful illusion in front of %s."),
