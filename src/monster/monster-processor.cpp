@@ -642,7 +642,9 @@ void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return;
     }
 
-    if (randint1(53) < 10000) {
+    // 猿空間フラグ持ちは530/10000、通常は53/10000の確率
+    const auto threshold = r_ptr->kind_flags.has(MonsterKindType::MONKEY_SPACE) ? 530 : 53;
+    if (randint1(10000) > threshold) {
         return;
     }
     ItemEntity item;
