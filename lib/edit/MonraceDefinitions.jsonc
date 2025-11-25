@@ -149752,5 +149752,66 @@
         ],
         "probability": "1_IN_6"
     }
+},
+{
+    "id": 2324,
+    "name": {
+        "ja": "ローウィンのフェアリー",
+        "en": "Fairy of Lorwyn"
+    },
+    "symbol": {
+        "character": "I",
+        "color": "Blue"
+    },
+    "speed": 10,
+    "hit_point": "5d10",
+    "vision": 12,
+    "armor_class": 30,
+    "alertness": 10,
+    "level": 12,
+    "rarity": 2,
+    "exp": 45,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "1d5"
+        },
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "1d5"
+        },
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "1d5"
+        }
+    ],
+    "skill": {
+        "shoot": "1d5",
+        "list": [
+            "SHOOT",
+            "BLIND",
+            "SLOW",
+            "CONF",
+            "SCARE"
+        ],
+        "probability": "1_IN_4"
+    },
+    "flavor": {
+        "ja": "ローウィンのフェアリーは女王ウーナのために知的生命体の夢を収穫する。好戦的ではないが、冗談にならない悪戯を好む。",
+        "en": "The fairies of Lorwyn harvest the dreams of sentient beings for Queen Oona. They are not warlike, but they delight in mischief that is no laughing matter."
+    },
+    "flags": [
+        "WEIRD_MIND",
+        "FRIENDS",
+        "CAN_FLY",
+        "WILD_ALL",
+        "FAIRY"
+    ]
 }]
 }
