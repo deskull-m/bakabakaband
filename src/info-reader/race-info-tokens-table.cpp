@@ -656,6 +656,8 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "SADIST", MonsterMiscType::SADIST },
     { "BREAK_DOWN", MonsterMiscType::BREAK_DOWN },
     { "NO_WAIFUZATION", MonsterMiscType::NO_WAIFUZATION },
+    { "DIURNAL", MonsterMiscType::DIURNAL },
+    { "NOCTURNAL", MonsterMiscType::NOCTURNAL },
 };
 
 const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {

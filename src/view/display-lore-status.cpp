@@ -171,6 +171,14 @@ void display_monster_constitutions(lore_type *lore_ptr)
     if (lore_ptr->misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
         hooked_roff(format(_("%s^は主なしでは存在を維持できない。", "%s^ cannot exist without a master."), Who::who(lore_ptr->msex).data()));
     }
+
+    if (lore_ptr->misc_flags.has(MonsterMiscType::DIURNAL)) {
+        hook_c_roff(TERM_YELLOW, format(_("%s^は昼行性である。", "%s^ is diurnal.  "), Who::who(lore_ptr->msex).data()));
+    }
+
+    if (lore_ptr->misc_flags.has(MonsterMiscType::NOCTURNAL)) {
+        hook_c_roff(TERM_L_DARK, format(_("%s^は夜行性である。", "%s^ is nocturnal.  "), Who::who(lore_ptr->msex).data()));
+    }
 }
 
 void display_monster_concrete_weakness(lore_type *lore_ptr)
