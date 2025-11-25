@@ -113103,6 +113103,7 @@
         "DROP_GOOD",
         "STUPID",
         "EVIL",
+        "MAGICAL_GIRL",
         "ELDRITCH_HORROR",
         "IM_COLD",
         "RES_NETH",
@@ -139503,6 +139504,7 @@
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
+        "MAGICAL_GIRL",
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
