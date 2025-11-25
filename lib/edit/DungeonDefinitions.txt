@@ -500,6 +500,18 @@ F:MONSTER_DIV_0 | CAVE | CAVERN | SMALLEST
 M:PUYO
 F:MONSTER_RATE_12
 
+N:33:腐れ谷
+E:VoDefile
+T:VOD
+D:$Valley of Defilement
+D:腐れ谷
+P:48:21
+W:29:33:45:1:14:160:90:77:0x0188:0x0280
+L:SHALLOW_POISONOUS_PUDDLE:30:DEEP_POISONOUS_PUDDLE:10:FLOOR:70:0
+A:DEEP_POISONOUS_PUDDLE:80:DARK_PIT:20:DARK_PIT:0:GRANITE:DEEP_POISONOUS_PUDDLE:NONE:NONE
+F:CAVERN | MONSTER_DIV_0 | LAKE_POISONOUS | POISONOUS_RIVER | ALWAY_ARENA
+M:IM_POIS | EVIL
+
 # N:<index>:<name>
 # D:<long name>
 # W:<min depth>:<min depth>:<min player level>:<flags mode>:<min alloc>:<max alloc chance>:<obj good>:<obj great>:<pit>:<nest>
