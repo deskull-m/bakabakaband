@@ -14,6 +14,7 @@ bool cast_blue_summon_ant(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_spider(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_hound(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_hydra(PlayerType *player_ptr, bmc_type *bmc_ptr);
+bool cast_blue_summon_fairy(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_angel(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_demon(PlayerType *player_ptr, bmc_type *bmc_ptr);
 bool cast_blue_summon_undead(PlayerType *player_ptr, bmc_type *bmc_ptr);

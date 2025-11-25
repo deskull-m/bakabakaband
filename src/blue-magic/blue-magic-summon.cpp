@@ -136,6 +136,21 @@ bool cast_blue_summon_hydra(PlayerType *player_ptr, bmc_type *bmc_ptr)
     return true;
 }
 
+bool cast_blue_summon_fairy(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("フェアリーを召喚した。", "You summon fairies."));
+    if (summon_specific(
+            player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_FAIRY, (bmc_ptr->g_mode | bmc_ptr->p_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚されたフェアリーは怒っている！", "The summoned fairies are angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
 bool cast_blue_summon_angel(PlayerType *player_ptr, bmc_type *bmc_ptr)
 {
     msg_print(_("天使を召喚した！", "You summon an angel!"));

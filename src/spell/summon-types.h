@@ -7,10 +7,11 @@ enum summon_type : int {
     SUMMON_SPIDER = 12, /*!< 召喚タイプ: 蜘蛛 */
     SUMMON_HOUND = 13, /*!< 召喚タイプ: ハウンド */
     SUMMON_HYDRA = 14, /*!< 召喚タイプ: ヒドラ */
-    SUMMON_ANGEL = 15, /*!< 召喚タイプ: 天使 */
-    SUMMON_DEMON = 16, /*!< 召喚タイプ: 悪魔 */
-    SUMMON_UNDEAD = 17, /*!< 召喚タイプ: アンデッド */
-    SUMMON_DRAGON = 18, /*!< 召喚タイプ: ドラゴン */
+    SUMMON_FAIRY = 15, /*!< 召喚タイプ: フェアリー */
+    SUMMON_ANGEL = 16, /*!< 召喚タイプ: 天使 */
+    SUMMON_DEMON = 17, /*!< 召喚タイプ: 悪魔 */
+    SUMMON_UNDEAD = 18, /*!< 召喚タイプ: アンデッド */
+    SUMMON_DRAGON = 19, /*!< 召喚タイプ: ドラゴン */
     SUMMON_HI_UNDEAD = 21, /*!< 召喚タイプ: 強力なアンデッド */
     SUMMON_HI_DRAGON = 22, /*!< 召喚タイプ: 古代ドラゴン */
     SUMMON_HI_DEMON = 23, /*!< 召喚タイプ: 上級デーモン */
