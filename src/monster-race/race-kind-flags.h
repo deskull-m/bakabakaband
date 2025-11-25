@@ -138,5 +138,6 @@ enum class MonsterKindType {
     CHAMELEON = 134, // カメレオン
     SQUIRREL = 135, // リス
     BARD = 136, // 呀遊詩人
+    MAGICAL_GIRL = 137, // 魔法少女
     MAX,
 };
