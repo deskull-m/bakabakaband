@@ -301,6 +301,10 @@ byte MonsterEntity::get_temporary_speed() const
         speed -= 5;
     }
 
+    if (this->mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        speed += 10;
+    }
+
     return speed;
 }
 
