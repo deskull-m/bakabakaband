@@ -246,6 +246,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_HOUND", MonsterAbilityType::S_HOUND },
 	{"S_HYDRA", MonsterAbilityType::S_HYDRA },
 	{"S_FAIRY", MonsterAbilityType::S_FAIRY },
+	{"S_BIRD", MonsterAbilityType::S_BIRD },
 	{"S_ANGEL", MonsterAbilityType::S_ANGEL },
 	{"S_DEMON", MonsterAbilityType::S_DEMON },
 	{"S_UNDEAD", MonsterAbilityType::S_UNDEAD },
