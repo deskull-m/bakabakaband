@@ -141,6 +141,7 @@ public:
     ACTION_ENERGY get_energy_need() const override;
     void set_energy_need(ACTION_ENERGY energy) override;
     int get_level() const override;
+    bool is_player() const override;
 
 private:
     tl::optional<bool> order_pet_named(const MonsterEntity &other) const;

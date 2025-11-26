@@ -96,6 +96,12 @@ public:
      */
     virtual int get_level() const = 0;
 
+    /*!
+     * @brief クリーチャーがプレイヤーかどうかを判定
+     * @return プレイヤーならtrue、モンスターならfalse
+     */
+    virtual bool is_player() const = 0;
+
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
     int16_t inven_cnt{}; /*!< 所持品数 / Number of items in inventory */
