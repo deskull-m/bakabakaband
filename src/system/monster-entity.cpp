@@ -722,3 +722,8 @@ int MonsterEntity::get_level() const
     }
     return this->get_monrace().level / 2;
 }
+
+bool MonsterEntity::is_player() const
+{
+    return false;
+}

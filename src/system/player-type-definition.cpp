@@ -322,3 +322,8 @@ int PlayerType::get_level() const
 {
     return this->lev;
 }
+
+bool PlayerType::is_player() const
+{
+    return true;
+}
