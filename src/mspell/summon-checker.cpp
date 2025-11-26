@@ -32,6 +32,8 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("M");
     case SUMMON_FAIRY:
         return monrace.kind_flags.has(MonsterKindType::FAIRY);
+    case SUMMON_BIRD:
+        return monrace.kind_flags.has(MonsterKindType::BIRD);
     case SUMMON_ANGEL:
         return monrace.symbol_char_is_any_of("A") && (monrace.kind_flags.has(MonsterKindType::EVIL) || monrace.kind_flags.has(MonsterKindType::GOOD));
     case SUMMON_DEMON:
@@ -117,8 +119,6 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("v");
     case SUMMON_HYBRID:
         return monrace.symbol_char_is_any_of("H");
-    case SUMMON_BIRD:
-        return monrace.symbol_char_is_any_of("B");
     case SUMMON_KAMIKAZE:
         return monrace.is_explodable();
     case SUMMON_KAMIKAZE_LIVING: {

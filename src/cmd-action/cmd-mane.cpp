@@ -920,6 +920,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_BIRD: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("鳥を召喚した。", "You summon birds."));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_BIRD, mode);
+        }
+        break;
+    }
     case MonsterAbilityType::S_INSECT: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
         if (!pos) {
