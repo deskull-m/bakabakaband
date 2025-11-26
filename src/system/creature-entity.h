@@ -2,8 +2,11 @@
 
 #include "system/angband.h"
 #include "util/point-2d.h"
+#include <memory>
+#include <vector>
 
 class FloorType;
+class ItemEntity;
 
 /*!
  * @brief プレイヤーとモンスターの共通基底クラス
@@ -92,4 +95,9 @@ public:
      * @return レベル値
      */
     virtual int get_level() const = 0;
+
+    // インベントリ関連
+    std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
+    int16_t inven_cnt{}; /*!< 所持品数 / Number of items in inventory */
+    int16_t equip_cnt{}; /*!< 装備品数 / Number of items in equipment */
 };

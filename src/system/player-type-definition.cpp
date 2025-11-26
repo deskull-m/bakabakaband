@@ -24,10 +24,10 @@ PlayerType p_body;
 PlayerType *p_ptr = &p_body;
 
 PlayerType::PlayerType()
-    : inventory(INVEN_TOTAL)
-    , timed_effects(std::make_shared<TimedEffects>())
 {
+    this->inventory.resize(INVEN_TOTAL);
     ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
+    this->timed_effects = std::make_shared<TimedEffects>();
 }
 
 bool PlayerType::is_true_winner() const
