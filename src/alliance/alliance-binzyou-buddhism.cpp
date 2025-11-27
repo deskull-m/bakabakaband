@@ -1,4 +1,5 @@
 #include "alliance/alliance-binzyou-buddhism.h"
+#include "game-option/birth-options.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -7,6 +8,11 @@
 int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     int result = 0;
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        result -= 10000;
+    }
+
     const auto &monraces = MonraceList::get_instance();
 
     // 便乗仏教大僧正『MUR』 (レベル40)

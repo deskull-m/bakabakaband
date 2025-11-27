@@ -1,4 +1,5 @@
 #include "alliance/alliance-boletaria.h"
+#include "game-option/birth-options.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "system/enums/monrace/monrace-id.h"

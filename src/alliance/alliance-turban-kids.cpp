@@ -5,6 +5,7 @@
 #include "spell/summon-types.h"
 #include "system/player-type-definition.h"
 
+#include "game-option/birth-options.h"
 /**
  * @note ターバンのガキ共は印象値の正負を一切持たない。
  */

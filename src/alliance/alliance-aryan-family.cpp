@@ -1,5 +1,6 @@
 #include "alliance/alliance-aryan-family.h"
 #include "alliance/alliance.h"
+#include "game-option/birth-options.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -9,6 +10,10 @@ int AllianceAryanFamily::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 14, 22);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
 
     // アーリアン・ファミリーのアライアンス所属モンスター撃破による印象値減少
     const std::string aryan_family_tag = get_alliance_type_tag(AllianceType::ARYAN_FAMILY);

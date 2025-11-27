@@ -3,6 +3,7 @@
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
+#include "game-option/birth-options.h"
 /*!
  * @brief 南蛮アライアンスの印象ポイント計算
  * @param creature_ptr プレイヤー情報

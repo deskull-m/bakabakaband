@@ -15,6 +15,7 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
+#include "game-option/birth-options.h"
 int AllianceShittoDan::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return 0;

@@ -3,6 +3,7 @@
 #include "core/disturbance.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
+#include "game-option/birth-options.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
@@ -18,7 +19,11 @@
 int AllianceFangFamily::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 5, 10);
+    impression += Alliance::calcPlayerPower(*creature_ptr, 17, 25);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
     impression -= MonraceList::get_instance().get_monrace(MonraceId::FANG_FAMILY).r_akills * 5;
     if (MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0) {
         impression -= 300;
