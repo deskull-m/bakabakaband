@@ -53,3 +53,41 @@ bool AllianceAmber::isAnnihilated()
     // return MonraceList::get_instance().get_monrace(MonraceId::OBERON).mob_num == 0;
     return false;
 }
+
+/*!
+ * @brief 襲撃時に出現するモンスターのリストを取得する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param impression_point 印象値
+ * @return アンバーのモンスターIDのリスト（印象値が低い場合は天使系や騎士系モンスター）
+ */
+std::vector<MonraceId> AllianceAmber::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, int impression_point) const
+{
+    std::vector<MonraceId> monsters;
+
+    // 印象値が低い場合のみ襲撃を行う（-200以下）
+    if (impression_point >= -200) {
+        return monsters;
+    }
+
+    // 印象値に応じてモンスターを追加（アンバーは秩序側なので天使や騎士系）
+    monsters.push_back(MonraceId::KACHO_ANGEL); // 課長天使
+    monsters.push_back(MonraceId::FALLEN_ANGEL); // 堕天使
+    monsters.push_back(MonraceId::ULTRA_PALADIN); // ウルトラパラディン
+
+    // 印象値が非常に低い場合は強力なユニークも追加
+    if (impression_point < -500) {
+        monsters.push_back(MonraceId::JULIAN); // アーデンの森の主『ジュリアン』
+        monsters.push_back(MonraceId::CAINE); // 陰謀家『ケイン』
+    }
+
+    return monsters;
+}
+
+/*!
+ * @brief 襲撃時のメッセージを取得する
+ * @return アンバー固有の襲撃メッセージ
+ */
+std::string AllianceAmber::get_ambush_message() const
+{
+    return _("アンバーの使者があなたを阻む！", "The agents of Amber block your way!");
+}

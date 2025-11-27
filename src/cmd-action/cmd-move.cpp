@@ -407,6 +407,8 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
         }
 
         if (((wild_level + 5) > (player_ptr->lev / 2)) && randint0(tmp) < (21 - player_ptr->skill_stl)) {
+            // TODO: 広域マップの領域ごとのアライアンス情報を取得する機能が未実装のため、
+            // 今回はデフォルトメッセージを使用。将来的にはアライアンス固有のメッセージを表示予定
             msg_print(_("襲撃だ！", "You are ambushed !"));
             player_ptr->oldpy = randint1(MAX_HGT - 2);
             player_ptr->oldpx = randint1(MAX_WID - 2);

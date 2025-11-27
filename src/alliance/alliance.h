@@ -3,6 +3,9 @@
 #include "util/flag-group.h"
 #include <map>
 #include <string>
+#include <vector>
+
+enum class MonraceId : int16_t;
 
 typedef int ALLIANCE_ID;
 class PlayerType;
@@ -105,6 +108,8 @@ public:
     virtual ~Alliance() = default;
     int64_t AnnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
     virtual void panishment(PlayerType &player_ptr);
+    virtual std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const;
+    virtual std::string get_ambush_message() const;
 
     // base_powerを変更するメソッド
     void set_base_power(int64_t new_power)
