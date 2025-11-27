@@ -1,12 +1,15 @@
 #include "mutation/mutation-investor-remover.h"
 #include "avatar/avatar.h"
 #include "core/stuff-handler.h"
+#include "inventory/inventory-object.h"
+#include "inventory/inventory-slot-types.h"
 #include "mutation/gain-mutation-switcher.h"
 #include "mutation/lose-mutation-switcher.h"
 #include "mutation/mutation-calculator.h" //!< @todo calc_mutant_regenerate_mod() が相互依存している、後で消す.
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-util.h"
 #include "player-base/player-race.h"
+#include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
@@ -242,6 +245,15 @@ bool gain_mutation(PlayerType *player_ptr, MUTATION_IDX choose_mut)
 
     neutralize_base_status(player_ptr, gm_ptr);
     neutralize_other_status(player_ptr, gm_ptr);
+
+    // 肛門破壊の突然変異を獲得した場合、尻の穴の装備を強制的に外す
+    if (gm_ptr->muta_which == PlayerMutationType::DESTROYED_ASSHOLE) {
+        auto &asshole_item = *player_ptr->inventory[INVEN_ASSHOLE];
+        if (asshole_item.is_valid()) {
+            msg_print(_("肛門が破壊されたため、尻の穴の装備が外れた！", "Your asshole equipment has been removed due to destruction!"));
+            (void)inven_takeoff(player_ptr, INVEN_ASSHOLE, 255);
+        }
+    }
 
     player_ptr->mutant_regenerate_mod = calc_mutant_regenerate_mod(player_ptr);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
