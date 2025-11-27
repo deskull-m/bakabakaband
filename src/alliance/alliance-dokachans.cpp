@@ -1,4 +1,5 @@
 #include "alliance/alliance-dokachans.h"
+#include "game-option/birth-options.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -7,6 +8,11 @@
 int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     auto impression = 0;
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
+
     if (MonraceList::get_instance().get_monrace(MonraceId::DOKACHAN).mob_num == 0) {
         impression -= 1000;
     }

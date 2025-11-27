@@ -1,4 +1,5 @@
 #include "alliance/alliance-amber.h"
+#include "game-option/birth-options.h"
 #include "monster-race/race-kind-flags.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
@@ -9,6 +10,10 @@ int AllianceAmber::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
 
     // アンバライト・アライアンス関連モンスターの撃破による印象値減少（掛け算）
     const auto &monrace_list = MonraceList::get_instance();

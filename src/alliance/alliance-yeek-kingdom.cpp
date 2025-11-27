@@ -1,5 +1,6 @@
 #include "alliance/alliance-yeek-kingdom.h"
 #include "floor/floor-util.h"
+#include "game-option/birth-options.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "spell/summon-types.h"
@@ -18,6 +19,10 @@
 int AllianceYeekKingdom::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
 
     // ボルドールとオルファックスの殺害状況を確認
     const auto &monrace_list = MonraceList::get_instance();

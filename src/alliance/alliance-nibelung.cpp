@@ -7,6 +7,7 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/floor-object.h"
+#include "game-option/birth-options.h"
 #include "inventory/inventory-object.h"
 #include "io/write-diary.h"
 #include "monster-floor/monster-summon.h"
@@ -45,6 +46,10 @@
 int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int point = 0;
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        point -= 10000;
+    }
 
     // 種族ボーナス
     switch (creature_ptr->prace) {

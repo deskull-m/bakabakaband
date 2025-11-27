@@ -243,6 +243,9 @@ const std::vector<GameOption> option_info = {
     { &ironman_nightmare, false, 6, 18, "ironman_nightmare",
         _("(鉄人用)悪夢モード(これは全く不条理です！)(*)", "Nightmare mode(it isn't even remotely fair!)(*)"), GameOptionPage::BIRTH },
 
+    { &ironman_alliance_hostility, false, 6, 19, "ironman_alliance_hostility",
+        _("(鉄人用)全てのアライアンスから猛烈に敵対される(*)", "All alliances are extremely hostile (*)"), GameOptionPage::BIRTH },
+
     { &left_hander, false, 6, 13, "left_hander", _("左利きである", "Left-Hander"), GameOptionPage::BIRTH },
 
     { &preserve_mode, true, 6, 14, "preserve_mode", _("伝説のアイテムを取り逃しても再生成される(*)", "Preserve artifacts (*)"), GameOptionPage::BIRTH },

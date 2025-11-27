@@ -3,6 +3,7 @@
 #include "core/disturbance.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
+#include "game-option/birth-options.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
@@ -19,6 +20,11 @@ int AllianceJural::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 2, 40);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
+
     impression -= MonraceList::get_instance().get_monrace(MonraceId::ALIEN_JURAL).r_akills * 10;
     if (MonraceList::get_instance().get_monrace(MonraceId::JURAL_MONS).mob_num == 0) {
         impression -= 300;
