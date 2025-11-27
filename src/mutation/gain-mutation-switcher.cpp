@@ -541,6 +541,12 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         }
         glm_ptr->muta_desc = _("あなたは変質者を引きつけるようになった。", "You attract perverts.");
         break;
+    case 209:
+        glm_ptr->muta_which = PlayerMutationType::DESTROYED_ASSHOLE;
+        glm_ptr->muta_desc = _(
+            "あなたの肛門は完全に破壊された！尻の穴に装備できなくなった。",
+            "Your asshole has been completely destroyed! You can no longer equip items there.");
+        break;
 
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;

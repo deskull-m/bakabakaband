@@ -143,6 +143,12 @@ void do_cmd_wield(PlayerType *player_ptr)
     }
 
     auto slot = wield_slot(player_ptr, o_ptr);
+
+    // 肛門破壊チェック
+    if (slot == INVEN_ASSHOLE && player_ptr->muta.has(PlayerMutationType::DESTROYED_ASSHOLE)) {
+        msg_print(_("あなたの肛門は完全に破壊されており、何も装備できない！", "Your asshole is completely destroyed and cannot equip anything!"));
+        return;
+    }
     const auto o_ptr_mh = player_ptr->inventory[INVEN_MAIN_HAND].get();
     const auto o_ptr_sh = player_ptr->inventory[INVEN_SUB_HAND].get();
     const auto tval = o_ptr->bi_key.tval();
