@@ -218,6 +218,26 @@ bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
 }
 
 /*!
+ * @brief 襲撃時に出現するモンスターのリストを取得する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param impression_point 印象値
+ * @return モンスターIDのリスト（デフォルトは空）
+ */
+std::vector<MonraceId> Alliance::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, [[maybe_unused]] int impression_point) const
+{
+    return std::vector<MonraceId>();
+}
+
+/*!
+ * @brief 襲撃時のメッセージを取得する
+ * @return デフォルトの襲撃メッセージ
+ */
+std::string Alliance::get_ambush_message() const
+{
+    return _("襲撃だ！", "You are ambushed!");
+}
+
+/*!
  * @brief AllianceTypeからタグを取得する
  * @param alliance_type AllianceType
  * @return タグ文字列
