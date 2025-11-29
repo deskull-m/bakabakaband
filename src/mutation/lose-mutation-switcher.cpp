@@ -541,6 +541,12 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
             "あなたの肛門は再生した！再び尻の穴に装備できるようになった。",
             "Your asshole has regenerated! You can equip items there again.");
         break;
+    case 210:
+        glm_ptr->muta_which = PlayerMutationType::LOST_HEAD;
+        glm_ptr->muta_desc = _(
+            "あなたの頭部は再生した！再び頭に装備できるようになった。",
+            "Your head has regenerated! You can equip items on your head again.");
+        break;
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;
         break;

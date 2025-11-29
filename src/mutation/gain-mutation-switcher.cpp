@@ -547,6 +547,12 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
             "あなたの肛門は完全に破壊された！尻の穴に装備できなくなった。",
             "Your asshole has been completely destroyed! You can no longer equip items there.");
         break;
+    case 210:
+        glm_ptr->muta_which = PlayerMutationType::LOST_HEAD;
+        glm_ptr->muta_desc = _(
+            "あなたは頭部を失った！頭に装備できなくなった。",
+            "You have lost your head! You can no longer equip items on your head.");
+        break;
 
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;
