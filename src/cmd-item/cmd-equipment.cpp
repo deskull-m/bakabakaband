@@ -149,6 +149,12 @@ void do_cmd_wield(PlayerType *player_ptr)
         msg_print(_("あなたの肛門は完全に破壊されており、何も装備できない！", "Your asshole is completely destroyed and cannot equip anything!"));
         return;
     }
+
+    // 頭部失失チェック
+    if (slot == INVEN_HEAD && player_ptr->muta.has(PlayerMutationType::LOST_HEAD)) {
+        msg_print(_("あなたは頭がないので、頭に何も装備できない！", "You have no head and cannot equip anything on your head!"));
+        return;
+    }
     const auto o_ptr_mh = player_ptr->inventory[INVEN_MAIN_HAND].get();
     const auto o_ptr_sh = player_ptr->inventory[INVEN_SUB_HAND].get();
     const auto tval = o_ptr->bi_key.tval();

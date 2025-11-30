@@ -108,5 +108,6 @@ enum class PlayerMutationType {
     ATT_NASTY = 102, /*!< 突然変異: クッソ汚い輩を引きつける */
     ATT_PERVERT = 103, /*!< 突然変異: 変質者を引きつける */
     DESTROYED_ASSHOLE = 104, /*!< 突然変異: 肛門を完全破壊された */
+    LOST_HEAD = 105, /*!< 突然変異: 頭部を失った */
     MAX,
 };
