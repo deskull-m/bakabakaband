@@ -193,6 +193,26 @@ const mbe_info_type mbe_info[static_cast<int>(RaceBlowEffectType::MAX)] = {
         0,
         AttributeType::NONE,
     }, /* FLAVOR */
+    {
+        30,
+        AttributeType::MONSTER_MELEE,
+    }, /* DEFECATE */
+    {
+        0,
+        AttributeType::MONSTER_MELEE,
+    }, /* SANITY_BLAST */
+    {
+        5,
+        AttributeType::MONSTER_MELEE,
+    }, /* CHAOS */
+    {
+        0,
+        AttributeType::MONSTER_MELEE,
+    }, /* LOCKUP */
+    {
+        40,
+        AttributeType::MONSTER_MELEE,
+    }, /* DESTROY_ASSHOLE */
 };
 
 /*!
@@ -443,6 +463,8 @@ std::string get_blow_effect_name(RaceBlowEffectType effect)
         return "カオスを呼び起こされた";
     case RaceBlowEffectType::LOCKUP:
         return "閉じ込められた";
+    case RaceBlowEffectType::DESTROY_ASSHOLE:
+        return "肛門を破壊された";
     case RaceBlowEffectType::MAX:
         return "訳が分からなかった";
     }
@@ -541,6 +563,8 @@ std::string get_blow_effect_tag(RaceBlowEffectType effect)
         return "CHAOS";
     case RaceBlowEffectType::LOCKUP:
         return "LOCKUP";
+    case RaceBlowEffectType::DESTROY_ASSHOLE:
+        return "DESTROY_ASSHOLE";
     case RaceBlowEffectType::MAX:
         return "UNKNOWN";
     }

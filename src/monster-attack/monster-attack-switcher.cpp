@@ -630,6 +630,30 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             teleport_player(player_ptr, 50, TELEPORT_PASSIVE);
             wall_creation(player_ptr, player_ptr->y, player_ptr->x);
         }
+        break;
+    }
+
+    case RaceBlowEffectType::DESTROY_ASSHOLE: { /* AC軽減あり / Player armor reduces total damage */
+        monap_ptr->obvious = true;
+        monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
+        monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+
+        // ダメージ量の最大HPに対する比率を計算
+        int damage_ratio = (monap_ptr->damage * 100) / player_ptr->mhp;
+
+        // 20%以上のダメージで肛門破壊の変異発生判定
+        if (damage_ratio >= 20) {
+            int chance = damage_ratio - 15; // 20%で5%、50%で35%、100%で85%の確率
+            if (randint1(100) <= chance) {
+                msg_print(_("あなたの肛門が完全に破壊された！", "Your asshole has been completely destroyed!"));
+                (void)gain_mutation(player_ptr, static_cast<int>(PlayerMutationType::DESTROYED_ASSHOLE));
+            } else {
+                msg_print(_("肛門に激痛が走った！", "Your asshole is in severe pain!"));
+            }
+        } else if (damage_ratio >= 10) {
+            msg_print(_("肛門に痛みを感じた...", "You feel pain in your asshole..."));
+        }
+        break;
     }
 
     case RaceBlowEffectType::MAX:
