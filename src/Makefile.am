@@ -985,6 +985,7 @@ hengband_SOURCES = \
 	mutation/gain-mutation-switcher.cpp mutation/gain-mutation-switcher.h \
 	mutation/lose-mutation-switcher.cpp mutation/lose-mutation-switcher.h \
 	mutation/mutation-calculator.cpp mutation/mutation-calculator.h \
+	mutation/mutation-data.cpp mutation/mutation-data.h \
 	mutation/mutation-investor-remover.cpp mutation/mutation-investor-remover.h \
 	mutation/mutation-util.cpp mutation/mutation-util.h \
 	mutation/mutation-flag-types.h \
@@ -1486,6 +1487,7 @@ hengband_SOURCES = \
 	wizard/tval-descriptions-table.cpp wizard/tval-descriptions-table.h \
 	wizard/wizard-game-modifier.cpp wizard/wizard-game-modifier.h \
 	wizard/wizard-item-modifier.cpp wizard/wizard-item-modifier.h \
+	wizard/wizard-mutation.cpp wizard/wizard-mutation.h \
 	wizard/wizard-player-modifier.cpp wizard/wizard-player-modifier.h \
 	wizard/wizard-messages.cpp wizard/wizard-messages.h \
 	wizard/wizard-spells.cpp wizard/wizard-spells.h \
