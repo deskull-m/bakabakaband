@@ -985,6 +985,7 @@ hengband_SOURCES = \
 	mutation/gain-mutation-switcher.cpp mutation/gain-mutation-switcher.h \
 	mutation/lose-mutation-switcher.cpp mutation/lose-mutation-switcher.h \
 	mutation/mutation-calculator.cpp mutation/mutation-calculator.h \
+	mutation/mutation-data.cpp mutation/mutation-data.h \
 	mutation/mutation-investor-remover.cpp mutation/mutation-investor-remover.h \
 	mutation/mutation-util.cpp mutation/mutation-util.h \
 	mutation/mutation-flag-types.h \
