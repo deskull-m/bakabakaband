@@ -14976,6 +14976,7 @@
         "CAN_FLY",
         "MULTIPLY",
         "WEIRD_MIND",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -15830,6 +15831,7 @@
         "RAND_25",
         "EMPTY_MIND",
         "COLD_BLOOD",
+        "ELEMENTAL",
         "PASS_WALL",
         "CAN_FLY",
         "NONLIVING",
@@ -15885,6 +15887,7 @@
     "flags": [
         "RAND_25",
         "SELF_LITE_1",
+        "ELEMENTAL",
         "EMPTY_MIND",
         "BASH_DOOR",
         "CAN_FLY",
@@ -16119,6 +16122,7 @@
         "NEVER_MOVE",
         "EMPTY_MIND",
         "COLD_BLOOD",
+        "MIMIC",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -16180,6 +16184,7 @@
         "NEVER_MOVE",
         "EMPTY_MIND",
         "COLD_BLOOD",
+        "MIMIC",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -16484,6 +16489,7 @@
         "EMPTY_MIND",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "PLANT",
         "EVIL",
         "NO_CONF",
         "NO_SLEEP",
@@ -16593,7 +16599,8 @@
         "ATTR_MULTI",
         "EAT_CONF",
         "EAT_DRAIN_EXP",
-        "EAT_INSANITY"
+        "EAT_INSANITY",
+        "BEAST"
     ],
     "skill": {
         "list": [
@@ -16905,7 +16912,8 @@
         "CAN_SWIM",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "FUNGUS"
     ]
 },
 {
@@ -17010,7 +17018,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "EMPTY_MIND",
-        "HURT_ROCK"
+        "HURT_ROCK",
+        "WALL"
     ]
 },
 {
@@ -17057,6 +17066,7 @@
     },
     "flags": [
         "DROP_60",
+        "BEAST",
         "NO_SLEEP",
         "NO_CONF",
         "UNDEAD",
