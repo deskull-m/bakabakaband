@@ -300,6 +300,10 @@ void set_monster_blow_effect(lore_type *lore_ptr, int m)
         lore_ptr->q = _("閉じ込める", "lock up");
         lore_ptr->qc = TERM_VIOLET;
         break;
+    case RaceBlowEffectType::DESTROY_ASSHOLE:
+        lore_ptr->q = _("肛門を破壊する", "destroy asshole");
+        lore_ptr->qc = TERM_L_RED;
+        break;
     case RaceBlowEffectType::FLAVOR:
         // フレーバー打撃には何の効果もないので付加説明もない。
         break;
