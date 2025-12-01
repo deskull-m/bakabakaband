@@ -42036,6 +42036,20 @@ D:$ They are not warlike, but they delight in mischief that is no laughing matte
 D:ローウィンのフェアリーは女王ウーナのために知的生命体の夢を収穫する。
 D:好戦的ではないが、冗談にならない悪戯を好む。
 
+N:2325:おしりかじり虫
+E:Bottom Biting Bug
+G:I:u
+I:110:2d6:10:15:20
+W:3:5:0:25:40
+B:BITE:DESTROY_ASSHOLE:1d8
+B:BITE:HURT:1d4
+F:ANIMAL | WILD_GRASS | WILD_SWAMP | DROP_CORPSE
+F:RAND_50 | INSECT
+D:$A peculiar worm with an insatiable appetite for human posteriors.
+D:$ It has sharp teeth specifically evolved for biting buttocks.
+D:人間の尻に対して異常な食欲を持つ奇妙な虫だ。
+D:尻を噛むために特別に進化した鋭い歯を持っている。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
