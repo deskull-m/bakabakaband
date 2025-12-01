@@ -2785,6 +2785,9 @@
     <ClCompile Include="..\..\src\monster-race\monster-era-type-name.cpp">
       <Filter>monster-race</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\wizard\wizard-mutation.cpp">
+      <Filter>wizard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -6011,6 +6014,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\monster-race\monster-era-type-name.h">
       <Filter>monster-race</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\wizard\wizard-mutation.h">
+      <Filter>wizard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

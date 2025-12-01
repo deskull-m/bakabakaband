@@ -2021,6 +2021,7 @@
     <ClCompile Include="..\..\src\wizard\wizard-game-modifier.cpp" />
     <ClCompile Include="..\..\src\wizard\wizard-item-modifier.cpp" />
     <ClCompile Include="..\..\src\wizard\wizard-messages.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-mutation.cpp" />
     <ClCompile Include="..\..\src\wizard\wizard-player-modifier.cpp" />
     <ClCompile Include="..\..\src\wizard\wizard-spells.cpp" />
     <ClCompile Include="..\..\src\wizard\wizard-spoiler.cpp" />
@@ -2107,6 +2108,7 @@
     <ClInclude Include="..\..\src\wizard\wizard-game-modifier.h" />
     <ClInclude Include="..\..\src\wizard\wizard-item-modifier.h" />
     <ClInclude Include="..\..\src\wizard\wizard-messages.h" />
+    <ClInclude Include="..\..\src\wizard\wizard-mutation.h" />
     <ClInclude Include="..\..\src\wizard\wizard-player-modifier.h" />
     <ClInclude Include="..\..\src\wizard\wizard-spells.h" />
     <ClInclude Include="..\..\src\world\world-alliance-processor.h" />

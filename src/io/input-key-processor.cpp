@@ -96,6 +96,7 @@
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
 #include "wizard/cmd-wizard.h"
+#include "wizard/wizard-mutation.h"
 #include "world/world.h"
 #include <string>
 #include <tl/optional.hpp>
@@ -203,6 +204,13 @@ void process_command(PlayerType *player_ptr)
     case KTRL('A'): {
         if (enter_debug_mode(floor)) {
             do_cmd_debug(player_ptr);
+        }
+
+        break;
+    }
+    case KTRL('Y'): {
+        if (enter_debug_mode(floor)) {
+            wiz_mutation_menu(player_ptr);
         }
 
         break;
