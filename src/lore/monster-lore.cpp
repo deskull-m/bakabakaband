@@ -202,8 +202,20 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::RANGER);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GRANDMA)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GRANDMA);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::WEREWOLF)) {
+        lore_ptr->kind_flags.set(MonsterKindType::WEREWOLF);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SAMURAI)) {
         lore_ptr->kind_flags.set(MonsterKindType::SAMURAI);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::PAPER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::PAPER);
     }
 
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {

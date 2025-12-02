@@ -799,6 +799,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::WEREWOLF)) {
+        hook_c_roff(TERM_L_DARK, _("人狼", " werewolf"));
+        has_specific_kind = true;
+    }
+
     // フォールバック処理：特定の種族が見つからない場合は「モンスター」と表示
     if (!has_specific_kind) {
         hooked_roff(_("モンスター", " creature"));

@@ -522,6 +522,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "SQUIRREL", MonsterKindType::SQUIRREL }, // リス
     { "BARD", MonsterKindType::BARD }, // 呀遊詩人
     { "MAGICAL_GIRL", MonsterKindType::MAGICAL_GIRL }, // 魔法少女
+    { "WEREWOLF", MonsterKindType::WEREWOLF }, // 人狼
 };
 
 const std::unordered_map<std::string_view, MonsterEraType> r_info_era_flags = {

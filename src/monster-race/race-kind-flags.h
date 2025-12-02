@@ -137,7 +137,8 @@ enum class MonsterKindType {
     TANUKI = 133, // 狸
     CHAMELEON = 134, // カメレオン
     SQUIRREL = 135, // リス
-    BARD = 136, // 呀遊詩人
+    BARD = 136, // 吟遊詩人
     MAGICAL_GIRL = 137, // 魔法少女
+    WEREWOLF = 138, // 人狼
     MAX,
 };

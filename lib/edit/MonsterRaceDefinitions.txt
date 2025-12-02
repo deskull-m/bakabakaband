@@ -5547,7 +5547,7 @@ B:CLAW:HURT:6d3
 B:BITE:HURT:3d6
 F:CAN_FLY |
 F:WILD_ONLY | WILD_MOUNTAIN | WILD_VOLCANO
-F:ANIMAL | GOOD | DROP_CORPSE | RIDING
+F:ANIMAL | GOOD | DROP_CORPSE | RIDING | BIRD
 S:1_IN_3
 S:SPECIAL
 D:$An agent of supernatural beings, this creature looks like a 
@@ -5659,7 +5659,7 @@ B:BITE:FIRE:1d3
 B:BITE:FIRE:1d3
 F:CAN_FLY | DROP_CORPSE |
 F:BASH_DOOR | WILD_MOUNTAIN |
-F:IM_FIRE | RIDING
+F:IM_FIRE | RIDING | BEAST
 S:1_IN_10 | 
 S:BR_FIRE
 D:$It is a strange concoction of lion, dragon and goat.  It looks very odd 
@@ -5698,7 +5698,7 @@ B:CLAW:HURT:1d10
 B:CLAW:HURT:1d10
 B:BITE:HURT:2d8
 F:OPEN_DOOR | BASH_DOOR | WILD_MOUNTAIN | WILD_WOOD | WILD_WASTE |
-F:ANIMAL | IM_COLD | DROP_SKELETON | DROP_CORPSE
+F:ANIMAL | IM_COLD | DROP_SKELETON | DROP_CORPSE | APE
 D:$A tall shaggy, furry humanoid, it could call the yeti brother.
 D:背が高く毛深い人間型の生物だ。それは兄弟であるイエティを呼ぶことがある。
 
@@ -5713,7 +5713,7 @@ B:BITE:HURT:3d6
 B:CLAW:HURT:3d6
 F:RAND_25 | 
 F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
-F:ANIMAL | EVIL | FRIENDS | DOG
+F:ANIMAL | EVIL | FRIENDS | DOG | WEREWOLF
 D:$It is a tracker; half human, half beast.
 D:それは追跡者だ。半分人間で、半分獣だ。
 
@@ -5766,7 +5766,7 @@ B:BITE:HURT:1d6
 B:BITE:HURT:1d10
 F:RAND_25 | 
 F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON |
-F:ANIMAL | EVIL
+F:ANIMAL | EVIL | WEREWOLF
 D:$It is a huge wolf with eyes that glow with manly intelligence.
 D:それは人間の知性を宿した、輝く目をした巨大な狼だ。
 
@@ -33242,7 +33242,7 @@ I:123:18d18:20:40:40
 W:20:2:0:40:700:1872
 B:BITE:HURT:2d10
 B:BITE:HURT:2d10
-F:RAND_25 | 
+F:RAND_25 |
 F:FRIENDS | WILD_WOOD | WILD_MOUNTAIN | DROP_SKELETON | DROP_CORPSE
 F:BASH_DOOR | DOG
 F:ANIMAL | EVIL

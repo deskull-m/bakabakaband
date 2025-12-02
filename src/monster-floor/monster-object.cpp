@@ -72,9 +72,11 @@ static void update_object_flags(const TrFlags &flags, EnumClassFlagGroup<Monster
     }
     if (flags.has(TR_SLAY_ANIMAL)) {
         flg_monster_kind.set(MonsterKindType::ANIMAL);
+        flg_monster_kind.set(MonsterKindType::WEREWOLF);
     }
     if (flags.has(TR_KILL_ANIMAL)) {
         flg_monster_kind.set(MonsterKindType::ANIMAL);
+        flg_monster_kind.set(MonsterKindType::WEREWOLF);
     }
     if (flags.has(TR_SLAY_EVIL)) {
         flg_monster_kind.set(MonsterKindType::EVIL);
