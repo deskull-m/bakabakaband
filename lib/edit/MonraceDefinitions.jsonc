@@ -17567,7 +17567,8 @@
         "ANIMAL",
         "GOOD",
         "DROP_CORPSE",
-        "RIDING"
+        "RIDING",
+        "BIRD"
     ],
     "skill": {
         "list": [
@@ -17924,7 +17925,8 @@
         "BASH_DOOR",
         "WILD_MOUNTAIN",
         "IM_FIRE",
-        "RIDING"
+        "RIDING",
+        "BEAST"
     ],
     "skill": {
         "list": [
@@ -18028,7 +18030,8 @@
         "ANIMAL",
         "IM_COLD",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "APE"
     ]
 },
 {
@@ -18082,7 +18085,8 @@
         "ANIMAL",
         "EVIL",
         "FRIENDS",
-        "DOG"
+        "DOG",
+        "WEREWOLF"
     ]
 },
 {
@@ -18233,7 +18237,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "ANIMAL",
-        "EVIL"
+        "EVIL",
+        "WEREWOLF"
     ]
 },
 {

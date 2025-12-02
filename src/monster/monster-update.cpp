@@ -299,6 +299,14 @@ static void update_specific_race_telepathy(PlayerType *player_ptr, um_type *um_p
         }
     }
 
+    if ((player_ptr->esp_animal) && monrace.kind_flags.has(MonsterKindType::WEREWOLF)) {
+        um_ptr->flag = true;
+        monster.mflag.set(MonsterTemporaryFlagType::ESP);
+        if (monster.is_original_ap() && !is_hallucinated) {
+            monrace.r_kind_flags.set(MonsterKindType::WEREWOLF);
+        }
+    }
+
     if ((player_ptr->esp_nasty) && monrace.kind_flags.has(MonsterKindType::NASTY)) {
         um_ptr->flag = true;
         um_ptr->m_ptr->mflag.set(MonsterTemporaryFlagType::ESP);
