@@ -313,6 +313,10 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         ss << _("違法改造の", "illegally modified ");
     }
 
+    if (monster.mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+        ss << _("軽量化した", "lightweight ");
+    }
+
     if (monster.mflag2.has(MonsterConstantFlagType::DEFECATED)) {
         ss << _("脱糞した", "defecated ");
     }
