@@ -112,6 +112,7 @@ const std::map<MonsterAbilityType, const monster_power> monster_powers = {
     { MonsterAbilityType::S_HYDRA, { 30, 23, 70, 0, 35, A_INT, _("ヒドラの召喚", "summon hydras") } },
     { MonsterAbilityType::S_INSECT, { 25, 30, 70, 0, 30, A_INT, _("虫の召喚", "summon insects") } },
     { MonsterAbilityType::S_FAIRY, { 30, 23, 70, 0, 35, A_INT, _("フェアリーの召喚", "summon fairies") } },
+    { MonsterAbilityType::S_APE, { 30, 25, 70, 0, 35, A_INT, _("類人猿の召喚", "summon apes") } },
     { MonsterAbilityType::S_BIRD, { 25, 20, 65, 0, 30, A_INT, _("鳥の召喚", "summon birds") } },
     { MonsterAbilityType::S_ANGEL, { 40, 50, 85, 0, 40, A_INT, _("天使の召喚", "summon an angel") } },
     { MonsterAbilityType::S_DEMON, { 35, 50, 80, 0, 35, A_INT, _("デーモンの召喚", "summon a daemon") } },
