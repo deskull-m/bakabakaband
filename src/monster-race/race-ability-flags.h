@@ -122,6 +122,7 @@ enum class MonsterAbilityType {
     S_WALL = 116, /* 壁召喚 */
     S_INSECT = 117, /* Summon Insect */
     S_FAIRY = 118, /* Summon Fairy */
-    S_BIRD = 119, /* Summon Bird */
+    S_APE = 119, /* Summon Ape */
+    S_BIRD = 120, /* Summon Bird */
     MAX,
 };

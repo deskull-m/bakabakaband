@@ -407,6 +407,10 @@ void set_summon_types(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("フェアリー召喚", "summon fairies"), TERM_L_BLUE);
     }
 
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_APE)) {
+        lore_ptr->lore_msgs.emplace_back(_("類人猿召喚", "summon apes"), TERM_UMBER);
+    }
+
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_BIRD)) {
         lore_ptr->lore_msgs.emplace_back(_("鳥召喚", "summon birds"), TERM_L_UMBER);
     }

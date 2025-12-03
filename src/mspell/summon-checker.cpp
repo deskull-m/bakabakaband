@@ -32,8 +32,8 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("M");
     case SUMMON_FAIRY:
         return monrace.kind_flags.has(MonsterKindType::FAIRY);
-    case SUMMON_BIRD:
-        return monrace.kind_flags.has(MonsterKindType::BIRD);
+    case SUMMON_APE:
+        return monrace.kind_flags.has(MonsterKindType::APE);
     case SUMMON_ANGEL:
         return monrace.symbol_char_is_any_of("A") && (monrace.kind_flags.has(MonsterKindType::EVIL) || monrace.kind_flags.has(MonsterKindType::GOOD));
     case SUMMON_DEMON:
