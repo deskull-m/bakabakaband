@@ -63,7 +63,7 @@ bool ask_quick_start(PlayerType *player_ptr)
     cp_ptr = &class_info.at(player_ptr->pclass);
     auto short_pclass = enum2i(player_ptr->pclass);
     mp_ptr = &class_magics_info[short_pclass];
-    ap_ptr = &personality_info[player_ptr->ppersonality];
+    player_ptr->personality = &personality_info[player_ptr->ppersonality];
 
     get_extra(player_ptr, false);
     static constexpr auto flags = {

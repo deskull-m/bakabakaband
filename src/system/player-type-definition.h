@@ -22,6 +22,7 @@
 
 // Forward declarations
 struct player_race_info;
+struct player_personality;
 
 enum class INCIDENT {
     WALK = 0,
@@ -251,6 +252,7 @@ public:
     bool select_ring_slot{};
 
     const player_race_info *race{}; /* Current race info */
+    const player_personality *personality{}; /* Current personality info */
 
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */

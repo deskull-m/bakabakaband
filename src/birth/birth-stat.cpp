@@ -155,7 +155,7 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
     player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
 
     const auto r_mhp = is_sorcerer ? player_ptr->race->r_mhp / 2 : player_ptr->race->r_mhp;
-    player_ptr->hit_dice = Dice(1, r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
+    player_ptr->hit_dice = Dice(1, r_mhp + cp_ptr->c_mhp + player_ptr->personality->a_mhp);
     if (roll_hitdie) {
         roll_hitdice(player_ptr, SPOP_NO_UPDATE);
     }

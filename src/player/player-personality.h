@@ -25,4 +25,4 @@ struct player_personality {
 };
 
 extern const player_personality personality_info[MAX_PERSONALITIES];
-extern const player_personality *ap_ptr;
+// ap_ptr is now a member named 'personality' in PlayerType

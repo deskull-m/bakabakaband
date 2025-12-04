@@ -30,7 +30,6 @@ static void enumerate_personality_list(PlayerType *player_ptr, char *sym)
             continue;
         }
 
-        ap_ptr = &personality_info[n];
         if (n < 26) {
             sym[n] = I2A(n);
         } else {
@@ -55,19 +54,19 @@ static std::string display_personality_stat(int cs, int *os, const std::string &
         put_str("                                   ", 5, 40);
         put_str("                                   ", 6, 40);
     } else {
-        ap_ptr = &personality_info[cs];
-        c_put_str(TERM_L_BLUE, ap_ptr->title, 3, 40);
-        put_str(_("の性格修正", ": Personality modification"), 3, 40 + ap_ptr->title->length());
+        const auto *personality_ptr = &personality_info[cs];
+        c_put_str(TERM_L_BLUE, personality_ptr->title, 3, 40);
+        put_str(_("の性格修正", ": Personality modification"), 3, 40 + personality_ptr->title->length());
         put_str(_("腕力 知能 賢さ 器用 耐久 魅力      ", "Str  Int  Wis  Dex  Con  Chr       "), 4, 40);
-        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d       ", ap_ptr->a_adj[0], ap_ptr->a_adj[1], ap_ptr->a_adj[2], ap_ptr->a_adj[3], ap_ptr->a_adj[4], ap_ptr->a_adj[5]);
+        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d       ", personality_ptr->a_adj[0], personality_ptr->a_adj[1], personality_ptr->a_adj[2], personality_ptr->a_adj[3], personality_ptr->a_adj[4], personality_ptr->a_adj[5]);
         c_put_str(TERM_L_BLUE, stats, 5, 40);
 
         put_str("HD", 6, 40);
-        const auto hd = format("%+3d", ap_ptr->a_mhp);
+        const auto hd = format("%+3d", personality_ptr->a_mhp);
         c_put_str(TERM_L_BLUE, hd, 6, 42);
 
         put_str(_("隠密", "Stealth"), 6, 47);
-        const auto stealth = format("%+3d", ap_ptr->a_stl);
+        const auto stealth = format("%+3d", personality_ptr->a_stl);
         c_put_str(TERM_L_BLUE, stealth, 6, _(51, 54));
     }
 
@@ -249,7 +248,7 @@ bool get_player_personality(PlayerType *player_ptr)
     }
 
     player_ptr->ppersonality = (player_personality_type)k;
-    ap_ptr = &personality_info[player_ptr->ppersonality];
+    player_ptr->personality = &personality_info[player_ptr->ppersonality];
     display_player_name(player_ptr);
     return true;
 }
