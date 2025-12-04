@@ -124,7 +124,7 @@ static void display_basic_stat_value(PlayerType *player_ptr, int stat_num, int r
 {
     c_put_str(TERM_L_BLUE, format("%3d", r_adj), row + stat_num + 1, stat_col + 13);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)(*player_ptr->pclass_info).c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
+    c_put_str(TERM_L_BLUE, format("%3d", (int)(*player_ptr->pclass_ref).c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
 
     c_put_str(TERM_L_BLUE, format("%3d", (int)(*player_ptr->personality).a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
 
@@ -150,7 +150,7 @@ static void process_stats(PlayerType *player_ptr, int row, int stat_col)
         int e_adj = calc_basic_stat(player_ptr, i);
         r_adj += compensate_special_race(player_ptr, i);
         e_adj -= r_adj;
-        e_adj -= (*player_ptr->pclass_info).c_adj[i];
+        e_adj -= (*player_ptr->pclass_ref).c_adj[i];
         e_adj -= (*player_ptr->personality).a_adj[i];
 
         display_basic_stat_name(player_ptr, i, row, stat_col);

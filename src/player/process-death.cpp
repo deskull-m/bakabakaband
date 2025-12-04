@@ -225,7 +225,7 @@ void print_tomb(PlayerType *player_ptr)
 
     show_tomb_line(p, GRAVE_PLAYER_TITLE_ROW);
 
-    show_tomb_line((*player_ptr->pclass_info).title, GRAVE_PLAYER_CLASS_ROW);
+    show_tomb_line((*player_ptr->pclass_ref).title, GRAVE_PLAYER_CLASS_ROW);
 
     show_basic_params(player_ptr);
 

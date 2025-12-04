@@ -175,7 +175,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
     } else if (streq(b + 1, "RACE")) {
         v = player_ptr->race->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = (*player_ptr->pclass_info).title.en_string();
+        v = (*player_ptr->pclass_ref).title.en_string();
     } else if (streq(b + 1, "REALM1")) {
         v = PlayerRealm(player_ptr).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {
