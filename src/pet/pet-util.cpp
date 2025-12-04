@@ -106,7 +106,7 @@ PERCENTAGE calculate_upkeep(PlayerType *player_ptr)
         return 0;
     }
 
-    int upkeep_factor = (total_friend_levels - (player_ptr->lev * 80 / ((*player_ptr->pclass_info).pet_upkeep_div)));
+    int upkeep_factor = (total_friend_levels - (player_ptr->lev * 80 / ((*player_ptr->pclass_ref).pet_upkeep_div)));
     if (upkeep_factor < 0) {
         upkeep_factor = 0;
     }

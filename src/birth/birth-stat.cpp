@@ -101,7 +101,7 @@ uint16_t get_expfact(PlayerType *player_ptr)
 
     PlayerRace pr(player_ptr);
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        expfact += (*player_ptr->pclass_info).c_exp;
+        expfact += (*player_ptr->pclass_ref).c_exp;
     }
 
     auto is_race_gaining_additional_speed = pr.equals(PlayerRaceType::KLACKON) || pr.equals(PlayerRaceType::SPRITE);
@@ -155,7 +155,7 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
     player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
 
     const auto r_mhp = is_sorcerer ? player_ptr->race->r_mhp / 2 : player_ptr->race->r_mhp;
-    player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_info).c_mhp + (*player_ptr->personality).a_mhp);
+    player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
     if (roll_hitdie) {
         roll_hitdice(player_ptr, SPOP_NO_UPDATE);
     }
