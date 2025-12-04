@@ -30,9 +30,9 @@ static void display_diary(PlayerType *player_ptr)
     const auto choice = Rand_external(subtitle_candidates.size());
     const auto &subtitle = subtitle_candidates[choice];
 #ifdef JP
-    const auto diary_title = format("「%s%s%sの伝説 -%s-」", player_ptr->personality->title.data(), player_ptr->personality->no ? "の" : "", player_ptr->name, subtitle.data());
+    const auto diary_title = format("「%s%s%sの伝説 -%s-」", (*player_ptr->personality).title.data(), (*player_ptr->personality).no ? "の" : "", player_ptr->name, subtitle.data());
 #else
-    const auto diary_title = format("Legend of %s %s '%s'", player_ptr->personality->title.data(), player_ptr->name, subtitle.data());
+    const auto diary_title = format("Legend of %s %s '%s'", (*player_ptr->personality).title.data(), player_ptr->name, subtitle.data());
 #endif
 
     std::stringstream ss;

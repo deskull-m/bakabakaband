@@ -420,7 +420,7 @@ static void update_max_hitpoints(PlayerType *player_ptr)
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
     if (player_ptr->mimic_form != MimicKindType::NONE) {
         auto r_mhp = mimic_info.at(player_ptr->mimic_form).r_mhp;
-        const auto mimic_hit_dice = Dice(1, (is_sorcerer ? r_mhp / 2 : r_mhp) + cp_ptr->c_mhp + player_ptr->personality->a_mhp);
+        const auto mimic_hit_dice = Dice(1, (is_sorcerer ? r_mhp / 2 : r_mhp) + cp_ptr->c_mhp + (*player_ptr->personality).a_mhp);
         mhp = mhp * mimic_hit_dice.maxroll() / player_ptr->hit_dice.maxroll();
     }
 
@@ -1038,7 +1038,7 @@ static ACTION_SKILL_POWER calc_disarming(PlayerType *player_ptr)
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
     pow = tmp_race_ptr->r_dis + player_class.c_dis + player_personality.a_dis;
-    pow += ((cp_ptr->x_dis * player_ptr->lev / 10) + (player_ptr->personality->a_dis * player_ptr->lev / 50));
+    pow += ((cp_ptr->x_dis * player_ptr->lev / 10) + ((*player_ptr->personality).a_dis * player_ptr->lev / 50));
     pow += adj_dex_dis[player_ptr->stat_index[A_DEX]];
     pow += adj_int_dis[player_ptr->stat_index[A_INT]];
     return pow;
@@ -1070,7 +1070,7 @@ static ACTION_SKILL_POWER calc_device_ability(PlayerType *player_ptr)
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
     pow = tmp_race_ptr->r_dev + player_class.c_dev + player_personality.a_dev;
-    pow += ((player_class.x_dev * player_ptr->lev / 10) + (player_ptr->personality->a_dev * player_ptr->lev / 50));
+    pow += ((player_class.x_dev * player_ptr->lev / 10) + ((*player_ptr->personality).a_dev * player_ptr->lev / 50));
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         ItemEntity *o_ptr;
@@ -1126,7 +1126,7 @@ static ACTION_SKILL_POWER calc_saving_throw(PlayerType *player_ptr)
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
     pow = tmp_race_ptr->r_sav + player_class.c_sav + player_personality.a_sav;
-    pow += ((cp_ptr->x_sav * player_ptr->lev / 10) + (player_ptr->personality->a_sav * player_ptr->lev / 50));
+    pow += ((cp_ptr->x_sav * player_ptr->lev / 10) + ((*player_ptr->personality).a_sav * player_ptr->lev / 50));
 
     if (player_ptr->muta.has(PlayerMutationType::MAGIC_RES)) {
         pow += (15 + (player_ptr->lev / 5));
