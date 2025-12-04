@@ -714,7 +714,7 @@ static void update_max_mana(PlayerType *player_ptr)
     if (pc.equals(PlayerClassType::SAMURAI)) {
         msp = (adj_mag_mana[player_ptr->stat_index[mp_ptr->spell_stat]] + 10) * 2;
         if (msp) {
-            msp += (msp * rp_ptr->r_adj[mp_ptr->spell_stat] / 20);
+            msp += (msp * player_ptr->rp_ptr->r_adj[mp_ptr->spell_stat] / 20);
         }
     } else {
         msp = adj_mag_mana[player_ptr->stat_index[mp_ptr->spell_stat]] * (levels + 3) / 4;
@@ -722,7 +722,7 @@ static void update_max_mana(PlayerType *player_ptr)
             msp++;
         }
         if (msp) {
-            msp += (msp * rp_ptr->r_adj[mp_ptr->spell_stat] / 20);
+            msp += (msp * player_ptr->rp_ptr->r_adj[mp_ptr->spell_stat] / 20);
         }
         if (msp && (player_ptr->ppersonality == PERSONALITY_MUNCHKIN)) {
             msp += msp / 2;

@@ -606,7 +606,7 @@ void wiz_reset_race(PlayerType *player_ptr)
     }
 
     player_ptr->prace = *chosen_race;
-    rp_ptr = &race_info[enum2i(player_ptr->prace)];
+    player_ptr->rp_ptr = &race_info[enum2i(player_ptr->prace)];
     change_birth_flags();
     handle_stuff(player_ptr);
 }

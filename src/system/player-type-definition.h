@@ -20,6 +20,9 @@
 #include <map>
 #include <string>
 
+// Forward declarations
+struct player_race_info;
+
 enum class INCIDENT {
     WALK = 0,
     EAT = 1,
@@ -246,6 +249,8 @@ public:
     /*** Temporary fields ***/
 
     bool select_ring_slot{};
+
+    const player_race_info *rp_ptr{}; /* Current race info */
 
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */

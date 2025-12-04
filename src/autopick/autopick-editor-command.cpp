@@ -528,7 +528,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
             break;
         }
         const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
-            rp_ptr->title.en_string().data(), cp_ptr->title.en_string().data(),
+            player_ptr->rp_ptr->title.en_string().data(), cp_ptr->title.en_string().data(),
             player_ptr->lev);
         tb->cx = 0;
         insert_return_code(tb);

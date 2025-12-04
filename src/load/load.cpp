@@ -215,7 +215,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
     }
 
     sp_ptr = &sex_info[player_ptr->psex];
-    rp_ptr = &race_info[enum2i(player_ptr->prace)];
+    player_ptr->rp_ptr = &race_info[enum2i(player_ptr->prace)];
     cp_ptr = &class_info.at(player_ptr->pclass);
     ap_ptr = &personality_info[player_ptr->ppersonality];
 
