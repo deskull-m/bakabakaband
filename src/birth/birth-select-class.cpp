@@ -37,6 +37,7 @@ static void enumerate_class_list(PlayerType *player_ptr, char *sym)
 {
     for (auto n = 0; n < PLAYER_CLASS_TYPE_MAX; n++) {
         cp_ptr = &class_info.at(i2enum<PlayerClassType>(n));
+        player_ptr->pclass_info = &class_info.at(i2enum<PlayerClassType>(n));
         mp_ptr = &class_magics_info[n];
         if (n < 26) {
             sym[n] = I2A(n);
@@ -65,16 +66,17 @@ static std::string display_class_stat(PlayerType *player_ptr, int cs, int *os, c
         put_str("                                   ", 6, 40);
     } else {
         cp_ptr = &class_info.at(i2enum<PlayerClassType>(cs));
+        player_ptr->pclass_info = &class_info.at(i2enum<PlayerClassType>(cs));
         mp_ptr = &class_magics_info[cs];
 
-        c_put_str(TERM_L_BLUE, cp_ptr->title, 3, 40);
-        put_str(_("の職業修正", ": Class modification"), 3, 40 + cp_ptr->title->length());
+        c_put_str(TERM_L_BLUE, (*player_ptr->pclass_info).title, 3, 40);
+        put_str(_("の職業修正", ": Class modification"), 3, 40 + (*player_ptr->pclass_info).title->length());
         put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", cp_ptr->c_adj[0], cp_ptr->c_adj[1], cp_ptr->c_adj[2], cp_ptr->c_adj[3], cp_ptr->c_adj[4], cp_ptr->c_adj[5], cp_ptr->c_exp);
+        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", (*player_ptr->pclass_info).c_adj[0], (*player_ptr->pclass_info).c_adj[1], (*player_ptr->pclass_info).c_adj[2], (*player_ptr->pclass_info).c_adj[3], (*player_ptr->pclass_info).c_adj[4], (*player_ptr->pclass_info).c_adj[5], (*player_ptr->pclass_info).c_exp);
         c_put_str(TERM_L_BLUE, stats, 5, 40);
 
         put_str("HD", 6, 40);
-        const auto hd = format("%+3d", cp_ptr->c_mhp);
+        const auto hd = format("%+3d", (*player_ptr->pclass_info).c_mhp);
         c_put_str(TERM_L_BLUE, hd, 6, 42);
 
         put_str(_("隠密", "Stealth"), 6, 47);
@@ -82,7 +84,7 @@ static std::string display_class_stat(PlayerType *player_ptr, int cs, int *os, c
         if (i2enum<PlayerClassType>(cs) == PlayerClassType::BERSERKER) {
             stealth = " xx";
         } else {
-            stealth = format(" %+2d", cp_ptr->c_stl);
+            stealth = format(" %+2d", (*player_ptr->pclass_info).c_stl);
         }
         c_put_str(TERM_L_BLUE, stealth, 6, _(51, 54));
     }
@@ -214,7 +216,8 @@ bool get_player_class(PlayerType *player_ptr)
 
     player_ptr->pclass = i2enum<PlayerClassType>(k);
     cp_ptr = &class_info.at(player_ptr->pclass);
+    player_ptr->pclass_info = &class_info.at(player_ptr->pclass);
     mp_ptr = &class_magics_info[enum2i(player_ptr->pclass)];
-    c_put_str(TERM_L_BLUE, cp_ptr->title, 5, 15);
+    c_put_str(TERM_L_BLUE, (*player_ptr->pclass_info).title, 5, 15);
     return true;
 }

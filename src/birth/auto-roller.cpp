@@ -171,7 +171,7 @@ static void decide_initial_stat(PlayerType *player_ptr, int *cval)
  */
 static std::string cursor_of_adjusted_stat(PlayerType *player_ptr, const int *cval, int cs)
 {
-    auto j = player_ptr->race->r_adj[cs] + cp_ptr->c_adj[cs] + (*player_ptr->personality).a_adj[cs];
+    auto j = player_ptr->race->r_adj[cs] + (*player_ptr->pclass_info).c_adj[cs] + (*player_ptr->personality).a_adj[cs];
     auto m = adjust_stat(17, j);
     std::string maxv;
     if (m > 18) {
@@ -188,7 +188,7 @@ static std::string cursor_of_adjusted_stat(PlayerType *player_ptr, const int *cv
         inp = format("%2d", m);
     }
 
-    return format("%6s       %2d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], player_ptr->race->r_adj[cs], cp_ptr->c_adj[cs], (*player_ptr->personality).a_adj[cs], inp.data(), maxv.data());
+    return format("%6s       %2d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], player_ptr->race->r_adj[cs], (*player_ptr->pclass_info).c_adj[cs], (*player_ptr->personality).a_adj[cs], inp.data(), maxv.data());
 }
 
 /*!

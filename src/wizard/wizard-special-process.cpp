@@ -633,6 +633,7 @@ void wiz_reset_class(PlayerType *player_ptr)
 
     player_ptr->pclass = *chosen_class;
     cp_ptr = &class_info.at(player_ptr->pclass);
+    player_ptr->pclass_info = &class_info.at(player_ptr->pclass);
     mp_ptr = &class_magics_info[enum2i(player_ptr->pclass)];
     PlayerClass(player_ptr).init_specific_data();
     PlayerRealm pr(player_ptr);
