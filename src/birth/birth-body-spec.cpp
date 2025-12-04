@@ -15,14 +15,14 @@ void get_height_weight(PlayerType *player_ptr)
     int deviation;
     switch (player_ptr->psex) {
     case SEX_MALE:
-        player_ptr->ht = randnor(rp_ptr->m_b_ht, rp_ptr->m_m_ht);
-        deviation = (int)(player_ptr->ht) * 100 / (int)(rp_ptr->m_b_ht);
-        player_ptr->wt = randnor((int)(rp_ptr->m_b_wt) * deviation / 100, (int)(rp_ptr->m_m_wt) * deviation / 300);
+        player_ptr->ht = randnor(player_ptr->rp_ptr->m_b_ht, player_ptr->rp_ptr->m_m_ht);
+        deviation = (int)(player_ptr->ht) * 100 / (int)(player_ptr->rp_ptr->m_b_ht);
+        player_ptr->wt = randnor((int)(player_ptr->rp_ptr->m_b_wt) * deviation / 100, (int)(player_ptr->rp_ptr->m_m_wt) * deviation / 300);
         return;
     case SEX_FEMALE:
-        player_ptr->ht = randnor(rp_ptr->f_b_ht, rp_ptr->f_m_ht);
-        deviation = (int)(player_ptr->ht) * 100 / (int)(rp_ptr->f_b_ht);
-        player_ptr->wt = randnor((int)(rp_ptr->f_b_wt) * deviation / 100, (int)(rp_ptr->f_m_wt) * deviation / 300);
+        player_ptr->ht = randnor(player_ptr->rp_ptr->f_b_ht, player_ptr->rp_ptr->f_m_ht);
+        deviation = (int)(player_ptr->ht) * 100 / (int)(player_ptr->rp_ptr->f_b_ht);
+        player_ptr->wt = randnor((int)(player_ptr->rp_ptr->f_b_wt) * deviation / 100, (int)(player_ptr->rp_ptr->f_m_wt) * deviation / 300);
         return;
     default:
         return;
@@ -35,7 +35,7 @@ void get_height_weight(PlayerType *player_ptr)
  */
 void get_ahw(PlayerType *player_ptr)
 {
-    player_ptr->age = rp_ptr->b_age + randint1(rp_ptr->m_age);
+    player_ptr->age = player_ptr->rp_ptr->b_age + randint1(player_ptr->rp_ptr->m_age);
     get_height_weight(player_ptr);
 }
 

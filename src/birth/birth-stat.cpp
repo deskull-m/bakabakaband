@@ -97,7 +97,7 @@ void get_stats(PlayerType *player_ptr)
  */
 uint16_t get_expfact(PlayerType *player_ptr)
 {
-    uint16_t expfact = rp_ptr->r_exp;
+    uint16_t expfact = player_ptr->rp_ptr->r_exp;
 
     PlayerRace pr(player_ptr);
     if (!pr.equals(PlayerRaceType::ANDROID)) {
@@ -154,7 +154,7 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
     // 武術スタイルの初期設定
     player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
 
-    const auto r_mhp = is_sorcerer ? rp_ptr->r_mhp / 2 : rp_ptr->r_mhp;
+    const auto r_mhp = is_sorcerer ? player_ptr->rp_ptr->r_mhp / 2 : player_ptr->rp_ptr->r_mhp;
     player_ptr->hit_dice = Dice(1, r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
     if (roll_hitdie) {
         roll_hitdice(player_ptr, SPOP_NO_UPDATE);

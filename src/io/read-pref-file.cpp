@@ -279,7 +279,7 @@ void load_all_pref_files(PlayerType *player_ptr)
     process_pref_file(player_ptr, "user.prf");
     process_pref_file(player_ptr, format("user-%s.prf", ANGBAND_SYS));
     constexpr auto fmt = "%s.prf";
-    process_pref_file(player_ptr, format(fmt, rp_ptr->title.data()));
+    process_pref_file(player_ptr, format(fmt, player_ptr->rp_ptr->title.data()));
     process_pref_file(player_ptr, format(fmt, cp_ptr->title.data()));
     process_pref_file(player_ptr, format(fmt, player_ptr->base_name));
     PlayerRealm pr(player_ptr);
