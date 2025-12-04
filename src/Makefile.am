@@ -27,6 +27,7 @@ hengband_SOURCES = \
 	alliance/alliance-binzyou-buddhism.cpp alliance/alliance-binzyou-buddhism.h \
 	alliance/alliance-chinchintei.cpp alliance/alliance-chinchintei.h \
 	alliance/alliance-dokachans.cpp alliance/alliance-dokachans.h \
+	alliance/alliance-diabolique.cpp alliance/alliance-diabolique.h \
 	alliance/alliance-eldrazi.cpp alliance/alliance-eldrazi.h \
 	alliance/alliance-gaichi.cpp alliance/alliance-gaichi.h \
 	alliance/alliance-ge-orlic.cpp alliance/alliance-ge-orlic.h \
@@ -42,6 +43,7 @@ hengband_SOURCES = \
 	alliance/alliance-khorne.cpp alliance/alliance-khorne.h \
 	alliance/alliance-king.cpp alliance/alliance-king.h \
 	alliance/alliance-kogan-ryu.cpp alliance/alliance-kogan-ryu.h \
+	alliance/alliance-seitei.cpp alliance/alliance-seitei.h \
 	alliance/alliance-legendofsavior.cpp alliance/alliance-legendofsavior.h \
 	alliance/alliance-mabelode.cpp alliance/alliance-mabelode.h \
 	alliance/alliance-meldor.cpp alliance/alliance-meldor.h \
@@ -77,6 +79,7 @@ hengband_SOURCES = \
 	alliance/alliance-utumno.cpp alliance/alliance-utumno.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
 	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
+	alliance/alliance-soukaiya.cpp alliance/alliance-soukaiya.h \
 	alliance/alliance-arioch.cpp alliance/alliance-arioch.h \
 	alliance/alliance-aryan-family.cpp alliance/alliance-aryan-family.h \
 	alliance/alliance-basam-empire.cpp alliance/alliance-basam-empire.h \
@@ -86,6 +89,7 @@ hengband_SOURCES = \
 	alliance/alliance-ungoliant.cpp alliance/alliance-ungoliant.h \
 	alliance/alliance-xiombarg.cpp alliance/alliance-xiombarg.h \
 	alliance/alliance-valinor.cpp alliance/alliance-valinor.h \
+	alliance/alliance-yeek-kingdom.cpp alliance/alliance-yeek-kingdom.h \
 	\
 	artifact/artifact-info.cpp artifact/artifact-info.h \
 	artifact/fixed-art-generator.cpp artifact/fixed-art-generator.h \
@@ -159,6 +163,7 @@ hengband_SOURCES = \
 	cmd-action/cmd-attack.cpp cmd-action/cmd-attack.h \
 	cmd-action/cmd-hissatsu.cpp cmd-action/cmd-hissatsu.h \
 	cmd-action/cmd-mane.cpp cmd-action/cmd-mane.h \
+	cmd-action/cmd-martial-arts.cpp cmd-action/cmd-martial-arts.h \
 	cmd-action/cmd-mind.cpp cmd-action/cmd-mind.h \
 	cmd-action/cmd-move.cpp cmd-action/cmd-move.h \
 	cmd-action/cmd-open-close.cpp cmd-action/cmd-open-close.h \
@@ -210,6 +215,7 @@ hengband_SOURCES = \
 	combat/aura-counterattack.cpp combat/aura-counterattack.h \
 	combat/hallucination-attacks-table.cpp combat/hallucination-attacks-table.h \
 	combat/martial-arts-table.cpp combat/martial-arts-table.h \
+	combat/martial-arts-style.cpp combat/martial-arts-style.h \
 	combat/attack-accuracy.cpp combat/attack-accuracy.h \
 	combat/slaying.cpp combat/slaying.h \
 	combat/combat-options-type.h \
@@ -684,6 +690,7 @@ hengband_SOURCES = \
 	info-reader/skill-reader.cpp info-reader/skill-reader.h \
 	info-reader/spell-reader.cpp info-reader/spell-reader.h \
 	info-reader/vault-reader.cpp info-reader/vault-reader.h \
+	info-reader/vault-info-tokens-table.h \
 	\
 	inventory/floor-item-getter.cpp inventory/floor-item-getter.h \
 	inventory/inventory-curse.cpp inventory/inventory-curse.h \
@@ -744,6 +751,7 @@ hengband_SOURCES = \
 	knowledge/lighting-level-table.cpp knowledge/lighting-level-table.h \
 	knowledge/monster-group-table.cpp knowledge/monster-group-table.h \
 	\
+	load/alliance-loader.cpp load/alliance-loader.h \
 	load/birth-loader.cpp load/birth-loader.h \
 	load/dummy-loader.cpp load/dummy-loader.h \
 	load/dungeon-loader.cpp load/dungeon-loader.h \
@@ -922,6 +930,7 @@ hengband_SOURCES = \
 	\
 	monster-race/monster-aura-types.h \
 	monster-race/monster-kind-mask.cpp monster-race/monster-kind-mask.h \
+	monster-race/monster-kind-type-name.cpp monster-race/monster-kind-type-name.h \
 	monster-race/monster-race-hook.cpp monster-race/monster-race-hook.h \
 	monster-race/race-ability-flags.h \
 	monster-race/race-ability-mask.cpp monster-race/race-ability-mask.h \
@@ -976,6 +985,7 @@ hengband_SOURCES = \
 	mutation/gain-mutation-switcher.cpp mutation/gain-mutation-switcher.h \
 	mutation/lose-mutation-switcher.cpp mutation/lose-mutation-switcher.h \
 	mutation/mutation-calculator.cpp mutation/mutation-calculator.h \
+	mutation/mutation-data.cpp mutation/mutation-data.h \
 	mutation/mutation-investor-remover.cpp mutation/mutation-investor-remover.h \
 	mutation/mutation-util.cpp mutation/mutation-util.h \
 	mutation/mutation-flag-types.h \
@@ -1201,7 +1211,9 @@ hengband_SOURCES = \
 	room/space-finder.cpp room/space-finder.h \
 	room/treasure-deployment.cpp room/treasure-deployment.h \
 	room/vault-builder.cpp room/vault-builder.h \
+	room/vault-flag-types.h \
 	\
+	save/alliance-writer.cpp save/alliance-writer.h \
 	save/floor-writer.cpp save/floor-writer.h \
 	save/info-writer.cpp save/info-writer.h \
 	save/item-writer.cpp save/item-writer.h \
@@ -1324,6 +1336,7 @@ hengband_SOURCES = \
 	system/angband-version.cpp system/angband-version.h \
 	system/artifact-type-definition.cpp system/artifact-type-definition.h \
 	system/building-type-definition.cpp system/building-type-definition.h \
+	system/creature-entity.h \
 	system/grid-type-definition.cpp system/grid-type-definition.h \
 	system/h-basic.h system/h-config.h \
 	system/h-system.h system/h-type.h \
@@ -1373,6 +1386,8 @@ hengband_SOURCES = \
 	\
 	system/terrain/terrain-definition.cpp system/terrain/terrain-definition.h \
 	system/terrain/terrain-list.cpp system/terrain/terrain-list.h \
+	\
+	terrain/terrain-processor.cpp terrain/terrain-processor.h \
 	\
 	target/grid-selector.cpp target/grid-selector.h \
 	target/projection-path-calculator.cpp target/projection-path-calculator.h \
@@ -1472,6 +1487,7 @@ hengband_SOURCES = \
 	wizard/tval-descriptions-table.cpp wizard/tval-descriptions-table.h \
 	wizard/wizard-game-modifier.cpp wizard/wizard-game-modifier.h \
 	wizard/wizard-item-modifier.cpp wizard/wizard-item-modifier.h \
+	wizard/wizard-mutation.cpp wizard/wizard-mutation.h \
 	wizard/wizard-player-modifier.cpp wizard/wizard-player-modifier.h \
 	wizard/wizard-messages.cpp wizard/wizard-messages.h \
 	wizard/wizard-spells.cpp wizard/wizard-spells.h \
@@ -1479,6 +1495,7 @@ hengband_SOURCES = \
 	wizard/wizard-special-process.cpp wizard/wizard-special-process.h \
 	\
 	world/world.cpp world/world.h \
+	world/world-alliance-processor.cpp world/world-alliance-processor.h \
 	world/world-collapsion.cpp world/world-collapsion.h \
 	world/world-object.cpp world/world-object.h \
 	world/world-movement-processor.cpp world/world-movement-processor.h \

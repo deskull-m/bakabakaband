@@ -39,6 +39,7 @@ room_info_type room_info_normal[ROOM_TYPE_MAX] = {
     { { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21 }, 1 }, /*PERVO      */
     { { 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 }, 3 }, /*MAZE   */
     { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 3 }, /*HOUSE ダンジョンでバイアス指定しない限り生成しない   */
+    { { 0, 1, 1, 1, 2, 2, 3, 4, 5, 6, 7 }, 15 }, /*THRONE_ROOM */
 };
 
 /*! 部屋の生成処理順 / Build rooms in descending order of difficulty. */
@@ -46,6 +47,7 @@ RoomType room_build_order[ROOM_TYPE_MAX] = {
     RoomType::GREATER_VAULT,
     RoomType::ARCADE,
     RoomType::RANDOM_VAULT,
+    RoomType::THRONE_ROOM,
     RoomType::LESSER_VAULT,
     RoomType::TRAP_PIT,
     RoomType::PIT,

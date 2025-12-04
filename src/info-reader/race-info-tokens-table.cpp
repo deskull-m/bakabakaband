@@ -87,6 +87,7 @@ const std::unordered_map<std::string_view, RaceBlowMethodType> r_info_blow_metho
     { "STAMP", RaceBlowMethodType::STAMP },
     { "FECES", RaceBlowMethodType::FECES },
     { "PUTAWAY", RaceBlowMethodType::PUTAWAY },
+    { "CHOKE", RaceBlowMethodType::CHOKE },
 };
 
 /*!
@@ -135,6 +136,7 @@ const std::unordered_map<std::string_view, RaceBlowEffectType> r_info_blow_effec
     { "DEFECATE", RaceBlowEffectType::DEFECATE },
     { "SANITY_BLAST", RaceBlowEffectType::SANITY_BLAST },
     { "LOCKUP", RaceBlowEffectType::LOCKUP },
+    { "DESTROY_ASSHOLE", RaceBlowEffectType::DESTROY_ASSHOLE },
 };
 
 /*!
@@ -244,6 +246,8 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_SPIDER", MonsterAbilityType::S_SPIDER },
 	{"S_HOUND", MonsterAbilityType::S_HOUND },
 	{"S_HYDRA", MonsterAbilityType::S_HYDRA },
+	{"S_FAIRY", MonsterAbilityType::S_FAIRY },
+	{"S_BIRD", MonsterAbilityType::S_BIRD },
 	{"S_ANGEL", MonsterAbilityType::S_ANGEL },
 	{"S_DEMON", MonsterAbilityType::S_DEMON },
 	{"S_UNDEAD", MonsterAbilityType::S_UNDEAD },
@@ -251,8 +255,12 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_HI_UNDEAD", MonsterAbilityType::S_HI_UNDEAD },
 	{"S_HI_DRAGON", MonsterAbilityType::S_HI_DRAGON },
 	{"S_AMBERITES", MonsterAbilityType::S_AMBERITES },
+	{"S_CHOASIANS", MonsterAbilityType::S_CHOASIANS },
 	{"S_UNIQUE", MonsterAbilityType::S_UNIQUE },
 	{"S_DEAD_UNIQUE", MonsterAbilityType::S_DEAD_UNIQUE },
+	{"S_CAT", MonsterAbilityType::S_CAT },
+	{"S_WALL", MonsterAbilityType::S_WALL },
+	{"S_INSECT", MonsterAbilityType::S_INSECT },
 };
 /* clang-format on */
 
@@ -389,6 +397,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "EVIL", MonsterKindType::EVIL },
     { "ANIMAL", MonsterKindType::ANIMAL },
     { "AMBERITE", MonsterKindType::AMBERITE },
+    { "CHOASIAN", MonsterKindType::CHOASIAN },
     { "GOOD", MonsterKindType::GOOD },
     { "NONLIVING", MonsterKindType::NONLIVING },
     { "ANGEL", MonsterKindType::ANGEL },
@@ -400,6 +409,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "QUYLTHLUG", MonsterKindType::QUYLTHLUG },
     { "SPIDER", MonsterKindType::SPIDER },
     { "WARRIOR", MonsterKindType::WARRIOR },
+    { "SOLDIER", MonsterKindType::SOLDIER },
     { "ROGUE", MonsterKindType::ROGUE },
     { "MAGE", MonsterKindType::MAGE },
     { "PRIEST", MonsterKindType::PRIEST },
@@ -417,12 +427,112 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "ELEMENTAL", MonsterKindType::ELEMENTAL },
     { "GOLEM", MonsterKindType::GOLEM },
     { "PUYO", MonsterKindType::PUYO },
+    { "INSECT", MonsterKindType::INSECT },
     { "ROBOT", MonsterKindType::ROBOT },
     { "YAZYU", MonsterKindType::YAZYU },
     { "SKELETON", MonsterKindType::SKELETON },
+    { "CANCER", MonsterKindType::CANCER },
+    { "FUNGAS", MonsterKindType::FUNGAS },
+    { "TURTLE", MonsterKindType::TURTLE },
+    { "MIMIC", MonsterKindType::MIMIC },
+    { "IXITXACHITL", MonsterKindType::IXITXACHITL },
+    { "NAGA", MonsterKindType::NAGA },
+    { "PERVERT", MonsterKindType::PERVERT },
+    { "ZOMBIE", MonsterKindType::ZOMBIE },
     { "DOG", MonsterKindType::DOG },
     { "CAT", MonsterKindType::CAT },
+    { "RABBIT", MonsterKindType::RABBIT },
+    { "PEASANT", MonsterKindType::PEASANT },
+    { "RABBLE", MonsterKindType::RABBLE },
+    { "NOBLE", MonsterKindType::NOBLE },
+    { "BEAST", MonsterKindType::BEAST },
+    { "LEECH", MonsterKindType::LEECH },
+    { "JELLYFISH", MonsterKindType::JELLYFISH },
+    { "CITIZEN", MonsterKindType::CITIZEN },
+    { "TREEFOLK", MonsterKindType::TREEFOLK },
+    { "VIRUS", MonsterKindType::VIRUS },
+    { "SPHINX", MonsterKindType::SPHINX },
+    { "SCORPION", MonsterKindType::SCORPION },
+    { "MINDCRAFTER", MonsterKindType::MINDCRAFTER },
+    { "TANUKI", MonsterKindType::TANUKI },
+    { "CHAMELEON", MonsterKindType::CHAMELEON },
     { "MONKEY_SPACE", MonsterKindType::MONKEY_SPACE }, // 猿空間
+    { "APE", MonsterKindType::APE }, // 類人猿
+    { "HORSE", MonsterKindType::HORSE }, // 馬
+    { "FROG", MonsterKindType::FROG }, // カエル
+    { "BEHOLDER", MonsterKindType::BEHOLDER }, // ビホルダー
+    { "YEEK", MonsterKindType::YEEK }, // イーク
+    { "AQUATIC_MAMMAL", MonsterKindType::AQUATIC_MAMMAL }, // 水棲哺乳類
+    { "FISH", MonsterKindType::FISH }, // 魚類
+    { "BIRD", MonsterKindType::BIRD }, // 鳥類
+    { "WALL", MonsterKindType::WALL }, // 壁
+    { "PLANT", MonsterKindType::PLANT }, // 植物
+    { "FUNGUS", MonsterKindType::FUNGUS }, // 菌類
+    { "TURTLE", MonsterKindType::TURTLE }, // 亀
+    { "SNAKE", MonsterKindType::SNAKE }, // 蛇
+    { "FAIRY", MonsterKindType::FAIRY }, // 妖精
+    { "VAMPIRE", MonsterKindType::VAMPIRE }, // 吸血鬼
+    { "BEAR", MonsterKindType::BEAR }, // 熊
+    { "VORTEX", MonsterKindType::VORTEX }, // ボルテックス
+    { "OOZE", MonsterKindType::OOZE }, // ウーズ
+    { "DINOSAUR", MonsterKindType::DINOSAUR }, // 恐竜
+    { "LICH", MonsterKindType::LICH }, // リッチ
+    { "GHOST", MonsterKindType::GHOST }, // 幽霊
+    { "BERSERK", MonsterKindType::BERSERK }, // 狂戦士
+    { "EXPLOSIVE", MonsterKindType::EXPLOSIVE }, // 爆発物
+    { "RAT", MonsterKindType::RAT }, // ネズミ
+    { "MINOTAUR", MonsterKindType::MINOTAUR }, // ミノタウロス
+    { "SKAVEN", MonsterKindType::SKAVEN }, // スケイヴン
+    { "KOBOLD", MonsterKindType::KOBOLD }, // コボルド
+    { "OGRE", MonsterKindType::OGRE }, // オーガ
+    { "BOVINE", MonsterKindType::BOVINE }, // 牛
+    { "MERFOLK", MonsterKindType::MERFOLK }, // マーフォーク
+    { "SHARK", MonsterKindType::SHARK }, // サメ
+    { "HYDRA", MonsterKindType::HYDRA }, // ヒドラ
+    { "SHIP", MonsterKindType::SHIP }, // 船舶
+    { "SLUG", MonsterKindType::SLUG }, // ナメクジ
+    { "EYE", MonsterKindType::EYE }, // 目
+    { "ALIEN", MonsterKindType::ALIEN }, // 異星人
+    { "GRANDMA", MonsterKindType::GRANDMA }, // ババア
+    { "PAPER", MonsterKindType::PAPER }, // 紙で出来た
+    { "DEEPONE", MonsterKindType::DEEPONE }, // 深きもの
+    { "PHYREXIAN", MonsterKindType::PHYREXIAN }, // ファイレクシア人
+    { "HORROR", MonsterKindType::HORROR }, // ホラー
+    { "WORM", MonsterKindType::WORM }, // ワーム
+    { "OCTOPUS", MonsterKindType::OCTOPUS }, // タコ
+    { "SQUID", MonsterKindType::SQUID }, // イカ
+    { "FACE", MonsterKindType::FACE }, // 顔面
+    { "HAND", MonsterKindType::HAND }, // 手
+    { "MINDFLAYER", MonsterKindType::MINDFLAYER }, // マインドフレア
+    { "NIBELUNG", MonsterKindType::NIBELUNG }, // ニーベルング
+    { "GNOME", MonsterKindType::GNOME }, // ノーム
+    { "KRAKEN", MonsterKindType::KRAKEN }, // クラーケン
+    { "HARPY", MonsterKindType::HARPY }, // ハーピー
+    { "ALARM", MonsterKindType::ALARM }, // 警報機
+    { "DEER", MonsterKindType::DEER }, // 鹿
+    { "ELEPHANT", MonsterKindType::ELEPHANT }, // 象
+    { "LIZARD", MonsterKindType::LIZARD }, // トカゲ
+    { "AVATAR", MonsterKindType::AVATAR }, // アヴァター
+    { "NIGHTSHADE", MonsterKindType::NIGHTSHADE }, // ナイトシェード
+    { "HIPPO", MonsterKindType::HIPPO }, // カバ
+    { "BAT", MonsterKindType::BAT }, // コウモリ
+    { "PLANESWALKER", MonsterKindType::PLANESWALKER }, // プレインズウォーカー
+    { "BOAR", MonsterKindType::BOAR }, // 猪
+    { "ARCHER", MonsterKindType::ARCHER }, // アーチャー
+    { "SQUIRREL", MonsterKindType::SQUIRREL }, // リス
+    { "BARD", MonsterKindType::BARD }, // 呀遊詩人
+    { "MAGICAL_GIRL", MonsterKindType::MAGICAL_GIRL }, // 魔法少女
+    { "WEREWOLF", MonsterKindType::WEREWOLF }, // 人狼
+};
+
+const std::unordered_map<std::string_view, MonsterEraType> r_info_era_flags = {
+    { "PREHISTORIC", MonsterEraType::PREHISTORIC }, // 先史時代級
+    { "ANCIENT", MonsterEraType::ANCIENT }, // 古代級
+    { "MEDIEVAL", MonsterEraType::MEDIEVAL }, // 中世級
+    { "EARLY_MODERN", MonsterEraType::EARLY_MODERN }, // 近代級
+    { "MODERN", MonsterEraType::MODERN }, // 現代級
+    { "INFORMATION_AGE", MonsterEraType::INFORMATION_AGE }, // 情報化時代級
+    { "NANOTECH", MonsterEraType::NANOTECH }, // ナノテク級
 };
 
 const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = {
@@ -474,6 +584,7 @@ const std::unordered_map<std::string_view, MonsterFeatureType> r_info_feature_fl
     { "AQUATIC", MonsterFeatureType::AQUATIC },
     { "CAN_SWIM", MonsterFeatureType::CAN_SWIM },
     { "CAN_FLY", MonsterFeatureType::CAN_FLY },
+    { "RAILWAY_ONLY", MonsterFeatureType::RAILWAY_ONLY },
 };
 
 const std::unordered_map<std::string_view, MonsterPopulationType> r_info_population_flags = {
@@ -548,8 +659,11 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "HOME_ONLY", MonsterMiscType::HOME_ONLY },
     { "SCATOLOGIST", MonsterMiscType::SCATOLOGIST },
     { "MASOCHIST", MonsterMiscType::MASOCHIST },
+    { "SADIST", MonsterMiscType::SADIST },
     { "BREAK_DOWN", MonsterMiscType::BREAK_DOWN },
     { "NO_WAIFUZATION", MonsterMiscType::NO_WAIFUZATION },
+    { "DIURNAL", MonsterMiscType::DIURNAL },
+    { "NOCTURNAL", MonsterMiscType::NOCTURNAL },
 };
 
 const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {

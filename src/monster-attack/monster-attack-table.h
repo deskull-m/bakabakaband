@@ -43,6 +43,7 @@ enum class RaceBlowMethodType {
     STAMP = 29, /*!< モンスターの攻撃種別:踏みつける */
     FECES = 30, /*!< モンスターの攻撃種別:糞を塗りたくる */
     PUTAWAY = 31, /*!< モンスターの攻撃種別:しまっちゃう */
+    CHOKE = 32, /*!< モンスターの攻撃種別:絞める */
 
     MAX, /*!< enum バリアント数 */
 };
@@ -53,3 +54,9 @@ struct mbe_info_type {
 };
 
 extern const mbe_info_type mbe_info[static_cast<int>(RaceBlowEffectType::MAX)];
+
+#include <string>
+std::string get_blow_method_name(RaceBlowMethodType method);
+std::string get_blow_method_tag(RaceBlowMethodType method);
+std::string get_blow_effect_name(RaceBlowEffectType effect);
+std::string get_blow_effect_tag(RaceBlowEffectType effect);

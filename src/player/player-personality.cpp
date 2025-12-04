@@ -82,6 +82,11 @@ const player_personality personality_info[MAX_PERSONALITIES] = {
         20, 40, 30, 10, 40, 40, 80, 80,
         20, 0, 0 },
 
+    { { "メスガキ", "Mesugaki" },
+        { -1, 2, -1, 2, 0, 3 },
+        8, 3, -2, 2, 6, 4, -5, 5,
+        0, 1, 1 },
+
 };
 
-const player_personality *ap_ptr;
+// ap_ptr is now a member named 'personality' in PlayerType

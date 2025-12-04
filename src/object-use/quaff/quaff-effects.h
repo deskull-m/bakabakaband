@@ -30,4 +30,5 @@ private:
     bool neo_tsuyoshi();
     bool tsuyoshi();
     bool polymorph();
+    bool mesudachi();
 };

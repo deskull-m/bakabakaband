@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 enum class MonraceId : int16_t {
     PLAYER = 0,
     FILTHY_URCHIN = 1,
@@ -17,6 +19,7 @@ enum class MonraceId : int16_t {
     SWORDFISH = 88,
     NOV_PALADIN = 97,
     NOV_PRIEST_G = 109,
+    NIBELUNG = 111, // ニーベルング
     SILVER_COINS = 117,
     D_ELF = 122,
     MANES = 128,
@@ -24,12 +27,14 @@ enum class MonraceId : int16_t {
     PHANTOM_W = 152,
     WOUNDED_BEAR = 159,
     D_ELF_MAGE = 178,
+    ORFAX = 180, // ボルドールの息子『オルファックス』
     D_ELF_WARRIOR = 182,
     BLUE_HORROR = 189,
     GOLD_COINS = 195,
     MASTER_YEEK = 224,
     PRIEST = 225,
     D_ELF_PRIEST = 226,
+    BOLDOR = 237, // イークの大王『ボルドール』
     MITHRIL_COINS = 239,
     PINK_HORROR = 242,
     IMP = 296,
@@ -40,28 +45,36 @@ enum class MonraceId : int16_t {
     ARCH_VILE = 357,
     JADE_MONK = 370,
     D_ELF_WARLOCK = 375,
+    MIME = 382, // ニーベルング族の『ミーメ』
+    HAGEN = 383, // アルベリヒの息子『ハーゲン』
     MENELDOR = 384,
     PHANTOM_B = 385,
     D_ELF_DRUID = 400,
     GWAIHIR = 410,
+    ALBERICH = 419, // ニーベルング族の王『アルベリヒ』
     ADAMANT_COINS = 423,
     COLBRAN = 435,
     MITHRIL_GOLEM = 464,
     THORONDOR = 468,
+    SHELOB = 481, // 闇の蜘蛛『シェロブ』
     GHOUL_KING = 483,
     NINJA = 485,
     BICLOPS = 490,
     IVORY_MONK = 492,
     GOEMON = 505,
     WATER_ELEM = 512,
+    JURT = 517, // 人間トランプ『ジャート』
     BLOODLETTER = 523,
     STAR_VAMPIRE = 536,
     RAAL = 557,
     NIGHTBLADE = 564,
+    LORD_BOREL = 573, // 『ボレル公爵』
     PLASMA_VORTEX = 588,
     SKY_WHALE = 594,
+    MANDOR = 598, // ログルスの達人『マンドール』
     BARON_HELL = 609,
     ANCIENT_CRISTAL_DRAGON = 646,
+    STRYGALLDWIR = 651, // 『ストリガルドワー』
     FALLEN_ANGEL = 652,
     D_ELF_SORC = 657,
     DREADMASTER = 690,
@@ -78,17 +91,20 @@ enum class MonraceId : int16_t {
     SANTA = 733,
     LORD_CHAOS = 737,
     NIGHTWALKER = 768,
+    SARUMAN = 771,
     SHADOWLORD = 774,
     JABBERWOCK = 778,
     SHAMBLER = 786,
     TIAMAT = 795,
     BLACK_REAVER = 798,
+    UNGOLIANT = 808, // 光なき闇の大蜘蛛『ウンゴリアント』
     UNMAKER = 815,
     CYBER = 816,
     ANGMAR = 825,
     WYRM_POWER = 847,
     JORMUNGAND = 854,
     SAURON = 858,
+    ANNATAR = 858, // アンナタール（サウロンの別名）
     UNICORN_ORD = 859,
     OBERON = 860,
     MORGOTH = 861,
@@ -125,6 +141,12 @@ enum class MonraceId : int16_t {
     CHEST_MIMIC_02 = 965,
     LUIGI = 966,
     JAIAN = 967,
+
+    // アヴァリ諸侯同盟 (Avarin Lords)
+    EOL_DARK_ELF_SMITH = 976, // ダークエルフの鍛冶師『エオル』
+    MAEGLIN_BETRAYER = 977, // ゴンドリンを裏切りし『マイグリン』
+
+    AR_PHARAZON = 978,
     FENGHUANG = 988,
     SUKE = 1001,
     KAKU = 1002,
@@ -151,6 +173,20 @@ enum class MonraceId : int16_t {
     TANUKI = 1067,
     ALIEN_JURAL = 1082,
     JURAL_WITCHKING = 1089,
+    IWAMOTO_KOGAN = 1096,
+    // Amberites
+    JASRA = 642, // ブランドの情婦『ジャスラ』
+    RINALDO = 660, // ブランドの息子『リナルド』
+    DWORKIN = 763, // 線の巨匠『ドワーキン』
+    BRAND = 773, // アンバーの狂気の夢想家『ブランド』
+    BLEYS = 789, // ごまかしの名手『ブレイズ』
+    FIONA = 791, // 女魔術師『フィオナ』
+    JULIAN = 794, // アーデンの森の主『ジュリアン』
+    CAINE = 799, // 陰謀家『ケイン』
+    GERARD = 807, // アンバーの強者『ジェラード』
+    ERIC = 813, // 王位簒奪者『エリック』
+    CORWIN = 820, // アヴァロンの主『コーウィン』
+    BENEDICT = 824, // 理想の戦士『ベネディクト』
     MIDDLE_AQUA_FIRST = 1152,
     LARGE_AQUA_FIRST = 1153,
     EXTRA_LARGE_AQUA_FIRST = 1154,
@@ -171,6 +207,15 @@ enum class MonraceId : int16_t {
     FOLLOWER_WARRIOR = 1210,
     FOLLOWER_MAGE = 1211,
     MIRAAK = 1212,
+
+    // 芦名一門 (Ashina Clan)
+    GENICHIRO_ASHINA = 1123, // 巴流『葦名弦一郎』
+    NAOMORI_KAWARADA = 1313, // 侍大将『川原田直盛』
+    ASHINA_ASHIGARU = 1479, // 葦名の足軽
+    ASHINA_RYU_DISCIPLE = 1488, // 葦名流門弟
+    TARO_SOLDIER = 1489, // 太郎兵
+    CHAINED_OGRE_ASHINA = 1490, // 葦名の赤鬼
+    SHIGENORI_YAMAUCHI = 1726, // 組頭『山内重則』
     SCARAB = 1220,
     IMHOTEP = 1221,
     EDGE = 1245,
@@ -185,11 +230,13 @@ enum class MonraceId : int16_t {
     BIG_RAVEN = 1268,
     MELKO = 1287,
     STOLENMAN = 1288,
+    KOMODO_DRAGON = 1297, // コモドドラゴン
     DOKACHAN = 1307,
     OLDMAN_60TY = 1353,
     BROTHER_45TH = 1354,
     YENDOR_WIZARD_1 = 1360,
     YENDOR_WIZARD_2 = 1361,
+    RAVEN_THE_GRIEF = 1602, // 悲しみのレイベン
     DOPPIO = 1366,
     DIAVOLO = 1367,
     MANIMANI = 1368,
@@ -215,26 +262,58 @@ enum class MonraceId : int16_t {
     INARIMAN_2 = 1519,
     INARIMAN_3 = 1520,
     CHEST_MIMIC_03 = 1529,
+    LEGOLAS = 1940, // 緑葉の『レゴラス』
+    THRANDUIL = 1946, // 森エルフの王『スランドゥイル』
     CHEST_MIMIC_04 = 1530,
     CHEST_MIMIC_11 = 1531,
     SHITTO_MASK = 1546,
+    HUMAN_FACE_LOCOMOTIVE = 1544, // 人面機関車
+    AVARIN_RANGER = 1566, // アヴァリ族のレンジャー
     JURAL_MONS = 1583,
+    NUMENOR_INFANTRY = 1586, // ヌメノール装甲歩兵
     BINZYOU_MUR = 1587,
     PRINCESS_KETHOLDETH = 1590,
     SUREN = 1810,
+    BINZYOU_BUDDHISM_MONK = 2199, // 便乗仏教修行僧
+    FEANOR = 1811,
+    PAWN_OF_KING_SUREN = 1813, // スレン王の兵卒
+    GREAT_PAWN_OF_KING_SUREN = 1814, // スレン王の重兵卒
+    KNIGHT_OF_KING_SUREN = 1815, // スレン王の騎士
+    GREAT_KNIGHT_OF_KING_SUREN = 1816, // スレン王の重騎士
+    TOPHAMHATT_ENGINEER = 2254, // トップハム・ハット一族の技師
     // GOLAN
     GOLAN_COLONEL = 1607,
     GOLAN_MAD = 1608,
     GOLAN_SOLDIER = 1687,
     KACHO_CAT = 1688,
     GOLAN_OFFICER = 1692,
+    MR_HEART = 1704,
+    KING_SPADE = 1762,
+    KING_DIA = 1763,
+    KING_CLUB = 1764,
+    FINGOLFIN = 1825,
     GOLAN_RED_BELET = 1828,
     KACHO_ANGEL = 1844,
+    DIABOLIQUE_GOLDO = 1861,
+    KAMAKURAKUN = 1986, // 忍者『カマクラくん』
+    SANTOS = 1987, // タフガイ『サントス』
+    ROSESABU = 1988, // 剣士『ロースサブ』
+    MASTER_CHEN = 1989, // 師匠『チンさん』
+    DIABOLIQUE_KAENOH = 1975,
+    DIABOLIQUE_AZURITE = 1993,
+    DIABOLIQUE_FATRAS = 1994,
+    DIABOLIQUE_PENGZU = 1995,
     KHORNE_CHOSEN = 2003,
     SLAANESH_CHOSEN = 2005,
+    BIG_EYE = 2028, // アーリアン・ファミリーのボス『ビッグ・アイ』
+    NIBELUNG_ASSASSIN = 2047, // ニーベルングの暗殺者
     LAFFEY_II = 2151,
     BUNBUN_STRIKERS = 2152,
+    GWYN = 2203, // 太陽の光の王『グウィン』
     KHORNE = 2234,
+    ARYAN_FAMILY_MEMBER = 2256, // アーリアン・ファミリーの構成員
+    OGRES_KING = 2257, // 『オゴレス王』
+    OLD_KING_ALLANT = 2262, // 老王『オーラント』
     GAICHI_MOA = 2267,
     BIO_CORE = 2269,
     SS_80_X_ATRAS = 2270,
@@ -242,6 +321,8 @@ enum class MonraceId : int16_t {
     GX_87_X_KILROY = 2272,
     M_77_X_TRIGGER = 2273,
     IDE = 2277,
+    KING_SHIN = 2281,
+    KING_SOLDIER = 2282,
     POLYGON_SPIN = -1, // TODO: 変愚から後日移植
     HUNGRY_OLD_MAN = -2 // TODO: 変愚から後日移植
 };

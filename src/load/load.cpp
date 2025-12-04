@@ -16,6 +16,7 @@
 #include "io/files-util.h"
 #include "io/report.h"
 #include "io/uid-checker.h"
+#include "load/alliance-loader.h"
 #include "load/dummy-loader.h"
 #include "load/dungeon-loader.h"
 #include "load/extra-loader.h"
@@ -116,6 +117,7 @@ static void load_player_world(PlayerType *player_ptr)
     rd_total_play_time();
     rd_world_info();
     rd_winner_class();
+    rd_alliance_base_power();
     rd_base_info(player_ptr);
     rd_player_info(player_ptr);
     preserve_mode = rd_bool();
@@ -213,9 +215,10 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
     }
 
     sp_ptr = &sex_info[player_ptr->psex];
-    rp_ptr = &race_info[enum2i(player_ptr->prace)];
+    player_ptr->race = &race_info[enum2i(player_ptr->prace)];
     cp_ptr = &class_info.at(player_ptr->pclass);
-    ap_ptr = &personality_info[player_ptr->ppersonality];
+    player_ptr->pclass_ref = &class_info.at(player_ptr->pclass);
+    player_ptr->personality = &personality_info[player_ptr->ppersonality];
 
     auto short_pclass = enum2i(player_ptr->pclass);
     mp_ptr = &class_magics_info[short_pclass];
@@ -285,7 +288,7 @@ static errr rd_savefile(PlayerType *player_ptr)
 static bool reset_save_data(PlayerType *player_ptr, bool *new_game)
 {
     *new_game = true;
-    player_ptr->is_dead = false;
+    player_ptr->is_dead_ = false;
     AngbandWorld::get_instance().sf_lives++;
     return true;
 }
@@ -332,7 +335,7 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
 {
     auto what = "generic";
     AngbandWorld::get_instance().game_turn = 0;
-    player_ptr->is_dead = false;
+    player_ptr->is_dead_ = false;
     if (savefile.empty()) {
         return true;
     }
@@ -420,7 +423,7 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
         return on_read_save_data_not_supported(player_ptr, new_game);
     }
 
-    if (player_ptr->is_dead || wc_ptr->is_blown_away()) {
+    if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
         return reset_save_data(player_ptr, new_game);
     }
 

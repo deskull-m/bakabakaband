@@ -59,7 +59,7 @@ bool android_inside_weapon(PlayerType *player_ptr)
 void calc_android_exp(PlayerType *player_ptr)
 {
     uint32_t total_exp = 0;
-    if (player_ptr->is_dead || !PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (player_ptr->is_dead() || !PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 

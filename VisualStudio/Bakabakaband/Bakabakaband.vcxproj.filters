@@ -2558,7 +2558,6 @@
     <ClCompile Include="..\..\src\io\macro-configurations-store.cpp">
       <Filter>io</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\alliance\alliance-jural.cpp" />
     <ClCompile Include="..\..\src\main-win\main-win-exception.cpp" />
     <ClCompile Include="..\..\src\util\candidate-selector.cpp" />
     <ClCompile Include="..\..\src\world\world-object.cpp" />
@@ -2604,7 +2603,6 @@
     <ClCompile Include="..\..\src\alliance\alliance-cookie-grandma.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\alliance\alliance-hide.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-gondor.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
@@ -2632,7 +2630,6 @@
     <ClCompile Include="..\..\src\alliance\alliance-basam-empire.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\alliance\alliance-hionhurn.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-chardros.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
@@ -2645,18 +2642,12 @@
     <ClCompile Include="..\..\src\alliance\alliance-mabelode.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\alliance\alliance-anor-londo.cpp" />
-    <ClCompile Include="..\..\src\alliance\alliance-boletaria.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-ide.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\alliance\alliance-valinor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-ketholdeth.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\alliance\alliance-eldrazi.cpp" />
-    <ClCompile Include="..\..\src\alliance\alliance-kogan-ryu.cpp" />
-    <ClCompile Include="..\..\src\alliance\alliance-numenor.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-khaine.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
@@ -2740,6 +2731,65 @@
     </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-nanto-orthodox.cpp">
       <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-seitei.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-diabolique.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cmd-action\cmd-martial-arts.cpp" />
+    <ClCompile Include="..\..\src\combat\martial-arts-style.cpp" />
+    <ClCompile Include="..\..\src\terrain\terrain-processor.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-anor-londo.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-boletaria.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-eldrazi.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hide.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-hionhurn.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-jural.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-kogan-ryu.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-numenor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-valinor.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-soukaiya.cpp" />
+    <ClCompile Include="..\..\src\monster-race\monster-kind-type-name.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-yeek-kingdom.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\load\alliance-loader.cpp">
+      <Filter>load</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\save\alliance-writer.cpp">
+      <Filter>save</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\world\world-alliance-processor.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\monster-race\monster-era-type-name.cpp">
+      <Filter>monster-race</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\wizard\wizard-mutation.cpp">
+      <Filter>wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mutation\mutation-data.cpp">
+      <Filter>mutation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5780,7 +5830,6 @@
     <ClInclude Include="..\..\src\alliance\alliance-cookie-grandma.h">
       <Filter>alliance</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\alliance\alliance-hide.h" />
     <ClInclude Include="..\..\src\alliance\alliance-gondor.h">
       <Filter>alliance</Filter>
     </ClInclude>
@@ -5808,7 +5857,6 @@
     <ClInclude Include="..\..\src\alliance\alliance-basam-empire.h">
       <Filter>alliance</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\alliance\alliance-hionhurn.h" />
     <ClInclude Include="..\..\src\alliance\alliance-chardros.h">
       <Filter>alliance</Filter>
     </ClInclude>
@@ -5821,18 +5869,12 @@
     <ClInclude Include="..\..\src\alliance\alliance-mabelode.h">
       <Filter>alliance</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\alliance\alliance-anor-londo.h" />
-    <ClInclude Include="..\..\src\alliance\alliance-boletaria.h" />
     <ClInclude Include="..\..\src\alliance\alliance-ide.h">
       <Filter>alliance</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\alliance\alliance-valinor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-ketholdeth.h">
       <Filter>alliance</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\alliance\alliance-eldrazi.h" />
-    <ClInclude Include="..\..\src\alliance\alliance-kogan-ryu.h" />
-    <ClInclude Include="..\..\src\alliance\alliance-numenor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-khaine.h">
       <Filter>alliance</Filter>
     </ClInclude>
@@ -5919,6 +5961,68 @@
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-nanto-orthodox.h">
       <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-seitei.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-diabolique.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\cmd-action\cmd-martial-arts.h" />
+    <ClInclude Include="..\..\src\combat\martial-arts-style.h" />
+    <ClInclude Include="..\..\src\terrain\terrain-processor.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-anor-londo.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-boletaria.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-eldrazi.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hide.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-hionhurn.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-kogan-ryu.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-numenor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-valinor.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-soukaiya.h" />
+    <ClInclude Include="..\..\src\monster-race\monster-kind-type-name.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-yeek-kingdom.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\load\alliance-loader.h">
+      <Filter>load</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\save\alliance-writer.h">
+      <Filter>save</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\world\world-alliance-processor.h">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\creature-entity.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\monster-race\race-era-flags.h">
+      <Filter>monster-race</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\monster-race\monster-era-type-name.h">
+      <Filter>monster-race</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\wizard\wizard-mutation.h">
+      <Filter>wizard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mutation\mutation-data.h">
+      <Filter>mutation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

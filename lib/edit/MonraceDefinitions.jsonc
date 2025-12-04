@@ -62,6 +62,7 @@
         "EVIL",
         "WILD_TOWN",
         "WILD_ONLY",
+        "RABBLE",
         "RAND_25",
         "FRIENDS",
         "HUMAN",
@@ -162,7 +163,8 @@
         "WILD_ONLY",
         "FRIENDLY",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "BIRD"
     ]
 },
 {
@@ -204,7 +206,8 @@
         "WILD_WOOD",
         "WILD_GRASS",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "BIRD"
     ]
 },
 {
@@ -246,7 +249,8 @@
         "WILD_WOOD",
         "ANIMAL",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "RABBIT"
     ]
 },
 {
@@ -296,7 +300,7 @@
         "DROP_CORPSE",
         "ONLY_GOLD",
         "DROP_60",
-        "RANGER",
+        "PEASANT",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR"
@@ -410,7 +414,8 @@
         "HAS_LITE_1",
         "NO_CONF",
         "NO_SLEEP",
-        "HOBBIT"
+        "HOBBIT",
+        "PEASANT"
     ]
 },
 {
@@ -453,6 +458,7 @@
         "RAND_25",
         "EAT_LOSE_INT",
         "HUMAN",
+        "RABBLE",
         "TAKE_ITEM"
     ],
     "drop_kind": [
@@ -504,6 +510,7 @@
         "RAND_25",
         "EAT_LOSE_CHR",
         "HUMAN",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR"
@@ -557,6 +564,7 @@
         "RAND_25",
         "EAT_LOSE_WIS",
         "HUMAN",
+        "RABBLE",
         "TAKE_ITEM"
     ]
 },
@@ -596,6 +604,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "HUMAN",
+        "RABBLE",
         "RAND_25",
         "WILD_TOWN",
         "WILD_ONLY",
@@ -654,6 +663,7 @@
         "RAND_25",
         "WILD_TOWN",
         "WILD_ONLY",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "EAT_LOSE_CON",
@@ -708,7 +718,7 @@
     "flags": [
         "DROP_CORPSE",
         "DROP_SKELETON",
-        "ROGUE",
+        "RABBLE",
         "DROP_60",
         "WILD_TOWN",
         "HUMAN",
@@ -767,7 +777,8 @@
         "WILD_ONLY",
         "TAKE_ITEM",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "RABBLE"
     ]
 },
 {
@@ -811,7 +822,7 @@
         "DROP_60",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ROGUE",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -915,7 +926,7 @@
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "WARRIOR"
+        "SOLDIER"
     ]
 },
 {
@@ -959,6 +970,7 @@
         "DROP_90",
         "DROP_GOOD",
         "HUMAN",
+        "NOBLE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "HAS_LITE_1",
@@ -1008,6 +1020,8 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "FUNGUS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -1056,7 +1070,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -1157,7 +1172,8 @@
         "WILD_SHORE",
         "WILD_SWAMP",
         "WILD_MOUNTAIN",
-        "ANIMAL"
+        "ANIMAL",
+        "LIZARD"
     ]
 },
 {
@@ -1200,6 +1216,7 @@
     "flags": [
         "RAND_50",
         "DROP_SKELETON",
+        "INSECT",
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
@@ -1244,7 +1261,8 @@
         "CAN_SWIM",
         "EMPTY_MIND",
         "DROP_CORPSE",
-        "EAT_CONF"
+        "EAT_CONF",
+        "OOZE"
     ]
 },
 {
@@ -1287,7 +1305,8 @@
         "INVISIBLE",
         "EMPTY_MIND",
         "DROP_CORPSE",
-        "EAT_CONF"
+        "EAT_CONF",
+        "OOZE"
     ]
 },
 {
@@ -1329,7 +1348,8 @@
         "CAN_SWIM",
         "ANIMAL",
         "DROP_CORPSE",
-        "EAT_CONF"
+        "EAT_CONF",
+        "RAT"
     ]
 },
 {
@@ -1375,7 +1395,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -1415,6 +1436,7 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EAT_POISONOUS",
@@ -1463,6 +1485,7 @@
     "flags": [
         "DROP_60",
         "WILD_ALL",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -1515,7 +1538,8 @@
         "ANIMAL",
         "IM_POIS",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -1553,6 +1577,7 @@
         "NEVER_MOVE",
         "CAN_FLY",
         "DROP_CORPSE",
+        "EYE",
         "HURT_LITE",
         "NO_FEAR",
         "EAT_SLEEP"
@@ -1594,7 +1619,8 @@
         "ANIMAL",
         "CAN_SWIM",
         "WILD_MOUNTAIN",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "LIZARD"
     ]
 },
 {
@@ -1638,7 +1664,8 @@
         "SELF_LITE_1",
         "ANIMAL",
         "NO_FEAR",
-        "IM_ELEC"
+        "IM_ELEC",
+        "INSECT"
     ]
 },
 {
@@ -1721,7 +1748,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "WILD_GRASS",
-        "EAT_POISONOUS"
+        "EAT_POISONOUS",
+        "INSECT"
     ]
 },
 {
@@ -1758,6 +1786,7 @@
     },
     "flags": [
         "ANIMAL",
+        "BAT",
         "CAN_FLY",
         "WILD_WOOD",
         "WILD_SWAMP",
@@ -1808,7 +1837,8 @@
         "RAND_25",
         "WILD_GRASS",
         "WILD_WOOD",
-        "WILD_SWAMP"
+        "WILD_SWAMP",
+        "WORM"
     ]
 },
 {
@@ -1858,6 +1888,7 @@
         "IM_POIS",
         "IM_COLD",
         "UNIQUE",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -1914,11 +1945,13 @@
     "flags": [
         "NEVER_MOVE",
         "NEVER_BLOW",
+        "ALARM",
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
         "WILD_SWAMP",
         "DROP_CORPSE",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -1983,7 +2016,8 @@
         "TAKE_ITEM",
         "KILL_BODY",
         "EAT_CONF",
-        "IM_POIS"
+        "IM_POIS",
+        "OOZE"
     ]
 },
 {
@@ -2024,6 +2058,7 @@
         "DROP_SKELETON",
         "WEIRD_MIND",
         "BASH_DOOR",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -2132,7 +2167,6 @@
         "DROP_60",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ROGUE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -2296,6 +2330,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -2336,6 +2371,7 @@
     "flags": [
         "NEVER_MOVE",
         "CAN_SWIM",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
@@ -2385,7 +2421,8 @@
         "BASH_DOOR",
         "WILD_WOOD",
         "WILD_GRASS",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -2427,7 +2464,9 @@
         "DROP_CORPSE",
         "ANIMAL",
         "IM_FIRE",
-        "EAT_FIRE_RES"
+        "EAT_FIRE_RES",
+        "LIZARD",
+        "ELEMENTAL"
     ]
 },
 {
@@ -2476,6 +2515,8 @@
     "flags": [
         "CAN_FLY",
         "WILD_MOUNTAIN",
+        "BIRD",
+        "HARPY",
         "RAND_50",
         "DROP_CORPSE",
         "ANIMAL",
@@ -2521,7 +2562,8 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "ANIMAL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK"
     ]
 },
 {
@@ -2702,7 +2744,8 @@
         "DROP_CORPSE",
         "BASH_DOOR",
         "EAT_POISONOUS",
-        "ANIMAL"
+        "ANIMAL",
+        "FROG"
     ]
 },
 {
@@ -2795,7 +2838,8 @@
         "IM_ACID",
         "CAN_SWIM",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -2842,7 +2886,8 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -2932,6 +2977,7 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "WILD_GRASS",
+        "BIRD",
         "WILD_WOOD"
     ]
 },
@@ -3126,6 +3172,7 @@
         "TAKE_ITEM",
         "EVIL",
         "UNDEAD",
+        "GHOST",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -3177,6 +3224,7 @@
         "CAN_SWIM",
         "STUPID",
         "EMPTY_MIND",
+        "OOZE",
         "IM_POIS",
         "HURT_LITE",
         "NO_CONF",
@@ -3228,7 +3276,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -3275,6 +3324,7 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "WILD_GRASS",
+        "BIRD",
         "WILD_WOOD"
     ]
 },
@@ -3316,6 +3366,7 @@
         "CAN_FLY",
         "MULTIPLY",
         "WEIRD_MIND",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -3356,7 +3407,8 @@
         "AQUATIC",
         "ANIMAL",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH"
     ]
 },
 {
@@ -3393,6 +3445,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "DROP_60",
         "DROP_CORPSE",
@@ -3443,6 +3496,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -3492,6 +3546,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -3544,7 +3599,7 @@
         "HAS_LITE_1",
         "DROP_60",
         "HOBBIT",
-        "ROGUE",
+        "RABBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -3590,7 +3645,8 @@
         "BASH_DOOR",
         "WILD_GRASS",
         "ANIMAL",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "INSECT"
     ]
 },
 {
@@ -3630,6 +3686,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -3673,7 +3730,8 @@
         "BASH_DOOR",
         "WILD_ALL",
         "DROP_SKELETON",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -3718,7 +3776,8 @@
         "EAT_LOSE_DEX",
         "ANIMAL",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -3767,7 +3826,8 @@
         "EAT_POISONOUS",
         "IM_POIS",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -3807,6 +3867,7 @@
         "CAN_FLY",
         "DROP_CORPSE",
         "SELF_LITE_1",
+        "EYE",
         "HURT_LITE",
         "NO_FEAR",
         "EAT_MANA",
@@ -3856,7 +3917,8 @@
         "CAN_FLY",
         "NONLIVING",
         "SELF_LITE_1",
-        "SELF_LITE_2"
+        "SELF_LITE_2",
+        "ELEMENTAL"
     ]
 },
 {
@@ -3894,7 +3956,8 @@
     "flags": [
         "ANIMAL",
         "CAN_SWIM",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "LIZARD"
     ]
 },
 {
@@ -3993,6 +4056,7 @@
     "flags": [
         "NEVER_MOVE",
         "COLD_BLOOD",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
@@ -4047,6 +4111,7 @@
         "BASH_DOOR",
         "ANIMAL",
         "IM_POIS",
+        "MIMIC",
         "NO_CONF",
         "NO_SLEEP"
     ]
@@ -4086,7 +4151,8 @@
     "flags": [
         "RAND_25",
         "MULTIPLY",
-        "ANIMAL"
+        "ANIMAL",
+        "RAT"
     ]
 },
 {
@@ -4183,7 +4249,8 @@
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH"
     ]
 },
 {
@@ -4229,7 +4296,8 @@
         "IM_COLD",
         "CAN_SWIM",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -4276,7 +4344,8 @@
         "DROP_CORPSE",
         "BASH_DOOR",
         "WILD_ALL",
-        "ANIMAL"
+        "ANIMAL",
+        "SNAKE"
     ]
 },
 {
@@ -4324,7 +4393,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "SKELETON"
+        "SKELETON",
+        "KOBOLD"
     ]
 },
 {
@@ -4379,7 +4449,8 @@
         "DROP_CORPSE",
         "WILD_WOOD",
         "HAS_LITE_1",
-        "RANGER"
+        "ALIEN",
+        "SOLDIER"
     ]
 },
 {
@@ -4476,6 +4547,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "TAKE_ITEM",
         "DROP_60",
@@ -4485,8 +4557,7 @@
         "WILD_SHORE",
         "EVIL",
         "IM_ACID",
-        "EAT_ACIDIC",
-        "WARRIOR"
+        "EAT_ACIDIC"
     ]
 },
 {
@@ -4531,7 +4602,8 @@
         "AQUATIC",
         "WEIRD_MIND",
         "RAND_25",
-        "RES_WATE"
+        "RES_WATE",
+        "LEECH"
     ]
 },
 {
@@ -4575,7 +4647,8 @@
         "AQUATIC",
         "ANIMAL",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH"
     ]
 },
 {
@@ -4684,7 +4757,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_90",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "ALIEN"
     ]
 },
 {
@@ -4723,6 +4797,7 @@
         "RAND_50",
         "RAND_25",
         "DROP_60",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
@@ -4773,6 +4848,7 @@
         "INVISIBLE",
         "COLD_BLOOD",
         "PASS_WALL",
+        "GHOST",
         "EVIL",
         "UNDEAD",
         "RES_NETH",
@@ -4814,11 +4890,13 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
         "IM_ACID",
         "HURT_LITE",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -4858,6 +4936,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -4904,7 +4983,8 @@
         "CAN_SWIM",
         "DROP_CORPSE",
         "EMPTY_MIND",
-        "EAT_CONF"
+        "EAT_CONF",
+        "OOZE"
     ]
 },
 {
@@ -4943,6 +5023,7 @@
         "ATTR_ANY",
         "RES_DISE",
         "DROP_CORPSE",
+        "EYE",
         "NEVER_MOVE",
         "CAN_FLY",
         "EAT_MANA",
@@ -4999,7 +5080,8 @@
         "IM_FIRE",
         "CAN_SWIM",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -5043,7 +5125,8 @@
         "BASH_DOOR",
         "EAT_POISONOUS",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "SNAKE"
     ]
 },
 {
@@ -5101,6 +5184,7 @@
         "COLD_BLOOD",
         "NO_CONF",
         "NO_SLEEP",
+        "MIMIC",
         "EVIL",
         "IM_COLD",
         "IM_FIRE",
@@ -5156,6 +5240,7 @@
         "CAN_SWIM",
         "STUPID",
         "EMPTY_MIND",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -5203,6 +5288,7 @@
         "DROP_CORPSE",
         "FRIENDS",
         "DROP_60",
+        "PRIEST",
         "OPEN_DOOR",
         "BASH_DOOR"
     ],
@@ -5261,6 +5347,7 @@
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
+        "WARRIOR",
         "FRIENDS",
         "DROP_60",
         "WILD_ALL",
@@ -5317,6 +5404,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DWARF",
+        "NIBELUNG",
+        "RABBLE",
         "HURT_LITE",
         "RES_DARK",
         "RES_DISE",
@@ -5347,7 +5436,7 @@
     "escorts": [],
     "blows": [
         {
-            "method": "CRUSH",
+            "method": "CHOKE",
             "effect": "HURT",
             "damage_dice": "1d10"
         }
@@ -5361,6 +5450,7 @@
         "COLD_BLOOD",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "HAND",
         "EVIL",
         "UNDEAD",
         "IM_POIS",
@@ -5409,6 +5499,8 @@
         "EMPTY_MIND",
         "IM_POIS",
         "CAN_SWIM",
+        "FUNGUS",
+        "OOZE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -5448,6 +5540,7 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "CAN_FLY",
         "WILD_MOUNTAIN",
         "WILD_WOOD",
@@ -5494,8 +5587,9 @@
     },
     "flags": [
         "EVIL",
-        "ANIMAL",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "RAT",
+        "HUMAN"
     ],
     "skill": {
         "list": [
@@ -5552,6 +5646,7 @@
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
+        "ARCHER",
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -5607,6 +5702,7 @@
         "DROP_1D2",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "MIMIC",
         "ANIMAL",
         "IM_POIS",
         "NO_CONF",
@@ -5701,7 +5797,8 @@
         "BASH_DOOR",
         "EAT_POISONOUS",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "SNAKE"
     ]
 },
 {
@@ -5749,7 +5846,8 @@
         "CAN_SWIM",
         "WILD_ALL",
         "DROP_CORPSE",
-        "EAT_ACIDIC"
+        "EAT_ACIDIC",
+        "SLUG"
     ],
     "skill": {
         "list": [
@@ -5799,7 +5897,8 @@
         "DROP_CORPSE",
         "EAT_POISONOUS",
         "EAT_LOSE_STR",
-        "ANIMAL"
+        "ANIMAL",
+        "FROG"
     ]
 },
 {
@@ -5842,6 +5941,7 @@
     "sex": "MALE",
     "flags": [
         "DROP_90",
+        "ELF",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -5908,7 +6008,8 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "KOBOLD"
     ]
 },
 {
@@ -6025,7 +6126,8 @@
         "IM_COLD",
         "RES_NETH",
         "COLD_BLOOD",
-        "EMPTY_MIND"
+        "EMPTY_MIND",
+        "ZOMBIE"
     ]
 },
 {
@@ -6068,6 +6170,7 @@
         "DROP_CORPSE",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "SOLDIER",
         "EVIL",
         "ORC",
         "HURT_LITE",
@@ -6202,7 +6305,8 @@
         "DROP_CORPSE",
         "HURT_LITE",
         "NO_FEAR",
-        "EAT_BLIND"
+        "EAT_BLIND",
+        "EYE"
     ],
     "skill": {
         "list": [
@@ -6254,6 +6358,7 @@
         "WILD_SHORE",
         "RAND_25",
         "DROP_60",
+        "NAGA",
         "TAKE_ITEM",
         "BASH_DOOR",
         "DROP_CORPSE",
@@ -6295,6 +6400,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "HURT_LITE",
@@ -6343,6 +6449,7 @@
         "SELF_LITE_2",
         "EMPTY_MIND",
         "EAT_ACIDIC",
+        "OOZE",
         "IM_ACID"
     ]
 },
@@ -6396,6 +6503,7 @@
         "COLD_BLOOD",
         "TAKE_ITEM",
         "PASS_WALL",
+        "GHOST",
         "EVIL",
         "UNDEAD",
         "IM_COLD",
@@ -6452,7 +6560,8 @@
         "ANIMAL",
         "CAN_SWIM",
         "WILD_ALL",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "LIZARD"
     ]
 },
 {
@@ -6506,7 +6615,9 @@
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
+        "KOBOLD",
         "FORCE_MAXHP",
+        "NOBLE",
         "ESCORT",
         "ESCORTS",
         "DROP_SKELETON",
@@ -6624,6 +6735,7 @@
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_GREAT",
+        "NOBLE",
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -6696,6 +6808,7 @@
         "FORCE_MAXHP",
         "SPEAK_ALL",
         "HUMAN",
+        "ARCHER",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_GREAT",
@@ -6817,7 +6930,8 @@
         "DROP_CORPSE",
         "EVIL",
         "ORC",
-        "RES_DARK"
+        "RES_DARK",
+        "SOLDIER"
     ]
 },
 {
@@ -6859,7 +6973,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK"
     ]
 },
 {
@@ -6954,6 +7069,8 @@
     "flags": [
         "RAND_25",
         "SELF_LITE_1",
+        "LIZARD",
+        "ELEMENTAL",
         "ANIMAL",
         "IM_FIRE",
         "CAN_SWIM",
@@ -7058,6 +7175,7 @@
         "CAN_FLY",
         "WILD_WOOD",
         "WILD_MOUNTAIN",
+        "APE",
         "DROP_CORPSE"
     ]
 },
@@ -7097,6 +7215,7 @@
         "NEVER_MOVE",
         "STUPID",
         "EMPTY_MIND",
+        "OOZE",
         "IM_ACID",
         "IM_POIS",
         "CAN_SWIM",
@@ -7150,6 +7269,7 @@
         "DROP_CORPSE",
         "HAS_LITE_2",
         "HUMAN",
+        "PALADIN",
         "FRIENDS",
         "DROP_60",
         "OPEN_DOOR",
@@ -7248,7 +7368,8 @@
         "EVIL",
         "ORC",
         "HURT_LITE",
-        "RES_DARK"
+        "RES_DARK",
+        "SOLDIER"
     ]
 },
 {
@@ -7349,7 +7470,8 @@
         "NO_FEAR",
         "CAN_FLY",
         "WILD_WOOD",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "BIRD"
     ]
 },
 {
@@ -7395,9 +7517,11 @@
         "FRIENDS",
         "COLD_BLOOD",
         "NONLIVING",
+        "GHOST",
         "NO_FEAR",
         "EMPTY_MIND",
-        "CAN_FLY"
+        "CAN_FLY",
+        "WARRIOR"
     ]
 },
 {
@@ -7448,10 +7572,10 @@
         "RES_DARK",
         "HURT_LITE",
         "EVIL",
-        "DEMON",
         "OPEN_DOOR",
         "TAKE_ITEM",
-        "CAN_SWIM"
+        "CAN_SWIM",
+        "BEAST"
     ]
 },
 {
@@ -7502,7 +7626,8 @@
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
         "ANIMAL",
-        "IM_COLD"
+        "IM_COLD",
+        "APE"
     ]
 },
 {
@@ -7549,6 +7674,7 @@
         "DROP_CORPSE",
         "EAT_ACIDIC",
         "EAT_POISONOUS",
+        "OOZE",
         "IM_POIS"
     ],
     "skill": {
@@ -7593,6 +7719,7 @@
     "flags": [
         "RAND_25",
         "MULTIPLY",
+        "RAT",
         "ANIMAL",
         "IM_POIS"
     ]
@@ -7644,6 +7771,7 @@
         "CAN_FLY",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
+        "HARPY",
         "RAND_25",
         "ANIMAL",
         "EVIL"
@@ -7694,6 +7822,7 @@
         "DROP_90",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "SKAVEN",
         "OPEN_DOOR",
         "WILD_WASTE",
         "WILD_SWAMP"
@@ -7747,6 +7876,7 @@
         "FORCE_MAXHP",
         "UNIQUE",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL",
         "WILD_ONLY",
         "WILD_WOOD",
@@ -7796,7 +7926,8 @@
         "AQUATIC",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "JELLYFISH"
     ]
 },
 {
@@ -8266,7 +8397,8 @@
         "BASH_DOOR",
         "WILD_ALL",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -8432,7 +8564,8 @@
         "EAT_BLIND",
         "EAT_POISONOUS",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "SNAKE"
     ]
 },
 {
@@ -8484,6 +8617,7 @@
         "WILD_WASTE",
         "WILD_MOUNTAIN",
         "WILD_WOOD",
+        "BIRD",
         "DROP_CORPSE"
     ]
 },
@@ -8535,6 +8669,7 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL"
     ]
 },
@@ -8580,7 +8715,8 @@
         "FRIENDS",
         "CAN_FLY",
         "WILD_ALL",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -8677,7 +8813,8 @@
         "BASH_DOOR",
         "CAN_FLY",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "INSECT"
     ]
 },
 {
@@ -8730,7 +8867,8 @@
         "NO_SLEEP",
         "IM_POIS",
         "IM_COLD",
-        "NO_FEAR"
+        "NO_FEAR",
+        "BEAST"
     ]
 },
 {
@@ -8837,7 +8975,8 @@
         "HAS_LITE_1",
         "ANIMAL",
         "IM_ACID",
-        "NO_FEAR"
+        "NO_FEAR",
+        "YEEK"
     ]
 },
 {
@@ -8901,7 +9040,9 @@
         "BASH_DOOR",
         "ANIMAL",
         "EVIL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK",
+        "NOBLE"
     ],
     "skill": {
         "list": [
@@ -8965,7 +9106,8 @@
         "IM_POIS",
         "IM_COLD",
         "RES_NETH",
-        "COLD_BLOOD"
+        "COLD_BLOOD",
+        "ZOMBIE"
     ],
     "skill": {
         "list": [
@@ -9075,6 +9217,7 @@
         "FRIENDS",
         "WILD_WASTE",
         "DROP_SKELETON",
+        "BEAST",
         "OPEN_DOOR",
         "BASH_DOOR",
         "HURT_LITE",
@@ -9124,6 +9267,7 @@
         "STUPID",
         "EMPTY_MIND",
         "CAN_SWIM",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9174,6 +9318,7 @@
         "MULTIPLY",
         "STUPID",
         "EMPTY_MIND",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9237,6 +9382,7 @@
         "DROP_GOOD",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "WARRIOR",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -9287,6 +9433,7 @@
         "NO_SLEEP",
         "WILD_ALL",
         "RES_WATE",
+        "FISH",
         "FRIENDS",
         "AQUATIC",
         "ANIMAL"
@@ -9339,7 +9486,8 @@
         "ANIMAL",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "BEAR"
     ]
 },
 {
@@ -9389,7 +9537,8 @@
         "DEMON",
         "IM_FIRE",
         "NO_FEAR",
-        "NO_CONF"
+        "NO_CONF",
+        "HORROR"
     ]
 },
 {
@@ -9430,6 +9579,7 @@
         "STUPID",
         "EMPTY_MIND",
         "IM_POIS",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -9482,6 +9632,7 @@
         "WILD_WOOD",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL",
         "WILD_ONLY"
     ]
@@ -9520,6 +9671,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "FUNGUS",
         "STUPID",
         "EMPTY_MIND",
         "RES_DISE",
@@ -9584,6 +9736,7 @@
         "FORCE_MAXHP",
         "CAN_FLY",
         "DROP_CORPSE",
+        "LIZARD",
         "DROP_60",
         "BASH_DOOR",
         "DRAGON",
@@ -9636,6 +9789,7 @@
     "flags": [
         "OPEN_DOOR",
         "BASH_DOOR",
+        "FAIRY",
         "EVIL",
         "DEMON",
         "IM_FIRE",
@@ -9696,6 +9850,7 @@
         "DROP_1D2",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "MIMIC",
         "ANIMAL",
         "IM_POIS",
         "NO_CONF",
@@ -9784,6 +9939,7 @@
         "CAN_FLY",
         "MULTIPLY",
         "WEIRD_MIND",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -9878,6 +10034,7 @@
         "TAKE_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "CITIZEN",
         "EVIL",
         "DROP_SKELETON",
         "ROGUE"
@@ -9986,7 +10143,8 @@
         "IM_POIS",
         "NO_SLEEP",
         "NO_CONF",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "BEAST"
     ]
 },
 {
@@ -10039,7 +10197,8 @@
         "COLD_BLOOD",
         "EVIL",
         "NEVER_MOVE",
-        "MULTIPLY"
+        "MULTIPLY",
+        "OOZE"
     ]
 },
 {
@@ -10217,7 +10376,8 @@
         "BASH_DOOR",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "RABBIT"
     ],
     "skill": {
         "list": [
@@ -10274,6 +10434,7 @@
         "COLD_BLOOD",
         "WILD_ONLY",
         "WILD_WOOD",
+        "TREEFOLK",
         "EMPTY_MIND",
         "UNIQUE",
         "DROP_CORPSE",
@@ -10334,6 +10495,8 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "RES_WATE",
+        "HORSE",
+        "FISH",
         "ANIMAL",
         "RIDING"
     ]
@@ -10388,6 +10551,7 @@
         "EVIL",
         "ORC",
         "UNDEAD",
+        "ZOMBIE",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -10446,6 +10610,7 @@
         "ANIMAL",
         "RIDING",
         "BASH_DOOR",
+        "BEAST",
         "IM_POIS",
         "IM_COLD",
         "IM_ELEC",
@@ -10486,6 +10651,7 @@
     },
     "flags": [
         "RAND_50",
+        "SNAKE",
         "BASH_DOOR",
         "CAN_SWIM",
         "WILD_WOOD",
@@ -10580,6 +10746,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "SELF_LITE_1",
@@ -10639,7 +10806,8 @@
         "ANIMAL",
         "HURT_LITE",
         "RES_NETH",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -10688,7 +10856,8 @@
         "NO_FEAR",
         "KILL_WALL",
         "COLD_BLOOD",
-        "INVISIBLE"
+        "INVISIBLE",
+        "WORM"
     ]
 },
 {
@@ -10747,6 +10916,7 @@
         "ESCORT",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "WARRIOR",
         "DROP_2D2",
         "DROP_GOOD",
         "EAT_POISONOUS",
@@ -10853,8 +11023,10 @@
     "flags": [
         "WILD_SWAMP",
         "WILD_WASTE",
+        "SKAVEN",
         "DROP_90",
         "HAS_LITE_2",
+        "PRIEST",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -10922,7 +11094,8 @@
         "EVIL",
         "EAT_MANA",
         "EAT_CONF",
-        "EAT_SLEEP"
+        "EAT_SLEEP",
+        "EYE"
     ],
     "skill": {
         "list": [
@@ -10980,6 +11153,8 @@
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
+        "ARCHER",
+        "WARRIOR",
         "DROP_1D2",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -11030,7 +11205,9 @@
         "AQUATIC",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "IXITXACHITL",
+        "FISH"
     ]
 },
 {
@@ -11070,7 +11247,8 @@
         "FRIENDS",
         "BASH_DOOR",
         "ANIMAL",
-        "DOG"
+        "DOG",
+        "EXPLOSIVE"
     ]
 },
 {
@@ -11172,6 +11350,7 @@
         "ONLY_ITEM",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "BEAST",
         "EVIL",
         "IM_FIRE",
         "ANIMAL",
@@ -11226,11 +11405,13 @@
         "HAS_LITE_2",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "PRIEST",
         "ANIMAL",
         "EVIL",
         "IM_ACID",
         "DROP_CORPSE",
-        "EAT_NEXUS"
+        "EAT_NEXUS",
+        "YEEK"
     ],
     "skill": {
         "list": [
@@ -11287,6 +11468,7 @@
         "HAS_LITE_2",
         "HUMAN",
         "DROP_1D2",
+        "PRIEST",
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -11342,6 +11524,8 @@
     },
     "sex": "MALE",
     "flags": [
+        "ELF",
+        "PRIEST",
         "ONLY_ITEM",
         "DROP_1D2",
         "SMART",
@@ -11402,6 +11586,7 @@
         "RAND_50",
         "RAND_25",
         "NONLIVING",
+        "ELEMENTAL",
         "EMPTY_MIND",
         "INVISIBLE",
         "COLD_BLOOD",
@@ -11510,6 +11695,7 @@
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
+        "ZOMBIE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -11617,6 +11803,7 @@
         "INVISIBLE",
         "COLD_BLOOD",
         "PASS_WALL",
+        "GHOST",
         "EVIL",
         "UNDEAD",
         "IM_COLD",
@@ -11678,7 +11865,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "INSECT"
     ]
 },
 {
@@ -11725,6 +11913,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "OOZE",
         "STUPID",
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -11734,7 +11923,8 @@
         "CAN_SWIM",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "OOZE"
     ]
 },
 {
@@ -11843,6 +12033,7 @@
     },
     "flags": [
         "ANIMAL",
+        "BAT",
         "EVIL",
         "FRIENDS",
         "CAN_FLY",
@@ -11892,7 +12083,8 @@
         "BASH_DOOR",
         "CAN_FLY",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -11954,7 +12146,9 @@
         "DROP_CORPSE",
         "ANIMAL",
         "EVIL",
-        "IM_ACID"
+        "IM_ACID",
+        "YEEK",
+        "NOBLE"
     ],
     "skill": {
         "list": [
@@ -12002,6 +12196,7 @@
     },
     "flags": [
         "FRIENDS",
+        "OGRE",
         "DROP_60",
         "WILD_WOOD",
         "WILD_MOUNTAIN",
@@ -12055,6 +12250,7 @@
         "DROP_2D2",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "MIMIC",
         "ANIMAL",
         "IM_POIS",
         "NO_CONF",
@@ -12096,6 +12292,7 @@
     "sex": "MALE",
     "flags": [
         "HUMAN",
+        "MAGE",
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -12164,6 +12361,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "PRIEST",
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -12234,7 +12432,8 @@
         "DEMON",
         "IM_FIRE",
         "NO_FEAR",
-        "NO_CONF"
+        "NO_CONF",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -12285,6 +12484,7 @@
         "NEVER_MOVE",
         "NONLIVING",
         "NO_FEAR",
+        "MIMIC",
         "STUPID",
         "EMPTY_MIND",
         "COLD_BLOOD",
@@ -12351,6 +12551,7 @@
         "EAT_POISONOUS",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "SOLDIER",
         "EVIL",
         "ORC",
         "HURT_LITE",
@@ -12411,7 +12612,8 @@
         "CAN_SWIM",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "OOZE"
     ]
 },
 {
@@ -12449,10 +12651,12 @@
     "flags": [
         "RAND_50",
         "RAND_25",
+        "JOKE",
         "MULTIPLY",
         "WEIRD_MIND",
         "BASH_DOOR",
         "CAN_FLY",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -12498,6 +12702,7 @@
         "ATTR_CLEAR",
         "NEVER_MOVE",
         "FORCE_MAXHP",
+        "MIMIC",
         "EMPTY_MIND",
         "INVISIBLE",
         "COLD_BLOOD",
@@ -12546,7 +12751,8 @@
     "flags": [
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "MERFOLK"
     ]
 },
 {
@@ -12590,7 +12796,8 @@
         "OPEN_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "EAT_BLIND"
+        "EAT_BLIND",
+        "LIZARD"
     ]
 },
 {
@@ -12631,6 +12838,7 @@
         "CAN_FLY",
         "WEIRD_MIND",
         "BASH_DOOR",
+        "INSECT",
         "ANIMAL",
         "IM_COLD"
     ],
@@ -12683,6 +12891,7 @@
         "WILD_ALL",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "RABBLE",
         "EVIL",
         "ORC",
         "HURT_LITE",
@@ -12737,6 +12946,7 @@
     },
     "flags": [
         "RAND_50",
+        "OOZE",
         "MULTIPLY",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -12793,6 +13003,8 @@
         "MULTIPLY",
         "EVIL",
         "CAN_SWIM",
+        "OOZE",
+        "EYE",
         "IM_POIS",
         "EMPTY_MIND",
         "NO_FEAR",
@@ -13043,7 +13255,8 @@
         "OPEN_DOOR",
         "GOOD",
         "HAS_LITE_1",
-        "ROGUE"
+        "RABBLE",
+        "GNOME"
     ],
     "skill": {
         "list": [
@@ -13087,6 +13300,7 @@
     "flags": [
         "RAND_50",
         "CAN_FLY",
+        "INSECT",
         "WEIRD_MIND",
         "MULTIPLY",
         "ANIMAL"
@@ -13149,6 +13363,7 @@
         "ESCORT",
         "DROP_1D2",
         "DROP_GOOD",
+        "WARRIOR",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -13252,6 +13467,7 @@
         "RAND_25",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
+        "OGRE",
         "FRIENDS",
         "DROP_60",
         "OPEN_DOOR",
@@ -13312,7 +13528,8 @@
         "IM_FIRE",
         "NO_FEAR",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEAST"
     ],
     "skill": {
         "list": [
@@ -13363,6 +13580,7 @@
     },
     "sex": "MALE",
     "flags": [
+        "HUMAN",
         "WILD_ALL",
         "FRIENDS",
         "DROP_60",
@@ -13414,6 +13632,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "DROP_60",
         "DROP_1D2",
@@ -13493,7 +13712,8 @@
         "AQUATIC",
         "ANIMAL",
         "WILD_ALL",
-        "RIDING"
+        "RIDING",
+        "OCTOPUS"
     ]
 },
 {
@@ -13528,6 +13748,7 @@
         "STUPID",
         "RES_TELE",
         "CAN_SWIM",
+        "FUNGUS",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -13593,6 +13814,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "IM_COLD",
+        "ZOMBIE",
         "EVIL",
         "DEMON",
         "UNDEAD",
@@ -13654,6 +13876,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "RAND_25",
         "DROP_60",
         "DROP_1D2",
@@ -13713,6 +13936,7 @@
         "DROP_CORPSE",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "RAT",
         "ANIMAL",
         "EVIL"
     ],
@@ -13867,6 +14091,8 @@
         "WEIRD_MIND",
         "NO_FEAR",
         "CAN_FLY",
+        "SKELETON",
+        "FACE",
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
@@ -13919,6 +14145,7 @@
         "COLD_BLOOD",
         "ANIMAL",
         "EVIL",
+        "ALIEN",
         "NO_SLEEP",
         "NO_CONF",
         "CAN_FLY",
@@ -14029,7 +14256,8 @@
         "BASH_DOOR",
         "WILD_ALL",
         "ANIMAL",
-        "DROP_SKELETON"
+        "DROP_SKELETON",
+        "INSECT"
     ]
 },
 {
@@ -14197,6 +14425,7 @@
         "CAN_FLY",
         "RIDING",
         "BASH_DOOR",
+        "BEAST",
         "ANIMAL",
         "IM_COLD",
         "IM_ELEC",
@@ -14292,6 +14521,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
+        "GNOME",
         "EVIL"
     ],
     "skill": {
@@ -14407,8 +14637,8 @@
         "BASH_DOOR",
         "KILL_WALL",
         "DROP_SKELETON",
-        "ANIMAL",
         "EVIL",
+        "INSECT",
         "IM_POIS",
         "HURT_ROCK",
         "NO_CONF",
@@ -14471,7 +14701,8 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "NO_CONF",
-        "EAT_ACIDIC"
+        "EAT_ACIDIC",
+        "BEAST"
     ]
 },
 {
@@ -14527,6 +14758,7 @@
     "flags": [
         "WILD_ALL",
         "DROP_90",
+        "WARRIOR",
         "OPEN_DOOR",
         "BASH_DOOR",
         "ESCORT",
@@ -14582,6 +14814,8 @@
     },
     "flags": [
         "FORCE_MAXHP",
+        "WALL",
+        "OOZE",
         "DROP_1D2",
         "DROP_4D2",
         "STUPID",
@@ -14640,6 +14874,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "CAN_FLY",
+        "INSECT",
         "ANIMAL",
         "IM_POIS"
     ],
@@ -14741,6 +14976,7 @@
         "CAN_FLY",
         "MULTIPLY",
         "WEIRD_MIND",
+        "INSECT",
         "ANIMAL"
     ]
 },
@@ -14792,7 +15028,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
-        "EVIL"
+        "EVIL",
+        "LIZARD"
     ]
 },
 {
@@ -14905,7 +15142,8 @@
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "SHARK"
     ]
 },
 {
@@ -14953,7 +15191,7 @@
     "sex": "MALE",
     "flags": [
         "HUMAN",
-        "WARRIOR",
+        "BERSERK",
         "NO_FEAR",
         "NO_STUN",
         "BASH_DOOR",
@@ -15073,6 +15311,7 @@
     },
     "flags": [
         "RIDING",
+        "SPHINX",
         "ONLY_GOLD",
         "DROP_1D2",
         "CAN_FLY",
@@ -15250,6 +15489,7 @@
         "EMPTY_MIND",
         "AURA_COLD",
         "HURT_FIRE",
+        "ELEMENTAL",
         "IM_COLD",
         "NO_FEAR",
         "NO_CONF",
@@ -15295,6 +15535,7 @@
         "EMPTY_MIND",
         "AURA_FIRE",
         "HURT_COLD",
+        "ELEMENTAL",
         "IM_FIRE",
         "NO_FEAR",
         "NO_CONF",
@@ -15339,6 +15580,7 @@
         "SELF_LITE_2",
         "EMPTY_MIND",
         "AURA_ELEC",
+        "ELEMENTAL",
         "IM_ELEC",
         "NO_FEAR",
         "NO_CONF",
@@ -15395,7 +15637,8 @@
         "BASH_DOOR",
         "MOVE_BODY",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -15445,7 +15688,8 @@
         "CAN_SWIM",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "WILD_SWAMP"
+        "WILD_SWAMP",
+        "PLANT"
     ]
 },
 {
@@ -15490,6 +15734,7 @@
         "EMPTY_MIND",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "ELEMENTAL",
         "EVIL",
         "IM_POIS",
         "CAN_FLY",
@@ -15540,6 +15785,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
+        "SCORPION",
         "ANIMAL",
         "DROP_SKELETON"
     ]
@@ -15585,6 +15831,7 @@
         "RAND_25",
         "EMPTY_MIND",
         "COLD_BLOOD",
+        "ELEMENTAL",
         "PASS_WALL",
         "CAN_FLY",
         "NONLIVING",
@@ -15640,6 +15887,7 @@
     "flags": [
         "RAND_25",
         "SELF_LITE_1",
+        "ELEMENTAL",
         "EMPTY_MIND",
         "BASH_DOOR",
         "CAN_FLY",
@@ -15874,6 +16122,7 @@
         "NEVER_MOVE",
         "EMPTY_MIND",
         "COLD_BLOOD",
+        "MIMIC",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -15935,6 +16184,7 @@
         "NEVER_MOVE",
         "EMPTY_MIND",
         "COLD_BLOOD",
+        "MIMIC",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -16239,6 +16489,7 @@
         "EMPTY_MIND",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "PLANT",
         "EVIL",
         "NO_CONF",
         "NO_SLEEP",
@@ -16292,7 +16543,9 @@
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL",
-        "RES_WATE"
+        "RES_WATE",
+        "FISH",
+        "SHARK"
     ]
 },
 {
@@ -16346,7 +16599,8 @@
         "ATTR_MULTI",
         "EAT_CONF",
         "EAT_DRAIN_EXP",
-        "EAT_INSANITY"
+        "EAT_INSANITY",
+        "BEAST"
     ],
     "skill": {
         "list": [
@@ -16457,6 +16711,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_MOUNTAIN",
+        "INSECT",
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP"
@@ -16548,6 +16803,7 @@
         "NEVER_BLOW",
         "RAND_50",
         "RAND_25",
+        "INSECT",
         "WEIRD_MIND",
         "BASH_DOOR",
         "CAN_FLY",
@@ -16656,7 +16912,8 @@
         "CAN_SWIM",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "FUNGUS"
     ]
 },
 {
@@ -16697,6 +16954,7 @@
         "WILD_MOUNTAIN",
         "WEIRD_MIND",
         "BASH_DOOR",
+        "INSECT",
         "ANIMAL",
         "IM_FIRE",
         "RES_SOUN",
@@ -16754,12 +17012,14 @@
         "IM_ELEC",
         "RES_SHAR",
         "NO_FEAR",
+        "WALL",
         "IM_FIRE",
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
         "EMPTY_MIND",
-        "HURT_ROCK"
+        "HURT_ROCK",
+        "WALL"
     ]
 },
 {
@@ -16806,6 +17066,7 @@
     },
     "flags": [
         "DROP_60",
+        "BEAST",
         "NO_SLEEP",
         "NO_CONF",
         "UNDEAD",
@@ -16864,7 +17125,9 @@
         "AQUATIC",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "IXITXACHITL",
+        "FISH"
     ],
     "skill": {
         "list": [
@@ -16927,6 +17190,7 @@
     },
     "flags": [
         "DROP_CORPSE",
+        "TREEFOLK",
         "DROP_60",
         "NO_SLEEP",
         "NO_CONF",
@@ -16938,7 +17202,8 @@
         "HURT_FIRE",
         "NEVER_MOVE",
         "WILD_ONLY",
-        "WILD_WOOD"
+        "WILD_WOOD",
+        "PLANT"
     ],
     "skill": {
         "list": [
@@ -17134,7 +17399,9 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
-        "FORCE_MAXHP"
+        "FORCE_MAXHP",
+        "LIZARD",
+        "NOBLE"
     ]
 },
 {
@@ -17177,6 +17444,7 @@
         "EMPTY_MIND",
         "INVISIBLE",
         "COLD_BLOOD",
+        "EXPLOSIVE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -17299,7 +17567,8 @@
         "ANIMAL",
         "GOOD",
         "DROP_CORPSE",
-        "RIDING"
+        "RIDING",
+        "BIRD"
     ],
     "skill": {
         "list": [
@@ -17353,6 +17622,7 @@
         "IM_ACID",
         "IM_ELEC",
         "NO_FEAR",
+        "WALL",
         "IM_FIRE",
         "IM_POIS",
         "NO_CONF",
@@ -17655,7 +17925,8 @@
         "BASH_DOOR",
         "WILD_MOUNTAIN",
         "IM_FIRE",
-        "RIDING"
+        "RIDING",
+        "BEAST"
     ],
     "skill": {
         "list": [
@@ -17759,7 +18030,8 @@
         "ANIMAL",
         "IM_COLD",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "APE"
     ]
 },
 {
@@ -17813,7 +18085,8 @@
         "ANIMAL",
         "EVIL",
         "FRIENDS",
-        "DOG"
+        "DOG",
+        "WEREWOLF"
     ]
 },
 {
@@ -17857,6 +18130,7 @@
         "RAND_25",
         "FORCE_MAXHP",
         "RES_WATE",
+        "AQUATIC_MAMMAL",
         "ANIMAL",
         "AQUATIC",
         "WILD_ALL"
@@ -17910,7 +18184,8 @@
         "RAND_25",
         "IM_ELEC",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "FISH"
     ]
 },
 {
@@ -17962,7 +18237,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "ANIMAL",
-        "EVIL"
+        "EVIL",
+        "WEREWOLF"
     ]
 },
 {
@@ -18181,6 +18457,7 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "SELF_LITE_1",
         "BASH_DOOR",
         "CAN_FLY",
@@ -18366,6 +18643,7 @@
         "WILD_VOLCANO",
         "WILD_ALL",
         "SELF_LITE_2",
+        "VORTEX",
         "EMPTY_MIND",
         "BASH_DOOR",
         "POWERFUL",
@@ -18420,6 +18698,7 @@
     "flags": [
         "RAND_50",
         "WILD_SHORE",
+        "VORTEX",
         "EMPTY_MIND",
         "BASH_DOOR",
         "POWERFUL",
@@ -18605,6 +18884,7 @@
         "RAND_50",
         "AURA_COLD",
         "COLD_BLOOD",
+        "VORTEX",
         "EMPTY_MIND",
         "BASH_DOOR",
         "POWERFUL",
@@ -18660,6 +18940,7 @@
         "RAND_50",
         "CAN_FLY",
         "SELF_LITE_2",
+        "VORTEX",
         "EMPTY_MIND",
         "BASH_DOOR",
         "POWERFUL",
@@ -18719,6 +19000,7 @@
         "EMPTY_MIND",
         "BASH_DOOR",
         "AQUATIC",
+        "FISH",
         "IM_POIS",
         "RES_WATE",
         "NO_STUN",
@@ -18889,6 +19171,7 @@
         "AQUATIC",
         "WILD_OCEAN",
         "RES_WATE",
+        "AQUATIC_MAMMAL",
         "ANIMAL"
     ]
 },
@@ -19043,7 +19326,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -19202,6 +19486,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "WILD_ALL",
+        "SCORPION",
         "ANIMAL",
         "DROP_SKELETON"
     ]
@@ -19449,7 +19734,8 @@
         "IM_FIRE",
         "IM_ELEC",
         "IM_POIS",
-        "RES_NETH"
+        "RES_NETH",
+        "NOBLE"
     ],
     "skill": {
         "list": [
@@ -19684,6 +19970,7 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "SELF_LITE_1",
         "BASH_DOOR",
         "CAN_FLY",
@@ -19738,7 +20025,8 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -19995,6 +20283,7 @@
         "BASH_DOOR",
         "EVIL",
         "DWARF",
+        "NIBELUNG",
         "IM_FIRE",
         "IM_COLD",
         "NO_CONF",
@@ -20247,7 +20536,8 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
-        "ANIMAL"
+        "ANIMAL",
+        "SHARK"
     ]
 },
 {
@@ -20308,7 +20598,8 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -20366,6 +20657,7 @@
         "IM_FIRE",
         "IM_POIS",
         "IM_COLD",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -20448,7 +20740,8 @@
         "MOVE_BODY",
         "DROP_CORPSE",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "DINOSAUR"
     ]
 },
 {
@@ -20544,9 +20837,11 @@
     },
     "flags": [
         "RAND_50",
+        "BAT",
         "COLD_BLOOD",
         "REGENERATE",
         "CAN_FLY",
+        "VAMPIRE",
         "EVIL",
         "ANIMAL",
         "UNDEAD",
@@ -20835,7 +21130,8 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "INSECT"
     ]
 },
 {
@@ -20935,6 +21231,7 @@
         "BASH_DOOR",
         "NONLIVING",
         "NEVER_MOVE",
+        "ALARM",
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
@@ -21073,6 +21370,7 @@
         "WEIRD_MIND",
         "RES_DISE",
         "DROP_CORPSE",
+        "BEAST",
         "IM_ACID",
         "IM_POIS",
         "NO_CONF"
@@ -21382,7 +21680,8 @@
         "ANIMAL",
         "IM_ACID",
         "DROP_CORPSE",
-        "EAT_ACIDIC"
+        "EAT_ACIDIC",
+        "WORM"
     ]
 },
 {
@@ -21425,7 +21724,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "CAN_FLY",
-        "EAT_LOSE_STR"
+        "EAT_LOSE_STR",
+        "INSECT"
     ]
 },
 {
@@ -21472,7 +21772,9 @@
         "RES_NETH",
         "IM_POIS",
         "RES_WATE",
-        "WILD_ALL"
+        "WILD_ALL",
+        "IXITXACHITL",
+        "FISH"
     ],
     "skill": {
         "list": [
@@ -21590,7 +21892,8 @@
         "DROP_CORPSE",
         "WEIRD_MIND",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -21993,6 +22296,7 @@
         "FRIENDS",
         "DROP_60",
         "DROP_CORPSE",
+        "OGRE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -22047,6 +22351,7 @@
         "BASH_DOOR",
         "CAN_FLY",
         "RES_NETH",
+        "GHOST",
         "EVIL",
         "UNDEAD",
         "IM_COLD",
@@ -22195,7 +22500,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "COLD_BLOOD",
-        "HURT_LITE"
+        "HURT_LITE",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -22257,6 +22563,7 @@
         "SPEAK_ALL",
         "ROGUE",
         "DWARF",
+        "NIBELUNG",
         "FORCE_MAXHP",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -22386,7 +22693,8 @@
         "ANIMAL",
         "IM_FIRE",
         "CAN_FLY",
-        "EAT_FIRE_RES"
+        "EAT_FIRE_RES",
+        "INSECT"
     ]
 },
 {
@@ -22928,6 +23236,7 @@
     "flags": [
         "DROP_1D2",
         "WILD_MOUNTAIN",
+        "OGRE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
@@ -22996,6 +23305,7 @@
         "SPEAK_ALL",
         "WILD_SWAMP",
         "WILD_SHORE",
+        "OGRE",
         "ESCORT",
         "HAS_LITE_2",
         "DROP_2D2",
@@ -23060,6 +23370,7 @@
         "COLD_BLOOD",
         "DROP_60",
         "DROP_1D2",
+        "VAMPIRE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "REGENERATE",
@@ -23315,6 +23626,7 @@
     },
     "sex": "FEMALE",
     "flags": [
+        "NAGA",
         "CAN_FLY",
         "ONLY_ITEM",
         "DROP_90",
@@ -23441,6 +23753,7 @@
     "mob": 1000,
     "flags": [
         "BASH_DOOR",
+        "SCORPION",
         "EVIL",
         "DEMON",
         "MASOCHIST"
@@ -23575,7 +23888,8 @@
         "ANIMAL",
         "IM_POIS",
         "WILD_SHORE",
-        "WILD_SWAMP"
+        "WILD_SWAMP",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -23635,6 +23949,7 @@
         "DROP_GREAT",
         "ONLY_ITEM",
         "ROGUE",
+        "DINOSAUR",
         "EVIL",
         "SPEAK_ALL",
         "SMART",
@@ -23964,7 +24279,8 @@
         "ANIMAL",
         "IM_ACID",
         "IM_POIS",
-        "CAN_SWIM"
+        "CAN_SWIM",
+        "WORM"
     ]
 },
 {
@@ -24025,7 +24341,8 @@
         "ANIMAL",
         "IM_POIS",
         "RIDING",
-        "EAT_BLIND"
+        "EAT_BLIND",
+        "BOVINE"
     ]
 },
 {
@@ -24204,6 +24521,7 @@
         "DROP_CORPSE",
         "EAT_GIVE_INT",
         "EAT_GIVE_WIS",
+        "MINDCRAFTER",
         "ONLY_ITEM",
         "DROP_60",
         "DROP_1D2",
@@ -24211,7 +24529,8 @@
         "BASH_DOOR",
         "EVIL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "MINDFLAYER"
     ],
     "skill": {
         "list": [
@@ -24350,6 +24669,7 @@
         "RES_TELE",
         "EVIL",
         "DEMON",
+        "DEEPONE",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -25268,6 +25588,7 @@
         "EVIL",
         "ANIMAL",
         "UNDEAD",
+        "DINOSAUR",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -25331,6 +25652,7 @@
         "UNIQUE",
         "DROP_CORPSE",
         "MOVE_BODY",
+        "SHARK",
         "WILD_OCEAN",
         "BASH_DOOR",
         "IM_COLD",
@@ -25448,7 +25770,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_ELEC"
+        "IM_ELEC",
+        "INSECT"
     ]
 },
 {
@@ -25683,7 +26006,8 @@
         "DROP_CORPSE",
         "WEIRD_MIND",
         "BASH_DOOR",
-        "ANIMAL"
+        "ANIMAL",
+        "INSECT"
     ]
 },
 {
@@ -25729,7 +26053,8 @@
         "WILD_GRASS",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -25789,7 +26114,8 @@
         "DROP_CORPSE",
         "EVIL",
         "RIDING",
-        "EAT_POISONOUS"
+        "EAT_POISONOUS",
+        "BOVINE"
     ],
     "skill": {
         "list": [
@@ -25972,7 +26298,8 @@
         "WILD_ALL",
         "DROP_CORPSE",
         "ANIMAL",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -26021,6 +26348,7 @@
         "ONLY_ITEM",
         "DROP_90",
         "DROP_CORPSE",
+        "OGRE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -26223,6 +26551,7 @@
         "IM_COLD",
         "MOVE_BODY",
         "RIDING",
+        "SQUID",
         "FORCE_MAXHP",
         "WILD_OCEAN"
     ],
@@ -28368,6 +28697,7 @@
         "EMPTY_MIND",
         "INVISIBLE",
         "COLD_BLOOD",
+        "NIGHTSHADE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "POWERFUL",
@@ -28428,7 +28758,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_POIS"
+        "IM_POIS",
+        "INSECT"
     ]
 },
 {
@@ -28623,6 +28954,7 @@
         "BASH_DOOR",
         "EVIL",
         "UNDEAD",
+        "LICH",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -28737,6 +29069,7 @@
     },
     "flags": [
         "FORCE_MAXHP",
+        "VAMPIRE",
         "DROP_4D2",
         "COLD_BLOOD",
         "OPEN_DOOR",
@@ -28817,6 +29150,7 @@
     },
     "flags": [
         "FORCE_MAXHP",
+        "VAMPIRE",
         "DROP_4D2",
         "CAN_FLY",
         "RES_NETH",
@@ -29045,6 +29379,7 @@
         "BASH_DOOR",
         "WILD_ALL",
         "DROP_SKELETON",
+        "SCORPION",
         "ANIMAL"
     ]
 },
@@ -29363,7 +29698,8 @@
         "HURT_LITE",
         "EVIL",
         "OPEN_DOOR",
-        "HAS_LITE_1"
+        "HAS_LITE_1",
+        "GNOME"
     ],
     "skill": {
         "list": [
@@ -29476,6 +29812,8 @@
         "FORCE_MAXHP",
         "UNIQUE",
         "REFLECTING",
+        "EXPLOSIVE",
+        "HAND",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "BASH_DOOR",
@@ -30492,7 +30830,8 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "ELEPHANT"
     ]
 },
 {
@@ -30540,7 +30879,8 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
-        "IM_FIRE"
+        "IM_FIRE",
+        "INSECT"
     ]
 },
 {
@@ -30915,6 +31255,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "RES_NETH",
+        "GHOST",
         "EVIL",
         "UNDEAD",
         "HURT_LITE",
@@ -31756,6 +32097,7 @@
         "INVISIBLE",
         "COLD_BLOOD",
         "RES_TIME",
+        "EXPLOSIVE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -32722,7 +33064,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "INSECT"
     ],
     "skill": {
         "list": [
@@ -33044,7 +33387,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "IM_ELEC",
-        "CAN_FLY"
+        "CAN_FLY",
+        "INSECT"
     ]
 },
 {
@@ -33084,6 +33428,7 @@
         "RAND_25",
         "RES_NEXU",
         "CAN_FLY",
+        "VORTEX",
         "EMPTY_MIND",
         "BASH_DOOR",
         "POWERFUL",
@@ -33553,6 +33898,7 @@
     "flags": [
         "FORCE_MAXHP",
         "CAN_FLY",
+        "AQUATIC_MAMMAL",
         "DROP_60",
         "DROP_90",
         "DROP_2D2",
@@ -33644,6 +33990,7 @@
         "SPEAK_ALL",
         "EVIL",
         "DEMON",
+        "DEEPONE",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -33728,6 +34075,7 @@
         "SPEAK_ALL",
         "EVIL",
         "DEMON",
+        "DEEPONE",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -34202,7 +34550,8 @@
         "EVIL",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEHOLDER"
     ],
     "skill": {
         "list": [
@@ -34511,6 +34860,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "RES_NETH",
+        "GHOST",
         "EVIL",
         "UNDEAD",
         "IM_COLD",
@@ -34708,6 +35058,7 @@
         "UNIQUE",
         "CAN_SWIM",
         "FORCE_MAXHP",
+        "HYDRA",
         "ONLY_GOLD",
         "DROP_2D2",
         "DROP_4D2",
@@ -35032,7 +35383,8 @@
         "MOVE_BODY",
         "ANIMAL",
         "IM_POIS",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -35669,6 +36021,7 @@
     "flags": [
         "FORCE_MAXHP",
         "CAN_FLY",
+        "VAMPIRE",
         "DROP_60",
         "DROP_4D2",
         "COLD_BLOOD",
@@ -36238,7 +36591,8 @@
         "ANIMAL",
         "HURT_LITE",
         "NO_FEAR",
-        "SELF_LITE_1"
+        "SELF_LITE_1",
+        "WORM"
     ]
 },
 {
@@ -36420,7 +36774,8 @@
         "DROP_CORPSE",
         "ANIMAL",
         "IM_FIRE",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -36813,6 +37168,7 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "MINOTAUR",
         "EVIL"
     ]
 },
@@ -37237,6 +37593,7 @@
         "DROP_SKELETON",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "GRANDMA",
         "EVIL",
         "HUMAN",
         "NO_CONF",
@@ -38084,6 +38441,7 @@
         "SKELETON",
         "EVIL",
         "UNDEAD",
+        "LICH",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -38158,7 +38516,8 @@
         "DEMON",
         "IM_FIRE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -38540,7 +38899,8 @@
         "EVIL",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEHOLDER"
     ],
     "skill": {
         "list": [
@@ -38766,6 +39126,7 @@
         "CAN_FLY",
         "ONLY_ITEM",
         "DROP_60",
+        "GHOST",
         "TAKE_ITEM",
         "INVISIBLE",
         "COLD_BLOOD",
@@ -39203,7 +39564,8 @@
         "DROP_CORPSE",
         "BASH_DOOR",
         "ANIMAL",
-        "RIDING"
+        "RIDING",
+        "ELEPHANT"
     ]
 },
 {
@@ -39725,7 +40087,8 @@
         "OPEN_DOOR",
         "UNDEAD",
         "RES_NETH",
-        "HAS_LITE_1"
+        "HAS_LITE_1",
+        "GNOME"
     ],
     "skill": {
         "list": [
@@ -39789,7 +40152,6 @@
         "UNIQUE",
         "SPEAK_ALL",
         "EVIL",
-        "DEMON",
         "FORCE_MAXHP",
         "NEVER_MOVE",
         "ELDRITCH_HORROR",
@@ -39801,7 +40163,8 @@
         "HURT_ROCK",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "HORROR"
     ],
     "skill": {
         "list": [
@@ -40099,7 +40462,7 @@
         "SPEAK_ALL",
         "BASH_DOOR",
         "EVIL",
-        "DEMON",
+        "OOZE",
         "NO_CONF",
         "NO_FEAR",
         "NO_SLEEP",
@@ -40348,7 +40711,8 @@
         "ANIMAL",
         "IM_FIRE",
         "CAN_SWIM",
-        "RIDING"
+        "RIDING",
+        "HYDRA"
     ],
     "skill": {
         "list": [
@@ -40413,6 +40777,7 @@
         "ONLY_ITEM",
         "DROP_90",
         "DROP_4D2",
+        "PRIEST",
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -40484,6 +40849,7 @@
     "flags": [
         "FORCE_MAXHP",
         "RAND_25",
+        "GHOST",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_4D2",
@@ -41230,6 +41596,7 @@
         "TAKE_ITEM",
         "SMART",
         "ROGUE",
+        "GNOME",
         "EVIL",
         "OPEN_DOOR",
         "NO_FEAR",
@@ -41536,7 +41903,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
-        "RIDING"
+        "RIDING",
+        "TURTLE"
     ],
     "skill": {
         "list": [
@@ -41597,6 +41965,7 @@
         "EVIL",
         "UNDEAD",
         "ANIMAL",
+        "DINOSAUR",
         "RES_NETH",
         "RES_NEXU",
         "RES_TELE",
@@ -41838,6 +42207,7 @@
         "FORCE_MAXHP",
         "FRIENDLY",
         "HURT_FIRE",
+        "TREEFOLK",
         "ONLY_ITEM",
         "DROP_4D2",
         "DROP_GOOD",
@@ -41848,7 +42218,8 @@
         "BASH_DOOR",
         "GOOD",
         "GIANT",
-        "RIDING"
+        "RIDING",
+        "PLANT"
     ]
 },
 {
@@ -42186,6 +42557,7 @@
         "DROP_CORPSE",
         "SPEAK_ALL",
         "HURT_FIRE",
+        "TREEFOLK",
         "FORCE_MAXHP",
         "ONLY_ITEM",
         "DROP_4D2",
@@ -42851,6 +43223,7 @@
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GOOD",
+        "NIGHTSHADE",
         "SMART",
         "COLD_BLOOD",
         "OPEN_DOOR",
@@ -43394,6 +43767,7 @@
         "DROP_GOOD",
         "BASH_DOOR",
         "DROP_CORPSE",
+        "MINOTAUR",
         "EVIL",
         "IM_FIRE",
         "IM_POIS",
@@ -44224,6 +44598,7 @@
         "MOVE_BODY",
         "SMART",
         "RES_WATE",
+        "KRAKEN",
         "EVIL",
         "IM_ELEC",
         "NO_CONF",
@@ -44384,6 +44759,7 @@
         "CAN_FLY",
         "EVIL",
         "UNDEAD",
+        "LICH",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -44547,6 +44923,7 @@
         "SMART",
         "KILL_WALL",
         "CAN_SWIM",
+        "NIGHTSHADE",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_2D2",
@@ -44564,7 +44941,8 @@
         "HURT_LITE",
         "RES_NETH",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "WORM"
     ],
     "skill": {
         "list": [
@@ -44872,6 +45250,7 @@
         "NEVER_MOVE",
         "NEVER_BLOW",
         "RES_TELE",
+        "HAND",
         "SMART",
         "COLD_BLOOD",
         "CAN_SWIM",
@@ -45366,6 +45745,7 @@
         "ANIMAL",
         "IM_FIRE",
         "IM_POIS",
+        "HYDRA",
         "NO_CONF",
         "NO_SLEEP",
         "CAN_SWIM"
@@ -45435,6 +45815,7 @@
     "alliance": "MELDOR",
     "flags": [
         "UNIQUE",
+        "VAMPIRE",
         "FORCE_MAXHP",
         "SMART",
         "SPEAK_ALL",
@@ -45928,7 +46309,8 @@
         "EVIL",
         "DEMON",
         "NONLIVING",
-        "ELDRITCH_HORROR"
+        "ELDRITCH_HORROR",
+        "AVATAR"
     ],
     "skill": {
         "list": [
@@ -46540,6 +46922,7 @@
         "DROP_4D2",
         "DROP_GOOD",
         "CAN_SWIM",
+        "NIGHTSHADE",
         "SMART",
         "COLD_BLOOD",
         "OPEN_DOOR",
@@ -47215,6 +47598,7 @@
         "SMART",
         "RES_WATE",
         "RES_DARK",
+        "KRAKEN",
         "EVIL",
         "IM_ELEC",
         "NO_CONF",
@@ -47692,6 +48076,7 @@
         "EVIL",
         "UNDEAD",
         "CAN_FLY",
+        "BEHOLDER",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -48527,6 +48912,7 @@
         "DROP_SKELETON",
         "HAS_LITE_2",
         "HUMAN",
+        "NOBLE",
         "FORCE_MAXHP",
         "NO_CONF",
         "NO_SLEEP",
@@ -48612,6 +48998,7 @@
     "sex": "MALE",
     "flags": [
         "UNIQUE",
+        "GHOST",
         "FORCE_MAXHP",
         "SPEAK_ALL",
         "CAN_FLY",
@@ -48996,6 +49383,7 @@
         "MOVE_BODY",
         "EVIL",
         "RIDING",
+        "ELEPHANT",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -49601,6 +49989,7 @@
         "BASH_DOOR",
         "EVIL",
         "UNDEAD",
+        "LICH",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -51003,6 +51392,7 @@
         "NO_CONF",
         "NO_SLEEP",
         "HUMAN",
+        "NOBLE",
         "DROP_4D2",
         "DROP_1D2",
         "DROP_GOOD",
@@ -55556,6 +55946,7 @@
         "FORCE_MAXHP",
         "DROP_CORPSE",
         "ANIMAL",
+        "HYDRA",
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_3D2",
@@ -55885,7 +56276,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "HURT_LITE",
-        "NO_FEAR"
+        "NO_FEAR",
+        "WORM"
     ]
 },
 {
@@ -56837,6 +57229,7 @@
     "flags": [
         "CHAR_CLEAR",
         "ATTR_CLEAR",
+        "EXPLOSIVE",
         "NEVER_MOVE",
         "IM_POIS",
         "NONLIVING",
@@ -57441,7 +57834,8 @@
         "IM_FIRE",
         "IM_ELEC",
         "IM_POIS",
-        "RES_SHAR"
+        "RES_SHAR",
+        "WALL"
     ]
 },
 {
@@ -57675,7 +58069,8 @@
         "IM_ELEC",
         "IM_POIS",
         "IM_FIRE",
-        "RES_SHAR"
+        "RES_SHAR",
+        "WALL"
     ]
 },
 {
@@ -57723,6 +58118,7 @@
         "RES_WATE",
         "ANIMAL",
         "NO_CONF",
+        "KRAKEN",
         "NO_SLEEP",
         "NO_FEAR",
         "DROP_CORPSE",
@@ -57948,6 +58344,7 @@
         "EVIL",
         "GIANT",
         "MOVE_BODY",
+        "OGRE",
         "WILD_WASTE"
     ]
 },
@@ -58680,6 +59077,8 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
+        "NAGA",
+        "MERFOLK",
         "ONLY_ITEM",
         "DROP_90",
         "DROP_2D2",
@@ -59247,6 +59646,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "FORCE_MAXHP",
+        "TURTLE",
         "DROP_1D2",
         "DROP_2D2",
         "ONLY_ITEM",
@@ -61166,7 +61566,8 @@
     "flags": [
         "DROP_CORPSE",
         "RAND_50",
-        "ANIMAL"
+        "ANIMAL",
+        "TURTLE"
     ]
 },
 {
@@ -61388,7 +61789,8 @@
         "ORC",
         "HURT_LITE",
         "EVIL",
-        "RES_DARK"
+        "RES_DARK",
+        "SOLDIER"
     ]
 },
 {
@@ -63033,6 +63435,7 @@
         "SPEAK_ALL",
         "FORCE_MAXHP",
         "ESCORT",
+        "OGRE",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_2D2",
@@ -63716,7 +64119,8 @@
         "NO_STUN",
         "NO_CONF",
         "NO_SLEEP",
-        "RIDING"
+        "RIDING",
+        "DEER"
     ],
     "skill": {
         "list": [
@@ -65768,6 +66172,7 @@
         "RES_TELE",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "ALIEN",
         "FORCE_MAXHP",
         "KILL_WALL",
         "HUMAN",
@@ -66186,6 +66591,7 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "BEAR",
         "ANIMAL",
         "EVIL",
         "WILD_WOOD",
@@ -66544,7 +66950,8 @@
         "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "INSECT"
     ],
     "skill": {
         "list": [
@@ -66607,6 +67014,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "FORCE_MAXHP",
+        "MINOTAUR",
         "EVIL",
         "UNIQUE"
     ]
@@ -67052,6 +67460,7 @@
         "DROP_CORPSE",
         "AQUATIC",
         "ANIMAL",
+        "AQUATIC_MAMMAL",
         "FORCE_MAXHP",
         "ONLY_ITEM",
         "DROP_2D2",
@@ -67802,6 +68211,7 @@
         "DROP_60",
         "WILD_ALL",
         "HUMAN",
+        "MINDCRAFTER",
         "OPEN_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -67857,6 +68267,7 @@
         "WILD_ALL",
         "FRIENDS",
         "HUMAN",
+        "MINDCRAFTER",
         "OPEN_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -67913,6 +68324,7 @@
     },
     "sex": "MALE",
     "flags": [
+        "MINDCRAFTER",
         "DROP_90",
         "WILD_ALL",
         "HUMAN",
@@ -67983,6 +68395,7 @@
         "ONLY_ITEM",
         "FORCE_MAXHP",
         "DROP_4D2",
+        "MINDCRAFTER",
         "SMART",
         "BASH_DOOR",
         "TAKE_ITEM",
@@ -68193,6 +68606,7 @@
         "WILD_ONLY",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "YEEK",
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP"
@@ -68305,6 +68719,7 @@
         "CAN_SWIM",
         "DROP_CORPSE",
         "ANIMAL",
+        "DINOSAUR",
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
@@ -68596,6 +69011,7 @@
         "ANIMAL",
         "CAN_SWIM",
         "WEIRD_MIND",
+        "OCTOPUS",
         "IM_POIS",
         "RES_DARK",
         "NO_FEAR",
@@ -68935,6 +69351,7 @@
         "FORCE_MAXHP",
         "DROP_CORPSE",
         "RIDING",
+        "WORM",
         "COLD_BLOOD",
         "BASH_DOOR",
         "KILL_WALL",
@@ -69721,7 +70138,8 @@
         "BASH_DOOR",
         "EVIL",
         "DROP_SKELETON",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "SOLDIER"
     ]
 },
 {
@@ -69777,7 +70195,8 @@
         "FRIENDS",
         "DROP_CORPSE",
         "WILD_WOOD",
-        "HAS_LITE_1"
+        "HAS_LITE_1",
+        "ALIEN"
     ]
 },
 {
@@ -69943,6 +70362,7 @@
     "flags": [
         "OPEN_DOOR",
         "BASH_DOOR",
+        "WORM",
         "ANIMAL",
         "KILL_BODY",
         "DROP_CORPSE",
@@ -70172,6 +70592,7 @@
         "IM_POIS",
         "RES_DARK",
         "RES_NETH",
+        "INSECT",
         "RES_PLAS",
         "RES_SHAR",
         "RES_SOUN",
@@ -70245,6 +70666,7 @@
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GOOD",
+        "ALIEN",
         "OPEN_DOOR",
         "BASH_DOOR"
     ]
@@ -71004,6 +71426,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "SKAVEN",
         "OPEN_DOOR",
         "WILD_WASTE",
         "WILD_SWAMP",
@@ -71498,6 +71921,7 @@
         "FORCE_MAXHP",
         "HUMAN",
         "DEMON",
+        "PLANESWALKER",
         "IM_FIRE",
         "IM_ELEC",
         "ONLY_ITEM",
@@ -71558,6 +71982,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71603,6 +72028,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71648,6 +72074,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71693,6 +72120,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71738,6 +72166,7 @@
     },
     "flags": [
         "DROP_90",
+        "KOBOLD",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -71790,6 +72219,7 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "KOBOLD",
         "EVIL",
         "IM_POIS",
         "EAT_POISONOUS",
@@ -72678,6 +73108,7 @@
         "MOVE_BODY",
         "EVIL",
         "INVISIBLE",
+        "OGRE",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "HURT_LITE",
@@ -72748,6 +73179,7 @@
         "MOVE_BODY",
         "EVIL",
         "INVISIBLE",
+        "OGRE",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "IM_FIRE",
@@ -72820,6 +73252,7 @@
         "MOVE_BODY",
         "EVIL",
         "INVISIBLE",
+        "OGRE",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "IM_COLD",
@@ -72893,6 +73326,7 @@
         "MOVE_BODY",
         "EVIL",
         "INVISIBLE",
+        "OGRE",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "DROP_90",
@@ -72962,6 +73396,7 @@
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
+        "OGRE",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_GREAT",
@@ -73124,6 +73559,7 @@
     "flags": [
         "WILD_SWAMP",
         "WILD_WASTE",
+        "SKAVEN",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
@@ -76345,6 +76781,7 @@
         "EVIL",
         "UNDEAD",
         "CAN_FLY",
+        "BEHOLDER",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -76427,7 +76864,8 @@
         "EVIL",
         "IM_POIS",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "BEHOLDER"
     ],
     "skill": {
         "list": [
@@ -79047,8 +79485,7 @@
         "DROP_60",
         "FRIENDS",
         "DROP_CORPSE",
-        "RES_DARK",
-        "RES_NETH"
+        "INSECT"
     ]
 },
 {
@@ -79483,6 +79920,7 @@
         "DROP_SKELETON",
         "BASH_DOOR",
         "POWERFUL",
+        "SOLDIER",
         "DROP_2D2",
         "DROP_3D2",
         "ONLY_ITEM",
@@ -81542,7 +81980,8 @@
         "ONLY_ITEM",
         "DROP_GOOD",
         "DROP_4D2",
-        "DROP_2D2"
+        "DROP_2D2",
+        "INSECT"
     ],
     "skill": {
         "list": [
@@ -81854,6 +82293,7 @@
     "sex": "MALE",
     "flags": [
         "ANIMAL",
+        "FAIRY",
         "REGENERATE",
         "OPEN_DOOR",
         "MOVE_BODY",
@@ -82381,6 +82821,7 @@
         "WEIRD_MIND",
         "RIDING",
         "TAKE_ITEM",
+        "BOVINE",
         "IM_COLD",
         "RES_WATE",
         "RES_TIME",
@@ -82526,6 +82967,7 @@
         "CAN_SWIM",
         "WILD_SHORE",
         "NEVER_MOVE",
+        "MERFOLK",
         "ONLY_ITEM",
         "DROP_GOOD",
         "DROP_1D2",
@@ -82725,7 +83167,8 @@
         "FRIENDLY",
         "HAS_LITE_1",
         "IM_POIS",
-        "RES_LITE"
+        "RES_LITE",
+        "FAIRY"
     ],
     "skill": {
         "list": [
@@ -84063,6 +84506,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "STUPID",
+        "PERVERT",
         "EVIL",
         "NASTY"
     ]
@@ -84125,8 +84569,8 @@
     "level": 20,
     "rarity": 2,
     "exp": 50,
-    "next_exp": 5000,
-    "next_mon": 1426,
+    "next_exp": 12000,
+    "next_mon": 2283,
     "escorts": [],
     "blows": [
         {
@@ -84145,6 +84589,7 @@
     },
     "sex": "MALE",
     "flags": [
+        "PERVERT",
         "DROP_1D2",
         "WILD_ALL",
         "HUMAN",
@@ -84650,6 +85095,7 @@
         "HUMAN",
         "FORCE_MAXHP",
         "RES_TELE",
+        "PERVERT",
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GREAT",
@@ -84734,6 +85180,7 @@
         "HUMAN",
         "NASTY",
         "UNIQUE",
+        "PERVERT",
         "FORCE_MAXHP",
         "ONLY_ITEM",
         "DROP_4D2",
@@ -84937,6 +85384,7 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_STUN",
+        "WALL",
         "IM_ACID",
         "IM_ELEC",
         "IM_POIS",
@@ -85125,6 +85573,8 @@
         "BASH_DOOR",
         "FRIENDS",
         "DROP_CORPSE",
+        "RABBIT",
+        "HUMAN",
         "WILD_WOOD",
         "HAS_LITE_1"
     ]
@@ -85186,11 +85636,13 @@
         "IM_ELEC",
         "IM_ACID",
         "IM_POIS",
+        "WORM",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "RIDING"
+        "RIDING",
+        "PHYREXIAN"
     ],
     "dead_spawn": [
         {
@@ -85252,11 +85704,13 @@
         "IM_ELEC",
         "IM_ACID",
         "IM_POIS",
+        "WORM",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "RIDING"
+        "RIDING",
+        "PHYREXIAN"
     ]
 },
 {
@@ -85306,11 +85760,13 @@
         "IM_ELEC",
         "IM_ACID",
         "IM_POIS",
+        "WORM",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "RIDING"
+        "RIDING",
+        "PHYREXIAN"
     ]
 },
 {
@@ -86466,7 +86922,8 @@
         "ONLY_ITEM",
         "DROP_60",
         "NONLIVING",
-        "YAZYU"
+        "YAZYU",
+        "FACE"
     ],
     "skill": {
         "list": [
@@ -86505,7 +86962,8 @@
         "DROP_CORPSE",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "INSECT"
     ],
     "skill": {
         "list": [
@@ -86559,6 +87017,7 @@
         "RES_WATE",
         "ANIMAL",
         "NO_CONF",
+        "SQUID",
         "NO_SLEEP",
         "NO_FEAR",
         "DROP_CORPSE",
@@ -86629,6 +87088,7 @@
         "RES_WATE",
         "ANIMAL",
         "NO_CONF",
+        "SQUID",
         "NO_SLEEP",
         "NO_FEAR",
         "DROP_CORPSE",
@@ -87340,6 +87800,7 @@
         "HAS_LITE_2",
         "HUMAN",
         "FRIENDLY",
+        "RABBLE",
         "OPEN_DOOR",
         "BASH_DOOR",
         "NO_FEAR",
@@ -87348,7 +87809,8 @@
         "HOMO_SEXUAL",
         "DROP_2D2",
         "DROP_GOOD",
-        "SCATOLOGIST"
+        "SCATOLOGIST",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -87417,7 +87879,8 @@
         "HOMO_SEXUAL",
         "DROP_2D2",
         "DROP_GOOD",
-        "SCATOLOGIST"
+        "SCATOLOGIST",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -87544,7 +88007,8 @@
         "DROP_2D2",
         "DROP_3D2",
         "DROP_4D2",
-        "DROP_GREAT"
+        "DROP_GREAT",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -90485,7 +90949,8 @@
         "FRIENDS",
         "ANIMAL",
         "EVIL",
-        "WILD_ALL"
+        "WILD_ALL",
+        "RABBIT"
     ]
 },
 {
@@ -91309,6 +91774,7 @@
         "POWERFUL",
         "REGENERATE",
         "RIDING",
+        "DINOSAUR",
         "MOVE_BODY",
         "CAN_SWIM",
         "OPEN_DOOR",
@@ -91802,6 +92268,7 @@
         "ANIMAL",
         "HURT_FIRE",
         "NEVER_MOVE",
+        "TREEFOLK",
         "DROP_90",
         "IM_POIS",
         "RES_WATE",
@@ -92235,6 +92702,7 @@
         "DROP_2D2",
         "WILD_ALL",
         "HUMAN",
+        "PERVERT",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -92329,7 +92797,9 @@
         "CAN_SWIM",
         "COLD_BLOOD",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "SOLDIER",
+        "INFORMATION_AGE"
     ]
 },
 {
@@ -92372,6 +92842,7 @@
     },
     "flags": [
         "DROP_90",
+        "CITIZEN",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
@@ -92625,7 +93096,8 @@
         "NO_FEAR",
         "NONLIVING",
         "RIDING",
-        "TANK"
+        "TANK",
+        "PHYREXIAN"
     ]
 },
 {
@@ -92879,7 +93351,7 @@
         "RES_DARK",
         "RES_LITE",
         "FRIENDS",
-        "WARRIOR",
+        "SOLDIER",
         "EVIL",
         "ORC",
         "NO_CONF",
@@ -93467,6 +93939,7 @@
         "IM_ELEC",
         "IM_POIS",
         "FRIENDS",
+        "GNOME",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -95170,7 +95643,8 @@
         "BASH_DOOR",
         "RES_WATE",
         "RES_TELE",
-        "RIDING"
+        "RIDING",
+        "SHARK"
     ]
 },
 {
@@ -95331,6 +95805,7 @@
         "NEVER_MOVE",
         "NEVER_BLOW",
         "NONLIVING",
+        "ALARM",
         "IM_POIS",
         "WILD_SWAMP",
         "DROP_CORPSE",
@@ -95579,10 +96054,10 @@
         "HUMAN",
         "WILD_ALL",
         "HAS_LITE_2",
+        "SOLDIER",
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "SAMURAI",
         "OPEN_DOOR",
         "BASH_DOOR",
         "FRIENDS"
@@ -95986,6 +96461,7 @@
         "FORCE_MAXHP",
         "ANIMAL",
         "ELDRAZI",
+        "BOAR",
         "POWERFUL",
         "REGENERATE",
         "RIDING",
@@ -96281,6 +96757,7 @@
     "mob": 150,
     "flags": [
         "DROP_1D2",
+        "SOLDIER",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
@@ -96406,7 +96883,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "UNIQUE",
-        "DEMON",
+        "AVATAR",
         "HURT_ROCK",
         "NO_STUN",
         "NO_SLEEP",
@@ -96588,7 +97065,8 @@
         "OPEN_DOOR",
         "DROP_CORPSE",
         "DROP_SKELETON",
-        "NASTY"
+        "NASTY",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -96638,6 +97116,7 @@
         "WILD_ONLY",
         "WILD_WOOD",
         "HUMAN",
+        "PEASANT",
         "RAND_25",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -97156,7 +97635,7 @@
         "BASH_DOOR",
         "SELF_DARK_2",
         "SELF_DARK_1",
-        "DEMON",
+        "AVATAR",
         "NO_STUN",
         "NO_SLEEP",
         "NO_FEAR"
@@ -97694,7 +98173,8 @@
         "IM_COLD",
         "IM_FIRE",
         "IM_POIS",
-        "CAN_SWIM"
+        "CAN_SWIM",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -97861,6 +98341,7 @@
         "IM_POIS",
         "NO_SLEEP",
         "NO_CONF",
+        "SOLDIER",
         "HUMAN",
         "DROP_CORPSE",
         "DROP_SKELETON"
@@ -98609,7 +99090,8 @@
         "EMPTY_MIND",
         "AQUATIC",
         "WILD_SHORE",
-        "WILD_OCEAN"
+        "WILD_OCEAN",
+        "JELLYFISH"
     ]
 },
 {
@@ -99408,7 +99890,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_STUN",
-        "NONLIVING"
+        "NONLIVING",
+        "SHARK"
     ],
     "spawn_creature": [
         {
@@ -100207,7 +100690,8 @@
         "BASH_DOOR",
         "CAN_FLY",
         "WARRIOR",
-        "EVIL"
+        "EVIL",
+        "ALIEN"
     ],
     "skill": {
         "list": [
@@ -100410,6 +100894,7 @@
         "DROP_GOOD",
         "EMPTY_MIND",
         "NONLIVING",
+        "SHIP",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -100955,6 +101440,7 @@
     "mob": 145,
     "flags": [
         "HAS_LITE_1",
+        "SOLDIER",
         "DROP_60",
         "HOBBIT",
         "TAKE_ITEM",
@@ -101878,6 +102364,7 @@
     "mob": 3000,
     "flags": [
         "HUMAN",
+        "GRANDMA",
         "EVIL",
         "RAND_25",
         "DROP_SKELETON",
@@ -102042,6 +102529,7 @@
         "FORCE_MAXHP",
         "DROP_1D2",
         "SMART",
+        "SOLDIER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "HUMAN",
@@ -102280,7 +102768,7 @@
         "DROP_1D2",
         "SMART",
         "CAN_SWIM",
-        "WARRIOR",
+        "SOLDIER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "HUMAN",
@@ -102773,6 +103261,7 @@
         "DROP_CORPSE",
         "ANIMAL",
         "EVIL",
+        "RABBIT",
         "FORCE_MAXHP",
         "NO_STUN",
         "NO_FEAR",
@@ -102881,7 +103370,8 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "DEER"
     ]
 },
 {
@@ -103081,6 +103571,7 @@
         "IM_COLD",
         "NASTY",
         "HOMO_SEXUAL",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -103159,6 +103650,7 @@
         "IM_POIS",
         "IM_COLD",
         "UNIQUE",
+        "BEAST",
         "RES_LITE",
         "RES_DARK",
         "RES_NETH",
@@ -103533,6 +104025,7 @@
     "flags": [
         "HAS_LITE_2",
         "HUMAN",
+        "SOLDIER",
         "DROP_90",
         "FRIENDS",
         "TAKE_ITEM",
@@ -103771,6 +104264,7 @@
         "NO_CONF",
         "NO_SLEEP",
         "HUMAN",
+        "SOLDIER",
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GOOD",
@@ -104140,6 +104634,7 @@
         "FORCE_MAXHP",
         "SMART",
         "REFLECTING",
+        "AVATAR",
         "ONLY_ITEM",
         "DROP_3D2",
         "DROP_4D2",
@@ -104158,9 +104653,7 @@
         "RES_DARK",
         "RES_TELE",
         "NO_CONF",
-        "NO_SLEEP",
-        "ANGEL",
-        "DEMON"
+        "NO_SLEEP"
     ],
     "skill": {
         "list": [
@@ -104340,7 +104833,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "UNIQUE",
-        "DEMON",
+        "AVATAR",
         "HURT_ROCK",
         "NO_STUN",
         "NO_SLEEP",
@@ -106736,6 +107229,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "ALIEN",
         "OPEN_DOOR",
         "BASH_DOOR",
         "CAN_FLY",
@@ -107682,7 +108176,8 @@
         "DROP_CORPSE",
         "EVIL",
         "ANIMAL",
-        "HUMAN"
+        "HUMAN",
+        "HIPPO"
     ],
     "skill": {
         "list": [
@@ -108668,7 +109163,8 @@
         "RES_TELE",
         "NO_STUN",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -108741,7 +109237,8 @@
         "DROP_GOOD",
         "EAT_POISONOUS",
         "OPEN_DOOR",
-        "BASH_DOOR"
+        "BASH_DOOR",
+        "PERVERT"
     ]
 },
 {
@@ -108847,7 +109344,8 @@
         "HOMO_SEXUAL",
         "NASTY",
         "WILD_WOOD",
-        "WILD_MOUNTAIN"
+        "WILD_MOUNTAIN",
+        "PERVERT"
     ]
 },
 {
@@ -108900,7 +109398,8 @@
         "HOMO_SEXUAL",
         "NASTY",
         "WILD_WOOD",
-        "WILD_MOUNTAIN"
+        "WILD_MOUNTAIN",
+        "PERVERT"
     ]
 },
 {
@@ -108963,7 +109462,8 @@
         "HUMAN",
         "DROP_CORPSE",
         "DROP_SKELETON",
-        "EVIL"
+        "EVIL",
+        "SOLDIER"
     ]
 },
 {
@@ -109094,6 +109594,7 @@
         "BASH_DOOR",
         "FORCE_MAXHP",
         "UNIQUE",
+        "PERVERT",
         "WILD_WOOD",
         "WILD_MOUNTAIN",
         "NO_SLEEP",
@@ -109355,6 +109856,7 @@
         "BASH_DOOR",
         "EVIL",
         "CAN_FLY",
+        "AVATAR",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -109530,6 +110032,7 @@
         "RES_TELE",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "AVATAR",
         "EVIL",
         "CAN_FLY",
         "IM_ACID",
@@ -110108,6 +110611,7 @@
         "UNIQUE",
         "NEVER_MOVE",
         "FORCE_MAXHP",
+        "FROG",
         "IM_ACID",
         "IM_POIS",
         "IM_COLD",
@@ -110438,6 +110942,7 @@
     "flags": [
         "WILD_SHORE",
         "WILD_SWAMP",
+        "HYDRA",
         "ONLY_GOLD",
         "DROP_2D2",
         "DROP_4D2",
@@ -110522,7 +111027,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "FRIENDS"
+        "FRIENDS",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -111482,6 +111988,7 @@
         "IM_ELEC",
         "IM_POIS",
         "NONLIVING",
+        "PHYREXIAN",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -111527,6 +112034,7 @@
         "FORCE_MAXHP",
         "CAN_FLY",
         "UNIQUE",
+        "AQUATIC_MAMMAL",
         "DROP_CORPSE",
         "QUANTUM",
         "DROP_GOOD",
@@ -111753,6 +112261,7 @@
         "NONLIVING",
         "RIDING",
         "TANK",
+        "PHYREXIAN",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -112203,7 +112712,8 @@
         "RAND_25",
         "RAND_50",
         "EAT_LOSE_INT",
-        "HUMAN"
+        "HUMAN",
+        "PERVERT"
     ]
 },
 {
@@ -112608,6 +113118,7 @@
         "DROP_GOOD",
         "STUPID",
         "EVIL",
+        "MAGICAL_GIRL",
         "ELDRITCH_HORROR",
         "IM_COLD",
         "RES_NETH",
@@ -113553,6 +114064,7 @@
         "DROP_SKELETON",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "GRANDMA",
         "EVIL",
         "HUMAN",
         "NO_CONF",
@@ -113741,7 +114253,7 @@
         }
     ],
     "flavor": {
-        "ja": "目に痛いほど鮮烈な黄色の装束を身にまとい、棘鞭と火炎の呪術を操る。しかし何よりも目を引くのはその異様な頭部に大きく巻き上げた黄色のダーバンだ。"
+        "ja": "目に痛いほど鮮烈な黄色の装束を身にまとい、棘鞭と火炎の呪術を操る。しかし何よりも目を引くのはその異様な頭部に大きく巻き上げた黄色のターバンだ。"
     },
     "sex": "MALE",
     "flags": [
@@ -113772,7 +114284,7 @@
 {
     "id": 1762,
     "name": {
-        "ja": "KINGの四重臣『スペード』",
+        "ja": "ＫＩＮＧの四重臣『スペード』",
         "en": "Spade, Big Four of KING"
     },
     "symbol": {
@@ -113780,13 +114292,13 @@
         "color": "Brown"
     },
     "speed": 0,
-    "hit_point": "25d10",
+    "hit_point": "25d30",
     "vision": 20,
-    "armor_class": 25,
+    "armor_class": 65,
     "alertness": 20,
-    "level": 14,
+    "level": 30,
     "rarity": 2,
-    "exp": 100,
+    "exp": 3000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -113794,30 +114306,31 @@
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "1d15"
+            "damage_dice": "4d15"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "1d15"
+            "damage_dice": "4d15"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "1d15"
+            "damage_dice": "4d15"
         }
     ],
     "skill": {
-        "shoot": "2d15",
+        "shoot": "4d15",
         "list": [
             "SHOOT"
         ],
         "probability": "1_IN_2"
     },
     "flavor": {
-        "ja": "サザンクロスの支配組織、KINGの重鎮の一人だ。ボウガンを愛用し、今日より明日を選ぶ老人の種もみを奪う極悪人である。"
+        "ja": "サザンクロスの支配組織、ＫＩＮＧの重鎮の一人だ。ボウガンを愛用し、今日より明日を選ぶ老人の種もみを奪う極悪人である。"
     },
     "sex": "MALE",
+    "alliance": "KING",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -113853,7 +114366,7 @@
 {
     "id": 1763,
     "name": {
-        "ja": "KINGの四重臣『ダイヤ』",
+        "ja": "ＫＩＮＧの四重臣『ダイヤ』",
         "en": "Diamond, Big Four of KING"
     },
     "symbol": {
@@ -113861,13 +114374,13 @@
         "color": "Brown"
     },
     "speed": 0,
-    "hit_point": "25d10",
+    "hit_point": "25d30",
     "vision": 20,
-    "armor_class": 25,
+    "armor_class": 65,
     "alertness": 20,
-    "level": 14,
+    "level": 30,
     "rarity": 2,
-    "exp": 100,
+    "exp": 3000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -113875,23 +114388,24 @@
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "4d16"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "4d16"
         },
         {
             "method": "HIT",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "4d16"
         }
     ],
     "flavor": {
-        "ja": "サザンクロスの支配組織、KINGの重鎮の一人だ。棒術の使い手で、無辜の親子の命を残酷に弄ぶ極悪人である。"
+        "ja": "サザンクロスの支配組織、ＫＩＮＧの重鎮の一人だ。棒術の使い手で、無辜の親子の命を残酷に弄ぶ極悪人である。"
     },
     "sex": "MALE",
+    "alliance": "KING",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -113927,7 +114441,7 @@
 {
     "id": 1764,
     "name": {
-        "ja": "KINGの四重臣『クラブ』",
+        "ja": "ＫＩＮＧの四重臣『クラブ』",
         "en": "Club, Big Four of KING"
     },
     "symbol": {
@@ -113935,13 +114449,13 @@
         "color": "Brown"
     },
     "speed": 0,
-    "hit_point": "25d10",
+    "hit_point": "25d30",
     "vision": 20,
     "armor_class": 25,
     "alertness": 20,
-    "level": 14,
+    "level": 31,
     "rarity": 2,
-    "exp": 100,
+    "exp": 3000,
     "next_exp": 0,
     "next_mon": 0,
     "escorts": [],
@@ -113949,23 +114463,24 @@
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "5d15"
         },
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "5d15"
         },
         {
             "method": "CLAW",
             "effect": "HURT",
-            "damage_dice": "2d15"
+            "damage_dice": "5d15"
         }
     ],
     "flavor": {
-        "ja": "サザンクロスの支配組織、KINGの重鎮の一人だ。鉤爪の使い手で、逃げ回る奴隷をいたぶり尽くす極悪人である。"
+        "ja": "サザンクロスの支配組織、ＫＩＮＧの重鎮の一人だ。鉤爪の使い手で、逃げ回る奴隷をいたぶり尽くす極悪人である。"
     },
     "sex": "MALE",
+    "alliance": "KING",
     "flags": [
         "UNIQUE",
         "EVIL",
@@ -114414,7 +114929,8 @@
         "ANIMAL",
         "EVIL",
         "WILD_WOOD",
-        "WILD_MOUNTAIN"
+        "WILD_MOUNTAIN",
+        "BOAR"
     ]
 },
 {
@@ -114506,7 +115022,8 @@
         "IM_ACID",
         "ONLY_ITEM",
         "DROP_60",
-        "NONLIVING"
+        "NONLIVING",
+        "FACE"
     ],
     "skill": {
         "list": [
@@ -114627,6 +115144,7 @@
         "COLD_BLOOD",
         "EMPTY_MIND",
         "FORCE_MAXHP",
+        "WALL",
         "BASH_DOOR",
         "IM_COLD",
         "IM_ACID",
@@ -115251,7 +115769,8 @@
         "EMPTY_MIND",
         "CAN_FLY",
         "RAND_50",
-        "RAND_25"
+        "RAND_25",
+        "JELLYFISH"
     ]
 },
 {
@@ -115413,6 +115932,7 @@
         "BASH_DOOR",
         "POWERFUL",
         "NONLIVING",
+        "MINOTAUR",
         "EVIL",
         "DEMON",
         "IM_FIRE",
@@ -115619,7 +116139,8 @@
         "BASH_DOOR",
         "HAS_LITE_1",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ]
 },
 {
@@ -115672,7 +116193,8 @@
         "BASH_DOOR",
         "HAS_LITE_1",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ]
 },
 {
@@ -115851,6 +116373,7 @@
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_GOOD",
+        "PERVERT",
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
@@ -115957,6 +116480,7 @@
         "HUMAN",
         "WILD_ALL",
         "HAS_LITE_2",
+        "SOLDIER",
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -116233,6 +116757,7 @@
         "NONLIVING",
         "NO_FEAR",
         "FORCE_MAXHP",
+        "PHYREXIAN",
         "KILL_BODY",
         "IM_FIRE",
         "IM_COLD",
@@ -116890,6 +117415,7 @@
         "DROP_60",
         "WILD_TOWN",
         "HUMAN",
+        "CITIZEN",
         "WILD_SWAMP",
         "WILD_WOOD",
         "WILD_GRASS",
@@ -116950,7 +117476,7 @@
         "FRIENDS",
         "DROP_60",
         "WILD_ALL",
-        "WARRIOR",
+        "SOLDIER",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -117012,7 +117538,7 @@
         "FRIENDS",
         "DROP_90",
         "WILD_ALL",
-        "WARRIOR",
+        "SOLDIER",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -117203,7 +117729,8 @@
         "DROP_CORPSE",
         "NO_STUN",
         "NO_SLEEP",
-        "NO_CONF"
+        "NO_CONF",
+        "PERVERT"
     ],
     "skill": {
         "list": [
@@ -117493,6 +118020,7 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "DROP_SKELETON",
+        "PHYREXIAN",
         "FORCE_MAXHP",
         "MOVE_BODY",
         "TAKE_ITEM",
@@ -117870,7 +118398,8 @@
         "BASH_DOOR",
         "HAS_LITE_1",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "PERVERT"
     ]
 },
 {
@@ -118425,6 +118954,7 @@
         "DROP_GOOD",
         "DRAGON",
         "HUMAN",
+        "PHYREXIAN",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -118694,7 +119224,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "EVIL",
-        "NONLIVING"
+        "NONLIVING",
+        "AVATAR"
     ],
     "skill": {
         "list": [
@@ -119552,6 +120083,7 @@
         "SMART",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "PERVERT",
         "EVIL",
         "NASTY",
         "HOMO_SEXUAL",
@@ -119694,6 +120226,7 @@
         "BASH_DOOR",
         "DROP_CORPSE",
         "DROP_SKELETON",
+        "PHYREXIAN",
         "FORCE_MAXHP",
         "KILL_BODY",
         "TAKE_ITEM",
@@ -119863,6 +120396,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "ANIMAL",
+        "PHYREXIAN",
         "IM_POIS"
     ]
 },
@@ -120050,6 +120584,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DRAGON",
+        "PHYREXIAN",
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
@@ -120116,6 +120651,7 @@
         "EMPTY_MIND",
         "AQUATIC",
         "NONLIVING",
+        "SHIP",
         "IM_COLD",
         "IM_POIS",
         "RES_WATE",
@@ -120172,6 +120708,7 @@
         "ja": "退廃にして残酷なる世界の支配者デアボリカを統べる五大貴族の一人だ。ゴルドーはその中でも最も年若く若輩だが、人間の一国を滅することなど造作もない。"
     },
     "sex": "MALE",
+    "alliance": "DIABOLIQUE",
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -120302,6 +120839,7 @@
         "CAN_FLY",
         "UNIQUE",
         "ANIMAL",
+        "PHYREXIAN",
         "IM_POIS"
     ],
     "spawn_creature": [
@@ -120720,6 +121258,7 @@
         "DROP_CORPSE",
         "WILD_TOWN",
         "WILD_ONLY",
+        "PEASANT",
         "RAND_25",
         "EAT_LOSE_CHR",
         "HUMAN",
@@ -121032,7 +121571,8 @@
         "IM_FIRE",
         "IM_ELEC",
         "IM_POIS",
-        "RES_SHAR"
+        "RES_SHAR",
+        "WALL"
     ]
 },
 {
@@ -121131,7 +121671,8 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
-        "ANIMAL"
+        "ANIMAL",
+        "SHARK"
     ]
 },
 {
@@ -121183,7 +121724,8 @@
     "flags": [
         "AQUATIC",
         "RES_WATE",
-        "ANIMAL"
+        "ANIMAL",
+        "SHARK"
     ]
 },
 {
@@ -121639,6 +122181,7 @@
     "flags": [
         "UNIQUE",
         "STUPID",
+        "FROG",
         "FORCE_MAXHP",
         "WILD_ALL",
         "DROP_CORPSE",
@@ -121756,7 +122299,8 @@
         "BASH_DOOR",
         "WILD_MOUNTAIN",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "RABBIT"
     ]
 },
 {
@@ -121965,6 +122509,8 @@
         "BASH_DOOR",
         "SMART",
         "EVIL",
+        "PHYREXIAN",
+        "SHIP",
         "NO_CONF",
         "NO_SLEEP",
         "RES_WATE",
@@ -122018,7 +122564,8 @@
         "REFLECTING",
         "NO_CONF",
         "NO_SLEEP",
-        "CAN_FLY"
+        "CAN_FLY",
+        "WALL"
     ]
 },
 {
@@ -122083,6 +122630,7 @@
         "SELF_LITE_1",
         "SELF_LITE_2",
         "ANGEL",
+        "PHYREXIAN",
         "ONLY_ITEM",
         "DROP_3D2",
         "DROP_4D2",
@@ -122175,6 +122723,7 @@
         "SMART",
         "DROP_CORPSE",
         "RIDING",
+        "HYDRA",
         "ONLY_GOLD",
         "DROP_3D2",
         "DROP_4D2",
@@ -122422,7 +122971,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "HIPPO"
     ],
     "skill": {
         "list": [
@@ -122483,6 +123033,7 @@
         "ATTR_ANY",
         "QUANTUM",
         "CAN_FLY",
+        "SHARK",
         "ELDRITCH_HORROR",
         "FRIENDS",
         "PASS_WALL",
@@ -122648,6 +123199,7 @@
         "CAN_FLY",
         "IM_FIRE",
         "IM_POIS",
+        "SHIP",
         "DROP_60",
         "DROP_90",
         "DROP_2D2",
@@ -122773,6 +123325,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "SOLDIER",
         "OPEN_DOOR",
         "BASH_DOOR",
         "FRIENDS",
@@ -124166,6 +124719,7 @@
         "DROP_90",
         "DROP_GREAT",
         "ONLY_ITEM",
+        "HYDRA",
         "SPEAK_ALL",
         "RES_TELE",
         "CAN_SWIM",
@@ -124302,7 +124856,8 @@
     "flags": [
         "CAN_FLY",
         "WILD_ALL",
-        "RES_POIS"
+        "RES_POIS",
+        "FAIRY"
     ]
 },
 {
@@ -124695,6 +125250,7 @@
         "WEIRD_MIND",
         "BASH_DOOR",
         "SUMOU_WRESTLER",
+        "SOLDIER",
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
@@ -124964,7 +125520,8 @@
         "WILD_WASTE",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "EAT_BERSERKER"
+        "EAT_BERSERKER",
+        "ALIEN"
     ]
 },
 {
@@ -125214,6 +125771,7 @@
         "IM_POIS",
         "CAN_FLY",
         "RES_NETH",
+        "HAND",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -126357,6 +126915,7 @@
         "RES_DARK",
         "EVIL",
         "UNDEAD",
+        "PLANESWALKER",
         "IM_COLD",
         "IM_POIS",
         "HURT_LITE",
@@ -127000,6 +127559,7 @@
         "FORCE_MAXHP",
         "DROP_1D2",
         "SMART",
+        "SOLDIER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "CAN_SWIM",
@@ -127060,6 +127620,7 @@
         "FORCE_MAXHP",
         "DROP_1D2",
         "SMART",
+        "SOLDIER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "CAN_SWIM",
@@ -127213,6 +127774,7 @@
         "ja": "退廃にして残酷なる世界の支配者デアボリカを統べる五大貴族の一人だ。火炎王はその中でも良くも悪しくも表裏なく、洒脱にして直情な振る舞いで知られる。彼は親しい従者や、厭世ゆえに変貌した旧友には深い情愛や執着の念を抱くが、その念を満たすためには、一つの都市を滅ぼす行為も、万人を殺める行為も躊躇わない。"
     },
     "sex": "MALE",
+    "alliance": "DIABOLIQUE",
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -127769,6 +128331,7 @@
         "DROP_2D2",
         "DROP_1D2",
         "DROP_GOOD",
+        "RABBIT",
         "DROP_CORPSE",
         "DROP_SKELETON"
     ]
@@ -128241,6 +128804,7 @@
         "DROP_CORPSE",
         "DROP_SKELETON",
         "UNIQUE",
+        "CITIZEN",
         "DROP_GOOD",
         "DROP_2D2",
         "FORCE_MAXHP",
@@ -128376,6 +128940,7 @@
         "ja": "退廃にして残酷なる世界の支配者デアボリカを統べる五大貴族の一人だ。アズライトは分けてもその退廃と残酷さを究めた最もデアボリカらしいデアボリカと言われており、不老不死の悠久の時と強大な力を、苛立ちと共に無為な怠惰と殺戮にばかり注ぎ続けている。その行為はロードデアボリカという存在が果てに何になるかの諦念に基づくものと言われており、近々、そこから逃避する手段を取るつもりでいるらしい。"
     },
     "sex": "MALE",
+    "alliance": "DIABOLIQUE",
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -128459,6 +129024,7 @@
         "ja": "退廃にして残酷なる世界の支配者デアボリカを統べる五大貴族の一人だ。ファトラは妖艶で泰然とした態度の紅一点にして、最も古き王である彭祖とほぼ同世代にして並ぶ実力者である。彼女は温和で他のデアボリカを慮るのみならず、定命の者にも無為な殺戮や圧政を行わなった話を聞かない。しばしば調停者として同族の軋轢や放縦の後始末をして窘めることもある。"
     },
     "sex": "FEMALE",
+    "alliance": "DIABOLIQUE",
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -128498,7 +129064,7 @@
 {
     "id": 1995,
     "name": {
-        "ja": "房中のロードデアボリカ『彭祖』",
+        "ja": "房中のロードデアボリカ『彭房中",
         "en": "PengZu, Lord Diabolique of Chamber"
     },
     "symbol": {
@@ -128542,6 +129108,7 @@
         "ja": "退廃にして残酷なる世界の支配者デアボリカを統べる五大貴族の一人だ。彭祖は最年長のロードデアボリカであり、かつては全てのデアボリカを統べる王の立場にもあった。今でこそ肉欲の日々を送る絶倫の好々爺を演じているが、その純然たる力の本質は王であった頃から全く損なわれていない。"
     },
     "sex": "MALE",
+    "alliance": "DIABOLIQUE",
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -129584,7 +130151,9 @@
     },
     "flags": [
         "WEIRD_MIND",
-        "DROP_CORPSE"
+        "DROP_CORPSE",
+        "SOLDIER",
+        "TURTLE"
     ]
 },
 {
@@ -130397,7 +130966,8 @@
         "WILD_ALL",
         "RES_POIS",
         "BASH_DOOR",
-        "OPEN_DOOR"
+        "OPEN_DOOR",
+        "FAIRY"
     ],
     "skill": {
         "list": [
@@ -130647,6 +131217,7 @@
         "DROP_CORPSE",
         "HAS_LITE_1",
         "EVIL",
+        "PHYREXIAN",
         "NO_FEAR"
     ]
 },
@@ -131199,6 +131770,7 @@
         "DROP_SKELETON",
         "WILD_TOWN",
         "WILD_ONLY",
+        "GRANDMA",
         "RAND_25",
         "RAND_50",
         "EAT_LOSE_CHR",
@@ -131323,6 +131895,7 @@
         "FORCE_MAXHP",
         "EVIL",
         "DEMON",
+        "DEEPONE",
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
@@ -131962,6 +132535,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "DWARF",
+        "NIBELUNG",
         "HURT_LITE",
         "RES_DARK",
         "RES_DISE",
@@ -132022,7 +132596,8 @@
         "BASH_DOOR",
         "EVIL",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "MINDFLAYER"
     ],
     "skill": {
         "list": [
@@ -132557,7 +133132,8 @@
         "BASH_DOOR",
         "ANIMAL",
         "IM_ACID",
-        "NO_FEAR"
+        "NO_FEAR",
+        "YEEK"
     ]
 },
 {
@@ -132747,6 +133323,7 @@
         "CAN_FLY",
         "NASTY",
         "NEVER_BLOW",
+        "FACE",
         "IM_COLD",
         "IM_FIRE",
         "IM_POIS",
@@ -132825,7 +133402,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "RES_TELE",
-        "RES_NETH"
+        "RES_NETH",
+        "YEEK"
     ],
     "skill": {
         "list": [
@@ -133365,10 +133943,10 @@
         "IM_ACID",
         "IM_FIRE",
         "IM_POIS",
-        "ANIMAL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "INSECT"
     ]
 },
 {
@@ -133589,6 +134167,7 @@
         "EMPTY_MIND",
         "AQUATIC",
         "NONLIVING",
+        "SHIP",
         "IM_COLD",
         "IM_POIS",
         "RES_WATE",
@@ -133701,7 +134280,8 @@
         "HURT_FIRE",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "PAPER"
     ]
 },
 {
@@ -135457,7 +136037,8 @@
         "BASH_DOOR",
         "EAT_GIVE_INT",
         "EAT_LOSE_STR",
-        "EVIL"
+        "EVIL",
+        "TURTLE"
     ],
     "skill": {
         "list": [
@@ -136532,6 +137113,7 @@
         "DROP_1D2",
         "STUPID",
         "WARRIOR",
+        "SOLDIER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "CAN_SWIM",
@@ -136877,6 +137459,7 @@
         "GOOD",
         "HAS_LITE_1",
         "HUMAN",
+        "PEASANT",
         "FORCE_MAXHP",
         "WILD_ALL",
         "DROP_SKELETON",
@@ -136940,6 +137523,7 @@
         "GOOD",
         "HAS_LITE_1",
         "HUMAN",
+        "PEASANT",
         "FORCE_MAXHP",
         "WILD_ALL",
         "DROP_SKELETON",
@@ -137441,7 +138025,9 @@
         "IM_COLD",
         "FORCE_MAXHP",
         "IM_ELEC",
-        "IM_POIS"
+        "IM_POIS",
+        "JELLYFISH",
+        "MIMIC"
     ]
 },
 {
@@ -137637,6 +138223,7 @@
     "flags": [
         "CAN_FLY",
         "SELF_LITE_2",
+        "WALL",
         "EMPTY_MIND",
         "NEVER_MOVE",
         "NEVER_BLOW",
@@ -138314,6 +138901,7 @@
         "FORCE_MAXHP",
         "EMPTY_MIND",
         "SMART",
+        "RABBIT",
         "CAN_FLY",
         "RAND_25",
         "NEVER_BLOW",
@@ -138931,6 +139519,7 @@
     "flags": [
         "HAS_LITE_1",
         "HUMAN",
+        "MAGICAL_GIRL",
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -139000,6 +139589,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "HUMAN",
+        "PLANESWALKER",
         "FORCE_MAXHP",
         "NO_CONF",
         "NO_SLEEP",
@@ -139067,6 +139657,7 @@
         "FRIENDS",
         "DROP_90",
         "TAKE_ITEM",
+        "FAIRY",
         "HURT_FIRE",
         "CAN_FLY",
         "FRIENDLY",
@@ -139121,6 +139712,7 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "SOLDIER",
         "OPEN_DOOR",
         "BASH_DOOR"
     ]
@@ -139905,10 +140497,10 @@
         "DROP_1D2",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "SAMURAI",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "FRIENDS"
+        "FRIENDS",
+        "SOLDIER"
     ]
 },
 {
@@ -140088,6 +140680,7 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
+        "CITIZEN",
         "BASH_DOOR",
         "OPEN_DOOR",
         "HAS_LITE_2",
@@ -140361,6 +140954,7 @@
         "UNIQUE",
         "HUMAN",
         "ANIMAL",
+        "PLANESWALKER",
         "FORCE_MAXHP",
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -140439,6 +141033,7 @@
         "FORCE_MAXHP",
         "HAS_LITE_2",
         "HUMAN",
+        "PLANESWALKER",
         "ONLY_ITEM",
         "DROP_2D2",
         "DROP_GOOD",
@@ -140639,6 +141234,7 @@
         "RIDING",
         "FORCE_MAXHP",
         "DROP_CORPSE",
+        "LIZARD",
         "ONLY_ITEM",
         "DROP_1D2",
         "DROP_4D2",
@@ -140923,7 +141519,7 @@
         "FRIENDS",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "WARRIOR",
+        "SOLDIER",
         "BASH_DOOR",
         "OPEN_DOOR",
         "HAS_LITE_2",
@@ -141620,7 +142216,8 @@
         "DROP_CORPSE",
         "EAT_ACIDIC",
         "SELF_LITE_1",
-        "FRIENDS"
+        "FRIENDS",
+        "SLUG"
     ],
     "skill": {
         "list": [
@@ -141839,7 +142436,8 @@
         "ja": "とある世界の支配階級たる種族、デアボリカの一員だが、その中にあっては最下級に位置する者たちだ。人間と比べればはるかに膂力に優れているが、人間と変わらず子を成し、寿命を持っている。人間の文明が進歩し火砲を持った軍隊を組織するようになった時代には、逆に人間からの迫害や虐殺の対象となることもあったという。"
     },
     "sex": "MALE",
-    "mob": 10000,
+    "alliance": "DIABOLIQUE",
+    "mob": 1500,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
@@ -141961,7 +142559,8 @@
         "EVIL",
         "NO_CONF",
         "NO_SLEEP",
-        "NO_FEAR"
+        "NO_FEAR",
+        "MINDFLAYER"
     ],
     "skill": {
         "list": [
@@ -142089,7 +142688,8 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "NO_CONF",
-        "NO_FEAR"
+        "NO_FEAR",
+        "FROG"
     ],
     "skill": {
         "list": [
@@ -142205,7 +142805,8 @@
         "WILD_ALL",
         "DROP_SKELETON",
         "DROP_CORPSE",
-        "ANIMAL"
+        "ANIMAL",
+        "BOAR"
     ]
 },
 {
@@ -142305,6 +142906,7 @@
         "IM_COLD",
         "ROBOT",
         "DROP_JUNK",
+        "SOLDIER",
         "IM_ELEC",
         "IM_POIS",
         "CAN_SWIM",
@@ -142384,7 +142986,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "RES_TELE",
-        "RES_NETH"
+        "RES_NETH",
+        "YEEK"
     ],
     "skill": {
         "list": [
@@ -142836,7 +143439,7 @@
         "DROP_CORPSE",
         "OPEN_DOOR",
         "BASH_DOOR",
-        "WARRIOR",
+        "SOLDIER",
         "FRIENDS"
     ]
 },
@@ -142882,7 +143485,8 @@
         "ja": "とある世界の支配階級たる種族、デアボリカの一員でありその中堅に属する種族だ。不老性と異能の能力、特に異種族に己の体液を注いで凶(まがき)と呼ばれる下僕を生み出すことができる。"
     },
     "sex": "MALE",
-    "mob": 7000,
+    "alliance": "DIABOLIQUE",
+    "mob": 1000,
     "flags": [
         "FRIENDS",
         "DROP_SKELETON",
@@ -144077,6 +144681,7 @@
         "SMART",
         "RES_WATE",
         "RES_DARK",
+        "KRAKEN",
         "EVIL",
         "IM_ELEC",
         "NO_CONF",
@@ -144216,6 +144821,7 @@
         "EMPTY_MIND",
         "COLD_BLOOD",
         "BASH_DOOR",
+        "SOLDIER",
         "IM_FIRE",
         "IM_COLD",
         "IM_ELEC",
@@ -144896,6 +145502,7 @@
         "DROP_CORPSE",
         "FORCE_MAXHP",
         "HUMAN",
+        "NOBLE",
         "DROP_90",
         "DROP_1D2",
         "DROP_GOOD",
@@ -144964,6 +145571,7 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "HURT_FIRE",
+        "SOLDIER",
         "OPEN_DOOR",
         "BASH_DOOR",
         "WARRIOR",
@@ -145022,7 +145630,7 @@
         "FRIENDS",
         "DROP_60",
         "WILD_ALL",
-        "WARRIOR",
+        "SOLDIER",
         "OPEN_DOOR",
         "BASH_DOOR",
         "DROP_SKELETON",
@@ -145194,6 +145802,7 @@
         "DROP_GOOD",
         "HUMAN",
         "DEMON",
+        "NOBLE",
         "DROP_1D2",
         "OPEN_DOOR",
         "BASH_DOOR",
@@ -145785,6 +146394,7 @@
         "FORCE_MAXHP",
         "DROP_1D2",
         "SMART",
+        "SOLDIER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "CAN_SWIM",
@@ -145847,6 +146457,7 @@
         "FORCE_MAXHP",
         "DROP_1D2",
         "SMART",
+        "SOLDIER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "CAN_SWIM",
@@ -145994,6 +146605,7 @@
     "flags": [
         "UNIQUE",
         "CAN_FLY",
+        "PLANESWALKER",
         "FORCE_MAXHP",
         "SPEAK_ALL",
         "SMART",
@@ -146379,6 +146991,2888 @@
         "DROP_SKELETON",
         "DROP_CORPSE",
         "RIDING"
+    ]
+},
+{
+    "id": 2281,
+    "name": {
+        "ja": "ＫＩＮＧ『シン』",
+        "en": "Shin the KING"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Light Gray"
+    },
+    "speed": 12,
+    "hit_point": "50d100",
+    "vision": 50,
+    "armor_class": 140,
+    "alertness": 10,
+    "level": 58,
+    "rarity": 2,
+    "exp": 30000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "10d10"
+        }
+    ],
+    "flavor": {
+        "ja": "南斗聖拳の一派、南斗孤鷲拳の使い手にして、殉星を背負う男だ。悪魔がほほ笑む時代と言われる世紀末の中で、暴力組織「ＫＩＮＧ」を結成し、核戦争後の関東の支配者となったが、その凶行の裏には愛ゆえの葛藤があった。",
+        "en": "A practitioner of the Nanto-Kosyuken, a branch of the Nanto-Seiken, and a man who bears the burden of a fallen star. In the apocalyptic era known as the time when demons smile, he formed the violent organization “KING” and became the ruler of post-nuclear war Kanto. Yet behind his atrocities lay a conflict born of love."
+    },
+    "sex": "MALE",
+    "alliance": "KING",
+    "flags": [
+        "UNIQUE",
+        "HAS_LITE_2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "HUMAN",
+        "FORCE_MAXHP",
+        "NO_CONF",
+        "NO_SLEEP",
+        "DROP_2D2",
+        "DROP_1D2",
+        "DROP_GOOD",
+        "ONLY_ITEM",
+        "CAN_SWIM",
+        "GOOD",
+        "EVIL",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_FIRE",
+        "REGENERATE"
+    ]
+},
+{
+    "id": 2282,
+    "name": {
+        "ja": "ＫＩＮＧ兵",
+        "en": "Soldier of KING"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "10d11",
+    "vision": 20,
+    "armor_class": 40,
+    "alertness": 40,
+    "level": 19,
+    "rarity": 1,
+    "exp": 70,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "2d5"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "2d5"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "3d5"
+        }
+    ],
+    "flavor": {
+        "ja": "世紀末の関東一円を支配するＫＩＮＧの構成員だ。南十字星を象った十字の紋章「ブラッディークロス」を旗印にしている。",
+        "en": "They are members of KING, which rules over the entire Kanto region at the end of the century. Their banner bears the emblem of the Bloody Cross, a cross shaped like the Southern Cross."
+    },
+    "sex": "MALE",
+    "alliance": "KING",
+    "mob": 1000,
+    "flags": [
+        "HAS_LITE_2",
+        "HUMAN",
+        "SOLDIER",
+        "DROP_90",
+        "FRIENDS",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "EVIL"
+    ],
+    "skill": {
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_4"
+    },
+    "drop_kind": [
+        {
+            "probability": "1_IN_10",
+            "item_id": "748",
+            "grade": "0",
+            "dice": "1d1"
+        },
+        {
+            "probability": "1_IN_10",
+            "item_id": "749",
+            "grade": "0",
+            "dice": "1d1"
+        }
+    ]
+},
+{
+    "id": 2283,
+    "name": {
+        "ja": "デスアクメおじさん",
+        "en": "Death acme uncle"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Red"
+    },
+    "speed": 20,
+    "hit_point": "40d20",
+    "vision": 20,
+    "armor_class": 90,
+    "alertness": 20,
+    "level": 49,
+    "rarity": 2,
+    "exp": 10000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRAWL",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "DROOL",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "CRAWL",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        }
+    ],
+    "flavor": {
+        "ja": "HENTAI行為にガチのリョナ的殺意がこもった本気でやべえおじさんだ！今の内に逃げろ！"
+    },
+    "sex": "MALE",
+    "flags": [
+        "PERVERT",
+        "DROP_1D2",
+        "WILD_ALL",
+        "HUMAN",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "EVIL",
+        "HAS_LITE_2",
+        "NASTY"
+    ],
+    "skill": {
+        "list": [
+            "CONF",
+            "BLIND",
+            "HOLD",
+            "SLOW"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2284,
+    "name": {
+        "ja": "超電磁空手の達人『刀耳』",
+        "en": "Toji, Master of Super Electromagnetic Karate"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Light Gray"
+    },
+    "speed": 15,
+    "hit_point": "60d110",
+    "vision": 30,
+    "armor_class": 180,
+    "alertness": 0,
+    "level": 61,
+    "rarity": 3,
+    "exp": 26000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "12d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "12d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "SHATTER",
+            "damage_dice": "13d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "SHATTER",
+            "damage_dice": "13d10"
+        }
+    ],
+    "flavor": {
+        "ja": "人類が宇宙に進出する時代になり、サイボーグ体を手に入れてなお「空手」を追求する武闘派集団が存在する。刀耳はその中でも大きな流派の一つである超電磁空手の使い手であり「虐殺士」と呼ばれる域にまで達した超大型サイボーグだ。",
+        "en": "In an era where humanity has ventured into space, a militant group exists that continues to pursue “karate” even after acquiring cyborg bodies. Toji is a practitioner of Super Electromagnetic Karate,  one of the major schools within this group, and is a super-sized cyborg who has reached the level known as a \"Massacre Warrior\"."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "GIANT",
+        "NO_FEAR",
+        "FORCE_MAXHP",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "KARATEKA",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_SWIM",
+        "COLD_BLOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR"
+    ]
+},
+{
+    "id": 2285,
+    "name": {
+        "ja": "聖帝兵",
+        "en": "Soldier of Seitei"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "10d11",
+    "vision": 20,
+    "armor_class": 40,
+    "alertness": 40,
+    "level": 20,
+    "rarity": 1,
+    "exp": 74,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "3d5"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "2d5"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "3d5"
+        }
+    ],
+    "flavor": {
+        "ja": "聖帝サウザーに付き従う兵士たちだ。聖帝十字陵建造の労役のために、無垢な子供たちを拉致し強制労働に従事させている。",
+        "en": "These are the soldiers who follow the \"Seitei\" Sauzer. They abduct innocent children and force them into labor to build the \"Seitei-Jyuziryou\"."
+    },
+    "sex": "MALE",
+    "alliance": "SEITEI",
+    "mob": 1000,
+    "flags": [
+        "HAS_LITE_2",
+        "HUMAN",
+        "SOLDIER",
+        "DROP_90",
+        "FRIENDS",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "EVIL"
+    ],
+    "drop_kind": [
+        {
+            "probability": "1_IN_10",
+            "item_id": "748",
+            "grade": "0",
+            "dice": "1d1"
+        },
+        {
+            "probability": "1_IN_10",
+            "item_id": "749",
+            "grade": "0",
+            "dice": "1d1"
+        }
+    ]
+},
+{
+    "id": 2286,
+    "name": {
+        "ja": "ベルシエルの白猫",
+        "en": "White cat of Beruthiel"
+    },
+    "symbol": {
+        "character": "f",
+        "color": "White"
+    },
+    "speed": 10,
+    "hit_point": "20d16",
+    "vision": 20,
+    "armor_class": 32,
+    "alertness": 40,
+    "level": 25,
+    "rarity": 3,
+    "exp": 140,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [
+        {
+            "escorts_id": 2287,
+            "escort_num": "9d1"
+        }
+    ],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        }
+    ],
+    "flavor": {
+        "ja": "ゴンドールの王妃、黒きヌメノール人とも噂されたべルシエル王妃の使い魔たちだ。彼女の眼となり、各地で人々の秘密を暴き出そうとしているという。彼女の白猫は特に黒猫を統べる存在だという。",
+        "en": "These are the familiars of Queen Berthiel of Gondor, rumored to be a Black Númenórean. They are said to be her eyes, seeking to uncover the secrets of people across the land. Her white cat is said to be the one who rules over black cats in particular."
+    },
+    "sex": "MALE",
+    "mob": 10,
+    "flags": [
+        "EVIL",
+        "DROP_1D2",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "CAT"
+    ],
+    "skill": {
+        "list": [
+            "SCARE",
+            "CAUSE_3",
+            "CAUSE_2",
+            "HOLD",
+            "BRAIN_SMASH",
+            "FORGET"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2287,
+    "name": {
+        "ja": "ベルシエルの黒猫",
+        "en": "Black cat of Beruthiel"
+    },
+    "symbol": {
+        "character": "f",
+        "color": "Dark Gray"
+    },
+    "speed": 3,
+    "hit_point": "12d16",
+    "vision": 20,
+    "armor_class": 32,
+    "alertness": 40,
+    "level": 20,
+    "rarity": 3,
+    "exp": 60,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "2d5"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "2d5"
+        }
+    ],
+    "flavor": {
+        "ja": "ゴンドールの王妃、黒きヌメノール人とも噂されたべルシエル王妃の使い魔たちだ。彼女の眼となり、各地で人々の秘密を暴き出そうとしているという。",
+        "en": "These are the familiars of Queen Berthiel of Gondor, rumored to be a Black Númenórean. They are said to be her eyes, seeking to uncover the secrets of people across the land."
+    },
+    "sex": "MALE",
+    "mob": 90,
+    "flags": [
+        "EVIL",
+        "DROP_1D2",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "CAT"
+    ],
+    "skill": {
+        "list": [
+            "SCARE",
+            "CAUSE_2",
+            "CAUSE_1",
+            "HOLD"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2288,
+    "name": {
+        "ja": "王妃『べルシエル』",
+        "en": "Queen Beruthiel"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Violet"
+    },
+    "speed": 8,
+    "hit_point": "20d100",
+    "vision": 30,
+    "armor_class": 40,
+    "alertness": 5,
+    "level": 39,
+    "rarity": 3,
+    "exp": 9000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "GAZE",
+            "effect": "EXP_80",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "GAZE",
+            "effect": "PARALYZE"
+        }
+    ],
+    "flavor": {
+        "ja": "ゴンドール王タランノンの代の王妃だ。だが、夫には愛されず、猫を下僕にして様々な悪しき事を企んでいたと言われ、その真の名は歴史の闇に葬られた。",
+        "en": "She was the queen during the reign of Tarannon, King of Gondor. Yet she was not loved by her husband, and it is said she kept a cat as her servant and plotted various wicked deeds. Her true name, it is said, was buried in the darkness of history."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "FORCE_MAXHP",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "SELF_LITE_2",
+        "NEVER_MOVE",
+        "EVIL",
+        "IM_ACID",
+        "IM_FIRE",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "HOLD",
+            "SCARE",
+            "CAUSE_3",
+            "SLOW",
+            "BLINK",
+            "TPORT",
+            "S_MONSTERS",
+            "S_DEMON",
+            "S_CAT"
+        ],
+        "probability": "1_IN_1"
+    }
+},
+{
+    "id": 2289,
+    "name": {
+        "ja": "家康所用巨具足『金陀美』",
+        "en": "Kindami, Ieyasu's Personal Heavy Armor "
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Yellow"
+    },
+    "speed": 21,
+    "hit_point": "100d100",
+    "vision": 80,
+    "armor_class": 130,
+    "alertness": 0,
+    "level": 72,
+    "rarity": 3,
+    "exp": 82000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "20d9"
+        }
+    ],
+    "flavor": {
+        "ja": "「履くか家康、あいや、信康よ、桶狭間合戦以来の巨具足！」現在の覇府の長たる内大臣家康の巨具足だ。その火焔は大坂城をも焼いた。",
+        "en": "Put them on, Ieyasu—no, Nobuyasu! These giant armor since the Battle of Okehazama! These are the giant armor of Ieyasu, the current head of Hafu,  the Minister of the Interior. Their flames even burned Osaka Castle."
+    },
+    "alliance": "HAFU",
+    "flags": [
+        "UNIQUE",
+        "NONLIVING",
+        "NO_FEAR",
+        "FORCE_MAXHP",
+        "REFLECTING",
+        "MOVE_BODY",
+        "KILL_WALL",
+        "IM_FIRE",
+        "IM_ELEC",
+        "IM_POIS",
+        "IM_ACID",
+        "IM_COLD",
+        "RES_NETH",
+        "RES_WATE",
+        "RES_PLAS",
+        "RES_NEXU",
+        "GOLEM",
+        "RES_DISE",
+        "RES_WALL",
+        "RES_INER",
+        "RES_GRAV",
+        "NO_STUN",
+        "REGENERATE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "CAN_FLY",
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "POWERFUL"
+    ],
+    "skill": {
+        "list": [
+            "BR_FIRE"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2290,
+    "name": {
+        "ja": "『テングザル兄貴』",
+        "en": "The Tengu Monkey Brother"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "3d55",
+    "vision": 10,
+    "armor_class": 5,
+    "alertness": 255,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "1d5"
+        }
+    ],
+    "flavor": {
+        "ja": "「できまし」"
+    },
+    "sex": "MALE",
+    "flags": [
+        "HAS_LITE_1",
+        "RAND_50",
+        "HUMAN",
+        "DROP_GOOD",
+        "DROP_90",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "WILD_TOWN",
+        "WILD_ONLY",
+        "UNIQUE",
+        "NASTY",
+        "HOMO_SEXUAL"
+    ]
+},
+{
+    "id": 2291,
+    "name": {
+        "ja": "浣腸の悪魔",
+        "en": "Enema demon"
+    },
+    "symbol": {
+        "character": "U",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "40d10",
+    "vision": 20,
+    "armor_class": 50,
+    "alertness": 80,
+    "level": 41,
+    "rarity": 2,
+    "exp": 1000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "FECES",
+            "effect": "DISEASE",
+            "damage_dice": "1d4"
+        },
+        {
+            "method": "ENEMA",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "ENEMA",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d10"
+        }
+    ],
+    "flavor": {
+        "ja": "汚物をひり出したり、ひり出させたりして肛門破壊まで目論む悪魔だ。",
+        "en": "It is a demon that forces out filth or makes others force it out, scheming to destroy the anus itself."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "FRIENDS",
+        "ONLY_ITEM",
+        "DROP_60",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "POWERFUL",
+        "NONLIVING",
+        "NASTY",
+        "EVIL",
+        "DEMON",
+        "IM_FIRE",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "BLIND",
+            "CONF"
+        ],
+        "probability": "1_IN_8"
+    }
+},
+{
+    "id": 2292,
+    "name": {
+        "ja": "超能力蛙",
+        "en": "Psychic frog"
+    },
+    "symbol": {
+        "character": "R",
+        "color": "Light Blue"
+    },
+    "speed": 0,
+    "hit_point": "18d8",
+    "vision": 12,
+    "armor_class": 16,
+    "alertness": 50,
+    "level": 23,
+    "rarity": 3,
+    "exp": 350,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "GAZE",
+            "effect": "LOSE_INT",
+            "damage_dice": "2d5"
+        }
+    ],
+    "flavor": {
+        "ja": "その名の通り様々な超能力を持ったカエルだ。人の精神を喰らい成長するという。",
+        "en": "True to its name, it's a frog with various psychic powers. It feeds on human minds to grow."
+    },
+    "flags": [
+        "RAND_50",
+        "WILD_ONLY",
+        "WILD_SHORE",
+        "WILD_SWAMP",
+        "BASH_DOOR",
+        "DROP_CORPSE",
+        "EAT_POISONOUS",
+        "RES_WATE",
+        "ANIMAL",
+        "FROG",
+        "CAN_FLY"
+    ],
+    "skill": {
+        "list": [
+            "BRAIN_SMASH",
+            "SLOW"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2293,
+    "name": {
+        "ja": "地獄ピラニア",
+        "en": "Hell piranha"
+    },
+    "symbol": {
+        "character": "l",
+        "color": "Red"
+    },
+    "speed": 10,
+    "hit_point": "15d12",
+    "vision": 40,
+    "armor_class": 50,
+    "alertness": 15,
+    "level": 25,
+    "rarity": 3,
+    "exp": 120,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "12d3"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "12d3"
+        }
+    ],
+    "flavor": {
+        "ja": "地獄産のより凶悪なピラニアだ。",
+        "en": "A more vicious piranha from hell."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "WILD_ALL",
+        "RES_WATE",
+        "FISH",
+        "DEMON",
+        "FRIENDS",
+        "AQUATIC",
+        "ANIMAL",
+        "SMART",
+        "IM_ACID",
+        "IM_ELEC",
+        "RES_COLD",
+        "RES_POIS",
+        "RES_NETH"
+    ]
+},
+{
+    "id": 2294,
+    "name": {
+        "ja": "マナー講師",
+        "en": "Etiquette Instructor"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "2d8",
+    "vision": 10,
+    "armor_class": 8,
+    "alertness": 99,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 10,
+    "next_mon": 2295,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        }
+    ],
+    "flavor": {
+        "ja": "殺せ、必ず殺せ、生かして返すな。",
+        "en": "Kill them. Kill them all. Don't let any live to return."
+    },
+    "sex": "MALE",
+    "flags": [
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "ROGUE",
+        "DROP_60",
+        "WILD_TOWN",
+        "HUMAN",
+        "WILD_SWAMP",
+        "WILD_WOOD",
+        "WILD_GRASS",
+        "WILD_MOUNTAIN",
+        "WILD_ONLY",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL"
+    ]
+},
+{
+    "id": 2295,
+    "name": {
+        "ja": "失礼クリエイター",
+        "en": "Etiquette Creater"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "2d10",
+    "vision": 10,
+    "armor_class": 8,
+    "alertness": 99,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        }
+    ],
+    "flavor": {
+        "ja": "いいから殺せ。とにかく殺せ。",
+        "en": "Just kill me. Kill me, no matter what."
+    },
+    "sex": "MALE",
+    "flags": [
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "ROGUE",
+        "DROP_60",
+        "WILD_TOWN",
+        "HUMAN",
+        "WILD_SWAMP",
+        "WILD_WOOD",
+        "WILD_GRASS",
+        "WILD_MOUNTAIN",
+        "WILD_ONLY",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL"
+    ]
+},
+{
+    "id": 2295,
+    "name": {
+        "ja": "『Longcat』",
+        "en": "The Longcat"
+    },
+    "symbol": {
+        "character": "f",
+        "color": "White"
+    },
+    "speed": 8,
+    "hit_point": "20d110",
+    "vision": 20,
+    "armor_class": 120,
+    "alertness": 70,
+    "level": 43,
+    "rarity": 4,
+    "exp": 24000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "9d6"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "9d6"
+        }
+    ],
+    "flavor": {
+        "ja": "馬鹿馬鹿しいほど大きく、神々しく、そして長い、天を衝くほどに長い猫だ。",
+        "en": " The cat so absurdly large, so majestic, and so long—long enough to pierce the heavens."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "DROP_90",
+        "DROP_60",
+        "BASH_DOOR",
+        "POWERFUL",
+        "MOVE_BODY",
+        "RIDING",
+        "SELF_LITE_2",
+        "FRIENDLY",
+        "CAT",
+        "IM_FIRE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "IM_POIS"
+    ],
+    "skill": {
+        "list": [
+            "BR_LITE",
+            "BA_LITE"
+        ],
+        "probability": "1_IN_6"
+    }
+},
+{
+    "id": 2296,
+    "name": {
+        "ja": "炎鎖の『アングラス』",
+        "en": "Angrath, the Flame-Chained"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Red"
+    },
+    "speed": 17,
+    "hit_point": "12d150",
+    "vision": 20,
+    "armor_class": 120,
+    "alertness": 40,
+    "level": 47,
+    "rarity": 7,
+    "exp": 11000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "9d7"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "9d7"
+        }
+    ],
+    "flavor": {
+        "ja": "彼は四つの大きな角に、常に赤熱した体をしている大きなミノタウロスのプレインズウォーカーだ。基本的に争わない理知的な性格だが、自分の邪魔立てするもの、娘たちを害するものには容赦がない。",
+        "en": "He is a Planeswalker in the form of a massive Minotaur, with four large horns and a body perpetually glowing red-hot. Though fundamentally intelligent and non-confrontational, he shows no mercy to those who stand in his way or harm his daughters."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "CAN_FLY",
+        "FORCE_MAXHP",
+        "SMART",
+        "REGENERATE",
+        "MINOTAUR",
+        "PLANESWALKER",
+        "NO_CONF",
+        "NO_STUN",
+        "FRIENDLY",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_FIRE",
+        "IM_POIS",
+        "RES_LITE",
+        "RES_NETH",
+        "RES_SHAR",
+        "RES_SOUN",
+        "RES_CHAO",
+        "RES_NEXU",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "AURA_FIRE",
+        "TAKE_ITEM",
+        "DROP_CORPSE"
+    ],
+    "skill": {
+        "list": [
+            "S_MONSTER",
+            "S_MONSTERS",
+            "BA_FIRE",
+            "BR_FIRE",
+            "BO_FIRE"
+        ],
+        "probability": "1_IN_6"
+    }
+},
+{
+    "id": 2297,
+    "name": {
+        "ja": "糞の壁",
+        "en": "Feces wall"
+    },
+    "symbol": {
+        "character": "#",
+        "color": "Brown"
+    },
+    "speed": 10,
+    "hit_point": "1d1",
+    "vision": 20,
+    "armor_class": 0,
+    "alertness": 0,
+    "level": 24,
+    "rarity": 1,
+    "exp": 10,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "EXPLODE",
+            "effect": "POISON",
+            "damage_dice": "15d8"
+        }
+    ],
+    "flavor": {
+        "ja": "触れれば脆くも飛び散るが、あなたがエンガチョなことになる。",
+        "en": "Touch it and it shatters into dust, but you'll be covered in filth."
+    },
+    "flags": [
+        "CAN_FLY",
+        "SELF_LITE_2",
+        "NASTY",
+        "WALL",
+        "EMPTY_MIND",
+        "NEVER_MOVE",
+        "NEVER_BLOW",
+        "HURT_COLD",
+        "NO_FEAR",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING"
+    ]
+},
+{
+    "id": 2298,
+    "name": {
+        "ja": "大悪魔『アスモデウス』",
+        "en": "Asmodeus the Archfiend"
+    },
+    "symbol": {
+        "character": "U",
+        "color": "Violet"
+    },
+    "speed": 30,
+    "hit_point": "30d266",
+    "vision": 20,
+    "armor_class": 160,
+    "alertness": 50,
+    "level": 88,
+    "rarity": 2,
+    "exp": 90000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "GAZE",
+            "effect": "EXP_VAMP",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "GAZE",
+            "effect": "TERRIFY",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "FIRE",
+            "damage_dice": "20d5"
+        }
+    ],
+    "flavor": {
+        "ja": "アスモデウスは多元宇宙の様々な世界で大悪魔として謳われている。しかし、彼の特に偉大な尊号は九層地獄バートルの統治者、そして邪悪なる秩序の顕現たることだ。",
+        "en": "Asmodeus is celebrated as a great demon across the multiverse's myriad worlds. Yet his most exalted titles are Ruler of the Ninth Circle of Hell,"
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "SPEAK_ALL",
+        "CAN_FLY",
+        "FORCE_MAXHP",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "MOVE_BODY",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GREAT",
+        "IM_FIRE",
+        "RES_PLAS",
+        "RES_NETH",
+        "AURA_FIRE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING",
+        "EVIL",
+        "DEMON",
+        "IM_COLD",
+        "IM_POIS"
+    ],
+    "skill": {
+        "list": [
+            "TELE_TO",
+            "SCARE",
+            "HOLD",
+            "BRAIN_SMASH",
+            "S_DEMON",
+            "S_HI_UNDEAD",
+            "S_UNDEAD",
+            "BR_FIRE",
+            "BR_NETH",
+            "S_CYBER",
+            "HAND_DOOM",
+            "ANIM_DEAD"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2299,
+    "name": {
+        "ja": "ヴァーミンロード",
+        "en": "Vermin Lord"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Violet"
+    },
+    "speed": 10,
+    "hit_point": "60d11",
+    "vision": 30,
+    "armor_class": 100,
+    "alertness": 5,
+    "level": 40,
+    "rarity": 2,
+    "exp": 3000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EXP_20",
+            "damage_dice": "8d2"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_20",
+            "damage_dice": "8d2"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_20",
+            "damage_dice": "8d2"
+        }
+    ],
+    "flavor": {
+        "ja": "無数の害虫たちと共に在る忌まわしい司祭だ。",
+        "en": "A vile priest who dwells alongside countless vermin."
+    },
+    "sex": "MALE",
+    "flags": [
+        "HUMAN",
+        "EVIL",
+        "PRIEST",
+        "FORCE_MAXHP",
+        "CAN_FLY",
+        "IM_COLD",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_POIS",
+        "RES_NETH",
+        "RES_SHAR",
+        "RES_SOUN",
+        "ONLY_ITEM",
+        "DROP_90",
+        "DROP_4D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "NO_STUN",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "S_INSECT"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2300,
+    "name": {
+        "ja": "ローランの銀獣",
+        "en": "Loran Silverbeast"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "White"
+    },
+    "speed": 18,
+    "hit_point": "13d40",
+    "vision": 20,
+    "armor_class": 90,
+    "alertness": 10,
+    "level": 41,
+    "rarity": 4,
+    "exp": 2000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "POISON",
+            "damage_dice": "12d4"
+        },
+        {
+            "method": "BITE",
+            "effect": "LOSE_CON",
+            "damage_dice": "3d4"
+        },
+        {
+            "method": "BITE",
+            "effect": "LOSE_CON",
+            "damage_dice": "3d4"
+        },
+        {
+            "method": "SLASH",
+            "effect": "POISON",
+            "damage_dice": "12d4"
+        }
+    ],
+    "flavor": {
+        "ja": "ヤーナムの古代文明に関わると思われる、さらに異形なる人型の魔獣だ。その内部に巨大なムカデのような寄生虫を飼っている。",
+        "en": "An even more monstrous humanoid beast believed to be connected to the ancient civilization of Yharnam. It harbors a giant centipede-like parasite within its body."
+    },
+    "sex": "MALE",
+    "flags": [
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "EVIL",
+        "NO_CONF",
+        "NO_SLEEP"
+    ]
+},
+{
+    "id": 2301,
+    "name": {
+        "ja": "仮面巨人",
+        "en": "Giant Dad"
+    },
+    "symbol": {
+        "character": "z",
+        "color": "Yellow"
+    },
+    "speed": 10,
+    "hit_point": "10d100",
+    "vision": 25,
+    "armor_class": 100,
+    "alertness": 10,
+    "level": 44,
+    "rarity": 2,
+    "exp": 1200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d8"
+        },
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "3d8"
+        }
+    ],
+    "flavor": {
+        "ja": "不死の使命を忘れ、黒い森の庭で永遠に互いに背中から斬りつけあっているロードランの亡者共だ。",
+        "en": "The undead of Lordran, who forgot their immortal mission, slash at each other's backs forever in the Darkroot Garden."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "SPEAK_ALL",
+        "HUMAN",
+        "UNDEAD",
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "FRIENDS",
+        "EVIL",
+        "IM_ACID",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP"
+    ]
+},
+{
+    "id": 2302,
+    "name": {
+        "ja": "運命の司『ナーモ・マンドス』",
+        "en": "Namo Mandos, Doomsman of the Valar"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Dark Gray"
+    },
+    "speed": 20,
+    "hit_point": "65d100",
+    "vision": 40,
+    "armor_class": 190,
+    "alertness": 10,
+    "level": 82,
+    "rarity": 3,
+    "exp": 80000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "EXP_VAMP",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_VAMP",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "HIT",
+            "effect": "PARALYZE",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        }
+    ],
+    "flavor": {
+        "ja": "ヴァリノールの強き諸力、ヴァラールの中でも運命の一切を司ると言われている存在だ。彼の主イルーヴァタールの力の及ぶ限り、彼の知らぬ運命はない。",
+        "en": "The mighty powers of Valinor, beings said to govern all destinies among the Valar. Within the reach of Iluvatar's power, there is no fate unknown to him."
+    },
+    "sex": "MALE",
+    "alliance": "VALINOR",
+    "flags": [
+        "UNIQUE",
+        "SPEAK_ALL",
+        "RES_NETH",
+        "NO_FEAR",
+        "GOOD",
+        "FORCE_MAXHP",
+        "SMART",
+        "REFLECTING",
+        "ONLY_ITEM",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GREAT",
+        "CAN_FLY",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "POWERFUL",
+        "MOVE_BODY",
+        "IM_ACID",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "RES_LITE",
+        "RES_TELE",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "BO_MANA",
+            "BA_NETH",
+            "CAUSE_4",
+            "BRAIN_SMASH",
+            "BR_NETH",
+            "PSY_SPEAR",
+            "S_MONSTERS",
+            "HEAL",
+            "HAND_DOOM",
+            "S_ANGEL",
+            "BR_MANA",
+            "BR_COLD",
+            "INVULNER",
+            "BA_LITE",
+            "BO_LITE"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2303,
+    "name": {
+        "ja": "行方不明になっていた『マック』",
+        "en": "Mac, who had been missing"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Violet"
+    },
+    "speed": 3,
+    "hit_point": "40d15",
+    "vision": 12,
+    "armor_class": 80,
+    "alertness": 10,
+    "level": 30,
+    "rarity": 4,
+    "exp": 2000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d8"
+        }
+    ],
+    "skill": {
+        "shoot": "10d5",
+        "list": [
+            "HOLD",
+            "SHOOT"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "イレギュラーハンターエックスの部下だったレプリロイドだが、ドクタードップラーの叛乱の中で洗脳された哀れな男だ。",
+        "en": "He was a Repliroid under Irregular Hunter X, but became a pitiful man brainwashed during Dr. Doppler's rebellion."
+    },
+    "flags": [
+        "ONLY_GOLD",
+        "DROP_2D2",
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "REFLECTING",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "ROBOT",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING"
+    ]
+},
+{
+    "id": 2304,
+    "name": {
+        "ja": "ナメック星人の若者",
+        "en": "Young Namekian"
+    },
+    "symbol": {
+        "character": "h",
+        "color": "Light Green"
+    },
+    "speed": 5,
+    "hit_point": "45d12",
+    "vision": 30,
+    "armor_class": 50,
+    "alertness": 10,
+    "level": 39,
+    "rarity": 2,
+    "exp": 600,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d2"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d2"
+        },
+        {
+            "method": "KICK",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "4d2"
+        }
+    ],
+    "flavor": {
+        "ja": "母星で平穏な暮らしを重ねる善良な種族の戦士だ。フリーザの侵略に抗っている。",
+        "en": "A warrior of a peaceful race living a tranquil life on their homeworld. They are resisting Frieza's invasion."
+    },
+    "flags": [
+        "GOOD",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "KARATEKA",
+        "ALIEN",
+        "DROP_60",
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "IM_ELEC",
+        "HAS_LITE_2",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "NO_FEAR",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "BO_MANA"
+        ],
+        "probability": "1_IN_6"
+    }
+},
+{
+    "id": 2305,
+    "name": {
+        "ja": "反物質おばあちゃん",
+        "en": "Antimatter grandma"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "White"
+    },
+    "speed": 0,
+    "hit_point": "10d5",
+    "vision": 10,
+    "armor_class": 30,
+    "alertness": 10,
+    "level": 45,
+    "rarity": 2,
+    "exp": 5,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "EXPLODE",
+            "effect": "HURT",
+            "damage_dice": "15d10"
+        }
+    ],
+    "flavor": {
+        "ja": "クッキーを作ることが全てである時空から、クッキーを作る目的のためだけにこの世界に来訪したおばあちゃんだ。対消滅エネルギーをもってクッキーを生み出そうとしている。"
+    },
+    "sex": "FEMALE",
+    "alliance": "COOKIE-GRANDMA",
+    "mob": 500,
+    "flags": [
+        "GRANDMA",
+        "EVIL",
+        "ATTR_MULTI",
+        "RAND_25",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "OPEN_DOOR",
+        "BASH_DOOR"
+    ],
+    "drop_kind": [
+        {
+            "probability": "1_IN_1",
+            "item_id": "750",
+            "grade": "0",
+            "dice": "10d5"
+        }
+    ],
+    "spawn_item": [
+        {
+            "id": 750,
+            "probability": "11_IN_1000"
+        }
+    ]
+},
+{
+    "id": 2306,
+    "name": {
+        "ja": "竜の巣窟の『ダーク』",
+        "en": "Dirk the Daring of Dragon's Lair"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "3d6",
+    "vision": 20,
+    "armor_class": 0,
+    "alertness": 25,
+    "level": 10,
+    "rarity": 10,
+    "exp": 10,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d5"
+        }
+    ],
+    "skill": {
+        "shoot": "1d5",
+        "list": [
+            "SHOOT"
+        ],
+        "probability": "1_IN_4"
+    },
+    "flavor": {
+        "ja": "彼はいつも巨竜シンジのねぐらの入り口で即骨になっているという。",
+        "en": "He always ends up getting instantly turned to dust at the entrance to the giant dragon Shinji's lair."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "HUMAN",
+        "DROP_SKELETON"
+    ]
+},
+{
+    "id": 2307,
+    "name": {
+        "ja": "異端の法務官『ウラブラスク』",
+        "en": "Urabrask, Heretic Praetor"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Red"
+    },
+    "speed": 16,
+    "hit_point": "50d98",
+    "vision": 20,
+    "armor_class": 120,
+    "alertness": 100,
+    "level": 61,
+    "rarity": 7,
+    "exp": 22500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "FIRE",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "CLAW",
+            "effect": "FIRE",
+            "damage_dice": "12d12"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "10d12"
+        }
+    ],
+    "flavor": {
+        "ja": "新ファイレクシアの法務官の一人だ。「静かなる焼炉」で黙々と仕事をこなし、エリシュ・ノーンの拡張路線に異議を唱えている。",
+        "en": "One of the new Phyrexian Praetor. He works silently in the “Silent Furnace,” Dvoicing dissent against Elish Noon's expansionist policies."
+    },
+    "alliance": "PHYREXIA",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "FORCE_MAXHP",
+        "PHYREXIAN",
+        "RES_TELE",
+        "AURA_FIRE",
+        "SELF_LITE_2",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "CAN_FLY",
+        "POWERFUL",
+        "EVIL",
+        "IM_FIRE",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NO_STUN"
+    ],
+    "skill": {
+        "list": [
+            "BR_FIRE",
+            "BA_FIRE",
+            "BO_MANA"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2308,
+    "name": {
+        "ja": "飢餓の声『ヴォリンクレックス』",
+        "en": "Vorinclex, Voice of Hunger"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Green"
+    },
+    "speed": 15,
+    "hit_point": "50d100",
+    "vision": 40,
+    "armor_class": 135,
+    "alertness": 10,
+    "level": 62,
+    "rarity": 2,
+    "exp": 42000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "9d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "9d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "SHATTER",
+            "damage_dice": "10d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "SHATTER",
+            "damage_dice": "10d9"
+        }
+    ],
+    "flavor": {
+        "ja": "新ファイレクシアの法務官の一人だ。「悪意の大群」の頂点にあり、ファイレクシアの油による異形の生態系が、なすがまま多元宇宙に広がる事を望んでいる。",
+        "en": "One of the new Phyrexian Praetor. Standing at the apex of the “Vicious Swarm”. He desires the Phyrexian oil's monstrous ecosystem to spread unchecked across the Multiverse."
+    },
+    "sex": "MALE",
+    "alliance": "PHYREXIA",
+    "flags": [
+        "UNIQUE",
+        "PHYREXIAN",
+        "FORCE_MAXHP",
+        "CAN_SWIM",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "EVIL",
+        "IM_COLD",
+        "IM_FIRE",
+        "IM_ACID",
+        "RES_NEXU",
+        "RES_NETH",
+        "RES_SOUN",
+        "IM_ACID",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "POWERFUL",
+        "RES_CHAO"
+    ],
+    "skill": {
+        "list": [
+            "HASTE",
+            "HEAL"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2309,
+    "name": {
+        "ja": "発展の暴君『ジン＝ギタクシアス』",
+        "en": "Jin-Gitaxias, Progress Tyrant"
+    },
+    "symbol": {
+        "character": "H",
+        "color": "Light Blue"
+    },
+    "speed": 20,
+    "hit_point": "47d100",
+    "vision": 20,
+    "armor_class": 130,
+    "alertness": 10,
+    "level": 63,
+    "rarity": 3,
+    "exp": 32000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "LOSE_INT",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "LOSE_CON",
+            "damage_dice": "8d10"
+        }
+    ],
+    "flavor": {
+        "ja": "新ファイレクシアの法務官の一人だ。「発展の動力源」の頂点にあり、ファイレクシアをより偉大な存在にするために、悍ましい実験を多元宇宙で繰り返している。",
+        "en": "One of the new Phyrexian Praetor. Standing at the pinnacle of the “Progress Engine” he conducts horrific experiments across the multiverse to make Phyrexia greater."
+    },
+    "sex": "MALE",
+    "alliance": "PHYREXIA",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "SMART",
+        "CAN_FLY",
+        "AURA_COLD",
+        "PHYREXIAN",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "DROP_GREAT",
+        "COLD_BLOOD",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "REGENERATE",
+        "EVIL",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "RES_NETH",
+        "RES_DARK",
+        "RES_LITE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "RES_TIME",
+        "RES_TELE",
+        "REFLECTING"
+    ],
+    "skill": {
+        "list": [
+            "SCARE",
+            "S_KIN",
+            "HAND_DOOM",
+            "BRAIN_SMASH",
+            "FORGET",
+            "BO_MANA"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2310,
+    "name": {
+        "ja": "巨大カニ",
+        "en": "Giant crab"
+    },
+    "symbol": {
+        "character": "c",
+        "color": "Red"
+    },
+    "speed": 10,
+    "hit_point": "6d10",
+    "vision": 3,
+    "armor_class": 40,
+    "alertness": 20,
+    "level": 9,
+    "rarity": 1,
+    "exp": 4,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "SLASH",
+            "effect": "HURT",
+            "damage_dice": "1d10"
+        }
+    ],
+    "flavor": {
+        "ja": "それは人の首をちょん切れる程のハサミをもった大きなカニだ。",
+        "en": "It's a giant crab wielding scissors sharp enough to slice off a person's head."
+    },
+    "flags": [
+        "RAND_50",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "WEIRD_MIND",
+        "BASH_DOOR",
+        "CANCER",
+        "CAN_SWIM",
+        "ANIMAL"
+    ]
+},
+{
+    "id": 2311,
+    "name": {
+        "ja": "子鹿",
+        "en": "Young deer"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "4d8",
+    "vision": 2,
+    "armor_class": 15,
+    "alertness": 10,
+    "level": 3,
+    "rarity": 1,
+    "exp": 2,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        }
+    ],
+    "flavor": {
+        "ja": "柔らかな茶色の毛と輝く瞳を持つ、小さく優雅な子鹿だ。",
+        "en": "A small, graceful young deer with soft brown fur and bright eyes."
+    },
+    "flags": [
+        "RAND_25",
+        "WILD_WOOD",
+        "WILD_GRASS",
+        "FRIENDLY",
+        "ANIMAL",
+        "DEER",
+        "DROP_SKELETON",
+        "DROP_CORPSE"
+    ]
+},
+{
+    "id": 2312,
+    "name": {
+        "ja": "白鹿",
+        "en": "White deer"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Light Gray"
+    },
+    "speed": 10,
+    "hit_point": "8d10",
+    "vision": 4,
+    "armor_class": 20,
+    "alertness": 15,
+    "level": 8,
+    "rarity": 2,
+    "exp": 10,
+    "next_exp": 50,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "2d6"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "1d8"
+        }
+    ],
+    "flavor": {
+        "ja": "気高い佇まいと異世界的な優雅さを持つ、壮麗な白鹿だ。",
+        "en": "A magnificent white deer with a noble bearing and an otherworldly grace."
+    },
+    "flags": [
+        "RAND_25",
+        "WILD_WOOD",
+        "WILD_GRASS",
+        "ANIMAL",
+        "DEER",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "GOOD"
+    ]
+},
+{
+    "id": 2313,
+    "name": {
+        "ja": "象",
+        "en": "Elephant"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Gray"
+    },
+    "speed": 0,
+    "hit_point": "25d15",
+    "vision": 6,
+    "armor_class": 30,
+    "alertness": 25,
+    "level": 18,
+    "rarity": 3,
+    "exp": 200,
+    "next_exp": 500,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BUTT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "3d12"
+        }
+    ],
+    "flavor": {
+        "ja": "巨大な耳と長い象牙を持つ、大型のアフリカ象だ。",
+        "en": "A massive African elephant with enormous ears and long ivory tusks."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "FRIENDS",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ANIMAL",
+        "ELEPHANT"
+    ]
+},
+{
+    "id": 2314,
+    "name": {
+        "ja": "カバ",
+        "en": "Hippopotamus"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Brown"
+    },
+    "speed": -2,
+    "hit_point": "10d18",
+    "vision": 6,
+    "armor_class": 60,
+    "alertness": 20,
+    "level": 14,
+    "rarity": 3,
+    "exp": 150,
+    "next_exp": 400,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "4d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "3d10"
+        }
+    ],
+    "flavor": {
+        "ja": "強力な顎と厚い皮を持つ巨大なカバだ。",
+        "en": "A massive hippopotamus with powerful jaws and thick hide."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "CAN_SWIM",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ANIMAL",
+        "HIPPO"
+    ]
+},
+{
+    "id": 2315,
+    "name": {
+        "ja": "『マーフィーズゴースト』",
+        "en": "Murphy's Ghost"
+    },
+    "symbol": {
+        "character": "z",
+        "color": "Gray"
+    },
+    "speed": -2,
+    "hit_point": "15d50",
+    "vision": 10,
+    "armor_class": 10,
+    "alertness": 99,
+    "level": 1,
+    "rarity": 20,
+    "exp": 4450,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "HIT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "HIT",
+            "effect": "FLAVOR"
+        }
+    ],
+    "flavor": {
+        "ja": "それは正体不明の存在だ。",
+        "en": "It is the UNSEEN ENTITY."
+    },
+    "flags": [
+        "EVIL",
+        "UNDEAD",
+        "NONLIVING",
+        "ONLY_GOLD",
+        "DROP_2D2",
+        "UNIQUE",
+        "FORCE_MAXHP"
+    ]
+},
+{
+    "id": 2316,
+    "name": {
+        "ja": "シグマウイルス",
+        "en": "Sigma Virus"
+    },
+    "symbol": {
+        "character": "*",
+        "color": "Light Green"
+    },
+    "speed": 10,
+    "hit_point": "30d30",
+    "vision": 10,
+    "armor_class": 20,
+    "alertness": 0,
+    "level": 34,
+    "rarity": 1,
+    "exp": 1500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "ENGULF",
+            "effect": "CONFUSE",
+            "damage_dice": "10d8"
+        }
+    ],
+    "flavor": {
+        "ja": "史上最初のレプリロイド大規模反乱の元凶となったイレギュラー、シグマの本質だ。電子上のみならず、物理的に存在するウイルスであり、ワイヤーフレームの頭部を形成して、破壊工作を行うこともできる。",
+        "en": "That is the essence of Sigma, the Irregular who sparked the first large-scale Repliroid rebellion in history. It is a virus that exists not only digitally but also in reality, capable of forming wireframe heads and carrying out destructive operations."
+    },
+    "flags": [
+        "CAN_FLY",
+        "SELF_LITE_2",
+        "AURA_ELEC",
+        "VIRUS",
+        "QUANTUM",
+        "IM_ELEC",
+        "NO_FEAR",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING"
+    ],
+    "skill": {
+        "list": [
+            "BO_ELEC",
+            "BO_MANA",
+            "MISSILE"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2317,
+    "name": {
+        "ja": "『デーモンの炎司祭』",
+        "en": "The Demon Firesage"
+    },
+    "symbol": {
+        "character": "U",
+        "color": "Red"
+    },
+    "speed": 0,
+    "hit_point": "40d50",
+    "vision": 20,
+    "armor_class": 90,
+    "alertness": 20,
+    "level": 43,
+    "rarity": 2,
+    "exp": 4700,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d10"
+        }
+    ],
+    "flavor": {
+        "ja": "イザリスの混沌から生まれ出でたデーモンの一体だ。地底の遺跡に居を構えている。",
+        "en": "One of the demons born from the chaos of Izalith. It makes its home in the subterranean ruins."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "ONLY_ITEM",
+        "DROP_1D2",
+        "UNIQUE",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "POWERFUL",
+        "NONLIVING",
+        "EVIL",
+        "DEMON",
+        "IM_COLD",
+        "IM_ACID",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP"
+    ],
+    "skill": {
+        "list": [
+            "BA_FIRE",
+            "BO_MANA",
+            "HOLD"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2318,
+    "name": {
+        "ja": "猿空間",
+        "en": "Monkey Space"
+    },
+    "symbol": {
+        "character": ".",
+        "color": "Black"
+    },
+    "speed": 0,
+    "hit_point": "21d20",
+    "vision": 30,
+    "armor_class": 14,
+    "alertness": 20,
+    "level": 40,
+    "rarity": 2,
+    "exp": 2800,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "ENGULF",
+            "effect": "CONFUSE",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "TIME",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "CHAOS",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "ENGULF",
+            "effect": "SANITY_BLAST",
+            "damage_dice": "4d6"
+        }
+    ],
+    "flavor": {
+        "ja": "この大いなる矛盾の塊はあなたを愚弄し尽くすだろう！今の内に逃げろ！",
+        "en": "This colossal mass of contradictions will utterly mock you! Flee while you can!"
+    },
+    "flags": [
+        "PASS_WALL",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NONLIVING",
+        "CAN_FLY",
+        "QUANTUM",
+        "AVATAR",
+        "IM_ACID",
+        "RES_DARK",
+        "RAND_25"
+    ]
+},
+{
+    "id": 2319,
+    "name": {
+        "ja": "リス",
+        "en": "Squirrel"
+    },
+    "symbol": {
+        "character": "r",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "1d2",
+    "vision": 5,
+    "armor_class": 3,
+    "alertness": 10,
+    "level": 0,
+    "rarity": 1,
+    "exp": 1,
+    "next_exp": 2,
+    "next_mon": 50,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "1d3"
+        }
+    ],
+    "flavor": {
+        "ja": "ふさふさした尾を持つ小さな毛むくじゃらの齧歯類だ。",
+        "en": "A small furry rodent with a bushy tail."
+    },
+    "flags": [
+        "RAND_50",
+        "WILD_GRASS",
+        "WILD_WOOD",
+        "CAN_SWIM",
+        "ANIMAL",
+        "DROP_CORPSE",
+        "SQUIRREL"
+    ]
+},
+{
+    "id": 2320,
+    "name": {
+        "ja": "毒チワワ",
+        "en": "Poison Chihuahua"
+    },
+    "symbol": {
+        "character": "C",
+        "color": "Violet"
+    },
+    "speed": 10,
+    "hit_point": "3d5",
+    "vision": 40,
+    "armor_class": 12,
+    "alertness": 0,
+    "level": 3,
+    "rarity": 2,
+    "exp": 10,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "1d6"
+        },
+        {
+            "method": "BITE",
+            "effect": "POISON",
+            "damage_dice": "1d6"
+        }
+    ],
+    "flavor": {
+        "ja": "魔界の貴族に人気の可愛らしいペットだ。だが一噛みで一般人を殺せる毒を持つ。",
+        "en": "A beloved pet among the nobility of the demon realm. Yet it possesses venom potent enough to kill a commoner with a single bite."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "WILD_ALL",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ANIMAL",
+        "DOG",
+        "DEMON"
+    ]
+},
+{
+    "id": 2321,
+    "name": {
+        "ja": "田所・バーニング",
+        "en": "Tadokoro Burning"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Brown"
+    },
+    "speed": 10,
+    "hit_point": "25d15",
+    "vision": 13,
+    "armor_class": 30,
+    "alertness": 10,
+    "level": 19,
+    "rarity": 3,
+    "exp": 75,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "4d6"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "4d6"
+        }
+    ],
+    "flavor": {
+        "ja": "ある狂人の生み出した野獣先輩らしき何かだ。意地でも流行らせろ、いややっぱ流行らせるな。",
+        "en": "It's some kind of Beast Senior-like thing created by a madman. Make it trend no matter what—no, scratch that, don't make it trend."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "FRIENDS",
+        "EVIL",
+        "HUMAN",
+        "NASTY",
+        "HOMO_SEXUAL",
+        "YAZYU"
+    ]
+},
+{
+    "id": 2322,
+    "name": {
+        "ja": "ウォッチマン",
+        "en": "Watchman"
+    },
+    "symbol": {
+        "character": "r",
+        "color": "Brown"
+    },
+    "speed": 1,
+    "hit_point": "20d8",
+    "vision": 20,
+    "armor_class": 40,
+    "alertness": 30,
+    "level": 19,
+    "rarity": 2,
+    "exp": 80,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d5"
+        }
+    ],
+    "skill": {
+        "shoot": "5d5",
+        "list": [
+            "SHOOT",
+            "HOLD"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "大きな時計を抱えた兎の亜人だ。",
+        "en": "It's a rabbit-like humanoid carrying a large clock."
+    },
+    "flags": [
+        "DROP_1D2",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "NO_CONF",
+        "NO_SLEEP",
+        "DROP_CORPSE",
+        "EVIL",
+        "IM_POIS",
+        "RABBIT"
+    ]
+},
+{
+    "id": 2323,
+    "name": {
+        "ja": "苦花",
+        "en": "Bitterblossom"
+    },
+    "symbol": {
+        "character": "#",
+        "color": "Gray"
+    },
+    "speed": -1,
+    "hit_point": "6d8",
+    "vision": 10,
+    "armor_class": 1,
+    "alertness": 0,
+    "level": 22,
+    "rarity": 1,
+    "exp": 230,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "flavor": {
+        "ja": "それはローウィンの地で見られる、妖精を引き寄せる妖しい花だ。",
+        "en": "It is a bewitching flower found in the land of Lorwyn that draws fairies."
+    },
+    "flags": [
+        "NEVER_MOVE",
+        "NEVER_BLOW",
+        "EMPTY_MIND",
+        "STUPID",
+        "PLANT",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "S_FAIRY"
+        ],
+        "probability": "1_IN_6"
+    }
+},
+{
+    "id": 2324,
+    "name": {
+        "ja": "ローウィンのフェアリー",
+        "en": "Fairy of Lorwyn"
+    },
+    "symbol": {
+        "character": "I",
+        "color": "Blue"
+    },
+    "speed": 10,
+    "hit_point": "5d10",
+    "vision": 12,
+    "armor_class": 30,
+    "alertness": 10,
+    "level": 12,
+    "rarity": 2,
+    "exp": 45,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "1d5"
+        },
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "1d5"
+        },
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "1d5"
+        }
+    ],
+    "skill": {
+        "shoot": "1d5",
+        "list": [
+            "SHOOT",
+            "BLIND",
+            "SLOW",
+            "CONF",
+            "SCARE"
+        ],
+        "probability": "1_IN_4"
+    },
+    "flavor": {
+        "ja": "ローウィンのフェアリーは女王ウーナのために知的生命体の夢を収穫する。好戦的ではないが、冗談にならない悪戯を好む。",
+        "en": "The fairies of Lorwyn harvest the dreams of sentient beings for Queen Oona. They are not warlike, but they delight in mischief that is no laughing matter."
+    },
+    "flags": [
+        "WEIRD_MIND",
+        "FRIENDS",
+        "CAN_FLY",
+        "WILD_ALL",
+        "FAIRY"
+    ]
+},
+{
+    "id": 2325,
+    "name": {
+        "ja": "おしりかじり虫",
+        "en": "Bottom Biting Bug"
+    },
+    "symbol": {
+        "character": "I",
+        "color": "Brown"
+    },
+    "speed": 0,
+    "hit_point": "2d6",
+    "vision": 10,
+    "armor_class": 15,
+    "alertness": 20,
+    "level": 3,
+    "rarity": 5,
+    "exp": 0,
+    "next_exp": 25,
+    "next_mon": 40,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "BITE",
+            "effect": "DESTROY_ASSHOLE",
+            "damage_dice": "1d8"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "1d4"
+        }
+    ],
+    "flavor": {
+        "ja": "人間の尻に対して異常な食欲を持つ奇妙な虫だ。尻を噛むために特別に進化した鋭い歯を持っている。",
+        "en": "A peculiar worm with an insatiable appetite for human posteriors. It has sharp teeth specifically evolved for biting buttocks."
+    },
+    "flags": [
+        "ANIMAL",
+        "WILD_GRASS",
+        "WILD_SWAMP",
+        "DROP_CORPSE",
+        "RAND_50",
+        "INSECT"
     ]
 }]
 }

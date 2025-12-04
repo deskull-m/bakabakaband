@@ -87,8 +87,8 @@ static void display_player_basic_info(PlayerType *player_ptr)
 {
     display_player_name(player_ptr);
     display_player_one_line(ENTRY_SEX, sp_ptr->title, TERM_L_BLUE);
-    display_player_one_line(ENTRY_RACE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : rp_ptr->title), TERM_L_BLUE);
-    display_player_one_line(ENTRY_CLASS, cp_ptr->title, TERM_L_BLUE);
+    display_player_one_line(ENTRY_RACE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), TERM_L_BLUE);
+    display_player_one_line(ENTRY_CLASS, (*player_ptr->pclass_ref).title, TERM_L_BLUE);
 }
 
 /*!
@@ -172,7 +172,7 @@ static void display_player_stats(PlayerType *player_ptr)
 static tl::optional<std::string> search_death_cause(PlayerType *player_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
-    if (!player_ptr->is_dead) {
+    if (!player_ptr->is_dead()) {
         return tl::nullopt;
     }
 
@@ -282,7 +282,7 @@ static std::string decide_current_floor(PlayerType *player_ptr)
  */
 tl::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
 {
-    auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr)) && display_mutations;
+    auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr) || has_pervert_attraction(player_ptr)) && display_mutations;
     auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
     {
         TermOffsetSetter tos(0, 0);

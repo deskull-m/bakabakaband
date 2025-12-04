@@ -24,10 +24,10 @@ PlayerType p_body;
 PlayerType *p_ptr = &p_body;
 
 PlayerType::PlayerType()
-    : inventory(INVEN_TOTAL)
-    , timed_effects(std::make_shared<TimedEffects>())
 {
+    this->inventory.resize(INVEN_TOTAL);
     ranges::generate(this->inventory, [] { return std::make_shared<ItemEntity>(); });
+    this->timed_effects = std::make_shared<TimedEffects>();
 }
 
 bool PlayerType::is_true_winner() const
@@ -48,6 +48,19 @@ void PlayerType::plus_incident(INCIDENT incidentID, int num)
         this->incident[incidentID] = 0;
     }
     this->incident[incidentID] += num;
+}
+
+/*
+ * @brief ツリー構造インシデント数加算
+ * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）
+ * @param num 加算量
+ */
+void PlayerType::plus_incident_tree(const std::string &incident_id, int num)
+{
+    if (this->incident_tree.count(incident_id) == 0) {
+        this->incident_tree[incident_id] = 0;
+    }
+    this->incident_tree[incident_id] += num;
 }
 
 /*!
@@ -252,4 +265,65 @@ int PlayerType::calc_life_rating() const
 bool PlayerType::try_resist_eldritch_horror() const
 {
     return evaluate_percent(this->skill_sav) || one_in_(2);
+}
+
+// CreatureEntityインターフェースの実装
+POSITION PlayerType::get_x() const
+{
+    return this->x;
+}
+
+POSITION PlayerType::get_y() const
+{
+    return this->y;
+}
+
+int PlayerType::get_current_hp() const
+{
+    return this->chp;
+}
+
+int PlayerType::get_max_hp() const
+{
+    return this->mhp;
+}
+
+int PlayerType::get_speed() const
+{
+    return this->pspeed;
+}
+
+bool PlayerType::is_valid() const
+{
+    return true; // プレイヤーは常に有効
+}
+
+bool PlayerType::is_dead() const
+{
+    return this->is_dead_;
+}
+
+FloorType *PlayerType::get_floor() const
+{
+    return this->current_floor_ptr;
+}
+
+ACTION_ENERGY PlayerType::get_energy_need() const
+{
+    return this->energy_need;
+}
+
+void PlayerType::set_energy_need(ACTION_ENERGY energy)
+{
+    this->energy_need = energy;
+}
+
+int PlayerType::get_level() const
+{
+    return this->lev;
+}
+
+bool PlayerType::is_player() const
+{
+    return true;
 }

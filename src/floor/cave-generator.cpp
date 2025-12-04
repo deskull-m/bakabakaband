@@ -20,10 +20,12 @@
 #include "room/lake-types.h"
 #include "room/room-generator.h"
 #include "room/rooms-maze-vault.h"
+#include "system/angband-system.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/terrain/terrain-characteristics.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -31,7 +33,12 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
+#include "util/probability-table.h"
+#include "util/rng-xoshiro.h"
+#include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+#include "world/world-collapsion.h"
+#include <vector>
 
 // シンメトリックなフロア生成（左右対称）
 static void make_symmetric_floor(FloorType &floor)
@@ -72,14 +79,6 @@ static tl::optional<DungeonId> select_random_non_beginner_dungeon()
     return non_beginner_dungeons[selected_index];
 }
 
-static void reset_lite_area(FloorType &floor)
-{
-    floor.lite_n = 0;
-    floor.mon_lite_n = 0;
-    floor.redraw_n = 0;
-    floor.view_n = 0;
-}
-
 static void check_arena_floor(PlayerType *player_ptr, DungeonData *dd_ptr)
 {
     const auto &floor = *player_ptr->current_floor_ptr;
@@ -116,12 +115,13 @@ static void place_cave_contents(PlayerType *player_ptr, DungeonData *dd_ptr, con
         destroy_level(player_ptr);
     }
 
-    if (dungeon.has_river_flag() && one_in_(3) && (randint1(floor.dun_level) > 5)) {
+    const auto always_river = dungeon.flags.has(DungeonFeatureType::ALWAYS_RIVER);
+    if (always_river || (dungeon.has_river_flag() && one_in_(3) && (randint1(floor.dun_level) > 5))) {
         add_river(floor, dd_ptr);
     }
 
     // 追加でさらに川を増やす。
-    if (one_in_(4)) {
+    if (always_river || one_in_(4)) {
         while (!one_in_(3)) {
             add_river(floor, dd_ptr);
         }
@@ -130,6 +130,43 @@ static void place_cave_contents(PlayerType *player_ptr, DungeonData *dd_ptr, con
     for (size_t i = 0; i < dd_ptr->cent_n; i++) {
         const auto pick = rand_range(0, i);
         std::swap(dd_ptr->centers[i], dd_ptr->centers[pick]);
+    }
+}
+
+/*!
+ * @brief 環状水路を生成する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @details マップの外周に沿ってマンハッタン距離で水地形の環状路を生成する
+ */
+static void generate_circular_waterway(PlayerType *player_ptr)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    const auto margin = 2; // 外壁からのマージン
+
+    // 環状水路の座標を計算
+    const auto start_y = margin;
+    const auto end_y = floor.height - margin - 1;
+    const auto start_x = margin;
+    const auto end_x = floor.width - margin - 1;
+
+    // 上辺: 左から右へ
+    for (int x = start_x; x <= end_x; x++) {
+        place_bold(player_ptr, start_y, x, GB_WATER);
+    }
+
+    // 右辺: 上から下へ（角を重複させないため start_y+1 から）
+    for (int y = start_y + 1; y <= end_y; y++) {
+        place_bold(player_ptr, y, end_x, GB_WATER);
+    }
+
+    // 下辺: 右から左へ（角を重複させないため end_x-1 から）
+    for (int x = end_x - 1; x >= start_x; x--) {
+        place_bold(player_ptr, end_y, x, GB_WATER);
+    }
+
+    // 左辺: 下から上へ（角を重複させないため end_y-1 から start_y+1 まで）
+    for (int y = end_y - 1; y > start_y; y--) {
+        place_bold(player_ptr, y, start_x, GB_WATER);
     }
 }
 
@@ -470,12 +507,28 @@ static void decide_grid_glowing(FloorType &floor, DungeonData *dd_ptr, const Dun
 /*!
  * @brief ダンジョン生成のメインルーチン
  * @param player_ptr プレイヤーへの参照ポインタ
+ * @param seed 乱数の種（オプショナル）。指定された場合は固定ダンジョンを生成
  * @return ダンジョン生成が全て無事に成功したらnullopt、何かエラーがあったらその文字列
  */
-tl::optional<std::string> cave_gen(PlayerType *player_ptr)
+tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t> seed)
 {
+    // 乱数種の保存と復元用
+    Xoshiro128StarStar::state_type original_state{};
+    bool seed_was_fixed = false;
+
+    // 乱数種が指定された場合は固定
+    if (seed) {
+        auto &rng = AngbandSystem::get_instance().get_rng();
+        original_state = rng.get_state(); // 現在の乱数状態を保存
+        rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
+        seed_was_fixed = true;
+        msg_format_wizard(player_ptr, CHEAT_DUNGEON,
+            _("乱数種を固定してダンジョンを生成: 0x%08X", "Generating dungeon with fixed seed: 0x%08X"),
+            *seed);
+    }
+
     auto &floor = *player_ptr->current_floor_ptr;
-    reset_lite_area(floor);
+    floor.reset_lite_area();
     get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook());
 
     // 鉄獄（ANGBAND）では一定確率で他のダンジョンの生成処理を使用
@@ -503,14 +556,31 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
         msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("アリーナレベルを生成。", "Arena level."));
     }
 
+    // ALWAY_ARENAフラグがある場合は常にアリーナ地形にする
+    if (dungeon.flags.has(DungeonFeatureType::ALWAY_ARENA)) {
+        dd.empty_level = true;
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("常時アリーナレベルを生成。", "Always arena level."));
+    }
+
     check_arena_floor(player_ptr, &dd);
     gen_caverns_and_lakes(player_ptr, dungeon, &dd);
     if (!switch_making_floor(player_ptr, &dd, dungeon)) {
+        // 乱数状態を復元
+        if (seed_was_fixed) {
+            AngbandSystem::get_instance().get_rng().set_state(original_state);
+        }
         return dd.why;
     }
 
     make_aqua_streams(player_ptr, &dd, dungeon);
     make_perm_walls(player_ptr);
+
+    // 環状水路の生成（WATERWAYフラグを持つダンジョンで1/8の確率）
+    constexpr int waterway_chance = 8;
+    if (dungeon.flags.has(DungeonFeatureType::WATERWAY) && one_in_(waterway_chance) && !dd.empty_level) {
+        generate_circular_waterway(player_ptr);
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("環状水路を生成。", "Circular waterway generated."));
+    }
 
     // 地形生成完了後、モンスター・アイテム配置前に左右対称化
     constexpr int symmetric_chance = 25;
@@ -520,14 +590,151 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr)
     }
 
     if (!check_place_necessary_objects(player_ptr, &dd)) {
+        // 乱数状態を復元
+        if (seed_was_fixed) {
+            AngbandSystem::get_instance().get_rng().set_state(original_state);
+        }
         return dd.why;
     }
 
     decide_dungeon_data_allocation(player_ptr, &dd, dungeon);
     if (!allocate_dungeon_data(player_ptr, &dd, dungeon)) {
+        // 乱数状態を復元
+        if (seed_was_fixed) {
+            AngbandSystem::get_instance().get_rng().set_state(original_state);
+        }
         return dd.why;
     }
 
     decide_grid_glowing(floor, &dd, dungeon);
+
+    // VESTIGEフラグを持つダンジョンで地形をランダムに差し替える
+    if (dungeon.flags.has(DungeonFeatureType::VESTIGE)) {
+        apply_vestige_terrain_replacement(player_ptr);
+    }
+
+    // 時空崩壊度に応じて虚空地形を配置
+    apply_void_terrain_placement(player_ptr);
+
+    // 乱数状態を復元
+    if (seed_was_fixed) {
+        AngbandSystem::get_instance().get_rng().set_state(original_state);
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("乱数状態を復元", "Random state restored"));
+    }
+
     return tl::nullopt;
+}
+
+/*!
+ * @brief VESTIGEフラグを持つダンジョンで地形をランダムに差し替える
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @details フロア全体を走査し、4%の確率でPERMANENTフラグを持たない地形をランダムに差し替える
+ */
+void apply_vestige_terrain_replacement(PlayerType *player_ptr)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &terrains = TerrainList::get_instance();
+
+    // PERMANENTフラグを持たない地形IDのリストを作成
+    std::vector<int> replaceable_terrain_ids;
+    for (const auto &terrain : terrains) {
+        if (terrain.flags.has_not(TerrainCharacteristics::PERMANENT)) {
+            replaceable_terrain_ids.push_back(terrain.idx);
+        }
+    }
+
+    if (replaceable_terrain_ids.empty()) {
+        return; // 差し替え可能な地形がない場合は何もしない
+    }
+
+    // フロア全体を走査して地形を差し替え
+    constexpr int replacement_chance = 25; // 4% = 1/25
+    int replacement_count = 0;
+
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        const auto &current_terrain = terrains.get_terrain(grid.feat);
+
+        // PERMANENTフラグを持つ地形はスキップ
+        if (current_terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
+            continue;
+        }
+
+        // 4%の確率で地形を差し替え
+        if (one_in_(replacement_chance)) {
+            const auto terrain = rand_choice(replaceable_terrain_ids);
+            set_terrain_id_to_grid(player_ptr, pos, terrain);
+            replacement_count++;
+        }
+    }
+
+    msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+        format(_("VESTIGE効果: %d箇所の地形を差し替えました", "VESTIGE effect: Replaced %d terrain features"),
+            replacement_count));
+}
+
+/*!
+ * @brief 時空崩壊度に応じて虚空地形を配置する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @details 時空崩壊度が70%を超えると、線形的に増加する確率で地形を虚空に置き換える
+ */
+void apply_void_terrain_placement(PlayerType *player_ptr)
+{
+    // 時空崩壊度が70%（70,000,000百万分率）を超えているかチェック
+    const int32_t collapse_threshold = 70000000; // 70%
+    if (wc_ptr->collapse_degree <= collapse_threshold) {
+        return;
+    }
+
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto &terrains = TerrainList::get_instance();
+
+    // 時空崩壊度から配置率を計算
+    // 70%時点で3%、100%時点で30%まで線形的に増加
+    const int32_t excess_collapse = wc_ptr->collapse_degree - collapse_threshold;
+    const int32_t max_excess = 100000000 - collapse_threshold; // 30%分の範囲
+
+    // 配置率を計算（3%～30%の範囲で線形補間）
+    int placement_rate_percent = 3 + (27 * excess_collapse / max_excess); // 3%～30%
+
+    // 上限チェック
+    if (placement_rate_percent > 30) {
+        placement_rate_percent = 30;
+    }
+
+    // ゼロ除算回避
+    if (placement_rate_percent <= 0) {
+        placement_rate_percent = 1;
+    }
+
+    const int placement_chance = 100 / placement_rate_percent; // 確率の逆数
+
+    // 虚空地形のID (VOID_ZONE = 236)
+    constexpr int void_terrain_id = 236;
+
+    int placement_count = 0;
+
+    // フロア全体を走査して地形を虚空に置き換え
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        const auto &current_terrain = terrains.get_terrain(grid.feat);
+
+        // PERMANENTフラグを持つ地形はスキップ
+        if (current_terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
+            continue;
+        }
+
+        // 計算された確率で地形を虚空に置き換え
+        if (one_in_(placement_chance)) {
+            set_terrain_id_to_grid(player_ptr, pos, void_terrain_id);
+            placement_count++;
+        }
+    }
+
+    msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+        format(_("時空崩壊効果: %d箇所を虚空地形に置き換えました（崩壊度: %d.%06d%%、配置率: %d%%）",
+                   "World collapse effect: Replaced %d terrain features with void (collapse: %d.%06d%%, rate: %d%%)"),
+            placement_count,
+            wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000,
+            placement_rate_percent));
 }

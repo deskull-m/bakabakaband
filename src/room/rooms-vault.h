@@ -1,6 +1,8 @@
 #pragma once
 
+#include "room/vault-flag-types.h"
 #include "system/h-type.h"
+#include "util/flag-group.h"
 #include <cstdint>
 #include <map>
 #include <string>
@@ -22,6 +24,7 @@ struct vault_type {
     int min_depth = 0;
     int max_depth = 999;
     int rarity = 1;
+    EnumClassFlagGroup<VaultFeatureType> flags{}; /* Vault Flags */
     std::map<char, FEAT_IDX> feature_list;
     std::map<char, FEAT_IDX> feature_ap_list;
     std::map<char, MonraceId> place_monster_list;

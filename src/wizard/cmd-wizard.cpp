@@ -31,6 +31,7 @@
 #include "view/display-messages.h"
 #include "wizard/wizard-game-modifier.h"
 #include "wizard/wizard-item-modifier.h"
+#include "wizard/wizard-mutation.h"
 #include "wizard/wizard-player-modifier.h"
 #include "wizard/wizard-special-process.h"
 #include "wizard/wizard-spells.h"
@@ -47,7 +48,7 @@
 /*!
  * @brief デバグコマンド一覧表
  * @details
- * 空き: A,B,E,I,J,k,K,L,M,q,Q,R,T,U,V,W,y,Y
+ * 空き: A,B,E,I,J,k,K,L,q,Q,R,T,U,V,W,y,Y
  */
 constexpr std::array debug_menu_table = {
     std::make_tuple('a', _("全状態回復", "Restore all status")),
@@ -67,6 +68,7 @@ constexpr std::array debug_menu_table = {
     std::make_tuple('j', _("指定ダンジョン階にワープ", "Jump to floor depth of target dungeon")),
     std::make_tuple('k', _("指定ダメージ・半径0の指定属性のボールを自分に放つ", "Fire a zero ball to self")),
     std::make_tuple('m', _("魔法の地図", "Magic mapping")),
+    std::make_tuple('M', _("突然変異コマンドメニュー", "Mutation debug commands")),
     std::make_tuple('n', _("指定モンスター生成", "Summon target monster")),
     std::make_tuple('N', _("指定モンスターをペットとして生成", "Summon target monster as pet")),
     std::make_tuple(KTRL('N'), _("指定モンスターをクローンとして生成", "Summon target monster as clone")),
@@ -206,6 +208,9 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         return true;
     case 'm':
         map_area(player_ptr, DETECT_RAD_ALL * 3);
+        return true;
+    case 'M':
+        wiz_mutation_menu(player_ptr);
         return true;
     case 'R':
         wiz_generate_room(player_ptr, command_arg);

@@ -5,6 +5,7 @@
 #include "monster/monster-timed-effects.h"
 #include "monster/smart-learn-types.h"
 #include "object/object-index-list.h"
+#include "system/creature-entity.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
 #include <map>
@@ -23,7 +24,7 @@ enum class MonraceId : int16_t;
 class FloorType;
 class MonraceDefinition;
 class MonsterEntityWriter;
-class MonsterEntity {
+class MonsterEntity : public CreatureEntity {
 public:
     friend class MonsterEntityWriter;
     MonsterEntity();
@@ -62,6 +63,7 @@ public:
     POSITION target_x{}; /*!< モンスターの攻撃目標対象X座標 /  Can attack !los player */
     std::string nickname{}; /*!< ペットに与えられた名前 / Monster's Nickname */
     EXP exp{}; /*!< モンスターの現在所持経験値 */
+    int16_t level{}; /*!< モンスターの個体レベル（0の場合は種族レベルを使用） / Monster's individual level (0 = use race level) */
 
     /* TODO: クローン、ペット、有効化は意義が異なるので別変数に切り離すこと。save/loadのバージョン更新が面倒そうだけど */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" - Some bit-flags for the "smart" field */
@@ -80,7 +82,6 @@ public:
     bool is_named_pet() const;
     bool is_original_ap() const;
     bool is_mimicry() const;
-    bool is_valid() const;
     bool is_male() const;
     bool is_female() const;
     MonraceId get_real_monrace_id() const;
@@ -94,7 +95,6 @@ public:
     short get_remaining_confusion() const;
     short get_remaining_fear() const;
     short get_remaining_invulnerability() const;
-    bool is_dead() const;
     bool is_asleep() const;
     bool is_accelerated() const;
     bool is_decelerated() const;
@@ -104,6 +104,7 @@ public:
     bool is_invulnerable() const;
     byte get_temporary_speed() const;
     bool has_living_flag(bool is_apperance = false) const;
+    bool is_undead() const;
     bool is_explodable() const;
     bool has_parent() const;
     std::string get_died_message() const;
@@ -113,10 +114,11 @@ public:
     tl::optional<bool> order_pet_whistle(const MonsterEntity &other) const;
     tl::optional<bool> order_pet_dismission(const MonsterEntity &other) const;
     bool is_riding() const;
-    Pos2D get_position() const;
+    Pos2D get_position() const override;
     Pos2D get_target_position() const;
     bool can_ring_boss_call_nazgul() const;
     std::string build_looking_description(bool needs_attitude) const;
+    int get_ac() const;
 
     void set_individual_speed(bool force_fixed_speed);
     void set_position(const Pos2D &pos);
@@ -126,6 +128,20 @@ public:
     void set_target(const Pos2D &pos);
     void reset_target();
     void set_friendly();
+
+    // CreatureEntityインターフェースの実装
+    POSITION get_x() const override;
+    POSITION get_y() const override;
+    int get_current_hp() const override;
+    int get_max_hp() const override;
+    int get_speed() const override;
+    bool is_valid() const override;
+    bool is_dead() const override;
+    FloorType *get_floor() const override;
+    ACTION_ENERGY get_energy_need() const override;
+    void set_energy_need(ACTION_ENERGY energy) override;
+    int get_level() const override;
+    bool is_player() const override;
 
 private:
     tl::optional<bool> order_pet_named(const MonsterEntity &other) const;

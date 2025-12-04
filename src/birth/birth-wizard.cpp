@@ -298,7 +298,7 @@ static void display_initial_options(PlayerType *player_ptr)
     const auto expfact_mod = static_cast<int>(get_expfact(player_ptr)) - 100;
     int16_t adj[A_MAX]{};
     for (int i = 0; i < A_MAX; i++) {
-        adj[i] = rp_ptr->r_adj[i] + cp_ptr->c_adj[i] + ap_ptr->a_adj[i];
+        adj[i] = player_ptr->race->r_adj[i] + (*player_ptr->pclass_ref).c_adj[i] + (*player_ptr->personality).a_adj[i];
     }
 
     put_str("                                   ", 3, 40);
@@ -308,7 +308,7 @@ static void display_initial_options(PlayerType *player_ptr)
     c_put_str(TERM_L_BLUE, stats, 5, 40);
 
     put_str("HD ", 6, 40);
-    const auto hd = format("%2d", rp_ptr->r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
+    const auto hd = format("%2d", player_ptr->race->r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
     c_put_str(TERM_L_BLUE, hd, 6, 43);
 
     put_str(_("隠密", "Stealth"), 6, 47);
@@ -316,12 +316,12 @@ static void display_initial_options(PlayerType *player_ptr)
     if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
         stealth = "xx";
     } else {
-        stealth = format("%+2d", rp_ptr->r_stl + cp_ptr->c_stl + ap_ptr->a_stl);
+        stealth = format("%+2d", player_ptr->race->r_stl + (*player_ptr->pclass_ref).c_stl + (*player_ptr->personality).a_stl);
     }
     c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
     put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-    const auto infra = format(_("%2dft", "%2dft"), 10 * rp_ptr->infra);
+    const auto infra = format(_("%%2dft", "%%2dft"), 10 * player_ptr->race->infra);
     c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
 
     clear_from(10);
@@ -330,7 +330,7 @@ static void display_initial_options(PlayerType *player_ptr)
     screen_load();
 }
 
-static void display_auto_roller_success_rate(const int col)
+static void display_auto_roller_success_rate(PlayerType *player_ptr, const int col)
 {
     if (!autoroller) {
         return;
@@ -354,7 +354,7 @@ static void display_auto_roller_success_rate(const int col)
 
     for (int i = 0; i < A_MAX; i++) {
         put_str(stat_names[i], 3 + i, col + 8);
-        int j = rp_ptr->r_adj[i] + cp_ptr->c_adj[i] + ap_ptr->a_adj[i];
+        int j = player_ptr->race->r_adj[i] + (*player_ptr->pclass_ref).c_adj[i] + (*player_ptr->personality).a_adj[i];
         int m = adjust_stat(stat_limit[i], j);
         c_put_str(TERM_L_BLUE, cnv_stat(m), 3 + i, col + 13);
     }
@@ -552,7 +552,7 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
             get_history(player_ptr);
         }
 
-        display_auto_roller_success_rate(col);
+        display_auto_roller_success_rate(player_ptr, col);
         exe_auto_roller(player_ptr, chara_limit, col);
         if (autoroller || autochara) {
             sound(SoundKind::LEVEL);

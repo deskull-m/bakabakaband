@@ -164,13 +164,14 @@ static void decide_initial_stat(PlayerType *player_ptr, int *cval)
 
 /*!
  * @brief オートローラの設定能力値行を作成する
+ * @param player_ptr プレイヤーへの参照ポインタ
  * @param cval 設定能力値配列
  * @param cs カーソル位置(能力値番号)
  * @return カーソル文字列
  */
-static std::string cursor_of_adjusted_stat(const int *cval, int cs)
+static std::string cursor_of_adjusted_stat(PlayerType *player_ptr, const int *cval, int cs)
 {
-    auto j = rp_ptr->r_adj[cs] + cp_ptr->c_adj[cs] + ap_ptr->a_adj[cs];
+    auto j = player_ptr->race->r_adj[cs] + (*player_ptr->pclass_ref).c_adj[cs] + (*player_ptr->personality).a_adj[cs];
     auto m = adjust_stat(17, j);
     std::string maxv;
     if (m > 18) {
@@ -187,7 +188,7 @@ static std::string cursor_of_adjusted_stat(const int *cval, int cs)
         inp = format("%2d", m);
     }
 
-    return format("%6s       %2d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], rp_ptr->r_adj[cs], cp_ptr->c_adj[cs], ap_ptr->a_adj[cs], inp.data(), maxv.data());
+    return format("%6s       %2d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], player_ptr->race->r_adj[cs], (*player_ptr->pclass_ref).c_adj[cs], (*player_ptr->personality).a_adj[cs], inp.data(), maxv.data());
 }
 
 /*!
@@ -223,7 +224,7 @@ bool get_stat_limits(PlayerType *player_ptr)
     decide_initial_stat(player_ptr, cval);
 
     for (int i = 0; i < A_MAX; i++) {
-        put_str(cursor_of_adjusted_stat(cval, i), 14 + i, 10);
+        put_str(cursor_of_adjusted_stat(player_ptr, cval, i), 14 + i, 10);
     }
 
     display_autoroller_chance(cval);
@@ -244,7 +245,7 @@ bool get_stat_limits(PlayerType *player_ptr)
             if (cs == A_MAX) {
                 c_put_str(TERM_YELLOW, _("決定する", "Accept"), 21, 35);
             } else {
-                cur = cursor_of_adjusted_stat(cval, cs);
+                cur = cursor_of_adjusted_stat(player_ptr, cval, cs);
                 c_put_str(TERM_YELLOW, cur, 14 + cs, 10);
             }
 
@@ -375,11 +376,11 @@ bool get_chara_limits(PlayerType *player_ptr, chara_limit_type *chara_limit_ptr)
 
     int max_percent, min_percent;
     if (player_ptr->psex == SEX_MALE) {
-        max_percent = (int)(rp_ptr->m_b_ht + rp_ptr->m_m_ht * 4 - 1) * 100 / (int)(rp_ptr->m_b_ht);
-        min_percent = (int)(rp_ptr->m_b_ht - rp_ptr->m_m_ht * 4 + 1) * 100 / (int)(rp_ptr->m_b_ht);
+        max_percent = (int)(player_ptr->race->m_b_ht + player_ptr->race->m_m_ht * 4 - 1) * 100 / (int)(player_ptr->race->m_b_ht);
+        min_percent = (int)(player_ptr->race->m_b_ht - player_ptr->race->m_m_ht * 4 + 1) * 100 / (int)(player_ptr->race->m_b_ht);
     } else {
-        max_percent = (int)(rp_ptr->f_b_ht + rp_ptr->f_m_ht * 4 - 1) * 100 / (int)(rp_ptr->f_b_ht);
-        min_percent = (int)(rp_ptr->f_b_ht - rp_ptr->f_m_ht * 4 + 1) * 100 / (int)(rp_ptr->f_b_ht);
+        max_percent = (int)(player_ptr->race->f_b_ht + player_ptr->race->f_m_ht * 4 - 1) * 100 / (int)(player_ptr->race->f_b_ht);
+        min_percent = (int)(player_ptr->race->f_b_ht - player_ptr->race->f_m_ht * 4 + 1) * 100 / (int)(player_ptr->race->f_b_ht);
     }
 
     put_str(_("体格/地位の最小値/最大値を設定して下さい。", "Set minimum/maximum attribute."), 10, 10);
@@ -391,38 +392,38 @@ bool get_chara_limits(PlayerType *player_ptr, chara_limit_type *chara_limit_ptr)
         int m;
         switch (i) {
         case 0: /* Minimum age */
-            m = rp_ptr->b_age + 1;
+            m = player_ptr->race->b_age + 1;
             break;
         case 1: /* Maximum age */
-            m = rp_ptr->b_age + rp_ptr->m_age;
+            m = player_ptr->race->b_age + player_ptr->race->m_age;
             break;
 
         case 2: /* Minimum height */
             if (player_ptr->psex == SEX_MALE) {
-                m = rp_ptr->m_b_ht - rp_ptr->m_m_ht * 4 + 1;
+                m = player_ptr->race->m_b_ht - player_ptr->race->m_m_ht * 4 + 1;
             } else {
-                m = rp_ptr->f_b_ht - rp_ptr->f_m_ht * 4 + 1;
+                m = player_ptr->race->f_b_ht - player_ptr->race->f_m_ht * 4 + 1;
             }
             break;
         case 3: /* Maximum height */
             if (player_ptr->psex == SEX_MALE) {
-                m = rp_ptr->m_b_ht + rp_ptr->m_m_ht * 4 - 1;
+                m = player_ptr->race->m_b_ht + player_ptr->race->m_m_ht * 4 - 1;
             } else {
-                m = rp_ptr->f_b_ht + rp_ptr->f_m_ht * 4 - 1;
+                m = player_ptr->race->f_b_ht + player_ptr->race->f_m_ht * 4 - 1;
             }
             break;
         case 4: /* Minimum weight */
             if (player_ptr->psex == SEX_MALE) {
-                m = (rp_ptr->m_b_wt * min_percent / 100) - (rp_ptr->m_m_wt * min_percent / 75) + 1;
+                m = (player_ptr->race->m_b_wt * min_percent / 100) - (player_ptr->race->m_m_wt * min_percent / 75) + 1;
             } else {
-                m = (rp_ptr->f_b_wt * min_percent / 100) - (rp_ptr->f_m_wt * min_percent / 75) + 1;
+                m = (player_ptr->race->f_b_wt * min_percent / 100) - (player_ptr->race->f_m_wt * min_percent / 75) + 1;
             }
             break;
         case 5: /* Maximum weight */
             if (player_ptr->psex == SEX_MALE) {
-                m = (rp_ptr->m_b_wt * max_percent / 100) + (rp_ptr->m_m_wt * max_percent / 75) - 1;
+                m = (player_ptr->race->m_b_wt * max_percent / 100) + (player_ptr->race->m_m_wt * max_percent / 75) - 1;
             } else {
-                m = (rp_ptr->f_b_wt * max_percent / 100) + (rp_ptr->f_m_wt * max_percent / 75) - 1;
+                m = (player_ptr->race->f_b_wt * max_percent / 100) + (player_ptr->race->f_m_wt * max_percent / 75) - 1;
             }
             break;
         case 6: /* Minimum prestige */

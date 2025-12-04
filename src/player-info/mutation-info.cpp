@@ -165,6 +165,18 @@ void set_mutation_info(PlayerType *player_ptr, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたは制御できない強烈な屁をこく。", "You are subject to uncontrollable flatulence."));
     }
 
+    if (player_ptr->muta.has(PlayerMutationType::IKISUGI)) {
+        self_ptr->info_list.emplace_back(_("あなたは時々イキすぎる。", "You sometimes climax too much."));
+    }
+
+    if (player_ptr->muta.has(PlayerMutationType::ATT_NASTY)) {
+        self_ptr->info_list.emplace_back(_("あなたはクッソ汚い輩を引きつける。", "You attract nasty creatures."));
+    }
+
+    if (has_pervert_attraction(player_ptr)) {
+        self_ptr->info_list.emplace_back(_("あなたは変質者を引きつける。", "You attract perverts."));
+    }
+
     if (player_ptr->muta.has(PlayerMutationType::PROD_MANA)) {
         self_ptr->info_list.emplace_back(_("あなたは制御不能な魔法のエネルギーを発している。", "You produce magical energy uncontrollably."));
     }
@@ -335,6 +347,10 @@ void set_mutation_info(PlayerType *player_ptr, self_info_type *self_ptr)
 
     if (player_ptr->muta.has(PlayerMutationType::SHORT_LEG)) {
         self_ptr->info_list.emplace_back(_("あなたの足は短い突起だ。(加速-3)", "Your legs are short stubs (-3 speed)."));
+    }
+
+    if (player_ptr->muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+        self_ptr->info_list.emplace_back(_("あなたは上半身に比べて下半身が貧弱すぎる。(腕力+2, 加速-2)", "Your lower body is too weak compared to your upper body (+2 STR, -2 speed)."));
     }
 
     if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {

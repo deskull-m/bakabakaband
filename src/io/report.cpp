@@ -237,8 +237,8 @@ std::string make_screen_dump(PlayerType *player_ptr)
 bool report_score(PlayerType *player_ptr)
 {
     std::stringstream score_ss;
-    std::string personality_desc = ap_ptr->title.string();
-    personality_desc.append(_(ap_ptr->no ? "の" : "", " "));
+    std::string personality_desc = (*player_ptr->personality).title.string();
+    personality_desc.append(_((*player_ptr->personality).no ? "の" : "", " "));
 
     PlayerRealm pr(player_ptr);
     const auto &realm1_name = PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
@@ -253,8 +253,8 @@ bool report_score(PlayerType *player_ptr)
     const auto &igd = InnerGameData::get_instance();
     score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
              << fmt::format("sex: {}\n", enum2i(player_ptr->psex))
-             << fmt::format("race: {}\n", rp_ptr->title)
-             << fmt::format("class: {}\n", cp_ptr->title)
+             << fmt::format("race: {}\n", player_ptr->race->title)
+             << fmt::format("class: {}\n", (*player_ptr->pclass_ref).title)
              << fmt::format("seikaku: {}\n", personality_desc)
              << fmt::format("realm1: {}\n", realm1_name)
              << fmt::format("realm2: {}\n", pr.realm2().get_name())

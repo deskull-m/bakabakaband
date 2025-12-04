@@ -226,7 +226,7 @@ static void desc_obj_fake(PlayerType *player_ptr, short bi_id)
     o_ptr->ident |= IDENT_KNOWN;
     handle_stuff(player_ptr);
 
-    if (screen_object(player_ptr, o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {
+    if (screen_object(player_ptr, *o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {
         return;
     }
 

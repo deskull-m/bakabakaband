@@ -41,9 +41,11 @@
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "terrain/terrain-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "window/main-window-row-column.h"
+#include "world/world-alliance-processor.h"
 #include "world/world-collapsion.h"
 #include "world/world-movement-processor.h"
 #include "world/world.h"
@@ -93,8 +95,10 @@ void WorldTurnProcessor::process_world()
     process_player_hp_mp(this->player_ptr);
     reduce_magic_effects_timeout(this->player_ptr);
     reduce_lite_life(this->player_ptr);
+    process_terrain_effects(this->player_ptr);
     process_world_aux_mutation(this->player_ptr);
     process_world_aux_sudden_attack(this->player_ptr);
+    process_alliance_recovery(this->player_ptr);
     execute_cursed_items_effect(this->player_ptr);
     recharge_magic_items(this->player_ptr);
     sense_inventory1(this->player_ptr);
@@ -155,7 +159,7 @@ void WorldTurnProcessor::process_downward()
 {
     /* 帰還無しモード時のレベルテレポバグ対策 / Fix for level teleport bugs on ironman_downward.*/
     auto &floor = *this->player_ptr->current_floor_ptr;
-    if (!ironman_downward || (floor.dungeon_id == DungeonId::ANGBAND) || !floor.is_underground()) {
+    if (!ironman_downward || (floor.dungeon_id == DungeonId::ANGBAND) || !floor.is_underground() || floor.is_in_quest()) {
         return;
     }
 

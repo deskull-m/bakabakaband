@@ -42,4 +42,7 @@ const std::unordered_map<std::string_view, DungeonFeatureType> dungeon_flags = {
     { "ALWAY_ARENA", DungeonFeatureType::ALWAY_ARENA },
     { "ALWAYS_LIGHT", DungeonFeatureType::ALWAYS_LIGHT },
     { "ALWAY_MAX_SIZE", DungeonFeatureType::ALWAY_MAX_SIZE },
+    { "ALWAYS_RIVER", DungeonFeatureType::ALWAYS_RIVER },
+    { "WATERWAY", DungeonFeatureType::WATERWAY },
+    { "VESTIGE", DungeonFeatureType::VESTIGE },
 };

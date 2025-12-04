@@ -23,10 +23,13 @@
 #include "monster-attack/monster-attack-effect.h"
 #include "monster-attack/monster-attack-switcher.h"
 #include "monster-attack/monster-attack-table.h"
+#include "monster-race/race-behavior-flags.h"
+#include "monster-race/race-misc-flags.h"
 #include "monster/monster-damage.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
+#include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/smart-learn-types.h"
 #include "object-hook/hook-armor.h"
@@ -181,6 +184,19 @@ bool MonsterAttackPlayer::process_monster_blows()
                 continue;
             }
 
+            // モンスターの打撃を受けた回数を記録
+            this->player_ptr->plus_incident_tree("HIT_BY_MONSTER", 1);
+
+            // 打撃手段ごとの記録
+            const std::string method_tag = get_blow_method_tag(this->method);
+            const std::string method_key = "HIT_BY_MONSTER/METHOD/" + method_tag;
+            this->player_ptr->plus_incident_tree(method_key, 1);
+
+            // 打撃効果ごとの記録
+            const std::string effect_tag = get_blow_effect_tag(this->effect);
+            const std::string effect_key = "HIT_BY_MONSTER/EFFECT/" + effect_tag;
+            this->player_ptr->plus_incident_tree(effect_key, 1);
+
             // 撃退失敗時は落馬処理、変わり身のテレポート処理を行う。
             check_fall_off_horse(this->player_ptr, this);
 
@@ -216,7 +232,7 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
     }
 
     const auto is_neighbor = Grid::calc_distance(this->player_ptr->get_position(), this->m_ptr->get_position()) <= 1;
-    return this->player_ptr->playing && !this->player_ptr->is_dead && is_neighbor && !this->player_ptr->leaving;
+    return this->player_ptr->playing && !this->player_ptr->is_dead() && is_neighbor && !this->player_ptr->leaving;
 }
 
 /*!
@@ -248,6 +264,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     this->calc_player_cut();
     this->process_player_stun();
     this->monster_explode();
+    this->process_sadist_reaction();
     process_aura_counterattack(this->player_ptr, this);
     return true;
 }
@@ -416,6 +433,7 @@ void MonsterAttackPlayer::process_monster_attack_evasion()
     case RaceBlowMethodType::CHARGE:
         this->describe_attack_evasion();
         this->gain_armor_exp();
+        this->gain_evasion_exp();
         this->damage = 0;
         return;
     default:
@@ -470,6 +488,23 @@ void MonsterAttackPlayer::gain_armor_exp()
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
+void MonsterAttackPlayer::gain_evasion_exp()
+{
+    // 装備重量が軽い（300ポンド以下）時のみ回避技能の経験値を獲得
+    auto equipment_weight = 0;
+    equipment_weight += this->player_ptr->inventory[INVEN_BODY]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_HEAD]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_OUTER]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_ARMS]->weight;
+    equipment_weight += this->player_ptr->inventory[INVEN_FEET]->weight;
+
+    if (equipment_weight > 300) {
+        return;
+    }
+
+    PlayerSkill(this->player_ptr).gain_evasion_skill_exp();
+}
+
 /*!
  * @brief モンスターの打撃情報を蓄積させる
  * @param ap_cnt モンスターの打撃 N回目
@@ -501,11 +536,11 @@ void MonsterAttackPlayer::postprocess_monster_blows()
     musou_counterattack(this->player_ptr, this);
     this->process_thief_teleport(spell_hex);
     auto &monrace = this->m_ptr->get_monrace();
-    if (this->player_ptr->is_dead && (monrace.r_deaths < MAX_SHORT) && !this->player_ptr->current_floor_ptr->inside_arena) {
+    if (this->player_ptr->is_dead() && (monrace.r_deaths < MAX_SHORT) && !this->player_ptr->current_floor_ptr->inside_arena) {
         monrace.r_deaths++;
     }
 
-    if (this->m_ptr->ml && this->fear && this->alive && !this->player_ptr->is_dead) {
+    if (this->m_ptr->ml && this->fear && this->alive && !this->player_ptr->is_dead()) {
         sound(SoundKind::FLEE);
         msg_format(_("%s^は恐怖で逃げ出した！", "%s^ flees in terror!"), this->m_name);
     }
@@ -515,7 +550,7 @@ void MonsterAttackPlayer::postprocess_monster_blows()
 
 void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
 {
-    if (!this->blinked || !this->alive || this->player_ptr->is_dead) {
+    if (!this->blinked || !this->alive || this->player_ptr->is_dead()) {
         return;
     }
 
@@ -524,5 +559,30 @@ void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
     } else {
         msg_print(_("泥棒は笑って逃げた！", "The thief flees laughing!"));
         teleport_away(this->player_ptr, this->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
+    }
+}
+
+/*!
+ * @brief サディストモンスターの特殊反応処理
+ * @details サディストはプレイヤーに苦痛を与えると興奮し、攻撃力が一時的に上昇する
+ */
+void MonsterAttackPlayer::process_sadist_reaction()
+{
+    const auto &monrace = this->m_ptr->get_monrace();
+
+    if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
+        return;
+    }
+
+    // プレイヤーにダメージを与えた場合の興奮状態
+    if (this->damage > 0 && one_in_(4)) {
+        (void)set_monster_monfear(this->player_ptr, this->m_idx, 0);
+
+        // 一時的な攻撃力上昇（怒り状態付与）
+        this->m_ptr->mflag2.set(MonsterConstantFlagType::ANGER);
+
+        if (this->m_ptr->ml) {
+            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), this->m_name);
+        }
     }
 }

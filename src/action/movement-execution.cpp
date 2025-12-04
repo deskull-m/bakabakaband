@@ -361,6 +361,17 @@ void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, 
         mpe_mode |= MPE_BREAK_TRAP;
     }
 
-    player_ptr->plus_incident(INCIDENT::WALK, 1);
+    player_ptr->plus_incident_tree("WALK", 1);
+
+    static constexpr const char *dir_names[10] = {
+        nullptr, "SW", "S", "SE", "W", "C", "E", "NW", "N", "NE"
+    };
+
+    const auto dir_id = dir.dir();
+    if (dir_id >= 1 && dir_id <= 9 && dir_names[dir_id] != nullptr) {
+        const auto walk_dir = format("WALK/%s", dir_names[dir_id]);
+        player_ptr->plus_incident_tree(walk_dir.data(), 1);
+    }
+
     (void)move_player_effect(player_ptr, pos.y, pos.x, mpe_mode);
 }

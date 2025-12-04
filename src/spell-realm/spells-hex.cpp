@@ -137,7 +137,7 @@ std::pair<bool, tl::optional<char>> SpellHex::select_spell_stopping(std::string_
 {
     while (true) {
         this->display_casting_spells_list();
-        const auto choice_opt = input_command(prompt, true);
+        const auto choice_opt = input_command(prompt);
         if (!choice_opt) {
             return { false, tl::nullopt };
         }
@@ -369,7 +369,7 @@ void SpellHex::interrupt_spelling()
 void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
 {
     const auto is_eyeeye_finished = (this->player_ptr->tim_eyeeye == 0) && !this->is_spelling_specific(HEX_EYE_FOR_EYE);
-    if (is_eyeeye_finished || (dam == 0) || this->player_ptr->is_dead) {
+    if (is_eyeeye_finished || (dam == 0) || this->player_ptr->is_dead()) {
         return;
     }
 

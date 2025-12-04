@@ -301,6 +301,10 @@ byte MonsterEntity::get_temporary_speed() const
         speed -= 5;
     }
 
+    if (this->mflag2.has(MonsterConstantFlagType::FRENZY)) {
+        speed += 10;
+    }
+
     return speed;
 }
 
@@ -314,6 +318,25 @@ bool MonsterEntity::has_living_flag(bool is_apperance) const
 {
     const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
     return monrace.has_living_flag();
+}
+
+/*!
+ * @brief モンスターがアンデッドかどうかを返す
+ * @return 種族または個体がアンデッドならばtrue
+ */
+bool MonsterEntity::is_undead() const
+{
+    // 種族データでアンデッドフラグがあるか確認
+    if (this->get_monrace().kind_flags.has(MonsterKindType::UNDEAD)) {
+        return true;
+    }
+
+    // 個体フラグでZOMBIFIED状態の場合（ZOMBIFIEDモンスターは自動的にUNDEADフラグを持つ）
+    if (this->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+        return true;
+    }
+
+    return false;
 }
 
 /*!
@@ -635,4 +658,72 @@ std::string MonsterEntity::build_attitude_description() const
     }
 
     return "";
+}
+
+int MonsterEntity::get_ac() const
+{
+    const auto &monrace = MonraceList::get_instance().get_monrace(this->r_idx);
+    if (this->mflag2.has(MonsterConstantFlagType::NAKED)) {
+        return 0;
+    }
+    auto ac = monrace.ac;
+    if (this->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        ac += randint1(10) + 5; // +6～+15のACボーナス
+    }
+    return ac;
+}
+
+// CreatureEntityインターフェースの実装
+POSITION MonsterEntity::get_x() const
+{
+    return this->fx;
+}
+
+POSITION MonsterEntity::get_y() const
+{
+    return this->fy;
+}
+
+int MonsterEntity::get_current_hp() const
+{
+    return this->hp;
+}
+
+int MonsterEntity::get_max_hp() const
+{
+    return this->maxhp;
+}
+
+int MonsterEntity::get_speed() const
+{
+    return this->mspeed;
+}
+
+FloorType *MonsterEntity::get_floor() const
+{
+    return this->current_floor_ptr;
+}
+
+ACTION_ENERGY MonsterEntity::get_energy_need() const
+{
+    return this->energy_need;
+}
+
+void MonsterEntity::set_energy_need(ACTION_ENERGY energy)
+{
+    this->energy_need = energy;
+}
+
+int MonsterEntity::get_level() const
+{
+    // 個体レベルが設定されていればそれを使用、未設定なら種族レベルを使用
+    if (this->level > 0) {
+        return this->level;
+    }
+    return this->get_monrace().level / 2;
+}
+
+bool MonsterEntity::is_player() const
+{
+    return false;
 }

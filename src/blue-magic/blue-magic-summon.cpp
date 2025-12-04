@@ -136,6 +136,51 @@ bool cast_blue_summon_hydra(PlayerType *player_ptr, bmc_type *bmc_ptr)
     return true;
 }
 
+bool cast_blue_summon_fairy(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("フェアリーを召喚した。", "You summon fairies."));
+    if (summon_specific(
+            player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_FAIRY, (bmc_ptr->g_mode | bmc_ptr->p_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚されたフェアリーは怒っている！", "The summoned fairies are angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_ape(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("類人猿を召喚した。", "You summon apes."));
+    if (summon_specific(
+            player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_APE, (bmc_ptr->g_mode | bmc_ptr->p_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚された類人猿は怒っている！", "The summoned apes are angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_bird(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("鳥を召喚した。", "You summon birds."));
+    if (summon_specific(
+            player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_BIRD, (bmc_ptr->g_mode | bmc_ptr->p_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚された鳥は怒っている！", "The summoned birds are angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
 bool cast_blue_summon_angel(PlayerType *player_ptr, bmc_type *bmc_ptr)
 {
     msg_print(_("天使を召喚した！", "You summon an angel!"));
@@ -241,6 +286,21 @@ bool cast_blue_summon_amberite(PlayerType *player_ptr, bmc_type *bmc_ptr)
     return true;
 }
 
+bool cast_blue_summon_choasian(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("混沌の王族を召喚した！", "You summon a Lord of Chaos!"));
+    if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_CHOASIANS,
+            (bmc_ptr->g_mode | bmc_ptr->p_mode | bmc_ptr->u_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚された混沌の王族は怒っている！", "The summoned Lord of Chaos is angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
 bool cast_blue_summon_unique(PlayerType *player_ptr, bmc_type *bmc_ptr)
 {
     int count = 0;
@@ -280,6 +340,132 @@ bool cast_blue_summon_dead_unique(PlayerType *player_ptr, bmc_type *bmc_ptr)
     if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_DEAD_UNIQUE, mode)) {
         if (!bmc_ptr->pet) {
             msg_print(_("蘇生されたユニーク・モンスターは怒っている！", "The summoned special dead opponent is angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_nasty(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("汚い怪物を召喚した！", "You summon nasty monsters!"));
+    for (int k = 0; k < 2 + bmc_ptr->plev / 20; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_NASTY, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚された汚い怪物は怒っている！", "The summoned nasty monsters are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_golem(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("ゴーレムを召喚した！", "You summon golems!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 25; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_GOLEM, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚されたゴーレムは怒っている！", "The summoned golems are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_cats(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("猫を召喚した！", "You summon cats!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 25; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_CATS, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚された猫は怒っている！", "The summoned cats are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_perverts(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("変質者を召喚した！", "You summon perverts!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 25; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_PERVERTS, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚された変質者は怒っている！", "The summoned perverts are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_puyo(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("ぷよを召喚した！", "You summon puyo!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 25; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_PUYO, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚されたぷよは怒っている！", "The summoned puyo are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_homo(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("ホモを召喚した！", "You summon homos!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 25; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_HOMO, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚されたホモは怒っている！", "The summoned homos are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_wall(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("壁を召喚した！", "You summon walls!"));
+    if (summon_specific(
+            player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_WALL, (bmc_ptr->g_mode | bmc_ptr->p_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚された壁は怒っている！", "The summoned walls are angry!"));
+        }
+    } else {
+        bmc_ptr->no_trump = true;
+    }
+
+    return true;
+}
+
+bool cast_blue_summon_insect(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("昆虫を召喚した！", "You summon insects!"));
+    if (summon_specific(
+            player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_INSECT, (bmc_ptr->g_mode | bmc_ptr->p_mode))) {
+        if (!bmc_ptr->pet) {
+            msg_print(_("召喚された昆虫は怒っている！", "The summoned insects are angry!"));
         }
     } else {
         bmc_ptr->no_trump = true;

@@ -1089,6 +1089,9 @@ void update_curses(PlayerType *player_ptr)
     if (player_ptr->ppersonality == PERSONALITY_SEXY) {
         player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
     }
+    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+        player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
+    }
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         o_ptr = player_ptr->inventory[i].get();
@@ -1819,6 +1822,11 @@ bool has_not_monk_weapon(PlayerType *player_ptr, int i)
 bool has_good_luck(PlayerType *player_ptr)
 {
     return (player_ptr->ppersonality == PERSONALITY_LUCKY) || (player_ptr->muta.has(PlayerMutationType::GOOD_LUCK));
+}
+
+bool has_pervert_attraction(PlayerType *player_ptr)
+{
+    return (player_ptr->ppersonality == PERSONALITY_MESUGAKI) || (player_ptr->muta.has(PlayerMutationType::ATT_PERVERT));
 }
 
 /**

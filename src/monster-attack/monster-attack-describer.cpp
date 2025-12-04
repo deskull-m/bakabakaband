@@ -277,6 +277,14 @@ void describe_monster_attack_method(MonsterAttackPlayer *monap_ptr)
         break;
     }
 
+    case RaceBlowMethodType::CHOKE: {
+        monap_ptr->act = _("首を絞められた。", "chokes.");
+        monap_ptr->touched = true;
+        monap_ptr->do_stun = 1;
+        sound(SoundKind::HIT);
+        break;
+    }
+
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:
         break;

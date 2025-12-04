@@ -77,7 +77,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
             (void)BadStatusSetter(player_ptr).mod_poison(10 + randint1(10));
         }
-        player_ptr->plus_incident(INCIDENT::EAT_FECES, 1);
+        player_ptr->plus_incident_tree("EAT_FECES", 1);
         PlayerSkill(player_ptr).gain_riding_skill_exp_on_gross_eating();
         return true;
     }
@@ -87,7 +87,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
             (void)BadStatusSetter(player_ptr).mod_poison(10 + randint1(10));
         }
-        player_ptr->plus_incident(INCIDENT::EAT_FECES, 1);
+        player_ptr->plus_incident_tree("EAT_FECES", 1);
         PlayerSkill(player_ptr).gain_riding_skill_exp_on_gross_eating();
         return true;
     }
@@ -279,7 +279,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_POISON:
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
             if (bss.mod_poison(randint0(10) + 10)) {
-                player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
+                player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
             }
         }
@@ -287,7 +287,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_BLINDNESS:
         if (!has_resist_blind(player_ptr)) {
             if (bss.mod_blindness(randint0(200) + 200)) {
-                player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
+                player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
             }
         }
@@ -295,7 +295,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_PARANOIA:
         if (!has_resist_fear(player_ptr)) {
             if (bss.mod_fear(randint0(10) + 10)) {
-                player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
+                player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
             }
         }
@@ -303,7 +303,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_CONFUSION:
         if (!has_resist_conf(player_ptr)) {
             if (bss.mod_confusion(randint0(10) + 10)) {
-                player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
+                player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
             }
         }
@@ -311,7 +311,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_HALLUCINATION:
         if (!has_resist_chaos(player_ptr)) {
             if (bss.mod_hallucination(randint0(250) + 250)) {
-                player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
+                player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
             }
         }
@@ -319,7 +319,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_PARALYSIS:
         if (!player_ptr->free_act) {
             if (bss.set_paralysis(10 + randint1(10))) {
-                player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
+                player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
             }
         }
@@ -390,23 +390,22 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         return true;
     case SV_FOOD_WELCOME_DRINK_OF_ARE:
     case SV_FOOD_ABA_TEA:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
+        player_ptr->plus_incident_tree("EAT_POISON", 1);
         (void)BadStatusSetter(player_ptr).mod_poison(10);
         msg_print("「非常に新鮮で……非常においしい……」");
-        player_ptr->plus_incident(INCIDENT::EAT_FECES, 1);
+        player_ptr->plus_incident_tree("EAT_FECES", 1);
         return true;
     case SV_FOOD_SEED_FEA:
         msg_print("脱穀して炊いた方が良かったかもしれないが、多少空腹は収まった。");
         return true;
     case SV_FOOD_HIP:
-        player_ptr->plus_incident(INCIDENT::EAT_POISON, 1);
-        player_ptr->incident[INCIDENT::EAT_POISON]++;
+        player_ptr->plus_incident_tree("EAT_POISON", 1);
         msg_print("ヴォエ！食ったら尻の肉だった！");
         msg_erase();
         (void)BadStatusSetter(player_ptr).mod_poison(10);
         msg_print("「作者は広告で収入得てないけど、こんな卑猥なアイテム放置するなよ」");
         msg_erase();
-        player_ptr->plus_incident(INCIDENT::EAT_FECES, 1);
+        player_ptr->plus_incident_tree("EAT_FECES", 1);
         return true;
     case SV_FOOD_SURSTROMMING:
         msg_print("悪臭が周囲を取り巻いた！");
@@ -678,7 +677,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         return;
     }
 
-    player_ptr->plus_incident(INCIDENT::EAT, 1);
+    player_ptr->plus_incident_tree("EAT", 1);
 
     rfu.set_flags(flags_srf);
     vary_item(player_ptr, i_idx, -1);

@@ -64,7 +64,7 @@ bool kawarimi(PlayerType *player_ptr, bool success)
         return false;
     }
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -299,7 +299,7 @@ bool set_superstealth(PlayerType *player_ptr, bool set)
     bool notice = false;
 
     auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
-    if (!ninja_data || player_ptr->is_dead) {
+    if (!ninja_data || player_ptr->is_dead()) {
         return false;
     }
 

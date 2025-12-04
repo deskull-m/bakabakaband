@@ -19,7 +19,7 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
         return;
     }
 
-    if (player_ptr->muta.any() || has_good_luck(player_ptr)) {
+    if (player_ptr->muta.any() || has_good_luck(player_ptr) || has_pervert_attraction(player_ptr)) {
         if (player_ptr->muta.has(PlayerMutationType::SPIT_ACID)) {
             fprintf(out_file, _(" あなたは酸を吹きかけることができる。(ダメージ レベルX1)\n", " You can spit acid (dam lvl).\n"));
         }
@@ -170,6 +170,18 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
 
         if (player_ptr->muta.has(PlayerMutationType::FLATULENT)) {
             fprintf(out_file, _(" あなたは制御できない強烈な屁をこく。\n", " You are subject to uncontrollable flatulence.\n"));
+        }
+
+        if (player_ptr->muta.has(PlayerMutationType::IKISUGI)) {
+            fprintf(out_file, _(" あなたは時々イキすぎる。\n", " You sometimes climax too much.\n"));
+        }
+
+        if (player_ptr->muta.has(PlayerMutationType::ATT_NASTY)) {
+            fprintf(out_file, _(" あなたはクッソ汚い輩を引きつける。\n", " You attract nasty creatures.\n"));
+        }
+
+        if (has_pervert_attraction(player_ptr)) {
+            fprintf(out_file, _(" あなたは変質者を引きつける。\n", " You attract perverts.\n"));
         }
 
         if (player_ptr->muta.has(PlayerMutationType::PROD_MANA)) {
@@ -342,6 +354,10 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
 
         if (player_ptr->muta.has(PlayerMutationType::SHORT_LEG)) {
             fprintf(out_file, _(" あなたの足は短い突起だ。(加速-3)\n", " Your legs are short stubs (-3 speed).\n"));
+        }
+
+        if (player_ptr->muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+            fprintf(out_file, _(" あなたは上半身に比べて下半身が貧弱すぎる。(腕力+2, 加速-2)\n", " Your lower body is too weak compared to your upper body (+2 STR, -2 speed).\n"));
         }
 
         if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {

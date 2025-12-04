@@ -1,5 +1,6 @@
 #pragma once
 
+#include "combat/martial-arts-style.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/trc-types.h"
 #include "player-ability/player-ability-types.h"
@@ -9,6 +10,7 @@
 #include "player/player-personality-types.h"
 #include "player/player-sex.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
@@ -17,6 +19,11 @@
 #include <array>
 #include <map>
 #include <string>
+
+// Forward declarations
+struct player_race_info;
+struct player_personality;
+struct player_class_info;
 
 enum class INCIDENT {
     WALK = 0,
@@ -44,7 +51,7 @@ enum class ElementRealmType;
 enum class FixedArtifactId : short;
 enum class ItemKindType : short;
 enum class MimicKindType;
-enum class MonraceId : short;
+enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
 enum class RealmType;
@@ -53,10 +60,11 @@ class Direction;
 class FloorType;
 class ItemEntity;
 class TimedEffects;
-class PlayerType {
+class PlayerType : public CreatureEntity {
 public:
     PlayerType();
     void plus_incident(INCIDENT incidentID, int num);
+    void plus_incident_tree(const std::string &incident_id, int num);
     bool is_true_winner() const;
 
     FloorType *current_floor_ptr{};
@@ -83,7 +91,8 @@ public:
     int16_t prestige{}; /* Prestige */
     int32_t death_count{}; /* Death count */
 
-    std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント */
+    std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
+    std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
     PRICE au{}; /* Current Gold */
 
@@ -206,15 +215,17 @@ public:
     std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp{}; /* Proficiency of weapons */
     std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp_max{}; /* Maximum proficiency of weapons */
     std::map<PlayerSkillKindType, SUB_EXP> skill_exp{}; /* Proficiency of misc. skill */
+    MartialArtsStyleType martial_arts_style{ MartialArtsStyleType::TRADITIONAL }; /* Martial arts fighting style */
 
     ClassSpecificData class_specific_data;
 
     int player_hp[PY_MAX_LEVEL]{};
     std::string died_from{}; /* What killed the player */
+    MonraceId killer_monrace_id{}; /* MonraceId of the killer */
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
 
-    bool is_dead{}; /* Player is dead */
+    bool is_dead_{}; /* Player is dead */
     bool now_damaged{};
     bool ambush_flag{};
 
@@ -237,13 +248,13 @@ public:
 
     bool autopick_autoregister{}; /* auto register is in-use or not */
 
-    std::vector<std::shared_ptr<ItemEntity>> inventory{}; /* The player's inventory */
-    int16_t inven_cnt{}; /* Number of items in inventory */
-    int16_t equip_cnt{}; /* Number of items in equipment */
-
     /*** Temporary fields ***/
 
     bool select_ring_slot{};
+
+    const player_race_info *race{}; /* Current race info */
+    const player_personality *personality{}; /* Current personality info (accessed like reference) */
+    const player_class_info *pclass_ref{}; /* Current class info (accessed like reference) */
 
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */
@@ -417,7 +428,7 @@ public:
     bool is_wielding(FixedArtifactId fa_id) const;
     std::string decrease_ability_random();
     std::string decrease_ability_all();
-    Pos2D get_position() const;
+    Pos2D get_position() const override;
     Pos2D get_old_position() const;
     Pos2D get_neighbor(int dir) const;
     Pos2D get_neighbor(const Direction &dir) const;
@@ -428,6 +439,20 @@ public:
     bool in_saved_floor() const;
     int calc_life_rating() const;
     bool try_resist_eldritch_horror() const;
+
+    // CreatureEntityインターフェースの実装
+    POSITION get_x() const override;
+    POSITION get_y() const override;
+    int get_current_hp() const override;
+    int get_max_hp() const override;
+    int get_speed() const override;
+    bool is_valid() const override;
+    bool is_dead() const override;
+    FloorType *get_floor() const override;
+    ACTION_ENERGY get_energy_need() const override;
+    void set_energy_need(ACTION_ENERGY energy) override;
+    int get_level() const override;
+    bool is_player() const override;
 
 private:
     std::shared_ptr<TimedEffects> timed_effects;

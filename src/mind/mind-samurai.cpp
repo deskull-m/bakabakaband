@@ -292,7 +292,7 @@ static void hissatsu_keiun_kininken(PlayerType *player_ptr, samurai_slaying_type
         return;
     }
 
-    if (samurai_slaying_ptr->r_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
+    if (samurai_slaying_ptr->m_ptr->is_undead()) {
         if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
 
@@ -524,7 +524,7 @@ void mineuchi(PlayerType *player_ptr, player_attack_type *pa_ptr)
 void musou_counterattack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
     const auto is_musou = PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
-    if ((!player_ptr->counter && !is_musou) || !monap_ptr->alive || player_ptr->is_dead || !monap_ptr->m_ptr->ml || (player_ptr->csp <= 7)) {
+    if ((!player_ptr->counter && !is_musou) || !monap_ptr->alive || player_ptr->is_dead() || !monap_ptr->m_ptr->ml || (player_ptr->csp <= 7)) {
         return;
     }
 

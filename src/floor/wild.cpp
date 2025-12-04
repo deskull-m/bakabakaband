@@ -9,6 +9,7 @@
  */
 
 #include "floor/wild.h"
+#include "alliance/alliance.h"
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "game-option/birth-options.h"
@@ -20,6 +21,7 @@
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-remover.h"
 #include "monster-floor/monster-summon.h"
+#include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster/monster-util.h"
 #include "player-status/player-energy.h"
@@ -32,6 +34,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/enums/terrain/wilderness-terrain.h"
 #include "system/floor/floor-info.h"
@@ -50,6 +53,7 @@
 #include <map>
 #include <numeric>
 #include <utility>
+#include <vector>
 
 constexpr auto SUM_TERRAIN_PROBABILITIES = 18;
 
@@ -375,6 +379,42 @@ static void generate_wild_monsters(PlayerType *player_ptr)
     constexpr auto num_ambush_monsters = 100;
     constexpr auto num_normal_monsters = 25;
     const auto lim = generate_encounter ? num_ambush_monsters : num_normal_monsters;
+
+    // 襲撃時はアライアンス固有のモンスターを生成
+    if (generate_encounter) {
+        // TODO: 広域マップの領域ごとのアライアンス情報を取得する機能が未実装のため、
+        // 今回はランダムなアライアンスからモンスターを選択する仮実装
+        // 将来的には WildernessGrid に alliance_id を追加する予定
+
+        // 仮実装: テスト用にいくつかの代表的なアライアンスからランダムに選択
+        std::vector<AllianceType> test_alliances = {
+            AllianceType::AMBER,
+            AllianceType::COCHAOS,
+            AllianceType::JURAL
+        };
+
+        auto test_alliance_type = test_alliances[randint0(static_cast<int>(test_alliances.size()))];
+        auto alliance_it = alliance_list.find(test_alliance_type);
+
+        if (alliance_it != alliance_list.end()) {
+            const auto &alliance = alliance_it->second;
+            int impression = alliance->calcImpressionPoint(player_ptr);
+            auto ambush_monsters = alliance->get_ambush_monsters(player_ptr, impression);
+
+            // アライアンス固有のモンスターを配置
+            if (!ambush_monsters.empty()) {
+                for (const auto &monster_id : ambush_monsters) {
+                    for (int i = 0; i < 3; i++) { // 各モンスターを3体ずつ配置
+                        auto y = randint0(player_ptr->current_floor_ptr->height);
+                        auto x = randint0(player_ptr->current_floor_ptr->width);
+                        (void)place_monster_one(player_ptr, y, x, monster_id, PM_ALLOW_GROUP);
+                    }
+                }
+            }
+        }
+    }
+
+    // 通常のランダムモンスター生成（襲撃時も追加で生成）
     for (auto i = 0; i < lim; i++) {
         BIT_FLAGS mode = 0;
         if (!(generate_encounter || (one_in_(2) && (!player_ptr->town_num)))) {

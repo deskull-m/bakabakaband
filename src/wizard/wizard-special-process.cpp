@@ -606,7 +606,7 @@ void wiz_reset_race(PlayerType *player_ptr)
     }
 
     player_ptr->prace = *chosen_race;
-    rp_ptr = &race_info[enum2i(player_ptr->prace)];
+    player_ptr->race = &race_info[enum2i(player_ptr->prace)];
     change_birth_flags();
     handle_stuff(player_ptr);
 }
@@ -633,6 +633,7 @@ void wiz_reset_class(PlayerType *player_ptr)
 
     player_ptr->pclass = *chosen_class;
     cp_ptr = &class_info.at(player_ptr->pclass);
+    player_ptr->pclass_ref = &class_info.at(player_ptr->pclass);
     mp_ptr = &class_magics_info[enum2i(player_ptr->pclass)];
     PlayerClass(player_ptr).init_specific_data();
     PlayerRealm pr(player_ptr);
@@ -817,7 +818,7 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
     world.noscore |= 0x0001;
     msg_erase();
 
-    player_ptr->is_dead = false;
+    player_ptr->is_dead_ = false;
     (void)life_stream(player_ptr, false, false);
     (void)restore_mana(player_ptr, true);
     (void)recall_player(player_ptr, 0);

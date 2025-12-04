@@ -3,6 +3,7 @@
 #include "player-base/player-race.h"
 #include "system/player-type-definition.h"
 
+#include "game-option/birth-options.h"
 /*!
  * @brief カインのアライアンス印象値を計算する
  * パトロンリストでのboost_statがA_STRなので、STRベースの印象値計算を行う

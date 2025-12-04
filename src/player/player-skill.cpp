@@ -217,6 +217,10 @@ concptr PlayerSkill::skill_name(PlayerSkillKindType skill)
         return _("スカトロジー", "Scatology");
     case PlayerSkillKindType::ARMOR:
         return _("装甲", "Armor");
+    case PlayerSkillKindType::EVASION:
+        return _("回避", "Evasion");
+    case PlayerSkillKindType::ASSHOLE:
+        return _("尻の穴", "Asshole");
     case PlayerSkillKindType::MAX:
         break;
     }
@@ -307,6 +311,22 @@ void PlayerSkill::gain_armor_skill_exp()
     if (this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::ARMOR]) {
         const GainAmountList gain_amount_list{ 50, 5, 1, (one_in_(3) ? 1 : 0) };
         gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR], gain_amount_list);
+    }
+}
+
+void PlayerSkill::gain_evasion_skill_exp()
+{
+    if (this->player_ptr->skill_exp[PlayerSkillKindType::EVASION] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::EVASION]) {
+        const GainAmountList gain_amount_list{ 40, 4, 1, (one_in_(4) ? 1 : 0) };
+        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::EVASION], gain_amount_list);
+    }
+}
+
+void PlayerSkill::gain_asshole_skill_exp()
+{
+    if (this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::ASSHOLE]) {
+        const GainAmountList gain_amount_list{ 50, 5, 2, (one_in_(3) ? 1 : 0) };
+        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE], gain_amount_list);
     }
 }
 

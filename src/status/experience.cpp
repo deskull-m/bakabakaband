@@ -9,7 +9,7 @@
  */
 void gain_exp_64(PlayerType *player_ptr, int32_t amount, uint32_t amount_frac)
 {
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return;
     }
     if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {

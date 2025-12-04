@@ -124,9 +124,9 @@ static void display_basic_stat_value(PlayerType *player_ptr, int stat_num, int r
 {
     c_put_str(TERM_L_BLUE, format("%3d", r_adj), row + stat_num + 1, stat_col + 13);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)cp_ptr->c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
+    c_put_str(TERM_L_BLUE, format("%3d", (int)(*player_ptr->pclass_ref).c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)ap_ptr->a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
+    c_put_str(TERM_L_BLUE, format("%3d", (int)(*player_ptr->personality).a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
 
     c_put_str(TERM_L_BLUE, format("%3d", (int)e_adj), row + stat_num + 1, stat_col + 22);
 
@@ -146,12 +146,12 @@ static void display_basic_stat_value(PlayerType *player_ptr, int stat_num, int r
 static void process_stats(PlayerType *player_ptr, int row, int stat_col)
 {
     for (int i = 0; i < A_MAX; i++) {
-        int r_adj = player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).r_adj[i] : rp_ptr->r_adj[i];
+        int r_adj = player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).r_adj[i] : player_ptr->race->r_adj[i];
         int e_adj = calc_basic_stat(player_ptr, i);
         r_adj += compensate_special_race(player_ptr, i);
         e_adj -= r_adj;
-        e_adj -= cp_ptr->c_adj[i];
-        e_adj -= ap_ptr->a_adj[i];
+        e_adj -= (*player_ptr->pclass_ref).c_adj[i];
+        e_adj -= (*player_ptr->personality).a_adj[i];
 
         display_basic_stat_name(player_ptr, i, row, stat_col);
         if (player_ptr->stat_max[i] == player_ptr->stat_max_max[i]) {

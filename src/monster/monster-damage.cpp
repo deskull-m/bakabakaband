@@ -8,6 +8,8 @@
 #include "avatar/avatar-changer.h"
 #include "core/speed-table.h"
 #include "core/stuff-handler.h"
+#include "effect/effect-characteristics.h"
+#include "effect/effect-processor.h"
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
 #include "io/files-util.h"
@@ -20,16 +22,21 @@
 #include "monster-floor/monster-remover.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
+#include "monster-race/monster-kind-type-name.h"
 #include "monster-race/monster-race-hook.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "mutation/mutation-investor-remover.h"
 #include "object-enchant/object-curse.h"
+#include "player/eldritch-horror.h"
 #include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "spell-kind/spells-random.h"
+#include "spell-kind/spells-teleport.h"
+#include "status/bad-status-setter.h"
 #include "status/experience.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -145,6 +152,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     this->increase_kill_numbers();
     const auto m_name = monster_desc(this->player_ptr, monster, MD_TRUE_NAME);
     this->death_amberites(m_name);
+    this->death_choasians(m_name);
     this->dying_scream(m_name);
     AvatarChanger ac(this->player_ptr, monster);
     ac.change_virtue();
@@ -208,6 +216,24 @@ void MonsterDamageProcessor::increase_kill_numbers()
     auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
     auto &monrace = monster.get_real_monrace();
     monrace.increment_akills();
+    this->player_ptr->plus_incident_tree("KILL", 1);
+
+    // Record kills by MonsterKindType
+    for (size_t i = 0; i < static_cast<size_t>(MonsterKindType::MAX); i++) {
+        const auto kind = static_cast<MonsterKindType>(i);
+        if (monrace.kind_flags.has(kind)) {
+            const std::string tag = get_monster_kind_type_tag(kind);
+            const std::string key = "KILL/RACE/" + tag;
+            this->player_ptr->plus_incident_tree(key, 1);
+        }
+    }
+
+    // Record kills by Alliance
+    if (monrace.alliance_idx != AllianceType::NONE) {
+        const std::string tag = get_alliance_type_tag(monrace.alliance_idx);
+        const std::string key = "KILL/ALLIANCE/" + tag;
+        this->player_ptr->plus_incident_tree(key, 1);
+    }
 
     const auto is_hallucinated = this->player_ptr->effects()->hallucination().is_hallucinated();
     if (((monster.ml == 0) || is_hallucinated) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
@@ -245,6 +271,47 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
     do {
         stop_ty = activate_ty_curse(this->player_ptr, stop_ty, &count);
     } while (--curses);
+}
+
+void MonsterDamageProcessor::death_choasians(std::string_view m_name)
+{
+    const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto &r_ref = monster.get_real_monrace();
+    if (r_ref.kind_flags.has_not(MonsterKindType::CHOASIAN) || one_in_(3)) {
+        return;
+    }
+
+    auto chaos_effects = 2 + randint1(3);
+    msg_format(_("%s^は死の際に混沌の力を解き放った！", "%s^ unleashes chaotic forces upon death!"), m_name.data());
+
+    // 混沌の効果：装備品の変化、テレポート、変身、突然変異など
+    for (auto i = 0; i < chaos_effects; i++) {
+        switch (randint1(5)) {
+        case 1:
+            // 装備品のランダムな変化
+            curse_equipment(this->player_ptr, 50, 25);
+            break;
+        case 2:
+            // テレポート
+            teleport_player(this->player_ptr, 100, TELEPORT_NONMAGICAL);
+            break;
+        case 3:
+            // 一時的な混乱
+            sanity_blast(player_ptr, m_idx);
+            break;
+        case 4:
+            // 突然変異のチャンス
+            if (one_in_(3)) {
+                gain_mutation(this->player_ptr, 0);
+            }
+            break;
+        case 5:
+            // ランダムな属性ダメージ
+            project(this->player_ptr, 0, 2, this->player_ptr->y, this->player_ptr->x,
+                randint1(100), static_cast<AttributeType>(randint1(15) + 1), PROJECT_KILL);
+            break;
+        }
+    }
 }
 
 void MonsterDamageProcessor::dying_scream(std::string_view m_name)
@@ -430,7 +497,8 @@ void MonsterDamageProcessor::add_monster_fear()
     }
 
     const auto &monrace = monster.get_monrace();
-    if (monster.is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+    if (monster.is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) ||
+        monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
         return;
     }
 
@@ -470,6 +538,33 @@ void MonsterDamageProcessor::process_masochist_reaction()
             if (monster.ml) {
                 msg_format(_("%s^は苦痛に悦んでいる！", "%s^ seems to enjoy the pain!"), monster.get_monrace().name.data());
             }
+        }
+    }
+}
+
+/*!
+ * @brief サディストモンスターの特殊反応処理
+ * @details サディストは他者に苦痛を与えると興奮し、攻撃力が一時的に上昇する
+ */
+void MonsterDamageProcessor::process_sadist_reaction()
+{
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+    const auto &monrace = monster.get_monrace();
+
+    if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
+        return;
+    }
+
+    // SADISTモンスターがプレイヤーにダメージを与えた場合の興奮状態
+    if (this->dam > 0 && one_in_(4)) {
+        (void)set_monster_monfear(this->player_ptr, this->m_idx, 0);
+        *this->fear = false;
+
+        // 一時的な加速効果付与（興奮状態）
+        (void)set_monster_fast(this->player_ptr, this->m_idx, monster.get_remaining_acceleration() + 100);
+
+        if (monster.ml) {
+            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
         }
     }
 }

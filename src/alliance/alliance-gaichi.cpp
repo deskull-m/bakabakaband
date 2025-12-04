@@ -1,4 +1,5 @@
 #include "alliance/alliance-gaichi.h"
+#include "game-option/birth-options.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -8,6 +9,10 @@ int AllianceGaichi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_pt
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 30, 4);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
     impression -= MonraceList::get_instance().get_monrace(MonraceId::BIO_CORE).r_pkills * 1500;
     impression -= MonraceList::get_instance().get_monrace(MonraceId::GAICHI_MOA).r_pkills * 1200;
     impression -= MonraceList::get_instance().get_monrace(MonraceId::SS_80_X_ATRAS).r_pkills * 20;

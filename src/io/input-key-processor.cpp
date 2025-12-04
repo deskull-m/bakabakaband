@@ -8,6 +8,7 @@
 #include "autopick/autopick-pref-processor.h"
 #include "cmd-action/cmd-hissatsu.h"
 #include "cmd-action/cmd-mane.h"
+#include "cmd-action/cmd-martial-arts.h"
 #include "cmd-action/cmd-mind.h"
 #include "cmd-action/cmd-move.h"
 #include "cmd-action/cmd-open-close.h"
@@ -95,6 +96,7 @@
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
 #include "wizard/cmd-wizard.h"
+#include "wizard/wizard-mutation.h"
 #include "world/world.h"
 #include <string>
 #include <tl/optional.hpp>
@@ -202,6 +204,13 @@ void process_command(PlayerType *player_ptr)
     case KTRL('A'): {
         if (enter_debug_mode(floor)) {
             do_cmd_debug(player_ptr);
+        }
+
+        break;
+    }
+    case KTRL('Y'): {
+        if (enter_debug_mode(floor)) {
+            wiz_mutation_menu(player_ptr);
         }
 
         break;
@@ -378,6 +387,10 @@ void process_command(PlayerType *player_ptr)
             do_cmd_study(player_ptr);
         }
 
+        break;
+    }
+    case 'X': {
+        do_cmd_martial_arts_style(player_ptr);
         break;
     }
     case 'b': {

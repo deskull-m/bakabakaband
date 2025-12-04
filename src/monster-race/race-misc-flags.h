@@ -28,8 +28,11 @@ enum class MonsterMiscType {
     HOME_ONLY = 24,
     SCATOLOGIST = 25,
     MASOCHIST = 26,
-    BREAK_DOWN = 27,
-    NO_WAIFUZATION = 28,
+    SADIST = 27,
+    BREAK_DOWN = 28,
+    NO_WAIFUZATION = 29,
+    DIURNAL = 30,
+    NOCTURNAL = 31,
     MAX
 };
 

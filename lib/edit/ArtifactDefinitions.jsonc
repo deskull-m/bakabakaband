@@ -11258,6 +11258,34 @@
       "en": ""
     },
     "activate": "THE_WORLD"
+  },
+  {
+    "id": 294,
+    "name": {
+      "ja": "ブラギガスあきの",
+      "en": ""
+    },
+    "base_item": {
+      "type_value": 41,
+      "subtype_value": 11
+    },
+    "parameter_value": -3,
+    "level": 20,
+    "rarity": 6,
+    "weight": 100,
+    "cost": 0,
+    "base_ac": 0,
+    "base_dice": "1d1",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "flags": [
+      "PERMA_CURSE"
+    ],
+    "flavor": {
+      "ja": "それはお尻に挿れると楽しい。らしい。知らんわ。",
+      "en": ""
+    }
   }
 ]
 }

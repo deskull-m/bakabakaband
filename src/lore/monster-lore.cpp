@@ -90,6 +90,34 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::SKELETON);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::CANCER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::CANCER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FUNGAS);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::TURTLE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::TURTLE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MIMIC)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MIMIC);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::IXITXACHITL);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::NAGA)) {
+        lore_ptr->kind_flags.set(MonsterKindType::NAGA);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::PERVERT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::PERVERT);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::EVIL)) {
         lore_ptr->kind_flags.set(MonsterKindType::EVIL);
     }
@@ -150,6 +178,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::WARRIOR);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SOLDIER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SOLDIER);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ROGUE)) {
         lore_ptr->kind_flags.set(MonsterKindType::ROGUE);
     }
@@ -170,8 +202,20 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::RANGER);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GRANDMA)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GRANDMA);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::WEREWOLF)) {
+        lore_ptr->kind_flags.set(MonsterKindType::WEREWOLF);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SAMURAI)) {
         lore_ptr->kind_flags.set(MonsterKindType::SAMURAI);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::PAPER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::PAPER);
     }
 
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
@@ -218,8 +262,24 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::PUYO);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::INSECT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::INSECT);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ANGEL)) {
         lore_ptr->kind_flags.set(MonsterKindType::ANGEL);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SLUG)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SLUG);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::EYE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::EYE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ALIEN)) {
+        lore_ptr->kind_flags.set(MonsterKindType::ALIEN);
     }
 
     if (lore_ptr->r_ptr->misc_flags.has(MonsterMiscType::FORCE_DEPTH)) {
@@ -241,8 +301,199 @@ static void set_race_flags(lore_type *lore_ptr)
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::DOG)) {
         lore_ptr->kind_flags.set(MonsterKindType::DOG);
     }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::CAT)) {
         lore_ptr->kind_flags.set(MonsterKindType::CAT);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::RABBIT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::RABBIT);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::PEASANT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::PEASANT);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::RABBLE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::RABBLE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::NOBLE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::NOBLE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BEAST)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BEAST);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::LEECH)) {
+        lore_ptr->kind_flags.set(MonsterKindType::LEECH);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::JELLYFISH)) {
+        lore_ptr->kind_flags.set(MonsterKindType::JELLYFISH);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::CITIZEN)) {
+        lore_ptr->kind_flags.set(MonsterKindType::CITIZEN);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::TREEFOLK)) {
+        lore_ptr->kind_flags.set(MonsterKindType::TREEFOLK);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::VIRUS)) {
+        lore_ptr->kind_flags.set(MonsterKindType::VIRUS);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SPHINX)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SPHINX);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SCORPION)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SCORPION);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MINDCRAFTER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MINDCRAFTER);
+    }
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::TANUKI)) {
+        lore_ptr->kind_flags.set(MonsterKindType::TANUKI);
+    }
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::CHAMELEON)) {
+        lore_ptr->kind_flags.set(MonsterKindType::CHAMELEON);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::APE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::APE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::HORSE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::HORSE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FROG)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FROG);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BEHOLDER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BEHOLDER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::YEEK)) {
+        lore_ptr->kind_flags.set(MonsterKindType::YEEK);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::AQUATIC_MAMMAL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::AQUATIC_MAMMAL);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FISH)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FISH);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BIRD)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BIRD);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::WALL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::WALL);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::PLANT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::PLANT);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FUNGUS)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FUNGUS);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::TURTLE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::TURTLE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SNAKE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SNAKE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FAIRY)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FAIRY);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::VAMPIRE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::VAMPIRE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BEAR)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BEAR);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::VORTEX)) {
+        lore_ptr->kind_flags.set(MonsterKindType::VORTEX);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::OOZE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::OOZE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::DINOSAUR)) {
+        lore_ptr->kind_flags.set(MonsterKindType::DINOSAUR);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::LICH)) {
+        lore_ptr->kind_flags.set(MonsterKindType::LICH);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GHOST)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GHOST);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BERSERK)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BERSERK);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::EXPLOSIVE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::EXPLOSIVE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::RAT)) {
+        lore_ptr->kind_flags.set(MonsterKindType::RAT);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MINOTAUR)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MINOTAUR);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SKAVEN)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SKAVEN);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::KOBOLD)) {
+        lore_ptr->kind_flags.set(MonsterKindType::KOBOLD);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::OGRE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::OGRE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::BOVINE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::BOVINE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MERFOLK)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MERFOLK);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SHARK)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SHARK);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::HYDRA)) {
+        lore_ptr->kind_flags.set(MonsterKindType::HYDRA);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SHIP)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SHIP);
     }
 }
 

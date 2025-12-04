@@ -1,5 +1,9 @@
 #include "alliance/alliance-fingolfin-noldor.h"
 #include "alliance/alliance.h"
+#include "game-option/birth-options.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -13,6 +17,11 @@ int AllianceFingolfinNoldor::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 17, 24);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
+
     return impression;
 }
 
@@ -30,10 +39,10 @@ void AllianceFingolfinNoldor::panishment([[maybe_unused]] PlayerType &player_ptr
 /*!
  * @brief フィンゴルフィン統ノルドールアライアンスの壊滅判定
  * @return 壊滅しているかどうか
- * @details 現在は空実装
+ * @details 聡明の上級王『フィンゴルフィン』が存在しない場合に壊滅する
  */
 bool AllianceFingolfinNoldor::isAnnihilated()
 {
-    // TODO: フィンゴルフィン統ノルドールの壊滅条件を実装
-    return false;
+    // 聡明の上級王『フィンゴルフィン』が存在しない場合、フィンゴルフィン統ノルドールは壊滅する
+    return MonraceList::get_instance().get_monrace(MonraceId::FINGOLFIN).mob_num == 0;
 }

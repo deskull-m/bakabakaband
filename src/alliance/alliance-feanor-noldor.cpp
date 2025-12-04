@@ -1,5 +1,9 @@
 #include "alliance/alliance-feanor-noldor.h"
 #include "alliance/alliance.h"
+#include "game-option/birth-options.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -12,6 +16,11 @@ int AllianceFeanorNoldor::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 19, 26);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
+
     return impression;
 }
 
@@ -29,10 +38,10 @@ void AllianceFeanorNoldor::panishment([[maybe_unused]] PlayerType &player_ptr)
 /*!
  * @brief フェアノール統ノルドールアライアンスの壊滅判定
  * @return 壊滅しているかどうか
- * @details 現在は空実装
+ * @details 憤怒の上級王『フェアノール』が存在しない場合に壊滅する
  */
 bool AllianceFeanorNoldor::isAnnihilated()
 {
-    // TODO: フェアノール統ノルドールの壊滅条件を実装
-    return false;
+    // 憤怒の上級王『フェアノール』が存在しない場合、フェアノール統ノルドールは壊滅する
+    return MonraceList::get_instance().get_monrace(MonraceId::FEANOR).mob_num == 0;
 }

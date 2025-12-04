@@ -11,10 +11,15 @@
 #include "floor/floor-object.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
+#include "monster-floor/monster-summon.h"
+#include "monster-floor/place-monster-types.h"
 #include "object/tval-types.h"
 #include "player-status/player-energy.h"
+#include "player/player-damage.h"
 #include "spell-kind/spells-sight.h"
 #include "spell/spells-status.h"
+#include "spell/summon-types.h"
+#include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "sv-definition/sv-junk-types.h"
 #include "system/baseitem/baseitem-key.h"
@@ -229,7 +234,78 @@ static std::vector<TextCommand> get_text_commands()
                 // 実際の浣腸攻撃処理を実行
                 do_cmd_enema(player_ptr);
             },
-            _("浣腸", "Enema") }
+            _("浣腸", "Enema") },
+        { { "ひでぶ", "hidebu", "ヒデブ", "HIDEBU" },
+            [](PlayerType *player_ptr) {
+                // ひでぶコマンド - プレイヤーに重症の傷を与える
+                msg_print(_("ひでぶ！", "Hidebu!"));
+                msg_print(_("あなたは謎の力によって重傷を負った！", "You are seriously wounded by a mysterious force!"));
+
+                // 重症の傷（現在のHPの半分のダメージ）
+                int damage = player_ptr->chp / 2;
+                if (damage < 1)
+                    damage = 1;
+
+                // 最低でも50ポイントのダメージ、最大でも現HP-1まで
+                damage = std::max(damage, 50);
+                damage = std::min(damage, player_ptr->chp - 1);
+
+                take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
+
+                // HPが1未満にならないようにする
+                if (player_ptr->chp < 1) {
+                    player_ptr->chp = 1;
+                }
+
+                // 重傷状態を設定
+                auto cut_plus = PlayerCut::get_accumulation(100, 200);
+                if (cut_plus > 0) {
+                    (void)BadStatusSetter(player_ptr).mod_cut(cut_plus);
+                }
+
+                // 画面更新
+                auto &rfu = RedrawingFlagsUpdater::get_instance();
+                rfu.set_flag(MainWindowRedrawingFlag::HP);
+                rfu.set_flag(MainWindowRedrawingFlag::CUT);
+                handle_stuff(player_ptr);
+
+                // 警告メッセージ
+                msg_print(_("何ということをしたのだ...", "What have you done..."));
+
+                // 時間消費
+                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+            },
+            _("ひでぶ", "Hidebu") },
+        { { "しゃぶれよ", "shabureyо", "しゃぶれ", "shabare" },
+            [](PlayerType *player_ptr) {
+                // しゃぶれよコマンド - 敵対的ホモを召喚
+                msg_print(_("何がしゃぶれだあ、お前がしゃぶれよ", "What do you mean 'suck it', you suck it yourself!"));
+
+                // 敵対的ホモを召喚（HOMO_SEXUALフラグを持つモンスターを敵対的に召喚）
+                int count = 0;
+                for (int k = 0; k < 2 + randint1(3); k++) {
+                    // プレイヤー周辺に敵対的にホモを召喚
+                    if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->lev,
+                            SUMMON_HOMO, PM_NO_PET)) {
+                        count++;
+                    }
+                }
+
+                if (count > 0) {
+                    if (count == 1) {
+                        msg_print(_("敵対的なホモが現れた！", "A hostile homosexual appears!"));
+                    } else {
+                        msg_print(_("敵対的なホモたちが現れた！", "Hostile homosexuals appear!"));
+                    }
+                    msg_print(_("彼らは非常に怒っているようだ...", "They seem very angry..."));
+                } else {
+                    msg_print(_("何かが起こりそうだったが、何も起こらなかった。", "Something was about to happen, but nothing did."));
+                }
+
+                // 時間消費
+                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+            },
+            _("しゃぶれよ", "Suck it") }
     };
 }
 

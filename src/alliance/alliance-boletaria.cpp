@@ -1,6 +1,10 @@
 #include "alliance/alliance-boletaria.h"
+#include "game-option/birth-options.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
 /*!
@@ -36,8 +40,10 @@ void AllianceBoletaria::panishment([[maybe_unused]] PlayerType &player_ptr)
 /*!
  * @brief ボーレタリアのアライアンスが壊滅したかどうか判定する
  * @return 壊滅フラグ
+ * @details 老王『オーラント』が存在しない場合に壊滅する
  */
 bool AllianceBoletaria::isAnnihilated()
 {
-    return false;
+    // 老王『オーラント』が存在しない場合、ボーレタリアは壊滅する
+    return MonraceList::get_instance().get_monrace(MonraceId::OLD_KING_ALLANT).mob_num == 0;
 }

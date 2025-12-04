@@ -30,6 +30,10 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("CZ");
     case SUMMON_HYDRA:
         return monrace.symbol_char_is_any_of("M");
+    case SUMMON_FAIRY:
+        return monrace.kind_flags.has(MonsterKindType::FAIRY);
+    case SUMMON_APE:
+        return monrace.kind_flags.has(MonsterKindType::APE);
     case SUMMON_ANGEL:
         return monrace.symbol_char_is_any_of("A") && (monrace.kind_flags.has(MonsterKindType::EVIL) || monrace.kind_flags.has(MonsterKindType::GOOD));
     case SUMMON_DEMON:
@@ -46,6 +50,8 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("UHB") && monrace.kind_flags.has(MonsterKindType::DEMON);
     case SUMMON_AMBERITES:
         return monrace.kind_flags.has(MonsterKindType::AMBERITE);
+    case SUMMON_CHOASIANS:
+        return monrace.kind_flags.has(MonsterKindType::CHOASIAN);
     case SUMMON_UNIQUE:
         return monrace.kind_flags.has(MonsterKindType::UNIQUE);
     case SUMMON_MOLD:
@@ -60,6 +66,18 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("!?=$|");
     case SUMMON_GOLEM:
         return monrace.symbol_char_is_any_of("g");
+    case SUMMON_CATS:
+        return monrace.kind_flags.has(MonsterKindType::CAT);
+    case SUMMON_PUYO:
+        return monrace.kind_flags.has(MonsterKindType::PUYO);
+    case SUMMON_HOMO:
+        return monrace.kind_flags.has(MonsterKindType::HOMO_SEXUAL);
+    case SUMMON_PERVERTS:
+        return monrace.kind_flags.has(MonsterKindType::PERVERT);
+    case SUMMON_WALL:
+        return monrace.kind_flags.has(MonsterKindType::WALL);
+    case SUMMON_INSECT:
+        return monrace.kind_flags.has(MonsterKindType::INSECT);
     case SUMMON_CYBER:
         return monrace.symbol_char_is_any_of("U") && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
     case SUMMON_KIN: {
@@ -101,8 +119,6 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.symbol_char_is_any_of("v");
     case SUMMON_HYBRID:
         return monrace.symbol_char_is_any_of("H");
-    case SUMMON_BIRD:
-        return monrace.symbol_char_is_any_of("B");
     case SUMMON_KAMIKAZE:
         return monrace.is_explodable();
     case SUMMON_KAMIKAZE_LIVING: {
@@ -163,6 +179,9 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
     }
     case SUMMON_KACHO: {
         return r_idx == MonraceId::KACHO_CAT || r_idx == MonraceId::KACHO_ANGEL;
+    }
+    case SUMMON_NASTY: {
+        return monrace.kind_flags.has(MonsterKindType::NASTY);
     }
 
     default:

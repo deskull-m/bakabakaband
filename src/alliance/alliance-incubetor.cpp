@@ -3,6 +3,7 @@
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
+#include "game-option/birth-options.h"
 /*!
  * @brief インキュベーターアライアンスの印象ポイント計算
  * @param creature_ptr プレイヤー情報
@@ -12,6 +13,10 @@
 int AllianceIncubetor::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
     // 魔法少女的な存在として、魔力や知力を重視
     impression += Alliance::calcPlayerPower(*creature_ptr, 12, 15);
     return impression;

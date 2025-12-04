@@ -3,6 +3,9 @@
 #include "util/flag-group.h"
 #include <map>
 #include <string>
+#include <vector>
+
+enum class MonraceId : int16_t;
 
 typedef int ALLIANCE_ID;
 class PlayerType;
@@ -76,6 +79,10 @@ enum class AllianceType : int {
     BOLETARIA = 65, //!< ボーレタリア
     IDE = 66, //!< イデ
     NANTO_ORTHODOX = 67, //!< 南斗正統派
+    SEITEI = 68, //!< 聖帝軍
+    DIABOLIQUE = 69, //!< デアボリカ
+    SOUKAIYA = 70, //!< ソウカイヤ
+    YEEK_KINGDOM = 71, //!< イークの王国
     MAX,
 };
 
@@ -91,15 +98,38 @@ public:
     std::string tag; //!< タグ
     std::string name; //!< 陣営名
     int64_t base_power; //!< 基本勢力指数
-    Alliance(AllianceType id, std::string tag, std::string name, int64_t base_power);
+    int64_t natural_recovery; //!< 自然回復量（10ターンごと）
+    Alliance(AllianceType id, std::string tag, std::string name, int64_t base_power, int64_t natural_recovery = 0);
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
     virtual bool isFriendly(PlayerType *creature_ptr) const;
     virtual int calcImpressionPoint(PlayerType *creature_ptr) const = 0;
     virtual ~Alliance() = default;
-    int64_t AnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
+    int64_t AnnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
     virtual void panishment(PlayerType &player_ptr);
+    virtual std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const;
+    virtual std::string get_ambush_message() const;
+
+    // base_powerを変更するメソッド
+    void set_base_power(int64_t new_power)
+    {
+        base_power = new_power;
+    }
+    int64_t get_base_power() const
+    {
+        return base_power;
+    }
+
+    // natural_recoveryを変更するメソッド
+    void set_natural_recovery(int64_t new_recovery)
+    {
+        natural_recovery = new_recovery;
+    }
+    int64_t get_natural_recovery() const
+    {
+        return natural_recovery;
+    }
 
 protected:
     static int calcPlayerPower(PlayerType const &player_ptr, const int bias, const int base_level);
@@ -110,6 +140,7 @@ protected:
 #include "alliance-ashina-clan.h"
 #include "alliance-avarin-lords.h"
 #include "alliance-binzyou-buddhism.h"
+#include "alliance-diabolique.h"
 #include "alliance-dokachans.h"
 #include "alliance-gaichi.h"
 #include "alliance-ge-orlic.h"
@@ -125,6 +156,9 @@ protected:
 #include "alliance-pure-mirrodin.h"
 #include "alliance-suren.h"
 #include "alliance-turban-kids.h"
+#include "alliance-yeek-kingdom.h"
 
 extern const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list;
 extern const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression;
+
+std::string get_alliance_type_tag(AllianceType alliance_type);

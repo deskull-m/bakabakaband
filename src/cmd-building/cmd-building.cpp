@@ -21,8 +21,6 @@
 #include "core/show-file.h"
 #include "core/special-internal-keys.h"
 #include "core/stuff-handler.h"
-#include "core/window-redrawer.h"
-#include "floor/floor-events.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/wild.h"
 #include "io/input-key-acceptor.h"
@@ -345,6 +343,14 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         do_cmd_store(player_ptr, StoreSaleType::MUSEUM);
         world.character_icky_depth = 1;
         return false;
+    case BACT_SHOP_MELINLAITO_POTION:
+        do_cmd_store(player_ptr, StoreSaleType::MELINLAITO);
+        world.character_icky_depth = 1;
+        return false;
+    case BACT_SHOP_HUNAHYANDA_WEAPON:
+        do_cmd_store(player_ptr, StoreSaleType::HUNAHYANDA);
+        world.character_icky_depth = 1;
+        return false;
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid building action is specified!");
     }
@@ -409,8 +415,8 @@ void do_cmd_building(PlayerType *player_ptr)
 
     player_ptr->oldpy = player_ptr->y;
     player_ptr->oldpx = player_ptr->x;
-    forget_lite(floor);
-    forget_view(floor);
+    floor.forget_lite();
+    floor.forget_view();
     world.character_icky_depth++;
 
     command_arg = 0;

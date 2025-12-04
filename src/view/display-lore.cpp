@@ -15,6 +15,7 @@
 #include "lore/monster-lore.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-flags.h"
+#include "monster-race/race-era-flags.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -273,107 +274,572 @@ void display_monster_never_move(lore_type *lore_ptr)
 
 void display_monster_kind(lore_type *lore_ptr)
 {
-    if (lore_ptr->kind_flags.has_none_of({ MonsterKindType::DRAGON, MonsterKindType::DEMON,
-            MonsterKindType::GIANT, MonsterKindType::TROLL, MonsterKindType::ORC, MonsterKindType::ANGEL,
-            MonsterKindType::QUANTUM, MonsterKindType::HUMAN, MonsterKindType::ELDRAZI, MonsterKindType::QUYLTHLUG, MonsterKindType::ELF,
-            MonsterKindType::DWARF, MonsterKindType::HOBBIT, MonsterKindType::SPIDER, MonsterKindType::TANK, MonsterKindType::ELEMENTAL,
-            MonsterKindType::GOLEM, MonsterKindType::PUYO, MonsterKindType::ROBOT, MonsterKindType::YAZYU,
-            MonsterKindType::DOG, MonsterKindType::CAT })) {
-        hooked_roff(_("モンスター", " creature"));
-        return;
+    if (lore_ptr->kind_flags.has(MonsterKindType::PAPER)) {
+        hook_c_roff(TERM_WHITE, _("紙で出来た", " made of paper"));
     }
+
+    bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {
         hook_c_roff(TERM_WHITE, _("エルドラージ", " eldrazi"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELF)) {
         hook_c_roff(TERM_GREEN, _("エルフ", " elf"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::DWARF)) {
         hook_c_roff(TERM_ORANGE, _("ドワーフ", " dwarf"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::HOBBIT)) {
         hook_c_roff(TERM_WHITE, _("ホビット", " hobbit"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG)) {
         hook_c_roff(TERM_RED, _("クイルスルグ", " quylthlug"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::SPIDER)) {
         hook_c_roff(TERM_SLATE, _("蜘蛛", " spider"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::DRAGON)) {
         hook_c_roff(TERM_ORANGE, _("ドラゴン", " dragon"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::DEMON)) {
         hook_c_roff(TERM_VIOLET, _("デーモン", " demon"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::GIANT)) {
         hook_c_roff(TERM_L_UMBER, _("巨人", " giant"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::TROLL)) {
         hook_c_roff(TERM_BLUE, _("トロル", " troll"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ORC)) {
         hook_c_roff(TERM_UMBER, _("オーク", " orc"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::HUMAN)) {
         hook_c_roff(TERM_L_WHITE, _("人間", " human"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::QUANTUM)) {
         hook_c_roff(TERM_VIOLET, _("量子生物", " quantum creature"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ANGEL)) {
         hook_c_roff(TERM_YELLOW, _("天使", " angel"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::TANK)) {
         hook_c_roff(TERM_SLATE, _("戦車", " tank"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELEMENTAL)) {
         hook_c_roff(TERM_ORANGE, _("エレメンタル", " elemental"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::GOLEM)) {
         hook_c_roff(TERM_ORANGE, _("ゴーレム", " golem"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::PUYO)) {
         hook_c_roff(TERM_WHITE, _("ぷよ", " puyo"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::INSECT)) {
+        hook_c_roff(TERM_UMBER, _("昆虫", " insect"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ROBOT)) {
         hook_c_roff(TERM_SLATE, _("ロボット", " robot"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::YAZYU)) {
         hook_c_roff(TERM_SLATE, _("野獣先輩", " Beast Senior"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::DOG)) {
         hook_c_roff(TERM_SLATE, _("犬", " dog"));
+        has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::CAT)) {
         hook_c_roff(TERM_SLATE, _("猫", " cat"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::RABBIT)) {
+        hook_c_roff(TERM_SLATE, _("兎", " rabbit"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::PEASANT)) {
+        hook_c_roff(TERM_UMBER, _("農民", " peasant"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::RABBLE)) {
+        hook_c_roff(TERM_L_DARK, _("賤民", " rabble"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::NOBLE)) {
+        hook_c_roff(TERM_VIOLET, _("貴族", " noble"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BEAST)) {
+        hook_c_roff(TERM_ORANGE, _("ビースト", " beast"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::LEECH)) {
+        hook_c_roff(TERM_L_RED, _("ヒル", " leech"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::JELLYFISH)) {
+        hook_c_roff(TERM_L_BLUE, _("クラゲ", " jellyfish"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::CITIZEN)) {
+        hook_c_roff(TERM_L_GREEN, _("市民", " citizen"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::TREEFOLK)) {
+        hook_c_roff(TERM_UMBER, _("ツリーフォーク", " treefolk"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::VIRUS)) {
+        hook_c_roff(TERM_L_GREEN, _("ウイルス", " virus"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SPHINX)) {
+        hook_c_roff(TERM_YELLOW, _("スフィンクス", " sphinx"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SCORPION)) {
+        hook_c_roff(TERM_L_UMBER, _("蜥", " scorpion"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MINDCRAFTER)) {
+        hook_c_roff(TERM_VIOLET, _("超能力者", " mindcrafter"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::TANUKI)) {
+        hook_c_roff(TERM_L_UMBER, _("狸", " tanuki"));
+        has_specific_kind = true;
+    }
+    if (lore_ptr->kind_flags.has(MonsterKindType::CHAMELEON)) {
+        hook_c_roff(TERM_L_GREEN, _("カメレオン", " chameleon"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::APE)) {
+        hook_c_roff(TERM_SLATE, _("類人猿", " ape"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HORSE)) {
+        hook_c_roff(TERM_UMBER, _("馬", " horse"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::DEER)) {
+        hook_c_roff(TERM_L_UMBER, _("鹿", " deer"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ELEPHANT)) {
+        hook_c_roff(TERM_SLATE, _("象", " elephant"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::LIZARD)) {
+        hook_c_roff(TERM_GREEN, _("トカゲ", " lizard"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::AVATAR)) {
+        hook_c_roff(TERM_VIOLET, _("アヴァター", " avatar"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::NIGHTSHADE)) {
+        hook_c_roff(TERM_L_DARK, _("ナイトシェード", " nightshade"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HIPPO)) {
+        hook_c_roff(TERM_SLATE, _("カバ", " hippo"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BAT)) {
+        hook_c_roff(TERM_L_DARK, _("コウモリ", " bat"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::PLANESWALKER)) {
+        hook_c_roff(TERM_VIOLET, _("プレインズウォーカー", " planeswalker"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BOAR)) {
+        hook_c_roff(TERM_UMBER, _("猪", " boar"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ARCHER)) {
+        hook_c_roff(TERM_BLUE, _("アーチャー", " archer"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FROG)) {
+        hook_c_roff(TERM_GREEN, _("カエル", " frog"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BEHOLDER)) {
+        hook_c_roff(TERM_VIOLET, _("ビホルダー", " beholder"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::YEEK)) {
+        hook_c_roff(TERM_YELLOW, _("イーク", " yeek"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::AQUATIC_MAMMAL)) {
+        hook_c_roff(TERM_L_BLUE, _("水棲哺乳類", " aquatic mammal"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FISH)) {
+        hook_c_roff(TERM_BLUE, _("魚類", " fish"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BIRD)) {
+        hook_c_roff(TERM_L_UMBER, _("鳥", " bird"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WALL)) {
+        hook_c_roff(TERM_L_DARK, _("壁", " wall"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::PLANT)) {
+        hook_c_roff(TERM_L_GREEN, _("植物", " plant"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FUNGUS)) {
+        hook_c_roff(TERM_YELLOW, _("菌類", " fungus"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::TURTLE)) {
+        hook_c_roff(TERM_L_BLUE, _("亀", " turtle"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SNAKE)) {
+        hook_c_roff(TERM_L_GREEN, _("蛇", " snake"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FAIRY)) {
+        hook_c_roff(TERM_VIOLET, _("妖精", " fairy"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::VAMPIRE)) {
+        hook_c_roff(TERM_L_DARK, _("吸血鬼", " vampire"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BEAR)) {
+        hook_c_roff(TERM_UMBER, _("熊", " bear"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::VORTEX)) {
+        hook_c_roff(TERM_L_BLUE, _("ボルテックス", " vortex"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::OOZE)) {
+        hook_c_roff(TERM_SLATE, _("ウーズ", " ooze"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::DINOSAUR)) {
+        hook_c_roff(TERM_UMBER, _("恐竜", " dinosaur"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::LICH)) {
+        hook_c_roff(TERM_L_DARK, _("リッチ", " lich"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::GHOST)) {
+        hook_c_roff(TERM_WHITE, _("幽霊", " ghost"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BERSERK)) {
+        hook_c_roff(TERM_RED, _("狂戦士", " berserk"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::EXPLOSIVE)) {
+        hook_c_roff(TERM_ORANGE, _("爆発物", " explosive"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::RAT)) {
+        hook_c_roff(TERM_L_UMBER, _("ネズミ", " rat"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MINOTAUR)) {
+        hook_c_roff(TERM_UMBER, _("ミノタウロス", " minotaur"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SKAVEN)) {
+        hook_c_roff(TERM_L_RED, _("スケイヴン", " skaven"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::KOBOLD)) {
+        hook_c_roff(TERM_ORANGE, _("コボルド", " kobold"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::OGRE)) {
+        hook_c_roff(TERM_RED, _("オーガ", " ogre"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::BOVINE)) {
+        hook_c_roff(TERM_L_UMBER, _("牛", " bovine"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MERFOLK)) {
+        hook_c_roff(TERM_L_BLUE, _("マーフォーク", " merfolk"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SHARK)) {
+        hook_c_roff(TERM_L_BLUE, _("サメ", " shark"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HYDRA)) {
+        hook_c_roff(TERM_L_GREEN, _("ヒドラ", " hydra"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SHIP)) {
+        hook_c_roff(TERM_UMBER, _("船舶", " ship"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SLUG)) {
+        hook_c_roff(TERM_L_UMBER, _("ナメクジ", " slug"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::EYE)) {
+        hook_c_roff(TERM_L_BLUE, _("目", " eye"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ALIEN)) {
+        hook_c_roff(TERM_L_GREEN, _("異星人", " alien"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::GRANDMA)) {
+        hook_c_roff(TERM_L_UMBER, _("ババア", " grandma"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
+        hook_c_roff(TERM_L_GREEN, _("菌類の", " fungus"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MIMIC)) {
+        hook_c_roff(TERM_YELLOW, _("ミミックの", " mimic"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
+        hook_c_roff(TERM_L_BLUE, _("イクシツザチトルの", " ixitxachitl"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::NAGA)) {
+        hook_c_roff(TERM_ORANGE, _("ナーガの", " naga"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::PERVERT)) {
+        hook_c_roff(TERM_VIOLET, _("変質者の", " pervert"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::DEEPONE)) {
+        hook_c_roff(TERM_L_BLUE, _("深きもの", " deep one"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::PHYREXIAN)) {
+        hook_c_roff(TERM_L_DARK, _("ファイレクシア人", " phyrexian"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HORROR)) {
+        hook_c_roff(TERM_RED, _("ホラー", " horror"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WORM)) {
+        hook_c_roff(TERM_YELLOW, _("ワーム", " worm"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::OCTOPUS)) {
+        hook_c_roff(TERM_BLUE, _("タコ", " octopus"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SQUID)) {
+        hook_c_roff(TERM_L_BLUE, _("イカ", " squid"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FACE)) {
+        hook_c_roff(TERM_L_RED, _("顔面", " face"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HAND)) {
+        hook_c_roff(TERM_L_WHITE, _("手", " hand"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MINDFLAYER)) {
+        hook_c_roff(TERM_VIOLET, _("マインドフレア", " mindflayer"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::NIBELUNG)) {
+        hook_c_roff(TERM_YELLOW, _("ニーベルング", " nibelung"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::GNOME)) {
+        hook_c_roff(TERM_L_GREEN, _("ノーム", " gnome"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::KRAKEN)) {
+        hook_c_roff(TERM_L_DARK, _("クラーケン", " kraken"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::HARPY)) {
+        hook_c_roff(TERM_L_UMBER, _("ハーピー", " harpy"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ALARM)) {
+        hook_c_roff(TERM_L_RED, _("警報機", " alarm"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WEREWOLF)) {
+        hook_c_roff(TERM_L_DARK, _("人狼", " werewolf"));
+        has_specific_kind = true;
+    }
+
+    // フォールバック処理：特定の種族が見つからない場合は「モンスター」と表示
+    if (!has_specific_kind) {
+        hooked_roff(_("モンスター", " creature"));
     }
 }
 
 void display_monster_alignment(lore_type *lore_ptr)
 {
+    if (lore_ptr->era_flags.has(MonsterEraType::PREHISTORIC)) {
+        hook_c_roff(TERM_L_UMBER, _("先史時代級の", " prehistoric-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::ANCIENT)) {
+        hook_c_roff(TERM_YELLOW, _("古代級の", " ancient-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::MEDIEVAL)) {
+        hook_c_roff(TERM_L_BLUE, _("中世級の", " medieval-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::EARLY_MODERN)) {
+        hook_c_roff(TERM_L_GREEN, _("近代級の", " early-modern-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::MODERN)) {
+        hook_c_roff(TERM_L_WHITE, _("現代級の", " modern-era"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::INFORMATION_AGE)) {
+        hook_c_roff(TERM_L_BLUE, _("情報化時代級の", " information-age"));
+    }
+
+    if (lore_ptr->era_flags.has(MonsterEraType::NANOTECH)) {
+        hook_c_roff(TERM_VIOLET, _("ナノテク級の", " nanotech-era"));
+    }
+
     /* TODO 再定義
     if (lore_ptr->msex == monster_sex::MSEX_MALE && lore_ptr->msex == monster_sex::MSEX_FEMALE) {
         hook_c_roff(TERM_VIOLET, _("両性具有であり", " hermaphroditic"));
@@ -409,6 +875,10 @@ void display_monster_alignment(lore_type *lore_ptr)
 
     if (lore_ptr->kind_flags.has(MonsterKindType::WARRIOR)) {
         hook_c_roff(TERM_ORANGE, _("戦士の", " warrior"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SOLDIER)) {
+        hook_c_roff(TERM_L_BLUE, _("兵士の", " soldier"));
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ROGUE)) {
@@ -452,19 +922,16 @@ void display_monster_alignment(lore_type *lore_ptr)
         hook_c_roff(TERM_YELLOW, _("スモトリの", " sumou wrestler"));
     }
 
-    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD) && lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
-        hook_c_roff(TERM_WHITE, _("スケルトン系アンデッドの", " skeleton undead"));
-    } else {
-        if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
-            hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
-        }
-        if (lore_ptr->kind_flags.has(MonsterKindType::SKELETON)) {
-            hook_c_roff(TERM_WHITE, _("スケルトンの", " skeleton"));
-        }
+    if (lore_ptr->kind_flags.has(MonsterKindType::UNDEAD)) {
+        hook_c_roff(TERM_VIOLET, _("アンデッドの", " undead"));
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::AMBERITE)) {
         hook_c_roff(TERM_VIOLET, _("アンバーの王族の", " Amberite"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::CHOASIAN)) {
+        hook_c_roff(TERM_L_RED, _("混沌の王族の", " Chaosian"));
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::HENTAI)) {

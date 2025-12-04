@@ -18,7 +18,6 @@
 #include "grid/grid.h"
 #include "io/write-diary.h"
 #include "mind/mind-ninja.h"
-#include "monster-floor/monster-lite.h"
 #include "monster-floor/monster-remover.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
@@ -255,7 +254,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
 
     /* Lose monster light */
     if (!in_generate) {
-        clear_mon_lite(floor);
+        floor.forget_mon_lite();
     }
 
     /* 時空崩壊度進行 */

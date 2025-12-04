@@ -20,6 +20,8 @@ enum class StoreSaleType : int {
     HOME = 7, //!< 店舗の種類: 我が家
     BOOK = 8, //!< 店舗の種類: 書店
     MUSEUM = 9, //!< 店舗の種類: 博物館
+    MELINLAITO = 10, //!< 店舗の種類: メリンライトの薬品庫
+    HUNAHYANDA = 11, //!< 店舗の種類: フナヒヤンダの武器蔵
     MAX
 };
 constexpr int MAX_STORES = enum2i(StoreSaleType::MAX); /*!< 店舗の種類最大数 / Total number of stores (see "store.c", etc) */
@@ -58,3 +60,5 @@ public:
 };
 
 extern Store *st_ptr;
+
+std::string get_store_sale_type_tag(StoreSaleType store_type);

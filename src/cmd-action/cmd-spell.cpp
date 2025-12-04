@@ -395,8 +395,8 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
         if (choice == ESCAPE) {
             choice = ' ';
         } else {
-            const auto new_choice = input_command(prompt, true);
-            if (!new_choice.has_value()) {
+            const auto new_choice = input_command(prompt);
+            if (!new_choice) {
                 break;
             }
 
@@ -1121,6 +1121,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
             return false;
         }
 
+        player_ptr->plus_incident_tree("CAST_SPELL", 1);
         if (randint1(100) < chance) {
             chg_virtue(player_ptr, Virtue::CHANCE, 1);
         }

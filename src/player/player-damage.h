@@ -1,5 +1,6 @@
 #pragma once
 
+#include "system/enums/monrace/monrace-id.h"
 #include <string_view>
 
 #define DAMAGE_FORCE 1
@@ -11,7 +12,7 @@
 
 class MonsterEntity;
 class PlayerType;
-int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_view kb_str);
+int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_view kb_str, MonraceId killer_monrace_id = static_cast<MonraceId>(0));
 int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
 int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
 int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);

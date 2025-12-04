@@ -263,7 +263,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_SLAY_UNDEAD)) && monrace.kind_flags.has(MonsterKindType::UNDEAD)) {
+        if ((flags.has(TR_SLAY_UNDEAD)) && monster.is_undead()) {
             if (is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }
@@ -272,7 +272,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_KILL_UNDEAD)) && monrace.kind_flags.has(MonsterKindType::UNDEAD)) {
+        if ((flags.has(TR_KILL_UNDEAD)) && monster.is_undead()) {
             if (is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }
@@ -610,12 +610,12 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
     PlayerEnergy(player_ptr).div_player_turn_energy(thits);
     player_ptr->is_fired = true;
 
-    player_ptr->plus_incident(INCIDENT::SHOOT, 1);
+    player_ptr->plus_incident_tree("SHOOT", 1);
 
     /* Sniper - Difficult to shot twice at 1 turn */
     if (snipe_type == SP_DOUBLE) {
         sniper_concent = (sniper_concent + 1) / 2;
-        player_ptr->plus_incident(INCIDENT::SHOOT, 1);
+        player_ptr->plus_incident_tree("SHOOT", 1);
     }
 
     /* Sniper - Repeat shooting when double shots */
@@ -692,12 +692,12 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
             }
 
             /* The player can see the (on screen) missile */
-            if (panel_contains(pos_impact.y, pos_impact.x) && player_can_see_bold(player_ptr, pos_impact.y, pos_impact.x)) {
+            if (panel_contains(pos_impact) && player_can_see_bold(player_ptr, pos_impact.y, pos_impact.x)) {
                 const auto symbol = fire_item.get_symbol();
 
                 /* Draw, Hilite, Fresh, Pause, Erase */
                 if (delay_factor > 0) {
-                    print_rel(player_ptr, symbol, pos_impact.y, pos_impact.x);
+                    print_rel(player_ptr, symbol, pos_impact);
                     move_cursor_relative(pos_impact.y, pos_impact.x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
@@ -1002,7 +1002,6 @@ bool test_hit_fire(PlayerType *player_ptr, int chance, const MonsterEntity &mons
 {
     int k;
     ARMOUR_CLASS ac;
-    const auto &monrace = monster.get_monrace();
 
     /* Percentile dice */
     k = randint1(100);
@@ -1032,7 +1031,7 @@ bool test_hit_fire(PlayerType *player_ptr, int chance, const MonsterEntity &mons
         return false;
     }
 
-    ac = monrace.ac;
+    ac = monster.get_ac();
     ac = ac * (8 - sniper_concent) / 8;
 
     if (monster.r_idx == MonraceId::GOEMON && !monster.is_asleep()) {

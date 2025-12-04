@@ -256,6 +256,9 @@ const std::vector<std::string_view> personality_explanations = {
     _("あなたは寿司を愛するあまり、寿司を食べないと死んでしまいます。寿司の力のためにとんでもない能力を持っていますが、その急激な空腹を満たせるのは世界に散在する寿司だけになります。",
         "You \"Sushi Eater\" love sushi so much that you will die if you don't eat it. You have incredible abilities thanks to the power of sushi, but the only thing that can satisfy your sudden hunger is sushi scattered around the world."),
 
+    _("メスガキは、常に挑発的な態度で周囲を怒らせ、また分からせようとする集団が襲い掛かってきますが、一部のモンスターに対する社会的抹殺のレイシャル能力を持ちます。",
+        "\"Mesugaki\" constantly provoke those around them with their defiant attitude, inciting anger and drawing attacks from groups intent on teaching them a lesson. Yet they possess a racial ability to socially genocide certain monsters."),
+
 };
 
 /*! 魔法領域の詳細解説メッセージテーブル */

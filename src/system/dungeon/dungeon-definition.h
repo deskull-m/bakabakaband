@@ -89,6 +89,7 @@ class DungeonDefinition {
 public:
     std::string name; /* Name */
     std::string text; /* Description */
+    std::string tag; /* Tag */
 
     ProbabilityTable<short> prob_table_floor{}; /* Floor probability */
     ProbabilityTable<short> prob_table_wall{}; /* Cave wall probability */

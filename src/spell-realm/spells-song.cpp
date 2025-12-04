@@ -94,7 +94,7 @@ bool set_tim_stealth(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 

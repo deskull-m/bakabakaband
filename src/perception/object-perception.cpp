@@ -23,7 +23,7 @@ void object_aware(PlayerType *player_ptr, const ItemEntity &item)
         return;
     }
 
-    if (is_already_awared || player_ptr->is_dead) {
+    if (is_already_awared || player_ptr->is_dead()) {
         return;
     }
 

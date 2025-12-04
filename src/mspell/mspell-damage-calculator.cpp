@@ -393,6 +393,10 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_HYDRA:
         return -1;
+    case MonsterAbilityType::S_FAIRY:
+        return -1;
+    case MonsterAbilityType::S_BIRD:
+        return -1;
     case MonsterAbilityType::S_ANGEL:
         return -1;
     case MonsterAbilityType::S_DEMON:
@@ -407,11 +411,23 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_AMBERITES:
         return -1;
+    case MonsterAbilityType::S_WALL:
+        return -1;
     case MonsterAbilityType::S_UNIQUE:
         return -1;
     case MonsterAbilityType::S_DEAD_UNIQUE:
         return -1;
+    case MonsterAbilityType::S_NASTY:
+        return -1;
+    case MonsterAbilityType::S_GOLEM:
+        return -1;
+    case MonsterAbilityType::S_CAT:
+        return -1;
+    case MonsterAbilityType::S_PUYO:
+        return -1;
     case MonsterAbilityType::MAX:
+        return -1;
+    default:
         return -1;
     }
 

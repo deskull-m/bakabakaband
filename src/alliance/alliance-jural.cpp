@@ -3,6 +3,7 @@
 #include "core/disturbance.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
+#include "game-option/birth-options.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
@@ -19,6 +20,11 @@ int AllianceJural::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 2, 40);
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
+
     impression -= MonraceList::get_instance().get_monrace(MonraceId::ALIEN_JURAL).r_akills * 10;
     if (MonraceList::get_instance().get_monrace(MonraceId::JURAL_MONS).mob_num == 0) {
         impression -= 300;
@@ -55,4 +61,43 @@ void AllianceJural::panishment(PlayerType &player_ptr)
     }
 
     return;
+}
+
+/*!
+ * @brief 襲撃時に出現するモンスターのリストを取得する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param impression_point 印象値
+ * @return ジュラル星人のモンスターIDのリスト（印象値が低い場合はジュラル星人）
+ */
+std::vector<MonraceId> AllianceJural::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, int impression_point) const
+{
+    std::vector<MonraceId> monsters;
+
+    // 印象値が低い場合のみ襲撃を行う（-40以下）
+    if (impression_point >= -40) {
+        return monsters;
+    }
+
+    // ジュラル星人による襲撃
+    monsters.push_back(MonraceId::ALIEN_JURAL); // ジュラル星人
+    monsters.push_back(MonraceId::ALIEN_JURAL); // 複数体を追加
+    monsters.push_back(MonraceId::ALIEN_JURAL);
+
+    // 印象値が非常に低い場合はリーダーも追加
+    if (impression_point < -300) {
+        monsters.push_back(MonraceId::JURAL_WITCHKING); // ジュラル魔王
+        monsters.push_back(MonraceId::JURAL_MONS); // ジュラル星ボス
+    }
+
+    return monsters;
+}
+
+/*!
+ * @brief 襲撃時のメッセージを取得する
+ * @return ジュラル星人固有の襲撃メッセージ
+ */
+std::string AllianceJural::get_ambush_message() const
+{
+    return _("「おーい、行ってみよう！」ジュラル星人があなたに襲いかかってきた！",
+        "\"Hey, let's go!\" Alien Jurals are attacking you!");
 }

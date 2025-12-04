@@ -1,4 +1,5 @@
 #include "monster-floor/monster-death.h"
+#include "alliance/alliance.h"
 #include "artifact/fixed-art-generator.h"
 #include "artifact/fixed-art-types.h"
 #include "dungeon/quest-completion-checker.h"
@@ -423,6 +424,17 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
     }
 
     wc_ptr->plus_collapsion(md.r_ptr->plus_collapse);
+
+    // オディオアライアンスがNONLIVINGでないモンスター死亡時に戦力を増加
+    if (md.r_ptr->kind_flags.has_not(MonsterKindType::NONLIVING)) {
+        auto it = alliance_list.find(AllianceType::ODIO);
+        if (it != alliance_list.end()) {
+            // モンスターのレベルに応じて戦力を増加（レベル * 10）
+            const auto power_gain = md.r_ptr->level * 10;
+            it->second->base_power += power_gain;
+        }
+    }
+
     drop_corpse(player_ptr, &md);
     monster_drop_carried_objects(player_ptr, *md.m_ptr);
     decide_drop_quality(&md);

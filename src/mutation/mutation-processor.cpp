@@ -179,6 +179,14 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         fire_ball(player_ptr, AttributeType::POIS, Direction::self(), player_ptr->lev, 3);
     }
 
+    if (player_ptr->muta.has(PlayerMutationType::IKISUGI) && (randint1(3000) == 13)) {
+        disturb(player_ptr, false, true);
+        msg_print(_("ンアアアアー！", "NAAAAAAAH!"));
+        msg_erase();
+        fire_ball(player_ptr, AttributeType::SOUND, Direction::self(), player_ptr->lev, 3);
+        aggravate_monsters(player_ptr, 0);
+    }
+
     if (player_ptr->muta.has(PlayerMutationType::DEFECATION) && (randint1(1500) == 13)) {
         player_defecate(player_ptr);
     }
@@ -220,6 +228,38 @@ void process_world_aux_mutation(PlayerType *player_ptr)
 
         if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DEMON, mode)) {
             msg_print(_("あなたはデーモンを引き寄せた！", "You have attracted a demon!"));
+            disturb(player_ptr, false, true);
+        }
+    }
+
+    if (player_ptr->muta.has(PlayerMutationType::ATT_NASTY) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
+        bool pet = one_in_(6);
+        BIT_FLAGS mode = PM_ALLOW_GROUP;
+
+        if (pet) {
+            mode |= PM_FORCE_PET;
+        } else {
+            mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
+        }
+
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_NASTY, mode)) {
+            msg_print(_("あなたはクッソ汚い輩を引き寄せた！", "You have attracted nasty creatures!"));
+            disturb(player_ptr, false, true);
+        }
+    }
+
+    if (has_pervert_attraction(player_ptr) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
+        bool pet = one_in_(6);
+        BIT_FLAGS mode = PM_ALLOW_GROUP;
+
+        if (pet) {
+            mode |= PM_FORCE_PET;
+        } else {
+            mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
+        }
+
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_PERVERTS, mode)) {
+            msg_print(_("あなたは変質者を引き寄せた！", "You have attracted perverts!"));
             disturb(player_ptr, false, true);
         }
     }

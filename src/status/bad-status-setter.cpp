@@ -42,7 +42,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
 {
     auto notice = false;
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -116,7 +116,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
 {
     auto notice = false;
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -191,7 +191,7 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
 {
     auto notice = false;
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -237,7 +237,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
 {
     auto notice = false;
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -288,7 +288,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
 {
     auto notice = false;
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -343,7 +343,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
 {
     auto notice = false;
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -410,7 +410,7 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
 {
     auto notice = false;
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -461,7 +461,7 @@ bool BadStatusSetter::mod_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
 bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
 {
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 
@@ -501,7 +501,7 @@ bool BadStatusSetter::mod_stun(const TIME_EFFECT tmp_v)
 bool BadStatusSetter::set_cut(const TIME_EFFECT tmp_v)
 {
     auto v = std::clamp<short>(tmp_v, 0, 10000);
-    if (this->player_ptr->is_dead) {
+    if (this->player_ptr->is_dead()) {
         return false;
     }
 

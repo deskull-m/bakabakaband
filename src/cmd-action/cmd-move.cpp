@@ -315,6 +315,13 @@ void do_cmd_go_down(PlayerType *player_ptr)
     if (!floor.is_underground()) {
         floor.enter_dungeon(true);
         down_num = dungeon.mindepth;
+
+        // ダンジョンに入った回数を記録
+        player_ptr->plus_incident_tree("ENTER_DUNGEON", 1);
+        if (!dungeon.tag.empty()) {
+            const auto dungeon_key = format("ENTER_DUNGEON/%s", dungeon.tag.c_str());
+            player_ptr->plus_incident_tree(dungeon_key.data(), 1);
+        }
     }
 
     if (record_stair && !floor.is_in_quest()) {
@@ -400,6 +407,8 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
         }
 
         if (((wild_level + 5) > (player_ptr->lev / 2)) && randint0(tmp) < (21 - player_ptr->skill_stl)) {
+            // TODO: 広域マップの領域ごとのアライアンス情報を取得する機能が未実装のため、
+            // 今回はデフォルトメッセージを使用。将来的にはアライアンス固有のメッセージを表示予定
             msg_print(_("襲撃だ！", "You are ambushed !"));
             player_ptr->oldpy = randint1(MAX_HGT - 2);
             player_ptr->oldpx = randint1(MAX_WID - 2);
@@ -523,6 +532,7 @@ void do_cmd_rest(PlayerType *player_ptr)
         chg_virtue(player_ptr, Virtue::DILIGENCE, -1);
     }
 
+    player_ptr->plus_incident_tree("REST", 1);
     player_ptr->resting = command_arg;
     player_ptr->action = ACTION_REST;
     auto &rfu = RedrawingFlagsUpdater::get_instance();

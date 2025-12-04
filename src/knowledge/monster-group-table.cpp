@@ -16,6 +16,15 @@ const std::vector<std::string> MONSTER_KINDS_GROUP = {
     _("乗馬可能なモンスター", "Ridable monsters"),
     _("賞金首", "Wanted monsters"),
     _("アンバーの王族", "Amberite"),
+    _("混沌の王族", "Chaosian"),
+    _("スケルトン族", "Skeleton"),
+    _("ゾンビ族", "Zombie"),
+    _("カニ族", "Crab"),
+    _("菌類", "Fungus"),
+    _("ミミック", "Mimic"),
+    _("イクシツザチトル", "Ixitxachitl"),
+    _("ナーガ", "Naga"),
+    _("変質者", "Pervert"),
     _("アリ", "Ant"),
     _("コウモリ", "Bat"),
     _("ムカデ", "Centipede"),
@@ -34,7 +43,6 @@ const std::vector<std::string> MONSTER_KINDS_GROUP = {
     _("人間", "Person/Townsman"),
     _("四足獣", "Quadruped"),
     _("ネズミ", "Rodent"),
-    _("スケルトン", "Skeleton"),
     _("デーモン", "Demon"),
     _("ボルテックス", "Vortex"),
     _("イモムシ/大群", "Worm/Worm-Mass"),
@@ -75,6 +83,6 @@ const std::vector<std::string> MONSTER_KINDS_GROUP = {
  * Symbols of monsters in each group. Note the "Uniques" group
  * is handled differently.
  */
-const std::vector<std::string> MONRACE_CHARACTERS_GROUP = { "Uniques", "Riding", "Wanted", "Amberites", "a", "b", "c", "dD", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+const std::vector<std::string> MONRACE_CHARACTERS_GROUP = { "Uniques", "Riding", "Wanted", "Amberites", "Chaosians", "Skeletons", "Zombies", "Crabs", "Fungi", "Mimics", "Ixitxachitls", "Nagas", "Perverts", "a", "b", "c", "dD", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
     "pt", "q", "r", "s", "uU", "v", "w", "y", "z", "A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "V", "W", "X",
     "Y", "Z", "!$&()+./=>?[\\]`{|~", "#%", ",", "*", "@" };

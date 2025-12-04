@@ -57,7 +57,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     PLAYER_LEVEL lev = powerful ? player_ptr->lev * 2 : player_ptr->lev;
     POSITION rad = powerful ? 3 : 2;
 
-    player_ptr->plus_incident(INCIDENT::ZAP_WAND, 1);
+    player_ptr->plus_incident_tree("ZAP_WAND", 1);
 
     /* XXX Hack -- Wand of wonder can do anything before it */
     if (sval == SV_WAND_WONDER) {

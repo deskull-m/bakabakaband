@@ -1,5 +1,6 @@
 #pragma once
 
+#include "combat/martial-arts-style.h"
 #include "system/angband.h"
 #include "util/dice.h"
 
@@ -17,3 +18,12 @@ struct martial_arts {
 };
 
 extern const martial_arts ma_blows[MAX_MA];
+extern const martial_arts ma_street_fighting[MAX_MA];
+extern const martial_arts ma_karate[MAX_MA];
+extern const martial_arts ma_kung_fu[MAX_MA];
+
+// 流派別武術テーブル
+extern const martial_arts *get_martial_arts_table(MartialArtsStyleType style);
+
+// 特定の流派のテーブルから技を取得
+const martial_arts *get_martial_arts_technique(MartialArtsStyleType style, int level);

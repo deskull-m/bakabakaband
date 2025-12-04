@@ -1,4 +1,5 @@
 #include "save/player-writer.h"
+#include "combat/martial-arts-style.h"
 #include "floor/dungeon-feeling.h"
 #include "game-option/birth-options.h"
 #include "market/arena-entry.h"
@@ -108,6 +109,9 @@ void wr_player(PlayerType *player_ptr)
         // resreved skills
         wr_s16b(0);
     }
+
+    // Save martial arts style
+    wr_s16b(static_cast<int16_t>(player_ptr->martial_arts_style));
 
     std::visit(PlayerClassSpecificDataWriter(), player_ptr->class_specific_data);
 
@@ -236,10 +240,16 @@ void wr_player(PlayerType *player_ptr)
     }
 
     wr_s32b(int32_t(player_ptr->incident.size()));
-    std::map<INCIDENT, int32_t>::iterator it;
-    for (it = player_ptr->incident.begin(); it != player_ptr->incident.end(); it++) {
-        wr_s32b((int32_t)it->first);
-        wr_s32b(it->second);
+    for (const auto &it : player_ptr->incident) {
+        wr_s32b((int32_t)it.first);
+        wr_s32b(it.second);
+    }
+
+    // Save incident_tree (string-keyed, tree-structured incidents)
+    wr_s32b(int32_t(player_ptr->incident_tree.size()));
+    for (const auto &it : player_ptr->incident_tree) {
+        wr_string(it.first);
+        wr_s32b(it.second);
     }
 
     wr_s16b(player_ptr->ele_attack);
@@ -268,7 +278,7 @@ void wr_player(PlayerType *player_ptr)
     wr_u16b(system.is_panic_save_executed() ? 1 : 0);
     wr_u16b(world.total_winner);
     wr_u16b(world.noscore);
-    wr_bool(player_ptr->is_dead);
+    wr_bool(player_ptr->is_dead());
     const auto &df = DungeonFeeling::get_instance();
     wr_byte(static_cast<uint8_t>(df.get_feeling()));
     wr_s32b(player_ptr->current_floor_ptr->generated_turn);

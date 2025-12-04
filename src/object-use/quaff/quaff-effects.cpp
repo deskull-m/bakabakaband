@@ -18,6 +18,8 @@
 #include "player/digestion-processor.h"
 #include "player/eldritch-horror.h"
 #include "player/player-damage.h"
+#include "player/player-sex.h"
+#include "player/player-skill.h"
 #include "player/player-status-flags.h"
 #include "spell-kind/spells-detection.h"
 #include "spell-kind/spells-floor.h"
@@ -236,6 +238,8 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
             msg_print(_("この薬は直腸に注入するものらしい。", "The potion seems to be injected into the rectum"));
             return true;
         }
+    case SV_POTION_MESUDACHI:
+        return this->mesudachi();
 
     default:
         return false;
@@ -603,4 +607,42 @@ bool QuaffEffects::polymorph()
         }
     } while (!ident || one_in_(2));
     return ident;
+}
+
+/*!
+ * @brief メス堕ちの薬
+ * @return 常にtrue
+ */
+bool QuaffEffects::mesudachi()
+{
+    msg_print(_("「女の子になっちゃう！」", "You become a girl!"));
+
+    // 尻の穴技能が10d10増加
+    int skill_gain = 0;
+    for (int i = 0; i < 10; i++) {
+        skill_gain += randint1(10);
+    }
+    this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE] += skill_gain;
+    msg_format(_("尻の穴技能が%d向上した！", "Your asshole skill increased by %d!"), skill_gain);
+
+    // 1/36の確率で性別が女になる（両性の場合は無効）
+    if (this->player_ptr->psex != SEX_BISEXUAL && one_in_(36)) {
+        this->player_ptr->psex = SEX_FEMALE;
+        sp_ptr = &sex_info[this->player_ptr->psex];
+        msg_print(_("あなたは本当に女の子になってしまった！", "You have really become a girl!"));
+
+        static constexpr auto flags = { StatusRecalculatingFlag::BONUS, StatusRecalculatingFlag::HP, StatusRecalculatingFlag::MP, StatusRecalculatingFlag::SPELLS };
+        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        static constexpr auto flags2 = {
+            MainWindowRedrawingFlag::BASIC,
+            MainWindowRedrawingFlag::HP,
+            MainWindowRedrawingFlag::MP,
+            MainWindowRedrawingFlag::ABILITY_SCORE,
+        };
+        RedrawingFlagsUpdater::get_instance().set_flags(flags2);
+        static constexpr auto flags3 = { SubWindowRedrawingFlag::PLAYER };
+        RedrawingFlagsUpdater::get_instance().set_flags(flags3);
+    }
+
+    return true;
 }

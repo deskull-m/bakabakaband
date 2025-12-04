@@ -349,6 +349,14 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_hound(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_HYDRA:
         return cast_blue_summon_hydra(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_FAIRY:
+        return cast_blue_summon_fairy(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_APE:
+        return cast_blue_summon_ape(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_BIRD:
+        return cast_blue_summon_bird(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_INSECT:
+        return cast_blue_summon_insect(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_ANGEL:
         return cast_blue_summon_angel(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_DEMON:
@@ -363,10 +371,26 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_high_dragon(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_AMBERITES:
         return cast_blue_summon_amberite(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_CHOASIANS:
+        return cast_blue_summon_choasian(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_UNIQUE:
         return cast_blue_summon_unique(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_DEAD_UNIQUE:
         return cast_blue_summon_dead_unique(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_NASTY:
+        return cast_blue_summon_nasty(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_GOLEM:
+        return cast_blue_summon_golem(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_CAT:
+        return cast_blue_summon_cats(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_PERVERT:
+        return cast_blue_summon_perverts(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_PUYO:
+        return cast_blue_summon_puyo(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_HOMO:
+        return cast_blue_summon_homo(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_WALL:
+        return cast_blue_summon_wall(player_ptr, bmc_ptr);
     default:
         msg_print("hoge?");
         return true;

@@ -40,6 +40,7 @@ void wr_lore(MonraceId monrace_id)
     wr_FlagGroup(monrace.r_aura_flags, wr_byte);
     wr_FlagGroup(monrace.r_behavior_flags, wr_byte);
     wr_FlagGroup(monrace.r_kind_flags, wr_byte);
+    wr_FlagGroup(monrace.r_era_flags, wr_byte);
     wr_FlagGroup(monrace.r_drop_flags, wr_byte);
     wr_FlagGroup(monrace.r_feature_flags, wr_byte);
     wr_FlagGroup(monrace.r_special_flags, wr_byte);

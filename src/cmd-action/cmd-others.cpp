@@ -188,7 +188,7 @@ void do_cmd_suicide(PlayerType *player_ptr)
 
     player_ptr->last_message = "";
     player_ptr->playing = false;
-    player_ptr->is_dead = true;
+    player_ptr->is_dead_ = true;
     player_ptr->leaving = true;
     if (world.total_winner) {
         accept_winner_message(player_ptr);

@@ -6,6 +6,7 @@
 #include "monster-race/race-behavior-flags.h"
 #include "monster-race/race-brightness-flags.h"
 #include "monster-race/race-drop-flags.h"
+#include "monster-race/race-era-flags.h"
 #include "monster-race/race-feature-flags.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-kind-flags.h"
@@ -76,6 +77,7 @@ struct lore_type {
     EnumClassFlagGroup<MonsterBehaviorType> behavior_flags;
     EnumClassFlagGroup<MonsterVisualType> visual_flags;
     EnumClassFlagGroup<MonsterKindType> kind_flags;
+    EnumClassFlagGroup<MonsterEraType> era_flags;
     EnumClassFlagGroup<MonsterResistanceType> resistance_flags;
     EnumClassFlagGroup<MonsterDropType> drop_flags;
     EnumClassFlagGroup<MonsterFeatureType> feature_flags;

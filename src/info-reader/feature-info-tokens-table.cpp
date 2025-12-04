@@ -139,6 +139,7 @@ const std::unordered_map<std::string_view, TerrainCharacteristics> f_info_flags 
     { "ICE", TerrainCharacteristics::ICE },
     { "SPIDER_SILK_NET", TerrainCharacteristics::SPIDER_SILK_NET },
     { "PORTAL", TerrainCharacteristics::PORTAL },
+    { "RAILWAY", TerrainCharacteristics::RAILWAY },
 };
 
 const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
@@ -165,6 +166,8 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "SHALLOW_WATER", TerrainTag::SHALLOW_WATER },
     { "DEEP_LAVA", TerrainTag::DEEP_LAVA },
     { "SHALLOW_LAVA", TerrainTag::SHALLOW_LAVA },
+    { "VOLCANIC_CRATER", TerrainTag::VOLCANIC_CRATER },
+    { "SUMMONING_CIRCLE", TerrainTag::SUMMONING_CIRCLE },
     { "HEAVY_COLD_ZONE", TerrainTag::HEAVY_COLD_ZONE },
     { "COLD_ZONE", TerrainTag::COLD_ZONE },
     { "HEAVY_ELECTRICAL_ZONE", TerrainTag::HEAVY_ELECTRICAL_ZONE },
@@ -205,6 +208,13 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
     { "TRAP_OPEN", TerrainTag::TRAP_OPEN },
     { "TRAP_PIRANHA", TerrainTag::TRAP_PIRANHA },
     { "TRAP_ARMAGEDDON", TerrainTag::TRAP_ARMAGEDDON },
+    { "TRAP_LAVA", TerrainTag::TRAP_LAVA },
+    { "TRAP_DUNG_POOL", TerrainTag::TRAP_DUNG_POOL },
+    { "TRAP_FIRE_STORM", TerrainTag::TRAP_FIRE_STORM },
+    { "TRAP_ICE_STORM", TerrainTag::TRAP_ICE_STORM },
+    { "TRAP_CHAOS_STORM", TerrainTag::TRAP_CHAOS_STORM },
+    { "TRAP_JUMP_VOID", TerrainTag::TRAP_JUMP_VOID },
+    { "TRAP_LAND_MINE", TerrainTag::TRAP_LAND_MINE },
 
     { "PATTERN_START", TerrainTag::PATTERN_START },
     { "PATTERN_1", TerrainTag::PATTERN_1 },

@@ -107,7 +107,20 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
             }
         }
 
-        prob_table.entry_item(monrace_id, entry.prob2);
+        // 昼行性・夜行性モンスターのレアリティ調整
+        auto adjusted_prob = entry.prob2;
+        const auto &world = AngbandWorld::get_instance();
+        const auto is_day = world.is_daytime();
+
+        if (monrace.misc_flags.has(MonsterMiscType::DIURNAL) && !is_day) {
+            // 昼行性モンスターが夜間に出現する場合、レアリティを上げる（出現率を下げる）
+            adjusted_prob = adjusted_prob * 2 / 5;
+        } else if (monrace.misc_flags.has(MonsterMiscType::NOCTURNAL) && is_day) {
+            // 夜行性モンスターが昼間に出現する場合、レアリティを上げる（出現率を下げる）
+            adjusted_prob = adjusted_prob * 2 / 5;
+        }
+
+        prob_table.entry_item(monrace_id, adjusted_prob);
     }
 
     if (cheat_hear) {

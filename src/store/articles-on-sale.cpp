@@ -95,6 +95,24 @@ const std::map<StoreSaleType, std::vector<BaseitemKey>> store_regular_sale_table
         } },
     { StoreSaleType::MUSEUM,
         {} },
+    { StoreSaleType::MELINLAITO,
+        {
+            { ItemKindType::POTION, SV_POTION_CURE_CRITICAL },
+            { ItemKindType::POTION, SV_POTION_CURE_SERIOUS },
+            { ItemKindType::POTION, SV_POTION_HEALING },
+            { ItemKindType::POTION, SV_POTION_SPEED },
+            { ItemKindType::POTION, SV_POTION_HEROISM },
+            { ItemKindType::POTION, SV_POTION_RESTORE_MANA },
+        } },
+    { StoreSaleType::HUNAHYANDA,
+        {
+            { ItemKindType::SWORD, SV_BLADE_OF_CHAOS },
+            { ItemKindType::POLEARM, SV_SCYTHE_OF_SLICING },
+            { ItemKindType::HAFTED, SV_MACE_OF_DISRUPTION },
+            { ItemKindType::SWORD, SV_ZWEIHANDER },
+            { ItemKindType::POLEARM, SV_LANCE },
+            { ItemKindType::SWORD, SV_EXECUTIONERS_SWORD },
+        } },
 };
 
 /*!
@@ -531,5 +549,111 @@ const std::map<StoreSaleType, std::vector<BaseitemKey>> store_sale_table = {
         } },
 
     { StoreSaleType::MUSEUM,
-        {} }
+        {} },
+
+    { StoreSaleType::MELINLAITO,
+        {
+            { ItemKindType::POTION, SV_POTION_CURE_LIGHT },
+            { ItemKindType::POTION, SV_POTION_CURE_LIGHT },
+            { ItemKindType::POTION, SV_POTION_CURE_SERIOUS },
+            { ItemKindType::POTION, SV_POTION_CURE_SERIOUS },
+
+            { ItemKindType::POTION, SV_POTION_CURE_CRITICAL },
+            { ItemKindType::POTION, SV_POTION_CURE_CRITICAL },
+            { ItemKindType::POTION, SV_POTION_CURE_CRITICAL },
+            { ItemKindType::POTION, SV_POTION_HEALING },
+
+            { ItemKindType::POTION, SV_POTION_HEALING },
+            { ItemKindType::POTION, SV_POTION_STAR_HEALING },
+            { ItemKindType::POTION, SV_POTION_LIFE },
+            { ItemKindType::POTION, SV_POTION_RESTORE_MANA },
+
+            { ItemKindType::POTION, SV_POTION_RESTORE_MANA },
+            { ItemKindType::POTION, SV_POTION_SPEED },
+            { ItemKindType::POTION, SV_POTION_SPEED },
+            { ItemKindType::POTION, SV_POTION_HEROISM },
+
+            { ItemKindType::POTION, SV_POTION_ENLIGHTENMENT },
+            { ItemKindType::POTION, SV_POTION_BOLDNESS },
+            { ItemKindType::POTION, SV_POTION_RESIST_HEAT },
+            { ItemKindType::POTION, SV_POTION_RESIST_COLD },
+
+            { ItemKindType::POTION, SV_POTION_RESISTANCE },
+            { ItemKindType::POTION, SV_POTION_ENLIGHTENMENT },
+            { ItemKindType::POTION, SV_POTION_RESTORE_EXP },
+            { ItemKindType::POTION, SV_POTION_RESTORE_EXP },
+
+            { ItemKindType::POTION, SV_POTION_RES_STR },
+            { ItemKindType::POTION, SV_POTION_RES_INT },
+            { ItemKindType::POTION, SV_POTION_RES_WIS },
+            { ItemKindType::POTION, SV_POTION_RES_DEX },
+
+            { ItemKindType::POTION, SV_POTION_RES_CON },
+            { ItemKindType::POTION, SV_POTION_RES_CHR },
+            { ItemKindType::POTION, SV_POTION_INC_STR },
+            { ItemKindType::POTION, SV_POTION_INC_INT },
+
+            { ItemKindType::POTION, SV_POTION_INC_WIS },
+            { ItemKindType::POTION, SV_POTION_INC_DEX },
+            { ItemKindType::POTION, SV_POTION_INC_CON },
+            { ItemKindType::POTION, SV_POTION_INC_CHR },
+
+            { ItemKindType::POTION, SV_POTION_AUGMENTATION },
+            { ItemKindType::POTION, SV_POTION_EXPERIENCE },
+            { ItemKindType::POTION, SV_POTION_SELF_KNOWLEDGE },
+            { ItemKindType::POTION, SV_POTION_INVULNERABILITY },
+
+            { ItemKindType::POTION, SV_POTION_NEW_LIFE },
+            { ItemKindType::POTION, SV_POTION_NEO_TSUYOSHI },
+            { ItemKindType::POTION, SV_POTION_TSUYOSHI },
+            { ItemKindType::POTION, SV_POTION_POLYMORPH },
+        } },
+
+    { StoreSaleType::HUNAHYANDA,
+        {
+            { ItemKindType::SWORD, SV_KATANA },
+            { ItemKindType::SWORD, SV_KATANA },
+            { ItemKindType::SWORD, SV_LONG_SWORD },
+            { ItemKindType::SWORD, SV_LONG_SWORD },
+
+            { ItemKindType::SWORD, SV_BROAD_SWORD },
+            { ItemKindType::SWORD, SV_BROAD_SWORD },
+            { ItemKindType::SWORD, SV_BASTARD_SWORD },
+            { ItemKindType::SWORD, SV_BASTARD_SWORD },
+
+            { ItemKindType::SWORD, SV_TWO_HANDED_SWORD },
+            { ItemKindType::SWORD, SV_TWO_HANDED_SWORD },
+            { ItemKindType::SWORD, SV_BLADE_OF_CHAOS },
+            { ItemKindType::SWORD, SV_BLADE_OF_CHAOS },
+
+            { ItemKindType::SWORD, SV_ZWEIHANDER },
+            { ItemKindType::SWORD, SV_ZWEIHANDER },
+            { ItemKindType::SWORD, SV_EXECUTIONERS_SWORD },
+            { ItemKindType::SWORD, SV_EXECUTIONERS_SWORD },
+
+            { ItemKindType::POLEARM, SV_SPEAR },
+            { ItemKindType::POLEARM, SV_SPEAR },
+            { ItemKindType::POLEARM, SV_PIKE },
+            { ItemKindType::POLEARM, SV_PIKE },
+
+            { ItemKindType::POLEARM, SV_LANCE },
+            { ItemKindType::POLEARM, SV_LANCE },
+            { ItemKindType::POLEARM, SV_SCYTHE_OF_SLICING },
+            { ItemKindType::POLEARM, SV_SCYTHE_OF_SLICING },
+            { ItemKindType::POLEARM, SV_HEAVY_LANCE },
+            { ItemKindType::POLEARM, SV_HEAVY_LANCE },
+
+            { ItemKindType::HAFTED, SV_WAR_HAMMER },
+            { ItemKindType::HAFTED, SV_WAR_HAMMER },
+            { ItemKindType::HAFTED, SV_GREAT_HAMMER },
+            { ItemKindType::HAFTED, SV_GREAT_HAMMER },
+
+            { ItemKindType::HAFTED, SV_MACE_OF_DISRUPTION },
+            { ItemKindType::HAFTED, SV_MACE_OF_DISRUPTION },
+
+            { ItemKindType::SWORD, SV_HAYABUSA },
+            { ItemKindType::POLEARM, SV_TRIFURCATE_SPEAR },
+            { ItemKindType::POLEARM, SV_DEATH_SCYTHE },
+            { ItemKindType::HAFTED, SV_WIZSTAFF },
+        } }
 };

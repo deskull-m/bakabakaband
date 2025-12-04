@@ -109,9 +109,9 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
     int bonus = player_ptr->to_h_m + (player_ptr->lev * 6 / 5);
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
     if (!is_hit) {
         sound(SoundKind::MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), m_name.data());
@@ -181,9 +181,10 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
 
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
+    player_ptr->plus_incident_tree("HEADBUTT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -272,9 +273,9 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
 
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -348,7 +349,7 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
  */
 bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_options mode)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.grid_array[y][x];
     const auto &monster = floor.m_list[grid.m_idx];
     const auto &monrace = monster.get_monrace();
@@ -450,7 +451,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         PlayerSkill(player_ptr).gain_riding_skill_exp_on_melee_attack(monrace);
     }
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_ACT_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_ACT_COUNT", 1);
 
     player_ptr->riding_t_m_idx = grid.m_idx;
     bool fear = false;
@@ -471,8 +472,18 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     }
 
     if (fear && monster.ml && !mdeath) {
-        sound(SoundKind::FLEE);
-        msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        // 1/20の確率で恐怖せず狂乱状態になる
+        if (one_in_(20)) {
+            auto &current_monster = floor.m_list[grid.m_idx];
+            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            (void)set_monster_monfear(player_ptr, grid.m_idx, 0);
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
+            fear = false;
+        } else {
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        }
     }
 
     if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::IAI) && ((mode != HISSATSU_IAI) || mdeath)) {
@@ -496,7 +507,7 @@ bool do_cmd_headbutt(PlayerType *player_ptr)
 
     const auto pos = player_ptr->get_neighbor(dir);
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
 
     if (!grid.has_monster()) {
@@ -556,8 +567,17 @@ bool do_cmd_headbutt(PlayerType *player_ptr)
     headbutt_attack(player_ptr, grid.m_idx, &fear, &mdeath);
 
     if (fear && monster.ml && !mdeath) {
-        sound(SoundKind::FLEE);
-        msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        // 1/20の確率で恐怖せず狂乱状態になる
+        if (one_in_(20)) {
+            auto &current_monster = floor.m_list[grid.m_idx];
+            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            (void)set_monster_monfear(player_ptr, grid.m_idx, 0);
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
+        } else {
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        }
     }
 
     return true;
@@ -575,7 +595,7 @@ void do_cmd_body_slam(PlayerType *player_ptr)
     }
 
     const auto pos = player_ptr->get_neighbor(dir);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
 
     if (!grid.has_monster()) {
@@ -619,8 +639,17 @@ void do_cmd_body_slam(PlayerType *player_ptr)
     bodyslam_attack(player_ptr, m_idx, &fear, &mdeath);
 
     if (fear && monster.ml && !mdeath) {
-        sound(SoundKind::FLEE);
-        msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        // 1/20の確率で恐怖せず狂乱状態になる
+        if (one_in_(20)) {
+            auto &current_monster = floor.m_list[m_idx];
+            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            (void)set_monster_monfear(player_ptr, m_idx, 0);
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
+        } else {
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        }
     }
 }
 
@@ -647,9 +676,9 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
 
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
-    player_ptr->plus_incident(INCIDENT::ATTACK_EXE_COUNT, 1);
+    player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monrace.ac, monster.ml);
+    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -672,6 +701,10 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
         ItemEntity item;
         msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
         msg_erase();
+
+        // 脱糞させたインシデントを記録
+        player_ptr->plus_incident_tree("ATTACK_EXE_COUNT/DEFECATION", 1);
+
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
         (void)drop_near(player_ptr, item, player_ptr->get_position());
     }
@@ -703,7 +736,7 @@ void do_cmd_enema(PlayerType *player_ptr)
     }
 
     const auto pos = player_ptr->get_neighbor(dir);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
 
     if (!grid.has_monster()) {
@@ -747,7 +780,16 @@ void do_cmd_enema(PlayerType *player_ptr)
     enema_attack(player_ptr, m_idx, &fear, &mdeath);
 
     if (fear && monster.ml && !mdeath) {
-        sound(SoundKind::FLEE);
-        msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        // 1/20の確率で恐怖せず狂乱状態になる
+        if (one_in_(20)) {
+            auto &current_monster = floor.m_list[m_idx];
+            current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
+            (void)set_monster_monfear(player_ptr, m_idx, 0);
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
+        } else {
+            sound(SoundKind::FLEE);
+            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+        }
     }
 }

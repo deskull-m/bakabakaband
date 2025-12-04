@@ -1,6 +1,8 @@
 #include "alliance/alliance-anor-londo.h"
-#include "player-base/player-class.h"
-#include "player-base/player-race.h"
+#include "game-option/birth-options.h"
+#include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
 /*!
@@ -16,6 +18,10 @@ int AllianceAnorLondo::calcImpressionPoint(PlayerType *creature_ptr) const
 
     int base_stat = (creature_ptr->stat_max[A_INT] + creature_ptr->stat_max[A_CHR]) / 2;
     int impression = base_stat + bias + creature_ptr->lev / level;
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
 
     // 最低値保証
     if (impression < 1) {
@@ -36,9 +42,10 @@ void AllianceAnorLondo::panishment([[maybe_unused]] PlayerType &player_ptr)
 
 /*!
  * @brief アノール・ロンドのアライアンスが壊滅したかどうか判定する
- * @return 壊滅フラグ
+ * @return 壊滅フラグ - 太陽の光の王グウィンが死亡した場合true
  */
 bool AllianceAnorLondo::isAnnihilated()
 {
-    return false;
+    const auto &monrace_list = MonraceList::get_instance();
+    return monrace_list.get_monrace(MonraceId::GWYN).mob_num == 0;
 }

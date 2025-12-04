@@ -51,6 +51,16 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
     const auto grp_riding = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Riding");
     const auto grp_wanted = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Wanted");
     const auto grp_amberite = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Amberites");
+    const auto grp_chaosian = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Chaosians");
+    const auto grp_skeleton = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Skeletons");
+    const auto grp_zombie = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Zombies");
+    const auto grp_cancer = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Crabs");
+    const auto grp_fungas = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Fungi");
+    const auto grp_turtle = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Turtles");
+    const auto grp_mimic = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Mimics");
+    const auto grp_ixitxachitl = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Ixitxachitls");
+    const auto grp_naga = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Nagas");
+    const auto grp_pervert = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Perverts");
 
     const auto &monraces = MonraceList::get_instance();
     std::vector<MonraceId> monrace_ids;
@@ -76,6 +86,46 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
             }
         } else if (grp_amberite) {
             if (monrace.kind_flags.has_not(MonsterKindType::AMBERITE)) {
+                continue;
+            }
+        } else if (grp_chaosian) {
+            if (monrace.kind_flags.has_not(MonsterKindType::CHOASIAN)) {
+                continue;
+            }
+        } else if (grp_skeleton) {
+            if (monrace.kind_flags.has_not(MonsterKindType::SKELETON)) {
+                continue;
+            }
+        } else if (grp_zombie) {
+            if (monrace.kind_flags.has_not(MonsterKindType::ZOMBIE)) {
+                continue;
+            }
+        } else if (grp_cancer) {
+            if (monrace.kind_flags.has_not(MonsterKindType::CANCER)) {
+                continue;
+            }
+        } else if (grp_fungas) {
+            if (monrace.kind_flags.has_not(MonsterKindType::FUNGAS)) {
+                continue;
+            }
+        } else if (grp_turtle) {
+            if (monrace.kind_flags.has_not(MonsterKindType::TURTLE)) {
+                continue;
+            }
+        } else if (grp_mimic) {
+            if (monrace.kind_flags.has_not(MonsterKindType::MIMIC)) {
+                continue;
+            }
+        } else if (grp_ixitxachitl) {
+            if (monrace.kind_flags.has_not(MonsterKindType::IXITXACHITL)) {
+                continue;
+            }
+        } else if (grp_naga) {
+            if (monrace.kind_flags.has_not(MonsterKindType::NAGA)) {
+                continue;
+            }
+        } else if (grp_pervert) {
+            if (monrace.kind_flags.has_not(MonsterKindType::PERVERT)) {
                 continue;
             }
         } else {

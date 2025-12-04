@@ -240,8 +240,8 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
         if (choice == ESCAPE) {
             choice = ' ';
         } else {
-            const auto new_choice = input_command(prompt, true);
-            if (!new_choice.has_value()) {
+            const auto new_choice = input_command(prompt);
+            if (!new_choice) {
                 break;
             }
 
@@ -909,6 +909,50 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_FAIRY: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("フェアリーを召喚した。", "You summon fairies."));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_FAIRY, mode);
+        }
+        break;
+    }
+    case MonsterAbilityType::S_APE: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("類人猿を召喚した。", "You summon apes."));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_APE, mode);
+        }
+        break;
+    }
+    case MonsterAbilityType::S_BIRD: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("鳥を召喚した。", "You summon birds."));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_BIRD, mode);
+        }
+        break;
+    }
+    case MonsterAbilityType::S_INSECT: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("昆虫を召喚した！", "You summon insects!"));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_INSECT, mode);
+        }
+        break;
+    }
     case MonsterAbilityType::S_ANGEL: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
         if (!pos) {
@@ -986,6 +1030,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_CHOASIANS: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("混沌の王族を召喚した！", "You summon Lords of Chaos!"));
+        for (auto k = 0; k < 4; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CHOASIANS, (mode | PM_ALLOW_UNIQUE));
+        }
+        break;
+    }
     case MonsterAbilityType::S_UNIQUE: {
         int count = 0;
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
@@ -1014,6 +1069,72 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_NASTY: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("汚い怪物を召喚した！", "You summon nasty monsters!"));
+        for (auto k = 0; k < 6; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_NASTY, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
+    case MonsterAbilityType::S_GOLEM: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("ゴーレムを召喚した！", "You summon golems!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_GOLEM, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
+    case MonsterAbilityType::S_CAT: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("猫を召喚した！", "You summon cats!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CATS, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
+    case MonsterAbilityType::S_PERVERT: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("変質者を召喚した！", "You summon perverts!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PERVERTS, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
+    case MonsterAbilityType::S_PUYO: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("ぷよを召喚した！", "You summon puyo!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PUYO, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
+    case MonsterAbilityType::S_HOMO: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("ホモを召喚した！", "You summon homos!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HOMO, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
     case MonsterAbilityType::BR_FECES:
         msg_print(_("糞便のブレスを吐いた。", "You breathe feces."));
         fire_breath(player_ptr, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
@@ -1022,6 +1143,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         msg_print(_("蜘蛛糸のブレスを吐いた。", "You breathe spider string."));
         fire_breath(player_ptr, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
         break;
+    case MonsterAbilityType::S_WALL: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("壁を召喚した！", "You summon walls!"));
+        for (auto k = 0; k < 1; k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_WALL, (mode | u_mode));
+        }
+        break;
+    }
     default:
         msg_print("hoge?");
     }

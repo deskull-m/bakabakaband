@@ -15,9 +15,14 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
+#include "game-option/birth-options.h"
 int AllianceKhorne::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
+    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
+    if (ironman_alliance_hostility) {
+        impression -= 10000;
+    }
     // プレイヤーの戦闘力を評価（コーンは戦闘を重視）
     impression += Alliance::calcPlayerPower(*creature_ptr, 3, 50);
 
@@ -48,7 +53,8 @@ int AllianceKhorne::calcImpressionPoint(PlayerType *creature_ptr) const
 
 bool AllianceKhorne::isAnnihilated()
 {
-    return false; // TODO: MonraceList::get_instance().get_monrace(MonraceId::KHORNE_GOD).mob_num == 0;
+    const auto &monrace_list = MonraceList::get_instance();
+    return monrace_list.get_monrace(MonraceId::KHORNE).mob_num == 0;
 }
 
 void AllianceKhorne::panishment(PlayerType &player_ptr)

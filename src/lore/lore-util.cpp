@@ -50,6 +50,9 @@ lore_type::lore_type(MonraceId monrace_id, monster_lore_mode mode)
     this->ability_flags = (this->r_ptr->ability_flags & this->r_ptr->r_ability_flags);
     this->aura_flags = (this->r_ptr->aura_flags & this->r_ptr->r_aura_flags);
     this->behavior_flags = (this->r_ptr->behavior_flags & this->r_ptr->r_behavior_flags);
+    this->visual_flags = this->r_ptr->visual_flags;
+    this->kind_flags = (this->r_ptr->kind_flags & this->r_ptr->r_kind_flags);
+    this->era_flags = (this->r_ptr->era_flags & this->r_ptr->r_era_flags);
     this->drop_flags = (this->r_ptr->drop_flags & this->r_ptr->r_drop_flags);
     this->resistance_flags = (this->r_ptr->resistance_flags & this->r_ptr->r_resistance_flags);
     this->feature_flags = (this->r_ptr->feature_flags & this->r_ptr->r_feature_flags);

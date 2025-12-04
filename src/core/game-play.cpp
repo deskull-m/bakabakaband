@@ -28,7 +28,6 @@
 #include "dungeon/quest.h"
 #include "flavor/object-flavor.h"
 #include "floor/floor-changer.h"
-#include "floor/floor-events.h"
 #include "floor/floor-leaver.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/floor-save.h"
@@ -37,7 +36,6 @@
 #include "game-option/input-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/runtime-arguments.h"
-#include "grid/grid.h"
 #include "info-reader/fixed-map-parser.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
@@ -54,7 +52,6 @@
 #include "market/bounty.h"
 #include "market/building-initializer.h"
 #include "monster-floor/monster-generator.h"
-#include "monster-floor/monster-lite.h"
 #include "monster-floor/monster-remover.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster/monster-util.h"
@@ -111,7 +108,7 @@ static void restore_windows(PlayerType *player_ptr)
         }
     }
 
-    (void)term_set_cursor(0);
+    term_set_cursor(false);
 }
 
 static void send_waiting_record(PlayerType *player_ptr)
@@ -133,7 +130,7 @@ static void send_waiting_record(PlayerType *player_ptr)
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
     update_creature(player_ptr);
-    player_ptr->is_dead = true;
+    player_ptr->is_dead_ = true;
     auto &world = AngbandWorld::get_instance();
     world.play_time.pause();
     signals_ignore_tstp();
@@ -337,7 +334,7 @@ static void init_riding_pet(PlayerType *player_ptr, bool new_game)
 
 static void decide_arena_death(PlayerType *player_ptr)
 {
-    if (!player_ptr->playing || !player_ptr->is_dead) {
+    if (!player_ptr->playing || !player_ptr->is_dead()) {
         return;
     }
 
@@ -373,7 +370,7 @@ static void decide_arena_death(PlayerType *player_ptr)
         entries.set_defeated_entry();
     }
     player_ptr->playing = false;
-    player_ptr->is_dead = true;
+    player_ptr->is_dead_ = true;
     player_ptr->leaving = true;
 
     world.set_arena(true);
@@ -395,22 +392,22 @@ static void process_game_turn(PlayerType *player_ptr)
         world.character_xtra = false;
         Target::clear_last_target();
         health_track(player_ptr, 0);
-        forget_lite(floor);
-        forget_view(floor);
-        clear_mon_lite(floor);
-        if (!player_ptr->playing && !player_ptr->is_dead) {
+        floor.forget_lite();
+        floor.forget_view();
+        floor.forget_mon_lite();
+        if (!player_ptr->playing && !player_ptr->is_dead()) {
             break;
         }
 
         wipe_o_list(floor);
-        if (!player_ptr->is_dead) {
+        if (!player_ptr->is_dead()) {
             wipe_monsters_list(player_ptr);
         }
 
         msg_erase();
         load_game = false;
         decide_arena_death(player_ptr);
-        if (player_ptr->is_dead || wc_ptr->is_blown_away()) {
+        if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
             break;
         }
         change_floor(player_ptr);
@@ -460,7 +457,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie)
 
     init_io(player_ptr);
     if (player_ptr->chp < 0 && !cheat_immortal) {
-        player_ptr->is_dead = true;
+        player_ptr->is_dead_ = true;
     }
 
     if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {

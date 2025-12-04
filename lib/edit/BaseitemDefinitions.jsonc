@@ -28637,6 +28637,80 @@
       "ja": "",
       "en": ""
     }
+  },
+  {
+    "id": 826,
+    "name": {
+      "ja": "ＤＸブラギガス",
+      "en": "DX Bragigas~"
+    },
+    "symbol": {
+      "character": "`",
+      "color": "Light Red"
+    },
+    "itemkind": {
+      "type_value": 41,
+      "subtype_value": 11
+    },
+    "parameter_value": 0,
+    "level": 20,
+    "weight": 6,
+    "cost": 100,
+    "base_ac": 0,
+    "base_dice": "0d0",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 2,
+    "allocations": [
+      {
+        "depth": 20,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "INSTA_ART"
+    ],
+    "flavor": {
+      "ja": "",
+      "en": ""
+    }
+  },
+  {
+    "id": 827,
+    "name": {
+      "ja": "メス堕ちの薬",
+      "en": "Feminization Potion"
+    },
+    "symbol": {
+      "character": "!",
+      "color": "Red"
+    },
+    "itemkind": {
+      "type_value": 75,
+      "subtype_value": 69
+    },
+    "parameter_value": 0,
+    "level": 30,
+    "weight": 4,
+    "cost": 1000,
+    "base_ac": 0,
+    "base_dice": "1d1",
+    "hit_bonus": 0,
+    "damage_bonus": 0,
+    "ac_bonus": 0,
+    "allocations": [
+      {
+        "depth": 30,
+        "rarity": 1
+      }
+    ],
+    "flags": [
+      "NASTY"
+    ],
+    "flavor": {
+      "ja": "それは飲むと女の子になっちゃう薬だ。いや、ならへんかもしれへんわ。",
+      "en": ""
+    }
   }
 ]
 }

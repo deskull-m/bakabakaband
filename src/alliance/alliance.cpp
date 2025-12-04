@@ -13,6 +13,7 @@
 #include "alliance/alliance-chinchintei.h"
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance-court-of-chaos.h"
+#include "alliance/alliance-diabolique.h"
 #include "alliance/alliance-dokachans.h"
 #include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
@@ -52,11 +53,13 @@
 #include "alliance/alliance-odio.h"
 #include "alliance/alliance-phyrexia.h"
 #include "alliance/alliance-pure-mirrodin.h"
+#include "alliance/alliance-seitei.h"
 #include "alliance/alliance-sexy-commando-club.h"
 #include "alliance/alliance-shire.h"
 #include "alliance/alliance-shittodan.h"
 #include "alliance/alliance-silvan-elf.h"
 #include "alliance/alliance-slaanesh.h"
+#include "alliance/alliance-soukaiya.h"
 #include "alliance/alliance-suren.h"
 #include "alliance/alliance-tophamhatt.h"
 #include "alliance/alliance-triothepunch.h"
@@ -83,17 +86,18 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::NONE, std::make_unique<AllianceNone>(AllianceType::NONE, "NONE", _("無所属", "None"), 0) },
     { AllianceType::AMBER, std::make_unique<AllianceAmber>(AllianceType::AMBER, "AMBER", _("アンバー", "Amber"), 350000000L) },
     { AllianceType::ANOR_LONDO, std::make_unique<AllianceAnorLondo>(AllianceType::ANOR_LONDO, "ANOR-LONDO", _("アノール・ロンド", "Anor Londo"), 15000000L) },
-    { AllianceType::COCHAOS, std::make_unique<AllianceCourtOfChaos>(AllianceType::COCHAOS, "COCHAOS", _("混沌の宮廷", "Court of Chaos"), 200000000L) },
-    { AllianceType::VALINOR, std::make_unique<AllianceValinor>(AllianceType::VALINOR, "VALINOR", _("ヴァリノール", "Valinor"), 4000000L) },
-    { AllianceType::UTUMNO, std::make_unique<AllianceCourtOfChaos>(AllianceType::UTUMNO, "UTUMNO", _("ウトゥムノ", "Utumno"), 3000000L) },
+    { AllianceType::COCHAOS, std::make_unique<AllianceCourtOfChaos>(AllianceType::COCHAOS, "COCHAOS", _("混沌の宮廷", "Court of Chaos"), 200000000L, 3000L) },
+    { AllianceType::VALINOR, std::make_unique<AllianceValinor>(AllianceType::VALINOR, "VALINOR", _("ヴァリノール", "Valinor"), 4000000L, 1000L) },
+    { AllianceType::UTUMNO, std::make_unique<AllianceCourtOfChaos>(AllianceType::UTUMNO, "UTUMNO", _("ウトゥムノ", "Utumno"), 3000000L, 800L) },
     { AllianceType::JURAL, std::make_unique<AllianceJural>(AllianceType::JURAL, "JURAL", _("ジュラル星人", "Jural"), 5500L) },
     { AllianceType::CHINCHINTEI, std::make_unique<AllianceChinChinTei>(AllianceType::CHINCHINTEI, "CHINCHINTEI", _("ちんちん亭", "Chin-Chin-Tei"), 191919L) },
-    { AllianceType::ODIO, std::make_unique<AllianceOdio>(AllianceType::ODIO, "ODIO", _("オディオ", "Odio"), 300000L) },
+    { AllianceType::ODIO, std::make_unique<AllianceOdio>(AllianceType::ODIO, "ODIO", _("オディオ", "Odio"), 300000L, 100L) },
     { AllianceType::KENOHGUN, std::make_unique<AllianceKenohgun>(AllianceType::KENOHGUN, "KENOHGUN", _("拳王軍", "Kenohgun"), 100000L) },
     { AllianceType::NANTO_ORTHODOX, std::make_unique<AllianceNantoOrthodox>(AllianceType::NANTO_ORTHODOX, "NANTO-ORTHODOX", _("南斗正統派", "Nanto Orthodox"), 100000L) },
+    { AllianceType::SEITEI, std::make_unique<AllianceSEITEI>(AllianceType::SEITEI, "SEITEI", _("聖帝軍", "Seitei Army"), 120000L) },
     { AllianceType::FANG_FAMILY, std::make_unique<AllianceFangFamily>(AllianceType::FANG_FAMILY, "FANG-FAMILY", _("牙一族", "Fang Family"), 4000L) },
     { AllianceType::KOGAN_RYU, std::make_unique<AllianceKoganRyu>(AllianceType::KOGAN_RYU, "KOGAN-RYU", _("虎眼流", "Kogan Ryu"), 10000L) },
-    { AllianceType::ELDRAZI, std::make_unique<AllianceEldrazi>(AllianceType::ELDRAZI, "ELDRAZI", _("エルドラージ", "Eldrazi"), 120000000L) },
+    { AllianceType::ELDRAZI, std::make_unique<AllianceEldrazi>(AllianceType::ELDRAZI, "ELDRAZI", _("エルドラージ", "Eldrazi"), 120000000L, 5000L) },
     { AllianceType::UNGOLIANT, std::make_unique<AllianceUngoliant>(AllianceType::UNGOLIANT, "UNGOLIANT", _("ウンゴリアント一族", "Ungoliant's Family"), 1500000L) },
     { AllianceType::SHITTO_DAN, std::make_unique<AllianceShittoDan>(AllianceType::SHITTO_DAN, "SHITTO-DAN", _("しっと団", "Sitto-Dan"), 1500L) },
     { AllianceType::GE_ORLIC, std::make_unique<AllianceGEOrlic>(AllianceType::GE_ORLIC, "GE-ORLIC", _("オーリック朝銀河帝国", "Galactic Empire of Orlic"), 2000000L) },
@@ -110,7 +114,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::GETTER, std::make_unique<AllianceGetter>(AllianceType::GETTER, "GETTER", _("ゲッター", "Getter"), 200000000L) },
     { AllianceType::PURE_MIRRODIN, std::make_unique<AlliancePureMirrodin>(AllianceType::PURE_MIRRODIN, "PURE-MIRRODIN", _("清純なるミラディン", "Pure Mirrodin"), 200000L) },
     { AllianceType::KING, std::make_unique<AllianceKING>(AllianceType::KING, "KING", _("KING", "KING"), 150000L) },
-    { AllianceType::PHYREXIA, std::make_unique<AlliancePhyrexia>(AllianceType::PHYREXIA, "PHYREXIA", _("ファイレクシア", "Phyrexia"), 2000000L) },
+    { AllianceType::PHYREXIA, std::make_unique<AlliancePhyrexia>(AllianceType::PHYREXIA, "PHYREXIA", _("ファイレクシア", "Phyrexia"), 2000000L, 500L) },
     { AllianceType::AVARIN_LORDS, std::make_unique<AllianceAvarinLords>(AllianceType::AVARIN_LORDS, "AVARIN-LORDS", _("アヴァリ諸侯同盟", "Avarin Lords"), 1000000L) },
     { AllianceType::GOLAN, std::make_unique<AllianceGOLAN>(AllianceType::GOLAN, "GOLAN", _("GOLAN", "GOLAN"), 100000L) },
     { AllianceType::BINJO_BUDDHISM, std::make_unique<AllianceBinzyouBuddhism>(AllianceType::BINJO_BUDDHISM, "BINJO-BUDDHISM", _("便乗仏教", "Binjo Buddhism"), 80000L) },
@@ -146,8 +150,11 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::HIONHURN, std::make_unique<AllianceHionhurn>(AllianceType::HIONHURN, "HIONHURN", _("ハイオンハーン", "Hionhurn"), 3800000L) },
     { AllianceType::CHARDROS, std::make_unique<AllianceChardros>(AllianceType::CHARDROS, "CHARDROS", _("チャードロス", "Chardros"), 4000000L) },
     { AllianceType::ARIOCH, std::make_unique<AllianceArioch>(AllianceType::ARIOCH, "ARIOCH", _("アリオッチ", "Arioch"), 4500000L) },
-    { AllianceType::XIOMBARG, std::make_unique<AllianceXiombarg>(AllianceType::XIOMBARG, "XIOMBARG", _("キシオムバーグ", "Xiombarg"), 4800000L) },
-    { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("マベロード", "Mabelode"), 3600000L) },
+    { AllianceType::XIOMBARG, std::make_unique<AllianceXiombarg>(AllianceType::XIOMBARG, "XIOMBARG", _("\u30ad\u30b7\u30aa\u30e0\u30d0\u30fc\u30b0", "Xiombarg"), 4800000L) },
+    { AllianceType::MABELODE, std::make_unique<AllianceMabelode>(AllianceType::MABELODE, "MABELODE", _("\u30de\u30d9\u30ed\u30fc\u30c9", "Mabelode"), 3600000L) },
+    { AllianceType::DIABOLIQUE, std::make_unique<AllianceDiabolique>(AllianceType::DIABOLIQUE, "DIABOLIQUE", _("\u30c7\u30a2\u30dc\u30ea\u30ab", "Diabolique"), 5000000L) },
+    { AllianceType::SOUKAIYA, std::make_unique<AllianceSoukaiya>(AllianceType::SOUKAIYA, "SOUKAIYA", _("ソウカイヤ", "Soukaiya"), 3000000L) },
+    { AllianceType::YEEK_KINGDOM, std::make_unique<AllianceYeekKingdom>(AllianceType::YEEK_KINGDOM, "YEEK-KINGDOM", _("イークの王国", "Yeek Kingdom"), 15000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
@@ -155,11 +162,12 @@ const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impres
     { std::make_tuple(AllianceType::UTUMNO, AllianceType::VALINOR), -1000 },
 };
 
-Alliance::Alliance(AllianceType id, std::string tag, std::string name, int64_t base_power)
+Alliance::Alliance(AllianceType id, std::string tag, std::string name, int64_t base_power, int64_t natural_recovery)
     : id(id)
     , tag(tag)
     , name(name)
     , base_power(base_power)
+    , natural_recovery(natural_recovery)
 {
 }
 
@@ -194,7 +202,7 @@ int64_t Alliance::calcCurrentPower()
         }
     }
     if (this->isAnnihilated()) {
-        res /= this->AnihilatedPowerdownDiv;
+        res /= this->AnnihilatedPowerdownDiv;
     }
     return res;
 }
@@ -207,4 +215,38 @@ bool Alliance::isAnnihilated()
 bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
 {
     return false;
+}
+
+/*!
+ * @brief 襲撃時に出現するモンスターのリストを取得する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param impression_point 印象値
+ * @return モンスターIDのリスト（デフォルトは空）
+ */
+std::vector<MonraceId> Alliance::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, [[maybe_unused]] int impression_point) const
+{
+    return std::vector<MonraceId>();
+}
+
+/*!
+ * @brief 襲撃時のメッセージを取得する
+ * @return デフォルトの襲撃メッセージ
+ */
+std::string Alliance::get_ambush_message() const
+{
+    return _("襲撃だ！", "You are ambushed!");
+}
+
+/*!
+ * @brief AllianceTypeからタグを取得する
+ * @param alliance_type AllianceType
+ * @return タグ文字列
+ */
+std::string get_alliance_type_tag(AllianceType alliance_type)
+{
+    auto it = alliance_list.find(alliance_type);
+    if (it != alliance_list.end()) {
+        return it->second->tag;
+    }
+    return "UNKNOWN";
 }

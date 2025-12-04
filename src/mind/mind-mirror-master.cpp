@@ -148,8 +148,8 @@ bool binding_field(PlayerType *player_ptr, int dam)
             }
 
             if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
-                if (!(player_ptr->effects()->blindness().is_blind()) && panel_contains(y, x)) {
-                    print_bolt_pict(player_ptr, y, x, y, x, AttributeType::MANA);
+                if (!(player_ptr->effects()->blindness().is_blind()) && panel_contains(pos)) {
+                    print_bolt_pict(player_ptr, pos, pos, AttributeType::MANA);
                     move_cursor_relative(y, x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
@@ -255,7 +255,7 @@ bool set_multishadow(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 
@@ -303,7 +303,7 @@ bool set_dustrobe(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead) {
+    if (player_ptr->is_dead()) {
         return false;
     }
 

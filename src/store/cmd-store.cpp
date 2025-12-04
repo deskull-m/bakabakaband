@@ -3,7 +3,6 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"
-#include "floor/floor-events.h"
 #include "game-option/birth-options.h"
 #include "game-option/input-options.h"
 #include "inventory/inventory-object.h"
@@ -112,8 +111,8 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
         store.last_visit = world.game_turn;
     }
 
-    forget_lite(floor);
-    forget_view(floor);
+    floor.forget_lite();
+    floor.forget_view();
     world.character_icky_depth = 1;
     command_arg = 0;
     command_rep = 0;
@@ -123,6 +122,12 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     st_ptr = &towns_info[player_ptr->town_num].get_store(store_num);
     ot_ptr = &owners.at(store_num)[st_ptr->owner];
     store_top = 0;
+
+    // 店舗に入ったインシデントを記録
+    player_ptr->plus_incident_tree("STORE/ENTER", 1);
+    const std::string store_tag = get_store_sale_type_tag(store_num);
+    player_ptr->plus_incident_tree("STORE/ENTER/" + store_tag, 1);
+
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
     display_store(player_ptr, store_num);
     leave_store = false;

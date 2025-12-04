@@ -254,6 +254,12 @@ bool set_monster_monfear(PlayerType *player_ptr, MONSTER_IDX m_idx, int v)
     auto &floor = *player_ptr->current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     bool notice = false;
+
+    // 狂乱状態のモンスターは恐怖しない
+    if (monster.mflag2.has(MonsterConstantFlagType::FRENZY) && v > 0) {
+        return false;
+    }
+
     v = (v > 200) ? 200 : (v < 0) ? 0
                                   : v;
     if (v) {

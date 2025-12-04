@@ -230,7 +230,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
 
     if (monster_to_player || (monster_to_monster && monster_target.is_riding())) {
         int get_damage = take_hit(player_ptr, DAMAGE_NOESCAPE, dam, m_name);
-        if (player_ptr->tim_eyeeye && get_damage > 0 && !player_ptr->is_dead) {
+        if (player_ptr->tim_eyeeye && get_damage > 0 && !player_ptr->is_dead()) {
             const auto m_name_self = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
             msg_print(_(format("攻撃が%s自身を傷つけた！", m_name.data()), format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data())));
             project(player_ptr, 0, 0, monster.fy, monster.fx, get_damage, AttributeType::MISSILE, PROJECT_KILL);

@@ -256,7 +256,13 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_desc = _("周囲の空間が安定した気がする。", "You feel the universe is more stable around you.");
         break;
     case 100:
+        glm_ptr->muta_which = PlayerMutationType::IKISUGI;
+        glm_ptr->muta_desc = _("もうイキすぎることはなくなった。", "You no longer climax too much.");
+        break;
     case 101:
+        glm_ptr->muta_which = PlayerMutationType::ATT_NASTY;
+        glm_ptr->muta_desc = _("もうクッソ汚い輩を引きつけることはなくなった。", "You no longer attract nasty creatures.");
+        break;
     case 102:
         glm_ptr->muta_which = PlayerMutationType::NORMALITY;
         glm_ptr->muta_desc = _("普通に奇妙な感じがする。", "You feel normally strange.");
@@ -514,6 +520,32 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
     case 205:
         glm_ptr->muta_which = PlayerMutationType::BI_SEXUAL;
         glm_ptr->muta_desc = _("あなたは同性への興味を失った。", "You have lost interest in the same sex.");
+        break;
+    case 206:
+    case 207:
+        glm_ptr->muta_which = PlayerMutationType::WEAK_LOWER_BODY;
+        glm_ptr->muta_desc = _("あなたは下半身の筋トレも怠らず行った。", "You have not neglected your lower body workouts.");
+        break;
+    case 208:
+        glm_ptr->muta_which = PlayerMutationType::ATT_PERVERT;
+        if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+            glm_ptr->muta_desc = _("メスガキの変質者引きつけは治療対象外だ。", "Mesugaki's pervert attraction is not curable.");
+            glm_ptr->muta_which = PlayerMutationType::MAX;
+            break;
+        }
+        glm_ptr->muta_desc = _("もう変質者を引きつけることはなくなった。", "You no longer attract perverts.");
+        break;
+    case 209:
+        glm_ptr->muta_which = PlayerMutationType::DESTROYED_ASSHOLE;
+        glm_ptr->muta_desc = _(
+            "あなたの肛門は再生した！再び尻の穴に装備できるようになった。",
+            "Your asshole has regenerated! You can equip items there again.");
+        break;
+    case 210:
+        glm_ptr->muta_which = PlayerMutationType::LOST_HEAD;
+        glm_ptr->muta_desc = _(
+            "あなたの頭部は再生した！再び頭に装備できるようになった。",
+            "Your head has regenerated! You can equip items on your head again.");
         break;
     default:
         glm_ptr->muta_which = PlayerMutationType::MAX;

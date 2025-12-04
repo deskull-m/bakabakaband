@@ -10,11 +10,13 @@
 #include "player/player-status-table.h"
 #include "player/special-defense-types.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "system/terrain/terrain-definition.h"
 #include "tracking/health-bar-tracker.h"
 
 /*!<広域マップ移動時の自然回復処理カウンタ（広域マップ1マス毎に20回処理を基本とする）*/
@@ -192,6 +194,17 @@ void regenerate_monsters(PlayerType *player_ptr)
                 frac *= 2;
             }
 
+            // Apply hygiene-based regeneration modifier
+            const auto &grid = player_ptr->current_floor_ptr->get_grid(monster.get_position());
+            const auto &terrain = grid.get_terrain();
+            if (terrain.hygiene != 0) {
+                const int hygiene_modifier = 100 + terrain.hygiene;
+                frac = (frac * hygiene_modifier) / 100;
+                if (frac < 0) {
+                    frac = 0;
+                }
+            }
+
             monster.hp += frac;
             if (monster.hp > monster.maxhp) {
                 monster.hp = monster.maxhp;
@@ -237,6 +250,17 @@ void regenerate_captured_monsters(PlayerType *player_ptr)
 
             if (monrace.misc_flags.has(MonsterMiscType::REGENERATE)) {
                 frac *= 2;
+            }
+
+            // Apply hygiene-based regeneration modifier (based on player's current terrain)
+            const auto &grid = player_ptr->current_floor_ptr->get_grid(player_ptr->get_position());
+            const auto &terrain = grid.get_terrain();
+            if (terrain.hygiene != 0) {
+                const int hygiene_modifier = 100 + terrain.hygiene;
+                frac = (frac * hygiene_modifier) / 100;
+                if (frac < 0) {
+                    frac = 0;
+                }
             }
 
             o_ptr->captured_monster_current_hp += frac;

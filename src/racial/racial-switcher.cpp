@@ -52,6 +52,7 @@
 #include "player-status/player-hand-types.h"
 #include "player/attack-defense-types.h"
 #include "player/player-damage.h"
+#include "player/player-personality-types.h"
 #include "player/player-realm.h"
 #include "player/player-status.h"
 #include "racial/racial-android.h"
@@ -310,6 +311,17 @@ bool switch_mimic_racial_execution(PlayerType *player_ptr)
 
 bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
 {
+    // 性格ベースのレイシャル能力をチェック
+    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+        const auto dir = get_aim_dir(player_ptr);
+        if (!dir) {
+            return false;
+        }
+        msg_print(_("社会的抹殺ボルトを放った！", "You fire a social genocide bolt!"));
+        fire_bolt(player_ptr, AttributeType::SOCIAL_GENOCIDE, dir, player_ptr->lev * 2);
+        return true;
+    }
+
     switch (player_ptr->prace) {
     case PlayerRaceType::DWARF:
         msg_print(_("周囲を調べた。", "You examine your surroundings."));

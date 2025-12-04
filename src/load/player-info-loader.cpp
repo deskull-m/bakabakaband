@@ -1,4 +1,5 @@
 #include "load/player-info-loader.h"
+#include "combat/martial-arts-style.h"
 #include "load/angband-version-comparer.h"
 #include "load/birth-loader.h"
 #include "load/dummy-loader.h"
@@ -120,6 +121,14 @@ void rd_experience(PlayerType *player_ptr)
 
     // resreved skills
     strip_bytes(sizeof(int16_t) * (MAX_SKILLS - PLAYER_SKILL_KIND_TYPE_RANGE.size()));
+
+    // Load martial arts style
+    if (loading_savefile_version_is_older_than(30)) {
+        // 古いセーブファイルではデフォルト値を設定
+        player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
+    } else {
+        player_ptr->martial_arts_style = static_cast<MartialArtsStyleType>(rd_s16b());
+    }
 }
 
 void rd_skills(PlayerType *player_ptr)
@@ -413,6 +422,16 @@ static void rd_player_status(PlayerType *player_ptr)
             id = rd_s32b();
             count = rd_s32b();
             player_ptr->incident[(INCIDENT)id] = count;
+        }
+    }
+
+    // Load incident_tree (string-keyed, tree-structured incidents)
+    if (!loading_savefile_version_is_older_than(31)) {
+        int32_t num = rd_s32b();
+        for (int32_t i = 0; i < num; i++) {
+            std::string key = rd_string();
+            int32_t count = rd_s32b();
+            player_ptr->incident_tree[key] = count;
         }
     }
 }

@@ -124,6 +124,10 @@ void set_monster_blow_method(lore_type *lore_ptr, int m)
         lore_ptr->p = _("しまっちゃう", "put away");
         lore_ptr->pc = TERM_L_WHITE;
         break;
+    case RaceBlowMethodType::CHOKE:
+        lore_ptr->p = _("絞める", "choke");
+        lore_ptr->pc = TERM_L_RED;
+        break;
 
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::MAX:
@@ -295,6 +299,10 @@ void set_monster_blow_effect(lore_type *lore_ptr, int m)
     case RaceBlowEffectType::LOCKUP:
         lore_ptr->q = _("閉じ込める", "lock up");
         lore_ptr->qc = TERM_VIOLET;
+        break;
+    case RaceBlowEffectType::DESTROY_ASSHOLE:
+        lore_ptr->q = _("肛門を破壊する", "destroy asshole");
+        lore_ptr->qc = TERM_L_RED;
         break;
     case RaceBlowEffectType::FLAVOR:
         // フレーバー打撃には何の効果もないので付加説明もない。

@@ -12,6 +12,7 @@
  */
 
 #include "save/save.h"
+#include "alliance/alliance.h"
 #include "core/object-compressor.h"
 #include "dungeon/quest.h"
 #include "inventory/inventory-slot-types.h"
@@ -21,6 +22,7 @@
 #include "locale/character-encoding.h"
 #include "monster/monster-compaction.h"
 #include "player/player-status.h"
+#include "save/alliance-writer.h"
 #include "save/floor-writer.h"
 #include "save/info-writer.h"
 #include "save/item-writer.h"
@@ -179,6 +181,8 @@ static bool wr_savefile_new(PlayerType *player_ptr)
     wr_FlagGroup(world.sf_winner, wr_byte);
     wr_FlagGroup(world.sf_retired, wr_byte);
 
+    wr_alliance_base_power();
+
     wr_player(player_ptr);
     tmp16u = PY_MAX_LEVEL;
     wr_u16b(tmp16u);
@@ -223,13 +227,13 @@ static bool wr_savefile_new(PlayerType *player_ptr)
 
     wr_s16b(player_ptr->pet_follow_distance);
     wr_s16b(player_ptr->pet_extra_flags);
-    if (AngbandSystem::get_instance().is_awaiting_report_status() || !player_ptr->is_dead) {
+    if (AngbandSystem::get_instance().is_awaiting_report_status() || !player_ptr->is_dead()) {
         wr_string(screen_dump);
     } else {
         wr_string("");
     }
 
-    if (!player_ptr->is_dead) {
+    if (!player_ptr->is_dead()) {
         if (!wr_dungeon(player_ptr)) {
             return false;
         }

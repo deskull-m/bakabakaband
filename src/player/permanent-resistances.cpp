@@ -29,7 +29,7 @@ static void add_mutation_flags(PlayerType *player_ptr, TrFlags &flags)
     if (player_ptr->muta.has(PlayerMutationType::FLESH_ROT)) {
         flags.reset(TR_REGEN);
     }
-    if (player_ptr->muta.has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG })) {
+    if (player_ptr->muta.has_any_of({ PlayerMutationType::XTRA_FAT, PlayerMutationType::XTRA_LEGS, PlayerMutationType::SHORT_LEG, PlayerMutationType::WEAK_LOWER_BODY })) {
         flags.set(TR_SPEED);
     }
     if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {
@@ -68,6 +68,7 @@ static void add_personality_flags(PlayerType *player_ptr, TrFlags &flags)
     if (player_ptr->ppersonality == PERSONALITY_SEXY) {
         flags.set(TR_AGGRAVATE);
     }
+
     if (player_ptr->ppersonality == PERSONALITY_CHARGEMAN) {
         flags.set(TR_RES_CONF);
     }

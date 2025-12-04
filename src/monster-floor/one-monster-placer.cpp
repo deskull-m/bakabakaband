@@ -300,18 +300,56 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         }
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(15)) {
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(100)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::HUGE);
+    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+               m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(15)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::LARGE);
+    }
+
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::LARGE) &&
+        m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(18)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::SMALL);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
+    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+               monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
+               m_ptr->mflag2.has_not(MonsterConstantFlagType::FAT) && one_in_(25)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::GAUNT);
+    }
+
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        monrace.kind_flags.has(MonsterKindType::HUMAN) && one_in_(80)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::NAKED);
+    }
+
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
+        monrace.kind_flags.has_not(MonsterKindType::UNDEAD) && one_in_(50)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::ZOMBIFIED);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.misc_flags.has(MonsterMiscType::NO_WAIFUZATION) && one_in_(20)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
+    }
+
+    // 違法改造フラグの付与
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        (monrace.kind_flags.has(MonsterKindType::GOLEM) || monrace.kind_flags.has(MonsterKindType::ROBOT)) &&
+        one_in_(40)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+    }
+
+    // 軽量化フラグの付与
+    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
+        monrace.kind_flags.has(MonsterKindType::GOLEM) &&
+        one_in_(15)) {
+        m_ptr->mflag2.set(MonsterConstantFlagType::LIGHTWEIGHT);
     }
 
     if (m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
@@ -387,13 +425,38 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->max_maxhp = new_monrace.hit_dice.roll();
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+        m_ptr->max_maxhp *= (randint1(8) + 15) / 8;
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    } else if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+        m_ptr->max_maxhp *= (randint1(2) + 4) / 8;
+        m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::FAT)) {
         m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+        m_ptr->max_maxhp *= (randint1(3) + 4) / 8;
+        m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+        m_ptr->max_maxhp *= (randint1(3) + 5) / 8;
+        m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
+        // ゾンビ化したモンスターにUNDEADフラグを付与
+        m_ptr->get_monrace().kind_flags.set(MonsterKindType::UNDEAD);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        m_ptr->max_maxhp *= (randint1(3) + 10) / 8; // 1.5倍～1.75倍のHPボーナス
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+        m_ptr->max_maxhp *= (randint1(2) + 5) / 8; // 0.625倍～0.75倍のHP減少
+        m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
 
     // Set MALE kind flag based on monster's sex
@@ -424,6 +487,22 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     }
 
     m_ptr->set_individual_speed(floor.inside_arena);
+
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+        m_ptr->mspeed -= randint1(2) + 2;
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+        m_ptr->mspeed -= randint1(3);
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+        m_ptr->mspeed += randint1(2) + 1;
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        m_ptr->mspeed += randint1(5) + 3; // +3～+7の加速ボーナス
+    }
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+        m_ptr->mspeed += randint1(3) + 2; // +2～+4の加速ボーナス
+    }
 
     if (any_bits(mode, PM_HASTE)) {
         (void)set_monster_fast(player_ptr, g_ptr->m_idx, 100);

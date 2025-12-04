@@ -1,5 +1,6 @@
 #include "birth/birth-stat.h"
 #include "birth/auto-roller.h"
+#include "combat/martial-arts-style.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -96,11 +97,11 @@ void get_stats(PlayerType *player_ptr)
  */
 uint16_t get_expfact(PlayerType *player_ptr)
 {
-    uint16_t expfact = rp_ptr->r_exp;
+    uint16_t expfact = player_ptr->race->r_exp;
 
     PlayerRace pr(player_ptr);
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        expfact += cp_ptr->c_exp;
+        expfact += (*player_ptr->pclass_ref).c_exp;
     }
 
     auto is_race_gaining_additional_speed = pr.equals(PlayerRaceType::KLACKON) || pr.equals(PlayerRaceType::SPRITE);
@@ -150,8 +151,11 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
         player_ptr->skill_exp[i] = class_skills_info[pclass].s_start[i];
     }
 
-    const auto r_mhp = is_sorcerer ? rp_ptr->r_mhp / 2 : rp_ptr->r_mhp;
-    player_ptr->hit_dice = Dice(1, r_mhp + cp_ptr->c_mhp + ap_ptr->a_mhp);
+    // 武術スタイルの初期設定
+    player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
+
+    const auto r_mhp = is_sorcerer ? player_ptr->race->r_mhp / 2 : player_ptr->race->r_mhp;
+    player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
     if (roll_hitdie) {
         roll_hitdice(player_ptr, SPOP_NO_UPDATE);
     }

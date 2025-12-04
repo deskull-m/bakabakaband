@@ -178,7 +178,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         set_singing_song_effect(player_ptr, MUSIC_DETECT);
     }
 
-    if (!player_ptr->playing || player_ptr->is_dead) {
+    if (!player_ptr->playing || player_ptr->is_dead()) {
         return;
     }
 
@@ -236,7 +236,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
             term_fresh_force();
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead) {
+        if (!player_ptr->playing || player_ptr->is_dead()) {
             break;
         }
 
@@ -248,7 +248,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
             term_fresh_force();
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead) {
+        if (!player_ptr->playing || player_ptr->is_dead()) {
             break;
         }
 
@@ -260,7 +260,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
             term_fresh_force();
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead || wc_ptr->is_blown_away()) {
+        if (!player_ptr->playing || player_ptr->is_dead() || wc_ptr->is_blown_away()) {
             break;
         }
 
@@ -289,7 +289,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         monrace_questor.misc_flags.reset(MonsterMiscType::QUESTOR);
     }
 
-    if (player_ptr->playing && !player_ptr->is_dead) {
+    if (player_ptr->playing && !player_ptr->is_dead()) {
         /*
          * Maintain Unique monsters and artifact, save current
          * floor, then prepare next floor
