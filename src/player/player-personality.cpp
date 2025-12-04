@@ -89,4 +89,4 @@ const player_personality personality_info[MAX_PERSONALITIES] = {
 
 };
 
-const player_personality *ap_ptr;
+// ap_ptr is now a member named 'personality' in PlayerType
