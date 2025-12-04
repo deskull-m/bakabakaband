@@ -173,7 +173,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = player_ptr->rp_ptr->title.en_string();
+        v = player_ptr->race->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
         v = cp_ptr->title.en_string();
     } else if (streq(b + 1, "REALM1")) {
