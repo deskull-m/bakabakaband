@@ -714,7 +714,7 @@ static void update_max_mana(PlayerType *player_ptr)
     if (pc.equals(PlayerClassType::SAMURAI)) {
         msp = (adj_mag_mana[player_ptr->stat_index[mp_ptr->spell_stat]] + 10) * 2;
         if (msp) {
-            msp += (msp * player_ptr->rp_ptr->r_adj[mp_ptr->spell_stat] / 20);
+            msp += (msp * player_ptr->race->r_adj[mp_ptr->spell_stat] / 20);
         }
     } else {
         msp = adj_mag_mana[player_ptr->stat_index[mp_ptr->spell_stat]] * (levels + 3) / 4;
@@ -722,7 +722,7 @@ static void update_max_mana(PlayerType *player_ptr)
             msp++;
         }
         if (msp) {
-            msp += (msp * player_ptr->rp_ptr->r_adj[mp_ptr->spell_stat] / 20);
+            msp += (msp * player_ptr->race->r_adj[mp_ptr->spell_stat] / 20);
         }
         if (msp && (player_ptr->ppersonality == PERSONALITY_MUNCHKIN)) {
             msp += msp / 2;
@@ -1026,18 +1026,18 @@ short calc_num_fire(PlayerType *player_ptr, const ItemEntity *o_ptr)
 static ACTION_SKILL_POWER calc_disarming(PlayerType *player_ptr)
 {
     ACTION_SKILL_POWER pow;
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
 
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
-    pow = tmp_rp_ptr->r_dis + player_class.c_dis + player_personality.a_dis;
+    pow = tmp_race_ptr->r_dis + player_class.c_dis + player_personality.a_dis;
     pow += ((cp_ptr->x_dis * player_ptr->lev / 10) + (ap_ptr->a_dis * player_ptr->lev / 50));
     pow += adj_dex_dis[player_ptr->stat_index[A_DEX]];
     pow += adj_int_dis[player_ptr->stat_index[A_INT]];
@@ -1058,18 +1058,18 @@ static ACTION_SKILL_POWER calc_disarming(PlayerType *player_ptr)
 static ACTION_SKILL_POWER calc_device_ability(PlayerType *player_ptr)
 {
     ACTION_SKILL_POWER pow;
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
 
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
-    pow = tmp_rp_ptr->r_dev + player_class.c_dev + player_personality.a_dev;
+    pow = tmp_race_ptr->r_dev + player_class.c_dev + player_personality.a_dev;
     pow += ((player_class.x_dev * player_ptr->lev / 10) + (ap_ptr->a_dev * player_ptr->lev / 50));
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -1114,18 +1114,18 @@ static ACTION_SKILL_POWER calc_device_ability(PlayerType *player_ptr)
 static ACTION_SKILL_POWER calc_saving_throw(PlayerType *player_ptr)
 {
     ACTION_SKILL_POWER pow;
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
 
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
-    pow = tmp_rp_ptr->r_sav + player_class.c_sav + player_personality.a_sav;
+    pow = tmp_race_ptr->r_sav + player_class.c_sav + player_personality.a_sav;
     pow += ((cp_ptr->x_sav * player_ptr->lev / 10) + (ap_ptr->a_sav * player_ptr->lev / 50));
 
     if (player_ptr->muta.has(PlayerMutationType::MAGIC_RES)) {
@@ -1187,17 +1187,17 @@ static ACTION_SKILL_POWER calc_saving_throw(PlayerType *player_ptr)
 static ACTION_SKILL_POWER calc_search(PlayerType *player_ptr)
 {
     ACTION_SKILL_POWER pow;
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
 
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
-    pow = tmp_rp_ptr->r_srh + player_class.c_srh + player_personality.a_srh;
+    pow = tmp_race_ptr->r_srh + player_class.c_srh + player_personality.a_srh;
     pow += (player_class.x_srh * player_ptr->lev / 10);
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -1237,16 +1237,16 @@ static ACTION_SKILL_POWER calc_search(PlayerType *player_ptr)
 static ACTION_SKILL_POWER calc_search_freq(PlayerType *player_ptr)
 {
     ACTION_SKILL_POWER pow;
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
-    pow = tmp_rp_ptr->r_fos + player_class.c_fos + player_personality.a_fos;
+    pow = tmp_race_ptr->r_fos + player_class.c_fos + player_personality.a_fos;
     pow += (player_class.x_fos * player_ptr->lev / 10);
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -1284,14 +1284,14 @@ static ACTION_SKILL_POWER calc_to_hit_melee(PlayerType *player_ptr)
     ACTION_SKILL_POWER pow;
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
-    pow = tmp_rp_ptr->r_thn + player_class.c_thn + player_personality.a_thn;
+    pow = tmp_race_ptr->r_thn + player_class.c_thn + player_personality.a_thn;
     pow += ((player_class.x_thn * player_ptr->lev / 10) + (player_personality.a_thn * player_ptr->lev / 50));
     return pow;
 }
@@ -1308,14 +1308,14 @@ static ACTION_SKILL_POWER calc_to_hit_shoot(PlayerType *player_ptr)
     ACTION_SKILL_POWER pow;
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
-    pow = tmp_rp_ptr->r_thb + player_class.c_thb + player_personality.a_thb;
+    pow = tmp_race_ptr->r_thb + player_class.c_thb + player_personality.a_thb;
     pow += ((player_class.x_thb * player_ptr->lev / 10) + (player_personality.a_thb * player_ptr->lev / 50));
     return pow;
 }
@@ -1333,14 +1333,14 @@ static ACTION_SKILL_POWER calc_to_hit_throw(PlayerType *player_ptr)
     ACTION_SKILL_POWER pow;
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
-    const player_race_info *tmp_rp_ptr;
+    const player_race_info *tmp_race_ptr;
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        tmp_rp_ptr = &mimic_info.at(player_ptr->mimic_form);
+        tmp_race_ptr = &mimic_info.at(player_ptr->mimic_form);
     } else {
-        tmp_rp_ptr = &race_info[enum2i(player_ptr->prace)];
+        tmp_race_ptr = &race_info[enum2i(player_ptr->prace)];
     }
 
-    pow = tmp_rp_ptr->r_thb + player_class.c_thb + player_personality.a_thb;
+    pow = tmp_race_ptr->r_thb + player_class.c_thb + player_personality.a_thb;
     pow += ((player_class.x_thb * player_ptr->lev / 10) + (player_personality.a_thb * player_ptr->lev / 50));
 
     if (is_shero(player_ptr)) {

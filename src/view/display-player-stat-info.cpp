@@ -146,7 +146,7 @@ static void display_basic_stat_value(PlayerType *player_ptr, int stat_num, int r
 static void process_stats(PlayerType *player_ptr, int row, int stat_col)
 {
     for (int i = 0; i < A_MAX; i++) {
-        int r_adj = player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).r_adj[i] : player_ptr->rp_ptr->r_adj[i];
+        int r_adj = player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).r_adj[i] : player_ptr->race->r_adj[i];
         int e_adj = calc_basic_stat(player_ptr, i);
         r_adj += compensate_special_race(player_ptr, i);
         e_adj -= r_adj;

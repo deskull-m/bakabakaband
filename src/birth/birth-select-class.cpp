@@ -24,7 +24,7 @@ static std::string birth_class_label(PlayerType *player_ptr, int cs, concptr sym
     ss << sym[cs] << p2;
     const auto pclass = i2enum<PlayerClassType>(cs);
     const auto title = class_info.at(pclass).title;
-    if (!(player_ptr->rp_ptr->choice & (1UL << cs))) {
+    if (!(player_ptr->race->choice & (1UL << cs))) {
         ss << '(' << title << ')';
     } else {
         ss << title;

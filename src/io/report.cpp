@@ -253,7 +253,7 @@ bool report_score(PlayerType *player_ptr)
     const auto &igd = InnerGameData::get_instance();
     score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
              << fmt::format("sex: {}\n", enum2i(player_ptr->psex))
-             << fmt::format("race: {}\n", player_ptr->rp_ptr->title)
+             << fmt::format("race: {}\n", player_ptr->race->title)
              << fmt::format("class: {}\n", cp_ptr->title)
              << fmt::format("seikaku: {}\n", personality_desc)
              << fmt::format("realm1: {}\n", realm1_name)

@@ -107,4 +107,4 @@ struct player_race_info {
     std::vector<player_race_condition> extra_flags;
 };
 
-// rp_ptr is now a member of PlayerType
+// race is now a member of PlayerType

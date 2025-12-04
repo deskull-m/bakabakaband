@@ -171,7 +171,7 @@ static void decide_initial_stat(PlayerType *player_ptr, int *cval)
  */
 static std::string cursor_of_adjusted_stat(PlayerType *player_ptr, const int *cval, int cs)
 {
-    auto j = player_ptr->rp_ptr->r_adj[cs] + cp_ptr->c_adj[cs] + ap_ptr->a_adj[cs];
+    auto j = player_ptr->race->r_adj[cs] + cp_ptr->c_adj[cs] + ap_ptr->a_adj[cs];
     auto m = adjust_stat(17, j);
     std::string maxv;
     if (m > 18) {
@@ -188,7 +188,7 @@ static std::string cursor_of_adjusted_stat(PlayerType *player_ptr, const int *cv
         inp = format("%2d", m);
     }
 
-    return format("%6s       %2d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], player_ptr->rp_ptr->r_adj[cs], cp_ptr->c_adj[cs], ap_ptr->a_adj[cs], inp.data(), maxv.data());
+    return format("%6s       %2d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], player_ptr->race->r_adj[cs], cp_ptr->c_adj[cs], ap_ptr->a_adj[cs], inp.data(), maxv.data());
 }
 
 /*!
@@ -376,11 +376,11 @@ bool get_chara_limits(PlayerType *player_ptr, chara_limit_type *chara_limit_ptr)
 
     int max_percent, min_percent;
     if (player_ptr->psex == SEX_MALE) {
-        max_percent = (int)(player_ptr->rp_ptr->m_b_ht + player_ptr->rp_ptr->m_m_ht * 4 - 1) * 100 / (int)(player_ptr->rp_ptr->m_b_ht);
-        min_percent = (int)(player_ptr->rp_ptr->m_b_ht - player_ptr->rp_ptr->m_m_ht * 4 + 1) * 100 / (int)(player_ptr->rp_ptr->m_b_ht);
+        max_percent = (int)(player_ptr->race->m_b_ht + player_ptr->race->m_m_ht * 4 - 1) * 100 / (int)(player_ptr->race->m_b_ht);
+        min_percent = (int)(player_ptr->race->m_b_ht - player_ptr->race->m_m_ht * 4 + 1) * 100 / (int)(player_ptr->race->m_b_ht);
     } else {
-        max_percent = (int)(player_ptr->rp_ptr->f_b_ht + player_ptr->rp_ptr->f_m_ht * 4 - 1) * 100 / (int)(player_ptr->rp_ptr->f_b_ht);
-        min_percent = (int)(player_ptr->rp_ptr->f_b_ht - player_ptr->rp_ptr->f_m_ht * 4 + 1) * 100 / (int)(player_ptr->rp_ptr->f_b_ht);
+        max_percent = (int)(player_ptr->race->f_b_ht + player_ptr->race->f_m_ht * 4 - 1) * 100 / (int)(player_ptr->race->f_b_ht);
+        min_percent = (int)(player_ptr->race->f_b_ht - player_ptr->race->f_m_ht * 4 + 1) * 100 / (int)(player_ptr->race->f_b_ht);
     }
 
     put_str(_("体格/地位の最小値/最大値を設定して下さい。", "Set minimum/maximum attribute."), 10, 10);
@@ -392,38 +392,38 @@ bool get_chara_limits(PlayerType *player_ptr, chara_limit_type *chara_limit_ptr)
         int m;
         switch (i) {
         case 0: /* Minimum age */
-            m = player_ptr->rp_ptr->b_age + 1;
+            m = player_ptr->race->b_age + 1;
             break;
         case 1: /* Maximum age */
-            m = player_ptr->rp_ptr->b_age + player_ptr->rp_ptr->m_age;
+            m = player_ptr->race->b_age + player_ptr->race->m_age;
             break;
 
         case 2: /* Minimum height */
             if (player_ptr->psex == SEX_MALE) {
-                m = player_ptr->rp_ptr->m_b_ht - player_ptr->rp_ptr->m_m_ht * 4 + 1;
+                m = player_ptr->race->m_b_ht - player_ptr->race->m_m_ht * 4 + 1;
             } else {
-                m = player_ptr->rp_ptr->f_b_ht - player_ptr->rp_ptr->f_m_ht * 4 + 1;
+                m = player_ptr->race->f_b_ht - player_ptr->race->f_m_ht * 4 + 1;
             }
             break;
         case 3: /* Maximum height */
             if (player_ptr->psex == SEX_MALE) {
-                m = player_ptr->rp_ptr->m_b_ht + player_ptr->rp_ptr->m_m_ht * 4 - 1;
+                m = player_ptr->race->m_b_ht + player_ptr->race->m_m_ht * 4 - 1;
             } else {
-                m = player_ptr->rp_ptr->f_b_ht + player_ptr->rp_ptr->f_m_ht * 4 - 1;
+                m = player_ptr->race->f_b_ht + player_ptr->race->f_m_ht * 4 - 1;
             }
             break;
         case 4: /* Minimum weight */
             if (player_ptr->psex == SEX_MALE) {
-                m = (player_ptr->rp_ptr->m_b_wt * min_percent / 100) - (player_ptr->rp_ptr->m_m_wt * min_percent / 75) + 1;
+                m = (player_ptr->race->m_b_wt * min_percent / 100) - (player_ptr->race->m_m_wt * min_percent / 75) + 1;
             } else {
-                m = (player_ptr->rp_ptr->f_b_wt * min_percent / 100) - (player_ptr->rp_ptr->f_m_wt * min_percent / 75) + 1;
+                m = (player_ptr->race->f_b_wt * min_percent / 100) - (player_ptr->race->f_m_wt * min_percent / 75) + 1;
             }
             break;
         case 5: /* Maximum weight */
             if (player_ptr->psex == SEX_MALE) {
-                m = (player_ptr->rp_ptr->m_b_wt * max_percent / 100) + (player_ptr->rp_ptr->m_m_wt * max_percent / 75) - 1;
+                m = (player_ptr->race->m_b_wt * max_percent / 100) + (player_ptr->race->m_m_wt * max_percent / 75) - 1;
             } else {
-                m = (player_ptr->rp_ptr->f_b_wt * max_percent / 100) + (player_ptr->rp_ptr->f_m_wt * max_percent / 75) - 1;
+                m = (player_ptr->race->f_b_wt * max_percent / 100) + (player_ptr->race->f_m_wt * max_percent / 75) - 1;
             }
             break;
         case 6: /* Minimum prestige */

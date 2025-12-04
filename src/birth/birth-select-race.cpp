@@ -27,7 +27,7 @@ static std::string birth_race_label(int cs, concptr sym)
 static void enumerate_race_list(PlayerType *player_ptr, char *sym)
 {
     for (int n = 0; n < MAX_RACES; n++) {
-        player_ptr->rp_ptr = &race_info[n];
+        player_ptr->race = &race_info[n];
         if (n < 26) {
             sym[n] = I2A(n);
         } else {
@@ -52,24 +52,24 @@ static std::string display_race_stat(PlayerType *player_ptr, int cs, int *os, co
         put_str("                                   ", 5, 40);
         put_str("                                   ", 6, 40);
     } else {
-        player_ptr->rp_ptr = &race_info[cs];
-        c_put_str(TERM_L_BLUE, player_ptr->rp_ptr->title, 3, 40);
+        player_ptr->race = &race_info[cs];
+        c_put_str(TERM_L_BLUE, player_ptr->race->title, 3, 40);
         put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-        put_str(_("の種族修正", ": Race modification"), 3, 40 + player_ptr->rp_ptr->title->length());
+        put_str(_("の種族修正", ": Race modification"), 3, 40 + player_ptr->race->title->length());
 
-        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", player_ptr->rp_ptr->r_adj[0], player_ptr->rp_ptr->r_adj[1], player_ptr->rp_ptr->r_adj[2], player_ptr->rp_ptr->r_adj[3], player_ptr->rp_ptr->r_adj[4], player_ptr->rp_ptr->r_adj[5], (player_ptr->rp_ptr->r_exp - 100));
+        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", player_ptr->race->r_adj[0], player_ptr->race->r_adj[1], player_ptr->race->r_adj[2], player_ptr->race->r_adj[3], player_ptr->race->r_adj[4], player_ptr->race->r_adj[5], (player_ptr->race->r_exp - 100));
         c_put_str(TERM_L_BLUE, stats, 5, 40);
 
         put_str("HD ", 6, 40);
-        const auto hd = format("%2d", player_ptr->rp_ptr->r_mhp);
+        const auto hd = format("%2d", player_ptr->race->r_mhp);
         c_put_str(TERM_L_BLUE, hd, 6, 43);
 
         put_str(_("隠密", "Stealth"), 6, 47);
-        const auto stealth = format("%+2d", player_ptr->rp_ptr->r_stl);
+        const auto stealth = format("%+2d", player_ptr->race->r_stl);
         c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
         put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-        const auto infra = format(_("%2dft", "%2dft"), 10 * player_ptr->rp_ptr->infra);
+        const auto infra = format(_("%%2dft", "%%2dft"), 10 * player_ptr->race->infra);
         c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
     }
 
@@ -183,7 +183,7 @@ bool get_player_race(PlayerType *player_ptr)
     }
 
     player_ptr->prace = i2enum<PlayerRaceType>(k);
-    player_ptr->rp_ptr = &race_info[k];
-    c_put_str(TERM_L_BLUE, player_ptr->rp_ptr->title, 4, 15);
+    player_ptr->race = &race_info[k];
+    c_put_str(TERM_L_BLUE, player_ptr->race->title, 4, 15);
     return true;
 }
