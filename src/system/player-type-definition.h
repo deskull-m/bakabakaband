@@ -383,26 +383,6 @@ public:
 
     ARMOUR_CLASS ac{}; /*!< 装備無しの基本AC / Base ac */
 
-    ACTION_SKILL_POWER see_infra{}; /*!< 赤外線視能力の強さ /Infravision range */
-    ACTION_SKILL_POWER skill_dis{}; /*!< 行動技能値:解除能力 / Skill: Disarming */
-    ACTION_SKILL_POWER skill_dev{}; /*!< 行動技能値:魔道具使用 / Skill: Magic Devices */
-    ACTION_SKILL_POWER skill_sav{}; /*!< 行動技能値:魔法防御 / Skill: Saving throw */
-    ACTION_SKILL_POWER skill_stl{}; /*!< 行動技能値:隠密 / Skill: Stealth factor */
-
-    /*!
-     * 行動技能値:知覚 / Skill: Searching ability
-     * この値はsearch()による地形の隠し要素発見処理などで混乱、盲目、幻覚、無光源などの
-     * 状態異常がない限り、難易度修正などがないままそのままパーセンテージ値として使われる。
-     * 100以上ならば必ず全てのトラップなどを見つけることが出来る。
-     */
-    ACTION_SKILL_POWER skill_srh{};
-
-    ACTION_SKILL_POWER skill_fos{}; /*!< 行動技能値:探索 / Skill: Searching frequency */
-    ACTION_SKILL_POWER skill_thn{}; /*!< 行動技能値:打撃命中能力 / Skill: To hit (normal) */
-    ACTION_SKILL_POWER skill_thb{}; /*!< 行動技能値:射撃命中能力 / Skill: To hit (shooting) */
-    ACTION_SKILL_POWER skill_tht{}; /*!< 行動技能値:投射命中能力 / Skill: To hit (throwing) */
-    ACTION_SKILL_POWER skill_dig{}; /*!< 行動技能値:掘削 / Skill: Digging */
-
     int16_t num_blow[2]{}; /* Number of blows */
     int16_t num_fire{}; /* Number of shots */
 
