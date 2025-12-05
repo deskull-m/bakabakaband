@@ -8,6 +8,11 @@
 class FloorType;
 class ItemEntity;
 
+// Forward declarations for race/class/personality info
+struct player_race_info;
+struct player_personality;
+struct player_class_info;
+
 /*!
  * @brief プレイヤーとモンスターの共通基底クラス
  * @details PlayerTypeとMonsterEntityの実装を将来的に一元化するための基底クラス。
@@ -101,6 +106,11 @@ public:
      * @return プレイヤーならtrue、モンスターならfalse
      */
     virtual bool is_player() const = 0;
+
+    // 種族・職業・性格情報（参照風アクセス用）
+    const player_race_info *race{}; /*!< 現在の種族情報 / Current race info */
+    const player_personality *personality{}; /*!< 現在の性格情報 / Current personality info (accessed like reference) */
+    const player_class_info *pclass_ref{}; /*!< 現在の職業情報 / Current class info (accessed like reference) */
 
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
