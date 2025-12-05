@@ -106,6 +106,13 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         ct_ref.mimic = rd_s16b();
         ct_ref.special = rd_s16b();
 
+        // セーブファイルバージョン34以降でalliance_idxを読み込み
+        if (!loading_savefile_version_is_older_than(34)) {
+            ct_ref.alliance_idx = static_cast<AllianceType>(rd_s16b());
+        } else {
+            ct_ref.alliance_idx = AllianceType::NONE;
+        }
+
         // セーブファイルバージョン29以降でterrain_descriptionを読み込み
         if (!loading_savefile_version_is_older_than(29)) {
             ct_ref.terrain_description = rd_string();
@@ -132,6 +139,7 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
             grid.feat = templates[id].feat;
             grid.mimic = templates[id].mimic;
             grid.special = templates[id].special;
+            grid.alliance_idx = templates[id].alliance_idx;
             grid.terrain_description = templates[id].terrain_description;
 
             if (++x >= xmax) {
