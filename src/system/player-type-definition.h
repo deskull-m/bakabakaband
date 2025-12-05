@@ -252,10 +252,6 @@ public:
 
     bool select_ring_slot{};
 
-    const player_race_info *race{}; /* Current race info */
-    const player_personality *personality{}; /* Current personality info (accessed like reference) */
-    const player_class_info *pclass_ref{}; /* Current class info (accessed like reference) */
-
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */
 
