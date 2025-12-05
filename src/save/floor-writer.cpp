@@ -50,7 +50,7 @@ std::vector<GridTemplate> generate_sorted_grid_templates(const FloorType &floor)
             continue;
         }
 
-        templates.emplace_back(grid.info, grid.feat, grid.mimic, grid.special, static_cast<uint16_t>(1));
+        templates.emplace_back(grid.info, grid.feat, grid.mimic, grid.special, static_cast<uint16_t>(1), grid.alliance_idx);
         templates.back().terrain_description = grid.terrain_description;
     }
 
@@ -95,6 +95,7 @@ void wr_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         wr_s16b(ct_ref.feat);
         wr_s16b(ct_ref.mimic);
         wr_s16b(ct_ref.special);
+        wr_s16b(static_cast<int16_t>(ct_ref.alliance_idx)); // セーブファイルバージョン34以降でalliance_idxを保存
 
         // セーブファイルバージョン29以降でterrain_descriptionを保存
         wr_string(ct_ref.terrain_description);
