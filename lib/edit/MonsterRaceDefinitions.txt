@@ -42050,29 +42050,23 @@ D:$ It has sharp teeth specifically evolved for biting buttocks.
 D:人間の尻に対して異常な食欲を持つ奇妙な虫だ。
 D:尻を噛むために特別に進化した鋭い歯を持っている。
 
-N:2326:アナルアサシン
-E:Anal Assassin, the Silent Killer
+N:2326:『アナルアサシン』
+E:The Anal Assassin
 G:p:D
-I:130:45d12:30:65:120
-W:42:1:0:28000:0
-B:HIT:DESTROY_ASSHOLE:8d8
-B:HIT:HURT:6d6
+I:130:45d12:30:65:10
+W:35:2:0:8000:0
+B:ENEMA:DESTROY_ASSHOLE:8d10
+B:PUNCH:HURT:6d6
 B:KICK:HURT:5d5
-B:BITE:DESTROY_ASSHOLE:7d7
+B:ENEMA:DESTROY_ASSHOLE:8d10
+F:UNIQUE | MALE | DROP_CORPSE | DROP_GOOD | DROP_4D2
+F:ONLY_ITEM | OPEN_DOOR | BASH_DOOR | HOMO_SEXUAL | NASTY | 
+F:STUPID | PERVERT | HUMAN
+F:RES_TELE | NO_CONF
 S:1_IN_3
 S:TELE_TO | BLINK | HASTE | DRAIN_MANA
-F:UNIQUE | MALE | DROP_CORPSE | DROP_GOOD | DROP_4D2
-F:ONLY_ITEM | OPEN_DOOR | BASH_DOOR
-F:FORCE_SLEEP | SMART | KILL_BODY
-F:RES_TELE | NO_CONF | NO_SLEEP
-D:$The legendary assassin who strikes from the shadows with deadly precision,
-D:$ targeting the most vulnerable point of his victims. His attacks are
-D:$ swift, silent, and utterly devastating to one's dignity and posterior.
-D:$ Few have survived an encounter with this master of anal destruction.
-D:影から忍び寄り、獲物の最も脆弱な部位を正確に狙う伝説の暗殺者だ。
-D:その攻撃は迅速かつ静寂で、犠牲者の尊厳と尻を徹底的に破壊する。
-D:このアナル破壊の達人との遭遇から生還した者はほとんどいない。
-D:彼は尻を狙う技術を極めた暗殺者として恐れられている。
+D:$This man will lead you to anal ecstasy! Flee while you can! 
+D:この男はお前をケツイキへといざなうだろう！今のうちに逃げろ！
 
 # N: serial number : monster name
 # G: symbol : color
