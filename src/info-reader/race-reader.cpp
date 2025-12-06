@@ -388,12 +388,12 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &mo
                 }
 
                 if (s_tokens.size() == 2 && s_tokens[0] == "FATHER") {
-                    info_set_value(r_ptr->father_r_idx, s_tokens[1]);
+                    info_set_value(r_ptr->father, s_tokens[1]);
                     continue;
                 }
 
                 if (s_tokens.size() == 2 && s_tokens[0] == "MOTHER") {
-                    info_set_value(r_ptr->mother_r_idx, s_tokens[1]);
+                    info_set_value(r_ptr->mother, s_tokens[1]);
                     continue;
                 }
 
