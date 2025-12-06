@@ -42089,6 +42089,24 @@ D:遭遇すると延々と横に伸びて通行を阻むが、
 D:回り込もうとするのを諦めると消えてしまう。
 D:壁をすり抜ける能力を持ち、物理攻撃をほとんど受け付けない。
 
+N:2328:ルーンベア
+E:Rune Bear
+G:q:R
+I:120:80d40:20:100:30
+W:48:2:0:12000:0
+B:CLAW:HURT:8d8
+B:CLAW:HURT:8d8
+B:BITE:HURT:10d10
+B:CRUSH:HURT:7d7
+F:FORCE_MAXHP | BASH_DOOR | KILL_WALL | POWERFUL
+F:DROP_CORPSE | DROP_SKELETON | DROP_2D2 | DROP_GOOD
+F:ANIMAL | BEAR | WILD_WOOD | WILD_MOUNTAIN
+F:NO_FEAR
+F:REGENERATE | CAN_SWIM
+D:$They inhabit various regions of Elde.
+D:$ These are giant bears bearing shining runes upon their chests.
+D:エルデの各地に生息する。胸に輝くルーンをまとった巨大な熊だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
