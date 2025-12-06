@@ -42050,6 +42050,24 @@ D:$ It has sharp teeth specifically evolved for biting buttocks.
 D:人間の尻に対して異常な食欲を持つ奇妙な虫だ。
 D:尻を噛むために特別に進化した鋭い歯を持っている。
 
+N:2326:『アナルアサシン』
+E:The Anal Assassin
+G:p:D
+I:130:45d12:30:65:10
+W:35:2:0:8000:0
+B:ENEMA:DESTROY_ASSHOLE:8d10
+B:PUNCH:HURT:6d6
+B:KICK:HURT:5d5
+B:ENEMA:DESTROY_ASSHOLE:8d10
+F:UNIQUE | MALE | DROP_CORPSE | DROP_GOOD | DROP_4D2
+F:ONLY_ITEM | OPEN_DOOR | BASH_DOOR | HOMO_SEXUAL | NASTY | 
+F:STUPID | PERVERT | HUMAN
+F:RES_TELE | NO_CONF
+S:1_IN_3
+S:TELE_TO | BLINK | HASTE | DRAIN_MANA
+D:$This man will lead you to anal ecstasy! Flee while you can! 
+D:この男はお前をケツイキへといざなうだろう！今のうちに逃げろ！
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
