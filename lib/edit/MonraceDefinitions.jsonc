@@ -7871,6 +7871,7 @@
         "ja": "傷ついた熊で、人間を襲うこともある。",
         "en": "A wounded bear, who has occasionally attacked humans."
     },
+    "start_hp_percentage": 50,
     "flags": [
         "BASH_DOOR",
         "FORCE_MAXHP",
