@@ -42068,6 +42068,27 @@ S:TELE_TO | BLINK | HASTE | DRAIN_MANA
 D:$This man will lead you to anal ecstasy! Flee while you can! 
 D:この男はお前をケツイキへといざなうだろう！今のうちに逃げろ！
 
+N:2327:ぬりかべ
+E:Nurikabe
+G:#:W
+I:95:80d10:10:50:30
+W:15:3:0:200:0
+B:TOUCH:HURT:2d6
+B:TOUCH:HURT:2d6
+F:BASH_DOOR | COLD_BLOOD
+F:IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | WALL
+F:WEIRD_MIND | MOVE_BODY | PASS_WALL
+S:1_IN_8
+S:BLINK | TPORT
+D:$A mysterious wall yokai that appears suddenly to block travelers' paths.
+D:$ When encountered, it extends endlessly to prevent passage,
+D:$ but disappears if you give up trying to go around it.
+D:旅人の行く手を突然塞ぐ謎の壁の妖怪だ。
+D:遭遇すると延々と横に伸びて通行を阻むが、
+D:回り込もうとするのを諦めると消えてしまう。
+D:壁をすり抜ける能力を持ち、物理攻撃をほとんど受け付けない。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
