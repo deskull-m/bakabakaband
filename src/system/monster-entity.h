@@ -33,8 +33,6 @@ public:
     MonsterEntity(const MonsterEntity &) = default;
     MonsterEntity &operator=(const MonsterEntity &) = default;
 
-    MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
-    MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
     FloorType *current_floor_ptr{}; /*!< 所在フロアID（現状はFloorType構造体によるオブジェクトは1つしかないためソースコード設計上の意義以外はない）*/
 
 /* Sub-alignment flags for neutral monsters */

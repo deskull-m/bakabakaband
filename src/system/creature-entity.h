@@ -12,6 +12,7 @@ class ItemEntity;
 struct player_race_info;
 struct player_personality;
 struct player_class_info;
+enum class MonraceId : int16_t;
 
 /*!
  * @brief プレイヤーとモンスターの共通基底クラス
@@ -106,6 +107,10 @@ public:
      * @return プレイヤーならtrue、モンスターならfalse
      */
     virtual bool is_player() const = 0;
+
+    // モンスター種族ID（プレイヤーの場合は0）
+    MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
+    MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
 
     // 種族・職業・性格情報（参照風アクセス用）
     const player_race_info *race{}; /*!< 現在の種族情報 / Current race info */
