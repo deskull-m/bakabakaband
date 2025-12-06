@@ -150,6 +150,7 @@ void wr_player(PlayerType *player_ptr)
     wr_s32b(player_ptr->mhp);
     wr_s32b(player_ptr->chp);
     wr_u32b(player_ptr->chp_frac);
+    wr_s32b(player_ptr->dealt_damage); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
     wr_s32b(player_ptr->msp);
     wr_s32b(player_ptr->csp);
     wr_u32b(player_ptr->csp_frac);

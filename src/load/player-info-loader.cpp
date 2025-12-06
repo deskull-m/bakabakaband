@@ -248,6 +248,13 @@ static void rd_hp(PlayerType *player_ptr)
     player_ptr->mhp = rd_s32b();
     player_ptr->chp = rd_s32b();
     player_ptr->chp_frac = rd_u32b();
+
+    // セーブファイルバージョン35以降で与ダメージ蓄積を読み込み
+    if (!loading_savefile_version_is_older_than(35)) {
+        player_ptr->dealt_damage = rd_s32b();
+    } else {
+        player_ptr->dealt_damage = 0;
+    }
 }
 
 /*!
