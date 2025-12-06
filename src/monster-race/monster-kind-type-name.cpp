@@ -279,6 +279,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("猪", "boar");
     case MonsterKindType::ARCHER:
         return _("アーチャー", "archer");
+    case MonsterKindType::GUNNER:
+        return _("ガンナー", "gunner");
     case MonsterKindType::SQUIRREL:
         return _("リス", "squirrel");
     case MonsterKindType::BARD:
@@ -566,6 +568,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "BOAR";
     case MonsterKindType::ARCHER:
         return "ARCHER";
+    case MonsterKindType::GUNNER:
+        return "GUNNER";
     case MonsterKindType::SQUIRREL:
         return "SQUIRREL";
     case MonsterKindType::BARD:

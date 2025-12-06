@@ -519,6 +519,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "PLANESWALKER", MonsterKindType::PLANESWALKER }, // プレインズウォーカー
     { "BOAR", MonsterKindType::BOAR }, // 猪
     { "ARCHER", MonsterKindType::ARCHER }, // アーチャー
+    { "GUNNER", MonsterKindType::GUNNER }, // ガンナー
     { "SQUIRREL", MonsterKindType::SQUIRREL }, // リス
     { "BARD", MonsterKindType::BARD }, // 呀遊詩人
     { "MAGICAL_GIRL", MonsterKindType::MAGICAL_GIRL }, // 魔法少女

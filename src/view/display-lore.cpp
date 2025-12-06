@@ -529,6 +529,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::GUNNER)) {
+        hook_c_roff(TERM_L_DARK, _("ガンナー", " gunner"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::FROG)) {
         hook_c_roff(TERM_GREEN, _("カエル", " frog"));
         has_specific_kind = true;

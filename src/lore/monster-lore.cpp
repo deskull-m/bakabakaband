@@ -364,6 +364,14 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::CHAMELEON);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ARCHER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::ARCHER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GUNNER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GUNNER);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::APE)) {
         lore_ptr->kind_flags.set(MonsterKindType::APE);
     }
