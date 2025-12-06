@@ -4450,7 +4450,8 @@
         "WILD_WOOD",
         "HAS_LITE_1",
         "ALIEN",
-        "SOLDIER"
+        "SOLDIER",
+        "GUNNER"
     ]
 },
 {
@@ -51037,6 +51038,7 @@
         "RAND_25",
         "EVIL",
         "DEMON",
+        "GUNNER",
         "DROP_3D2",
         "DROP_GOOD",
         "ONLY_ITEM",
@@ -53382,6 +53384,7 @@
         "RAND_25",
         "EVIL",
         "DEMON",
+        "GUNNER",
         "DROP_2D2",
         "DROP_3D2",
         "ONLY_ITEM",
@@ -98342,6 +98345,7 @@
         "NO_SLEEP",
         "NO_CONF",
         "SOLDIER",
+        "GUNNER",
         "HUMAN",
         "DROP_CORPSE",
         "DROP_SKELETON"
@@ -102530,6 +102534,7 @@
         "DROP_1D2",
         "SMART",
         "SOLDIER",
+        "GUNNER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "HUMAN",
