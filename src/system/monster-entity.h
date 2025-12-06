@@ -47,7 +47,6 @@ public:
     int hp{}; /*!< 現在のHP / Current Hit points */
     int maxhp{}; /*!< 現在の最大HP(衰弱効果などにより低下したものの反映) / Max Hit points */
     int max_maxhp{}; /*!< 生成時の初期最大HP / Max Max Hit points */
-    int dealt_damage{}; /*!< これまでに蓄積して与えてきたダメージ / Sum of damages dealt by player */
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
     byte mspeed{}; /*!< モンスターの個体加速値 / Monster "speed" */

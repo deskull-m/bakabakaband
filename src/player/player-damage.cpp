@@ -369,6 +369,14 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         player_ptr->chp = 0;
     }
 
+    // 与ダメージの蓄積（プレイヤーが受けたダメージとして記録）
+    if (damage > 0 && damage_type != DAMAGE_USELIFE && damage_type != DAMAGE_LOSELIFE) {
+        player_ptr->dealt_damage += damage;
+        if (player_ptr->dealt_damage > 999999999) {
+            player_ptr->dealt_damage = 999999999; // オーバーフロー防止
+        }
+    }
+
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);

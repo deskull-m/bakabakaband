@@ -112,6 +112,9 @@ public:
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
     MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
 
+    // 与ダメージ蓄積（プレイヤー・モンスター共通）
+    int32_t dealt_damage{}; /*!< これまでに蓄積して与えてきたダメージ / Sum of damages dealt by player or to monster */
+
     // 種族・職業・性格情報（参照風アクセス用）
     const player_race_info *race{}; /*!< 現在の種族情報 / Current race info */
     const player_personality *personality{}; /*!< 現在の性格情報 / Current personality info (accessed like reference) */
