@@ -306,6 +306,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_L_BLUE, _("ミスリルで出来た", " made of mithril"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::ADAMANTITE)) {
+        hook_c_roff(TERM_L_DARK, _("アダマンタイトで出来た", " made of adamantite"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {

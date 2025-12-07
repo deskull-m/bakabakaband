@@ -148,5 +148,6 @@ enum class MonsterKindType {
     SILVER = 144, // 銀で出来た
     GOLD = 145, // 金で出来た
     MITHRIL = 146, // ミスリルで出来た
+    ADAMANTITE = 147, // アダマンタイトで出来た
     MAX,
 };
