@@ -143,5 +143,6 @@ enum class MonsterKindType {
     WEREWOLF = 139, // 人狼
     WOODEN = 140, // 木で出来た
     IRON = 141, // 鉄で出来た
+    COPPER = 142, // 銅で出来た
     MAX,
 };

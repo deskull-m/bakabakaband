@@ -286,6 +286,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_SLATE, _("鉄で出来た", " made of iron"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::COPPER)) {
+        hook_c_roff(TERM_ORANGE, _("銅で出来た", " made of copper"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {

@@ -150134,7 +150134,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "GOLEM"
+        "GOLEM",
+        "COPPER"
     ],
     "skill": {
         "list": [
