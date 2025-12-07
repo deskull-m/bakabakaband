@@ -302,6 +302,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_YELLOW, _("金で出来た", " made of gold"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::MITHRIL)) {
+        hook_c_roff(TERM_L_BLUE, _("ミスリルで出来た", " made of mithril"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {
