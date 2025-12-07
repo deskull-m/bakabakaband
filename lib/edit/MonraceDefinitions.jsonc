@@ -134230,6 +134230,7 @@
         "HURT_ROCK",
         "NONLIVING",
         "HURT_FIRE",
+        "WOODEN",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
