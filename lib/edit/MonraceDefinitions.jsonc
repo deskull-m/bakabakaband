@@ -150147,5 +150147,72 @@
         ],
         "probability": "1_IN_8"
     }
+},
+{
+    "id": 2330,
+    "name": {
+        "ja": "銀のゴーレム",
+        "en": "Silver golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Light Gray"
+    },
+    "speed": 5,
+    "hit_point": "100d14",
+    "vision": 12,
+    "armor_class": 95,
+    "alertness": 10,
+    "level": 28,
+    "rarity": 2,
+    "exp": 200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d8"
+        }
+    ],
+    "flavor": {
+        "ja": "輝く銀でできた巨像で、魔力を放ちながら優雅に動く。",
+        "en": "It is a gleaming silver statue that radiates magical power and moves with grace."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "IM_ACID",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "GOLEM",
+        "REFLECTING"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE",
+            "TELE_TO"
+        ],
+        "probability": "1_IN_7"
+    }
 }]
 }

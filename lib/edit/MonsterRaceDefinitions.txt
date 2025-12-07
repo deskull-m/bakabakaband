@@ -42122,6 +42122,23 @@ S:SLOW | SCARE
 D:$It is a massive statue made of reddish copper that moves with surprising agility.
 D:赤みがかった銅でできた堂々たる巨像で、驚くほど俊敏に動く。
 
+N:2330:銀のゴーレム
+E:Silver golem
+G:g:W
+I:115:100d14:12:95:10
+W:28:2:200:0:0
+B:HIT:HURT:2d8
+B:HIT:HURT:2d8
+B:HIT:HURT:2d8
+F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
+F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC | IM_ACID
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM
+F:REFLECTING
+S:1_IN_7 | 
+S:SLOW | SCARE | TELE_TO
+D:$It is a gleaming silver statue that radiates magical power and moves with grace.
+D:輝く銀でできた巨像で、魔力を放ちながら優雅に動く。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
