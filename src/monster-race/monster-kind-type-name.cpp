@@ -233,6 +233,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("紙で出来た", "made of paper");
     case MonsterKindType::WOODEN:
         return _("木で出来た", "made of wood");
+    case MonsterKindType::IRON:
+        return _("鉄で出来た", "made of iron");
     case MonsterKindType::DEEPONE:
         return _("深きもの", "deep one");
     case MonsterKindType::PHYREXIAN:
@@ -524,6 +526,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "PAPER";
     case MonsterKindType::WOODEN:
         return "WOODEN";
+    case MonsterKindType::IRON:
+        return "IRON";
     case MonsterKindType::DEEPONE:
         return "DEEPONE";
     case MonsterKindType::PHYREXIAN:

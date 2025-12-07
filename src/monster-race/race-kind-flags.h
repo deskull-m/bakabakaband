@@ -142,5 +142,6 @@ enum class MonsterKindType {
     MAGICAL_GIRL = 138, // 魔法少女
     WEREWOLF = 139, // 人狼
     WOODEN = 140, // 木で出来た
+    IRON = 141, // 鉄で出来た
     MAX,
 };
