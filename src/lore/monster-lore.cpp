@@ -222,6 +222,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::WOODEN);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::IRON)) {
+        lore_ptr->kind_flags.set(MonsterKindType::IRON);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
         lore_ptr->kind_flags.set(MonsterKindType::NINJA);
     }

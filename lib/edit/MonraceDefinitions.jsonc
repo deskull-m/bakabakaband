@@ -19375,7 +19375,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "GOLEM"
+        "GOLEM",
+        "IRON"
     ],
     "skill": {
         "list": [
@@ -117130,6 +117131,7 @@
         "IM_ELEC",
         "IM_POIS",
         "GOLEM",
+        "IRON",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -144833,6 +144835,7 @@
         "IM_ELEC",
         "IM_POIS",
         "FRIENDS",
+        "IRON",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
