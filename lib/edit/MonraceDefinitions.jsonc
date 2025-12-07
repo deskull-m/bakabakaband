@@ -150084,5 +150084,64 @@
         "REGENERATE",
         "CAN_SWIM"
     ]
+},
+{
+    "id": 2329,
+    "name": {
+        "ja": "銅のゴーレム",
+        "en": "Copper golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "90d13",
+    "vision": 12,
+    "armor_class": 85,
+    "alertness": 10,
+    "level": 25,
+    "rarity": 2,
+    "exp": 170,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d14"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d14"
+        }
+    ],
+    "flavor": {
+        "ja": "赤みがかった銅でできた堂々たる巨像で、驚くほど俊敏に動く。",
+        "en": "It is a massive statue made of reddish copper that moves with surprising agility."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "GOLEM"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE"
+        ],
+        "probability": "1_IN_8"
+    }
 }]
 }

@@ -42107,6 +42107,21 @@ D:$They inhabit various regions of Elde.
 D:$ These are giant bears bearing shining runes upon their chests.
 D:エルデの各地に生息する。胸に輝くルーンをまとった巨大な熊だ。
 
+N:2329:銅のゴーレム
+E:Copper golem
+G:g:o
+I:110:90d13:12:85:10
+W:25:2:170:0:0
+B:HIT:HURT:1d14
+B:HIT:HURT:1d14
+F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
+F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM
+S:1_IN_8 | 
+S:SLOW | SCARE
+D:$It is a massive statue made of reddish copper that moves with surprising agility.
+D:赤みがかった銅でできた堂々たる巨像で、驚くほど俊敏に動く。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
