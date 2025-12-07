@@ -150215,5 +150215,73 @@
         ],
         "probability": "1_IN_7"
     }
+},
+{
+    "id": 2331,
+    "name": {
+        "ja": "金のゴーレム",
+        "en": "Gold golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Yellow"
+    },
+    "speed": 5,
+    "hit_point": "95d14",
+    "vision": 12,
+    "armor_class": 90,
+    "alertness": 10,
+    "level": 27,
+    "rarity": 5,
+    "exp": 185,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d10"
+        }
+    ],
+    "flavor": {
+        "ja": "黄金でできた荘厳な巨像で、異世界的な輝きを放っている。",
+        "en": "It is a magnificent golden statue that gleams with an otherworldly radiance."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "IM_ACID",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "GOLEM",
+        "ONLY_GOLD",
+        "DROP_2D2"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE",
+            "CONF"
+        ],
+        "probability": "1_IN_8"
+    }
 }]
 }
