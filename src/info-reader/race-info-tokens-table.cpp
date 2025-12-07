@@ -498,6 +498,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "WOODEN", MonsterKindType::WOODEN }, // 木で出来た
     { "IRON", MonsterKindType::IRON }, // 鉄で出来た
     { "COPPER", MonsterKindType::COPPER }, // 銅で出来た
+    { "STONE", MonsterKindType::STONE }, // 石で出来た
     { "DEEPONE", MonsterKindType::DEEPONE }, // 深きもの
     { "PHYREXIAN", MonsterKindType::PHYREXIAN }, // ファイレクシア人
     { "HORROR", MonsterKindType::HORROR }, // ホラー
