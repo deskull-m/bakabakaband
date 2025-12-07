@@ -144,5 +144,6 @@ enum class MonsterKindType {
     WOODEN = 140, // 木で出来た
     IRON = 141, // 鉄で出来た
     COPPER = 142, // 銅で出来た
+    STONE = 143, // 石で出来た
     MAX,
 };
