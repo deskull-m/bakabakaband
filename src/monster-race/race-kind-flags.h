@@ -146,5 +146,6 @@ enum class MonsterKindType {
     COPPER = 142, // 銅で出来た
     STONE = 143, // 石で出来た
     SILVER = 144, // 銀で出来た
+    GOLD = 145, // 金で出来た
     MAX,
 };

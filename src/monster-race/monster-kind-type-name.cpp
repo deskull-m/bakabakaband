@@ -241,6 +241,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("石で出来た", "made of stone");
     case MonsterKindType::SILVER:
         return _("銀で出来た", "made of silver");
+    case MonsterKindType::GOLD:
+        return _("金で出来た", "made of gold");
     case MonsterKindType::DEEPONE:
         return _("深きもの", "deep one");
     case MonsterKindType::PHYREXIAN:
@@ -540,6 +542,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "STONE";
     case MonsterKindType::SILVER:
         return "SILVER";
+    case MonsterKindType::GOLD:
+        return "GOLD";
     case MonsterKindType::DEEPONE:
         return "DEEPONE";
     case MonsterKindType::PHYREXIAN:
