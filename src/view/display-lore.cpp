@@ -278,6 +278,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_WHITE, _("紙で出来た", " made of paper"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::WOODEN)) {
+        hook_c_roff(TERM_UMBER, _("木で出来た", " made of wood"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {

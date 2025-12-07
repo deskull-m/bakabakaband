@@ -38030,7 +38030,7 @@ B:HIT:HURT:1d6
 B:HIT:HURT:1d6
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
 F:IM_COLD | IM_ELEC | IM_POIS | GOLEM
-F:HURT_ROCK | NONLIVING | HURT_FIRE
+F:HURT_ROCK | NONLIVING | HURT_FIRE | WOODEN
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$It is a cheap animated statue made out of wood.
 D:それは生命を吹き込まれた安っぽい巨像で、木材でできている。
