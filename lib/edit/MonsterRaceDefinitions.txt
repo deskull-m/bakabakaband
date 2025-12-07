@@ -42156,6 +42156,24 @@ S:SLOW | SCARE | CONF
 D:$It is a magnificent golden statue that gleams with an otherworldly radiance.
 D:黄金でできた荘厳な巨像で、異世界的な輝きを放っている。
 
+N:2332:アダマンタイト・ゴーレム
+E:Adamantite golem
+G:g:g
+I:120:130d20:15:135:20
+W:50:2:280:0:0
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+F:FORCE_MAXHP | EMPTY_MIND | COLD_BLOOD | BASH_DOOR | KILL_WALL
+F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC | IM_ACID
+F:NO_CONF | NO_SLEEP | NO_FEAR | NO_STUN | NONLIVING | GOLEM | ADAMANTITE
+F:REFLECTING
+S:1_IN_6 | 
+S:SLOW | SCARE | TELE_TO | HASTE
+D:$An golem forged from legendary adamantite.
+D:伝説のアダマンタイトで鍛造されたゴーレムだ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
