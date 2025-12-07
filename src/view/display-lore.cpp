@@ -710,27 +710,27 @@ void display_monster_kind(lore_type *lore_ptr)
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
-        hook_c_roff(TERM_L_GREEN, _("菌類の", " fungus"));
+        hook_c_roff(TERM_L_GREEN, _("菌類", " fungus"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::MIMIC)) {
-        hook_c_roff(TERM_YELLOW, _("ミミックの", " mimic"));
+        hook_c_roff(TERM_YELLOW, _("ミミック", " mimic"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
-        hook_c_roff(TERM_L_BLUE, _("イクシツザチトルの", " ixitxachitl"));
+        hook_c_roff(TERM_L_BLUE, _("イクシツザチトル", " ixitxachitl"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::NAGA)) {
-        hook_c_roff(TERM_ORANGE, _("ナーガの", " naga"));
+        hook_c_roff(TERM_ORANGE, _("ナーガ", " naga"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::PERVERT)) {
-        hook_c_roff(TERM_VIOLET, _("変質者の", " pervert"));
+        hook_c_roff(TERM_VIOLET, _("変質者", " pervert"));
         has_specific_kind = true;
     }
 
