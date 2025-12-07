@@ -294,6 +294,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_L_WHITE, _("石で出来た", " made of stone"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::SILVER)) {
+        hook_c_roff(TERM_WHITE, _("銀で出来た", " made of silver"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {
