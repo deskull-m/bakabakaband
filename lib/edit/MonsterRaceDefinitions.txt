@@ -42116,7 +42116,7 @@ B:HIT:HURT:1d14
 B:HIT:HURT:1d14
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
 F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC
-F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM | COPPER
 S:1_IN_8 | 
 S:SLOW | SCARE
 D:$It is a massive statue made of reddish copper that moves with surprising agility.
