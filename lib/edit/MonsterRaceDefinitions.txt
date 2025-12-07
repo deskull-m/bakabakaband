@@ -7921,7 +7921,7 @@ B:HIT:HURT:5d5
 B:HIT:HURT:5d5
 F:ONLY_GOLD | DROP_2D2 | 
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | REFLECTING | 
-F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | GOLEM
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | GOLEM | MITHRIL
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 D:$It is a massive statue of purest mithril.  It looks expensive!
 D:それは純粋なミスリルでできた堂々たる巨像だ。それは値段にしたら相当高価
