@@ -150285,5 +150285,82 @@
         ],
         "probability": "1_IN_8"
     }
+},
+{
+    "id": 2332,
+    "name": {
+        "ja": "アダマンタイト・ゴーレム",
+        "en": "Adamantite golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Green"
+    },
+    "speed": 10,
+    "hit_point": "130d20",
+    "vision": 15,
+    "armor_class": 135,
+    "alertness": 20,
+    "level": 50,
+    "rarity": 2,
+    "exp": 280,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        }
+    ],
+    "flavor": {
+        "ja": "伝説のアダマンタイトで鍛造されたゴーレムだ。",
+        "en": "An golem forged from legendary adamantite."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "KILL_WALL",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "IM_ACID",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NO_STUN",
+        "NONLIVING",
+        "GOLEM",
+        "ADAMANTITE",
+        "REFLECTING"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE",
+            "TELE_TO",
+            "HASTE"
+        ],
+        "probability": "1_IN_6"
+    }
 }]
 }
