@@ -244,6 +244,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\achievement\achievement-checker.cpp" />
+    <ClCompile Include="..\..\src\achievement\achievement-definitions.cpp" />
+    <ClCompile Include="..\..\src\achievement\achievement-tracker.cpp" />
     <ClCompile Include="..\..\src\action\action-limited.cpp" />
     <ClCompile Include="..\..\src\action\activation-execution.cpp" />
     <ClCompile Include="..\..\src\action\mutation-execution.cpp" />
@@ -1096,6 +1099,11 @@
     <ClCompile Include="..\..\src\load\quest-loader.cpp" />
     <ClCompile Include="..\..\src\view\display-store.cpp" />
     <ClCompile Include="..\..\src\object-use\throw-execution.cpp" />
+    <ClInclude Include="..\..\src\achievement\achievement-checker.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-definition.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-definitions.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-tracker.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-types.h" />
     <ClInclude Include="..\..\src\action\action-limited.h" />
     <ClInclude Include="..\..\src\action\activation-execution.h" />
     <ClInclude Include="..\..\src\action\mutation-execution.h" />

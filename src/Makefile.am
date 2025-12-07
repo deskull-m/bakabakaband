@@ -5,6 +5,12 @@ AUTOMAKE_OPTIONS = foreign subdir-objects nostdinc
 bin_PROGRAMS = hengband
 
 hengband_SOURCES = \
+	achievement/achievement-checker.cpp achievement/achievement-checker.h \
+	achievement/achievement-definition.h \
+	achievement/achievement-definitions.cpp achievement/achievement-definitions.h \
+	achievement/achievement-tracker.cpp achievement/achievement-tracker.h \
+	achievement/achievement-types.h \
+	\
 	action/action-limited.cpp action/action-limited.h \
 	action/activation-execution.cpp action/activation-execution.h \
 	action/movement-execution.cpp action/movement-execution.h \
