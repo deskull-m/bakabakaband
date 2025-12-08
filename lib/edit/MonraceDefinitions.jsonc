@@ -86087,6 +86087,7 @@
     "flags": [
         "NEVER_MOVE",
         "NEVER_BLOW",
+        "FECES",
         "EMPTY_MIND",
         "STUPID",
         "QUYLTHLUG",
@@ -89639,7 +89640,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "GOLEM"
+        "GOLEM",
+        "FECES"
     ]
 },
 {
@@ -96272,6 +96274,7 @@
     "mob": 100,
     "flags": [
         "NEVER_MOVE",
+        "FECES",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "NASTY",
@@ -111874,6 +111877,7 @@
         "EMPTY_MIND",
         "BASH_DOOR",
         "CAN_FLY",
+        "FECES",
         "RES_SHAR",
         "NO_FEAR",
         "NO_CONF",
@@ -114141,6 +114145,7 @@
         "FRIENDS",
         "CAN_FLY",
         "DOG",
+        "FECES",
         "BASH_DOOR",
         "ANIMAL",
         "IM_POIS"
@@ -135441,7 +135446,8 @@
         "NO_FEAR",
         "NO_CONF",
         "NO_SLEEP",
-        "NONLIVING"
+        "NONLIVING",
+        "FECES"
     ]
 },
 {
@@ -148201,6 +148207,7 @@
         "NEVER_MOVE",
         "NEVER_BLOW",
         "HURT_COLD",
+        "FECES",
         "NO_FEAR",
         "NO_CONF",
         "NO_SLEEP",
