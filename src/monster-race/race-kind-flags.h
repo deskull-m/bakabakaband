@@ -151,5 +151,6 @@ enum class MonsterKindType {
     ADAMANTITE = 147, // アダマンタイトで出来た
     FECES = 148, // 糞で出来た
     FLESH = 149, // 肉で出来た
+    DARKSTEEL = 150, // 漆黒の鋼で出来た
     MAX,
 };

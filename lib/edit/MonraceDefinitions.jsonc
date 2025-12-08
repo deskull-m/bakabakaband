@@ -131176,6 +131176,7 @@
         "IM_COLD",
         "IM_ELEC",
         "GOLEM",
+        "DARKSTEEL",
         "IM_POIS",
         "NONLIVING",
         "REFLECTING",
@@ -137421,6 +137422,7 @@
         "RES_SHAR",
         "RES_VOID",
         "RES_ABYSS",
+        "DARKSTEEL",
         "NO_CONF",
         "NO_SLEEP"
     ]
