@@ -310,6 +310,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_L_DARK, _("アダマンタイトで出来た", " made of adamantite"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::FECES)) {
+        hook_c_roff(TERM_UMBER, _("糞で出来た", " made of feces"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {
