@@ -4212,7 +4212,7 @@ W:14:1:50:0:0
 B:HIT:HURT:1d6
 B:HIT:HURT:1d6
 F:EMPTY_MIND | BASH_DOOR | CAN_SWIM |
-F:IM_ELEC | IM_COLD | GOLEM
+F:IM_ELEC | IM_COLD | GOLEM | FLESH
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 D:$A shambling humanoid monster with long scars.
 D:よろめき歩く、体中傷だらけの人間型モンスターだ。

@@ -504,6 +504,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "MITHRIL", MonsterKindType::MITHRIL }, // ミスリルで出来た
     { "ADAMANTITE", MonsterKindType::ADAMANTITE }, // アダマンタイトで出来た
     { "FECES", MonsterKindType::FECES }, // 糞で出来た
+    { "FLESH", MonsterKindType::FLESH }, // 肉で出来た
     { "DEEPONE", MonsterKindType::DEEPONE }, // 深きもの
     { "PHYREXIAN", MonsterKindType::PHYREXIAN }, // ファイレクシア人
     { "HORROR", MonsterKindType::HORROR }, // ホラー
