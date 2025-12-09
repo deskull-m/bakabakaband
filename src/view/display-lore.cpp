@@ -582,6 +582,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::SMITH)) {
+        hook_c_roff(TERM_ORANGE, _("鍍冶師", " smith"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::FROG)) {
         hook_c_roff(TERM_GREEN, _("カエル", " frog"));
         has_specific_kind = true;
