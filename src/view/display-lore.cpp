@@ -318,6 +318,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_L_RED, _("肉で出来た", " made of flesh"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::DARKSTEEL)) {
+        hook_c_roff(TERM_L_DARK, _("ダークスティールで出来た", " made of darksteel"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {
