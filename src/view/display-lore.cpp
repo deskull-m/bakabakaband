@@ -322,6 +322,10 @@ void display_monster_kind(lore_type *lore_ptr)
         hook_c_roff(TERM_L_DARK, _("ダークスティールで出来た", " made of darksteel"));
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::WARPSTONE)) {
+        hook_c_roff(TERM_VIOLET, _("ワープストーンで出来た", " made of warpstone"));
+    }
+
     bool has_specific_kind = false;
 
     if (lore_ptr->kind_flags.has(MonsterKindType::ELDRAZI)) {

@@ -131109,7 +131109,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "GOLEM"
+        "GOLEM",
+        "WARPSTONE"
     ],
     "skill": {
         "list": [
