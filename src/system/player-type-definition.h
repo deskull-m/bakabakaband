@@ -116,10 +116,6 @@ public:
 
     int16_t max_plv{}; /* Max Player Level */
 
-    short stat_max[A_MAX]{}; /* Current "maximal" stat values */
-    short stat_max_max[A_MAX]{}; /* Maximal "maximal" stat values */
-    short stat_cur[A_MAX]{}; /* Current "natural" stat values */
-
     int16_t learned_spells{};
     int16_t add_spells{};
 
