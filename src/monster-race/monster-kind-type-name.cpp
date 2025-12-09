@@ -253,6 +253,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("肉で出来た", "made of flesh");
     case MonsterKindType::DARKSTEEL:
         return _("ダークスティールで出来た", "made of darksteel");
+    case MonsterKindType::WARPSTONE:
+        return _("ワープストーンで出来た", "made of warpstone");
     case MonsterKindType::DEEPONE:
         return _("深きもの", "deep one");
     case MonsterKindType::PHYREXIAN:
@@ -564,6 +566,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "FLESH";
     case MonsterKindType::DARKSTEEL:
         return "DARKSTEEL";
+    case MonsterKindType::WARPSTONE:
+        return "WARPSTONE";
     case MonsterKindType::DEEPONE:
         return "DEEPONE";
     case MonsterKindType::PHYREXIAN:
