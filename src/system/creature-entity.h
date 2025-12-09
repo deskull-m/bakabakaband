@@ -1,5 +1,6 @@
 #pragma once
 
+#include "player-ability/player-ability-types.h"
 #include "system/angband.h"
 #include "util/point-2d.h"
 #include <memory>
@@ -132,6 +133,11 @@ public:
     ACTION_SKILL_POWER skill_thb{}; /*!< 行動技能値:射撃命中能力 / Skill: To hit (shooting) */
     ACTION_SKILL_POWER skill_tht{}; /*!< 行動技能値:投射命中能力 / Skill: To hit (throwing) */
     ACTION_SKILL_POWER skill_dig{}; /*!< 行動技能値:掘削 / Skill: Digging */
+
+    // ステータス関連
+    short stat_max[A_MAX]{}; /*!< 現在の最大能力値 / Current "maximal" stat values */
+    short stat_max_max[A_MAX]{}; /*!< 最大の最大能力値 / Maximal "maximal" stat values */
+    short stat_cur[A_MAX]{}; /*!< 現在の基本能力値 / Current "natural" stat values */
 
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
