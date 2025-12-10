@@ -63199,6 +63199,7 @@
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
+        "SMITH",
         "FORCE_MAXHP",
         "MOVE_BODY",
         "DROP_CORPSE",
