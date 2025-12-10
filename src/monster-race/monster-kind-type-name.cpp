@@ -315,6 +315,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("人狼", "werewolf");
     case MonsterKindType::SMITH:
         return _("鍛冶師", "smith");
+    case MonsterKindType::WHEEL:
+        return _("車輪", "wheel");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -630,6 +632,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "WEREWOLF";
     case MonsterKindType::SMITH:
         return "SMITH";
+    case MonsterKindType::WHEEL:
+        return "WHEEL";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }
