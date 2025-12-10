@@ -105413,7 +105413,9 @@
         "NO_SLEEP",
         "NO_STUN",
         "NONLIVING",
-        "RES_TELE"
+        "RES_TELE",
+        "WHEEL",
+        "EXPLOSIVE"
     ]
 },
 {
@@ -130371,6 +130373,7 @@
         "UNDEAD",
         "COLD_BLOOD",
         "EVIL",
+        "WHEEL",
         "IM_COLD",
         "IM_ELEC",
         "IM_ACID",
@@ -130854,6 +130857,7 @@
         "UNDEAD",
         "COLD_BLOOD",
         "EVIL",
+        "WHEEL",
         "IM_FIRE",
         "IM_COLD",
         "IM_ACID",

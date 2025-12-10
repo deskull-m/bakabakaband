@@ -153,6 +153,7 @@ enum class MonsterKindType {
     FLESH = 149, // 肉で出来た
     DARKSTEEL = 150, // 漆黒の鋼で出来た
     WARPSTONE = 151, // ワープストーンで出来た
-    SMITH = 152, // 鍍冶師
+    SMITH = 152, // 鍛冶師
+    WHEEL = 153, // 車輪
     MAX,
 };
