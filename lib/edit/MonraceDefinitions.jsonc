@@ -150378,5 +150378,68 @@
         ],
         "probability": "1_IN_6"
     }
+},
+{
+    "id": 2333,
+    "name": {
+        "ja": "地雷女",
+        "en": "Drama queen"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "Red"
+    },
+    "speed": 0,
+    "hit_point": "2d5",
+    "vision": 12,
+    "armor_class": 2,
+    "alertness": 10,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "INSULT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "INSULT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d1"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        }
+    ],
+    "flavor": {
+        "ja": "何かにつけて周囲を消耗させる、まさに心理的吸血鬼だ。",
+        "en": "She's a true psychological vampire, draining those around her at every turn."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "HAS_LITE_1",
+        "HUMAN",
+        "RABBLE",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "WILD_TOWN",
+        "WILD_ALL"
+    ],
+    "skill": {
+        "list": [
+            "SHRIEK"
+        ],
+        "probability": "1_IN_8"
+    }
 }]
 }

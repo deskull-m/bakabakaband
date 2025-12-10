@@ -42174,6 +42174,24 @@ S:SLOW | SCARE | TELE_TO | HASTE
 D:$An golem forged from legendary adamantite.
 D:伝説のアダマンタイトで鍛造されたゴーレムだ。
 
+N:2333:地雷女
+E:Drama queen
+G:t:r
+I:110:2d5:12:2:10
+W:0:1:0:0:0
+B:INSULT:FLAVOR
+B:INSULT:FLAVOR
+B:HIT:HURT:1d1
+B:TOUCH:EAT_GOLD
+F:FEMALE | HAS_LITE_1
+F:HUMAN | RABBLE
+F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:WILD_TOWN | WILD_ALL
+S:1_IN_8 |
+S:SHRIEK
+D:$She's a true psychological vampire, draining those around her at every turn.
+D:何かにつけて周囲を消耗させる、まさに心理的吸血鬼だ。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
