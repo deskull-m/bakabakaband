@@ -155,5 +155,6 @@ enum class MonsterKindType {
     WARPSTONE = 151, // ワープストーンで出来た
     SMITH = 152, // 鍛冶師
     WHEEL = 153, // 車輪
+    GREAT_OLD_ONE = 154, // 旧支配者
     MAX,
 };
