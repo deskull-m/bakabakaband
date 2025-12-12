@@ -150447,5 +150447,95 @@
         ],
         "probability": "1_IN_8"
     }
+},
+{
+    "id": 2334,
+    "name": {
+        "ja": "『tanasinn』",
+        "en": "tanasinn"
+    },
+    "symbol": {
+        "character": ".",
+        "color": "Violet"
+    },
+    "speed": 5,
+    "hit_point": "40d90",
+    "vision": 25,
+    "armor_class": 90,
+    "alertness": 15,
+    "level": 65,
+    "rarity": 2,
+    "exp": 26000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "LOSE_ALL",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_VAMP",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "UN_POWER",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "DR_MANA",
+            "damage_dice": "5d12"
+        }
+    ],
+    "flavor": {
+        "ja": "tanasinnは真実だ意識の虚無は真実だ囚われ人は真実だ。私達は洞窟に入った。それが真実。なぜ死んだ赤子が横断歩道をわたったのか。鶏にホッチキスで留められていたから。それが真実。tanasinnは真実。たえずtanasinnに留意しないといけない。tanasinnは苦痛。それが真実。tanasinnは快楽。それが真実。tanasinnに戻りたい。それが真実。戻らなければ気が狂う。それが真実。tanasinntanasinntanasinntanasinntanasinnそれが真実。tanasinntanasinntanasinntanasinntanasinntanasinntanasinn僕は怖い。それが真実。tanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinn.......───「ヤァ　息仔ョ　失ゥコトノ　堪ェ難キ痛ミニモ　モウ慣レタカイ？」",
+        "en": "You can't think about it. Don't think, feel and you'll be tanasinn."
+    },
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "PASS_WALL",
+        "NONLIVING",
+        "IM_ACID",
+        "CAN_FLY",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_3D2",
+        "DROP_GOOD",
+        "SMART",
+        "ELDRITCH_HORROR",
+        "IM_COLD",
+        "RES_NETH",
+        "RES_DARK",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_STUN",
+        "QUANTUM",
+        "RAND_25",
+        "REGENERATE",
+        "SELF_DARK_1",
+        "SELF_DARK_2",
+        "AVATAR"
+    ],
+    "skill": {
+        "list": [
+            "BR_NETH",
+            "BRAIN_SMASH",
+            "SCARE",
+            "DRAIN_MANA",
+            "HEAL",
+            "ANIM_DEAD",
+            "BO_ABYSS",
+            "BO_VOID",
+            "BR_ABYSS",
+            "BR_VOID",
+            "BA_VOID"
+        ],
+        "probability": "1_IN_6"
+    }
 }]
 }
