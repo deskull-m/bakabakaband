@@ -42198,6 +42198,45 @@ S:SHRIEK
 D:$She's a true psychological vampire, draining those around her at every turn.
 D:何かにつけて周囲を消耗させる、まさに心理的吸血鬼だ。
 
+N:2334:『tanasinn』
+E:tanasinn
+G:.:v
+I:115:40d90:25:90:15
+W:65:2:26000:0:0
+B:TOUCH:LOSE_ALL:5d12
+B:TOUCH:EXP_VAMP:5d12
+B:TOUCH:UN_POWER:5d12
+B:TOUCH:DR_MANA:5d12
+F:UNIQUE | FORCE_MAXHP | PASS_WALL | NONLIVING | IM_ACID | CAN_FLY
+F:ONLY_ITEM | DROP_2D2 | DROP_3D2 | DROP_GOOD | SMART
+F:ELDRITCH_HORROR | IM_COLD | RES_NETH | RES_DARK
+F:NO_CONF | NO_SLEEP | NO_STUN | QUANTUM | RAND_25
+F:REGENERATE | SELF_DARK_1 | SELF_DARK_2
+F:AVATAR
+S:1_IN_6 | BR_NETH | BRAIN_SMASH | SCARE
+S:DRAIN_MANA | HEAL | ANIM_DEAD | BO_ABYSS | BO_VOID | BR_ABYSS | BR_VOID | BA_VOID
+D:$You can't think about it.
+D:$ Don't think, feel and you'll be tanasinn.
+D:tanasinnは真実だ
+D:意識の虚無は真実だ
+D:囚われ人は真実だ。
+D:私達は洞窟に入った。それが真実。
+D:なぜ死んだ赤子が横断歩道をわたったのか。
+D:鶏にホッチキスで留められていたから。
+D:それが真実。
+D:tanasinnは真実。
+D:たえずtanasinnに留意しないといけない。
+D:tanasinnは苦痛。それが真実。
+D:tanasinnは快楽。それが真実。
+D:tanasinnに戻りたい。それが真実。
+D:戻らなければ気が狂う。それが真実。
+D:tanasinntanasinntanasinntanasinntanasinnそれが真実。
+D:tanasinntanasinntanasinntanasinntanasinntanasinntanasinn
+D:僕は怖い。それが真実。
+D:tanasinntanasinntanasinntanasinntanasinntanasinntanasinn
+D:tanasinntanasinntanasinntanasinn.......
+D:───「ヤァ　息仔ョ　失ゥコトノ　堪ェ難キ痛ミニモ　モウ慣レタカイ？」
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
