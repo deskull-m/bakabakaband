@@ -78,6 +78,8 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
         return monrace.kind_flags.has(MonsterKindType::WALL);
     case SUMMON_INSECT:
         return monrace.kind_flags.has(MonsterKindType::INSECT);
+    case SUMMON_ELDRAZI:
+        return monrace.kind_flags.has(MonsterKindType::ELDRAZI);
     case SUMMON_CYBER:
         return monrace.symbol_char_is_any_of("U") && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
     case SUMMON_KIN: {

@@ -1570,3 +1570,47 @@ MonsterSpellResult spell_RF6_S_INSECT(PlayerType *player_ptr, POSITION y, POSITI
 
     return res;
 }
+
+/*!
+ * @brief RF6_S_ELDRAZIの処理。エルドラージ召喚。 /
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param y 対象の地点のy座標
+ * @param x 対象の地点のx座標
+ * @param m_idx 呪文を唱えるモンスターID
+ * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+ * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+ * @return ダメージ量を返す。
+ */
+MonsterSpellResult spell_RF6_S_ELDRAZI(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+{
+    auto &floor = *player_ptr->current_floor_ptr;
+    auto rlev = monster_level_idx(floor, m_idx);
+    const auto known = monster_near_player(floor, m_idx, t_idx);
+    const auto see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+    const auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+
+    mspell_cast_msg_blind msg(_("%sが何かをつぶやいた。", "%s^ mumbles."),
+        _("%sが魔法でエルドラージを召喚した！", "%s^ magically summons Eldrazi!"),
+        _("%sが魔法でエルドラージを召喚した。", "%s^ magically summons Eldrazi."));
+
+    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    summon_disturb(player_ptr, target_type, known, see_either);
+
+    int count = 0;
+    for (int k = 0; k < std::max(1, rlev / 30); k++) {
+        count += summon_specific(player_ptr, y, x, rlev, SUMMON_ELDRAZI, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+    }
+
+    if (player_ptr->effects()->blindness().is_blind() && count) {
+        msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
+    }
+
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon) {
+        floor.monster_noise = true;
+    }
+
+    auto res = MonsterSpellResult::make_valid();
+    res.learnable = target_type == MONSTER_TO_PLAYER;
+
+    return res;
+}

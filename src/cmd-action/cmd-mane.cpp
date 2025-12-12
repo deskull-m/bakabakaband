@@ -953,6 +953,17 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_ELDRAZI: {
+        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("エルドラージを召喚した！", "You summon Eldrazi!"));
+        for (auto k = 0; k < std::max(1, plev / 30); k++) {
+            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_ELDRAZI, mode);
+        }
+        break;
+    }
     case MonsterAbilityType::S_ANGEL: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
         if (!pos) {

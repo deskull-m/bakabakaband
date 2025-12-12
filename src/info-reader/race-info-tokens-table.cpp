@@ -261,6 +261,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_CAT", MonsterAbilityType::S_CAT },
 	{"S_WALL", MonsterAbilityType::S_WALL },
 	{"S_INSECT", MonsterAbilityType::S_INSECT },
+	{"S_ELDRAZI", MonsterAbilityType::S_ELDRAZI },
 };
 /* clang-format on */
 
