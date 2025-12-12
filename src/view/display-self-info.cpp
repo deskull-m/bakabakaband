@@ -25,7 +25,7 @@ void display_max_base_status(PlayerType *player_ptr, self_info_type *self_ptr)
 {
     self_ptr->info_list.emplace_back(_("能力の最大値", "Limits of maximum stats"));
     for (int v_nr = 0; v_nr < A_MAX; v_nr++) {
-        auto stat = format("%s 18/%d", stat_names[v_nr], player_ptr->stat_max_max[v_nr] - 18);
+        auto stat = format("%s %4.1f", stat_names[v_nr], player_ptr->stat_max_max[v_nr] / 10.0);
         self_ptr->info_list.push_back(std::move(stat));
     }
 }

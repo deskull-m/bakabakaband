@@ -49,20 +49,21 @@ bool inc_stat(PlayerType *player_ptr, int stat)
         return false;
     }
 
-    if (value < 18) {
-        value += evaluate_percent(75) ? 1 : 2;
-    } else if (value < (player_ptr->stat_max_max[stat] - 2)) {
-        auto gain = (((player_ptr->stat_max_max[stat]) - value) / 2 + 3) / 2;
-        if (gain < 1) {
-            gain = 1;
+    // 新形式: 30-180は10-20増加、それ以上はスケール調整
+    if (value < 180) {
+        value += evaluate_percent(75) ? 10 : 20;
+    } else if (value < (player_ptr->stat_max_max[stat] - 20)) {
+        auto gain = (((player_ptr->stat_max_max[stat]) - value) / 2 + 30) / 2;
+        if (gain < 10) {
+            gain = 10;
         }
 
         value += randint1(gain) + gain / 2;
-        if (value > (player_ptr->stat_max_max[stat] - 1)) {
-            value = player_ptr->stat_max_max[stat] - 1;
+        if (value > (player_ptr->stat_max_max[stat] - 10)) {
+            value = player_ptr->stat_max_max[stat] - 10;
         }
     } else {
-        value++;
+        value += 10;
     }
 
     player_ptr->stat_cur[stat] = value;
@@ -97,20 +98,20 @@ bool dec_stat(PlayerType *player_ptr, int stat, int amount, int permanent)
     auto cur = player_ptr->stat_cur[stat];
     auto max = player_ptr->stat_max[stat];
     int same = (cur == max);
-    if (cur > 3) {
-        if (cur <= 18) {
+    if (cur > 30) {
+        if (cur <= 180) {
             if (amount > 90) {
-                cur--;
+                cur -= 10;
             }
             if (amount > 50) {
-                cur--;
+                cur -= 10;
             }
             if (amount > 20) {
-                cur--;
+                cur -= 10;
             }
-            cur--;
+            cur -= 10;
         } else {
-            int loss = (((cur - 18) / 2 + 1) / 2 + 1);
+            int loss = (((cur - 180) / 2 + 1) / 2 + 1);
             if (loss < 1) {
                 loss = 1;
             }
@@ -121,13 +122,13 @@ bool dec_stat(PlayerType *player_ptr, int stat, int amount, int permanent)
             }
 
             cur = cur - loss;
-            if (cur < 18) {
-                cur = (amount <= 20) ? 18 : 17;
+            if (cur < 180) {
+                cur = (amount <= 20) ? 180 : 170;
             }
         }
 
-        if (cur < 3) {
-            cur = 3;
+        if (cur < 30) {
+            cur = 30;
         }
 
         if (cur != player_ptr->stat_cur[stat]) {
@@ -135,33 +136,33 @@ bool dec_stat(PlayerType *player_ptr, int stat, int amount, int permanent)
         }
     }
 
-    if (permanent && (max > 3)) {
+    if (permanent && (max > 30)) {
         chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
         if (stat == A_WIS || stat == A_INT) {
             chg_virtue(player_ptr, Virtue::ENLIGHTEN, -2);
         }
 
-        if (max <= 18) {
+        if (max <= 180) {
             if (amount > 90) {
-                max--;
+                max -= 10;
             }
             if (amount > 50) {
-                max--;
+                max -= 10;
             }
             if (amount > 20) {
-                max--;
+                max -= 10;
             }
-            max--;
+            max -= 10;
         } else {
-            int loss = (((max - 18) / 2 + 1) / 2 + 1);
+            int loss = (((max - 180) / 2 + 1) / 2 + 1);
             loss = ((randint1(loss) + loss) * amount) / 100;
             if (loss < amount / 2) {
                 loss = amount / 2;
             }
 
             max = max - loss;
-            if (max < 18) {
-                max = (amount <= 20) ? 18 : 17;
+            if (max < 180) {
+                max = (amount <= 20) ? 180 : 170;
             }
         }
 

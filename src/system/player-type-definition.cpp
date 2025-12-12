@@ -142,8 +142,8 @@ std::string PlayerType::decrease_ability_random()
 
     const auto &[k, act] = rand_choice(candidates);
     this->stat_cur[k] = (this->stat_cur[k] * 3) / 4;
-    if (this->stat_cur[k] < 3) {
-        this->stat_cur[k] = 3;
+    if (this->stat_cur[k] < 30) {
+        this->stat_cur[k] = 30;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -159,8 +159,8 @@ std::string PlayerType::decrease_ability_all()
 {
     for (auto i = 0; i < A_MAX; i++) {
         this->stat_cur[i] = (this->stat_cur[i] * 7) / 8;
-        if (this->stat_cur[i] < 3) {
-            this->stat_cur[i] = 3;
+        if (this->stat_cur[i] < 30) {
+            this->stat_cur[i] = 30;
         }
     }
 

@@ -21,44 +21,33 @@ namespace {
 constexpr auto random_distribution = 60;
 
 /*! オートロール能力値の乱数分布 (1d3, 1d4, 1d5 を3 * 4 * 5 = 60個で表現) */
+/*! 新形式: 8-17 -> 80-170 (3.0-17.0表示) */
 constexpr std::array<short, random_distribution> auto_roller_distribution = {
     {
-        8, 9, 9, 9, 10, 10, 10, 10, 10, 10, /*00-09*/
-        11, 11, 11, 11, 11, 11, 11, 11, 11, 12, /*10-19*/
-        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, /*20-29*/
-        13, 13, 13, 13, 13, 13, 13, 13, 13, 13, /*30-49*/
-        13, 14, 14, 14, 14, 14, 14, 14, 14, 14, /*40-49*/
-        15, 15, 15, 15, 15, 15, 16, 16, 16, 17 /*50-59*/
+        80, 90, 90, 90, 100, 100, 100, 100, 100, 100, /*00-09*/
+        110, 110, 110, 110, 110, 110, 110, 110, 110, 120, /*10-19*/
+        120, 120, 120, 120, 120, 120, 120, 120, 120, 120, /*20-29*/
+        130, 130, 130, 130, 130, 130, 130, 130, 130, 130, /*30-49*/
+        130, 140, 140, 140, 140, 140, 140, 140, 140, 140, /*40-49*/
+        150, 150, 150, 150, 150, 150, 160, 160, 160, 170 /*50-59*/
     }
 };
 }
 
 /*!
  * @brief プレイヤーの能力値表現に基づいて加減算を行う。
- * @param value 現在の能力値
- * @param amount 加減算する値
+ * @param value 現在の能力値 (30-400の範囲)
+ * @param amount 加減算する値 (10単位)
  * @return 加減算の結果
  */
 int adjust_stat(int value, int amount)
 {
-    if (amount < 0) {
-        for (int i = 0; i < (0 - amount); i++) {
-            if (value >= 18 + 10) {
-                value -= 10;
-            } else if (value > 18) {
-                value = 18;
-            } else if (value > 3) {
-                value--;
-            }
-        }
-    } else if (amount > 0) {
-        for (int i = 0; i < amount; i++) {
-            if (value < 18) {
-                value++;
-            } else {
-                value += 10;
-            }
-        }
+    value += amount * 10;
+
+    if (value < 30) {
+        value = 30;
+    } else if (value > 400) {
+        value = 400;
     }
 
     return value;
@@ -86,7 +75,8 @@ void get_stats(PlayerType *player_ptr)
             }
         }
 
-        if ((sum > 42 + 5 * 6) && (sum < 57 + 5 * 6)) {
+        // 新形式: 42*10 + 5*6*10 = 720, 57*10 + 5*6*10 = 870
+        if ((sum > 720) && (sum < 870)) {
             break;
         }
     }
@@ -184,7 +174,8 @@ void get_max_stats(PlayerType *player_ptr)
     }
 
     for (auto i = 0; i < A_MAX; i++) {
-        short max_max = 18 + 60 + dice[i] * 10;
+        // 新形式: 180 + 60 + dice[i] * 10 = 240 + 10~70 = 250~310 (25.0~31.0)
+        short max_max = 180 + 60 + dice[i] * 10;
         player_ptr->stat_max_max[i] = max_max;
         if (player_ptr->stat_max[i] > max_max) {
             player_ptr->stat_max[i] = max_max;

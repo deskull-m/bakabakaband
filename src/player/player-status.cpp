@@ -2929,60 +2929,45 @@ void check_experience(PlayerType *player_ptr)
 }
 
 /*!
- * @brief 現在の修正後能力値を3～17及び18/xxx形式に変換する / Converts stat num into a six-char (right justified) string
- * @param val 能力値
- * @return std::string 右詰め6文字で記述した能力値
+ * @brief 現在の修正後能力値を3.0～40.0形式に変換する / Converts stat num into a six-char (right justified) string
+ * @param val 能力値 (30～400の範囲)
+ * @return std::string 右詰め6文字で記述した能力値 (3.0～40.0表示)
  */
 std::string cnv_stat(int val)
 {
-    if (val <= 18) {
-        return format("    %2d", val);
-    }
+    // 30～400 -> 3.0～40.0に変換
+    int integer_part = val / 10;
+    int decimal_part = val % 10;
 
-    int bonus = (val - 18);
-    if (bonus >= 220) {
-        return "18/***";
-    } else if (bonus >= 100) {
-        return format("18/%03d", bonus);
+    if (val >= 400) {
+        return " 40.0";
+    } else if (integer_part >= 10) {
+        return format(" %2d.%d", integer_part, decimal_part);
     } else {
-        return format(" 18/%02d", bonus);
+        return format("  %d.%d", integer_part, decimal_part);
     }
 }
 
 /*!
- * @brief 能力値現在値から3～17及び18/xxx様式に基づく加減算を行う。
+ * @brief 能力値現在値から加減算を行う。
  * Modify a stat value by a "modifier", return new value
- * @param value 現在値
- * @param amount 加減算値
+ * @param value 現在値 (30～400の範囲)
+ * @param amount 加減算値 (10単位)
  * @return 加減算後の値
  * @details
  * <pre>
- * Stats go up: 3,4,...,17,18,18/10,18/20,...,18/220
- * Or even: 18/13, 18/23, 18/33, ..., 18/220
- * Stats go down: 18/220, 18/210,..., 18/10, 18, 17, ..., 3
- * Or even: 18/13, 18/03, 18, 17, ..., 3
+ * 新システム: 30,40,...,170,180,190,...,400 (表示: 3.0,4.0,...,17.0,18.0,19.0,...,40.0)
+ * 最小値30、最大値400で制限
  * </pre>
  */
 int16_t modify_stat_value(int value, int amount)
 {
-    if (amount > 0) {
-        for (int i = 0; i < amount; i++) {
-            if (value < 18) {
-                value++;
-            } else {
-                value += 10;
-            }
-        }
-    } else if (amount < 0) {
-        for (int i = 0; i < (0 - amount); i++) {
-            if (value >= 18 + 10) {
-                value -= 10;
-            } else if (value > 18) {
-                value = 18;
-            } else if (value > 3) {
-                value--;
-            }
-        }
+    value += amount * 10;
+
+    if (value < 30) {
+        value = 30;
+    } else if (value > 400) {
+        value = 400;
     }
 
     return (int16_t)value;
