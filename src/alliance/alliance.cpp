@@ -74,10 +74,12 @@
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
+#include "monster-race/race-kind-flags.h"
 #include "spell/summon-types.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -235,6 +237,25 @@ std::vector<MonraceId> Alliance::get_ambush_monsters([[maybe_unused]] PlayerType
 std::string Alliance::get_ambush_message() const
 {
     return _("襲撃だ！", "You are ambushed!");
+}
+
+/*!
+ * @brief モンスターが他のモンスターに対して敵意を抱くかどうかを判定する（デフォルト実装）
+ * @param monster_other 敵意を抱くか調べる他のモンスターの参照
+ * @param monrace モンスター種族情報の参照
+ * @return monster_other で指定したモンスターに敵意を持つならばtrue
+ * @details デフォルトではEVIL vs GOOD の属性判定のみを行う。各アライアンスでオーバーライド可能。
+ */
+bool Alliance::is_hostile_to(const MonsterEntity &monster_other, const MonraceDefinition &monrace) const
+{
+    uint8_t sub_align2 = SUB_ALIGN_NEUTRAL;
+    if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
+        sub_align2 |= SUB_ALIGN_EVIL;
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
+        sub_align2 |= SUB_ALIGN_GOOD;
+    }
+    return MonsterEntity::check_sub_alignments(monster_other.sub_align, sub_align2);
 }
 
 /*!

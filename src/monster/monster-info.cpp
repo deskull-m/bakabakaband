@@ -10,6 +10,7 @@
  */
 
 #include "monster/monster-info.h"
+#include "alliance/alliance.h"
 #include "floor/wild.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-resistance-mask.h"
@@ -207,11 +208,24 @@ bool monster_has_hostile_to_player(PlayerType *player_ptr, int pa_good, int pa_e
  * @param monster_other 敵意を抱くか調べる他のモンスターの参照
  * @param monrace モンスター種族情報の参照
  * @return monster_other で指定したモンスターに敵意を持つならばtrueを返す
+ * @details アライアンス未所属（NONE）として判定する
  */
 bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace)
 {
-    const auto sub_align2 = get_recial_sub_align(monrace);
-    return MonsterEntity::check_sub_alignments(monster_other.sub_align, sub_align2);
+    return monster_has_hostile_to_other_monster(monster_other, monrace, AllianceType::NONE);
+}
+
+/*!
+ * @brief モンスターが他のモンスターに対して敵意を抱くかどうかを返す（アライアンス指定版）
+ * @param monster_other 敵意を抱くか調べる他のモンスターの参照
+ * @param monrace モンスター種族情報の参照
+ * @param alliance_id アライアンスID
+ * @return monster_other で指定したモンスターに敵意を持つならばtrueを返す
+ */
+bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace, AllianceType alliance_id)
+{
+    const auto &alliance = alliance_list.at(alliance_id);
+    return alliance->is_hostile_to(monster_other, monrace);
 }
 
 bool is_original_ap_and_seen(PlayerType *player_ptr, const MonsterEntity &monster)
