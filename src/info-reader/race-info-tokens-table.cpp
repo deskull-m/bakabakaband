@@ -538,6 +538,7 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "WEREWOLF", MonsterKindType::WEREWOLF }, // 人狼
     { "SMITH", MonsterKindType::SMITH }, // 鍛冶師
     { "WHEEL", MonsterKindType::WHEEL }, // 車輪
+    { "GREAT_OLD_ONE", MonsterKindType::GREAT_OLD_ONE }, // 旧支配者
 };
 
 const std::unordered_map<std::string_view, MonsterEraType> r_info_era_flags = {

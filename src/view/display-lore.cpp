@@ -592,6 +592,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::GREAT_OLD_ONE)) {
+        hook_c_roff(TERM_VIOLET, _("旧支配者", " Great Old One"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::FROG)) {
         hook_c_roff(TERM_GREEN, _("カエル", " frog"));
         has_specific_kind = true;

@@ -46012,7 +46012,8 @@
         "HURT_LITE",
         "NO_CONF",
         "NO_SLEEP",
-        "RES_TELE"
+        "RES_TELE",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -50171,7 +50172,8 @@
         "IM_ACID",
         "IM_COLD",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -53577,7 +53579,8 @@
         "IM_POIS",
         "IM_FIRE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -53877,7 +53880,8 @@
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
-        "RES_CHAO"
+        "RES_CHAO",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -54139,7 +54143,8 @@
         "IM_FIRE",
         "NO_CONF",
         "NO_SLEEP",
-        "POWERFUL"
+        "POWERFUL",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -54672,7 +54677,8 @@
         "IM_ELEC",
         "IM_ACID",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
