@@ -6,6 +6,8 @@
 #include <vector>
 
 enum class MonraceId : int16_t;
+class MonsterEntity;
+class MonraceDefinition;
 
 typedef int ALLIANCE_ID;
 class PlayerType;
@@ -110,6 +112,7 @@ public:
     virtual void panishment(PlayerType &player_ptr);
     virtual std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const;
     virtual std::string get_ambush_message() const;
+    virtual bool is_hostile_to(const MonsterEntity &monster_other, const MonraceDefinition &monrace) const;
 
     // base_powerを変更するメソッド
     void set_base_power(int64_t new_power)
