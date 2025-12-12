@@ -391,6 +391,8 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_homo(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_WALL:
         return cast_blue_summon_wall(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_ELDRAZI:
+        return cast_blue_summon_eldrazi(player_ptr, bmc_ptr);
     default:
         msg_print("hoge?");
         return true;

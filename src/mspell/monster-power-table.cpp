@@ -131,6 +131,7 @@ const std::map<MonsterAbilityType, const monster_power> monster_powers = {
     { MonsterAbilityType::S_HOMO, { 25, 40, 70, 0, 30, A_INT, _("ホモの召喚", "summon homos") } },
     { MonsterAbilityType::S_PUYO, { 20, 35, 65, 0, 25, A_INT, _("ぷよの召喚", "summon puyo") } },
     { MonsterAbilityType::S_WALL, { 25, 30, 70, 0, 30, A_INT, _("壁の召喚", "summon walls") } },
+    { MonsterAbilityType::S_ELDRAZI, { 40, 70, 85, 0, 45, A_INT, _("エルドラージの召喚", "summon Eldrazi") } },
     { MonsterAbilityType::BR_FECES, { 30, 25, 80, 200, 95, A_CON, _("糞便のブレス", "breathe feces") } },
     { MonsterAbilityType::BR_SPIDER_STRING, { 25, 20, 75, 150, 95, A_CON, _("蜘蛛糸のブレス", "breathe spider string") } },
 };
@@ -261,4 +262,5 @@ const std::map<MonsterAbilityType, concptr> monster_powers_short = {
     { MonsterAbilityType::S_PUYO, _("ぷよ", "Puyo") },
     { MonsterAbilityType::S_HOMO, _("ホモ", "Homos") },
     { MonsterAbilityType::S_WALL, _("壁", "Walls") },
+    { MonsterAbilityType::S_ELDRAZI, _("エルドラージ", "Eldrazi") },
 };

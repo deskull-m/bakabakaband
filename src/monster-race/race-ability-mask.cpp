@@ -8,7 +8,7 @@ const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_SUMMON_MASK = {
     MonsterAbilityType::S_FAIRY, MonsterAbilityType::S_APE, MonsterAbilityType::S_BIRD, MonsterAbilityType::S_ANGEL, MonsterAbilityType::S_DEMON, MonsterAbilityType::S_UNDEAD, MonsterAbilityType::S_DRAGON,
     MonsterAbilityType::S_HI_UNDEAD, MonsterAbilityType::S_HI_DRAGON, MonsterAbilityType::S_AMBERITES, MonsterAbilityType::S_CHOASIANS, MonsterAbilityType::S_UNIQUE,
     MonsterAbilityType::S_DEAD_UNIQUE, MonsterAbilityType::S_NASTY, MonsterAbilityType::S_GOLEM, MonsterAbilityType::S_CAT, MonsterAbilityType::S_PUYO, MonsterAbilityType::S_HOMO,
-    MonsterAbilityType::S_PERVERT, MonsterAbilityType::S_WALL, MonsterAbilityType::S_INSECT
+    MonsterAbilityType::S_PERVERT, MonsterAbilityType::S_WALL, MonsterAbilityType::S_INSECT, MonsterAbilityType::S_ELDRAZI
 };
 
 /* Choose "intelligent" spells when desperate Including "summon" spells */

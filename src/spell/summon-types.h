@@ -67,4 +67,5 @@ enum summon_type : int {
     SUMMON_PERVERTS = 81, /*!< 召喚タイプ: 変質者 */
     SUMMON_WALL = 82, /*!< 召喚タイプ: 壁 */
     SUMMON_INSECT = 83, /*!< 召喚タイプ: 昆虫 */
+    SUMMON_ELDRAZI = 84, /*!< 召喚タイプ: エルドラージ */
 };

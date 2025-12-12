@@ -34,3 +34,4 @@ MonsterSpellResult spell_RF6_S_HOMO(PlayerType *player_ptr, POSITION y, POSITION
 MonsterSpellResult spell_RF6_S_PERVERTS(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
 MonsterSpellResult spell_RF6_S_WALL(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
 MonsterSpellResult spell_RF6_S_INSECT(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
+MonsterSpellResult spell_RF6_S_ELDRAZI(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
