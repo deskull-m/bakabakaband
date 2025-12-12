@@ -533,8 +533,8 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             auto &rfu = RedrawingFlagsUpdater::get_instance();
             for (i = A_STR; i < A_MAX; i++) {
                 if (player_ptr->stat_cur[i] < player_ptr->stat_max[i]) {
-                    if (player_ptr->stat_cur[i] < 18) {
-                        player_ptr->stat_cur[i]++;
+                    if (player_ptr->stat_cur[i] < 180) {
+                        player_ptr->stat_cur[i] += 10;
                     } else {
                         player_ptr->stat_cur[i] += 10;
                     }

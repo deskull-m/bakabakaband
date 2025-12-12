@@ -33,23 +33,8 @@
  */
 static int calc_basic_stat(PlayerType *player_ptr, int stat_num)
 {
-    int e_adj = 0;
-    if ((player_ptr->stat_max[stat_num] > 18) && (player_ptr->stat_top[stat_num] > 18)) {
-        e_adj = (player_ptr->stat_top[stat_num] - player_ptr->stat_max[stat_num]) / 10;
-    }
-
-    if ((player_ptr->stat_max[stat_num] <= 18) && (player_ptr->stat_top[stat_num] <= 18)) {
-        e_adj = player_ptr->stat_top[stat_num] - player_ptr->stat_max[stat_num];
-    }
-
-    if ((player_ptr->stat_max[stat_num] <= 18) && (player_ptr->stat_top[stat_num] > 18)) {
-        e_adj = (player_ptr->stat_top[stat_num] - 18) / 10 - player_ptr->stat_max[stat_num] + 18;
-    }
-
-    if ((player_ptr->stat_max[stat_num] > 18) && (player_ptr->stat_top[stat_num] <= 18)) {
-        e_adj = player_ptr->stat_top[stat_num] - (player_ptr->stat_max[stat_num] - 19) / 10 - 19;
-    }
-
+    // 新形式では単純に差分を返す（すでに10倍スケール）
+    int e_adj = (player_ptr->stat_top[stat_num] - player_ptr->stat_max[stat_num]) / 10;
     return e_adj;
 }
 

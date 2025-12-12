@@ -171,19 +171,48 @@ void rd_bounty_uniques()
 /*!
  * @brief 腕力などの基本ステータス情報を読み込む
  * @param player_ptr プレイヤーへの参照ポインタ
+ * @details セーブファイルバージョン36以降は30-400形式、それ以前は3-18/220形式
  */
 static void rd_base_status(PlayerType *player_ptr)
 {
+    auto convert_old_stat_to_new = [](int16_t old_val) -> int16_t {
+        // 旧形式 (3-18/220) を新形式 (30-400) に変換
+        if (old_val <= 18) {
+            // 3-18 -> 30-180
+            return old_val * 10;
+        } else {
+            // 18/xx -> 180-400
+            // 18/00 = 19 -> 190
+            // 18/220 = 238 -> 400
+            int bonus = old_val - 18;
+            if (bonus > 220) {
+                bonus = 220;
+            }
+            return 180 + (bonus * 220 / 220);
+        }
+    };
+
+    bool is_old_format = loading_savefile_version_is_older_than(36);
+
     for (int i = 0; i < A_MAX; i++) {
         player_ptr->stat_max[i] = rd_s16b();
+        if (is_old_format) {
+            player_ptr->stat_max[i] = convert_old_stat_to_new(player_ptr->stat_max[i]);
+        }
     }
 
     for (int i = 0; i < A_MAX; i++) {
         player_ptr->stat_max_max[i] = rd_s16b();
+        if (is_old_format) {
+            player_ptr->stat_max_max[i] = convert_old_stat_to_new(player_ptr->stat_max_max[i]);
+        }
     }
 
     for (int i = 0; i < A_MAX; i++) {
         player_ptr->stat_cur[i] = rd_s16b();
+        if (is_old_format) {
+            player_ptr->stat_cur[i] = convert_old_stat_to_new(player_ptr->stat_cur[i]);
+        }
     }
 }
 
