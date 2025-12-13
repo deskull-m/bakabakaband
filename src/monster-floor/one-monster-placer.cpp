@@ -228,7 +228,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     const auto &world = AngbandWorld::get_instance();
-    if (world.is_wild_mode() || !floor.contains(pos) || !MonraceList::is_valid(r_idx)) {
+    if (world.is_wild_mode() || !floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || !MonraceList::is_valid(r_idx)) {
         return tl::nullopt;
     }
 

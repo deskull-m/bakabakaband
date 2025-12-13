@@ -204,7 +204,7 @@ void cast_meteor(PlayerType *player_ptr, int dam, POSITION rad)
                 continue;
             }
 
-            if (!floor.contains(pos)) {
+            if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                 continue;
             }
 
