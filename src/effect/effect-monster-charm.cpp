@@ -59,14 +59,14 @@ static void effect_monster_charm_resist(PlayerType *player_ptr, EffectMonster *e
 
 ProcessResult effect_monster_charm(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    int vir = virtue_number(player_ptr, Virtue::HARMONY);
-    if (vir) {
-        em_ptr->dam += player_ptr->virtues[vir - 1] / 10;
+    auto it = player_ptr->virtues.find(Virtue::HARMONY);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam += it->second / 10;
     }
 
-    vir = virtue_number(player_ptr, Virtue::INDIVIDUALISM);
-    if (vir) {
-        em_ptr->dam -= player_ptr->virtues[vir - 1] / 20;
+    it = player_ptr->virtues.find(Virtue::INDIVIDUALISM);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam -= it->second / 20;
     }
 
     if (em_ptr->seen) {
@@ -84,14 +84,14 @@ ProcessResult effect_monster_control_undead(PlayerType *player_ptr, EffectMonste
         em_ptr->obvious = true;
     }
 
-    int vir = virtue_number(player_ptr, Virtue::UNLIFE);
-    if (vir) {
-        em_ptr->dam += player_ptr->virtues[vir - 1] / 10;
+    auto it = player_ptr->virtues.find(Virtue::UNLIFE);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam += it->second / 10;
     }
 
-    vir = virtue_number(player_ptr, Virtue::INDIVIDUALISM);
-    if (vir) {
-        em_ptr->dam -= player_ptr->virtues[vir - 1] / 20;
+    it = player_ptr->virtues.find(Virtue::INDIVIDUALISM);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam -= it->second / 20;
     }
 
     if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || !em_ptr->m_ptr->has_undead_flag()) {
@@ -125,14 +125,14 @@ ProcessResult effect_monster_control_demon(PlayerType *player_ptr, EffectMonster
         em_ptr->obvious = true;
     }
 
-    int vir = virtue_number(player_ptr, Virtue::UNLIFE);
-    if (vir) {
-        em_ptr->dam += player_ptr->virtues[vir - 1] / 10;
+    auto it = player_ptr->virtues.find(Virtue::UNLIFE);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam += it->second / 10;
     }
 
-    vir = virtue_number(player_ptr, Virtue::INDIVIDUALISM);
-    if (vir) {
-        em_ptr->dam -= player_ptr->virtues[vir - 1] / 20;
+    it = player_ptr->virtues.find(Virtue::INDIVIDUALISM);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam -= it->second / 20;
     }
 
     if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::DEMON)) {
@@ -166,14 +166,14 @@ ProcessResult effect_monster_control_animal(PlayerType *player_ptr, EffectMonste
         em_ptr->obvious = true;
     }
 
-    int vir = virtue_number(player_ptr, Virtue::NATURE);
-    if (vir) {
-        em_ptr->dam += player_ptr->virtues[vir - 1] / 10;
+    auto it = player_ptr->virtues.find(Virtue::NATURE);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam += it->second / 10;
     }
 
-    vir = virtue_number(player_ptr, Virtue::INDIVIDUALISM);
-    if (vir) {
-        em_ptr->dam -= player_ptr->virtues[vir - 1] / 20;
+    it = player_ptr->virtues.find(Virtue::INDIVIDUALISM);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam -= it->second / 20;
     }
 
     if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::ANIMAL)) {
@@ -206,19 +206,18 @@ ProcessResult effect_monster_control_animal(PlayerType *player_ptr, EffectMonste
 
 ProcessResult effect_monster_charm_living(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    int vir = virtue_number(player_ptr, Virtue::UNLIFE);
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
-    vir = virtue_number(player_ptr, Virtue::UNLIFE);
-    if (vir) {
-        em_ptr->dam -= player_ptr->virtues[vir - 1] / 10;
+    auto it = player_ptr->virtues.find(Virtue::UNLIFE);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam -= it->second / 10;
     }
 
-    vir = virtue_number(player_ptr, Virtue::INDIVIDUALISM);
-    if (vir) {
-        em_ptr->dam -= player_ptr->virtues[vir - 1] / 20;
+    it = player_ptr->virtues.find(Virtue::INDIVIDUALISM);
+    if (it != player_ptr->virtues.end()) {
+        em_ptr->dam -= it->second / 20;
     }
 
     msg_format(_("%sを見つめた。", "You stare at %s."), em_ptr->m_name);

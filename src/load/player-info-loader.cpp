@@ -1,4 +1,5 @@
 #include "load/player-info-loader.h"
+#include "avatar/avatar.h"
 #include "combat/martial-arts-style.h"
 #include "load/angband-version-comparer.h"
 #include "load/birth-loader.h"
@@ -390,12 +391,19 @@ static void set_mutations(PlayerType *player_ptr)
 
 static void set_virtues(PlayerType *player_ptr)
 {
+    // Load virtue values (8 entries)
+    int16_t virtue_values[8];
     for (int i = 0; i < 8; i++) {
-        player_ptr->virtues[i] = rd_s16b();
+        virtue_values[i] = rd_s16b();
     }
 
+    // Load virtue types (8 entries) and build map
+    player_ptr->virtues.clear();
     for (int i = 0; i < 8; i++) {
-        player_ptr->vir_types[i] = i2enum<Virtue>(rd_s16b());
+        auto vir_type = i2enum<Virtue>(rd_s16b());
+        if (vir_type != Virtue::NONE && vir_type < Virtue::MAX) {
+            player_ptr->virtues[vir_type] = virtue_values[i];
+        }
     }
 }
 

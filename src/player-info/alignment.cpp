@@ -16,6 +16,7 @@
 #include "util/bit-flags-calculator.h"
 #include <array>
 #include <fmt/format.h>
+#include <vector>
 
 PlayerAlignment::PlayerAlignment(PlayerType *player_ptr)
 {
@@ -101,36 +102,40 @@ void PlayerAlignment::update_alignment()
         this->bias_evil_alignment(1000);
     }
 
-    int j = 0;
-    std::array<int, 2> neutral{};
-    for (int i = 0; i < 8; i++) {
-        switch (this->player_ptr->vir_types[i]) {
+    std::vector<Virtue> neutral_virtues;
+    for (const auto &[virtue_type, value] : this->player_ptr->virtues) {
+        switch (virtue_type) {
         case Virtue::JUSTICE:
-            this->bias_good_alignment(this->player_ptr->virtues[i] * 2);
+            this->bias_good_alignment(value * 2);
             break;
         case Virtue::CHANCE:
             break;
         case Virtue::NATURE:
         case Virtue::HARMONY:
-            neutral[j++] = i;
+            neutral_virtues.push_back(virtue_type);
             break;
         case Virtue::UNLIFE:
-            this->bias_evil_alignment(this->player_ptr->virtues[i]);
+            this->bias_evil_alignment(value);
             break;
         default:
-            this->bias_good_alignment(this->player_ptr->virtues[i]);
+            this->bias_good_alignment(value);
             break;
         }
     }
 
-    for (int i = 0; i < j; i++) {
+    for (const auto &vir_type : neutral_virtues) {
+        auto it = this->player_ptr->virtues.find(vir_type);
+        if (it == this->player_ptr->virtues.end()) {
+            continue;
+        }
+
         if (this->player_ptr->alignment > 0) {
-            this->bias_evil_alignment(this->player_ptr->virtues[neutral[i]] / 2);
+            this->bias_evil_alignment(it->second / 2);
             if (this->player_ptr->alignment < 0) {
                 this->reset_alignment();
             }
         } else if (this->player_ptr->alignment < 0) {
-            this->bias_good_alignment(this->player_ptr->virtues[neutral[i]] / 2);
+            this->bias_good_alignment(it->second / 2);
             if (this->player_ptr->alignment > 0) {
                 this->reset_alignment();
             }

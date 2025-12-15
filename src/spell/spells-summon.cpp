@@ -485,13 +485,16 @@ void cast_invoke_spirits(PlayerType *player_ptr, const Direction &dir)
     int vir = virtue_number(player_ptr, Virtue::CHANCE);
 
     if (vir != 0) {
-        if (player_ptr->virtues[vir - 1] > 0) {
-            while (randint1(400) < player_ptr->virtues[vir - 1]) {
-                die++;
-            }
-        } else {
-            while (randint1(400) < (0 - player_ptr->virtues[vir - 1])) {
-                die--;
+        auto it = player_ptr->virtues.find(Virtue::CHANCE);
+        if (it != player_ptr->virtues.end()) {
+            if (it->second > 0) {
+                while (randint1(400) < it->second) {
+                    die++;
+                }
+            } else {
+                while (randint1(400) < (0 - it->second)) {
+                    die--;
+                }
             }
         }
     }
