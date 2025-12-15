@@ -134,6 +134,13 @@ public:
     ACTION_SKILL_POWER skill_tht{}; /*!< 行動技能値:投射命中能力 / Skill: To hit (throwing) */
     ACTION_SKILL_POWER skill_dig{}; /*!< 行動技能値:掘削 / Skill: Digging */
 
+    // 基本情報
+    int16_t age{}; /*!< 年齢 / Age */
+    int16_t ht{}; /*!< 身長 / Height */
+    int16_t wt{}; /*!< 体重 / Weight */
+    int16_t prestige{}; /*!< 名声 / Prestige */
+    int32_t death_count{}; /*!< 死亡カウント / Death count */
+
     // ステータス関連
     short stat_max[A_MAX]{}; /*!< 現在の最大能力値 / Current "maximal" stat values */
     short stat_max_max[A_MAX]{}; /*!< 最大の最大能力値 / Maximal "maximal" stat values */

@@ -85,12 +85,6 @@ public:
                          * characters (such as Amberite Paladins)
                          */
 
-    int16_t age{}; /* Characters age */
-    int16_t ht{}; /* Height */
-    int16_t wt{}; /* Weight */
-    int16_t prestige{}; /* Prestige */
-    int32_t death_count{}; /* Death count */
-
     std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
     std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
