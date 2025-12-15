@@ -1,4 +1,5 @@
 #include "save/player-writer.h"
+#include "avatar/avatar.h"
 #include "combat/martial-arts-style.h"
 #include "floor/dungeon-feeling.h"
 #include "game-option/birth-options.h"
@@ -238,12 +239,32 @@ void wr_player(PlayerType *player_ptr)
     wr_FlagGroup(player_ptr->muta, wr_byte);
     wr_FlagGroup(player_ptr->trait, wr_byte);
 
-    for (int i = 0; i < 8; i++) {
-        wr_s16b(player_ptr->virtues[i]);
+    // Save virtues in legacy format (8 entries)
+    // First, collect virtues into arrays
+    Virtue vir_types[8];
+    int16_t vir_values[8];
+    int idx = 0;
+    for (const auto &[vir_type, value] : player_ptr->virtues) {
+        if (idx < 8) {
+            vir_types[idx] = vir_type;
+            vir_values[idx] = value;
+            idx++;
+        }
+    }
+    // Fill remaining slots with NONE
+    for (; idx < 8; idx++) {
+        vir_types[idx] = Virtue::NONE;
+        vir_values[idx] = 0;
     }
 
+    // Write virtue values
     for (int i = 0; i < 8; i++) {
-        wr_s16b(enum2i(player_ptr->vir_types[i]));
+        wr_s16b(vir_values[i]);
+    }
+
+    // Write virtue types
+    for (int i = 0; i < 8; i++) {
+        wr_s16b(enum2i(vir_types[i]));
     }
 
     wr_s32b(int32_t(player_ptr->incident.size()));

@@ -36,10 +36,9 @@ void display_virtue(PlayerType *player_ptr, self_info_type *self_ptr)
     const std::string alg = PlayerAlignment(player_ptr).get_alignment_description(true);
     self_ptr->info_list.push_back(format(_("現在の属性 : %s", "Your alignment : %s"), alg.data()));
 
-    for (int v_nr = 0; v_nr < 8; v_nr++) {
-        const auto vir_name = virtue_names.at(player_ptr->vir_types[v_nr]).data();
+    for (const auto &[virtue_type, tester] : player_ptr->virtues) {
+        const auto vir_name = virtue_names.at(virtue_type).data();
         std::string vir_desc;
-        int tester = player_ptr->virtues[v_nr];
         if (tester < -100) {
             vir_desc = format(_("[%s]の対極 (%d)", "You are the polar opposite of %s (%d)."), vir_name, tester);
         } else if (tester < -80) {

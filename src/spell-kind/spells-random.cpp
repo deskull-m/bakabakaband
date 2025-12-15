@@ -368,13 +368,16 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     int die = randint1(100) + plev / 5;
     int vir = virtue_number(player_ptr, Virtue::CHANCE);
     if (vir) {
-        if (player_ptr->virtues[vir - 1] > 0) {
-            while (randint1(400) < player_ptr->virtues[vir - 1]) {
-                die++;
-            }
-        } else {
-            while (randint1(400) < (0 - player_ptr->virtues[vir - 1])) {
-                die--;
+        auto it = player_ptr->virtues.find(Virtue::CHANCE);
+        if (it != player_ptr->virtues.end()) {
+            if (it->second > 0) {
+                while (randint1(400) < it->second) {
+                    die++;
+                }
+            } else {
+                while (randint1(400) < (0 - it->second)) {
+                    die--;
+                }
             }
         }
     }

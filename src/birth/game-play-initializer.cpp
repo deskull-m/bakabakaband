@@ -132,9 +132,7 @@ void player_wipe_without_name(PlayerType *player_ptr)
     melee_arena.update_gladiators(player_ptr);
     player_ptr->muta.clear();
 
-    for (int i = 0; i < 8; i++) {
-        player_ptr->virtues[i] = 0;
-    }
+    player_ptr->virtues.clear();
 
     if (vanilla_town || ironman_downward) {
         player_ptr->recall_dungeon = DungeonId::ANGBAND;

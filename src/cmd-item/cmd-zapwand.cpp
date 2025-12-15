@@ -65,19 +65,22 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
         sval = randint0(SV_WAND_WONDER);
 
         if (vir) {
-            if (player_ptr->virtues[vir - 1] > 0) {
-                while (randint1(300) < player_ptr->virtues[vir - 1]) {
-                    sval++;
-                }
-                if (sval > SV_WAND_COLD_BALL) {
-                    sval = randint0(4) + SV_WAND_ACID_BALL;
-                }
-            } else {
-                while (randint1(300) < (0 - player_ptr->virtues[vir - 1])) {
-                    sval--;
-                }
-                if (sval < SV_WAND_HEAL_MONSTER) {
-                    sval = randint0(3) + SV_WAND_HEAL_MONSTER;
+            auto it = player_ptr->virtues.find(Virtue::CHANCE);
+            if (it != player_ptr->virtues.end()) {
+                if (it->second > 0) {
+                    while (randint1(300) < it->second) {
+                        sval++;
+                    }
+                    if (sval > SV_WAND_COLD_BALL) {
+                        sval = randint0(4) + SV_WAND_ACID_BALL;
+                    }
+                } else {
+                    while (randint1(300) < (0 - it->second)) {
+                        sval--;
+                    }
+                    if (sval < SV_WAND_HEAL_MONSTER) {
+                        sval = randint0(3) + SV_WAND_HEAL_MONSTER;
+                    }
                 }
             }
         }

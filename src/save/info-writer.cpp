@@ -1,4 +1,5 @@
 #include "save/info-writer.h"
+#include "avatar/avatar.h"
 #include "birth/quick-start.h"
 #include "game-option/cheat-options.h"
 #include "game-option/option-flags.h"
@@ -190,8 +191,21 @@ void save_quick_start(void)
     }
 
     wr_s16b(previous_char.patron);
+
+    // Write previous character virtues in legacy format
+    Virtue vir_types[8];
+    int idx = 0;
+    for (const auto &[vir_type, value] : previous_char.virtues) {
+        if (idx < 8) {
+            vir_types[idx++] = vir_type;
+        }
+    }
+    for (; idx < 8; idx++) {
+        vir_types[idx] = Virtue::NONE;
+    }
+
     for (int i = 0; i < 8; i++) {
-        wr_s16b(enum2i(previous_char.vir_types[i]));
+        wr_s16b(enum2i(vir_types[i]));
     }
 
     for (int i = 0; i < 4; i++) {

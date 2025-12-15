@@ -491,7 +491,10 @@ bool hp_player(PlayerType *player_ptr, int num)
     }
 
     if (vir) {
-        num = num * (player_ptr->virtues[vir - 1] + 1250) / 1250;
+        auto it = player_ptr->virtues.find(Virtue::VITALITY);
+        if (it != player_ptr->virtues.end()) {
+            num = num * (it->second + 1250) / 1250;
+        }
     }
 
     if (player_ptr->chp < player_ptr->mhp) {
