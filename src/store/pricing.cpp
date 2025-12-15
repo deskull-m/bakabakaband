@@ -61,8 +61,8 @@ int price_item(PlayerType *player_ptr, const ItemEntity *o_ptr, int greed, bool 
         if (store_num == StoreSaleType::BLACK) {
             const auto level = store_level(store_num);
             auto mult = 20000UL;
-            const auto BM_LIMIT = 500;
-            for (int i = 1; i < std::min(level, BM_LIMIT); i++) {
+            const auto BM_LIMIT = 200;
+            for (int i = 1; i < std::min(level, BM_LIMIT); i += 2) {
                 mult = mult * 101 / 100;
             }
             p = p * mult / 10000UL;
