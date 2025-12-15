@@ -558,9 +558,14 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     /* 基本食い物でないものを喰う判定 */
     bool ate = false;
+
     ate = exe_eat_soul(player_ptr, o_ptr);
+
     if (!ate) {
         ate = exe_eat_corpse_type_object(player_ptr, o_ptr);
+    }
+
+    if (!ate) {
         ate = exe_eat_junk_type_object(player_ptr, o_ptr);
     }
 
@@ -672,6 +677,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
             ate = true;
         }
     }
+
     if (!ate) {
         msg_print("流石に食べるのを躊躇した。");
         return;
