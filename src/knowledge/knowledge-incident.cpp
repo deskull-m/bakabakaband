@@ -6,13 +6,18 @@
 
 #include "alliance/alliance.h"
 #include "core/show-file.h"
+#include "flavor/flavor-describer.h"
+#include "flavor/object-flavor-types.h"
 #include "io-dump/dump-util.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/monster-kind-type-name.h"
 #include "monster-race/race-kind-flags.h"
+#include "object/tval-types.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
@@ -213,6 +218,33 @@ void do_cmd_knowledge_incident(PlayerType *player_ptr)
         }
         if (player_ptr->incident_tree.count("EAT_POISON")) {
             fprintf(fff, _("    うち%d回中毒症状を起こした。\n", "    of which %d times had addiction symptoms\n"), player_ptr->incident_tree["EAT_POISON"]);
+        }
+
+        // 死体を食べた記録を表示
+        std::map<std::string, int> corpse_eaten;
+        for (const auto &entry : player_ptr->incident_tree) {
+            if (entry.first.find("EAT/CORPSE/") == 0) {
+                corpse_eaten[entry.first] = entry.second;
+            }
+        }
+
+        if (!corpse_eaten.empty()) {
+            fprintf(fff, _("    死体を食べた記録:\n", "    Corpses eaten:\n"));
+            for (const auto &entry : corpse_eaten) {
+                // キーから tval/sval/pval を抽出
+                int tval, sval, pval;
+                if (sscanf(entry.first.c_str(), "EAT/CORPSE/%d/%d/%d", &tval, &sval, &pval) == 3) {
+                    // アイテムを再構成
+                    ItemEntity item;
+                    item.bi_key = BaseitemKey(static_cast<ItemKindType>(tval), sval);
+                    item.pval = pval;
+                    item.mark_as_known();
+
+                    auto item_name = describe_flavor(player_ptr, item, 0);
+                    fprintf(fff, _("        %s を %d 回\n", "        %s %d times\n"),
+                        item_name.data(), entry.second);
+                }
+            }
         }
     }
     if (player_ptr->incident_tree.count("QUAFF")) {

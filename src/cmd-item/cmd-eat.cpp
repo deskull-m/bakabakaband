@@ -685,6 +685,15 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     player_ptr->plus_incident_tree("EAT", 1);
 
+    // 死体を食べた場合は詳細情報を記録
+    if (o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_CORPSE) {
+        auto incident_key = format("EAT/CORPSE/%d/%d/%d",
+            static_cast<int>(o_ptr->bi_key.tval()),
+            o_ptr->bi_key.sval().value_or(0),
+            o_ptr->pval);
+        player_ptr->plus_incident_tree(incident_key, 1);
+    }
+
     rfu.set_flags(flags_srf);
     vary_item(player_ptr, i_idx, -1);
 }
