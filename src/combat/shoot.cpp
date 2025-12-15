@@ -263,7 +263,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_SLAY_UNDEAD)) && monster.is_undead()) {
+        if ((flags.has(TR_SLAY_UNDEAD)) && monster.has_undead_flag()) {
             if (is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }
@@ -272,7 +272,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_KILL_UNDEAD)) && monster.is_undead()) {
+        if ((flags.has(TR_KILL_UNDEAD)) && monster.has_undead_flag()) {
             if (is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }

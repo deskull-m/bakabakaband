@@ -95,6 +95,12 @@ void display_mimic_race_ability(PlayerType *player_ptr, self_info_type *self_ptr
             self_ptr->info_list.push_back(format(fmt, min_dam, max_dam, cost));
         }
         return;
+    case MimicKindType::ANGEL:
+        return;
+    case MimicKindType::DEMIGOD:
+        return;
+    default:
+        return;
     }
 }
 

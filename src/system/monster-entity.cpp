@@ -321,22 +321,27 @@ bool MonsterEntity::has_living_flag(bool is_apperance) const
 }
 
 /*!
- * @brief モンスターがアンデッドかどうかを返す
- * @return 種族または個体がアンデッドならばtrue
+ * @brief モンスターが悪魔かどうかを返す
+ * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
+ * @return 悪魔ならばtrue
+ * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
  */
-bool MonsterEntity::is_undead() const
+bool MonsterEntity::has_demon_flag(bool is_apperance) const
 {
-    // 種族データでアンデッドフラグがあるか確認
-    if (this->get_monrace().kind_flags.has(MonsterKindType::UNDEAD)) {
-        return true;
-    }
+    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_demon_flag();
+}
 
-    // 個体フラグでZOMBIFIED状態の場合（ZOMBIFIEDモンスターは自動的にUNDEADフラグを持つ）
-    if (this->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
-        return true;
-    }
-
-    return false;
+/*!
+ * @brief モンスターがアンデッドかどうかを返す
+ * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
+ * @return アンデッドならばtrue
+ * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
+ */
+bool MonsterEntity::has_undead_flag(bool is_apperance) const
+{
+    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_undead_flag();
 }
 
 /*!

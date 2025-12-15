@@ -189,8 +189,9 @@ enum tr_type : int {
     TR_SLAY_FEMALE = 174, //!< 女性スレイ(/女)
     TR_KILL_FEMALE = 175, //!< 女性スレイ(X女)
     TR_STANDARDIZED = 176, //!< 規格品
+    TR_IM_LITE = 177, //!< 閃光免疫
 
-    TR_FLAG_MAX = 177,
+    TR_FLAG_MAX = 178,
 };
 
 /** 能力値(STR,INT,WIS,DEX,CON,CHR)のpvalを増減させるフラグのリスト */

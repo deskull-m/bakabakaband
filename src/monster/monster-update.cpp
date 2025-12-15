@@ -323,7 +323,7 @@ static void update_specific_race_telepathy(PlayerType *player_ptr, um_type *um_p
         }
     }
 
-    if ((player_ptr->esp_undead) && monster.is_undead()) {
+    if ((player_ptr->esp_undead) && monster.has_undead_flag()) {
         um_ptr->flag = true;
         monster.mflag.set(MonsterTemporaryFlagType::ESP);
         if (monster.is_original_ap() && !is_hallucinated) {

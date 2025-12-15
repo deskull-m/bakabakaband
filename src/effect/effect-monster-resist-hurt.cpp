@@ -241,7 +241,7 @@ static bool effect_monster_nether_resist(PlayerType *player_ptr, EffectMonster *
         return false;
     }
 
-    if (em_ptr->m_ptr->is_undead()) {
+    if (em_ptr->m_ptr->has_undead_flag()) {
         em_ptr->note = _("には完全な耐性がある！", " is immune.");
         em_ptr->dam = 0;
         if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {

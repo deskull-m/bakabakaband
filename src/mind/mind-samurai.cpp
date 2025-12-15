@@ -292,7 +292,7 @@ static void hissatsu_keiun_kininken(PlayerType *player_ptr, samurai_slaying_type
         return;
     }
 
-    if (samurai_slaying_ptr->m_ptr->is_undead()) {
+    if (samurai_slaying_ptr->m_ptr->has_undead_flag()) {
         if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
 
