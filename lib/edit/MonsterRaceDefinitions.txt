@@ -42237,6 +42237,39 @@ D:tanasinntanasinntanasinntanasinntanasinntanasinntanasinn
 D:tanasinntanasinntanasinntanasinn.......
 D:───「ヤァ　息仔ョ　失ゥコトノ　堪ェ難キ痛ミニモ　モウ慣レタカイ？」
 
+N:2335:ブラックマーケットの中級エージェント
+E:Mature agent of black market
+G:p:D
+I:130:15d10:30:100:40
+W:32:4:0:350:12000:1394
+B:HIT:HURT:2d8
+B:HIT:EAT_GOLD:2d8
+B:HIT:EAT_ITEM:2d8
+B:HIT:EAT_ITEM:2d8
+B:SHOOT::9d5
+S:BLINK | TELE_TO | TELE_AWAY | TPORT | HASTE | 1_IN_4
+F:HUMAN | DROP_2D2 | DROP_4D2 | ONLY_ITEM | DROP_GOOD | DROP_SKELETON | DROP_CORPSE | TAKE_ITEM | OPEN_DOOR | BASH_DOOR
+F:IM_FIRE | IM_COLD | NO_CONF | NO_SLEEP | EVIL | MALE
+D:彼はダンジョンのあらゆるところから商品を「拾って」くることを生業としている。
+D:$His job is to 'find' goods from all over the dungeon.
+
+N:2336:ブラックマーケットの上級エージェント
+E:Master agent of black market
+G:p:D
+I:130:50d20:40:150:10
+W:64:8:0:5000:0:0
+B:HIT:EAT_ITEM:6d5
+B:HIT:EAT_ITEM:6d5
+B:HIT:EAT_ITEM:6d5
+B:HIT:EAT_ITEM:6d5
+B:SHOOT::24d5
+S:BLINK | TELE_TO | TELE_AWAY | TPORT | TELE_LEVEL | HASTE | HEAL | ANIM_DEAD | ROCKET | BR_FIRE | BR_COLD | BO_METEOR | S_MONSTER | 1_IN_3
+F:HUMAN | FORCE_MAXHP | ONLY_ITEM | DROP_2D2 | DROP_3D2 | DROP_4D2 | DROP_GOOD | SMART | OPEN_DOOR | BASH_DOOR
+F:TAKE_ITEM | KILL_BODY | EVIL | IM_ACID | IM_COLD | IM_FIRE | IM_ELEC | IM_POIS | RES_CHAO | REFLECTING | CAN_FLY
+F:NO_CONF | NO_SLEEP | HAS_LITE_2 | MALE
+D:ダンジョンの奥深くから商品を「拾って」くるエキスパートだ。商品を惜しみなく使用して武装している。
+D:$He is an expert at 'find' goods from the depths of the dungeon, and is armed with a generous supply of goods.
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
