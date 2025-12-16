@@ -48,27 +48,29 @@ const std::map<Virtue, std::string> virtue_names = {
 };
 
 /*!
- * @brief 該当の徳がプレイヤーに指定されているか否かに応じつつ、大小を比較する。
+ * @brief 該当の徳がクリーチャーに指定されているか否かに応じつつ、大小を比較する。
  * @details 徳がない場合は値0として比較する。
- * @param virtue_names 比較したい徳のID
+ * @param creature クリーチャーへの参照
+ * @param virtue 比較したい徳のID
  * @param threshold 比較基準値
  * @return 比較の真偽値を返す
  */
-bool compare_virtue(PlayerType *player_ptr, Virtue virtue, int threshold)
+bool compare_virtue(CreatureEntity &creature, Virtue virtue, int threshold)
 {
-    const auto it = player_ptr->virtues.find(virtue);
-    const auto virtue_value = (it != player_ptr->virtues.end()) ? it->second : 0;
+    const auto it = creature.virtues.find(virtue);
+    const auto virtue_value = (it != creature.virtues.end()) ? it->second : 0;
     return virtue_value > threshold;
 }
 
 /*!
- * @brief プレイヤーの指定の徳が何番目のスロットに登録されているかを返す。 / Aux function
- * @param virtue_names 確認したい徳のID
+ * @brief クリーチャーの指定の徳が何番目のスロットに登録されているかを返す。 / Aux function
+ * @param creature クリーチャーへの参照
+ * @param virtue 確認したい徳のID
  * @return スロットがあるならばスロットのID(0～7)+1、ない場合は0を返す。
  */
-int virtue_number(PlayerType *player_ptr, Virtue virtue)
+int virtue_number(CreatureEntity &creature, Virtue virtue)
 {
-    return player_ptr->virtues.find(virtue) != player_ptr->virtues.end() ? 1 : 0;
+    return creature.virtues.find(virtue) != creature.virtues.end() ? 1 : 0;
 }
 
 /*!
@@ -106,25 +108,25 @@ static enum Virtue get_realm_virtues(PlayerType *player_ptr, RealmType realm)
 {
     switch (realm) {
     case RealmType::LIFE:
-        if (virtue_number(player_ptr, Virtue::VITALITY)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY)) {
             return Virtue::TEMPERANCE;
         } else {
             return Virtue::VITALITY;
         }
     case RealmType::SORCERY:
-        if (virtue_number(player_ptr, Virtue::KNOWLEDGE)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE)) {
             return Virtue::ENCHANT;
         } else {
             return Virtue::KNOWLEDGE;
         }
     case RealmType::NATURE:
-        if (virtue_number(player_ptr, Virtue::NATURE)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE)) {
             return Virtue::HARMONY;
         } else {
             return Virtue::NATURE;
         }
     case RealmType::CHAOS:
-        if (virtue_number(player_ptr, Virtue::CHANCE)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE)) {
             return Virtue::INDIVIDUALISM;
         } else {
             return Virtue::CHANCE;
@@ -136,25 +138,25 @@ static enum Virtue get_realm_virtues(PlayerType *player_ptr, RealmType realm)
     case RealmType::ARCANE:
         return Virtue::NONE;
     case RealmType::CRAFT:
-        if (virtue_number(player_ptr, Virtue::ENCHANT)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT)) {
             return Virtue::INDIVIDUALISM;
         } else {
             return Virtue::ENCHANT;
         }
     case RealmType::DAEMON:
-        if (virtue_number(player_ptr, Virtue::JUSTICE)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE)) {
             return Virtue::FAITH;
         } else {
             return Virtue::JUSTICE;
         }
     case RealmType::CRUSADE:
-        if (virtue_number(player_ptr, Virtue::JUSTICE)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE)) {
             return Virtue::HONOUR;
         } else {
             return Virtue::JUSTICE;
         }
     case RealmType::HEX:
-        if (virtue_number(player_ptr, Virtue::COMPASSION)) {
+        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION)) {
             return Virtue::JUSTICE;
         } else {
             return Virtue::COMPASSION;
@@ -168,13 +170,18 @@ static enum Virtue get_realm_virtues(PlayerType *player_ptr, RealmType realm)
  * @brief 作成中のプレイヤーキャラクターに徳8種類を与える。 / Select virtues & reset values for a new character
  * @details 職業に応じて1～4種が固定、種族に応じて1種類が与えられ、後は重複なくランダムに選択される。
  */
-void initialize_virtues(PlayerType *player_ptr)
+void initialize_virtues(CreatureEntity &creature)
 {
-    player_ptr->virtues.clear();
+    creature.virtues.clear();
+
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
 
     auto add_virtue = [&](Virtue v) {
-        if (v != Virtue::NONE && player_ptr->virtues.find(v) == player_ptr->virtues.end()) {
-            player_ptr->virtues[v] = 0;
+        if (v != Virtue::NONE && creature.virtues.find(v) == creature.virtues.end()) {
+            creature.virtues[v] = 0;
         }
     };
 
@@ -376,21 +383,22 @@ void initialize_virtues(PlayerType *player_ptr)
     }
 
     /* Fill up to 8 virtues with random ones */
-    while (player_ptr->virtues.size() < 8) {
+    while (creature.virtues.size() < 8) {
         get_random_virtue(player_ptr);
     }
 }
 
 /*!
- * @brief 対応する徳をプレイヤーがスロットに登録している場合に加減を行う。
+ * @brief 対応する徳をクリーチャーがスロットに登録している場合に加減を行う。
  * @details 範囲は-125～125、基本的に絶対値が大きいほど絶対値が上がり辛くなる。
- * @param virtue_names 徳のID
+ * @param creature クリーチャーへの参照
+ * @param virtue_id 徳のID
  * @param amount 加減量
  */
-void chg_virtue(PlayerType *player_ptr, Virtue virtue_id, int amount)
+void chg_virtue(CreatureEntity &creature, Virtue virtue_id, int amount)
 {
-    auto it = player_ptr->virtues.find(virtue_id);
-    if (it == player_ptr->virtues.end()) {
+    auto it = creature.virtues.find(virtue_id);
+    if (it == creature.virtues.end()) {
         return;
     }
 
@@ -442,29 +450,31 @@ void chg_virtue(PlayerType *player_ptr, Virtue virtue_id, int amount)
 }
 
 /*!
- * @brief 対応する徳をプレイヤーがスロットに登録している場合に固定値をセットする
- * @param virtue_names 徳のID
+ * @brief 対応する徳をクリーチャーがスロットに登録している場合に固定値をセットする
+ * @param creature クリーチャーへの参照
+ * @param virtue_id 徳のID
  * @param amount セットしたい値
  */
-void set_virtue(PlayerType *player_ptr, Virtue virtue_id, int amount)
+void set_virtue(CreatureEntity &creature, Virtue virtue_id, int amount)
 {
-    auto it = player_ptr->virtues.find(virtue_id);
-    if (it != player_ptr->virtues.end()) {
+    auto it = creature.virtues.find(virtue_id);
+    if (it != creature.virtues.end()) {
         it->second = static_cast<int16_t>(amount);
     }
 }
 
 /*!
  * @brief 徳のダンプ表示を行う
+ * @param creature クリーチャーへの参照
  * @param out_file ファイルポインタ
  */
-void dump_virtues(PlayerType *player_ptr, FILE *out_file)
+void dump_virtues(CreatureEntity &creature, FILE *out_file)
 {
     if (!out_file) {
         return;
     }
 
-    for (const auto &[virtue_type, value] : player_ptr->virtues) {
+    for (const auto &[virtue_type, value] : creature.virtues) {
         const auto &vir_name = virtue_names.at(virtue_type);
         const auto vir_val_str = format(" (%d)", value);
         const auto vir_val = show_actual_value ? vir_val_str.data() : "";

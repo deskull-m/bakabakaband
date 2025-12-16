@@ -44,7 +44,7 @@ void do_cmd_knowledge_virtues(PlayerType *player_ptr)
 
     std::string alg = PlayerAlignment(player_ptr).get_alignment_description();
     fprintf(fff, _("現在の属性 : %s\n\n", "Your alignment : %s\n\n"), alg.data());
-    dump_virtues(player_ptr, fff);
+    dump_virtues(static_cast<CreatureEntity &>(*player_ptr), fff);
     angband_fclose(fff);
     FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("八つの徳", "Virtues"));
     fd_kill(file_name);

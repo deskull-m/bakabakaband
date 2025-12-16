@@ -275,7 +275,7 @@ void sense_inventory1(PlayerType *player_ptr)
         break;
     }
 
-    if (compare_virtue(player_ptr, Virtue::KNOWLEDGE, 100)) {
+    if (compare_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 100)) {
         heavy = true;
     }
 

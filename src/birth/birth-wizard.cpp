@@ -592,7 +592,7 @@ static void set_name_history(PlayerType *player_ptr)
     process_player_name(player_ptr, AngbandWorld::get_instance().creating_savefile);
     edit_history(player_ptr);
     get_max_stats(player_ptr);
-    initialize_virtues(player_ptr);
+    initialize_virtues(static_cast<CreatureEntity &>(*player_ptr));
     prt(_("[ 'Q' 中断, 'S' 初めから, Enter ゲーム開始 ]", "['Q'uit, 'S'tart over, or Enter to continue]"), 23, _(14, 10));
 }
 

@@ -107,9 +107,9 @@ void ObjectReadEntity::change_virtue_as_read(ItemEntity &o_ref)
         return;
     }
 
-    chg_virtue(this->player_ptr, Virtue::PATIENCE, -1);
-    chg_virtue(this->player_ptr, Virtue::CHANCE, 1);
-    chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
 }
 
 void ObjectReadEntity::gain_exp_from_item_use(ItemEntity *o_ptr, bool is_identified)

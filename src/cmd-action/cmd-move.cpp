@@ -525,11 +525,11 @@ void do_cmd_rest(PlayerType *player_ptr)
     set_superstealth(player_ptr, false);
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     if (command_arg > 100) {
-        chg_virtue(player_ptr, Virtue::DILIGENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, -1);
     }
 
     if (player_ptr->is_fully_healthy()) {
-        chg_virtue(player_ptr, Virtue::DILIGENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, -1);
     }
 
     player_ptr->plus_incident_tree("REST", 1);

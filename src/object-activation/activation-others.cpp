@@ -132,8 +132,8 @@ bool activate_stone_mud(PlayerType *player_ptr)
 bool activate_judgement(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sは赤く明るく光った！", "The %s flashes bright red!"), name.data());
-    chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
-    chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
     wiz_lite(player_ptr, false);
 
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());

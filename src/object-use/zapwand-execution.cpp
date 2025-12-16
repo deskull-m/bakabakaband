@@ -113,9 +113,9 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 
     rfu.reset_flags(flags_srf);
     if (!o_ptr->is_aware()) {
-        chg_virtue(this->player_ptr, Virtue::PATIENCE, -1);
-        chg_virtue(this->player_ptr, Virtue::CHANCE, 1);
-        chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
     }
 
     o_ptr->mark_as_tried();

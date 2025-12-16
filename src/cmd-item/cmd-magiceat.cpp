@@ -528,7 +528,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
         msg_print(_("呪文をうまく唱えられなかった！", "You failed to get the magic off!"));
         sound(SoundKind::FAIL);
         if (randint1(100) >= chance) {
-            chg_virtue(player_ptr, Virtue::CHANCE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
         }
         energy.set_player_turn_energy(100);
 
@@ -585,7 +585,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
         }
 
         if (randint1(100) < chance) {
-            chg_virtue(player_ptr, Virtue::CHANCE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
         }
     }
 

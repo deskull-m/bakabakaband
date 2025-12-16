@@ -126,7 +126,7 @@ bool turn_undead(PlayerType *player_ptr)
 {
     bool tester = (project_all_los(player_ptr, AttributeType::TURN_UNDEAD, player_ptr->lev));
     if (tester) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
     }
     return tester;
 }
@@ -140,7 +140,7 @@ bool dispel_undead(PlayerType *player_ptr, int dam)
 {
     bool tester = (project_all_los(player_ptr, AttributeType::DISP_UNDEAD, dam));
     if (tester) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, -2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
     }
     return tester;
 }
@@ -485,7 +485,7 @@ bool probing(PlayerType *player_ptr)
     term_fresh();
 
     if (probe) {
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
         msg_print(_("これで全部です。", "That's all."));
     }
 

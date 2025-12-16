@@ -100,8 +100,8 @@ bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
 #else
     msg_format("Your %s (%c) %s disenchanted!", item_name.data(), index_to_label(t), (item.number != 1) ? "were" : "was");
 #endif
-    chg_virtue(player_ptr, Virtue::HARMONY, 1);
-    chg_virtue(player_ptr, Virtue::ENCHANT, -2);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -2);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     static constexpr auto flags = {

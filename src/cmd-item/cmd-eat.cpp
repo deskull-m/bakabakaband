@@ -113,7 +113,7 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
     const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
     EXP max_exp = monrace.level * monrace.level * 5;
 
-    chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
     if (player_ptr->exp < PY_MAX_EXP) {
         EXP ee = (player_ptr->exp / 2) + 10;
         ee = std::min(ee, max_exp);
@@ -589,9 +589,9 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     rfu.reset_flags(flags_srf);
     if (!(o_ptr->is_aware())) {
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, -1);
-        chg_virtue(player_ptr, Virtue::PATIENCE, -1);
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     /* We have tried it */

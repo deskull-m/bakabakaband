@@ -750,10 +750,10 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
 
                 if (monster.is_asleep()) {
                     if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-                        chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+                        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
                     }
                     if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-                        chg_virtue(player_ptr, Virtue::HONOUR, -1);
+                        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
                     }
                 }
 

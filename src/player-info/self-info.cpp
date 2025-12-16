@@ -243,8 +243,8 @@ void self_knowledge(PlayerType *player_ptr)
     self_info_type tmp_si;
     self_info_type *self_ptr = &tmp_si;
     display_life_rating(player_ptr, self_ptr);
-    chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
-    chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
     display_max_base_status(player_ptr, self_ptr);
     display_virtue(player_ptr, self_ptr);
     self_ptr->info_list.emplace_back("");

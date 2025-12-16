@@ -54,10 +54,10 @@ void anger_monster(PlayerType *player_ptr, MonsterEntity &monster)
     const auto m_name = monster_desc(player_ptr, monster, 0);
     msg_format(_("%s^は怒った！", "%s^ gets angry!"), m_name.data());
     monster.set_hostile();
-    chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
-    chg_virtue(player_ptr, Virtue::HONOUR, -1);
-    chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-    chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
 }
 
 /*!

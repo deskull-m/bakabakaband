@@ -485,8 +485,8 @@ bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_sc
     generate_unnatural_random_artifact(player_ptr, o_ptr, a_scroll, power_level, max_powers, total_flags);
 
     if (a_scroll) {
-        chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 2);
-        chg_virtue(player_ptr, Virtue::ENCHANT, 5);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, 5);
     }
 
     return true;

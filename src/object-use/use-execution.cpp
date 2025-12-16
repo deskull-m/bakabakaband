@@ -102,9 +102,9 @@ void ObjectUseEntity::execute()
     sound(SoundKind::ZAP);
     auto ident = staff_effect(this->player_ptr, *o_ptr->bi_key.sval(), &use_charge, false, false, o_ptr->is_aware());
     if (!(o_ptr->is_aware())) {
-        chg_virtue(this->player_ptr, Virtue::PATIENCE, -1);
-        chg_virtue(this->player_ptr, Virtue::CHANCE, 1);
-        chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

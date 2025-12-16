@@ -105,10 +105,10 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
         } else if (!is_invuln(player_ptr)) {
             msg_print(_("無敵だ！", "Invulnerability!"));
             notice = true;
-            chg_virtue(player_ptr, Virtue::UNLIFE, -2);
-            chg_virtue(player_ptr, Virtue::HONOUR, -2);
-            chg_virtue(player_ptr, Virtue::SACRIFICE, -3);
-            chg_virtue(player_ptr, Virtue::VALOUR, -5);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -2);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -3);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VALOUR, -5);
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
             rfu.set_flags(flags_swrf);

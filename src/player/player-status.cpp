@@ -1995,7 +1995,7 @@ void put_equipment_warning(PlayerType *player_ptr)
         if (player_ptr->is_icky_wield[i]) {
             msg_print(_("今の装備はどうも自分にふさわしくない気がする。", "You do not feel comfortable with your weapon."));
             if (AngbandWorld::get_instance().is_loading_now) {
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
         } else if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
             msg_print(_("今の装備は自分にふさわしい気がする。", "You feel comfortable with your weapon."));
@@ -2029,7 +2029,7 @@ void put_equipment_warning(PlayerType *player_ptr)
         if (heavy_armor(player_ptr)) {
             msg_print(_("装備が重くてバランスを取れない。", "The weight of your armor disrupts your balance."));
             if (AngbandWorld::get_instance().is_loading_now) {
-                chg_virtue(player_ptr, Virtue::HARMONY, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, -1);
             }
         } else {
             msg_print(_("バランスがとれるようになった。", "You regain your balance."));

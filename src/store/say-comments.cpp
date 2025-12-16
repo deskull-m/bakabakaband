@@ -6,6 +6,7 @@
 #include "store/store-owner-comments.h"
 #include "store/store-util.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 #define RUMOR_CHANCE 8
@@ -44,8 +45,8 @@ void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE gu
     /* Item was worthless, but we bought it */
     if ((value <= 0) && (price > value)) {
         msg_print(rand_choice(comment_7a));
-        chg_virtue(player_ptr, Virtue::HONOUR, -1);
-        chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
         sound(SoundKind::STORE1);
         return;
     }
@@ -53,9 +54,9 @@ void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE gu
     /* Item was cheaper than we thought, and we paid more than necessary */
     if ((value < guess) && (price > value)) {
         msg_print(rand_choice(comment_7b));
-        chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
         if (one_in_(4)) {
-            chg_virtue(player_ptr, Virtue::HONOUR, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
         }
         sound(SoundKind::STORE2);
         return;
@@ -65,9 +66,9 @@ void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE gu
     if ((value > guess) && (value < (4 * guess)) && (price < value)) {
         msg_print(rand_choice(comment_7c));
         if (one_in_(4)) {
-            chg_virtue(player_ptr, Virtue::HONOUR, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
         } else if (one_in_(4)) {
-            chg_virtue(player_ptr, Virtue::HONOUR, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
         }
         sound(SoundKind::STORE3);
         return;
@@ -77,13 +78,13 @@ void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE gu
     if ((value > guess) && (price < value)) {
         msg_print(rand_choice(comment_7d));
         if (one_in_(2)) {
-            chg_virtue(player_ptr, Virtue::HONOUR, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
         }
         if (one_in_(4)) {
-            chg_virtue(player_ptr, Virtue::HONOUR, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
         }
         if (10 * price < value) {
-            chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
         }
         sound(SoundKind::STORE4);
         return;

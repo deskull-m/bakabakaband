@@ -117,8 +117,8 @@ void set_lightspeed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         } else if (!player_ptr->lightspeed) {
             msg_print(_("非常に素早く動けるようになった！", "You feel yourself moving extremely fast!"));
             notice = true;
-            chg_virtue(player_ptr, Virtue::PATIENCE, -1);
-            chg_virtue(player_ptr, Virtue::DILIGENCE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
         }
     } else {
         if (player_ptr->lightspeed) {

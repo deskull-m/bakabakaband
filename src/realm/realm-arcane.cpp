@@ -439,8 +439,8 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
-            chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
 
             wiz_lite(player_ptr, false);
 

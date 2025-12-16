@@ -135,12 +135,12 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
 
             sound(SoundKind::SELL);
             if (store_num == StoreSaleType::BLACK) {
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
 
             const auto tval = o_ptr->bi_key.tval();
             if ((tval == ItemKindType::BOTTLE) && (store_num != StoreSaleType::HOME)) {
-                chg_virtue(player_ptr, Virtue::NATURE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
             }
 
             player_ptr->au += price;
