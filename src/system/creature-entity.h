@@ -3,6 +3,7 @@
 #include "player-ability/player-ability-types.h"
 #include "system/angband.h"
 #include "util/point-2d.h"
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -14,6 +15,7 @@ struct player_race_info;
 struct player_personality;
 struct player_class_info;
 enum class MonraceId : int16_t;
+enum class Virtue : short;
 
 /*!
  * @brief プレイヤーとモンスターの共通基底クラス
@@ -145,6 +147,9 @@ public:
     short stat_max[A_MAX]{}; /*!< 現在の最大能力値 / Current "maximal" stat values */
     short stat_max_max[A_MAX]{}; /*!< 最大の最大能力値 / Maximal "maximal" stat values */
     short stat_cur[A_MAX]{}; /*!< 現在の基本能力値 / Current "natural" stat values */
+
+    // 徳関連
+    std::map<Virtue, int16_t> virtues; /*!< 徳の値 / Virtue values */
 
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
