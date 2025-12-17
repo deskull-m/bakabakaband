@@ -165,5 +165,5 @@ void calc_android_exp(PlayerType *player_ptr)
     }
 
     player_ptr->exp = player_ptr->max_exp = total_exp;
-    check_experience(player_ptr);
+    check_experience(static_cast<CreatureEntity &>(*player_ptr));
 }

@@ -322,7 +322,7 @@ static void wiz_change_status_max(PlayerType *player_ptr)
 void wiz_change_status(PlayerType *player_ptr)
 {
     const auto finalizer = util::make_finalizer([player_ptr]() {
-        check_experience(player_ptr);
+        check_experience(static_cast<CreatureEntity &>(*player_ptr));
         do_cmd_redraw(player_ptr);
     });
 

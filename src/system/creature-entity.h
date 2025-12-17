@@ -151,6 +151,12 @@ public:
     // 徳関連
     std::map<Virtue, int16_t> virtues; /*!< 徳の値 / Virtue values */
 
+    // 経験値関連
+    EXP max_max_exp{}; /*!< 最大の最大経験値 / Max max experience (only to calculate score) */
+    EXP max_exp{}; /*!< 最大経験値 / Max experience */
+    EXP exp{}; /*!< 現在の経験値 / Current experience */
+    uint32_t exp_frac{}; /*!< 経験値の小数部 / Current exp frac (times 2^16) */
+
     // 騎乗関連
     MONSTER_IDX riding{}; /*!< 騎乗中のモンスターID / Riding on a monster of this index */
 

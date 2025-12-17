@@ -31,7 +31,7 @@ static void exe_ring_of_power(PlayerType *player_ptr, const Direction &dir)
         (void)dec_stat(player_ptr, A_CHR, 50, true);
         player_ptr->exp -= (player_ptr->exp / 4);
         player_ptr->max_exp -= (player_ptr->exp / 4);
-        check_experience(player_ptr);
+        check_experience(static_cast<CreatureEntity &>(*player_ptr));
         break;
     case 3:
         msg_print(_("あなたは強力なオーラに包み込まれた。", "You are surrounded by a powerful aura."));

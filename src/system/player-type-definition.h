@@ -90,11 +90,6 @@ public:
 
     PRICE au{}; /* Current Gold */
 
-    EXP max_max_exp{}; /* Max max experience (only to calculate score) */
-    EXP max_exp{}; /* Max experience */
-    EXP exp{}; /* Cur experience */
-    uint32_t exp_frac{}; /* Cur exp frac (times 2^16) */
-
     PLAYER_LEVEL lev{}; /* Level */
 
     int16_t town_num{}; /* Current town number */

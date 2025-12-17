@@ -1102,7 +1102,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
 
                 if ((spell_id > 15) && one_in_(6) && !player_ptr->hold_exp) {
-                    lose_exp(player_ptr, spell_id * 250);
+                    lose_exp(static_cast<CreatureEntity &>(*player_ptr), spell_id * 250);
                 }
             }
         } else if ((tval == ItemKindType::MUSIC_BOOK) && (randint1(200) < spell_id)) {
@@ -1135,7 +1135,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
             /* The spell worked */
             realm_status.set_worked(spell_id);
 
-            gain_exp(player_ptr, e * spell.slevel);
+            gain_exp(static_cast<CreatureEntity &>(*player_ptr), e * spell.slevel);
             RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 
             switch (use_realm) {

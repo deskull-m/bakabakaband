@@ -54,7 +54,7 @@ void learn_spell(PlayerType *player_ptr, MonsterAbilityType monspell)
     if (randint1(player_ptr->lev + 70) > monster_power.level + 40) {
         bluemage_data->learnt_blue_magics.set(monspell);
         msg_format(_("%sを学習した！", "You have learned %s!"), monster_power.name);
-        gain_exp(player_ptr, monster_power.level * monster_power.smana);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), monster_power.level * monster_power.smana);
         sound(SoundKind::STUDY);
         bluemage_data->new_magic_learned = true;
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);

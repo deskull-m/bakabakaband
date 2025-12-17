@@ -525,7 +525,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                 }
 
                 /* Check the experience */
-                check_experience(player_ptr);
+                check_experience(static_cast<CreatureEntity &>(*player_ptr));
 
                 flag = true;
             }

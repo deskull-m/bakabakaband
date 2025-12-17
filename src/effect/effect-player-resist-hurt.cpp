@@ -483,7 +483,7 @@ static void effect_player_time_addition(PlayerType *player_ptr)
         }
 
         msg_print(_("人生が逆戻りした気がする。", "You feel like a chunk of the past has been ripped away."));
-        lose_exp(player_ptr, 100 + (player_ptr->exp / 100) * MON_DRAIN_LIFE);
+        lose_exp(static_cast<CreatureEntity &>(*player_ptr), 100 + (player_ptr->exp / 100) * MON_DRAIN_LIFE);
         break;
     }
     case 6:

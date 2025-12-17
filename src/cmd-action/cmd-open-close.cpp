@@ -69,7 +69,7 @@ static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX 
 
         if (evaluate_percent(j)) {
             msg_print(_("鍵をはずした。", "You have picked the lock."));
-            gain_exp(player_ptr, 1);
+            gain_exp(static_cast<CreatureEntity &>(*player_ptr), 1);
             flag = true;
         } else {
             more = true;

@@ -118,7 +118,7 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
         EXP ee = (player_ptr->exp / 2) + 10;
         ee = std::min(ee, max_exp);
         msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-        gain_exp(player_ptr, ee);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), ee);
     }
     return true;
 }
@@ -421,7 +421,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         (void)do_inc_stat(player_ptr, randint0(6));
         return true;
     case SV_FOOD_ABESHI:
-        gain_exp(player_ptr, player_ptr->lev * 50);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->lev * 50);
         (void)set_hero(player_ptr, randint1(10) + 10, false);
         if (one_in_(300)) {
             (void)do_inc_stat(player_ptr, A_STR);
@@ -434,7 +434,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         return true;
     case SV_FOOD_HIDEBU:
-        gain_exp(player_ptr, player_ptr->lev * 100);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->lev * 100);
         (void)set_hero(player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {
             (void)do_inc_stat(player_ptr, A_STR);
@@ -447,7 +447,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         return true;
     case SV_FOOD_BASILISK_TIME:
-        gain_exp(player_ptr, player_ptr->lev * 100);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->lev * 100);
         msg_print("あなたは突如狂ったように踊り始めた！");
         msg_print("「みずのよーうにのようにやさしく！はなのよーうにはげしく！ふーるえ……」");
         (void)BadStatusSetter(player_ptr).mod_stun(25 + randint1(25));
@@ -603,7 +603,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     /* The player is now aware of the object */
     if (ident && !o_ptr->is_aware()) {
         object_aware(player_ptr, *o_ptr);
-        gain_exp(player_ptr, (level + (player_ptr->lev >> 1)) / player_ptr->lev);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), (level + (player_ptr->lev >> 1)) / player_ptr->lev);
     }
 
     static constexpr auto flags_swrf = {

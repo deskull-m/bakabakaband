@@ -157,7 +157,7 @@ static void gain_exp_by_destroying_magic_book(PlayerType *player_ptr, const Item
     }
 
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(player_ptr, tester_exp * destroyed_item.number);
+    gain_exp(static_cast<CreatureEntity &>(*player_ptr), tester_exp * destroyed_item.number);
 }
 
 static void process_destroy_magic_book(PlayerType *player_ptr, const ItemEntity &destroyed_item)
