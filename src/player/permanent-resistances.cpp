@@ -108,12 +108,17 @@ void player_flags(PlayerType *player_ptr, TrFlags &flags)
     add_personality_flags(player_ptr, flags);
 }
 
-void riding_flags(PlayerType *player_ptr, TrFlags &flags, TrFlags &negative_flags)
+void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_flags)
 {
     flags.clear();
     negative_flags.clear();
 
-    if (!player_ptr->riding) {
+    if (!creature.riding) {
+        return;
+    }
+
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
         return;
     }
 

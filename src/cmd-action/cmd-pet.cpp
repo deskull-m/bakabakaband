@@ -181,8 +181,13 @@ void do_cmd_pet_dismiss(PlayerType *player_ptr)
  * @param force 強制的に騎乗/下馬するならばTRUE
  * @return 騎乗/下馬できたらTRUE
  */
-bool do_cmd_riding(PlayerType *player_ptr, bool force)
+bool do_cmd_riding(CreatureEntity &creature, bool force)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     const auto dir = get_direction(player_ptr);
     if (!dir) {
         return false;
@@ -193,7 +198,7 @@ bool do_cmd_riding(PlayerType *player_ptr, bool force)
 
     PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (player_ptr->riding) {
+    if (creature.riding) {
         /* Skip non-empty grids */
         if (!can_player_ride_pet(player_ptr, grid, false)) {
             msg_print(_("そちらには降りられません。", "You cannot go that direction."));
@@ -790,7 +795,7 @@ void do_cmd_pet(PlayerType *player_ptr)
     }
 
     case PET_RIDING: {
-        (void)do_cmd_riding(player_ptr, false);
+        (void)do_cmd_riding(static_cast<CreatureEntity &>(*player_ptr), false);
         break;
     }
 

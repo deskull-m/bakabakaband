@@ -151,6 +151,9 @@ public:
     // 徳関連
     std::map<Virtue, int16_t> virtues; /*!< 徳の値 / Virtue values */
 
+    // 騎乗関連
+    MONSTER_IDX riding{}; /*!< 騎乗中のモンスターID / Riding on a monster of this index */
+
     // インベントリ関連
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
     int16_t inven_cnt{}; /*!< 所持品数 / Number of items in inventory */

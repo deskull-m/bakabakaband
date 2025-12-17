@@ -31,7 +31,7 @@ bool rodeo(PlayerType *player_ptr)
         return false;
     }
 
-    if (!do_cmd_riding(player_ptr, true)) {
+    if (!do_cmd_riding(static_cast<CreatureEntity &>(*player_ptr), true)) {
         return true;
     }
 
