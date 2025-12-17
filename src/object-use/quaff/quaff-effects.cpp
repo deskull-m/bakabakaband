@@ -149,7 +149,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_RESTORE_MANA:
         return restore_mana(this->player_ptr, true);
     case SV_POTION_RESTORE_EXP:
-        return restore_level(this->player_ptr);
+        return restore_level(static_cast<CreatureEntity &>(*this->player_ptr));
     case SV_POTION_RES_STR:
         return do_res_stat(this->player_ptr, A_STR);
     case SV_POTION_RES_INT:
@@ -371,7 +371,7 @@ bool QuaffEffects::lose_memories()
 
     msg_print(_("過去の記憶が薄れていく気がする。", "You feel your memories fade."));
     chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -5);
-    lose_exp(this->player_ptr, this->player_ptr->exp / 4);
+    lose_exp(static_cast<CreatureEntity &>(*this->player_ptr), this->player_ptr->exp / 4);
     return true;
 }
 
@@ -526,7 +526,7 @@ bool QuaffEffects::experience()
     }
 
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(this->player_ptr, ee);
+    gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), ee);
     return true;
 }
 

@@ -120,9 +120,9 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
             if (player_ptr->hold_exp) {
-                lose_exp(player_ptr, player_ptr->exp / 160);
+                lose_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->exp / 160);
             } else {
-                lose_exp(player_ptr, player_ptr->exp / 16);
+                lose_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->exp / 16);
             }
             if (!one_in_(6)) {
                 break;

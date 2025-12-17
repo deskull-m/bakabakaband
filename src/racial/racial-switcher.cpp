@@ -357,7 +357,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         msg_print(_("あなたは「パターン」を心に描いてその上を歩いた...", "You picture the Pattern in your mind and walk it..."));
         (void)true_healing(player_ptr, 0);
         (void)restore_all_status(player_ptr);
-        (void)restore_level(player_ptr);
+        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
         return true;
     case PlayerRaceType::BARBARIAN:
         msg_print(_("うぉぉおお！", "Raaagh!"));
@@ -477,7 +477,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     case PlayerRaceType::SKELETON:
     case PlayerRaceType::ZOMBIE:
         msg_print(_("あなたは失ったエネルギーを取り戻そうと試みた。", "You attempt to restore your lost energies."));
-        (void)restore_level(player_ptr);
+        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
         return true;
     case PlayerRaceType::VAMPIRE:
         (void)vampirism(player_ptr);

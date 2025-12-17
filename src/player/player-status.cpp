@@ -2769,33 +2769,38 @@ void wreck_the_pattern(PlayerType *player_ptr)
  * @brief プレイヤーの経験値について整合性のためのチェックと調整を行う /
  * Advance experience levels and print experience
  */
-void check_experience(PlayerType *player_ptr)
+void check_experience(CreatureEntity &creature)
 {
-    if (player_ptr->exp < 0) {
-        player_ptr->exp = 0;
+    if (creature.exp < 0) {
+        creature.exp = 0;
     }
-    if (player_ptr->max_exp < 0) {
-        player_ptr->max_exp = 0;
+    if (creature.max_exp < 0) {
+        creature.max_exp = 0;
     }
-    if (player_ptr->max_max_exp < 0) {
-        player_ptr->max_max_exp = 0;
-    }
-
-    if (player_ptr->exp > PY_MAX_EXP) {
-        player_ptr->exp = PY_MAX_EXP;
-    }
-    if (player_ptr->max_exp > PY_MAX_EXP) {
-        player_ptr->max_exp = PY_MAX_EXP;
-    }
-    if (player_ptr->max_max_exp > PY_MAX_EXP) {
-        player_ptr->max_max_exp = PY_MAX_EXP;
+    if (creature.max_max_exp < 0) {
+        creature.max_max_exp = 0;
     }
 
-    if (player_ptr->exp > player_ptr->max_exp) {
-        player_ptr->max_exp = player_ptr->exp;
+    if (creature.exp > PY_MAX_EXP) {
+        creature.exp = PY_MAX_EXP;
     }
-    if (player_ptr->max_exp > player_ptr->max_max_exp) {
-        player_ptr->max_max_exp = player_ptr->max_exp;
+    if (creature.max_exp > PY_MAX_EXP) {
+        creature.max_exp = PY_MAX_EXP;
+    }
+    if (creature.max_max_exp > PY_MAX_EXP) {
+        creature.max_max_exp = PY_MAX_EXP;
+    }
+
+    if (creature.exp > creature.max_exp) {
+        creature.max_exp = creature.exp;
+    }
+    if (creature.max_exp > creature.max_max_exp) {
+        creature.max_max_exp = creature.max_exp;
+    }
+
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -2909,7 +2914,7 @@ void check_experience(PlayerType *player_ptr)
         }
 
         /*
-         * 報酬でレベルが上ると再帰的に check_experience(player_ptr) が
+         * 報酬でレベルが上ると再帰的に check_experience(static_cast<CreatureEntity &>(*player_ptr)) が
          * 呼ばれるので順番を最後にする。
          */
         if (level_reward) {

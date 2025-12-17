@@ -500,7 +500,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 28: {
         if (cast) {
-            restore_level(player_ptr);
+            restore_level(static_cast<CreatureEntity &>(*player_ptr));
         }
     } break;
 

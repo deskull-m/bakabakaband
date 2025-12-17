@@ -205,12 +205,12 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     }
     case RandomArtActType::REST_EXP:
         msg_print(_("深紅に輝いている...", "It glows a deep red..."));
-        restore_level(player_ptr);
+        restore_level(static_cast<CreatureEntity &>(*player_ptr));
         return true;
     case RandomArtActType::REST_ALL:
         msg_print(_("濃緑色に輝いている...", "It glows a deep green..."));
         (void)restore_all_status(player_ptr);
-        (void)restore_level(player_ptr);
+        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
         return true;
     case RandomArtActType::CURE_700:
         msg_print(_("深青色に輝いている...", "It glows deep blue..."));

@@ -288,7 +288,7 @@ bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
         msg_print(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"));
     }
 
-    restore_level(player_ptr);
+    restore_level(static_cast<CreatureEntity &>(*player_ptr));
     BadStatusSetter bss(player_ptr);
     (void)bss.set_poison(0);
     (void)bss.set_blindness(0);

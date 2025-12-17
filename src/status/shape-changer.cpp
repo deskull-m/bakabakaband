@@ -91,7 +91,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
 
     roll_hitdice(player_ptr, SPOP_NONE);
-    check_experience(player_ptr);
+    check_experience(static_cast<CreatureEntity &>(*player_ptr));
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::BASIC);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);

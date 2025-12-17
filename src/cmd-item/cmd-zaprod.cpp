@@ -136,7 +136,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_RESTORATION: {
-        if (restore_level(player_ptr)) {
+        if (restore_level(static_cast<CreatureEntity &>(*player_ptr))) {
             ident = true;
         }
         if (restore_all_status(player_ptr)) {

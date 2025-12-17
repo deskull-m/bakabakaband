@@ -119,7 +119,7 @@ bool pattern_effect(PlayerType *player_ptr)
     case PATTERN_TILE_END:
         (void)BadStatusSetter(player_ptr).hallucination(0);
         (void)restore_all_status(player_ptr);
-        (void)restore_level(player_ptr);
+        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
         (void)cure_critical_wounds(player_ptr, 1000);
 
         set_terrain_id_to_grid(player_ptr, player_ptr->get_position(), TerrainTag::PATTERN_OLD);

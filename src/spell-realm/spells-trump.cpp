@@ -228,7 +228,7 @@ void cast_shuffle(PlayerType *player_ptr)
         ee = 5000;
     }
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(player_ptr, ee);
+    gain_exp(static_cast<CreatureEntity &>(*player_ptr), ee);
 }
 
 void become_living_trump(PlayerType *player_ptr)

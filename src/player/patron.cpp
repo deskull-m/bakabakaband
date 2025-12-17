@@ -216,7 +216,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                 }
 
                 msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-                gain_exp(this->player_ptr, ee);
+                gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), ee);
                 reward = _("経験値を得た", "experience");
             }
 
@@ -227,7 +227,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             if (PlayerRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
                 msg_print(_("しかし何も起こらなかった。", "But, nothing happens."));
             } else {
-                lose_exp(this->player_ptr, this->player_ptr->exp / 6);
+                lose_exp(static_cast<CreatureEntity &>(*this->player_ptr), this->player_ptr->exp / 6);
                 reward = _("経験値を失った。", "losing experience");
             }
 
@@ -345,7 +345,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             break;
         case REW_HEAL_FUL:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
-            (void)restore_level(this->player_ptr);
+            (void)restore_level(static_cast<CreatureEntity &>(*this->player_ptr));
             (void)restore_all_status(this->player_ptr);
             (void)true_healing(this->player_ptr, 5000);
             reward = _("体力が回復した。", "healing");

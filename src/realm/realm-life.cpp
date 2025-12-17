@@ -345,7 +345,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
     case 28: {
         if (cast) {
             (void)restore_all_status(player_ptr);
-            restore_level(player_ptr);
+            restore_level(static_cast<CreatureEntity &>(*player_ptr));
         }
     } break;
 

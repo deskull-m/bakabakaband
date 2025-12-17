@@ -16,49 +16,58 @@ void gain_exp_64(PlayerType *player_ptr, int32_t amount, uint32_t amount_frac)
         return;
     }
 
-    s64b_add(&(player_ptr->exp), &(player_ptr->exp_frac), amount, amount_frac);
+    auto &creature = static_cast<CreatureEntity &>(*player_ptr);
+    s64b_add(&(creature.exp), &(creature.exp_frac), amount, amount_frac);
 
-    if (player_ptr->exp < player_ptr->max_exp) {
-        player_ptr->max_exp += amount / 5;
+    if (creature.exp < creature.max_exp) {
+        creature.max_exp += amount / 5;
     }
 
-    check_experience(player_ptr);
+    check_experience(creature);
 }
 
 /*
  * Gain experience
  */
-void gain_exp(PlayerType *player_ptr, int32_t amount)
+void gain_exp(CreatureEntity &creature, int32_t amount)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
     gain_exp_64(player_ptr, amount, 0L);
 }
 
 /*
  * Lose experience
  */
-void lose_exp(PlayerType *player_ptr, int32_t amount)
+void lose_exp(CreatureEntity &creature, int32_t amount)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
     if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return;
     }
-    if (amount > player_ptr->exp) {
-        amount = player_ptr->exp;
+    if (amount > creature.exp) {
+        amount = creature.exp;
     }
 
-    player_ptr->exp -= amount;
+    creature.exp -= amount;
 
-    check_experience(player_ptr);
+    check_experience(creature);
 }
 
 /*
  * Restores any drained experience
  */
-bool restore_level(PlayerType *player_ptr)
+bool restore_level(CreatureEntity &creature)
 {
-    if (player_ptr->exp < player_ptr->max_exp) {
+    if (creature.exp < creature.max_exp) {
         msg_print(_("経験値が戻ってきた気がする。", "You feel your experience returning."));
-        player_ptr->exp = player_ptr->max_exp;
-        check_experience(player_ptr);
+        creature.exp = creature.max_exp;
+        check_experience(creature);
         return true;
     }
 
@@ -82,10 +91,10 @@ bool drain_exp(PlayerType *player_ptr, int32_t drain, int32_t slip, int hold_exp
 
     if (player_ptr->hold_exp) {
         msg_print(_("経験値を少し吸い取られた気がする！", "You feel your experience slipping away!"));
-        lose_exp(player_ptr, slip);
+        lose_exp(static_cast<CreatureEntity &>(*player_ptr), slip);
     } else {
         msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away!"));
-        lose_exp(player_ptr, drain);
+        lose_exp(static_cast<CreatureEntity &>(*player_ptr), drain);
     }
 
     return true;
