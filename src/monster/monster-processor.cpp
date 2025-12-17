@@ -301,7 +301,7 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     if (monster.ml) {
-        chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
     }
 }
 

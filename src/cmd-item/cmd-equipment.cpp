@@ -338,7 +338,7 @@ void do_cmd_wield(PlayerType *player_ptr)
     msg_format(act, item_name.data(), index_to_label(slot));
     if (wield_slot_item.is_cursed()) {
         msg_print(_("うわ！ すさまじく冷たい！", "Oops! It feels deathly cold!"));
-        chg_virtue(player_ptr, Virtue::HARMONY, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, -1);
         wield_slot_item.ident |= (IDENT_SENSE);
     }
 

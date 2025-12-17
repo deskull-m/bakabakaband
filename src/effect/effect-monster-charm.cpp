@@ -50,9 +50,9 @@ static void effect_monster_charm_resist(PlayerType *player_ptr, EffectMonster *e
         em_ptr->note = _("は突然友好的になったようだ！", " suddenly seems friendly!");
         set_pet(player_ptr, *em_ptr->m_ptr);
 
-        chg_virtue(player_ptr, Virtue::INDIVIDUALISM, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, -1);
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
-            chg_virtue(player_ptr, Virtue::NATURE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
         }
     }
 }
@@ -196,7 +196,7 @@ ProcessResult effect_monster_control_animal(PlayerType *player_ptr, EffectMonste
         em_ptr->note = _("はなついた。", " is tamed!");
         set_pet(player_ptr, *em_ptr->m_ptr);
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
-            chg_virtue(player_ptr, Virtue::NATURE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
         }
     }
 
@@ -242,7 +242,7 @@ ProcessResult effect_monster_charm_living(PlayerType *player_ptr, EffectMonster 
         em_ptr->note = _("を支配した。", " is tamed!");
         set_pet(player_ptr, *em_ptr->m_ptr);
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
-            chg_virtue(player_ptr, Virtue::NATURE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
         }
     }
 

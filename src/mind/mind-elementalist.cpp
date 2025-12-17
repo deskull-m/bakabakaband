@@ -924,7 +924,7 @@ void do_cmd_element(PlayerType *player_ptr)
         player_ptr->csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, -10);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);
             msg_print(_("体を悪くしてしまった！", "You have damaged your health!"));
@@ -1090,7 +1090,7 @@ ProcessResult effect_monster_elemental_genocide(PlayerType *player_ptr, EffectMo
             msg_format(_("%sは消滅した！", "%s^ disappeared!"), em_ptr->m_name);
         }
         em_ptr->dam = 0;
-        chg_virtue(player_ptr, Virtue::VITALITY, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
         return ProcessResult::PROCESS_TRUE;
     }
 

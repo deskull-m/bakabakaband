@@ -170,21 +170,21 @@ static void process_destroy_magic_book(PlayerType *player_ptr, const ItemEntity 
     const auto tval = bi_key.tval();
     gain_exp_by_destroying_magic_book(player_ptr, destroyed_item);
     if (tval == ItemKindType::LIFE_BOOK) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, 1);
-        chg_virtue(player_ptr, Virtue::VITALITY, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
     } else if (tval == ItemKindType::DEATH_BOOK) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, -1);
-        chg_virtue(player_ptr, Virtue::VITALITY, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
     }
 
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_h != 0) || (destroyed_item.to_d != 0)) {
-        chg_virtue(player_ptr, Virtue::ENCHANT, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -1);
     }
 
     if (object_value_real(&destroyed_item) > 30000) {
-        chg_virtue(player_ptr, Virtue::SACRIFICE, 2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 2);
     } else if (object_value_real(&destroyed_item) > 10000) {
-        chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
     }
 }
 
@@ -199,7 +199,7 @@ static void exe_destroy_item(PlayerType *player_ptr, ItemEntity &destroying_item
     vary_item(player_ptr, i_idx, -amount);
     process_destroy_magic_book(player_ptr, destroyed_item);
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_d != 0) || (destroyed_item.to_h != 0)) {
-        chg_virtue(player_ptr, Virtue::HARMONY, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
     }
 
     if (i_idx >= INVEN_MAIN_HAND) {

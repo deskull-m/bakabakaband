@@ -58,11 +58,11 @@ void process_eat_gold(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     } else if (player_ptr->au > 0) {
         msg_print(_("財布が軽くなった気がする。", "Your purse feels lighter."));
         msg_print(_("${} のお金が盗まれた！", "{} coins were stolen!"), gold);
-        chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
     } else {
         msg_print(_("財布が軽くなった気がする。", "Your purse feels lighter."));
         msg_print(_("お金が全部盗まれた！", "All of your coins were stolen!"));
-        chg_virtue(player_ptr, Virtue::SACRIFICE, 2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 2);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -147,7 +147,7 @@ void process_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 #else
         msg_format("%sour %s (%c) was stolen!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name.data(), index_to_label(i_idx));
 #endif
-        chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
         const auto item_idx = player_ptr->current_floor_ptr->pop_empty_index_item();
         move_item_to_monster(player_ptr, monap_ptr, item_idx);
         inven_item_increase(player_ptr, i_idx, -1);

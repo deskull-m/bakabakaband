@@ -402,16 +402,16 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || is_shero(player_ptr) || !monster.ml)) {
         if (player_ptr->is_wielding(FixedArtifactId::STORMBRINGER)) {
             msg_format(_("黒い刃は強欲に%sを攻撃した！", "Your black blade greedily attacks %s!"), m_name.data());
-            chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
-            chg_virtue(player_ptr, Virtue::HONOUR, -1);
-            chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-            chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
         } else if (!PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
             if (input_check(_("本当に攻撃しますか？", "Really hit it? "))) {
-                chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
-                chg_virtue(player_ptr, Virtue::HONOUR, -1);
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-                chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
             } else {
                 msg_format(_("%sを攻撃するのを止めた。", "You stop to avoid hitting %s."), m_name.data());
                 return false;
@@ -434,10 +434,10 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
 
     if (monster.is_asleep()) {
         if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-            chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
         }
         if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-            chg_virtue(player_ptr, Virtue::HONOUR, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
         }
     }
 

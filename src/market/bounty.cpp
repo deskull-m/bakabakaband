@@ -178,7 +178,7 @@ bool exchange_cash(PlayerType *player_ptr)
             }
 
             vary_item(player_ptr, i, -item.number);
-            chg_virtue(player_ptr, Virtue::JUSTICE, 5);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, 5);
             is_achieved = true;
 
             const auto num = static_cast<int>(std::count_if(std::begin(world.bounties), std::end(world.bounties),

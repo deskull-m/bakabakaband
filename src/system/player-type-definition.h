@@ -177,8 +177,6 @@ public:
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
 
-    std::map<Virtue, int16_t> virtues; /*!< 徳の値 / Virtue values */
-
     TIME_EFFECT word_recall{}; /* Word of recall counter */
     TIME_EFFECT alter_reality{}; /* Alter reality counter */
     DungeonId recall_dungeon{}; /* Dungeon set to be recalled */

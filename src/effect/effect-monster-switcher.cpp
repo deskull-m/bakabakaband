@@ -268,7 +268,7 @@ ProcessResult effect_monster_genocide(PlayerType *player_ptr, EffectMonster *em_
         if (em_ptr->seen_msg) {
             msg_format(_("%sは消滅した！", "%s^ disappeared!"), em_ptr->m_name);
         }
-        chg_virtue(player_ptr, Virtue::VITALITY, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
         return ProcessResult::PROCESS_TRUE;
     }
 
@@ -292,7 +292,7 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
             if (em_ptr->seen_msg) {
                 msg_format(_("%sは変質者として社会から完全に抹殺された！", "%s^ has been completely eliminated from society as a pervert!"), em_ptr->m_name);
             }
-            chg_virtue(player_ptr, Virtue::VITALITY, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
             return ProcessResult::PROCESS_TRUE;
         }
     }
@@ -308,7 +308,7 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
         if (em_ptr->seen_msg) {
             msg_format(_("%sは社会から抹殺された！", "%s^ has been socially eliminated!"), em_ptr->m_name);
         }
-        chg_virtue(player_ptr, Virtue::VITALITY, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
         return ProcessResult::PROCESS_TRUE;
     }
 

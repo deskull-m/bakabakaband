@@ -31,7 +31,7 @@ void cast_shuffle(PlayerType *player_ptr)
 {
     PLAYER_LEVEL plev = player_ptr->lev;
     int die;
-    int vir = virtue_number(player_ptr, Virtue::CHANCE);
+    int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
     int i;
 
     PlayerClass pc(player_ptr);
@@ -62,7 +62,7 @@ void cast_shuffle(PlayerType *player_ptr)
     msg_print(_("あなたはカードを切って一枚引いた...", "You shuffle the deck and draw a card..."));
 
     if (die < 30) {
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;
@@ -212,8 +212,8 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 120) {
         msg_print(_("《太陽》だ。", "It's the Sun."));
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
-        chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
         wiz_lite(player_ptr, false);
         return;
     }

@@ -366,7 +366,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
 {
     PLAYER_LEVEL plev = player_ptr->lev;
     int die = randint1(100) + plev / 5;
-    int vir = virtue_number(player_ptr, Virtue::CHANCE);
+    int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
     if (vir) {
         auto it = player_ptr->virtues.find(Virtue::CHANCE);
         if (it != player_ptr->virtues.end()) {
@@ -383,7 +383,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 26) {
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     if (die > 100) {

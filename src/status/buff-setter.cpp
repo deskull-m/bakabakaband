@@ -134,8 +134,8 @@ bool set_acceleration(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         } else if (!is_fast(player_ptr) && !player_ptr->lightspeed) {
             msg_print(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
             notice = true;
-            chg_virtue(player_ptr, Virtue::PATIENCE, -1);
-            chg_virtue(player_ptr, Virtue::DILIGENCE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
         }
     } else {
         if (acceleration.is_fast() && !player_ptr->lightspeed) {
@@ -513,10 +513,10 @@ bool set_wraith_form(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         } else if (!player_ptr->wraith_form) {
             msg_print(_("物質界を離れて幽鬼のような存在になった！", "You leave the physical world and turn into a wraith-being!"));
             notice = true;
-            chg_virtue(player_ptr, Virtue::UNLIFE, 3);
-            chg_virtue(player_ptr, Virtue::HONOUR, -2);
-            chg_virtue(player_ptr, Virtue::SACRIFICE, -2);
-            chg_virtue(player_ptr, Virtue::VALOUR, -5);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 3);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -2);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -2);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VALOUR, -5);
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
             rfu.set_flags(flags_swrf);
@@ -570,7 +570,7 @@ bool set_tsuyoshi(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         } else if (!player_ptr->tsuyoshi) {
             msg_print(_("「オクレ兄さん！」", "Brother OKURE!"));
             notice = true;
-            chg_virtue(player_ptr, Virtue::VITALITY, 2);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 2);
         }
     } else {
         if (player_ptr->tsuyoshi) {
@@ -580,7 +580,7 @@ bool set_tsuyoshi(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             (void)dec_stat(player_ptr, A_STR, 20, true);
 
             notice = true;
-            chg_virtue(player_ptr, Virtue::VITALITY, -3);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -3);
         }
     }
 

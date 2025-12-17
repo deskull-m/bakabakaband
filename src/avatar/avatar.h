@@ -27,11 +27,12 @@ enum class Virtue : short {
     MAX,
 };
 
+class CreatureEntity;
 class PlayerType;
 extern const std::map<Virtue, std::string> virtue_names;
-bool compare_virtue(PlayerType *player_ptr, Virtue virtue, int threshold);
-int virtue_number(PlayerType *player_ptr, Virtue virtue);
-void initialize_virtues(PlayerType *player_ptr);
-void chg_virtue(PlayerType *player_ptr, Virtue virtue, int amount);
-void set_virtue(PlayerType *player_ptr, Virtue virtue, int amount);
-void dump_virtues(PlayerType *player_ptr, FILE *out_file);
+void initialize_virtues(CreatureEntity &creature);
+bool compare_virtue(CreatureEntity &creature, Virtue virtue, int threshold);
+int virtue_number(CreatureEntity &creature, Virtue virtue);
+void chg_virtue(CreatureEntity &creature, Virtue virtue, int amount);
+void set_virtue(CreatureEntity &creature, Virtue virtue, int amount);
+void dump_virtues(CreatureEntity &creature, FILE *out_file);

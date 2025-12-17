@@ -311,7 +311,7 @@ bool pulish_shield(PlayerType *player_ptr)
         o_ptr->ego_idx = EgoType::REFLECTION;
         enchant_equipment(o_ptr, randint0(3) + 4, ENCH_TOAC);
         o_ptr->discount = 99;
-        chg_virtue(player_ptr, Virtue::ENCHANT, 2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, 2);
         return true;
     }
 
@@ -320,7 +320,7 @@ bool pulish_shield(PlayerType *player_ptr)
     }
 
     msg_print(_("失敗した。", "Failed."));
-    chg_virtue(player_ptr, Virtue::ENCHANT, -2);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -2);
     calc_android_exp(player_ptr);
     return false;
 }

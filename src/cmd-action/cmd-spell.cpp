@@ -868,16 +868,16 @@ void do_cmd_study(PlayerType *player_ptr)
 
     switch (mp_ptr->spell_book) {
     case ItemKindType::LIFE_BOOK:
-        chg_virtue(player_ptr, Virtue::FAITH, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, 1);
         break;
     case ItemKindType::DEATH_BOOK:
-        chg_virtue(player_ptr, Virtue::UNLIFE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
         break;
     case ItemKindType::NATURE_BOOK:
-        chg_virtue(player_ptr, Virtue::NATURE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
         break;
     default:
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
         break;
     }
 
@@ -1053,37 +1053,37 @@ bool do_cmd_cast(PlayerType *player_ptr)
         switch (use_realm) {
         case RealmType::LIFE:
             if (randint1(100) < chance) {
-                chg_virtue(player_ptr, Virtue::VITALITY, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
             }
             break;
         case RealmType::DEATH:
             if (randint1(100) < chance) {
-                chg_virtue(player_ptr, Virtue::UNLIFE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
             }
             break;
         case RealmType::NATURE:
             if (randint1(100) < chance) {
-                chg_virtue(player_ptr, Virtue::NATURE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, -1);
             }
             break;
         case RealmType::DAEMON:
             if (randint1(100) < chance) {
-                chg_virtue(player_ptr, Virtue::JUSTICE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, 1);
             }
             break;
         case RealmType::CRUSADE:
             if (randint1(100) < chance) {
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
             break;
         case RealmType::HEX:
             if (randint1(100) < chance) {
-                chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
             }
             break;
         default:
             if (randint1(100) < chance) {
-                chg_virtue(player_ptr, Virtue::KNOWLEDGE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -1);
             }
             break;
         }
@@ -1110,7 +1110,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
             aggravate_monsters(player_ptr, 0);
         }
         if (randint1(100) >= chance) {
-            chg_virtue(player_ptr, Virtue::CHANCE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
         }
     }
 
@@ -1123,7 +1123,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
 
         player_ptr->plus_incident_tree("CAST_SPELL", 1);
         if (randint1(100) < chance) {
-            chg_virtue(player_ptr, Virtue::CHANCE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
         }
 
         /* A spell was cast */
@@ -1140,121 +1140,121 @@ bool do_cmd_cast(PlayerType *player_ptr)
 
             switch (use_realm) {
             case RealmType::LIFE:
-                chg_virtue(player_ptr, Virtue::TEMPERANCE, 1);
-                chg_virtue(player_ptr, Virtue::COMPASSION, 1);
-                chg_virtue(player_ptr, Virtue::VITALITY, 1);
-                chg_virtue(player_ptr, Virtue::DILIGENCE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
                 break;
             case RealmType::DEATH:
-                chg_virtue(player_ptr, Virtue::UNLIFE, 1);
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
-                chg_virtue(player_ptr, Virtue::VITALITY, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
                 break;
             case RealmType::DAEMON:
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
-                chg_virtue(player_ptr, Virtue::HONOUR, -1);
-                chg_virtue(player_ptr, Virtue::TEMPERANCE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, -1);
                 break;
             case RealmType::CRUSADE:
-                chg_virtue(player_ptr, Virtue::FAITH, 1);
-                chg_virtue(player_ptr, Virtue::JUSTICE, 1);
-                chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
-                chg_virtue(player_ptr, Virtue::HONOUR, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
                 break;
             case RealmType::NATURE:
-                chg_virtue(player_ptr, Virtue::NATURE, 1);
-                chg_virtue(player_ptr, Virtue::HARMONY, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
                 break;
             case RealmType::HEX:
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
-                chg_virtue(player_ptr, Virtue::HONOUR, -1);
-                chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
                 break;
             default:
-                chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
                 break;
             }
         }
         switch (use_realm) {
         case RealmType::LIFE:
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::TEMPERANCE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::COMPASSION, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::VITALITY, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::DILIGENCE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
             }
             break;
         case RealmType::DEATH:
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::UNLIFE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::VITALITY, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
             }
             break;
         case RealmType::DAEMON:
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::HONOUR, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::TEMPERANCE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, -1);
             }
             break;
         case RealmType::CRUSADE:
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::FAITH, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::JUSTICE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::HONOUR, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
             }
             break;
         case RealmType::NATURE:
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::NATURE, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::HARMONY, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
             }
             break;
         case RealmType::HEX:
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::HONOUR, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
             }
             if (randint1(100 + player_ptr->lev) < need_mana) {
-                chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
             }
             break;
         default:
@@ -1286,25 +1286,25 @@ bool do_cmd_cast(PlayerType *player_ptr)
         (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
         switch (use_realm) {
         case RealmType::LIFE:
-            chg_virtue(player_ptr, Virtue::VITALITY, -10);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -10);
             break;
         case RealmType::DEATH:
-            chg_virtue(player_ptr, Virtue::UNLIFE, -10);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -10);
             break;
         case RealmType::DAEMON:
-            chg_virtue(player_ptr, Virtue::JUSTICE, 10);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, 10);
             break;
         case RealmType::NATURE:
-            chg_virtue(player_ptr, Virtue::NATURE, -10);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, -10);
             break;
         case RealmType::CRUSADE:
-            chg_virtue(player_ptr, Virtue::JUSTICE, -10);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -10);
             break;
         case RealmType::HEX:
-            chg_virtue(player_ptr, Virtue::COMPASSION, 10);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, 10);
             break;
         default:
-            chg_virtue(player_ptr, Virtue::KNOWLEDGE, -10);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -10);
             break;
         }
 

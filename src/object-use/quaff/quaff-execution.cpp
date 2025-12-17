@@ -163,7 +163,7 @@ void ObjectQuaffEntity::change_virtue_as_quaff(const ItemEntity &o_ref)
         return;
     }
 
-    chg_virtue(this->player_ptr, Virtue::PATIENCE, -1);
-    chg_virtue(this->player_ptr, Virtue::CHANCE, 1);
-    chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
 }
