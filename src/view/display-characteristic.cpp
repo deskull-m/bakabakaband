@@ -419,7 +419,7 @@ all_player_flags get_player_state_flags(PlayerType *player_ptr)
     tim_player_immunity(player_ptr, f.tim_player_imm);
     known_obj_immunity(player_ptr, f.known_obj_imm);
     player_vulnerability_flags(player_ptr, f.player_vuln);
-    riding_flags(player_ptr, f.riding_flags, f.riding_negative_flags);
+    riding_flags(static_cast<CreatureEntity &>(*player_ptr), f.riding_flags, f.riding_negative_flags);
     return f;
 }
 

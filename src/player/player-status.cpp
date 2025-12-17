@@ -321,7 +321,7 @@ static void update_bonuses(PlayerType *player_ptr)
 
     for (int i = 0; i < 2; i++) {
         player_ptr->is_icky_wield[i] = is_wielding_icky_weapon(player_ptr, i);
-        player_ptr->is_icky_riding_wield[i] = is_wielding_icky_riding_weapon(player_ptr, i);
+        player_ptr->is_icky_riding_wield[i] = is_wielding_icky_riding_weapon(static_cast<CreatureEntity &>(*player_ptr), i);
         player_ptr->heavy_wield[i] = is_heavy_wield(player_ptr, i);
         player_ptr->num_blow[i] = calc_num_blow(player_ptr, i);
         player_ptr->damage_dice_bonus[i].num = calc_to_weapon_dice_num(player_ptr, INVEN_MAIN_HAND + i);

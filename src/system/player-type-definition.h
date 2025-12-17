@@ -224,8 +224,6 @@ public:
     bool now_damaged{};
     bool ambush_flag{};
 
-    MONSTER_IDX riding{}; /* Riding on a monster of this index */
-
 #define KNOW_STAT 0x01
 #define KNOW_HPRATE 0x02
     BIT_FLAGS8 knowledge{}; /* Knowledge about yourself */

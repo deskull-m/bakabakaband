@@ -71,8 +71,13 @@ struct um_type {
  * @param ox 移動後の、モンスターのX座標
  * @return アイテム等に影響を及ぼしたらTRUE
  */
-bool update_riding_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox, POSITION ny, POSITION nx)
+bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox, POSITION ny, POSITION nx)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     auto &grid = player_ptr->current_floor_ptr->grid_array[ny][nx];
     MonsterEntity *y_ptr = &player_ptr->current_floor_ptr->m_list[grid.m_idx];
