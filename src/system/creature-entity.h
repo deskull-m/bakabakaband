@@ -182,6 +182,11 @@ public:
     MANA_POINT csp{}; /*!< 現在MP / Current mana pts */
     uint32_t csp_frac{}; /*!< MP小数部 / Current mana frac (times 2^16) */
 
+    // HP関連
+    int hp{}; /*!< 現在のHP / Current Hit points */
+    int maxhp{}; /*!< 現在の最大HP / Max Hit points */
+    int max_maxhp{}; /*!< 生成時の初期最大HP / Max Max Hit points */
+
     // 基本パラメータ（主にプレイヤー用、モンスターでは未使用）
     player_sex psex{}; /*!< 性別 / Sex index */
     PlayerRaceType prace{}; /*!< 種族 / Race index */
