@@ -173,6 +173,11 @@ public:
     POSITION y{}; /*!< 現在のY座標 / Current location (Y) */
     POSITION x{}; /*!< 現在のX座標 / Current location (X) */
 
+    // MP関連
+    MANA_POINT msp{}; /*!< 最大MP / Max mana pts */
+    MANA_POINT csp{}; /*!< 現在MP / Current mana pts */
+    uint32_t csp_frac{}; /*!< MP小数部 / Current mana frac (times 2^16) */
+
     // 変異関連
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
