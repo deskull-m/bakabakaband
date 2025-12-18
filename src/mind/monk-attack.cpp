@@ -298,6 +298,6 @@ bool double_attack(PlayerType *player_ptr)
         do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
     }
 
-    player_ptr->energy_need += ENERGY_NEED();
+    static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());
     return true;
 }

@@ -97,13 +97,19 @@ public:
      * @brief 次の行動までに必要なエネルギーを取得
      * @return エネルギー値
      */
-    virtual ACTION_ENERGY get_energy_need() const = 0;
+    virtual ACTION_ENERGY get_energy_need() const
+    {
+        return this->energy_need;
+    }
 
     /*!
      * @brief 次の行動までに必要なエネルギーを設定
      * @param energy エネルギー値
      */
-    virtual void set_energy_need(ACTION_ENERGY energy) = 0;
+    virtual void set_energy_need(ACTION_ENERGY energy)
+    {
+        this->energy_need = energy;
+    }
 
     /*!
      * @brief クリーチャーのレベルを取得
@@ -197,4 +203,7 @@ public:
     // 変異関連
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
+
+    // エネルギー関連
+    ACTION_ENERGY energy_need{}; /*!< 次の行動までに必要なエネルギー / Energy needed for next move */
 };

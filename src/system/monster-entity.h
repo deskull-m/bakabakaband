@@ -45,7 +45,7 @@ public:
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
     byte mspeed{}; /*!< モンスターの個体加速値 / Monster "speed" */
-    ACTION_ENERGY energy_need{}; /*!< モンスター次ターンまでに必要な行動エネルギー / Monster "energy" */
+
     POSITION cdis{}; /*!< 現在のプレイヤーから距離(逐一計算を避けるためのテンポラリ変数) Current dis from player */
     EnumClassFlagGroup<MonsterTemporaryFlagType> mflag{}; /*!< モンスター個体に与えられた特殊フラグ1 (セーブ不要) / Extra monster flags */
     EnumClassFlagGroup<MonsterConstantFlagType> mflag2{}; /*!< モンスター個体に与えられた特殊フラグ2 (セーブ必要) / Extra monster flags */
@@ -131,8 +131,7 @@ public:
     bool is_valid() const override;
     bool is_dead() const override;
     FloorType *get_floor() const override;
-    ACTION_ENERGY get_energy_need() const override;
-    void set_energy_need(ACTION_ENERGY energy) override;
+
     int get_level() const override;
     bool is_player() const override;
 

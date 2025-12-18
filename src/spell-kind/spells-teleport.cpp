@@ -559,7 +559,7 @@ void teleport_away_followable(PlayerType *player_ptr, MONSTER_IDX m_idx)
         teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_SPONTANEOUS);
     }
 
-    player_ptr->energy_need += ENERGY_NEED();
+    static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());
 }
 
 /*!
@@ -572,12 +572,12 @@ bool exe_dimension_door(PlayerType *player_ptr, const Pos2D &pos)
 {
     PLAYER_LEVEL plev = player_ptr->lev;
 
-    player_ptr->energy_need += static_cast<short>((60 - plev) * ENERGY_NEED() / 100);
+    static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + static_cast<short>((60 - plev) * ENERGY_NEED() / 100));
     auto is_successful = cave_player_teleportable_bold(player_ptr, pos.y, pos.x, TELEPORT_SPONTANEOUS);
     is_successful &= Grid::calc_distance(pos, player_ptr->get_position()) <= plev / 2 + 10;
     is_successful &= !one_in_(plev / 10 + 10);
     if (!is_successful) {
-        player_ptr->energy_need += static_cast<short>((60 - plev) * ENERGY_NEED() / 100);
+        static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + static_cast<short>((60 - plev) * ENERGY_NEED() / 100));
         teleport_player(player_ptr, (plev + 2) * 2, TELEPORT_PASSIVE);
         return false;
     }

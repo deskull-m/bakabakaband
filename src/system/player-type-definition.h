@@ -160,7 +160,6 @@ public:
     TIME_EFFECT alter_reality{}; /* Alter reality counter */
     DungeonId recall_dungeon{}; /* Dungeon set to be recalled */
 
-    ENERGY energy_need{}; /* Energy needed for next move */
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */
 
     int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
@@ -395,8 +394,7 @@ public:
     bool is_valid() const override;
     bool is_dead() const override;
     FloorType *get_floor() const override;
-    ACTION_ENERGY get_energy_need() const override;
-    void set_energy_need(ACTION_ENERGY energy) override;
+
     int get_level() const override;
     bool is_player() const override;
 
