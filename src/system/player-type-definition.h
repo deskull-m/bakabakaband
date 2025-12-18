@@ -69,10 +69,6 @@ public:
 
     FloorType *current_floor_ptr{};
 
-    player_sex psex{}; /* Sex index */
-    PlayerRaceType prace{}; /* Race index */
-    PlayerClassType pclass{}; /* Class index */
-    player_personality_type ppersonality{}; /* Personality index */
     RealmType realm1{}; /* First magic realm */
     RealmType realm2{}; /* Second magic realm */
     ElementRealmType element_realm{}; //!< 元素使い領域
