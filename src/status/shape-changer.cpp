@@ -154,7 +154,7 @@ void do_poly_self(PlayerType *player_ptr)
         while ((power > randint0(20)) && one_in_(10)) {
             power -= 10;
 
-            if (!lose_mutation(player_ptr, 0)) {
+            if (!lose_mutation(*player_ptr, 0)) {
                 msg_print(_("奇妙なくらい普通になった気がする。", "You feel oddly normal."));
             }
         }
@@ -192,7 +192,7 @@ void do_poly_self(PlayerType *player_ptr)
 
     while ((power > randint0(15)) && one_in_(3)) {
         power -= 7;
-        (void)gain_mutation(player_ptr, 0);
+        (void)gain_mutation(*player_ptr, 0);
     }
 
     if (power > randint0(5)) {

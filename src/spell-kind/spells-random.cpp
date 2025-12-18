@@ -313,7 +313,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         break;
     case 27:
     case 28:
-        (void)gain_mutation(player_ptr, 0);
+        (void)gain_mutation(*player_ptr, 0);
         break;
     case 29:
     case 30:

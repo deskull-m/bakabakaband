@@ -602,7 +602,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             monap_ptr->obvious = true;
 
             msg_print(_("あなたの身体はカオスの力で捻じ曲げられた！", "Your body is twisted by chaos!"));
-            (void)gain_mutation(player_ptr, 0);
+            (void)gain_mutation(*player_ptr, 0);
         }
     } break;
 
@@ -646,7 +646,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             int chance = damage_ratio - 15; // 20%で5%、50%で35%、100%で85%の確率
             if (randint1(100) <= chance) {
                 msg_print(_("あなたの肛門が完全に破壊された！", "Your asshole has been completely destroyed!"));
-                (void)gain_mutation(player_ptr, static_cast<int>(PlayerMutationType::DESTROYED_ASSHOLE));
+                (void)gain_mutation(*player_ptr, static_cast<int>(PlayerMutationType::DESTROYED_ASSHOLE));
             } else {
                 msg_print(_("肛門に激痛が走った！", "Your asshole is in severe pain!"));
             }

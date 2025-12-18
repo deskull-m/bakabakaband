@@ -87,7 +87,7 @@ void wizard_player_modifier(PlayerType *player_ptr)
         roll_hitdice(player_ptr, i2enum<spell_operation>(SPOP_DISPLAY_MES | SPOP_DEBUG));
         break;
     case 'm':
-        (void)gain_mutation(player_ptr, command_arg);
+        (void)gain_mutation(*player_ptr, command_arg);
         break;
     case 'r':
         wiz_reset_race(player_ptr);

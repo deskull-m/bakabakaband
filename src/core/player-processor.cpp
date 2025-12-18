@@ -109,7 +109,7 @@ void process_player(PlayerType *player_ptr)
 {
     if (player_ptr->hack_mutation) {
         msg_print(_("何か変わった気がする！", "You feel different!"));
-        (void)gain_mutation(player_ptr, 0);
+        (void)gain_mutation(*player_ptr, 0);
         player_ptr->hack_mutation = false;
     }
 

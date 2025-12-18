@@ -302,7 +302,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
         case 4:
             // 突然変異のチャンス
             if (one_in_(3)) {
-                gain_mutation(this->player_ptr, 0);
+                gain_mutation(*this->player_ptr, 0);
             }
             break;
         case 5:

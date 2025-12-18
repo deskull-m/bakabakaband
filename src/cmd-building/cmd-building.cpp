@@ -231,7 +231,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         }
 
         if (muta.any()) {
-            while (!lose_mutation(player_ptr, 0)) {
+            while (!lose_mutation(*player_ptr, 0)) {
                 ;
             }
 

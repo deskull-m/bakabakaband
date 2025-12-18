@@ -193,7 +193,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
 
     if (one_in_(6) && !chosen_reward) {
         msg_format(_("%s^は褒美としてあなたを突然変異させた。", "%s^ rewards you with a mutation!"), this->name.data());
-        (void)gain_mutation(this->player_ptr, 0);
+        (void)gain_mutation(*this->player_ptr, 0);
         reward = _("変異した。", "mutation");
     } else {
         const auto &floor = *this->player_ptr->current_floor_ptr;
