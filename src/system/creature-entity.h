@@ -2,6 +2,7 @@
 
 #include "mutation/mutation-flag-types.h"
 #include "player-ability/player-ability-types.h"
+#include "player/player-personality-types.h"
 #include "system/angband.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
@@ -18,6 +19,9 @@ struct player_personality;
 struct player_class_info;
 enum class MonraceId : int16_t;
 enum class Virtue : short;
+enum player_sex : byte;
+enum class PlayerRaceType;
+enum class PlayerClassType : short;
 
 /*!
  * @brief プレイヤーとモンスターの共通基底クラス
@@ -177,6 +181,12 @@ public:
     MANA_POINT msp{}; /*!< 最大MP / Max mana pts */
     MANA_POINT csp{}; /*!< 現在MP / Current mana pts */
     uint32_t csp_frac{}; /*!< MP小数部 / Current mana frac (times 2^16) */
+
+    // 基本パラメータ（主にプレイヤー用、モンスターでは未使用）
+    player_sex psex{}; /*!< 性別 / Sex index */
+    PlayerRaceType prace{}; /*!< 種族 / Race index */
+    PlayerClassType pclass{}; /*!< クラス / Class index */
+    player_personality_type ppersonality{}; /*!< 性格 / Personality index */
 
     // 変異関連
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
