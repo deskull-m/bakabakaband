@@ -68,8 +68,6 @@ public:
     bool is_true_winner() const;
 
     FloorType *current_floor_ptr{};
-    POSITION oldpy{}; /* Previous player location -KMW- */
-    POSITION oldpx{}; /* Previous player location -KMW- */
 
     player_sex psex{}; /* Sex index */
     PlayerRaceType prace{}; /* Race index */
@@ -378,8 +376,6 @@ public:
 
     ENERGY energy_use{}; /*!< 直近のターンに消費したエネルギー / Energy use this turn */
 
-    POSITION y{}; /*!< ダンジョンの現在Y座標 / Player location in dungeon */
-    POSITION x{}; /*!< ダンジョンの現在X座標 / Player location in dungeon */
     GAME_TEXT name[32]{}; /*!< 現在のプレイヤー名 / Current player's character name */
     char base_name[32]{}; /*!< Stripped version of "player_name" */
 
