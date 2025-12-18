@@ -17130,7 +17130,7 @@
         "RES_WATE",
         "WILD_ALL",
         "IXITXACHITL",
-        "FISH"
+        "PRIEST"
     ],
     "skill": {
         "list": [
@@ -17279,7 +17279,8 @@
         "EVIL",
         "ORC",
         "IM_POIS",
-        "RES_DARK"
+        "RES_DARK",
+        "WARRIOR"
     ]
 },
 {
@@ -17632,7 +17633,8 @@
         "NO_SLEEP",
         "FRIENDS",
         "HURT_ROCK",
-        "RES_SHAR"
+        "RES_SHAR",
+        "STONE"
     ]
 },
 {
@@ -18290,6 +18292,9 @@
         "EAT_BLIND",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "ELF",
+        "NOBLE",
+        "PALADIN",
         "EVIL",
         "HURT_LITE",
         "RES_DARK"
@@ -18423,7 +18428,8 @@
         "EVIL",
         "ORC",
         "IM_POIS",
-        "RES_DARK"
+        "RES_DARK",
+        "WARRIOR"
     ]
 },
 {
@@ -18523,6 +18529,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "MIMIC",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "NO_CONF",
@@ -18590,6 +18597,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "MIMIC",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "NO_CONF",
@@ -19072,6 +19080,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
+        "ZOMBIE",
+        "BIRD",
         "IM_ACID",
         "IM_FIRE",
         "IM_POIS",
@@ -19124,6 +19134,7 @@
         "EVIL",
         "ORC",
         "UNDEAD",
+        "ZOMBIE",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -19228,6 +19239,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EAT_POISONOUS",
+        "BEAST",
         "EVIL"
     ],
     "skill": {
