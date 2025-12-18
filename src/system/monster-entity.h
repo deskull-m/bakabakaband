@@ -42,9 +42,6 @@ public:
     BIT_FLAGS8 sub_align{}; /*!< 中立属性のモンスターが召喚主のアライメントに従い一時的に立っている善悪陣営 / Sub-alignment for a neutral monster */
     AllianceType alliance_idx; /*!< 現在の所属アライアンス */
 
-    int hp{}; /*!< 現在のHP / Current Hit points */
-    int maxhp{}; /*!< 現在の最大HP(衰弱効果などにより低下したものの反映) / Max Hit points */
-    int max_maxhp{}; /*!< 生成時の初期最大HP / Max Max Hit points */
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
     byte mspeed{}; /*!< モンスターの個体加速値 / Monster "speed" */
