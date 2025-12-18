@@ -553,7 +553,7 @@ bool QuaffEffects::new_life()
     roll_hitdice(this->player_ptr, SPOP_NONE);
     get_max_stats(this->player_ptr);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    lose_all_mutations(this->player_ptr);
+    lose_all_mutations(*this->player_ptr);
     return true;
 }
 
@@ -592,17 +592,17 @@ bool QuaffEffects::tsuyoshi()
 bool QuaffEffects::polymorph()
 {
     if (this->player_ptr->muta.any() && one_in_(23)) {
-        lose_all_mutations(this->player_ptr);
+        lose_all_mutations(*this->player_ptr);
         return false;
     }
 
     auto ident = false;
     do {
         if (one_in_(2)) {
-            if (gain_mutation(this->player_ptr, 0)) {
+            if (gain_mutation(*this->player_ptr, 0)) {
                 ident = true;
             }
-        } else if (lose_mutation(this->player_ptr, 0)) {
+        } else if (lose_mutation(*this->player_ptr, 0)) {
             ident = true;
         }
     } while (!ident || one_in_(2));

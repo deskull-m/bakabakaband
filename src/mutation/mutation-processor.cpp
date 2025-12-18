@@ -40,6 +40,7 @@
 #include "store/store-util.h"
 #include "store/store.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -348,7 +349,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     }
 
     if (player_ptr->muta.has(PlayerMutationType::NORMALITY) && one_in_(5000)) {
-        if (!lose_mutation(player_ptr, 0)) {
+        if (!lose_mutation(*player_ptr, 0)) {
             msg_print(_("奇妙なくらい普通になった気がする。", "You feel oddly normal."));
         }
     }
@@ -528,12 +529,13 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(player_ptr, false, true);
         msg_print(_("足がもつれて転んだ！", "You trip over your own feet!"));
         take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->wt / 6), _("転倒", "tripping"));
-        drop_weapons(player_ptr);
+        drop_weapons(*player_ptr);
     }
 }
 
-bool drop_weapons(PlayerType *player_ptr)
+bool drop_weapons(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     INVENTORY_IDX slot = 0;
     ItemEntity *o_ptr = nullptr;
 
@@ -542,16 +544,16 @@ bool drop_weapons(PlayerType *player_ptr)
     }
 
     msg_erase();
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND)) {
+    if (has_melee_weapon(&player, INVEN_MAIN_HAND)) {
         slot = INVEN_MAIN_HAND;
-        o_ptr = player_ptr->inventory[INVEN_MAIN_HAND].get();
+        o_ptr = creature.inventory[INVEN_MAIN_HAND].get();
 
-        if (has_melee_weapon(player_ptr, INVEN_SUB_HAND) && one_in_(2)) {
-            o_ptr = player_ptr->inventory[INVEN_SUB_HAND].get();
+        if (has_melee_weapon(&player, INVEN_SUB_HAND) && one_in_(2)) {
+            o_ptr = creature.inventory[INVEN_SUB_HAND].get();
             slot = INVEN_SUB_HAND;
         }
-    } else if (has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
-        o_ptr = player_ptr->inventory[INVEN_SUB_HAND].get();
+    } else if (has_melee_weapon(&player, INVEN_SUB_HAND)) {
+        o_ptr = creature.inventory[INVEN_SUB_HAND].get();
         slot = INVEN_SUB_HAND;
     }
 
@@ -560,6 +562,6 @@ bool drop_weapons(PlayerType *player_ptr)
     }
 
     msg_print(_("武器を落としてしまった！", "You drop your weapon!"));
-    drop_from_inventory(player_ptr, slot, 1);
+    drop_from_inventory(&player, slot, 1);
     return true;
 }

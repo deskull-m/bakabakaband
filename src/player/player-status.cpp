@@ -2909,7 +2909,7 @@ void check_experience(CreatureEntity &creature)
 
         if (level_mutation) {
             msg_print(_("あなたは変わった気がする...", "You feel different..."));
-            (void)gain_mutation(player_ptr, 0);
+            (void)gain_mutation(*player_ptr, 0);
             level_mutation = false;
         }
 

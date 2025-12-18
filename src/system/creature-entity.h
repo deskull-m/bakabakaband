@@ -1,7 +1,9 @@
 #pragma once
 
+#include "mutation/mutation-flag-types.h"
 #include "player-ability/player-ability-types.h"
 #include "system/angband.h"
+#include "util/flag-group.h"
 #include "util/point-2d.h"
 #include <map>
 #include <memory>
@@ -164,4 +166,8 @@ public:
     std::vector<std::shared_ptr<ItemEntity>> inventory{}; /*!< 所持品リスト / The creature's inventory */
     int16_t inven_cnt{}; /*!< 所持品数 / Number of items in inventory */
     int16_t equip_cnt{}; /*!< 装備品数 / Number of items in equipment */
+
+    // 変異関連
+    EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
+    EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
 };

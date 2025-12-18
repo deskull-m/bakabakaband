@@ -169,9 +169,6 @@ public:
 
     int16_t patron{};
 
-    EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
-    EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
-
     TIME_EFFECT word_recall{}; /* Word of recall counter */
     TIME_EFFECT alter_reality{}; /* Alter reality counter */
     DungeonId recall_dungeon{}; /* Dungeon set to be recalled */

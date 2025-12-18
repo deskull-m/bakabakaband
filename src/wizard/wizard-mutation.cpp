@@ -246,7 +246,7 @@ void wiz_mutation_menu(PlayerType *player_ptr)
             const auto mutation_id = input_numerics("獲得する突然変異ID", 0, static_cast<int>(PlayerMutationType::MAX) - 1, 0);
             screen_load();
             if (mutation_id.has_value()) {
-                gain_mutation(player_ptr, mutation_id.value());
+                gain_mutation(*player_ptr, mutation_id.value());
                 msg_print("突然変異を獲得しました。");
             }
             break;
@@ -259,7 +259,7 @@ void wiz_mutation_menu(PlayerType *player_ptr)
             const auto mutation_id = input_numerics("喪失する突然変異ID", 0, static_cast<int>(PlayerMutationType::MAX) - 1, 0);
             screen_load();
             if (mutation_id.has_value()) {
-                lose_mutation(player_ptr, mutation_id.value());
+                lose_mutation(*player_ptr, mutation_id.value());
                 msg_print("突然変異を喪失しました。");
             }
             break;
@@ -268,7 +268,7 @@ void wiz_mutation_menu(PlayerType *player_ptr)
         case 'a':
         case 'A': {
             for (int i = 0; i < static_cast<int>(PlayerMutationType::MAX); i++) {
-                gain_mutation(player_ptr, i);
+                gain_mutation(*player_ptr, i);
             }
             msg_print("全ての突然変異を獲得しました。");
             break;
@@ -276,7 +276,7 @@ void wiz_mutation_menu(PlayerType *player_ptr)
 
         case 'r':
         case 'R': {
-            lose_all_mutations(player_ptr);
+            lose_all_mutations(*player_ptr);
             msg_print("全ての突然変異を削除しました。");
             break;
         }

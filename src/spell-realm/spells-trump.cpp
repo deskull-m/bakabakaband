@@ -206,7 +206,7 @@ void cast_shuffle(PlayerType *player_ptr)
     if (die < 111) {
         msg_print(_("《審判》だ。", "It's Judgement."));
         roll_hitdice(player_ptr, SPOP_NONE);
-        lose_all_mutations(player_ptr);
+        lose_all_mutations(*player_ptr);
         return;
     }
 
@@ -235,7 +235,7 @@ void become_living_trump(PlayerType *player_ptr)
 {
     /* 1/7 Teleport control and 6/7 Random teleportation (uncontrolled) */
     MUTATION_IDX mutation = one_in_(7) ? 12 : 77;
-    if (gain_mutation(player_ptr, mutation)) {
+    if (gain_mutation(*player_ptr, mutation)) {
         msg_print(_("あなたは生きているカードに変わった。", "You have turned into a Living Trump."));
     }
 }

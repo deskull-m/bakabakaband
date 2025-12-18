@@ -3,11 +3,13 @@
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-util.h"
 #include "player-base/player-class.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
-void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
+void switch_gain_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
-    PlayerClass pc(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    PlayerClass pc(&player);
 
     // 変異の決定
     PlayerMutationType mutation_type;
@@ -39,14 +41,14 @@ void switch_gain_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
 
     case PlayerMutationType::BAD_LUCK:
         // 幸運な性格の場合、このミュテーションは無効
-        if (player_ptr->ppersonality == PERSONALITY_LUCKY) {
+        if (player.ppersonality == PERSONALITY_LUCKY) {
             glm_ptr->muta_which = PlayerMutationType::MAX;
         }
         break;
 
     case PlayerMutationType::ATT_PERVERT:
         // メスガキ性格の場合、このミュテーションは無効
-        if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+        if (player.ppersonality == PERSONALITY_MESUGAKI) {
             glm_ptr->muta_which = PlayerMutationType::MAX;
         }
         break;
