@@ -167,6 +167,12 @@ public:
     int16_t inven_cnt{}; /*!< 所持品数 / Number of items in inventory */
     int16_t equip_cnt{}; /*!< 装備品数 / Number of items in equipment */
 
+    // 座標関連
+    POSITION oldpy{}; /*!< 前回のY座標 / Previous location (Y) */
+    POSITION oldpx{}; /*!< 前回のX座標 / Previous location (X) */
+    POSITION y{}; /*!< 現在のY座標 / Current location (Y) */
+    POSITION x{}; /*!< 現在のX座標 / Current location (X) */
+
     // 変異関連
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
