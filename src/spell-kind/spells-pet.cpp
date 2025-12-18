@@ -63,7 +63,7 @@ void discharge_minion(PlayerType *player_ptr)
         if (dam > 800) {
             dam = 800;
         }
-        project(player_ptr, i, 2 + (monrace.level / 20), monster.fy, monster.fx, dam, AttributeType::PLASMA, PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+        project(player_ptr, i, 2 + (monrace.level / 20), monster.y, monster.x, dam, AttributeType::PLASMA, PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 
         if (record_named_pet && monster.is_named()) {
             const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);

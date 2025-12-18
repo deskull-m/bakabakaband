@@ -143,7 +143,7 @@ bool process_monster_attack_to_monster(PlayerType *player_ptr, turn_flags *turn_
     do_move_body &= (monrace_from.mexp > monrace_to.mexp);
     do_move_body &= can_cross;
     do_move_body &= !monster_to.is_riding();
-    do_move_body &= monster_can_cross_terrain(player_ptr, player_ptr->current_floor_ptr->grid_array[monster_from.fy][monster_from.fx].feat, monrace_to, 0);
+    do_move_body &= monster_can_cross_terrain(player_ptr, player_ptr->current_floor_ptr->grid_array[monster_from.y][monster_from.x].feat, monrace_to, 0);
     if (do_move_body) {
         turn_flags_ptr->do_move = true;
         turn_flags_ptr->did_move_body = true;

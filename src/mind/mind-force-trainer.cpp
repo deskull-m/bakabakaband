@@ -244,8 +244,8 @@ bool shock_power(PlayerType *player_ptr)
     msg_format(_("%sを吹き飛ばした！", "You blow %s away!"), m_name.data());
     floor.get_grid(pos_origin).m_idx = 0;
     floor.get_grid(pos_target).m_idx = m_idx;
-    monster.fy = pos_target.y;
-    monster.fx = pos_target.x;
+    monster.y = pos_target.y;
+    monster.x = pos_target.x;
 
     update_monster(player_ptr, m_idx, true);
     lite_spot(player_ptr, pos_origin);

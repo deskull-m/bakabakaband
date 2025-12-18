@@ -19,8 +19,8 @@ void MonsterEntityWriter::write_to_savedata() const
     wr_s16b(enum2i(this->monster.r_idx));
     wr_s32b(enum2i(this->monster.alliance_idx));
 
-    wr_byte((byte)this->monster.fy);
-    wr_byte((byte)this->monster.fx);
+    wr_byte((byte)this->monster.y);
+    wr_byte((byte)this->monster.x);
     wr_s16b((int16_t)this->monster.hp);
     wr_s16b((int16_t)this->monster.maxhp);
     wr_s16b((int16_t)this->monster.max_maxhp);

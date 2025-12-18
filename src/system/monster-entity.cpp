@@ -480,8 +480,8 @@ void MonsterEntity::set_individual_speed(bool force_fixed_speed)
 
 void MonsterEntity::set_position(const Pos2D &pos)
 {
-    this->fy = pos.y;
-    this->fx = pos.x;
+    this->y = pos.y;
+    this->x = pos.x;
 }
 
 /*!
@@ -591,7 +591,7 @@ bool MonsterEntity::is_riding() const
 
 Pos2D MonsterEntity::get_position() const
 {
-    return { this->fy, this->fx };
+    return { this->y, this->x };
 }
 
 Pos2D MonsterEntity::get_target_position() const
@@ -681,12 +681,12 @@ int MonsterEntity::get_ac() const
 // CreatureEntityインターフェースの実装
 POSITION MonsterEntity::get_x() const
 {
-    return this->fx;
+    return this->x;
 }
 
 POSITION MonsterEntity::get_y() const
 {
-    return this->fy;
+    return this->y;
 }
 
 int MonsterEntity::get_current_hp() const

@@ -47,11 +47,11 @@ static tl::optional<Pos2D> adjacent_grid_check(PlayerType *player_ptr, const Mon
     };
 
     int next;
-    if (monster.fy < player_ptr->y && monster.fx < player_ptr->x) {
+    if (monster.y < player_ptr->y && monster.x < player_ptr->x) {
         next = 0;
-    } else if (monster.fy < player_ptr->y) {
+    } else if (monster.y < player_ptr->y) {
         next = 1;
-    } else if (monster.fx < player_ptr->x) {
+    } else if (monster.x < player_ptr->x) {
         next = 2;
     } else {
         next = 3;

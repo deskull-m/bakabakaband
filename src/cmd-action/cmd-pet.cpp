@@ -104,7 +104,7 @@ void do_cmd_pet_dismiss(PlayerType *player_ptr)
             constexpr auto mes = _("%sを放しますか？ [Yes/No/Unnamed (%d体)]", "Dismiss %s? [Yes/No/Unnamed (%d remain)]");
             msg_format(mes, friend_name.data(), num_pet_index - i);
             if (monster.ml) {
-                move_cursor_relative(monster.fy, monster.fx);
+                move_cursor_relative(monster.y, monster.x);
             }
 
             while (true) {

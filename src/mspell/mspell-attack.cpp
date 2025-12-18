@@ -104,7 +104,7 @@ static bool check_mspell_non_stupid(PlayerType *player_ptr, msa_type *msa_ptr)
     }
 
     if (msa_ptr->ability_flags.has_any_of(RF_ABILITY_BOLT_MASK) &&
-        !clean_shot(player_ptr, msa_ptr->m_ptr->fy, msa_ptr->m_ptr->fx, player_ptr->y, player_ptr->x, false)) {
+        !clean_shot(player_ptr, msa_ptr->m_ptr->y, msa_ptr->m_ptr->x, player_ptr->y, player_ptr->x, false)) {
         msa_ptr->ability_flags.reset(RF_ABILITY_BOLT_MASK);
     }
 
@@ -264,7 +264,7 @@ static bool check_thrown_mspell(PlayerType *player_ptr, msa_type *msa_ptr)
 static void check_mspell_imitation(PlayerType *player_ptr, msa_type *msa_ptr)
 {
     const auto seen = (!player_ptr->effects()->blindness().is_blind() && msa_ptr->m_ptr->ml);
-    const auto can_imitate = player_ptr->current_floor_ptr->has_los_at({ msa_ptr->m_ptr->fy, msa_ptr->m_ptr->fx });
+    const auto can_imitate = player_ptr->current_floor_ptr->has_los_at({ msa_ptr->m_ptr->y, msa_ptr->m_ptr->x });
     PlayerClass pc(player_ptr);
     if (!seen || !can_imitate || (AngbandWorld::get_instance().timewalk_m_idx != 0) || !pc.equals(PlayerClassType::IMITATOR)) {
         return;

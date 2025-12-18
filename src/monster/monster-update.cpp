@@ -87,14 +87,14 @@ bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr,
 
     player_ptr->current_floor_ptr->grid_array[oy][ox].m_idx = grid.m_idx;
     if (grid.has_monster()) {
-        y_ptr->fy = oy;
-        y_ptr->fx = ox;
+        y_ptr->y = oy;
+        y_ptr->x = ox;
         update_monster(player_ptr, grid.m_idx, true);
     }
 
     grid.m_idx = m_idx;
-    monster.fy = ny;
-    monster.fx = nx;
+    monster.y = ny;
+    monster.x = nx;
     update_monster(player_ptr, m_idx, true);
 
     lite_spot(player_ptr, { oy, ox });
@@ -183,8 +183,8 @@ static um_type *initialize_um_type(PlayerType *player_ptr, um_type *um_ptr, MONS
     auto &floor = *player_ptr->current_floor_ptr;
     um_ptr->m_ptr = &floor.m_list[m_idx];
     um_ptr->do_disturb = disturb_move;
-    um_ptr->fy = um_ptr->m_ptr->fy;
-    um_ptr->fx = um_ptr->m_ptr->fx;
+    um_ptr->fy = um_ptr->m_ptr->y;
+    um_ptr->fx = um_ptr->m_ptr->x;
     um_ptr->flag = false;
     um_ptr->easy = false;
     um_ptr->in_darkness = floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && !player_ptr->see_nocto;

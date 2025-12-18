@@ -184,7 +184,7 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
     simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_PASSIVE);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
         return res;
     }
 
@@ -221,9 +221,9 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
     }
 
     if (monster_target.is_riding()) {
-        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_PASSIVE);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
     } else {
-        teleport_monster_to(player_ptr, t_idx, monster.fy, monster.fx, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(player_ptr, t_idx, monster.y, monster.x, 100, TELEPORT_PASSIVE);
     }
     set_monster_csleep(player_ptr, t_idx, 0);
 
@@ -491,7 +491,7 @@ MonsterSpellResult spell_RF6_RAISE_DEAD(PlayerType *player_ptr, MONSTER_IDX m_id
 
     monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
-    animate_dead(player_ptr, m_idx, monster.fy, monster.fx);
+    animate_dead(player_ptr, m_idx, monster.y, monster.x);
 
     return MonsterSpellResult::make_valid();
 }

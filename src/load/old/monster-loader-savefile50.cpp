@@ -24,8 +24,8 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
         monster.alliance_idx = i2enum<AllianceType>(rd_s32b());
     }
 
-    monster.fy = rd_byte();
-    monster.fx = rd_byte();
+    monster.y = rd_byte();
+    monster.x = rd_byte();
 
     monster.hp = rd_s16b();
     monster.maxhp = rd_s16b();

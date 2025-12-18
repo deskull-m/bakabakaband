@@ -224,7 +224,7 @@ static void restore_world_floor_info(PlayerType *player_ptr)
     player_ptr->ride_monster(0);
     for (short i = floor.m_max; i > 0; i--) {
         const auto &monster = floor.m_list[i];
-        if (player_ptr->is_located_at({ monster.fy, monster.fx })) {
+        if (player_ptr->is_located_at({ monster.y, monster.x })) {
             player_ptr->ride_monster(i);
             break;
         }

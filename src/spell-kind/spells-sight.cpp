@@ -235,7 +235,7 @@ void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
             }
         }
 
-        if (floor.has_los_at({ monster.fy, monster.fx }) && !monster.is_pet()) {
+        if (floor.has_los_at({ monster.y, monster.x }) && !monster.is_pet()) {
             monster.mflag2.set(MonsterConstantFlagType::ANGER);
             (void)set_monster_fast(player_ptr, i, monster.get_remaining_acceleration() + 100);
             speed = true;
@@ -447,7 +447,7 @@ bool probing(PlayerType *player_ptr)
         if (!monster.is_valid()) {
             continue;
         }
-        if (!floor.has_los_at({ monster.fy, monster.fx })) {
+        if (!floor.has_los_at({ monster.y, monster.x })) {
             continue;
         }
         if (!monster.ml) {
@@ -465,7 +465,7 @@ bool probing(PlayerType *player_ptr)
         message_add(probe_result);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
         handle_stuff(player_ptr);
-        move_cursor_relative(monster.fy, monster.fx);
+        move_cursor_relative(monster.y, monster.x);
         inkey();
         term_erase(0, 0);
         const auto mes = monrace.probe_lore();

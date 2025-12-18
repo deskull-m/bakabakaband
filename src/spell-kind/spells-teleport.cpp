@@ -556,7 +556,7 @@ void teleport_away_followable(PlayerType *player_ptr, MONSTER_IDX m_idx)
         teleport_player(player_ptr, 200, TELEPORT_PASSIVE);
         msg_print(_("失敗！", "Failed!"));
     } else {
-        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_SPONTANEOUS);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_SPONTANEOUS);
     }
 
     player_ptr->energy_need += ENERGY_NEED();

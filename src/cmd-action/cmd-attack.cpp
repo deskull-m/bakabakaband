@@ -136,7 +136,7 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
 
     switch (attack) {
     case PlayerMutationType::SCOR_TAIL:
-        project(player_ptr, 0, 0, monster.fy, monster.fx, k, AttributeType::POIS, PROJECT_KILL);
+        project(player_ptr, 0, 0, monster.y, monster.x, k, AttributeType::POIS, PROJECT_KILL);
         *mdeath = !monster.is_valid();
         break;
     case PlayerMutationType::HORNS:
