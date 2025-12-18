@@ -366,8 +366,8 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         }
     }
 
-    m_ptr->fy = y;
-    m_ptr->fx = x;
+    m_ptr->y = y;
+    m_ptr->x = x;
     m_ptr->current_floor_ptr = &floor;
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {

@@ -381,8 +381,8 @@ void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
     const auto m_name_self = monster_desc(this->player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
     msg_format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data());
 #endif
-    const auto y = monster.fy;
-    const auto x = monster.fx;
+    const auto y = monster.y;
+    const auto x = monster.x;
     project(this->player_ptr, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
     if (this->player_ptr->tim_eyeeye) {
         set_tim_eyeeye(this->player_ptr, this->player_ptr->tim_eyeeye - 5, true);

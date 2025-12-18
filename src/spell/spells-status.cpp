@@ -629,7 +629,7 @@ void apply_nexus(const MonsterEntity &monster, PlayerType *player_ptr)
 
     case 4:
     case 5: {
-        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_PASSIVE);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
         break;
     }
 

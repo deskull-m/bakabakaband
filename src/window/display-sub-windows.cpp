@@ -237,7 +237,7 @@ static void print_pet_list_oneline(PlayerType *player_ptr, const MonsterEntity &
     term_addstr(-1, TERM_WHITE, name);
 
     if (width >= 50) {
-        const auto location = format(" (X:%3d Y:%3d)", monster.fx, monster.fy);
+        const auto location = format(" (X:%3d Y:%3d)", monster.x, monster.y);
         prt(is_visible ? location : "", y, width - location.length());
     }
 }

@@ -64,11 +64,11 @@ static void process_blow_effect(PlayerType *player_ptr, mam_type *mam_ptr)
     const auto &monrace = mam_ptr->m_ptr->get_monrace();
     switch (mam_ptr->attribute) {
     case BlowEffectType::FEAR:
-        project(player_ptr, mam_ptr->m_idx, 0, mam_ptr->t_ptr->fy, mam_ptr->t_ptr->fx, mam_ptr->damage,
+        project(player_ptr, mam_ptr->m_idx, 0, mam_ptr->t_ptr->y, mam_ptr->t_ptr->x, mam_ptr->damage,
             AttributeType::TURN_ALL, PROJECT_KILL | PROJECT_STOP | PROJECT_AIMED);
         break;
     case BlowEffectType::SLEEP:
-        project(player_ptr, mam_ptr->m_idx, 0, mam_ptr->t_ptr->fy, mam_ptr->t_ptr->fx, monrace.level,
+        project(player_ptr, mam_ptr->m_idx, 0, mam_ptr->t_ptr->y, mam_ptr->t_ptr->x, monrace.level,
             AttributeType::OLD_SLEEP, PROJECT_KILL | PROJECT_STOP | PROJECT_AIMED);
         break;
     case BlowEffectType::HEAL:
@@ -102,7 +102,7 @@ static void aura_fire_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 
     const auto dam = Dice::roll(1 + ((monrace_target.level) / 26), 1 + ((monrace_target.level) / 17));
     constexpr auto flags = PROJECT_KILL | PROJECT_STOP | PROJECT_AIMED;
-    project(player_ptr, mam_ptr->t_idx, 0, mam_ptr->m_ptr->fy, mam_ptr->m_ptr->fx, dam, AttributeType::FIRE, flags);
+    project(player_ptr, mam_ptr->t_idx, 0, mam_ptr->m_ptr->y, mam_ptr->m_ptr->x, dam, AttributeType::FIRE, flags);
 }
 
 static void aura_cold_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
@@ -129,7 +129,7 @@ static void aura_cold_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 
     const auto dam = Dice::roll(1 + ((monrace_target.level) / 26), 1 + ((monrace_target.level) / 17));
     constexpr auto flags = PROJECT_KILL | PROJECT_STOP | PROJECT_AIMED;
-    project(player_ptr, mam_ptr->t_idx, 0, monster.fy, monster.fx, dam, AttributeType::COLD, flags);
+    project(player_ptr, mam_ptr->t_idx, 0, monster.y, monster.x, dam, AttributeType::COLD, flags);
 }
 
 static void aura_elec_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
@@ -156,7 +156,7 @@ static void aura_elec_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 
     const auto dam = Dice::roll(1 + ((monrace_target.level) / 26), 1 + ((monrace_target.level) / 17));
     constexpr auto flags = PROJECT_KILL | PROJECT_STOP | PROJECT_AIMED;
-    project(player_ptr, mam_ptr->t_idx, 0, monster.fy, monster.fx, dam, AttributeType::ELEC, flags);
+    project(player_ptr, mam_ptr->t_idx, 0, monster.y, monster.x, dam, AttributeType::ELEC, flags);
 }
 
 static bool check_same_monster(PlayerType *player_ptr, mam_type *mam_ptr)
@@ -222,7 +222,7 @@ static void process_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_
     }
 
     if (!mam_ptr->explode) {
-        project(player_ptr, mam_ptr->m_idx, 0, mam_ptr->t_ptr->fy, mam_ptr->t_ptr->fx, mam_ptr->damage, mam_ptr->pt,
+        project(player_ptr, mam_ptr->m_idx, 0, mam_ptr->t_ptr->y, mam_ptr->t_ptr->x, mam_ptr->damage, mam_ptr->pt,
             PROJECT_KILL | PROJECT_STOP | PROJECT_AIMED);
     }
 
@@ -306,8 +306,8 @@ static void repeat_melee(PlayerType *player_ptr, mam_type *mam_ptr)
             break;
         }
 
-        const auto x_saver = mam_ptr->t_ptr->fx != mam_ptr->x_saver;
-        const auto y_saver = mam_ptr->t_ptr->fy != mam_ptr->y_saver;
+        const auto x_saver = mam_ptr->t_ptr->x != mam_ptr->x_saver;
+        const auto y_saver = mam_ptr->t_ptr->y != mam_ptr->y_saver;
         if (x_saver || y_saver || mam_ptr->method == RaceBlowMethodType::NONE) {
             break;
         }

@@ -60,8 +60,8 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
         case MonsterAbilityType::S_INSECT:
         case MonsterAbilityType::S_ELDRAZI:
         case MonsterAbilityType::S_UNIQUE:
-            x = m_ptr->fx;
-            y = m_ptr->fy;
+            x = m_ptr->x;
+            y = m_ptr->y;
             break;
         default:
             break;
@@ -246,8 +246,8 @@ static MonsterSpellResult monspell_to_monster_impl(
         case MonsterAbilityType::S_INSECT:
         case MonsterAbilityType::S_ELDRAZI:
         case MonsterAbilityType::S_UNIQUE:
-            x = m_ptr->fx;
-            y = m_ptr->fy;
+            x = m_ptr->x;
+            y = m_ptr->y;
             break;
         default:
             break;

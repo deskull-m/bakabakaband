@@ -42,8 +42,6 @@ public:
     BIT_FLAGS8 sub_align{}; /*!< 中立属性のモンスターが召喚主のアライメントに従い一時的に立っている善悪陣営 / Sub-alignment for a neutral monster */
     AllianceType alliance_idx; /*!< 現在の所属アライアンス */
 
-    POSITION fy{}; /*!< 所在グリッドY座標 / Y location on map */
-    POSITION fx{}; /*!< 所在グリッドX座標 / X location on map */
     int hp{}; /*!< 現在のHP / Current Hit points */
     int maxhp{}; /*!< 現在の最大HP(衰弱効果などにより低下したものの反映) / Max Hit points */
     int max_maxhp{}; /*!< 生成時の初期最大HP / Max Max Hit points */

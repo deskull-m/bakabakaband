@@ -20,7 +20,7 @@
 void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto &grid = player_ptr->current_floor_ptr->grid_array[monster.fy][monster.fx];
+    const auto &grid = player_ptr->current_floor_ptr->grid_array[monster.y][monster.x];
     BIT_FLAGS curse_flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     int count = 0;
     bool is_first_loop = true;
@@ -44,7 +44,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             if (!count) {
                 int extra_dam = Dice::roll(10, 10);
                 msg_print(_("純粋な魔力の次元への扉が開いた！", "A portal opens to a plane of raw mana!"));
-                project(player_ptr, 0, 8, monster.fy, monster.fx, extra_dam, AttributeType::MANA, curse_flg);
+                project(player_ptr, 0, 8, monster.y, monster.x, extra_dam, AttributeType::MANA, curse_flg);
                 if (!one_in_(6)) {
                     break;
                 }
@@ -58,7 +58,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
                     teleport_away(player_ptr, grid.m_idx, Dice::roll(10, 10), TELEPORT_PASSIVE);
                 }
                 if (one_in_(13)) {
-                    count += activate_hi_summon(player_ptr, monster.fy, monster.fx, true);
+                    count += activate_hi_summon(player_ptr, monster.y, monster.x, true);
                 }
                 if (!one_in_(6)) {
                     break;
@@ -69,7 +69,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
         case 10:
         case 11:
             msg_print(_("エネルギーのうねりを感じた！", "You feel a surge of energy!"));
-            project(player_ptr, 0, 7, monster.fy, monster.fx, 50, AttributeType::DISINTEGRATE, curse_flg);
+            project(player_ptr, 0, 7, monster.y, monster.x, 50, AttributeType::DISINTEGRATE, curse_flg);
             if (!one_in_(6)) {
                 break;
             }
@@ -86,7 +86,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             [[fallthrough]];
         case 17:
         case 18:
-            count += activate_hi_summon(player_ptr, monster.fy, monster.fx, true);
+            count += activate_hi_summon(player_ptr, monster.y, monster.x, true);
             if (!one_in_(6)) {
                 break;
             }

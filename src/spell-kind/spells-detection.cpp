@@ -343,8 +343,8 @@ bool detect_monsters_normal(PlayerType *player_ptr, POSITION range)
             continue;
         }
 
-        POSITION y = monster.fy;
-        POSITION x = monster.fx;
+        POSITION y = monster.y;
+        POSITION x = monster.x;
         if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
             continue;
         }
@@ -390,8 +390,8 @@ bool detect_monsters_invis(PlayerType *player_ptr, POSITION range)
             continue;
         }
 
-        POSITION y = monster.fy;
-        POSITION x = monster.fx;
+        POSITION y = monster.y;
+        POSITION x = monster.x;
 
         if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
             continue;
@@ -441,8 +441,8 @@ bool detect_monsters_evil(PlayerType *player_ptr, POSITION range)
             continue;
         }
 
-        POSITION y = monster.fy;
-        POSITION x = monster.fx;
+        POSITION y = monster.y;
+        POSITION x = monster.x;
 
         if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
             continue;
@@ -491,8 +491,8 @@ bool detect_monsters_nonliving(PlayerType *player_ptr, POSITION range)
             continue;
         }
 
-        POSITION y = monster.fy;
-        POSITION x = monster.fx;
+        POSITION y = monster.y;
+        POSITION x = monster.x;
         if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
             continue;
         }
@@ -538,8 +538,8 @@ bool detect_monsters_mind(PlayerType *player_ptr, POSITION range)
             continue;
         }
 
-        POSITION y = monster.fy;
-        POSITION x = monster.fx;
+        POSITION y = monster.y;
+        POSITION x = monster.x;
 
         if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
             continue;
@@ -587,8 +587,8 @@ bool detect_monsters_string(PlayerType *player_ptr, POSITION range, concptr Matc
             continue;
         }
 
-        POSITION y = monster.fy;
-        POSITION x = monster.fx;
+        POSITION y = monster.y;
+        POSITION x = monster.x;
 
         if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
             continue;
