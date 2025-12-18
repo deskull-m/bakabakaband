@@ -275,9 +275,9 @@ static void rd_arena(PlayerType *player_ptr)
  */
 static void rd_hp(PlayerType *player_ptr)
 {
-    player_ptr->mhp = rd_s32b();
-    player_ptr->chp = rd_s32b();
-    player_ptr->chp_frac = rd_u32b();
+    player_ptr->maxhp = rd_s32b();
+    player_ptr->hp = rd_s32b();
+    player_ptr->hp_frac = rd_u32b();
 
     // セーブファイルバージョン35以降で与ダメージ蓄積を読み込み
     if (!loading_savefile_version_is_older_than(35)) {

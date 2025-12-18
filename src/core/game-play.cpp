@@ -456,7 +456,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie)
     }
 
     init_io(player_ptr);
-    if (player_ptr->chp < 0 && !cheat_immortal) {
+    if (player_ptr->hp < 0 && !cheat_immortal) {
         player_ptr->is_dead_ = true;
     }
 

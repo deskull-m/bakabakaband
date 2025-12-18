@@ -124,21 +124,21 @@ void print_hp(PlayerType *player_ptr)
 {
     char tmp[32];
     put_str("HP", ROW_CURHP, COL_CURHP);
-    sprintf(tmp, "%4ld", (long int)player_ptr->chp);
+    sprintf(tmp, "%4ld", (long int)player_ptr->hp);
     TERM_COLOR color;
-    if (player_ptr->chp >= player_ptr->mhp) {
+    if (player_ptr->hp >= player_ptr->maxhp) {
         color = TERM_L_GREEN;
-    } else if (player_ptr->chp > (player_ptr->mhp * hitpoint_warn) / 10) {
+    } else if (player_ptr->hp > (player_ptr->maxhp * hitpoint_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", player_ptr->chp), ROW_CURHP, COL_CURHP + 3);
+    c_put_str(color, format("%4d", player_ptr->hp), ROW_CURHP, COL_CURHP + 3);
     put_str("/", ROW_CURHP, COL_CURHP + 7);
-    sprintf(tmp, "%4ld", (long int)player_ptr->mhp);
+    sprintf(tmp, "%4ld", (long int)player_ptr->maxhp);
     color = TERM_L_GREEN;
-    c_put_str(color, format("%4d", player_ptr->mhp), ROW_CURHP, COL_CURHP + 8);
+    c_put_str(color, format("%4d", player_ptr->maxhp), ROW_CURHP, COL_CURHP + 8);
 }
 
 /*!

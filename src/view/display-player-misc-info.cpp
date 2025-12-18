@@ -57,6 +57,6 @@ void display_player_misc_info(PlayerType *player_ptr)
     put_str(_("ＭＰ  :", "Mana  :"), 8, 1);
 
     c_put_str(TERM_L_BLUE, format("%d", (int)player_ptr->lev), 6, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)player_ptr->chp, (int)player_ptr->mhp), 7, 9);
+    c_put_str(TERM_L_BLUE, format("%d/%d", (int)player_ptr->hp, (int)player_ptr->maxhp), 7, 9);
     c_put_str(TERM_L_BLUE, format("%d/%d", (int)player_ptr->csp, (int)player_ptr->msp), 8, 9);
 }

@@ -476,7 +476,7 @@ static bool display_auto_roller_result(PlayerType *player_ptr, bool prev, char *
     while (true) {
         rfu.set_flags(flags);
         update_creature(player_ptr);
-        player_ptr->chp = player_ptr->mhp;
+        player_ptr->hp = player_ptr->maxhp;
         player_ptr->csp = player_ptr->msp;
         (void)display_player(player_ptr, mode);
         term_gotoxy(2, 23);

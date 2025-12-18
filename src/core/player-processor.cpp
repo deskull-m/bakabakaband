@@ -155,7 +155,7 @@ void process_player(PlayerType *player_ptr)
 
     if (player_ptr->resting < 0) {
         if (player_ptr->resting == COMMAND_ARG_REST_FULL_HEALING) {
-            if ((player_ptr->chp == player_ptr->mhp) && (player_ptr->csp >= player_ptr->msp)) {
+            if ((player_ptr->hp == player_ptr->maxhp) && (player_ptr->csp >= player_ptr->msp)) {
                 set_action(player_ptr, ACTION_NONE);
             }
         } else if (player_ptr->resting == COMMAND_ARG_REST_UNTIL_DONE) {

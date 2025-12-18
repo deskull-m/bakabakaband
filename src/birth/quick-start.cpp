@@ -73,7 +73,7 @@ bool ask_quick_start(PlayerType *player_ptr)
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
     update_creature(player_ptr);
-    player_ptr->chp = player_ptr->mhp;
+    player_ptr->hp = player_ptr->maxhp;
     player_ptr->csp = player_ptr->msp;
     process_player_name(player_ptr);
     return true;
@@ -166,8 +166,8 @@ void load_prev_data(PlayerType *player_ptr, bool swap)
         player_ptr->player_hp[i] = previous_char.player_hp[i];
     }
 
-    player_ptr->mhp = player_ptr->player_hp[0];
-    player_ptr->chp = player_ptr->player_hp[0];
+    player_ptr->maxhp = player_ptr->player_hp[0];
+    player_ptr->hp = player_ptr->player_hp[0];
     player_ptr->patron = previous_char.patron;
     player_ptr->virtues = previous_char.virtues;
 

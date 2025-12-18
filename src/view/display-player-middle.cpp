@@ -292,12 +292,12 @@ static void display_playtime_in_game(PlayerType *player_ptr)
     display_player_one_line(ENTRY_DAY, mes, TERM_L_GREEN);
     display_player_one_line(ENTRY_WORLD_COLLAPSE, format("%3d.%06d%%", wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000), TERM_L_GREEN);
 
-    if (player_ptr->chp >= player_ptr->mhp) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->chp, player_ptr->mhp), TERM_L_GREEN);
-    } else if (player_ptr->chp > (player_ptr->mhp * hitpoint_warn) / 10) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->chp, player_ptr->mhp), TERM_YELLOW);
+    if (player_ptr->hp >= player_ptr->maxhp) {
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_L_GREEN);
+    } else if (player_ptr->hp > (player_ptr->maxhp * hitpoint_warn) / 10) {
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->chp, player_ptr->mhp), TERM_RED);
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_RED);
     }
 
     if (player_ptr->csp >= player_ptr->msp) {

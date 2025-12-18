@@ -109,7 +109,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // 現在のHP状況（傷ついているほど好まれる）
     /*
-    int hp_ratio = (creature_ptr->chp * 100) / creature_ptr->mhp;
+    int hp_ratio = (creature_ptr->hp * 100) / creature_ptr->maxhp;
     if (hp_ratio <= 25)
         impression += 60;
     else if (hp_ratio <= 50)

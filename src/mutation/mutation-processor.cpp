@@ -498,7 +498,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         MainWindowRedrawingFlag::MP,
     };
     if (player_ptr->muta.has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
-        MANA_POINT wounds = (MANA_POINT)(player_ptr->mhp - player_ptr->chp);
+        MANA_POINT wounds = (MANA_POINT)(player_ptr->maxhp - player_ptr->hp);
         if (wounds > 0) {
             int healing = player_ptr->csp;
             if (healing > wounds) {
@@ -514,7 +514,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     if (player_ptr->muta.has(PlayerMutationType::HP_TO_SP) && !player_ptr->anti_magic && one_in_(4000)) {
         int wounds = (int)(player_ptr->msp - player_ptr->csp);
         if (wounds > 0) {
-            int healing = player_ptr->chp;
+            int healing = player_ptr->hp;
             if (healing > wounds) {
                 healing = wounds;
             }

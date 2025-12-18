@@ -409,7 +409,7 @@ static std::string get_element_effect_info(PlayerType *player_ptr, int spell_idx
     case ElementSpells::BALL_1ST:
         return format(" %s%d", KWD_DAM, 55 + plev);
     case ElementSpells::BREATH_2ND:
-        dam = p_ptr->chp / 2;
+        dam = p_ptr->hp / 2;
         return format(" %s%d", KWD_DAM, (dam > 150) ? 150 : dam);
     case ElementSpells::ANNIHILATE:
         return format(" %s%d", _("効力:", "pow "), 50 + plev);
@@ -424,7 +424,7 @@ static std::string get_element_effect_info(PlayerType *player_ptr, int spell_idx
     case ElementSpells::STORM_2ND:
         return format(" %s%d", KWD_DAM, 115 + plev * 5 / 2);
     case ElementSpells::BREATH_1ST:
-        return format(" %s%d", KWD_DAM, p_ptr->chp * 2 / 3);
+        return format(" %s%d", KWD_DAM, p_ptr->hp * 2 / 3);
     case ElementSpells::STORM_3ND:
         return format(" %s%d", KWD_DAM, 300 + plev * 5);
     default:
@@ -515,7 +515,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
             return false;
         }
 
-        const auto dam = std::min(150, player_ptr->chp / 2);
+        const auto dam = std::min(150, player_ptr->hp / 2);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
         if (fire_breath(player_ptr, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
@@ -613,7 +613,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
             return false;
         }
 
-        const auto dam = player_ptr->chp * 2 / 3;
+        const auto dam = player_ptr->hp * 2 / 3;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
         (void)fire_breath(player_ptr, typ, dir, dam, 3);
         return true;

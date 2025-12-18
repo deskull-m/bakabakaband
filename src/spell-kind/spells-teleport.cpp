@@ -114,7 +114,7 @@ bool teleport_away(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION dis, tele
         return false;
     }
 
-    if ((mode & TELEPORT_DEC_VALOUR) && (((player_ptr->chp * 10) / player_ptr->mhp) > 5) && (4 + randint1(5) < ((player_ptr->chp * 10) / player_ptr->mhp))) {
+    if ((mode & TELEPORT_DEC_VALOUR) && (((player_ptr->hp * 10) / player_ptr->maxhp) > 5) && (4 + randint1(5) < ((player_ptr->hp * 10) / player_ptr->maxhp))) {
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VALOUR, -1);
     }
 

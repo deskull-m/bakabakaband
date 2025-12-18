@@ -644,8 +644,8 @@ void effect_player_hand_doom(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
         ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->m_name);
 
-        if (player_ptr->chp < 1) {
-            player_ptr->chp = 1;
+        if (player_ptr->hp < 1) {
+            player_ptr->hp = 1;
         }
     }
 }
