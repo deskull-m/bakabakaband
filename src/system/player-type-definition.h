@@ -97,10 +97,6 @@ public:
     uint32_t chp_frac{}; /* Cur hit frac (times 2^16) */
     PERCENTAGE mutant_regenerate_mod{};
 
-    MANA_POINT msp{}; /* Max mana pts */
-    MANA_POINT csp{}; /* Cur mana pts */
-    uint32_t csp_frac{}; /* Cur mana frac (times 2^16) */
-
     int16_t max_plv{}; /* Max Player Level */
 
     int16_t learned_spells{};
