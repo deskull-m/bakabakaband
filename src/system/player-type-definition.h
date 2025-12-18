@@ -88,9 +88,6 @@ public:
 
     int16_t town_num{}; /* Current town number */
 
-    int mhp{}; /* Max hit pts */
-    int chp{}; /* Cur hit pts */
-    uint32_t chp_frac{}; /* Cur hit frac (times 2^16) */
     PERCENTAGE mutant_regenerate_mod{};
 
     int16_t max_plv{}; /* Max Player Level */

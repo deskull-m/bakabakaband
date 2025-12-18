@@ -457,21 +457,21 @@ static void update_max_hitpoints(PlayerType *player_ptr)
     if (SpellHex(player_ptr).is_spelling_specific(HEX_BUILDING)) {
         mhp += 60;
     }
-    if (player_ptr->mhp == mhp) {
+    if (player_ptr->maxhp == mhp) {
         return;
     }
 
-    if (player_ptr->chp >= mhp) {
-        player_ptr->chp = mhp;
-        player_ptr->chp_frac = 0;
+    if (player_ptr->hp >= mhp) {
+        player_ptr->hp = mhp;
+        player_ptr->hp_frac = 0;
     }
 
 #ifdef JP
-    if (player_ptr->level_up_message && (mhp > player_ptr->mhp)) {
-        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - player_ptr->mhp));
+    if (player_ptr->level_up_message && (mhp > player_ptr->maxhp)) {
+        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - player_ptr->maxhp));
     }
 #endif
-    player_ptr->mhp = mhp;
+    player_ptr->maxhp = mhp;
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);

@@ -186,6 +186,7 @@ public:
     int hp{}; /*!< 現在のHP / Current Hit points */
     int maxhp{}; /*!< 現在の最大HP / Max Hit points */
     int max_maxhp{}; /*!< 生成時の初期最大HP / Max Max Hit points */
+    uint32_t hp_frac{}; /*!< HP小数部 / Current hit frac (times 2^16) */
 
     // 基本パラメータ（主にプレイヤー用、モンスターでは未使用）
     player_sex psex{}; /*!< 性別 / Sex index */

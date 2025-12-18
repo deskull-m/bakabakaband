@@ -482,7 +482,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
     } break;
 
     case 30: {
-        int dam = player_ptr->chp;
+        int dam = player_ptr->hp;
         POSITION rad = 2;
 
         if (info) {

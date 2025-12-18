@@ -326,7 +326,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         }
 
         /* Still alive and autosave enabled */
-        if (autosave_l && (player_ptr->chp >= 0)) {
+        if (autosave_l && (player_ptr->hp >= 0)) {
             do_cmd_save_game(player_ptr, true);
         }
 

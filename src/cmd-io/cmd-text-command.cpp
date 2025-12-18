@@ -134,8 +134,8 @@ static std::vector<TextCommand> get_text_commands()
                 msg_print(_("糞便が足下に落ちた。", "Dung has dropped at your feet."));
 
                 // 体力を少し消費
-                if (player_ptr->chp > 1) {
-                    player_ptr->chp--;
+                if (player_ptr->hp > 1) {
+                    player_ptr->hp--;
                     auto &rfu = RedrawingFlagsUpdater::get_instance();
                     rfu.set_flag(MainWindowRedrawingFlag::HP);
                 }
@@ -242,19 +242,19 @@ static std::vector<TextCommand> get_text_commands()
                 msg_print(_("あなたは謎の力によって重傷を負った！", "You are seriously wounded by a mysterious force!"));
 
                 // 重症の傷（現在のHPの半分のダメージ）
-                int damage = player_ptr->chp / 2;
+                int damage = player_ptr->hp / 2;
                 if (damage < 1)
                     damage = 1;
 
                 // 最低でも50ポイントのダメージ、最大でも現HP-1まで
                 damage = std::max(damage, 50);
-                damage = std::min(damage, player_ptr->chp - 1);
+                damage = std::min(damage, player_ptr->hp - 1);
 
                 take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
 
                 // HPが1未満にならないようにする
-                if (player_ptr->chp < 1) {
-                    player_ptr->chp = 1;
+                if (player_ptr->hp < 1) {
+                    player_ptr->hp = 1;
                 }
 
                 // 重傷状態を設定

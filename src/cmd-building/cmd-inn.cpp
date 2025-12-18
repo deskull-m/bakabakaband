@@ -115,7 +115,7 @@ static void back_to_health(PlayerType *player_ptr)
     (void)bss.set_blindness(0);
     (void)bss.set_confusion(0);
     player_ptr->effects()->stun().reset();
-    player_ptr->chp = player_ptr->mhp;
+    player_ptr->hp = player_ptr->maxhp;
     player_ptr->csp = player_ptr->msp;
 }
 
@@ -188,7 +188,7 @@ static bool stay_inn(PlayerType *player_ptr)
         exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::DIALY, 0);
     }
 
-    player_ptr->chp = player_ptr->mhp;
+    player_ptr->hp = player_ptr->maxhp;
     if (has_a_nightmare(player_ptr)) {
         return true;
     }

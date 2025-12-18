@@ -143,7 +143,7 @@ racial_level_check_result check_racial_level(PlayerType *player_ptr, rpi_type *r
     if (cmd_limit_confused(player_ptr)) {
         energy.reset_player_turn();
         return RACIAL_CANCEL;
-    } else if (player_ptr->chp < use_hp) {
+    } else if (player_ptr->hp < use_hp) {
         if (!input_check(_("本当に今の衰弱した状態でこの能力を使いますか？", "Really use the power in your weakened state? "))) {
             energy.reset_player_turn();
             return RACIAL_CANCEL;

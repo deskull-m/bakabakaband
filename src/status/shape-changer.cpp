@@ -29,7 +29,7 @@
 
 void do_poly_wounds(PlayerType *player_ptr)
 {
-    int16_t hit_p = (player_ptr->mhp - player_ptr->chp);
+    int16_t hit_p = (player_ptr->maxhp - player_ptr->hp);
     auto change = static_cast<TIME_EFFECT>(Dice::roll(player_ptr->lev, 5));
     auto nasty_effect = one_in_(5);
     const auto &player_cut = player_ptr->effects()->cut();

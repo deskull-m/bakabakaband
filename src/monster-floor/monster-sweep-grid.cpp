@@ -62,8 +62,8 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto p_chp = player_ptr->chp;
-    const auto p_mhp = player_ptr->mhp;
+    const auto p_chp = player_ptr->hp;
+    const auto p_mhp = player_ptr->maxhp;
     const auto m_chp = monster.hp;
     const auto m_mhp = monster.maxhp;
     const uint32_t p_val = (p_lev * p_mhp) + (p_chp << 2);
@@ -222,7 +222,7 @@ public:
             room -= 2;
         }
 
-        if (room >= (8 * (this->player_ptr->chp + this->player_ptr->csp)) / (this->player_ptr->mhp + this->player_ptr->msp)) {
+        if (room >= (8 * (this->player_ptr->hp + this->player_ptr->csp)) / (this->player_ptr->maxhp + this->player_ptr->msp)) {
             return tl::nullopt;
         }
 

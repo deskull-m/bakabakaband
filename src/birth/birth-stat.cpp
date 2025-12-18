@@ -150,7 +150,7 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
         roll_hitdice(player_ptr, SPOP_NO_UPDATE);
     }
 
-    player_ptr->mhp = player_ptr->player_hp[0];
+    player_ptr->maxhp = player_ptr->player_hp[0];
 }
 
 /*!

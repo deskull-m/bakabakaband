@@ -150,7 +150,7 @@ static void decide_mind_ki_chance(PlayerType *player_ptr, cm_type *cm_ptr)
 static bool check_mind_hp_mp_sufficiency(PlayerType *player_ptr, cm_type *cm_ptr)
 {
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
-        if (cm_ptr->mana_cost > player_ptr->chp) {
+        if (cm_ptr->mana_cost > player_ptr->hp) {
             msg_print(_("ＨＰが足りません。", "You do not have enough hp to use this power."));
             return false;
         }

@@ -788,7 +788,7 @@ static void display_spell_list(PlayerType *player_ptr)
                     a = TERM_ORANGE;
                 }
             } else {
-                if (spell.mana_cost > player_ptr->chp) {
+                if (spell.mana_cost > player_ptr->hp) {
                     chance += 100;
                     a = TERM_RED;
                 }

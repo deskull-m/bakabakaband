@@ -299,8 +299,8 @@ static void death_save(PlayerType *player_ptr)
  */
 int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_view hit_from, MonraceId killer_monrace_id)
 {
-    const auto old_chp = player_ptr->chp;
-    const auto hp_warning_threshold = (player_ptr->mhp * hitpoint_warn / 10);
+    const auto old_chp = player_ptr->hp;
+    const auto hp_warning_threshold = (player_ptr->maxhp * hitpoint_warn / 10);
     if (player_ptr->is_dead()) {
         return 0;
     }
@@ -359,14 +359,14 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         }
     }
 
-    player_ptr->chp -= damage;
-    if (player_ptr->chp < -9999) {
-        player_ptr->chp = -9999;
+    player_ptr->hp -= damage;
+    if (player_ptr->hp < -9999) {
+        player_ptr->hp = -9999;
     }
 
-    if (damage_type == DAMAGE_GENO && player_ptr->chp < 0) {
-        damage += player_ptr->chp;
-        player_ptr->chp = 0;
+    if (damage_type == DAMAGE_GENO && player_ptr->hp < 0) {
+        damage += player_ptr->hp;
+        player_ptr->hp = 0;
     }
 
     // 与ダメージの蓄積（プレイヤーが受けたダメージとして記録）
@@ -380,14 +380,14 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    if (damage_type != DAMAGE_GENO && player_ptr->chp == 0) {
+    if (damage_type != DAMAGE_GENO && player_ptr->hp == 0) {
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 2);
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;
     auto &world = AngbandWorld::get_instance();
-    if (player_ptr->chp < 0 && !cheat_immortal) {
+    if (player_ptr->hp < 0 && !cheat_immortal) {
         const auto is_android = PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID);
         sound(SoundKind::DEATH);
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 10);
@@ -608,7 +608,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
     }
 
     handle_stuff(player_ptr);
-    if (player_ptr->chp < hp_warning_threshold) {
+    if (player_ptr->hp < hp_warning_threshold) {
         if (old_chp > hp_warning_threshold) {
             bell();
         }
@@ -635,7 +635,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         flush();
     }
 
-    if (world.is_wild_mode() && !player_ptr->leaving && (player_ptr->chp < std::max(hp_warning_threshold, player_ptr->mhp / 5))) {
+    if (world.is_wild_mode() && !player_ptr->leaving && (player_ptr->hp < std::max(hp_warning_threshold, player_ptr->maxhp / 5))) {
         change_wild_mode(player_ptr, false);
     }
 

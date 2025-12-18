@@ -93,7 +93,7 @@ std::shared_ptr<TimedEffects> PlayerType::effects() const
 bool PlayerType::is_fully_healthy() const
 {
     auto effects = this->effects();
-    auto is_fully_healthy = this->chp == this->mhp;
+    auto is_fully_healthy = this->hp == this->maxhp;
     is_fully_healthy &= this->csp >= this->msp;
     is_fully_healthy &= !effects->blindness().is_blind();
     is_fully_healthy &= !effects->confusion().is_confused();
@@ -280,12 +280,12 @@ POSITION PlayerType::get_y() const
 
 int PlayerType::get_current_hp() const
 {
-    return this->chp;
+    return this->hp;
 }
 
 int PlayerType::get_max_hp() const
 {
-    return this->mhp;
+    return this->maxhp;
 }
 
 int PlayerType::get_speed() const

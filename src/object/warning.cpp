@@ -512,7 +512,7 @@ bool process_warning(PlayerType *player_ptr, POSITION xx, POSITION yy)
     if (dam_max > old_damage) {
         old_damage = dam_max * 3 / 2;
 
-        if (dam_max > player_ptr->chp / 2) {
+        if (dam_max > player_ptr->hp / 2) {
             auto *o_ptr = choose_warning_item(player_ptr);
             std::string item_name;
             if (o_ptr != nullptr) {

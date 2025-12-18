@@ -148,9 +148,9 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b((int16_t)player_ptr->oldpy);
 
     wr_s16b(0);
-    wr_s32b(player_ptr->mhp);
-    wr_s32b(player_ptr->chp);
-    wr_u32b(player_ptr->chp_frac);
+    wr_s32b(player_ptr->maxhp);
+    wr_s32b(player_ptr->hp);
+    wr_u32b(player_ptr->hp_frac);
     wr_s32b(player_ptr->dealt_damage); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
     wr_s32b(player_ptr->msp);
     wr_s32b(player_ptr->csp);

@@ -610,7 +610,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->obvious = true;
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (monap_ptr->damage * 2 > randint1(p_ptr->chp)) {
+        if (monap_ptr->damage * 2 > randint1(p_ptr->hp)) {
             player_defecate(player_ptr);
         }
         break;
@@ -639,7 +639,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 
         // ダメージ量の最大HPに対する比率を計算
-        int damage_ratio = (monap_ptr->damage * 100) / player_ptr->mhp;
+        int damage_ratio = (monap_ptr->damage * 100) / player_ptr->maxhp;
 
         // 20%以上のダメージで肛門破壊の変異発生判定
         if (damage_ratio >= 20) {

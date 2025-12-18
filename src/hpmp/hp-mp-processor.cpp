@@ -383,7 +383,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         auto should_damage = !is_invuln(player_ptr);
         should_damage &= player_ptr->wraith_form == 0;
         should_damage &= player_ptr->tim_pass_wall == 0;
-        should_damage &= (player_ptr->chp > (player_ptr->lev / 5)) || !has_pass_wall(player_ptr);
+        should_damage &= (player_ptr->hp > (player_ptr->lev / 5)) || !has_pass_wall(player_ptr);
         if (should_damage) {
             concptr dam_desc;
             cave_no_regen = true;
@@ -473,7 +473,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     }
 
     regen_amount = (regen_amount * player_ptr->mutant_regenerate_mod) / 100;
-    if ((player_ptr->chp < player_ptr->mhp) && !cave_no_regen) {
+    if ((player_ptr->hp < player_ptr->maxhp) && !cave_no_regen) {
         regenhp(player_ptr, regen_amount);
     }
 }
@@ -497,15 +497,15 @@ bool hp_player(PlayerType *player_ptr, int num)
         }
     }
 
-    if (player_ptr->chp < player_ptr->mhp) {
-        if ((num > 0) && (player_ptr->chp < (player_ptr->mhp / 3))) {
+    if (player_ptr->hp < player_ptr->maxhp) {
+        if ((num > 0) && (player_ptr->hp < (player_ptr->maxhp / 3))) {
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
         }
 
-        player_ptr->chp += num;
-        if (player_ptr->chp >= player_ptr->mhp) {
-            player_ptr->chp = player_ptr->mhp;
-            player_ptr->chp_frac = 0;
+        player_ptr->hp += num;
+        if (player_ptr->hp >= player_ptr->maxhp) {
+            player_ptr->hp = player_ptr->maxhp;
+            player_ptr->hp_frac = 0;
         }
 
         auto &rfu = RedrawingFlagsUpdater::get_instance();
