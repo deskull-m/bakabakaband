@@ -38,6 +38,12 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
     monster.mtimed[MonsterTimedEffect::SLEEP] = any_bits(flags, SaveDataMonsterFlagType::SLEEP) ? rd_s16b() : 0;
     monster.speed = rd_byte();
     monster.energy_need = rd_s16b();
+    if (loading_savefile_version_is_older_than(38)) {
+        MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(monster.r_idx);
+        monster.ac = r_ptr->ac;
+    } else {
+        monster.ac = rd_s16b();
+    }
     monster.mtimed[MonsterTimedEffect::FAST] = any_bits(flags, SaveDataMonsterFlagType::FAST) ? rd_byte() : 0;
     monster.mtimed[MonsterTimedEffect::SLOW] = any_bits(flags, SaveDataMonsterFlagType::SLOW) ? rd_byte() : 0;
     monster.mtimed[MonsterTimedEffect::STUN] = any_bits(flags, SaveDataMonsterFlagType::STUNNED) ? rd_byte() : 0;

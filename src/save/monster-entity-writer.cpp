@@ -40,6 +40,7 @@ void MonsterEntityWriter::write_to_savedata() const
 
     wr_byte((byte)this->monster.speed);
     wr_s16b(this->monster.energy_need);
+    wr_s16b(this->monster.ac);
     this->write_monster_info(flags);
 }
 

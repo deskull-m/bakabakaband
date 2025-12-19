@@ -488,6 +488,12 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     m_ptr->set_individual_speed(floor.inside_arena);
 
+    // Initialize AC from monster race
+    m_ptr->ac = new_monrace.ac;
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        m_ptr->ac += randint1(10) + 5; // +6～+15のACボーナス
+    }
+
     if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
         m_ptr->speed -= randint1(2) + 2;
     }
