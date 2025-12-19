@@ -1,5 +1,6 @@
 #include "target/target-describer.h"
 #include "action/travel-execution.h"
+#include "cmd-visual/cmd-draw.h"
 #include "core/stuff-handler.h"
 #include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
@@ -223,7 +224,10 @@ static void describe_grid_monster(PlayerType *player_ptr, GridExamination *ge_pt
         prt(out_val, 0, 0);
         move_cursor_relative(ge_ptr->y, ge_ptr->x);
         ge_ptr->query = inkey();
-        if (ge_ptr->query != 'r') {
+        if (ge_ptr->query == 'c') {
+            do_cmd_player_status(static_cast<CreatureEntity *>(ge_ptr->m_ptr));
+            return;
+        } else if (ge_ptr->query != 'r') {
             return;
         }
 

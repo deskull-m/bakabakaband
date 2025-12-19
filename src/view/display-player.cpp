@@ -282,8 +282,9 @@ static std::string decide_current_floor(PlayerType *player_ptr)
  * Mode 4 = mutations.
  * Mode 5 = ??? (コード上の定義より6で割った余りは5になりうるが元のコメントに記載なし).
  */
-tl::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
+tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
     auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr) || has_pervert_attraction(player_ptr)) && display_mutations;
     auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
     {

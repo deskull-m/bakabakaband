@@ -134,8 +134,9 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
 /*!
  * @brief プレイヤーのステータス表示
  */
-void do_cmd_player_status(PlayerType *player_ptr)
+void do_cmd_player_status(CreatureEntity *creature_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
     auto page = 0;
     screen_save();
     constexpr auto prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'h' to change mode, or ESC]");

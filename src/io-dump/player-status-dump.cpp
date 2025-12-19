@@ -1,4 +1,5 @@
 #include "io-dump/player-status-dump.h"
+#include "system/player-type-definition.h"
 #include "view/display-player.h"
 #include "view/display-symbol.h"
 
