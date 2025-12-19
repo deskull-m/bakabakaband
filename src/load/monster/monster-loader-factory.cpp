@@ -23,7 +23,6 @@ std::shared_ptr<MonsterLoaderBase> MonsterLoaderFactory::create_loader()
     case MonsterLoaderVersionType::LOAD50:
     case MonsterLoaderVersionType::LOAD51:
         return std::make_shared<MonsterLoader50>();
-        // dummy yet.
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid loader version was specified!");
     }

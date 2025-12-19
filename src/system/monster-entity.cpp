@@ -676,15 +676,10 @@ std::string MonsterEntity::build_attitude_description() const
 
 int MonsterEntity::get_ac() const
 {
-    const auto &monrace = MonraceList::get_instance().get_monrace(this->r_idx);
     if (this->mflag2.has(MonsterConstantFlagType::NAKED)) {
         return 0;
     }
-    auto ac = monrace.ac;
-    if (this->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
-        ac += randint1(10) + 5; // +6～+15のACボーナス
-    }
-    return ac;
+    return this->ac;
 }
 
 // CreatureEntityインターフェースの実装

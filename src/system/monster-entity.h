@@ -55,6 +55,7 @@ public:
     std::string nickname{}; /*!< ペットに与えられた名前 / Monster's Nickname */
     EXP exp{}; /*!< モンスターの現在所持経験値 */
     int16_t level{}; /*!< モンスターの個体レベル（0の場合は種族レベルを使用） / Monster's individual level (0 = use race level) */
+    int ac{}; /*!< モンスターのアーマークラス / Monster's armor class */
 
     /* TODO: クローン、ペット、有効化は意義が異なるので別変数に切り離すこと。save/loadのバージョン更新が面倒そうだけど */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" - Some bit-flags for the "smart" field */
