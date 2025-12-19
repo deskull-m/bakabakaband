@@ -259,7 +259,7 @@ static void update_bonuses(PlayerType *player_ptr)
     BIT_FLAGS old_esp_unique = player_ptr->esp_unique;
     BIT_FLAGS old_see_inv = player_ptr->see_inv;
     BIT_FLAGS old_mighty_throw = player_ptr->mighty_throw;
-    int16_t old_speed = player_ptr->pspeed;
+    int16_t old_speed = static_cast<CreatureEntity &>(*player_ptr).get_speed();
 
     ARMOUR_CLASS old_dis_ac = player_ptr->dis_ac;
     ARMOUR_CLASS old_dis_to_a = player_ptr->dis_to_a;
@@ -328,7 +328,7 @@ static void update_bonuses(PlayerType *player_ptr)
         player_ptr->damage_dice_bonus[i].sides = 0;
     }
 
-    player_ptr->pspeed = PlayerSpeed(player_ptr).get_value();
+    static_cast<CreatureEntity &>(*player_ptr).set_speed(PlayerSpeed(player_ptr).get_value());
     player_ptr->see_infra = PlayerInfravision(player_ptr).get_value();
     player_ptr->skill_stl = PlayerStealth(player_ptr).get_value();
     player_ptr->skill_dis = calc_disarming(player_ptr);
@@ -388,7 +388,7 @@ static void update_bonuses(PlayerType *player_ptr)
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     }
 
-    if (player_ptr->pspeed != old_speed) {
+    if (static_cast<CreatureEntity &>(*player_ptr).get_speed() != old_speed) {
         rfu.set_flag(MainWindowRedrawingFlag::SPEED);
     }
 

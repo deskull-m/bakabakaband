@@ -308,7 +308,7 @@ static void calc_blow_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *mo
 
 static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (player_ptr->effects()->acceleration().is_fast() || (player_ptr->pspeed >= 130)) {
+    if (player_ptr->effects()->acceleration().is_fast() || (static_cast<CreatureEntity &>(*player_ptr).get_speed() >= 130)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 

@@ -288,11 +288,6 @@ int PlayerType::get_max_hp() const
     return this->maxhp;
 }
 
-int PlayerType::get_speed() const
-{
-    return this->pspeed;
-}
-
 bool PlayerType::is_valid() const
 {
     return true; // プレイヤーは常に有効

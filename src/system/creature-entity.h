@@ -73,7 +73,19 @@ public:
      * @brief クリーチャーの速度を取得
      * @return 速度値
      */
-    virtual int get_speed() const = 0;
+    virtual int get_speed() const
+    {
+        return this->speed;
+    }
+
+    /*!
+     * @brief クリーチャーの速度を設定
+     * @param new_speed 速度値
+     */
+    virtual void set_speed(int new_speed)
+    {
+        this->speed = new_speed;
+    }
 
     /*!
      * @brief クリーチャーが有効（生存中）かどうかを判定
@@ -206,4 +218,7 @@ public:
 
     // エネルギー関連
     ACTION_ENERGY energy_need{}; /*!< 次の行動までに必要なエネルギー / Energy needed for next move */
+
+    // 速度関連
+    int speed{}; /*!< クリーチャーの速度 / Creature speed */
 };

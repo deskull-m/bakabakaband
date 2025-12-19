@@ -284,7 +284,7 @@ bool MonsterEntity::is_invulnerable() const
  */
 byte MonsterEntity::get_temporary_speed() const
 {
-    auto speed = this->mspeed;
+    auto speed = this->speed;
     if (ironman_nightmare) {
         speed += 5;
     }
@@ -306,6 +306,15 @@ byte MonsterEntity::get_temporary_speed() const
     }
 
     return speed;
+}
+
+/*!
+ * @brief モンスターの基本速度を取得
+ * @return 基本速度値
+ */
+int MonsterEntity::get_speed() const
+{
+    return this->speed;
 }
 
 /*!
@@ -475,7 +484,7 @@ void MonsterEntity::set_individual_speed(bool force_fixed_speed)
         speed = STANDARD_SPEED + 99;
     }
 
-    this->mspeed = speed;
+    this->speed = speed;
 }
 
 void MonsterEntity::set_position(const Pos2D &pos)
@@ -697,11 +706,6 @@ int MonsterEntity::get_current_hp() const
 int MonsterEntity::get_max_hp() const
 {
     return this->maxhp;
-}
-
-int MonsterEntity::get_speed() const
-{
-    return this->mspeed;
 }
 
 FloorType *MonsterEntity::get_floor() const

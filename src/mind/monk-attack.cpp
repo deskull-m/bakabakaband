@@ -210,9 +210,9 @@ static void process_attack_vital_spot(PlayerType *player_ptr, player_attack_type
 
     if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + player_ptr->to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
         const auto is_unique = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
-        if (is_unique && (randint1(player_ptr->lev) > monrace.level) && (pa_ptr->m_ptr->mspeed > STANDARD_SPEED - 50)) {
+        if (is_unique && (randint1(player_ptr->lev) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
             msg_format(_("%s^は足をひきずり始めた。", "You've hobbled %s."), pa_ptr->m_name);
-            pa_ptr->m_ptr->mspeed -= 10;
+            pa_ptr->m_ptr->speed -= 10;
         }
     }
 }

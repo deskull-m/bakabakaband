@@ -360,8 +360,6 @@ public:
     byte tval_xtra{}; /* (Unused)Correct xtra tval */
     ItemKindType tval_ammo{}; /* Correct ammo tval */
 
-    int16_t pspeed{}; /*!< 現在の速度 / Current speed */
-
     ENERGY energy_use{}; /*!< 直近のターンに消費したエネルギー / Energy use this turn */
 
     GAME_TEXT name[32]{}; /*!< 現在のプレイヤー名 / Current player's character name */
@@ -390,7 +388,7 @@ public:
     POSITION get_y() const override;
     int get_current_hp() const override;
     int get_max_hp() const override;
-    int get_speed() const override;
+
     bool is_valid() const override;
     bool is_dead() const override;
     FloorType *get_floor() const override;

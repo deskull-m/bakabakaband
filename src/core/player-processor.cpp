@@ -137,7 +137,7 @@ void process_player(PlayerType *player_ptr)
         WorldTurnProcessor(player_ptr).print_cheat_position();
 
     } else if (!(load && player_ptr->energy_need <= 0)) {
-        player_ptr->energy_need -= speed_to_energy(player_ptr->pspeed);
+        player_ptr->energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
     }
 
     if (player_ptr->energy_need > 0) {
@@ -439,7 +439,7 @@ void process_player(PlayerType *player_ptr)
 void process_upkeep_with_speed(PlayerType *player_ptr)
 {
     if (!load && player_ptr->enchant_energy_need > 0 && !player_ptr->leaving) {
-        player_ptr->enchant_energy_need -= speed_to_energy(player_ptr->pspeed);
+        player_ptr->enchant_energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
     }
 
     if (player_ptr->enchant_energy_need > 0) {

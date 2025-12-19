@@ -425,7 +425,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int 
      * - Varying speed effects
      * - Get a fraction in proportion of damage point
      */
-    auto new_exp = monrace.level * speed_to_energy(monster.mspeed) * exp_dam;
+    auto new_exp = monrace.level * speed_to_energy(monster.speed) * exp_dam;
     auto new_exp_frac = 0U;
     auto div_h = 0;
     auto div_l = (uint)((this->player_ptr->max_plv + 2) * speed_to_energy(monrace.speed));

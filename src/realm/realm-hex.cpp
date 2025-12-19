@@ -210,7 +210,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         }
 
         if (cast) {
-            int a = 3 - (player_ptr->pspeed - 100) / 10;
+            int a = 3 - (static_cast<CreatureEntity &>(*player_ptr).get_speed() - 100) / 10;
             byte r = 3 + randint1(3) + std::max(0, std::min(3, a));
 
             if (spell_hex.get_revenge_turn() > 0) {
@@ -694,7 +694,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 
         if (cast) {
             byte r;
-            int a = 3 - (player_ptr->pspeed - 100) / 10;
+            int a = 3 - (static_cast<CreatureEntity &>(*player_ptr).get_speed() - 100) / 10;
             r = 1 + randint1(2) + std::max(0, std::min(3, a));
 
             if (spell_hex.get_revenge_turn() > 0) {

@@ -38,7 +38,7 @@ void MonsterEntityWriter::write_to_savedata() const
         wr_s16b(this->monster.mtimed.at(MonsterTimedEffect::SLEEP));
     }
 
-    wr_byte((byte)this->monster.mspeed);
+    wr_byte((byte)this->monster.speed);
     wr_s16b(this->monster.energy_need);
     this->write_monster_info(flags);
 }

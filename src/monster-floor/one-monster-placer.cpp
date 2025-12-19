@@ -489,19 +489,19 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     m_ptr->set_individual_speed(floor.inside_arena);
 
     if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
-        m_ptr->mspeed -= randint1(2) + 2;
+        m_ptr->speed -= randint1(2) + 2;
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
-        m_ptr->mspeed -= randint1(3);
+        m_ptr->speed -= randint1(3);
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
-        m_ptr->mspeed += randint1(2) + 1;
+        m_ptr->speed += randint1(2) + 1;
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
-        m_ptr->mspeed += randint1(5) + 3; // +3～+7の加速ボーナス
+        m_ptr->speed += randint1(5) + 3; // +3～+7の加速ボーナス
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
-        m_ptr->mspeed += randint1(3) + 2; // +2～+4の加速ボーナス
+        m_ptr->speed += randint1(3) + 2; // +2～+4の加速ボーナス
     }
 
     if (any_bits(mode, PM_HASTE)) {
