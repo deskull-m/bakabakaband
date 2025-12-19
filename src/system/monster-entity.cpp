@@ -709,16 +709,6 @@ FloorType *MonsterEntity::get_floor() const
     return this->current_floor_ptr;
 }
 
-ACTION_ENERGY MonsterEntity::get_energy_need() const
-{
-    return this->energy_need;
-}
-
-void MonsterEntity::set_energy_need(ACTION_ENERGY energy)
-{
-    this->energy_need = energy;
-}
-
 int MonsterEntity::get_level() const
 {
     // 個体レベルが設定されていればそれを使用、未設定なら種族レベルを使用

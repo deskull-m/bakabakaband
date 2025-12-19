@@ -91,8 +91,8 @@ void reset_tim_flags(PlayerType *player_ptr)
     player_ptr->special_attack = 0L;
     player_ptr->special_defense = 0L;
 
-    while (player_ptr->energy_need < 0) {
-        player_ptr->energy_need += ENERGY_NEED();
+    while (static_cast<CreatureEntity &>(*player_ptr).get_energy_need() < 0) {
+        static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());
     }
 
     player_ptr->timewalk = false;

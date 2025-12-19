@@ -308,16 +308,6 @@ FloorType *PlayerType::get_floor() const
     return this->current_floor_ptr;
 }
 
-ACTION_ENERGY PlayerType::get_energy_need() const
-{
-    return this->energy_need;
-}
-
-void PlayerType::set_energy_need(ACTION_ENERGY energy)
-{
-    this->energy_need = energy;
-}
-
 int PlayerType::get_level() const
 {
     return this->lev;
