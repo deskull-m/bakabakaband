@@ -89,8 +89,12 @@ static void display_player_basic_info(PlayerType *player_ptr)
 {
     display_player_name(player_ptr);
     display_player_one_line(ENTRY_SEX, sp_ptr->title, TERM_L_BLUE);
-    display_player_one_line(ENTRY_RACE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), TERM_L_BLUE);
-    display_player_one_line(ENTRY_CLASS, (*player_ptr->pclass_ref).title, TERM_L_BLUE);
+    if (player_ptr->race != nullptr) {
+        display_player_one_line(ENTRY_RACE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), TERM_L_BLUE);
+    }
+    if (player_ptr->pclass_ref != nullptr) {
+        display_player_one_line(ENTRY_CLASS, (*player_ptr->pclass_ref).title, TERM_L_BLUE);
+    }
 }
 
 /*!
@@ -296,7 +300,9 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     }
 
     display_player_basic_info(player_ptr);
-    display_magic_realms(player_ptr);
+    if (creature_ptr->is_player()) {
+        display_magic_realms(player_ptr);
+    }
     if (PlayerClass(player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[player_ptr->patron].name, TERM_L_BLUE);
     }
@@ -314,7 +320,9 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     display_player_stats(player_ptr);
     if (mode == 0) {
         display_player_middle(player_ptr);
-        display_player_various(player_ptr);
+        if (creature_ptr->is_player()) {
+            display_player_various(player_ptr);
+        }
         return tl::nullopt;
     }
 

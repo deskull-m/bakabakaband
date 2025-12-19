@@ -22,6 +22,12 @@ MonsterEntity::MonsterEntity()
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
         this->mtimed[mte] = 0;
     }
+
+    // CreatureEntityの基本メンバーを初期化
+    this->r_idx = MonraceId::PLAYER; // デフォルトはプレイヤー（無効な状態）
+    this->ap_r_idx = MonraceId::PLAYER;
+    this->patron = 0; // パトロンなし
+    this->current_floor_ptr = nullptr;
 }
 
 /*!
