@@ -216,6 +216,9 @@ public:
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
     EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
 
+    // パトロン関連（主にカオス戦士用、モンスターでは未使用）
+    int16_t patron{}; /*!< カオスパトロンのID / Chaos patron ID */
+
     // エネルギー関連
     ACTION_ENERGY energy_need{}; /*!< 次の行動までに必要なエネルギー / Energy needed for next move */
 
