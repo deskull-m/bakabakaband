@@ -3,8 +3,8 @@
 "monsters": [{
     "id": 0,
     "name": {
-        "ja": "プレイヤー",
-        "en": "Player"
+        "ja": "〈烙印者〉",
+        "en": "*Stigmatic*"
     },
     "symbol": {
         "character": "@",

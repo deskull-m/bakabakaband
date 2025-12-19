@@ -31,6 +31,8 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -296,6 +298,15 @@ tl::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
     display_magic_realms(player_ptr);
     if (PlayerClass(player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[player_ptr->patron].name, TERM_L_BLUE);
+    }
+
+    // 実際の種族と見かけの種族を表示
+    const auto &actual_monrace = MonraceList::get_instance().get_monrace(player_ptr->r_idx);
+    display_player_one_line(ENTRY_ACTUAL_RACE, actual_monrace.name, TERM_L_GREEN);
+    if (player_ptr->r_idx != player_ptr->ap_r_idx) {
+        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(player_ptr->ap_r_idx);
+        auto color = (player_ptr->r_idx == player_ptr->ap_r_idx) ? TERM_L_GREEN : TERM_YELLOW;
+        display_player_one_line(ENTRY_APPARENT_RACE, apparent_monrace.name, color);
     }
 
     display_phisique(player_ptr);

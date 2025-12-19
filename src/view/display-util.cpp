@@ -62,6 +62,8 @@ const std::vector<disp_player_line> disp_player_lines = {
     { 53, 19, -1, _("掘削      :", "Digging    : ") },
     { 29, 8, 21, _("死亡回数", "Dead") },
     { 29, 21, 21, _("時空崩壊度", "W. Collapse") },
+    { 26, 0, -1, _("種   : ", "Category : ") },
+    { 26, 2, -1, _("擬態   : ", "App.Category : ") },
 };
 }
 

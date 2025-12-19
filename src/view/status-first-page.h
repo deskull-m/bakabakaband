@@ -52,6 +52,8 @@
 
 #define ENTRY_DEATH_COUNT 46
 #define ENTRY_WORLD_COLLAPSE 47
+#define ENTRY_ACTUAL_RACE 48
+#define ENTRY_APPARENT_RACE 49
 
 class PlayerType;
 void display_player_various(PlayerType *player_ptr);
