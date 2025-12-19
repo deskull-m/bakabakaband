@@ -44,7 +44,6 @@ public:
 
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
-    byte mspeed{}; /*!< モンスターの個体加速値 / Monster "speed" */
 
     POSITION cdis{}; /*!< 現在のプレイヤーから距離(逐一計算を避けるためのテンポラリ変数) Current dis from player */
     EnumClassFlagGroup<MonsterTemporaryFlagType> mflag{}; /*!< モンスター個体に与えられた特殊フラグ1 (セーブ不要) / Extra monster flags */
@@ -95,6 +94,7 @@ public:
     bool is_fearful() const;
     bool is_invulnerable() const;
     byte get_temporary_speed() const;
+    int get_speed() const override;
     bool has_living_flag(bool is_apperance = false) const;
     bool has_demon_flag(bool is_apperance = false) const;
     bool has_undead_flag(bool is_apperance = false) const;
@@ -127,7 +127,7 @@ public:
     POSITION get_y() const override;
     int get_current_hp() const override;
     int get_max_hp() const override;
-    int get_speed() const override;
+
     bool is_valid() const override;
     bool is_dead() const override;
     FloorType *get_floor() const override;

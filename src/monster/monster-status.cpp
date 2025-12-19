@@ -148,7 +148,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
         auto d = (monster.cdis < MAX_MONSTER_SENSING / 2) ? (MAX_MONSTER_SENSING / monster.cdis) : 1;
 
         /* Hack -- amount of "waking" is affected by speed of player */
-        d = (d * speed_to_energy(player_ptr->pspeed)) / 10;
+        d = (d * speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed())) / 10;
         if (d < 0) {
             d = 1;
         }

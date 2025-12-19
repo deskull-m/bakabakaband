@@ -325,7 +325,7 @@ void display_player_middle(PlayerType *player_ptr)
     display_shoot_magnification(player_ptr);
     display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", player_ptr->dis_ac, player_ptr->dis_to_a), TERM_L_BLUE);
 
-    int base_speed = player_ptr->pspeed - 110;
+    int base_speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - 110;
     if (player_ptr->action == ACTION_SEARCH) {
         base_speed += 10;
     }

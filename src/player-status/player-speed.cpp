@@ -277,13 +277,13 @@ int16_t PlayerSpeed::mutation_bonus()
 int16_t PlayerSpeed::riding_bonus()
 {
     const auto &monster = (this->player_ptr)->current_floor_ptr->m_list[this->player_ptr->riding];
-    int16_t speed = monster.mspeed;
+    int16_t speed = monster.speed;
     int16_t bonus = 0;
     if (!this->player_ptr->riding) {
         return 0;
     }
 
-    if (monster.mspeed > STANDARD_SPEED) {
+    if (monster.speed > STANDARD_SPEED) {
         const auto skill_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
         bonus = (int16_t)((speed - STANDARD_SPEED) * (skill_exp * 3 + this->player_ptr->lev * 160L - 10000L) / (22000L));
         if (bonus < 0) {

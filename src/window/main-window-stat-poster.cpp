@@ -262,7 +262,7 @@ void print_speed(PlayerType *player_ptr)
     auto col_speed = wid + COL_SPEED;
     auto row_speed = hgt + ROW_SPEED;
 
-    const auto speed = player_ptr->pspeed - STANDARD_SPEED;
+    const auto speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - STANDARD_SPEED;
     const auto &floor = *player_ptr->current_floor_ptr;
     bool is_player_fast = is_fast(player_ptr);
     char buf[32] = "";

@@ -905,7 +905,7 @@ void sweep_monster_process(PlayerType *player_ptr)
             continue;
         }
 
-        byte speed = monster.is_riding() ? player_ptr->pspeed : monster.get_temporary_speed();
+        byte speed = monster.is_riding() ? static_cast<CreatureEntity &>(*player_ptr).get_speed() : monster.get_temporary_speed();
         monster.energy_need -= speed_to_energy(speed);
         if (monster.energy_need > 0) {
             continue;

@@ -108,7 +108,7 @@ static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Dire
 
     auto &monster = player_ptr->current_floor_ptr->m_list[*m_idx];
     if (item.captured_monster_speed > 0) {
-        monster.mspeed = item.captured_monster_speed;
+        monster.speed = item.captured_monster_speed;
     }
 
     if (item.captured_monster_max_hp) {
