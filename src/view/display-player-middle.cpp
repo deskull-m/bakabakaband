@@ -184,6 +184,9 @@ static TERM_COLOR decide_speed_color(PlayerType *player_ptr, const int base_spee
  */
 static int calc_temporary_speed(PlayerType *player_ptr)
 {
+    if (!player_ptr->is_player()) {
+        return 0;
+    }
     int tmp_speed = 0;
     if (!player_ptr->riding) {
         if (is_fast(player_ptr)) {
@@ -316,13 +319,15 @@ static void display_playtime_in_game(PlayerType *player_ptr)
  */
 void display_player_middle(PlayerType *player_ptr)
 {
-    if (can_attack_with_main_hand(player_ptr)) {
-        display_player_melee_bonus(player_ptr, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
-    }
+    if (player_ptr->is_player()) {
+        if (can_attack_with_main_hand(player_ptr)) {
+            display_player_melee_bonus(player_ptr, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
+        }
 
-    display_sub_hand(player_ptr);
-    display_bow_hit_damage(player_ptr);
-    display_shoot_magnification(player_ptr);
+        display_sub_hand(player_ptr);
+        display_bow_hit_damage(player_ptr);
+        display_shoot_magnification(player_ptr);
+    }
     display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", player_ptr->dis_ac, player_ptr->dis_to_a), TERM_L_BLUE);
 
     int base_speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - 110;
