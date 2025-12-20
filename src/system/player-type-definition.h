@@ -82,8 +82,6 @@ public:
     std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
     std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
-    PRICE au{}; /* Current Gold */
-
     PLAYER_LEVEL lev{}; /* Level */
 
     int16_t town_num{}; /* Current town number */
