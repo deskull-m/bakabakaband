@@ -17,7 +17,7 @@
 void display_player_name(PlayerType *player_ptr, bool name_only)
 {
     std::stringstream ss;
-    if (!name_only) {
+    if (!name_only && player_ptr->personality != nullptr) {
         ss << (*player_ptr->personality).title << _((*player_ptr->personality).no == 1 ? "の" : "", " ");
     }
     ss << player_ptr->name;

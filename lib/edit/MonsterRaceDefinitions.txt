@@ -186,9 +186,9 @@ V:2.8.1
 ##### The Player #####
 
 #J0#
-N:0:プレイヤー
+N:0:〈烙印者〉
 I:0:1d1:0:0:0
-E:Player
+E:*Stigmatic*
 G:@:w
 
 ##### Town monsters #####
