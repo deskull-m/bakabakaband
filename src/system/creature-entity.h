@@ -224,4 +224,7 @@ public:
 
     // 速度関連
     int speed{}; /*!< クリーチャーの速度 / Creature speed */
+
+    // 所持金関連
+    PRICE au{}; /*!< 所持金 / Current Gold */
 };
