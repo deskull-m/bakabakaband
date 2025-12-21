@@ -1,6 +1,5 @@
 #include "alliance/alliance-frieza-clan.h"
 #include "alliance/alliance.h"
-#include "game-option/birth-options.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -15,10 +14,7 @@ int AllianceFriezaClan::calcImpressionPoint(PlayerType *creature_ptr) const
     int impression = 0;
     // 宇宙の帝王として、高レベルの強者を重視
     impression += Alliance::calcPlayerPower(*creature_ptr, 25, 30);
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        impression -= 10000;
-    }
+    impression += calcIronmanHostilityPenalty();
 
     return impression;
 }

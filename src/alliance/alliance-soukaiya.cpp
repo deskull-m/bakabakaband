@@ -11,7 +11,6 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-#include "game-option/birth-options.h"
 int AllianceSoukaiya::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     // プレイヤーレベルによる基本印象値

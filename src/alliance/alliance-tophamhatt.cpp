@@ -10,7 +10,6 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-#include "game-option/birth-options.h"
 int AllianceTophamHatt::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     auto impression = Alliance::calcPlayerPower(*creature_ptr, 10, 5);

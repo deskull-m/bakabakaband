@@ -1,5 +1,4 @@
 #include "alliance/alliance-avarin-lords.h"
-#include "game-option/birth-options.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -9,10 +8,7 @@ int AllianceAvarinLords::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 23);
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        impression -= 10000;
-    }
+    impression += calcIronmanHostilityPenalty();
 
     // アヴァリ諸侯同盟のモンスター撃破による印象値低下
     const auto &monrace_list = MonraceList::get_instance();

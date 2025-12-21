@@ -136,6 +136,7 @@ public:
 
 protected:
     static int calcPlayerPower(PlayerType const &player_ptr, const int bias, const int base_level);
+    static int calcIronmanHostilityPenalty();
 };
 
 // 分離されたアライアンスクラスのインクルード

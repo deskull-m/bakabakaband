@@ -72,6 +72,7 @@
 #include "alliance/alliance-xiombarg.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
+#include "game-option/birth-options.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/race-kind-flags.h"
@@ -185,6 +186,18 @@ int Alliance::calcPlayerPower(PlayerType const &player_ptr, const int bias, cons
         return 0;
     }
     return (2000 + 10 * (player_ptr.level - min_level + 1) * (player_ptr.level - min_level + 1)) * bias / 100;
+}
+
+/*!
+ * @brief 鉄人モードの敵対ペナルティを計算する
+ * @return 鉄人モード時は-10000、それ以外は0
+ */
+int Alliance::calcIronmanHostilityPenalty()
+{
+    if (ironman_alliance_hostility) {
+        return -10000;
+    }
+    return 0;
 }
 
 void Alliance::panishment([[maybe_unused]] PlayerType &player_ptr)

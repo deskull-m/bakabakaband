@@ -1,6 +1,5 @@
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance.h"
-#include "game-option/birth-options.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -13,10 +12,7 @@
 int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     int impression = 0;
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        impression -= 10000;
-    }
+    impression += calcIronmanHostilityPenalty();
 
     // TODO: クッキーババアの価値観に基づく印象ポイント計算を実装
     return impression;

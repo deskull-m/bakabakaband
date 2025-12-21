@@ -1,5 +1,4 @@
 #include "alliance/alliance-anor-londo.h"
-#include "game-option/birth-options.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -18,10 +17,7 @@ int AllianceAnorLondo::calcImpressionPoint(PlayerType *creature_ptr) const
 
     int base_stat = (creature_ptr->stat_max[A_INT] + creature_ptr->stat_max[A_CHR]) / 2;
     int impression = base_stat + bias + creature_ptr->level / level;
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        impression -= 10000;
-    }
+    impression += calcIronmanHostilityPenalty();
 
     // 最低値保証
     if (impression < 1) {

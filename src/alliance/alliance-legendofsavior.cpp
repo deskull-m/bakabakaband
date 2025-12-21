@@ -15,7 +15,6 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-#include "game-option/birth-options.h"
 int AllianceLegendOfSavior::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     auto impression = 0;
