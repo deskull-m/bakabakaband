@@ -1,5 +1,4 @@
 #include "alliance/alliance-angartha.h"
-#include "game-option/birth-options.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -9,10 +8,7 @@ int AllianceAngartha::calcImpressionPoint([[maybe_unused]] PlayerType *creature_
 {
     int impression = 0;
     impression += Alliance::calcPlayerPower(*creature_ptr, 11, 20);
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        impression -= 10000;
-    }
+    impression += calcIronmanHostilityPenalty();
 
     return impression;
 }

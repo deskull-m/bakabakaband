@@ -15,7 +15,6 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 
-#include "game-option/birth-options.h"
 int AllianceSexyCommandoClub::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     int point = 0;

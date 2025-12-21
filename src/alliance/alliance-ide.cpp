@@ -6,7 +6,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
-#include "game-option/birth-options.h"
 /*!
  * @brief イデのアライアンス印象値を計算する
  * 無限力の存在として、INTとWISをベースとした印象値計算を行う
