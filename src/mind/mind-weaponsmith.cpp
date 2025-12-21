@@ -483,7 +483,7 @@ static void add_essence(PlayerType *player_ptr, SmithCategoryType mode)
 
         add_essence_count = o_ptr->pval;
     } else if (effect == SmithEffectType::SLAY_GLOVE) {
-        const auto max_val = player_ptr->lev / 7 + 3;
+        const auto max_val = player_ptr->level / 7 + 3;
         const auto num_enchants = input_numerics(prompt, 1, max_val, 1);
         if (!num_enchants.has_value()) {
             return;

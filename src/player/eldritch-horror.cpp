@@ -111,7 +111,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         case PlayerRaceLifeType::DEMON:
             return;
         case PlayerRaceLifeType::UNDEAD:
-            if (evaluate_percent(25 + player_ptr->lev)) {
+            if (evaluate_percent(25 + player_ptr->level)) {
                 return;
             }
             break;
@@ -156,12 +156,12 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         monrace.r_misc_flags.set(MonsterMiscType::ELDRITCH_HORROR);
         switch (PlayerRace(player_ptr).life()) {
         case PlayerRaceLifeType::DEMON:
-            if (evaluate_percent(20 + player_ptr->lev)) {
+            if (evaluate_percent(20 + player_ptr->level)) {
                 return;
             }
             break;
         case PlayerRaceLifeType::UNDEAD:
-            if (evaluate_percent(10 + player_ptr->lev)) {
+            if (evaluate_percent(10 + player_ptr->level)) {
                 return;
             }
             break;

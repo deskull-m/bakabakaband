@@ -55,7 +55,7 @@ bool MindPowerGetter::get_mind_power(SPELL_IDX *sn, bool only_browse)
     }
 
     for (this->index = 0; this->index < std::ssize(this->mind_ptr->info); this->index++) {
-        if (mind_ptr->info[this->index].min_lev <= this->player_ptr->lev) {
+        if (mind_ptr->info[this->index].min_lev <= this->player_ptr->level) {
             this->num++;
         }
     }
@@ -140,7 +140,7 @@ bool MindPowerGetter::select_spell_index(SPELL_IDX *sn)
         }
     }
 
-    return mind_ptr->info[*sn].min_lev <= this->player_ptr->lev;
+    return mind_ptr->info[*sn].min_lev <= this->player_ptr->level;
 }
 
 bool MindPowerGetter::decide_mind_choice(std::string_view prompt, const bool only_browse)
@@ -257,7 +257,7 @@ void MindPowerGetter::display_each_mind_chance()
     const auto has_weapon_sub = has_melee_weapon(this->player_ptr, INVEN_SUB_HAND);
     for (this->index = 0; this->index < std::ssize(mind_ptr->info); this->index++) {
         this->spell = &mind_ptr->info[this->index];
-        if (this->spell->min_lev > this->player_ptr->lev) {
+        if (this->spell->min_lev > this->player_ptr->level) {
             break;
         }
 
@@ -288,7 +288,7 @@ void MindPowerGetter::calculate_mind_chance(bool has_weapon_main, bool has_weapo
         return;
     }
 
-    this->chance -= 3 * (this->player_ptr->lev - this->spell->min_lev);
+    this->chance -= 3 * (this->player_ptr->level - this->spell->min_lev);
     this->chance -= 3 * (adj_mag_stat[this->player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
     calculate_ki_chance(has_weapon_main, has_weapon_sub);
     if ((this->use_mind != MindKindType::BERSERKER) && (this->use_mind != MindKindType::NINJUTSU) && (this->mana_cost > this->player_ptr->csp)) {

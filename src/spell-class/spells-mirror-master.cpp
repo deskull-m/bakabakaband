@@ -92,7 +92,7 @@ void SpellsMirrorMaster::remove_all_mirrors(bool explode)
         }
 
         constexpr BIT_FLAGS projection = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI;
-        project(this->player_ptr, 0, 2, pos.y, pos.x, this->player_ptr->lev / 2 + 5, AttributeType::SHARDS, projection);
+        project(this->player_ptr, 0, 2, pos.y, pos.x, this->player_ptr->level / 2 + 5, AttributeType::SHARDS, projection);
     }
 }
 
@@ -157,7 +157,7 @@ bool SpellsMirrorMaster::mirror_concentration()
     }
 
     msg_print(_("少し頭がハッキリした。", "You feel your head clear a little."));
-    this->player_ptr->csp += (5 + this->player_ptr->lev * this->player_ptr->lev / 100);
+    this->player_ptr->csp += (5 + this->player_ptr->level * this->player_ptr->level / 100);
     if (this->player_ptr->csp >= this->player_ptr->msp) {
         this->player_ptr->csp = this->player_ptr->msp;
         this->player_ptr->csp_frac = 0;

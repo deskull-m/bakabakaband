@@ -54,7 +54,7 @@
 bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool powerful, bool magic)
 {
     bool ident = false;
-    PLAYER_LEVEL lev = powerful ? player_ptr->lev * 2 : player_ptr->lev;
+    PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
     POSITION rad = powerful ? 3 : 2;
 
     player_ptr->plus_incident_tree("ZAP_WAND", 1);

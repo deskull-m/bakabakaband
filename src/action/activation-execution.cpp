@@ -192,7 +192,7 @@ static bool activate_artifact(PlayerType *player_ptr, ItemEntity *o_ptr)
         o_ptr->timeout = o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_ICE) ? 200 : 250;
         return true;
     case RandomArtActType::TERROR:
-        o_ptr->timeout = 3 * (player_ptr->lev + 10);
+        o_ptr->timeout = 3 * (player_ptr->level + 10);
         return true;
     case RandomArtActType::MURAMASA:
         return true;
@@ -256,7 +256,7 @@ static bool activate_firethrowing(PlayerType *player_ptr, ae_type *ae_ptr)
     }
 
     msg_print(_("汚物は消毒だあ！", "The filth must be disinfected!"));
-    fire_breath(player_ptr, AttributeType::FIRE, dir, 20 + player_ptr->lev * 5, 2);
+    fire_breath(player_ptr, AttributeType::FIRE, dir, 20 + player_ptr->level * 5, 2);
     return true;
 }
 
@@ -271,7 +271,7 @@ static bool activate_rosmarinus(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    fire_breath(player_ptr, AttributeType::MISSILE, dir, 20 + player_ptr->lev * 5, 2);
+    fire_breath(player_ptr, AttributeType::MISSILE, dir, 20 + player_ptr->level * 5, 2);
     return true;
 }
 
@@ -288,7 +288,7 @@ static bool activate_stungun(PlayerType *player_ptr, ae_type *ae_ptr)
     }
 
     msg_print(_("『バチィ』", "'bzzt'"));
-    fire_ball(player_ptr, AttributeType::STUNGUN, dir, player_ptr->lev, 0);
+    fire_ball(player_ptr, AttributeType::STUNGUN, dir, player_ptr->level, 0);
     project_length = 0;
     return true;
 }
@@ -305,7 +305,7 @@ static bool activate_raygun(PlayerType *player_ptr, ae_type *ae_ptr)
     }
 
     msg_print(_("『ビィーム！』", "'ZAP! ZAP!'"));
-    fire_bolt(player_ptr, AttributeType::MISSILE, dir, 10 + player_ptr->lev * 2);
+    fire_bolt(player_ptr, AttributeType::MISSILE, dir, 10 + player_ptr->level * 2);
     return true;
 }
 

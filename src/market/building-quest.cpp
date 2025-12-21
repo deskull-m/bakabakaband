@@ -111,7 +111,7 @@ void castle_quest(PlayerType *player_ptr)
         (void)inkey();
         prt("", 0, 0);
         msg_erase();
-        record_quest_final_status(&quest, player_ptr->lev, QuestStatusType::FAILED);
+        record_quest_final_status(&quest, player_ptr->level, QuestStatusType::FAILED);
     }
 
     if (quest.status == QuestStatusType::FAILED) {

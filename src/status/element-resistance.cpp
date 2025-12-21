@@ -121,7 +121,7 @@ bool set_oppose_fire(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if ((PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && (player_ptr->lev > 44)) || (player_ptr->mimic_form == MimicKindType::DEMON)) {
+    if ((PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && (player_ptr->level > 44)) || (player_ptr->mimic_form == MimicKindType::DEMON)) {
         v = 1;
     }
     if (v) {
@@ -273,7 +273,7 @@ bool is_oppose_fire(PlayerType *player_ptr)
     can_oppose_fire |= music_singing(player_ptr, MUSIC_RESIST);
     can_oppose_fire |= PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
     can_oppose_fire |= player_ptr->mimic_form == MimicKindType::DEMON;
-    can_oppose_fire |= (PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->lev > 44);
+    can_oppose_fire |= (PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->level > 44);
     return can_oppose_fire;
 }
 

@@ -91,7 +91,7 @@ void wr_player(PlayerType *player_ptr)
     wr_u32b(player_ptr->max_max_exp);
     wr_u32b(player_ptr->exp);
     wr_u32b(player_ptr->exp_frac);
-    wr_s16b(player_ptr->lev);
+    wr_s16b(player_ptr->level);
 
     for (int i = 0; i < 64; i++) {
         wr_s16b(player_ptr->spell_exp[i]);

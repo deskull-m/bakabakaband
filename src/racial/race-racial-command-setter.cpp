@@ -317,28 +317,28 @@ void set_race_racial_command(PlayerType *player_ptr, rc_type *rc_ptr)
         rc_ptr->add_power(rpi, RC_IDX_RACE_0);
         break;
     case PlayerRaceType::ANDROID:
-        if (player_ptr->lev < 10) {
+        if (player_ptr->level < 10) {
             rpi = rpi_type(_("レイガン", "Ray Gun"));
             rpi.info = format("%s%d", KWD_DAM, (rc_ptr->lvl + 1) / 2);
             rpi.text = _("弱い魔法の矢を放つ。", "Fires a weak bolt of magic.");
             rpi.min_level = 1;
             rpi.cost = 7;
             rpi.fail = 8;
-        } else if (player_ptr->lev < 25) {
+        } else if (player_ptr->level < 25) {
             rpi = rpi_type(_("ブラスター", "Blaster"));
             rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl);
             rpi.text = _("弱い魔法の矢を放つ。", "Fires a weak bolt of magic.");
             rpi.min_level = 10;
             rpi.cost = 13;
             rpi.fail = 10;
-        } else if (player_ptr->lev < 35) {
+        } else if (player_ptr->level < 35) {
             rpi = rpi_type(_("バズーカ", "Bazooka"));
             rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
             rpi.text = _("弱い魔法のボールを放つ。", "Fires a weak ball of magic.");
             rpi.min_level = 25;
             rpi.cost = 26;
             rpi.fail = 12;
-        } else if (player_ptr->lev < 45) {
+        } else if (player_ptr->level < 45) {
             rpi = rpi_type(_("ビームキャノン", "Beam Cannon"));
             rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
             rpi.text = _("弱い魔法のビームを放つ。", "Fires a beam of magic.");

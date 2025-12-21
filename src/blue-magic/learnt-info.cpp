@@ -18,7 +18,7 @@
  */
 PLAYER_LEVEL get_pseudo_monstetr_level(PlayerType *player_ptr)
 {
-    PLAYER_LEVEL monster_level = player_ptr->lev + 40;
+    PLAYER_LEVEL monster_level = player_ptr->level + 40;
     return (monster_level * monster_level - 1550) / 130;
 }
 

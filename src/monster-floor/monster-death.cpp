@@ -403,7 +403,7 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
     if (md.r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && md.m_ptr->mflag2.has_not(MonsterConstantFlagType::CLONED)) {
         world.play_time.update();
         md.r_ptr->defeat_time = world.play_time.elapsed_sec();
-        md.r_ptr->defeat_level = player_ptr->lev;
+        md.r_ptr->defeat_level = player_ptr->level;
     }
 
     if (md.r_ptr->brightness_flags.has_any_of(ld_mask)) {

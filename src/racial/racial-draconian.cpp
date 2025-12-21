@@ -12,7 +12,7 @@
 
 static tl::optional<std::pair<AttributeType, std::string>> decide_breath_kind(PlayerType *player_ptr)
 {
-    if (randint1(100) >= player_ptr->lev) {
+    if (randint1(100) >= player_ptr->level) {
         return tl::nullopt;
     }
 
@@ -109,6 +109,6 @@ bool draconian_breath(PlayerType *player_ptr)
 
     stop_mouth(player_ptr);
     msg_format(_("あなたは%sのブレスを吐いた。", "You breathe %s."), breath_type_description.data());
-    fire_breath(player_ptr, breath_type, dir, player_ptr->lev * 2, (player_ptr->lev / 15) + 1);
+    fire_breath(player_ptr, breath_type, dir, player_ptr->level * 2, (player_ptr->level / 15) + 1);
     return true;
 }

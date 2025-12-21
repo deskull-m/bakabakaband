@@ -269,7 +269,7 @@ static bool spell_okay(PlayerType *player_ptr, int spell_id, bool learned, bool 
     const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
     /* Spell is illegal */
-    if (spell.slevel > player_ptr->lev) {
+    if (spell.slevel > player_ptr->level) {
         return false;
     }
 
@@ -935,7 +935,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
             auto flag = false;
             msg_print(_("これ以上新しい呪文を詠唱することはできない。", "Can not cast more spells."));
             flush();
-            if (player_ptr->lev >= 35) {
+            if (player_ptr->level >= 35) {
                 flag = SpellHex(player_ptr).stop_spells_with_selection();
             }
 
@@ -1180,80 +1180,80 @@ bool do_cmd_cast(PlayerType *player_ptr)
         }
         switch (use_realm) {
         case RealmType::LIFE:
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
             }
             break;
         case RealmType::DEATH:
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
             }
             break;
         case RealmType::DAEMON:
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, -1);
             }
             break;
         case RealmType::CRUSADE:
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
             }
             break;
         case RealmType::NATURE:
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
             }
             break;
         case RealmType::HEX:
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
             }
-            if (randint1(100 + player_ptr->lev) < need_mana) {
+            if (randint1(100 + player_ptr->level) < need_mana) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
             }
             break;

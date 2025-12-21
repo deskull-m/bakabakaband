@@ -54,24 +54,24 @@ static int compensate_special_race(PlayerType *player_ptr, int stat_num)
     switch (stat_num) {
     case A_STR:
     case A_CON:
-        if (player_ptr->lev > 25) {
+        if (player_ptr->level > 25) {
             r_adj++;
         }
-        if (player_ptr->lev > 40) {
+        if (player_ptr->level > 40) {
             r_adj++;
         }
-        if (player_ptr->lev > 45) {
+        if (player_ptr->level > 45) {
             r_adj++;
         }
         break;
     case A_DEX:
-        if (player_ptr->lev > 25) {
+        if (player_ptr->level > 25) {
             r_adj--;
         }
-        if (player_ptr->lev > 40) {
+        if (player_ptr->level > 40) {
             r_adj--;
         }
-        if (player_ptr->lev > 45) {
+        if (player_ptr->level > 45) {
             r_adj--;
         }
         break;

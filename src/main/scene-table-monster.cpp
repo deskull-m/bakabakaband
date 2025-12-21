@@ -178,7 +178,7 @@ static bool scene_unknown(PlayerType *player_ptr, scene_type *value)
 
 static bool scene_high_level(PlayerType *player_ptr, scene_type *value)
 {
-    if (scene_target_monster.ap_r_ptr->r_tkills > 0 && (scene_target_monster.ap_r_ptr->level >= player_ptr->lev)) {
+    if (scene_target_monster.ap_r_ptr->r_tkills > 0 && (scene_target_monster.ap_r_ptr->level >= player_ptr->level)) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_HIGHER_LEVEL_MONSTER;
         return true;

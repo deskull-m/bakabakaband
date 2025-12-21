@@ -129,7 +129,7 @@ static ProcessResult check_continue_player_effect(PlayerType *player_ptr, Effect
     }
 
     auto is_effective = ep_ptr->dam > 0;
-    is_effective &= randint0(55) < (player_ptr->lev * 3 / 5 + 20);
+    is_effective &= randint0(55) < (player_ptr->level * 3 / 5 + 20);
     is_effective &= ep_ptr->is_monster();
     is_effective &= !ep_ptr->src_ptr || !ep_ptr->src_ptr->is_riding();
     if (is_effective && kawarimi(player_ptr, true)) {

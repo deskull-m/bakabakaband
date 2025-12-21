@@ -75,7 +75,7 @@ void AvatarChanger::change_virtue_non_beginner()
         chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::VALOUR, 1);
     }
 
-    if (monrace.level >= 2 * (this->player_ptr->lev + 1)) {
+    if (monrace.level >= 2 * (this->player_ptr->level + 1)) {
         chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::VALOUR, 2);
     }
 }

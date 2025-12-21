@@ -103,12 +103,12 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         [[fallthrough]];
     case PlayerClassType::MAGE:
     case PlayerClassType::SORCERER:
-        return eat_magic(player_ptr, player_ptr->lev * 2);
+        return eat_magic(player_ptr, player_ptr->level * 2);
     case PlayerClassType::PRIEST:
         if (!PlayerRealm(player_ptr).realm1().is_good_attribute()) {
-            (void)dispel_monsters(player_ptr, player_ptr->lev * 4);
-            turn_monsters(player_ptr, player_ptr->lev * 4);
-            banish_monsters(player_ptr, player_ptr->lev * 4);
+            (void)dispel_monsters(player_ptr, player_ptr->level * 4);
+            turn_monsters(player_ptr, player_ptr->level * 4);
+            banish_monsters(player_ptr, player_ptr->level * 4);
             return true;
         }
 
@@ -126,7 +126,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             return false;
         }
 
-        fire_beam(player_ptr, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, player_ptr->lev * 3);
+        fire_beam(player_ptr, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, player_ptr->level * 3);
         return true;
     }
     case PlayerClassType::WARRIOR_MAGE:
@@ -190,12 +190,12 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
                 return false;
             }
 
-            (void)fire_ball_hide(player_ptr, AttributeType::CHARM_LIVING, dir, player_ptr->lev, 0);
+            (void)fire_ball_hide(player_ptr, AttributeType::CHARM_LIVING, dir, player_ptr->level, 0);
             return true;
         }
 
         if (command == -4) {
-            project_all_los(player_ptr, AttributeType::CHARM_LIVING, player_ptr->lev);
+            project_all_los(player_ptr, AttributeType::CHARM_LIVING, player_ptr->level);
         }
 
         return true;
@@ -261,7 +261,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     case PlayerClassType::BERSERKER:
         return recall_player(player_ptr, randint0(21) + 15);
     case PlayerClassType::SMITH:
-        if (player_ptr->lev <= 29) {
+        if (player_ptr->level <= 29) {
             return ident_spell(player_ptr, true);
         }
 
@@ -318,7 +318,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
         msg_print(_("社会的抹殺ボルトを放った！", "You fire a social genocide bolt!"));
-        fire_bolt(player_ptr, AttributeType::SOCIAL_GENOCIDE, dir, player_ptr->lev * 2);
+        fire_bolt(player_ptr, AttributeType::SOCIAL_GENOCIDE, dir, player_ptr->level * 2);
         return true;
     }
 
@@ -341,7 +341,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         return true;
     case PlayerRaceType::HALF_TROLL:
         msg_print(_("うがぁぁ！", "RAAAGH!"));
-        (void)berserk(player_ptr, 10 + randint1(player_ptr->lev));
+        (void)berserk(player_ptr, 10 + randint1(player_ptr->level));
         return true;
     case PlayerRaceType::AMBERITE:
         if (command == -1) {
@@ -361,7 +361,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         return true;
     case PlayerRaceType::BARBARIAN:
         msg_print(_("うぉぉおお！", "Raaagh!"));
-        (void)berserk(player_ptr, 10 + randint1(player_ptr->lev));
+        (void)berserk(player_ptr, 10 + randint1(player_ptr->level));
         return true;
     case PlayerRaceType::HALF_OGRE:
         msg_print(_("爆発のルーンを慎重に仕掛けた...", "You carefully set an explosive rune..."));
@@ -387,7 +387,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("巨大な岩を投げた。", "You throw a huge boulder."));
-        (void)fire_bolt(player_ptr, AttributeType::MISSILE, dir, (3 * player_ptr->lev) / 2);
+        (void)fire_bolt(player_ptr, AttributeType::MISSILE, dir, (3 * player_ptr->level) / 2);
         return true;
     }
     case PlayerRaceType::YEEK: {
@@ -398,7 +398,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
 
         stop_mouth(player_ptr);
         msg_print(_("身の毛もよだつ叫び声を上げた！", "You make a horrible scream!"));
-        (void)fear_monster(player_ptr, dir, player_ptr->lev);
+        (void)fear_monster(player_ptr, dir, player_ptr->level);
         return true;
     }
     case PlayerRaceType::KLACKON: {
@@ -409,10 +409,10 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
 
         stop_mouth(player_ptr);
         msg_print(_("酸を吐いた。", "You spit acid."));
-        if (player_ptr->lev < 25) {
-            (void)fire_bolt(player_ptr, AttributeType::ACID, dir, player_ptr->lev);
+        if (player_ptr->level < 25) {
+            (void)fire_bolt(player_ptr, AttributeType::ACID, dir, player_ptr->level);
         } else {
-            (void)fire_ball(player_ptr, AttributeType::ACID, dir, player_ptr->lev, 2);
+            (void)fire_ball(player_ptr, AttributeType::ACID, dir, player_ptr->level, 2);
         }
 
         return true;
@@ -424,7 +424,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("毒のダーツを投げた。", "You throw a poisoned dart."));
-        (void)fire_bolt(player_ptr, AttributeType::POIS, dir, player_ptr->lev);
+        (void)fire_bolt(player_ptr, AttributeType::POIS, dir, player_ptr->level);
         return true;
     }
     case PlayerRaceType::NIBELUNG:
@@ -440,7 +440,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("マジック・ミサイルを放った。", "You cast a magic missile."));
-        (void)fire_bolt_or_beam(player_ptr, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((player_ptr->lev - 1) / 5), 4));
+        (void)fire_bolt_or_beam(player_ptr, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((player_ptr->level - 1) / 5), 4));
         return true;
     }
     case PlayerRaceType::DRACONIAN:
@@ -452,7 +452,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("あなたは集中し、目が赤く輝いた...", "You concentrate and your eyes glow red..."));
-        (void)fire_bolt(player_ptr, AttributeType::PSI, dir, player_ptr->lev);
+        (void)fire_bolt(player_ptr, AttributeType::PSI, dir, player_ptr->level);
         return true;
     }
     case PlayerRaceType::IMP: {
@@ -461,12 +461,12 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        if (player_ptr->lev >= 30) {
+        if (player_ptr->level >= 30) {
             msg_print(_("ファイア・ボールを放った。", "You cast a ball of fire."));
-            (void)fire_ball(player_ptr, AttributeType::FIRE, dir, player_ptr->lev, 2);
+            (void)fire_ball(player_ptr, AttributeType::FIRE, dir, player_ptr->level, 2);
         } else {
             msg_print(_("ファイア・ボルトを放った。", "You cast a bolt of fire."));
-            (void)fire_bolt(player_ptr, AttributeType::FIRE, dir, player_ptr->lev);
+            (void)fire_bolt(player_ptr, AttributeType::FIRE, dir, player_ptr->level);
         }
 
         return true;
@@ -490,15 +490,15 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
 
         stop_mouth(player_ptr);
         msg_print(_("あなたはおどろおどろしい叫び声をあげた！", "You emit an eldritch howl!"));
-        (void)fear_monster(player_ptr, dir, player_ptr->lev);
+        (void)fear_monster(player_ptr, dir, player_ptr->level);
         return true;
     }
     case PlayerRaceType::SPRITE:
         msg_print(_("あなたは魔法の粉を投げつけた...", "You throw some magic dust..."));
-        if (player_ptr->lev < 25) {
+        if (player_ptr->level < 25) {
             (void)sleep_monsters_touch(player_ptr);
         } else {
-            (void)sleep_monsters(player_ptr, player_ptr->lev);
+            (void)sleep_monsters(player_ptr, player_ptr->level);
         }
 
         return true;

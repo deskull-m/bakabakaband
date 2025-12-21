@@ -316,7 +316,7 @@ bool activate_rocket(PlayerType *player_ptr)
     }
 
     msg_print(_("ロケットを発射した！", "You launch a rocket!"));
-    (void)fire_ball(player_ptr, AttributeType::ROCKET, dir, 250 + player_ptr->lev * 3, 2);
+    (void)fire_ball(player_ptr, AttributeType::ROCKET, dir, 250 + player_ptr->level * 3, 2);
     return true;
 }
 

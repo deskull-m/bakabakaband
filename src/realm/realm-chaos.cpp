@@ -39,7 +39,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
 
     switch (spell) {
     case 0: {

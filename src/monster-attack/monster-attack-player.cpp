@@ -94,7 +94,7 @@ void MonsterAttackPlayer::make_attack_normal()
         }
     }
 
-    auto can_activate_kawarimi = randint0(55) < (this->player_ptr->lev * 3 / 5 + 20);
+    auto can_activate_kawarimi = randint0(55) < (this->player_ptr->level * 3 / 5 + 20);
     if (can_activate_kawarimi && kawarimi(this->player_ptr, true)) {
         return;
     }
@@ -278,7 +278,7 @@ bool MonsterAttackPlayer::effect_protecion_from_evil()
     auto &monrace = this->m_ptr->get_monrace();
     auto is_protected = this->player_ptr->effects()->protection().is_protected();
     is_protected &= monrace.kind_flags.has(MonsterKindType::EVIL);
-    is_protected &= (randint0(100) + this->player_ptr->lev - this->rlev) > 50;
+    is_protected &= (randint0(100) + this->player_ptr->level - this->rlev) > 50;
     if (!is_protected) {
         return false;
     }

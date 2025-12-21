@@ -44,8 +44,8 @@ static void rd_hengband_dungeons()
 void rd_dungeons(PlayerType *player_ptr)
 {
     rd_hengband_dungeons();
-    if (player_ptr->max_plv < player_ptr->lev) {
-        player_ptr->max_plv = player_ptr->lev;
+    if (player_ptr->max_plv < player_ptr->level) {
+        player_ptr->max_plv = player_ptr->level;
     }
 }
 

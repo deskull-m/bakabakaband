@@ -29,7 +29,7 @@
  */
 void cast_shuffle(PlayerType *player_ptr)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     int die;
     int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
     int i;
@@ -129,7 +129,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 42) {
         msg_print(_("《正義》だ。", "It's Justice."));
-        set_blessed(player_ptr, player_ptr->lev, false);
+        set_blessed(player_ptr, player_ptr->level, false);
         return;
     }
 
@@ -191,7 +191,7 @@ void cast_shuffle(PlayerType *player_ptr)
         msg_print(_("《恋人》だ。", "It's the Lovers."));
 
         if (const auto dir = get_aim_dir(player_ptr)) {
-            charm_monster(player_ptr, dir, std::min<short>(player_ptr->lev, 20));
+            charm_monster(player_ptr, dir, std::min<short>(player_ptr->level, 20));
         }
 
         return;

@@ -596,7 +596,7 @@ void update_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, bool full)
     um_type *um_ptr = initialize_um_type(player_ptr, &tmp_um, m_idx, full);
     if (disturb_high) {
         auto *ap_r_ptr = &um_ptr->m_ptr->get_appearance_monrace();
-        if (ap_r_ptr->r_tkills && ap_r_ptr->level >= player_ptr->lev) {
+        if (ap_r_ptr->r_tkills && ap_r_ptr->level >= player_ptr->level) {
             um_ptr->do_disturb = true;
         }
     }

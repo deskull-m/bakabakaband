@@ -83,7 +83,7 @@ static void add_personality_flags(PlayerType *player_ptr, TrFlags &flags)
     if (!PlayerClass(player_ptr).equals(PlayerClassType::NINJA)) {
         flags.set(TR_LITE_1);
     }
-    if (player_ptr->lev > 9) {
+    if (player_ptr->level > 9) {
         flags.set(TR_SPEED);
     }
 }

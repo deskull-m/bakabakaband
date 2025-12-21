@@ -291,8 +291,8 @@ static std::string describe_ammo_detail(PlayerType *player_ptr, const ItemEntity
 static std::string describe_spike_detail(PlayerType *player_ptr)
 {
     auto avgdam = player_ptr->mighty_throw ? (1 + 3) : 1;
-    avgdam += ((player_ptr->lev + 30) * (player_ptr->lev + 30) - 900) / 55;
-    const auto energy_fire = 100 - player_ptr->lev;
+    avgdam += ((player_ptr->level + 30) * (player_ptr->level + 30) - 900) / 55;
+    const auto energy_fire = 100 - player_ptr->level;
     const auto avgdam_per_turn = 100 * avgdam / energy_fire;
 
     return format(" (%d/%d)", avgdam, avgdam_per_turn);

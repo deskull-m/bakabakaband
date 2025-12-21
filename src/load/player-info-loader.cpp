@@ -104,7 +104,7 @@ void rd_experience(PlayerType *player_ptr)
     player_ptr->exp = rd_s32b();
     player_ptr->exp_frac = rd_u32b();
 
-    player_ptr->lev = rd_s16b();
+    player_ptr->level = rd_s16b();
     for (int i = 0; i < 64; i++) {
         player_ptr->spell_exp[i] = rd_s16b();
     }

@@ -18,7 +18,7 @@ bool activate_teleport_away(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, player_ptr->lev);
+    (void)fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, player_ptr->level);
     return true;
 }
 

@@ -114,7 +114,7 @@ void output_monster_spoiler(MonraceId r_idx, hook_c_roff_pf roff_func)
     hook_c_roff = roff_func;
     PlayerType dummy;
 
-    dummy.lev = 1;
+    dummy.level = 1;
     dummy.max_plv = 1;
     process_monster_lore(&dummy, r_idx, MONSTER_LORE_DEBUG);
 }
@@ -1034,12 +1034,12 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
     int64_t exp_decimal = ((base_exp % player_factor * 1000 / player_factor) + 5) / 10;
 
 #ifdef JP
-    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", player_ptr->lev, exp_integer, exp_decimal));
+    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", player_ptr->level, exp_integer, exp_decimal));
 #else
     hooked_roff(format(" is worth about %lld.%02lld point%s", exp_integer, exp_decimal, ((exp_integer == 1) && (exp_decimal == 0)) ? "" : "s"));
 
     concptr ordinal;
-    switch (player_ptr->lev % 10) {
+    switch (player_ptr->level % 10) {
     case 1:
         ordinal = "st";
         break;
@@ -1055,7 +1055,7 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
     }
 
     concptr vowel;
-    switch (player_ptr->lev) {
+    switch (player_ptr->level) {
     case 8:
     case 11:
     case 18:
@@ -1066,7 +1066,7 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
         break;
     }
 
-    hooked_roff(format(" for a%s %d%s level character.  ", vowel, player_ptr->lev, ordinal));
+    hooked_roff(format(" for a%s %d%s level character.  ", vowel, player_ptr->level, ordinal));
 #endif
 }
 

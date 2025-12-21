@@ -205,14 +205,14 @@ void process_surprise_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    int tmp = player_ptr->lev * 6 + (player_ptr->skill_stl + 10) * 4;
+    int tmp = player_ptr->level * 6 + (player_ptr->skill_stl + 10) * 4;
     if (player_ptr->monlite && (pa_ptr->mode != HISSATSU_NYUSIN)) {
         tmp /= 3;
     }
     if (has_aggravate(player_ptr)) {
         tmp /= 2;
     }
-    if (monrace.level > (player_ptr->lev * player_ptr->lev / 20 + 10)) {
+    if (monrace.level > (player_ptr->level * player_ptr->level / 20 + 10)) {
         tmp /= 3;
     }
 
@@ -249,12 +249,12 @@ void print_surprise_attack(player_attack_type *pa_ptr)
 void calc_surprise_attack_damage(PlayerType *player_ptr, player_attack_type *pa_ptr)
 {
     if (pa_ptr->backstab) {
-        pa_ptr->attack_damage *= (3 + (player_ptr->lev / 20));
+        pa_ptr->attack_damage *= (3 + (player_ptr->level / 20));
         return;
     }
 
     if (pa_ptr->surprise_attack) {
-        pa_ptr->attack_damage = pa_ptr->attack_damage * (5 + (player_ptr->lev * 2 / 25)) / 2;
+        pa_ptr->attack_damage = pa_ptr->attack_damage * (5 + (player_ptr->level * 2 / 25)) / 2;
         return;
     }
 
@@ -345,7 +345,7 @@ bool set_superstealth(PlayerType *player_ptr, bool set)
  */
 bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
     switch (spell) {
     case MindNinjaType::DARKNESS_CREATION:
@@ -380,7 +380,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
 
         break;
     case MindNinjaType::ABSCONDING:
-        teleport_player(player_ptr, player_ptr->lev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(player_ptr, player_ptr->level * 5, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::HIT_AND_AWAY:
         if (!hit_and_away(player_ptr)) {

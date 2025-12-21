@@ -27,32 +27,32 @@ bool android_inside_weapon(PlayerType *player_ptr)
         return false;
     }
 
-    if (player_ptr->lev < 10) {
+    if (player_ptr->level < 10) {
         msg_print(_("レイガンを発射した。", "You fire your ray gun."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, (player_ptr->lev + 1) / 2);
+        fire_bolt(player_ptr, AttributeType::MISSILE, dir, (player_ptr->level + 1) / 2);
         return true;
     }
 
-    if (player_ptr->lev < 25) {
+    if (player_ptr->level < 25) {
         msg_print(_("ブラスターを発射した。", "You fire your blaster."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, player_ptr->lev);
+        fire_bolt(player_ptr, AttributeType::MISSILE, dir, player_ptr->level);
         return true;
     }
 
-    if (player_ptr->lev < 35) {
+    if (player_ptr->level < 35) {
         msg_print(_("バズーカを発射した。", "You fire your bazooka."));
-        fire_ball(player_ptr, AttributeType::MISSILE, dir, player_ptr->lev * 2, 2);
+        fire_ball(player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2, 2);
         return true;
     }
 
-    if (player_ptr->lev < 45) {
+    if (player_ptr->level < 45) {
         msg_print(_("ビームキャノンを発射した。", "You fire a beam cannon."));
-        fire_beam(player_ptr, AttributeType::MISSILE, dir, player_ptr->lev * 2);
+        fire_beam(player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2);
         return true;
     }
 
     msg_print(_("ロケットを発射した。", "You fire a rocket."));
-    fire_rocket(player_ptr, AttributeType::ROCKET, dir, player_ptr->lev * 5, 2);
+    fire_rocket(player_ptr, AttributeType::ROCKET, dir, player_ptr->level * 5, 2);
     return true;
 }
 

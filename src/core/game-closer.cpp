@@ -98,7 +98,7 @@ static void kingly(PlayerType *player_ptr)
     }
 
     player_ptr->exp = player_ptr->max_exp;
-    player_ptr->lev = player_ptr->max_plv;
+    player_ptr->level = player_ptr->max_plv;
     player_ptr->au += 10000000L;
     term_clear();
 

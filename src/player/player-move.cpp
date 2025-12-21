@@ -224,7 +224,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
     const Pos2D pos(ny, nx);
     if (mpe_mode & MPE_ENERGY_USE) {
         if (music_singing(player_ptr, MUSIC_WALL)) {
-            (void)project(player_ptr, 0, 0, player_ptr->y, player_ptr->x, (60 + player_ptr->lev), AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
+            (void)project(player_ptr, 0, 0, player_ptr->y, player_ptr->x, (60 + player_ptr->level), AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
             if (!player_ptr->is_located_at(pos) || player_ptr->is_dead() || player_ptr->leaving) {
                 return false;
             }

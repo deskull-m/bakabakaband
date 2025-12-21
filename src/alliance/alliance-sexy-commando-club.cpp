@@ -161,9 +161,9 @@ int AllianceSexyCommandoClub::calcImpressionPoint([[maybe_unused]] PlayerType *c
     }
 
     // レベルによる補正（青春補正）
-    if (creature_ptr->lev <= 20) {
+    if (creature_ptr->level <= 20) {
         point += 10;
-    } else if (creature_ptr->lev >= 40) {
+    } else if (creature_ptr->level >= 40) {
         point -= 5;
     }
 

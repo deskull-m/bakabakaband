@@ -79,15 +79,15 @@ void display_mimic_race_ability(PlayerType *player_ptr, self_info_type *self_ptr
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD: {
         constexpr auto fmt = _("あなたは %d ダメージの地獄か火炎のブレスを吐くことができる。(%d MP)", "You can breathe nether, dam. %d (cost %d).");
-        const auto dam = 3 * player_ptr->lev;
-        const auto cost = 10 + player_ptr->lev / 3;
+        const auto dam = 3 * player_ptr->level;
+        const auto cost = 10 + player_ptr->level / 3;
         self_ptr->info_list.push_back(format(fmt, dam, cost));
         return;
     }
     case MimicKindType::VAMPIRE:
-        if (player_ptr->lev >= 2) {
+        if (player_ptr->level >= 2) {
             constexpr auto fmt = _("あなたは敵から %d-%d HP の生命力を吸収できる。(%d MP)", "You can steal life from a foe, dam. %d-%d (cost %d).");
-            const auto lev = player_ptr->lev;
+            const auto lev = player_ptr->level;
             const auto min_dam = lev + std::max(1, lev / 10);
             const auto max_dam = lev + lev * std::max(1, lev / 10);
             const auto cost = 1 + lev / 3;

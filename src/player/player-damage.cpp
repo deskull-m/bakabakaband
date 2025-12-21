@@ -484,7 +484,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
             auto &quests = QuestList::get_instance();
             auto &quest = quests.get_quest(q_idx);
             if (quest.status == QuestStatusType::TAKEN) {
-                record_quest_final_status(&quest, player_ptr->lev, QuestStatusType::FAILED);
+                record_quest_final_status(&quest, player_ptr->level, QuestStatusType::FAILED);
                 if (quest.type == QuestKindType::RANDOM) {
                     if (record_rand_quest) {
                         exe_write_diary_quest(player_ptr, DiaryKind::RAND_QUEST_F, q_idx);

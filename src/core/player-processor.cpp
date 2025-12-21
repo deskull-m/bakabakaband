@@ -383,8 +383,8 @@ void process_player(PlayerType *player_ptr)
 
             if (PlayerClass(player_ptr).equals(PlayerClassType::IMITATOR)) {
                 auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
-                if (static_cast<int>(mane_data->mane_list.size()) > (player_ptr->lev > 44 ? 3 : player_ptr->lev > 29 ? 2
-                                                                                                                     : 1)) {
+                if (static_cast<int>(mane_data->mane_list.size()) > (player_ptr->level > 44 ? 3 : player_ptr->level > 29 ? 2
+                                                                                                                         : 1)) {
                     mane_data->mane_list.pop_front();
                 }
 

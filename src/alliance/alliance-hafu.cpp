@@ -32,7 +32,7 @@ int AllianceHafu::calcImpressionPoint(PlayerType *creature_ptr) const
     impression += (creature_ptr->stat_use[A_WIS] - 10) * 2;
 
     // レベルによる権威の評価
-    impression += creature_ptr->lev * 2;
+    impression += creature_ptr->level * 2;
 
     /*
     // 覇府関連のモンスター討伐による減点

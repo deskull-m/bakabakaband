@@ -52,7 +52,7 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return false;
     }
 
-    const auto p_lev = player_ptr->lev;
+    const auto p_lev = player_ptr->level;
     const auto m_lev = monrace.level + (m_idx & 0x08) + 25;
     if (m_lev > p_lev + 4) {
         return false;

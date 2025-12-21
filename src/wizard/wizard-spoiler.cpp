@@ -182,7 +182,7 @@ static SpoilerOutputResultType spoil_player_spell()
     spoil_out("------------------------------------------\n\n");
 
     PlayerType dummy_p;
-    dummy_p.lev = 1;
+    dummy_p.level = 1;
     for (const auto pclass : EnumRange(PlayerClassType::WARRIOR, PlayerClassType::MAX)) {
         spoil_out(format("[[Class: %s]]\n", class_info.at(pclass).title.data()));
 

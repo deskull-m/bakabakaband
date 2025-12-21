@@ -142,7 +142,7 @@ static std::string switch_mind_ninja(const PLAYER_LEVEL plev, const int power)
  */
 std::string mindcraft_info(PlayerType *player_ptr, MindKindType use_mind, int power)
 {
-    const PLAYER_LEVEL plev = player_ptr->lev;
+    const PLAYER_LEVEL plev = player_ptr->level;
     switch (use_mind) {
     case MindKindType::MINDCRAFTER:
         return switch_mind_mindcrafter(player_ptr, plev, power);

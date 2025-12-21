@@ -266,7 +266,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_FIRE)) {
-        if (!(PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->lev > 44)) {
+        if (!(PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->level > 44)) {
             if (!has_immune_fire(player_ptr) && (player_ptr->oppose_fire || music_singing(player_ptr, MUSIC_RESIST))) {
                 return true;
             }
@@ -297,7 +297,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
         }
     }
 
-    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (player_ptr->lev > 44))) {
+    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (player_ptr->level > 44))) {
         if (player_ptr->oppose_pois || music_singing(player_ptr, MUSIC_RESIST)) {
             return true;
         }

@@ -73,7 +73,7 @@ static bool calc_fall_off_possibility(PlayerType *player_ptr, const int dam, con
         return true;
     }
 
-    if ((PlayerClass(player_ptr).is_tamer() && !player_ptr->riding_ryoute) || !one_in_(player_ptr->lev * (player_ptr->riding_ryoute ? 2 : 3) + 30)) {
+    if ((PlayerClass(player_ptr).is_tamer() && !player_ptr->riding_ryoute) || !one_in_(player_ptr->level * (player_ptr->riding_ryoute ? 2 : 3) + 30)) {
         return false;
     }
 

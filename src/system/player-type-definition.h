@@ -82,8 +82,6 @@ public:
     std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
     std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
-    PLAYER_LEVEL lev{}; /* Level */
-
     int16_t town_num{}; /* Current town number */
 
     PERCENTAGE mutant_regenerate_mod{};
@@ -389,7 +387,6 @@ public:
     bool is_dead() const override;
     FloorType *get_floor() const override;
 
-    int get_level() const override;
     bool is_player() const override;
 
 private:

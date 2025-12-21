@@ -71,7 +71,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
     item.mark_as_tried();
     if (ident && !item.is_aware()) {
         object_aware(this->player_ptr, item);
-        gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item.get_baseitem_level() + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
+        gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item.get_baseitem_level() + (this->player_ptr->level >> 1)) / this->player_ptr->level);
     }
 
     static constexpr auto flags = {

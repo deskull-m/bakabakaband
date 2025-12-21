@@ -121,7 +121,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     int regen_amount = PY_REGEN_NORMAL;
     const auto effects = player_ptr->effects();
     if (terrain.flags.has(TerrainCharacteristics::RUNE_HEALING)) {
-        hp_player(player_ptr, 2 + player_ptr->lev / 6);
+        hp_player(player_ptr, 2 + player_ptr->level / 6);
     }
 
     const auto &player_poison = effects->poison();
@@ -227,7 +227,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     if (can_drown && !player_ptr->levitation && !player_ptr->can_swim && !has_resist_water(player_ptr)) {
         if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
             msg_print(_("溺れている！", "You are drowning!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->lev), _("溺れ", "drowning"));
+            take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->level), _("溺れ", "drowning"));
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
@@ -237,9 +237,9 @@ void process_player_hp_mp(PlayerType *player_ptr)
         int damage;
         msg_print(_("棘に体が突き刺さっている！", "Your body is stuck in a thorn!"));
         if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
-            damage = randint1(player_ptr->lev);
+            damage = randint1(player_ptr->level);
         } else {
-            damage = (randint1(player_ptr->lev) + 1) / 2;
+            damage = (randint1(player_ptr->level) + 1) / 2;
         }
         cave_no_regen = true;
         take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
@@ -265,7 +265,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     if (get_player_flags(player_ptr, TR_SELF_FIRE) && !has_immune_fire(player_ptr)) {
         int damage;
-        damage = player_ptr->lev;
+        damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_FIRE)) {
             damage += damage / 3;
         }
@@ -283,7 +283,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     if (get_player_flags(player_ptr, TR_SELF_ELEC) && !has_immune_elec(player_ptr)) {
         int damage;
-        damage = player_ptr->lev;
+        damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_ELEC)) {
             damage += damage / 3;
         }
@@ -301,7 +301,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     if (get_player_flags(player_ptr, TR_SELF_COLD) && !has_immune_cold(player_ptr)) {
         int damage;
-        damage = player_ptr->lev;
+        damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_COLD)) {
             damage += damage / 3;
         }
@@ -383,7 +383,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         auto should_damage = !is_invuln(player_ptr);
         should_damage &= player_ptr->wraith_form == 0;
         should_damage &= player_ptr->tim_pass_wall == 0;
-        should_damage &= (player_ptr->hp > (player_ptr->lev / 5)) || !has_pass_wall(player_ptr);
+        should_damage &= (player_ptr->hp > (player_ptr->level / 5)) || !has_pass_wall(player_ptr);
         if (should_damage) {
             concptr dam_desc;
             cave_no_regen = true;
@@ -396,7 +396,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
                 dam_desc = _("硬い岩", "solid rock");
             }
 
-            take_hit(player_ptr, DAMAGE_NOESCAPE, 1 + (player_ptr->lev / 5), dam_desc);
+            take_hit(player_ptr, DAMAGE_NOESCAPE, 1 + (player_ptr->level / 5), dam_desc);
         }
     }
 

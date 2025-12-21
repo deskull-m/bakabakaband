@@ -85,7 +85,7 @@ bool project_all_los(PlayerType *player_ptr, AttributeType typ, int dam)
  */
 bool speed_monsters(PlayerType *player_ptr)
 {
-    return project_all_los(player_ptr, AttributeType::OLD_SPEED, player_ptr->lev);
+    return project_all_los(player_ptr, AttributeType::OLD_SPEED, player_ptr->level);
 }
 
 /*!
@@ -124,7 +124,7 @@ bool banish_evil(PlayerType *player_ptr, int dist)
  */
 bool turn_undead(PlayerType *player_ptr)
 {
-    bool tester = (project_all_los(player_ptr, AttributeType::TURN_UNDEAD, player_ptr->lev));
+    bool tester = (project_all_los(player_ptr, AttributeType::TURN_UNDEAD, player_ptr->level));
     if (tester) {
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
     }
@@ -202,7 +202,7 @@ bool dispel_demons(PlayerType *player_ptr, int dam)
  */
 bool crusade(PlayerType *player_ptr)
 {
-    return project_all_los(player_ptr, AttributeType::CRUSADE, player_ptr->lev * 4);
+    return project_all_los(player_ptr, AttributeType::CRUSADE, player_ptr->level * 4);
 }
 
 /*!
@@ -359,7 +359,7 @@ bool turn_monsters(PlayerType *player_ptr, int dam)
  */
 bool deathray_monsters(PlayerType *player_ptr)
 {
-    return project_all_los(player_ptr, AttributeType::DEATH_RAY, player_ptr->lev * 200);
+    return project_all_los(player_ptr, AttributeType::DEATH_RAY, player_ptr->level * 200);
 }
 
 /*!

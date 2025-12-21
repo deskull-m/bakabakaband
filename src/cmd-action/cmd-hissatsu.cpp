@@ -66,7 +66,7 @@ static int get_hissatsu_power(PlayerType *player_ptr, SPELL_IDX *sn)
     int num = 0;
     POSITION y = 1;
     POSITION x = 15;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     char choice;
     concptr p = _("必殺剣", "special attack");
     int menu_line = (use_menu ? 1 : 0);
@@ -399,7 +399,7 @@ void do_cmd_gain_hissatsu(PlayerType *player_ptr)
             continue;
         }
 
-        if (PlayerRealm::get_spell_info(RealmType::HISSATSU, i).slevel > player_ptr->lev) {
+        if (PlayerRealm::get_spell_info(RealmType::HISSATSU, i).slevel > player_ptr->level) {
             continue;
         }
 

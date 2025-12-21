@@ -86,7 +86,7 @@ bool melee_arena_comm(PlayerType *player_ptr)
         }
     }
 
-    auto maxbet = player_ptr->lev * 200;
+    auto maxbet = player_ptr->level * 200;
     maxbet = std::min(maxbet, player_ptr->au);
     constexpr auto prompt = _("賭け金？", "Your wager? ");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
