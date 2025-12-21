@@ -11,6 +11,7 @@
 #include "player/player-skill.h"
 #include "spell/spells-status.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/inner-game-data.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -54,13 +55,14 @@ int adjust_stat(int value, int amount)
 }
 
 /*!
- * @brief プレイヤーの能力値を一通りロールする。 / Roll for a characters stats
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @brief クリーチャー（プレイヤーやモンスター等）の能力値を一通りロールする。 / Roll for a creature's stats
+ * @param creature_ptr クリーチャーへの参照ポインタ
  * @details
+ * プレイヤーのキャラメイクと同じロジックで能力値を生成する。
  * calc_bonuses()による、独立ステータスからの副次ステータス算出も行っている。
  * For efficiency, we include a chunk of "calc_bonuses()".\n
  */
-void get_stats(PlayerType *player_ptr)
+void get_stats(CreatureEntity *creature_ptr)
 {
     while (true) {
         auto sum = 0;
@@ -70,7 +72,7 @@ void get_stats(PlayerType *player_ptr)
                 auto stat = i * 3 + j;
                 auto val = auto_roller_distribution[tmp % random_distribution];
                 sum += val;
-                player_ptr->stat_cur[stat] = player_ptr->stat_max[stat] = val;
+                creature_ptr->stat_cur[stat] = creature_ptr->stat_max[stat] = val;
                 tmp /= random_distribution;
             }
         }
@@ -79,6 +81,11 @@ void get_stats(PlayerType *player_ptr)
         if ((sum > 720) && (sum < 870)) {
             break;
         }
+    }
+
+    // stat_max_maxは初期化する
+    for (auto i = 0; i < A_MAX; i++) {
+        creature_ptr->stat_max_max[i] = creature_ptr->stat_max[i];
     }
 }
 

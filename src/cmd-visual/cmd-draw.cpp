@@ -7,8 +7,12 @@
 #include "main/sound-of-music.h"
 #include "player-base/player-race.h"
 #include "player-info/race-types.h"
+#include "player/player-status-table.h"
+#include "player/player-status.h"
 #include "player/process-name.h"
 #include "racial/racial-android.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -132,10 +136,75 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
 }
 
 /*!
+ * @brief モンスターのステータスを簡易表示する（プレイヤー表示フォーマットを流用）
+ * @param monster_ptr モンスターへの参照ポインタ
+ */
+static void display_monster_status(MonsterEntity *monster_ptr)
+{
+    term_clear();
+
+    // モンスター名とレベルを表示
+    const auto &monrace = monster_ptr->get_monrace();
+    c_put_str(TERM_L_BLUE, monrace.name, 1, 1);
+    put_str(format(_("レベル: %d", "Level: %d"), monster_ptr->get_level()), 1, 40);
+    put_str(format(_("HP: %d/%d", "HP: %d/%d"), monster_ptr->hp, monster_ptr->maxhp), 2, 40);
+
+    // 能力値表示（プレイヤーと同じフォーマット）
+    int stat_col = 22;
+    int row = 3;
+
+    // ヘッダー行
+    c_put_str(TERM_WHITE, _("能力", "Stat"), row, stat_col + 1);
+    c_put_str(TERM_BLUE, _("  基本", "  Base"), row, stat_col + 7);
+    c_put_str(TERM_L_GREEN, _("合計", "Total"), row, stat_col + _(21, 19));
+    c_put_str(TERM_YELLOW, _("現在", "Current"), row, stat_col + _(28, 26));
+
+    // 各能力値
+    for (int i = 0; i < A_MAX; i++) {
+        // 能力値名
+        if (monster_ptr->stat_cur[i] < monster_ptr->stat_max[i]) {
+            c_put_str(TERM_WHITE, stat_names_reduced[i], row + i + 1, stat_col + 1);
+        } else {
+            c_put_str(TERM_WHITE, stat_names[i], row + i + 1, stat_col + 1);
+        }
+
+        // 最大値マーク
+        if (monster_ptr->stat_max[i] == monster_ptr->stat_max_max[i]) {
+            c_put_str(TERM_WHITE, "!", row + i + 1, _(stat_col + 6, stat_col + 4));
+        }
+
+        // 基本値（stat_max）
+        const auto stat_str = cnv_stat(monster_ptr->stat_max[i]);
+        c_put_str(TERM_BLUE, stat_str, row + i + 1, stat_col + 13 - stat_str.length());
+
+        // 合計値
+        c_put_str(TERM_L_GREEN, cnv_stat(monster_ptr->stat_max[i]), row + i + 1, stat_col + _(21, 19));
+
+        // 現在値（一時的減少がある場合）
+        if (monster_ptr->stat_cur[i] < monster_ptr->stat_max[i]) {
+            c_put_str(TERM_YELLOW, cnv_stat(monster_ptr->stat_cur[i]), row + i + 1, stat_col + _(28, 26));
+        }
+    }
+
+    // 終了メッセージ
+    put_str(_("[ESCで終了]", "[Press ESC to exit]"), 23, 25);
+}
+
+/*!
  * @brief プレイヤーのステータス表示
  */
 void do_cmd_player_status(CreatureEntity *creature_ptr)
 {
+    // モンスターの場合は専用の表示
+    if (!creature_ptr->is_player()) {
+        auto *monster_ptr = static_cast<MonsterEntity *>(creature_ptr);
+        screen_save();
+        display_monster_status(monster_ptr);
+        inkey();
+        screen_load();
+        return;
+    }
+
     auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
     auto page = 0;
     screen_save();

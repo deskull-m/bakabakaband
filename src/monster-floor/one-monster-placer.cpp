@@ -5,6 +5,7 @@
  */
 
 #include "alliance/alliance.h"
+#include "birth/birth-stat.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"
 #include "dungeon/quest.h"
@@ -253,6 +254,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     MonsterEntity *m_ptr;
     m_ptr = &floor.m_list[g_ptr->m_idx];
+    m_ptr->wipe(); // モンスターを初期化（古いデータをクリア）
+
+    // モンスターの能力値をランダムに初期化
+    get_stats(m_ptr);
+
     m_ptr->alliance_idx = monrace.alliance_idx;
 
     m_ptr->mflag.clear();
