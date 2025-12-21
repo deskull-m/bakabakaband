@@ -208,9 +208,9 @@ static void print_pickup_message(PlayerType *player_ptr, [[maybe_unused]] const 
 
 #ifdef JP
     if (picked_slot_item.is_specific_artifact(FixedArtifactId::CRIMSON) && (player_ptr->ppersonality == PERSONALITY_COMBAT)) {
-        msg_print("こうして、{}は『クリムゾン』を手に入れた。", player_ptr->name);
+        msg_print("こうして、{}は『クリムゾン』を手に入れた。", player_ptr->name.data());
         msg_print("しかし今、『混沌のサーペント』の放ったモンスターが、");
-        msg_print("{}に襲いかかる．．．", player_ptr->name);
+        msg_print("{}に襲いかかる．．．", player_ptr->name.data());
         return;
     }
 

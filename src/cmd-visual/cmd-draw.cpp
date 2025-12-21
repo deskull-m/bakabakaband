@@ -107,7 +107,7 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
         process_player_name(player_ptr);
         return page;
     case 'f': {
-        const auto initial_filename = format("%s.txt", player_ptr->base_name);
+        const auto initial_filename = format("%s.txt", player_ptr->base_name.data());
         const auto input_filename = input_string(_("ファイル名: ", "File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
             return page;

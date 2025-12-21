@@ -356,8 +356,8 @@ public:
 
     ENERGY energy_use{}; /*!< 直近のターンに消費したエネルギー / Energy use this turn */
 
-    GAME_TEXT name[32]{}; /*!< 現在のプレイヤー名 / Current player's character name */
-    char base_name[32]{}; /*!< Stripped version of "player_name" */
+    std::string name{}; /*!< 現在のプレイヤー名（最大40文字） / Current player's character name (max 40 chars) */
+    std::string base_name{}; /*!< Stripped version of "player_name" */
 
     void ride_monster(MONSTER_IDX m_idx);
     std::shared_ptr<TimedEffects> effects() const;

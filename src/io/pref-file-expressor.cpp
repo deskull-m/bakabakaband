@@ -167,9 +167,10 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
     } else if (streq(b + 1, "CLASS")) {
         v = (*player_ptr->pclass_ref).title.en_string();
     } else if (streq(b + 1, "PLAYER")) {
-        static char tmp_player_name[32];
-        char *pn, *tpn;
-        for (pn = player_ptr->name, tpn = tmp_player_name; *pn; pn++, tpn++) {
+        static char tmp_player_name[64];
+        const char *pn = player_ptr->name.c_str();
+        char *tpn = tmp_player_name;
+        for (; *pn; pn++, tpn++) {
 #ifdef JP
             if (iskanji(*pn)) {
                 *(tpn++) = *(pn++);

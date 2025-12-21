@@ -181,9 +181,10 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
     } else if (streq(b + 1, "REALM2")) {
         v = PlayerRealm(player_ptr).realm2().get_name().en_string();
     } else if (streq(b + 1, "PLAYER")) {
-        char tmp_player_name[32]{};
-        char *pn, *tpn;
-        for (pn = player_ptr->name, tpn = tmp_player_name; *pn; pn++, tpn++) {
+        char tmp_player_name[64]{};
+        const char *pn = player_ptr->name.c_str();
+        char *tpn = tmp_player_name;
+        for (; *pn; pn++, tpn++) {
 #ifdef JP
             if (iskanji(*pn)) {
                 *(tpn++) = *(pn++);

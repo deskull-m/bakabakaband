@@ -240,7 +240,7 @@ void print_tomb(PlayerType *player_ptr)
     if (wc_ptr->is_blown_away()) {
         msg_format(_("世 界 こ わ れ る", "The world had *b*r*o*k*e*n*."));
     } else {
-        msg_format(_("さようなら、%s!", "Goodbye, %s!"), player_ptr->name);
+        msg_format(_("さようなら、%s!", "Goodbye, %s!"), player_ptr->name.data());
     }
 }
 
@@ -373,7 +373,7 @@ static void file_character_auto(PlayerType *player_ptr)
     char datetime[32];
     strftime(datetime, sizeof(datetime), "%Y-%m-%d_%H%M%S", now_tm);
     screen_save();
-    const auto filename = format("%s_Autodump_%s.txt", player_ptr->name, datetime);
+    const auto filename = format("%s_Autodump_%s.txt", player_ptr->name.data(), datetime);
     file_character(player_ptr, filename);
     screen_load();
 }

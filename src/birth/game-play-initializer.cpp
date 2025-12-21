@@ -140,7 +140,7 @@ void player_wipe_without_name(PlayerType *player_ptr)
         player_ptr->recall_dungeon = DungeonId::GALGALS;
     }
 
-    std::copy_n(backup_name.begin(), backup_name.length(), player_ptr->name);
+    player_ptr->name = backup_name;
 }
 
 /*!
