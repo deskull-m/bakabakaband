@@ -5,6 +5,7 @@
  */
 
 #include "info-reader/baseitem-reader.h"
+#include "alliance/alliance.h"
 #include "artifact/random-art-effects.h"
 #include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
@@ -202,6 +203,40 @@ static errr set_baseitem_activate(const nlohmann::json &act_data, BaseitemDefini
 }
 
 /*!
+ * @brief JSON Objectからアライアンス情報をセットする
+ * @param alliance_data アライアンス情報の格納されたJSON Object
+ * @param baseitem 保管先のベースアイテム情報インスタンス
+ * @return エラーコード
+ */
+static errr set_baseitem_alliance(const nlohmann::json &alliance_data, BaseitemDefinition &baseitem)
+{
+    if (alliance_data.is_null()) {
+        baseitem.alliance_idx = AllianceType::NONE;
+        return PARSE_ERROR_NONE;
+    }
+    if (!alliance_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    const auto alliance_tag = alliance_data.get<std::string>();
+    bool found = false;
+    for (const auto &[type, alliance_ptr] : alliance_list) {
+        if (alliance_ptr->tag == alliance_tag) {
+            baseitem.alliance_idx = type;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        msg_format(_("未知のアライアンスタグ '%s'。", "Unknown alliance tag '%s'."), alliance_tag.data());
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからベースアイテムフラグをセットする
  * @param flag_data ベースアイテムフラグ情報の格納されたJSON Object
  * @param baseitem 保管先のベースアイテム情報インスタンス
@@ -308,6 +343,10 @@ errr parse_baseitems_info(nlohmann::json &item_data, angband_header *)
     }
     if (auto err = set_baseitem_allocations(item_data["allocations"], baseitem)) {
         msg_format(_("アイテムの生成情報読込失敗。ID: '%d'。", "Failed to load generation info of item. ID: '%d'."), error_idx);
+        return err;
+    }
+    if (auto err = set_baseitem_alliance(item_data["alliance"], baseitem)) {
+        msg_format(_("アイテムのアライアンス情報読込失敗。ID: '%d'。", "Failed to load alliance of item. ID: '%d'."), error_idx);
         return err;
     }
     if (auto err = set_baseitem_activate(item_data["activate"], baseitem)) {

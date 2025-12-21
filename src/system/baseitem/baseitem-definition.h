@@ -15,6 +15,7 @@
 #include <array>
 #include <string>
 
+enum class AllianceType : int;
 enum class ItemKindType : short;
 enum class RandomArtActType : short;
 class BaseitemDefinition {
@@ -48,6 +49,7 @@ public:
     EnumClassFlagGroup<ItemGenerationTraitType> gen_flags; /*!< ベースアイテムの生成特性ビット配列 / flags for generate */
 
     int level{}; /*!< ベースアイテムの基本生成階 / Level */
+    AllianceType alliance_idx{}; /*!< アイテムの製造元アライアンス / Manufacturing alliance */
 
     struct alloc_table {
         int level; /*!< ベースアイテムの生成階 */
