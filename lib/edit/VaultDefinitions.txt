@@ -19671,6 +19671,24 @@ D:%...%%%%..%%%%...%
 D:%...%   %%   %...%
 D: %%%          %%% 
 
+N:946:SymetricRoom
+X:18:8:14:14
+D:      %%      
+D:    %%..%%    
+D:   %......%   
+D:   %vvvvvv%   
+D:  %.v#..#v.%  
+D: %..v.&[.v..% 
+D: %..v.[&.v..% 
+D:  %..#..#..%  
+D:  %.#....#.%  
+D:  %.#....#.%  
+D: %....%%....% 
+D:%....%  %....%
+D:%....%  %....%
+D: %%%%    %%%% 
+
+
 #    % - outside of the vault, where corridors may be connected
 #    # - granite
 #    $ - glass wall
