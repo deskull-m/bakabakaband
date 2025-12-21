@@ -806,7 +806,7 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
             break;
 
         case 3:
-            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), player_ptr->name);
+            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), player_ptr->name.data());
             break;
 
         default:

@@ -418,7 +418,7 @@ std::string describe_named_item(PlayerType *player_ptr, const ItemEntity &item, 
 
 #ifdef JP
     if (item.is_smith() && none_bits(opt.mode, OD_BASE_NAME)) {
-        ss << format("鍛冶師%sの", player_ptr->name);
+        ss << format("鍛冶師%sの", player_ptr->name.data());
     }
 
     ss << describe_unique_name_before_body_ja(item, opt);
@@ -434,7 +434,7 @@ std::string describe_named_item(PlayerType *player_ptr, const ItemEntity &item, 
     ss << describe_unique_name_after_body_ja(item, opt);
 #else
     if (item.is_smith() && none_bits(opt.mode, OD_BASE_NAME)) {
-        ss << format(" of %s the Smith", player_ptr->name);
+        ss << format(" of %s the Smith", player_ptr->name.data());
     }
 
     ss << describe_unique_name_after_body_en(item, opt);

@@ -64,9 +64,10 @@ static void rd_realms(PlayerType *player_ptr)
  */
 void rd_base_info(PlayerType *player_ptr)
 {
-    const auto player_name = rd_string();
-    const auto player_name_len = player_name.copy(player_ptr->name, sizeof(player_ptr->name) - 1);
-    player_ptr->name[player_name_len] = '\0';
+    player_ptr->name = rd_string();
+    if (player_ptr->name.length() > 40) {
+        player_ptr->name.resize(40);
+    }
     player_ptr->died_from = rd_string();
     player_ptr->last_message = rd_string();
 

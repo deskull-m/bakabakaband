@@ -36,7 +36,7 @@ errr highscore_read(high_score *score)
 
 void high_score::copy_info(const PlayerType &player)
 {
-    const auto name = format("%-.15s", player.name);
+    const auto name = format("%-.15s", player.name.data());
     std::copy_n(name.begin(), name.length(), this->who);
 
 #ifdef SET_UID
