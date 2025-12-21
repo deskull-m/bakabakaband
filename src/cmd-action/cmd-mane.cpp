@@ -158,7 +158,7 @@ static int damage;
  */
 static std::string mane_info(PlayerType *player_ptr, MonsterAbilityType power, int dam)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
 
     const auto power_int = enum2i(power);
     using Mat = MonsterAbilityType;
@@ -213,7 +213,7 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
     TERM_LEN y = 1;
     TERM_LEN x = 18;
     PERCENTAGE minfail = 0;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     PERCENTAGE chance = 0;
     char choice;
     concptr p = _("能力", "power");
@@ -366,7 +366,7 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
  */
 static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     BIT_FLAGS mode = (PM_ALLOW_GROUP | PM_FORCE_PET);
     BIT_FLAGS u_mode = 0L;
 
@@ -1194,7 +1194,7 @@ bool do_cmd_mane(PlayerType *player_ptr, bool baigaesi)
     int n = 0;
     PERCENTAGE chance;
     PERCENTAGE minfail = 0;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     monster_power spell;
     bool cast;
 

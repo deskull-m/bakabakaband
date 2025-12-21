@@ -113,7 +113,7 @@ static void attack_classify(PlayerType *player_ptr, player_attack_type *pa_ptr)
 static void get_bare_knuckle_exp(PlayerType *player_ptr, player_attack_type *pa_ptr)
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if ((monrace.level + 10) <= player_ptr->lev) {
+    if ((monrace.level + 10) <= player_ptr->level) {
         return;
     }
 
@@ -146,7 +146,7 @@ static void get_attack_exp(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    if (!o_ptr->is_melee_weapon() || ((monrace.level + 10) <= player_ptr->lev)) {
+    if (!o_ptr->is_melee_weapon() || ((monrace.level + 10) <= player_ptr->level)) {
         return;
     }
 
@@ -545,7 +545,7 @@ void exe_player_attack_to_monster(PlayerType *player_ptr, POSITION y, POSITION x
     auto pa_ptr = &tmp_attack;
 
     const auto is_human = pa_ptr->r_ptr->symbol_char_is_any_of("p");
-    const auto is_lowlevel = (pa_ptr->r_ptr->level < (player_ptr->lev - 15));
+    const auto is_lowlevel = (pa_ptr->r_ptr->level < (player_ptr->level - 15));
 
     attack_classify(player_ptr, pa_ptr);
     get_attack_exp(player_ptr, pa_ptr);

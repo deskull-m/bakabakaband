@@ -188,15 +188,15 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
     }
 
     std::string color;
-    if (monrace.level > player_ptr->lev + 30) {
+    if (monrace.level > player_ptr->level + 30) {
         color = _("黒く", "black");
-    } else if (monrace.level > player_ptr->lev + 15) {
+    } else if (monrace.level > player_ptr->level + 15) {
         color = _("紫色に", "purple");
-    } else if (monrace.level > player_ptr->lev + 5) {
+    } else if (monrace.level > player_ptr->level + 5) {
         color = _("ルビー色に", "deep red");
-    } else if (monrace.level > player_ptr->lev - 5) {
+    } else if (monrace.level > player_ptr->level - 5) {
         color = _("赤く", "red");
-    } else if (monrace.level > player_ptr->lev - 15) {
+    } else if (monrace.level > player_ptr->level - 15) {
         color = _("ピンク色に", "pink");
     } else {
         color = _("白く", "white");

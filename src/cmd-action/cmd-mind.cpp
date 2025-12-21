@@ -79,7 +79,7 @@ static cm_type *initialize_cm_type(PlayerType *player_ptr, cm_type *cm_ptr)
     cm_ptr->n = 0;
     cm_ptr->b = 0;
     cm_ptr->minfail = 0;
-    cm_ptr->plev = player_ptr->lev;
+    cm_ptr->plev = player_ptr->level;
     cm_ptr->old_csp = player_ptr->csp;
     cm_ptr->on_mirror = false;
     return cm_ptr;

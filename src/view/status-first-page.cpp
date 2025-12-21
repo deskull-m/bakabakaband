@@ -58,13 +58,13 @@ static void calc_shot_params(PlayerType *player_ptr, ItemEntity *o_ptr, int *sho
         return;
     }
 
-    if (player_ptr->lev >= 10) {
+    if (player_ptr->level >= 10) {
         (*shots)++;
     }
-    if (player_ptr->lev >= 30) {
+    if (player_ptr->level >= 30) {
         (*shots)++;
     }
-    if (player_ptr->lev >= 45) {
+    if (player_ptr->level >= 45) {
         (*shots)++;
     }
 }
@@ -80,7 +80,7 @@ static void calc_shot_params(PlayerType *player_ptr, ItemEntity *o_ptr, int *sho
  */
 static bool calc_weapon_damage_limit(PlayerType *player_ptr, int hand, int *damage, int *basedam, ItemEntity *o_ptr)
 {
-    PLAYER_LEVEL level = player_ptr->lev;
+    PLAYER_LEVEL level = player_ptr->level;
     if (hand > 0) {
         damage[hand] = 0;
         return false;
@@ -99,8 +99,8 @@ static bool calc_weapon_damage_limit(PlayerType *player_ptr, int hand, int *dama
         *basedam = monk_ave_damage[level][0];
     }
     bool impact = player_ptr->impact != 0;
-    WEIGHT weight = player_ptr->lev * calc_monk_attack_weight(player_ptr);
-    int to_h = player_ptr->lev * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
+    WEIGHT weight = player_ptr->level * calc_monk_attack_weight(player_ptr);
+    int to_h = player_ptr->level * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
 
     *basedam = calc_expect_crit(player_ptr, weight, to_h, *basedam, player_ptr->to_h[0], false, impact, 100);
 

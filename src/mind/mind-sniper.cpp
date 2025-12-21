@@ -148,7 +148,7 @@ static bool snipe_concentrate(PlayerType *player_ptr)
         return false;
     }
 
-    if (sniper_data->concent < (2 + (player_ptr->lev + 5) / 10)) {
+    if (sniper_data->concent < (2 + (player_ptr->level + 5) / 10)) {
         sniper_data->concent++;
     }
 
@@ -200,7 +200,7 @@ void display_snipe_list(PlayerType *player_ptr)
     int i;
     TERM_LEN y = 1;
     TERM_LEN x = 1;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     snipe_power spell;
 
     /* Display a list of spells */
@@ -251,7 +251,7 @@ static int get_snipe_power(PlayerType *player_ptr, COMMAND_CODE *sn, bool only_b
     int num = 0;
     TERM_LEN y = 1;
     TERM_LEN x = 20;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     concptr p = _("射撃術", "power");
     snipe_power spell;
     bool flag, redraw;

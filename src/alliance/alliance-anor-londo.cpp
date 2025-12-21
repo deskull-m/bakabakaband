@@ -17,7 +17,7 @@ int AllianceAnorLondo::calcImpressionPoint(PlayerType *creature_ptr) const
     int level = 25;
 
     int base_stat = (creature_ptr->stat_max[A_INT] + creature_ptr->stat_max[A_CHR]) / 2;
-    int impression = base_stat + bias + creature_ptr->lev / level;
+    int impression = base_stat + bias + creature_ptr->level / level;
     // 鉄人モード: 全てのアライアンスから猛烈に敵対される
     if (ironman_alliance_hostility) {
         impression -= 10000;

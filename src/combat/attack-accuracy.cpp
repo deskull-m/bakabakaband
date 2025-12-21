@@ -81,7 +81,7 @@ bool check_hit_from_monster_to_player(PlayerType *player_ptr, int power, DEPTH l
 
     int ac = player_ptr->ac + player_ptr->to_a;
     if (player_ptr->special_attack & ATTACK_SUIKEN) {
-        ac += (player_ptr->lev * 2);
+        ac += (player_ptr->level * 2);
     }
 
     if ((i > 0) && (randint1(i) > ((ac * 3) / 4))) {

@@ -303,11 +303,6 @@ FloorType *PlayerType::get_floor() const
     return this->current_floor_ptr;
 }
 
-int PlayerType::get_level() const
-{
-    return this->lev;
-}
-
 bool PlayerType::is_player() const
 {
     return true;

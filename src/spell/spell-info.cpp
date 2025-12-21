@@ -127,7 +127,7 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell_id, RealmType us
     const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
     PERCENTAGE chance = spell.sfail;
-    chance -= 3 * (player_ptr->lev - spell.slevel);
+    chance -= 3 * (player_ptr->level - spell.slevel);
     chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
     if (player_ptr->riding) {
         const auto &riding_monrace = player_ptr->current_floor_ptr->m_list[player_ptr->riding].get_monrace();
@@ -310,7 +310,7 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell_id, const SPELL
             if (spell.slevel > player_ptr->max_plv) {
                 comment = _("未知", "unknown");
                 line_attr = TERM_L_BLUE;
-            } else if (spell.slevel > player_ptr->lev) {
+            } else if (spell.slevel > player_ptr->level) {
                 comment = _("忘却", "forgotten");
                 line_attr = TERM_YELLOW;
             }

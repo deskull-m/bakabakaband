@@ -127,7 +127,10 @@ public:
      * @brief クリーチャーのレベルを取得
      * @return レベル値
      */
-    virtual int get_level() const = 0;
+    virtual int get_level() const
+    {
+        return this->level;
+    }
 
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
@@ -224,6 +227,9 @@ public:
 
     // 速度関連
     int speed{}; /*!< クリーチャーの速度 / Creature speed */
+
+    // レベル関連
+    int16_t level{}; /*!< クリーチャーのレベル / Creature level */
 
     // 所持金関連
     PRICE au{}; /*!< 所持金 / Current Gold */

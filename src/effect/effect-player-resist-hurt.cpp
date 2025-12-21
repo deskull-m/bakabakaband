@@ -139,7 +139,7 @@ void effect_player_arrow(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         return;
     }
 
-    if (is_tough(player_ptr) && one_in_(100 / (2 + player_ptr->lev))) {
+    if (is_tough(player_ptr) && one_in_(100 / (2 + player_ptr->level))) {
         msg_print(_("灘神影流、弾丸すべり！", "Bullet slipping of Nada-Shinkage-Arts!"));
         return;
     }

@@ -192,7 +192,7 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
         if (one_in_(2)) {
             msg_print("あなたの体が腐敗し始めた...");
             project(&player_ptr, 0, 3, player_ptr.y, player_ptr.x,
-                player_ptr.lev * 2, AttributeType::POIS,
+                player_ptr.level * 2, AttributeType::POIS,
                 PROJECT_KILL | PROJECT_ITEM);
         }
 
@@ -228,7 +228,7 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
 
         // 大ダメージ（腐敗エリア攻撃）
         project(&player_ptr, 0, 5, player_ptr.y, player_ptr.x,
-            player_ptr.lev * 4, AttributeType::POIS,
+            player_ptr.level * 4, AttributeType::POIS,
             PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
         if (one_in_(2)) {

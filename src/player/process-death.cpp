@@ -70,7 +70,7 @@ static void show_tomb_line(std::string_view str, int row)
  */
 static void show_basic_params(PlayerType *player_ptr)
 {
-    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), player_ptr->lev), GRAVE_LEVEL_ROW);
+    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), player_ptr->level), GRAVE_LEVEL_ROW);
 
     show_tomb_line(fmt::format(_("経験値: {}", "Exp: {}"), player_ptr->exp), GRAVE_EXP_ROW);
 
@@ -214,7 +214,7 @@ void print_tomb(PlayerType *player_ptr)
 {
     term_clear();
     read_dead_file(wc_ptr->is_blown_away());
-    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(player_ptr->pclass)[(player_ptr->lev - 1) / 5];
+    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(player_ptr->pclass)[(player_ptr->level - 1) / 5];
 
     show_tomb_line(player_ptr->name, GRAVE_PLAYER_NAME_ROW);
 

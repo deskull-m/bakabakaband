@@ -80,7 +80,7 @@ bool clear_mind(PlayerType *player_ptr)
 
     msg_print(_("少し頭がハッキリした。", "You feel your head clear a little."));
 
-    player_ptr->csp += (3 + player_ptr->lev / 20);
+    player_ptr->csp += (3 + player_ptr->level / 20);
     if (player_ptr->csp >= player_ptr->msp) {
         player_ptr->csp = player_ptr->msp;
         player_ptr->csp_frac = 0;
@@ -206,7 +206,7 @@ bool shock_power(PlayerType *player_ptr)
     }
 
     auto pos = player_ptr->get_neighbor(dir);
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     const auto dam = Dice::roll(8 + ((plev - 5) / 4) + boost / 12, 8);
     fire_beam(player_ptr, AttributeType::MISSILE, dir, dam);
     auto &floor = *player_ptr->current_floor_ptr;
@@ -266,7 +266,7 @@ bool shock_power(PlayerType *player_ptr)
  */
 bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     int boost = get_current_ki(player_ptr);
     if (heavy_armor(player_ptr)) {
         boost /= 2;

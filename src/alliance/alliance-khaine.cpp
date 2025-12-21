@@ -17,7 +17,7 @@ int AllianceKhaine::calcImpressionPoint(PlayerType *creature_ptr) const
     int level = 30;
 
     // STRベースでパトロンの傾向を反映した印象値計算
-    int impression = creature_ptr->stat_max[A_STR] + bias + creature_ptr->lev / level;
+    int impression = creature_ptr->stat_max[A_STR] + bias + creature_ptr->level / level;
     if (impression < 1) {
         impression = 1;
     }

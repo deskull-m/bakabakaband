@@ -249,7 +249,7 @@ static void display_player_speed(PlayerType *player_ptr, TERM_COLOR attr, int ba
     }
 
     display_player_one_line(ENTRY_SPEED, buf, attr);
-    display_player_one_line(ENTRY_LEVEL, format("%d", player_ptr->lev), TERM_L_GREEN);
+    display_player_one_line(ENTRY_LEVEL, format("%d", player_ptr->level), TERM_L_GREEN);
 }
 
 /*!
@@ -272,12 +272,12 @@ static void display_player_exp(PlayerType *player_ptr)
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
 
-    if (player_ptr->lev >= PY_MAX_LEVEL) {
+    if (player_ptr->level >= PY_MAX_LEVEL) {
         display_player_one_line(e, "*****", TERM_L_GREEN);
     } else if (pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[player_ptr->lev - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[player_ptr->level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp[player_ptr->level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
     }
 }
 

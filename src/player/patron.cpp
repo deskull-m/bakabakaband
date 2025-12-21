@@ -164,11 +164,11 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         }
     }
 
-    if (this->player_ptr->lev == 13) {
+    if (this->player_ptr->level == 13) {
         nasty_chance = 2;
-    } else if (!(this->player_ptr->lev % 13)) {
+    } else if (!(this->player_ptr->level % 13)) {
         nasty_chance = 3;
-    } else if (!(this->player_ptr->lev % 14)) {
+    } else if (!(this->player_ptr->level % 14)) {
         nasty_chance = 12;
     }
 
@@ -339,8 +339,8 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_HURT_LOT:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「苦しむがよい、無能な愚か者よ！」", "'Suffer, pathetic fool!'"));
-            fire_ball(this->player_ptr, AttributeType::DISINTEGRATE, Direction::self(), this->player_ptr->lev * 4, 4);
-            take_hit(this->player_ptr, DAMAGE_NOESCAPE, this->player_ptr->lev * 4, wrath_reason);
+            fire_ball(this->player_ptr, AttributeType::DISINTEGRATE, Direction::self(), this->player_ptr->level * 4, 4);
+            take_hit(this->player_ptr, DAMAGE_NOESCAPE, this->player_ptr->level * 4, wrath_reason);
             reward = _("分解の球が発生した。", "generating disintegration ball");
             break;
         case REW_HEAL_FUL:
@@ -435,7 +435,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_WRATH:
             msg_format(_("%sの声が轟き渡った:", "The voice of %s thunders:"), this->name.data());
             msg_print(_("「死ぬがよい、下僕よ！」", "'Die, mortal!'"));
-            take_hit(this->player_ptr, DAMAGE_LOSELIFE, this->player_ptr->lev * 4, wrath_reason);
+            take_hit(this->player_ptr, DAMAGE_LOSELIFE, this->player_ptr->level * 4, wrath_reason);
             for (int stat = 0; stat < A_MAX; stat++) {
                 (void)dec_stat(this->player_ptr, stat, 10 + randint1(15), false);
             }
@@ -483,7 +483,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             break;
         case REW_DISPEL_C:
             msg_format(_("%sの力が敵を攻撃するのを感じた！", "You can feel the power of %s assault your enemies!"), this->name.data());
-            (void)dispel_monsters(this->player_ptr, this->player_ptr->lev * 4);
+            (void)dispel_monsters(this->player_ptr, this->player_ptr->level * 4);
             break;
         case REW_GOOD_HAFTED:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());

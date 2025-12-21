@@ -124,7 +124,7 @@ void player_wipe_without_name(PlayerType *player_ptr)
     world.set_wild_mode(false);
     WildernessGrids::get_instance().initialize_position();
 
-    player_ptr->max_plv = player_ptr->lev = 1;
+    player_ptr->max_plv = player_ptr->level = 1;
     ArenaEntryList::get_instance().reset_entry();
     world.set_arena(true);
     world.knows_daily_bounty = false;

@@ -376,7 +376,7 @@ PERCENTAGE breakage_chance(PlayerType *player_ptr, ItemEntity *o_ptr, bool has_a
     }
 
     /* Examine the item type */
-    PERCENTAGE archer_bonus = (has_archer_bonus ? (PERCENTAGE)(player_ptr->lev - 1) / 7 + 4 : 0);
+    PERCENTAGE archer_bonus = (has_archer_bonus ? (PERCENTAGE)(player_ptr->level - 1) / 7 + 4 : 0);
     switch (o_ptr->bi_key.tval()) {
         /* Always break */
     case ItemKindType::FLASK:

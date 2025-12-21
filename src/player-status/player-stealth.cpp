@@ -56,7 +56,7 @@ int16_t PlayerStealth::personality_bonus()
 int16_t PlayerStealth::class_base_bonus()
 {
     const auto &player_class = class_info.at(this->player_ptr->pclass);
-    return player_class.c_stl + (player_class.x_stl * this->player_ptr->lev / 10);
+    return player_class.c_stl + (player_class.x_stl * this->player_ptr->level / 10);
 }
 
 /*!
@@ -75,9 +75,9 @@ int16_t PlayerStealth::class_bonus()
 
     int16_t bonus = 0;
     if (heavy_armor(this->player_ptr)) {
-        bonus -= (this->player_ptr->lev) / 10;
+        bonus -= (this->player_ptr->level) / 10;
     } else if (pc.has_ninja_speed()) {
-        bonus += (this->player_ptr->lev) / 10;
+        bonus += (this->player_ptr->level) / 10;
     }
 
     return bonus;

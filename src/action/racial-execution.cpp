@@ -46,7 +46,7 @@ bool exe_racial_power(PlayerType *player_ptr, const int32_t command)
  */
 PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr)
 {
-    if ((player_ptr->lev < rpi_ptr->min_level) || player_ptr->effects()->confusion().is_confused()) {
+    if ((player_ptr->level < rpi_ptr->min_level) || player_ptr->effects()->confusion().is_confused()) {
         return 0;
     }
 
@@ -58,8 +58,8 @@ PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr)
     const auto &player_stun = player_ptr->effects()->stun();
     if (player_stun.is_stunned()) {
         difficulty += player_stun.current();
-    } else if (player_ptr->lev > rpi_ptr->min_level) {
-        PERCENTAGE lev_adj = (PERCENTAGE)((player_ptr->lev - rpi_ptr->min_level) / 3);
+    } else if (player_ptr->level > rpi_ptr->min_level) {
+        PERCENTAGE lev_adj = (PERCENTAGE)((player_ptr->level - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
             lev_adj = 10;
         }
@@ -104,8 +104,8 @@ static void adjust_racial_power_difficulty(PlayerType *player_ptr, rpi_type *rpi
     const auto &player_stun = player_ptr->effects()->stun();
     if (player_stun.is_stunned()) {
         *difficulty += player_stun.current();
-    } else if (player_ptr->lev > rpi_ptr->min_level) {
-        int lev_adj = ((player_ptr->lev - rpi_ptr->min_level) / 3);
+    } else if (player_ptr->level > rpi_ptr->min_level) {
+        int lev_adj = ((player_ptr->level - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
             lev_adj = 10;
         }
@@ -134,7 +134,7 @@ racial_level_check_result check_racial_level(PlayerType *player_ptr, rpi_type *r
     }
 
     PlayerEnergy energy(player_ptr);
-    if (player_ptr->lev < min_level) {
+    if (player_ptr->level < min_level) {
         msg_format(_("この能力を使用するにはレベル %d に達していなければなりません。", "You need to attain level %d to use this power."), min_level);
         energy.reset_player_turn();
         return RACIAL_CANCEL;

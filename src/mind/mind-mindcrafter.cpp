@@ -144,7 +144,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
     bool b = false;
     int dam = 0;
     TIME_EFFECT t;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     switch (spell) {
     case MindMindcrafterType::PRECOGNITION:
         if (plev > 44) {

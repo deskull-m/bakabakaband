@@ -187,7 +187,7 @@ bool choose_ele_attack(PlayerType *player_ptr, TIME_EFFECT turn)
     }
 
     screen_save();
-    int num = (player_ptr->lev - 20) / 5;
+    int num = (player_ptr->level - 20) / 5;
     c_prt(TERM_RED, _("        a) 焼棄", "        a) Fire Brand"), 2, 14);
 
     if (num >= 2) {

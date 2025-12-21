@@ -35,7 +35,7 @@ ItemMagicApplier::ItemMagicApplier(PlayerType *player_ptr, ItemEntity *o_ptr, DE
     , mode(mode)
 {
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
-        this->lev += randint0(player_ptr->lev / 2 + 10);
+        this->lev += randint0(player_ptr->level / 2 + 10);
     }
 
     if (this->lev > MAX_DEPTH - 1) {

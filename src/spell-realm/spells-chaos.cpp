@@ -80,7 +80,7 @@ void call_the_void(PlayerType *player_ptr)
         return;
     }
 
-    if (destroy_area(player_ptr, player_ptr->y, player_ptr->x, 15 + player_ptr->lev + randint0(11), false)) {
+    if (destroy_area(player_ptr, player_ptr->y, player_ptr->x, 15 + player_ptr->level + randint0(11), false)) {
         msg_print(_("ダンジョンが崩壊した...", "The dungeon collapses..."));
     } else {
         msg_print(_("ダンジョンは大きく揺れた。", "The dungeon trembles."));

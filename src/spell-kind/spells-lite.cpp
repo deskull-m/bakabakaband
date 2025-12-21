@@ -314,7 +314,7 @@ bool starlight(PlayerType *player_ptr, bool magic)
         }
 
         constexpr uint flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL | PROJECT_LOS;
-        project(player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + player_ptr->lev / 8, 10), AttributeType::LITE_WEAK, flags);
+        project(player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + player_ptr->level / 8, 10), AttributeType::LITE_WEAK, flags);
     }
 
     return true;

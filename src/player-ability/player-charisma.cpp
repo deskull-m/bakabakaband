@@ -125,8 +125,8 @@ int16_t PlayerCharisma::set_exception_use_status(int16_t value)
 {
     if (this->player_ptr->muta.has(PlayerMutationType::ILL_NORM)) {
         /* 10.0 to 27.0 charisma, guaranteed, based on level */
-        if (value < 80 + 20 * this->player_ptr->lev) {
-            value = 80 + 20 * this->player_ptr->lev;
+        if (value < 80 + 20 * this->player_ptr->level) {
+            value = 80 + 20 * this->player_ptr->level;
         }
     }
     return value;

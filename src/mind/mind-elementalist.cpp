@@ -317,7 +317,7 @@ static AttributeType get_element_spells_type(PlayerType *player_ptr, int n)
     const auto &realm = element_types.at(player_ptr->element_realm);
     const auto t = realm.type.at(n);
     if (realm.extra.find(t) != realm.extra.end()) {
-        if (evaluate_percent(player_ptr->lev * 2)) {
+        if (evaluate_percent(player_ptr->level * 2)) {
             return realm.extra.at(t);
         }
     }
@@ -393,7 +393,7 @@ static mind_type get_elemental_info(PlayerType *player_ptr, int spell_idx)
  */
 static std::string get_element_effect_info(PlayerType *player_ptr, int spell_idx)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     auto spell = i2enum<ElementSpells>(spell_idx);
     int dam = 0;
 
@@ -443,7 +443,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto spell = i2enum<ElementSpells>(spell_idx);
     const auto &power = element_powers.at(spell);
-    const auto plev = player_ptr->lev;
+    const auto plev = player_ptr->level;
     switch (spell) {
     case ElementSpells::BOLT_1ST: {
         const auto dir = get_aim_dir(player_ptr);
@@ -644,7 +644,7 @@ static PERCENTAGE decide_element_chance(PlayerType *player_ptr, mind_type spell)
 {
     PERCENTAGE chance = spell.fail;
 
-    chance -= 3 * (player_ptr->lev - spell.min_lev);
+    chance -= 3 * (player_ptr->level - spell.min_lev);
     chance += player_ptr->to_m_chance;
     chance -= 3 * (adj_mag_stat[player_ptr->stat_index[A_WIS]] - 1);
 
@@ -698,7 +698,7 @@ bool get_element_power(PlayerType *player_ptr, SPELL_IDX *sn, bool only_browse)
     int num = 0;
     TERM_LEN y = 1;
     TERM_LEN x = 10;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     bool flag, redraw;
     int menu_line = (use_menu ? 1 : 0);
 
@@ -872,7 +872,7 @@ static bool try_cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx, 
     sound(SoundKind::FAIL);
 
     if (randint1(100) < chance / 2) {
-        int plev = player_ptr->lev;
+        int plev = player_ptr->level;
         msg_print(_("元素の力が制御できない氾流となって解放された！", "The elemental power surges from you in an uncontrollable torrent!"));
         const auto element = get_element_types(player_ptr->element_realm)[0];
         constexpr auto flags = PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
@@ -983,7 +983,7 @@ void display_element_spell_list(PlayerType *player_ptr, int y, int x)
     int i;
     for (i = 0; i < spell_max; i++) {
         const auto spell = get_elemental_info(player_ptr, i);
-        if (spell.min_lev > player_ptr->lev) {
+        if (spell.min_lev > player_ptr->level) {
             break;
         }
 
@@ -1113,7 +1113,7 @@ bool has_element_resist(PlayerType *player_ptr, ElementRealmType realm, PLAYER_L
         return false;
     }
 
-    return (player_ptr->element_realm == realm) && (player_ptr->lev >= lev);
+    return (player_ptr->element_realm == realm) && (player_ptr->level >= lev);
 }
 
 /*!
@@ -1292,7 +1292,7 @@ tl::optional<ElementRealmType> select_element_realm(PlayerType *player_ptr)
  */
 void switch_element_racial(PlayerType *player_ptr, rc_type *rc_ptr)
 {
-    auto plev = player_ptr->lev;
+    auto plev = player_ptr->level;
     rpi_type rpi;
     switch (player_ptr->element_realm) {
     case ElementRealmType::FIRE:
@@ -1473,7 +1473,7 @@ static bool door_to_darkness(PlayerType *player_ptr, int distance)
  */
 bool switch_element_execution(PlayerType *player_ptr)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
 
     switch (player_ptr->element_realm) {
     case ElementRealmType::FIRE:

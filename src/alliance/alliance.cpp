@@ -181,10 +181,10 @@ Alliance::Alliance(AllianceType id, std::string tag, std::string name, int64_t b
  */
 int Alliance::calcPlayerPower(PlayerType const &player_ptr, const int bias, const int min_level)
 {
-    if (min_level > player_ptr.lev) {
+    if (min_level > player_ptr.level) {
         return 0;
     }
-    return (2000 + 10 * (player_ptr.lev - min_level + 1) * (player_ptr.lev - min_level + 1)) * bias / 100;
+    return (2000 + 10 * (player_ptr.level - min_level + 1) * (player_ptr.level - min_level + 1)) * bias / 100;
 }
 
 void Alliance::panishment([[maybe_unused]] PlayerType &player_ptr)

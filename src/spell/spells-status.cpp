@@ -114,7 +114,7 @@ bool sleep_monster(PlayerType *player_ptr, const Direction &dir, int power)
  */
 bool stasis_monster(PlayerType *player_ptr, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS, dir, player_ptr->lev * 2, 0);
+    return fire_ball_hide(player_ptr, AttributeType::STASIS, dir, player_ptr->level * 2, 0);
 }
 
 /*!
@@ -126,7 +126,7 @@ bool stasis_monster(PlayerType *player_ptr, const Direction &dir)
  */
 bool stasis_evil(PlayerType *player_ptr, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS_EVIL, dir, player_ptr->lev * 2, 0);
+    return fire_ball_hide(player_ptr, AttributeType::STASIS_EVIL, dir, player_ptr->level * 2, 0);
 }
 
 /*!
@@ -606,7 +606,7 @@ bool cosmic_cast_off(PlayerType *player_ptr, ItemEntity **o_ptr_ptr)
     (void)mod_acceleration(player_ptr, t, false);
     (void)set_shero(player_ptr, player_ptr->shero + t, false);
     if (PlayerClass(player_ptr).equals(PlayerClassType::FORCETRAINER)) {
-        set_current_ki(player_ptr, true, player_ptr->lev * 5 + 190);
+        set_current_ki(player_ptr, true, player_ptr->level * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }
 

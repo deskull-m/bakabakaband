@@ -187,7 +187,7 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
     } else if (streq(b + 1, "REALM2")) {
         v = PlayerRealm(player_ptr).realm2().get_name().en_string();
     } else if (streq(b + 1, "LEVEL")) {
-        v = format("%02d", player_ptr->lev);
+        v = format("%02d", player_ptr->level);
     } else if (streq(b + 1, "AUTOREGISTER")) {
         if (player_ptr->autopick_autoregister) {
             v = "1";

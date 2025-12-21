@@ -54,7 +54,7 @@ void ObjectReadEntity::execute(bool known)
     }
 
     SpellHex spell_hex(this->player_ptr);
-    if (spell_hex.is_spelling_any() && ((this->player_ptr->lev < 35) || spell_hex.is_casting_full_capacity())) {
+    if (spell_hex.is_spelling_any() && ((this->player_ptr->level < 35) || spell_hex.is_casting_full_capacity())) {
         (void)SpellHex(this->player_ptr).stop_all_spells();
     }
 
@@ -120,5 +120,5 @@ void ObjectReadEntity::gain_exp_from_item_use(ItemEntity *o_ptr, bool is_identif
 
     object_aware(this->player_ptr, *o_ptr);
     const auto item_level = o_ptr->get_baseitem_level();
-    gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item_level + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
+    gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
 }

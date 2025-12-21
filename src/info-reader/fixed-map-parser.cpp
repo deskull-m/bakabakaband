@@ -199,7 +199,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
     } else if (streq(b + 1, "TOWN")) {
         v = std::to_string(player_ptr->town_num);
     } else if (streq(b + 1, "LEVEL")) {
-        v = std::to_string(player_ptr->lev);
+        v = std::to_string(player_ptr->level);
     } else if (streq(b + 1, "QUEST_NUMBER")) {
         v = std::to_string(enum2i(player_ptr->current_floor_ptr->quest_number));
     } else if (streq(b + 1, "LEAVING_QUEST")) {

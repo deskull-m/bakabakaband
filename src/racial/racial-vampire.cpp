@@ -35,7 +35,7 @@ bool vampirism(PlayerType *player_ptr)
 
     msg_print(_("あなたはニヤリとして牙をむいた...", "You grin and bare your fangs..."));
 
-    int dummy = player_ptr->lev * 2;
+    int dummy = player_ptr->level * 2;
     if (!hypodynamic_bolt(player_ptr, dir, dummy)) {
         msg_print(_("げぇ！ひどい味だ。", "Yechh. That tastes foul."));
         return true;

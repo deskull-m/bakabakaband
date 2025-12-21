@@ -95,9 +95,9 @@ static bool scene_field(PlayerType *player_ptr, scene_type *value)
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
 
-        if (player_ptr->lev >= 45) {
+        if (player_ptr->level >= 45) {
             value->val = MUSIC_BASIC_FIELD3;
-        } else if (player_ptr->lev >= 25) {
+        } else if (player_ptr->level >= 25) {
             value->val = MUSIC_BASIC_FIELD2;
         } else {
             value->val = MUSIC_BASIC_FIELD1;
