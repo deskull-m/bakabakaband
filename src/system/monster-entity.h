@@ -23,6 +23,7 @@ constexpr int MONSTER_MAXHP = 30000; //!< モンスターの最大HP
 
 enum class MonraceId : int16_t;
 enum class PlayerRaceType;
+enum class PlayerClassType : short;
 class FloorType;
 class MonraceDefinition;
 class MonsterEntityWriter;
@@ -44,6 +45,7 @@ public:
     BIT_FLAGS8 sub_align{}; /*!< 中立属性のモンスターが召喚主のアライメントに従い一時的に立っている善悪陣営 / Sub-alignment for a neutral monster */
     AllianceType alliance_idx; /*!< 現在の所属アライアンス */
     std::vector<PlayerRaceType> equivalent_player_races{}; /*!< モンスターのフラグに基づいて対応するプレイヤー種族IDリスト */
+    std::vector<PlayerClassType> equivalent_player_classes{}; /*!< モンスターのフラグに基づいて対応するプレイヤー職業IDリスト */
 
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
@@ -125,6 +127,7 @@ public:
     void reset_target();
     void set_friendly();
     void initialize_equivalent_player_races();
+    void initialize_equivalent_player_classes();
 
     // CreatureEntityインターフェースの実装
     POSITION get_x() const override;
