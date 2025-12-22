@@ -406,6 +406,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     m_ptr->initialize_equivalent_player_races();
     m_ptr->initialize_equivalent_player_classes();
 
+    // 所持金を初期化（能力値に基づいて計算）
+    get_money_for_creature(m_ptr);
+
     m_ptr->ml = false;
     if (any_bits(mode, PM_FORCE_PET)) {
         set_pet(player_ptr, *m_ptr);

@@ -164,6 +164,9 @@ static void display_monster_status(MonsterEntity *monster_ptr)
     // 経験値を表示
     put_str(format(_("経験値: %ld", "Exp: %ld"), (long)monster_ptr->exp), 4, 1);
 
+    // 所持金を表示
+    put_str(format(_("所持金: %ld", "Gold: %ld"), (long)monster_ptr->au), 4, 40);
+
     // 能力値表示（プレイヤーと同じフォーマット）
     int stat_col = 22;
     int row = 5;
