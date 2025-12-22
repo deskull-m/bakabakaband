@@ -161,9 +161,12 @@ static void display_monster_status(MonsterEntity *monster_ptr)
         put_str(format(_("職業: %s", "Class: %s"), monster_ptr->pclass_ref->title.data()), 3, 40);
     }
 
+    // 経験値を表示
+    put_str(format(_("経験値: %ld", "Exp: %ld"), (long)monster_ptr->exp), 4, 1);
+
     // 能力値表示（プレイヤーと同じフォーマット）
     int stat_col = 22;
-    int row = 4;
+    int row = 5;
 
     // ヘッダー行
     c_put_str(TERM_WHITE, _("能力", "Stat"), row, stat_col + 1);
