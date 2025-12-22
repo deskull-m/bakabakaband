@@ -111,6 +111,14 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::PARENT);
     }
 
+    if (this->monster.au) {
+        set_bits(flags, SaveDataMonsterFlagType::GOLD);
+    }
+
+    if (this->monster.ht || this->monster.wt) {
+        set_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -174,5 +182,14 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
 
     if (any_bits(flags, SaveDataMonsterFlagType::PARENT)) {
         wr_s16b(this->monster.parent_m_idx);
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::GOLD)) {
+        wr_s32b(this->monster.au);
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT)) {
+        wr_s16b(this->monster.ht);
+        wr_s16b(this->monster.wt);
     }
 }
