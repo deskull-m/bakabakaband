@@ -5,6 +5,7 @@
 #include "player-info/race-types.h"
 #include "player/player-personality-types.h"
 #include "player/player-sex.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 /*!
@@ -23,6 +24,35 @@ void get_height_weight(PlayerType *player_ptr)
         player_ptr->ht = randnor(player_ptr->race->f_b_ht, player_ptr->race->f_m_ht);
         deviation = (int)(player_ptr->ht) * 100 / (int)(player_ptr->race->f_b_ht);
         player_ptr->wt = randnor((int)(player_ptr->race->f_b_wt) * deviation / 100, (int)(player_ptr->race->f_m_wt) * deviation / 300);
+        return;
+    default:
+        return;
+    }
+}
+
+/*!
+ * @brief クリーチャーの身長体重を決める（種族情報に基づいて）
+ * @param creature_ptr クリーチャーへの参照ポインタ
+ * @details 種族が指定されている場合、その種族の身長・体重範囲で設定する
+ */
+void get_height_weight_for_creature(CreatureEntity *creature_ptr)
+{
+    // 種族情報が設定されていない場合は何もしない
+    if (creature_ptr->race == nullptr) {
+        return;
+    }
+
+    int deviation;
+    switch (creature_ptr->psex) {
+    case SEX_MALE:
+        creature_ptr->ht = randnor(creature_ptr->race->m_b_ht, creature_ptr->race->m_m_ht);
+        deviation = (int)(creature_ptr->ht) * 100 / (int)(creature_ptr->race->m_b_ht);
+        creature_ptr->wt = randnor((int)(creature_ptr->race->m_b_wt) * deviation / 100, (int)(creature_ptr->race->m_m_wt) * deviation / 300);
+        return;
+    case SEX_FEMALE:
+        creature_ptr->ht = randnor(creature_ptr->race->f_b_ht, creature_ptr->race->f_m_ht);
+        deviation = (int)(creature_ptr->ht) * 100 / (int)(creature_ptr->race->f_b_ht);
+        creature_ptr->wt = randnor((int)(creature_ptr->race->f_b_wt) * deviation / 100, (int)(creature_ptr->race->f_m_wt) * deviation / 300);
         return;
     default:
         return;

@@ -4,6 +4,7 @@
 #include "core/window-redrawer.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
+#include "locale/japanese.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -167,9 +168,18 @@ static void display_monster_status(MonsterEntity *monster_ptr)
     // 所持金を表示
     put_str(format(_("所持金: %ld", "Gold: %ld"), (long)monster_ptr->au), 4, 40);
 
+    // 身長・体重を表示（種族が設定されている場合のみ）
+    if (monster_ptr->race != nullptr && monster_ptr->ht > 0) {
+#ifdef JP
+        put_str(format("身長: %dcm  体重: %dkg", inch_to_cm(monster_ptr->ht), lb_to_kg(monster_ptr->wt)), 5, 1);
+#else
+        put_str(format("Height: %d  Weight: %d", monster_ptr->ht, monster_ptr->wt), 5, 1);
+#endif
+    }
+
     // 能力値表示（プレイヤーと同じフォーマット）
     int stat_col = 22;
-    int row = 5;
+    int row = 6;
 
     // ヘッダー行
     c_put_str(TERM_WHITE, _("能力", "Stat"), row, stat_col + 1);
