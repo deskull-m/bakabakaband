@@ -10,6 +10,7 @@
 #include "util/point-2d.h"
 #include <map>
 #include <string>
+#include <vector>
 
 /*!
  * @brief Monster information, for a specific monster.
@@ -21,6 +22,7 @@
 constexpr int MONSTER_MAXHP = 30000; //!< モンスターの最大HP
 
 enum class MonraceId : int16_t;
+enum class PlayerRaceType;
 class FloorType;
 class MonraceDefinition;
 class MonsterEntityWriter;
@@ -41,6 +43,7 @@ public:
 #define SUB_ALIGN_GOOD 0x0002 /*!< モンスターのサブアライメント:悪 */
     BIT_FLAGS8 sub_align{}; /*!< 中立属性のモンスターが召喚主のアライメントに従い一時的に立っている善悪陣営 / Sub-alignment for a neutral monster */
     AllianceType alliance_idx; /*!< 現在の所属アライアンス */
+    std::vector<PlayerRaceType> equivalent_player_races{}; /*!< モンスターのフラグに基づいて対応するプレイヤー種族IDリスト */
 
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
@@ -121,6 +124,7 @@ public:
     void set_target(const Pos2D &pos);
     void reset_target();
     void set_friendly();
+    void initialize_equivalent_player_races();
 
     // CreatureEntityインターフェースの実装
     POSITION get_x() const override;
