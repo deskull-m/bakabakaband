@@ -90,6 +90,36 @@ void get_stats(CreatureEntity *creature_ptr)
 }
 
 /*!
+ * @brief クリーチャーの初期所持金を決める（プレイヤーと同様のロジック）
+ * @param creature_ptr クリーチャーへの参照ポインタ
+ * @details プレイヤーのget_money()と同等の処理を行う
+ */
+void get_money_for_creature(CreatureEntity *creature_ptr)
+{
+    int gold = (creature_ptr->prestige * 6) + randint1(100) + 300;
+
+    // 能力値に応じて所持金を調整
+    for (int i = 0; i < A_MAX; i++) {
+        if (creature_ptr->stat_max[i] >= 680) {
+            gold -= 300;
+        } else if (creature_ptr->stat_max[i] >= 380) {
+            gold -= 200;
+        } else if (creature_ptr->stat_max[i] > 180) {
+            gold -= 150;
+        } else {
+            gold -= (creature_ptr->stat_max[i] / 10 - 8) * 10;
+        }
+    }
+
+    const int minimum_deposit = 100;
+    if (gold < minimum_deposit) {
+        gold = minimum_deposit;
+    }
+
+    creature_ptr->au = gold;
+}
+
+/*!
  * @brief 経験値修正の合計値を計算
  */
 uint16_t get_expfact(PlayerType *player_ptr)
