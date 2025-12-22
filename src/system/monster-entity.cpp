@@ -5,6 +5,8 @@
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-status.h"
+#include "player-info/race-types.h"
+#include "player/race-info-table.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
@@ -14,6 +16,7 @@
 #include "term/term-color-types.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include <algorithm>
 
@@ -597,6 +600,114 @@ void MonsterEntity::reset_target()
 void MonsterEntity::set_friendly()
 {
     this->mflag2.set(MonsterConstantFlagType::FRIENDLY);
+}
+
+/*!
+ * @brief モンスターのフラグに基づいて対応するプレイヤー種族IDを初期化する
+ * @details モンスターのMonsterKindTypeフラグをチェックし、
+ * プレイヤー種族と同等の名前のフラグがあればequivalent_player_racesに追加する
+ */
+void MonsterEntity::initialize_equivalent_player_races()
+{
+    this->equivalent_player_races.clear();
+    const auto &monrace = this->get_monrace();
+
+    // モンスターのフラグとプレイヤー種族の対応関係をチェック
+    if (monrace.kind_flags.has(MonsterKindType::HUMAN)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HUMAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ELF)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ELF);
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_ELF);
+        this->equivalent_player_races.push_back(PlayerRaceType::HIGH_ELF);
+        this->equivalent_player_races.push_back(PlayerRaceType::DARK_ELF);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DWARF)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::DWARF);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HOBBIT)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HOBBIT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GNOME)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::GNOME);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ORC)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_ORC);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::TROLL)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_TROLL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GIANT)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_GIANT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::OGRE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_OGRE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::AMBERITE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::AMBERITE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::YEEK)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::YEEK);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::KOBOLD)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::KOBOLD);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::NIBELUNG)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::NIBELUNG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DRAGON)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::DRACONIAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MINDFLAYER)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::MIND_FLAYER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DEMON)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::IMP);
+        this->equivalent_player_races.push_back(PlayerRaceType::BALROG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GOLEM)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::GOLEM);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SKELETON)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::SKELETON);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ZOMBIE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ZOMBIE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::VAMPIRE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::VAMPIRE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::UNDEAD)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::SPECTRE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FAIRY)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::SPRITE);
+        this->equivalent_player_races.push_back(PlayerRaceType::S_FAIRY);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BEAST)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::BEASTMAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::TREEFOLK)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ENT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ANGEL)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ARCHON);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ROBOT)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ANDROID);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MERFOLK)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::MERFOLK);
+    }
+
+    // equivalent_player_racesの最初の種族をraceポインタに設定
+    if (!this->equivalent_player_races.empty()) {
+        this->race = &race_info[enum2i(this->equivalent_player_races[0])];
+        this->prace = this->equivalent_player_races[0];
+    } else {
+        this->race = nullptr;
+        this->prace = PlayerRaceType::HUMAN; // デフォルト
+    }
 }
 
 bool MonsterEntity::is_riding() const
