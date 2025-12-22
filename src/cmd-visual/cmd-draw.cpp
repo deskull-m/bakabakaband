@@ -6,6 +6,7 @@
 #include "io/input-key-acceptor.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-race.h"
+#include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player-info/race-types.h"
 #include "player/player-status-table.h"
@@ -153,6 +154,11 @@ static void display_monster_status(MonsterEntity *monster_ptr)
     // 種族情報を表示
     if (monster_ptr->race != nullptr) {
         put_str(format(_("種族: %s", "Race: %s"), monster_ptr->race->title.data()), 3, 1);
+    }
+
+    // 職業情報を表示
+    if (monster_ptr->pclass_ref != nullptr) {
+        put_str(format(_("職業: %s", "Class: %s"), monster_ptr->pclass_ref->title.data()), 3, 40);
     }
 
     // 能力値表示（プレイヤーと同じフォーマット）

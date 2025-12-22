@@ -299,12 +299,17 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
         return tl::nullopt;
     }
 
-    // モンスターの場合も種族を表示
-    if (!creature_ptr->is_player() && creature_ptr->race != nullptr) {
-        display_player_one_line(ENTRY_RACE, creature_ptr->race->title, TERM_L_BLUE);
-    }
-
     display_player_basic_info(player_ptr);
+
+    // モンスターの場合も種族と職業を表示
+    if (!creature_ptr->is_player()) {
+        if (creature_ptr->race != nullptr) {
+            display_player_one_line(ENTRY_RACE, creature_ptr->race->title, TERM_L_BLUE);
+        }
+        if (creature_ptr->pclass_ref != nullptr) {
+            display_player_one_line(ENTRY_CLASS, creature_ptr->pclass_ref->title, TERM_L_BLUE);
+        }
+    }
 
     if (creature_ptr->is_player()) {
         display_magic_realms(player_ptr);

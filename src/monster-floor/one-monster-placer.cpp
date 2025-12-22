@@ -402,8 +402,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
     }
 
-    // モンスターのフラグに基づいて対応するプレイヤー種族IDを初期化
+    // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
     m_ptr->initialize_equivalent_player_races();
+    m_ptr->initialize_equivalent_player_classes();
 
     m_ptr->ml = false;
     if (any_bits(mode, PM_FORCE_PET)) {

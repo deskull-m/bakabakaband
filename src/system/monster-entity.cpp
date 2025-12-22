@@ -5,6 +5,8 @@
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-status.h"
+#include "player-info/class-info.h"
+#include "player-info/class-types.h"
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
 #include "system/angband-system.h"
@@ -707,6 +709,67 @@ void MonsterEntity::initialize_equivalent_player_races()
     } else {
         this->race = nullptr;
         this->prace = PlayerRaceType::HUMAN; // デフォルト
+    }
+}
+
+/*!
+ * @brief モンスターのフラグに基づいて対応するプレイヤー職業IDを初期化する
+ * @details モンスターのMonsterKindTypeフラグをチェックし、
+ * プレイヤー職業と同等の名前のフラグがあればequivalent_player_classesに追加する
+ */
+void MonsterEntity::initialize_equivalent_player_classes()
+{
+    this->equivalent_player_classes.clear();
+    const auto &monrace = this->get_monrace();
+
+    // モンスターのフラグとプレイヤー職業の対応関係をチェック
+    if (monrace.kind_flags.has(MonsterKindType::WARRIOR)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::WARRIOR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MAGE)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::MAGE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PRIEST)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::PRIEST);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ROGUE)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::ROGUE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::RANGER)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::RANGER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PALADIN)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::PALADIN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SAMURAI)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::SAMURAI);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::NINJA)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::NINJA);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MINDCRAFTER)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::MINDCRAFTER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ARCHER)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::ARCHER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BARD)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::BARD);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SMITH)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::SMITH);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::KARATEKA)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::MONK);
+    }
+
+    // equivalent_player_classesの最初の職業をpclass_refポインタに設定
+    if (!this->equivalent_player_classes.empty()) {
+        this->pclass_ref = &class_info.at(this->equivalent_player_classes[0]);
+        this->pclass = this->equivalent_player_classes[0];
+    } else {
+        this->pclass_ref = nullptr;
+        this->pclass = PlayerClassType::WARRIOR; // デフォルト
     }
 }
 
