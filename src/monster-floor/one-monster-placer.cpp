@@ -5,6 +5,7 @@
  */
 
 #include "alliance/alliance.h"
+#include "birth/birth-body-spec.h"
 #include "birth/birth-stat.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"
@@ -405,6 +406,9 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
     m_ptr->initialize_equivalent_player_races();
     m_ptr->initialize_equivalent_player_classes();
+
+    // 種族が指定されている場合、身長・体重を設定
+    get_height_weight_for_creature(m_ptr);
 
     // 所持金を初期化（能力値に基づいて計算）
     get_money_for_creature(m_ptr);
