@@ -2,6 +2,9 @@
 #include "load/load-util.h"
 #include "load/old/load-v1-5-0.h"
 #include "load/old/monster-flag-types-savefile50.h"
+#include "player-info/class-info.h"
+#include "player-info/race-types.h"
+#include "player/race-info-table.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
@@ -105,6 +108,42 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
         } else {
             monster.ht = 0;
             monster.wt = 0;
+        }
+    }
+
+    // バージョン41以降: 種族・職業の読み込み
+    if (loading_savefile_version_is_older_than(41)) {
+        monster.prace = PlayerRaceType::NONE;
+        monster.pclass = PlayerClassType::NONE;
+        monster.race = nullptr;
+        monster.pclass_ref = nullptr;
+    } else {
+        // 種族の読み込み
+        if (any_bits(flags, SaveDataMonsterFlagType::RACE)) {
+            monster.prace = i2enum<PlayerRaceType>(rd_byte());
+            // ポインタを復元
+            if (monster.prace != PlayerRaceType::NONE && enum2i(monster.prace) < MAX_RACES) {
+                monster.race = &race_info[enum2i(monster.prace)];
+            } else {
+                monster.race = nullptr;
+            }
+        } else {
+            monster.prace = PlayerRaceType::NONE;
+            monster.race = nullptr;
+        }
+
+        // 職業の読み込み
+        if (any_bits(flags, SaveDataMonsterFlagType::CLASS)) {
+            monster.pclass = i2enum<PlayerClassType>(rd_s16b());
+            // ポインタを復元
+            if (monster.pclass != PlayerClassType::NONE) {
+                monster.pclass_ref = &class_info.at(monster.pclass);
+            } else {
+                monster.pclass_ref = nullptr;
+            }
+        } else {
+            monster.pclass = PlayerClassType::NONE;
+            monster.pclass_ref = nullptr;
         }
     }
 }

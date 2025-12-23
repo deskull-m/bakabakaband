@@ -176,10 +176,7 @@ void set_class_ability_info(PlayerType *player_ptr, self_info_type *self_ptr)
 
         break;
 
-    case PlayerClassType::ARCHER:
-    case PlayerClassType::BARD:
-    case PlayerClassType::SNIPER:
-    case PlayerClassType::MAX:
+    default:
         break;
     }
 }

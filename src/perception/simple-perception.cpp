@@ -271,7 +271,7 @@ void sense_inventory1(PlayerType *player_ptr)
         break;
     }
 
-    case PlayerClassType::MAX:
+    default:
         break;
     }
 
@@ -403,7 +403,7 @@ void sense_inventory2(PlayerType *player_ptr)
         break;
     }
 
-    case PlayerClassType::MAX:
+    default:
         break;
     }
 

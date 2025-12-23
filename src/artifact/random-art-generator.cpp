@@ -150,7 +150,7 @@ static void set_artifact_bias(PlayerType *player_ptr, ItemEntity *o_ptr, int *wa
         o_ptr->artifact_bias = one_in_(2) ? RandomArtifactBias::MAGE : RandomArtifactBias::INT;
         break;
 
-    case PlayerClassType::MAX:
+    default:
         break;
     }
 }

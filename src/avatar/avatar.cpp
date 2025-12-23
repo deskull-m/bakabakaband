@@ -288,7 +288,7 @@ void initialize_virtues(CreatureEntity &creature)
     case PlayerClassType::ELEMENTALIST:
         add_virtue(Virtue::NATURE);
         break;
-    case PlayerClassType::MAX:
+    default:
         break;
     };
 
@@ -366,7 +366,7 @@ void initialize_virtues(CreatureEntity &creature)
     case PlayerRaceType::BEASTMAN:
         add_virtue(Virtue::CHANCE);
         break;
-    case PlayerRaceType::MAX:
+    default:
         break;
     }
 
