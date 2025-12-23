@@ -1,5 +1,7 @@
 #include "save/monster-entity-writer.h"
 #include "load/old/monster-flag-types-savefile50.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
 #include "save/save-util.h"
 #include "system/monster-entity.h"
 #include "util/enum-converter.h"
@@ -119,6 +121,14 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT);
     }
 
+    if (this->monster.prace != PlayerRaceType::NONE) {
+        set_bits(flags, SaveDataMonsterFlagType::RACE);
+    }
+
+    if (this->monster.pclass != PlayerClassType::NONE) {
+        set_bits(flags, SaveDataMonsterFlagType::CLASS);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -191,5 +201,13 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     if (any_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT)) {
         wr_s16b(this->monster.ht);
         wr_s16b(this->monster.wt);
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::RACE)) {
+        wr_byte(enum2i(this->monster.prace));
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::CLASS)) {
+        wr_s16b(enum2i(this->monster.pclass));
     }
 }

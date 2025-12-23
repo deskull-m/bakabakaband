@@ -45,6 +45,7 @@ enum class PlayerRaceType : int {
     ANDROID = 36,
     MERFOLK = 37,
     MAX,
+    NONE = -1,
 };
 
 constexpr auto MAX_RACES = enum2i(PlayerRaceType::MAX);
