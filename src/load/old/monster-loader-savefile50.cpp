@@ -91,4 +91,20 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
     }
 
     monster.parent_m_idx = any_bits(flags, SaveDataMonsterFlagType::PARENT) ? rd_s16b() : 0;
+
+    // バージョン40以降: 所持金、身長、体重の読み込み
+    if (loading_savefile_version_is_older_than(40)) {
+        monster.au = 0;
+        monster.ht = 0;
+        monster.wt = 0;
+    } else {
+        monster.au = any_bits(flags, SaveDataMonsterFlagType::GOLD) ? rd_s32b() : 0;
+        if (any_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT)) {
+            monster.ht = rd_s16b();
+            monster.wt = rd_s16b();
+        } else {
+            monster.ht = 0;
+            monster.wt = 0;
+        }
+    }
 }
