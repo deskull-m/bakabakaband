@@ -10,6 +10,7 @@
 #include "combat/attack-power-table.h"
 #include "combat/shoot.h"
 #include "game-option/text-display-options.h"
+#include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
 #include "mind/monk-attack.h"
 #include "mutation/mutation-flag-types.h"
@@ -17,17 +18,26 @@
 #include "object-enchant/tr-types.h"
 #include "object/tval-types.h"
 #include "perception/object-perception.h"
+#include "pet/pet-util.h"
 #include "player-base/player-class.h"
 #include "player-info/equipment-info.h"
 #include "player-info/monk-data-type.h"
+#include "player-info/samurai-data-type.h"
 #include "player-status/player-hand-types.h"
+#include "player/attack-defense-types.h"
+#include "player/digestion-processor.h"
 #include "player/player-status-flags.h"
+#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
+#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-util.h"
 
@@ -259,6 +269,157 @@ static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
 }
 
 /*!
+ * @brief HP回復量/ターンを計算する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @return 100倍したHP回復量（小数第2位まで表示するため）
+ */
+static int calculate_hp_regen_rate(PlayerType *player_ptr)
+{
+    PlayerClass pc(player_ptr);
+    if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+        return 0;
+    }
+    if (player_ptr->action == ACTION_HAYAGAKE) {
+        return 0;
+    }
+
+    int regen_amount = PY_REGEN_NORMAL;
+
+    // 満腹度による補正
+    if (player_ptr->food < PY_FOOD_WEAK) {
+        if (player_ptr->food < PY_FOOD_STARVE) {
+            regen_amount = 0;
+        } else if (player_ptr->food < PY_FOOD_FAINT) {
+            regen_amount = PY_REGEN_FAINT;
+        } else {
+            regen_amount = PY_REGEN_WEAK;
+        }
+    }
+
+    // 毒・切り傷で回復しない
+    const auto effects = player_ptr->effects();
+    if (effects->poison().is_poisoned() || effects->cut().is_cut()) {
+        regen_amount = 0;
+    }
+
+    // 再生能力
+    if (player_ptr->regenerate) {
+        regen_amount = regen_amount * 2;
+    }
+
+    // 構え・型による補正
+    if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
+        regen_amount /= 2;
+    }
+
+    // 呪いによる補正
+    if (player_ptr->cursed.has(CurseTraitType::SLOW_REGEN)) {
+        regen_amount /= 5;
+    }
+
+    // 探索・休息中は2倍
+    if ((player_ptr->action == ACTION_SEARCH) || (player_ptr->action == ACTION_REST)) {
+        regen_amount = regen_amount * 2;
+    }
+
+    // 地形による衛生補正
+    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &grid = floor.get_grid(player_ptr->get_position());
+    const auto &terrain = grid.get_terrain();
+    if (regen_amount > 0 && terrain.hygiene != 0) {
+        const int hygiene_modifier = 100 + terrain.hygiene;
+        regen_amount = (regen_amount * hygiene_modifier) / 100;
+        if (regen_amount < 0) {
+            regen_amount = 0;
+        }
+    }
+
+    // ミュータント補正
+    regen_amount = (regen_amount * player_ptr->mutant_regenerate_mod) / 100;
+
+    // 実際の回復量を計算 (10ターンごとに処理されるので1ターンあたりの量に変換)
+    // percent = regen_amount は 1/2^16 単位なので、実際のHP回復量は:
+    // (maxhp * regen_amount + PY_REGEN_HPBASE) >> 16
+    // これを10で割って1ターンあたりにし、さらに100ターン分に変換
+    int64_t hp_per_turn = ((int64_t)player_ptr->maxhp * regen_amount + PY_REGEN_HPBASE) * 10000 >> 16;
+
+    return static_cast<int>(hp_per_turn);
+}
+
+/*!
+ * @brief MP回復量/ターンを計算する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @return 100倍したMP回復量（小数第2位まで表示するため）
+ */
+static int calculate_mp_regen_rate(PlayerType *player_ptr)
+{
+    int regen_amount = PY_REGEN_NORMAL;
+
+    // 満腹度による補正
+    if (player_ptr->food < PY_FOOD_WEAK) {
+        if (player_ptr->food < PY_FOOD_STARVE) {
+            regen_amount = 0;
+        } else if (player_ptr->food < PY_FOOD_FAINT) {
+            regen_amount = PY_REGEN_FAINT;
+        } else {
+            regen_amount = PY_REGEN_WEAK;
+        }
+    }
+
+    // 毒で回復しない
+    const auto effects = player_ptr->effects();
+    if (effects->poison().is_poisoned()) {
+        regen_amount = 0;
+    }
+
+    // 再生能力
+    if (player_ptr->regenerate) {
+        regen_amount = regen_amount * 2;
+    }
+
+    // 構え・型による補正
+    PlayerClass pc(player_ptr);
+    if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
+        regen_amount /= 2;
+    }
+
+    // 呪いによる補正
+    if (player_ptr->cursed.has(CurseTraitType::SLOW_REGEN)) {
+        regen_amount /= 5;
+    }
+
+    // 探索・休息中は2倍
+    if ((player_ptr->action == ACTION_SEARCH) || (player_ptr->action == ACTION_REST)) {
+        regen_amount = regen_amount * 2;
+    }
+
+    // ペットの維持コスト
+    int upkeep_factor = calculate_upkeep(player_ptr);
+    if ((player_ptr->action == ACTION_LEARN) || (player_ptr->action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+        upkeep_factor += 100;
+    }
+
+    // 回復率を計算 (100分率)
+    int32_t regen_rate = regen_amount * 100 - upkeep_factor * PY_REGEN_NORMAL;
+
+    // マイナスの場合は回復しない（減少する）
+    if (regen_rate < 0) {
+        // 減少量を計算 (表示上はマイナス表示)
+        int64_t mp_decay_per_10turn = ((int64_t)player_ptr->msp * (-regen_rate) / 100 + PY_REGEN_MNBASE) >> 16;
+        int64_t mp_per_turn_x100 = (mp_decay_per_10turn * 100) / 10;
+        int64_t mp_per_100turn = -(mp_per_turn_x100 * 100); // 100ターン分（マイナス）
+        return static_cast<int>(mp_per_100turn);
+    }
+
+    // 実際の回復量を計算
+    int64_t mp_per_10turn = ((int64_t)player_ptr->msp * regen_rate / 100 + PY_REGEN_MNBASE) >> 16;
+    int64_t mp_per_turn_x100 = (mp_per_10turn * 100) / 10; // 100倍して小数5桁表示用
+    int64_t mp_per_100turn = mp_per_turn_x100 * 100; // 100ターン分
+
+    return static_cast<int>(mp_per_100turn);
+}
+
+/*!
  * @brief キャラ基本情報及び技能値をメインウィンドウに表示する
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param xthb 武器等を含めた最終命中率
@@ -342,6 +503,16 @@ static void display_first_page(PlayerType *player_ptr, int xthb, int *damage, in
 
     display_player_one_line(ENTRY_AVG_DMG, desc, TERM_L_BLUE);
     display_player_one_line(ENTRY_INFRA, format("%d feet", player_ptr->see_infra * 10), TERM_WHITE);
+
+    // HP回復量/100ターンの計算
+    int hp_regen_amount = calculate_hp_regen_rate(player_ptr);
+    std::string hp_regen_desc = format("%+d.%05d", hp_regen_amount / 100000, hp_regen_amount % 100000);
+    display_player_one_line(ENTRY_HP_REGEN, hp_regen_desc, TERM_L_BLUE);
+
+    // MP回復量/100ターンの計算
+    int mp_regen_amount = calculate_mp_regen_rate(player_ptr);
+    std::string mp_regen_desc = format("%+d.%05d", mp_regen_amount / 100000, mp_regen_amount % 100000);
+    display_player_one_line(ENTRY_MP_REGEN, mp_regen_desc, TERM_L_BLUE);
 }
 
 /*!
