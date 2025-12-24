@@ -106,6 +106,7 @@ struct player_race_info {
     uint32_t choice{}; //!< 似つかわしい職業(ミミック時はミミック種族属性) / Legal class choices
     PlayerRaceLifeType life{}; //!< 生命の形態
     PlayerRaceFoodType food{}; //!< 食料の形態
+    bool playable{}; //!< プレイヤー作成時に選択可能か / Can be selected at character creation
 
     std::vector<player_race_condition> extra_flags;
 };
