@@ -2,6 +2,7 @@
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
+#include "io-dump/player-status-dump-json.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "locale/japanese.h"
@@ -22,6 +23,7 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
+#include "util/angband-files.h"
 #include "util/buffer-shaper.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -124,6 +126,29 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
         if (!filename.empty()) {
             AngbandWorld::get_instance().play_time.update();
             file_character(player_ptr, filename);
+        }
+
+        return page;
+    }
+    case 'g': {
+        const auto initial_filename = format("%s.json", player_ptr->base_name.data());
+        const auto input_filename = input_string(_("JSON ファイル名: ", "JSON File name: "), 80, initial_filename);
+        if (!input_filename.has_value()) {
+            return page;
+        }
+
+        const auto &filename = str_ltrim(input_filename.value());
+        if (!filename.empty()) {
+            AngbandWorld::get_instance().play_time.update();
+            const auto path = path_build(ANGBAND_DIR_USER, filename);
+            FILE *fff = angband_fopen(path, FileOpenMode::WRITE);
+            if (fff) {
+                dump_player_status_json_to_file(player_ptr, fff);
+                angband_fclose(fff);
+                msg_format(_("ステータスを %s に書き出しました。", "Character status dumped to %s."), filename.data());
+            } else {
+                msg_format(_("ファイル %s を開けませんでした。", "Failed to open %s."), filename.data());
+            }
         }
 
         return page;
@@ -236,7 +261,7 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
     auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
     auto page = 0;
     screen_save();
-    constexpr auto prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'h' to change mode, or ESC]");
+    constexpr auto prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
     auto &world = AngbandWorld::get_instance();
     while (true) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
