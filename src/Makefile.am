@@ -736,6 +736,7 @@ hengband_SOURCES = \
 	io-dump/dump-remover.cpp io-dump/dump-remover.h \
 	io-dump/dump-util.cpp io-dump/dump-util.h \
 	io-dump/player-status-dump.cpp io-dump/player-status-dump.h \
+	io-dump/player-status-dump-json.cpp io-dump/player-status-dump-json.h \
 	io-dump/random-art-info-dumper.cpp io-dump/random-art-info-dumper.h \
 	io-dump/special-class-dump.cpp io-dump/special-class-dump.h \
 	\
