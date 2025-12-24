@@ -20,6 +20,7 @@ const std::map<MimicKindType, player_race_info> mimic_info =
         0x000000,
         PlayerRaceLifeType::LIVING,
         PlayerRaceFoodType::RATION,
+        false,
         { },
         }
     },
@@ -36,6 +37,7 @@ const std::map<MimicKindType, player_race_info> mimic_info =
         0x000003,
         PlayerRaceLifeType::DEMON,
         PlayerRaceFoodType::MONSTER_REMAINS,
+        false,
         {
             { TR_RES_FIRE },
             { TR_RES_NETHER },
@@ -59,6 +61,7 @@ const std::map<MimicKindType, player_race_info> mimic_info =
         0x000003,
         PlayerRaceLifeType::DEMON,
         PlayerRaceFoodType::MONSTER_REMAINS,
+        false,
         {
             { TR_IM_FIRE },
             { TR_RES_COLD },
@@ -93,6 +96,7 @@ const std::map<MimicKindType, player_race_info> mimic_info =
         0x000005,
         PlayerRaceLifeType::UNDEAD,
         PlayerRaceFoodType::BLOOD,
+        false,
         {
             { TR_RES_COLD },
             { TR_RES_POIS },
@@ -119,6 +123,7 @@ const std::map<MimicKindType, player_race_info> mimic_info =
         0x000007,
         PlayerRaceLifeType::LIVING,
         PlayerRaceFoodType::RATION,
+        false,
         {
             { TR_RES_LITE },
             { TR_RES_WATER },
@@ -142,6 +147,7 @@ const std::map<MimicKindType, player_race_info> mimic_info =
         0x000007,
         PlayerRaceLifeType::LIVING,
         PlayerRaceFoodType::RATION,
+        false,
         {
             { TR_RES_FIRE },
             { TR_RES_COLD },

@@ -10,6 +10,7 @@
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include <sstream>
+#include <vector>
 
 static std::string birth_race_label(int cs, concptr sym)
 {
@@ -26,16 +27,33 @@ static std::string birth_race_label(int cs, concptr sym)
 
 static void enumerate_race_list(PlayerType *player_ptr, char *sym)
 {
+    int display_index = 0;
     for (int n = 0; n < MAX_RACES; n++) {
-        player_ptr->race = &race_info[n];
-        if (n < 26) {
-            sym[n] = I2A(n);
-        } else {
-            sym[n] = ('A' + n - 26);
+        if (!race_info[n].playable) {
+            continue;
         }
 
-        put_str(birth_race_label(n, sym), 12 + (n / 5), 1 + 16 * (n % 5));
+        player_ptr->race = &race_info[n];
+        if (display_index < 26) {
+            sym[n] = I2A(display_index);
+        } else {
+            sym[n] = ('A' + display_index - 26);
+        }
+
+        put_str(birth_race_label(n, sym), 12 + (display_index / 5), 1 + 16 * (display_index % 5));
+        display_index++;
     }
+}
+
+static int get_random_playable_race()
+{
+    std::vector<int> playable_races;
+    for (int i = 0; i < MAX_RACES; i++) {
+        if (race_info[i].playable) {
+            playable_races.push_back(i);
+        }
+    }
+    return playable_races[randint0(playable_races.size())];
 }
 
 static std::string display_race_stat(PlayerType *player_ptr, int cs, int *os, const std::string &cur, concptr sym)
@@ -129,7 +147,7 @@ static bool select_race(PlayerType *player_ptr, char *sym, int *k)
 
         if (c == ' ' || c == '\r' || c == '\n') {
             if (cs == MAX_RACES) {
-                *k = randint0(MAX_RACES);
+                *k = get_random_playable_race();
                 cs = *k;
                 continue;
             } else {
@@ -139,20 +157,20 @@ static bool select_race(PlayerType *player_ptr, char *sym, int *k)
         }
 
         if (c == '*') {
-            *k = randint0(MAX_RACES);
+            *k = get_random_playable_race();
             cs = *k;
             continue;
         }
 
         interpret_race_select_key_move(c, &cs);
         *k = (islower(c) ? A2I(c) : -1);
-        if ((*k >= 0) && (*k < MAX_RACES)) {
+        if ((*k >= 0) && (*k < MAX_RACES) && race_info[*k].playable) {
             cs = *k;
             continue;
         }
 
         *k = (isupper(c) ? (26 + c - 'A') : -1);
-        if ((*k >= 26) && (*k < MAX_RACES)) {
+        if ((*k >= 26) && (*k < MAX_RACES) && race_info[*k].playable) {
             cs = *k;
             continue;
         } else {
