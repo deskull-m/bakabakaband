@@ -108,20 +108,22 @@ void display_monster_blow(lore_type *lore_ptr, int m, int attack_numbers)
  */
 void display_monster_blows(lore_type *lore_ptr)
 {
-    const int max_attack_numbers = 4;
-    for (int m = 0; m < max_attack_numbers; m++) {
+    const int blow_count = static_cast<int>(lore_ptr->r_ptr->blows.size());
+    const int r_blow_count = static_cast<int>(lore_ptr->r_ptr->r_blows.size());
+    for (int m = 0; m < blow_count; m++) {
         if (lore_ptr->r_ptr->blows[m].method == RaceBlowMethodType::NONE) {
             continue;
         }
 
-        if (lore_ptr->r_ptr->r_blows[m] || lore_ptr->know_everything) {
+        if ((m < r_blow_count && lore_ptr->r_ptr->r_blows[m]) || lore_ptr->know_everything) {
             lore_ptr->count++;
         }
     }
 
     int attack_numbers = 0;
-    for (int m = 0; m < max_attack_numbers; m++) {
-        if (lore_ptr->r_ptr->blows[m].method == RaceBlowMethodType::NONE || (((lore_ptr->r_ptr->r_blows[m] == 0) && !lore_ptr->know_everything))) {
+    for (int m = 0; m < blow_count; m++) {
+        const bool has_r_blow = m < r_blow_count && lore_ptr->r_ptr->r_blows[m] > 0;
+        if (lore_ptr->r_ptr->blows[m].method == RaceBlowMethodType::NONE || (!has_r_blow && !lore_ptr->know_everything)) {
             continue;
         }
 

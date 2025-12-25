@@ -318,11 +318,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    for (auto blow_num = 0; auto &blow : blow_data.items()) {
-        if (blow_num > 5) {
-            return PARSE_ERROR_GENERIC;
-        }
-
+    for (auto &blow : blow_data.items()) {
         const auto &blow_method = blow.value()["method"];
         const auto &blow_effect = blow.value()["effect"];
         if (blow_method.is_null() || blow_effect.is_null()) {
@@ -338,7 +334,8 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
         if (rbe == r_info_blow_effect.end()) {
             return PARSE_ERROR_INVALID_FLAG;
         }
-        auto &mon_blow = monrace.blows[blow_num];
+
+        MonsterBlow mon_blow;
         mon_blow.method = rbm->second;
         mon_blow.effect = rbe->second;
 
@@ -346,7 +343,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
             return err;
         }
 
-        blow_num++;
+        monrace.blows.push_back(mon_blow);
     }
     return PARSE_ERROR_NONE;
 }

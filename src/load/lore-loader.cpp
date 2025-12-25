@@ -347,6 +347,8 @@ static void rd_lore(MonraceDefinition &monrace)
     strip_bytes(1);
     monrace.r_cast_spell = rd_byte();
 
+    // r_blowsを読み込み（最低4個は読み込む）
+    monrace.r_blows.resize(4);
     monrace.r_blows[0] = rd_byte();
     monrace.r_blows[1] = rd_byte();
     monrace.r_blows[2] = rd_byte();

@@ -53,10 +53,7 @@ public:
     EnumClassFlagGroup<MonsterFeatureType> old_r_feature_flags{};
     EnumClassFlagGroup<MonsterSpecialType> old_r_special_flags{};
 
-    byte old_r_blows0 = 0;
-    byte old_r_blows1 = 0;
-    byte old_r_blows2 = 0;
-    byte old_r_blows3 = 0;
+    std::vector<byte> old_r_blows;
 
     byte old_r_cast_spell = 0;
 
