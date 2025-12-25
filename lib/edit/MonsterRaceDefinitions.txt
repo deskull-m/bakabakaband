@@ -40544,7 +40544,7 @@ N:2240:BT-91 マジュー第二形態
 E:BT-91 Beast (second form)
 G:P:G
 I:120:40d50:30:125:15
-W:48:1:9000:0:0
+W:48:1:9000:0:15000:2338
 B:PUNCH:HURT:8d12
 B:PUNCH:HURT:8d12
 B:PUNCH:HURT:8d12
@@ -42287,6 +42287,28 @@ F:IM_FIRE | IM_COLD | IM_ACID | IM_ELEC | IM_POIS | FRIENDLY
 S:1_IN_5 | BA_WATE | BA_LITE | BO_PLAS | BR_POIS | BR_ACID
 D:$Explosion. Explosion. Art is an explosion.
 D:爆発だ、爆発だ、芸術は爆発だ。
+
+N:2338:BT-91 マジュー最終形態
+E:BT-91 Beast (final form)
+G:P:R
+I:130:60d80:40:145:20
+W:62:1:18000:0:0
+B:PUNCH:HURT:12d15
+B:PUNCH:HURT:12d15
+B:PUNCH:SUPERHURT:15d12
+B:PUNCH:SUPERHURT:15d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
+F:OPEN_DOOR | BASH_DOOR | MOB_100 | POWERFUL
+F:GIANT | REGENERATE
+F:IM_FIRE | IM_COLD | RES_NETH | NO_CONF | NO_FEAR
+S:1_IN_3 | HEAL | BO_MANA | BA_MANA | HASTE | BR_FIRE
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its final form,
+D:$ it achieves perfect bipedal upright walking and
+D:$ demonstrates overwhelming combat capabilities.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:最終形態では完全に人型となり、圧倒的な戦闘能力を発揮する。
 
 # N: serial number : monster name
 # G: symbol : color
