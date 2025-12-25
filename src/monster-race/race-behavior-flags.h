@@ -15,5 +15,6 @@ enum class MonsterBehaviorType {
     SMART = 11,
     FRIENDLY = 12,
     FRIENDLY_STANDBY = 13,
+    TIMID = 14,
     MAX,
 };

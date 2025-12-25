@@ -172,6 +172,10 @@ void display_monster_constitutions(lore_type *lore_ptr)
         hooked_roff(format(_("%s^は主なしでは存在を維持できない。", "%s^ cannot exist without a master."), Who::who(lore_ptr->msex).data()));
     }
 
+    if (lore_ptr->behavior_flags.has(MonsterBehaviorType::TIMID)) {
+        hook_c_roff(TERM_VIOLET, format(_("%%s^は臆病で常に逃走しようとする。", "%%s^ is timid and always tries to flee.  "), Who::who(lore_ptr->msex).data()));
+    }
+
     if (lore_ptr->misc_flags.has(MonsterMiscType::DIURNAL)) {
         hook_c_roff(TERM_YELLOW, format(_("%s^は昼行性である。", "%s^ is diurnal.  "), Who::who(lore_ptr->msex).data()));
     }
