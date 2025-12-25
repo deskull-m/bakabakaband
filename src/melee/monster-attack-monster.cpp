@@ -297,7 +297,8 @@ static void repeat_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 {
     const auto &monster = *mam_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
-    for (int ap_cnt = 0; ap_cnt < MAX_NUM_BLOWS; ap_cnt++) {
+    const auto blow_count = static_cast<int>(monrace.blows.size());
+    for (int ap_cnt = 0; ap_cnt < blow_count; ap_cnt++) {
         mam_ptr->effect = monrace.blows[ap_cnt].effect;
         mam_ptr->method = monrace.blows[ap_cnt].method;
         mam_ptr->damage_dice = monrace.blows[ap_cnt].damage_dice;
@@ -316,6 +317,10 @@ static void repeat_melee(PlayerType *player_ptr, mam_type *mam_ptr)
         process_melee(player_ptr, mam_ptr);
         if (!is_original_ap_and_seen(player_ptr, *mam_ptr->m_ptr) || mam_ptr->do_silly_attack) {
             continue;
+        }
+
+        if (ap_cnt >= static_cast<int>(monrace.r_blows.size())) {
+            monrace.r_blows.resize(ap_cnt + 1, 0);
         }
 
         if (!mam_ptr->obvious && !mam_ptr->damage && (monrace.r_blows[ap_cnt] <= 10)) {

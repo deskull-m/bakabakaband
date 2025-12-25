@@ -143,7 +143,8 @@ bool MonsterAttackPlayer::check_no_blow()
 bool MonsterAttackPlayer::process_monster_blows()
 {
     const auto &monrace = this->m_ptr->get_monrace();
-    for (auto ap_cnt = 0; ap_cnt < MAX_NUM_BLOWS; ap_cnt++) {
+    const auto blow_count = static_cast<int>(monrace.blows.size());
+    for (auto ap_cnt = 0; ap_cnt < blow_count; ap_cnt++) {
         this->obvious = false;
         this->damage = 0;
         this->act = nullptr;
@@ -519,6 +520,10 @@ void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
     }
 
     auto &monrace = this->m_ptr->get_monrace();
+    if (ap_cnt >= static_cast<int>(monrace.r_blows.size())) {
+        monrace.r_blows.resize(ap_cnt + 1, 0);
+    }
+
     if (!this->obvious && (this->damage == 0) && (monrace.r_blows[ap_cnt] <= 10)) {
         return;
     }

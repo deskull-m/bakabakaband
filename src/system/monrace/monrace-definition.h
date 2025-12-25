@@ -135,7 +135,7 @@ public:
     EnumClassFlagGroup<MonsterBrightnessType> brightness_flags; //!< 能力フラグ（明暗） / Speaking Lite or Dark
     EnumClassFlagGroup<MonsterSpecialType> special_flags; //!< 能力フラグ(特殊) / Special Flags
     EnumClassFlagGroup<MonsterMiscType> misc_flags; //!< 能力フラグ（その他） / Speaking Other
-    MonsterBlow blows[MAX_NUM_BLOWS]{}; //!< 打撃能力定義 / Up to four blows per round
+    std::vector<MonsterBlow> blows; //!< 打撃能力定義（可変長） / Monster blows
     Dice shoot_damage_dice; //!< 射撃ダメージダイス / shoot damage dice
 
     std::vector<std::tuple<int, int, MonraceId>> spawn_monsters; //!< 落とし子生成率
@@ -174,7 +174,7 @@ public:
     ITEM_NUMBER r_drop_gold{}; //!< これまでに撃破時に落とした財宝の数 / Max number of gold dropped at once
     ITEM_NUMBER r_drop_item{}; //!< これまでに撃破時に落としたアイテムの数 / Max number of item dropped at once
     byte r_cast_spell{}; //!< 使った魔法/ブレスの種類数 /  Max unique number of spells seen
-    byte r_blows[MAX_NUM_BLOWS]{}; //!< 受けた打撃 /  Number of times each blow type was seen
+    std::vector<byte> r_blows; //!< 受けた打撃（可変長） /  Number of times each blow type was seen
     EnumClassFlagGroup<MonsterAbilityType> r_ability_flags; //!< 見た能力フラグ(魔法/ブレス) / Observed racial ability flags
     EnumClassFlagGroup<MonsterAuraType> r_aura_flags; //!< 見た能力フラグ(オーラ) / Observed aura flags
     EnumClassFlagGroup<MonsterBehaviorType> r_behavior_flags; //!< 見た能力フラグ（習性） / Observed racial attr flags

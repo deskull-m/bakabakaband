@@ -30,10 +30,16 @@ void wr_lore(MonraceId monrace_id)
     wr_byte(0); /* unused now */
     wr_byte(monrace.r_cast_spell);
 
-    wr_byte(monrace.r_blows[0]);
-    wr_byte(monrace.r_blows[1]);
-    wr_byte(monrace.r_blows[2]);
-    wr_byte(monrace.r_blows[3]);
+    // r_blowsのサイズと内容を保存（下位互換性のため最低4個は保存）
+    for (size_t i = 0; i < 4; i++) {
+        wr_byte(i < monrace.r_blows.size() ? monrace.r_blows[i] : 0);
+    }
+    // 4個を超える部分は拡張データとして保存（将来の互換性のため）
+    if (monrace.r_blows.size() > 4) {
+        for (size_t i = 4; i < monrace.r_blows.size(); i++) {
+            wr_byte(monrace.r_blows[i]);
+        }
+    }
 
     wr_FlagGroup(monrace.r_resistance_flags, wr_byte);
     wr_FlagGroup(monrace.r_ability_flags, wr_byte);
