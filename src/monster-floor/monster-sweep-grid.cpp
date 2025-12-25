@@ -36,6 +36,10 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
+    if (monrace.behavior_flags.has(MonsterBehaviorType::TIMID)) {
+        return true;
+    }
+
     if (monster.is_pet()) {
         return (player_ptr->pet_follow_distance < 0) && (monster.cdis <= (0 - player_ptr->pet_follow_distance));
     }
