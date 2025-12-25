@@ -150720,5 +150720,87 @@
         "NO_SLEEP",
         "HAS_LITE_2"
     ]
+},
+{
+    "id": 2337,
+    "name": {
+        "ja": "『タローマン』",
+        "en": "The Taroman"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Yellow"
+    },
+    "speed": 10,
+    "hit_point": "89d89",
+    "vision": 30,
+    "armor_class": 140,
+    "alertness": 15,
+    "level": 64,
+    "rarity": 3,
+    "exp": 30000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        },
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        },
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        },
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        }
+    ],
+    "flavor": {
+        "ja": "爆発だ、爆発だ、芸術は爆発だ。",
+        "en": "Explosion. Explosion. Art is an explosion."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "ONLY_ITEM",
+        "DROP_GOOD",
+        "DROP_4D2",
+        "KILL_BODY",
+        "KILL_WALL",
+        "RAND_50",
+        "SMART",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_CORPSE",
+        "GIANT",
+        "HAS_LITE_2",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_POIS",
+        "FRIENDLY"
+    ],
+    "skill": {
+        "list": [
+            "BA_WATE",
+            "BA_LITE",
+            "BO_PLAS",
+            "BR_POIS",
+            "BR_ACID"
+        ],
+        "probability": "1_IN_5"
+    }
 }]
 }

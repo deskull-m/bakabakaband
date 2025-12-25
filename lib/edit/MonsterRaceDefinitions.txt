@@ -29810,7 +29810,6 @@ F:DROP_1D2 |
 F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
 D:ドワーフの誇りと血統を守り抜く堅牢なる戦士だ。
 
-
 N:1560:オソメ・ブラザーズ『狂一』
 E:Kyoichi, the Osome Brothers
 G:p:o
@@ -42269,6 +42268,25 @@ F:TAKE_ITEM | KILL_BODY | EVIL | IM_ACID | IM_COLD | IM_FIRE | IM_ELEC | IM_POIS
 F:NO_CONF | NO_SLEEP | HAS_LITE_2 | MALE
 D:ダンジョンの奥深くから商品を「拾って」くるエキスパートだ。商品を惜しみなく使用して武装している。
 D:$He is an expert at 'find' goods from the depths of the dungeon, and is armed with a generous supply of goods.
+
+N:2337:『タローマン』
+E:The Taroman
+G:P:y
+I:120:89d89:30:140:15
+W:64:3:30000:0:0
+B:HIT:CONFUSE:11d11
+B:HIT:CONFUSE:11d11
+B:HIT:CONFUSE:11d11
+B:HIT:CONFUSE:11d11
+F:UNIQUE | MALE | 
+F:FORCE_MAXHP | 
+F:ONLY_ITEM | DROP_GOOD | DROP_4D2 | KILL_BODY | KILL_WALL | RAND_50
+F:SMART | TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_CORPSE | 
+F:GIANT | HAS_LITE_2 |
+F:IM_FIRE | IM_COLD | IM_ACID | IM_ELEC | IM_POIS | FRIENDLY
+S:1_IN_5 | BA_WATE | BA_LITE | BO_PLAS | BR_POIS | BR_ACID
+D:$Explosion. Explosion. Art is an explosion.
+D:爆発だ、爆発だ、芸術は爆発だ。
 
 # N: serial number : monster name
 # G: symbol : color
