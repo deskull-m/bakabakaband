@@ -337,7 +337,7 @@ static void do_name_pet(PlayerType *player_ptr)
     auto old_name = false;
     std::string initial_name("");
     if (monster.is_named()) {
-        initial_name = monster.nickname;
+        initial_name = monster.name;
         old_name = true;
     }
 
@@ -347,7 +347,7 @@ static void do_name_pet(PlayerType *player_ptr)
     }
 
     if (!new_name->empty()) {
-        monster.nickname = *new_name;
+        monster.name = *new_name;
         if (record_named_pet) {
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_NAME, monster_desc(player_ptr, monster, MD_INDEF_VISIBLE));
         }
@@ -359,7 +359,7 @@ static void do_name_pet(PlayerType *player_ptr)
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_UNNAME, monster_desc(player_ptr, monster, MD_INDEF_VISIBLE));
     }
 
-    monster.nickname.clear();
+    monster.name.clear();
 }
 
 /*!

@@ -23,7 +23,7 @@
 
 static void inscribe_nickname(ItemEntity &item, const CapturedMonsterType &cap_mon)
 {
-    if (cap_mon.nickname.empty()) {
+    if (cap_mon.name.empty()) {
         return;
     }
 
@@ -37,7 +37,7 @@ static void inscribe_nickname(ItemEntity &item, const CapturedMonsterType &cap_m
     }
 
     std::stringstream nickname;
-    nickname << '#' << _("", '\'') << cap_mon.nickname << _("", '\'');
+    nickname << '#' << _("", '\'') << cap_mon.name << _("", '\'');
 
     insc->append(nickname.str());
 }
@@ -88,7 +88,7 @@ static void restore_monster_nickname(MonsterEntity &monster, ItemEntity &item)
         }
     }
 #endif
-    monster.nickname = nickname;
+    monster.name = nickname;
 
     insc->erase(s - insc->data());
 }

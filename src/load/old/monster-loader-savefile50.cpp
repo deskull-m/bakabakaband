@@ -88,9 +88,9 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::NICKNAME)) {
-        monster.nickname = rd_string();
+        monster.name = rd_string();
     } else {
-        monster.nickname.clear();
+        monster.name.clear();
     }
 
     monster.parent_m_idx = any_bits(flags, SaveDataMonsterFlagType::PARENT) ? rd_s16b() : 0;

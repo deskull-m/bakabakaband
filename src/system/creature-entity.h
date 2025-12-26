@@ -233,4 +233,7 @@ public:
 
     // 所持金関連
     PRICE au{}; /*!< 所持金 / Current Gold */
+
+    // 名前関連
+    std::string name{}; /*!< クリーチャーの名前（プレイヤー名またはペット名） / Creature's name (player name or pet nickname) */
 };
