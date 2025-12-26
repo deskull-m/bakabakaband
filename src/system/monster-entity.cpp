@@ -125,11 +125,6 @@ bool MonsterEntity::is_hostile_align(const byte other_sub_align) const
     return MonsterEntity::check_sub_alignments(this->sub_align, other_sub_align);
 }
 
-bool MonsterEntity::is_named() const
-{
-    return !this->name.empty();
-}
-
 bool MonsterEntity::is_named_pet() const
 {
     return this->is_pet() && this->is_named();

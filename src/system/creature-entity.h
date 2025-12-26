@@ -78,6 +78,15 @@ public:
         return this->speed;
     }
 
+    /*!<
+     * @brief クリーチャーが名前を持っているかどうか
+     * @return 名前を持っていればtrue
+     */
+    bool is_named() const
+    {
+        return !this->name.empty();
+    }
+
     /*!
      * @brief クリーチャーの速度を設定
      * @param new_speed 速度値
