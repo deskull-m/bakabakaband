@@ -340,7 +340,6 @@ public:
     int16_t to_h_m{}; /* Bonus to hit (misc) */
     int16_t to_d[2]{}; /* Bonus to dam (wield) */
     int16_t to_d_m{}; /* Bonus to dam (misc) */
-    ARMOUR_CLASS to_a{}; /* Bonus to ac */
 
     int16_t to_m_chance{}; /* Minusses to cast chance */
 
