@@ -234,6 +234,9 @@ public:
     // 所持金関連
     PRICE au{}; /*!< 所持金 / Current Gold */
 
+    // AC関連
+    ARMOUR_CLASS ac{}; /*!< アーマークラス（プレイヤーは装備無しの基本AC、モンスターは総合AC） / Armor class (base AC for player, total AC for monster) */
+
     // 名前関連
     std::string name{}; /*!< クリーチャーの名前（プレイヤー名またはペット名） / Creature's name (player name or pet nickname) */
 };

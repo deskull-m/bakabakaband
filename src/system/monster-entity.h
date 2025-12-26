@@ -57,7 +57,6 @@ public:
     ObjectIndexList hold_o_idx_list{}; /*!< モンスターが所持しているアイテムのリスト / Object list being held (if any) */
     POSITION target_y{}; /*!< モンスターの攻撃目標対象Y座標 / Can attack !los player */
     POSITION target_x{}; /*!< モンスターの攻撃目標対象X座標 /  Can attack !los player */
-    int ac{}; /*!< モンスターのアーマークラス / Monster's armor class */
 
     /* TODO: クローン、ペット、有効化は意義が異なるので別変数に切り離すこと。save/loadのバージョン更新が面倒そうだけど */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" - Some bit-flags for the "smart" field */
