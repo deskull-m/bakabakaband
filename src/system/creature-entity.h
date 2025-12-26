@@ -236,6 +236,7 @@ public:
 
     // AC関連
     ARMOUR_CLASS ac{}; /*!< アーマークラス（プレイヤーは装備無しの基本AC、モンスターは総合AC） / Armor class (base AC for player, total AC for monster) */
+    ARMOUR_CLASS to_a{}; /*!< ACへのボーナス（主にプレイヤー用、装備などによるボーナス） / Bonus to AC (mainly for player, bonus from equipment) */
 
     // 名前関連
     std::string name{}; /*!< クリーチャーの名前（プレイヤー名またはペット名） / Creature's name (player name or pet nickname) */
