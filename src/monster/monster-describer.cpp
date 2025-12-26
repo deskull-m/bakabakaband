@@ -332,7 +332,7 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
     }
 
     if (monster.is_named()) {
-        ss << _("「", " called ") << monster.nickname << _("」", "");
+        ss << _("「", " called ") << monster.name << _("」", "");
     }
 
     if (monster.is_riding()) {

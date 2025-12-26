@@ -187,7 +187,7 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::NICKNAME)) {
-        wr_string(this->monster.nickname);
+        wr_string(this->monster.name);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::PARENT)) {
