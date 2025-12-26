@@ -346,8 +346,6 @@ public:
 
     bool no_flowed{};
 
-    ARMOUR_CLASS ac{}; /*!< 装備無しの基本AC / Base ac */
-
     int16_t num_blow[2]{}; /* Number of blows */
     int16_t num_fire{}; /* Number of shots */
 
