@@ -298,22 +298,6 @@ public:
     BIT_FLAGS regenerate{}; /* Regenerate hit pts */
     BIT_FLAGS hold_exp{}; /* Resist exp draining */
 
-    BIT_FLAGS telepathy{}; /* Telepathy */
-    BIT_FLAGS esp_animal{};
-    BIT_FLAGS esp_nasty{};
-    BIT_FLAGS esp_homo{};
-    BIT_FLAGS esp_undead{};
-    BIT_FLAGS esp_demon{};
-    BIT_FLAGS esp_orc{};
-    BIT_FLAGS esp_troll{};
-    BIT_FLAGS esp_giant{};
-    BIT_FLAGS esp_dragon{};
-    BIT_FLAGS esp_human{};
-    BIT_FLAGS esp_evil{};
-    BIT_FLAGS esp_good{};
-    BIT_FLAGS esp_nonliving{};
-    BIT_FLAGS esp_unique{};
-
     BIT_FLAGS slow_digest{}; /* Slower digestion */
     BIT_FLAGS bless_blade{}; //!< 祝福された装備をしている / Blessed by inventory items
     BIT_FLAGS xtra_might{}; /* Extra might bow */

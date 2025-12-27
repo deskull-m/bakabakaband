@@ -249,4 +249,21 @@ public:
 
     // 名前関連
     std::string name{}; /*!< クリーチャーの名前（プレイヤー名またはペット名） / Creature's name (player name or pet nickname) */
+
+    // テレパシー・感知能力関連 / Telepathy and ESP abilities
+    BIT_FLAGS telepathy{}; /* Telepathy */
+    BIT_FLAGS esp_animal{};
+    BIT_FLAGS esp_nasty{};
+    BIT_FLAGS esp_homo{};
+    BIT_FLAGS esp_undead{};
+    BIT_FLAGS esp_demon{};
+    BIT_FLAGS esp_orc{};
+    BIT_FLAGS esp_troll{};
+    BIT_FLAGS esp_giant{};
+    BIT_FLAGS esp_dragon{};
+    BIT_FLAGS esp_human{};
+    BIT_FLAGS esp_evil{};
+    BIT_FLAGS esp_good{};
+    BIT_FLAGS esp_nonliving{};
+    BIT_FLAGS esp_unique{};
 };
