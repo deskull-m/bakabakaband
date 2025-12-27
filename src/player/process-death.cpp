@@ -12,6 +12,7 @@
 #include "flavor/flavor-describer.h"
 #include "game-option/game-play-options.h"
 #include "inventory/inventory-slot-types.h"
+#include "io-dump/score-sender.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "object/item-tester-hooker.h"

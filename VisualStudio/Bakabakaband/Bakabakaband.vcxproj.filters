@@ -2803,6 +2803,9 @@
     <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp">
       <Filter>io-dump</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\io-dump\score-sender.cpp">
+      <Filter>io-dump</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -6052,6 +6055,9 @@
       <Filter>achivement</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io-dump\player-status-dump-json.h">
+      <Filter>io-dump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io-dump\score-sender.h">
       <Filter>io-dump</Filter>
     </ClInclude>
   </ItemGroup>
