@@ -8,6 +8,7 @@
 #include "mind/mind-mirror-master.h"
 #include "monster-attack/monster-attack-player.h"
 #include "player-base/player-race.h"
+#include "player/player-sex.h"
 #include "player/player-status-flags.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
@@ -130,6 +131,32 @@ void process_stun_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     if (BadStatusSetter(player_ptr).mod_stun(10 + randint1(monrace.level / 4))) {
         monap_ptr->obvious = true;
     }
+}
+
+void process_groin_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+{
+    if (check_multishadow(player_ptr)) {
+        return;
+    }
+
+    // 男性または両性の場合のみ追加効果
+    const bool is_vulnerable = (player_ptr->psex == SEX_MALE) || (player_ptr->psex == SEX_BISEXUAL);
+
+    if (is_vulnerable) {
+        // 追加ダメージを与える（元のダメージの50%追加）
+        const int extra_damage = monap_ptr->damage / 2;
+        monap_ptr->damage += extra_damage;
+
+        // 朦朧状態を付与
+        const auto &monrace = monap_ptr->m_ptr->get_monrace();
+        if (BadStatusSetter(player_ptr).mod_stun(15 + randint1(monrace.level / 3))) {
+            monap_ptr->obvious = true;
+        }
+
+        msg_print(_("痛っ！", "Ouch!"));
+    }
+
+    monap_ptr->obvious = true;
 }
 
 void process_monster_attack_time(PlayerType *player_ptr)

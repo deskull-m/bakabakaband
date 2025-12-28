@@ -50,6 +50,7 @@ enum class RaceBlowEffectType : int {
     CHAOS = 40, /*!< モンスターの攻撃効果: カオスを呼び起こす*/
     LOCKUP = 41, /*!< モンスターの攻撃効果: 閉じ込める*/
     DESTROY_ASSHOLE = 42, /*!< モンスターの攻撃効果: 肛門破壊*/
+    GROIN_ATTACK = 43, /*!< モンスターの攻撃効果: 金的攻撃*/
 
     MAX, /*!< 最大値 */
 };
