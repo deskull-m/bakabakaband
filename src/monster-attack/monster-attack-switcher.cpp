@@ -625,6 +625,16 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     }
 
+    case RaceBlowEffectType::GROIN_ATTACK: { /* AC軽減あり / Player armor reduces total damage */
+        monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
+        monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (player_ptr->is_dead()) {
+            break;
+        }
+        process_groin_attack(player_ptr, monap_ptr);
+        break;
+    }
+
     case RaceBlowEffectType::LOCKUP: { /* AC軽減あり / Player armor reduces total damage */
         if (player_ptr->anti_tele == 0) {
             teleport_player(player_ptr, 50, TELEPORT_PASSIVE);

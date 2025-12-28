@@ -304,6 +304,10 @@ void set_monster_blow_effect(lore_type *lore_ptr, int m)
         lore_ptr->q = _("肛門を破壊する", "destroy asshole");
         lore_ptr->qc = TERM_L_RED;
         break;
+    case RaceBlowEffectType::GROIN_ATTACK:
+        lore_ptr->q = _("股間を打つ", "strike the groin");
+        lore_ptr->qc = TERM_L_RED;
+        break;
     case RaceBlowEffectType::FLAVOR:
         // フレーバー打撃には何の効果もないので付加説明もない。
         break;

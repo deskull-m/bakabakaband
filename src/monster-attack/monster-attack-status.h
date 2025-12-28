@@ -9,4 +9,5 @@ void process_terrify_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
 void process_paralyze_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
 void process_lose_all_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
 void process_stun_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
+void process_groin_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
 void process_monster_attack_time(PlayerType *player_ptr);
