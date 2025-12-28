@@ -42310,6 +42310,26 @@ D:$ demonstrates overwhelming combat capabilities.
 D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
 D:最終形態では完全に人型となり、圧倒的な戦闘能力を発揮する。
 
+N:2339:BT-90 ガーディン第二形態
+E:BT-90 Guardin (second form)
+G:I:R
+I:125:40d65:50:165:25
+W:50:1:8500:0:0
+B:CRUSH:HURT:6d15
+B:CRUSH:HURT:6d15
+B:CRUSH:SUPERHURT:7d15
+B:STING:HURT:5d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
+F:BASH_DOOR | POWERFUL
+F:REGENERATE | IM_POIS | RES_NETH | NO_CONF
+S:1_IN_5 | HEAL | BO_MANA | HASTE | BA_POIS
+D:$One of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its second form, its insect-like body grows even larger,
+D:$ with its armor significantly reinforced.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:第二形態では虫のような体がより巨大化し、特に装甲が強化される。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
