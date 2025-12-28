@@ -150881,5 +150881,78 @@
         ],
         "probability": "1_IN_3"
     }
+},
+{
+    "id": 2339,
+    "name": {
+        "ja": "BT-90 ガーディン第二形態",
+        "en": "BT-90 Guardin (second form)"
+    },
+    "symbol": {
+        "character": "I",
+        "color": "Light Red"
+    },
+    "speed": 15,
+    "hit_point": "40d65",
+    "vision": 50,
+    "armor_class": 165,
+    "alertness": 25,
+    "level": 50,
+    "rarity": 1,
+    "exp": 8500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "6d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "6d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "7d15"
+        },
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "5d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。第二形態では虫のような体がより巨大化し、特に装甲が強化される。",
+        "en": "One of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its second form, its insect-like body grows even larger, with its armor significantly reinforced."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "KILL_BODY",
+        "BASH_DOOR",
+        "POWERFUL",
+        "REGENERATE",
+        "IM_POIS",
+        "RES_NETH",
+        "NO_CONF"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "HASTE",
+            "BA_POIS"
+        ],
+        "probability": "1_IN_5"
+    }
 }]
 }
