@@ -28,6 +28,7 @@ extern int num_more;
 extern concptr inkey_next;
 
 char inkey(bool do_all_term_refresh = false);
+char inkey_for_image();
 int inkey_special(bool numpad_cursor);
 void start_term_fresh(void);
 void stop_term_fresh(void);
