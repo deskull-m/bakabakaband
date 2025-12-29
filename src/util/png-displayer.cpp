@@ -9,6 +9,7 @@
 #include "main-win/main-win-utils.h"
 #include <gdiplus.h>
 #include <iostream>
+#include <map>
 #include <string>
 #include <windows.h>
 
@@ -18,10 +19,21 @@
 
 using namespace Gdiplus;
 
+// 画像情報構造体
+struct PngImageInfo {
+    std::wstring path;
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
 // GDI+初期化状態
 static ULONG_PTR g_gdiplusToken = 0;
 static bool g_gdiplus_initialized = false;
-static bool g_png_displayed = false;
+
+// 登録されている画像のマップ（ファイルパス -> 画像情報）
+static std::map<std::string, PngImageInfo> g_registered_images;
 
 /*!
  * @brief GDI+を初期化する
@@ -37,11 +49,11 @@ static void ensure_gdiplus_initialized()
 }
 
 /*!
- * @brief PNGファイルを画面中央に表示する
+ * @brief PNG画像を描画リストに登録する
  * @param png_file_path 表示するPNGファイルのパス
  * @return 成功した場合true、失敗した場合false
  */
-bool display_png_centered(const std::string &png_file_path)
+bool register_png_image(const std::string &png_file_path)
 {
     // メインウィンドウを取得
     HWND hwndMain = get_main_window_hwnd();
@@ -65,6 +77,7 @@ bool display_png_centered(const std::string &png_file_path)
     std::wstring wstr_path(size_needed, 0);
     MultiByteToWideChar(CP_UTF8, 0, png_file_path.c_str(), -1, &wstr_path[0], size_needed);
 
+    // 画像の読み込みテスト
     Image image(wstr_path.c_str());
     if (image.GetLastStatus() != Ok) {
         return false;
@@ -84,43 +97,38 @@ bool display_png_centered(const std::string &png_file_path)
     int x = (windowWidth - imageWidth) / 2;
     int y = (windowHeight - imageHeight) / 2;
 
-    // メインウィンドウのデバイスコンテキストを取得
-    HDC hdc = GetDC(hwndMain);
-    if (!hdc) {
-        return false;
-    }
+    // 画像情報を登録
+    PngImageInfo info;
+    info.path = wstr_path;
+    info.x = x;
+    info.y = y;
+    info.width = imageWidth;
+    info.height = imageHeight;
 
-    // Graphicsオブジェクトを作成して直接描画
-    Graphics graphics(hdc);
-    if (graphics.GetLastStatus() != Ok) {
-        ReleaseDC(hwndMain, hdc);
-        return false;
-    }
+    g_registered_images[png_file_path] = info;
 
-    // 背景を黒で塗りつぶし
-    SolidBrush blackBrush(Color(255, 0, 0, 0));
-    graphics.FillRectangle(&blackBrush, 0, 0, windowWidth, windowHeight);
-
-    // 画像を描画
-    Status status = graphics.DrawImage(&image, x, y, imageWidth, imageHeight);
-
-    // クリーンアップ
-    ReleaseDC(hwndMain, hdc);
-
-    if (status != Ok) {
-        return false;
-    }
-
-    g_png_displayed = true;
     return true;
 }
 
 /*!
- * @brief 表示中のPNG画像を消去する
+ * @brief PNG画像を描画リストから削除する
+ * @param png_file_path 削除するPNGファイルのパス
  */
-void clear_png_display()
+void unregister_png_image(const std::string &png_file_path)
 {
-    if (!g_png_displayed) {
+    auto it = g_registered_images.find(png_file_path);
+    if (it != g_registered_images.end()) {
+        g_registered_images.erase(it);
+    }
+}
+
+/*!
+ * @brief 登録されている全てのPNG画像を再描画する
+ * @details termの表示前に呼び出すことで、登録された画像を画面に表示する
+ */
+void redraw_png_images()
+{
+    if (g_registered_images.empty()) {
         return;
     }
 
@@ -130,11 +138,40 @@ void clear_png_display()
         return;
     }
 
-    // 画面を再描画させる
-    InvalidateRect(hwndMain, NULL, TRUE);
-    UpdateWindow(hwndMain);
+    // GDI+が初期化されていない場合は何もしない
+    if (!g_gdiplus_initialized) {
+        return;
+    }
 
-    g_png_displayed = false;
+    // メインウィンドウのデバイスコンテキストを取得
+    HDC hdc = GetDC(hwndMain);
+    if (!hdc) {
+        return;
+    }
+
+    // Graphicsオブジェクトを作成
+    Graphics graphics(hdc);
+    if (graphics.GetLastStatus() != Ok) {
+        ReleaseDC(hwndMain, hdc);
+        return;
+    }
+
+    // 登録されている全ての画像を描画
+    for (const auto &pair : g_registered_images) {
+        const PngImageInfo &info = pair.second;
+
+        // 画像を読み込み
+        Image image(info.path.c_str());
+        if (image.GetLastStatus() != Ok) {
+            continue;
+        }
+
+        // 画像を描画
+        graphics.DrawImage(&image, info.x, info.y, info.width, info.height);
+    }
+
+    // クリーンアップ
+    ReleaseDC(hwndMain, hdc);
 }
 
 #endif // WINDOWS

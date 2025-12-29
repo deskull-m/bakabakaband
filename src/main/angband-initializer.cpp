@@ -110,9 +110,9 @@ static void init_angband_aux(const std::string &why)
  */
 static void put_title()
 {
-    // title.pngを表示
+    // title.pngを描画リストに登録
     const auto title_path = path_build(ANGBAND_DIR, "graphics/title.png");
-    (void)display_png_centered(title_path.string());
+    (void)register_png_image(title_path.string());
     const auto title = AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL);
     const auto col = (title.length() <= MAIN_TERM_MIN_COLS) ? (MAIN_TERM_MIN_COLS - title.length()) / 2 : 0;
     constexpr auto row_version_info = 3; //!< タイトル表記(行)
@@ -177,7 +177,6 @@ void init_angband(PlayerType *player_ptr, bool no_term)
 #ifdef WINDOWS
     if (!no_term) {
         put_title();
-        (void)inkey_for_image();
     }
 #endif
 
@@ -251,4 +250,12 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     process_pref_file(player_ptr, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
 
     init_note(_("[初期化終了]", "[Initialization complete]"));
+
+#ifdef WINDOWS
+    if (!no_term) {
+        const auto title_path = path_build(ANGBAND_DIR, "graphics/title.png");
+        unregister_png_image(title_path.string());
+    }
+#endif
+
 }
