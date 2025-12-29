@@ -74,9 +74,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -307,9 +307,9 @@
     ],
     "drop_kind": [
         {
+            "id": 533,
             "probability": "1_IN_5",
-            "item_id": "533",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -463,9 +463,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -517,9 +517,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -613,9 +613,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -671,9 +671,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -59611,9 +59611,9 @@
     },
     "drop_kind": [
         {
+            "id": 779,
             "probability": "1_IN_1",
-            "item_id": "779",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -62457,9 +62457,9 @@
     },
     "drop_kind": [
         {
+            "id": 779,
             "probability": "1_IN_1",
-            "item_id": "779",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -85844,15 +85844,15 @@
     ],
     "drop_kind": [
         {
+            "id": 94,
             "probability": "1_IN_1",
-            "item_id": "94",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 75,
             "probability": "1_IN_1",
-            "item_id": "75",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -90410,15 +90410,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_10",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_10",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -90478,9 +90478,9 @@
     ],
     "drop_kind": [
         {
+            "id": 708,
             "probability": "1_IN_1",
-            "item_id": "708",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -90541,15 +90541,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -91063,27 +91063,27 @@
     },
     "drop_kind": [
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         },
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         },
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         },
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         }
     ]
@@ -93453,15 +93453,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -93538,15 +93538,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -93698,15 +93698,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -93792,15 +93792,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -95411,15 +95411,15 @@
     ],
     "drop_kind": [
         {
+            "id": 775,
             "probability": "1_IN_1",
-            "item_id": "775",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 43,
             "probability": "1_IN_1",
-            "item_id": "43",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -97600,9 +97600,9 @@
     ],
     "drop_kind": [
         {
+            "id": 682,
             "probability": "1_IN_1",
-            "item_id": "682",
-            "grade": "1",
+            "grade": 1,
             "dice": "1d1"
         }
     ]
@@ -97885,9 +97885,9 @@
     },
     "drop_kind": [
         {
+            "id": 753,
             "probability": "1_IN_2",
-            "item_id": "753",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ],
@@ -99989,9 +99989,9 @@
     ],
     "drop_kind": [
         {
+            "id": 803,
             "probability": "1_IN_1",
-            "item_id": "803",
-            "grade": "0",
+            "grade": 0,
             "dice": "2d10"
         }
     ],
@@ -101530,33 +101530,33 @@
     ],
     "drop_kind": [
         {
+            "id": 754,
             "probability": "1_IN_1",
-            "item_id": "754",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 755,
             "probability": "1_IN_1",
-            "item_id": "755",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 756,
             "probability": "1_IN_1",
-            "item_id": "756",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 757,
             "probability": "1_IN_1",
-            "item_id": "757",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 758,
             "probability": "1_IN_1",
-            "item_id": "758",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -101858,15 +101858,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -102404,9 +102404,9 @@
     ],
     "drop_kind": [
         {
+            "id": 750,
             "probability": "1_IN_1",
-            "item_id": "750",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d5"
         }
     ],
@@ -102458,15 +102458,15 @@
     ],
     "drop_kind": [
         {
+            "id": 42,
             "probability": "1_IN_1",
-            "item_id": "42",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 346,
             "probability": "1_IN_1",
-            "item_id": "346",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d2"
         }
     ]
@@ -102958,21 +102958,21 @@
     ],
     "drop_kind": [
         {
+            "id": 40,
             "probability": "1_IN_1",
-            "item_id": "40",
-            "grade": "1",
+            "grade": 1,
             "dice": "1d1"
         },
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -103042,21 +103042,21 @@
     ],
     "drop_kind": [
         {
+            "id": 40,
             "probability": "1_IN_1",
-            "item_id": "40",
-            "grade": "1",
+            "grade": 1,
             "dice": "1d1"
         },
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -103538,15 +103538,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -104074,15 +104074,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -105960,9 +105960,9 @@
     ],
     "drop_kind": [
         {
+            "id": 749,
             "probability": "1_IN_1",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -107204,9 +107204,9 @@
     ],
     "drop_kind": [
         {
+            "id": 773,
             "probability": "1_IN_1",
-            "item_id": "773",
-            "grade": "0",
+            "grade": 0,
             "dice": "2d4"
         }
     ]
@@ -109826,15 +109826,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -110567,21 +110567,21 @@
     },
     "drop_kind": [
         {
+            "id": 603,
             "probability": "1_IN_1",
-            "item_id": "603",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d8"
         },
         {
+            "id": 678,
             "probability": "1_IN_1",
-            "item_id": "678",
-            "grade": "0",
+            "grade": 0,
             "dice": "5d8"
         },
         {
+            "id": 595,
             "probability": "1_IN_1",
-            "item_id": "595",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d4"
         }
     ]
@@ -110913,15 +110913,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -114385,15 +114385,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -114460,15 +114460,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -114535,15 +114535,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -115070,9 +115070,9 @@
     },
     "drop_kind": [
         {
+            "id": 800,
             "probability": "1_IN_1",
-            "item_id": "800",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d3"
         }
     ]
@@ -118132,9 +118132,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -121306,9 +121306,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -121969,9 +121969,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -122287,9 +122287,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -126205,9 +126205,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -127074,9 +127074,9 @@
     ],
     "drop_kind": [
         {
+            "id": 533,
             "probability": "1_IN_5",
-            "item_id": "533",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -127875,6 +127875,14 @@
         "NO_FEAR",
         "RES_TELE",
         "NASTY"
+    ],
+    "drop_kind": [
+        {
+            "id": 721,
+            "probability": "1_IN_1",
+            "grade": 0,
+            "dice": "2d5"
+        }
     ]
 },
 {
@@ -128922,9 +128930,9 @@
     },
     "drop_kind": [
         {
+            "id": 781,
             "probability": "1_IN_1",
-            "item_id": "781",
-            "grade": "2",
+            "grade": 2,
             "dice": "1d1"
         }
     ]
@@ -135768,9 +135776,9 @@
     },
     "drop_kind": [
         {
+            "id": 169,
             "probability": "1_IN_5",
-            "item_id": "169",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -136876,9 +136884,9 @@
     ],
     "drop_kind": [
         {
+            "id": 64,
             "probability": "1_IN_5",
-            "item_id": "64",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -137704,9 +137712,9 @@
     ],
     "drop_kind": [
         {
+            "id": 702,
             "probability": "1_IN_1",
-            "item_id": "702",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -137763,9 +137771,9 @@
     ],
     "drop_kind": [
         {
+            "id": 803,
             "probability": "1_IN_1",
-            "item_id": "803",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -137826,9 +137834,9 @@
     ],
     "drop_kind": [
         {
+            "id": 815,
             "probability": "1_IN_1",
-            "item_id": "815",
-            "grade": "0",
+            "grade": 0,
             "dice": "6d6"
         }
     ]
@@ -140798,15 +140806,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -142324,9 +142332,9 @@
     },
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -144346,15 +144354,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -147180,15 +147188,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_10",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_10",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -147390,15 +147398,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_10",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_10",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -148814,9 +148822,9 @@
     ],
     "drop_kind": [
         {
+            "id": 750,
             "probability": "1_IN_1",
-            "item_id": "750",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         }
     ],
