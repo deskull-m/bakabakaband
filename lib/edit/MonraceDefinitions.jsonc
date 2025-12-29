@@ -47314,7 +47314,7 @@
     },
     "sex": "MALE",
     "alliance": "VALINOR",
-    "collapse": "-15.22",
+    "world_collapse_plus": "-15.22",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -55116,7 +55116,7 @@
     },
     "sex": "MALE",
     "alliance": "UTUMNO",
-    "collapse": "82.5",
+    "world_collapse_plus": "82.5",
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -95270,7 +95270,7 @@
         "ja": "大半の多元宇宙で彼らの生存は許されない。"
     },
     "sex": "MALE",
-    "collapse": "-0.000100",
+    "world_collapse_plus": "-0.000100",
     "flags": [
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -150953,6 +150953,87 @@
             "BA_POIS"
         ],
         "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2340,
+    "name": {
+        "ja": "BT-90 ガーディン最終形態",
+        "en": "BT-90 Guardin (final form)"
+    },
+    "symbol": {
+        "character": "I",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "50d80",
+    "vision": 50,
+    "armor_class": 200,
+    "alertness": 30,
+    "level": 60,
+    "rarity": 1,
+    "exp": 12000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SHATTER",
+            "damage_dice": "10d15"
+        },
+        {
+            "method": "STING",
+            "effect": "POISON",
+            "damage_dice": "7d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。最終形態では外骨格が最大硬度に達し、超重量級戦車の砲弾を平然とはじくに至る。",
+        "en": "This is one of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its final form, its exoskeleton achieves maximum hardness, enabling it to casually deflect shells from super-heavy tanks."
+    },
+    "alliance": "GAICHI",
+    "mob": 50,
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "KILL_BODY",
+        "BASH_DOOR",
+        "KILL_WALL",
+        "POWERFUL",
+        "REGENERATE",
+        "IM_POIS",
+        "IM_ACID",
+        "RES_NETH",
+        "RES_DARK",
+        "NO_CONF",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "BA_MANA",
+            "HASTE",
+            "BA_POIS",
+            "BA_ACID",
+            "BR_POIS"
+        ],
+        "probability": "1_IN_4"
     }
 }]
 }

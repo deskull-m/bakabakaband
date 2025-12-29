@@ -42330,6 +42330,27 @@ D:$ with its armor significantly reinforced.
 D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
 D:第二形態では虫のような体がより巨大化し、特に装甲が強化される。
 
+N:2340:BT-90 ガーディン最終形態
+E:BT-90 Guardin (final form)
+G:I:v
+I:130:50d80:50:200:30
+W:60:1:12000:0:0
+B:CRUSH:SUPERHURT:8d15
+B:CRUSH:SUPERHURT:8d15
+B:CRUSH:SHATTER:10d15
+B:STING:POISON:7d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
+F:BASH_DOOR | KILL_WALL | POWERFUL | MOB_50
+F:REGENERATE | IM_POIS | IM_ACID | RES_NETH | RES_DARK | NO_CONF | NO_FEAR
+S:1_IN_4 | HEAL | BO_MANA | BA_MANA | HASTE | BA_POIS | BA_ACID | BR_POIS
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its final form,
+D:$ its exoskeleton achieves maximum hardness,
+D:$ enabling it to casually deflect shells from super-heavy tanks.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:最終形態では外骨格が最大硬度に達し、超重量級戦車の砲弾を平然とはじくに至る。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
