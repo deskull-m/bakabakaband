@@ -112,7 +112,7 @@ static void put_title()
 {
     // title.pngを描画リストに登録
     const auto title_path = path_build(ANGBAND_DIR, "graphics/title.png");
-    (void)register_png_image(title_path.string());
+    (void)register_png_image(title_path.string(), PngVAlign::TOP, PngHAlign::CENTER, 0, -20);
     const auto title = AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL);
     const auto col = (title.length() <= MAIN_TERM_MIN_COLS) ? (MAIN_TERM_MIN_COLS - title.length()) / 2 : 0;
     constexpr auto row_version_info = 3; //!< タイトル表記(行)
@@ -257,5 +257,4 @@ void init_angband(PlayerType *player_ptr, bool no_term)
         unregister_png_image(title_path.string());
     }
 #endif
-
 }

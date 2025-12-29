@@ -26,6 +26,10 @@ struct PngImageInfo {
     int y;
     int width;
     int height;
+    PngVAlign v_align;
+    PngHAlign h_align;
+    int x_offset;
+    int y_offset;
 };
 
 // GDI+初期化状態
@@ -51,9 +55,17 @@ static void ensure_gdiplus_initialized()
 /*!
  * @brief PNG画像を描画リストに登録する
  * @param png_file_path 表示するPNGファイルのパス
+ * @param v_align 縦方向の配置（デフォルト：中央）
+ * @param h_align 横方向の配置（デフォルト：中央）
+ * @param x_offset 横方向のオフセット（ピクセル、デフォルト：0）
+ * @param y_offset 縦方向のオフセット（ピクセル、デフォルト：0）
  * @return 成功した場合true、失敗した場合false
  */
-bool register_png_image(const std::string &png_file_path)
+bool register_png_image(const std::string &png_file_path,
+    PngVAlign v_align,
+    PngHAlign h_align,
+    int x_offset,
+    int y_offset)
 {
     // メインウィンドウを取得
     HWND hwndMain = get_main_window_hwnd();
@@ -93,9 +105,35 @@ bool register_png_image(const std::string &png_file_path)
     int imageWidth = image.GetWidth();
     int imageHeight = image.GetHeight();
 
-    // 中央に配置するための座標を計算
-    int x = (windowWidth - imageWidth) / 2;
-    int y = (windowHeight - imageHeight) / 2;
+    // 横方向の座標を計算
+    int x = 0;
+    switch (h_align) {
+    case PngHAlign::LEFT:
+        x = 0;
+        break;
+    case PngHAlign::CENTER:
+        x = (windowWidth - imageWidth) / 2;
+        break;
+    case PngHAlign::RIGHT:
+        x = windowWidth - imageWidth;
+        break;
+    }
+    x += x_offset;
+
+    // 縦方向の座標を計算
+    int y = 0;
+    switch (v_align) {
+    case PngVAlign::TOP:
+        y = 0;
+        break;
+    case PngVAlign::CENTER:
+        y = (windowHeight - imageHeight) / 2;
+        break;
+    case PngVAlign::BOTTOM:
+        y = windowHeight - imageHeight;
+        break;
+    }
+    y += y_offset;
 
     // 画像情報を登録
     PngImageInfo info;
@@ -104,6 +142,10 @@ bool register_png_image(const std::string &png_file_path)
     info.y = y;
     info.width = imageWidth;
     info.height = imageHeight;
+    info.v_align = v_align;
+    info.h_align = h_align;
+    info.x_offset = x_offset;
+    info.y_offset = y_offset;
 
     g_registered_images[png_file_path] = info;
 
