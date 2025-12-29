@@ -26,8 +26,10 @@
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
+#include "util/angband-files.h"
 #include "util/buffer-shaper.h"
 #include "util/int-char-converter.h"
+#include "util/png-displayer.h"
 #include "util/string-processor.h"
 #include "view/display-inventory.h"
 #include "view/display-messages.h"
@@ -213,6 +215,7 @@ static void show_tomb_detail(PlayerType *player_ptr)
  */
 void print_tomb(PlayerType *player_ptr)
 {
+
     term_clear();
     read_dead_file(wc_ptr->is_blown_away());
     std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(player_ptr->pclass)[(player_ptr->level - 1) / 5];
@@ -241,7 +244,20 @@ void print_tomb(PlayerType *player_ptr)
     if (wc_ptr->is_blown_away()) {
         msg_format(_("世 界 こ わ れ る", "The world had *b*r*o*k*e*n*."));
     } else {
+#ifdef WINDOWS
+        // 墓石画像を表示
+        const auto tomb_path = path_build(ANGBAND_DIR, "graphics/tomb.png");
+        display_png_centered(tomb_path.string());
+#endif
+
         msg_format(_("さようなら、%s!", "Goodbye, %s!"), player_ptr->name.data());
+
+#ifdef WINDOWS
+        /*
+        // 画像を消去
+        clear_png_display();
+        */
+#endif
     }
 }
 

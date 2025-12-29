@@ -148,6 +148,16 @@ static bool is_main_term(term_data *td)
     return td == &data[0];
 }
 static term_data *my_td; //!< Hack -- global "window creation" pointer
+
+/*!
+ * @brief メインウィンドウのHWNDを取得する
+ * @return メインウィンドウのHWND
+ */
+HWND get_main_window_hwnd(void)
+{
+    return data[0].w;
+}
+
 POINT normsize; //!< Remember normal size of main window when maxmized
 
 /*

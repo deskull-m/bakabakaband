@@ -304,6 +304,41 @@ char inkey(bool do_all_term_refresh)
 }
 
 /*
+ * @brief 画像表示用のキー入力待機関数 / Get a keypress for image display without screen refresh
+ * @details 画面更新や再描画を行わずに、キーやマウス入力を待つ。一枚絵表示などに使用する。
+ * @return キーを表すコード
+ */
+char inkey_for_image()
+{
+    char ch = 0;
+    term_type *old = game_term;
+
+    // マクロ処理をクリア
+    parse_macro = false;
+    parse_under = false;
+
+    // カーソルを非表示
+    term_set_cursor(false);
+
+    term_activate(angband_terms[0]);
+
+    // 画面更新なしで入力を待つ
+    while (!ch) {
+        // 入力があるまで待機
+        if (0 == term_inkey(&ch, true, true)) {
+            break;
+        }
+        // 短い遅延
+        term_xtra(TERM_XTRA_DELAY, 10);
+    }
+
+    term_activate(old);
+    term_set_cursor(false);
+
+    return ch;
+}
+
+/*
  * Get a keypress from the user.
  * And interpret special keys as internal code.
  *

@@ -1445,6 +1445,7 @@ hengband_SOURCES = \
 	util/dice.cpp util/dice.h \
 	util/int-char-converter.h \
 	util/object-sort.cpp util/object-sort.h \
+	util/png-displayer.cpp util/png-displayer.h \
 	util/point-2d.h \
 	util/probability-table.h \
 	util/rng-xoshiro.cpp util/rng-xoshiro.h \

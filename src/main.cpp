@@ -25,6 +25,9 @@
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
+#ifdef WINDOWS
+#include "util/png-displayer.h"
+#endif
 #include "view/display-scores.h"
 #include "wizard/spoiler-util.h"
 #include "wizard/wizard-spoiler.h"
@@ -440,6 +443,11 @@ int main(int argc, char *argv[])
         init_angband(p_ptr, false);
         pause_line(MAIN_TERM_MIN_ROWS - 1);
     }
+
+#ifdef WINDOWS
+    // タイトル画像を消去
+    clear_png_display();
+#endif
 
     play_game(p_ptr, new_game, browsing_movie);
     quit("");
