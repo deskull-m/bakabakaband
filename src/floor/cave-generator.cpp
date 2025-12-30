@@ -174,6 +174,9 @@ static bool decide_tunnel_planned_site(PlayerType *player_ptr, DungeonData *dd_p
 {
     dd_ptr->tunn_n = 0;
     dd_ptr->wall_n = 0;
+    if (dungeon.flags.has(DungeonFeatureType::NO_TUNNEL)) {
+        return true;
+    }
     if (randint1(player_ptr->current_floor_ptr->dun_level) > dungeon.tunnel_percent) {
         (void)build_tunnel2(player_ptr, dd_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos, 2, 2);
     } else if (!build_tunnel(player_ptr, dd_ptr, dt_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos)) {
@@ -278,7 +281,7 @@ static bool make_one_floor(PlayerType *player_ptr, DungeonData *dd_ptr, const Du
     }
 
     // 通路の過剰生成処理
-    if (one_in_(8)) {
+    if (!dungeon.flags.has(DungeonFeatureType::NO_TUNNEL) && one_in_(8)) {
         int num = randint1((floor.width * floor.height) / 500);
         if (one_in_(2)) {
             num /= 2;
