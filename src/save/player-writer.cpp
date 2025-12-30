@@ -70,6 +70,18 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b(player_ptr->ht);
     wr_s16b(player_ptr->wt);
 
+    // 死亡履歴のセーブ
+    wr_u32b(static_cast<uint32_t>(player_ptr->death_history.size()));
+    for (const auto &record : player_ptr->death_history) {
+        wr_s32b(record.game_turn);
+        wr_s16b(record.day);
+        wr_s16b(record.hour);
+        wr_s16b(record.min);
+        wr_s16b(record.player_level);
+        wr_string(record.cause);
+        wr_s16b(enum2i(record.killer_monrace_id));
+    }
+
     for (int i = 0; i < A_MAX; ++i) {
         wr_s16b(player_ptr->stat_max[i]);
     }

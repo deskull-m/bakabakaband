@@ -8,6 +8,7 @@
 #include "util/point-2d.h"
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 class FloorType;
@@ -22,6 +23,19 @@ enum class Virtue : short;
 enum player_sex : byte;
 enum class PlayerRaceType;
 enum class PlayerClassType : short;
+
+/*!
+ * @brief 死亡履歴情報構造体
+ */
+struct DeathRecord {
+    int32_t game_turn; /*!< 死亡時のゲームターン */
+    int16_t day; /*!< 死亡時の日数 */
+    int16_t hour; /*!< 死亡時の時刻 */
+    int16_t min; /*!< 死亡時の分 */
+    int16_t player_level; /*!< 死亡時のプレイヤーレベル */
+    std::string cause; /*!< 死因 */
+    MonraceId killer_monrace_id; /*!< 死亡原因のモンスターID */
+};
 
 /*!
  * @brief プレイヤーとモンスターの共通基底クラス
@@ -266,4 +280,7 @@ public:
     BIT_FLAGS esp_good{};
     BIT_FLAGS esp_nonliving{};
     BIT_FLAGS esp_unique{};
+
+    // 死亡履歴
+    std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
 };
