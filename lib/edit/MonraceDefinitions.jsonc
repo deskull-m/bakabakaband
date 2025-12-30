@@ -151117,5 +151117,84 @@
         ],
         "probability": "1_IN_5"
     }
+},
+{
+    "id": 2342,
+    "name": {
+        "ja": "BT-92 ブレナー最終形態",
+        "en": "BT-92 Blenar (final form)"
+    },
+    "symbol": {
+        "character": "D",
+        "color": "Violet"
+    },
+    "speed": 30,
+    "hit_point": "60d80",
+    "vision": 100,
+    "armor_class": 130,
+    "alertness": 30,
+    "level": 61,
+    "rarity": 1,
+    "exp": 8000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "7d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "7d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。最終形態では龍の頭のような形状に進化している。",
+        "en": "This is one of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its final form, it has evolved into a dragon-headed form capable of ultra-high-speed flight."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "CAN_FLY",
+        "BASH_DOOR",
+        "KILL_WALL",
+        "POWERFUL",
+        "REGENERATE",
+        "AURA_FIRE",
+        "IM_FIRE",
+        "RES_LITE",
+        "RES_DARK",
+        "RES_PLAS",
+        "NO_FEAR",
+        "NO_CONF"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "HASTE",
+            "BLINK",
+            "TPORT"
+        ],
+        "probability": "1_IN_4"
+    }
 }]
 }

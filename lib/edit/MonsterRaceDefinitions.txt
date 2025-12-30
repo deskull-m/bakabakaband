@@ -42372,6 +42372,26 @@ D:$ achieving supersonic flight capability.
 D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
 D:第二形態では推進機構が劇的に強化され、音速を超える飛行能力を獲得している。
 
+N:2342:BT-92 ブレナー最終形態
+E:BT-92 Blenar (final form)
+G:D:v
+I:140:60d80:100:130:30
+W:61:1:8000:0:0
+B:CRUSH:HURT:7d12
+B:CRUSH:HURT:7d12
+B:CRUSH:SUPERHURT:8d12
+B:CRUSH:SUPERHURT:8d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | CAN_FLY | ALLIANCE_GAICHI
+F:BASH_DOOR | KILL_WALL | POWERFUL | REGENERATE | AURA_FIRE
+F:IM_FIRE | RES_LITE | RES_DARK | RES_PLAS | NO_FEAR | NO_CONF
+S:1_IN_4 | HEAL | BO_MANA | HASTE | BLINK | TPORT
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its final form,
+D:$ it has evolved into a dragon-headed form capable of ultra-high-speed flight.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:最終形態では龍の頭のような形状に進化している。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
