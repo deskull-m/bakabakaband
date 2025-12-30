@@ -470,6 +470,18 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         player_ptr->death_count++;
         player_ptr->killer_monrace_id = killer_monrace_id;
 
+        // 死亡履歴を記録
+        DeathRecord death_record;
+        death_record.game_turn = world.game_turn;
+        const auto [day, hour, min] = world.extract_date_time(player_ptr->prace);
+        death_record.day = day;
+        death_record.hour = hour;
+        death_record.min = min;
+        death_record.player_level = player_ptr->level;
+        death_record.cause = player_ptr->died_from;
+        death_record.killer_monrace_id = killer_monrace_id;
+        player_ptr->death_history.push_back(death_record);
+
         // インシデントに死亡回数を記録
         player_ptr->plus_incident_tree("DEAD", 1);
 

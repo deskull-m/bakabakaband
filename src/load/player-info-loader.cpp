@@ -95,6 +95,26 @@ void rd_base_info(PlayerType *player_ptr)
     player_ptr->age = rd_s16b();
     player_ptr->ht = rd_s16b();
     player_ptr->wt = rd_s16b();
+
+    // 死亡履歴のロード（バージョン44以降）
+    if (loading_savefile_version_is_older_than(44)) {
+        player_ptr->death_history.clear();
+    } else {
+        const auto death_history_size = rd_u32b();
+        player_ptr->death_history.clear();
+        player_ptr->death_history.reserve(death_history_size);
+        for (uint32_t i = 0; i < death_history_size; ++i) {
+            DeathRecord record;
+            record.game_turn = rd_s32b();
+            record.day = rd_s16b();
+            record.hour = rd_s16b();
+            record.min = rd_s16b();
+            record.player_level = rd_s16b();
+            record.cause = rd_string();
+            record.killer_monrace_id = i2enum<MonraceId>(rd_s16b());
+            player_ptr->death_history.push_back(record);
+        }
+    }
 }
 
 void rd_experience(PlayerType *player_ptr)

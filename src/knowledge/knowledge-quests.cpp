@@ -17,9 +17,11 @@
 #include "system/artifact-type-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
@@ -321,5 +323,52 @@ void do_cmd_knowledge_quests(PlayerType *player_ptr)
 
     angband_fclose(fff);
     FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("クエスト達成状況", "Quest status"));
+    fd_kill(file_name);
+}
+
+/*!
+ * @brief 死亡履歴を表示する
+ * @param player_ptr プレイヤーへの参照ポインタ
+ */
+void do_cmd_knowledge_death_history(PlayerType *player_ptr)
+{
+    FILE *fff = nullptr;
+    GAME_TEXT file_name[FILE_NAME_SIZE];
+    if (!open_temporary_file(&fff, file_name)) {
+        return;
+    }
+
+    fprintf(fff, _("《死亡履歴》\n", "< Death History >\n"));
+
+    if (player_ptr->death_history.empty()) {
+        fprintf(fff, _("まだ一度も死亡していない。\n", "You have never died.\n"));
+    } else {
+        int16_t total = 0;
+        for (const auto &record : player_ptr->death_history) {
+            total++;
+
+            // 死亡原因の名前を取得
+            std::string cause_name = record.cause;
+
+            // モンスターIDが有効な場合はモンスター名を追加
+            if (MonraceList::is_valid(record.killer_monrace_id) && record.killer_monrace_id != MonraceId::PLAYER) {
+                const auto &monrace = MonraceList::get_instance().get_monrace(record.killer_monrace_id);
+                if (!cause_name.empty() && cause_name != monrace.name.string()) {
+                    cause_name = format(_("%s(%s)", "%s(%s)"), cause_name.data(), monrace.name.data());
+                }
+            }
+
+            // 死亡日時と死因を表示
+            constexpr auto mes = _("%3d. %d日目 %02d:%02d - レベル%2d - %s\n",
+                "%3d. Day %d %02d:%02d - Level %2d - %s\n");
+            fprintf(fff, mes, total, record.day, record.hour, record.min,
+                record.player_level, cause_name.data());
+        }
+
+        fprintf(fff, _("\n合計死亡回数: %d\n", "\nTotal deaths: %d\n"), total);
+    }
+
+    angband_fclose(fff);
+    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("死亡履歴", "Death History"));
     fd_kill(file_name);
 }
