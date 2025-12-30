@@ -151043,5 +151043,79 @@
         ],
         "probability": "1_IN_4"
     }
+},
+{
+    "id": 2341,
+    "name": {
+        "ja": "BT-92 ブレナー第二形態",
+        "en": "BT-92 Blenar (second form)"
+    },
+    "symbol": {
+        "character": "B",
+        "color": "Violet"
+    },
+    "speed": 25,
+    "hit_point": "40d65",
+    "vision": 90,
+    "armor_class": 110,
+    "alertness": 35,
+    "level": 52,
+    "rarity": 1,
+    "exp": 5000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。第二形態では推進機構が劇的に強化され、音速を超える飛行能力を獲得している。",
+        "en": "This is one of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its second form, its propulsion system has been dramatically enhanced, achieving supersonic flight capability."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "CAN_FLY",
+        "BASH_DOOR",
+        "POWERFUL",
+        "REGENERATE",
+        "RES_LITE",
+        "RES_DARK",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "HASTE",
+            "BLINK",
+            "TPORT"
+        ],
+        "probability": "1_IN_5"
+    }
 }]
 }

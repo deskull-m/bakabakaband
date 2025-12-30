@@ -42352,6 +42352,26 @@ D:$ enabling it to casually deflect shells from super-heavy tanks.
 D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
 D:最終形態では外骨格が最大硬度に達し、超重量級戦車の砲弾を平然とはじくに至る。
 
+N:2341:BT-92 ブレナー第二形態
+E:BT-92 Blenar (second form)
+G:B:v
+I:135:40d65:90:110:35
+W:52:1:5000:0:0
+B:CRUSH:HURT:5d12
+B:CRUSH:HURT:5d12
+B:CRUSH:SUPERHURT:6d12
+B:CRUSH:SUPERHURT:6d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | CAN_FLY | ALLIANCE_GAICHI
+F:BASH_DOOR | POWERFUL | REGENERATE | RES_LITE | RES_DARK | NO_FEAR
+S:1_IN_5 | HEAL | BO_MANA | HASTE | BLINK | TPORT
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its second form,
+D:$ its propulsion system has been dramatically enhanced,
+D:$ achieving supersonic flight capability.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:第二形態では推進機構が劇的に強化され、音速を超える飛行能力を獲得している。
+
 # N: serial number : monster name
 # G: symbol : color
 # I: speed : hit points : vision : armor class : alertness
