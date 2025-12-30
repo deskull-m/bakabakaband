@@ -45,4 +45,5 @@ const std::unordered_map<std::string_view, DungeonFeatureType> dungeon_flags = {
     { "ALWAYS_RIVER", DungeonFeatureType::ALWAYS_RIVER },
     { "WATERWAY", DungeonFeatureType::WATERWAY },
     { "VESTIGE", DungeonFeatureType::VESTIGE },
+    { "NO_TUNNEL", DungeonFeatureType::NO_TUNNEL },
 };
