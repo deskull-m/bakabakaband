@@ -245,9 +245,9 @@ void print_tomb(PlayerType *player_ptr)
         msg_format(_("世 界 こ わ れ る", "The world had *b*r*o*k*e*n*."));
     } else {
 #ifdef WINDOWS
-        // 墓石画像を表示
+        // 墓石画像を描画リストに登録
         const auto tomb_path = path_build(ANGBAND_DIR, "graphics/tomb.png");
-        display_png_centered(tomb_path.string());
+        (void)register_png_image(tomb_path.string());
 #endif
 
         msg_format(_("さようなら、%s!", "Goodbye, %s!"), player_ptr->name.data());
