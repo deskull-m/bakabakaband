@@ -39,4 +39,5 @@ private:
     void process_masochist_reaction();
     void process_sadist_reaction();
     void add_monster_fear();
+    bool check_and_process_hp_transform();
 };

@@ -3,6 +3,7 @@
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
 #include "save/save-util.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "util/enum-converter.h"
 
@@ -129,6 +130,10 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::CLASS);
     }
 
+    if (MonraceList::is_valid(this->monster.transform_r_idx) || this->monster.has_transformed) {
+        set_bits(flags, SaveDataMonsterFlagType::TRANSFORM);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -209,5 +214,11 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
 
     if (any_bits(flags, SaveDataMonsterFlagType::CLASS)) {
         wr_s16b(enum2i(this->monster.pclass));
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::TRANSFORM)) {
+        wr_s16b(enum2i(this->monster.transform_r_idx));
+        wr_byte(this->monster.transform_hp_threshold);
+        wr_byte(this->monster.has_transformed ? 1 : 0);
     }
 }

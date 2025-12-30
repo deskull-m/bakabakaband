@@ -395,6 +395,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->parent_m_idx = 0;
     }
 
+    // 変身情報のコピー
+    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
+    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
+    m_ptr->has_transformed = false;
+
     if (any_bits(mode, PM_CLONE)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::CLONED);
     }
@@ -402,6 +407,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     if (any_bits(mode, PM_NO_PET)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
     }
+
+    // 変身情報のコピー
+    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
+    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
+    m_ptr->has_transformed = false;
 
     // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
     m_ptr->initialize_equivalent_player_races();

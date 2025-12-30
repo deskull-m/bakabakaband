@@ -219,6 +219,28 @@ static errr set_mon_evolve(nlohmann::json &evolve_data, MonraceDefinition &monra
 }
 
 /*!
+ * @brief JSON Objectからモンスターの変身をセットする
+ * @param transform_data 変身情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+static errr set_mon_transform(nlohmann::json &transform_data, MonraceDefinition &monrace)
+{
+    if (transform_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+
+    if (auto err = info_set_integer(transform_data["hp_threshold"], monrace.transform_hp_threshold, true, Range(0, 100))) {
+        return err;
+    }
+    if (auto err = info_set_integer(transform_data["to"], monrace.transform_r_idx, true, Range(0, 9999))) {
+        return err;
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの性別をセットする
  * @param sex_data 性別情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -1195,6 +1217,12 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_evolve(mon_data["evolve"], monrace);
     if (err) {
         msg_format(_("モンスター進化情報読込失敗。ID: '%d'。", "Failed to load monster evolve data. ID: '%d'."), error_idx);
+        return err;
+    }
+
+    err = set_mon_transform(mon_data["transform"], monrace);
+    if (err) {
+        msg_format(_("モンスター変身情報読込失敗。ID: '%d'。", "Failed to load monster transform data. ID: '%d'."), error_idx);
         return err;
     }
     err = set_mon_sex(mon_data["sex"], monrace);

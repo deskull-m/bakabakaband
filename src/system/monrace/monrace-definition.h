@@ -151,6 +151,8 @@ public:
     PERCENTAGE arena_ratio{}; //!< モンスター闘技場の掛け金倍率修正値(%基準 / 0=100%) / The adjustment ratio for gambling monster
     MonraceId next_r_idx{}; //!< 進化先モンスター種族ID
     EXP next_exp{}; //!< 進化に必要な経験値
+    MonraceId transform_r_idx{}; //!< 変身先モンスター種族ID
+    PERCENTAGE transform_hp_threshold{}; //!< 変身するHP閾値(最大HPの%)
     DEPTH level{}; //!< レベル / Level of creature
     RARITY rarity{}; //!< レアリティ / Rarity of creature
     DisplaySymbol symbol_definition{}; //!< 定義上のシンボル (色/文字).
