@@ -666,6 +666,7 @@ void process_monster_lore(PlayerType *player_ptr, MonraceId r_idx, monster_lore_
     display_monster_immunities(lore_ptr);
     display_monster_alert(lore_ptr);
     display_monster_drops(lore_ptr);
+    display_monster_dead_spawns(lore_ptr);
     display_monster_blows(lore_ptr);
     display_monster_guardian(lore_ptr);
 }
