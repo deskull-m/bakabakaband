@@ -21,4 +21,5 @@ enum class SaveDataMonsterFlagType {
     HEIGHT_WEIGHT = 0x00020000,
     RACE = 0x00040000,
     CLASS = 0x00080000,
+    TRANSFORM = 0x00100000,
 };

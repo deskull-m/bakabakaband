@@ -61,6 +61,9 @@ public:
     /* TODO: クローン、ペット、有効化は意義が異なるので別変数に切り離すこと。save/loadのバージョン更新が面倒そうだけど */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" - Some bit-flags for the "smart" field */
     MONSTER_IDX parent_m_idx{}; /*!< 召喚主のモンスターID */
+    MonraceId transform_r_idx{}; /*!< 変身先モンスター種族ID */
+    PERCENTAGE transform_hp_threshold{}; /*!< 変身するHP閾値(最大HPの%) */
+    bool has_transformed{}; /*!< 既に変身済みかどうかのフラグ */
 
     static bool check_sub_alignments(const byte sub_align1, const byte sub_align2);
 

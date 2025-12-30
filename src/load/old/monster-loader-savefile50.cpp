@@ -5,6 +5,7 @@
 #include "player-info/class-info.h"
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
@@ -144,6 +145,23 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
         } else {
             monster.pclass = PlayerClassType::NONE;
             monster.pclass_ref = nullptr;
+        }
+    }
+
+    // バージョン43以降: 変身情報の読み込み
+    if (loading_savefile_version_is_older_than(43)) {
+        monster.transform_r_idx = MonraceId::PLAYER;
+        monster.transform_hp_threshold = 0;
+        monster.has_transformed = false;
+    } else {
+        if (any_bits(flags, SaveDataMonsterFlagType::TRANSFORM)) {
+            monster.transform_r_idx = i2enum<MonraceId>(rd_s16b());
+            monster.transform_hp_threshold = rd_byte();
+            monster.has_transformed = rd_byte() != 0;
+        } else {
+            monster.transform_r_idx = MonraceId::PLAYER;
+            monster.transform_hp_threshold = 0;
+            monster.has_transformed = false;
         }
     }
 }
