@@ -1248,6 +1248,35 @@ void display_monster_sometimes(lore_type *lore_ptr)
     hooked_roff(_("ことがある。", ".  "));
 }
 
+void display_monster_dead_spawns(lore_type *lore_ptr)
+{
+    if (lore_ptr->r_ptr->dead_spawns.empty()) {
+        return;
+    }
+
+    if (!lore_ptr->know_everything && lore_ptr->r_ptr->r_tkills == 0) {
+        return;
+    }
+
+    for (const auto &[numerator, denominator, spawn_monrace_id, dice_side, dice_num] : lore_ptr->r_ptr->dead_spawns) {
+        const auto &spawn_monrace = MonraceList::get_instance().get_monrace(spawn_monrace_id);
+
+#ifdef JP
+        hooked_roff(format("%s^は撃破されると確率%d/%dで%dd%d体の%sを産み落とす。",
+            Who::who(lore_ptr->msex).data(),
+            numerator, denominator,
+            dice_num, dice_side,
+            spawn_monrace.name.data()));
+#else
+        hooked_roff(format("%s^ spawns %dd%d %s with probability %d/%d when defeated.  ",
+            Who::who(lore_ptr->msex).data(),
+            dice_num, dice_side,
+            pluralize(spawn_monrace.name).data(),
+            numerator, denominator));
+#endif
+    }
+}
+
 void display_monster_guardian(lore_type *lore_ptr)
 {
     bool is_kingpin = lore_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
