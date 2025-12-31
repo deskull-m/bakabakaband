@@ -52,6 +52,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
+#include "util/rng-xoshiro.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
 #include "wizard/wizard-messages.h"
@@ -312,11 +313,26 @@ static void generate_fixed_floor(PlayerType *player_ptr)
 /*!
  * @brief ダンジョン時のランダムフロア生成 / Make a real level
  * @param player_ptr プレイヤーへの参照ポインタ
- * @param concptr
+ * @param seed 乱数の種（オプショナル）。指定された場合は固定ダンジョンを生成
  * @return フロアの生成に成功したらTRUE
  */
-static tl::optional<std::string> level_gen(PlayerType *player_ptr)
+static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<uint32_t> seed = tl::nullopt)
 {
+    // 乱数種の保存と復元用
+    Xoshiro128StarStar::state_type original_state{};
+    bool seed_was_fixed = false;
+
+    // 乱数種が指定された場合は固定
+    if (seed) {
+        auto &rng = AngbandSystem::get_instance().get_rng();
+        original_state = rng.get_state(); // 現在の乱数状態を保存
+        rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
+        seed_was_fixed = true;
+        msg_format_wizard(player_ptr, CHEAT_DUNGEON,
+            _("乱数種を固定してフロア生成: 0x%08X", "Generating floor with fixed seed: 0x%08X"),
+            *seed);
+    }
+
     constexpr auto chance_small_floor = 10;
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &dungeon = floor.get_generated_dungeon_definition();
@@ -355,7 +371,14 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr)
     panel_row_min = floor.height;
     panel_col_min = floor.width;
 
-    return cave_gen(player_ptr);
+    auto result = cave_gen(player_ptr, seed);
+
+    // 乱数状態を復元
+    if (seed_was_fixed) {
+        AngbandSystem::get_instance().get_rng().set_state(original_state);
+    }
+
+    return result;
 }
 
 /*!
@@ -557,7 +580,7 @@ void generate_floor(PlayerType *player_ptr)
                 wilderness_gen(player_ptr);
             }
         } else {
-            why = level_gen(player_ptr);
+            why = level_gen(player_ptr, 191919);
         }
 
         if (is_sushi_eater(player_ptr)) {
