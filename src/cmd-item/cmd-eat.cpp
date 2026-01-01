@@ -160,7 +160,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::BERSERKER)) {
-        set_shero(player_ptr, player_ptr->shero + randint1(10) + 10, false);
+        set_berserk(player_ptr, player_ptr->berserk + randint1(10) + 10, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::ACIDIC)) {
@@ -452,7 +452,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         msg_print("「みずのよーうにのようにやさしく！はなのよーうにはげしく！ふーるえ……」");
         (void)BadStatusSetter(player_ptr).mod_stun(25 + randint1(25));
         (void)set_hero(player_ptr, randint1(25) + 25, false);
-        (void)set_shero(player_ptr, randint1(25) + 25, false);
+        (void)set_berserk(player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {
             (void)do_inc_stat(player_ptr, A_STR);
         }
