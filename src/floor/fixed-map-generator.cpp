@@ -332,7 +332,8 @@ static bool parse_qtw_P(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char **zz)
         return false;
     }
 
-    if ((init_flags & INIT_CREATE_DUNGEON) == 0) {
+    // サイズ取得モード、またはダンジョン生成モードでない場合は処理しない
+    if ((init_flags & (INIT_CREATE_DUNGEON | INIT_GET_SIZE)) == 0) {
         return true;
     }
 
@@ -355,6 +356,12 @@ static bool parse_qtw_P(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char **zz)
     floor.width = panels_x * SCREEN_WID;
     panel_row_min = floor.height;
     panel_col_min = floor.width;
+
+    // サイズ取得モードの場合はここで終了
+    if (init_flags & INIT_GET_SIZE) {
+        return true;
+    }
+
     if (floor.is_in_quest()) {
         POSITION py = atoi(zz[0]);
         POSITION px = atoi(zz[1]);

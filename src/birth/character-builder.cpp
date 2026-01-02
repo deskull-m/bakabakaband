@@ -17,7 +17,9 @@
 #include "birth/game-play-initializer.h"
 #include "birth/quick-start.h"
 #include "core/window-redrawer.h"
+#include "dungeon/quest.h"
 #include "game-option/option-flags.h"
+#include "info-reader/fixed-map-parser.h"
 #include "io/write-diary.h"
 #include "main/music-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -34,9 +36,13 @@
 #include "player/race-info-table.h"
 #include "store/store-owners.h"
 #include "store/store.h"
+#include "system/dungeon/dungeon-definition.h"
+#include "system/enums/dungeon/dungeon-id.h"
+#include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
+#include "system/gamevalue.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -93,8 +99,10 @@ static void write_birth_diary(PlayerType *player_ptr)
  * @details
  * Note that we may be called with "junk" leftover in the various
  * fields, so we must be sure to clear them first.
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param initial_quest_id ゲーム開始時に突入するクエストID（オプション）
  */
-void player_birth(PlayerType *player_ptr)
+void player_birth(PlayerType *player_ptr, std::optional<QuestId> initial_quest_id)
 {
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
@@ -132,5 +140,22 @@ void player_birth(PlayerType *player_ptr)
 
     if (g_window_flags[2].none()) {
         g_window_flags[2].set(SubWindowRedrawingFlag::INVENTORY);
+    }
+
+    // ゲーム開始時に特定のクエストに突入する処理
+    if (initial_quest_id.has_value()) {
+        auto &quests = QuestList::get_instance();
+        auto &quest = quests.get_quest(*initial_quest_id);
+
+        // クエストの初期化処理（ウィザードモードのwiz_enter_quest関数を参考）
+        init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
+        player_ptr->current_floor_ptr->quest_number = *initial_quest_id;
+        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        quest.status = QuestStatusType::TAKEN;
+
+        // クエストに突入
+        if (quest.dungeon == DungeonId::WILDERNESS) {
+            exe_enter_quest(player_ptr, *initial_quest_id);
+        }
     }
 }
