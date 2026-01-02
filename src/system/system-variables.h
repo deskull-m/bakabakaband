@@ -22,6 +22,7 @@ enum init_flags_type {
     INIT_CREATE_DUNGEON = 0x08,
     INIT_ONLY_FEATURES = 0x10,
     INIT_ONLY_BUILDINGS = 0x20,
+    INIT_GET_SIZE = 0x40, // クエストマップサイズ取得用フラグ
 };
 
 extern init_flags_type init_flags;

@@ -77,12 +77,14 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
+#include "system/gamevalue.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "system/system-variables.h"
 #include "target/target-checker.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -181,7 +183,7 @@ static void init_random_seed(PlayerType *player_ptr, bool new_game)
     }
 }
 
-static void init_world_floor_info(PlayerType *player_ptr)
+static void init_world_floor_info(PlayerType *player_ptr, std::optional<QuestId> initial_quest_id = std::nullopt)
 {
     AngbandWorld::get_instance().character_dungeon = false;
     wc_ptr->collapse_degree = 0;
@@ -195,7 +197,7 @@ static void init_world_floor_info(PlayerType *player_ptr)
     auto &system = AngbandSystem::get_instance();
     system.set_seed_flavor(randint0(0x10000000));
     system.set_seed_town(randint0(0x10000000));
-    player_birth(player_ptr);
+    player_birth(player_ptr, initial_quest_id);
     counts_write(player_ptr, 2, 0);
     player_ptr->count = 0;
     load = false;
@@ -424,7 +426,7 @@ static void process_game_turn(PlayerType *player_ptr)
  * savefile, we will commit suicide, if necessary, to allow the
  * player to start a new game.
  */
-void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie)
+void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::optional<QuestId> initial_quest_id)
 {
     if (browsing_movie) {
         reset_visuals(player_ptr);
@@ -442,9 +444,21 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie)
     AngbandWorld::get_instance().creating_savefile = new_game;
     init_random_seed(player_ptr, new_game);
     if (new_game) {
-        init_world_floor_info(player_ptr);
+        init_world_floor_info(player_ptr, initial_quest_id);
     } else {
         restore_world_floor_info(player_ptr);
+    }
+
+    // クエスト開始時は、マップサイズを事前に取得する
+    auto &floor = *player_ptr->current_floor_ptr;
+    if (new_game && floor.is_in_quest()) {
+        init_flags = INIT_GET_SIZE;
+        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        // サイズが取得できなかった場合はデフォルト値を設定
+        if (floor.height == 0 || floor.width == 0) {
+            floor.height = MAX_HGT;
+            floor.width = MAX_WID;
+        }
     }
 
     generate_world(player_ptr, new_game);
