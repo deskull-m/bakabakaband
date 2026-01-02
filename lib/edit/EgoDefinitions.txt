@@ -1715,6 +1715,14 @@ W:0:0:0:0
 C:0:0:0:3
 F:WIS | CHR | CURSED | HEAVY_CURSE | DOWN_SAVING
 
+N:238:(サイコフレーム)
+E:(PsychoFrame)
+X:31:25
+W:0:55:0:20000
+C:0:0:10:5
+F:RES_ACID | RES_ELEC | RES_FIRE | RES_COLD | HIGH_TELEPATHY | SPEED
+F:IGNORE_ACID | IGNORE_ELEC | IGNORE_FIRE | IGNORE_COLD | TELEPATHY
+
 N:240:邪剣「夜」の
 E:of Jaken Yoru
 X:24:30
@@ -1755,3 +1763,9 @@ F:SEE_INVIS | BLESSED | RES_FEAR | ONE_SUSTAIN
 G:1/4:BLOWS
 
 # MAX 242
+
+# N: serial number : ego type
+# X: inventory slot : rating
+# C: max to-hit : max to-dam : max to-ac : pval
+# W: depth : rarity : weight : cost
+# F: flag | flag | etc

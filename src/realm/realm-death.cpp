@@ -41,7 +41,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
 
     switch (spell) {
     case 0: {
@@ -287,8 +287,8 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (hypodynamic_bolt(player_ptr, dir, dam)) {
-                chg_virtue(player_ptr, Virtue::SACRIFICE, -1);
-                chg_virtue(player_ptr, Virtue::VITALITY, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
 
                 hp_player(player_ptr, dam);
 
@@ -413,8 +413,8 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            chg_virtue(player_ptr, Virtue::SACRIFICE, -1);
-            chg_virtue(player_ptr, Virtue::VITALITY, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
 
             for (i = 0; i < 3; i++) {
                 if (hypodynamic_bolt(player_ptr, dir, dam)) {
@@ -500,7 +500,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 28: {
         if (cast) {
-            restore_level(player_ptr);
+            restore_level(static_cast<CreatureEntity &>(*player_ptr));
         }
     } break;
 

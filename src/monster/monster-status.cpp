@@ -122,7 +122,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
             }
 
             /* Handle "sight" and "aggravation" */
-            else if ((monster.cdis <= MAX_PLAYER_SIGHT) && floor.has_los_at({ monster.fy, monster.fx })) {
+            else if ((monster.cdis <= MAX_PLAYER_SIGHT) && floor.has_los_at({ monster.y, monster.x })) {
                 is_wakeup = true;
             }
         }
@@ -148,7 +148,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
         auto d = (monster.cdis < MAX_MONSTER_SENSING / 2) ? (MAX_MONSTER_SENSING / monster.cdis) : 1;
 
         /* Hack -- amount of "waking" is affected by speed of player */
-        d = (d * speed_to_energy(player_ptr->pspeed)) / 10;
+        d = (d * speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed())) / 10;
         if (d < 0) {
             d = 1;
         }
@@ -421,7 +421,7 @@ void monster_gain_exp(PlayerType *player_ptr, MONSTER_IDX m_idx, MonraceId monra
     monster.exp = 0;
     if (monster.is_pet() || monster.ml) {
         const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
-        if (!ignore_unview || player_can_see_bold(player_ptr, monster.fy, monster.fx)) {
+        if (!ignore_unview || player_can_see_bold(player_ptr, monster.y, monster.x)) {
             if (is_hallucinated) {
                 const auto ids = monraces.search([](const auto &monrace) { return monrace.kind_flags.has_not(MonsterKindType::UNIQUE); });
                 const auto &monrace_hallucinated = monraces.get_monrace(rand_choice(ids));

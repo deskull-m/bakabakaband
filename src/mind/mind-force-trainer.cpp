@@ -1,4 +1,5 @@
 #include "mind/mind-force-trainer.h"
+#include "action/travel-execution.h"
 #include "avatar/avatar.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
@@ -80,7 +81,7 @@ bool clear_mind(PlayerType *player_ptr)
 
     msg_print(_("少し頭がハッキリした。", "You feel your head clear a little."));
 
-    player_ptr->csp += (3 + player_ptr->lev / 20);
+    player_ptr->csp += (3 + player_ptr->level / 20);
     if (player_ptr->csp >= player_ptr->msp) {
         player_ptr->csp = player_ptr->msp;
         player_ptr->csp_frac = 0;
@@ -117,8 +118,8 @@ void set_lightspeed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         } else if (!player_ptr->lightspeed) {
             msg_print(_("非常に素早く動けるようになった！", "You feel yourself moving extremely fast!"));
             notice = true;
-            chg_virtue(player_ptr, Virtue::PATIENCE, -1);
-            chg_virtue(player_ptr, Virtue::DILIGENCE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
         }
     } else {
         if (player_ptr->lightspeed) {
@@ -179,8 +180,8 @@ bool set_tim_sh_force(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state) {
-        disturb(player_ptr, false, false);
+    if (disturb_state || Travel::get_instance().is_ongoing()) {
+        disturb(player_ptr, false, true);
     }
 
     handle_stuff(player_ptr);
@@ -206,7 +207,7 @@ bool shock_power(PlayerType *player_ptr)
     }
 
     auto pos = player_ptr->get_neighbor(dir);
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     const auto dam = Dice::roll(8 + ((plev - 5) / 4) + boost / 12, 8);
     fire_beam(player_ptr, AttributeType::MISSILE, dir, dam);
     auto &floor = *player_ptr->current_floor_ptr;
@@ -244,8 +245,8 @@ bool shock_power(PlayerType *player_ptr)
     msg_format(_("%sを吹き飛ばした！", "You blow %s away!"), m_name.data());
     floor.get_grid(pos_origin).m_idx = 0;
     floor.get_grid(pos_target).m_idx = m_idx;
-    monster.fy = pos_target.y;
-    monster.fx = pos_target.x;
+    monster.y = pos_target.y;
+    monster.x = pos_target.x;
 
     update_monster(player_ptr, m_idx, true);
     lite_spot(player_ptr, pos_origin);
@@ -266,7 +267,7 @@ bool shock_power(PlayerType *player_ptr)
  */
 bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     int boost = get_current_ki(player_ptr);
     if (heavy_armor(player_ptr)) {
         boost /= 2;

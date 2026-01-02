@@ -17,4 +17,9 @@ enum class SaveDataMonsterFlagType {
     MFLAG2 = 0x00002000,
     NICKNAME = 0x00004000,
     PARENT = 0x00008000,
+    GOLD = 0x00010000,
+    HEIGHT_WEIGHT = 0x00020000,
+    RACE = 0x00040000,
+    CLASS = 0x00080000,
+    TRANSFORM = 0x00100000,
 };

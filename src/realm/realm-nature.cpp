@@ -54,7 +54,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
 
     switch (spell) {
     case 0: {
@@ -445,8 +445,8 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         if (cast) {
             fire_ball(player_ptr, AttributeType::LITE, Direction::self(), dam, rad);
-            chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
-            chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
             wiz_lite(player_ptr, false);
 
             PlayerRace race(player_ptr);

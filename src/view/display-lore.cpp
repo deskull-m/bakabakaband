@@ -114,7 +114,7 @@ void output_monster_spoiler(MonraceId r_idx, hook_c_roff_pf roff_func)
     hook_c_roff = roff_func;
     PlayerType dummy;
 
-    dummy.lev = 1;
+    dummy.level = 1;
     dummy.max_plv = 1;
     process_monster_lore(&dummy, r_idx, MONSTER_LORE_DEBUG);
 }
@@ -276,6 +276,54 @@ void display_monster_kind(lore_type *lore_ptr)
 {
     if (lore_ptr->kind_flags.has(MonsterKindType::PAPER)) {
         hook_c_roff(TERM_WHITE, _("紙で出来た", " made of paper"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WOODEN)) {
+        hook_c_roff(TERM_UMBER, _("木で出来た", " made of wood"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::IRON)) {
+        hook_c_roff(TERM_SLATE, _("鉄で出来た", " made of iron"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::COPPER)) {
+        hook_c_roff(TERM_ORANGE, _("銅で出来た", " made of copper"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::STONE)) {
+        hook_c_roff(TERM_L_WHITE, _("石で出来た", " made of stone"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SILVER)) {
+        hook_c_roff(TERM_WHITE, _("銀で出来た", " made of silver"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::GOLD)) {
+        hook_c_roff(TERM_YELLOW, _("金で出来た", " made of gold"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::MITHRIL)) {
+        hook_c_roff(TERM_L_BLUE, _("ミスリルで出来た", " made of mithril"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::ADAMANTITE)) {
+        hook_c_roff(TERM_L_DARK, _("アダマンタイトで出来た", " made of adamantite"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FECES)) {
+        hook_c_roff(TERM_UMBER, _("糞で出来た", " made of feces"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::FLESH)) {
+        hook_c_roff(TERM_L_RED, _("肉で出来た", " made of flesh"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::DARKSTEEL)) {
+        hook_c_roff(TERM_L_DARK, _("ダークスティールで出来た", " made of darksteel"));
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WARPSTONE)) {
+        hook_c_roff(TERM_VIOLET, _("ワープストーンで出来た", " made of warpstone"));
     }
 
     bool has_specific_kind = false;
@@ -529,6 +577,26 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::GUNNER)) {
+        hook_c_roff(TERM_L_DARK, _("ガンナー", " gunner"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::SMITH)) {
+        hook_c_roff(TERM_ORANGE, _("鍍冶師", " smith"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::WHEEL)) {
+        hook_c_roff(TERM_SLATE, _("車輪", " wheel"));
+        has_specific_kind = true;
+    }
+
+    if (lore_ptr->kind_flags.has(MonsterKindType::GREAT_OLD_ONE)) {
+        hook_c_roff(TERM_VIOLET, _("旧支配者", " Great Old One"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::FROG)) {
         hook_c_roff(TERM_GREEN, _("カエル", " frog"));
         has_specific_kind = true;
@@ -705,27 +773,27 @@ void display_monster_kind(lore_type *lore_ptr)
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::FUNGAS)) {
-        hook_c_roff(TERM_L_GREEN, _("菌類の", " fungus"));
+        hook_c_roff(TERM_L_GREEN, _("菌類", " fungus"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::MIMIC)) {
-        hook_c_roff(TERM_YELLOW, _("ミミックの", " mimic"));
+        hook_c_roff(TERM_YELLOW, _("ミミック", " mimic"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::IXITXACHITL)) {
-        hook_c_roff(TERM_L_BLUE, _("イクシツザチトルの", " ixitxachitl"));
+        hook_c_roff(TERM_L_BLUE, _("イクシツザチトル", " ixitxachitl"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::NAGA)) {
-        hook_c_roff(TERM_ORANGE, _("ナーガの", " naga"));
+        hook_c_roff(TERM_ORANGE, _("ナーガ", " naga"));
         has_specific_kind = true;
     }
 
     if (lore_ptr->kind_flags.has(MonsterKindType::PERVERT)) {
-        hook_c_roff(TERM_VIOLET, _("変質者の", " pervert"));
+        hook_c_roff(TERM_VIOLET, _("変質者", " pervert"));
         has_specific_kind = true;
     }
 
@@ -966,12 +1034,12 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
     int64_t exp_decimal = ((base_exp % player_factor * 1000 / player_factor) + 5) / 10;
 
 #ifdef JP
-    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", player_ptr->lev, exp_integer, exp_decimal));
+    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", player_ptr->level, exp_integer, exp_decimal));
 #else
     hooked_roff(format(" is worth about %lld.%02lld point%s", exp_integer, exp_decimal, ((exp_integer == 1) && (exp_decimal == 0)) ? "" : "s"));
 
     concptr ordinal;
-    switch (player_ptr->lev % 10) {
+    switch (player_ptr->level % 10) {
     case 1:
         ordinal = "st";
         break;
@@ -987,7 +1055,7 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
     }
 
     concptr vowel;
-    switch (player_ptr->lev) {
+    switch (player_ptr->level) {
     case 8:
     case 11:
     case 18:
@@ -998,7 +1066,7 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
         break;
     }
 
-    hooked_roff(format(" for a%s %d%s level character.  ", vowel, player_ptr->lev, ordinal));
+    hooked_roff(format(" for a%s %d%s level character.  ", vowel, player_ptr->level, ordinal));
 #endif
 }
 
@@ -1178,6 +1246,35 @@ void display_monster_sometimes(lore_type *lore_ptr)
     }
 
     hooked_roff(_("ことがある。", ".  "));
+}
+
+void display_monster_dead_spawns(lore_type *lore_ptr)
+{
+    if (lore_ptr->r_ptr->dead_spawns.empty()) {
+        return;
+    }
+
+    if (!lore_ptr->know_everything && lore_ptr->r_ptr->r_tkills == 0) {
+        return;
+    }
+
+    for (const auto &[numerator, denominator, spawn_monrace_id, dice_side, dice_num] : lore_ptr->r_ptr->dead_spawns) {
+        const auto &spawn_monrace = MonraceList::get_instance().get_monrace(spawn_monrace_id);
+
+#ifdef JP
+        hooked_roff(format("%s^は撃破されると確率%d/%dで%dd%d体の%sを産み落とす。",
+            Who::who(lore_ptr->msex).data(),
+            numerator, denominator,
+            dice_num, dice_side,
+            spawn_monrace.name.data()));
+#else
+        hooked_roff(format("%s^ spawns %dd%d %s with probability %d/%d when defeated.  ",
+            Who::who(lore_ptr->msex).data(),
+            dice_num, dice_side,
+            pluralize(spawn_monrace.name).data(),
+            numerator, denominator));
+#endif
+    }
 }
 
 void display_monster_guardian(lore_type *lore_ptr)

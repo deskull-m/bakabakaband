@@ -36,6 +36,10 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
+    if (monrace.behavior_flags.has(MonsterBehaviorType::TIMID)) {
+        return true;
+    }
+
     if (monster.is_pet()) {
         return (player_ptr->pet_follow_distance < 0) && (monster.cdis <= (0 - player_ptr->pet_follow_distance));
     }
@@ -52,7 +56,7 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return false;
     }
 
-    const auto p_lev = player_ptr->lev;
+    const auto p_lev = player_ptr->level;
     const auto m_lev = monrace.level + (m_idx & 0x08) + 25;
     if (m_lev > p_lev + 4) {
         return false;
@@ -62,8 +66,8 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto p_chp = player_ptr->chp;
-    const auto p_mhp = player_ptr->mhp;
+    const auto p_chp = player_ptr->hp;
+    const auto p_mhp = player_ptr->maxhp;
     const auto m_chp = monster.hp;
     const auto m_mhp = monster.maxhp;
     const uint32_t p_val = (p_lev * p_mhp) + (p_chp << 2);
@@ -222,7 +226,7 @@ public:
             room -= 2;
         }
 
-        if (room >= (8 * (this->player_ptr->chp + this->player_ptr->csp)) / (this->player_ptr->mhp + this->player_ptr->msp)) {
+        if (room >= (8 * (this->player_ptr->hp + this->player_ptr->csp)) / (this->player_ptr->maxhp + this->player_ptr->msp)) {
             return tl::nullopt;
         }
 

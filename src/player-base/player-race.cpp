@@ -42,7 +42,7 @@ TrFlags PlayerRace::tr_flags() const
     }
 
     for (auto &cond : race_ptr->extra_flags) {
-        if (this->player_ptr->lev < cond.level) {
+        if (this->player_ptr->level < cond.level) {
             continue;
         }
         if (cond.pclass) {
@@ -78,6 +78,8 @@ const player_race_info *PlayerRace::get_info() const
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD:
     case MimicKindType::VAMPIRE:
+    case MimicKindType::ANGEL:
+    case MimicKindType::DEMIGOD:
         return &mimic_info.at(this->player_ptr->mimic_form);
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid MimicKindType was specified!");
@@ -116,7 +118,7 @@ bool PlayerRace::has_cut_immunity() const
     auto cut_immunity = this->equals(PlayerRaceType::GOLEM);
     cut_immunity |= this->equals(PlayerRaceType::SKELETON);
     cut_immunity |= this->equals(PlayerRaceType::SPECTRE);
-    cut_immunity |= this->equals(PlayerRaceType::ZOMBIE) && (this->player_ptr->lev > 11);
+    cut_immunity |= this->equals(PlayerRaceType::ZOMBIE) && (this->player_ptr->level > 11);
     return cut_immunity;
 }
 
@@ -151,7 +153,7 @@ int16_t PlayerRace::speed() const
             result -= 10;
         }
         if (this->equals(PlayerRaceType::KLACKON) || this->equals(PlayerRaceType::SPRITE)) {
-            result += (this->player_ptr->lev) / 10;
+            result += (this->player_ptr->level) / 10;
         }
     }
 
@@ -159,7 +161,7 @@ int16_t PlayerRace::speed() const
         const auto &floor = *this->player_ptr->current_floor_ptr;
         const auto &terrain = floor.get_grid(this->player_ptr->get_position()).get_terrain();
         if (terrain.flags.has(TerrainCharacteristics::WATER)) {
-            result += (2 + this->player_ptr->lev / 10);
+            result += (2 + this->player_ptr->level / 10);
         } else if (!this->player_ptr->levitation) {
             result -= 2;
         }
@@ -174,6 +176,10 @@ int16_t PlayerRace::speed() const
         return result + 5;
     case MimicKindType::VAMPIRE:
         return result + 3;
+    case MimicKindType::ANGEL:
+        return result + 3;
+    case MimicKindType::DEMIGOD:
+        return result + 5;
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid MimicKindType was specified!");
     }
@@ -191,13 +197,13 @@ int16_t PlayerRace::additional_strength() const
     int16_t result = 0;
 
     if (this->equals(PlayerRaceType::ENT)) {
-        if (this->player_ptr->lev > 25) {
+        if (this->player_ptr->level > 25) {
             result++;
         }
-        if (this->player_ptr->lev > 40) {
+        if (this->player_ptr->level > 40) {
             result++;
         }
-        if (this->player_ptr->lev > 45) {
+        if (this->player_ptr->level > 45) {
             result++;
         }
     }
@@ -217,13 +223,13 @@ int16_t PlayerRace::additional_dexterity() const
     int16_t result = 0;
 
     if (this->equals(PlayerRaceType::ENT)) {
-        if (this->player_ptr->lev > 25) {
+        if (this->player_ptr->level > 25) {
             result--;
         }
-        if (this->player_ptr->lev > 40) {
+        if (this->player_ptr->level > 40) {
             result--;
         }
-        if (this->player_ptr->lev > 45) {
+        if (this->player_ptr->level > 45) {
             result--;
         }
     }
@@ -243,13 +249,13 @@ int16_t PlayerRace::additional_constitution() const
     int16_t result = 0;
 
     if (PlayerRace(this->player_ptr).equals(PlayerRaceType::ENT)) {
-        if (this->player_ptr->lev > 25) {
+        if (this->player_ptr->level > 25) {
             result++;
         }
-        if (this->player_ptr->lev > 40) {
+        if (this->player_ptr->level > 40) {
             result++;
         }
-        if (this->player_ptr->lev > 45) {
+        if (this->player_ptr->level > 45) {
             result++;
         }
     }

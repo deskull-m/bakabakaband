@@ -54,7 +54,7 @@ static void home_carry_load(PlayerType *player_ptr, Store *store_ptr, ItemEntity
 
     store_ptr->stock_num++;
     *store_ptr->stock[slot] = o_ptr->clone();
-    chg_virtue(player_ptr, Virtue::SACRIFICE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
 }
 
 /*!

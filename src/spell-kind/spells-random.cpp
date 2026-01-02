@@ -80,7 +80,7 @@ void call_chaos(PlayerType *player_ptr)
     if (line_chaos) {
         fire_beam(player_ptr, chaos_type, dir, 250);
     } else {
-        fire_ball(player_ptr, chaos_type, dir, 250, 3 + (player_ptr->lev / 35));
+        fire_ball(player_ptr, chaos_type, dir, 250, 3 + (player_ptr->level / 35));
     }
 }
 
@@ -182,7 +182,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 11:
         case 12:
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
-            lose_exp(player_ptr, player_ptr->exp / 16);
+            lose_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->exp / 16);
             if (!one_in_(6)) {
                 break;
             }
@@ -313,7 +313,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         break;
     case 27:
     case 28:
-        (void)gain_mutation(player_ptr, 0);
+        (void)gain_mutation(*player_ptr, 0);
         break;
     case 29:
     case 30:
@@ -364,23 +364,26 @@ void wild_magic(PlayerType *player_ptr, int spell)
  */
 void cast_wonder(PlayerType *player_ptr, const Direction &dir)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     int die = randint1(100) + plev / 5;
-    int vir = virtue_number(player_ptr, Virtue::CHANCE);
+    int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
     if (vir) {
-        if (player_ptr->virtues[vir - 1] > 0) {
-            while (randint1(400) < player_ptr->virtues[vir - 1]) {
-                die++;
-            }
-        } else {
-            while (randint1(400) < (0 - player_ptr->virtues[vir - 1])) {
-                die--;
+        auto it = player_ptr->virtues.find(Virtue::CHANCE);
+        if (it != player_ptr->virtues.end()) {
+            if (it->second > 0) {
+                while (randint1(400) < it->second) {
+                    die++;
+                }
+            } else {
+                while (randint1(400) < (0 - it->second)) {
+                    die--;
+                }
             }
         }
     }
 
     if (die < 26) {
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     if (die > 100) {

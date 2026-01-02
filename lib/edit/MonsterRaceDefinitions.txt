@@ -186,9 +186,9 @@ V:2.8.1
 ##### The Player #####
 
 #J0#
-N:0:プレイヤー
+N:0:〈烙印者〉
 I:0:1d1:0:0:0
-E:Player
+E:*Stigmatic*
 G:@:w
 
 ##### Town monsters #####
@@ -1544,7 +1544,7 @@ B:SHOOT:HURT:2d5
 B:HIT:HURT:2d4
 B:HIT:HURT:2d4
 F:DROP_60 | OPEN_DOOR | BASH_DOOR | FRIENDS | DROP_CORPSE |
-F:WILD_WOOD | HAS_LITE_1 | ALIEN | SOLDIER
+F:WILD_WOOD | HAS_LITE_1 | ALIEN | SOLDIER | GUNNER
 S:1_IN_8
 S:SHOOT
 D:$A cute, furry little animal, full of merchandising potential. 
@@ -4212,7 +4212,7 @@ W:14:1:50:0:0
 B:HIT:HURT:1d6
 B:HIT:HURT:1d6
 F:EMPTY_MIND | BASH_DOOR | CAN_SWIM |
-F:IM_ELEC | IM_COLD | GOLEM
+F:IM_ELEC | IM_COLD | GOLEM | FLESH
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 D:$A shambling humanoid monster with long scars.
 D:よろめき歩く、体中傷だらけの人間型モンスターだ。
@@ -5340,7 +5340,7 @@ B:HIT:HURT:1d10
 B:HIT:HURT:1d10
 F:COLD_BLOOD | EMPTY_MIND | BASH_DOOR | 
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | 
-F:HURT_ROCK | GOLEM
+F:HURT_ROCK | GOLEM | STONE
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 D:$It is a massive animated statue.
 D:それは生命を吹き込まれた堂々たる石像だ。
@@ -5421,7 +5421,7 @@ I:110:10d10:20:40:20
 W:19:1:80:0:0
 B:STING:POISON:2d7
 B:STING:POISON:2d7
-F:ANIMAL | EVIL | AQUATIC | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL | FISH
+F:ANIMAL | EVIL | AQUATIC | IM_POIS | RES_WATE | WILD_ALL | IXITXACHITL | PRIEST
 S:1_IN_6
 S:TELE_TO | HEAL | SCARE | CAUSE_2 | BLIND | S_MONSTER
 D:$A devil ray of the depths, with priestly magic.
@@ -5461,7 +5461,7 @@ F:UNIQUE | MALE | SPEAK_ALL |
 F:FORCE_MAXHP | 
 F:ESCORT | DROP_SKELETON | DROP_CORPSE | EAT_POISONOUS |
 F:DROP_2D2 | DROP_GOOD | OPEN_DOOR | BASH_DOOR
-F:EVIL | ORC | IM_POIS | RES_DARK
+F:EVIL | ORC | IM_POIS | RES_DARK | WARRIOR
 D:$A large and powerful orc.  He looks just like his daddy.  He is tall and 
 D:$fast, but fortunately blessed with orcish brains.
 D:大きくて力の強いオークで、その姿は父親にそっくりだ。彼は背が高くて動きも素早
@@ -5566,7 +5566,7 @@ B:HIT:HURT:2d5
 B:HIT:HURT:2d5
 F:MULTIPLY | NEVER_MOVE | IM_COLD | COLD_BLOOD | IM_ACID | IM_ELEC | NO_FEAR | WALL
 F:IM_FIRE | IM_POIS | NO_CONF | NO_SLEEP | FRIENDS | HURT_ROCK |
-F:RES_SHAR
+F:RES_SHAR | STONE
 D:$A sentient section of wall.
 D:意識を持った壁の一部だ。
 
@@ -5780,7 +5780,7 @@ B:HIT:HURT:3d8
 B:HIT:HURT:3d5
 F:MALE | 
 F:ONLY_ITEM | DROP_2D2 | DROP_SKELETON | DROP_CORPSE | EAT_BLIND |
-F:OPEN_DOOR | BASH_DOOR | 
+F:OPEN_DOOR | BASH_DOOR | ELF | NOBLE | PALADIN
 F:EVIL | HURT_LITE | RES_DARK
 S:1_IN_5 | 
 S:HASTE | BLIND | CONF | DARKNESS | BO_FIRE | BO_COLD | MISSILE
@@ -5815,7 +5815,7 @@ F:UNIQUE | MALE | SPEAK_ALL | ALLIANCE_ANGARTHA
 F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
 F:ESCORT | EAT_POISONOUS | WARRIOR
 F:DROP_1D2 | DROP_GOOD | OPEN_DOOR | BASH_DOOR
-F:EVIL | ORC | IM_POIS | RES_DARK
+F:EVIL | ORC | IM_POIS | RES_DARK | WARRIOR
 D:$Another of Morgoth's servants, this orc is strong and cunning.  He is ugly 
 D:$and scarred from many power struggles.
 D:メルコールの召使いの一人で、力が強くてずる賢いオークだ。彼はやっかいな
@@ -5846,7 +5846,7 @@ B:HIT:POISON:3d4
 B:HIT:POISON:3d4
 B:HIT:HURT:2d3
 B:HIT:HURT:2d3
-F:NEVER_MOVE | 
+F:NEVER_MOVE | MIMIC
 F:EMPTY_MIND | COLD_BLOOD |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 S:1_IN_5 | 
@@ -5867,7 +5867,7 @@ B:GAZE:CONFUSE:2d3
 B:CLAW:POISON:3d4
 B:CLAW:POISON:3d4
 B:SPIT:BLIND:2d3
-F:NEVER_MOVE | 
+F:NEVER_MOVE | MIMIC
 F:EMPTY_MIND | COLD_BLOOD |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 S:1_IN_5 | 
@@ -6008,7 +6008,7 @@ B:BITE:HURT:4d3
 F:FORCE_MAXHP | CAN_FLY |
 F:COLD_BLOOD | OPEN_DOOR | BASH_DOOR |
 F:EVIL | ANIMAL | UNDEAD | RIDING |
-F:NO_CONF | NO_SLEEP | NO_FEAR |
+F:NO_CONF | NO_SLEEP | NO_FEAR | ZOMBIE | BIRD
 F:IM_ACID | IM_FIRE | IM_POIS | RES_NETH
 D:$A mummified, undead great avian creature, who now serves as 
 D:$a steed for mighty undead creatures.
@@ -6025,7 +6025,7 @@ B:HIT:HURT:2d4
 B:HIT:HURT:2d4
 F:DROP_90 | 
 F:EMPTY_MIND | COLD_BLOOD | OPEN_DOOR | BASH_DOOR | 
-F:EVIL | ORC | UNDEAD | 
+F:EVIL | ORC | UNDEAD | ZOMBIE
 F:IM_COLD | IM_POIS | RES_NETH | RES_DARK |
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$It is an orcish figure covered in wrappings.
@@ -6060,7 +6060,7 @@ B:BITE:POISON:5d5
 B:BITE:POISON:5d5
 F:MALE | CAN_SWIM | IM_POIS | IM_ACID | HAS_LITE_2 |
 F:DROP_60 | DROP_1D2 | FRIENDS | DROP_CORPSE |
-F:OPEN_DOOR | BASH_DOOR | EAT_POISONOUS |
+F:OPEN_DOOR | BASH_DOOR | EAT_POISONOUS | BEAST
 F:EVIL | 
 S:1_IN_8
 S:BA_POIS | S_MONSTER | SCARE | HOLD |
@@ -6111,7 +6111,7 @@ W:22:2:160:0:0
 B:HIT:HURT:1d12
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | 
-F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM | IRON
 S:1_IN_7 | 
 S:SLOW
 D:$It is a massive metal statue that moves steadily towards you.
@@ -7921,7 +7921,7 @@ B:HIT:HURT:5d5
 B:HIT:HURT:5d5
 F:ONLY_GOLD | DROP_2D2 | 
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | REFLECTING | 
-F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | GOLEM
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | GOLEM | MITHRIL
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 D:$It is a massive statue of purest mithril.  It looks expensive!
 D:それは純粋なミスリルでできた堂々たる巨像だ。それは値段にしたら相当高価
@@ -14381,6 +14381,7 @@ F:FORCE_MAXHP | SMART | SPEAK_ALL | AURA_ELEC |
 F:ONLY_ITEM | DROP_2D2 | DROP_3D2 | DROP_4D2 | DROP_GOOD |
 F:COLD_BLOOD | OPEN_DOOR | BASH_DOOR | POWERFUL | NONLIVING | RES_NETH |
 F:IM_COLD | IM_POIS | RES_DARK | HURT_LITE | NO_CONF | NO_SLEEP | RES_TELE
+F:GREAT_OLD_ONE
 S:1_IN_3 |
 S:BLIND | HOLD | SCARE | CAUSE_4 | DRAIN_MANA |
 S:BRAIN_SMASH | BA_WATE | S_DEMON | HASTE |
@@ -15770,6 +15771,7 @@ F:ONLY_ITEM | DROP_GOOD | MOVE_BODY |
 F:SMART | BASH_DOOR | 
 F:EVIL | IM_POIS | IM_ACID | IM_COLD |
 F:NO_CONF | NO_SLEEP
+F:GREAT_OLD_ONE
 S:1_IN_2 | 
 S:S_DEMON | S_MONSTERS | S_UNDEAD | HOLD | SCARE | MIND_BLAST |
 S:BR_ACID | BR_NETH | CAUSE_4 
@@ -16106,7 +16108,7 @@ B:HIT:HURT:1d50
 B:HIT:HURT:1d50
 B:HIT:HURT:1d50
 B:HIT:HURT:1d50
-F:RAND_25 | EVIL | DEMON |
+F:RAND_25 | EVIL | DEMON | GUNNER
 F:DROP_3D2 | DROP_GOOD | ONLY_ITEM | RES_TELE |
 F:IM_POIS | IM_FIRE | FORCE_MAXHP | NONLIVING
 S:1_IN_4 |
@@ -16910,7 +16912,7 @@ B:HIT:HURT:2d50
 B:HIT:HURT:2d50
 B:HIT:HURT:2d50
 B:HIT:HURT:2d50
-F:RAND_25 | EVIL | DEMON |
+F:RAND_25 | EVIL | DEMON | GUNNER
 F:DROP_2D2 | DROP_3D2 | ONLY_ITEM | RES_TELE | DROP_GREAT | UNIQUE |
 F:IM_POIS | IM_FIRE | FORCE_MAXHP | NONLIVING
 S:1_IN_3 |
@@ -16964,6 +16966,7 @@ F:PASS_WALL | FORCE_MAXHP | AURA_ELEC | AURA_FIRE |
 F:ONLY_ITEM | DROP_4D2 | DROP_2D2 | DROP_GREAT | ATTR_MULTI | ATTR_ANY | AURA_COLD |
 F:COLD_BLOOD | OPEN_DOOR | BASH_DOOR | NONLIVING | CAN_FLY | POWERFUL |
 F:EVIL | IM_ACID | IM_COLD | IM_ELEC | IM_POIS | IM_FIRE | NO_CONF | NO_SLEEP
+F:GREAT_OLD_ONE
 S:1_IN_3 |
 S:BO_MANA | BRAIN_SMASH | BA_MANA | S_MONSTERS | S_CYBER | DISPEL | BA_LITE |
 S:BA_CHAO | S_DEMON | S_HI_UNDEAD | S_HOUND | BR_MANA | BR_DISI | PSY_SPEAR
@@ -17065,6 +17068,7 @@ F:ATTR_MULTI | FORCE_MAXHP | PASS_WALL | ATTR_ANY |
 F:ONLY_ITEM | DROP_4D2 | DROP_2D2 | DROP_GREAT | NONLIVING | CAN_FLY |
 F:SMART | OPEN_DOOR | BASH_DOOR | REGENERATE | DEMON | AURA_COLD 
 F:EVIL | IM_ACID | IM_COLD | IM_POIS | NO_CONF | NO_SLEEP | RES_CHAO
+F:GREAT_OLD_ONE
 S:1_IN_3 |
 S:BO_MANA | BRAIN_SMASH | BA_DARK | S_MONSTERS |
 S:CAUSE_4 | HEAL | BR_CHAO | BR_CONF | BR_POIS | BR_NUKE |
@@ -17155,6 +17159,7 @@ F:SHAPECHANGER | ATTR_MULTI | ATTR_ANY | MALE | AURA_ELEC |
 F:ONLY_ITEM | DROP_4D2 | DROP_3D2 | DROP_GREAT |
 F:SMART | OPEN_DOOR | BASH_DOOR | REGENERATE | AURA_COLD |
 F:EVIL | IM_ACID | IM_POIS | IM_FIRE | NO_CONF | NO_SLEEP | POWERFUL |
+F:GREAT_OLD_ONE
 S:1_IN_3 |
 S:TELE_AWAY | TELE_TO | TELE_LEVEL | TPORT | BR_NEXU | BA_CHAO |
 S:BA_MANA | BA_FIRE | S_MONSTERS | BRAIN_SMASH | MIND_BLAST |
@@ -17338,6 +17343,7 @@ F:OPEN_DOOR | BASH_DOOR | POWERFUL | MOVE_BODY | REGENERATE | RES_NETH |
 F:ONLY_ITEM | DROP_2D2 | DROP_4D2 | DROP_1D2 | DROP_GREAT
 F:RES_DISE | RES_CHAO | RES_DARK | RES_TELE | CAN_SWIM |
 F:EVIL | IM_FIRE | IM_POIS | IM_ELEC | IM_ACID | NO_CONF | NO_SLEEP |
+F:GREAT_OLD_ONE
 S:1_IN_3
 S:TPORT | SCARE | BLIND | MIND_BLAST | BRAIN_SMASH | DRAIN_MANA |
 S:BR_POIS | BR_ACID | BR_FIRE | CONF | DARKNESS | FORGET | S_HI_UNDEAD |
@@ -19703,7 +19709,7 @@ B:GAZE:PARALYZE
 B:HIT:HURT:5d12
 B:HIT:HURT:5d12
 B:HIT:HURT:5d12
-F:UNIQUE | MALE | SPEAK_ALL |
+F:UNIQUE | MALE | SPEAK_ALL | SMITH |
 F:FORCE_MAXHP | MOVE_BODY | DROP_CORPSE
 F:ONLY_ITEM | DROP_3D2 | DROP_GOOD | ALLIANCE_AVARIN-LORDS
 F:SMART | OPEN_DOOR | BASH_DOOR |
@@ -25868,7 +25874,7 @@ E:Feces quylthulg
 G:Q:u
 I:110:6d8:10:1:0
 W:30:1:0:250:0:0
-F:NEVER_MOVE | NEVER_BLOW |
+F:NEVER_MOVE | NEVER_BLOW | FECES
 F:EMPTY_MIND | STUPID | QUYLTHLUG | NASTY | SCATOLOGIST
 F:NO_CONF | NO_SLEEP | NO_FEAR | ALLIANCE_DOKACHANS
 F:RES_CHAO | RES_NETH | IM_POIS
@@ -26851,7 +26857,7 @@ B:HIT:DISEASE:1d8
 B:HIT:DISEASE:1d8
 F:EMPTY_MIND | BASH_DOOR | CAN_SWIM | ALLIANCE_DOKACHANS
 F:IM_ELEC | IM_COLD | IM_POIS | NASTY | MOB_500 | SCATOLOGIST
-F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM | FECES
 D:何故こんなものを作る存在がいるのか、私には理解に苦しむね（ペチペチ）
 
 N:1381:CT RN-43062『今田耕司先輩』
@@ -28539,7 +28545,7 @@ B:GAZE:CONFUSE:4d3
 B:CLAW:POISON:5d4
 B:CLAW:POISON:5d4
 B:SPIT:BLIND:4d3
-F:NEVER_MOVE | ALLIANCE_DOKACHANS
+F:NEVER_MOVE | ALLIANCE_DOKACHANS | FECES
 F:EMPTY_MIND | COLD_BLOOD | NASTY | MOB_100 | SCATOLOGIST
 F:NO_CONF | NO_SLEEP | NO_FEAR
 S:1_IN_5 | 
@@ -29055,7 +29061,7 @@ W:22:3:0:240:0:0
 B:SHOOT:HURT:10d10
 B:HIT:HURT:2d10
 F:BASH_DOOR | OPEN_DOOR | FRIENDS | DROP_90 | ALLIANCE_VALVERDE | MOB_500
-F:IM_FIRE | IM_POIS | NO_SLEEP | NO_CONF | SOLDIER
+F:IM_FIRE | IM_POIS | NO_SLEEP | NO_CONF | SOLDIER | GUNNER
 F:MALE | HUMAN | DROP_CORPSE | DROP_SKELETON
 S:1_IN_2 |
 S:SHOOT
@@ -29804,7 +29810,6 @@ F:DROP_1D2 |
 F:TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
 D:ドワーフの誇りと血統を守り抜く堅牢なる戦士だ。
 
-
 N:1560:オソメ・ブラザーズ『狂一』
 E:Kyoichi, the Osome Brothers
 G:p:o
@@ -30134,7 +30139,7 @@ B:HIT:HURT:8d4
 B:HIT:HURT:8d4
 B:HIT:HURT:8d4
 B:HIT:HURT:8d4
-F:MALE | FORCE_MAXHP | DROP_1D2 | SMART | ALLIANCE_ANGARTHA | SOLDIER
+F:MALE | FORCE_MAXHP | DROP_1D2 | SMART | ALLIANCE_ANGARTHA | SOLDIER | GUNNER
 F:DROP_CORPSE | DROP_SKELETON | HUMAN | ORC | FRIENDS | MOB_200
 S:1_IN_3 |
 S:ROCKET
@@ -30880,7 +30885,7 @@ W:30:6:0:150:0:0
 B:EXPLODE:FIRE:30d5
 F:EMPTY_MIND | COLD_BLOOD |
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_ACID | IM_POIS | KILL_BODY | RAND_25 | RAND_50
-F:NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN | NONLIVING | RES_TELE
+F:NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN | NONLIVING | RES_TELE | WHEEL | EXPLOSIVE
 D:この猛烈な回転兵器は狙いを定めようもなく全てを爆発に巻き込むだろう！今のうちに逃げろ！
 
 N:1625:クレイジーサイコレズ『ALC』
@@ -32514,7 +32519,7 @@ W:39:4:0:730:0:0
 B:ENGULF:POISON:10d6
 B:ENGULF:POISON:10d6
 B:ENGULF:POISON:10d6
-F:RAND_50 | EMPTY_MIND | BASH_DOOR | CAN_FLY |
+F:RAND_50 | EMPTY_MIND | BASH_DOOR | CAN_FLY | FECES
 F:RES_SHAR | NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN | POWERFUL | NONLIVING | SCATOLOGIST
 F:ALLIANCE_DOKACHANS | MOB_53
 S:1_IN_4 | BR_FECES
@@ -33087,7 +33092,7 @@ B:BITE:DISEASE:1d8
 B:CLAW:DISEASE:3d3
 B:CLAW:DISEASE:3d3
 F:ALLIANCE_DOKACHANS | MOB_1000 | SCATOLOGIST
-F:FRIENDS | CAN_FLY | DOG
+F:FRIENDS | CAN_FLY | DOG | FECES
 F:BASH_DOOR |
 F:ANIMAL | IM_POIS
 S:1_IN_7 | BR_FECES
@@ -33822,7 +33827,7 @@ B:HIT:HURT:2d12
 B:HIT:HURT:2d12
 B:SHOOT:HURT:4d12
 F:COLD_BLOOD | BASH_DOOR | FORCE_MAXHP | UNIQUE
-F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | GOLEM
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | GOLEM | IRON
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 S:1_IN_4 | 
 S:SHOOT
@@ -36467,6 +36472,7 @@ I:110:3d3:1000:20:3
 W:5:2:0:50:0:0
 F:EMPTY_MIND | NEVER_MOVE
 F:NO_CONF | NO_SLEEP | NO_FEAR | RES_TELE | NASTY
+F:DROP_KIND_1_IN_1_721_0_2d5
 D:それは種から育てた大切なものだ。あ（察し）
 
 N:1977:壁殴り代行員
@@ -37085,7 +37091,7 @@ B:CRUSH:HURT:8d5
 B:CRUSH:HURT:8d5
 B:CRUSH:HURT:8d5
 B:CRUSH:HURT:8d5
-F:UNDEAD | COLD_BLOOD | EVIL
+F:UNDEAD | COLD_BLOOD | EVIL | WHEEL
 F:IM_COLD | IM_ELEC | IM_ACID | IM_POIS | RES_NETH | KILL_BODY | RAND_25
 F:NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN | NONLIVING | RES_TELE | FRIENDS | SKELETON
 D:車裂きなどの残酷な刑罰を受けた果てなのだろうか？
@@ -37198,7 +37204,7 @@ B:CRUSH:HURT:12d5
 B:CRUSH:HURT:12d5
 B:CRUSH:HURT:12d5
 B:CRUSH:HURT:12d5
-F:UNDEAD | COLD_BLOOD | EVIL
+F:UNDEAD | COLD_BLOOD | EVIL | WHEEL
 F:IM_FIRE | IM_COLD | IM_ACID | IM_POIS | RES_NETH | KILL_BODY
 F:NO_FEAR | NO_CONF | NO_SLEEP | NO_STUN | NONLIVING | RES_TELE | FRIENDS
 S:1_IN_5
@@ -37256,7 +37262,7 @@ B:HIT:CONFUSE:8d6
 F:ONLY_GOLD | DROP_2D2 | 
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | REFLECTING |
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | RES_CHAO | RES_DISE
-F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM | WARPSTONE
 S:1_IN_10
 S:BO_NETH | SLOW | CONF | BR_CHAO
 D:かのスケイヴンの技術者集団、スクリール族の産物であろうか？
@@ -37274,7 +37280,7 @@ B:HIT:HURT:12d6
 B:HIT:HURT:12d6
 F:FORCE_MAXHP | 
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
-F:IM_FIRE | IM_COLD | IM_ELEC | GOLEM
+F:IM_FIRE | IM_COLD | IM_ELEC | GOLEM | DARKSTEEL
 F:IM_POIS | NONLIVING | REFLECTING |
 F:NO_CONF | NO_SLEEP | NO_FEAR | RES_CHAO | RES_DISE | RES_NEXU
 V:75
@@ -37971,7 +37977,7 @@ B:HIT:HURT:1d14
 B:HIT:HURT:1d14
 F:COLD_BLOOD | EMPTY_MIND | BASH_DOOR | 
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | 
-F:HURT_ROCK | GOLEM
+F:HURT_ROCK | GOLEM | STONE
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 S:1_IN_4 | CAUSE_2
 D:墓石を即興かつ粗雑に組み合わせて作られた冒涜的なゴーレムだ。
@@ -38030,7 +38036,7 @@ B:HIT:HURT:1d6
 B:HIT:HURT:1d6
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
 F:IM_COLD | IM_ELEC | IM_POIS | GOLEM
-F:HURT_ROCK | NONLIVING | HURT_FIRE
+F:HURT_ROCK | NONLIVING | HURT_FIRE | WOODEN
 F:NO_CONF | NO_SLEEP | NO_FEAR
 D:$It is a cheap animated statue made out of wood.
 D:それは生命を吹き込まれた安っぽい巨像で、木材でできている。
@@ -38332,7 +38338,7 @@ W:17:1:5:0:0
 B:EXPLODE:POISON:8d8
 F:CAN_FLY | SELF_LITE_2 |
 F:EMPTY_MIND
-F:IM_POIS | NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
+F:IM_POIS | NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING | FECES
 D:$A ball of stinking feces.
 D:汚臭を放つ糞の球体だ。
 
@@ -38819,7 +38825,7 @@ F:DROP_SKELETON | NEVER_BLOW | STUPID | NONLIVING
 F:IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS
 F:RES_LITE | RES_DARK | RES_SOUN | RES_CHAO | RES_NETH | RES_DISE |
 F:RES_WALL | RES_INER | RES_TIME | RES_GRAV | RES_PLAS | RES_NEXU | RES_SHAR |
-F:RES_VOID | RES_ABYSS
+F:RES_VOID | RES_ABYSS | DARKSTEEL
 F:NO_CONF | NO_SLEEP
 D:全く無害だが、ダークスティール製のひどく頑丈なマイアだ。
 
@@ -38907,7 +38913,7 @@ B:HIT:HURT:2d10
 F:DROP_KIND_1_IN_1_815_0_6d6
 F:COLD_BLOOD | EMPTY_MIND | BASH_DOOR | GOLEM
 F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS |
-F:HURT_ROCK | NASTY | GOLEM
+F:HURT_ROCK | NASTY | GOLEM | STONE
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING
 D:それは悪趣味な医師兼魔術師が執念を込めて作り上げたゴーレムだ。
 D:砂利を固める要領でより刺々しいデザインに仕立て上げているのはどうみても悪意の塊だ。
@@ -40539,7 +40545,7 @@ N:2240:BT-91 マジュー第二形態
 E:BT-91 Beast (second form)
 G:P:G
 I:120:40d50:30:125:15
-W:48:1:9000:0:0
+W:48:1:9000:0:15000:2338
 B:PUNCH:HURT:8d12
 B:PUNCH:HURT:8d12
 B:PUNCH:HURT:8d12
@@ -40666,7 +40672,7 @@ W:26:2:130:0:0
 B:PUNCH:HURT:1d20
 B:SHOOT:HURT:5d5
 F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | SOLDIER
-F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | FRIENDS
+F:IM_FIRE | IM_COLD | IM_ELEC | IM_POIS | FRIENDS | IRON
 F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | ROBOT | DROP_JUNK
 S:1_IN_3 | 
 S:SHOOT
@@ -41594,7 +41600,7 @@ I:120:1d1:20:0:0
 W:24:1:10:0:0
 B:EXPLODE:POISON:15d8
 F:CAN_FLY | SELF_LITE_2 | NASTY | WALL
-F:EMPTY_MIND | NEVER_MOVE | NEVER_BLOW | HURT_COLD |
+F:EMPTY_MIND | NEVER_MOVE | NEVER_BLOW | HURT_COLD | FECES
 F:NO_FEAR | NO_CONF | NO_SLEEP | NONLIVING
 D:$Touch it and it shatters into dust, but you'll be covered in filth.
 D:触れれば脆くも飛び散るが、あなたがエンガチョなことになる。
@@ -42049,6 +42055,342 @@ D:$A peculiar worm with an insatiable appetite for human posteriors.
 D:$ It has sharp teeth specifically evolved for biting buttocks.
 D:人間の尻に対して異常な食欲を持つ奇妙な虫だ。
 D:尻を噛むために特別に進化した鋭い歯を持っている。
+
+N:2326:『アナルアサシン』
+E:The Anal Assassin
+G:p:D
+I:130:45d12:30:65:10
+W:35:2:0:8000:0
+B:ENEMA:DESTROY_ASSHOLE:8d10
+B:PUNCH:HURT:6d6
+B:KICK:HURT:5d5
+B:ENEMA:DESTROY_ASSHOLE:8d10
+F:UNIQUE | MALE | DROP_CORPSE | DROP_GOOD | DROP_4D2
+F:ONLY_ITEM | OPEN_DOOR | BASH_DOOR | HOMO_SEXUAL | NASTY | 
+F:STUPID | PERVERT | HUMAN
+F:RES_TELE | NO_CONF
+S:1_IN_3
+S:TELE_TO | BLINK | HASTE | DRAIN_MANA
+D:$This man will lead you to anal ecstasy! Flee while you can! 
+D:この男はお前をケツイキへといざなうだろう！今のうちに逃げろ！
+
+N:2327:ぬりかべ
+E:Nurikabe
+G:#:W
+I:95:80d10:10:50:30
+W:15:3:0:200:0
+B:TOUCH:HURT:2d6
+B:TOUCH:HURT:2d6
+F:BASH_DOOR | COLD_BLOOD
+F:IM_ACID | IM_FIRE | IM_COLD | IM_ELEC | IM_POIS
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | WALL
+F:WEIRD_MIND | MOVE_BODY | PASS_WALL
+S:1_IN_8
+S:BLINK | TPORT
+D:$A mysterious wall yokai that appears suddenly to block travelers' paths.
+D:$ When encountered, it extends endlessly to prevent passage,
+D:$ but disappears if you give up trying to go around it.
+D:旅人の行く手を突然塞ぐ謎の壁の妖怪だ。
+D:遭遇すると延々と横に伸びて通行を阻むが、
+D:回り込もうとするのを諦めると消えてしまう。
+D:壁をすり抜ける能力を持ち、物理攻撃をほとんど受け付けない。
+
+N:2328:ルーンベア
+E:Rune Bear
+G:q:R
+I:120:80d40:20:100:30
+W:48:2:0:12000:0
+B:CLAW:HURT:8d8
+B:CLAW:HURT:8d8
+B:BITE:HURT:10d10
+B:CRUSH:HURT:7d7
+F:FORCE_MAXHP | BASH_DOOR | KILL_WALL | POWERFUL
+F:DROP_CORPSE | DROP_SKELETON | DROP_2D2 | DROP_GOOD
+F:ANIMAL | BEAR | WILD_WOOD | WILD_MOUNTAIN
+F:NO_FEAR
+F:REGENERATE | CAN_SWIM
+D:$They inhabit various regions of Elde.
+D:$ These are giant bears bearing shining runes upon their chests.
+D:エルデの各地に生息する。胸に輝くルーンをまとった巨大な熊だ。
+
+N:2329:銅のゴーレム
+E:Copper golem
+G:g:o
+I:110:90d13:12:85:10
+W:25:2:170:0:0
+B:HIT:HURT:1d14
+B:HIT:HURT:1d14
+F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
+F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM | COPPER
+S:1_IN_8 | 
+S:SLOW | SCARE
+D:$It is a massive statue made of reddish copper that moves with surprising agility.
+D:赤みがかった銅でできた堂々たる巨像で、驚くほど俊敏に動く。
+
+N:2330:銀のゴーレム
+E:Silver golem
+G:g:W
+I:115:100d14:12:95:10
+W:28:2:200:0:0
+B:HIT:HURT:2d8
+B:HIT:HURT:2d8
+B:HIT:HURT:2d8
+F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
+F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC | IM_ACID
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM | SILVER
+F:REFLECTING
+S:1_IN_7 | 
+S:SLOW | SCARE | TELE_TO
+D:$It is a gleaming silver statue that radiates magical power and moves with grace.
+D:輝く銀でできた巨像で、魔力を放ちながら優雅に動く。
+
+N:2331:金のゴーレム
+E:Gold golem
+G:g:y
+I:115:95d14:12:90:10
+W:27:5:185:0:0
+B:HIT:HURT:2d9
+B:HIT:HURT:2d9
+B:HIT:HURT:1d10
+F:EMPTY_MIND | COLD_BLOOD | BASH_DOOR | 
+F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC | IM_ACID
+F:NO_CONF | NO_SLEEP | NO_FEAR | NONLIVING | GOLEM | GOLD
+F:ONLY_GOLD | DROP_2D2
+S:1_IN_8 | 
+S:SLOW | SCARE | CONF
+D:$It is a magnificent golden statue that gleams with an otherworldly radiance.
+D:黄金でできた荘厳な巨像で、異世界的な輝きを放っている。
+
+N:2332:アダマンタイト・ゴーレム
+E:Adamantite golem
+G:g:g
+I:120:130d20:15:135:20
+W:50:2:280:0:0
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+B:HIT:HURT:4d10
+F:FORCE_MAXHP | EMPTY_MIND | COLD_BLOOD | BASH_DOOR | KILL_WALL
+F:IM_FIRE | IM_COLD | IM_POIS | IM_ELEC | IM_ACID
+F:NO_CONF | NO_SLEEP | NO_FEAR | NO_STUN | NONLIVING | GOLEM | ADAMANTITE
+F:REFLECTING
+S:1_IN_6 | 
+S:SLOW | SCARE | TELE_TO | HASTE
+D:$An golem forged from legendary adamantite.
+D:伝説のアダマンタイトで鍛造されたゴーレムだ。
+
+N:2333:地雷女
+E:Drama queen
+G:t:r
+I:110:2d5:12:2:10
+W:0:1:0:0:0
+B:INSULT:FLAVOR
+B:INSULT:FLAVOR
+B:HIT:HURT:1d1
+B:TOUCH:EAT_GOLD
+F:FEMALE | HAS_LITE_1
+F:HUMAN | RABBLE
+F:OPEN_DOOR | BASH_DOOR | DROP_SKELETON | DROP_CORPSE
+F:WILD_TOWN | WILD_ALL
+S:1_IN_8 |
+S:SHRIEK
+D:$She's a true psychological vampire, draining those around her at every turn.
+D:何かにつけて周囲を消耗させる、まさに心理的吸血鬼だ。
+
+N:2334:『tanasinn』
+E:tanasinn
+G:.:v
+I:115:40d90:25:90:15
+W:65:2:26000:0:0
+B:TOUCH:LOSE_ALL:5d12
+B:TOUCH:EXP_VAMP:5d12
+B:TOUCH:UN_POWER:5d12
+B:TOUCH:DR_MANA:5d12
+F:UNIQUE | FORCE_MAXHP | PASS_WALL | NONLIVING | IM_ACID | CAN_FLY
+F:ONLY_ITEM | DROP_2D2 | DROP_3D2 | DROP_GOOD | SMART
+F:ELDRITCH_HORROR | IM_COLD | RES_NETH | RES_DARK
+F:NO_CONF | NO_SLEEP | NO_STUN | QUANTUM | RAND_25
+F:REGENERATE | SELF_DARK_1 | SELF_DARK_2
+F:AVATAR
+S:1_IN_6 | BR_NETH | BRAIN_SMASH | SCARE
+S:DRAIN_MANA | HEAL | ANIM_DEAD | BO_ABYSS | BO_VOID | BR_ABYSS | BR_VOID | BA_VOID
+D:$You can't think about it.
+D:$ Don't think, feel and you'll be tanasinn.
+D:tanasinnは真実だ
+D:意識の虚無は真実だ
+D:囚われ人は真実だ。
+D:私達は洞窟に入った。それが真実。
+D:なぜ死んだ赤子が横断歩道をわたったのか。
+D:鶏にホッチキスで留められていたから。
+D:それが真実。
+D:tanasinnは真実。
+D:たえずtanasinnに留意しないといけない。
+D:tanasinnは苦痛。それが真実。
+D:tanasinnは快楽。それが真実。
+D:tanasinnに戻りたい。それが真実。
+D:戻らなければ気が狂う。それが真実。
+D:tanasinntanasinntanasinntanasinntanasinnそれが真実。
+D:tanasinntanasinntanasinntanasinntanasinntanasinntanasinn
+D:僕は怖い。それが真実。
+D:tanasinntanasinntanasinntanasinntanasinntanasinntanasinn
+D:tanasinntanasinntanasinntanasinn.......
+D:───「ヤァ　息仔ョ　失ゥコトノ　堪ェ難キ痛ミニモ　モウ慣レタカイ？」
+
+N:2335:ブラックマーケットの中級エージェント
+E:Mature agent of black market
+G:p:D
+I:130:15d10:30:100:40
+W:32:4:0:350:12000:1394
+B:HIT:HURT:2d8
+B:HIT:EAT_GOLD:2d8
+B:HIT:EAT_ITEM:2d8
+B:HIT:EAT_ITEM:2d8
+B:SHOOT::9d5
+S:BLINK | TELE_TO | TELE_AWAY | TPORT | HASTE | 1_IN_4
+F:HUMAN | DROP_2D2 | DROP_4D2 | ONLY_ITEM | DROP_GOOD | DROP_SKELETON | DROP_CORPSE | TAKE_ITEM | OPEN_DOOR | BASH_DOOR
+F:IM_FIRE | IM_COLD | NO_CONF | NO_SLEEP | EVIL | MALE
+D:彼はダンジョンのあらゆるところから商品を「拾って」くることを生業としている。
+D:$His job is to 'find' goods from all over the dungeon.
+
+N:2336:ブラックマーケットの上級エージェント
+E:Master agent of black market
+G:p:D
+I:130:50d20:40:150:10
+W:64:8:0:5000:0:0
+B:HIT:EAT_ITEM:6d5
+B:HIT:EAT_ITEM:6d5
+B:HIT:EAT_ITEM:6d5
+B:HIT:EAT_ITEM:6d5
+B:SHOOT::24d5
+S:BLINK | TELE_TO | TELE_AWAY | TPORT | TELE_LEVEL | HASTE | HEAL | ANIM_DEAD | ROCKET | BR_FIRE | BR_COLD | BO_METEOR | S_MONSTER | 1_IN_3
+F:HUMAN | FORCE_MAXHP | ONLY_ITEM | DROP_2D2 | DROP_3D2 | DROP_4D2 | DROP_GOOD | SMART | OPEN_DOOR | BASH_DOOR
+F:TAKE_ITEM | KILL_BODY | EVIL | IM_ACID | IM_COLD | IM_FIRE | IM_ELEC | IM_POIS | RES_CHAO | REFLECTING | CAN_FLY
+F:NO_CONF | NO_SLEEP | HAS_LITE_2 | MALE
+D:ダンジョンの奥深くから商品を「拾って」くるエキスパートだ。商品を惜しみなく使用して武装している。
+D:$He is an expert at 'find' goods from the depths of the dungeon, and is armed with a generous supply of goods.
+
+N:2337:『タローマン』
+E:The Taroman
+G:P:y
+I:120:89d89:30:140:15
+W:64:3:30000:0:0
+B:HIT:CONFUSE:11d11
+B:HIT:CONFUSE:11d11
+B:HIT:CONFUSE:11d11
+B:HIT:CONFUSE:11d11
+F:UNIQUE | MALE | 
+F:FORCE_MAXHP | 
+F:ONLY_ITEM | DROP_GOOD | DROP_4D2 | KILL_BODY | KILL_WALL | RAND_50
+F:SMART | TAKE_ITEM | OPEN_DOOR | BASH_DOOR | DROP_CORPSE | 
+F:GIANT | HAS_LITE_2 |
+F:IM_FIRE | IM_COLD | IM_ACID | IM_ELEC | IM_POIS | FRIENDLY
+S:1_IN_5 | BA_WATE | BA_LITE | BO_PLAS | BR_POIS | BR_ACID
+D:$Explosion. Explosion. Art is an explosion.
+D:爆発だ、爆発だ、芸術は爆発だ。
+
+N:2338:BT-91 マジュー最終形態
+E:BT-91 Beast (final form)
+G:P:R
+I:130:60d80:40:145:20
+W:62:1:18000:0:0
+B:PUNCH:HURT:12d15
+B:PUNCH:HURT:12d15
+B:PUNCH:SUPERHURT:15d12
+B:PUNCH:SUPERHURT:15d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
+F:OPEN_DOOR | BASH_DOOR | MOB_100 | POWERFUL
+F:GIANT | REGENERATE
+F:IM_FIRE | IM_COLD | RES_NETH | NO_CONF | NO_FEAR
+S:1_IN_3 | HEAL | BO_MANA | BA_MANA | HASTE | BR_FIRE
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its final form,
+D:$ it achieves perfect bipedal upright walking and
+D:$ demonstrates overwhelming combat capabilities.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:最終形態では完全に人型となり、圧倒的な戦闘能力を発揮する。
+
+N:2339:BT-90 ガーディン第二形態
+E:BT-90 Guardin (second form)
+G:I:R
+I:125:40d65:50:165:25
+W:50:1:8500:0:0
+B:CRUSH:HURT:6d15
+B:CRUSH:HURT:6d15
+B:CRUSH:SUPERHURT:7d15
+B:STING:HURT:5d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
+F:BASH_DOOR | POWERFUL
+F:REGENERATE | IM_POIS | RES_NETH | NO_CONF
+S:1_IN_5 | HEAL | BO_MANA | HASTE | BA_POIS
+D:$One of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its second form, its insect-like body grows even larger,
+D:$ with its armor significantly reinforced.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:第二形態では虫のような体がより巨大化し、特に装甲が強化される。
+
+N:2340:BT-90 ガーディン最終形態
+E:BT-90 Guardin (final form)
+G:I:v
+I:130:50d80:50:200:30
+W:60:1:12000:0:0
+B:CRUSH:SUPERHURT:8d15
+B:CRUSH:SUPERHURT:8d15
+B:CRUSH:SHATTER:10d15
+B:STING:POISON:7d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | KILL_BODY | ALLIANCE_GAICHI
+F:BASH_DOOR | KILL_WALL | POWERFUL | MOB_50
+F:REGENERATE | IM_POIS | IM_ACID | RES_NETH | RES_DARK | NO_CONF | NO_FEAR
+S:1_IN_4 | HEAL | BO_MANA | BA_MANA | HASTE | BA_POIS | BA_ACID | BR_POIS
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its final form,
+D:$ its exoskeleton achieves maximum hardness,
+D:$ enabling it to casually deflect shells from super-heavy tanks.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:最終形態では外骨格が最大硬度に達し、超重量級戦車の砲弾を平然とはじくに至る。
+
+N:2341:BT-92 ブレナー第二形態
+E:BT-92 Blenar (second form)
+G:B:v
+I:135:40d65:90:110:35
+W:52:1:5000:0:0
+B:CRUSH:HURT:5d12
+B:CRUSH:HURT:5d12
+B:CRUSH:SUPERHURT:6d12
+B:CRUSH:SUPERHURT:6d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | CAN_FLY | ALLIANCE_GAICHI
+F:BASH_DOOR | POWERFUL | REGENERATE | RES_LITE | RES_DARK | NO_FEAR
+S:1_IN_5 | HEAL | BO_MANA | HASTE | BLINK | TPORT
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its second form,
+D:$ its propulsion system has been dramatically enhanced,
+D:$ achieving supersonic flight capability.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:第二形態では推進機構が劇的に強化され、音速を超える飛行能力を獲得している。
+
+N:2342:BT-92 ブレナー最終形態
+E:BT-92 Blenar (final form)
+G:D:v
+I:140:60d80:100:130:30
+W:61:1:8000:0:0
+B:CRUSH:HURT:7d12
+B:CRUSH:HURT:7d12
+B:CRUSH:SUPERHURT:8d12
+B:CRUSH:SUPERHURT:8d12
+F:FORCE_MAXHP | DROP_SKELETON | DROP_CORPSE
+F:ONLY_ITEM | DROP_4D2 | DROP_GOOD | CAN_FLY | ALLIANCE_GAICHI
+F:BASH_DOOR | KILL_WALL | POWERFUL | REGENERATE | AURA_FIRE
+F:IM_FIRE | RES_LITE | RES_DARK | RES_PLAS | NO_FEAR | NO_CONF
+S:1_IN_4 | HEAL | BO_MANA | HASTE | BLINK | TPORT
+D:$This is one of the biological weapons developed on Mars by the Gaichi Army,
+D:$ which plots the empire's revival. In its final form,
+D:$ it has evolved into a dragon-headed form capable of ultra-high-speed flight.
+D:帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。
+D:最終形態では龍の頭のような形状に進化している。
 
 # N: serial number : monster name
 # G: symbol : color

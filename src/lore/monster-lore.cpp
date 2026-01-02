@@ -218,6 +218,54 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::PAPER);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::WOODEN)) {
+        lore_ptr->kind_flags.set(MonsterKindType::WOODEN);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::IRON)) {
+        lore_ptr->kind_flags.set(MonsterKindType::IRON);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::COPPER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::COPPER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::STONE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::STONE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SILVER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SILVER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GOLD)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GOLD);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MITHRIL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MITHRIL);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ADAMANTITE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::ADAMANTITE);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FECES)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FECES);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::FLESH)) {
+        lore_ptr->kind_flags.set(MonsterKindType::FLESH);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::DARKSTEEL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::DARKSTEEL);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::WARPSTONE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::WARPSTONE);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
         lore_ptr->kind_flags.set(MonsterKindType::NINJA);
     }
@@ -362,6 +410,26 @@ static void set_race_flags(lore_type *lore_ptr)
     }
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::CHAMELEON)) {
         lore_ptr->kind_flags.set(MonsterKindType::CHAMELEON);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::ARCHER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::ARCHER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GUNNER)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GUNNER);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::SMITH)) {
+        lore_ptr->kind_flags.set(MonsterKindType::SMITH);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::WHEEL)) {
+        lore_ptr->kind_flags.set(MonsterKindType::WHEEL);
+    }
+
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::GREAT_OLD_ONE)) {
+        lore_ptr->kind_flags.set(MonsterKindType::GREAT_OLD_ONE);
     }
 
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::APE)) {
@@ -598,6 +666,7 @@ void process_monster_lore(PlayerType *player_ptr, MonraceId r_idx, monster_lore_
     display_monster_immunities(lore_ptr);
     display_monster_alert(lore_ptr);
     display_monster_drops(lore_ptr);
+    display_monster_dead_spawns(lore_ptr);
     display_monster_blows(lore_ptr);
     display_monster_guardian(lore_ptr);
 }

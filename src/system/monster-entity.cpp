@@ -5,6 +5,10 @@
 #include "monster-race/race-kind-flags.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-status.h"
+#include "player-info/class-info.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
+#include "player/race-info-table.h"
 #include "system/angband-system.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
@@ -14,6 +18,7 @@
 #include "term/term-color-types.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include <algorithm>
 
@@ -22,6 +27,12 @@ MonsterEntity::MonsterEntity()
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
         this->mtimed[mte] = 0;
     }
+
+    // CreatureEntityの基本メンバーを初期化
+    this->r_idx = MonraceId::PLAYER; // デフォルトはプレイヤー（無効な状態）
+    this->ap_r_idx = MonraceId::PLAYER;
+    this->patron = 0; // パトロンなし
+    this->current_floor_ptr = nullptr;
 }
 
 /*!
@@ -112,11 +123,6 @@ bool MonsterEntity::is_hostile_to_melee(const MonsterEntity &other) const
 bool MonsterEntity::is_hostile_align(const byte other_sub_align) const
 {
     return MonsterEntity::check_sub_alignments(this->sub_align, other_sub_align);
-}
-
-bool MonsterEntity::is_named() const
-{
-    return !this->nickname.empty();
 }
 
 bool MonsterEntity::is_named_pet() const
@@ -284,7 +290,7 @@ bool MonsterEntity::is_invulnerable() const
  */
 byte MonsterEntity::get_temporary_speed() const
 {
-    auto speed = this->mspeed;
+    auto speed = this->speed;
     if (ironman_nightmare) {
         speed += 5;
     }
@@ -309,6 +315,15 @@ byte MonsterEntity::get_temporary_speed() const
 }
 
 /*!
+ * @brief モンスターの基本速度を取得
+ * @return 基本速度値
+ */
+int MonsterEntity::get_speed() const
+{
+    return this->speed;
+}
+
+/*!
  * @brief モンスターが生命体かどうかを返す
  * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
  * @return 生命体ならばtrue
@@ -321,22 +336,27 @@ bool MonsterEntity::has_living_flag(bool is_apperance) const
 }
 
 /*!
- * @brief モンスターがアンデッドかどうかを返す
- * @return 種族または個体がアンデッドならばtrue
+ * @brief モンスターが悪魔かどうかを返す
+ * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
+ * @return 悪魔ならばtrue
+ * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
  */
-bool MonsterEntity::is_undead() const
+bool MonsterEntity::has_demon_flag(bool is_apperance) const
 {
-    // 種族データでアンデッドフラグがあるか確認
-    if (this->get_monrace().kind_flags.has(MonsterKindType::UNDEAD)) {
-        return true;
-    }
+    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_demon_flag();
+}
 
-    // 個体フラグでZOMBIFIED状態の場合（ZOMBIFIEDモンスターは自動的にUNDEADフラグを持つ）
-    if (this->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
-        return true;
-    }
-
-    return false;
+/*!
+ * @brief モンスターがアンデッドかどうかを返す
+ * @param is_apperance たぬき、カメレオン、各種誤認ならtrue
+ * @return アンデッドならばtrue
+ * @todo kind_flags をMonsterEntityへコピーする (将来的なモンスター仕様の拡張)
+ */
+bool MonsterEntity::has_undead_flag(bool is_apperance) const
+{
+    const auto &monrace = is_apperance ? this->get_appearance_monrace() : this->get_monrace();
+    return monrace.has_undead_flag();
 }
 
 /*!
@@ -470,13 +490,13 @@ void MonsterEntity::set_individual_speed(bool force_fixed_speed)
         speed = STANDARD_SPEED + 99;
     }
 
-    this->mspeed = speed;
+    this->speed = speed;
 }
 
 void MonsterEntity::set_position(const Pos2D &pos)
 {
-    this->fy = pos.y;
-    this->fx = pos.x;
+    this->y = pos.y;
+    this->x = pos.x;
 }
 
 /*!
@@ -579,6 +599,175 @@ void MonsterEntity::set_friendly()
     this->mflag2.set(MonsterConstantFlagType::FRIENDLY);
 }
 
+/*!
+ * @brief モンスターのフラグに基づいて対応するプレイヤー種族IDを初期化する
+ * @details モンスターのMonsterKindTypeフラグをチェックし、
+ * プレイヤー種族と同等の名前のフラグがあればequivalent_player_racesに追加する
+ */
+void MonsterEntity::initialize_equivalent_player_races()
+{
+    this->equivalent_player_races.clear();
+    const auto &monrace = this->get_monrace();
+
+    // モンスターのフラグとプレイヤー種族の対応関係をチェック
+    if (monrace.kind_flags.has(MonsterKindType::HUMAN)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HUMAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ELF)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ELF);
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_ELF);
+        this->equivalent_player_races.push_back(PlayerRaceType::HIGH_ELF);
+        this->equivalent_player_races.push_back(PlayerRaceType::DARK_ELF);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DWARF)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::DWARF);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::HOBBIT)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HOBBIT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GNOME)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::GNOME);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ORC)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_ORC);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::TROLL)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_TROLL);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GIANT)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_GIANT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::OGRE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::HALF_OGRE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::AMBERITE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::AMBERITE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::YEEK)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::YEEK);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::KOBOLD)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::KOBOLD);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::NIBELUNG)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::NIBELUNG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DRAGON)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::DRACONIAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MINDFLAYER)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::MIND_FLAYER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::DEMON)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::IMP);
+        this->equivalent_player_races.push_back(PlayerRaceType::BALROG);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GOLEM)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::GOLEM);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SKELETON)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::SKELETON);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ZOMBIE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ZOMBIE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::VAMPIRE)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::VAMPIRE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::UNDEAD)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::SPECTRE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::FAIRY)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::SPRITE);
+        this->equivalent_player_races.push_back(PlayerRaceType::S_FAIRY);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BEAST)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::BEASTMAN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::TREEFOLK)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ENT);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ANGEL)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ARCHON);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ROBOT)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::ANDROID);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MERFOLK)) {
+        this->equivalent_player_races.push_back(PlayerRaceType::MERFOLK);
+    }
+
+    // equivalent_player_racesの最初の種族をraceポインタに設定
+    if (!this->equivalent_player_races.empty()) {
+        this->race = &race_info[enum2i(this->equivalent_player_races[0])];
+        this->prace = this->equivalent_player_races[0];
+    } else {
+        this->race = nullptr;
+        this->prace = PlayerRaceType::HUMAN; // デフォルト
+    }
+}
+
+/*!
+ * @brief モンスターのフラグに基づいて対応するプレイヤー職業IDを初期化する
+ * @details モンスターのMonsterKindTypeフラグをチェックし、
+ * プレイヤー職業と同等の名前のフラグがあればequivalent_player_classesに追加する
+ */
+void MonsterEntity::initialize_equivalent_player_classes()
+{
+    this->equivalent_player_classes.clear();
+    const auto &monrace = this->get_monrace();
+
+    // モンスターのフラグとプレイヤー職業の対応関係をチェック
+    if (monrace.kind_flags.has(MonsterKindType::WARRIOR)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::WARRIOR);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MAGE)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::MAGE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PRIEST)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::PRIEST);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ROGUE)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::ROGUE);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::RANGER)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::RANGER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::PALADIN)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::PALADIN);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SAMURAI)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::SAMURAI);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::NINJA)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::NINJA);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::MINDCRAFTER)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::MINDCRAFTER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::ARCHER)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::ARCHER);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::BARD)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::BARD);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::SMITH)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::SMITH);
+    }
+    if (monrace.kind_flags.has(MonsterKindType::KARATEKA)) {
+        this->equivalent_player_classes.push_back(PlayerClassType::MONK);
+    }
+
+    // equivalent_player_classesの最初の職業をpclass_refポインタに設定
+    if (!this->equivalent_player_classes.empty()) {
+        this->pclass_ref = &class_info.at(this->equivalent_player_classes[0]);
+        this->pclass = this->equivalent_player_classes[0];
+    } else {
+        this->pclass_ref = nullptr;
+        this->pclass = PlayerClassType::WARRIOR; // デフォルト
+    }
+}
+
 bool MonsterEntity::is_riding() const
 {
     return this->mflag2.has(MonsterConstantFlagType::RIDING);
@@ -586,7 +775,7 @@ bool MonsterEntity::is_riding() const
 
 Pos2D MonsterEntity::get_position() const
 {
-    return { this->fy, this->fx };
+    return { this->y, this->x };
 }
 
 Pos2D MonsterEntity::get_target_position() const
@@ -610,14 +799,18 @@ std::string MonsterEntity::build_looking_description(bool needs_attitude) const
     const auto attitude = needs_attitude ? this->build_attitude_description() : "";
     const std::string clone(this->mflag2.has(MonsterConstantFlagType::CLONED) ? ", clone" : "");
     const auto &apparent_monrace = this->get_appearance_monrace();
-    const std::string alliance_name = alliance_list.at(this->alliance_idx)->name;
+
+    // ペットの場合はアライアンス表示を省略
+    const bool show_alliance = !this->is_pet() && this->alliance_idx != AllianceType::NONE;
+    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->alliance_idx)->name.data()) : "";
+
     if ((apparent_monrace.r_tkills > 0) && this->mflag2.has_not(MonsterConstantFlagType::KAGE)) {
-        constexpr auto fmt = _("レベル%d, %s%s%s(%s)", "Level %d, %s%s%s(%s)");
-        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_name.data());
+        constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");
+        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_part.data());
     }
 
-    constexpr auto fmt = _("レベル???, %s%s%s(%s)", "Level ???, %s%s%s(%s)");
-    return format(fmt, description.data(), attitude.data(), clone.data(), alliance_name.data());
+    constexpr auto fmt = _("レベル???, %s%s%s%s", "Level ???, %s%s%s%s");
+    return format(fmt, description.data(), attitude.data(), clone.data(), alliance_part.data());
 }
 
 std::string MonsterEntity::build_damage_description() const
@@ -662,26 +855,21 @@ std::string MonsterEntity::build_attitude_description() const
 
 int MonsterEntity::get_ac() const
 {
-    const auto &monrace = MonraceList::get_instance().get_monrace(this->r_idx);
     if (this->mflag2.has(MonsterConstantFlagType::NAKED)) {
         return 0;
     }
-    auto ac = monrace.ac;
-    if (this->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
-        ac += randint1(10) + 5; // +6～+15のACボーナス
-    }
-    return ac;
+    return this->ac;
 }
 
 // CreatureEntityインターフェースの実装
 POSITION MonsterEntity::get_x() const
 {
-    return this->fx;
+    return this->x;
 }
 
 POSITION MonsterEntity::get_y() const
 {
-    return this->fy;
+    return this->y;
 }
 
 int MonsterEntity::get_current_hp() const
@@ -694,24 +882,9 @@ int MonsterEntity::get_max_hp() const
     return this->maxhp;
 }
 
-int MonsterEntity::get_speed() const
-{
-    return this->mspeed;
-}
-
 FloorType *MonsterEntity::get_floor() const
 {
     return this->current_floor_ptr;
-}
-
-ACTION_ENERGY MonsterEntity::get_energy_need() const
-{
-    return this->energy_need;
-}
-
-void MonsterEntity::set_energy_need(ACTION_ENERGY energy)
-{
-    this->energy_need = energy;
 }
 
 int MonsterEntity::get_level() const

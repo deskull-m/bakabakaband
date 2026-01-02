@@ -1,6 +1,9 @@
 #include "save/monster-entity-writer.h"
 #include "load/old/monster-flag-types-savefile50.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
 #include "save/save-util.h"
+#include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "util/enum-converter.h"
 
@@ -19,8 +22,8 @@ void MonsterEntityWriter::write_to_savedata() const
     wr_s16b(enum2i(this->monster.r_idx));
     wr_s32b(enum2i(this->monster.alliance_idx));
 
-    wr_byte((byte)this->monster.fy);
-    wr_byte((byte)this->monster.fx);
+    wr_byte((byte)this->monster.y);
+    wr_byte((byte)this->monster.x);
     wr_s16b((int16_t)this->monster.hp);
     wr_s16b((int16_t)this->monster.maxhp);
     wr_s16b((int16_t)this->monster.max_maxhp);
@@ -38,8 +41,9 @@ void MonsterEntityWriter::write_to_savedata() const
         wr_s16b(this->monster.mtimed.at(MonsterTimedEffect::SLEEP));
     }
 
-    wr_byte((byte)this->monster.mspeed);
+    wr_byte((byte)this->monster.speed);
     wr_s16b(this->monster.energy_need);
+    wr_s16b(this->monster.ac);
     this->write_monster_info(flags);
 }
 
@@ -110,6 +114,26 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::PARENT);
     }
 
+    if (this->monster.au) {
+        set_bits(flags, SaveDataMonsterFlagType::GOLD);
+    }
+
+    if (this->monster.ht || this->monster.wt) {
+        set_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT);
+    }
+
+    if (this->monster.prace != PlayerRaceType::NONE) {
+        set_bits(flags, SaveDataMonsterFlagType::RACE);
+    }
+
+    if (this->monster.pclass != PlayerClassType::NONE) {
+        set_bits(flags, SaveDataMonsterFlagType::CLASS);
+    }
+
+    if (MonraceList::is_valid(this->monster.transform_r_idx) || this->monster.has_transformed) {
+        set_bits(flags, SaveDataMonsterFlagType::TRANSFORM);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -168,10 +192,33 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::NICKNAME)) {
-        wr_string(this->monster.nickname);
+        wr_string(this->monster.name);
     }
 
     if (any_bits(flags, SaveDataMonsterFlagType::PARENT)) {
         wr_s16b(this->monster.parent_m_idx);
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::GOLD)) {
+        wr_s32b(this->monster.au);
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::HEIGHT_WEIGHT)) {
+        wr_s16b(this->monster.ht);
+        wr_s16b(this->monster.wt);
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::RACE)) {
+        wr_byte(enum2i(this->monster.prace));
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::CLASS)) {
+        wr_s16b(enum2i(this->monster.pclass));
+    }
+
+    if (any_bits(flags, SaveDataMonsterFlagType::TRANSFORM)) {
+        wr_s16b(enum2i(this->monster.transform_r_idx));
+        wr_byte(this->monster.transform_hp_threshold);
+        wr_byte(this->monster.has_transformed ? 1 : 0);
     }
 }

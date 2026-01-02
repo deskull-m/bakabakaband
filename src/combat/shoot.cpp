@@ -263,7 +263,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_SLAY_UNDEAD)) && monster.is_undead()) {
+        if ((flags.has(TR_SLAY_UNDEAD)) && monster.has_undead_flag()) {
             if (is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }
@@ -272,7 +272,7 @@ static MULTIPLY calc_shot_damage_with_slay(
             }
         }
 
-        if ((flags.has(TR_KILL_UNDEAD)) && monster.is_undead()) {
+        if ((flags.has(TR_KILL_UNDEAD)) && monster.has_undead_flag()) {
             if (is_original_ap_and_seen(player_ptr, monster)) {
                 monrace.r_kind_flags.set(MonsterKindType::UNDEAD);
             }
@@ -750,14 +750,14 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
 
                 if (monster.is_asleep()) {
                     if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-                        chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+                        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
                     }
                     if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-                        chg_virtue(player_ptr, Virtue::HONOUR, -1);
+                        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
                     }
                 }
 
-                if ((monrace.level + 10) > player_ptr->lev) {
+                if ((monrace.level + 10) > player_ptr->level) {
                     PlayerSkill(player_ptr).gain_range_weapon_exp(j_ptr);
                 }
 

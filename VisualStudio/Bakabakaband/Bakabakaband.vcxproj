@@ -244,6 +244,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\achievement\achievement-checker.cpp" />
+    <ClCompile Include="..\..\src\achievement\achievement-definitions.cpp" />
+    <ClCompile Include="..\..\src\achievement\achievement-tracker.cpp" />
     <ClCompile Include="..\..\src\action\action-limited.cpp" />
     <ClCompile Include="..\..\src\action\activation-execution.cpp" />
     <ClCompile Include="..\..\src\action\mutation-execution.cpp" />
@@ -372,6 +375,8 @@
     <ClCompile Include="..\..\src\cmd-io\cmd-text-command.cpp" />
     <ClCompile Include="..\..\src\combat\martial-arts-style.cpp" />
     <ClCompile Include="..\..\src\core\score-util.cpp" />
+    <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp" />
+    <ClCompile Include="..\..\src\io-dump\score-sender.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-incident.cpp" />
     <ClCompile Include="..\..\src\external-lib\fmt\format.cc" />
@@ -760,6 +765,7 @@
     <ClCompile Include="..\..\src\tracking\lore-tracker.cpp" />
     <ClCompile Include="..\..\src\util\candidate-selector.cpp" />
     <ClCompile Include="..\..\src\util\elapsed-time.cpp" />
+    <ClCompile Include="..\..\src\util\png-displayer.cpp" />
     <ClCompile Include="..\..\src\util\rng-xoshiro.cpp" />
     <ClCompile Include="..\..\src\util\dice.cpp" />
     <ClCompile Include="..\..\src\util\sha256.cpp" />
@@ -1096,6 +1102,11 @@
     <ClCompile Include="..\..\src\load\quest-loader.cpp" />
     <ClCompile Include="..\..\src\view\display-store.cpp" />
     <ClCompile Include="..\..\src\object-use\throw-execution.cpp" />
+    <ClInclude Include="..\..\src\achievement\achievement-checker.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-definition.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-definitions.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-tracker.h" />
+    <ClInclude Include="..\..\src\achievement\achievement-types.h" />
     <ClInclude Include="..\..\src\action\action-limited.h" />
     <ClInclude Include="..\..\src\action\activation-execution.h" />
     <ClInclude Include="..\..\src\action\mutation-execution.h" />
@@ -1179,6 +1190,8 @@
     <ClInclude Include="..\..\src\cmd-action\cmd-martial-arts.h" />
     <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h" />
     <ClInclude Include="..\..\src\combat\martial-arts-style.h" />
+    <ClInclude Include="..\..\src\io-dump\player-status-dump-json.h" />
+    <ClInclude Include="..\..\src\io-dump\score-sender.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
     <ClInclude Include="..\..\src\external-lib\include-json.h" />
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
@@ -1693,6 +1706,7 @@
     <ClInclude Include="..\..\src\util\finalizer.h" />
     <ClInclude Include="..\..\src\util\flag-group.h" />
     <ClInclude Include="..\..\src\util\int-char-converter.h" />
+    <ClInclude Include="..\..\src\util\png-displayer.h" />
     <ClInclude Include="..\..\src\util\point-2d.h" />
     <ClInclude Include="..\..\src\lore\combat-types-setter.h" />
     <ClInclude Include="..\..\src\lore\magic-types-setter.h" />

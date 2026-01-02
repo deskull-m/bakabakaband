@@ -47,11 +47,11 @@ static tl::optional<Pos2D> adjacent_grid_check(PlayerType *player_ptr, const Mon
     };
 
     int next;
-    if (monster.fy < player_ptr->y && monster.fx < player_ptr->x) {
+    if (monster.y < player_ptr->y && monster.x < player_ptr->x) {
         next = 0;
-    } else if (monster.fy < player_ptr->y) {
+    } else if (monster.y < player_ptr->y) {
         next = 1;
-    } else if (monster.fx < player_ptr->x) {
+    } else if (monster.x < player_ptr->x) {
         next = 2;
     } else {
         next = 3;
@@ -235,7 +235,7 @@ void decide_lite_area(PlayerType *player_ptr, msa_type *msa_ptr)
 
     PlayerClass pc(player_ptr);
     auto can_use_lite_area = pc.equals(PlayerClassType::NINJA);
-    can_use_lite_area &= !msa_ptr->m_ptr->is_undead();
+    can_use_lite_area &= !msa_ptr->m_ptr->has_undead_flag();
     can_use_lite_area &= msa_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
     can_use_lite_area &= (msa_ptr->r_ptr->brightness_flags.has_none_of(dark_mask));
 

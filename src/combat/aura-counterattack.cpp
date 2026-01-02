@@ -242,7 +242,7 @@ static void aura_shadow_by_monster_attack(PlayerType *player_ptr, MonsterAttackP
     for (int j = 0; j < TABLE_SIZE; j++) {
         o_armed_ptr = player_ptr->inventory[table[j].slot].get();
         if (o_armed_ptr->is_valid() && o_armed_ptr->is_cursed() && o_armed_ptr->is_protector()) {
-            project(player_ptr, 0, 0, monap_ptr->m_ptr->fy, monap_ptr->m_ptr->fx, (player_ptr->lev * 2), table[j].type, flg);
+            project(player_ptr, 0, 0, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, (player_ptr->level * 2), table[j].type, flg);
         }
     }
 }

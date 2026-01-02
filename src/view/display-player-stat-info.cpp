@@ -33,23 +33,8 @@
  */
 static int calc_basic_stat(PlayerType *player_ptr, int stat_num)
 {
-    int e_adj = 0;
-    if ((player_ptr->stat_max[stat_num] > 18) && (player_ptr->stat_top[stat_num] > 18)) {
-        e_adj = (player_ptr->stat_top[stat_num] - player_ptr->stat_max[stat_num]) / 10;
-    }
-
-    if ((player_ptr->stat_max[stat_num] <= 18) && (player_ptr->stat_top[stat_num] <= 18)) {
-        e_adj = player_ptr->stat_top[stat_num] - player_ptr->stat_max[stat_num];
-    }
-
-    if ((player_ptr->stat_max[stat_num] <= 18) && (player_ptr->stat_top[stat_num] > 18)) {
-        e_adj = (player_ptr->stat_top[stat_num] - 18) / 10 - player_ptr->stat_max[stat_num] + 18;
-    }
-
-    if ((player_ptr->stat_max[stat_num] > 18) && (player_ptr->stat_top[stat_num] <= 18)) {
-        e_adj = player_ptr->stat_top[stat_num] - (player_ptr->stat_max[stat_num] - 19) / 10 - 19;
-    }
-
+    // 新形式では単純に差分を返す（すでに10倍スケール）
+    int e_adj = (player_ptr->stat_top[stat_num] - player_ptr->stat_max[stat_num]) / 10;
     return e_adj;
 }
 
@@ -69,24 +54,24 @@ static int compensate_special_race(PlayerType *player_ptr, int stat_num)
     switch (stat_num) {
     case A_STR:
     case A_CON:
-        if (player_ptr->lev > 25) {
+        if (player_ptr->level > 25) {
             r_adj++;
         }
-        if (player_ptr->lev > 40) {
+        if (player_ptr->level > 40) {
             r_adj++;
         }
-        if (player_ptr->lev > 45) {
+        if (player_ptr->level > 45) {
             r_adj++;
         }
         break;
     case A_DEX:
-        if (player_ptr->lev > 25) {
+        if (player_ptr->level > 25) {
             r_adj--;
         }
-        if (player_ptr->lev > 40) {
+        if (player_ptr->level > 40) {
             r_adj--;
         }
-        if (player_ptr->lev > 45) {
+        if (player_ptr->level > 45) {
             r_adj--;
         }
         break;

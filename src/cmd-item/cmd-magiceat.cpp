@@ -267,8 +267,8 @@ static tl::optional<BaseitemKey> select_magic_eater(PlayerType *player_ptr, bool
                 chance = level * 4 / 5 + 20;
                 chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
                 level /= 2;
-                if (player_ptr->lev > level) {
-                    chance -= 3 * (player_ptr->lev - level);
+                if (player_ptr->level > level) {
+                    chance -= 3 * (player_ptr->level - level);
                 }
                 chance = mod_spell_chance_1(player_ptr, chance);
                 chance = std::max<int>(chance, adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]]);
@@ -508,8 +508,8 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
     auto chance = level * 4 / 5 + 20;
     chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
     level /= 2;
-    if (player_ptr->lev > level) {
-        chance -= 3 * (player_ptr->lev - level);
+    if (player_ptr->level > level) {
+        chance -= 3 * (player_ptr->level - level);
     }
     chance = mod_spell_chance_1(player_ptr, chance);
     chance = std::max<int>(chance, adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]]);
@@ -528,7 +528,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
         msg_print(_("呪文をうまく唱えられなかった！", "You failed to get the magic off!"));
         sound(SoundKind::FAIL);
         if (randint1(100) >= chance) {
-            chg_virtue(player_ptr, Virtue::CHANCE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
         }
         energy.set_player_turn_energy(100);
 
@@ -585,7 +585,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
         }
 
         if (randint1(100) < chance) {
-            chg_virtue(player_ptr, Virtue::CHANCE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
         }
     }
 

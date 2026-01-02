@@ -89,7 +89,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
     }
 
     screen_save();
-    const auto initial_filename = format("%s.prf", player_ptr->base_name);
+    const auto initial_filename = format("%s.prf", player_ptr->base_name.data());
     while (true) {
         term_clear();
         print_visuals_menu(nullptr);

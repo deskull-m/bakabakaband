@@ -326,7 +326,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         }
 
         /* Still alive and autosave enabled */
-        if (autosave_l && (player_ptr->chp >= 0)) {
+        if (autosave_l && (player_ptr->hp >= 0)) {
             do_cmd_save_game(player_ptr, true);
         }
 
@@ -445,7 +445,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
             const auto num = levs[std::min(lev / 10, 9)];
             for (auto i = 0; i < num; i++) {
                 const Pos2D pos(rand_spread(p_pos.y, 5), rand_spread(p_pos.x, 7));
-                if (!floor.contains(pos)) {
+                if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                     continue;
                 }
 
@@ -466,10 +466,10 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
                 if (evil_idx && good_idx) {
                     auto &monster_evil = floor.m_list[evil_idx];
                     auto &monster_good = floor.m_list[good_idx];
-                    monster_evil.target_y = monster_good.fy;
-                    monster_evil.target_x = monster_good.fx;
-                    monster_good.target_y = monster_evil.fy;
-                    monster_good.target_x = monster_evil.fx;
+                    monster_evil.target_y = monster_good.y;
+                    monster_evil.target_x = monster_good.x;
+                    monster_good.target_y = monster_evil.y;
+                    monster_good.target_x = monster_evil.x;
                 }
             }
         }

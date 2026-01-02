@@ -117,8 +117,8 @@ static MonraceDefinition &set_pet_params(PlayerType *player_ptr, const int curre
     player_ptr->current_floor_ptr->grid_array[cy][cx].m_idx = m_idx;
     auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     monster = party_mon[current_monster].clone();
-    monster.fy = cy;
-    monster.fx = cx;
+    monster.y = cy;
+    monster.x = cx;
     monster.current_floor_ptr = player_ptr->current_floor_ptr;
     monster.ml = true;
     monster.mtimed[MonsterTimedEffect::SLEEP] = 0;

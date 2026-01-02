@@ -32,8 +32,8 @@ static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &monster = floor.m_list[i1];
 
-    const auto y = monster.fy;
-    const auto x = monster.fx;
+    const auto y = monster.y;
+    const auto x = monster.x;
     auto &grid = floor.grid_array[y][x];
     grid.m_idx = i2;
 

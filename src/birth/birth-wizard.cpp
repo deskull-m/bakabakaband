@@ -476,7 +476,7 @@ static bool display_auto_roller_result(PlayerType *player_ptr, bool prev, char *
     while (true) {
         rfu.set_flags(flags);
         update_creature(player_ptr);
-        player_ptr->chp = player_ptr->mhp;
+        player_ptr->hp = player_ptr->maxhp;
         player_ptr->csp = player_ptr->msp;
         (void)display_player(player_ptr, mode);
         term_gotoxy(2, 23);
@@ -592,7 +592,7 @@ static void set_name_history(PlayerType *player_ptr)
     process_player_name(player_ptr, AngbandWorld::get_instance().creating_savefile);
     edit_history(player_ptr);
     get_max_stats(player_ptr);
-    initialize_virtues(player_ptr);
+    initialize_virtues(static_cast<CreatureEntity &>(*player_ptr));
     prt(_("[ 'Q' 中断, 'S' 初めから, Enter ゲーム開始 ]", "['Q'uit, 'S'tart over, or Enter to continue]"), 23, _(14, 10));
 }
 

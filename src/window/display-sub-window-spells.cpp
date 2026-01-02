@@ -49,7 +49,7 @@ static void display_spell_list(PlayerType *player_ptr)
 
     if (pc.has_listed_magics()) {
         PERCENTAGE minfail = 0;
-        PLAYER_LEVEL plev = player_ptr->lev;
+        PLAYER_LEVEL plev = player_ptr->level;
         PERCENTAGE chance = 0;
         mind_type spell;
         MindKindType use_mind;
@@ -96,7 +96,7 @@ static void display_spell_list(PlayerType *player_ptr)
             }
 
             chance = spell.fail;
-            chance -= 3 * (player_ptr->lev - spell.min_lev);
+            chance -= 3 * (player_ptr->level - spell.min_lev);
             chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
             if (!use_hp) {
                 if (spell.mana_cost > player_ptr->csp) {
@@ -104,7 +104,7 @@ static void display_spell_list(PlayerType *player_ptr)
                     a = TERM_ORANGE;
                 }
             } else {
-                if (spell.mana_cost > player_ptr->chp) {
+                if (spell.mana_cost > player_ptr->hp) {
                     chance += 100;
                     a = TERM_RED;
                 }

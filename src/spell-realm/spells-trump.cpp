@@ -29,9 +29,9 @@
  */
 void cast_shuffle(PlayerType *player_ptr)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     int die;
-    int vir = virtue_number(player_ptr, Virtue::CHANCE);
+    int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
     int i;
 
     PlayerClass pc(player_ptr);
@@ -45,13 +45,16 @@ void cast_shuffle(PlayerType *player_ptr)
     }
 
     if (vir) {
-        if (player_ptr->virtues[vir - 1] > 0) {
-            while (randint1(400) < player_ptr->virtues[vir - 1]) {
-                die++;
-            }
-        } else {
-            while (randint1(400) < (0 - player_ptr->virtues[vir - 1])) {
-                die--;
+        auto it = player_ptr->virtues.find(Virtue::CHANCE);
+        if (it != player_ptr->virtues.end()) {
+            if (it->second > 0) {
+                while (randint1(400) < it->second) {
+                    die++;
+                }
+            } else {
+                while (randint1(400) < (0 - it->second)) {
+                    die--;
+                }
             }
         }
     }
@@ -59,7 +62,7 @@ void cast_shuffle(PlayerType *player_ptr)
     msg_print(_("あなたはカードを切って一枚引いた...", "You shuffle the deck and draw a card..."));
 
     if (die < 30) {
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;
@@ -126,7 +129,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 42) {
         msg_print(_("《正義》だ。", "It's Justice."));
-        set_blessed(player_ptr, player_ptr->lev, false);
+        set_blessed(player_ptr, player_ptr->level, false);
         return;
     }
 
@@ -188,7 +191,7 @@ void cast_shuffle(PlayerType *player_ptr)
         msg_print(_("《恋人》だ。", "It's the Lovers."));
 
         if (const auto dir = get_aim_dir(player_ptr)) {
-            charm_monster(player_ptr, dir, std::min<short>(player_ptr->lev, 20));
+            charm_monster(player_ptr, dir, std::min<short>(player_ptr->level, 20));
         }
 
         return;
@@ -203,14 +206,14 @@ void cast_shuffle(PlayerType *player_ptr)
     if (die < 111) {
         msg_print(_("《審判》だ。", "It's Judgement."));
         roll_hitdice(player_ptr, SPOP_NONE);
-        lose_all_mutations(player_ptr);
+        lose_all_mutations(*player_ptr);
         return;
     }
 
     if (die < 120) {
         msg_print(_("《太陽》だ。", "It's the Sun."));
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
-        chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
         wiz_lite(player_ptr, false);
         return;
     }
@@ -225,14 +228,14 @@ void cast_shuffle(PlayerType *player_ptr)
         ee = 5000;
     }
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(player_ptr, ee);
+    gain_exp(static_cast<CreatureEntity &>(*player_ptr), ee);
 }
 
 void become_living_trump(PlayerType *player_ptr)
 {
     /* 1/7 Teleport control and 6/7 Random teleportation (uncontrolled) */
     MUTATION_IDX mutation = one_in_(7) ? 12 : 77;
-    if (gain_mutation(player_ptr, mutation)) {
+    if (gain_mutation(*player_ptr, mutation)) {
         msg_print(_("あなたは生きているカードに変わった。", "You have turned into a Living Trump."));
     }
 }

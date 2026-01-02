@@ -164,21 +164,21 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::CHARM_OTHERS:
         return activate_charm_others(player_ptr);
     case RandomArtActType::SUMMON_ANIMAL:
-        (void)summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->lev, SUMMON_ANIMAL_RANGER, PM_ALLOW_GROUP | PM_FORCE_PET);
+        (void)summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->level, SUMMON_ANIMAL_RANGER, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_PHANTOM:
         msg_print(_("幻霊を召喚した。", "You summon a phantasmal servant."));
         (void)summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_PHANTOM, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_ELEMENTAL:
-        return cast_summon_elemental(player_ptr, (player_ptr->lev * 3) / 2);
+        return cast_summon_elemental(player_ptr, (player_ptr->level * 3) / 2);
     case RandomArtActType::SUMMON_DEMON:
-        cast_summon_demon(player_ptr, (player_ptr->lev * 3) / 2);
+        cast_summon_demon(player_ptr, (player_ptr->level * 3) / 2);
         return true;
     case RandomArtActType::SUMMON_UNDEAD:
-        return cast_summon_undead(player_ptr, (player_ptr->lev * 3) / 2);
+        return cast_summon_undead(player_ptr, (player_ptr->level * 3) / 2);
     case RandomArtActType::SUMMON_HOUND:
-        return cast_summon_hound(player_ptr, (player_ptr->lev * 3) / 2);
+        return cast_summon_hound(player_ptr, (player_ptr->level * 3) / 2);
     case RandomArtActType::SUMMON_DAWN:
         msg_print(_("暁の師団を召喚した。", "You summon the Legion of the Dawn."));
         (void)summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DAWN, PM_ALLOW_GROUP | PM_FORCE_PET);
@@ -205,12 +205,12 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     }
     case RandomArtActType::REST_EXP:
         msg_print(_("深紅に輝いている...", "It glows a deep red..."));
-        restore_level(player_ptr);
+        restore_level(static_cast<CreatureEntity &>(*player_ptr));
         return true;
     case RandomArtActType::REST_ALL:
         msg_print(_("濃緑色に輝いている...", "It glows a deep green..."));
         (void)restore_all_status(player_ptr);
-        (void)restore_level(player_ptr);
+        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
         return true;
     case RandomArtActType::CURE_700:
         msg_print(_("深青色に輝いている...", "It glows deep blue..."));
@@ -238,7 +238,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return true;
     case RandomArtActType::PROT_EVIL:
         msg_format(_("%sから鋭い音が流れ出た...", "The %s lets out a shrill wail..."), name.data());
-        BodyImprovement(player_ptr).set_protection(randint1(25) + player_ptr->lev * 3);
+        BodyImprovement(player_ptr).set_protection(randint1(25) + player_ptr->level * 3);
         return true;
     case RandomArtActType::RESIST_ALL:
         return activate_resistance_elements(player_ptr);
@@ -255,7 +255,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)set_acceleration(player_ptr, randint1(75) + 75, false);
         return true;
     case RandomArtActType::WRAITH:
-        set_wraith_form(player_ptr, randint1(player_ptr->lev / 2) + (player_ptr->lev / 2), false);
+        set_wraith_form(player_ptr, randint1(player_ptr->level / 2) + (player_ptr->level / 2), false);
         return true;
     case RandomArtActType::INVULN:
         (void)set_invuln(player_ptr, randint1(8) + 8, false);

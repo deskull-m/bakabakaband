@@ -40,7 +40,7 @@
 #include "target/target-types.h"
 #include "view/display-messages.h"
 
-static bool cast_blue_dispel(PlayerType *player_ptr)
+bool cast_blue_dispel(PlayerType *player_ptr)
 {
     const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
     if (!pos) {
@@ -391,6 +391,8 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return cast_blue_summon_homo(player_ptr, bmc_ptr);
     case MonsterAbilityType::S_WALL:
         return cast_blue_summon_wall(player_ptr, bmc_ptr);
+    case MonsterAbilityType::S_ELDRAZI:
+        return cast_blue_summon_eldrazi(player_ptr, bmc_ptr);
     default:
         msg_print("hoge?");
         return true;

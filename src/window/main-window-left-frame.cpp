@@ -46,7 +46,7 @@ void print_title(PlayerType *player_ptr)
             p = _("***勝利者***", "***WINNER***");
         }
     } else {
-        p = player_titles.at(player_ptr->pclass).at((player_ptr->lev - 1) / 5);
+        p = player_titles.at(player_ptr->pclass).at((player_ptr->level - 1) / 5);
     }
 
     print_field(p, ROW_TITLE, COL_TITLE);
@@ -57,8 +57,8 @@ void print_title(PlayerType *player_ptr)
  */
 void print_level(PlayerType *player_ptr)
 {
-    const auto tmp = format("%5d", player_ptr->lev);
-    if (player_ptr->lev >= player_ptr->max_plv) {
+    const auto tmp = format("%5d", player_ptr->level);
+    if (player_ptr->level >= player_ptr->max_plv) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
         c_put_str(TERM_L_GREEN, tmp, ROW_LEVEL, COL_LEVEL + 7);
     } else {
@@ -78,10 +78,10 @@ void print_exp(PlayerType *player_ptr)
     if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
         out_val = format("%8d", player_ptr->exp);
     } else {
-        if (player_ptr->lev >= PY_MAX_LEVEL) {
+        if (player_ptr->level >= PY_MAX_LEVEL) {
             (void)sprintf(out_val.data(), "********");
         } else {
-            out_val = format("%8d", player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100 - player_ptr->exp);
+            out_val = format("%8d", player_exp[player_ptr->level - 1] * player_ptr->expfact / 100 - player_ptr->exp);
         }
     }
 
@@ -124,21 +124,21 @@ void print_hp(PlayerType *player_ptr)
 {
     char tmp[32];
     put_str("HP", ROW_CURHP, COL_CURHP);
-    sprintf(tmp, "%4ld", (long int)player_ptr->chp);
+    sprintf(tmp, "%4ld", (long int)player_ptr->hp);
     TERM_COLOR color;
-    if (player_ptr->chp >= player_ptr->mhp) {
+    if (player_ptr->hp >= player_ptr->maxhp) {
         color = TERM_L_GREEN;
-    } else if (player_ptr->chp > (player_ptr->mhp * hitpoint_warn) / 10) {
+    } else if (player_ptr->hp > (player_ptr->maxhp * hitpoint_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", player_ptr->chp), ROW_CURHP, COL_CURHP + 3);
+    c_put_str(color, format("%4d", player_ptr->hp), ROW_CURHP, COL_CURHP + 3);
     put_str("/", ROW_CURHP, COL_CURHP + 7);
-    sprintf(tmp, "%4ld", (long int)player_ptr->mhp);
+    sprintf(tmp, "%4ld", (long int)player_ptr->maxhp);
     color = TERM_L_GREEN;
-    c_put_str(color, format("%4d", player_ptr->mhp), ROW_CURHP, COL_CURHP + 8);
+    c_put_str(color, format("%4d", player_ptr->maxhp), ROW_CURHP, COL_CURHP + 8);
 }
 
 /*!

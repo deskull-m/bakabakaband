@@ -113,7 +113,7 @@ bool disarm_traps_touch(PlayerType *player_ptr)
 bool sleep_monsters_touch(PlayerType *player_ptr)
 {
     BIT_FLAGS flg = PROJECT_KILL | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, player_ptr->y, player_ptr->x, player_ptr->lev, AttributeType::OLD_SLEEP, flg).notice;
+    return project(player_ptr, 0, 1, player_ptr->y, player_ptr->x, player_ptr->level, AttributeType::OLD_SLEEP, flg).notice;
 }
 
 /*!
@@ -138,7 +138,7 @@ void wall_breaker(PlayerType *player_ptr)
 {
     const auto p_pos = player_ptr->get_position();
     auto attempts = 1000;
-    if (randint1(80 + player_ptr->lev) < 70) {
+    if (randint1(80 + player_ptr->level) < 70) {
         Pos2D pos(0, 0);
         while (attempts--) {
             pos = scatter(player_ptr, p_pos, 4, PROJECT_NONE);

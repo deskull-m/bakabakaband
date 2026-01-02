@@ -48,7 +48,7 @@ bool PlayerClass::equals(PlayerClassType type) const
 TrFlags PlayerClass::tr_flags() const
 {
     TrFlags flags;
-    const auto plev = this->player_ptr->lev;
+    const auto plev = this->player_ptr->level;
 
     switch (this->player_ptr->pclass) {
     case PlayerClassType::WARRIOR: {
@@ -267,12 +267,12 @@ TrFlags PlayerClass::stance_tr_flags() const
 
 bool PlayerClass::has_stun_immunity() const
 {
-    return this->equals(PlayerClassType::BERSERKER) && (this->player_ptr->lev > 34);
+    return this->equals(PlayerClassType::BERSERKER) && (this->player_ptr->level > 34);
 }
 
 bool PlayerClass::has_poison_resistance() const
 {
-    return this->equals(PlayerClassType::NINJA) && (this->player_ptr->lev > 44);
+    return this->equals(PlayerClassType::NINJA) && (this->player_ptr->level > 44);
 }
 
 /*!

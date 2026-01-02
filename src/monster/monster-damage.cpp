@@ -29,6 +29,7 @@
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "monster/monster-update.h"
 #include "mutation/mutation-investor-remover.h"
 #include "object-enchant/object-curse.h"
 #include "player/eldritch-horror.h"
@@ -120,6 +121,11 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
 
     if (this->process_dead_exp_virtue(note, exp_mon)) {
         return true;
+    }
+
+    // HP変身チェック
+    if (this->check_and_process_hp_transform()) {
+        return false;
     }
 
     this->add_monster_fear();
@@ -302,7 +308,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
         case 4:
             // 突然変異のチャンス
             if (one_in_(3)) {
-                gain_mutation(this->player_ptr, 0);
+                gain_mutation(*this->player_ptr, 0);
             }
             break;
         case 5:
@@ -425,7 +431,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int 
      * - Varying speed effects
      * - Get a fraction in proportion of damage point
      */
-    auto new_exp = monrace.level * speed_to_energy(monster.mspeed) * exp_dam;
+    auto new_exp = monrace.level * speed_to_energy(monster.speed) * exp_dam;
     auto new_exp_frac = 0U;
     auto div_h = 0;
     auto div_l = (uint)((this->player_ptr->max_plv + 2) * speed_to_energy(monrace.speed));
@@ -567,4 +573,84 @@ void MonsterDamageProcessor::process_sadist_reaction()
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
         }
     }
+}
+
+/*!
+ * @brief HP変身のチェックと実行
+ * @return 変身した場合true、しなかった場合false
+ */
+bool MonsterDamageProcessor::check_and_process_hp_transform()
+{
+    auto &monster = this->player_ptr->current_floor_ptr->m_list[this->m_idx];
+
+    // 変身条件のチェック
+    if (monster.has_transformed) {
+        return false; // 既に変身済み
+    }
+
+    if (!MonraceList::is_valid(monster.transform_r_idx) || monster.transform_hp_threshold == 0) {
+        return false; // 変身設定がない
+    }
+
+    // HP閾値チェック（最大HPの%で判定）
+    const auto hp_percent = (100 * monster.hp) / monster.maxhp;
+    if (hp_percent > monster.transform_hp_threshold) {
+        return false; // まだ変身しない
+    }
+
+    // 変身先の種族情報を取得
+    const auto new_r_idx = monster.transform_r_idx;
+    auto &new_monrace = MonraceList::get_instance().get_monrace(new_r_idx);
+
+    // 変身前の情報を保存
+    const auto old_hp = monster.hp;
+    const auto old_maxhp = monster.max_maxhp;
+    const auto old_sub_align = monster.sub_align;
+    const auto old_name = monster_desc(this->player_ptr, monster, MD_INDEF_VISIBLE);
+
+    // 種族カウンターの更新
+    monster.get_real_monrace().decrement_current_numbers();
+    monster.r_idx = new_r_idx;
+    new_monrace.increment_current_numbers();
+    monster.ap_r_idx = new_r_idx;
+
+    // 新しいHPの計算
+    monster.max_maxhp = new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP)
+                            ? new_monrace.hit_dice.maxroll()
+                            : new_monrace.hit_dice.roll();
+
+    if (ironman_nightmare) {
+        const auto hp = monster.max_maxhp * 2;
+        monster.max_maxhp = std::min(MONSTER_MAXHP, hp);
+    }
+
+    monster.maxhp = monster.max_maxhp;
+    // HPは変身前の割合を維持
+    monster.hp = old_hp * monster.maxhp / old_maxhp;
+
+    // 変身フラグを設定
+    monster.has_transformed = true;
+
+    // 変身先の変身情報をコピー
+    monster.transform_r_idx = new_monrace.transform_r_idx;
+    monster.transform_hp_threshold = new_monrace.transform_hp_threshold;
+
+    // アライメントを維持
+    monster.sub_align = old_sub_align;
+
+    // メッセージ表示
+    if (monster.ml) {
+        const auto new_name = monster_desc(this->player_ptr, monster, MD_INDEF_VISIBLE);
+        msg_format(_("%sは%sに変身した！", "%s^ transforms into %s!"),
+            old_name.data(), new_name.data());
+    }
+
+    // 再描画フラグを設定
+    this->set_redraw();
+    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
+
+    // モンスターの情報を更新
+    update_monster(this->player_ptr, this->m_idx, true);
+
+    return true;
 }

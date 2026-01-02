@@ -42,6 +42,7 @@
 #include "player/player-skill.h"
 #include "player/special-defense-types.h"
 #include "spell-kind/spells-random.h"
+#include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-hex.h"
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
@@ -108,7 +109,7 @@ void process_player(PlayerType *player_ptr)
 {
     if (player_ptr->hack_mutation) {
         msg_print(_("何か変わった気がする！", "You feel different!"));
-        (void)gain_mutation(player_ptr, 0);
+        (void)gain_mutation(*player_ptr, 0);
         player_ptr->hack_mutation = false;
     }
 
@@ -136,7 +137,7 @@ void process_player(PlayerType *player_ptr)
         WorldTurnProcessor(player_ptr).print_cheat_position();
 
     } else if (!(load && player_ptr->energy_need <= 0)) {
-        player_ptr->energy_need -= speed_to_energy(player_ptr->pspeed);
+        player_ptr->energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
     }
 
     if (player_ptr->energy_need > 0) {
@@ -154,7 +155,7 @@ void process_player(PlayerType *player_ptr)
 
     if (player_ptr->resting < 0) {
         if (player_ptr->resting == COMMAND_ARG_REST_FULL_HEALING) {
-            if ((player_ptr->chp == player_ptr->mhp) && (player_ptr->csp >= player_ptr->msp)) {
+            if ((player_ptr->hp == player_ptr->maxhp) && (player_ptr->csp >= player_ptr->msp)) {
                 set_action(player_ptr, ACTION_NONE);
             }
         } else if (player_ptr->resting == COMMAND_ARG_REST_UNTIL_DONE) {
@@ -382,8 +383,8 @@ void process_player(PlayerType *player_ptr)
 
             if (PlayerClass(player_ptr).equals(PlayerClassType::IMITATOR)) {
                 auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
-                if (static_cast<int>(mane_data->mane_list.size()) > (player_ptr->lev > 44 ? 3 : player_ptr->lev > 29 ? 2
-                                                                                                                     : 1)) {
+                if (static_cast<int>(mane_data->mane_list.size()) > (player_ptr->level > 44 ? 3 : player_ptr->level > 29 ? 2
+                                                                                                                         : 1)) {
                     mane_data->mane_list.pop_front();
                 }
 
@@ -438,7 +439,7 @@ void process_player(PlayerType *player_ptr)
 void process_upkeep_with_speed(PlayerType *player_ptr)
 {
     if (!load && player_ptr->enchant_energy_need > 0 && !player_ptr->leaving) {
-        player_ptr->enchant_energy_need -= speed_to_energy(player_ptr->pspeed);
+        player_ptr->enchant_energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
     }
 
     if (player_ptr->enchant_energy_need > 0) {
@@ -448,6 +449,14 @@ void process_upkeep_with_speed(PlayerType *player_ptr)
     while (player_ptr->enchant_energy_need <= 0) {
         if (!load) {
             check_music(player_ptr);
+        }
+
+        if (!load) {
+            check_emission(player_ptr);
+        }
+
+        if (!load) {
+            check_demigod(player_ptr);
         }
 
         SpellHex spell_hex(player_ptr);

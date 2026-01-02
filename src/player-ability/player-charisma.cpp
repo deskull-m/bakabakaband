@@ -124,9 +124,9 @@ BIT_FLAGS PlayerCharisma::get_bad_flags()
 int16_t PlayerCharisma::set_exception_use_status(int16_t value)
 {
     if (this->player_ptr->muta.has(PlayerMutationType::ILL_NORM)) {
-        /* 10 to 18/90 charisma, guaranteed, based on level */
-        if (value < 8 + 2 * this->player_ptr->lev) {
-            value = 8 + 2 * this->player_ptr->lev;
+        /* 10.0 to 27.0 charisma, guaranteed, based on level */
+        if (value < 80 + 20 * this->player_ptr->level) {
+            value = 80 + 20 * this->player_ptr->level;
         }
     }
     return value;

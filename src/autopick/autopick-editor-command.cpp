@@ -529,7 +529,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         }
         const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
             player_ptr->race->title.en_string().data(), (*player_ptr->pclass_ref).title.en_string().data(),
-            player_ptr->lev);
+            player_ptr->level);
         tb->cx = 0;
         insert_return_code(tb);
         tb->lines_list[tb->cy] = std::make_unique<std::string>(expression);

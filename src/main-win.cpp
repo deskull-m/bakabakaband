@@ -148,6 +148,16 @@ static bool is_main_term(term_data *td)
     return td == &data[0];
 }
 static term_data *my_td; //!< Hack -- global "window creation" pointer
+
+/*!
+ * @brief メインウィンドウのHWNDを取得する
+ * @return メインウィンドウのHWND
+ */
+HWND get_main_window_hwnd(void)
+{
+    return data[0].w;
+}
+
 POINT normsize; //!< Remember normal size of main window when maxmized
 
 /*
@@ -2444,7 +2454,7 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         }
 
         msg_flag = false;
-        if (p_ptr->chp < 0) {
+        if (p_ptr->hp < 0) {
             p_ptr->is_dead_ = false;
         }
         exe_write_diary(*p_ptr->current_floor_ptr, DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "---- Save and Exit Game ----"));

@@ -21,7 +21,7 @@
 bool cleansing_nova(PlayerType *player_ptr, bool magic, bool powerful)
 {
     auto ident = dispel_evil(player_ptr, powerful ? 225 : 150);
-    const auto k = 3 * player_ptr->lev;
+    const auto k = 3 * player_ptr->level;
     const short turns = randint1(25) + k;
     BodyImprovement improvement(player_ptr);
     if (magic) {

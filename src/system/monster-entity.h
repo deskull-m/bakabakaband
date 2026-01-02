@@ -10,6 +10,7 @@
 #include "util/point-2d.h"
 #include <map>
 #include <string>
+#include <vector>
 
 /*!
  * @brief Monster information, for a specific monster.
@@ -21,6 +22,8 @@
 constexpr int MONSTER_MAXHP = 30000; //!< モンスターの最大HP
 
 enum class MonraceId : int16_t;
+enum class PlayerRaceType;
+enum class PlayerClassType : short;
 class FloorType;
 class MonraceDefinition;
 class MonsterEntityWriter;
@@ -33,8 +36,6 @@ public:
     MonsterEntity(const MonsterEntity &) = default;
     MonsterEntity &operator=(const MonsterEntity &) = default;
 
-    MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
-    MonraceId ap_r_idx{}; /*!< モンスターの外見種族ID（あやしい影、たぬき、ジュラル星人誤認などにより変化する）Monster race appearance index */
     FloorType *current_floor_ptr{}; /*!< 所在フロアID（現状はFloorType構造体によるオブジェクトは1つしかないためソースコード設計上の意義以外はない）*/
 
 /* Sub-alignment flags for neutral monsters */
@@ -43,17 +44,12 @@ public:
 #define SUB_ALIGN_GOOD 0x0002 /*!< モンスターのサブアライメント:悪 */
     BIT_FLAGS8 sub_align{}; /*!< 中立属性のモンスターが召喚主のアライメントに従い一時的に立っている善悪陣営 / Sub-alignment for a neutral monster */
     AllianceType alliance_idx; /*!< 現在の所属アライアンス */
+    std::vector<PlayerRaceType> equivalent_player_races{}; /*!< モンスターのフラグに基づいて対応するプレイヤー種族IDリスト */
+    std::vector<PlayerClassType> equivalent_player_classes{}; /*!< モンスターのフラグに基づいて対応するプレイヤー職業IDリスト */
 
-    POSITION fy{}; /*!< 所在グリッドY座標 / Y location on map */
-    POSITION fx{}; /*!< 所在グリッドX座標 / X location on map */
-    int hp{}; /*!< 現在のHP / Current Hit points */
-    int maxhp{}; /*!< 現在の最大HP(衰弱効果などにより低下したものの反映) / Max Hit points */
-    int max_maxhp{}; /*!< 生成時の初期最大HP / Max Max Hit points */
-    int dealt_damage{}; /*!< これまでに蓄積して与えてきたダメージ / Sum of damages dealt by player */
     int death_count{}; /*!< 自壊するまでの残りターン数 */
     std::map<MonsterTimedEffect, short> mtimed; /*!< 与えられた時限効果の残りターン / Timed status counter */
-    byte mspeed{}; /*!< モンスターの個体加速値 / Monster "speed" */
-    ACTION_ENERGY energy_need{}; /*!< モンスター次ターンまでに必要な行動エネルギー / Monster "energy" */
+
     POSITION cdis{}; /*!< 現在のプレイヤーから距離(逐一計算を避けるためのテンポラリ変数) Current dis from player */
     EnumClassFlagGroup<MonsterTemporaryFlagType> mflag{}; /*!< モンスター個体に与えられた特殊フラグ1 (セーブ不要) / Extra monster flags */
     EnumClassFlagGroup<MonsterConstantFlagType> mflag2{}; /*!< モンスター個体に与えられた特殊フラグ2 (セーブ必要) / Extra monster flags */
@@ -61,13 +57,13 @@ public:
     ObjectIndexList hold_o_idx_list{}; /*!< モンスターが所持しているアイテムのリスト / Object list being held (if any) */
     POSITION target_y{}; /*!< モンスターの攻撃目標対象Y座標 / Can attack !los player */
     POSITION target_x{}; /*!< モンスターの攻撃目標対象X座標 /  Can attack !los player */
-    std::string nickname{}; /*!< ペットに与えられた名前 / Monster's Nickname */
-    EXP exp{}; /*!< モンスターの現在所持経験値 */
-    int16_t level{}; /*!< モンスターの個体レベル（0の場合は種族レベルを使用） / Monster's individual level (0 = use race level) */
 
     /* TODO: クローン、ペット、有効化は意義が異なるので別変数に切り離すこと。save/loadのバージョン更新が面倒そうだけど */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" - Some bit-flags for the "smart" field */
     MONSTER_IDX parent_m_idx{}; /*!< 召喚主のモンスターID */
+    MonraceId transform_r_idx{}; /*!< 変身先モンスター種族ID */
+    PERCENTAGE transform_hp_threshold{}; /*!< 変身するHP閾値(最大HPの%) */
+    bool has_transformed{}; /*!< 既に変身済みかどうかのフラグ */
 
     static bool check_sub_alignments(const byte sub_align1, const byte sub_align2);
 
@@ -78,7 +74,6 @@ public:
     bool is_hostile() const;
     bool is_hostile_to_melee(const MonsterEntity &other) const;
     bool is_hostile_align(const byte other_sub_align) const;
-    bool is_named() const;
     bool is_named_pet() const;
     bool is_original_ap() const;
     bool is_mimicry() const;
@@ -103,8 +98,10 @@ public:
     bool is_fearful() const;
     bool is_invulnerable() const;
     byte get_temporary_speed() const;
+    int get_speed() const override;
     bool has_living_flag(bool is_apperance = false) const;
-    bool is_undead() const;
+    bool has_demon_flag(bool is_apperance = false) const;
+    bool has_undead_flag(bool is_apperance = false) const;
     bool is_explodable() const;
     bool has_parent() const;
     std::string get_died_message() const;
@@ -128,18 +125,19 @@ public:
     void set_target(const Pos2D &pos);
     void reset_target();
     void set_friendly();
+    void initialize_equivalent_player_races();
+    void initialize_equivalent_player_classes();
 
     // CreatureEntityインターフェースの実装
     POSITION get_x() const override;
     POSITION get_y() const override;
     int get_current_hp() const override;
     int get_max_hp() const override;
-    int get_speed() const override;
+
     bool is_valid() const override;
     bool is_dead() const override;
     FloorType *get_floor() const override;
-    ACTION_ENERGY get_energy_need() const override;
-    void set_energy_need(ACTION_ENERGY energy) override;
+
     int get_level() const override;
     bool is_player() const override;
 

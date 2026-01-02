@@ -53,9 +53,9 @@ void gain_attack_skill_exp(PlayerType *player_ptr, short &exp, const GainAmountL
         gain_amount = calc_gain_amount(PlayerSkillRank::UNSKILLED, WEAPON_EXP_BEGINNER);
     } else if (exp < WEAPON_EXP_SKILLED) {
         gain_amount = calc_gain_amount(PlayerSkillRank::BEGINNER, WEAPON_EXP_SKILLED);
-    } else if ((exp < WEAPON_EXP_EXPERT) && (player_ptr->lev > 19)) {
+    } else if ((exp < WEAPON_EXP_EXPERT) && (player_ptr->level > 19)) {
         gain_amount = calc_gain_amount(PlayerSkillRank::SKILLED, WEAPON_EXP_EXPERT);
-    } else if ((exp < WEAPON_EXP_MASTER) && (player_ptr->lev > 34)) {
+    } else if ((exp < WEAPON_EXP_MASTER) && (player_ptr->level > 34)) {
         gain_amount = calc_gain_amount(PlayerSkillRank::EXPERT, WEAPON_EXP_MASTER);
     }
 
@@ -66,7 +66,7 @@ void gain_attack_skill_exp(PlayerType *player_ptr, short &exp, const GainAmountL
 void gain_spell_skill_exp_aux(PlayerType *player_ptr, short &exp, const GainAmountList &gain_amount_list, int spell_level)
 {
     const auto dlev = player_ptr->current_floor_ptr->dun_level;
-    const auto plev = player_ptr->lev;
+    const auto plev = player_ptr->level;
 
     auto gain_amount = 0;
     auto calc_gain_amount = [&gain_amount_list, exp](PlayerSkillRank rank, int next_rank_exp) {

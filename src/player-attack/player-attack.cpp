@@ -113,7 +113,7 @@ static void attack_classify(PlayerType *player_ptr, player_attack_type *pa_ptr)
 static void get_bare_knuckle_exp(PlayerType *player_ptr, player_attack_type *pa_ptr)
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if ((monrace.level + 10) <= player_ptr->lev) {
+    if ((monrace.level + 10) <= player_ptr->level) {
         return;
     }
 
@@ -146,7 +146,7 @@ static void get_attack_exp(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    if (!o_ptr->is_melee_weapon() || ((monrace.level + 10) <= player_ptr->lev)) {
+    if (!o_ptr->is_melee_weapon() || ((monrace.level + 10) <= player_ptr->level)) {
         return;
     }
 
@@ -191,7 +191,7 @@ static chaotic_effect select_chaotic_effect(PlayerType *player_ptr, player_attac
     }
 
     if (one_in_(10)) {
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     if (randint1(5) < 3) {
@@ -222,7 +222,7 @@ static MagicalBrandEffectType select_magical_brand_effect(PlayerType *player_ptr
     }
 
     if (one_in_(10)) {
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     if (one_in_(5)) {
@@ -488,6 +488,7 @@ static void apply_actual_attack(
     pa_ptr->chaos_effect = select_chaotic_effect(player_ptr, pa_ptr);
     pa_ptr->magical_effect = select_magical_brand_effect(player_ptr, pa_ptr);
     decide_blood_sucking(player_ptr, pa_ptr);
+    decide_exorcism(player_ptr, pa_ptr);
 
     bool vorpal_cut = (pa_ptr->flags.has(TR_VORPAL) || SpellHex(player_ptr).is_spelling_specific(HEX_RUNESWORD)) && (randint1(vorpal_chance * 3 / 2) == 1) && !is_zantetsu_nullified;
     calc_attack_damage(player_ptr, pa_ptr, do_quake, vorpal_cut, vorpal_chance);
@@ -544,7 +545,7 @@ void exe_player_attack_to_monster(PlayerType *player_ptr, POSITION y, POSITION x
     auto pa_ptr = &tmp_attack;
 
     const auto is_human = pa_ptr->r_ptr->symbol_char_is_any_of("p");
-    const auto is_lowlevel = (pa_ptr->r_ptr->level < (player_ptr->lev - 15));
+    const auto is_lowlevel = (pa_ptr->r_ptr->level < (player_ptr->level - 15));
 
     attack_classify(player_ptr, pa_ptr);
     get_attack_exp(player_ptr, pa_ptr);
@@ -595,7 +596,7 @@ void exe_player_attack_to_monster(PlayerType *player_ptr, POSITION y, POSITION x
     }
 
     if ((pa_ptr->drain_left != MAX_VAMPIRIC_DRAIN) && one_in_(4)) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
     }
 
     cause_earthquake(player_ptr, pa_ptr, do_quake, y, x);

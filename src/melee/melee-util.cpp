@@ -19,14 +19,13 @@ mam_type *initialize_mam_type(PlayerType *player_ptr, mam_type *mam_ptr, MONSTER
     mam_ptr->see_m = is_seen(player_ptr, *mam_ptr->m_ptr);
     mam_ptr->see_t = is_seen(player_ptr, *mam_ptr->t_ptr);
     mam_ptr->see_either = mam_ptr->see_m || mam_ptr->see_t;
-    mam_ptr->y_saver = mam_ptr->t_ptr->fy;
-    mam_ptr->x_saver = mam_ptr->t_ptr->fx;
+    mam_ptr->y_saver = mam_ptr->t_ptr->y;
+    mam_ptr->x_saver = mam_ptr->t_ptr->x;
     mam_ptr->explode = false;
     mam_ptr->touched = false;
 
     const auto &monrace = mam_ptr->m_ptr->get_monrace();
-    const auto &monrace_target = mam_ptr->t_ptr->get_monrace();
-    mam_ptr->ac = monrace_target.ac;
+    mam_ptr->ac = mam_ptr->t_ptr->get_ac();
     mam_ptr->rlev = ((monrace.level >= 1) ? monrace.level : 1);
     mam_ptr->blinked = false;
     mam_ptr->do_silly_attack = (one_in_(2) && player_ptr->effects()->hallucination().is_hallucinated());

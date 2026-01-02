@@ -212,7 +212,12 @@ const mbe_info_type mbe_info[static_cast<int>(RaceBlowEffectType::MAX)] = {
     {
         40,
         AttributeType::MONSTER_MELEE,
-    }, /* DESTROY_ASSHOLE */
+    },
+    /* DESTROY_ASSHOLE */ {
+        60,
+        AttributeType::MONSTER_MELEE,
+    },
+    /* GROIN_ATTACK */
 };
 
 /*!
@@ -465,6 +470,8 @@ std::string get_blow_effect_name(RaceBlowEffectType effect)
         return "閉じ込められた";
     case RaceBlowEffectType::DESTROY_ASSHOLE:
         return "肛門を破壊された";
+    case RaceBlowEffectType::GROIN_ATTACK:
+        return "股間を打たれた";
     case RaceBlowEffectType::MAX:
         return "訳が分からなかった";
     }
@@ -565,6 +572,8 @@ std::string get_blow_effect_tag(RaceBlowEffectType effect)
         return "LOCKUP";
     case RaceBlowEffectType::DESTROY_ASSHOLE:
         return "DESTROY_ASSHOLE";
+    case RaceBlowEffectType::GROIN_ATTACK:
+        return "GROIN_ATTACK";
     case RaceBlowEffectType::MAX:
         return "UNKNOWN";
     }

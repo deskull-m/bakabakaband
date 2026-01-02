@@ -76,12 +76,12 @@ static int32_t get_autoroller_prob(int *minval)
     tot = 0;
 
     /* calc. prob. */
-    for (ii[0] = tval[0]; ii[0] < 18; ii[0]++) {
-        for (ii[1] = tval[1]; ii[1] < 18; ii[1]++) {
-            for (ii[2] = tval[2]; ii[2] < 18; ii[2]++) {
-                for (ii[3] = tval[3]; ii[3] < 18; ii[3]++) {
-                    for (ii[4] = tval[4]; ii[4] < 18; ii[4]++) {
-                        for (ii[5] = tval[5]; ii[5] < 18; ii[5]++) {
+    for (ii[0] = tval[0]; ii[0] < 180; ii[0] += 10) {
+        for (ii[1] = tval[1]; ii[1] < 180; ii[1] += 10) {
+            for (ii[2] = tval[2]; ii[2] < 180; ii[2] += 10) {
+                for (ii[3] = tval[3]; ii[3] < 180; ii[3] += 10) {
+                    for (ii[4] = tval[4]; ii[4] < 180; ii[4] += 10) {
+                        for (ii[5] = tval[5]; ii[5] < 180; ii[5] += 10) {
                             tot = ii[0] + ii[1] + ii[2] + ii[3] + ii[4] + ii[5];
 
                             if (tot > 86) {
@@ -138,26 +138,26 @@ static void decide_initial_stat(PlayerType *player_ptr, int *cval)
     }
 
     if (cval[A_CON] == 0) {
-        cval[A_CON] = 17;
+        cval[A_CON] = 170; // 17.0の新形式
         if (is_magic_user) {
             num_17++;
         }
     }
 
     if (cval[A_STR] == 0) {
-        cval[A_STR] = num_17 == 2 ? 16 : 17;
+        cval[A_STR] = num_17 == 2 ? 160 : 170; // 16.0 or 17.0の新形式
         if (is_magic_user && num_17 < 2) {
             num_17++;
         }
     }
 
     if (cval[A_DEX] == 0) {
-        cval[A_DEX] = 17 - std::max(0, num_17 - 1);
+        cval[A_DEX] = (17 - std::max(0, num_17 - 1)) * 10; // 新形式
     }
 
     for (int i = 0; i < A_MAX; i++) {
         if (cval[i] == 0) {
-            cval[i] = 8;
+            cval[i] = 80; // 8.0の新形式
         }
     }
 }
@@ -172,23 +172,13 @@ static void decide_initial_stat(PlayerType *player_ptr, int *cval)
 static std::string cursor_of_adjusted_stat(PlayerType *player_ptr, const int *cval, int cs)
 {
     auto j = player_ptr->race->r_adj[cs] + (*player_ptr->pclass_ref).c_adj[cs] + (*player_ptr->personality).a_adj[cs];
-    auto m = adjust_stat(17, j);
-    std::string maxv;
-    if (m > 18) {
-        maxv = format("18/%02d", (m - 18));
-    } else {
-        maxv = format("%2d", m);
-    }
+    auto m = adjust_stat(170, j); // 17.0 の新形式
+    auto maxv = format("%4.1f", m / 10.0);
 
     m = adjust_stat(cval[cs], j);
-    std::string inp;
-    if (m > 18) {
-        inp = format("18/%02d", (m - 18));
-    } else {
-        inp = format("%2d", m);
-    }
+    auto inp = format("%4.1f", m / 10.0);
 
-    return format("%6s       %2d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], player_ptr->race->r_adj[cs], (*player_ptr->pclass_ref).c_adj[cs], (*player_ptr->personality).a_adj[cs], inp.data(), maxv.data());
+    return format("%6s     %4.1f   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs] / 10.0, player_ptr->race->r_adj[cs], (*player_ptr->pclass_ref).c_adj[cs], (*player_ptr->personality).a_adj[cs], inp.data(), maxv.data());
 }
 
 /*!

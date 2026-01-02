@@ -104,7 +104,7 @@ void do_cmd_pet_dismiss(PlayerType *player_ptr)
             constexpr auto mes = _("%sを放しますか？ [Yes/No/Unnamed (%d体)]", "Dismiss %s? [Yes/No/Unnamed (%d remain)]");
             msg_format(mes, friend_name.data(), num_pet_index - i);
             if (monster.ml) {
-                move_cursor_relative(monster.fy, monster.fx);
+                move_cursor_relative(monster.y, monster.x);
             }
 
             while (true) {
@@ -181,8 +181,13 @@ void do_cmd_pet_dismiss(PlayerType *player_ptr)
  * @param force 強制的に騎乗/下馬するならばTRUE
  * @return 騎乗/下馬できたらTRUE
  */
-bool do_cmd_riding(PlayerType *player_ptr, bool force)
+bool do_cmd_riding(CreatureEntity &creature, bool force)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     const auto dir = get_direction(player_ptr);
     if (!dir) {
         return false;
@@ -193,7 +198,7 @@ bool do_cmd_riding(PlayerType *player_ptr, bool force)
 
     PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (player_ptr->riding) {
+    if (creature.riding) {
         /* Skip non-empty grids */
         if (!can_player_ride_pet(player_ptr, grid, false)) {
             msg_print(_("そちらには降りられません。", "You cannot go that direction."));
@@ -254,7 +259,7 @@ bool do_cmd_riding(PlayerType *player_ptr, bool force)
 
             return false;
         }
-        if (monster.get_monrace().level > randint1((player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 50 + player_ptr->lev / 2 + 20))) {
+        if (monster.get_monrace().level > randint1((player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 50 + player_ptr->level / 2 + 20))) {
             msg_print(_("うまく乗れなかった。", "You failed to ride."));
             PlayerEnergy(player_ptr).set_player_turn_energy(100);
             return false;
@@ -332,7 +337,7 @@ static void do_name_pet(PlayerType *player_ptr)
     auto old_name = false;
     std::string initial_name("");
     if (monster.is_named()) {
-        initial_name = monster.nickname;
+        initial_name = monster.name;
         old_name = true;
     }
 
@@ -342,7 +347,7 @@ static void do_name_pet(PlayerType *player_ptr)
     }
 
     if (!new_name->empty()) {
-        monster.nickname = *new_name;
+        monster.name = *new_name;
         if (record_named_pet) {
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_NAME, monster_desc(player_ptr, monster, MD_INDEF_VISIBLE));
         }
@@ -354,7 +359,7 @@ static void do_name_pet(PlayerType *player_ptr)
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_UNNAME, monster_desc(player_ptr, monster, MD_INDEF_VISIBLE));
     }
 
-    monster.nickname.clear();
+    monster.name.clear();
 }
 
 /*!
@@ -790,7 +795,7 @@ void do_cmd_pet(PlayerType *player_ptr)
     }
 
     case PET_RIDING: {
-        (void)do_cmd_riding(player_ptr, false);
+        (void)do_cmd_riding(static_cast<CreatureEntity &>(*player_ptr), false);
         break;
     }
 

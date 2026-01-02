@@ -113,15 +113,15 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 
     rfu.reset_flags(flags_srf);
     if (!o_ptr->is_aware()) {
-        chg_virtue(this->player_ptr, Virtue::PATIENCE, -1);
-        chg_virtue(this->player_ptr, Virtue::CHANCE, 1);
-        chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
     }
 
     o_ptr->mark_as_tried();
     if (ident && !o_ptr->is_aware()) {
         object_aware(this->player_ptr, *o_ptr);
-        gain_exp(this->player_ptr, (item_level + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
+        gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
     }
 
     static constexpr auto flags_swrf = {

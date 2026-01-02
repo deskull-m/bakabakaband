@@ -317,7 +317,7 @@ static AttributeType get_element_spells_type(PlayerType *player_ptr, int n)
     const auto &realm = element_types.at(player_ptr->element_realm);
     const auto t = realm.type.at(n);
     if (realm.extra.find(t) != realm.extra.end()) {
-        if (evaluate_percent(player_ptr->lev * 2)) {
+        if (evaluate_percent(player_ptr->level * 2)) {
             return realm.extra.at(t);
         }
     }
@@ -393,7 +393,7 @@ static mind_type get_elemental_info(PlayerType *player_ptr, int spell_idx)
  */
 static std::string get_element_effect_info(PlayerType *player_ptr, int spell_idx)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     auto spell = i2enum<ElementSpells>(spell_idx);
     int dam = 0;
 
@@ -409,7 +409,7 @@ static std::string get_element_effect_info(PlayerType *player_ptr, int spell_idx
     case ElementSpells::BALL_1ST:
         return format(" %s%d", KWD_DAM, 55 + plev);
     case ElementSpells::BREATH_2ND:
-        dam = p_ptr->chp / 2;
+        dam = p_ptr->hp / 2;
         return format(" %s%d", KWD_DAM, (dam > 150) ? 150 : dam);
     case ElementSpells::ANNIHILATE:
         return format(" %s%d", _("効力:", "pow "), 50 + plev);
@@ -424,7 +424,7 @@ static std::string get_element_effect_info(PlayerType *player_ptr, int spell_idx
     case ElementSpells::STORM_2ND:
         return format(" %s%d", KWD_DAM, 115 + plev * 5 / 2);
     case ElementSpells::BREATH_1ST:
-        return format(" %s%d", KWD_DAM, p_ptr->chp * 2 / 3);
+        return format(" %s%d", KWD_DAM, p_ptr->hp * 2 / 3);
     case ElementSpells::STORM_3ND:
         return format(" %s%d", KWD_DAM, 300 + plev * 5);
     default:
@@ -443,7 +443,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto spell = i2enum<ElementSpells>(spell_idx);
     const auto &power = element_powers.at(spell);
-    const auto plev = player_ptr->lev;
+    const auto plev = player_ptr->level;
     switch (spell) {
     case ElementSpells::BOLT_1ST: {
         const auto dir = get_aim_dir(player_ptr);
@@ -515,7 +515,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
             return false;
         }
 
-        const auto dam = std::min(150, player_ptr->chp / 2);
+        const auto dam = std::min(150, player_ptr->hp / 2);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
         if (fire_breath(player_ptr, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
@@ -613,7 +613,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
             return false;
         }
 
-        const auto dam = player_ptr->chp * 2 / 3;
+        const auto dam = player_ptr->hp * 2 / 3;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
         (void)fire_breath(player_ptr, typ, dir, dam, 3);
         return true;
@@ -644,7 +644,7 @@ static PERCENTAGE decide_element_chance(PlayerType *player_ptr, mind_type spell)
 {
     PERCENTAGE chance = spell.fail;
 
-    chance -= 3 * (player_ptr->lev - spell.min_lev);
+    chance -= 3 * (player_ptr->level - spell.min_lev);
     chance += player_ptr->to_m_chance;
     chance -= 3 * (adj_mag_stat[player_ptr->stat_index[A_WIS]] - 1);
 
@@ -698,7 +698,7 @@ bool get_element_power(PlayerType *player_ptr, SPELL_IDX *sn, bool only_browse)
     int num = 0;
     TERM_LEN y = 1;
     TERM_LEN x = 10;
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     bool flag, redraw;
     int menu_line = (use_menu ? 1 : 0);
 
@@ -872,7 +872,7 @@ static bool try_cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx, 
     sound(SoundKind::FAIL);
 
     if (randint1(100) < chance / 2) {
-        int plev = player_ptr->lev;
+        int plev = player_ptr->level;
         msg_print(_("元素の力が制御できない氾流となって解放された！", "The elemental power surges from you in an uncontrollable torrent!"));
         const auto element = get_element_types(player_ptr->element_realm)[0];
         constexpr auto flags = PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
@@ -924,7 +924,7 @@ void do_cmd_element(PlayerType *player_ptr)
         player_ptr->csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, -10);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);
             msg_print(_("体を悪くしてしまった！", "You have damaged your health!"));
@@ -983,7 +983,7 @@ void display_element_spell_list(PlayerType *player_ptr, int y, int x)
     int i;
     for (i = 0; i < spell_max; i++) {
         const auto spell = get_elemental_info(player_ptr, i);
-        if (spell.min_lev > player_ptr->lev) {
+        if (spell.min_lev > player_ptr->level) {
             break;
         }
 
@@ -1090,7 +1090,7 @@ ProcessResult effect_monster_elemental_genocide(PlayerType *player_ptr, EffectMo
             msg_format(_("%sは消滅した！", "%s^ disappeared!"), em_ptr->m_name);
         }
         em_ptr->dam = 0;
-        chg_virtue(player_ptr, Virtue::VITALITY, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
         return ProcessResult::PROCESS_TRUE;
     }
 
@@ -1113,7 +1113,7 @@ bool has_element_resist(PlayerType *player_ptr, ElementRealmType realm, PLAYER_L
         return false;
     }
 
-    return (player_ptr->element_realm == realm) && (player_ptr->lev >= lev);
+    return (player_ptr->element_realm == realm) && (player_ptr->level >= lev);
 }
 
 /*!
@@ -1292,7 +1292,7 @@ tl::optional<ElementRealmType> select_element_realm(PlayerType *player_ptr)
  */
 void switch_element_racial(PlayerType *player_ptr, rc_type *rc_ptr)
 {
-    auto plev = player_ptr->lev;
+    auto plev = player_ptr->level;
     rpi_type rpi;
     switch (player_ptr->element_realm) {
     case ElementRealmType::FIRE:
@@ -1396,7 +1396,7 @@ static bool is_target_grid_dark(const FloorType &floor, const Pos2D &pos)
             if (pos == pos_neighbor) {
                 continue;
             }
-            if (!floor.contains(pos_neighbor)) {
+            if (!floor.contains(pos_neighbor, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                 continue;
             }
 
@@ -1473,7 +1473,7 @@ static bool door_to_darkness(PlayerType *player_ptr, int distance)
  */
 bool switch_element_execution(PlayerType *player_ptr)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
 
     switch (player_ptr->element_realm) {
     case ElementRealmType::FIRE:

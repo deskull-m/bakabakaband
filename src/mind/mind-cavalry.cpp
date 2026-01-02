@@ -31,7 +31,7 @@ bool rodeo(PlayerType *player_ptr)
         return false;
     }
 
-    if (!do_cmd_riding(player_ptr, true)) {
+    if (!do_cmd_riding(static_cast<CreatureEntity &>(*player_ptr), true)) {
         return true;
     }
 
@@ -52,9 +52,9 @@ bool rodeo(PlayerType *player_ptr)
     if (rlev > 60) {
         rlev = 60 + (rlev - 60) / 2;
     }
-    if ((randint1(player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 120 + player_ptr->lev * 2 / 3) > rlev) && one_in_(2) &&
+    if ((randint1(player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 120 + player_ptr->level * 2 / 3) > rlev) && one_in_(2) &&
         !player_ptr->current_floor_ptr->inside_arena && !AngbandSystem::get_instance().is_phase_out() && monrace.misc_flags.has_not(MonsterMiscType::GUARDIAN) && monrace.misc_flags.has_not(MonsterMiscType::QUESTOR) &&
-        (rlev < player_ptr->lev * 3 / 2 + randint0(player_ptr->lev / 5))) {
+        (rlev < player_ptr->level * 3 / 2 + randint0(player_ptr->level / 5))) {
         msg_format(_("%sを手なずけた。", "You tame %s."), m_name.data());
         set_pet(player_ptr, monster);
     } else {

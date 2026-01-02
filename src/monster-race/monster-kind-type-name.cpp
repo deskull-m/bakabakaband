@@ -231,6 +231,30 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("ババア", "grandma");
     case MonsterKindType::PAPER:
         return _("紙で出来た", "made of paper");
+    case MonsterKindType::WOODEN:
+        return _("木で出来た", "made of wood");
+    case MonsterKindType::IRON:
+        return _("鉄で出来た", "made of iron");
+    case MonsterKindType::COPPER:
+        return _("銅で出来た", "made of copper");
+    case MonsterKindType::STONE:
+        return _("石で出来た", "made of stone");
+    case MonsterKindType::SILVER:
+        return _("銀で出来た", "made of silver");
+    case MonsterKindType::GOLD:
+        return _("金で出来た", "made of gold");
+    case MonsterKindType::MITHRIL:
+        return _("ミスリルで出来た", "made of mithril");
+    case MonsterKindType::ADAMANTITE:
+        return _("アダマンタイトで出来た", "made of adamantite");
+    case MonsterKindType::FECES:
+        return _("糞で出来た", "made of feces");
+    case MonsterKindType::FLESH:
+        return _("肉で出来た", "made of flesh");
+    case MonsterKindType::DARKSTEEL:
+        return _("ダークスティールで出来た", "made of darksteel");
+    case MonsterKindType::WARPSTONE:
+        return _("ワープストーンで出来た", "made of warpstone");
     case MonsterKindType::DEEPONE:
         return _("深きもの", "deep one");
     case MonsterKindType::PHYREXIAN:
@@ -279,6 +303,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("猪", "boar");
     case MonsterKindType::ARCHER:
         return _("アーチャー", "archer");
+    case MonsterKindType::GUNNER:
+        return _("ガンナー", "gunner");
     case MonsterKindType::SQUIRREL:
         return _("リス", "squirrel");
     case MonsterKindType::BARD:
@@ -287,6 +313,12 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("魔法少女", "magical girl");
     case MonsterKindType::WEREWOLF:
         return _("人狼", "werewolf");
+    case MonsterKindType::SMITH:
+        return _("鍛冶師", "smith");
+    case MonsterKindType::WHEEL:
+        return _("車輪", "wheel");
+    case MonsterKindType::GREAT_OLD_ONE:
+        return _("旧支配者", "Great Old One");
     case MonsterKindType::MAX:
         return _("不明", "unknown");
     }
@@ -518,6 +550,30 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "GRANDMA";
     case MonsterKindType::PAPER:
         return "PAPER";
+    case MonsterKindType::WOODEN:
+        return "WOODEN";
+    case MonsterKindType::IRON:
+        return "IRON";
+    case MonsterKindType::COPPER:
+        return "COPPER";
+    case MonsterKindType::STONE:
+        return "STONE";
+    case MonsterKindType::SILVER:
+        return "SILVER";
+    case MonsterKindType::GOLD:
+        return "GOLD";
+    case MonsterKindType::MITHRIL:
+        return "MITHRIL";
+    case MonsterKindType::ADAMANTITE:
+        return "ADAMANTITE";
+    case MonsterKindType::FECES:
+        return "FECES";
+    case MonsterKindType::FLESH:
+        return "FLESH";
+    case MonsterKindType::DARKSTEEL:
+        return "DARKSTEEL";
+    case MonsterKindType::WARPSTONE:
+        return "WARPSTONE";
     case MonsterKindType::DEEPONE:
         return "DEEPONE";
     case MonsterKindType::PHYREXIAN:
@@ -566,6 +622,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "BOAR";
     case MonsterKindType::ARCHER:
         return "ARCHER";
+    case MonsterKindType::GUNNER:
+        return "GUNNER";
     case MonsterKindType::SQUIRREL:
         return "SQUIRREL";
     case MonsterKindType::BARD:
@@ -574,6 +632,12 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "MAGICAL_GIRL";
     case MonsterKindType::WEREWOLF:
         return "WEREWOLF";
+    case MonsterKindType::SMITH:
+        return "SMITH";
+    case MonsterKindType::WHEEL:
+        return "WHEEL";
+    case MonsterKindType::GREAT_OLD_ONE:
+        return "GREAT_OLD_ONE";
     case MonsterKindType::MAX:
         return "UNKNOWN";
     }

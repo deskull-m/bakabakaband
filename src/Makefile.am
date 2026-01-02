@@ -5,6 +5,12 @@ AUTOMAKE_OPTIONS = foreign subdir-objects nostdinc
 bin_PROGRAMS = hengband
 
 hengband_SOURCES = \
+	achievement/achievement-checker.cpp achievement/achievement-checker.h \
+	achievement/achievement-definition.h \
+	achievement/achievement-definitions.cpp achievement/achievement-definitions.h \
+	achievement/achievement-tracker.cpp achievement/achievement-tracker.h \
+	achievement/achievement-types.h \
+	\
 	action/action-limited.cpp action/action-limited.h \
 	action/activation-execution.cpp action/activation-execution.h \
 	action/movement-execution.cpp action/movement-execution.h \
@@ -730,7 +736,9 @@ hengband_SOURCES = \
 	io-dump/dump-remover.cpp io-dump/dump-remover.h \
 	io-dump/dump-util.cpp io-dump/dump-util.h \
 	io-dump/player-status-dump.cpp io-dump/player-status-dump.h \
+	io-dump/player-status-dump-json.cpp io-dump/player-status-dump-json.h \
 	io-dump/random-art-info-dumper.cpp io-dump/random-art-info-dumper.h \
+	io-dump/score-sender.cpp io-dump/score-sender.h \
 	io-dump/special-class-dump.cpp io-dump/special-class-dump.h \
 	\
 	knowledge/knowledge-alliance.cpp knowledge/knowledge-alliance.h \
@@ -1437,6 +1445,7 @@ hengband_SOURCES = \
 	util/dice.cpp util/dice.h \
 	util/int-char-converter.h \
 	util/object-sort.cpp util/object-sort.h \
+	util/png-displayer.cpp util/png-displayer.h \
 	util/point-2d.h \
 	util/probability-table.h \
 	util/rng-xoshiro.cpp util/rng-xoshiro.h \

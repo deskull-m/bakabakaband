@@ -744,7 +744,7 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
     auto &floor = *player_ptr->current_floor_ptr;
     for (auto x = x1 - 2; x <= x2 + 2; x++) {
         const Pos2D pos(y1 - 2, x);
-        if (!floor.contains(pos)) {
+        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             break;
         }
 
@@ -754,7 +754,7 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
 
     for (auto x = x1 - 2; x <= x2 + 2; x++) {
         const Pos2D pos(y2 + 2, x);
-        if (!floor.contains(pos)) {
+        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             break;
         }
 
@@ -764,7 +764,7 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
 
     for (auto y = y1 - 2; y <= y2 + 2; y++) {
         const Pos2D pos(y, x1 - 2);
-        if (!floor.contains(pos)) {
+        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             break;
         }
 
@@ -774,7 +774,7 @@ static void build_mini_c_vault(PlayerType *player_ptr, const Pos2D &center, cons
 
     for (auto y = y1 - 2; y <= y2 + 2; y++) {
         const Pos2D pos(y, x2 + 2);
-        if (!floor.contains(pos)) {
+        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             break;
         }
 

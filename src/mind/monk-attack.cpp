@@ -8,10 +8,12 @@
 #include "mind/monk-attack.h"
 #include "cmd-action/cmd-attack.h"
 #include "combat/attack-criticality.h"
+#include "combat/slaying.h"
 #include "core/speed-table.h"
 #include "core/stuff-handler.h"
 #include "floor/geometry.h"
 #include "game-option/cheat-options.h"
+#include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "mind/mind-force-trainer.h"
@@ -75,7 +77,7 @@ static int calc_max_blow_selection_times(PlayerType *player_ptr)
 {
     PlayerClass pc(player_ptr);
     if (pc.monk_stance_is(MonkStanceType::BYAKKO)) {
-        return player_ptr->lev < 3 ? 1 : player_ptr->lev / 3;
+        return player_ptr->level < 3 ? 1 : player_ptr->level / 3;
     }
 
     if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
@@ -86,7 +88,7 @@ static int calc_max_blow_selection_times(PlayerType *player_ptr)
         return 1;
     }
 
-    return player_ptr->lev < 7 ? 1 : player_ptr->lev / 7;
+    return player_ptr->level < 7 ? 1 : player_ptr->level / 7;
 }
 
 /*!
@@ -108,7 +110,7 @@ static int select_blow(PlayerType *player_ptr, player_attack_type *pa_ptr, int m
             } else {
                 min_level = pa_ptr->ma_ptr->min_level;
             }
-        } while ((min_level > player_ptr->lev) || (randint1(player_ptr->lev) < pa_ptr->ma_ptr->chance));
+        } while ((min_level > player_ptr->level) || (randint1(player_ptr->level) < pa_ptr->ma_ptr->chance));
 
         const auto effects = player_ptr->effects();
         const auto is_stunned = effects->stun().is_stunned();
@@ -208,9 +210,9 @@ static void process_attack_vital_spot(PlayerType *player_ptr, player_attack_type
 
     if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + player_ptr->to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
         const auto is_unique = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
-        if (is_unique && (randint1(player_ptr->lev) > monrace.level) && (pa_ptr->m_ptr->mspeed > STANDARD_SPEED - 50)) {
+        if (is_unique && (randint1(player_ptr->level) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
             msg_format(_("%s^は足をひきずり始めた。", "You've hobbled %s."), pa_ptr->m_name);
-            pa_ptr->m_ptr->mspeed -= 10;
+            pa_ptr->m_ptr->speed -= 10;
         }
     }
 }
@@ -227,7 +229,7 @@ static void print_stun_effect(PlayerType *player_ptr, player_attack_type *pa_ptr
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (stun_effect && ((pa_ptr->attack_damage + player_ptr->to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
-        if (player_ptr->lev > randint1(monrace.level + resist_stun + 10)) {
+        if (player_ptr->level > randint1(monrace.level + resist_stun + 10)) {
             if (set_monster_stunned(player_ptr, pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
                 msg_format(_("%s^はフラフラになった。", "%s^ is stunned."), pa_ptr->m_name);
             } else {
@@ -249,9 +251,11 @@ void process_monk_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
     int max_blow_selection_times = calc_max_blow_selection_times(player_ptr);
     int min_level = select_blow(player_ptr, pa_ptr, max_blow_selection_times);
 
+    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto num = pa_ptr->ma_ptr->damage_dice.num + player_ptr->damage_dice_bonus[pa_ptr->hand].num;
     const auto sides = pa_ptr->ma_ptr->damage_dice.sides + player_ptr->damage_dice_bonus[pa_ptr->hand].sides;
-    pa_ptr->attack_damage = Dice::roll(num, sides);
+    pa_ptr->attack_damage = calc_attack_damage_with_slay(player_ptr, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
+
     if (player_ptr->special_attack & ATTACK_SUIKEN) {
         pa_ptr->attack_damage *= 2;
     }
@@ -259,7 +263,7 @@ void process_monk_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
     int stun_effect = 0;
     int special_effect = process_monk_additional_effect(pa_ptr, &stun_effect);
     WEIGHT weight = calc_monk_attack_weight(player_ptr);
-    pa_ptr->attack_damage = critical_norm(player_ptr, player_ptr->lev * weight, min_level, pa_ptr->attack_damage, player_ptr->to_h[0], HISSATSU_NONE);
+    pa_ptr->attack_damage = critical_norm(player_ptr, player_ptr->level * weight, min_level, pa_ptr->attack_damage, player_ptr->to_h[0], HISSATSU_NONE);
     process_attack_vital_spot(player_ptr, pa_ptr, &stun_effect, &resist_stun, special_effect);
     print_stun_effect(player_ptr, pa_ptr, stun_effect, resist_stun);
 }
@@ -294,6 +298,6 @@ bool double_attack(PlayerType *player_ptr)
         do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
     }
 
-    player_ptr->energy_need += ENERGY_NEED();
+    static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());
     return true;
 }

@@ -108,7 +108,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_STINKING_MIST: {
-        const Dice dice(1, player_ptr->lev / 2 + 5);
+        const Dice dice(1, player_ptr->level / 2 + 5);
         if (info) {
             return info_damage(dice);
         }
@@ -210,7 +210,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         }
 
         if (cast) {
-            int a = 3 - (player_ptr->pspeed - 100) / 10;
+            int a = 3 - (static_cast<CreatureEntity &>(*player_ptr).get_speed() - 100) / 10;
             byte r = 3 + randint1(3) + std::max(0, std::min(3, a));
 
             if (spell_hex.get_revenge_turn() > 0) {
@@ -281,7 +281,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_VAMP_MIST: {
-        const Dice dice(1, player_ptr->lev / 2 + 5);
+        const Dice dice(1, player_ptr->level / 2 + 5);
         if (info) {
             return info_damage(dice);
         }
@@ -327,7 +327,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_ANTI_TELE: {
-        power = player_ptr->lev * 3 / 2;
+        power = player_ptr->level * 3 / 2;
         if (info) {
             return info_power(power);
         }
@@ -360,7 +360,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_RECHARGE: {
-        power = player_ptr->lev * 2;
+        power = player_ptr->level * 2;
         if (info) {
             return info_power(power);
         }
@@ -485,7 +485,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_PAIN_TO_MANA: {
-        const Dice dice(1, player_ptr->lev * 3 / 2);
+        const Dice dice(1, player_ptr->level * 3 / 2);
         if (info) {
             return info_damage(dice);
         }
@@ -525,7 +525,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                 }
 
                 /* Check the experience */
-                check_experience(player_ptr);
+                check_experience(static_cast<CreatureEntity &>(*player_ptr));
 
                 flag = true;
             }
@@ -533,8 +533,8 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             auto &rfu = RedrawingFlagsUpdater::get_instance();
             for (i = A_STR; i < A_MAX; i++) {
                 if (player_ptr->stat_cur[i] < player_ptr->stat_max[i]) {
-                    if (player_ptr->stat_cur[i] < 18) {
-                        player_ptr->stat_cur[i]++;
+                    if (player_ptr->stat_cur[i] < 180) {
+                        player_ptr->stat_cur[i] += 10;
                     } else {
                         player_ptr->stat_cur[i] += 10;
                     }
@@ -580,7 +580,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                 return "";
             }
 
-            player_ptr->csp += (player_ptr->lev / 5) + randint1(player_ptr->lev / 5);
+            player_ptr->csp += (player_ptr->level / 5) + randint1(player_ptr->level / 5);
             if (o_ptr->get_flags().has(TR_TY_CURSE) || o_ptr->curse_flags.has(CurseTraitType::TY_CURSE)) {
                 player_ptr->csp += randint1(5);
             }
@@ -626,7 +626,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_STUN_MONSTERS: {
-        power = player_ptr->lev * 4;
+        power = player_ptr->level * 4;
         if (info) {
             return info_power(power);
         }
@@ -656,7 +656,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 
                 const auto p_pos = player_ptr->get_position();
                 const auto dist = Grid::calc_distance(*pos_target, p_pos);
-                if (!floor.is_empty_at(*pos_target) || (*pos_target == p_pos) || floor.get_grid(*pos_target).is_icky() || (dist > player_ptr->lev + 2)) {
+                if (!floor.is_empty_at(*pos_target) || (*pos_target == p_pos) || floor.get_grid(*pos_target).is_icky() || (dist > player_ptr->level + 2)) {
                     msg_print(_("そこには移動できない。", "Can not teleport to there."));
                     continue;
                 }
@@ -664,7 +664,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                 break;
             }
 
-            if (flag && randint0(player_ptr->lev * player_ptr->lev / 2)) {
+            if (flag && randint0(player_ptr->level * player_ptr->level / 2)) {
                 teleport_player_to(player_ptr, pos_target->y, pos_target->x, TELEPORT_SPONTANEOUS);
             } else {
                 msg_print(_("おっと！", "Oops!"));
@@ -676,7 +676,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 
         break;
     case HEX_ANTI_MAGIC: {
-        power = player_ptr->lev * 3 / 2;
+        power = player_ptr->level * 3 / 2;
         if (info) {
             return info_power(power);
         }
@@ -694,7 +694,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 
         if (cast) {
             byte r;
-            int a = 3 - (player_ptr->pspeed - 100) / 10;
+            int a = 3 - (static_cast<CreatureEntity &>(*player_ptr).get_speed() - 100) / 10;
             r = 1 + randint1(2) + std::max(0, std::min(3, a));
 
             if (spell_hex.get_revenge_turn() > 0) {

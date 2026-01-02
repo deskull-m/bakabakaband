@@ -89,12 +89,12 @@ void MonsterAttackPlayer::make_attack_normal()
     angband_strcpy(this->ddesc, monster_desc(this->player_ptr, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
     if (PlayerClass(this->player_ptr).samurai_stance_is(SamuraiStanceType::IAI)) {
         msg_format(_("相手が襲いかかる前に素早く武器を振るった。", "You took sen, drew and cut in one motion before %s moved."), this->m_name);
-        if (do_cmd_attack(this->player_ptr, this->m_ptr->fy, this->m_ptr->fx, HISSATSU_IAI)) {
+        if (do_cmd_attack(this->player_ptr, this->m_ptr->y, this->m_ptr->x, HISSATSU_IAI)) {
             return;
         }
     }
 
-    auto can_activate_kawarimi = randint0(55) < (this->player_ptr->lev * 3 / 5 + 20);
+    auto can_activate_kawarimi = randint0(55) < (this->player_ptr->level * 3 / 5 + 20);
     if (can_activate_kawarimi && kawarimi(this->player_ptr, true)) {
         return;
     }
@@ -143,7 +143,8 @@ bool MonsterAttackPlayer::check_no_blow()
 bool MonsterAttackPlayer::process_monster_blows()
 {
     const auto &monrace = this->m_ptr->get_monrace();
-    for (auto ap_cnt = 0; ap_cnt < MAX_NUM_BLOWS; ap_cnt++) {
+    const auto blow_count = static_cast<int>(monrace.blows.size());
+    for (auto ap_cnt = 0; ap_cnt < blow_count; ap_cnt++) {
         this->obvious = false;
         this->damage = 0;
         this->act = nullptr;
@@ -278,7 +279,7 @@ bool MonsterAttackPlayer::effect_protecion_from_evil()
     auto &monrace = this->m_ptr->get_monrace();
     auto is_protected = this->player_ptr->effects()->protection().is_protected();
     is_protected &= monrace.kind_flags.has(MonsterKindType::EVIL);
-    is_protected &= (randint0(100) + this->player_ptr->lev - this->rlev) > 50;
+    is_protected &= (randint0(100) + this->player_ptr->level - this->rlev) > 50;
     if (!is_protected) {
         return false;
     }
@@ -519,6 +520,10 @@ void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
     }
 
     auto &monrace = this->m_ptr->get_monrace();
+    if (ap_cnt >= static_cast<int>(monrace.r_blows.size())) {
+        monrace.r_blows.resize(ap_cnt + 1, 0);
+    }
+
     if (!this->obvious && (this->damage == 0) && (monrace.r_blows[ap_cnt] <= 10)) {
         return;
     }

@@ -473,3 +473,19 @@ bool cast_blue_summon_insect(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     return true;
 }
+
+bool cast_blue_summon_eldrazi(PlayerType *player_ptr, bmc_type *bmc_ptr)
+{
+    msg_print(_("エルドラージを召喚した！", "You summon Eldrazi!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 30; k++) {
+        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, bmc_ptr->summon_lev, SUMMON_ELDRAZI, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("エルドラージを制御できない！", "Cannot control Eldrazi!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}

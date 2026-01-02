@@ -156,12 +156,15 @@ void PlayerBasicStatistics::update_index_status()
 {
     int status = (int)this->ability_type;
     int index;
-    if (this->player_ptr->stat_use[status] <= 18) {
-        index = (this->player_ptr->stat_use[status] - 3);
-    } else if (this->player_ptr->stat_use[status] <= 18 + 219) {
-        index = (15 + (this->player_ptr->stat_use[status] - 18) / 10);
+    // 新形式: 30-400 -> 0-37のインデックスに変換
+    // 30-180: 0-15 (旧3-18相当)
+    // 190-400: 16-37 (旧18/10-18/220相当)
+    if (this->player_ptr->stat_use[status] <= 180) {
+        index = (this->player_ptr->stat_use[status] - 30) / 10;
+    } else if (this->player_ptr->stat_use[status] <= 400) {
+        index = 15 + (this->player_ptr->stat_use[status] - 180) / 10;
     } else {
-        index = (37);
+        index = 37;
     }
 
     if (this->player_ptr->stat_index[status] == index) {

@@ -345,7 +345,7 @@ bool process_warning(PlayerType *player_ptr, POSITION xx, POSITION yy)
         for (auto my = yy - warning_aware_range; my < yy + warning_aware_range + 1; my++) {
             const Pos2D pos_neighbor(my, mx);
             int dam_max0 = 0;
-            if (!floor.contains(pos_neighbor) || (Grid::calc_distance(pos_neighbor, pos) > warning_aware_range)) {
+            if (!floor.contains(pos_neighbor, FloorBoundary::OUTER_WALL_EXCLUSIVE) || (Grid::calc_distance(pos_neighbor, pos) > warning_aware_range)) {
                 continue;
             }
 
@@ -512,7 +512,7 @@ bool process_warning(PlayerType *player_ptr, POSITION xx, POSITION yy)
     if (dam_max > old_damage) {
         old_damage = dam_max * 3 / 2;
 
-        if (dam_max > player_ptr->chp / 2) {
+        if (dam_max > player_ptr->hp / 2) {
             auto *o_ptr = choose_warning_item(player_ptr);
             std::string item_name;
             if (o_ptr != nullptr) {

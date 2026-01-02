@@ -292,7 +292,7 @@ static void hissatsu_keiun_kininken(PlayerType *player_ptr, samurai_slaying_type
         return;
     }
 
-    if (samurai_slaying_ptr->m_ptr->is_undead()) {
+    if (samurai_slaying_ptr->m_ptr->has_undead_flag()) {
         if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
 
@@ -343,7 +343,7 @@ MULTIPLY mult_hissatsu(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &fla
 
 void concentration(PlayerType *player_ptr)
 {
-    int max_csp = std::max(player_ptr->msp * 4, player_ptr->lev * 5 + 5);
+    int max_csp = std::max(player_ptr->msp * 4, player_ptr->level * 5 + 5);
 
     if (total_friends) {
         msg_print(_("今はペットを操ることに集中していないと。", "Your pets demand all of your attention."));
@@ -392,7 +392,7 @@ bool choose_samurai_stance(PlayerType *player_ptr)
     screen_save();
     prt(_(" a) 型を崩す", " a) No Form"), 2, 20);
     for (auto i = 0U; i < samurai_stances.size(); i++) {
-        if (player_ptr->lev >= samurai_stances[i].min_level) {
+        if (player_ptr->level >= samurai_stances[i].min_level) {
             const auto buf = format(_(" %c) %sの型    %s", " %c) Stance of %-12s  %s"), I2A(i + 1), samurai_stances[i].desc, samurai_stances[i].info);
             prt(buf, 3 + i, 20);
         }
@@ -419,13 +419,13 @@ bool choose_samurai_stance(PlayerType *player_ptr)
         } else if ((choice == 'b') || (choice == 'B')) {
             new_stance = SamuraiStanceType::IAI;
             break;
-        } else if (((choice == 'c') || (choice == 'C')) && (player_ptr->lev > 29)) {
+        } else if (((choice == 'c') || (choice == 'C')) && (player_ptr->level > 29)) {
             new_stance = SamuraiStanceType::FUUJIN;
             break;
-        } else if (((choice == 'd') || (choice == 'D')) && (player_ptr->lev > 34)) {
+        } else if (((choice == 'd') || (choice == 'D')) && (player_ptr->level > 34)) {
             new_stance = SamuraiStanceType::KOUKIJIN;
             break;
-        } else if (((choice == 'e') || (choice == 'E')) && (player_ptr->lev > 39)) {
+        } else if (((choice == 'e') || (choice == 'E')) && (player_ptr->level > 39)) {
             new_stance = SamuraiStanceType::MUSOU;
             break;
         }
@@ -477,9 +477,9 @@ int calc_attack_quality(PlayerType *player_ptr, player_attack_type *pa_ptr)
         chance = std::max(chance * 3 / 2, chance + 60);
     }
 
-    int vir = virtue_number(player_ptr, Virtue::VALOUR);
-    if (vir != 0) {
-        chance += (player_ptr->virtues[vir - 1] / 10);
+    auto it = player_ptr->virtues.find(Virtue::VALOUR);
+    if (it != player_ptr->virtues.end()) {
+        chance += (it->second / 10);
     }
 
     return chance;
@@ -505,7 +505,7 @@ void mineuchi(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    int tmp = (10 + randint1(15) + player_ptr->lev / 5);
+    int tmp = (10 + randint1(15) + player_ptr->level / 5);
     if (pa_ptr->m_ptr->get_remaining_stun()) {
         msg_format(_("%sはひどくもうろうとした。", "%s is more dazed."), pa_ptr->m_name);
         tmp /= 2;
@@ -531,7 +531,7 @@ void musou_counterattack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     const auto m_target_name = monster_desc(player_ptr, *monap_ptr->m_ptr, 0);
     player_ptr->csp -= 7;
     msg_format(_("%s^に反撃した！", "You counterattacked %s!"), m_target_name.data());
-    do_cmd_attack(player_ptr, monap_ptr->m_ptr->fy, monap_ptr->m_ptr->fx, HISSATSU_COUNTER);
+    do_cmd_attack(player_ptr, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
     monap_ptr->fear = false;
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }

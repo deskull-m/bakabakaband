@@ -10,6 +10,7 @@
 
 class ItemEntity;
 class PlayerType;
+class CreatureEntity;
 
 int calc_weapon_weight_limit(PlayerType *player_ptr);
 int calc_bow_weight_limit(PlayerType *player_ptr);
@@ -20,7 +21,7 @@ int calc_weight_limit(PlayerType *player_ptr);
 void update_creature(PlayerType *player_ptr);
 bool player_has_no_spellbooks(PlayerType *player_ptr);
 
-void check_experience(PlayerType *player_ptr);
+void check_experience(CreatureEntity &creature);
 void wreck_the_pattern(PlayerType *player_ptr);
 std::string cnv_stat(int val);
 int16_t modify_stat_value(int value, int amount);

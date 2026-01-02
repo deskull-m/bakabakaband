@@ -34,7 +34,7 @@ static coordinate_candidate sweep_safe_coordinate(PlayerType *player_ptr, MONSTE
     const auto m_pos = monster.get_position();
     for (const auto &vec : offsets) {
         const auto pos = m_pos + vec;
-        if (!floor.contains(pos)) {
+        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             continue;
         }
 
@@ -120,13 +120,13 @@ static void sweep_hiding_candidate(
     const auto m_pos = monster.get_position();
     for (const auto &vec : offsets) {
         const auto pos = m_pos + vec;
-        if (!floor.contains(pos)) {
+        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             continue;
         }
         if (!monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0)) {
             continue;
         }
-        if (projectable(floor, p_pos, pos) || !clean_shot(player_ptr, monster.fy, monster.fx, pos.y, pos.x, false)) {
+        if (projectable(floor, p_pos, pos) || !clean_shot(player_ptr, monster.y, monster.x, pos.y, pos.x, false)) {
             continue;
         }
 

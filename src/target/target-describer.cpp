@@ -1,5 +1,6 @@
 #include "target/target-describer.h"
 #include "action/travel-execution.h"
+#include "cmd-visual/cmd-draw.h"
 #include "core/stuff-handler.h"
 #include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
@@ -107,7 +108,7 @@ bool show_gold_on_floor = false;
 static std::string evaluate_monster_exp(PlayerType *player_ptr, const MonsterEntity &monster)
 {
     const auto &monrace = monster.get_appearance_monrace();
-    if ((player_ptr->lev >= PY_MAX_LEVEL) || PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if ((player_ptr->level >= PY_MAX_LEVEL) || PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return "**";
     }
 
@@ -121,7 +122,7 @@ static std::string evaluate_monster_exp(PlayerType *player_ptr, const MonsterEnt
     uint32_t exp_mon_frac = 0;
     s64b_div(&exp_mon, &exp_mon_frac, 0, (player_ptr->max_plv + 2));
 
-    int32_t exp_adv = player_exp[player_ptr->lev - 1] * player_ptr->expfact;
+    int32_t exp_adv = player_exp[player_ptr->level - 1] * player_ptr->expfact;
     uint32_t exp_adv_frac = 0;
     s64b_div(&exp_adv, &exp_adv_frac, 0, 100);
 
@@ -223,7 +224,10 @@ static void describe_grid_monster(PlayerType *player_ptr, GridExamination *ge_pt
         prt(out_val, 0, 0);
         move_cursor_relative(ge_ptr->y, ge_ptr->x);
         ge_ptr->query = inkey();
-        if (ge_ptr->query != 'r') {
+        if (ge_ptr->query == 'c') {
+            do_cmd_player_status(static_cast<CreatureEntity *>(ge_ptr->m_ptr));
+            return;
+        } else if (ge_ptr->query != 'r') {
             return;
         }
 

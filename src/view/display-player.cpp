@@ -31,6 +31,8 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -87,8 +89,12 @@ static void display_player_basic_info(PlayerType *player_ptr)
 {
     display_player_name(player_ptr);
     display_player_one_line(ENTRY_SEX, sp_ptr->title, TERM_L_BLUE);
-    display_player_one_line(ENTRY_RACE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), TERM_L_BLUE);
-    display_player_one_line(ENTRY_CLASS, (*player_ptr->pclass_ref).title, TERM_L_BLUE);
+    if (player_ptr->race != nullptr) {
+        display_player_one_line(ENTRY_RACE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), TERM_L_BLUE);
+    }
+    if (player_ptr->pclass_ref != nullptr) {
+        display_player_one_line(ENTRY_CLASS, (*player_ptr->pclass_ref).title, TERM_L_BLUE);
+    }
 }
 
 /*!
@@ -280,8 +286,9 @@ static std::string decide_current_floor(PlayerType *player_ptr)
  * Mode 4 = mutations.
  * Mode 5 = ??? (コード上の定義より6で割った余りは5になりうるが元のコメントに記載なし).
  */
-tl::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
+tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
     auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr) || has_pervert_attraction(player_ptr)) && display_mutations;
     auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
     {
@@ -293,16 +300,40 @@ tl::optional<int> display_player(PlayerType *player_ptr, const int tmp_mode)
     }
 
     display_player_basic_info(player_ptr);
-    display_magic_realms(player_ptr);
+
+    // モンスターの場合も種族と職業を表示
+    if (!creature_ptr->is_player()) {
+        if (creature_ptr->race != nullptr) {
+            display_player_one_line(ENTRY_RACE, creature_ptr->race->title, TERM_L_BLUE);
+        }
+        if (creature_ptr->pclass_ref != nullptr) {
+            display_player_one_line(ENTRY_CLASS, creature_ptr->pclass_ref->title, TERM_L_BLUE);
+        }
+    }
+
+    if (creature_ptr->is_player()) {
+        display_magic_realms(player_ptr);
+    }
     if (PlayerClass(player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[player_ptr->patron].name, TERM_L_BLUE);
+    }
+
+    // 実際の種族と見かけの種族を表示
+    const auto &actual_monrace = MonraceList::get_instance().get_monrace(player_ptr->r_idx);
+    display_player_one_line(ENTRY_ACTUAL_RACE, actual_monrace.name, TERM_L_GREEN);
+    if (player_ptr->r_idx != player_ptr->ap_r_idx) {
+        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(player_ptr->ap_r_idx);
+        auto color = (player_ptr->r_idx == player_ptr->ap_r_idx) ? TERM_L_GREEN : TERM_YELLOW;
+        display_player_one_line(ENTRY_APPARENT_RACE, apparent_monrace.name, color);
     }
 
     display_phisique(player_ptr);
     display_player_stats(player_ptr);
     if (mode == 0) {
         display_player_middle(player_ptr);
-        display_player_various(player_ptr);
+        if (creature_ptr->is_player()) {
+            display_player_various(player_ptr);
+        }
         return tl::nullopt;
     }
 

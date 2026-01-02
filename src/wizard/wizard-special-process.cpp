@@ -322,7 +322,7 @@ static void wiz_change_status_max(PlayerType *player_ptr)
 void wiz_change_status(PlayerType *player_ptr)
 {
     const auto finalizer = util::make_finalizer([player_ptr]() {
-        check_experience(player_ptr);
+        check_experience(static_cast<CreatureEntity &>(*player_ptr));
         do_cmd_redraw(player_ptr);
     });
 
@@ -806,7 +806,7 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
             break;
 
         case 3:
-            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), player_ptr->name);
+            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), player_ptr->name.data());
             break;
 
         default:

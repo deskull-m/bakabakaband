@@ -6,6 +6,7 @@
  */
 
 #include "mind/mind-mirror-master.h"
+#include "action/travel-execution.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "effect/attribute-types.h"
@@ -238,11 +239,11 @@ bool binding_field(PlayerType *player_ptr, int dam)
 bool confusing_light(PlayerType *player_ptr)
 {
     msg_print(_("辺りを睨んだ...", "You glare at nearby monsters..."));
-    slow_monsters(player_ptr, player_ptr->lev);
-    stun_monsters(player_ptr, player_ptr->lev * 4);
-    confuse_monsters(player_ptr, player_ptr->lev * 4);
-    turn_monsters(player_ptr, player_ptr->lev * 4);
-    stasis_monsters(player_ptr, player_ptr->lev * 4);
+    slow_monsters(player_ptr, player_ptr->level);
+    stun_monsters(player_ptr, player_ptr->level * 4);
+    confuse_monsters(player_ptr, player_ptr->level * 4);
+    turn_monsters(player_ptr, player_ptr->level * 4);
+    stasis_monsters(player_ptr, player_ptr->level * 4);
     return true;
 }
 
@@ -282,8 +283,8 @@ bool set_multishadow(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state) {
-        disturb(player_ptr, false, false);
+    if (disturb_state || Travel::get_instance().is_ongoing()) {
+        disturb(player_ptr, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -330,8 +331,8 @@ bool set_dustrobe(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state) {
-        disturb(player_ptr, false, false);
+    if (disturb_state || Travel::get_instance().is_ongoing()) {
+        disturb(player_ptr, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -357,7 +358,7 @@ static int number_of_mirrors(const FloorType &floor)
  */
 bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     int tmp;
     TIME_EFFECT t;
     const auto &grid = player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x];

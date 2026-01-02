@@ -116,6 +116,24 @@ bool MonraceDefinition::has_living_flag() const
 }
 
 /*!
+ * @brief モンスターが悪魔かどうかを返す
+ * @return 悪魔ならばtrue
+ */
+bool MonraceDefinition::has_demon_flag() const
+{
+    return this->kind_flags.has(MonsterKindType::DEMON);
+}
+
+/*!
+ * @brief モンスターがアンデッドかどうかを返す
+ * @return アンデッドならばtrue
+ */
+bool MonraceDefinition::has_undead_flag() const
+{
+    return this->kind_flags.has(MonsterKindType::UNDEAD);
+}
+
+/*!
  * @brief モンスターが自爆するか否か
  * @return 自爆するならtrue
  */
@@ -740,9 +758,12 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
 
     this->r_wake = MAX_UCHAR;
     this->r_ignore = MAX_UCHAR;
-    for (auto i = 0; i < std::ssize(this->blows); i++) {
+    for (size_t i = 0; i < this->blows.size(); i++) {
         const auto &blow = this->blows[i];
         if ((blow.effect != RaceBlowEffectType::NONE) || (blow.method != RaceBlowMethodType::NONE)) {
+            if (i >= this->r_blows.size()) {
+                this->r_blows.resize(i + 1, 0);
+            }
             if (this->r_blows[i] != MAX_UCHAR) {
                 n = true;
             }
@@ -907,6 +928,9 @@ bool MonraceDefinition::is_details_known() const
  */
 bool MonraceDefinition::is_blow_damage_known(int num_blow) const
 {
+    if (num_blow >= static_cast<int>(this->blows.size()) || num_blow >= static_cast<int>(this->r_blows.size())) {
+        return false;
+    }
     const auto r_blow = this->r_blows[num_blow];
     auto max_damage = this->blows[num_blow].damage_dice.maxroll();
     if (max_damage >= ((4 + this->level) * MAX_UCHAR) / 80) {

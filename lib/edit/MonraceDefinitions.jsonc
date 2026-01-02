@@ -3,8 +3,8 @@
 "monsters": [{
     "id": 0,
     "name": {
-        "ja": "プレイヤー",
-        "en": "Player"
+        "ja": "〈烙印者〉",
+        "en": "*Stigmatic*"
     },
     "symbol": {
         "character": "@",
@@ -74,9 +74,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -307,9 +307,9 @@
     ],
     "drop_kind": [
         {
+            "id": 533,
             "probability": "1_IN_5",
-            "item_id": "533",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -463,9 +463,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -517,9 +517,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -613,9 +613,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -671,9 +671,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -4450,7 +4450,8 @@
         "WILD_WOOD",
         "HAS_LITE_1",
         "ALIEN",
-        "SOLDIER"
+        "SOLDIER",
+        "GUNNER"
     ]
 },
 {
@@ -7870,7 +7871,7 @@
         "ja": "傷ついた熊で、人間を襲うこともある。",
         "en": "A wounded bear, who has occasionally attacked humans."
     },
-    "perhp": "50",
+    "start_hp_percentage": 50,
     "flags": [
         "BASH_DOOR",
         "FORCE_MAXHP",
@@ -13160,6 +13161,7 @@
         "IM_ELEC",
         "IM_COLD",
         "GOLEM",
+        "FLESH",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -16865,6 +16867,7 @@
         "IM_POIS",
         "HURT_ROCK",
         "GOLEM",
+        "STONE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -17127,7 +17130,7 @@
         "RES_WATE",
         "WILD_ALL",
         "IXITXACHITL",
-        "FISH"
+        "PRIEST"
     ],
     "skill": {
         "list": [
@@ -17276,7 +17279,8 @@
         "EVIL",
         "ORC",
         "IM_POIS",
-        "RES_DARK"
+        "RES_DARK",
+        "WARRIOR"
     ]
 },
 {
@@ -17629,7 +17633,8 @@
         "NO_SLEEP",
         "FRIENDS",
         "HURT_ROCK",
-        "RES_SHAR"
+        "RES_SHAR",
+        "STONE"
     ]
 },
 {
@@ -18287,6 +18292,9 @@
         "EAT_BLIND",
         "OPEN_DOOR",
         "BASH_DOOR",
+        "ELF",
+        "NOBLE",
+        "PALADIN",
         "EVIL",
         "HURT_LITE",
         "RES_DARK"
@@ -18420,7 +18428,8 @@
         "EVIL",
         "ORC",
         "IM_POIS",
-        "RES_DARK"
+        "RES_DARK",
+        "WARRIOR"
     ]
 },
 {
@@ -18520,6 +18529,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "MIMIC",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "NO_CONF",
@@ -18587,6 +18597,7 @@
     },
     "flags": [
         "NEVER_MOVE",
+        "MIMIC",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "NO_CONF",
@@ -19069,6 +19080,8 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
+        "ZOMBIE",
+        "BIRD",
         "IM_ACID",
         "IM_FIRE",
         "IM_POIS",
@@ -19121,6 +19134,7 @@
         "EVIL",
         "ORC",
         "UNDEAD",
+        "ZOMBIE",
         "IM_COLD",
         "IM_POIS",
         "RES_NETH",
@@ -19225,6 +19239,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EAT_POISONOUS",
+        "BEAST",
         "EVIL"
     ],
     "skill": {
@@ -19374,7 +19389,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "GOLEM"
+        "GOLEM",
+        "IRON"
     ],
     "skill": {
         "list": [
@@ -25469,6 +25485,7 @@
         "IM_ELEC",
         "IM_POIS",
         "GOLEM",
+        "MITHRIL",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -46007,7 +46024,8 @@
         "HURT_LITE",
         "NO_CONF",
         "NO_SLEEP",
-        "RES_TELE"
+        "RES_TELE",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -47296,7 +47314,7 @@
     },
     "sex": "MALE",
     "alliance": "VALINOR",
-    "collapse": "-15.22",
+    "world_collapse_plus": "-15.22",
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -50166,7 +50184,8 @@
         "IM_ACID",
         "IM_COLD",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -51037,6 +51056,7 @@
         "RAND_25",
         "EVIL",
         "DEMON",
+        "GUNNER",
         "DROP_3D2",
         "DROP_GOOD",
         "ONLY_ITEM",
@@ -53382,6 +53402,7 @@
         "RAND_25",
         "EVIL",
         "DEMON",
+        "GUNNER",
         "DROP_2D2",
         "DROP_3D2",
         "ONLY_ITEM",
@@ -53570,7 +53591,8 @@
         "IM_POIS",
         "IM_FIRE",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -53870,7 +53892,8 @@
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
-        "RES_CHAO"
+        "RES_CHAO",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -54132,7 +54155,8 @@
         "IM_FIRE",
         "NO_CONF",
         "NO_SLEEP",
-        "POWERFUL"
+        "POWERFUL",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -54665,7 +54689,8 @@
         "IM_ELEC",
         "IM_ACID",
         "NO_CONF",
-        "NO_SLEEP"
+        "NO_SLEEP",
+        "GREAT_OLD_ONE"
     ],
     "skill": {
         "list": [
@@ -55091,7 +55116,7 @@
     },
     "sex": "MALE",
     "alliance": "UTUMNO",
-    "collapse": "82.5",
+    "world_collapse_plus": "82.5",
     "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -59586,9 +59611,9 @@
     },
     "drop_kind": [
         {
+            "id": 779,
             "probability": "1_IN_1",
-            "item_id": "779",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -62432,9 +62457,9 @@
     },
     "drop_kind": [
         {
+            "id": 779,
             "probability": "1_IN_1",
-            "item_id": "779",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -63192,6 +63217,7 @@
     "flags": [
         "UNIQUE",
         "SPEAK_ALL",
+        "SMITH",
         "FORCE_MAXHP",
         "MOVE_BODY",
         "DROP_CORPSE",
@@ -85818,15 +85844,15 @@
     ],
     "drop_kind": [
         {
+            "id": 94,
             "probability": "1_IN_1",
-            "item_id": "94",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 75,
             "probability": "1_IN_1",
-            "item_id": "75",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -86081,6 +86107,7 @@
     "flags": [
         "NEVER_MOVE",
         "NEVER_BLOW",
+        "FECES",
         "EMPTY_MIND",
         "STUPID",
         "QUYLTHLUG",
@@ -89633,7 +89660,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "GOLEM"
+        "GOLEM",
+        "FECES"
     ]
 },
 {
@@ -90382,15 +90410,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_10",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_10",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -90450,9 +90478,9 @@
     ],
     "drop_kind": [
         {
+            "id": 708,
             "probability": "1_IN_1",
-            "item_id": "708",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -90513,15 +90541,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -91035,27 +91063,27 @@
     },
     "drop_kind": [
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         },
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         },
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         },
         {
+            "id": 711,
             "probability": "1_IN_1",
-            "item_id": "711",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         }
     ]
@@ -93425,15 +93453,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -93510,15 +93538,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -93670,15 +93698,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -93764,15 +93792,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -95242,7 +95270,7 @@
         "ja": "大半の多元宇宙で彼らの生存は許されない。"
     },
     "sex": "MALE",
-    "collapse": "-0.000100",
+    "world_collapse_plus": "-0.000100",
     "flags": [
         "DROP_SKELETON",
         "DROP_CORPSE",
@@ -95383,15 +95411,15 @@
     ],
     "drop_kind": [
         {
+            "id": 775,
             "probability": "1_IN_1",
-            "item_id": "775",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 43,
             "probability": "1_IN_1",
-            "item_id": "43",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -96266,6 +96294,7 @@
     "mob": 100,
     "flags": [
         "NEVER_MOVE",
+        "FECES",
         "EMPTY_MIND",
         "COLD_BLOOD",
         "NASTY",
@@ -97571,9 +97600,9 @@
     ],
     "drop_kind": [
         {
+            "id": 682,
             "probability": "1_IN_1",
-            "item_id": "682",
-            "grade": "1",
+            "grade": 1,
             "dice": "1d1"
         }
     ]
@@ -97856,9 +97885,9 @@
     },
     "drop_kind": [
         {
+            "id": 753,
             "probability": "1_IN_2",
-            "item_id": "753",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ],
@@ -98342,6 +98371,7 @@
         "NO_SLEEP",
         "NO_CONF",
         "SOLDIER",
+        "GUNNER",
         "HUMAN",
         "DROP_CORPSE",
         "DROP_SKELETON"
@@ -99959,9 +99989,9 @@
     ],
     "drop_kind": [
         {
+            "id": 803,
             "probability": "1_IN_1",
-            "item_id": "803",
-            "grade": "0",
+            "grade": 0,
             "dice": "2d10"
         }
     ],
@@ -101500,33 +101530,33 @@
     ],
     "drop_kind": [
         {
+            "id": 754,
             "probability": "1_IN_1",
-            "item_id": "754",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 755,
             "probability": "1_IN_1",
-            "item_id": "755",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 756,
             "probability": "1_IN_1",
-            "item_id": "756",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 757,
             "probability": "1_IN_1",
-            "item_id": "757",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 758,
             "probability": "1_IN_1",
-            "item_id": "758",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -101828,15 +101858,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -102374,9 +102404,9 @@
     ],
     "drop_kind": [
         {
+            "id": 750,
             "probability": "1_IN_1",
-            "item_id": "750",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d5"
         }
     ],
@@ -102428,15 +102458,15 @@
     ],
     "drop_kind": [
         {
+            "id": 42,
             "probability": "1_IN_1",
-            "item_id": "42",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 346,
             "probability": "1_IN_1",
-            "item_id": "346",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d2"
         }
     ]
@@ -102530,6 +102560,7 @@
         "DROP_1D2",
         "SMART",
         "SOLDIER",
+        "GUNNER",
         "DROP_CORPSE",
         "DROP_SKELETON",
         "HUMAN",
@@ -102927,21 +102958,21 @@
     ],
     "drop_kind": [
         {
+            "id": 40,
             "probability": "1_IN_1",
-            "item_id": "40",
-            "grade": "1",
+            "grade": 1,
             "dice": "1d1"
         },
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -103011,21 +103042,21 @@
     ],
     "drop_kind": [
         {
+            "id": 40,
             "probability": "1_IN_1",
-            "item_id": "40",
-            "grade": "1",
+            "grade": 1,
             "dice": "1d1"
         },
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -103507,15 +103538,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -104043,15 +104074,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -105400,7 +105431,9 @@
         "NO_SLEEP",
         "NO_STUN",
         "NONLIVING",
-        "RES_TELE"
+        "RES_TELE",
+        "WHEEL",
+        "EXPLOSIVE"
     ]
 },
 {
@@ -105927,9 +105960,9 @@
     ],
     "drop_kind": [
         {
+            "id": 749,
             "probability": "1_IN_1",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -107171,9 +107204,9 @@
     ],
     "drop_kind": [
         {
+            "id": 773,
             "probability": "1_IN_1",
-            "item_id": "773",
-            "grade": "0",
+            "grade": 0,
             "dice": "2d4"
         }
     ]
@@ -109793,15 +109826,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -110514,7 +110547,7 @@
         "ja": "マッスルボディ２ダッシュプラスになるべく懸垂もどきにはげみ、自分で調合したの魔法のクスリを大量に服用し続ける高校生だ。今にも折れて朽ち果てそうなほど痩せこけているが、異様なまでにしぶとくもある。これもクスリの成果なのだろうか？"
     },
     "alliance": "SEXY-COMMANDO-CLUB",
-    "perhp": "1",
+    "start_hp_percentage": 1,
     "flags": [
         "UNIQUE",
         "NO_QUEST",
@@ -110534,21 +110567,21 @@
     },
     "drop_kind": [
         {
+            "id": 603,
             "probability": "1_IN_1",
-            "item_id": "603",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d8"
         },
         {
+            "id": 678,
             "probability": "1_IN_1",
-            "item_id": "678",
-            "grade": "0",
+            "grade": 0,
             "dice": "5d8"
         },
         {
+            "id": 595,
             "probability": "1_IN_1",
-            "item_id": "595",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d4"
         }
     ]
@@ -110880,15 +110913,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -111866,6 +111899,7 @@
         "EMPTY_MIND",
         "BASH_DOOR",
         "CAN_FLY",
+        "FECES",
         "RES_SHAR",
         "NO_FEAR",
         "NO_CONF",
@@ -114133,6 +114167,7 @@
         "FRIENDS",
         "CAN_FLY",
         "DOG",
+        "FECES",
         "BASH_DOOR",
         "ANIMAL",
         "IM_POIS"
@@ -114350,15 +114385,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -114425,15 +114460,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -114500,15 +114535,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -115035,9 +115070,9 @@
     },
     "drop_kind": [
         {
+            "id": 800,
             "probability": "1_IN_1",
-            "item_id": "800",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d3"
         }
     ]
@@ -117125,6 +117160,7 @@
         "IM_ELEC",
         "IM_POIS",
         "GOLEM",
+        "IRON",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -118096,9 +118132,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -121270,9 +121306,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -121933,9 +121969,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -122251,9 +122287,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -126169,9 +126205,9 @@
     ],
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -127038,9 +127074,9 @@
     ],
     "drop_kind": [
         {
+            "id": 533,
             "probability": "1_IN_5",
-            "item_id": "533",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -127839,6 +127875,14 @@
         "NO_FEAR",
         "RES_TELE",
         "NASTY"
+    ],
+    "drop_kind": [
+        {
+            "id": 721,
+            "probability": "1_IN_1",
+            "grade": 0,
+            "dice": "2d5"
+        }
     ]
 },
 {
@@ -128886,9 +128930,9 @@
     },
     "drop_kind": [
         {
+            "id": 781,
             "probability": "1_IN_1",
-            "item_id": "781",
-            "grade": "2",
+            "grade": 2,
             "dice": "1d1"
         }
     ]
@@ -130355,6 +130399,7 @@
         "UNDEAD",
         "COLD_BLOOD",
         "EVIL",
+        "WHEEL",
         "IM_COLD",
         "IM_ELEC",
         "IM_ACID",
@@ -130838,6 +130883,7 @@
         "UNDEAD",
         "COLD_BLOOD",
         "EVIL",
+        "WHEEL",
         "IM_FIRE",
         "IM_COLD",
         "IM_ACID",
@@ -131094,7 +131140,8 @@
         "NO_SLEEP",
         "NO_FEAR",
         "NONLIVING",
-        "GOLEM"
+        "GOLEM",
+        "WARPSTONE"
     ],
     "skill": {
         "list": [
@@ -131161,6 +131208,7 @@
         "IM_COLD",
         "IM_ELEC",
         "GOLEM",
+        "DARKSTEEL",
         "IM_POIS",
         "NONLIVING",
         "REFLECTING",
@@ -133995,6 +134043,7 @@
         "IM_POIS",
         "HURT_ROCK",
         "GOLEM",
+        "STONE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -134225,6 +134274,7 @@
         "HURT_ROCK",
         "NONLIVING",
         "HURT_FIRE",
+        "WOODEN",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR"
@@ -135430,7 +135480,8 @@
         "NO_FEAR",
         "NO_CONF",
         "NO_SLEEP",
-        "NONLIVING"
+        "NONLIVING",
+        "FECES"
     ]
 },
 {
@@ -135725,9 +135776,9 @@
     },
     "drop_kind": [
         {
+            "id": 169,
             "probability": "1_IN_5",
-            "item_id": "169",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -136833,9 +136884,9 @@
     ],
     "drop_kind": [
         {
+            "id": 64,
             "probability": "1_IN_5",
-            "item_id": "64",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -137403,6 +137454,7 @@
         "RES_SHAR",
         "RES_VOID",
         "RES_ABYSS",
+        "DARKSTEEL",
         "NO_CONF",
         "NO_SLEEP"
     ]
@@ -137660,9 +137712,9 @@
     ],
     "drop_kind": [
         {
+            "id": 702,
             "probability": "1_IN_1",
-            "item_id": "702",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -137719,9 +137771,9 @@
     ],
     "drop_kind": [
         {
+            "id": 803,
             "probability": "1_IN_1",
-            "item_id": "803",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -137774,6 +137826,7 @@
         "HURT_ROCK",
         "NASTY",
         "GOLEM",
+        "STONE",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -137781,9 +137834,9 @@
     ],
     "drop_kind": [
         {
+            "id": 815,
             "probability": "1_IN_1",
-            "item_id": "815",
-            "grade": "0",
+            "grade": 0,
             "dice": "6d6"
         }
     ]
@@ -140753,15 +140806,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -142279,9 +142332,9 @@
     },
     "drop_kind": [
         {
+            "id": 102,
             "probability": "1_IN_5",
-            "item_id": "102",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -144301,15 +144354,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_8",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_8",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -144331,9 +144384,9 @@
     "alertness": 15,
     "level": 48,
     "rarity": 1,
-    "exp": 9000,
-    "next_exp": 0,
-    "next_mon": 0,
+    "exp": 0,
+    "next_exp": 15000,
+    "next_mon": 2338,
     "escorts": [],
     "blows": [
         {
@@ -144827,6 +144880,7 @@
         "IM_ELEC",
         "IM_POIS",
         "FRIENDS",
+        "IRON",
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
@@ -147134,15 +147188,15 @@
     },
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_10",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_10",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -147344,15 +147398,15 @@
     ],
     "drop_kind": [
         {
+            "id": 748,
             "probability": "1_IN_10",
-            "item_id": "748",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         },
         {
+            "id": 749,
             "probability": "1_IN_10",
-            "item_id": "749",
-            "grade": "0",
+            "grade": 0,
             "dice": "1d1"
         }
     ]
@@ -148188,6 +148242,7 @@
         "NEVER_MOVE",
         "NEVER_BLOW",
         "HURT_COLD",
+        "FECES",
         "NO_FEAR",
         "NO_CONF",
         "NO_SLEEP",
@@ -148767,9 +148822,9 @@
     ],
     "drop_kind": [
         {
+            "id": 750,
             "probability": "1_IN_1",
-            "item_id": "750",
-            "grade": "0",
+            "grade": 0,
             "dice": "10d5"
         }
     ],
@@ -149874,5 +149929,1272 @@
         "RAND_50",
         "INSECT"
     ]
+},
+{
+    "id": 2326,
+    "name": {
+        "ja": "『アナルアサシン』",
+        "en": "The Anal Assassin"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Dark Gray"
+    },
+    "speed": 20,
+    "hit_point": "45d12",
+    "vision": 30,
+    "armor_class": 65,
+    "alertness": 10,
+    "level": 35,
+    "rarity": 2,
+    "exp": 0,
+    "next_exp": 8000,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "ENEMA",
+            "effect": "DESTROY_ASSHOLE",
+            "damage_dice": "8d10"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "6d6"
+        },
+        {
+            "method": "KICK",
+            "effect": "HURT",
+            "damage_dice": "5d5"
+        },
+        {
+            "method": "ENEMA",
+            "effect": "DESTROY_ASSHOLE",
+            "damage_dice": "8d10"
+        }
+    ],
+    "flavor": {
+        "ja": "この男はお前をケツイキへといざなうだろう！今のうちに逃げろ！",
+        "en": "This man will lead you to anal ecstasy! Flee while you can! "
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "DROP_CORPSE",
+        "DROP_GOOD",
+        "DROP_4D2",
+        "ONLY_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "HOMO_SEXUAL",
+        "NASTY",
+        "STUPID",
+        "PERVERT",
+        "HUMAN",
+        "RES_TELE",
+        "NO_CONF"
+    ],
+    "skill": {
+        "list": [
+            "TELE_TO",
+            "BLINK",
+            "HASTE",
+            "DRAIN_MANA"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2327,
+    "name": {
+        "ja": "ぬりかべ",
+        "en": "Nurikabe"
+    },
+    "symbol": {
+        "character": "#",
+        "color": "Light Gray"
+    },
+    "speed": -15,
+    "hit_point": "80d10",
+    "vision": 10,
+    "armor_class": 50,
+    "alertness": 30,
+    "level": 15,
+    "rarity": 3,
+    "exp": 0,
+    "next_exp": 200,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "HURT",
+            "damage_dice": "2d6"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "HURT",
+            "damage_dice": "2d6"
+        }
+    ],
+    "flavor": {
+        "ja": "旅人の行く手を突然塞ぐ謎の壁の妖怪だ。遭遇すると延々と横に伸びて通行を阻むが、回り込もうとするのを諦めると消えてしまう。壁をすり抜ける能力を持ち、物理攻撃をほとんど受け付けない。",
+        "en": "A mysterious wall yokai that appears suddenly to block travelers' paths. When encountered, it extends endlessly to prevent passage, but disappears if you give up trying to go around it."
+    },
+    "flags": [
+        "BASH_DOOR",
+        "COLD_BLOOD",
+        "IM_ACID",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ELEC",
+        "IM_POIS",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "WALL",
+        "WEIRD_MIND",
+        "MOVE_BODY",
+        "PASS_WALL"
+    ],
+    "skill": {
+        "list": [
+            "BLINK",
+            "TPORT"
+        ],
+        "probability": "1_IN_8"
+    }
+},
+{
+    "id": 2328,
+    "name": {
+        "ja": "ルーンベア",
+        "en": "Rune Bear"
+    },
+    "symbol": {
+        "character": "q",
+        "color": "Light Red"
+    },
+    "speed": 10,
+    "hit_point": "80d40",
+    "vision": 20,
+    "armor_class": 100,
+    "alertness": 30,
+    "level": 48,
+    "rarity": 2,
+    "exp": 0,
+    "next_exp": 12000,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "8d8"
+        },
+        {
+            "method": "CLAW",
+            "effect": "HURT",
+            "damage_dice": "8d8"
+        },
+        {
+            "method": "BITE",
+            "effect": "HURT",
+            "damage_dice": "10d10"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "7d7"
+        }
+    ],
+    "flavor": {
+        "ja": "エルデの各地に生息する。胸に輝くルーンをまとった巨大な熊だ。",
+        "en": "They inhabit various regions of Elde. These are giant bears bearing shining runes upon their chests."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "BASH_DOOR",
+        "KILL_WALL",
+        "POWERFUL",
+        "DROP_CORPSE",
+        "DROP_SKELETON",
+        "DROP_2D2",
+        "DROP_GOOD",
+        "ANIMAL",
+        "BEAR",
+        "WILD_WOOD",
+        "WILD_MOUNTAIN",
+        "NO_FEAR",
+        "REGENERATE",
+        "CAN_SWIM"
+    ]
+},
+{
+    "id": 2329,
+    "name": {
+        "ja": "銅のゴーレム",
+        "en": "Copper golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Orange"
+    },
+    "speed": 0,
+    "hit_point": "90d13",
+    "vision": 12,
+    "armor_class": 85,
+    "alertness": 10,
+    "level": 25,
+    "rarity": 2,
+    "exp": 170,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d14"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d14"
+        }
+    ],
+    "flavor": {
+        "ja": "赤みがかった銅でできた堂々たる巨像で、驚くほど俊敏に動く。",
+        "en": "It is a massive statue made of reddish copper that moves with surprising agility."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "GOLEM",
+        "COPPER"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE"
+        ],
+        "probability": "1_IN_8"
+    }
+},
+{
+    "id": 2330,
+    "name": {
+        "ja": "銀のゴーレム",
+        "en": "Silver golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Light Gray"
+    },
+    "speed": 5,
+    "hit_point": "100d14",
+    "vision": 12,
+    "armor_class": 95,
+    "alertness": 10,
+    "level": 28,
+    "rarity": 2,
+    "exp": 200,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d8"
+        }
+    ],
+    "flavor": {
+        "ja": "輝く銀でできた巨像で、魔力を放ちながら優雅に動く。",
+        "en": "It is a gleaming silver statue that radiates magical power and moves with grace."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "IM_ACID",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "GOLEM",
+        "SILVER",
+        "REFLECTING"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE",
+            "TELE_TO"
+        ],
+        "probability": "1_IN_7"
+    }
+},
+{
+    "id": 2331,
+    "name": {
+        "ja": "金のゴーレム",
+        "en": "Gold golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Yellow"
+    },
+    "speed": 5,
+    "hit_point": "95d14",
+    "vision": 12,
+    "armor_class": 90,
+    "alertness": 10,
+    "level": 27,
+    "rarity": 5,
+    "exp": 185,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d9"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d10"
+        }
+    ],
+    "flavor": {
+        "ja": "黄金でできた荘厳な巨像で、異世界的な輝きを放っている。",
+        "en": "It is a magnificent golden statue that gleams with an otherworldly radiance."
+    },
+    "flags": [
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "IM_ACID",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NONLIVING",
+        "GOLEM",
+        "GOLD",
+        "ONLY_GOLD",
+        "DROP_2D2"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE",
+            "CONF"
+        ],
+        "probability": "1_IN_8"
+    }
+},
+{
+    "id": 2332,
+    "name": {
+        "ja": "アダマンタイト・ゴーレム",
+        "en": "Adamantite golem"
+    },
+    "symbol": {
+        "character": "g",
+        "color": "Green"
+    },
+    "speed": 10,
+    "hit_point": "130d20",
+    "vision": 15,
+    "armor_class": 135,
+    "alertness": 20,
+    "level": 50,
+    "rarity": 2,
+    "exp": 280,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "4d10"
+        }
+    ],
+    "flavor": {
+        "ja": "伝説のアダマンタイトで鍛造されたゴーレムだ。",
+        "en": "An golem forged from legendary adamantite."
+    },
+    "flags": [
+        "FORCE_MAXHP",
+        "EMPTY_MIND",
+        "COLD_BLOOD",
+        "BASH_DOOR",
+        "KILL_WALL",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_POIS",
+        "IM_ELEC",
+        "IM_ACID",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "NO_STUN",
+        "NONLIVING",
+        "GOLEM",
+        "ADAMANTITE",
+        "REFLECTING"
+    ],
+    "skill": {
+        "list": [
+            "SLOW",
+            "SCARE",
+            "TELE_TO",
+            "HASTE"
+        ],
+        "probability": "1_IN_6"
+    }
+},
+{
+    "id": 2333,
+    "name": {
+        "ja": "地雷女",
+        "en": "Drama queen"
+    },
+    "symbol": {
+        "character": "t",
+        "color": "Red"
+    },
+    "speed": 0,
+    "hit_point": "2d5",
+    "vision": 12,
+    "armor_class": 2,
+    "alertness": 10,
+    "level": 0,
+    "rarity": 1,
+    "exp": 0,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "INSULT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "INSULT",
+            "effect": "FLAVOR"
+        },
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "1d1"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EAT_GOLD"
+        }
+    ],
+    "flavor": {
+        "ja": "何かにつけて周囲を消耗させる、まさに心理的吸血鬼だ。",
+        "en": "She's a true psychological vampire, draining those around her at every turn."
+    },
+    "sex": "FEMALE",
+    "flags": [
+        "HAS_LITE_1",
+        "HUMAN",
+        "RABBLE",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "WILD_TOWN",
+        "WILD_ALL"
+    ],
+    "skill": {
+        "list": [
+            "SHRIEK"
+        ],
+        "probability": "1_IN_8"
+    }
+},
+{
+    "id": 2334,
+    "name": {
+        "ja": "『tanasinn』",
+        "en": "tanasinn"
+    },
+    "symbol": {
+        "character": ".",
+        "color": "Violet"
+    },
+    "speed": 5,
+    "hit_point": "40d90",
+    "vision": 25,
+    "armor_class": 90,
+    "alertness": 15,
+    "level": 65,
+    "rarity": 2,
+    "exp": 26000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "TOUCH",
+            "effect": "LOSE_ALL",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "EXP_VAMP",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "UN_POWER",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "TOUCH",
+            "effect": "DR_MANA",
+            "damage_dice": "5d12"
+        }
+    ],
+    "flavor": {
+        "ja": "tanasinnは真実だ意識の虚無は真実だ囚われ人は真実だ。私達は洞窟に入った。それが真実。なぜ死んだ赤子が横断歩道をわたったのか。鶏にホッチキスで留められていたから。それが真実。tanasinnは真実。たえずtanasinnに留意しないといけない。tanasinnは苦痛。それが真実。tanasinnは快楽。それが真実。tanasinnに戻りたい。それが真実。戻らなければ気が狂う。それが真実。tanasinntanasinntanasinntanasinntanasinnそれが真実。tanasinntanasinntanasinntanasinntanasinntanasinntanasinn僕は怖い。それが真実。tanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinntanasinn.......───「ヤァ　息仔ョ　失ゥコトノ　堪ェ難キ痛ミニモ　モウ慣レタカイ？」",
+        "en": "You can't think about it. Don't think, feel and you'll be tanasinn."
+    },
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "PASS_WALL",
+        "NONLIVING",
+        "IM_ACID",
+        "CAN_FLY",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_3D2",
+        "DROP_GOOD",
+        "SMART",
+        "ELDRITCH_HORROR",
+        "IM_COLD",
+        "RES_NETH",
+        "RES_DARK",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_STUN",
+        "QUANTUM",
+        "RAND_25",
+        "REGENERATE",
+        "SELF_DARK_1",
+        "SELF_DARK_2",
+        "AVATAR"
+    ],
+    "skill": {
+        "list": [
+            "BR_NETH",
+            "BRAIN_SMASH",
+            "SCARE",
+            "DRAIN_MANA",
+            "HEAL",
+            "ANIM_DEAD",
+            "BO_ABYSS",
+            "BO_VOID",
+            "BR_ABYSS",
+            "BR_VOID",
+            "BA_VOID"
+        ],
+        "probability": "1_IN_6"
+    }
+},
+{
+    "id": 2335,
+    "name": {
+        "ja": "ブラックマーケットの中級エージェント",
+        "en": "Mature agent of black market"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Dark Gray"
+    },
+    "speed": 20,
+    "hit_point": "15d10",
+    "vision": 30,
+    "armor_class": 100,
+    "alertness": 40,
+    "level": 32,
+    "rarity": 4,
+    "exp": 350,
+    "next_exp": 12000,
+    "next_mon": 1394,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "HURT",
+            "damage_dice": "2d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "EAT_GOLD",
+            "damage_dice": "2d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "EAT_ITEM",
+            "damage_dice": "2d8"
+        },
+        {
+            "method": "HIT",
+            "effect": "EAT_ITEM",
+            "damage_dice": "2d8"
+        }
+    ],
+    "skill": {
+        "shoot": "9d5",
+        "list": [
+            "BLINK",
+            "TELE_TO",
+            "TELE_AWAY",
+            "TPORT",
+            "HASTE"
+        ],
+        "probability": "1_IN_4"
+    },
+    "flavor": {
+        "ja": "彼はダンジョンのあらゆるところから商品を「拾って」くることを生業としている。",
+        "en": "His job is to 'find' goods from all over the dungeon."
+    },
+    "sex": "MALE",
+    "flags": [
+        "HUMAN",
+        "DROP_2D2",
+        "DROP_4D2",
+        "ONLY_ITEM",
+        "DROP_GOOD",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "IM_FIRE",
+        "IM_COLD",
+        "NO_CONF",
+        "NO_SLEEP",
+        "EVIL"
+    ]
+},
+{
+    "id": 2336,
+    "name": {
+        "ja": "ブラックマーケットの上級エージェント",
+        "en": "Master agent of black market"
+    },
+    "symbol": {
+        "character": "p",
+        "color": "Dark Gray"
+    },
+    "speed": 20,
+    "hit_point": "50d20",
+    "vision": 40,
+    "armor_class": 150,
+    "alertness": 10,
+    "level": 64,
+    "rarity": 8,
+    "exp": 5000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "EAT_ITEM",
+            "damage_dice": "6d5"
+        },
+        {
+            "method": "HIT",
+            "effect": "EAT_ITEM",
+            "damage_dice": "6d5"
+        },
+        {
+            "method": "HIT",
+            "effect": "EAT_ITEM",
+            "damage_dice": "6d5"
+        },
+        {
+            "method": "HIT",
+            "effect": "EAT_ITEM",
+            "damage_dice": "6d5"
+        }
+    ],
+    "skill": {
+        "shoot": "24d5",
+        "list": [
+            "BLINK",
+            "TELE_TO",
+            "TELE_AWAY",
+            "TPORT",
+            "TELE_LEVEL",
+            "HASTE",
+            "HEAL",
+            "ANIM_DEAD",
+            "ROCKET",
+            "BR_FIRE",
+            "BR_COLD",
+            "BO_METEOR",
+            "S_MONSTER"
+        ],
+        "probability": "1_IN_3"
+    },
+    "flavor": {
+        "ja": "ダンジョンの奥深くから商品を「拾って」くるエキスパートだ。商品を惜しみなく使用して武装している。",
+        "en": "He is an expert at 'find' goods from the depths of the dungeon, and is armed with a generous supply of goods."
+    },
+    "sex": "MALE",
+    "flags": [
+        "HUMAN",
+        "FORCE_MAXHP",
+        "ONLY_ITEM",
+        "DROP_2D2",
+        "DROP_3D2",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "SMART",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "TAKE_ITEM",
+        "KILL_BODY",
+        "EVIL",
+        "IM_ACID",
+        "IM_COLD",
+        "IM_FIRE",
+        "IM_ELEC",
+        "IM_POIS",
+        "RES_CHAO",
+        "REFLECTING",
+        "CAN_FLY",
+        "NO_CONF",
+        "NO_SLEEP",
+        "HAS_LITE_2"
+    ]
+},
+{
+    "id": 2337,
+    "name": {
+        "ja": "『タローマン』",
+        "en": "The Taroman"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Yellow"
+    },
+    "speed": 10,
+    "hit_point": "89d89",
+    "vision": 30,
+    "armor_class": 140,
+    "alertness": 15,
+    "level": 64,
+    "rarity": 3,
+    "exp": 30000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        },
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        },
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        },
+        {
+            "method": "HIT",
+            "effect": "CONFUSE",
+            "damage_dice": "11d11"
+        }
+    ],
+    "flavor": {
+        "ja": "爆発だ、爆発だ、芸術は爆発だ。",
+        "en": "Explosion. Explosion. Art is an explosion."
+    },
+    "sex": "MALE",
+    "flags": [
+        "UNIQUE",
+        "FORCE_MAXHP",
+        "ONLY_ITEM",
+        "DROP_GOOD",
+        "DROP_4D2",
+        "KILL_BODY",
+        "KILL_WALL",
+        "RAND_50",
+        "SMART",
+        "TAKE_ITEM",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "DROP_CORPSE",
+        "GIANT",
+        "HAS_LITE_2",
+        "IM_FIRE",
+        "IM_COLD",
+        "IM_ACID",
+        "IM_ELEC",
+        "IM_POIS",
+        "FRIENDLY"
+    ],
+    "skill": {
+        "list": [
+            "BA_WATE",
+            "BA_LITE",
+            "BO_PLAS",
+            "BR_POIS",
+            "BR_ACID"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2338,
+    "name": {
+        "ja": "BT-91 マジュー最終形態",
+        "en": "BT-91 Beast (final form)"
+    },
+    "symbol": {
+        "character": "P",
+        "color": "Light Red"
+    },
+    "speed": 20,
+    "hit_point": "60d80",
+    "vision": 40,
+    "armor_class": 145,
+    "alertness": 20,
+    "level": 62,
+    "rarity": 1,
+    "exp": 18000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "12d15"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "HURT",
+            "damage_dice": "12d15"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "15d12"
+        },
+        {
+            "method": "PUNCH",
+            "effect": "SUPERHURT",
+            "damage_dice": "15d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。最終形態では完全に人型となり、圧倒的な戦闘能力を発揮する。",
+        "en": "This is one of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its final form, it achieves perfect bipedal upright walking and demonstrates overwhelming combat capabilities."
+    },
+    "alliance": "GAICHI",
+    "mob": 100,
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "KILL_BODY",
+        "OPEN_DOOR",
+        "BASH_DOOR",
+        "POWERFUL",
+        "GIANT",
+        "REGENERATE",
+        "IM_FIRE",
+        "IM_COLD",
+        "RES_NETH",
+        "NO_CONF",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "BA_MANA",
+            "HASTE",
+            "BR_FIRE"
+        ],
+        "probability": "1_IN_3"
+    }
+},
+{
+    "id": 2339,
+    "name": {
+        "ja": "BT-90 ガーディン第二形態",
+        "en": "BT-90 Guardin (second form)"
+    },
+    "symbol": {
+        "character": "I",
+        "color": "Light Red"
+    },
+    "speed": 15,
+    "hit_point": "40d65",
+    "vision": 50,
+    "armor_class": 165,
+    "alertness": 25,
+    "level": 50,
+    "rarity": 1,
+    "exp": 8500,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "6d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "6d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "7d15"
+        },
+        {
+            "method": "STING",
+            "effect": "HURT",
+            "damage_dice": "5d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。第二形態では虫のような体がより巨大化し、特に装甲が強化される。",
+        "en": "One of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its second form, its insect-like body grows even larger, with its armor significantly reinforced."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "KILL_BODY",
+        "BASH_DOOR",
+        "POWERFUL",
+        "REGENERATE",
+        "IM_POIS",
+        "RES_NETH",
+        "NO_CONF"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "HASTE",
+            "BA_POIS"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2340,
+    "name": {
+        "ja": "BT-90 ガーディン最終形態",
+        "en": "BT-90 Guardin (final form)"
+    },
+    "symbol": {
+        "character": "I",
+        "color": "Violet"
+    },
+    "speed": 20,
+    "hit_point": "50d80",
+    "vision": 50,
+    "armor_class": 200,
+    "alertness": 30,
+    "level": 60,
+    "rarity": 1,
+    "exp": 12000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d15"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SHATTER",
+            "damage_dice": "10d15"
+        },
+        {
+            "method": "STING",
+            "effect": "POISON",
+            "damage_dice": "7d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。最終形態では外骨格が最大硬度に達し、超重量級戦車の砲弾を平然とはじくに至る。",
+        "en": "This is one of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its final form, its exoskeleton achieves maximum hardness, enabling it to casually deflect shells from super-heavy tanks."
+    },
+    "alliance": "GAICHI",
+    "mob": 50,
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "KILL_BODY",
+        "BASH_DOOR",
+        "KILL_WALL",
+        "POWERFUL",
+        "REGENERATE",
+        "IM_POIS",
+        "IM_ACID",
+        "RES_NETH",
+        "RES_DARK",
+        "NO_CONF",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "BA_MANA",
+            "HASTE",
+            "BA_POIS",
+            "BA_ACID",
+            "BR_POIS"
+        ],
+        "probability": "1_IN_4"
+    }
+},
+{
+    "id": 2341,
+    "name": {
+        "ja": "BT-92 ブレナー第二形態",
+        "en": "BT-92 Blenar (second form)"
+    },
+    "symbol": {
+        "character": "B",
+        "color": "Violet"
+    },
+    "speed": 25,
+    "hit_point": "40d65",
+    "vision": 90,
+    "armor_class": 110,
+    "alertness": 35,
+    "level": 52,
+    "rarity": 1,
+    "exp": 5000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "5d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "6d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。第二形態では推進機構が劇的に強化され、音速を超える飛行能力を獲得している。",
+        "en": "This is one of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its second form, its propulsion system has been dramatically enhanced, achieving supersonic flight capability."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "CAN_FLY",
+        "BASH_DOOR",
+        "POWERFUL",
+        "REGENERATE",
+        "RES_LITE",
+        "RES_DARK",
+        "NO_FEAR"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "HASTE",
+            "BLINK",
+            "TPORT"
+        ],
+        "probability": "1_IN_5"
+    }
+},
+{
+    "id": 2342,
+    "name": {
+        "ja": "BT-92 ブレナー最終形態",
+        "en": "BT-92 Blenar (final form)"
+    },
+    "symbol": {
+        "character": "D",
+        "color": "Violet"
+    },
+    "speed": 30,
+    "hit_point": "60d80",
+    "vision": 100,
+    "armor_class": 130,
+    "alertness": 30,
+    "level": 61,
+    "rarity": 1,
+    "exp": 8000,
+    "next_exp": 0,
+    "next_mon": 0,
+    "escorts": [],
+    "blows": [
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "7d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "HURT",
+            "damage_dice": "7d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d12"
+        },
+        {
+            "method": "CRUSH",
+            "effect": "SUPERHURT",
+            "damage_dice": "8d12"
+        }
+    ],
+    "flavor": {
+        "ja": "帝国復興を企むガイチ軍が火星で開発したバイオ兵器の一つだ。最終形態では龍の頭のような形状に進化している。",
+        "en": "This is one of the biological weapons developed on Mars by the Gaichi Army, which plots the empire's revival. In its final form, it has evolved into a dragon-headed form capable of ultra-high-speed flight."
+    },
+    "alliance": "GAICHI",
+    "flags": [
+        "FORCE_MAXHP",
+        "DROP_SKELETON",
+        "DROP_CORPSE",
+        "ONLY_ITEM",
+        "DROP_4D2",
+        "DROP_GOOD",
+        "CAN_FLY",
+        "BASH_DOOR",
+        "KILL_WALL",
+        "POWERFUL",
+        "REGENERATE",
+        "AURA_FIRE",
+        "IM_FIRE",
+        "RES_LITE",
+        "RES_DARK",
+        "RES_PLAS",
+        "NO_FEAR",
+        "NO_CONF"
+    ],
+    "skill": {
+        "list": [
+            "HEAL",
+            "BO_MANA",
+            "HASTE",
+            "BLINK",
+            "TPORT"
+        ],
+        "probability": "1_IN_4"
+    }
 }]
 }

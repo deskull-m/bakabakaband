@@ -259,7 +259,7 @@ static void update_bonuses(PlayerType *player_ptr)
     BIT_FLAGS old_esp_unique = player_ptr->esp_unique;
     BIT_FLAGS old_see_inv = player_ptr->see_inv;
     BIT_FLAGS old_mighty_throw = player_ptr->mighty_throw;
-    int16_t old_speed = player_ptr->pspeed;
+    int16_t old_speed = static_cast<CreatureEntity &>(*player_ptr).get_speed();
 
     ARMOUR_CLASS old_dis_ac = player_ptr->dis_ac;
     ARMOUR_CLASS old_dis_to_a = player_ptr->dis_to_a;
@@ -321,14 +321,14 @@ static void update_bonuses(PlayerType *player_ptr)
 
     for (int i = 0; i < 2; i++) {
         player_ptr->is_icky_wield[i] = is_wielding_icky_weapon(player_ptr, i);
-        player_ptr->is_icky_riding_wield[i] = is_wielding_icky_riding_weapon(player_ptr, i);
+        player_ptr->is_icky_riding_wield[i] = is_wielding_icky_riding_weapon(static_cast<CreatureEntity &>(*player_ptr), i);
         player_ptr->heavy_wield[i] = is_heavy_wield(player_ptr, i);
         player_ptr->num_blow[i] = calc_num_blow(player_ptr, i);
         player_ptr->damage_dice_bonus[i].num = calc_to_weapon_dice_num(player_ptr, INVEN_MAIN_HAND + i);
         player_ptr->damage_dice_bonus[i].sides = 0;
     }
 
-    player_ptr->pspeed = PlayerSpeed(player_ptr).get_value();
+    static_cast<CreatureEntity &>(*player_ptr).set_speed(PlayerSpeed(player_ptr).get_value());
     player_ptr->see_infra = PlayerInfravision(player_ptr).get_value();
     player_ptr->skill_stl = PlayerStealth(player_ptr).get_value();
     player_ptr->skill_dis = calc_disarming(player_ptr);
@@ -388,7 +388,7 @@ static void update_bonuses(PlayerType *player_ptr)
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     }
 
-    if (player_ptr->pspeed != old_speed) {
+    if (static_cast<CreatureEntity &>(*player_ptr).get_speed() != old_speed) {
         rfu.set_flag(MainWindowRedrawingFlag::SPEED);
     }
 
@@ -413,8 +413,8 @@ static void update_bonuses(PlayerType *player_ptr)
  */
 static void update_max_hitpoints(PlayerType *player_ptr)
 {
-    int bonus = ((int)(adj_con_mhp[player_ptr->stat_index[A_CON]]) - 128) * player_ptr->lev / 4;
-    int mhp = player_ptr->player_hp[player_ptr->lev - 1];
+    int bonus = ((int)(adj_con_mhp[player_ptr->stat_index[A_CON]]) - 128) * player_ptr->level / 4;
+    int mhp = player_ptr->player_hp[player_ptr->level - 1];
 
     PlayerClass pc(player_ptr);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
@@ -425,8 +425,8 @@ static void update_max_hitpoints(PlayerType *player_ptr)
     }
 
     if (is_sorcerer) {
-        if (player_ptr->lev < 30) {
-            mhp = (mhp * (45 + player_ptr->lev) / 100);
+        if (player_ptr->level < 30) {
+            mhp = (mhp * (45 + player_ptr->level) / 100);
         } else {
             mhp = (mhp * 75 / 100);
         }
@@ -436,11 +436,11 @@ static void update_max_hitpoints(PlayerType *player_ptr)
     mhp += bonus;
 
     if (pc.equals(PlayerClassType::BERSERKER)) {
-        mhp = mhp * (110 + (((player_ptr->lev + 40) * (player_ptr->lev + 40) - 1550) / 110)) / 100;
+        mhp = mhp * (110 + (((player_ptr->level + 40) * (player_ptr->level + 40) - 1550) / 110)) / 100;
     }
 
-    if (mhp < player_ptr->lev + 1) {
-        mhp = player_ptr->lev + 1;
+    if (mhp < player_ptr->level + 1) {
+        mhp = player_ptr->level + 1;
     }
     if (is_hero(player_ptr)) {
         mhp += 10;
@@ -457,21 +457,21 @@ static void update_max_hitpoints(PlayerType *player_ptr)
     if (SpellHex(player_ptr).is_spelling_specific(HEX_BUILDING)) {
         mhp += 60;
     }
-    if (player_ptr->mhp == mhp) {
+    if (player_ptr->maxhp == mhp) {
         return;
     }
 
-    if (player_ptr->chp >= mhp) {
-        player_ptr->chp = mhp;
-        player_ptr->chp_frac = 0;
+    if (player_ptr->hp >= mhp) {
+        player_ptr->hp = mhp;
+        player_ptr->hp_frac = 0;
     }
 
 #ifdef JP
-    if (player_ptr->level_up_message && (mhp > player_ptr->mhp)) {
-        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - player_ptr->mhp));
+    if (player_ptr->level_up_message && (mhp > player_ptr->maxhp)) {
+        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - player_ptr->maxhp));
     }
 #endif
-    player_ptr->mhp = mhp;
+    player_ptr->maxhp = mhp;
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
@@ -500,7 +500,7 @@ static void update_num_of_spells(PlayerType *player_ptr)
     }
 
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
-    int levels = player_ptr->lev - mp_ptr->spell_first + 1;
+    int levels = player_ptr->level - mp_ptr->spell_first + 1;
     if (levels < 0) {
         levels = 0;
     }
@@ -548,7 +548,7 @@ static void update_num_of_spells(PlayerType *player_ptr)
         const auto &realm = is_realm1 ? pr.realm1() : pr.realm2();
         const auto &spell = realm.get_spell_info(spell_id);
 
-        if (spell.slevel <= player_ptr->lev) {
+        if (spell.slevel <= player_ptr->level) {
             continue;
         }
 
@@ -608,7 +608,7 @@ static void update_num_of_spells(PlayerType *player_ptr)
         const auto &realm = is_realm1 ? pr.realm1() : pr.realm2();
         const auto &spell = realm.get_spell_info(spell_id);
 
-        if (spell.slevel > player_ptr->lev) {
+        if (spell.slevel > player_ptr->level) {
             continue;
         }
 
@@ -634,7 +634,7 @@ static void update_num_of_spells(PlayerType *player_ptr)
         for (int j = 0; j < 32; j++) {
             const auto &spell = pr.realm1().get_spell_info(j);
 
-            if (spell.slevel > player_ptr->lev) {
+            if (spell.slevel > player_ptr->level) {
                 continue;
             }
 
@@ -699,15 +699,15 @@ static void update_max_mana(PlayerType *player_ptr)
     use_direct_level |= pc.equals(PlayerClassType::BLUE_MAGE);
     use_direct_level |= pc.equals(PlayerClassType::ELEMENTALIST);
     if (use_direct_level) {
-        levels = player_ptr->lev;
+        levels = player_ptr->level;
     } else {
-        if (mp_ptr->spell_first > player_ptr->lev) {
+        if (mp_ptr->spell_first > player_ptr->level) {
             player_ptr->msp = 0;
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             return;
         }
 
-        levels = (player_ptr->lev - mp_ptr->spell_first) + 1;
+        levels = (player_ptr->level - mp_ptr->spell_first) + 1;
     }
 
     int msp;
@@ -731,7 +731,7 @@ static void update_max_mana(PlayerType *player_ptr)
             msp += msp / 4;
         }
         if (msp && pc.equals(PlayerClassType::SORCERER)) {
-            msp += msp * (25 + player_ptr->lev) / 100;
+            msp += msp * (25 + player_ptr->level) / 100;
         }
     }
 
@@ -987,27 +987,27 @@ short calc_num_fire(PlayerType *player_ptr, const ItemEntity *o_ptr)
     const auto tval_ammo = o_ptr->get_arrow_kind();
     PlayerClass pc(player_ptr);
     if (pc.equals(PlayerClassType::RANGER) && (tval_ammo == ItemKindType::ARROW)) {
-        num += (player_ptr->lev * 4);
+        num += (player_ptr->level * 4);
     }
 
     if (pc.equals(PlayerClassType::CAVALRY) && (tval_ammo == ItemKindType::ARROW)) {
-        num += (player_ptr->lev * 3);
+        num += (player_ptr->level * 3);
     }
 
     if (pc.equals(PlayerClassType::ARCHER)) {
         if (tval_ammo == ItemKindType::ARROW) {
-            num += ((player_ptr->lev * 5) + 50);
+            num += ((player_ptr->level * 5) + 50);
         } else if ((tval_ammo == ItemKindType::BOLT) || (tval_ammo == ItemKindType::SHOT)) {
-            num += (player_ptr->lev * 4);
+            num += (player_ptr->level * 4);
         }
     }
 
     if (pc.equals(PlayerClassType::WARRIOR) && (tval_ammo <= ItemKindType::BOLT) && (tval_ammo >= ItemKindType::SHOT)) {
-        num += (player_ptr->lev * 2);
+        num += (player_ptr->level * 2);
     }
 
     if (pc.equals(PlayerClassType::ROGUE) && (tval_ammo == ItemKindType::SHOT)) {
-        num += (player_ptr->lev * 4);
+        num += (player_ptr->level * 4);
     }
 
     return (int16_t)num;
@@ -1038,7 +1038,7 @@ static ACTION_SKILL_POWER calc_disarming(PlayerType *player_ptr)
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
     pow = tmp_race_ptr->r_dis + player_class.c_dis + player_personality.a_dis;
-    pow += (((*player_ptr->pclass_ref).x_dis * player_ptr->lev / 10) + ((*player_ptr->personality).a_dis * player_ptr->lev / 50));
+    pow += (((*player_ptr->pclass_ref).x_dis * player_ptr->level / 10) + ((*player_ptr->personality).a_dis * player_ptr->level / 50));
     pow += adj_dex_dis[player_ptr->stat_index[A_DEX]];
     pow += adj_int_dis[player_ptr->stat_index[A_INT]];
     return pow;
@@ -1070,7 +1070,7 @@ static ACTION_SKILL_POWER calc_device_ability(PlayerType *player_ptr)
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
     pow = tmp_race_ptr->r_dev + player_class.c_dev + player_personality.a_dev;
-    pow += ((player_class.x_dev * player_ptr->lev / 10) + ((*player_ptr->personality).a_dev * player_ptr->lev / 50));
+    pow += ((player_class.x_dev * player_ptr->level / 10) + ((*player_ptr->personality).a_dev * player_ptr->level / 50));
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         ItemEntity *o_ptr;
@@ -1126,10 +1126,10 @@ static ACTION_SKILL_POWER calc_saving_throw(PlayerType *player_ptr)
     const auto &player_personality = personality_info[player_ptr->ppersonality];
 
     pow = tmp_race_ptr->r_sav + player_class.c_sav + player_personality.a_sav;
-    pow += (((*player_ptr->pclass_ref).x_sav * player_ptr->lev / 10) + ((*player_ptr->personality).a_sav * player_ptr->lev / 50));
+    pow += (((*player_ptr->pclass_ref).x_sav * player_ptr->level / 10) + ((*player_ptr->personality).a_sav * player_ptr->level / 50));
 
     if (player_ptr->muta.has(PlayerMutationType::MAGIC_RES)) {
-        pow += (15 + (player_ptr->lev / 5));
+        pow += (15 + (player_ptr->level / 5));
     }
 
     if (has_resist_curse(player_ptr)) {
@@ -1137,7 +1137,7 @@ static ACTION_SKILL_POWER calc_saving_throw(PlayerType *player_ptr)
     }
 
     if (player_ptr->bless_blade) {
-        pow += 6 + (player_ptr->lev - 1) / 10;
+        pow += 6 + (player_ptr->level - 1) / 10;
     }
 
     pow += adj_wis_sav[player_ptr->stat_index[A_WIS]];
@@ -1154,16 +1154,16 @@ static ACTION_SKILL_POWER calc_saving_throw(PlayerType *player_ptr)
         pow -= 30;
     }
 
-    if (player_ptr->anti_magic && (pow < (90 + player_ptr->lev))) {
-        pow = 90 + player_ptr->lev;
+    if (player_ptr->anti_magic && (pow < (90 + player_ptr->level))) {
+        pow = 90 + player_ptr->level;
     }
 
     if (player_ptr->tsubureru) {
         pow = 10;
     }
 
-    if ((player_ptr->ult_res || player_ptr->resist_magic || player_ptr->magicdef) && (pow < (95 + player_ptr->lev))) {
-        pow = 95 + player_ptr->lev;
+    if ((player_ptr->ult_res || player_ptr->resist_magic || player_ptr->magicdef) && (pow < (95 + player_ptr->level))) {
+        pow = 95 + player_ptr->level;
     }
 
     if (player_ptr->down_saving) {
@@ -1198,7 +1198,7 @@ static ACTION_SKILL_POWER calc_search(PlayerType *player_ptr)
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
     pow = tmp_race_ptr->r_srh + player_class.c_srh + player_personality.a_srh;
-    pow += (player_class.x_srh * player_ptr->lev / 10);
+    pow += (player_class.x_srh * player_ptr->level / 10);
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         ItemEntity *o_ptr;
@@ -1247,7 +1247,7 @@ static ACTION_SKILL_POWER calc_search_freq(PlayerType *player_ptr)
     const auto &player_class = class_info.at(player_ptr->pclass);
     const auto &player_personality = personality_info[player_ptr->ppersonality];
     pow = tmp_race_ptr->r_fos + player_class.c_fos + player_personality.a_fos;
-    pow += (player_class.x_fos * player_ptr->lev / 10);
+    pow += (player_class.x_fos * player_ptr->level / 10);
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         ItemEntity *o_ptr;
@@ -1292,7 +1292,7 @@ static ACTION_SKILL_POWER calc_to_hit_melee(PlayerType *player_ptr)
     }
 
     pow = tmp_race_ptr->r_thn + player_class.c_thn + player_personality.a_thn;
-    pow += ((player_class.x_thn * player_ptr->lev / 10) + (player_personality.a_thn * player_ptr->lev / 50));
+    pow += ((player_class.x_thn * player_ptr->level / 10) + (player_personality.a_thn * player_ptr->level / 50));
     return pow;
 }
 
@@ -1316,7 +1316,7 @@ static ACTION_SKILL_POWER calc_to_hit_shoot(PlayerType *player_ptr)
     }
 
     pow = tmp_race_ptr->r_thb + player_class.c_thb + player_personality.a_thb;
-    pow += ((player_class.x_thb * player_ptr->lev / 10) + (player_personality.a_thb * player_ptr->lev / 50));
+    pow += ((player_class.x_thb * player_ptr->level / 10) + (player_personality.a_thb * player_ptr->level / 50));
     return pow;
 }
 
@@ -1341,7 +1341,7 @@ static ACTION_SKILL_POWER calc_to_hit_throw(PlayerType *player_ptr)
     }
 
     pow = tmp_race_ptr->r_thb + player_class.c_thb + player_personality.a_thb;
-    pow += ((player_class.x_thb * player_ptr->lev / 10) + (player_personality.a_thb * player_ptr->lev / 50));
+    pow += ((player_class.x_thb * player_ptr->level / 10) + (player_personality.a_thb * player_ptr->level / 50));
 
     if (is_shero(player_ptr)) {
         pow -= 20;
@@ -1372,7 +1372,7 @@ static ACTION_SKILL_POWER calc_skill_dig(PlayerType *player_ptr)
     pow = 0;
 
     if (PlayerRace(player_ptr).equals(PlayerRaceType::ENT) && !player_ptr->inventory[INVEN_MAIN_HAND]->is_valid()) {
-        pow += player_ptr->lev * 10;
+        pow += player_ptr->level * 10;
     }
 
     if (is_shero(player_ptr)) {
@@ -1382,7 +1382,7 @@ static ACTION_SKILL_POWER calc_skill_dig(PlayerType *player_ptr)
     pow += adj_str_dig[player_ptr->stat_index[A_STR]];
 
     if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
-        pow += (100 + player_ptr->lev * 8);
+        pow += (100 + player_ptr->level * 8);
     }
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -1462,7 +1462,7 @@ static int16_t calc_num_blow(PlayerType *player_ptr, int i)
             str_index = (adj_str_blow[player_ptr->stat_index[A_STR]] * mul / div);
 
             if (has_two_handed_weapons(player_ptr) && !has_disable_two_handed_bonus(player_ptr, 0)) {
-                str_index += pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER) ? (player_ptr->lev / 23 + 1) : 1;
+                str_index += pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER) ? (player_ptr->level / 23 + 1) : 1;
             }
             if (pc.equals(PlayerClassType::NINJA)) {
                 str_index = std::max(0, str_index - 1);
@@ -1483,9 +1483,9 @@ static int16_t calc_num_blow(PlayerType *player_ptr, int i)
 
             num_blow += (int16_t)player_ptr->extra_blows[i];
             if (pc.equals(PlayerClassType::WARRIOR)) {
-                num_blow += (player_ptr->lev / 40);
+                num_blow += (player_ptr->level / 40);
             } else if (pc.equals(PlayerClassType::BERSERKER)) {
-                num_blow += (player_ptr->lev / 23);
+                num_blow += (player_ptr->level / 23);
             } else if (pc.equals(PlayerClassType::ROGUE) && (o_ptr->weight < 50) && (player_ptr->stat_index[A_DEX] >= 30)) {
                 num_blow++;
             }
@@ -1513,7 +1513,7 @@ static int16_t calc_num_blow(PlayerType *player_ptr, int i)
     }
     /* Different calculation for monks with empty hands */
     if (is_martial_arts_mode(player_ptr)) {
-        int blow_base = player_ptr->lev + adj_dex_blow[player_ptr->stat_index[A_DEX]];
+        int blow_base = player_ptr->level + adj_dex_blow[player_ptr->stat_index[A_DEX]];
         num_blow = 0;
 
         if (pc.equals(PlayerClassType::FORCETRAINER)) {
@@ -1559,7 +1559,7 @@ static int16_t calc_num_blow(PlayerType *player_ptr, int i)
 
         if (pc.monk_stance_is(MonkStanceType::GENBU)) {
             num_blow -= 2;
-            if (pc.equals(PlayerClassType::MONK) && (player_ptr->lev > 42)) {
+            if (pc.equals(PlayerClassType::MONK) && (player_ptr->level > 42)) {
                 num_blow--;
             }
             if (num_blow < 0) {
@@ -1640,13 +1640,13 @@ static ARMOUR_CLASS calc_base_ac(PlayerType *player_ptr)
     const auto o_ptr_mh = player_ptr->inventory[INVEN_MAIN_HAND].get();
     const auto o_ptr_sh = player_ptr->inventory[INVEN_SUB_HAND].get();
     if (o_ptr_mh->is_protector() || o_ptr_sh->is_protector()) {
-        ac += player_ptr->skill_exp[PlayerSkillKindType::SHIELD] * (1 + player_ptr->lev / 22) / 2000;
+        ac += player_ptr->skill_exp[PlayerSkillKindType::SHIELD] * (1 + player_ptr->level / 22) / 2000;
     }
 
     // 装甲技能による防御力ボーナス（鎧装備時）
     const auto o_ptr_body = player_ptr->inventory[INVEN_BODY].get();
     if (o_ptr_body->is_valid() && (o_ptr_body->bi_key.tval() == ItemKindType::HARD_ARMOR)) {
-        ac += player_ptr->skill_exp[PlayerSkillKindType::ARMOR] * (1 + player_ptr->lev / 25) / 2500;
+        ac += player_ptr->skill_exp[PlayerSkillKindType::ARMOR] * (1 + player_ptr->level / 25) / 2500;
     }
 
     // 回避技能による防御力ボーナス（軽装備時）
@@ -1659,7 +1659,7 @@ static ARMOUR_CLASS calc_base_ac(PlayerType *player_ptr)
 
     // 装備重量が軽い（300ポンド以下）時に回避技能ボーナス
     if (equipment_weight <= 300) {
-        auto evasion_bonus = player_ptr->skill_exp[PlayerSkillKindType::EVASION] * (1 + player_ptr->lev / 20) / 3000;
+        auto evasion_bonus = player_ptr->skill_exp[PlayerSkillKindType::EVASION] * (1 + player_ptr->level / 20) / 3000;
         // 装備がより軽いほどボーナスが大きくなる（最大で2倍）
         auto weight_ratio = (300 - equipment_weight) / 300.0;
         evasion_bonus = static_cast<int>(evasion_bonus * (1.0 + weight_ratio));
@@ -1690,11 +1690,19 @@ static ARMOUR_CLASS calc_to_ac(PlayerType *player_ptr, bool is_real_value)
     case MimicKindType::VAMPIRE:
         ac += 10;
         break;
+    case MimicKindType::ANGEL:
+        ac += 10;
+        break;
+    case MimicKindType::DEMIGOD:
+        ac += 20;
+        break;
+    default:
+        break;
     }
 
     PlayerClass pc(player_ptr);
     if (pc.equals(PlayerClassType::BERSERKER)) {
-        ac += 10 + player_ptr->lev / 2;
+        ac += 10 + player_ptr->level / 2;
     }
 
     if (pc.equals(PlayerClassType::SORCERER)) {
@@ -1730,7 +1738,7 @@ static ARMOUR_CLASS calc_to_ac(PlayerType *player_ptr, bool is_real_value)
 
     PlayerRace pr(player_ptr);
     if (pr.equals(PlayerRaceType::GOLEM) || pr.equals(PlayerRaceType::ANDROID)) {
-        ac += 10 + (player_ptr->lev * 2 / 5);
+        ac += 10 + (player_ptr->level * 2 / 5);
     }
 
     if (set_quick_and_tiny(player_ptr)) {
@@ -1759,22 +1767,22 @@ static ARMOUR_CLASS calc_to_ac(PlayerType *player_ptr, bool is_real_value)
 
     if (pc.is_martial_arts_pro() && !heavy_armor(player_ptr)) {
         if (!player_ptr->inventory[INVEN_BODY]->is_valid()) {
-            ac += (player_ptr->lev * 3) / 2;
+            ac += (player_ptr->level * 3) / 2;
         }
-        if (!player_ptr->inventory[INVEN_OUTER]->is_valid() && (player_ptr->lev > 15)) {
-            ac += ((player_ptr->lev - 13) / 3);
+        if (!player_ptr->inventory[INVEN_OUTER]->is_valid() && (player_ptr->level > 15)) {
+            ac += ((player_ptr->level - 13) / 3);
         }
-        if (!player_ptr->inventory[INVEN_SUB_HAND]->is_valid() && (player_ptr->lev > 10)) {
-            ac += ((player_ptr->lev - 8) / 3);
+        if (!player_ptr->inventory[INVEN_SUB_HAND]->is_valid() && (player_ptr->level > 10)) {
+            ac += ((player_ptr->level - 8) / 3);
         }
-        if (!player_ptr->inventory[INVEN_HEAD]->is_valid() && (player_ptr->lev > 4)) {
-            ac += (player_ptr->lev - 2) / 3;
+        if (!player_ptr->inventory[INVEN_HEAD]->is_valid() && (player_ptr->level > 4)) {
+            ac += (player_ptr->level - 2) / 3;
         }
         if (!player_ptr->inventory[INVEN_ARMS]->is_valid()) {
-            ac += (player_ptr->lev / 2);
+            ac += (player_ptr->level / 2);
         }
         if (!player_ptr->inventory[INVEN_FEET]->is_valid()) {
-            ac += (player_ptr->lev / 3);
+            ac += (player_ptr->level / 3);
         }
     }
 
@@ -1807,7 +1815,7 @@ static ARMOUR_CLASS calc_to_ac(PlayerType *player_ptr, bool is_real_value)
     }
 
     if (pc.monk_stance_is(MonkStanceType::GENBU)) {
-        ac += (player_ptr->lev * player_ptr->lev) / 50;
+        ac += (player_ptr->level * player_ptr->level) / 50;
     } else if (pc.monk_stance_is(MonkStanceType::BYAKKO)) {
         ac -= 40;
     } else if (pc.monk_stance_is(MonkStanceType::SEIRYU)) {
@@ -1834,7 +1842,7 @@ static ARMOUR_CLASS calc_to_ac(PlayerType *player_ptr, bool is_real_value)
         const auto bi_id_main = player_ptr->inventory[INVEN_MAIN_HAND]->bi_id;
         const auto bi_id_sub = player_ptr->inventory[INVEN_SUB_HAND]->bi_id;
         if (((bi_id_main == 0) || can_attack_with_main_hand(player_ptr)) && ((bi_id_sub == 0) || can_attack_with_sub_hand(player_ptr))) {
-            ac += player_ptr->lev / 2 + 5;
+            ac += player_ptr->level / 2 + 5;
         }
     }
 
@@ -1987,7 +1995,7 @@ void put_equipment_warning(PlayerType *player_ptr)
         if (player_ptr->is_icky_wield[i]) {
             msg_print(_("今の装備はどうも自分にふさわしくない気がする。", "You do not feel comfortable with your weapon."));
             if (AngbandWorld::get_instance().is_loading_now) {
-                chg_virtue(player_ptr, Virtue::FAITH, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
         } else if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
             msg_print(_("今の装備は自分にふさわしい気がする。", "You feel comfortable with your weapon."));
@@ -2021,7 +2029,7 @@ void put_equipment_warning(PlayerType *player_ptr)
         if (heavy_armor(player_ptr)) {
             msg_print(_("装備が重くてバランスを取れない。", "The weight of your armor disrupts your balance."));
             if (AngbandWorld::get_instance().is_loading_now) {
-                chg_virtue(player_ptr, Virtue::HARMONY, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, -1);
             }
         } else {
             msg_print(_("バランスがとれるようになった。", "You regain your balance."));
@@ -2053,7 +2061,7 @@ static short calc_to_damage(PlayerType *player_ptr, INVENTORY_IDX slot, bool is_
     damage += ((int)(adj_str_td[player_ptr->stat_index[A_STR]]) - 128);
 
     if (is_shero(player_ptr)) {
-        damage += 3 + (player_ptr->lev / 5);
+        damage += 3 + (player_ptr->level / 5);
     }
 
     damage -= player_ptr->effects()->stun().get_damage_penalty();
@@ -2062,9 +2070,9 @@ static short calc_to_damage(PlayerType *player_ptr, INVENTORY_IDX slot, bool is_
     if (pc.equals(PlayerClassType::PRIEST) && (o_ptr->get_flags().has_not(TR_BLESSED)) && ((tval == ItemKindType::SWORD) || (tval == ItemKindType::POLEARM))) {
         damage -= 2;
     } else if (pc.equals(PlayerClassType::BERSERKER)) {
-        damage += player_ptr->lev / 6;
+        damage += player_ptr->level / 6;
         if (((calc_hand == PLAYER_HAND_MAIN) && !can_attack_with_sub_hand(player_ptr)) || has_two_handed_weapons(player_ptr)) {
-            damage += player_ptr->lev / 6;
+            damage += player_ptr->level / 6;
         }
     } else if (pc.equals(PlayerClassType::SORCERER)) {
         auto is_suitable = o_ptr->bi_key == BaseitemKey(ItemKindType::HAFTED, SV_WIZSTAFF);
@@ -2174,13 +2182,13 @@ static short calc_to_damage(PlayerType *player_ptr, INVENTORY_IDX slot, bool is_
     }
 
     if (is_martial_arts_mode(player_ptr) && (!heavy_armor(player_ptr) || !pc.equals(PlayerClassType::BERSERKER))) {
-        damage += (player_ptr->lev / 6);
+        damage += (player_ptr->level / 6);
     }
 
     // 朱雀の構えをとっているとき、格闘ダメージに -(レベル)/6 の修正を得る。
     if (PlayerClass(player_ptr).monk_stance_is(MonkStanceType::SUZAKU)) {
         if (is_martial_arts_mode(player_ptr) && calc_hand == PLAYER_HAND_MAIN) {
-            damage -= (player_ptr->lev / 6);
+            damage -= (player_ptr->level / 6);
         }
     }
 
@@ -2299,9 +2307,9 @@ static short calc_to_hit(PlayerType *player_ptr, INVENTORY_IDX slot, bool is_rea
         if (pc.equals(PlayerClassType::PRIEST) && (flags.has_not(TR_BLESSED)) && ((tval == ItemKindType::SWORD) || (tval == ItemKindType::POLEARM))) {
             hit -= 2;
         } else if (pc.equals(PlayerClassType::BERSERKER)) {
-            hit += player_ptr->lev / 5;
+            hit += player_ptr->level / 5;
             if (((calc_hand == PLAYER_HAND_MAIN) && !can_attack_with_sub_hand(player_ptr)) || has_two_handed_weapons(player_ptr)) {
-                hit += player_ptr->lev / 5;
+                hit += player_ptr->level / 5;
             }
         } else if (pc.equals(PlayerClassType::SORCERER)) {
             auto is_suitable = o_ptr->bi_key == BaseitemKey(ItemKindType::HAFTED, SV_WIZSTAFF);
@@ -2411,7 +2419,7 @@ static short calc_to_hit(PlayerType *player_ptr, INVENTORY_IDX slot, bool is_rea
 
     /* Martial arts bonus */
     if (is_martial_arts_mode(player_ptr) && (!heavy_armor(player_ptr) || !pc.equals(PlayerClassType::BERSERKER))) {
-        hit += (player_ptr->lev / 3);
+        hit += (player_ptr->level / 3);
     }
 
     /* Two handed combat penalty */
@@ -2420,7 +2428,7 @@ static short calc_to_hit(PlayerType *player_ptr, INVENTORY_IDX slot, bool is_rea
     // 朱雀の構えをとっているとき、格闘命中に -(レベル)/3 の修正を得る。
     if (PlayerClass(player_ptr).monk_stance_is(MonkStanceType::SUZAKU)) {
         if (is_martial_arts_mode(player_ptr) && calc_hand == PLAYER_HAND_MAIN) {
-            hit -= (player_ptr->lev / 3);
+            hit -= (player_ptr->level / 3);
         }
     }
 
@@ -2470,7 +2478,7 @@ static int16_t calc_to_hit_bow(PlayerType *player_ptr, bool is_real_value)
     if (o_ptr->is_valid()) {
         if (!is_heavy_shoot(player_ptr, player_ptr->inventory[INVEN_BOW].get())) {
             if (PlayerClass(player_ptr).equals(PlayerClassType::SNIPER) && (player_ptr->tval_ammo == ItemKindType::BOLT)) {
-                pow += (10 + (player_ptr->lev / 5));
+                pow += (10 + (player_ptr->level / 5));
             }
         }
     }
@@ -2528,7 +2536,7 @@ static int16_t calc_to_damage_misc(PlayerType *player_ptr)
     }
 
     if (is_shero(player_ptr)) {
-        to_dam += 3 + (player_ptr->lev / 5);
+        to_dam += 3 + (player_ptr->level / 5);
     }
 
     to_dam -= player_ptr->effects()->stun().get_damage_penalty();
@@ -2761,33 +2769,38 @@ void wreck_the_pattern(PlayerType *player_ptr)
  * @brief プレイヤーの経験値について整合性のためのチェックと調整を行う /
  * Advance experience levels and print experience
  */
-void check_experience(PlayerType *player_ptr)
+void check_experience(CreatureEntity &creature)
 {
-    if (player_ptr->exp < 0) {
-        player_ptr->exp = 0;
+    if (creature.exp < 0) {
+        creature.exp = 0;
     }
-    if (player_ptr->max_exp < 0) {
-        player_ptr->max_exp = 0;
+    if (creature.max_exp < 0) {
+        creature.max_exp = 0;
     }
-    if (player_ptr->max_max_exp < 0) {
-        player_ptr->max_max_exp = 0;
-    }
-
-    if (player_ptr->exp > PY_MAX_EXP) {
-        player_ptr->exp = PY_MAX_EXP;
-    }
-    if (player_ptr->max_exp > PY_MAX_EXP) {
-        player_ptr->max_exp = PY_MAX_EXP;
-    }
-    if (player_ptr->max_max_exp > PY_MAX_EXP) {
-        player_ptr->max_max_exp = PY_MAX_EXP;
+    if (creature.max_max_exp < 0) {
+        creature.max_max_exp = 0;
     }
 
-    if (player_ptr->exp > player_ptr->max_exp) {
-        player_ptr->max_exp = player_ptr->exp;
+    if (creature.exp > PY_MAX_EXP) {
+        creature.exp = PY_MAX_EXP;
     }
-    if (player_ptr->max_exp > player_ptr->max_max_exp) {
-        player_ptr->max_max_exp = player_ptr->max_exp;
+    if (creature.max_exp > PY_MAX_EXP) {
+        creature.max_exp = PY_MAX_EXP;
+    }
+    if (creature.max_max_exp > PY_MAX_EXP) {
+        creature.max_max_exp = PY_MAX_EXP;
+    }
+
+    if (creature.exp > creature.max_exp) {
+        creature.max_exp = creature.exp;
+    }
+    if (creature.max_exp > creature.max_max_exp) {
+        creature.max_max_exp = creature.max_exp;
+    }
+
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -2796,15 +2809,15 @@ void check_experience(PlayerType *player_ptr)
 
     PlayerRace pr(player_ptr);
     bool android = pr.equals(PlayerRaceType::ANDROID);
-    PLAYER_LEVEL old_lev = player_ptr->lev;
+    PLAYER_LEVEL old_lev = player_ptr->level;
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,
         StatusRecalculatingFlag::MP,
         StatusRecalculatingFlag::SPELLS,
     };
-    while ((player_ptr->lev > 1) && (player_ptr->exp < ((android ? player_exp_a : player_exp)[player_ptr->lev - 2] * player_ptr->expfact / 100L))) {
-        player_ptr->lev--;
+    while ((player_ptr->level > 1) && (player_ptr->exp < ((android ? player_exp_a : player_exp)[player_ptr->level - 2] * player_ptr->expfact / 100L))) {
+        player_ptr->level--;
         rfu.set_flags(flags_srf);
         static constexpr auto flags_mwrf = {
             MainWindowRedrawingFlag::LEVEL,
@@ -2818,10 +2831,10 @@ void check_experience(PlayerType *player_ptr)
     bool level_reward = false;
     bool level_mutation = false;
     bool level_inc_stat = false;
-    while ((player_ptr->lev < PY_MAX_LEVEL) && (player_ptr->exp >= ((android ? player_exp_a : player_exp)[player_ptr->lev - 1] * player_ptr->expfact / 100L))) {
-        player_ptr->lev++;
-        if (player_ptr->lev > player_ptr->max_plv) {
-            player_ptr->max_plv = player_ptr->lev;
+    while ((player_ptr->level < PY_MAX_LEVEL) && (player_ptr->exp >= ((android ? player_exp_a : player_exp)[player_ptr->level - 1] * player_ptr->expfact / 100L))) {
+        player_ptr->level++;
+        if (player_ptr->level > player_ptr->max_plv) {
+            player_ptr->max_plv = player_ptr->level;
 
             if (PlayerClass(player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT)) {
                 level_reward = true;
@@ -2833,11 +2846,11 @@ void check_experience(PlayerType *player_ptr)
             }
             level_inc_stat = true;
 
-            exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::LEVELUP, player_ptr->lev);
+            exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::LEVELUP, player_ptr->level);
         }
 
         sound(SoundKind::LEVEL);
-        msg_format(_("レベル %d にようこそ。", "Welcome to level %d."), player_ptr->lev);
+        msg_format(_("レベル %d にようこそ。", "Welcome to level %d."), player_ptr->level);
         rfu.set_flags(flags_srf);
         const auto flags_mwrf_levelup = {
             MainWindowRedrawingFlag::LEVEL,
@@ -2896,12 +2909,12 @@ void check_experience(PlayerType *player_ptr)
 
         if (level_mutation) {
             msg_print(_("あなたは変わった気がする...", "You feel different..."));
-            (void)gain_mutation(player_ptr, 0);
+            (void)gain_mutation(*player_ptr, 0);
             level_mutation = false;
         }
 
         /*
-         * 報酬でレベルが上ると再帰的に check_experience(player_ptr) が
+         * 報酬でレベルが上ると再帰的に check_experience(static_cast<CreatureEntity &>(*player_ptr)) が
          * 呼ばれるので順番を最後にする。
          */
         if (level_reward) {
@@ -2923,66 +2936,51 @@ void check_experience(PlayerType *player_ptr)
         handle_stuff(player_ptr);
     }
 
-    if (old_lev != player_ptr->lev) {
+    if (old_lev != player_ptr->level) {
         autopick_load_pref(player_ptr, false);
     }
 }
 
 /*!
- * @brief 現在の修正後能力値を3～17及び18/xxx形式に変換する / Converts stat num into a six-char (right justified) string
- * @param val 能力値
- * @return std::string 右詰め6文字で記述した能力値
+ * @brief 現在の修正後能力値を3.0～40.0形式に変換する / Converts stat num into a six-char (right justified) string
+ * @param val 能力値 (30～400の範囲)
+ * @return std::string 右詰め6文字で記述した能力値 (3.0～40.0表示)
  */
 std::string cnv_stat(int val)
 {
-    if (val <= 18) {
-        return format("    %2d", val);
-    }
+    // 30～400 -> 3.0～40.0に変換
+    int integer_part = val / 10;
+    int decimal_part = val % 10;
 
-    int bonus = (val - 18);
-    if (bonus >= 220) {
-        return "18/***";
-    } else if (bonus >= 100) {
-        return format("18/%03d", bonus);
+    if (val >= 400) {
+        return " 40.0";
+    } else if (integer_part >= 10) {
+        return format(" %2d.%d", integer_part, decimal_part);
     } else {
-        return format(" 18/%02d", bonus);
+        return format("  %d.%d", integer_part, decimal_part);
     }
 }
 
 /*!
- * @brief 能力値現在値から3～17及び18/xxx様式に基づく加減算を行う。
+ * @brief 能力値現在値から加減算を行う。
  * Modify a stat value by a "modifier", return new value
- * @param value 現在値
- * @param amount 加減算値
+ * @param value 現在値 (30～400の範囲)
+ * @param amount 加減算値 (10単位)
  * @return 加減算後の値
  * @details
  * <pre>
- * Stats go up: 3,4,...,17,18,18/10,18/20,...,18/220
- * Or even: 18/13, 18/23, 18/33, ..., 18/220
- * Stats go down: 18/220, 18/210,..., 18/10, 18, 17, ..., 3
- * Or even: 18/13, 18/03, 18, 17, ..., 3
+ * 新システム: 30,40,...,170,180,190,...,400 (表示: 3.0,4.0,...,17.0,18.0,19.0,...,40.0)
+ * 最小値30、最大値400で制限
  * </pre>
  */
 int16_t modify_stat_value(int value, int amount)
 {
-    if (amount > 0) {
-        for (int i = 0; i < amount; i++) {
-            if (value < 18) {
-                value++;
-            } else {
-                value += 10;
-            }
-        }
-    } else if (amount < 0) {
-        for (int i = 0; i < (0 - amount); i++) {
-            if (value >= 18 + 10) {
-                value -= 10;
-            } else if (value > 18) {
-                value = 18;
-            } else if (value > 3) {
-                value--;
-            }
-        }
+    value += amount * 10;
+
+    if (value < 30) {
+        value = 30;
+    } else if (value > 400) {
+        value = 400;
     }
 
     return (int16_t)value;
@@ -3140,7 +3138,7 @@ bool is_hero(PlayerType *player_ptr)
 
 bool is_shero(PlayerType *player_ptr)
 {
-    return player_ptr->shero || PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER);
+    return player_ptr->berserk || PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER);
 }
 
 bool is_echizen(PlayerType *player_ptr)

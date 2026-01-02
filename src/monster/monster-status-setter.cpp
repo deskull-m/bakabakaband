@@ -35,6 +35,7 @@ void set_pet(PlayerType *player_ptr, MonsterEntity &monster)
 {
     QuestCompletionChecker(player_ptr, monster).complete();
     monster.mflag2.set(MonsterConstantFlagType::PET);
+    monster.alliance_idx = AllianceType::NONE;
     if (monster.get_monrace().kind_flags.has_none_of(alignment_mask)) {
         monster.sub_align = SUB_ALIGN_NEUTRAL;
     }
@@ -54,10 +55,10 @@ void anger_monster(PlayerType *player_ptr, MonsterEntity &monster)
     const auto m_name = monster_desc(player_ptr, monster, 0);
     msg_format(_("%s^は怒った！", "%s^ gets angry!"), m_name.data());
     monster.set_hostile();
-    chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
-    chg_virtue(player_ptr, Virtue::HONOUR, -1);
-    chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-    chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
 }
 
 /*!

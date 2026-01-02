@@ -339,7 +339,7 @@ static int monspell_damage_base(
         return -1;
 
     case MonsterAbilityType::HAND_DOOM:
-        mult = player_ptr->chp;
+        mult = player_ptr->hp;
         div = 100;
         dam = 40 * (mult / div);
         dice = Dice(1, 20);
@@ -425,6 +425,8 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_PUYO:
         return -1;
+    case MonsterAbilityType::S_ELDRAZI:
+        return -1;
     case MonsterAbilityType::MAX:
         return -1;
     default:
@@ -492,5 +494,5 @@ int monspell_bluemage_damage(PlayerType *player_ptr, MonsterAbilityType ms_type,
     const auto shoot_base = o_ptr ? o_ptr->to_d : 0;
     const auto shoot_dice = o_ptr ? o_ptr->damage_dice : Dice(1, 1);
 
-    return monspell_damage_base(player_ptr, ms_type, player_ptr->chp, plev * 2, false, shoot_dice, shoot_base, TYPE);
+    return monspell_damage_base(player_ptr, ms_type, player_ptr->hp, plev * 2, false, shoot_dice, shoot_base, TYPE);
 }

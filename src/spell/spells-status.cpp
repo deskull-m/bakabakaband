@@ -114,7 +114,7 @@ bool sleep_monster(PlayerType *player_ptr, const Direction &dir, int power)
  */
 bool stasis_monster(PlayerType *player_ptr, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS, dir, player_ptr->lev * 2, 0);
+    return fire_ball_hide(player_ptr, AttributeType::STASIS, dir, player_ptr->level * 2, 0);
 }
 
 /*!
@@ -126,7 +126,7 @@ bool stasis_monster(PlayerType *player_ptr, const Direction &dir)
  */
 bool stasis_evil(PlayerType *player_ptr, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS_EVIL, dir, player_ptr->lev * 2, 0);
+    return fire_ball_hide(player_ptr, AttributeType::STASIS_EVIL, dir, player_ptr->level * 2, 0);
 }
 
 /*!
@@ -167,7 +167,7 @@ bool poly_monster(PlayerType *player_ptr, const Direction &dir, int power)
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
     bool tester = (project_hook(player_ptr, AttributeType::OLD_POLY, dir, power, flg));
     if (tester) {
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
     return tester;
 }
@@ -280,15 +280,15 @@ void roll_hitdice(PlayerType *player_ptr, spell_operation options)
 bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
 {
     if (virtue_change) {
-        chg_virtue(player_ptr, Virtue::VITALITY, 1);
-        chg_virtue(player_ptr, Virtue::UNLIFE, -5);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -5);
     }
 
     if (message) {
         msg_print(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"));
     }
 
-    restore_level(player_ptr);
+    restore_level(static_cast<CreatureEntity &>(*player_ptr));
     BadStatusSetter bss(player_ptr);
     (void)bss.set_poison(0);
     (void)bss.set_blindness(0);
@@ -298,7 +298,7 @@ bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
     (void)bss.set_cut(0);
     (void)bss.set_paralysis(0);
     (void)restore_all_status(player_ptr);
-    (void)set_shero(player_ptr, 0, true);
+    (void)set_berserk(player_ptr, 0, true);
     handle_stuff(player_ptr);
     hp_player(player_ptr, 5000);
 
@@ -330,7 +330,7 @@ bool berserk(PlayerType *player_ptr, int base)
         ident = true;
     }
 
-    if (set_shero(player_ptr, player_ptr->shero + randint1(base) + base, false)) {
+    if (set_berserk(player_ptr, player_ptr->berserk + randint1(base) + base, false)) {
         ident = true;
     }
 
@@ -357,7 +357,7 @@ bool cure_light_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    if (set_shero(player_ptr, 0, true)) {
+    if (set_berserk(player_ptr, 0, true)) {
         ident = true;
     }
 
@@ -384,7 +384,7 @@ bool cure_serious_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    if (set_shero(player_ptr, 0, true)) {
+    if (set_berserk(player_ptr, 0, true)) {
         ident = true;
     }
 
@@ -419,7 +419,7 @@ bool cure_critical_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    if (set_shero(player_ptr, 0, true)) {
+    if (set_berserk(player_ptr, 0, true)) {
         ident = true;
     }
 
@@ -604,9 +604,9 @@ bool cosmic_cast_off(PlayerType *player_ptr, ItemEntity **o_ptr_ptr)
     (void)set_hero(player_ptr, player_ptr->hero + t, false);
     (void)set_blessed(player_ptr, player_ptr->blessed + t, false);
     (void)mod_acceleration(player_ptr, t, false);
-    (void)set_shero(player_ptr, player_ptr->shero + t, false);
+    (void)set_berserk(player_ptr, player_ptr->berserk + t, false);
     if (PlayerClass(player_ptr).equals(PlayerClassType::FORCETRAINER)) {
-        set_current_ki(player_ptr, true, player_ptr->lev * 5 + 190);
+        set_current_ki(player_ptr, true, player_ptr->level * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }
 
@@ -629,7 +629,7 @@ void apply_nexus(const MonsterEntity &monster, PlayerType *player_ptr)
 
     case 4:
     case 5: {
-        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_PASSIVE);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
         break;
     }
 

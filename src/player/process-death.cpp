@@ -12,6 +12,7 @@
 #include "flavor/flavor-describer.h"
 #include "game-option/game-play-options.h"
 #include "inventory/inventory-slot-types.h"
+#include "io-dump/score-sender.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "object/item-tester-hooker.h"
@@ -25,8 +26,10 @@
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
+#include "util/angband-files.h"
 #include "util/buffer-shaper.h"
 #include "util/int-char-converter.h"
+#include "util/png-displayer.h"
 #include "util/string-processor.h"
 #include "view/display-inventory.h"
 #include "view/display-messages.h"
@@ -70,7 +73,7 @@ static void show_tomb_line(std::string_view str, int row)
  */
 static void show_basic_params(PlayerType *player_ptr)
 {
-    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), player_ptr->lev), GRAVE_LEVEL_ROW);
+    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), player_ptr->level), GRAVE_LEVEL_ROW);
 
     show_tomb_line(fmt::format(_("経験値: {}", "Exp: {}"), player_ptr->exp), GRAVE_EXP_ROW);
 
@@ -212,9 +215,10 @@ static void show_tomb_detail(PlayerType *player_ptr)
  */
 void print_tomb(PlayerType *player_ptr)
 {
+
     term_clear();
     read_dead_file(wc_ptr->is_blown_away());
-    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(player_ptr->pclass)[(player_ptr->lev - 1) / 5];
+    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(player_ptr->pclass)[(player_ptr->level - 1) / 5];
 
     show_tomb_line(player_ptr->name, GRAVE_PLAYER_NAME_ROW);
 
@@ -240,7 +244,20 @@ void print_tomb(PlayerType *player_ptr)
     if (wc_ptr->is_blown_away()) {
         msg_format(_("世 界 こ わ れ る", "The world had *b*r*o*k*e*n*."));
     } else {
-        msg_format(_("さようなら、%s!", "Goodbye, %s!"), player_ptr->name);
+#ifdef WINDOWS
+        // 墓石画像を描画リストに登録
+        const auto tomb_path = path_build(ANGBAND_DIR, "graphics/tomb.png");
+        (void)register_png_image(tomb_path.string());
+#endif
+
+        msg_format(_("さようなら、%s!", "Goodbye, %s!"), player_ptr->name.data());
+
+#ifdef WINDOWS
+        /*
+        // 画像を消去
+        clear_png_display();
+        */
+#endif
     }
 }
 
@@ -373,7 +390,7 @@ static void file_character_auto(PlayerType *player_ptr)
     char datetime[32];
     strftime(datetime, sizeof(datetime), "%Y-%m-%d_%H%M%S", now_tm);
     screen_save();
-    const auto filename = format("%s_Autodump_%s.txt", player_ptr->name, datetime);
+    const auto filename = format("%s_Autodump_%s.txt", player_ptr->name.data(), datetime);
     file_character(player_ptr, filename);
     screen_load();
 }

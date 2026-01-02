@@ -188,6 +188,7 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "MEGATON_COIN", TR_MEGATON_COIN },
     { "SUSHI", TR_SUSHI },
     { "STANDARDIZED", TR_STANDARDIZED },
+    { "IM_LITE", TR_IM_LITE },
 };
 
 /*!

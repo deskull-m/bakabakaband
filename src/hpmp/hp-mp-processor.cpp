@@ -121,7 +121,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     int regen_amount = PY_REGEN_NORMAL;
     const auto effects = player_ptr->effects();
     if (terrain.flags.has(TerrainCharacteristics::RUNE_HEALING)) {
-        hp_player(player_ptr, 2 + player_ptr->lev / 6);
+        hp_player(player_ptr, 2 + player_ptr->level / 6);
     }
 
     const auto &player_poison = effects->poison();
@@ -227,7 +227,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     if (can_drown && !player_ptr->levitation && !player_ptr->can_swim && !has_resist_water(player_ptr)) {
         if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
             msg_print(_("溺れている！", "You are drowning!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->lev), _("溺れ", "drowning"));
+            take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->level), _("溺れ", "drowning"));
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
@@ -237,9 +237,9 @@ void process_player_hp_mp(PlayerType *player_ptr)
         int damage;
         msg_print(_("棘に体が突き刺さっている！", "Your body is stuck in a thorn!"));
         if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
-            damage = randint1(player_ptr->lev);
+            damage = randint1(player_ptr->level);
         } else {
-            damage = (randint1(player_ptr->lev) + 1) / 2;
+            damage = (randint1(player_ptr->level) + 1) / 2;
         }
         cave_no_regen = true;
         take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
@@ -265,7 +265,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     if (get_player_flags(player_ptr, TR_SELF_FIRE) && !has_immune_fire(player_ptr)) {
         int damage;
-        damage = player_ptr->lev;
+        damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_FIRE)) {
             damage += damage / 3;
         }
@@ -283,7 +283,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     if (get_player_flags(player_ptr, TR_SELF_ELEC) && !has_immune_elec(player_ptr)) {
         int damage;
-        damage = player_ptr->lev;
+        damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_ELEC)) {
             damage += damage / 3;
         }
@@ -301,7 +301,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     if (get_player_flags(player_ptr, TR_SELF_COLD) && !has_immune_cold(player_ptr)) {
         int damage;
-        damage = player_ptr->lev;
+        damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_COLD)) {
             damage += damage / 3;
         }
@@ -383,7 +383,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         auto should_damage = !is_invuln(player_ptr);
         should_damage &= player_ptr->wraith_form == 0;
         should_damage &= player_ptr->tim_pass_wall == 0;
-        should_damage &= (player_ptr->chp > (player_ptr->lev / 5)) || !has_pass_wall(player_ptr);
+        should_damage &= (player_ptr->hp > (player_ptr->level / 5)) || !has_pass_wall(player_ptr);
         if (should_damage) {
             concptr dam_desc;
             cave_no_regen = true;
@@ -396,7 +396,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
                 dam_desc = _("硬い岩", "solid rock");
             }
 
-            take_hit(player_ptr, DAMAGE_NOESCAPE, 1 + (player_ptr->lev / 5), dam_desc);
+            take_hit(player_ptr, DAMAGE_NOESCAPE, 1 + (player_ptr->level / 5), dam_desc);
         }
     }
 
@@ -473,7 +473,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
     }
 
     regen_amount = (regen_amount * player_ptr->mutant_regenerate_mod) / 100;
-    if ((player_ptr->chp < player_ptr->mhp) && !cave_no_regen) {
+    if ((player_ptr->hp < player_ptr->maxhp) && !cave_no_regen) {
         regenhp(player_ptr, regen_amount);
     }
 }
@@ -484,25 +484,28 @@ void process_player_hp_mp(PlayerType *player_ptr)
 bool hp_player(PlayerType *player_ptr, int num)
 {
     int vir;
-    vir = virtue_number(player_ptr, Virtue::VITALITY);
+    vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY);
 
     if (num <= 0) {
         return false;
     }
 
     if (vir) {
-        num = num * (player_ptr->virtues[vir - 1] + 1250) / 1250;
+        auto it = player_ptr->virtues.find(Virtue::VITALITY);
+        if (it != player_ptr->virtues.end()) {
+            num = num * (it->second + 1250) / 1250;
+        }
     }
 
-    if (player_ptr->chp < player_ptr->mhp) {
-        if ((num > 0) && (player_ptr->chp < (player_ptr->mhp / 3))) {
-            chg_virtue(player_ptr, Virtue::TEMPERANCE, 1);
+    if (player_ptr->hp < player_ptr->maxhp) {
+        if ((num > 0) && (player_ptr->hp < (player_ptr->maxhp / 3))) {
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
         }
 
-        player_ptr->chp += num;
-        if (player_ptr->chp >= player_ptr->mhp) {
-            player_ptr->chp = player_ptr->mhp;
-            player_ptr->chp_frac = 0;
+        player_ptr->hp += num;
+        if (player_ptr->hp >= player_ptr->maxhp) {
+            player_ptr->hp = player_ptr->maxhp;
+            player_ptr->hp_frac = 0;
         }
 
         auto &rfu = RedrawingFlagsUpdater::get_instance();

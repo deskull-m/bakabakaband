@@ -47,7 +47,7 @@
 int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use_charge, bool powerful)
 {
     int ident = false;
-    PLAYER_LEVEL lev = powerful ? player_ptr->lev * 2 : player_ptr->lev;
+    PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
     POSITION rad = powerful ? 3 : 2;
 
@@ -122,7 +122,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
         if (true_healing(player_ptr, 0)) {
             ident = true;
         }
-        if (set_shero(player_ptr, 0, true)) {
+        if (set_berserk(player_ptr, 0, true)) {
             ident = true;
         }
         break;
@@ -136,7 +136,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_RESTORATION: {
-        if (restore_level(player_ptr)) {
+        if (restore_level(static_cast<CreatureEntity &>(*player_ptr))) {
             ident = true;
         }
         if (restore_all_status(player_ptr)) {

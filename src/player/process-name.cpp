@@ -29,66 +29,63 @@
 void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
 {
     const auto &world = AngbandWorld::get_instance();
-    char old_player_base[32] = "";
-    if (world.character_generated) {
-        strcpy(old_player_base, player_ptr->base_name);
-    }
+    const std::string old_player_base = world.character_generated ? player_ptr->base_name : "";
 
-    for (int i = 0; player_ptr->name[i]; i++) {
+    const auto name_c_str = player_ptr->name.c_str();
+    for (size_t i = 0; i < player_ptr->name.length(); i++) {
 #ifdef JP
-        if (iskanji(player_ptr->name[i])) {
+        if (iskanji(name_c_str[i])) {
             i++;
             continue;
         }
 
-        if (iscntrl((unsigned char)player_ptr->name[i])) {
+        if (iscntrl((unsigned char)name_c_str[i])) {
 #else
-        if (iscntrl(player_ptr->name[i])) {
+        if (iscntrl(name_c_str[i])) {
 #endif
-            quit_fmt(_("'%s' という名前は不正なコントロールコードを含んでいます。", "The name '%s' contains control chars!"), player_ptr->name);
+            quit_fmt(_("'%s' という名前は不正なコントロールコードを含んでいます。", "The name '%s' contains control chars!"), name_c_str);
         }
     }
 
-    int k = 0;
-    for (int i = 0; player_ptr->name[i]; i++) {
+    player_ptr->base_name.clear();
+    for (size_t i = 0; i < player_ptr->name.length(); i++) {
 #ifdef JP
-        unsigned char c = player_ptr->name[i];
+        unsigned char c = name_c_str[i];
 #else
-        char c = player_ptr->name[i];
+        char c = name_c_str[i];
 #endif
 
 #ifdef JP
         if (iskanji(c)) {
-            if (k + 2 >= (int)sizeof(player_ptr->base_name) || !player_ptr->name[i + 1]) {
+            if (player_ptr->base_name.length() + 2 >= 40 || i + 1 >= player_ptr->name.length()) {
                 break;
             }
 
-            player_ptr->base_name[k++] = c;
+            player_ptr->base_name += c;
             i++;
-            player_ptr->base_name[k++] = player_ptr->name[i];
+            player_ptr->base_name += name_c_str[i];
         }
 #ifdef SJIS
         else if (iskana(c))
-            player_ptr->base_name[k++] = c;
+            player_ptr->base_name += c;
 #endif
         else
 #endif
-            if (!strncmp(PATH_SEP, player_ptr->name + i, strlen(PATH_SEP))) {
-            player_ptr->base_name[k++] = '_';
+            if (!strncmp(PATH_SEP, name_c_str + i, strlen(PATH_SEP))) {
+            player_ptr->base_name += '_';
             i += strlen(PATH_SEP);
         }
 #if defined(WINDOWS)
         else if (angband_strchr("\"*,/:;<>?\\|", c))
-            player_ptr->base_name[k++] = '_';
+            player_ptr->base_name += '_';
 #endif
         else if (isprint(c)) {
-            player_ptr->base_name[k++] = c;
+            player_ptr->base_name += c;
         }
     }
 
-    player_ptr->base_name[k] = '\0';
-    if (!player_ptr->base_name[0]) {
-        strcpy(player_ptr->base_name, "PLAYER");
+    if (player_ptr->base_name.empty()) {
+        player_ptr->base_name = "PLAYER";
     }
 
     auto is_modified = false;
@@ -115,7 +112,7 @@ void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
 #endif
     }
 
-    if (world.character_generated && !streq(old_player_base, player_ptr->base_name)) {
+    if (world.character_generated && old_player_base != player_ptr->base_name) {
         autopick_load_pref(player_ptr, false);
     }
 }
@@ -133,17 +130,16 @@ void get_name(PlayerType *player_ptr)
         display_player_misc_info(player_ptr);
     });
 
-    std::string initial_name(player_ptr->name);
-    const auto max_name_size = 15;
-    const auto copy_size = sizeof(player_ptr->name);
+    std::string initial_name = player_ptr->name;
+    const auto max_name_size = 40;
     constexpr auto prompt = _("キャラクターの名前を入力して下さい: ", "Enter a name for your character: ");
     const auto name = input_string(prompt, max_name_size, initial_name);
     if (name && !name->empty()) {
-        angband_strcpy(player_ptr->name, *name, copy_size);
+        player_ptr->name = *name;
         return;
     }
 
     if (initial_name.empty()) {
-        angband_strcpy(player_ptr->name, "PLAYER", copy_size);
+        player_ptr->name = "PLAYER";
     }
 }

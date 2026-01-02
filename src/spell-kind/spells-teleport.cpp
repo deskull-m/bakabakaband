@@ -58,7 +58,7 @@ bool teleport_swap(PlayerType *player_ptr, const Direction &dir)
         return false;
     }
 
-    if ((grid.is_icky()) || (Grid::calc_distance(pos, player_ptr->get_position()) > player_ptr->lev * 3 / 2 + 10)) {
+    if ((grid.is_icky()) || (Grid::calc_distance(pos, player_ptr->get_position()) > player_ptr->level * 3 / 2 + 10)) {
         msg_print(_("失敗した。", "Failed to swap."));
         return false;
     }
@@ -114,8 +114,8 @@ bool teleport_away(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION dis, tele
         return false;
     }
 
-    if ((mode & TELEPORT_DEC_VALOUR) && (((player_ptr->chp * 10) / player_ptr->mhp) > 5) && (4 + randint1(5) < ((player_ptr->chp * 10) / player_ptr->mhp))) {
-        chg_virtue(player_ptr, Virtue::VALOUR, -1);
+    if ((mode & TELEPORT_DEC_VALOUR) && (((player_ptr->hp * 10) / player_ptr->maxhp) > 5) && (4 + randint1(5) < ((player_ptr->hp * 10) / player_ptr->maxhp))) {
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VALOUR, -1);
     }
 
     const auto m_pos_orig = monster.get_position();
@@ -139,7 +139,7 @@ bool teleport_away(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION dis, tele
                 }
             }
 
-            if (!floor.contains(m_pos)) {
+            if (!floor.contains(m_pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                 continue;
             }
             if (!cave_monster_teleportable_bold(player_ptr, m_idx, m_pos.y, m_pos.x, mode)) {
@@ -221,7 +221,7 @@ void teleport_monster_to(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION ty,
                 }
             }
 
-            if (!floor.contains(m_pos)) {
+            if (!floor.contains(m_pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                 continue;
             }
             if (!cave_monster_teleportable_bold(player_ptr, m_idx, m_pos.y, m_pos.x, mode)) {
@@ -367,7 +367,7 @@ bool teleport_player_aux(PlayerType *player_ptr, POSITION dis, bool is_quantum_e
     sound(SoundKind::TELEPORT);
 #ifdef JP
     if (is_echizen(player_ptr)) {
-        msg_format("『こっちだぁ、%s』", player_ptr->name);
+        msg_format("『こっちだぁ、%s』", player_ptr->name.data());
     }
 #endif
     (void)move_player_effect(player_ptr, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
@@ -483,7 +483,7 @@ void teleport_player_to(PlayerType *player_ptr, POSITION ny, POSITION nx, telepo
         while (true) {
             pos.y = rand_spread(ny, dis);
             pos.x = rand_spread(nx, dis);
-            if (floor.contains(pos)) {
+            if (floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                 break;
             }
         }
@@ -556,10 +556,10 @@ void teleport_away_followable(PlayerType *player_ptr, MONSTER_IDX m_idx)
         teleport_player(player_ptr, 200, TELEPORT_PASSIVE);
         msg_print(_("失敗！", "Failed!"));
     } else {
-        teleport_player_to(player_ptr, monster.fy, monster.fx, TELEPORT_SPONTANEOUS);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_SPONTANEOUS);
     }
 
-    player_ptr->energy_need += ENERGY_NEED();
+    static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());
 }
 
 /*!
@@ -570,14 +570,14 @@ void teleport_away_followable(PlayerType *player_ptr, MONSTER_IDX m_idx)
  */
 bool exe_dimension_door(PlayerType *player_ptr, const Pos2D &pos)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
 
-    player_ptr->energy_need += static_cast<short>((60 - plev) * ENERGY_NEED() / 100);
+    static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + static_cast<short>((60 - plev) * ENERGY_NEED() / 100));
     auto is_successful = cave_player_teleportable_bold(player_ptr, pos.y, pos.x, TELEPORT_SPONTANEOUS);
     is_successful &= Grid::calc_distance(pos, player_ptr->get_position()) <= plev / 2 + 10;
     is_successful &= !one_in_(plev / 10 + 10);
     if (!is_successful) {
-        player_ptr->energy_need += static_cast<short>((60 - plev) * ENERGY_NEED() / 100);
+        static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + static_cast<short>((60 - plev) * ENERGY_NEED() / 100));
         teleport_player(player_ptr, (plev + 2) * 2, TELEPORT_PASSIVE);
         return false;
     }

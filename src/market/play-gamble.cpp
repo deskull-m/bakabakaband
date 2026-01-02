@@ -34,7 +34,7 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
     }
 
     clear_bldg(5, 23);
-    auto maxbet = player_ptr->lev * 200;
+    auto maxbet = player_ptr->level * 200;
     maxbet = std::min(maxbet, player_ptr->au);
     constexpr auto prompt = _("賭け金？", "Your wager ?");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
@@ -254,10 +254,10 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
     prt("", 18, 37);
     if (player_ptr->au >= oldgold) {
         msg_print(_("「今回は儲けたな！でも次はこっちが勝ってやるからな、絶対に！」", "You came out a winner! We'll win next time, I'm sure."));
-        chg_virtue(player_ptr, Virtue::CHANCE, 3);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 3);
     } else {
         msg_print(_("「金をスッてしまったな、わはは！うちに帰った方がいいぜ。」", "You lost gold! Haha, better head home."));
-        chg_virtue(player_ptr, Virtue::CHANCE, -3);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -3);
     }
 
     msg_erase();

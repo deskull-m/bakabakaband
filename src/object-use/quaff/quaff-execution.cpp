@@ -71,7 +71,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
     item.mark_as_tried();
     if (ident && !item.is_aware()) {
         object_aware(this->player_ptr, item);
-        gain_exp(this->player_ptr, (item.get_baseitem_level() + (this->player_ptr->lev >> 1)) / this->player_ptr->lev);
+        gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item.get_baseitem_level() + (this->player_ptr->level >> 1)) / this->player_ptr->level);
     }
 
     static constexpr auto flags = {
@@ -163,7 +163,7 @@ void ObjectQuaffEntity::change_virtue_as_quaff(const ItemEntity &o_ref)
         return;
     }
 
-    chg_virtue(this->player_ptr, Virtue::PATIENCE, -1);
-    chg_virtue(this->player_ptr, Virtue::CHANCE, 1);
-    chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
 }

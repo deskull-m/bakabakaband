@@ -68,7 +68,7 @@ void do_cmd_colors(PlayerType *player_ptr)
 {
     FILE *auto_dump_stream;
     screen_save();
-    const auto initial_filename = format("%s.prf", player_ptr->base_name);
+    const auto initial_filename = format("%s.prf", player_ptr->base_name.data());
     while (true) {
         term_clear();
         prt(_("[ カラーの設定 ]", "Interact with Colors"), 2, 0);

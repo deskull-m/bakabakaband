@@ -119,7 +119,7 @@ static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, I
     }
 
     display_store_inventory(player_ptr, StoreSaleType::HOME);
-    chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
 }
 
 static void switch_store_stock(PlayerType *player_ptr, const int i, const COMMAND_CODE item, StoreSaleType store_num)
@@ -230,7 +230,10 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
 
     COMMAND_CODE item_new;
     const auto purchased_item_name = describe_flavor(player_ptr, item, 0);
-    msg_format(_("%s(%c)を購入する。", "Buying %s (%c)."), purchased_item_name.data(), I2A(item_num));
+    const auto item_index = item_num % store_bottom;
+    const auto item_index_char = (item_index > 25) ? toupper(I2A(item_index - 26)) : I2A(item_index);
+
+    msg_format(_("%s(%c)を購入する。", "Buying %s (%c)."), purchased_item_name.data(), item_index_char);
     msg_erase();
 
     const auto &world = AngbandWorld::get_instance();
@@ -249,10 +252,10 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
 
     store_owner_says_comment(player_ptr, store_num);
     if (store_num == StoreSaleType::BLACK) {
-        chg_virtue(player_ptr, Virtue::JUSTICE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
     }
     if ((item_store.bi_key.tval() == ItemKindType::BOTTLE) && (store_num != StoreSaleType::HOME)) {
-        chg_virtue(player_ptr, Virtue::NATURE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, -1);
     }
 
     sound(SoundKind::BUY);

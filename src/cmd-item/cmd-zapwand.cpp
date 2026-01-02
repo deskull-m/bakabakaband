@@ -54,35 +54,38 @@
 bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool powerful, bool magic)
 {
     bool ident = false;
-    PLAYER_LEVEL lev = powerful ? player_ptr->lev * 2 : player_ptr->lev;
+    PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
     POSITION rad = powerful ? 3 : 2;
 
     player_ptr->plus_incident_tree("ZAP_WAND", 1);
 
     /* XXX Hack -- Wand of wonder can do anything before it */
     if (sval == SV_WAND_WONDER) {
-        int vir = virtue_number(player_ptr, Virtue::CHANCE);
+        int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
         sval = randint0(SV_WAND_WONDER);
 
         if (vir) {
-            if (player_ptr->virtues[vir - 1] > 0) {
-                while (randint1(300) < player_ptr->virtues[vir - 1]) {
-                    sval++;
-                }
-                if (sval > SV_WAND_COLD_BALL) {
-                    sval = randint0(4) + SV_WAND_ACID_BALL;
-                }
-            } else {
-                while (randint1(300) < (0 - player_ptr->virtues[vir - 1])) {
-                    sval--;
-                }
-                if (sval < SV_WAND_HEAL_MONSTER) {
-                    sval = randint0(3) + SV_WAND_HEAL_MONSTER;
+            auto it = player_ptr->virtues.find(Virtue::CHANCE);
+            if (it != player_ptr->virtues.end()) {
+                if (it->second > 0) {
+                    while (randint1(300) < it->second) {
+                        sval++;
+                    }
+                    if (sval > SV_WAND_COLD_BALL) {
+                        sval = randint0(4) + SV_WAND_ACID_BALL;
+                    }
+                } else {
+                    while (randint1(300) < (0 - it->second)) {
+                        sval--;
+                    }
+                    if (sval < SV_WAND_HEAL_MONSTER) {
+                        sval = randint0(3) + SV_WAND_HEAL_MONSTER;
+                    }
                 }
             }
         }
         if (sval < SV_WAND_TELEPORT_AWAY) {
-            chg_virtue(player_ptr, Virtue::CHANCE, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
         }
     }
 

@@ -1,5 +1,4 @@
 #include "alliance/alliance-boletaria.h"
-#include "game-option/birth-options.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -19,7 +18,7 @@ int AllianceBoletaria::calcImpressionPoint(PlayerType *creature_ptr) const
     int level = 22;
 
     int base_stat = (creature_ptr->stat_max[A_STR] + creature_ptr->stat_max[A_CON]) / 2;
-    int impression = base_stat + bias + creature_ptr->lev / level;
+    int impression = base_stat + bias + creature_ptr->level / level;
 
     if (impression < 1) {
         impression = 1;

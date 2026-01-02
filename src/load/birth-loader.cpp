@@ -1,4 +1,5 @@
 #include "load/birth-loader.h"
+#include "avatar/avatar.h"
 #include "birth/quick-start.h"
 #include "load/load-util.h"
 #include "player-ability/player-ability-types.h"
@@ -37,8 +38,13 @@ void load_quick_start(void)
 
     previous_char.patron = rd_s16b();
 
+    // Load previous character virtues (only types, values not saved)
+    previous_char.virtues.clear();
     for (int i = 0; i < 8; i++) {
-        previous_char.vir_types[i] = i2enum<Virtue>(rd_s16b());
+        auto vir_type = i2enum<Virtue>(rd_s16b());
+        if (vir_type != Virtue::NONE && vir_type < Virtue::MAX) {
+            previous_char.virtues[vir_type] = 0;
+        }
     }
 
     for (int i = 0; i < 4; i++) {

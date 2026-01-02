@@ -14,6 +14,9 @@
 #include "term/gameterm.h"
 #include "term/term-color-types.h"
 #include "view/display-symbol.h"
+#ifdef WINDOWS
+#include "util/png-displayer.h"
+#endif
 
 /* Special flags in the attr data */
 #define AF_BIGTILE2 0xf0
@@ -1243,6 +1246,11 @@ void term_fresh()
     old->cv = scr->cv;
     old->cx = scr->cx;
     old->cy = scr->cy;
+
+#ifdef WINDOWS
+    /* Redraw registered PNG images */
+    redraw_png_images();
+#endif
 
     /* Actually flush the output */
     term_xtra(TERM_XTRA_FRESH, 0);

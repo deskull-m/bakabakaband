@@ -5,10 +5,12 @@
  */
 
 #include "system/baseitem/baseitem-definition.h"
+#include "alliance/alliance.h"
 #include "util/string-processor.h"
 
 BaseitemDefinition::BaseitemDefinition()
     : bi_key(ItemKindType::NONE)
+    , alliance_idx(AllianceType::NONE)
     , symbol_definition(DisplaySymbol(0, '\0'))
     , symbol_config(DisplaySymbol(0, '\0'))
 {

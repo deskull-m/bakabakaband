@@ -17,8 +17,6 @@
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-
-#include "game-option/birth-options.h"
 /*!
  * @brief ナーグル神アライアンスの印象ポイント計算
  * @param creature_ptr プレイヤー情報
@@ -29,10 +27,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
 
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        impression -= 10000;
-    }
+    impression += calcIronmanHostilityPenalty();
     // 基本的な戦力による評価（控えめ）
     impression += Alliance::calcPlayerPower(*creature_ptr, 10, 25);
 
@@ -109,7 +104,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // 現在のHP状況（傷ついているほど好まれる）
     /*
-    int hp_ratio = (creature_ptr->chp * 100) / creature_ptr->mhp;
+    int hp_ratio = (creature_ptr->hp * 100) / creature_ptr->maxhp;
     if (hp_ratio <= 25)
         impression += 60;
     else if (hp_ratio <= 50)
@@ -192,7 +187,7 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
         if (one_in_(2)) {
             msg_print("あなたの体が腐敗し始めた...");
             project(&player_ptr, 0, 3, player_ptr.y, player_ptr.x,
-                player_ptr.lev * 2, AttributeType::POIS,
+                player_ptr.level * 2, AttributeType::POIS,
                 PROJECT_KILL | PROJECT_ITEM);
         }
 
@@ -228,7 +223,7 @@ void AllianceNurgle::panishment(PlayerType &player_ptr)
 
         // 大ダメージ（腐敗エリア攻撃）
         project(&player_ptr, 0, 5, player_ptr.y, player_ptr.x,
-            player_ptr.lev * 4, AttributeType::POIS,
+            player_ptr.level * 4, AttributeType::POIS,
             PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
         if (one_in_(2)) {

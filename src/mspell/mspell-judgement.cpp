@@ -196,7 +196,7 @@ bool dispel_check_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
         return true;
     }
 
-    if ((t_ref.mspeed < 135) && t_ref.is_accelerated()) {
+    if ((t_ref.speed < 135) && t_ref.is_accelerated()) {
         return true;
     }
 
@@ -240,11 +240,15 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     PlayerClass pc(player_ptr);
-    if (player_ptr->shero && !pc.equals(PlayerClassType::BERSERKER)) {
+    if (player_ptr->berserk && !pc.equals(PlayerClassType::BERSERKER)) {
         return true;
     }
 
     if (player_ptr->mimic_form == MimicKindType::DEMON_LORD) {
+        return true;
+    }
+
+    if (player_ptr->mimic_form == MimicKindType::DEMIGOD) {
         return true;
     }
 
@@ -262,7 +266,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_FIRE)) {
-        if (!(PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->lev > 44)) {
+        if (!(PlayerRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->level > 44)) {
             if (!has_immune_fire(player_ptr) && (player_ptr->oppose_fire || music_singing(player_ptr, MUSIC_RESIST))) {
                 return true;
             }
@@ -293,7 +297,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
         }
     }
 
-    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (player_ptr->lev > 44))) {
+    if (monrace.ability_flags.has_any_of({ MonsterAbilityType::BR_POIS, MonsterAbilityType::BR_NUKE }) && !(pc.equals(PlayerClassType::NINJA) && (player_ptr->level > 44))) {
         if (player_ptr->oppose_pois || music_singing(player_ptr, MUSIC_RESIST)) {
             return true;
         }
@@ -331,18 +335,18 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    if ((player_ptr->pspeed < 145) && is_fast(player_ptr)) {
+    if ((static_cast<CreatureEntity &>(*player_ptr).get_speed() < 145) && is_fast(player_ptr)) {
         return true;
     }
 
     constexpr auto threshold = 25;
     const auto threshold_speed = STANDARD_SPEED + threshold;
-    if (player_ptr->lightspeed && (monster.mspeed <= threshold_speed)) {
+    if (player_ptr->lightspeed && (monster.speed <= threshold_speed)) {
         return true;
     }
 
     const auto &m_ref = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
-    if (player_ptr->riding && (player_ptr->current_floor_ptr->m_list[player_ptr->riding].mspeed < 135) && m_ref.is_accelerated()) {
+    if (player_ptr->riding && (player_ptr->current_floor_ptr->m_list[player_ptr->riding].speed < 135) && m_ref.is_accelerated()) {
         return true;
     }
 

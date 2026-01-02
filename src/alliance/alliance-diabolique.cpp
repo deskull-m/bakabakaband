@@ -3,7 +3,6 @@
 #include "core/disturbance.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
-#include "game-option/birth-options.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
@@ -19,13 +18,10 @@
 int AllianceDiabolique::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int impression = 0;
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        impression -= 10000;
-    }
+    impression += calcIronmanHostilityPenalty();
 
     // プレイヤーレベルによる基本印象値
-    impression += creature_ptr->lev * 10;
+    impression += creature_ptr->level * 10;
 
     // デアボリカのロードたちを殺害した場合の大幅減点（レベル×10）
     const auto &monrace_list = MonraceList::get_instance();

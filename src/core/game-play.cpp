@@ -224,7 +224,7 @@ static void restore_world_floor_info(PlayerType *player_ptr)
     player_ptr->ride_monster(0);
     for (short i = floor.m_max; i > 0; i--) {
         const auto &monster = floor.m_list[i];
-        if (player_ptr->is_located_at({ monster.fy, monster.fx })) {
+        if (player_ptr->is_located_at({ monster.y, monster.x })) {
             player_ptr->ride_monster(i);
             break;
         }
@@ -324,7 +324,7 @@ static void init_riding_pet(PlayerType *player_ptr, bool new_game)
     const auto &monrace = MonraceList::get_instance().get_monrace(pet_id);
     const auto m_idx = place_specific_monster(player_ptr, player_ptr->y, player_ptr->x - 1, pet_id, (PM_FORCE_PET | PM_NO_KAGE));
     auto &monster = player_ptr->current_floor_ptr->m_list[*m_idx];
-    monster.mspeed = monrace.speed;
+    monster.speed = monrace.speed;
     monster.maxhp = monrace.hit_dice.floored_expected_value();
     monster.max_maxhp = monster.maxhp;
     monster.hp = monrace.hit_dice.floored_expected_value();
@@ -456,7 +456,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie)
     }
 
     init_io(player_ptr);
-    if (player_ptr->chp < 0 && !cheat_immortal) {
+    if (player_ptr->hp < 0 && !cheat_immortal) {
         player_ptr->is_dead_ = true;
     }
 

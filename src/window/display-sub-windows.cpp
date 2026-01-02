@@ -237,7 +237,7 @@ static void print_pet_list_oneline(PlayerType *player_ptr, const MonsterEntity &
     term_addstr(-1, TERM_WHITE, name);
 
     if (width >= 50) {
-        const auto location = format(" (X:%3d Y:%3d)", monster.fx, monster.fy);
+        const auto location = format(" (X:%3d Y:%3d)", monster.x, monster.y);
         prt(is_visible ? location : "", y, width - location.length());
     }
 }
@@ -736,7 +736,7 @@ static void display_spell_list(PlayerType *player_ptr)
 
     if (pc.has_listed_magics()) {
         PERCENTAGE minfail = 0;
-        PLAYER_LEVEL plev = player_ptr->lev;
+        PLAYER_LEVEL plev = player_ptr->level;
         PERCENTAGE chance = 0;
         MindKindType use_mind;
         bool use_hp = false;
@@ -780,7 +780,7 @@ static void display_spell_list(PlayerType *player_ptr)
             }
 
             chance = spell.fail;
-            chance -= 3 * (player_ptr->lev - spell.min_lev);
+            chance -= 3 * (player_ptr->level - spell.min_lev);
             chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
             if (!use_hp) {
                 if (spell.mana_cost > player_ptr->csp) {
@@ -788,7 +788,7 @@ static void display_spell_list(PlayerType *player_ptr)
                     a = TERM_ORANGE;
                 }
             } else {
-                if (spell.mana_cost > player_ptr->chp) {
+                if (spell.mana_cost > player_ptr->hp) {
                     chance += 100;
                     a = TERM_RED;
                 }

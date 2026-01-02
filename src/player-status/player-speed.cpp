@@ -77,35 +77,35 @@ int16_t PlayerSpeed::class_bonus()
     has_speed |= this->player_ptr->ppersonality == PERSONALITY_MUNCHKIN;
     if (pc.equals(PlayerClassType::NINJA)) {
         if (heavy_armor(this->player_ptr)) {
-            bonus -= (this->player_ptr->lev) / 10;
+            bonus -= (this->player_ptr->level) / 10;
         } else if (pc.has_ninja_speed()) {
             bonus += 3;
             if (!has_speed) {
-                bonus += (this->player_ptr->lev) / 10;
+                bonus += (this->player_ptr->level) / 10;
             }
         }
     }
 
     if ((pc.equals(PlayerClassType::MONK) || pc.equals(PlayerClassType::FORCETRAINER)) && !heavy_armor(this->player_ptr)) {
         if (!has_speed) {
-            bonus += (this->player_ptr->lev) / 10;
+            bonus += (this->player_ptr->level) / 10;
         }
     }
 
     if (pc.equals(PlayerClassType::BERSERKER)) {
         bonus += 2;
-        if (this->player_ptr->lev > 29) {
+        if (this->player_ptr->level > 29) {
             bonus++;
         }
 
-        if (this->player_ptr->lev > 39) {
+        if (this->player_ptr->level > 39) {
             bonus++;
         }
-        if (this->player_ptr->lev > 44) {
+        if (this->player_ptr->level > 44) {
             bonus++;
         }
 
-        if (this->player_ptr->lev > 49) {
+        if (this->player_ptr->level > 49) {
             bonus++;
         }
     }
@@ -130,7 +130,7 @@ int16_t PlayerSpeed::personality_bonus()
         return 0;
     }
 
-    return this->player_ptr->lev / 10 + 5;
+    return this->player_ptr->level / 10 + 5;
 }
 
 /*!
@@ -277,15 +277,15 @@ int16_t PlayerSpeed::mutation_bonus()
 int16_t PlayerSpeed::riding_bonus()
 {
     const auto &monster = (this->player_ptr)->current_floor_ptr->m_list[this->player_ptr->riding];
-    int16_t speed = monster.mspeed;
+    int16_t speed = monster.speed;
     int16_t bonus = 0;
     if (!this->player_ptr->riding) {
         return 0;
     }
 
-    if (monster.mspeed > STANDARD_SPEED) {
+    if (monster.speed > STANDARD_SPEED) {
         const auto skill_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
-        bonus = (int16_t)((speed - STANDARD_SPEED) * (skill_exp * 3 + this->player_ptr->lev * 160L - 10000L) / (22000L));
+        bonus = (int16_t)((speed - STANDARD_SPEED) * (skill_exp * 3 + this->player_ptr->level * 160L - 10000L) / (22000L));
         if (bonus < 0) {
             bonus = 0;
         }
@@ -293,7 +293,7 @@ int16_t PlayerSpeed::riding_bonus()
         bonus = speed - 110;
     }
 
-    bonus += (this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] + this->player_ptr->lev * 160L) / 3200;
+    bonus += (this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] + this->player_ptr->level * 160L) / 3200;
     if (monster.is_accelerated()) {
         bonus += 10;
     }

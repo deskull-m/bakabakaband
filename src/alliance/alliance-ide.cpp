@@ -6,7 +6,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
-#include "game-option/birth-options.h"
 /*!
  * @brief イデのアライアンス印象値を計算する
  * 無限力の存在として、INTとWISをベースとした印象値計算を行う
@@ -21,7 +20,7 @@ int AllianceIde::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // INTとWISの平均をベースとした印象値計算（無限力らしく知性と叡智を重視）
     int base_stat = (creature_ptr->stat_max[A_INT] + creature_ptr->stat_max[A_WIS]) / 2;
-    int impression = base_stat + bias + creature_ptr->lev / level;
+    int impression = base_stat + bias + creature_ptr->level / level;
 
     // 最低値保証
     if (impression < 1) {

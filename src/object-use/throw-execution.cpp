@@ -173,7 +173,7 @@ void ObjectThrowEntity::set_class_specific_throw_params()
     energy.set_player_turn_energy(100);
     PlayerClass pc(this->player_ptr);
     if (pc.equals(PlayerClassType::ROGUE) || pc.equals(PlayerClassType::NINJA)) {
-        energy.sub_player_turn_energy(this->player_ptr->lev);
+        energy.sub_player_turn_energy(this->player_ptr->level);
     }
 
     this->y = this->player_ptr->y;
@@ -513,7 +513,7 @@ void ObjectThrowEntity::calc_racial_power_damage()
     }
 
     if (this->shuriken != 0) {
-        this->tdam += ((this->player_ptr->lev + 30) * (this->player_ptr->lev + 30) - 900) / 55;
+        this->tdam += ((this->player_ptr->level + 30) * (this->player_ptr->level + 30) - 900) / 55;
     }
 
     if (this->tdam < 0) {

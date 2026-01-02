@@ -56,7 +56,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
 {
     int k;
     bool ident = false;
-    PLAYER_LEVEL lev = powerful ? player_ptr->lev * 2 : player_ptr->lev;
+    PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
 
     player_ptr->plus_incident_tree("ZAP_STAFF", 1);
@@ -201,7 +201,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
 
     case SV_STAFF_CURING: {
         ident = true_healing(player_ptr, 0);
-        if (set_shero(player_ptr, 0, true)) {
+        if (set_berserk(player_ptr, 0, true)) {
             ident = true;
         }
         break;
@@ -219,7 +219,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
             ident = true;
         }
         ident |= restore_mana(player_ptr, false);
-        if (set_shero(player_ptr, 0, true)) {
+        if (set_berserk(player_ptr, 0, true)) {
             ident = true;
         }
         break;

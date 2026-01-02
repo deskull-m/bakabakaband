@@ -259,17 +259,17 @@ static void curse_drain_exp(PlayerType *player_ptr)
         return;
     }
 
-    player_ptr->exp -= (player_ptr->lev + 1) / 2;
+    player_ptr->exp -= (player_ptr->level + 1) / 2;
     if (player_ptr->exp < 0) {
         player_ptr->exp = 0;
     }
 
-    player_ptr->max_exp -= (player_ptr->lev + 1) / 2;
+    player_ptr->max_exp -= (player_ptr->level + 1) / 2;
     if (player_ptr->max_exp < 0) {
         player_ptr->max_exp = 0;
     }
 
-    check_experience(player_ptr);
+    check_experience(static_cast<CreatureEntity &>(*player_ptr));
 }
 
 static void multiply_low_curse(PlayerType *player_ptr)
@@ -401,7 +401,7 @@ static void curse_berserk_rage(PlayerType *player_ptr)
 
     auto *o_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::BERS_RAGE);
     auto chance = 1500;
-    short duration = 10 + randint1(player_ptr->lev);
+    short duration = 10 + randint1(player_ptr->level);
 
     if (o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
         chance = 150;
@@ -415,7 +415,7 @@ static void curse_berserk_rage(PlayerType *player_ptr)
     disturb(player_ptr, false, true);
     msg_print(_("ウガァァア！", "RAAAAGHH!"));
     msg_print(_("激怒の発作に襲われた！", "You feel a fit of rage coming over you!"));
-    (void)set_shero(player_ptr, duration, false);
+    (void)set_berserk(player_ptr, duration, false);
     (void)BadStatusSetter(player_ptr).set_fear(0);
 }
 
@@ -428,7 +428,7 @@ static void curse_drain_hp(PlayerType *player_ptr)
     const auto *item_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::DRAIN_HP);
     const auto item_name = describe_flavor(player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの体力を吸収した！", "Your %s drains HP from you!"), item_name.data());
-    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min(player_ptr->lev * 2, 100), item_name);
+    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min(player_ptr->level * 2, 100), item_name);
 }
 
 static void curse_drain_mp(PlayerType *player_ptr)
@@ -440,7 +440,7 @@ static void curse_drain_mp(PlayerType *player_ptr)
     const auto *item_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::DRAIN_MANA);
     const auto item_name = describe_flavor(player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
-    player_ptr->csp -= std::min<short>(player_ptr->lev, 50);
+    player_ptr->csp -= std::min<short>(player_ptr->level, 50);
     if (player_ptr->csp < 0) {
         player_ptr->csp = 0;
         player_ptr->csp_frac = 0;
@@ -465,7 +465,7 @@ static void curse_megaton_coin(PlayerType *player_ptr)
     auto dam = Dice::roll(2, 8);
     take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
 
-    if (autosave_l && (player_ptr->chp >= 0)) {
+    if (autosave_l && (player_ptr->hp >= 0)) {
         do_cmd_save_game(player_ptr, true);
     }
 
@@ -535,5 +535,5 @@ void execute_cursed_items_effect(PlayerType *player_ptr)
         msg_print(_("なにかがあなたの体力を吸収した！", "Something drains life from you!"));
     }
 
-    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min<short>(player_ptr->lev, 50), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min<short>(player_ptr->level, 50), _("審判の宝石", "the Jewel of Judgement"));
 }

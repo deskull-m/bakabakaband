@@ -261,6 +261,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_CAT", MonsterAbilityType::S_CAT },
 	{"S_WALL", MonsterAbilityType::S_WALL },
 	{"S_INSECT", MonsterAbilityType::S_INSECT },
+	{"S_ELDRAZI", MonsterAbilityType::S_ELDRAZI },
 };
 /* clang-format on */
 
@@ -373,6 +374,7 @@ const std::unordered_map<std::string_view, MonsterBehaviorType> r_info_behavior_
     { "SMART", MonsterBehaviorType::SMART },
     { "FRIENDLY", MonsterBehaviorType::FRIENDLY },
     { "FRIENDLY_STANDBY", MonsterBehaviorType::FRIENDLY_STANDBY },
+    { "TIMID", MonsterBehaviorType::TIMID },
 };
 
 const std::unordered_map<std::string_view, MonsterVisualType> r_info_visual_flags = {
@@ -495,6 +497,18 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "ALIEN", MonsterKindType::ALIEN }, // 異星人
     { "GRANDMA", MonsterKindType::GRANDMA }, // ババア
     { "PAPER", MonsterKindType::PAPER }, // 紙で出来た
+    { "WOODEN", MonsterKindType::WOODEN }, // 木で出来た
+    { "IRON", MonsterKindType::IRON }, // 鉄で出来た
+    { "COPPER", MonsterKindType::COPPER }, // 銅で出来た
+    { "STONE", MonsterKindType::STONE }, // 石で出来た
+    { "SILVER", MonsterKindType::SILVER }, // 銀で出来た
+    { "GOLD", MonsterKindType::GOLD }, // 金で出来た
+    { "MITHRIL", MonsterKindType::MITHRIL }, // ミスリルで出来た
+    { "ADAMANTITE", MonsterKindType::ADAMANTITE }, // アダマンタイトで出来た
+    { "FECES", MonsterKindType::FECES }, // 糞で出来た
+    { "FLESH", MonsterKindType::FLESH }, // 肉で出来た
+    { "DARKSTEEL", MonsterKindType::DARKSTEEL }, // ダークスティールで出来た
+    { "WARPSTONE", MonsterKindType::WARPSTONE }, // ワープストーンで出来た
     { "DEEPONE", MonsterKindType::DEEPONE }, // 深きもの
     { "PHYREXIAN", MonsterKindType::PHYREXIAN }, // ファイレクシア人
     { "HORROR", MonsterKindType::HORROR }, // ホラー
@@ -519,10 +533,14 @@ const std::unordered_map<std::string_view, MonsterKindType> r_info_kind_flags = 
     { "PLANESWALKER", MonsterKindType::PLANESWALKER }, // プレインズウォーカー
     { "BOAR", MonsterKindType::BOAR }, // 猪
     { "ARCHER", MonsterKindType::ARCHER }, // アーチャー
+    { "GUNNER", MonsterKindType::GUNNER }, // ガンナー
     { "SQUIRREL", MonsterKindType::SQUIRREL }, // リス
-    { "BARD", MonsterKindType::BARD }, // 呀遊詩人
+    { "BARD", MonsterKindType::BARD }, // 吟遊詩人
     { "MAGICAL_GIRL", MonsterKindType::MAGICAL_GIRL }, // 魔法少女
     { "WEREWOLF", MonsterKindType::WEREWOLF }, // 人狼
+    { "SMITH", MonsterKindType::SMITH }, // 鍛冶師
+    { "WHEEL", MonsterKindType::WHEEL }, // 車輪
+    { "GREAT_OLD_ONE", MonsterKindType::GREAT_OLD_ONE }, // 旧支配者
 };
 
 const std::unordered_map<std::string_view, MonsterEraType> r_info_era_flags = {

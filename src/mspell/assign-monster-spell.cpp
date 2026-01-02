@@ -58,9 +58,10 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
         case MonsterAbilityType::S_CHOASIANS:
         case MonsterAbilityType::S_WALL:
         case MonsterAbilityType::S_INSECT:
+        case MonsterAbilityType::S_ELDRAZI:
         case MonsterAbilityType::S_UNIQUE:
-            x = m_ptr->fx;
-            y = m_ptr->fy;
+            x = m_ptr->x;
+            y = m_ptr->y;
             break;
         default:
             break;
@@ -204,6 +205,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::S_PERVERT: return spell_RF6_S_PERVERTS(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_PERVERT */
     case MonsterAbilityType::S_WALL: return spell_RF6_S_WALL(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_WALL */
     case MonsterAbilityType::S_INSECT: return spell_RF6_S_INSECT(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_INSECT */
+    case MonsterAbilityType::S_ELDRAZI: return spell_RF6_S_ELDRAZI(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_ELDRAZI */
     default: break;
     }
     // clang-format on
@@ -242,9 +244,10 @@ static MonsterSpellResult monspell_to_monster_impl(
         case MonsterAbilityType::S_CHOASIANS:
         case MonsterAbilityType::S_WALL:
         case MonsterAbilityType::S_INSECT:
+        case MonsterAbilityType::S_ELDRAZI:
         case MonsterAbilityType::S_UNIQUE:
-            x = m_ptr->fx;
-            y = m_ptr->fy;
+            x = m_ptr->x;
+            y = m_ptr->y;
             break;
         default:
             break;
@@ -388,6 +391,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::S_PERVERT: return spell_RF6_S_PERVERTS(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_PERVERT */
     case MonsterAbilityType::S_WALL: return spell_RF6_S_WALL(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_WALL */
     case MonsterAbilityType::S_INSECT: return spell_RF6_S_INSECT(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_INSECT */
+    case MonsterAbilityType::S_ELDRAZI: return spell_RF6_S_ELDRAZI(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_ELDRAZI */
     default: break;
     }
     // clang-format on

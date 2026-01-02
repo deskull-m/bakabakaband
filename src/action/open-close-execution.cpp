@@ -88,7 +88,7 @@ bool exe_open(PlayerType *player_ptr, POSITION y, POSITION x)
     cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
     sound(SoundKind::OPENDOOR);
     player_ptr->plus_incident_tree("OPEN_DOOR", 1);
-    gain_exp(player_ptr, 1);
+    gain_exp(static_cast<CreatureEntity &>(*player_ptr), 1);
     return false;
 }
 
@@ -184,7 +184,7 @@ bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
             msg_print(_("鍵をはずした。", "You have picked the lock."));
             cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
             sound(SoundKind::OPENDOOR);
-            gain_exp(player_ptr, 1);
+            gain_exp(static_cast<CreatureEntity &>(*player_ptr), 1);
         } else {
             if (flush_failure) {
                 flush();
@@ -243,7 +243,7 @@ bool exe_disarm_chest(PlayerType *player_ptr, POSITION y, POSITION x, OBJECT_IDX
         msg_print(_("箱にはトラップが仕掛けられていない。", "The chest is not trapped."));
     } else if (evaluate_percent(j)) {
         msg_print(_("箱に仕掛けられていたトラップを解除した。", "You have disarmed the chest."));
-        gain_exp(player_ptr, o_ptr->pval);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), o_ptr->pval);
         o_ptr->pval = (0 - o_ptr->pval);
     } else if ((i > 5) && (randint1(i) > 5)) {
         more = true;
@@ -306,7 +306,7 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction 
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::TRAP, 0 }));
         item.pval = grid.feat;
         msg_format(_("%sを解除した。", "You have disarmed the %s."), name.data());
-        gain_exp(player_ptr, power);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), power);
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::DISARM);
         exe_movement(player_ptr, dir, easy_disarm, false);
 
@@ -373,7 +373,7 @@ bool exe_bash(PlayerType *player_ptr, POSITION y, POSITION x, const Direction &d
         }
 
         exe_movement(player_ptr, dir, false, false);
-    } else if (evaluate_percent(adj_dex_safe[player_ptr->stat_index[A_DEX]] + player_ptr->lev)) {
+    } else if (evaluate_percent(adj_dex_safe[player_ptr->stat_index[A_DEX]] + player_ptr->level)) {
         msg_format(_("この%sは頑丈だ。", "The %s holds firm."), name.data());
         more = true;
     } else {

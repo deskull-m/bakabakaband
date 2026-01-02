@@ -106,7 +106,7 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
     }
 
     const auto m_name = monster_desc(player_ptr, monster, 0);
-    int bonus = player_ptr->to_h_m + (player_ptr->lev * 6 / 5);
+    int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5);
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
     player_ptr->plus_incident_tree("ATTACK_EXE_COUNT", 1);
@@ -136,7 +136,7 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
 
     switch (attack) {
     case PlayerMutationType::SCOR_TAIL:
-        project(player_ptr, 0, 0, monster.fy, monster.fx, k, AttributeType::POIS, PROJECT_KILL);
+        project(player_ptr, 0, 0, monster.y, monster.x, k, AttributeType::POIS, PROJECT_KILL);
         *mdeath = !monster.is_valid();
         break;
     case PlayerMutationType::HORNS:
@@ -171,7 +171,7 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     concptr atk_desc = _("頭突き", "headbutt");
 
     const auto m_name = monster_desc(player_ptr, monster, 0);
-    int bonus = player_ptr->to_h_m + (player_ptr->lev * 6 / 5);
+    int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5);
 
     // 狂戦士状態の場合は命中とダメージにボーナス
     if (is_shero(player_ptr)) {
@@ -255,10 +255,10 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     concptr atk_desc = _("体当たり", "body slam");
 
     // プレイヤーの体重による影響（推定）
-    int body_weight_bonus = (player_ptr->lev + player_ptr->stat_index[A_STR]) / 3;
+    int body_weight_bonus = (player_ptr->level + player_ptr->stat_index[A_STR]) / 3;
 
     const auto m_name = monster_desc(player_ptr, monster, 0);
-    int bonus = player_ptr->to_h_m + (player_ptr->lev * 6 / 5) + body_weight_bonus;
+    int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5) + body_weight_bonus;
 
     // 狂戦士状態や英雄状態での強化
     if (is_shero(player_ptr)) {
@@ -402,16 +402,16 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || is_shero(player_ptr) || !monster.ml)) {
         if (player_ptr->is_wielding(FixedArtifactId::STORMBRINGER)) {
             msg_format(_("黒い刃は強欲に%sを攻撃した！", "Your black blade greedily attacks %s!"), m_name.data());
-            chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
-            chg_virtue(player_ptr, Virtue::HONOUR, -1);
-            chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-            chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
         } else if (!PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
             if (input_check(_("本当に攻撃しますか？", "Really hit it? "))) {
-                chg_virtue(player_ptr, Virtue::INDIVIDUALISM, 1);
-                chg_virtue(player_ptr, Virtue::HONOUR, -1);
-                chg_virtue(player_ptr, Virtue::JUSTICE, -1);
-                chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
             } else {
                 msg_format(_("%sを攻撃するのを止めた。", "You stop to avoid hitting %s."), m_name.data());
                 return false;
@@ -434,10 +434,10 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
 
     if (monster.is_asleep()) {
         if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-            chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
         }
         if (monrace.kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-            chg_virtue(player_ptr, Virtue::HONOUR, -1);
+            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
         }
     }
 
@@ -671,7 +671,7 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
     concptr atk_desc = _("浣腸", "enema");
 
     const auto m_name = monster_desc(player_ptr, monster, 0);
-    int bonus = player_ptr->to_h_m + (player_ptr->lev * 6 / 5) + (player_ptr->lev + player_ptr->stat_index[A_DEX]) / 3;
+    int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5) + (player_ptr->level + player_ptr->stat_index[A_DEX]) / 3;
     ;
 
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));

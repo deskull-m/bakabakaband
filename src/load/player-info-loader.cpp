@@ -1,4 +1,5 @@
 #include "load/player-info-loader.h"
+#include "avatar/avatar.h"
 #include "combat/martial-arts-style.h"
 #include "load/angband-version-comparer.h"
 #include "load/birth-loader.h"
@@ -63,9 +64,10 @@ static void rd_realms(PlayerType *player_ptr)
  */
 void rd_base_info(PlayerType *player_ptr)
 {
-    const auto player_name = rd_string();
-    const auto player_name_len = player_name.copy(player_ptr->name, sizeof(player_ptr->name) - 1);
-    player_ptr->name[player_name_len] = '\0';
+    player_ptr->name = rd_string();
+    if (player_ptr->name.length() > 40) {
+        player_ptr->name.resize(40);
+    }
     player_ptr->died_from = rd_string();
     player_ptr->last_message = rd_string();
 
@@ -93,6 +95,26 @@ void rd_base_info(PlayerType *player_ptr)
     player_ptr->age = rd_s16b();
     player_ptr->ht = rd_s16b();
     player_ptr->wt = rd_s16b();
+
+    // 死亡履歴のロード（バージョン44以降）
+    if (loading_savefile_version_is_older_than(44)) {
+        player_ptr->death_history.clear();
+    } else {
+        const auto death_history_size = rd_u32b();
+        player_ptr->death_history.clear();
+        player_ptr->death_history.reserve(death_history_size);
+        for (uint32_t i = 0; i < death_history_size; ++i) {
+            DeathRecord record;
+            record.game_turn = rd_s32b();
+            record.day = rd_s16b();
+            record.hour = rd_s16b();
+            record.min = rd_s16b();
+            record.player_level = rd_s16b();
+            record.cause = rd_string();
+            record.killer_monrace_id = i2enum<MonraceId>(rd_s16b());
+            player_ptr->death_history.push_back(record);
+        }
+    }
 }
 
 void rd_experience(PlayerType *player_ptr)
@@ -103,7 +125,7 @@ void rd_experience(PlayerType *player_ptr)
     player_ptr->exp = rd_s32b();
     player_ptr->exp_frac = rd_u32b();
 
-    player_ptr->lev = rd_s16b();
+    player_ptr->level = rd_s16b();
     for (int i = 0; i < 64; i++) {
         player_ptr->spell_exp[i] = rd_s16b();
     }
@@ -171,19 +193,48 @@ void rd_bounty_uniques()
 /*!
  * @brief 腕力などの基本ステータス情報を読み込む
  * @param player_ptr プレイヤーへの参照ポインタ
+ * @details セーブファイルバージョン36以降は30-400形式、それ以前は3-18/220形式
  */
 static void rd_base_status(PlayerType *player_ptr)
 {
+    auto convert_old_stat_to_new = [](int16_t old_val) -> int16_t {
+        // 旧形式 (3-18/220) を新形式 (30-400) に変換
+        if (old_val <= 18) {
+            // 3-18 -> 30-180
+            return old_val * 10;
+        } else {
+            // 18/xx -> 180-400
+            // 18/00 = 19 -> 190
+            // 18/220 = 238 -> 400
+            int bonus = old_val - 18;
+            if (bonus > 220) {
+                bonus = 220;
+            }
+            return 180 + (bonus * 220 / 220);
+        }
+    };
+
+    bool is_old_format = loading_savefile_version_is_older_than(36);
+
     for (int i = 0; i < A_MAX; i++) {
         player_ptr->stat_max[i] = rd_s16b();
+        if (is_old_format) {
+            player_ptr->stat_max[i] = convert_old_stat_to_new(player_ptr->stat_max[i]);
+        }
     }
 
     for (int i = 0; i < A_MAX; i++) {
         player_ptr->stat_max_max[i] = rd_s16b();
+        if (is_old_format) {
+            player_ptr->stat_max_max[i] = convert_old_stat_to_new(player_ptr->stat_max_max[i]);
+        }
     }
 
     for (int i = 0; i < A_MAX; i++) {
         player_ptr->stat_cur[i] = rd_s16b();
+        if (is_old_format) {
+            player_ptr->stat_cur[i] = convert_old_stat_to_new(player_ptr->stat_cur[i]);
+        }
     }
 }
 
@@ -245,9 +296,16 @@ static void rd_arena(PlayerType *player_ptr)
  */
 static void rd_hp(PlayerType *player_ptr)
 {
-    player_ptr->mhp = rd_s32b();
-    player_ptr->chp = rd_s32b();
-    player_ptr->chp_frac = rd_u32b();
+    player_ptr->maxhp = rd_s32b();
+    player_ptr->hp = rd_s32b();
+    player_ptr->hp_frac = rd_u32b();
+
+    // セーブファイルバージョン35以降で与ダメージ蓄積を読み込み
+    if (!loading_savefile_version_is_older_than(35)) {
+        player_ptr->dealt_damage = rd_s32b();
+    } else {
+        player_ptr->dealt_damage = 0;
+    }
 }
 
 /*!
@@ -325,6 +383,15 @@ static void set_timed_effects(PlayerType *player_ptr)
     player_ptr->tim_reflect = rd_s16b();
     player_ptr->multishadow = rd_s16b();
     player_ptr->dustrobe = rd_s16b();
+
+    if (!loading_savefile_version_is_older_than(37)) {
+        player_ptr->tim_res_lite = rd_s16b();
+        player_ptr->tim_res_dark = rd_s16b();
+        player_ptr->tim_res_fear = rd_s16b();
+        player_ptr->tim_emission = rd_s16b();
+        player_ptr->tim_exorcism = rd_s16b();
+        player_ptr->tim_imm_dark = rd_s16b();
+    }
 }
 
 static void set_mutations(PlayerType *player_ptr)
@@ -345,12 +412,19 @@ static void set_mutations(PlayerType *player_ptr)
 
 static void set_virtues(PlayerType *player_ptr)
 {
+    // Load virtue values (8 entries)
+    int16_t virtue_values[8];
     for (int i = 0; i < 8; i++) {
-        player_ptr->virtues[i] = rd_s16b();
+        virtue_values[i] = rd_s16b();
     }
 
+    // Load virtue types (8 entries) and build map
+    player_ptr->virtues.clear();
     for (int i = 0; i < 8; i++) {
-        player_ptr->vir_types[i] = i2enum<Virtue>(rd_s16b());
+        auto vir_type = i2enum<Virtue>(rd_s16b());
+        if (vir_type != Virtue::NONE && vir_type < Virtue::MAX) {
+            player_ptr->virtues[vir_type] = virtue_values[i];
+        }
     }
 }
 
@@ -397,7 +471,7 @@ static void rd_player_status(PlayerType *player_ptr)
     rd_energy(player_ptr);
     rd_status(player_ptr);
     player_ptr->hero = rd_s16b();
-    player_ptr->shero = rd_s16b();
+    player_ptr->berserk = rd_s16b();
     player_ptr->shield = rd_s16b();
     player_ptr->blessed = rd_s16b();
     player_ptr->tim_invis = rd_s16b();

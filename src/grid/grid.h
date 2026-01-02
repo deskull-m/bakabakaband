@@ -7,6 +7,7 @@
  * @date 2015/01/25
  */
 
+#include "alliance/alliance.h"
 #include "object/object-index-list.h"
 #include "spell/spells-util.h"
 #include "system/angband.h"
@@ -19,17 +20,18 @@ class Grid;
 class GridTemplate {
 public:
     GridTemplate()
-        : GridTemplate(0, 0, 0, 0, 0)
+        : GridTemplate(0, 0, 0, 0, 0, AllianceType::NONE)
     {
     }
 
-    GridTemplate(BIT_FLAGS info, FEAT_IDX feat, FEAT_IDX mimic, short special, uint16_t occurrence)
+    GridTemplate(BIT_FLAGS info, FEAT_IDX feat, FEAT_IDX mimic, short special, uint16_t occurrence, AllianceType alliance_idx)
         : info(info)
         , feat(feat)
         , mimic(mimic)
         , special(special)
         , occurrence(occurrence)
         , terrain_description("")
+        , alliance_idx(alliance_idx)
     {
     }
 
@@ -39,6 +41,7 @@ public:
     short special;
     uint16_t occurrence;
     std::string terrain_description;
+    AllianceType alliance_idx;
 
     bool matches(const Grid &grid) const;
 };

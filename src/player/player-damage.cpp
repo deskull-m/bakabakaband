@@ -299,8 +299,8 @@ static void death_save(PlayerType *player_ptr)
  */
 int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_view hit_from, MonraceId killer_monrace_id)
 {
-    const auto old_chp = player_ptr->chp;
-    const auto hp_warning_threshold = (player_ptr->mhp * hitpoint_warn / 10);
+    const auto old_chp = player_ptr->hp;
+    const auto hp_warning_threshold = (player_ptr->maxhp * hitpoint_warn / 10);
     if (player_ptr->is_dead()) {
         return 0;
     }
@@ -359,30 +359,38 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         }
     }
 
-    player_ptr->chp -= damage;
-    if (player_ptr->chp < -9999) {
-        player_ptr->chp = -9999;
+    player_ptr->hp -= damage;
+    if (player_ptr->hp < -9999) {
+        player_ptr->hp = -9999;
     }
 
-    if (damage_type == DAMAGE_GENO && player_ptr->chp < 0) {
-        damage += player_ptr->chp;
-        player_ptr->chp = 0;
+    if (damage_type == DAMAGE_GENO && player_ptr->hp < 0) {
+        damage += player_ptr->hp;
+        player_ptr->hp = 0;
+    }
+
+    // 与ダメージの蓄積（プレイヤーが受けたダメージとして記録）
+    if (damage > 0 && damage_type != DAMAGE_USELIFE && damage_type != DAMAGE_LOSELIFE) {
+        player_ptr->dealt_damage += damage;
+        if (player_ptr->dealt_damage > 999999999) {
+            player_ptr->dealt_damage = 999999999; // オーバーフロー防止
+        }
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    if (damage_type != DAMAGE_GENO && player_ptr->chp == 0) {
-        chg_virtue(player_ptr, Virtue::SACRIFICE, 1);
-        chg_virtue(player_ptr, Virtue::CHANCE, 2);
+    if (damage_type != DAMAGE_GENO && player_ptr->hp == 0) {
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 2);
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;
     auto &world = AngbandWorld::get_instance();
-    if (player_ptr->chp < 0 && !cheat_immortal) {
+    if (player_ptr->hp < 0 && !cheat_immortal) {
         const auto is_android = PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID);
         sound(SoundKind::DEATH);
-        chg_virtue(player_ptr, Virtue::SACRIFICE, 10);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 10);
         handle_stuff(player_ptr);
         player_ptr->leaving = true;
         if (!cheat_immortal) {
@@ -462,6 +470,18 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         player_ptr->death_count++;
         player_ptr->killer_monrace_id = killer_monrace_id;
 
+        // 死亡履歴を記録
+        DeathRecord death_record;
+        death_record.game_turn = world.game_turn;
+        const auto [day, hour, min] = world.extract_date_time(player_ptr->prace);
+        death_record.day = day;
+        death_record.hour = hour;
+        death_record.min = min;
+        death_record.player_level = player_ptr->level;
+        death_record.cause = player_ptr->died_from;
+        death_record.killer_monrace_id = killer_monrace_id;
+        player_ptr->death_history.push_back(death_record);
+
         // インシデントに死亡回数を記録
         player_ptr->plus_incident_tree("DEAD", 1);
 
@@ -476,7 +496,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
             auto &quests = QuestList::get_instance();
             auto &quest = quests.get_quest(q_idx);
             if (quest.status == QuestStatusType::TAKEN) {
-                record_quest_final_status(&quest, player_ptr->lev, QuestStatusType::FAILED);
+                record_quest_final_status(&quest, player_ptr->level, QuestStatusType::FAILED);
                 if (quest.type == QuestKindType::RANDOM) {
                     if (record_rand_quest) {
                         exe_write_diary_quest(player_ptr, DiaryKind::RAND_QUEST_F, q_idx);
@@ -600,7 +620,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
     }
 
     handle_stuff(player_ptr);
-    if (player_ptr->chp < hp_warning_threshold) {
+    if (player_ptr->hp < hp_warning_threshold) {
         if (old_chp > hp_warning_threshold) {
             bell();
         }
@@ -627,7 +647,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
         flush();
     }
 
-    if (world.is_wild_mode() && !player_ptr->leaving && (player_ptr->chp < std::max(hp_warning_threshold, player_ptr->mhp / 5))) {
+    if (world.is_wild_mode() && !player_ptr->leaving && (player_ptr->hp < std::max(hp_warning_threshold, player_ptr->maxhp / 5))) {
         change_wild_mode(player_ptr, false);
     }
 

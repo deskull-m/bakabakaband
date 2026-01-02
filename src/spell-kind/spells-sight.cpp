@@ -85,7 +85,7 @@ bool project_all_los(PlayerType *player_ptr, AttributeType typ, int dam)
  */
 bool speed_monsters(PlayerType *player_ptr)
 {
-    return project_all_los(player_ptr, AttributeType::OLD_SPEED, player_ptr->lev);
+    return project_all_los(player_ptr, AttributeType::OLD_SPEED, player_ptr->level);
 }
 
 /*!
@@ -124,9 +124,9 @@ bool banish_evil(PlayerType *player_ptr, int dist)
  */
 bool turn_undead(PlayerType *player_ptr)
 {
-    bool tester = (project_all_los(player_ptr, AttributeType::TURN_UNDEAD, player_ptr->lev));
+    bool tester = (project_all_los(player_ptr, AttributeType::TURN_UNDEAD, player_ptr->level));
     if (tester) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
     }
     return tester;
 }
@@ -140,7 +140,7 @@ bool dispel_undead(PlayerType *player_ptr, int dam)
 {
     bool tester = (project_all_los(player_ptr, AttributeType::DISP_UNDEAD, dam));
     if (tester) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, -2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
     }
     return tester;
 }
@@ -202,7 +202,7 @@ bool dispel_demons(PlayerType *player_ptr, int dam)
  */
 bool crusade(PlayerType *player_ptr)
 {
-    return project_all_los(player_ptr, AttributeType::CRUSADE, player_ptr->lev * 4);
+    return project_all_los(player_ptr, AttributeType::CRUSADE, player_ptr->level * 4);
 }
 
 /*!
@@ -235,7 +235,7 @@ void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
             }
         }
 
-        if (floor.has_los_at({ monster.fy, monster.fx }) && !monster.is_pet()) {
+        if (floor.has_los_at({ monster.y, monster.x }) && !monster.is_pet()) {
             monster.mflag2.set(MonsterConstantFlagType::ANGER);
             (void)set_monster_fast(player_ptr, i, monster.get_remaining_acceleration() + 100);
             speed = true;
@@ -359,7 +359,7 @@ bool turn_monsters(PlayerType *player_ptr, int dam)
  */
 bool deathray_monsters(PlayerType *player_ptr)
 {
-    return project_all_los(player_ptr, AttributeType::DEATH_RAY, player_ptr->lev * 200);
+    return project_all_los(player_ptr, AttributeType::DEATH_RAY, player_ptr->level * 200);
 }
 
 /*!
@@ -401,7 +401,7 @@ std::string probed_monster_info(PlayerType *player_ptr, MonsterEntity &monster, 
 
     const auto speed = monster.get_temporary_speed() - STANDARD_SPEED;
     constexpr auto mes = _("%s ... 属性:%s HP:%d/%d AC:%d 速度:%s%d 経験:", "%s ... align:%s HP:%d/%d AC:%d speed:%s%d exp:");
-    auto result = format(mes, m_name.data(), align, (int)monster.hp, (int)monster.maxhp, monrace.ac, (speed > 0) ? "+" : "", speed);
+    auto result = format(mes, m_name.data(), align, (int)monster.hp, (int)monster.maxhp, monster.get_ac(), (speed > 0) ? "+" : "", speed);
 
     if (monrace.get_next().is_valid()) {
         result.append(format("%d/%d ", monster.exp, monrace.next_exp));
@@ -447,7 +447,7 @@ bool probing(PlayerType *player_ptr)
         if (!monster.is_valid()) {
             continue;
         }
-        if (!floor.has_los_at({ monster.fy, monster.fx })) {
+        if (!floor.has_los_at({ monster.y, monster.x })) {
             continue;
         }
         if (!monster.ml) {
@@ -465,7 +465,7 @@ bool probing(PlayerType *player_ptr)
         message_add(probe_result);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
         handle_stuff(player_ptr);
-        move_cursor_relative(monster.fy, monster.fx);
+        move_cursor_relative(monster.y, monster.x);
         inkey();
         term_erase(0, 0);
         const auto mes = monrace.probe_lore();
@@ -485,7 +485,7 @@ bool probing(PlayerType *player_ptr)
     term_fresh();
 
     if (probe) {
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
         msg_print(_("これで全部です。", "That's all."));
     }
 

@@ -1,4 +1,5 @@
 #include "perception/identification.h"
+#include "alliance/alliance.h"
 #include "artifact/fixed-art-types.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
@@ -46,6 +47,12 @@ bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mod
     int i = 0;
     std::transform(item_text_lines.begin(), item_text_lines.end(), &info[i], [](const auto &line) { return line.data(); });
     i += item_text_lines.size();
+
+    const auto &baseitem = item.get_baseitem();
+    if (baseitem.alliance_idx != AllianceType::NONE) {
+        const auto &alliance = alliance_list.at(baseitem.alliance_idx);
+        info[i++] = format(_("製造元: %s", "Manufactured by: %s"), alliance->name.data()).data();
+    }
 
     if (item.is_equipment()) {
         trivial_info = i;
@@ -401,6 +408,10 @@ bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mod
         info[i++] = _("それは暗黒に対する完全な免疫を授ける。", "It provides immunity to dark.");
     }
 
+    if (flags.has(TR_IM_LITE)) {
+        info[i++] = _("それは閃光に対する完全な免疫を授ける。", "It provides immunity to light.");
+    }
+
     if (flags.has(TR_VUL_LITE)) {
         info[i++] = _("それは閃光に対する弱点を授ける。", "It provides vulnerability to light.");
     }
@@ -441,7 +452,7 @@ bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mod
         info[i++] = _("それは毒への耐性を授ける。", "It provides resistance to poison.");
     }
 
-    if (flags.has(TR_RES_LITE) && flags.has_not(TR_VUL_LITE)) {
+    if (flags.has(TR_RES_LITE) && flags.has_not(TR_VUL_LITE) && flags.has_not(TR_IM_LITE)) {
         info[i++] = _("それは閃光への耐性を授ける。", "It provides resistance to light.");
     }
 

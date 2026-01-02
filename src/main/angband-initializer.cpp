@@ -17,6 +17,7 @@
 #include "floor/wild.h"
 #include "info-reader/feature-reader.h"
 #include "io/files-util.h"
+#include "io/input-key-acceptor.h"
 #include "io/read-pref-file.h"
 #include "io/uid-checker.h"
 #include "main/game-data-initializer.h"
@@ -33,6 +34,9 @@
 #include "time.h"
 #include "util/angband-files.h"
 #include "world/world.h"
+#ifdef WINDOWS
+#include "util/png-displayer.h"
+#endif
 
 /*!
  * @brief 各データファイルを読み取るためのパスを取得する.
@@ -99,17 +103,22 @@ static void init_angband_aux(const std::string &why)
     quit(_("致命的なエラー。", "Fatal Error."));
 }
 
+#ifdef WINDOWS
 /*!
  * @brief タイトル記述
  * @param なし
  */
 static void put_title()
 {
+    // title.pngを描画リストに登録
+    const auto title_path = path_build(ANGBAND_DIR, "graphics/title.png");
+    (void)register_png_image(title_path.string(), PngVAlign::TOP, PngHAlign::CENTER, 0, -20);
     const auto title = AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL);
     const auto col = (title.length() <= MAIN_TERM_MIN_COLS) ? (MAIN_TERM_MIN_COLS - title.length()) / 2 : 0;
     constexpr auto row_version_info = 3; //!< タイトル表記(行)
     prt(title, row_version_info, col);
 }
+#endif
 
 /*!
  * @brief 全ゲームデータ読み込みのメインルーチン /
@@ -164,9 +173,12 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     }
 
     (void)fd_close(fd);
+
+#ifdef WINDOWS
     if (!no_term) {
         put_title();
     }
+#endif
 
     void (*init_note)(concptr) = (no_term ? init_note_no_term : init_note_term);
 
@@ -238,4 +250,11 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     process_pref_file(player_ptr, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
 
     init_note(_("[初期化終了]", "[Initialization complete]"));
+
+#ifdef WINDOWS
+    if (!no_term) {
+        const auto title_path = path_build(ANGBAND_DIR, "graphics/title.png");
+        unregister_png_image(title_path.string());
+    }
+#endif
 }

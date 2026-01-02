@@ -40,5 +40,6 @@ enum class DungeonFeatureType {
     ALWAYS_RIVER,
     WATERWAY,
     VESTIGE,
+    NO_TUNNEL,
     MAX,
 };

@@ -235,8 +235,8 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     process_angar(player_ptr, m_idx, turn_flags_ptr->see_m);
 
-    POSITION oy = monster.fy;
-    POSITION ox = monster.fx;
+    POSITION oy = monster.y;
+    POSITION ox = monster.x;
     if (decide_monster_multiplication(player_ptr, m_idx, oy, ox)) {
         return;
     }
@@ -254,8 +254,8 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     // 狂乱状態のモンスターは魔法を使わず、プレイヤーに隣接していれば攻撃のみを行う
     if (monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
-        const auto dy = std::abs(monster.fy - player_ptr->y);
-        const auto dx = std::abs(monster.fx - player_ptr->x);
+        const auto dy = std::abs(monster.y - player_ptr->y);
+        const auto dx = std::abs(monster.x - player_ptr->x);
         if (dy <= 1 && dx <= 1 && turn_flags_ptr->aware) {
             MonsterAttackPlayer(player_ptr, m_idx).make_attack_normal();
         }
@@ -301,7 +301,7 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     if (monster.ml) {
-        chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
     }
 }
 
@@ -320,7 +320,7 @@ bool process_stealth(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
-    int tmp = player_ptr->lev * 6 + (player_ptr->skill_stl + 10) * 4;
+    int tmp = player_ptr->level * 6 + (player_ptr->skill_stl + 10) * 4;
     if (player_ptr->monlite) {
         tmp /= 3;
     }
@@ -329,7 +329,7 @@ bool process_stealth(PlayerType *player_ptr, MONSTER_IDX m_idx)
         tmp /= 2;
     }
 
-    if (monrace.level > (player_ptr->lev * player_ptr->lev / 20 + 10)) {
+    if (monrace.level > (player_ptr->level * player_ptr->level / 20 + 10)) {
         tmp /= 3;
     }
 
@@ -548,7 +548,7 @@ void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
     BIT_FLAGS p_mode = monster.is_pet() ? PM_FORCE_PET : PM_NONE;
 
     for (int k = 0; k < A_MAX; k++) {
-        if (auto summoned_m_idx = summon_specific(player_ptr, monster.fy, monster.fx, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
+        if (auto summoned_m_idx = summon_specific(player_ptr, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
             if (player_ptr->current_floor_ptr->m_list[*summoned_m_idx].ml) {
                 count++;
             }
@@ -905,7 +905,7 @@ void sweep_monster_process(PlayerType *player_ptr)
             continue;
         }
 
-        byte speed = monster.is_riding() ? player_ptr->pspeed : monster.get_temporary_speed();
+        byte speed = monster.is_riding() ? static_cast<CreatureEntity &>(*player_ptr).get_speed() : monster.get_temporary_speed();
         monster.energy_need -= speed_to_energy(speed);
         if (monster.energy_need > 0) {
             continue;
@@ -924,7 +924,7 @@ void sweep_monster_process(PlayerType *player_ptr)
             }
         }
 
-        auto g_ptr = &player_ptr->current_floor_ptr->grid_array[monster.fy][monster.fx];
+        auto g_ptr = &player_ptr->current_floor_ptr->grid_array[monster.y][monster.x];
         auto &f_ptr = TerrainList::get_instance().get_terrain(g_ptr->feat);
         if (f_ptr.flags.has(TerrainCharacteristics::TENTACLE)) {
             int pow = 30;
@@ -946,11 +946,11 @@ void sweep_monster_process(PlayerType *player_ptr)
                     switch (randint1(3)) {
                     case 1:
                         msg_format(_("%s「んほぉ！」", "%s 'Nnhor!'"), m_name.data());
-                        (void)set_monster_stunned(player_ptr, 0, monster.get_remaining_stun() + 10 + randint0(player_ptr->lev) / 5);
+                        (void)set_monster_stunned(player_ptr, 0, monster.get_remaining_stun() + 10 + randint0(player_ptr->level) / 5);
                         break;
                     case 2:
                         msg_format(_("%s「アへぇ！」", "%s 'Aherr!'"), m_name.data());
-                        (void)set_monster_slow(player_ptr, 0, monster.get_remaining_deceleration() + 10 + randint0(player_ptr->lev) / 5);
+                        (void)set_monster_slow(player_ptr, 0, monster.get_remaining_deceleration() + 10 + randint0(player_ptr->level) / 5);
                         break;
                     case 3: {
                         bool fear = false;
@@ -999,7 +999,7 @@ bool decide_process_continue(PlayerType *player_ptr, MonsterEntity &monster)
     }
 
     auto should_continue = (monster.cdis <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
-    should_continue &= player_ptr->current_floor_ptr->has_los_at({ monster.fy, monster.fx }) || has_aggravate(player_ptr);
+    should_continue &= player_ptr->current_floor_ptr->has_los_at({ monster.y, monster.x }) || has_aggravate(player_ptr);
     if (should_continue) {
         return true;
     }

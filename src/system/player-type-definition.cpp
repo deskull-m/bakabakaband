@@ -93,7 +93,7 @@ std::shared_ptr<TimedEffects> PlayerType::effects() const
 bool PlayerType::is_fully_healthy() const
 {
     auto effects = this->effects();
-    auto is_fully_healthy = this->chp == this->mhp;
+    auto is_fully_healthy = this->hp == this->maxhp;
     is_fully_healthy &= this->csp >= this->msp;
     is_fully_healthy &= !effects->blindness().is_blind();
     is_fully_healthy &= !effects->confusion().is_confused();
@@ -142,8 +142,8 @@ std::string PlayerType::decrease_ability_random()
 
     const auto &[k, act] = rand_choice(candidates);
     this->stat_cur[k] = (this->stat_cur[k] * 3) / 4;
-    if (this->stat_cur[k] < 3) {
-        this->stat_cur[k] = 3;
+    if (this->stat_cur[k] < 30) {
+        this->stat_cur[k] = 30;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -159,8 +159,8 @@ std::string PlayerType::decrease_ability_all()
 {
     for (auto i = 0; i < A_MAX; i++) {
         this->stat_cur[i] = (this->stat_cur[i] * 7) / 8;
-        if (this->stat_cur[i] < 3) {
-            this->stat_cur[i] = 3;
+        if (this->stat_cur[i] < 30) {
+            this->stat_cur[i] = 30;
         }
     }
 
@@ -280,17 +280,12 @@ POSITION PlayerType::get_y() const
 
 int PlayerType::get_current_hp() const
 {
-    return this->chp;
+    return this->hp;
 }
 
 int PlayerType::get_max_hp() const
 {
-    return this->mhp;
-}
-
-int PlayerType::get_speed() const
-{
-    return this->pspeed;
+    return this->maxhp;
 }
 
 bool PlayerType::is_valid() const
@@ -306,21 +301,6 @@ bool PlayerType::is_dead() const
 FloorType *PlayerType::get_floor() const
 {
     return this->current_floor_ptr;
-}
-
-ACTION_ENERGY PlayerType::get_energy_need() const
-{
-    return this->energy_need;
-}
-
-void PlayerType::set_energy_need(ACTION_ENERGY energy)
-{
-    this->energy_need = energy;
-}
-
-int PlayerType::get_level() const
-{
-    return this->lev;
 }
 
 bool PlayerType::is_player() const

@@ -40,6 +40,7 @@
 #include "store/store-util.h"
 #include "store/store.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -111,7 +112,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(player_ptr, false, true);
         msg_print(_("ウガァァア！", "RAAAAGHH!"));
         msg_print(_("激怒の発作に襲われた！", "You feel a fit of rage coming over you!"));
-        (void)set_shero(player_ptr, 10 + randint1(player_ptr->lev), false);
+        (void)set_berserk(player_ptr, 10 + randint1(player_ptr->level), false);
         (void)bss.set_fear(0);
     }
 
@@ -176,14 +177,14 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(player_ptr, false, true);
         msg_print(_("ブゥーーッ！おっと。", "BRRAAAP! Oops."));
         msg_erase();
-        fire_ball(player_ptr, AttributeType::POIS, Direction::self(), player_ptr->lev, 3);
+        fire_ball(player_ptr, AttributeType::POIS, Direction::self(), player_ptr->level, 3);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::IKISUGI) && (randint1(3000) == 13)) {
         disturb(player_ptr, false, true);
         msg_print(_("ンアアアアー！", "NAAAAAAAH!"));
         msg_erase();
-        fire_ball(player_ptr, AttributeType::SOUND, Direction::self(), player_ptr->lev, 3);
+        fire_ball(player_ptr, AttributeType::SOUND, Direction::self(), player_ptr->level, 3);
         aggravate_monsters(player_ptr, 0);
     }
 
@@ -201,8 +202,8 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         RedrawingFlagsUpdater::get_instance().set_flags(flags);
 
         (void)bss.mod_hallucination(randint0(10) + 20);
-        (void)set_shero(player_ptr, 10 + randint1(player_ptr->lev), false);
-        (void)set_acceleration(player_ptr, 10 + randint1(player_ptr->lev), false);
+        (void)set_berserk(player_ptr, 10 + randint1(player_ptr->level), false);
+        (void)set_acceleration(player_ptr, 10 + randint1(player_ptr->level), false);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::PROD_MANA) && !player_ptr->anti_magic && one_in_(9000)) {
@@ -213,7 +214,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         flush();
         msg_erase();
         const auto dir = get_aim_dir(player_ptr, false);
-        fire_ball(player_ptr, AttributeType::MANA, dir ? dir : Direction::self(), player_ptr->lev * 2, 3);
+        fire_ball(player_ptr, AttributeType::MANA, dir ? dir : Direction::self(), player_ptr->level * 2, 3);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::ATT_DEMON) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
@@ -311,6 +312,12 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             }
         }
 
+        if (player_ptr->tim_emission > 0) {
+            hp_player(player_ptr, player_ptr->tim_emission);
+            set_tim_emission(player_ptr, 0, true);
+            msg_print(_("あなたは自身の光をエネルギーとして吸収した！", "You absorb energy from your own light!"));
+        }
+
         /*
          * Unlite the area (radius 10) around player and
          * do 50 points damage to every affected monster
@@ -338,11 +345,11 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(player_ptr, false, true);
         msg_print(_("周りの空間が歪んでいる気がする！", "You feel the world warping around you!"));
         msg_erase();
-        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), player_ptr->lev, 8);
+        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), player_ptr->level, 8);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::NORMALITY) && one_in_(5000)) {
-        if (!lose_mutation(player_ptr, 0)) {
+        if (!lose_mutation(*player_ptr, 0)) {
             msg_print(_("奇妙なくらい普通になった気がする。", "You feel oddly normal."));
         }
     }
@@ -351,7 +358,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(player_ptr, false, true);
         msg_print(_("非物質化した！", "You feel insubstantial!"));
         msg_erase();
-        set_wraith_form(player_ptr, randint1(player_ptr->lev / 2) + (player_ptr->lev / 2), false);
+        set_wraith_form(player_ptr, randint1(player_ptr->level / 2) + (player_ptr->level / 2), false);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::POLY_WOUND) && one_in_(3000)) {
@@ -427,7 +434,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             set_tim_esp(player_ptr, 0, true);
         } else {
             msg_print(_("精神が広がった！", "Your mind expands!"));
-            set_tim_esp(player_ptr, player_ptr->lev, false);
+            set_tim_esp(player_ptr, player_ptr->level, false);
         }
     }
 
@@ -459,8 +466,8 @@ void process_world_aux_mutation(PlayerType *player_ptr)
                 continue;
             }
 
-            if (monrace.level >= player_ptr->lev) {
-                danger_amount += monrace.level - player_ptr->lev + 1;
+            if (monrace.level >= player_ptr->level) {
+                danger_amount += monrace.level - player_ptr->level + 1;
             }
         }
 
@@ -491,7 +498,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         MainWindowRedrawingFlag::MP,
     };
     if (player_ptr->muta.has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
-        MANA_POINT wounds = (MANA_POINT)(player_ptr->mhp - player_ptr->chp);
+        MANA_POINT wounds = (MANA_POINT)(player_ptr->maxhp - player_ptr->hp);
         if (wounds > 0) {
             int healing = player_ptr->csp;
             if (healing > wounds) {
@@ -507,7 +514,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     if (player_ptr->muta.has(PlayerMutationType::HP_TO_SP) && !player_ptr->anti_magic && one_in_(4000)) {
         int wounds = (int)(player_ptr->msp - player_ptr->csp);
         if (wounds > 0) {
-            int healing = player_ptr->chp;
+            int healing = player_ptr->hp;
             if (healing > wounds) {
                 healing = wounds;
             }
@@ -522,12 +529,13 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(player_ptr, false, true);
         msg_print(_("足がもつれて転んだ！", "You trip over your own feet!"));
         take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->wt / 6), _("転倒", "tripping"));
-        drop_weapons(player_ptr);
+        drop_weapons(*player_ptr);
     }
 }
 
-bool drop_weapons(PlayerType *player_ptr)
+bool drop_weapons(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     INVENTORY_IDX slot = 0;
     ItemEntity *o_ptr = nullptr;
 
@@ -536,16 +544,16 @@ bool drop_weapons(PlayerType *player_ptr)
     }
 
     msg_erase();
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND)) {
+    if (has_melee_weapon(&player, INVEN_MAIN_HAND)) {
         slot = INVEN_MAIN_HAND;
-        o_ptr = player_ptr->inventory[INVEN_MAIN_HAND].get();
+        o_ptr = creature.inventory[INVEN_MAIN_HAND].get();
 
-        if (has_melee_weapon(player_ptr, INVEN_SUB_HAND) && one_in_(2)) {
-            o_ptr = player_ptr->inventory[INVEN_SUB_HAND].get();
+        if (has_melee_weapon(&player, INVEN_SUB_HAND) && one_in_(2)) {
+            o_ptr = creature.inventory[INVEN_SUB_HAND].get();
             slot = INVEN_SUB_HAND;
         }
-    } else if (has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
-        o_ptr = player_ptr->inventory[INVEN_SUB_HAND].get();
+    } else if (has_melee_weapon(&player, INVEN_SUB_HAND)) {
+        o_ptr = creature.inventory[INVEN_SUB_HAND].get();
         slot = INVEN_SUB_HAND;
     }
 
@@ -554,6 +562,6 @@ bool drop_weapons(PlayerType *player_ptr)
     }
 
     msg_print(_("武器を落としてしまった！", "You drop your weapon!"));
-    drop_from_inventory(player_ptr, slot, 1);
+    drop_from_inventory(&player, slot, 1);
     return true;
 }

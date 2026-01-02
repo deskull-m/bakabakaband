@@ -57,12 +57,20 @@ int price_item(PlayerType *player_ptr, const ItemEntity *o_ptr, int greed, bool 
         if (adjust < 100) {
             adjust = 100;
         }
-
+        uint64_t p = price;
         if (store_num == StoreSaleType::BLACK) {
-            price = price * 2;
+            const auto level = store_level(store_num);
+            auto mult = 20000UL;
+            const auto BM_LIMIT = 200;
+            for (int i = 1; i < std::min(level, BM_LIMIT); i += 2) {
+                mult = mult * 101 / 100;
+            }
+            p = p * mult / 10000UL;
         }
+        p = (p * (uint64_t)adjust + 50UL) / 100UL;
+        p = p < INT32_MAX ? p : INT32_MAX;
 
-        price = (int32_t)(((uint32_t)price * (uint32_t)adjust + 50UL) / 100UL);
+        price = (int)p;
     }
 
     if (price <= 0L) {

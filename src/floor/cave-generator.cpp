@@ -38,6 +38,7 @@
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world-collapsion.h"
+#include <functional>
 #include <vector>
 
 // シンメトリックなフロア生成（左右対称）
@@ -174,6 +175,9 @@ static bool decide_tunnel_planned_site(PlayerType *player_ptr, DungeonData *dd_p
 {
     dd_ptr->tunn_n = 0;
     dd_ptr->wall_n = 0;
+    if (dungeon.flags.has(DungeonFeatureType::NO_TUNNEL)) {
+        return true;
+    }
     if (randint1(player_ptr->current_floor_ptr->dun_level) > dungeon.tunnel_percent) {
         (void)build_tunnel2(player_ptr, dd_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos, 2, 2);
     } else if (!build_tunnel(player_ptr, dd_ptr, dt_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos)) {
@@ -278,7 +282,7 @@ static bool make_one_floor(PlayerType *player_ptr, DungeonData *dd_ptr, const Du
     }
 
     // 通路の過剰生成処理
-    if (one_in_(8)) {
+    if (!dungeon.flags.has(DungeonFeatureType::NO_TUNNEL) && one_in_(8)) {
         int num = randint1((floor.width * floor.height) / 500);
         if (one_in_(2)) {
             num /= 2;
@@ -505,6 +509,27 @@ static void decide_grid_glowing(FloorType &floor, DungeonData *dd_ptr, const Dun
 }
 
 /*!
+ * @brief ダンジョンID・レベルから地形生成用のシード値を計算する
+ * @param dungeon_id ダンジョンID
+ * @param dun_level ダンジョン階層
+ * @return 計算されたシード値
+ * @details 同じダンジョンの同じ階層では常に同じシード値を返す。
+ * std::hashを使用してダンジョンIDとレベルを組み合わせたシード値を生成する。
+ */
+uint32_t calculate_terrain_seed(int dungeon_id, int dun_level)
+{
+    // ダンジョンIDとレベルを64ビット値に結合
+    uint64_t combined = (static_cast<uint64_t>(dungeon_id) << 32) | static_cast<uint32_t>(dun_level);
+
+    // std::hashでハッシュ値を計算
+    std::hash<uint64_t> hasher;
+    uint64_t hash_value = hasher(combined);
+
+    // 32ビットに圧縮（上位32ビットと下位32ビットをXOR）
+    return static_cast<uint32_t>((hash_value >> 32) ^ (hash_value & 0xFFFFFFFF));
+}
+
+/*!
  * @brief ダンジョン生成のメインルーチン
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param seed 乱数の種（オプショナル）。指定された場合は固定ダンジョンを生成
@@ -597,17 +622,6 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
         return dd.why;
     }
 
-    decide_dungeon_data_allocation(player_ptr, &dd, dungeon);
-    if (!allocate_dungeon_data(player_ptr, &dd, dungeon)) {
-        // 乱数状態を復元
-        if (seed_was_fixed) {
-            AngbandSystem::get_instance().get_rng().set_state(original_state);
-        }
-        return dd.why;
-    }
-
-    decide_grid_glowing(floor, &dd, dungeon);
-
     // VESTIGEフラグを持つダンジョンで地形をランダムに差し替える
     if (dungeon.flags.has(DungeonFeatureType::VESTIGE)) {
         apply_vestige_terrain_replacement(player_ptr);
@@ -616,11 +630,20 @@ tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t
     // 時空崩壊度に応じて虚空地形を配置
     apply_void_terrain_placement(player_ptr);
 
-    // 乱数状態を復元
+    // ★地形生成完了：ここで乱数状態を復元し、以降のモンスター/アイテム配置は元の乱数で実行★
     if (seed_was_fixed) {
         AngbandSystem::get_instance().get_rng().set_state(original_state);
-        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("乱数状態を復元", "Random state restored"));
+        msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+            _("地形生成完了、乱数状態を復元してモンスター/アイテム配置へ",
+                "Terrain generation complete, restoring RNG for monster/item placement"));
     }
+
+    decide_dungeon_data_allocation(player_ptr, &dd, dungeon);
+    if (!allocate_dungeon_data(player_ptr, &dd, dungeon)) {
+        return dd.why;
+    }
+
+    decide_grid_glowing(floor, &dd, dungeon);
 
     return tl::nullopt;
 }

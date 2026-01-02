@@ -486,6 +486,10 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
         return has_vuln_curse(player_ptr);
     case TR_SUSHI:
     case TR_STANDARDIZED:
+        break;
+    case TR_IM_LITE:
+        return has_immune_lite(player_ptr);
+
     case TR_FLAG_MAX:
         break;
     }
@@ -779,14 +783,14 @@ void check_no_flowed(PlayerType *player_ptr)
     PlayerClass pc(player_ptr);
     if (has_sw && (pr.realm1().equals(RealmType::NATURE) || pr.realm2().equals(RealmType::NATURE) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::NATURE, SPELL_SW);
-        if (player_ptr->lev >= spell.slevel) {
+        if (player_ptr->level >= spell.slevel) {
             player_ptr->no_flowed = true;
         }
     }
 
     if (has_kabe && (pr.realm1().equals(RealmType::CRAFT) || pr.realm2().equals(RealmType::CRAFT) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::CRAFT, SPELL_WALL);
-        if (player_ptr->lev >= spell.slevel) {
+        if (player_ptr->level >= spell.slevel) {
             player_ptr->no_flowed = true;
         }
     }
@@ -1361,9 +1365,9 @@ BIT_FLAGS has_resist_sound(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_lite(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_LITE);
+    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_LITE) | common_cause_flags(player_ptr, TR_IM_LITE);
 
-    if (player_ptr->ult_res) {
+    if (player_ptr->ult_res || player_ptr->tim_res_lite || player_ptr->mimic_form == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1385,7 +1389,7 @@ BIT_FLAGS has_resist_dark(PlayerType *player_ptr)
 {
     BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_DARK) | common_cause_flags(player_ptr, TR_IM_DARK);
 
-    if (player_ptr->ult_res) {
+    if (player_ptr->ult_res || player_ptr->tim_res_dark || player_ptr->tim_imm_dark) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1558,7 +1562,7 @@ BIT_FLAGS has_resist_fear(PlayerType *player_ptr)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (is_hero(player_ptr) || is_shero(player_ptr) || player_ptr->ult_res) {
+    if (is_hero(player_ptr) || is_shero(player_ptr) || player_ptr->ult_res || player_ptr->tim_res_fear) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1621,10 +1625,19 @@ BIT_FLAGS has_immune_dark(PlayerType *player_ptr)
 {
     BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_DARK);
 
-    if (player_ptr->wraith_form) {
+    if (player_ptr->wraith_form || player_ptr->tim_imm_dark) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
+    return result;
+}
+
+BIT_FLAGS has_immune_lite(PlayerType *player_ptr)
+{
+    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_LITE);
+    if (player_ptr->mimic_form == MimicKindType::DEMIGOD) {
+        result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
+    }
     return result;
 }
 
@@ -1782,14 +1795,19 @@ bool is_wielding_icky_weapon(PlayerType *player_ptr, int i)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param i 武器を持っている手。0ならば利き手、1ならば反対の手
  */
-bool is_wielding_icky_riding_weapon(PlayerType *player_ptr, int i)
+bool is_wielding_icky_riding_weapon(CreatureEntity &creature, int i)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     const auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
     const auto flags = o_ptr->get_flags();
     const auto tval = o_ptr->bi_key.tval();
     const auto has_no_weapon = (tval == ItemKindType::NONE) || (tval == ItemKindType::SHIELD);
     const auto is_suitable = o_ptr->is_lance() || flags.has(TR_RIDING);
-    return (player_ptr->riding > 0) && !has_no_weapon && !is_suitable;
+    return (creature.riding > 0) && !has_no_weapon && !is_suitable;
 }
 
 bool has_not_ninja_weapon(PlayerType *player_ptr, int i)

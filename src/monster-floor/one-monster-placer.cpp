@@ -5,6 +5,8 @@
  */
 
 #include "alliance/alliance.h"
+#include "birth/birth-body-spec.h"
+#include "birth/birth-stat.h"
 #include "core/disturbance.h"
 #include "core/speed-table.h"
 #include "dungeon/quest.h"
@@ -188,15 +190,15 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
     }
 
     std::string color;
-    if (monrace.level > player_ptr->lev + 30) {
+    if (monrace.level > player_ptr->level + 30) {
         color = _("黒く", "black");
-    } else if (monrace.level > player_ptr->lev + 15) {
+    } else if (monrace.level > player_ptr->level + 15) {
         color = _("紫色に", "purple");
-    } else if (monrace.level > player_ptr->lev + 5) {
+    } else if (monrace.level > player_ptr->level + 5) {
         color = _("ルビー色に", "deep red");
-    } else if (monrace.level > player_ptr->lev - 5) {
+    } else if (monrace.level > player_ptr->level - 5) {
         color = _("赤く", "red");
-    } else if (monrace.level > player_ptr->lev - 15) {
+    } else if (monrace.level > player_ptr->level - 15) {
         color = _("ピンク色に", "pink");
     } else {
         color = _("白く", "white");
@@ -228,7 +230,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     const auto &world = AngbandWorld::get_instance();
-    if (world.is_wild_mode() || !floor.contains(pos) || !MonraceList::is_valid(r_idx)) {
+    if (world.is_wild_mode() || !floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || !MonraceList::is_valid(r_idx)) {
         return tl::nullopt;
     }
 
@@ -253,6 +255,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     MonsterEntity *m_ptr;
     m_ptr = &floor.m_list[g_ptr->m_idx];
+    m_ptr->wipe(); // モンスターを初期化（古いデータをクリア）
+
+    // モンスターの能力値をランダムに初期化
+    get_stats(m_ptr);
+
     m_ptr->alliance_idx = monrace.alliance_idx;
 
     m_ptr->mflag.clear();
@@ -366,8 +373,8 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         }
     }
 
-    m_ptr->fy = y;
-    m_ptr->fx = x;
+    m_ptr->y = y;
+    m_ptr->x = x;
     m_ptr->current_floor_ptr = &floor;
 
     for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
@@ -376,7 +383,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     m_ptr->cdis = 0;
     m_ptr->reset_target();
-    m_ptr->nickname.clear();
+    m_ptr->name.clear();
     m_ptr->exp = 0;
 
     if (is_summoned) {
@@ -388,6 +395,11 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->parent_m_idx = 0;
     }
 
+    // 変身情報のコピー
+    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
+    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
+    m_ptr->has_transformed = false;
+
     if (any_bits(mode, PM_CLONE)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::CLONED);
     }
@@ -395,6 +407,21 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     if (any_bits(mode, PM_NO_PET)) {
         m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
     }
+
+    // 変身情報のコピー
+    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
+    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
+    m_ptr->has_transformed = false;
+
+    // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
+    m_ptr->initialize_equivalent_player_races();
+    m_ptr->initialize_equivalent_player_classes();
+
+    // 種族が指定されている場合、身長・体重を設定
+    get_height_weight_for_creature(m_ptr);
+
+    // 所持金を初期化（能力値に基づいて計算）
+    get_money_for_creature(m_ptr);
 
     m_ptr->ml = false;
     if (any_bits(mode, PM_FORCE_PET)) {
@@ -488,20 +515,26 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     m_ptr->set_individual_speed(floor.inside_arena);
 
+    // Initialize AC from monster race
+    m_ptr->ac = new_monrace.ac;
+    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+        m_ptr->ac += randint1(10) + 5; // +6～+15のACボーナス
+    }
+
     if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
-        m_ptr->mspeed -= randint1(2) + 2;
+        m_ptr->speed -= randint1(2) + 2;
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
-        m_ptr->mspeed -= randint1(3);
+        m_ptr->speed -= randint1(3);
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
-        m_ptr->mspeed += randint1(2) + 1;
+        m_ptr->speed += randint1(2) + 1;
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
-        m_ptr->mspeed += randint1(5) + 3; // +3～+7の加速ボーナス
+        m_ptr->speed += randint1(5) + 3; // +3～+7の加速ボーナス
     }
     if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
-        m_ptr->mspeed += randint1(3) + 2; // +2～+4の加速ボーナス
+        m_ptr->speed += randint1(3) + 2; // +2～+4の加速ボーナス
     }
 
     if (any_bits(mode, PM_HASTE)) {

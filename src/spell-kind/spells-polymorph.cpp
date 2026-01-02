@@ -116,7 +116,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
     auto m_idx = place_specific_monster(player_ptr, y, x, new_r_idx, mode);
     if (m_idx) {
         auto &monster_polymorphed = floor.m_list[*m_idx];
-        monster_polymorphed.nickname = back_m.nickname;
+        monster_polymorphed.name = back_m.name;
         monster_polymorphed.parent_m_idx = back_m.parent_m_idx;
         monster_polymorphed.hold_o_idx_list = back_m.hold_o_idx_list;
         polymorphed = true;

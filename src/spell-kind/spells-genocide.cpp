@@ -155,8 +155,8 @@ bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
         return false;
     }
 
-    chg_virtue(player_ptr, Virtue::VITALITY, -2);
-    chg_virtue(player_ptr, Virtue::CHANCE, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -2);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
     return true;
 }
 
@@ -190,8 +190,8 @@ bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
     }
 
     if (result) {
-        chg_virtue(player_ptr, Virtue::VITALITY, -2);
-        chg_virtue(player_ptr, Virtue::CHANCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
     }
 
     return result;
@@ -219,7 +219,7 @@ bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
         if (!monster.is_valid()) {
             continue;
         }
-        if (!monster.is_undead()) {
+        if (!monster.has_undead_flag()) {
             continue;
         }
         if (monster.cdis > MAX_PLAYER_SIGHT) {
@@ -230,8 +230,8 @@ bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
     }
 
     if (result) {
-        chg_virtue(player_ptr, Virtue::UNLIFE, -2);
-        chg_virtue(player_ptr, Virtue::CHANCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
     }
 
     return result;

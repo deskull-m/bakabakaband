@@ -16,7 +16,7 @@ public:
     short current_hp = 0;
     short max_hp = 0;
 
-    std::string nickname = "";
+    std::string name = "";
     EnumClassFlagGroup<MonsterConstantFlagType> mflag2{};
 };
 

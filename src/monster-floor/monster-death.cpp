@@ -53,8 +53,8 @@
 
 static void write_pet_death(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
-    md_ptr->md_y = md_ptr->m_ptr->fy;
-    md_ptr->md_x = md_ptr->m_ptr->fx;
+    md_ptr->md_y = md_ptr->m_ptr->y;
+    md_ptr->md_x = md_ptr->m_ptr->x;
     if (record_named_pet && md_ptr->m_ptr->is_named_pet()) {
         const auto m_name = monster_desc(player_ptr, *md_ptr->m_ptr, MD_INDEF_VISIBLE);
         exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::NAMED_PET, 3, m_name);
@@ -403,7 +403,7 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
     if (md.r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && md.m_ptr->mflag2.has_not(MonsterConstantFlagType::CLONED)) {
         world.play_time.update();
         md.r_ptr->defeat_time = world.play_time.elapsed_sec();
-        md.r_ptr->defeat_level = player_ptr->lev;
+        md.r_ptr->defeat_level = player_ptr->level;
     }
 
     if (md.r_ptr->brightness_flags.has_any_of(ld_mask)) {

@@ -30,22 +30,22 @@ static bool fire_crimson(PlayerType *player_ptr)
 
     int num = 1;
     if (PlayerClass(player_ptr).equals(PlayerClassType::ARCHER)) {
-        if (player_ptr->lev >= 10) {
+        if (player_ptr->level >= 10) {
             num++;
         }
 
-        if (player_ptr->lev >= 30) {
+        if (player_ptr->level >= 30) {
             num++;
         }
 
-        if (player_ptr->lev >= 45) {
+        if (player_ptr->level >= 45) {
             num++;
         }
     }
 
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
     for (int i = 0; i < num; i++) {
-        (void)project(player_ptr, 0, player_ptr->lev / 20 + 1, ty, tx, player_ptr->lev * player_ptr->lev * 6 / 50, AttributeType::ROCKET, flg);
+        (void)project(player_ptr, 0, player_ptr->level / 20 + 1, ty, tx, player_ptr->level * player_ptr->level * 6 / 50, AttributeType::ROCKET, flg);
     }
 
     return true;

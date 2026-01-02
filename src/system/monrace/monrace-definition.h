@@ -135,7 +135,7 @@ public:
     EnumClassFlagGroup<MonsterBrightnessType> brightness_flags; //!< 能力フラグ（明暗） / Speaking Lite or Dark
     EnumClassFlagGroup<MonsterSpecialType> special_flags; //!< 能力フラグ(特殊) / Special Flags
     EnumClassFlagGroup<MonsterMiscType> misc_flags; //!< 能力フラグ（その他） / Speaking Other
-    MonsterBlow blows[MAX_NUM_BLOWS]{}; //!< 打撃能力定義 / Up to four blows per round
+    std::vector<MonsterBlow> blows; //!< 打撃能力定義（可変長） / Monster blows
     Dice shoot_damage_dice; //!< 射撃ダメージダイス / shoot damage dice
 
     std::vector<std::tuple<int, int, MonraceId>> spawn_monsters; //!< 落とし子生成率
@@ -151,6 +151,8 @@ public:
     PERCENTAGE arena_ratio{}; //!< モンスター闘技場の掛け金倍率修正値(%基準 / 0=100%) / The adjustment ratio for gambling monster
     MonraceId next_r_idx{}; //!< 進化先モンスター種族ID
     EXP next_exp{}; //!< 進化に必要な経験値
+    MonraceId transform_r_idx{}; //!< 変身先モンスター種族ID
+    PERCENTAGE transform_hp_threshold{}; //!< 変身するHP閾値(最大HPの%)
     DEPTH level{}; //!< レベル / Level of creature
     RARITY rarity{}; //!< レアリティ / Rarity of creature
     DisplaySymbol symbol_definition{}; //!< 定義上のシンボル (色/文字).
@@ -158,8 +160,8 @@ public:
     MONSTER_NUMBER max_num{}; //!< 階に最大存在できる数 / Maximum population allowed per level
     MONSTER_NUMBER mob_num{}; //!< 動員可能数
     MONSTER_NUMBER cur_num{}; //!< 階に現在いる数 / Monster population on current level
-    MONSTER_NUMBER father_r_idx{}; //!< 父親モンスター種族ID
-    MONSTER_NUMBER mother_r_idx{}; //!< 母親モンスター種族ID
+    MonraceId father{}; //!< 父親モンスター種族ID
+    MonraceId mother{}; //!< 母親モンスター種族ID
     int32_t collapse_over = 0; //!< 生成条件：時空崩壊度加減
     int32_t plus_collapse{}; //!< 死亡時の時空崩壊度進行値
     FLOOR_IDX floor_id{}; //!< 存在している保存階ID /  Location of unique monster
@@ -174,7 +176,7 @@ public:
     ITEM_NUMBER r_drop_gold{}; //!< これまでに撃破時に落とした財宝の数 / Max number of gold dropped at once
     ITEM_NUMBER r_drop_item{}; //!< これまでに撃破時に落としたアイテムの数 / Max number of item dropped at once
     byte r_cast_spell{}; //!< 使った魔法/ブレスの種類数 /  Max unique number of spells seen
-    byte r_blows[MAX_NUM_BLOWS]{}; //!< 受けた打撃 /  Number of times each blow type was seen
+    std::vector<byte> r_blows; //!< 受けた打撃（可変長） /  Number of times each blow type was seen
     EnumClassFlagGroup<MonsterAbilityType> r_ability_flags; //!< 見た能力フラグ(魔法/ブレス) / Observed racial ability flags
     EnumClassFlagGroup<MonsterAuraType> r_aura_flags; //!< 見た能力フラグ(オーラ) / Observed aura flags
     EnumClassFlagGroup<MonsterBehaviorType> r_behavior_flags; //!< 見た能力フラグ（習性） / Observed racial attr flags
@@ -194,6 +196,8 @@ public:
     bool is_male() const;
     bool is_female() const;
     bool has_living_flag() const;
+    bool has_demon_flag() const;
+    bool has_undead_flag() const;
     bool is_explodable() const;
     bool is_angel_superficially() const;
     bool symbol_char_is_any_of(std::string_view symbol_characters) const;

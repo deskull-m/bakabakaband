@@ -96,11 +96,11 @@ PERCENTAGE beam_chance(PlayerType *player_ptr)
 {
     PlayerClass pc(player_ptr);
     if (pc.equals(PlayerClassType::MAGE)) {
-        return (PERCENTAGE)(player_ptr->lev);
+        return (PERCENTAGE)(player_ptr->level);
     }
     if (pc.equals(PlayerClassType::HIGH_MAGE) || pc.equals(PlayerClassType::SORCERER)) {
-        return (PERCENTAGE)(player_ptr->lev + 10);
+        return (PERCENTAGE)(player_ptr->level + 10);
     }
 
-    return (PERCENTAGE)(player_ptr->lev / 2);
+    return (PERCENTAGE)(player_ptr->level / 2);
 }

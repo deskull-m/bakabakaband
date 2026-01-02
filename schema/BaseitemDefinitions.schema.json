@@ -140,6 +140,10 @@
                         "minimum": -99,
                         "maximum": 99
                     },
+                    "alliance": {
+                        "type": "string",
+                        "description": "アイテムの製造元アライアンスタグ (例: AMBER, VALINOR, PHYREXIA等)"
+                    },
                     "allocations": {
                         "type": "array",
                         "description": "アイテム出現階層と希少度の定義",

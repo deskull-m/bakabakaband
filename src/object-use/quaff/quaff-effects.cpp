@@ -149,7 +149,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_RESTORE_MANA:
         return restore_mana(this->player_ptr, true);
     case SV_POTION_RESTORE_EXP:
-        return restore_level(this->player_ptr);
+        return restore_level(static_cast<CreatureEntity &>(*this->player_ptr));
     case SV_POTION_RES_STR:
         return do_res_stat(this->player_ptr, A_STR);
     case SV_POTION_RES_INT:
@@ -304,7 +304,7 @@ bool QuaffEffects::booze()
     auto ident = false;
     auto is_monk = PlayerClass(this->player_ptr).equals(PlayerClassType::MONK);
     if (!is_monk) {
-        chg_virtue(this->player_ptr, Virtue::HARMONY, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::HARMONY, -1);
     } else if (!has_resist_conf(this->player_ptr)) {
         set_bits(this->player_ptr->special_attack, ATTACK_SUIKEN);
     }
@@ -370,8 +370,8 @@ bool QuaffEffects::lose_memories()
     }
 
     msg_print(_("過去の記憶が薄れていく気がする。", "You feel your memories fade."));
-    chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, -5);
-    lose_exp(this->player_ptr, this->player_ptr->exp / 4);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -5);
+    lose_exp(static_cast<CreatureEntity &>(*this->player_ptr), this->player_ptr->exp / 4);
     return true;
 }
 
@@ -412,8 +412,8 @@ bool QuaffEffects::detonation()
  */
 bool QuaffEffects::death()
 {
-    chg_virtue(this->player_ptr, Virtue::VITALITY, -1);
-    chg_virtue(this->player_ptr, Virtue::UNLIFE, 5);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::VITALITY, -1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::UNLIFE, 5);
     msg_print(_("死の予感が体中を駆けめぐった。", "A feeling of Death flows through your body."));
     take_hit(this->player_ptr, DAMAGE_LOSELIFE, 5000, _("死の薬", "a potion of Death"));
     return true;
@@ -474,8 +474,8 @@ bool QuaffEffects::augmentation()
 bool QuaffEffects::enlightenment()
 {
     msg_print(_("自分の置かれている状況が脳裏に浮かんできた...", "An image of your surroundings forms in your mind..."));
-    chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, 1);
-    chg_virtue(this->player_ptr, Virtue::ENLIGHTEN, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::ENLIGHTEN, 1);
     wiz_lite(this->player_ptr, false);
     return true;
 }
@@ -487,8 +487,8 @@ bool QuaffEffects::enlightenment()
 bool QuaffEffects::star_enlightenment()
 {
     msg_print(_("更なる啓蒙を感じた...", "You begin to feel more enlightened..."));
-    chg_virtue(this->player_ptr, Virtue::KNOWLEDGE, 1);
-    chg_virtue(this->player_ptr, Virtue::ENLIGHTEN, 2);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::ENLIGHTEN, 2);
     msg_erase();
     wiz_lite(this->player_ptr, false);
     (void)do_inc_stat(this->player_ptr, A_INT);
@@ -514,7 +514,7 @@ bool QuaffEffects::experience()
         return false;
     }
 
-    chg_virtue(this->player_ptr, Virtue::ENLIGHTEN, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::ENLIGHTEN, 1);
     if (this->player_ptr->exp >= PY_MAX_EXP) {
         return false;
     }
@@ -526,7 +526,7 @@ bool QuaffEffects::experience()
     }
 
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(this->player_ptr, ee);
+    gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), ee);
     return true;
 }
 
@@ -553,7 +553,7 @@ bool QuaffEffects::new_life()
     roll_hitdice(this->player_ptr, SPOP_NONE);
     get_max_stats(this->player_ptr);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    lose_all_mutations(this->player_ptr);
+    lose_all_mutations(*this->player_ptr);
     return true;
 }
 
@@ -592,17 +592,17 @@ bool QuaffEffects::tsuyoshi()
 bool QuaffEffects::polymorph()
 {
     if (this->player_ptr->muta.any() && one_in_(23)) {
-        lose_all_mutations(this->player_ptr);
+        lose_all_mutations(*this->player_ptr);
         return false;
     }
 
     auto ident = false;
     do {
         if (one_in_(2)) {
-            if (gain_mutation(this->player_ptr, 0)) {
+            if (gain_mutation(*this->player_ptr, 0)) {
                 ident = true;
             }
-        } else if (lose_mutation(this->player_ptr, 0)) {
+        } else if (lose_mutation(*this->player_ptr, 0)) {
             ident = true;
         }
     } while (!ident || one_in_(2));

@@ -113,12 +113,12 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
     const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
     EXP max_exp = monrace.level * monrace.level * 5;
 
-    chg_virtue(player_ptr, Virtue::ENLIGHTEN, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
     if (player_ptr->exp < PY_MAX_EXP) {
         EXP ee = (player_ptr->exp / 2) + 10;
         ee = std::min(ee, max_exp);
         msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-        gain_exp(player_ptr, ee);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), ee);
     }
     return true;
 }
@@ -160,7 +160,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::BERSERKER)) {
-        set_shero(player_ptr, player_ptr->shero + randint1(10) + 10, false);
+        set_berserk(player_ptr, player_ptr->berserk + randint1(10) + 10, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::ACIDIC)) {
@@ -421,7 +421,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         (void)do_inc_stat(player_ptr, randint0(6));
         return true;
     case SV_FOOD_ABESHI:
-        gain_exp(player_ptr, player_ptr->lev * 50);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 50);
         (void)set_hero(player_ptr, randint1(10) + 10, false);
         if (one_in_(300)) {
             (void)do_inc_stat(player_ptr, A_STR);
@@ -434,7 +434,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         return true;
     case SV_FOOD_HIDEBU:
-        gain_exp(player_ptr, player_ptr->lev * 100);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 100);
         (void)set_hero(player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {
             (void)do_inc_stat(player_ptr, A_STR);
@@ -447,12 +447,12 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         return true;
     case SV_FOOD_BASILISK_TIME:
-        gain_exp(player_ptr, player_ptr->lev * 100);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 100);
         msg_print("あなたは突如狂ったように踊り始めた！");
         msg_print("「みずのよーうにのようにやさしく！はなのよーうにはげしく！ふーるえ……」");
         (void)BadStatusSetter(player_ptr).mod_stun(25 + randint1(25));
         (void)set_hero(player_ptr, randint1(25) + 25, false);
-        (void)set_shero(player_ptr, randint1(25) + 25, false);
+        (void)set_berserk(player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {
             (void)do_inc_stat(player_ptr, A_STR);
         }
@@ -558,9 +558,14 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     /* 基本食い物でないものを喰う判定 */
     bool ate = false;
+
     ate = exe_eat_soul(player_ptr, o_ptr);
+
     if (!ate) {
         ate = exe_eat_corpse_type_object(player_ptr, o_ptr);
+    }
+
+    if (!ate) {
         ate = exe_eat_junk_type_object(player_ptr, o_ptr);
     }
 
@@ -584,9 +589,9 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     rfu.reset_flags(flags_srf);
     if (!(o_ptr->is_aware())) {
-        chg_virtue(player_ptr, Virtue::KNOWLEDGE, -1);
-        chg_virtue(player_ptr, Virtue::PATIENCE, -1);
-        chg_virtue(player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
 
     /* We have tried it */
@@ -598,7 +603,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     /* The player is now aware of the object */
     if (ident && !o_ptr->is_aware()) {
         object_aware(player_ptr, *o_ptr);
-        gain_exp(player_ptr, (level + (player_ptr->lev >> 1)) / player_ptr->lev);
+        gain_exp(static_cast<CreatureEntity &>(*player_ptr), (level + (player_ptr->level >> 1)) / player_ptr->level);
     }
 
     static constexpr auto flags_swrf = {
@@ -672,12 +677,22 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
             ate = true;
         }
     }
+
     if (!ate) {
         msg_print("流石に食べるのを躊躇した。");
         return;
     }
 
     player_ptr->plus_incident_tree("EAT", 1);
+
+    // 死体を食べた場合は詳細情報を記録
+    if (o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_CORPSE) {
+        auto incident_key = format("EAT/CORPSE/%d/%d/%d",
+            static_cast<int>(o_ptr->bi_key.tval()),
+            o_ptr->bi_key.sval().value_or(0),
+            o_ptr->pval);
+        player_ptr->plus_incident_tree(incident_key, 1);
+    }
 
     rfu.set_flags(flags_srf);
     vary_item(player_ptr, i_idx, -1);

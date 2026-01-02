@@ -49,6 +49,7 @@ enum aggravate_state {
     NASTY_AGGRAVATE = 0x00000004L,
 };
 
+class CreatureEntity;
 class PlayerType;
 BIT_FLAGS convert_inventory_slot_type_to_flag_cause(inventory_slot_type inventory_slot);
 BIT_FLAGS check_equipment_flags(PlayerType *player_ptr, tr_type tr_flag);
@@ -138,6 +139,7 @@ BIT_FLAGS has_immune_elec(PlayerType *player_ptr);
 BIT_FLAGS has_immune_fire(PlayerType *player_ptr);
 BIT_FLAGS has_immune_cold(PlayerType *player_ptr);
 BIT_FLAGS has_immune_dark(PlayerType *player_ptr);
+BIT_FLAGS has_immune_lite(PlayerType *player_ptr);
 bool can_attack_with_main_hand(PlayerType *player_ptr);
 bool can_attack_with_sub_hand(PlayerType *player_ptr);
 bool has_two_handed_weapons(PlayerType *player_ptr);
@@ -146,7 +148,7 @@ bool has_disable_two_handed_bonus(PlayerType *player_ptr, int i);
 bool has_not_ninja_weapon(PlayerType *player_ptr, int i);
 bool has_not_monk_weapon(PlayerType *player_ptr, int i);
 bool is_wielding_icky_weapon(PlayerType *player_ptr, int i);
-bool is_wielding_icky_riding_weapon(PlayerType *player_ptr, int i);
+bool is_wielding_icky_riding_weapon(CreatureEntity &creature, int i);
 bool has_good_luck(PlayerType *player_ptr);
 bool has_pervert_attraction(PlayerType *player_ptr);
 BIT_FLAGS player_aggravate_state(PlayerType *player_ptr);

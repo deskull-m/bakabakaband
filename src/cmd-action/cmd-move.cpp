@@ -280,7 +280,7 @@ void do_cmd_go_down(PlayerType *player_ptr)
         }
 
         auto dungeon = DungeonList::get_instance().get_dungeon(dungeon_id);
-        if (dungeon.min_plev > player_ptr->lev) {
+        if (dungeon.min_plev > player_ptr->level) {
             msg_print(_("あなたは弾き返された。このダンジョンに入るだけの力が備わっていないようだ。", "You are repelled. You lack the strength to enter this dungeon."));
             return;
         }
@@ -389,7 +389,7 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
         }
 
         if (player_ptr->action == ACTION_HAYAGAKE) {
-            auto energy_use = (ENERGY)(player_ptr->energy_use * (45 - (player_ptr->lev / 2)) / 100);
+            auto energy_use = (ENERGY)(player_ptr->energy_use * (45 - (player_ptr->level / 2)) / 100);
             energy.set_player_turn_energy(energy_use);
         }
 
@@ -401,12 +401,12 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
     const auto p_pos = player_ptr->get_position();
     if (is_wild_mode && !floor.has_terrain_characteristics(p_pos, TerrainCharacteristics::TOWN)) {
         const auto wild_level = WildernessGrids::get_instance().get_player_grid().get_level();
-        auto tmp = 120 + player_ptr->lev * 10 - wild_level + 5;
+        auto tmp = 120 + player_ptr->level * 10 - wild_level + 5;
         if (tmp < 1) {
             tmp = 1;
         }
 
-        if (((wild_level + 5) > (player_ptr->lev / 2)) && randint0(tmp) < (21 - player_ptr->skill_stl)) {
+        if (((wild_level + 5) > (player_ptr->level / 2)) && randint0(tmp) < (21 - player_ptr->skill_stl)) {
             // TODO: 広域マップの領域ごとのアライアンス情報を取得する機能が未実装のため、
             // 今回はデフォルトメッセージを使用。将来的にはアライアンス固有のメッセージを表示予定
             msg_print(_("襲撃だ！", "You are ambushed !"));
@@ -525,11 +525,11 @@ void do_cmd_rest(PlayerType *player_ptr)
     set_superstealth(player_ptr, false);
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     if (command_arg > 100) {
-        chg_virtue(player_ptr, Virtue::DILIGENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, -1);
     }
 
     if (player_ptr->is_fully_healthy()) {
-        chg_virtue(player_ptr, Virtue::DILIGENCE, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, -1);
     }
 
     player_ptr->plus_incident_tree("REST", 1);

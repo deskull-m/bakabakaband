@@ -165,7 +165,7 @@ void do_cmd_macros(PlayerType *player_ptr)
     };
     print_macro_menu();
 
-    const auto initial_filename = format("%s.prf", player_ptr->base_name);
+    const auto initial_filename = format("%s.prf", player_ptr->base_name.data());
     while (true) {
         msg_print(_("コマンド: ", "Command: "));
         const auto key = inkey();

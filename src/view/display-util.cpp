@@ -31,8 +31,8 @@ const std::vector<disp_player_line> disp_player_lines = {
     { 29, 16, 21, _("次レベル", "Exp to Adv") },
     { 29, 17, 21, _("所持金", "Gold") },
     { 29, 18, 21, _("日付", "Time") },
-    { 29, 10, 21, _("ＨＰ", "Hit points") },
-    { 29, 11, 21, _("ＭＰ", "SP (Mana)") },
+    { 29, 9, 21, _("ＨＰ", "Hit points") },
+    { 29, 10, 21, _("ＭＰ", "SP (Mana)") },
     { 29, 19, 21, _("プレイ時間", "Play time") },
     { 53, 10, -1, _("打撃命中  :", "Fighting   : ") },
     { 53, 11, -1, _("射撃命中  :", "Bows/Throw : ") },
@@ -62,6 +62,10 @@ const std::vector<disp_player_line> disp_player_lines = {
     { 53, 19, -1, _("掘削      :", "Digging    : ") },
     { 29, 8, 21, _("死亡回数", "Dead") },
     { 29, 21, 21, _("時空崩壊度", "W. Collapse") },
+    { 26, 0, -1, _("種   : ", "Category : ") },
+    { 26, 2, -1, _("擬態   : ", "App.Category : ") },
+    { 29, 11, 21, _("HP回復/100T", "HP Regen/100T") },
+    { 29, 12, 21, _("MP回復/100T", "MP Regen/100T") },
 };
 }
 

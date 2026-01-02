@@ -7,7 +7,6 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/floor-object.h"
-#include "game-option/birth-options.h"
 #include "inventory/inventory-object.h"
 #include "io/write-diary.h"
 #include "monster-floor/monster-summon.h"
@@ -46,10 +45,7 @@
 int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
 {
     int point = 0;
-    // 鉄人モード: 全てのアライアンスから猛烈に敵対される
-    if (ironman_alliance_hostility) {
-        point -= 10000;
-    }
+    point += calcIronmanHostilityPenalty();
 
     // 種族ボーナス
     switch (creature_ptr->prace) {
@@ -116,7 +112,7 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // レベルボーナス
-    point += creature_ptr->lev / 3;
+    point += creature_ptr->level / 3;
 
     // ニーベルング族のメンバーを殺害した場合の減点
     const auto &monrace_list = MonraceList::get_instance();
@@ -218,7 +214,7 @@ void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
 
     // 強力な地属性攻撃
     project(&player_ptr, 0, 8, player_ptr.y, player_ptr.x,
-        player_ptr.lev * 4, AttributeType::SHARDS,
+        player_ptr.level * 4, AttributeType::SHARDS,
         PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
     // 大量のドワーフ軍団召喚

@@ -25,7 +25,7 @@ void display_max_base_status(PlayerType *player_ptr, self_info_type *self_ptr)
 {
     self_ptr->info_list.emplace_back(_("能力の最大値", "Limits of maximum stats"));
     for (int v_nr = 0; v_nr < A_MAX; v_nr++) {
-        auto stat = format("%s 18/%d", stat_names[v_nr], player_ptr->stat_max_max[v_nr] - 18);
+        auto stat = format("%s %4.1f", stat_names[v_nr], player_ptr->stat_max_max[v_nr] / 10.0);
         self_ptr->info_list.push_back(std::move(stat));
     }
 }
@@ -36,10 +36,9 @@ void display_virtue(PlayerType *player_ptr, self_info_type *self_ptr)
     const std::string alg = PlayerAlignment(player_ptr).get_alignment_description(true);
     self_ptr->info_list.push_back(format(_("現在の属性 : %s", "Your alignment : %s"), alg.data()));
 
-    for (int v_nr = 0; v_nr < 8; v_nr++) {
-        const auto vir_name = virtue_names.at(player_ptr->vir_types[v_nr]).data();
+    for (const auto &[virtue_type, tester] : player_ptr->virtues) {
+        const auto vir_name = virtue_names.at(virtue_type).data();
         std::string vir_desc;
-        int tester = player_ptr->virtues[v_nr];
         if (tester < -100) {
             vir_desc = format(_("[%s]の対極 (%d)", "You are the polar opposite of %s (%d)."), vir_name, tester);
         } else if (tester < -80) {
@@ -80,20 +79,26 @@ void display_mimic_race_ability(PlayerType *player_ptr, self_info_type *self_ptr
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD: {
         constexpr auto fmt = _("あなたは %d ダメージの地獄か火炎のブレスを吐くことができる。(%d MP)", "You can breathe nether, dam. %d (cost %d).");
-        const auto dam = 3 * player_ptr->lev;
-        const auto cost = 10 + player_ptr->lev / 3;
+        const auto dam = 3 * player_ptr->level;
+        const auto cost = 10 + player_ptr->level / 3;
         self_ptr->info_list.push_back(format(fmt, dam, cost));
         return;
     }
     case MimicKindType::VAMPIRE:
-        if (player_ptr->lev >= 2) {
+        if (player_ptr->level >= 2) {
             constexpr auto fmt = _("あなたは敵から %d-%d HP の生命力を吸収できる。(%d MP)", "You can steal life from a foe, dam. %d-%d (cost %d).");
-            const auto lev = player_ptr->lev;
+            const auto lev = player_ptr->level;
             const auto min_dam = lev + std::max(1, lev / 10);
             const auto max_dam = lev + lev * std::max(1, lev / 10);
             const auto cost = 1 + lev / 3;
             self_ptr->info_list.push_back(format(fmt, min_dam, max_dam, cost));
         }
+        return;
+    case MimicKindType::ANGEL:
+        return;
+    case MimicKindType::DEMIGOD:
+        return;
+    default:
         return;
     }
 }

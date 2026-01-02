@@ -139,7 +139,7 @@ void effect_player_arrow(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         return;
     }
 
-    if (is_tough(player_ptr) && one_in_(100 / (2 + player_ptr->lev))) {
+    if (is_tough(player_ptr) && one_in_(100 / (2 + player_ptr->level))) {
         msg_print(_("灘神影流、弾丸すべり！", "Bullet slipping of Nada-Shinkage-Arts!"));
         return;
     }
@@ -259,7 +259,7 @@ void effect_player_chaos(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         (void)bss.mod_hallucination(randnum1<short>(10));
         if (one_in_(3)) {
             msg_print(_("あなたの身体はカオスの力で捻じ曲げられた！", "Your body is twisted by chaos!"));
-            (void)gain_mutation(player_ptr, 0);
+            (void)gain_mutation(*player_ptr, 0);
         }
     }
     if (!has_resist_neth(player_ptr) && !has_resist_chaos(player_ptr)) {
@@ -483,7 +483,7 @@ static void effect_player_time_addition(PlayerType *player_ptr)
         }
 
         msg_print(_("人生が逆戻りした気がする。", "You feel like a chunk of the past has been ripped away."));
-        lose_exp(player_ptr, 100 + (player_ptr->exp / 100) * MON_DRAIN_LIFE);
+        lose_exp(static_cast<CreatureEntity &>(*player_ptr), 100 + (player_ptr->exp / 100) * MON_DRAIN_LIFE);
         break;
     }
     case 6:
@@ -644,8 +644,8 @@ void effect_player_hand_doom(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
         ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->m_name);
 
-        if (player_ptr->chp < 1) {
-            player_ptr->chp = 1;
+        if (player_ptr->hp < 1) {
+            player_ptr->hp = 1;
         }
     }
 }

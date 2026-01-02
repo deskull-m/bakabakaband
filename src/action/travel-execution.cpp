@@ -61,7 +61,7 @@ int travel_flow_cost(PlayerType *player_ptr, const Pos2D &pos)
         cost += lava;
     }
 
-    if (grid.is_mark()) {
+    if (!grid.is_hidden()) {
         if (terrain.flags.has(TerrainCharacteristics::DOOR)) {
             cost += 1;
         }
@@ -87,7 +87,7 @@ tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int c
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
-    if (!floor.contains(pos)) {
+    if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return tl::nullopt;
     }
 
@@ -266,6 +266,7 @@ int Travel::get_cost(const Pos2D &pos) const
  */
 void Travel::step(PlayerType *player_ptr)
 {
+
     this->dir = decide_travel_step_dir(player_ptr, this->dir, this->costs);
     if (!this->dir) {
         if (this->state != TravelState::EXECUTING) {
@@ -279,6 +280,9 @@ void Travel::step(PlayerType *player_ptr)
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     exe_movement(player_ptr, this->dir, always_pickup, false);
+    if (this->state == TravelState::STOP) {
+        return;
+    }
     if (player_ptr->get_position() == this->get_goal()) {
         this->reset_goal();
     } else {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "alliance/alliance.h"
 #include "object/object-index-list.h"
 #include "system/angband.h"
 #include "system/enums/terrain/terrain-kind.h"
@@ -60,6 +61,7 @@ public:
      * 各ダンジョン入口の移行先ダンジョンID、
      */
     int16_t special{};
+    AllianceType alliance_idx{ AllianceType::NONE }; /*!< このグリッドの所属アライアンス / Alliance controlling this grid */
 
     FEAT_IDX mimic{}; /* Feature to mimic */
 
@@ -84,6 +86,7 @@ public:
     bool is_view() const;
     bool is_object() const;
     bool is_mark() const;
+    bool is_hidden() const;
     bool is_mirror() const;
     bool is_rune_protection() const;
     bool is_rune_explosion() const;

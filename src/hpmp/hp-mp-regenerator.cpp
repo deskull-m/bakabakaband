@@ -35,7 +35,7 @@ void regenhp(PlayerType *player_ptr, int percent)
         return;
     }
 
-    int old_chp = player_ptr->chp;
+    int old_chp = player_ptr->hp;
 
     /*
      * Extract the new hitpoints
@@ -43,15 +43,15 @@ void regenhp(PlayerType *player_ptr, int percent)
      * 'percent' is the Regen factor in unit (1/2^16)
      */
     int new_chp = 0;
-    uint32_t new_chp_frac = (player_ptr->mhp * percent + PY_REGEN_HPBASE);
+    uint32_t new_chp_frac = (player_ptr->maxhp * percent + PY_REGEN_HPBASE);
     s64b_lshift(&new_chp, &new_chp_frac, 16);
-    s64b_add(&(player_ptr->chp), &(player_ptr->chp_frac), new_chp, new_chp_frac);
-    if (0 < s64b_cmp(player_ptr->chp, player_ptr->chp_frac, player_ptr->mhp, 0)) {
-        player_ptr->chp = player_ptr->mhp;
-        player_ptr->chp_frac = 0;
+    s64b_add(&(player_ptr->hp), &(player_ptr->hp_frac), new_chp, new_chp_frac);
+    if (0 < s64b_cmp(player_ptr->hp, player_ptr->hp_frac, player_ptr->maxhp, 0)) {
+        player_ptr->hp = player_ptr->maxhp;
+        player_ptr->hp_frac = 0;
     }
 
-    if (old_chp != player_ptr->chp) {
+    if (old_chp != player_ptr->hp) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::HP);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);

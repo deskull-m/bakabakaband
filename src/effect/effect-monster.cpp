@@ -370,10 +370,10 @@ static void effect_makes_change_virtues(PlayerType *player_ptr, EffectMonster *e
     }
 
     if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-        chg_virtue(player_ptr, Virtue::COMPASSION, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
     }
     if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL) || one_in_(5)) {
-        chg_virtue(player_ptr, Virtue::HONOUR, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
     }
 }
 
@@ -551,14 +551,14 @@ static void effect_damage_makes_teleport(PlayerType *player_ptr, EffectMonster *
     em_ptr->note = _("が消え去った！", " disappears!");
 
     if (em_ptr->is_monster()) {
-        chg_virtue(player_ptr, Virtue::VALOUR, -1);
+        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VALOUR, -1);
     }
 
     teleport_flags tflag = i2enum<teleport_flags>((em_ptr->is_monster() ? TELEPORT_DEC_VALOUR : TELEPORT_SPONTANEOUS) | TELEPORT_PASSIVE);
     teleport_away(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->do_dist, tflag);
 
-    em_ptr->y = em_ptr->m_ptr->fy;
-    em_ptr->x = em_ptr->m_ptr->fx;
+    em_ptr->y = em_ptr->m_ptr->y;
+    em_ptr->x = em_ptr->m_ptr->x;
     em_ptr->g_ptr = &player_ptr->current_floor_ptr->grid_array[em_ptr->y][em_ptr->x];
 }
 

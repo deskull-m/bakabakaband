@@ -68,13 +68,7 @@ public:
     bool is_true_winner() const;
 
     FloorType *current_floor_ptr{};
-    POSITION oldpy{}; /* Previous player location -KMW- */
-    POSITION oldpx{}; /* Previous player location -KMW- */
 
-    player_sex psex{}; /* Sex index */
-    PlayerRaceType prace{}; /* Race index */
-    PlayerClassType pclass{}; /* Class index */
-    player_personality_type ppersonality{}; /* Personality index */
     RealmType realm1{}; /* First magic realm */
     RealmType realm2{}; /* Second magic realm */
     ElementRealmType element_realm{}; //!< 元素使い領域
@@ -85,40 +79,14 @@ public:
                          * characters (such as Amberite Paladins)
                          */
 
-    int16_t age{}; /* Characters age */
-    int16_t ht{}; /* Height */
-    int16_t wt{}; /* Weight */
-    int16_t prestige{}; /* Prestige */
-    int32_t death_count{}; /* Death count */
-
     std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
     std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
-    PRICE au{}; /* Current Gold */
-
-    EXP max_max_exp{}; /* Max max experience (only to calculate score) */
-    EXP max_exp{}; /* Max experience */
-    EXP exp{}; /* Cur experience */
-    uint32_t exp_frac{}; /* Cur exp frac (times 2^16) */
-
-    PLAYER_LEVEL lev{}; /* Level */
-
     int16_t town_num{}; /* Current town number */
 
-    int mhp{}; /* Max hit pts */
-    int chp{}; /* Cur hit pts */
-    uint32_t chp_frac{}; /* Cur hit frac (times 2^16) */
     PERCENTAGE mutant_regenerate_mod{};
 
-    MANA_POINT msp{}; /* Max mana pts */
-    MANA_POINT csp{}; /* Cur mana pts */
-    uint32_t csp_frac{}; /* Cur mana frac (times 2^16) */
-
     int16_t max_plv{}; /* Max Player Level */
-
-    short stat_max[A_MAX]{}; /* Current "maximal" stat values */
-    short stat_max_max[A_MAX]{}; /* Maximal "maximal" stat values */
-    short stat_cur[A_MAX]{}; /* Current "natural" stat values */
 
     int16_t learned_spells{};
     int16_t add_spells{};
@@ -128,7 +96,7 @@ public:
     TIME_EFFECT invuln{}; /* Timed -- Invulnerable */
     TIME_EFFECT ult_res{}; /* Timed -- Ultimate Resistance */
     TIME_EFFECT hero{}; /* Timed -- Heroism */
-    TIME_EFFECT shero{}; /* Timed -- Super Heroism */
+    TIME_EFFECT berserk{}; /* Timed -- Super Heroism */
     TIME_EFFECT shield{}; /* Timed -- Shield Spell */
     TIME_EFFECT blessed{}; /* Timed -- Blessed */
     TIME_EFFECT tim_invis{}; /* Timed -- See Invisible */
@@ -156,6 +124,9 @@ public:
     TIME_EFFECT tsubureru{};
     TIME_EFFECT magicdef{};
     TIME_EFFECT tim_res_nether{}; /* Timed -- Nether resistance */
+    TIME_EFFECT tim_res_lite{}; /* Timed -- Lite resistance */
+    TIME_EFFECT tim_res_dark{}; /* Timed -- Dark resistance */
+    TIME_EFFECT tim_res_fear{}; /* Timed -- Fear resistance */
     TIME_EFFECT tim_res_time{}; /* Timed -- Time resistance */
     MimicKindType mimic_form{};
     TIME_EFFECT tim_mimic{};
@@ -168,25 +139,21 @@ public:
     TIME_EFFECT multishadow{}; /* Timed -- Multi-shadow */
     TIME_EFFECT dustrobe{}; /* Timed -- Robe of dust */
 
+    /* for crusade */
+    TIME_EFFECT tim_emission{}; /* Timed -- Player Emission */
+    TIME_EFFECT tim_exorcism{}; /* Timed -- Exorcism */
+    TIME_EFFECT tim_imm_dark{}; /* Timed -- Darkness immunity */
+
     bool timewalk{};
 
 #define COMMAND_ARG_REST_UNTIL_DONE -2 /*!<休憩コマンド引数 … 必要な分だけ回復 */
 #define COMMAND_ARG_REST_FULL_HEALING -1 /*!<休憩コマンド引数 … HPとMPが全回復するまで */
     GAME_TURN resting{}; /* Current counter for resting, if any */
 
-    int16_t patron{};
-
-    EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
-    EnumClassFlagGroup<PlayerMutationType> trait{}; /*!< 後天特性 / permanent trait */
-
-    int16_t virtues[8]{};
-    Virtue vir_types[8]{};
-
     TIME_EFFECT word_recall{}; /* Word of recall counter */
     TIME_EFFECT alter_reality{}; /* Alter reality counter */
     DungeonId recall_dungeon{}; /* Dungeon set to be recalled */
 
-    ENERGY energy_need{}; /* Energy needed for next move */
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */
 
     int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
@@ -229,8 +196,6 @@ public:
     bool now_damaged{};
     bool ambush_flag{};
 
-    MONSTER_IDX riding{}; /* Riding on a monster of this index */
-
 #define KNOW_STAT 0x01
 #define KNOW_HPRATE 0x02
     BIT_FLAGS8 knowledge{}; /* Knowledge about yourself */
@@ -251,10 +216,6 @@ public:
     /*** Temporary fields ***/
 
     bool select_ring_slot{};
-
-    const player_race_info *race{}; /* Current race info */
-    const player_personality *personality{}; /* Current personality info (accessed like reference) */
-    const player_class_info *pclass_ref{}; /* Current class info (accessed like reference) */
 
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */
@@ -337,22 +298,6 @@ public:
     BIT_FLAGS regenerate{}; /* Regenerate hit pts */
     BIT_FLAGS hold_exp{}; /* Resist exp draining */
 
-    BIT_FLAGS telepathy{}; /* Telepathy */
-    BIT_FLAGS esp_animal{};
-    BIT_FLAGS esp_nasty{};
-    BIT_FLAGS esp_homo{};
-    BIT_FLAGS esp_undead{};
-    BIT_FLAGS esp_demon{};
-    BIT_FLAGS esp_orc{};
-    BIT_FLAGS esp_troll{};
-    BIT_FLAGS esp_giant{};
-    BIT_FLAGS esp_dragon{};
-    BIT_FLAGS esp_human{};
-    BIT_FLAGS esp_evil{};
-    BIT_FLAGS esp_good{};
-    BIT_FLAGS esp_nonliving{};
-    BIT_FLAGS esp_unique{};
-
     BIT_FLAGS slow_digest{}; /* Slower digestion */
     BIT_FLAGS bless_blade{}; //!< 祝福された装備をしている / Blessed by inventory items
     BIT_FLAGS xtra_might{}; /* Extra might bow */
@@ -379,33 +324,10 @@ public:
     int16_t to_h_m{}; /* Bonus to hit (misc) */
     int16_t to_d[2]{}; /* Bonus to dam (wield) */
     int16_t to_d_m{}; /* Bonus to dam (misc) */
-    ARMOUR_CLASS to_a{}; /* Bonus to ac */
 
     int16_t to_m_chance{}; /* Minusses to cast chance */
 
     bool no_flowed{};
-
-    ARMOUR_CLASS ac{}; /*!< 装備無しの基本AC / Base ac */
-
-    ACTION_SKILL_POWER see_infra{}; /*!< 赤外線視能力の強さ /Infravision range */
-    ACTION_SKILL_POWER skill_dis{}; /*!< 行動技能値:解除能力 / Skill: Disarming */
-    ACTION_SKILL_POWER skill_dev{}; /*!< 行動技能値:魔道具使用 / Skill: Magic Devices */
-    ACTION_SKILL_POWER skill_sav{}; /*!< 行動技能値:魔法防御 / Skill: Saving throw */
-    ACTION_SKILL_POWER skill_stl{}; /*!< 行動技能値:隠密 / Skill: Stealth factor */
-
-    /*!
-     * 行動技能値:知覚 / Skill: Searching ability
-     * この値はsearch()による地形の隠し要素発見処理などで混乱、盲目、幻覚、無光源などの
-     * 状態異常がない限り、難易度修正などがないままそのままパーセンテージ値として使われる。
-     * 100以上ならば必ず全てのトラップなどを見つけることが出来る。
-     */
-    ACTION_SKILL_POWER skill_srh{};
-
-    ACTION_SKILL_POWER skill_fos{}; /*!< 行動技能値:探索 / Skill: Searching frequency */
-    ACTION_SKILL_POWER skill_thn{}; /*!< 行動技能値:打撃命中能力 / Skill: To hit (normal) */
-    ACTION_SKILL_POWER skill_thb{}; /*!< 行動技能値:射撃命中能力 / Skill: To hit (shooting) */
-    ACTION_SKILL_POWER skill_tht{}; /*!< 行動技能値:投射命中能力 / Skill: To hit (throwing) */
-    ACTION_SKILL_POWER skill_dig{}; /*!< 行動技能値:掘削 / Skill: Digging */
 
     int16_t num_blow[2]{}; /* Number of blows */
     int16_t num_fire{}; /* Number of shots */
@@ -413,14 +335,9 @@ public:
     byte tval_xtra{}; /* (Unused)Correct xtra tval */
     ItemKindType tval_ammo{}; /* Correct ammo tval */
 
-    int16_t pspeed{}; /*!< 現在の速度 / Current speed */
-
     ENERGY energy_use{}; /*!< 直近のターンに消費したエネルギー / Energy use this turn */
 
-    POSITION y{}; /*!< ダンジョンの現在Y座標 / Player location in dungeon */
-    POSITION x{}; /*!< ダンジョンの現在X座標 / Player location in dungeon */
-    GAME_TEXT name[32]{}; /*!< 現在のプレイヤー名 / Current player's character name */
-    char base_name[32]{}; /*!< Stripped version of "player_name" */
+    std::string base_name{}; /*!< Stripped version of "player_name" */
 
     void ride_monster(MONSTER_IDX m_idx);
     std::shared_ptr<TimedEffects> effects() const;
@@ -445,13 +362,11 @@ public:
     POSITION get_y() const override;
     int get_current_hp() const override;
     int get_max_hp() const override;
-    int get_speed() const override;
+
     bool is_valid() const override;
     bool is_dead() const override;
     FloorType *get_floor() const override;
-    ACTION_ENERGY get_energy_need() const override;
-    void set_energy_need(ACTION_ENERGY energy) override;
-    int get_level() const override;
+
     bool is_player() const override;
 
 private:

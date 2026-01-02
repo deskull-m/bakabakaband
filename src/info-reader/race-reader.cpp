@@ -219,6 +219,28 @@ static errr set_mon_evolve(nlohmann::json &evolve_data, MonraceDefinition &monra
 }
 
 /*!
+ * @brief JSON Objectからモンスターの変身をセットする
+ * @param transform_data 変身情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+static errr set_mon_transform(nlohmann::json &transform_data, MonraceDefinition &monrace)
+{
+    if (transform_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+
+    if (auto err = info_set_integer(transform_data["hp_threshold"], monrace.transform_hp_threshold, true, Range(0, 100))) {
+        return err;
+    }
+    if (auto err = info_set_integer(transform_data["to"], monrace.transform_r_idx, true, Range(0, 9999))) {
+        return err;
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの性別をセットする
  * @param sex_data 性別情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -318,11 +340,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    for (auto blow_num = 0; auto &blow : blow_data.items()) {
-        if (blow_num > 5) {
-            return PARSE_ERROR_GENERIC;
-        }
-
+    for (auto &blow : blow_data.items()) {
         const auto &blow_method = blow.value()["method"];
         const auto &blow_effect = blow.value()["effect"];
         if (blow_method.is_null() || blow_effect.is_null()) {
@@ -338,7 +356,8 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
         if (rbe == r_info_blow_effect.end()) {
             return PARSE_ERROR_INVALID_FLAG;
         }
-        auto &mon_blow = monrace.blows[blow_num];
+
+        MonsterBlow mon_blow;
         mon_blow.method = rbm->second;
         mon_blow.effect = rbe->second;
 
@@ -346,7 +365,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
             return err;
         }
 
-        blow_num++;
+        monrace.blows.push_back(mon_blow);
     }
     return PARSE_ERROR_NONE;
 }
@@ -388,12 +407,12 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &mo
                 }
 
                 if (s_tokens.size() == 2 && s_tokens[0] == "FATHER") {
-                    info_set_value(r_ptr->father_r_idx, s_tokens[1]);
+                    info_set_value(r_ptr->father, s_tokens[1]);
                     continue;
                 }
 
                 if (s_tokens.size() == 2 && s_tokens[0] == "MOTHER") {
-                    info_set_value(r_ptr->mother_r_idx, s_tokens[1]);
+                    info_set_value(r_ptr->mother, s_tokens[1]);
                     continue;
                 }
 
@@ -957,6 +976,89 @@ static errr set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDefiniti
 }
 
 /*!
+ * @brief JSON Objectからモンスターのドロップアイテム情報をセットする
+ * @param drop_data ドロップアイテム情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+static errr set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace)
+{
+    if (drop_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+
+    if (!drop_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &drop_item : drop_data) {
+        if (!drop_item.contains("id") || !drop_item.contains("probability") || !drop_item.contains("grade") || !drop_item.contains("dice")) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        short item_id;
+        if (auto err = info_set_integer(drop_item["id"], item_id, true, Range(0, 9999))) {
+            return err;
+        }
+
+        const auto &probability_str = drop_item["probability"].get<std::string>();
+
+        // "X_IN_Y" 形式をパース
+        size_t in_pos = probability_str.find("_IN_");
+        if (in_pos == std::string::npos) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        const auto numer_str = probability_str.substr(0, in_pos);
+        const auto denom_str = probability_str.substr(in_pos + 4); // "_IN_" を除去
+
+        int numerator, denominator;
+        try {
+            numerator = std::stoi(numer_str);
+            denominator = std::stoi(denom_str);
+        } catch (...) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        if (numerator <= 0 || denominator <= 0) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        int grade;
+        if (auto err = info_set_integer(drop_item["grade"], grade, true, Range(-2, 2))) {
+            return err;
+        }
+
+        // ダイス情報の解析 ("XdY" 形式)
+        const auto &dice_str = drop_item["dice"].get<std::string>();
+        size_t d_pos = dice_str.find('d');
+        if (d_pos == std::string::npos) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        const auto dice_num_str = dice_str.substr(0, d_pos);
+        const auto dice_side_str = dice_str.substr(d_pos + 1);
+
+        int dice_num, dice_side;
+        try {
+            dice_num = std::stoi(dice_num_str);
+            dice_side = std::stoi(dice_side_str);
+        } catch (...) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        if (dice_num <= 0 || dice_side <= 0) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        // 分子、分母、アイテムID、グレード、ダイス面数、ダイス個数を設定
+        monrace.drop_kinds.push_back({ numerator, denominator, item_id, grade, dice_side, dice_num });
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの死亡時召喚情報をセットする
  * @param dead_spawn_data 死亡時召喚情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -1117,6 +1219,12 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
         msg_format(_("モンスター進化情報読込失敗。ID: '%d'。", "Failed to load monster evolve data. ID: '%d'."), error_idx);
         return err;
     }
+
+    err = set_mon_transform(mon_data["transform"], monrace);
+    if (err) {
+        msg_format(_("モンスター変身情報読込失敗。ID: '%d'。", "Failed to load monster transform data. ID: '%d'."), error_idx);
+        return err;
+    }
     err = set_mon_sex(mon_data["sex"], monrace);
     if (err) {
         msg_format(_("モンスター性別読込失敗。ID: '%d'。", "Failed to load monster sex. ID: '%d'."), error_idx);
@@ -1196,6 +1304,11 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_spawn_item(mon_data["spawn_item"], monrace);
     if (err) {
         msg_format(_("モンスター自然生成アイテム情報読み込み失敗。ID: '%d'。", "Failed to load monster spawn item data. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_drop_kinds(mon_data["drop_kind"], monrace);
+    if (err) {
+        msg_format(_("モンスタードロップアイテム情報読み込み失敗。ID: '%d'。", "Failed to load monster drop kind data. ID: '%d'."), error_idx);
         return err;
     }
     err = set_mon_dead_spawns(mon_data["dead_spawn"], monrace);

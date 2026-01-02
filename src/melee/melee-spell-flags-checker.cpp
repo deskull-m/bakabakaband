@@ -113,7 +113,7 @@ static void check_darkness(PlayerType *player_ptr, melee_spell_type *ms_ptr)
     }
 
     const auto vs_ninja = PlayerClass(player_ptr).equals(PlayerClassType::NINJA) && !ms_ptr->t_ptr->is_hostile();
-    auto can_use_lite_area = vs_ninja && !ms_ptr->m_ptr->is_undead();
+    auto can_use_lite_area = vs_ninja && !ms_ptr->m_ptr->has_undead_flag();
     can_use_lite_area &= ms_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
     can_use_lite_area &= ms_ptr->r_ptr->brightness_flags.has_none_of(dark_mask);
     if (ms_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID)) {
@@ -313,11 +313,11 @@ static void check_non_stupid(PlayerType *player_ptr, melee_spell_type *ms_ptr)
         return;
     }
 
-    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_BOLT_MASK) && !clean_shot(player_ptr, ms_ptr->m_ptr->fy, ms_ptr->m_ptr->fx, ms_ptr->t_ptr->fy, ms_ptr->t_ptr->fx, ms_ptr->pet)) {
+    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_BOLT_MASK) && !clean_shot(player_ptr, ms_ptr->m_ptr->y, ms_ptr->m_ptr->x, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x, ms_ptr->pet)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_BOLT_MASK);
     }
 
-    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_SUMMON_MASK) && !(summon_possible(player_ptr, ms_ptr->t_ptr->fy, ms_ptr->t_ptr->fx))) {
+    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_SUMMON_MASK) && !(summon_possible(player_ptr, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x))) {
         ms_ptr->ability_flags.reset(RF_ABILITY_SUMMON_MASK);
     }
 
@@ -329,7 +329,7 @@ static void check_non_stupid(PlayerType *player_ptr, melee_spell_type *ms_ptr)
         ms_ptr->ability_flags.reset(MonsterAbilityType::RAISE_DEAD);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) && !summon_possible(player_ptr, ms_ptr->t_ptr->fy, ms_ptr->t_ptr->fx)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) && !summon_possible(player_ptr, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }
 }
@@ -374,8 +374,8 @@ bool check_melee_spell_set(PlayerType *player_ptr, melee_spell_type *ms_ptr)
         return false;
     }
 
-    ms_ptr->y = ms_ptr->t_ptr->fy;
-    ms_ptr->x = ms_ptr->t_ptr->fx;
+    ms_ptr->y = ms_ptr->t_ptr->y;
+    ms_ptr->x = ms_ptr->t_ptr->x;
     ms_ptr->m_ptr->reset_target();
     ms_ptr->ability_flags.reset({ MonsterAbilityType::WORLD, MonsterAbilityType::TRAPS, MonsterAbilityType::FORGET });
     if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_LITE) && !los(*player_ptr->current_floor_ptr, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position())) {

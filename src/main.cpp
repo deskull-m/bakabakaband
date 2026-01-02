@@ -25,6 +25,9 @@
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
+#ifdef WINDOWS
+#include "util/png-displayer.h"
+#endif
 #include "view/display-scores.h"
 #include "wizard/spoiler-util.h"
 #include "wizard/wizard-spoiler.h"
@@ -279,7 +282,9 @@ int main(int argc, char *argv[])
 
     safe_setuid_drop();
 #ifdef SET_UID
-    user_name(p_ptr->name, ids.get_user_id());
+    char tmp_name[128];
+    user_name(tmp_name, ids.get_user_id());
+    p_ptr->name = tmp_name;
 #ifdef PRIVATE_USER_PATH
     create_user_dir();
 #endif /* PRIVATE_USER_PATH */
@@ -333,7 +338,10 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            strcpy(p_ptr->name, &argv[i][2]);
+            p_ptr->name = &argv[i][2];
+            if (p_ptr->name.length() > 40) {
+                p_ptr->name.resize(40);
+            }
             break;
         case 'm':
             if (!argv[i][2]) {
@@ -435,6 +443,11 @@ int main(int argc, char *argv[])
         init_angband(p_ptr, false);
         pause_line(MAIN_TERM_MIN_ROWS - 1);
     }
+
+#ifdef WINDOWS
+    // タイトル画像を消去
+    clear_png_display();
+#endif
 
     play_game(p_ptr, new_game, browsing_movie);
     quit("");

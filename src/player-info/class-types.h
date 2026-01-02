@@ -31,6 +31,7 @@ enum class PlayerClassType : short {
     SNIPER = 27,
     ELEMENTALIST = 28,
     MAX,
+    NONE = -1,
 };
 
 constexpr auto PLAYER_CLASS_TYPE_MAX = static_cast<short>(PlayerClassType::MAX);

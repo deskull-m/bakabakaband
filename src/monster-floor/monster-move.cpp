@@ -353,7 +353,7 @@ static bool process_post_dig_wall(PlayerType *player_ptr, turn_flags *turn_flags
 void activate_explosive_rune(PlayerType *player_ptr, const Pos2D &pos, const MonraceDefinition &monrace)
 {
     auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-    const auto level = player_ptr->lev;
+    const auto level = player_ptr->level;
     if (!grid.is_rune_explosion()) {
         return;
     }
@@ -471,7 +471,7 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
             monster.energy_need += ENERGY_NEED() / 2;
         }
 
-        if (!update_riding_monster(player_ptr, turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {
+        if (!update_riding_monster(static_cast<CreatureEntity &>(*player_ptr), turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {
             break;
         }
 
@@ -480,7 +480,7 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
         const auto m_pos = monster.get_position();
         const auto is_projectable = projectable(floor, p_pos, m_pos);
         const auto can_see = disturb_near && monster.mflag.has(MonsterTemporaryFlagType::VIEW) && is_projectable;
-        const auto is_high_level = disturb_high && (apparent_monrace.r_tkills > 0) && (apparent_monrace.level >= player_ptr->lev);
+        const auto is_high_level = disturb_high && (apparent_monrace.r_tkills > 0) && (apparent_monrace.level >= player_ptr->level);
         const auto is_unknown_level = disturb_unknown && (apparent_monrace.r_tkills == 0);
         if (monster.ml && (disturb_move || can_see || is_high_level || is_unknown_level)) {
             if (monster.is_hostile()) {

@@ -15,7 +15,6 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 
-#include "game-option/birth-options.h"
 int AllianceSexyCommandoClub::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
 {
     int point = 0;
@@ -161,9 +160,9 @@ int AllianceSexyCommandoClub::calcImpressionPoint([[maybe_unused]] PlayerType *c
     }
 
     // レベルによる補正（青春補正）
-    if (creature_ptr->lev <= 20) {
+    if (creature_ptr->level <= 20) {
         point += 10;
-    } else if (creature_ptr->lev >= 40) {
+    } else if (creature_ptr->level >= 40) {
         point -= 5;
     }
 

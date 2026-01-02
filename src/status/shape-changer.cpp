@@ -29,8 +29,8 @@
 
 void do_poly_wounds(PlayerType *player_ptr)
 {
-    int16_t hit_p = (player_ptr->mhp - player_ptr->chp);
-    auto change = static_cast<TIME_EFFECT>(Dice::roll(player_ptr->lev, 5));
+    int16_t hit_p = (player_ptr->maxhp - player_ptr->hp);
+    auto change = static_cast<TIME_EFFECT>(Dice::roll(player_ptr->level, 5));
     auto nasty_effect = one_in_(5);
     const auto &player_cut = player_ptr->effects()->cut();
     if (!player_cut.is_cut() && (hit_p == 0) && !nasty_effect) {
@@ -63,7 +63,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     msg_format("You turn into %s %s%s!", (is_a_vowel((effect_msg[0]) ? effect_msg[0] : title[0]) ? "an" : "a"), effect_msg, title);
 #endif
 
-    chg_virtue(player_ptr, Virtue::CHANCE, 2);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 2);
     if (enum2i(player_ptr->prace) < 32) {
         player_ptr->old_race1 |= 1UL << enum2i(player_ptr->prace);
     } else {
@@ -91,7 +91,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
 
     roll_hitdice(player_ptr, SPOP_NONE);
-    check_experience(player_ptr);
+    check_experience(static_cast<CreatureEntity &>(*player_ptr));
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::BASIC);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -106,10 +106,10 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
 
 void do_poly_self(PlayerType *player_ptr)
 {
-    int power = player_ptr->lev;
+    int power = player_ptr->level;
 
     msg_print(_("あなたは変化の訪れを感じた...", "You feel a change coming over you..."));
-    chg_virtue(player_ptr, Virtue::CHANCE, 1);
+    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
 
     PlayerRace pr(player_ptr);
     if ((power > randint0(20)) && one_in_(3) && !pr.equals(PlayerRaceType::ANDROID)) {
@@ -154,7 +154,7 @@ void do_poly_self(PlayerType *player_ptr)
         while ((power > randint0(20)) && one_in_(10)) {
             power -= 10;
 
-            if (!lose_mutation(player_ptr, 0)) {
+            if (!lose_mutation(*player_ptr, 0)) {
                 msg_print(_("奇妙なくらい普通になった気がする。", "You feel oddly normal."));
             }
         }
@@ -177,7 +177,7 @@ void do_poly_self(PlayerType *player_ptr)
         }
         if (one_in_(6)) {
             msg_print(_("現在の姿で生きていくのは困難なようだ！", "You find living difficult in your present form!"));
-            take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(randint1(10), player_ptr->lev), _("致命的な突然変異", "a lethal mutation"));
+            take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(randint1(10), player_ptr->level), _("致命的な突然変異", "a lethal mutation"));
 
             power -= 10;
         }
@@ -192,7 +192,7 @@ void do_poly_self(PlayerType *player_ptr)
 
     while ((power > randint0(15)) && one_in_(3)) {
         power -= 7;
-        (void)gain_mutation(player_ptr, 0);
+        (void)gain_mutation(*player_ptr, 0);
     }
 
     if (power > randint0(5)) {

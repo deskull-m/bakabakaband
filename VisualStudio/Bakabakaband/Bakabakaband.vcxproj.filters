@@ -2791,6 +2791,21 @@
     <ClCompile Include="..\..\src\mutation\mutation-data.cpp">
       <Filter>mutation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\achievement\achievement-checker.cpp">
+      <Filter>achivement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\achievement\achievement-definitions.cpp">
+      <Filter>achivement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\achievement\achievement-tracker.cpp">
+      <Filter>achivement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp">
+      <Filter>io-dump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\io-dump\score-sender.cpp">
+      <Filter>io-dump</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -6024,6 +6039,27 @@
     <ClInclude Include="..\..\src\mutation\mutation-data.h">
       <Filter>mutation</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\achievement\achievement-checker.h">
+      <Filter>achivement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\achievement\achievement-definition.h">
+      <Filter>achivement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\achievement\achievement-definitions.h">
+      <Filter>achivement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\achievement\achievement-tracker.h">
+      <Filter>achivement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\achievement\achievement-types.h">
+      <Filter>achivement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io-dump\player-status-dump-json.h">
+      <Filter>io-dump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io-dump\score-sender.h">
+      <Filter>io-dump</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />
@@ -6323,6 +6359,9 @@
     </Filter>
     <Filter Include="external-lib\fmt">
       <UniqueIdentifier>{de5173c3-9151-46e9-a937-8861a5a14c00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="achivement">
+      <UniqueIdentifier>{6d1aa13b-cb5f-4aa3-828a-bd4d0018fc21}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

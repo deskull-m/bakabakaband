@@ -88,7 +88,7 @@ bool SpellHex::stop_spells_with_selection()
     }
 
     auto casting_num = this->get_casting_num();
-    if ((casting_num == 1) || (this->player_ptr->lev < 35)) {
+    if ((casting_num == 1) || (this->player_ptr->level < 35)) {
         this->stop_all_spells();
         return true;
     }
@@ -293,7 +293,7 @@ void SpellHex::gain_exp()
  */
 bool SpellHex::is_casting_full_capacity() const
 {
-    auto k_max = (this->player_ptr->lev / 15) + 1;
+    auto k_max = (this->player_ptr->level / 15) + 1;
     k_max = std::min(k_max, MAX_KEEP);
     return this->get_casting_num() >= k_max;
 }
@@ -342,7 +342,7 @@ bool SpellHex::check_hex_barrier(MONSTER_IDX m_idx, spell_hex_type type) const
 {
     const auto &monster = this->player_ptr->current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
-    return this->is_spelling_specific(type) && ((this->player_ptr->lev * 3 / 2) >= randint1(monrace.level));
+    return this->is_spelling_specific(type) && ((this->player_ptr->level * 3 / 2) >= randint1(monrace.level));
 }
 
 bool SpellHex::is_spelling_specific(int hex) const
@@ -381,8 +381,8 @@ void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
     const auto m_name_self = monster_desc(this->player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
     msg_format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data());
 #endif
-    const auto y = monster.fy;
-    const auto x = monster.fx;
+    const auto y = monster.y;
+    const auto x = monster.x;
     project(this->player_ptr, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
     if (this->player_ptr->tim_eyeeye) {
         set_tim_eyeeye(this->player_ptr, this->player_ptr->tim_eyeeye - 5, true);

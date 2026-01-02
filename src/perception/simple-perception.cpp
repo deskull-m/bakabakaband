@@ -145,7 +145,7 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
  */
 void sense_inventory1(PlayerType *player_ptr)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     bool heavy = false;
     ItemEntity *o_ptr;
     if (player_ptr->effects()->confusion().is_confused()) {
@@ -271,11 +271,11 @@ void sense_inventory1(PlayerType *player_ptr)
         break;
     }
 
-    case PlayerClassType::MAX:
+    default:
         break;
     }
 
-    if (compare_virtue(player_ptr, Virtue::KNOWLEDGE, 100)) {
+    if (compare_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 100)) {
         heavy = true;
     }
 
@@ -333,7 +333,7 @@ void sense_inventory1(PlayerType *player_ptr)
  */
 void sense_inventory2(PlayerType *player_ptr)
 {
-    PLAYER_LEVEL plev = player_ptr->lev;
+    PLAYER_LEVEL plev = player_ptr->level;
     ItemEntity *o_ptr;
 
     if (player_ptr->effects()->confusion().is_confused()) {
@@ -403,7 +403,7 @@ void sense_inventory2(PlayerType *player_ptr)
         break;
     }
 
-    case PlayerClassType::MAX:
+    default:
         break;
     }
 

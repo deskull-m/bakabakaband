@@ -1,10 +1,12 @@
 #include "mutation/lose-mutation-switcher.h"
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-util.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
-void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
+void switch_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     switch ((glm_ptr->choose_mut != 0) ? glm_ptr->choose_mut : randint1(205)) {
     case 1:
     case 2:
@@ -490,7 +492,7 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         glm_ptr->muta_desc = _("動作の正確さがなくなった。", "You move with less assurance.");
         break;
     case 193:
-        if (player_ptr->ppersonality == PERSONALITY_LUCKY) {
+        if (player.ppersonality == PERSONALITY_LUCKY) {
             break;
         }
 
@@ -528,7 +530,7 @@ void switch_lose_mutation(PlayerType *player_ptr, glm_type *glm_ptr)
         break;
     case 208:
         glm_ptr->muta_which = PlayerMutationType::ATT_PERVERT;
-        if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+        if (player.ppersonality == PERSONALITY_MESUGAKI) {
             glm_ptr->muta_desc = _("メスガキの変質者引きつけは治療対象外だ。", "Mesugaki's pervert attraction is not curable.");
             glm_ptr->muta_which = PlayerMutationType::MAX;
             break;

@@ -94,8 +94,8 @@ static void decide_enemy_approch_direction(PlayerType *player_ptr, MONSTER_IDX m
             }
         }
 
-        *y = monster_to.fy;
-        *x = monster_to.fx;
+        *y = monster_to.y;
+        *x = monster_to.x;
         return;
     }
 }
@@ -113,12 +113,12 @@ static tl::optional<MonsterMovementDirectionList> get_enemy_dir(PlayerType *play
     const auto &monster = floor.m_list[m_idx];
 
     POSITION x = 0, y = 0;
-    if (player_ptr->riding_t_m_idx && player_ptr->is_located_at({ monster.fy, monster.fx })) {
-        y = floor.m_list[player_ptr->riding_t_m_idx].fy;
-        x = floor.m_list[player_ptr->riding_t_m_idx].fx;
+    if (player_ptr->riding_t_m_idx && player_ptr->is_located_at({ monster.y, monster.x })) {
+        y = floor.m_list[player_ptr->riding_t_m_idx].y;
+        x = floor.m_list[player_ptr->riding_t_m_idx].x;
     } else if (monster.is_pet() && player_ptr->pet_t_m_idx) {
-        y = floor.m_list[player_ptr->pet_t_m_idx].fy;
-        x = floor.m_list[player_ptr->pet_t_m_idx].fx;
+        y = floor.m_list[player_ptr->pet_t_m_idx].y;
+        x = floor.m_list[player_ptr->pet_t_m_idx].x;
     } else {
         int start;
         int plus = 1;

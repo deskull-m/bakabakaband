@@ -281,7 +281,7 @@ void load_all_pref_files(PlayerType *player_ptr)
     constexpr auto fmt = "%s.prf";
     process_pref_file(player_ptr, format(fmt, player_ptr->race->title.data()));
     process_pref_file(player_ptr, format(fmt, (*player_ptr->pclass_ref).title.data()));
-    process_pref_file(player_ptr, format(fmt, player_ptr->base_name));
+    process_pref_file(player_ptr, format(fmt, player_ptr->base_name.data()));
     PlayerRealm pr(player_ptr);
     if (pr.realm1().is_available()) {
         process_pref_file(player_ptr, format(fmt, pr.realm1().get_name().data()));

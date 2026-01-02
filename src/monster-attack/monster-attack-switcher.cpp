@@ -308,7 +308,7 @@ static void calc_blow_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *mo
 
 static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (player_ptr->effects()->acceleration().is_fast() || (player_ptr->pspeed >= 130)) {
+    if (player_ptr->effects()->acceleration().is_fast() || (static_cast<CreatureEntity &>(*player_ptr).get_speed() >= 130)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -602,7 +602,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             monap_ptr->obvious = true;
 
             msg_print(_("あなたの身体はカオスの力で捻じ曲げられた！", "Your body is twisted by chaos!"));
-            (void)gain_mutation(player_ptr, 0);
+            (void)gain_mutation(*player_ptr, 0);
         }
     } break;
 
@@ -610,7 +610,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->obvious = true;
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (monap_ptr->damage * 2 > randint1(p_ptr->chp)) {
+        if (monap_ptr->damage * 2 > randint1(p_ptr->hp)) {
             player_defecate(player_ptr);
         }
         break;
@@ -622,6 +622,16 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             break;
         }
         sanity_blast(player_ptr);
+        break;
+    }
+
+    case RaceBlowEffectType::GROIN_ATTACK: { /* AC軽減あり / Player armor reduces total damage */
+        monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
+        monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
+        if (player_ptr->is_dead()) {
+            break;
+        }
+        process_groin_attack(player_ptr, monap_ptr);
         break;
     }
 
@@ -639,14 +649,14 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 
         // ダメージ量の最大HPに対する比率を計算
-        int damage_ratio = (monap_ptr->damage * 100) / player_ptr->mhp;
+        int damage_ratio = (monap_ptr->damage * 100) / player_ptr->maxhp;
 
         // 20%以上のダメージで肛門破壊の変異発生判定
         if (damage_ratio >= 20) {
             int chance = damage_ratio - 15; // 20%で5%、50%で35%、100%で85%の確率
             if (randint1(100) <= chance) {
                 msg_print(_("あなたの肛門が完全に破壊された！", "Your asshole has been completely destroyed!"));
-                (void)gain_mutation(player_ptr, static_cast<int>(PlayerMutationType::DESTROYED_ASSHOLE));
+                (void)gain_mutation(*player_ptr, static_cast<int>(PlayerMutationType::DESTROYED_ASSHOLE));
             } else {
                 msg_print(_("肛門に激痛が走った！", "Your asshole is in severe pain!"));
             }

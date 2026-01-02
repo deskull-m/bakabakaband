@@ -262,7 +262,7 @@ void print_speed(PlayerType *player_ptr)
     auto col_speed = wid + COL_SPEED;
     auto row_speed = hgt + ROW_SPEED;
 
-    const auto speed = player_ptr->pspeed - STANDARD_SPEED;
+    const auto speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - STANDARD_SPEED;
     const auto &floor = *player_ptr->current_floor_ptr;
     bool is_player_fast = is_fast(player_ptr);
     char buf[32] = "";
@@ -670,6 +670,30 @@ void print_status(PlayerType *player_ptr)
 
     if (player_ptr->tim_eyeeye) {
         ADD_BAR_FLAG(BAR_EYEEYE);
+    }
+
+    if (player_ptr->tim_res_lite) {
+        ADD_BAR_FLAG(BAR_RESLITE);
+    }
+
+    if (player_ptr->tim_res_dark) {
+        ADD_BAR_FLAG(BAR_RESDARK);
+    }
+
+    if (player_ptr->tim_res_fear) {
+        ADD_BAR_FLAG(BAR_RESFEAR);
+    }
+
+    if (player_ptr->tim_emission) {
+        ADD_BAR_FLAG(BAR_EMISSION);
+    }
+
+    if (player_ptr->tim_exorcism) {
+        ADD_BAR_FLAG(BAR_EXORCISM);
+    }
+
+    if (player_ptr->tim_imm_dark) {
+        ADD_BAR_FLAG(BAR_IMMDARK);
     }
 
     add_hex_status_flags(player_ptr, bar_flags);

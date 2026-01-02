@@ -184,6 +184,9 @@ static TERM_COLOR decide_speed_color(PlayerType *player_ptr, const int base_spee
  */
 static int calc_temporary_speed(PlayerType *player_ptr)
 {
+    if (!player_ptr->is_player()) {
+        return 0;
+    }
     int tmp_speed = 0;
     if (!player_ptr->riding) {
         if (is_fast(player_ptr)) {
@@ -246,7 +249,7 @@ static void display_player_speed(PlayerType *player_ptr, TERM_COLOR attr, int ba
     }
 
     display_player_one_line(ENTRY_SPEED, buf, attr);
-    display_player_one_line(ENTRY_LEVEL, format("%d", player_ptr->lev), TERM_L_GREEN);
+    display_player_one_line(ENTRY_LEVEL, format("%d", player_ptr->level), TERM_L_GREEN);
 }
 
 /*!
@@ -269,12 +272,12 @@ static void display_player_exp(PlayerType *player_ptr)
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
 
-    if (player_ptr->lev >= PY_MAX_LEVEL) {
+    if (player_ptr->level >= PY_MAX_LEVEL) {
         display_player_one_line(e, "*****", TERM_L_GREEN);
     } else if (pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[player_ptr->lev - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[player_ptr->level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp[player_ptr->lev - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp[player_ptr->level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
     }
 }
 
@@ -292,12 +295,12 @@ static void display_playtime_in_game(PlayerType *player_ptr)
     display_player_one_line(ENTRY_DAY, mes, TERM_L_GREEN);
     display_player_one_line(ENTRY_WORLD_COLLAPSE, format("%3d.%06d%%", wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000), TERM_L_GREEN);
 
-    if (player_ptr->chp >= player_ptr->mhp) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->chp, player_ptr->mhp), TERM_L_GREEN);
-    } else if (player_ptr->chp > (player_ptr->mhp * hitpoint_warn) / 10) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->chp, player_ptr->mhp), TERM_YELLOW);
+    if (player_ptr->hp >= player_ptr->maxhp) {
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_L_GREEN);
+    } else if (player_ptr->hp > (player_ptr->maxhp * hitpoint_warn) / 10) {
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->chp, player_ptr->mhp), TERM_RED);
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_RED);
     }
 
     if (player_ptr->csp >= player_ptr->msp) {
@@ -316,16 +319,18 @@ static void display_playtime_in_game(PlayerType *player_ptr)
  */
 void display_player_middle(PlayerType *player_ptr)
 {
-    if (can_attack_with_main_hand(player_ptr)) {
-        display_player_melee_bonus(player_ptr, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
-    }
+    if (player_ptr->is_player()) {
+        if (can_attack_with_main_hand(player_ptr)) {
+            display_player_melee_bonus(player_ptr, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
+        }
 
-    display_sub_hand(player_ptr);
-    display_bow_hit_damage(player_ptr);
-    display_shoot_magnification(player_ptr);
+        display_sub_hand(player_ptr);
+        display_bow_hit_damage(player_ptr);
+        display_shoot_magnification(player_ptr);
+    }
     display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", player_ptr->dis_ac, player_ptr->dis_to_a), TERM_L_BLUE);
 
-    int base_speed = player_ptr->pspeed - 110;
+    int base_speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - 110;
     if (player_ptr->action == ACTION_SEARCH) {
         base_speed += 10;
     }

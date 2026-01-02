@@ -1,4 +1,5 @@
 #include "save/player-writer.h"
+#include "avatar/avatar.h"
 #include "combat/martial-arts-style.h"
 #include "floor/dungeon-feeling.h"
 #include "game-option/birth-options.h"
@@ -45,7 +46,7 @@ void wr_player(PlayerType *player_ptr)
 {
     auto &system = AngbandSystem::get_instance();
 
-    wr_string(player_ptr->name);
+    wr_string(player_ptr->name.data());
     wr_string(player_ptr->died_from);
     wr_string(player_ptr->last_message);
 
@@ -69,6 +70,18 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b(player_ptr->ht);
     wr_s16b(player_ptr->wt);
 
+    // 死亡履歴のセーブ
+    wr_u32b(static_cast<uint32_t>(player_ptr->death_history.size()));
+    for (const auto &record : player_ptr->death_history) {
+        wr_s32b(record.game_turn);
+        wr_s16b(record.day);
+        wr_s16b(record.hour);
+        wr_s16b(record.min);
+        wr_s16b(record.player_level);
+        wr_string(record.cause);
+        wr_s16b(enum2i(record.killer_monrace_id));
+    }
+
     for (int i = 0; i < A_MAX; ++i) {
         wr_s16b(player_ptr->stat_max[i]);
     }
@@ -90,7 +103,7 @@ void wr_player(PlayerType *player_ptr)
     wr_u32b(player_ptr->max_max_exp);
     wr_u32b(player_ptr->exp);
     wr_u32b(player_ptr->exp_frac);
-    wr_s16b(player_ptr->lev);
+    wr_s16b(player_ptr->level);
 
     for (int i = 0; i < 64; i++) {
         wr_s16b(player_ptr->spell_exp[i]);
@@ -147,9 +160,10 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b((int16_t)player_ptr->oldpy);
 
     wr_s16b(0);
-    wr_s32b(player_ptr->mhp);
-    wr_s32b(player_ptr->chp);
-    wr_u32b(player_ptr->chp_frac);
+    wr_s32b(player_ptr->maxhp);
+    wr_s32b(player_ptr->hp);
+    wr_u32b(player_ptr->hp_frac);
+    wr_s32b(player_ptr->dealt_damage); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
     wr_s32b(player_ptr->msp);
     wr_s32b(player_ptr->csp);
     wr_u32b(player_ptr->csp_frac);
@@ -189,7 +203,7 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b(player_ptr->invuln);
     wr_s16b(player_ptr->ult_res);
     wr_s16b(player_ptr->hero);
-    wr_s16b(player_ptr->shero);
+    wr_s16b(player_ptr->berserk);
     wr_s16b(player_ptr->shield);
     wr_s16b(player_ptr->blessed);
     wr_s16b(player_ptr->tim_invis);
@@ -216,6 +230,9 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b(player_ptr->tsubureru);
     wr_s16b(player_ptr->magicdef);
     wr_s16b(player_ptr->tim_res_nether);
+    wr_s16b(player_ptr->tim_res_lite);
+    wr_s16b(player_ptr->tim_res_dark);
+    wr_s16b(player_ptr->tim_res_fear);
     wr_s16b(player_ptr->tim_res_time);
     wr_byte((byte)player_ptr->mimic_form);
     wr_s16b(player_ptr->tim_mimic);
@@ -226,17 +243,40 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b(player_ptr->tim_reflect);
     wr_s16b(player_ptr->multishadow);
     wr_s16b(player_ptr->dustrobe);
+    wr_s16b(player_ptr->tim_emission);
+    wr_s16b(player_ptr->tim_exorcism);
+    wr_s16b(player_ptr->tim_imm_dark);
 
     wr_s16b(player_ptr->patron);
     wr_FlagGroup(player_ptr->muta, wr_byte);
     wr_FlagGroup(player_ptr->trait, wr_byte);
 
-    for (int i = 0; i < 8; i++) {
-        wr_s16b(player_ptr->virtues[i]);
+    // Save virtues in legacy format (8 entries)
+    // First, collect virtues into arrays
+    Virtue vir_types[8];
+    int16_t vir_values[8];
+    int idx = 0;
+    for (const auto &[vir_type, value] : player_ptr->virtues) {
+        if (idx < 8) {
+            vir_types[idx] = vir_type;
+            vir_values[idx] = value;
+            idx++;
+        }
+    }
+    // Fill remaining slots with NONE
+    for (; idx < 8; idx++) {
+        vir_types[idx] = Virtue::NONE;
+        vir_values[idx] = 0;
     }
 
+    // Write virtue values
     for (int i = 0; i < 8; i++) {
-        wr_s16b(enum2i(player_ptr->vir_types[i]));
+        wr_s16b(vir_values[i]);
+    }
+
+    // Write virtue types
+    for (int i = 0; i < 8; i++) {
+        wr_s16b(enum2i(vir_types[i]));
     }
 
     wr_s32b(int32_t(player_ptr->incident.size()));
