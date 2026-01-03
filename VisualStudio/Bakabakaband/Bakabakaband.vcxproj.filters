@@ -2813,6 +2813,9 @@
     <ClCompile Include="..\..\src\system\creature-party\creature-party-list.cpp">
       <Filter>system\creature-party</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\info-reader\party-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -6073,6 +6076,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\system\creature-party\creature-party-list.h">
       <Filter>system\creature-party</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\party-reader.h">
+      <Filter>info-reader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

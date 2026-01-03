@@ -5,7 +5,7 @@
       "id": 1,
       "name": {
         "ja": "初期パーティ",
-        "en": "Novice Party",
+        "en": "Novice Party"
       },
       "tag": "NOVICE_PARTY",
       "min_level": 1,
@@ -32,7 +32,7 @@
           "monrace_id": 46,
           "count_dice": "1d2",
           "probability": 100
-        },
+        }
       ]
     }
   ]
