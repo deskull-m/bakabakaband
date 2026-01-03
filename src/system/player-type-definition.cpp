@@ -148,44 +148,6 @@ std::string PlayerType::decrease_ability_all()
     return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
 }
 
-/*!
- * @brief 現在地の瞬時値を返す
- * @details プレイヤーが移動する前後の文脈で使用すると不整合を起こすので注意
- */
-Pos2D PlayerType::get_position() const
-{
-    return Pos2D(this->y, this->x);
-}
-
-Pos2D PlayerType::get_old_position() const
-{
-    return Pos2D(this->oldpy, this->oldpx);
-}
-
-/*!
- * @brief 現在地の隣 (瞬時値)または現在地を返す
- * @param dir 隣を表す方向番号
- * @details プレイヤーが移動する前後の文脈で使用すると不整合を起こすので注意
- * 方向番号による位置取りは以下の通り. 0と5は現在地.
- * 789 ...
- * 456 .@.
- * 123 ...
- */
-Pos2D PlayerType::get_neighbor(int dir) const
-{
-    return this->get_position() + Direction(dir).vec();
-}
-
-/*!
- * @brief 現在地の隣 (瞬時値)または現在地を返す
- * @param dir 隣を表す方向
- * @attention プレイヤーが移動する前後の文脈で使用すると不整合を起こすので注意
- */
-Pos2D PlayerType::get_neighbor(const Direction &dir) const
-{
-    return this->get_position() + dir.vec();
-}
-
 bool PlayerType::is_located_at_running_destination() const
 {
     return (this->y == this->run_py) && (this->x == this->run_px);
@@ -248,16 +210,6 @@ bool PlayerType::try_resist_eldritch_horror() const
 }
 
 // CreatureEntityインターフェースの実装
-POSITION PlayerType::get_x() const
-{
-    return this->x;
-}
-
-POSITION PlayerType::get_y() const
-{
-    return this->y;
-}
-
 int PlayerType::get_current_hp() const
 {
     return this->hp;

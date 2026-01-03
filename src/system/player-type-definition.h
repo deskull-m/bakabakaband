@@ -340,10 +340,6 @@ public:
     bool is_fully_healthy() const;
     std::string decrease_ability_random();
     std::string decrease_ability_all();
-    Pos2D get_position() const override;
-    Pos2D get_old_position() const;
-    Pos2D get_neighbor(int dir) const;
-    Pos2D get_neighbor(const Direction &dir) const;
     bool is_located_at_running_destination() const;
     bool is_located_at(const Pos2D &pos) const;
     bool try_set_position(const Pos2D &pos);
@@ -353,8 +349,6 @@ public:
     bool try_resist_eldritch_horror() const;
 
     // CreatureEntityインターフェースの実装
-    POSITION get_x() const override;
-    POSITION get_y() const override;
     int get_current_hp() const override;
     int get_max_hp() const override;
 
