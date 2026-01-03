@@ -15,6 +15,7 @@
 #include "grid/grid.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-summon.h"
+#include "monster-floor/party-generator.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster/monster-util.h"
 #include "room/lake-types.h"
@@ -459,7 +460,19 @@ static void decide_dungeon_data_allocation(PlayerType *player_ptr, DungeonData *
 static bool allocate_dungeon_data(PlayerType *player_ptr, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
     dd_ptr->alloc_monster_num += randint1(8);
+    auto &floor = *player_ptr->current_floor_ptr;
+    
     for (dd_ptr->alloc_monster_num = dd_ptr->alloc_monster_num + dd_ptr->alloc_object_num; dd_ptr->alloc_monster_num > 0; dd_ptr->alloc_monster_num--) {
+        if (one_in_(30)) {
+            // ランダムな位置を決定
+            Pos2D pos(randint0(floor.height), randint0(floor.width));
+            if (alloc_creature_party(player_ptr, pos)) {
+                // パーティ生成に成功した場合、このイテレーションをスキップ
+                continue;
+            }
+        }
+        
+        // 通常のモンスター生成
         (void)alloc_monster(player_ptr, 0, PM_ALLOW_SLEEP, summon_specific);
     }
 
@@ -468,7 +481,6 @@ static bool allocate_dungeon_data(PlayerType *player_ptr, DungeonData *dd_ptr, c
         alloc_object(player_ptr, ALLOC_SET_CORR, ALLOC_TYP_RUBBLE, randint1(dd_ptr->alloc_object_num));
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
     if (floor.is_entering_dungeon() && floor.dun_level > 1) {
         floor.object_level = 1;
     }
