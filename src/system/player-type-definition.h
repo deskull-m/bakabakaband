@@ -339,7 +339,6 @@ public:
     std::string base_name{}; /*!< Stripped version of "player_name" */
 
     void ride_monster(MONSTER_IDX m_idx);
-    std::shared_ptr<TimedEffects> effects() const;
     bool is_fully_healthy() const;
     std::string decrease_ability_random();
     std::string decrease_ability_all();
@@ -366,9 +365,6 @@ public:
     FloorType *get_floor() const override;
 
     bool is_player() const override;
-
-private:
-    std::shared_ptr<TimedEffects> timed_effects;
 };
 
 extern PlayerType *p_ptr;

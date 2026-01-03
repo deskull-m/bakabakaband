@@ -14,6 +14,7 @@
 
 class FloorType;
 class ItemEntity;
+class TimedEffects;
 
 // Forward declarations for race/class/personality info
 struct player_race_info;
@@ -294,4 +295,13 @@ public:
 
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
+
+    /*!<
+     * @brief 時限効果管理オブジェクトを取得
+     * @return 時限効果管理オブジェクトへの共有ポインタ
+     */
+    std::shared_ptr<TimedEffects> effects() const;
+
+protected:
+    std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
 };

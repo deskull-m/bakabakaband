@@ -80,11 +80,6 @@ void PlayerType::ride_monster(MONSTER_IDX m_idx)
     }
 }
 
-std::shared_ptr<TimedEffects> PlayerType::effects() const
-{
-    return this->timed_effects;
-}
-
 /*!
  * @brief 自身の状態が全快で、かつフロアに影響を与えないかを検証する
  * @return 上記の通りか
