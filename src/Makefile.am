@@ -690,6 +690,7 @@ hengband_SOURCES = \
 	info-reader/magic-reader.cpp info-reader/magic-reader.h \
 	info-reader/message-reader.cpp info-reader/message-reader.h \
 	info-reader/parse-error-types.h \
+	info-reader/party-reader.cpp info-reader/party-reader.h \
 	info-reader/race-info-tokens-table.cpp info-reader/race-info-tokens-table.h \
 	info-reader/race-reader.cpp info-reader/race-reader.h \
 	info-reader/random-grid-effect-types.h \
@@ -921,6 +922,7 @@ hengband_SOURCES = \
 	monster-floor/monster-direction.cpp monster-floor/monster-direction.h \
 	monster-floor/monster-dist-offsets.cpp monster-floor/monster-dist-offsets.h \
 	monster-floor/monster-generator.cpp monster-floor/monster-generator.h \
+	monster-floor/party-generator.cpp monster-floor/party-generator.h \
 	monster-floor/monster-move.cpp monster-floor/monster-move.h \
 	monster-floor/monster-movement-direction-list.cpp monster-floor/monster-movement-direction-list.h \
 	monster-floor/monster-object.cpp monster-floor/monster-object.h \
@@ -1361,6 +1363,9 @@ hengband_SOURCES = \
 	system/baseitem/baseitem-definition.cpp system/baseitem/baseitem-definition.h \
 	system/baseitem/baseitem-key.cpp system/baseitem/baseitem-key.h \
 	system/baseitem/baseitem-list.cpp system/baseitem/baseitem-list.h \
+	\
+	system/creature-party/creature-party-definition.cpp system/creature-party/creature-party-definition.h \
+	system/creature-party/creature-party-list.cpp system/creature-party/creature-party-list.h \
 	\
 	system/dungeon/dungeon-data-definition.cpp system/dungeon/dungeon-data-definition.h \
 	system/dungeon/dungeon-definition.cpp system/dungeon/dungeon-definition.h \

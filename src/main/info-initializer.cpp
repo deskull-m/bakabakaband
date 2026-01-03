@@ -16,6 +16,7 @@
 #include "info-reader/info-reader-util.h"
 #include "info-reader/magic-reader.h"
 #include "info-reader/message-reader.h"
+#include "info-reader/party-reader.h"
 #include "info-reader/race-reader.h"
 #include "info-reader/skill-reader.h"
 #include "info-reader/vault-reader.h"
@@ -31,6 +32,8 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-party/creature-party-definition.h"
+#include "system/creature-party/creature-party-list.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/floor/wilderness-grid.h"
@@ -245,6 +248,15 @@ void init_monster_message_definitions()
 {
     init_header(&monster_messages_header);
     init_json("MonsterMessages.jsonc", "groups", monster_messages_header, MonraceMessageList::get_instance(), parse_monster_messages_info);
+}
+
+/*!
+ * @brief パーティ情報読み込みのメインルーチン
+ */
+void init_creature_parties_info()
+{
+    init_header(&creature_parties_header);
+    init_json("CreatureParty.jsonc", "parties", creature_parties_header, CreaturePartyList::get_instance(), parse_creature_parties_info);
 }
 
 /*!

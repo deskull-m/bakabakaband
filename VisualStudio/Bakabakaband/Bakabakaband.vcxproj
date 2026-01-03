@@ -375,6 +375,7 @@
     <ClCompile Include="..\..\src\cmd-io\cmd-text-command.cpp" />
     <ClCompile Include="..\..\src\combat\martial-arts-style.cpp" />
     <ClCompile Include="..\..\src\core\score-util.cpp" />
+    <ClCompile Include="..\..\src\info-reader\party-reader.cpp" />
     <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp" />
     <ClCompile Include="..\..\src\io-dump\score-sender.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp" />
@@ -383,9 +384,12 @@
     <ClCompile Include="..\..\src\io\macro-configurations-store.cpp" />
     <ClCompile Include="..\..\src\load\alliance-loader.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-movement-direction-list.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\party-generator.cpp" />
     <ClCompile Include="..\..\src\monster-race\monster-era-type-name.cpp" />
     <ClCompile Include="..\..\src\mutation\mutation-data.cpp" />
     <ClCompile Include="..\..\src\save\alliance-writer.cpp" />
+    <ClCompile Include="..\..\src\system\creature-party\creature-party-definition.cpp" />
+    <ClCompile Include="..\..\src\system\creature-party\creature-party-list.cpp" />
     <ClCompile Include="..\..\src\system\floor\wilderness-grid.cpp" />
     <ClCompile Include="..\..\src\system\services\dungeon-monrace-service.cpp" />
     <ClCompile Include="..\..\src\system\services\dungeon-service.cpp" />
@@ -1190,6 +1194,7 @@
     <ClInclude Include="..\..\src\cmd-action\cmd-martial-arts.h" />
     <ClInclude Include="..\..\src\cmd-io\cmd-text-command.h" />
     <ClInclude Include="..\..\src\combat\martial-arts-style.h" />
+    <ClInclude Include="..\..\src\info-reader\party-reader.h" />
     <ClInclude Include="..\..\src\io-dump\player-status-dump-json.h" />
     <ClInclude Include="..\..\src\io-dump\score-sender.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
@@ -1197,11 +1202,14 @@
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
     <ClInclude Include="..\..\src\load\alliance-loader.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-movement-direction-list.h" />
+    <ClInclude Include="..\..\src\monster-floor\party-generator.h" />
     <ClInclude Include="..\..\src\monster-race\monster-era-type-name.h" />
     <ClInclude Include="..\..\src\monster-race\race-era-flags.h" />
     <ClInclude Include="..\..\src\mutation\mutation-data.h" />
     <ClInclude Include="..\..\src\save\alliance-writer.h" />
     <ClInclude Include="..\..\src\system\creature-entity.h" />
+    <ClInclude Include="..\..\src\system\creature-party\creature-party-definition.h" />
+    <ClInclude Include="..\..\src\system\creature-party\creature-party-list.h" />
     <ClInclude Include="..\..\src\system\enums\terrain\terrain-kind.h" />
     <ClInclude Include="..\..\src\system\enums\terrain\wilderness-terrain.h" />
     <ClInclude Include="..\..\src\system\floor\wilderness-grid.h" />

@@ -232,7 +232,8 @@ void init_angband(PlayerType *player_ptr, bool no_term)
 
     init_note(_("[配列を初期化しています... (クエスト)]", "[Initializing arrays... (quests)]"));
     QuestList::get_instance().initialize();
-
+    init_note(_("配列を初期化しています... (パーティ)", "[Initializing arrays... (parties)]"));
+    init_creature_parties_info();
     init_note(_("[データの初期化中... (宝物庫)]", "[Initializing arrays... (vaults)]"));
     init_vaults_info();
 
