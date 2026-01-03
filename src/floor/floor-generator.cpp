@@ -580,7 +580,7 @@ void generate_floor(PlayerType *player_ptr)
                 wilderness_gen(player_ptr);
             }
         } else {
-            why = level_gen(player_ptr, 191919);
+            why = level_gen(player_ptr);
         }
 
         if (is_sushi_eater(player_ptr)) {
