@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+class Direction;
 class FloorType;
 class ItemEntity;
 class TimedEffects;
@@ -59,19 +60,55 @@ public:
      * @brief クリーチャーの座標を取得
      * @return 座標
      */
-    virtual Pos2D get_position() const = 0;
+    virtual Pos2D get_position() const
+    {
+        return Pos2D(this->y, this->x);
+    }
 
     /*!
      * @brief クリーチャーのX座標を取得
      * @return X座標
      */
-    virtual POSITION get_x() const = 0;
+    virtual POSITION get_x() const
+    {
+        return this->x;
+    }
 
     /*!
      * @brief クリーチャーのY座標を取得
      * @return Y座標
      */
-    virtual POSITION get_y() const = 0;
+    virtual POSITION get_y() const
+    {
+        return this->y;
+    }
+
+    /*!
+     * @brief クリーチャーの前回の座標を取得
+     * @return 前回の座標
+     */
+    virtual Pos2D get_old_position() const
+    {
+        return Pos2D(this->oldpy, this->oldpx);
+    }
+
+    /*!
+     * @brief 現在地の隣 (瞬時値)または現在地を返す
+     * @param dir 隣を表す方向番号
+     * @details クリーチャーが移動する前後の文脈で使用すると不整合を起こすので注意
+     * 方向番号による位置取りは以下の通り. 0と5は現在地.
+     * 789 ...
+     * 456 .@.
+     * 123 ...
+     */
+    Pos2D get_neighbor(int dir) const;
+
+    /*!
+     * @brief 現在地の隣 (瞬時値)または現在地を返す
+     * @param dir 隣を表す方向
+     * @attention クリーチャーが移動する前後の文脈で使用すると不整合を起こすので注意
+     */
+    Pos2D get_neighbor(const Direction &dir) const;
 
     /*!
      * @brief クリーチャーの現在HPを取得
