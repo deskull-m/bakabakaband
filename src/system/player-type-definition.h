@@ -67,8 +67,6 @@ public:
     void plus_incident_tree(const std::string &incident_id, int num);
     bool is_true_winner() const;
 
-    FloorType *current_floor_ptr{};
-
     RealmType realm1{}; /* First magic realm */
     RealmType realm2{}; /* Second magic realm */
     ElementRealmType element_realm{}; //!< 元素使い領域
@@ -362,7 +360,6 @@ public:
 
     bool is_valid() const override;
     bool is_dead() const override;
-    FloorType *get_floor() const override;
 
     bool is_player() const override;
 };
