@@ -1043,9 +1043,14 @@ BIT_FLAGS has_levitation(PlayerType *player_ptr)
     return monrace.feature_flags.has(MonsterFeatureType::CAN_FLY) ? FLAG_CAUSE_RIDING : FLAG_CAUSE_NONE;
 }
 
-bool has_can_swim(PlayerType *player_ptr)
+bool has_can_swim(CreatureEntity *creature_ptr)
 {
-    if (player_ptr->riding == 0) {
+    if (creature_ptr->riding == 0) {
+        return false;
+    }
+
+    auto *player_ptr = dynamic_cast<PlayerType *>(creature_ptr);
+    if (!player_ptr) {
         return false;
     }
 

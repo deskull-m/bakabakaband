@@ -281,6 +281,9 @@ public:
     BIT_FLAGS esp_nonliving{};
     BIT_FLAGS esp_unique{};
 
+    // 地形移動能力 / Terrain movement abilities
+    bool can_swim{}; /* No damage in water */
+
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
 };
