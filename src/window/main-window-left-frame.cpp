@@ -171,12 +171,12 @@ void print_sp(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの所持金を表示する / Prints current gold
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_gold(PlayerType *player_ptr)
+void print_gold(CreatureEntity &creature)
 {
     put_str(_("＄ ", "AU "), ROW_GOLD, COL_GOLD);
-    c_put_str(TERM_L_GREEN, format("%9d", player_ptr->au), ROW_GOLD, COL_GOLD + 3);
+    c_put_str(TERM_L_GREEN, format("%9d", creature.au), ROW_GOLD, COL_GOLD + 3);
 }
 
 /*!
@@ -261,7 +261,7 @@ void print_frame_basic(PlayerType *player_ptr)
     print_ac(player_ptr);
     print_hp(player_ptr);
     print_sp(player_ptr);
-    print_gold(player_ptr);
+    print_gold(*player_ptr);
     print_depth(player_ptr);
     print_health(player_ptr, true);
     print_health(player_ptr, false);
