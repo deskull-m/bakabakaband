@@ -156,12 +156,12 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::HP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::HP);
-        print_hp(player_ptr);
+        print_hp(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::MP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::MP);
-        print_sp(player_ptr);
+        print_sp(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::GOLD)) {
