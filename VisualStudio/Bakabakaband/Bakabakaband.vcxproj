@@ -388,6 +388,7 @@
     <ClCompile Include="..\..\src\monster-race\monster-era-type-name.cpp" />
     <ClCompile Include="..\..\src\mutation\mutation-data.cpp" />
     <ClCompile Include="..\..\src\save\alliance-writer.cpp" />
+    <ClCompile Include="..\..\src\system\creature-entity.cpp" />
     <ClCompile Include="..\..\src\system\creature-party\creature-party-definition.cpp" />
     <ClCompile Include="..\..\src\system\creature-party\creature-party-list.cpp" />
     <ClCompile Include="..\..\src\system\floor\wilderness-grid.cpp" />
