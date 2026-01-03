@@ -290,7 +290,6 @@ public:
     EnumClassFlagGroup<CurseTraitType> cursed{}; /* Player is cursed */
     EnumClassFlagGroup<CurseSpecialTraitType> cursed_special{}; /* Player is special type cursed */
 
-    bool can_swim{}; /* No damage falling */
     BIT_FLAGS levitation{}; /* No damage falling */
     BIT_FLAGS lite{}; /* Permanent light */
     BIT_FLAGS free_act{}; /* Never paralyzed */

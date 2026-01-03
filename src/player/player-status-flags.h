@@ -101,7 +101,7 @@ BIT_FLAGS has_sustain_dex(PlayerType *player_ptr);
 BIT_FLAGS has_sustain_con(PlayerType *player_ptr);
 BIT_FLAGS has_sustain_chr(PlayerType *player_ptr);
 BIT_FLAGS has_levitation(PlayerType *player_ptr);
-bool has_can_swim(PlayerType *player_ptr);
+bool has_can_swim(CreatureEntity *creature_ptr);
 BIT_FLAGS has_slow_digest(PlayerType *player_ptr);
 BIT_FLAGS has_regenerate(PlayerType *player_ptr);
 void update_curses(PlayerType *player_ptr);
