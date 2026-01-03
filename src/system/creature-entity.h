@@ -1,5 +1,6 @@
 #pragma once
 
+#include "artifact/fixed-art-types.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-ability/player-ability-types.h"
 #include "player/player-personality-types.h"
@@ -160,6 +161,13 @@ public:
      * @return プレイヤーならtrue、モンスターならfalse
      */
     virtual bool is_player() const = 0;
+
+    /*!
+     * @brief 指定した固定アーティファクトを装備しているかどうか調べる
+     * @param fa_id 固定アーティファクトのID
+     * @return 装備していればtrue、そうでなければfalse
+     */
+    bool is_wielding(FixedArtifactId fa_id) const;
 
     // モンスター種族ID（プレイヤーの場合は0）
     MonraceId r_idx{}; /*!< モンスターの実種族ID (これが0の時は死亡扱いになる) / Monster race index 0 = dead. */
