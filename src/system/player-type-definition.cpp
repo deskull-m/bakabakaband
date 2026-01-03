@@ -278,11 +278,6 @@ bool PlayerType::is_dead() const
     return this->is_dead_;
 }
 
-FloorType *PlayerType::get_floor() const
-{
-    return this->current_floor_ptr;
-}
-
 bool PlayerType::is_player() const
 {
     return true;

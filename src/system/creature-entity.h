@@ -128,7 +128,10 @@ public:
      * @brief クリーチャーが所属するフロアを取得
      * @return フロアへのポインタ
      */
-    virtual FloorType *get_floor() const = 0;
+    virtual FloorType *get_floor() const
+    {
+        return this->current_floor_ptr;
+    }
 
     /*!
      * @brief 次の行動までに必要なエネルギーを取得
@@ -295,6 +298,9 @@ public:
 
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
+
+    // フロア情報
+    FloorType *current_floor_ptr{}; /*!< 現在所属しているフロアへのポインタ / Current floor pointer */
 
     /*!<
      * @brief 時限効果管理オブジェクトを取得
