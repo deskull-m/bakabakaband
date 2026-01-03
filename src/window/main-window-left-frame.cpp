@@ -119,32 +119,34 @@ void print_ac(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーのHPを表示する / Prints Cur/Max hit points
+ * @param creature クリーチャーへの参照
  */
-void print_hp(PlayerType *player_ptr)
+void print_hp(CreatureEntity &creature)
 {
     char tmp[32];
     put_str("HP", ROW_CURHP, COL_CURHP);
-    sprintf(tmp, "%4ld", (long int)player_ptr->hp);
+    sprintf(tmp, "%4ld", (long int)creature.hp);
     TERM_COLOR color;
-    if (player_ptr->hp >= player_ptr->maxhp) {
+    if (creature.hp >= creature.maxhp) {
         color = TERM_L_GREEN;
-    } else if (player_ptr->hp > (player_ptr->maxhp * hitpoint_warn) / 10) {
+    } else if (creature.hp > (creature.maxhp * hitpoint_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", player_ptr->hp), ROW_CURHP, COL_CURHP + 3);
+    c_put_str(color, format("%4d", creature.hp), ROW_CURHP, COL_CURHP + 3);
     put_str("/", ROW_CURHP, COL_CURHP + 7);
-    sprintf(tmp, "%4ld", (long int)player_ptr->maxhp);
+    sprintf(tmp, "%4ld", (long int)creature.maxhp);
     color = TERM_L_GREEN;
-    c_put_str(color, format("%4d", player_ptr->maxhp), ROW_CURHP, COL_CURHP + 8);
+    c_put_str(color, format("%4d", creature.maxhp), ROW_CURHP, COL_CURHP + 8);
 }
 
 /*!
  * @brief プレイヤーのMPを表示する / Prints players max/cur spell points
+ * @param creature クリーチャーへの参照
  */
-void print_sp(PlayerType *player_ptr)
+void print_sp(CreatureEntity &creature)
 {
     char tmp[32];
     byte color;
@@ -153,20 +155,20 @@ void print_sp(PlayerType *player_ptr)
     }
 
     put_str(_("MP", "SP"), ROW_CURSP, COL_CURSP);
-    sprintf(tmp, "%4ld", (long int)player_ptr->csp);
-    if (player_ptr->csp >= player_ptr->msp) {
+    sprintf(tmp, "%4ld", (long int)creature.csp);
+    if (creature.csp >= creature.msp) {
         color = TERM_L_GREEN;
-    } else if (player_ptr->csp > (player_ptr->msp * mana_warn) / 10) {
+    } else if (creature.csp > (creature.msp * mana_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", player_ptr->csp), ROW_CURSP, COL_CURSP + 3);
+    c_put_str(color, format("%4d", creature.csp), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
-    sprintf(tmp, "%4ld", (long int)player_ptr->msp);
+    sprintf(tmp, "%4ld", (long int)creature.msp);
     color = TERM_L_GREEN;
-    c_put_str(color, format("%4d", player_ptr->msp), ROW_CURSP, COL_CURSP + 8);
+    c_put_str(color, format("%4d", creature.msp), ROW_CURSP, COL_CURSP + 8);
 }
 
 /*!
@@ -259,8 +261,8 @@ void print_frame_basic(PlayerType *player_ptr)
     }
 
     print_ac(player_ptr);
-    print_hp(player_ptr);
-    print_sp(player_ptr);
+    print_hp(*player_ptr);
+    print_sp(*player_ptr);
     print_gold(*player_ptr);
     print_depth(player_ptr);
     print_health(player_ptr, true);
