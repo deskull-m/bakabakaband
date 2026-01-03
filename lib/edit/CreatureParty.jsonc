@@ -1,0 +1,39 @@
+{
+  "version": 1.0,
+  "parties": [
+    {
+      "id": 1,
+      "name": {
+        "ja": "初期パーティ",
+        "en": "Novice Party",
+      },
+      "tag": "NOVICE_PARTY",
+      "min_level": 1,
+      "max_level": 127,
+      "rarity": 6,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 43,
+          "count_dice": "1d2",
+          "probability": 100
+        },
+        {
+          "monrace_id": 45,
+          "count_dice": "1d2",
+          "probability": 100
+        },
+        {
+          "monrace_id": 44,
+          "count_dice": "1d2",
+          "probability": 100
+        },
+        {
+          "monrace_id": 46,
+          "count_dice": "1d2",
+          "probability": 100
+        },
+      ]
+    }
+  ]
+}

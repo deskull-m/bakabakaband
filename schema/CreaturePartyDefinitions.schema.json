@@ -1,0 +1,105 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "description": "モンスターパーティの定義",
+    "properties": {
+        "version": {
+            "type": "number",
+            "description": "バージョン情報"
+        },
+        "parties": {
+            "type": "array",
+            "description": "パーティ定義を格納する配列",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "tag",
+                    "min_level",
+                    "max_level",
+                    "rarity",
+                    "members"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "パーティID（一意の識別子）",
+                        "minimum": 1
+                    },
+                    "name": {
+                        "type": "object",
+                        "description": "パーティの名称（多言語対応）",
+                        "required": ["ja", "en"],
+                        "properties": {
+                            "ja": {
+                                "type": "string",
+                                "description": "日本語名"
+                            },
+                            "en": {
+                                "type": "string",
+                                "description": "英語名"
+                            }
+                        }
+                    },
+                    "tag": {
+                        "type": "string",
+                        "description": "パーティのタグ（内部識別用）"
+                    },
+                    "min_level": {
+                        "type": "integer",
+                        "description": "出現最小階層レベル",
+                        "minimum": 0
+                    },
+                    "max_level": {
+                        "type": "integer",
+                        "description": "出現最大階層レベル",
+                        "minimum": 0
+                    },
+                    "rarity": {
+                        "type": "integer",
+                        "description": "レアリティ（値が小さいほど出現しやすい）",
+                        "minimum": 1
+                    },
+                    "allow_unique": {
+                        "type": "boolean",
+                        "description": "ユニークモンスターを含むかどうか",
+                        "default": false
+                    },
+                    "members": {
+                        "type": "array",
+                        "description": "パーティメンバーのリスト",
+                        "minItems": 1,
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "monrace_id",
+                                "count_dice",
+                                "probability"
+                            ],
+                            "properties": {
+                                "monrace_id": {
+                                    "type": "integer",
+                                    "description": "モンスター種族ID",
+                                    "minimum": 0
+                                },
+                                "count_dice": {
+                                    "type": "string",
+                                    "description": "出現数ダイス（XdY形式、例: '1d3', '2+1d4', '0+1d2-1'）",
+                                    "pattern": "^[0-9]*[+]?[0-9]*d[0-9]+([+-][0-9]+)?$"
+                                },
+                                "probability": {
+                                    "type": "integer",
+                                    "description": "出現確率（パーセンテージ）",
+                                    "minimum": 0,
+                                    "maximum": 100
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

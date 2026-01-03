@@ -2806,6 +2806,13 @@
     <ClCompile Include="..\..\src\io-dump\score-sender.cpp">
       <Filter>io-dump</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\util\png-displayer.cpp" />
+    <ClCompile Include="..\..\src\system\creature-party\creature-party-definition.cpp">
+      <Filter>system\creature-party</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\creature-party\creature-party-list.cpp">
+      <Filter>system\creature-party</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -6060,6 +6067,13 @@
     <ClInclude Include="..\..\src\io-dump\score-sender.h">
       <Filter>io-dump</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\util\png-displayer.h" />
+    <ClInclude Include="..\..\src\system\creature-party\creature-party-definition.h">
+      <Filter>system\creature-party</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\creature-party\creature-party-list.h">
+      <Filter>system\creature-party</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />
@@ -6362,6 +6376,9 @@
     </Filter>
     <Filter Include="achivement">
       <UniqueIdentifier>{6d1aa13b-cb5f-4aa3-828a-bd4d0018fc21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system\creature-party">
+      <UniqueIdentifier>{6246be9f-4a6a-418a-a1e4-65eba10a8f58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

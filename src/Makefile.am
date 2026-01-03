@@ -1362,6 +1362,9 @@ hengband_SOURCES = \
 	system/baseitem/baseitem-key.cpp system/baseitem/baseitem-key.h \
 	system/baseitem/baseitem-list.cpp system/baseitem/baseitem-list.h \
 	\
+	system/creature-party/creature-party-definition.cpp system/creature-party/creature-party-definition.h \
+	system/creature-party/creature-party-list.cpp system/creature-party/creature-party-list.h \
+	\
 	system/dungeon/dungeon-data-definition.cpp system/dungeon/dungeon-data-definition.h \
 	system/dungeon/dungeon-definition.cpp system/dungeon/dungeon-definition.h \
 	system/dungeon/dungeon-list.cpp system/dungeon/dungeon-list.h \
