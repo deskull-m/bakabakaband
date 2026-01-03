@@ -384,6 +384,7 @@
     <ClCompile Include="..\..\src\io\macro-configurations-store.cpp" />
     <ClCompile Include="..\..\src\load\alliance-loader.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-movement-direction-list.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\party-generator.cpp" />
     <ClCompile Include="..\..\src\monster-race\monster-era-type-name.cpp" />
     <ClCompile Include="..\..\src\mutation\mutation-data.cpp" />
     <ClCompile Include="..\..\src\save\alliance-writer.cpp" />
@@ -1201,6 +1202,7 @@
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
     <ClInclude Include="..\..\src\load\alliance-loader.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-movement-direction-list.h" />
+    <ClInclude Include="..\..\src\monster-floor\party-generator.h" />
     <ClInclude Include="..\..\src\monster-race\monster-era-type-name.h" />
     <ClInclude Include="..\..\src\monster-race\race-era-flags.h" />
     <ClInclude Include="..\..\src\mutation\mutation-data.h" />

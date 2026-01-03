@@ -922,6 +922,7 @@ hengband_SOURCES = \
 	monster-floor/monster-direction.cpp monster-floor/monster-direction.h \
 	monster-floor/monster-dist-offsets.cpp monster-floor/monster-dist-offsets.h \
 	monster-floor/monster-generator.cpp monster-floor/monster-generator.h \
+	monster-floor/party-generator.cpp monster-floor/party-generator.h \
 	monster-floor/monster-move.cpp monster-floor/monster-move.h \
 	monster-floor/monster-movement-direction-list.cpp monster-floor/monster-movement-direction-list.h \
 	monster-floor/monster-object.cpp monster-floor/monster-object.h \
