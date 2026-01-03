@@ -166,7 +166,7 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::GOLD)) {
         rfu.reset_flag(MainWindowRedrawingFlag::GOLD);
-        print_gold(player_ptr);
+        print_gold(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::DEPTH)) {
