@@ -2,7 +2,9 @@
 #include "load/old/monster-flag-types-savefile50.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
+#include "save/item-writer.h"
 #include "save/save-util.h"
+#include "system/item-entity.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "util/enum-converter.h"
@@ -134,6 +136,18 @@ uint32_t MonsterEntityWriter::write_monster_flags() const
         set_bits(flags, SaveDataMonsterFlagType::TRANSFORM);
     }
 
+    // インベントリがあるかチェック
+    bool has_inventory = false;
+    for (const auto &item : this->monster.inventory) {
+        if (item && item->is_valid()) {
+            has_inventory = true;
+            break;
+        }
+    }
+    if (has_inventory) {
+        set_bits(flags, SaveDataMonsterFlagType::INVENTORY);
+    }
+
     wr_u32b(flags);
     return flags;
 }
@@ -220,5 +234,19 @@ void MonsterEntityWriter::write_monster_info(uint32_t flags) const
         wr_s16b(enum2i(this->monster.transform_r_idx));
         wr_byte(this->monster.transform_hp_threshold);
         wr_byte(this->monster.has_transformed ? 1 : 0);
+    }
+
+    // インベントリの保存（PlayerTypeと同じ形式）
+    if (any_bits(flags, SaveDataMonsterFlagType::INVENTORY)) {
+        for (size_t i = 0; i < this->monster.inventory.size(); i++) {
+            const auto &item = this->monster.inventory[i];
+            if (!item || !item->is_valid()) {
+                continue;
+            }
+
+            wr_u16b(static_cast<uint16_t>(i));
+            wr_item(*item);
+        }
+        wr_u16b(0xFFFF); // 終端マーカー
     }
 }
