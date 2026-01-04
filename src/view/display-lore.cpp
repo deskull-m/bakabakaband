@@ -742,6 +742,11 @@ void display_monster_kind(lore_type *lore_ptr)
         has_specific_kind = true;
     }
 
+    if (lore_ptr->kind_flags.has(MonsterKindType::MESUGAKI)) {
+        hook_c_roff(TERM_YELLOW, _("メスガキ", " mesugaki"));
+        has_specific_kind = true;
+    }
+
     if (lore_ptr->kind_flags.has(MonsterKindType::HYDRA)) {
         hook_c_roff(TERM_L_GREEN, _("ヒドラ", " hydra"));
         has_specific_kind = true;
