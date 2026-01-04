@@ -217,6 +217,8 @@ std::string get_monster_kind_type_name(MonsterKindType kind)
         return _("マーフォーク", "merfolk");
     case MonsterKindType::SHARK:
         return _("サメ", "shark");
+    case MonsterKindType::MESUGAKI:
+        return _("メスガキ", "mesugaki");
     case MonsterKindType::HYDRA:
         return _("ヒドラ", "hydra");
     case MonsterKindType::SHIP:
@@ -536,6 +538,8 @@ std::string get_monster_kind_type_tag(MonsterKindType kind)
         return "MERFOLK";
     case MonsterKindType::SHARK:
         return "SHARK";
+    case MonsterKindType::MESUGAKI:
+        return "MESUGAKI";
     case MonsterKindType::HYDRA:
         return "HYDRA";
     case MonsterKindType::SHIP:

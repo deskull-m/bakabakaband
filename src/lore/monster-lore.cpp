@@ -556,6 +556,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::SHARK);
     }
 
+    if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::MESUGAKI)) {
+        lore_ptr->kind_flags.set(MonsterKindType::MESUGAKI);
+    }
+
     if (lore_ptr->r_ptr->kind_flags.has(MonsterKindType::HYDRA)) {
         lore_ptr->kind_flags.set(MonsterKindType::HYDRA);
     }
