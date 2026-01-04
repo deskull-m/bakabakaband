@@ -1,4 +1,6 @@
 #include "load/old/monster-loader-savefile50.h"
+#include "load/item/item-loader-base.h"
+#include "load/item/item-loader-factory.h"
 #include "load/load-util.h"
 #include "load/old/load-v1-5-0.h"
 #include "load/old/monster-flag-types-savefile50.h"
@@ -6,6 +8,7 @@
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
@@ -162,6 +165,55 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
             monster.transform_r_idx = MonraceId::PLAYER;
             monster.transform_hp_threshold = 0;
             monster.has_transformed = false;
+        }
+    }
+
+    // バージョン45以降: インベントリの読み込み
+    if (loading_savefile_version_is_older_than(45)) {
+        // 古いバージョンではインベントリは空
+        for (auto &item : monster.inventory) {
+            if (item) {
+                item->wipe();
+            }
+        }
+        monster.inven_cnt = 0;
+        monster.equip_cnt = 0;
+    } else {
+        if (any_bits(flags, SaveDataMonsterFlagType::INVENTORY)) {
+            // PlayerTypeと同じ形式で読み込み
+            auto item_loader = ItemLoaderFactory::create_loader();
+            monster.inven_cnt = 0;
+            monster.equip_cnt = 0;
+
+            while (true) {
+                auto n = rd_u16b();
+                if (n == 0xFFFF) {
+                    break;
+                }
+
+                if (n >= monster.inventory.size()) {
+                    continue; // 範囲外は無視
+                }
+
+                if (!monster.inventory[n]) {
+                    monster.inventory[n] = std::make_shared<ItemEntity>();
+                }
+
+                item_loader->rd_item(monster.inventory[n].get());
+
+                if (monster.inventory[n]->is_valid()) {
+                    monster.inven_cnt++;
+                }
+            }
+        } else {
+            // フラグが立っていない場合は空
+            for (auto &item : monster.inventory) {
+                if (item) {
+                    item->wipe();
+                }
+            }
+            monster.inven_cnt = 0;
+            monster.equip_cnt = 0;
         }
     }
 }
