@@ -93,6 +93,16 @@ public:
     }
 
     /*!
+     * @brief 指定座標にクリーチャーがいるかどうかを判定
+     * @param pos 判定する座標
+     * @return 指定座標にいればtrue
+     */
+    virtual bool is_located_at(const Pos2D &pos) const
+    {
+        return (this->y == pos.y) && (this->x == pos.x);
+    }
+
+    /*!
      * @brief 現在地の隣 (瞬時値)または現在地を返す
      * @param dir 隣を表す方向番号
      * @details クリーチャーが移動する前後の文脈で使用すると不整合を起こすので注意

@@ -361,7 +361,7 @@ MONSTER_NUMBER summon_LAFFEY_II(PlayerType *player_ptr, const Pos2D &position, M
                 const auto current_position = monster.get_position();
                 auto &current_grid = floor.get_grid(current_position);
                 auto target_m_idx = current_grid.m_idx;
-                const auto attract_position = mon_scatter(player_ptr, MonraceId::BUNBUN_STRIKERS, position, 2);
+                const auto attract_position = mon_scatter(*player_ptr, MonraceId::BUNBUN_STRIKERS, position, 2);
                 if (!attract_position) {
                     continue;
                 }

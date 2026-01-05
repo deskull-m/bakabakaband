@@ -20,6 +20,7 @@
 #include "monster/smart-learn-types.h"
 #include "mspell/summon-checker.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
@@ -39,14 +40,14 @@
 
 /*!
  * @brief モンスター1体を目標地点に可能な限り近い位置に生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monracde_id 生成モンスター種族
  * @param pos 中心生成位置座標
  * @param max_distance 生成位置の最大半径
  * @return 生成成功ならば結果生成位置座標、失敗ならばnullopt
  *
  */
-tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, const Pos2D &pos, int max_distance)
+tl::optional<Pos2D> mon_scatter(CreatureEntity &creature, MonraceId monrace_id, const Pos2D &pos, int max_distance)
 {
     constexpr auto max_distance_permitted = 10;
     std::vector<Pos2D> places;
@@ -59,8 +60,8 @@ tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, co
         return tl::nullopt;
     }
 
-    const auto p_pos = player_ptr->get_position();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    const auto &floor = *creature.get_floor();
     const auto &monraces = MonraceList::get_instance();
     auto dist = 0;
     for (auto nx = pos.x - max_distance; nx <= pos.x + max_distance; nx++) {
@@ -76,7 +77,7 @@ tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, co
 
             if (MonraceList::is_valid(monrace_id)) {
                 const auto &monrace = monraces.get_monrace(monrace_id);
-                if (!monster_can_enter(player_ptr, pos_neighbor.y, pos_neighbor.x, monrace, 0)) {
+                if (!monster_can_enter(&creature, pos_neighbor.y, pos_neighbor.x, monrace, 0)) {
                     continue;
                 }
             } else {
@@ -128,7 +129,7 @@ tl::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX m
 {
     auto &floor = *player_ptr->current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
-    const auto pos = mon_scatter(player_ptr, monster.r_idx, monster.get_position(), 1);
+    const auto pos = mon_scatter(*player_ptr, monster.r_idx, monster.get_position(), 1);
     if (!pos) {
         return tl::nullopt;
     }

@@ -69,7 +69,7 @@ bool alloc_creature_party(PlayerType *player_ptr, const Pos2D &pos_center)
         const int count = member.count_dice.roll();
         for (int i = 0; i < count; i++) {
             // 散開位置を取得
-            const auto pos_scatter = mon_scatter(player_ptr, member.monrace_id, pos_center, 5);
+            const auto pos_scatter = mon_scatter(*player_ptr, member.monrace_id, pos_center, 5);
             if (!pos_scatter) {
                 continue;
             }
