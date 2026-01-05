@@ -26,6 +26,7 @@ enum class Virtue : short;
 enum player_sex : byte;
 enum class PlayerRaceType;
 enum class PlayerClassType : short;
+enum class MimicKindType;
 
 /*!
  * @brief 死亡履歴情報構造体
@@ -342,6 +343,58 @@ public:
 
     // 地形移動能力 / Terrain movement abilities
     bool can_swim{}; /* No damage in water */
+
+    // 時限効果 / Timed effects
+    TIME_EFFECT invuln{}; /* Timed -- Invulnerable */
+    TIME_EFFECT ult_res{}; /* Timed -- Ultimate Resistance */
+    TIME_EFFECT hero{}; /* Timed -- Heroism */
+    TIME_EFFECT berserk{}; /* Timed -- Super Heroism */
+    TIME_EFFECT shield{}; /* Timed -- Shield Spell */
+    TIME_EFFECT blessed{}; /* Timed -- Blessed */
+    TIME_EFFECT tim_invis{}; /* Timed -- See Invisible */
+    TIME_EFFECT tim_infra{}; /* Timed -- Infra Vision */
+    TIME_EFFECT tsuyoshi{}; /* Timed -- Tsuyoshi Special */
+    TIME_EFFECT ele_attack{}; /* Timed -- Elemental Attack */
+    TIME_EFFECT ele_immune{}; /* Timed -- Elemental Immune */
+
+    TIME_EFFECT oppose_acid{}; /* Timed -- oppose acid */
+    TIME_EFFECT oppose_elec{}; /* Timed -- oppose lightning */
+    TIME_EFFECT oppose_fire{}; /* Timed -- oppose heat */
+    TIME_EFFECT oppose_cold{}; /* Timed -- oppose cold */
+    TIME_EFFECT oppose_pois{}; /* Timed -- oppose poison */
+
+    TIME_EFFECT tim_esp{}; /* Timed ESP */
+    TIME_EFFECT wraith_form{}; /* Timed wraithform */
+
+    TIME_EFFECT resist_magic{}; /* Timed Resist Magic (later) */
+    TIME_EFFECT tim_regen{};
+    TIME_EFFECT tim_pass_wall{};
+    TIME_EFFECT tim_stealth{};
+    TIME_EFFECT tim_levitation{};
+    TIME_EFFECT tim_sh_touki{};
+    TIME_EFFECT lightspeed{};
+    TIME_EFFECT tsubureru{};
+    TIME_EFFECT magicdef{};
+    TIME_EFFECT tim_res_nether{}; /* Timed -- Nether resistance */
+    TIME_EFFECT tim_res_lite{}; /* Timed -- Lite resistance */
+    TIME_EFFECT tim_res_dark{}; /* Timed -- Dark resistance */
+    TIME_EFFECT tim_res_fear{}; /* Timed -- Fear resistance */
+    TIME_EFFECT tim_res_time{}; /* Timed -- Time resistance */
+    MimicKindType mimic_form{};
+    TIME_EFFECT tim_mimic{};
+    TIME_EFFECT tim_sh_fire{};
+    TIME_EFFECT tim_sh_holy{};
+    TIME_EFFECT tim_eyeeye{};
+
+    /* for mirror master */
+    TIME_EFFECT tim_reflect{}; /* Timed -- Reflect */
+    TIME_EFFECT multishadow{}; /* Timed -- Multi-shadow */
+    TIME_EFFECT dustrobe{}; /* Timed -- Robe of dust */
+
+    /* for crusade */
+    TIME_EFFECT tim_emission{}; /* Timed -- Player Emission */
+    TIME_EFFECT tim_exorcism{}; /* Timed -- Exorcism */
+    TIME_EFFECT tim_imm_dark{}; /* Timed -- Darkness immunity */
 
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
