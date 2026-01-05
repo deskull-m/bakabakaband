@@ -49,7 +49,7 @@ tl::optional<MONSTER_IDX> summon_specific(PlayerType *player_ptr, POSITION y1, P
         return tl::nullopt;
     }
 
-    const auto pos = mon_scatter(player_ptr, MonraceList::empty_id(), { y1, x1 }, 2);
+    const auto pos = mon_scatter(*player_ptr, MonraceList::empty_id(), { y1, x1 }, 2);
     if (!pos) {
         return tl::nullopt;
     }
@@ -118,7 +118,7 @@ tl::optional<MONSTER_IDX> summon_named_creature(PlayerType *player_ptr, MONSTER_
         return false;
     }
 
-    const auto pos = mon_scatter(player_ptr, r_idx, { oy, ox }, 2);
+    const auto pos = mon_scatter(*player_ptr, r_idx, { oy, ox }, 2);
     if (!pos) {
         return false;
     }
