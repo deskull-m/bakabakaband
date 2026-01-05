@@ -222,7 +222,7 @@ static void effect_damage_makes_sleep(PlayerType *player_ptr, EffectMonster *em_
     }
 
     if (em_ptr->do_sleep) {
-        (void)set_monster_csleep(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
+        (void)set_monster_csleep(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
     }
 }
 
@@ -245,7 +245,7 @@ static bool deal_effect_damage_from_monster(PlayerType *player_ptr, EffectMonste
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
-    (void)set_monster_csleep(player_ptr, em_ptr->g_ptr->m_idx, 0);
+    (void)set_monster_csleep(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
     em_ptr->m_ptr->hp -= em_ptr->dam;
     if (em_ptr->m_ptr->hp < 0) {
         effect_damage_killed_pet(player_ptr, em_ptr);
@@ -354,7 +354,7 @@ static void deal_effect_damage_to_monster(PlayerType *player_ptr, EffectMonster 
     }
 
     if (em_ptr->do_sleep) {
-        (void)set_monster_csleep(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
+        (void)set_monster_csleep(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->do_sleep);
     }
 }
 
@@ -428,7 +428,7 @@ static void effect_damage_piles_stun(PlayerType *player_ptr, EffectMonster *em_p
         turns = em_ptr->do_stun;
     }
 
-    (void)set_monster_stunned(player_ptr, em_ptr->g_ptr->m_idx, turns);
+    (void)set_monster_stunned(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, turns);
     em_ptr->get_angry = true;
 }
 
@@ -457,7 +457,7 @@ static void effect_damage_piles_confusion(PlayerType *player_ptr, EffectMonster 
         turns = em_ptr->do_conf;
     }
 
-    (void)set_monster_confused(player_ptr, em_ptr->g_ptr->m_idx, turns);
+    (void)set_monster_confused(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, turns);
     em_ptr->get_angry = true;
 }
 
@@ -476,7 +476,7 @@ static void effect_damage_piles_fear(PlayerType *player_ptr, EffectMonster *em_p
         return;
     }
 
-    (void)set_monster_monfear(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_fear() + em_ptr->do_fear);
+    (void)set_monster_monfear(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_fear() + em_ptr->do_fear);
     em_ptr->get_angry = true;
 }
 

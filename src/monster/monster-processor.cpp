@@ -431,7 +431,7 @@ bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return false;
     }
 
-    (void)set_monster_csleep(player_ptr, m_idx, 0);
+    (void)set_monster_csleep(*player_ptr->current_floor_ptr, m_idx, 0);
     if (monster.ml) {
         const auto m_name = monster_desc(player_ptr, monster, 0);
         msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
@@ -817,7 +817,7 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
         return false;
     }
 
-    (void)set_monster_monfear(player_ptr, m_idx, 0);
+    (void)set_monster_monfear(*player_ptr->current_floor_ptr, m_idx, 0);
     if (!turn_flags_ptr->see_m) {
         return true;
     }
@@ -946,11 +946,11 @@ void sweep_monster_process(PlayerType *player_ptr)
                     switch (randint1(3)) {
                     case 1:
                         msg_format(_("%s「んほぉ！」", "%s 'Nnhor!'"), m_name.data());
-                        (void)set_monster_stunned(player_ptr, 0, monster.get_remaining_stun() + 10 + randint0(player_ptr->level) / 5);
+                        (void)set_monster_stunned(*player_ptr->current_floor_ptr, 0, monster.get_remaining_stun() + 10 + randint0(player_ptr->level) / 5);
                         break;
                     case 2:
                         msg_format(_("%s「アへぇ！」", "%s 'Aherr!'"), m_name.data());
-                        (void)set_monster_slow(player_ptr, 0, monster.get_remaining_deceleration() + 10 + randint0(player_ptr->level) / 5);
+                        (void)set_monster_slow(*player_ptr->current_floor_ptr, 0, monster.get_remaining_deceleration() + 10 + randint0(player_ptr->level) / 5);
                         break;
                     case 3: {
                         bool fear = false;

@@ -226,7 +226,7 @@ void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
 
         if (monster.cdis < MAX_PLAYER_SIGHT * 2) {
             if (monster.is_asleep()) {
-                (void)set_monster_csleep(player_ptr, i, 0);
+                (void)set_monster_csleep(floor, i, 0);
                 sleep = true;
             }
 
@@ -237,7 +237,7 @@ void aggravate_monsters(PlayerType *player_ptr, MONSTER_IDX src_idx)
 
         if (floor.has_los_at({ monster.y, monster.x }) && !monster.is_pet()) {
             monster.mflag2.set(MonsterConstantFlagType::ANGER);
-            (void)set_monster_fast(player_ptr, i, monster.get_remaining_acceleration() + 100);
+            (void)set_monster_fast(floor, i, monster.get_remaining_acceleration() + 100);
             speed = true;
         }
     }

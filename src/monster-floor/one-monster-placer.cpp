@@ -443,7 +443,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     m_ptr->mtimed[MonsterTimedEffect::SLEEP] = 0;
     if (any_bits(mode, PM_ALLOW_SLEEP) && new_monrace.sleep && !ironman_nightmare) {
         int val = new_monrace.sleep;
-        (void)set_monster_csleep(player_ptr, g_ptr->m_idx, (val * 2) + randint1(val * 10));
+        (void)set_monster_csleep(floor, g_ptr->m_idx, (val * 2) + randint1(val * 10));
     }
 
     if (new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP)) {
@@ -538,7 +538,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     }
 
     if (any_bits(mode, PM_HASTE)) {
-        (void)set_monster_fast(player_ptr, g_ptr->m_idx, 100);
+        (void)set_monster_fast(floor, g_ptr->m_idx, 100);
     }
 
     if (!ironman_nightmare) {
