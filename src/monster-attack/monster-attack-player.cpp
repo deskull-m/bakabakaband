@@ -581,7 +581,7 @@ void MonsterAttackPlayer::process_sadist_reaction()
 
     // プレイヤーにダメージを与えた場合の興奮状態
     if (this->damage > 0 && one_in_(4)) {
-        (void)set_monster_monfear(this->player_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*this->player_ptr->current_floor_ptr, this->m_idx, 0);
 
         // 一時的な攻撃力上昇（怒り状態付与）
         this->m_ptr->mflag2.set(MonsterConstantFlagType::ANGER);

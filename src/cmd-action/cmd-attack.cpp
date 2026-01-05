@@ -321,7 +321,7 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     // 体当たりによる特殊効果（ノックバック可能性）
     if (k > 20 && one_in_(4) && !monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
         msg_format(_("%sは体当たりでよろめいた！", "%s staggers from your body slam!"), m_name.data());
-        (void)set_monster_stunned(player_ptr, m_idx, monster.get_remaining_stun() + randint1(5) + 5);
+        (void)set_monster_stunned(*player_ptr->current_floor_ptr, m_idx, monster.get_remaining_stun() + randint1(5) + 5);
     }
 
     // 体当たりによるダメージ処理
@@ -428,7 +428,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
             msg_format(_("そっちには何か恐いものがいる！", "There is something scary in your way!"));
         }
 
-        (void)set_monster_csleep(player_ptr, grid.m_idx, 0);
+        (void)set_monster_csleep(*player_ptr->current_floor_ptr, grid.m_idx, 0);
         return false;
     }
 
@@ -476,7 +476,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[grid.m_idx];
             current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
-            (void)set_monster_monfear(player_ptr, grid.m_idx, 0);
+            (void)set_monster_monfear(*player_ptr->current_floor_ptr, grid.m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
             fear = false;
@@ -557,7 +557,7 @@ bool do_cmd_headbutt(PlayerType *player_ptr)
     }
 
     // モンスターを起こす
-    (void)set_monster_csleep(player_ptr, grid.m_idx, 0);
+    (void)set_monster_csleep(*player_ptr->current_floor_ptr, grid.m_idx, 0);
 
     // 頭突き攻撃実行
     bool fear = false;
@@ -571,7 +571,7 @@ bool do_cmd_headbutt(PlayerType *player_ptr)
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[grid.m_idx];
             current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
-            (void)set_monster_monfear(player_ptr, grid.m_idx, 0);
+            (void)set_monster_monfear(*player_ptr->current_floor_ptr, grid.m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
         } else {
@@ -643,7 +643,7 @@ void do_cmd_body_slam(PlayerType *player_ptr)
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[m_idx];
             current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
-            (void)set_monster_monfear(player_ptr, m_idx, 0);
+            (void)set_monster_monfear(*player_ptr->current_floor_ptr, m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
         } else {
@@ -784,7 +784,7 @@ void do_cmd_enema(PlayerType *player_ptr)
         if (one_in_(20)) {
             auto &current_monster = floor.m_list[m_idx];
             current_monster.mflag2.set(MonsterConstantFlagType::FRENZY);
-            (void)set_monster_monfear(player_ptr, m_idx, 0);
+            (void)set_monster_monfear(*player_ptr->current_floor_ptr, m_idx, 0);
             sound(SoundKind::FLEE);
             msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
         } else {
