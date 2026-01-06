@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
-void print_tomb(PlayerType *player_ptr);
-void show_death_info(PlayerType *player_ptr);
+class CreatureEntity;
+void print_tomb(CreatureEntity &creature);
+void show_death_info(CreatureEntity &creature);

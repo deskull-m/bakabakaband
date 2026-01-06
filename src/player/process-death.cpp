@@ -69,15 +69,15 @@ static void show_tomb_line(std::string_view str, int row)
 
 /*!
  * @brief 墓に基本情報を表示
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  */
-static void show_basic_params(PlayerType *player_ptr)
+static void show_basic_params(CreatureEntity &creature)
 {
-    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), player_ptr->level), GRAVE_LEVEL_ROW);
+    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), creature.level), GRAVE_LEVEL_ROW);
 
-    show_tomb_line(fmt::format(_("経験値: {}", "Exp: {}"), player_ptr->exp), GRAVE_EXP_ROW);
+    show_tomb_line(fmt::format(_("経験値: {}", "Exp: {}"), creature.exp), GRAVE_EXP_ROW);
 
-    show_tomb_line(fmt::format(_("所持金: {}", "AU: {}"), player_ptr->au), GRAVE_AU_ROW);
+    show_tomb_line(fmt::format(_("所持金: {}", "AU: {}"), creature.au), GRAVE_AU_ROW);
 }
 
 #ifdef JP
@@ -91,12 +91,12 @@ static void show_basic_params(PlayerType *player_ptr)
  * のようなタイプの場合で『△△△』の途中で改行される場合○○○を1行目に、『△△△』を2行目に
  * 分割して表示することを試みる。但し『△△△』が1行に入り切らない場合はそのまま表示する。
  *
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @return 続いて死亡した場所を表示するためのオフセット行数
  */
-static int show_killing_monster(PlayerType *player_ptr)
+static int show_killing_monster(CreatureEntity &creature)
 {
-    const auto lines = shape_buffer(player_ptr->died_from, GRAVE_LINE_WIDTH + 1);
+    const auto lines = shape_buffer(creature.died_from, GRAVE_LINE_WIDTH + 1);
     if (lines.size() == 1) {
         show_tomb_line(lines[0], GRAVE_KILLER_NAME_ROW);
         return 0;
@@ -129,12 +129,12 @@ static int show_killing_monster(PlayerType *player_ptr)
 
 /*!
  * @brief どこで死んだかを表示する (日本語版専用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @param extra_line 追加の行数
  */
-static void show_dead_place(PlayerType *player_ptr, int extra_line)
+static void show_dead_place(CreatureEntity &creature, int extra_line)
 {
-    if (streq(player_ptr->died_from, "ripe") || streq(player_ptr->died_from, "Seppuku")) {
+    if (streq(creature.died_from, "ripe") || streq(creature.died_from, "Seppuku")) {
         return;
     }
 
@@ -143,18 +143,18 @@ static void show_dead_place(PlayerType *player_ptr, int extra_line)
     }
 
     std::string place;
-    if (!player_ptr->current_floor_ptr->is_underground()) {
-        concptr field_name = player_ptr->town_num ? "街" : "荒野";
-        if (streq(player_ptr->died_from, "途中終了")) {
+    if (!creature.current_floor_ptr->is_underground()) {
+        concptr field_name = creature.town_num ? "街" : "荒野";
+        if (streq(creature.died_from, "途中終了")) {
             place = format("%sで死んで飽きた", field_name);
         } else {
             place = format("に%sで殺されて飽きた", field_name);
         }
     } else {
-        if (streq(player_ptr->died_from, "途中終了")) {
-            place = format("地下 %d 階で死んで飽きた", (int)player_ptr->current_floor_ptr->dun_level);
+        if (streq(creature.died_from, "途中終了")) {
+            place = format("地下 %d 階で死んで飽きた", (int)creature.current_floor_ptr->dun_level);
         } else {
-            place = format("に地下 %d 階で殺されて飽きた", (int)player_ptr->current_floor_ptr->dun_level);
+            place = format("に地下 %d 階で殺されて飽きた", (int)creature.current_floor_ptr->dun_level);
         }
     }
 
@@ -163,35 +163,35 @@ static void show_dead_place(PlayerType *player_ptr, int extra_line)
 
 /*!
  * @brief 墓に刻む言葉を細かく表示 (日本語版専用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  */
-static void show_tomb_detail(PlayerType *player_ptr)
+static void show_tomb_detail(CreatureEntity &creature)
 {
     auto offset = 0;
-    if (streq(player_ptr->died_from, "途中終了")) {
+    if (streq(creature.died_from, "途中終了")) {
         show_tomb_line("<自殺>", GRAVE_KILLER_NAME_ROW);
-    } else if (streq(player_ptr->died_from, "ripe")) {
+    } else if (streq(creature.died_from, "ripe")) {
         show_tomb_line("引退後に虚無った", GRAVE_KILLER_NAME_ROW);
-    } else if (streq(player_ptr->died_from, "Seppuku")) {
+    } else if (streq(creature.died_from, "Seppuku")) {
         show_tomb_line("勝利の後、切腹して虚無った", GRAVE_KILLER_NAME_ROW);
     } else {
-        offset = show_killing_monster(player_ptr);
+        offset = show_killing_monster(creature);
     }
 
-    show_dead_place(player_ptr, offset);
+    show_dead_place(creature, offset);
 }
 #else
 
 /*!
  * @brief Detailed display of words engraved on the tomb (English version only)
- * @param player_ptr reference pointer to the player
+ * @param creature reference to the player
  * @return nothing
  */
-static void show_tomb_detail(PlayerType *player_ptr)
+static void show_tomb_detail(CreatureEntity &creature)
 {
-    show_tomb_line(format("Killed on Level %d", player_ptr->current_floor_ptr->dun_level), GRAVE_DEAD_PLACE_ROW);
+    show_tomb_line(format("Killed on Level %d", creature.current_floor_ptr->dun_level), GRAVE_DEAD_PLACE_ROW);
 
-    auto lines = shape_buffer(format("by %s.", player_ptr->died_from.data()).data(), GRAVE_LINE_WIDTH + 1);
+    auto lines = shape_buffer(format("by %s.", creature.died_from.data()).data(), GRAVE_LINE_WIDTH + 1);
     show_tomb_line(lines[0], GRAVE_KILLER_NAME_ROW);
     if (lines.size() == 1) {
         return;
@@ -211,16 +211,16 @@ static void show_tomb_detail(PlayerType *player_ptr)
 /*!
  * @brief 墓石のアスキーアート表示 /
  * Display a "tomb-stone"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  */
-void print_tomb(PlayerType *player_ptr)
+void print_tomb(CreatureEntity &creature)
 {
 
     term_clear();
     read_dead_file(wc_ptr->is_blown_away());
-    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(player_ptr->pclass)[(player_ptr->level - 1) / 5];
+    std::string p = AngbandWorld::get_instance().total_winner ? _("偉大なる者", "Magnificent") : player_titles.at(creature.pclass)[(creature.level - 1) / 5];
 
-    show_tomb_line(player_ptr->name, GRAVE_PLAYER_NAME_ROW);
+    show_tomb_line(creature.name, GRAVE_PLAYER_NAME_ROW);
 
 #ifdef JP
 #else
@@ -229,14 +229,14 @@ void print_tomb(PlayerType *player_ptr)
 
     show_tomb_line(p, GRAVE_PLAYER_TITLE_ROW);
 
-    show_tomb_line((*player_ptr->pclass_ref).title, GRAVE_PLAYER_CLASS_ROW);
+    show_tomb_line((*creature.pclass_ref).title, GRAVE_PLAYER_CLASS_ROW);
 
-    show_basic_params(player_ptr);
+    show_basic_params(creature);
 
     if (wc_ptr->is_blown_away()) {
         show_tomb_line(_("世界こわれた", "The world has collapsed"), GRAVE_DEAD_PLACE_ROW);
     } else {
-        show_tomb_detail(player_ptr);
+        show_tomb_detail(creature);
     }
 
     time_t ct = time((time_t *)0);
@@ -250,7 +250,7 @@ void print_tomb(PlayerType *player_ptr)
         (void)register_png_image(tomb_path.string());
 #endif
 
-        msg_format(_("さようなら、%s!", "Goodbye, %s!"), player_ptr->name.data());
+        msg_format(_("さようなら、%s!", "Goodbye, %s!"), creature.name.data());
 
 #ifdef WINDOWS
         /*
@@ -263,27 +263,27 @@ void print_tomb(PlayerType *player_ptr)
 
 /*!
  * @brief 死亡/引退/切腹時にインベントリ内のアイテムを*鑑定*する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  */
-static void inventory_aware(PlayerType *player_ptr)
+static void inventory_aware(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+        o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
 
-        object_aware(player_ptr, *o_ptr);
+        object_aware(static_cast<PlayerType *>(&creature), *o_ptr);
         o_ptr->mark_as_known();
     }
 }
 
 /*!
  * @brief 死亡/引退/切腹時に我が家のアイテムを*鑑定*する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  */
-static void home_aware(PlayerType *player_ptr)
+static void home_aware(CreatureEntity &creature)
 {
     for (size_t i = 1; i < towns_info.size(); i++) {
         const auto &store = towns_info[i].get_store(StoreSaleType::HOME);
@@ -293,7 +293,7 @@ static void home_aware(PlayerType *player_ptr)
                 continue;
             }
 
-            object_aware(player_ptr, item);
+            object_aware(static_cast<PlayerType *>(&creature), item);
             item.mark_as_known();
         }
     }
@@ -301,23 +301,23 @@ static void home_aware(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの持ち物を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @return Escキーでゲームを終了する時TRUE
  */
-static bool show_dead_player_items(PlayerType *player_ptr)
+static bool show_dead_player_items(CreatureEntity &creature)
 {
-    if (player_ptr->equip_cnt) {
+    if (creature.equip_cnt) {
         term_clear();
-        (void)show_equipment(player_ptr, 0, USE_FULL, AllMatchItemTester());
+        (void)show_equipment(static_cast<PlayerType *>(&creature), 0, USE_FULL, AllMatchItemTester());
         prt(_("装備していたアイテム: -続く-", "You are using: -more-"), 0, 0);
         if (inkey() == ESCAPE) {
             return true;
         }
     }
 
-    if (player_ptr->inven_cnt) {
+    if (creature.inven_cnt) {
         term_clear();
-        (void)show_inventory(player_ptr, 0, USE_FULL, AllMatchItemTester());
+        (void)show_inventory(static_cast<PlayerType *>(&creature), 0, USE_FULL, AllMatchItemTester());
         prt(_("持っていたアイテム: -続く-", "You are carrying: -more-"), 0, 0);
 
         if (inkey() == ESCAPE) {
@@ -330,9 +330,9 @@ static bool show_dead_player_items(PlayerType *player_ptr)
 
 /*!
  * @brief 我が家にあったアイテムを表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  */
-static void show_dead_home_items(PlayerType *player_ptr)
+static void show_dead_home_items(CreatureEntity &creature)
 {
     for (size_t l = 1; l < towns_info.size(); l++) {
         const auto &store = towns_info[l].get_store(StoreSaleType::HOME);
@@ -345,7 +345,7 @@ static void show_dead_home_items(PlayerType *player_ptr)
             for (int j = 0; (j < 12) && (i < store.stock_num); j++, i++) {
                 const auto &item = *store.stock[i];
                 prt(format("%c) ", I2A(j)), j + 2, 4);
-                const auto item_name = describe_flavor(player_ptr, item, 0);
+                const auto item_name = describe_flavor(static_cast<PlayerType *>(&creature), item, 0);
                 c_put_str(tval_to_attr[enum2i(item.bi_key.tval())], item_name, j + 2, 7);
             }
 
@@ -359,10 +359,10 @@ static void show_dead_home_items(PlayerType *player_ptr)
 
 /*!
  * @brief キャラクタ情報をファイルに書き出す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @param file_character ステータスダンプへのコールバック
  */
-static void export_player_info(PlayerType *player_ptr)
+static void export_player_info(CreatureEntity &creature)
 {
     prt(_("キャラクターの記録をファイルに書き出すことができます。", "You may now dump a character record to one or more files."), 21, 0);
     prt(_("リターンキーでキャラクターを見ます。ESCで中断します。", "Then, hit RETURN to see the character, or ESC to abort."), 22, 0);
@@ -374,7 +374,7 @@ static void export_player_info(PlayerType *player_ptr)
         }
 
         screen_save();
-        file_character(player_ptr, *ask_result);
+        file_character(static_cast<PlayerType *>(&creature), *ask_result);
         screen_load();
     }
 }
@@ -382,7 +382,7 @@ static void export_player_info(PlayerType *player_ptr)
 /*!
  * @brief 自動的にプレイヤーステータスをファイルダンプ出力する
  */
-static void file_character_auto(PlayerType *player_ptr)
+static void file_character_auto(CreatureEntity &creature)
 {
     time_t now_t = time(nullptr);
     struct tm *now_tm = localtime(&now_t);
@@ -390,39 +390,39 @@ static void file_character_auto(PlayerType *player_ptr)
     char datetime[32];
     strftime(datetime, sizeof(datetime), "%Y-%m-%d_%H%M%S", now_tm);
     screen_save();
-    const auto filename = format("%s_Autodump_%s.txt", player_ptr->name.data(), datetime);
-    file_character(player_ptr, filename);
+    const auto filename = format("%s_Autodump_%s.txt", creature.name.data(), datetime);
+    file_character(static_cast<PlayerType *>(&creature), filename);
     screen_load();
 }
 
 /*!
  * @brief 死亡、引退時の簡易ステータス表示
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @param display_player ステータス表示へのコールバック
  */
-void show_death_info(PlayerType *player_ptr)
+void show_death_info(CreatureEntity &creature)
 {
-    inventory_aware(player_ptr);
-    home_aware(player_ptr);
+    inventory_aware(creature);
+    home_aware(creature);
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(static_cast<PlayerType *>(&creature));
     flush();
     msg_erase();
 
     if (auto_dump) {
-        file_character_auto(player_ptr);
+        file_character_auto(creature);
     }
 
-    export_player_info(player_ptr);
-    (void)display_player(player_ptr, 0);
+    export_player_info(creature);
+    (void)display_player(static_cast<PlayerType *>(&creature), 0);
     prt(_("何かキーを押すとさらに情報が続きます (ESCで中断): ", "Hit any key to see more information (ESC to abort): "), 23, 0);
     if (inkey() == ESCAPE) {
         return;
     }
-    if (show_dead_player_items(player_ptr)) {
+    if (show_dead_player_items(creature)) {
         return;
     }
 
-    show_dead_home_items(player_ptr);
+    show_dead_home_items(creature);
 }

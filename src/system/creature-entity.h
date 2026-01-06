@@ -297,6 +297,7 @@ public:
     PlayerRaceType prace{}; /*!< 種族 / Race index */
     PlayerClassType pclass{}; /*!< クラス / Class index */
     player_personality_type ppersonality{}; /*!< 性格 / Personality index */
+    int16_t town_num{}; /*!< 現在いる街番号 / Current town number */
 
     // 変異関連
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */
@@ -399,6 +400,10 @@ public:
     TIME_EFFECT tim_emission{}; /* Timed -- Player Emission */
     TIME_EFFECT tim_exorcism{}; /* Timed -- Exorcism */
     TIME_EFFECT tim_imm_dark{}; /* Timed -- Darkness immunity */
+
+    // 死亡情報
+    std::string died_from{}; /*!< 何によって殺されたか / What killed the creature */
+    MonraceId killer_monrace_id{}; /*!< 死因となったモンスターのID / MonraceId of the killer */
 
     // 死亡履歴
     std::vector<DeathRecord> death_history{}; /*!< 死亡履歴リスト */
