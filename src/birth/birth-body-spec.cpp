@@ -9,33 +9,11 @@
 #include "system/player-type-definition.h"
 
 /*!
- * @brief プレイヤーの身長体重を決める / Get character's height and weight
- */
-void get_height_weight(PlayerType *player_ptr)
-{
-    int deviation;
-    switch (player_ptr->psex) {
-    case SEX_MALE:
-        player_ptr->ht = randnor(player_ptr->race->m_b_ht, player_ptr->race->m_m_ht);
-        deviation = (int)(player_ptr->ht) * 100 / (int)(player_ptr->race->m_b_ht);
-        player_ptr->wt = randnor((int)(player_ptr->race->m_b_wt) * deviation / 100, (int)(player_ptr->race->m_m_wt) * deviation / 300);
-        return;
-    case SEX_FEMALE:
-        player_ptr->ht = randnor(player_ptr->race->f_b_ht, player_ptr->race->f_m_ht);
-        deviation = (int)(player_ptr->ht) * 100 / (int)(player_ptr->race->f_b_ht);
-        player_ptr->wt = randnor((int)(player_ptr->race->f_b_wt) * deviation / 100, (int)(player_ptr->race->f_m_wt) * deviation / 300);
-        return;
-    default:
-        return;
-    }
-}
-
-/*!
- * @brief クリーチャーの身長体重を決める（種族情報に基づいて）
+ * @brief クリーチャーの身長体重を決める / Get creature's height and weight
  * @param creature_ptr クリーチャーへの参照ポインタ
- * @details 種族が指定されている場合、その種族の身長・体重範囲で設定する
+ * @details 種族情報に基づいて身長・体重を設定する。PlayerTypeもCreatureEntityを継承しているため、プレイヤーにも使用可能。
  */
-void get_height_weight_for_creature(CreatureEntity *creature_ptr)
+void get_height_weight(CreatureEntity *creature_ptr)
 {
     // 種族情報が設定されていない場合は何もしない
     if (creature_ptr->race == nullptr) {
