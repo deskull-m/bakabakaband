@@ -169,7 +169,7 @@ static void bash_glass_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, 
     }
 
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     turn_flags_ptr->did_bash_door = true;
@@ -484,7 +484,7 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
         const auto is_unknown_level = disturb_unknown && (apparent_monrace.r_tkills == 0);
         if (monster.ml && (disturb_move || can_see || is_high_level || is_unknown_level)) {
             if (monster.is_hostile()) {
-                disturb(player_ptr, false, true);
+                disturb(*player_ptr, false, true);
             }
         }
 
@@ -549,7 +549,7 @@ static tl::optional<MonsterMessageType> get_speak_type(const MonsterEntity &mons
 void show_sound_message(PlayerType *player_ptr, std::string_view message)
 {
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
     msg_print(message);
 }

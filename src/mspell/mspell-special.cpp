@@ -52,7 +52,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
     auto dummy_y = monster.y;
     auto dummy_x = monster.x;
     if (see_monster(player_ptr, m_idx) && monster_near_player(floor, m_idx, 0)) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     const auto &monraces = MonraceList::get_instance();
@@ -153,7 +153,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(PlayerType *player_ptr, POSI
 
     monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
     if (mon_to_player || (mon_to_mon && known && see_either)) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     for (k = 0; k < num; k++) {
@@ -187,7 +187,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
     bool direct = player_ptr->is_located_at({ y, x });
     const auto m_name = monster_name(player_ptr, m_idx);
 
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     if (one_in_(3) || !direct) {
         msg.to_player = _("%s^は突然視界から消えた!", "You lose sight of %s!");
         msg.to_mons = _("%s^は突然急上昇して視界から消えた!", "You lose sight of %s!");

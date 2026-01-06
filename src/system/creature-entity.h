@@ -314,6 +314,10 @@ public:
     // レベル関連
     int16_t level{}; /*!< クリーチャーのレベル / Creature level */
 
+    // 行動状態関連
+    byte action{}; /*!< クリーチャーが現在取っている常時行動のID / Currently action */
+    int16_t running{}; /*!< 現在の走行カウンタ / Current counter for running, if any */
+
     // 所持金関連
     PRICE au{}; /*!< 所持金 / Current Gold */
 

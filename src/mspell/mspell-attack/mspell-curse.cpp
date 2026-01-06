@@ -19,7 +19,7 @@ static bool message_curse(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
     const auto t_name = monster_name(player_ptr, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
         if (player_ptr->effects()->blindness().is_blind()) {
             msg_format(msg1.data(), m_name.data());
         } else {

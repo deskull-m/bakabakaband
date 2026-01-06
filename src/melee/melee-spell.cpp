@@ -36,7 +36,7 @@ static bool try_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr)
         return false;
     }
 
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     if (ms_ptr->see_m) {
         msg_format(_("%s^は呪文を唱えようとしたが失敗した。", "%s^ tries to cast a spell, but fails."), ms_ptr->m_name.data());
     }
@@ -114,7 +114,7 @@ bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
     ms_ptr->m_name = monster_desc(player_ptr, *ms_ptr->m_ptr, 0x00);
     ms_ptr->thrown_spell = rand_choice(ms_ptr->spells);
     if (ms_ptr->m_ptr->is_riding()) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     if (try_melee_spell(player_ptr, ms_ptr) || disturb_melee_spell(player_ptr, ms_ptr)) {

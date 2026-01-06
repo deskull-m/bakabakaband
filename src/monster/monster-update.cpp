@@ -545,7 +545,7 @@ static void update_invisible_monster(PlayerType *player_ptr, um_type *um_ptr, MO
     const auto projectable_from_player = projectable(floor, p_pos, m_pos);
     if (disturb_near && projectable_from_monster && projectable_from_player) {
         if (disturb_pets || monster.is_hostile()) {
-            disturb(player_ptr, true, true);
+            disturb(*player_ptr, true, true);
         }
     }
 }
@@ -565,7 +565,7 @@ static void update_visible_monster(PlayerType *player_ptr, um_type *um_ptr, MONS
     }
 
     if (um_ptr->do_disturb && (disturb_pets || um_ptr->m_ptr->is_hostile())) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 }
 
@@ -578,7 +578,7 @@ static bool update_clear_monster(PlayerType *player_ptr, um_type *um_ptr)
     if (um_ptr->m_ptr->mflag.has_not(MonsterTemporaryFlagType::VIEW)) {
         um_ptr->m_ptr->mflag.set(MonsterTemporaryFlagType::VIEW);
         if (um_ptr->do_disturb && (disturb_pets || um_ptr->m_ptr->is_hostile())) {
-            disturb(player_ptr, true, true);
+            disturb(*player_ptr, true, true);
         }
     }
 
@@ -618,7 +618,7 @@ void update_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, bool full)
 
     um_ptr->m_ptr->mflag.reset(MonsterTemporaryFlagType::VIEW);
     if (um_ptr->do_disturb && (disturb_pets || um_ptr->m_ptr->is_hostile())) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 }
 

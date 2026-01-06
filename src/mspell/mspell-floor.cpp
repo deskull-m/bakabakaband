@@ -83,7 +83,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, PlayerType *player_ptr, M
  */
 MonsterSpellResult spell_RF6_WORLD(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     (void)set_monster_timewalk(player_ptr, m_idx, randint1(2) + 2, true);
 
     return MonsterSpellResult::make_valid();
@@ -104,7 +104,7 @@ MonsterSpellResult spell_RF6_BLINK(PlayerType *player_ptr, MONSTER_IDX m_idx, in
     const auto m_name = monster_name(player_ptr, m_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     if (!is_quantum_effect && SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
@@ -141,7 +141,7 @@ MonsterSpellResult spell_RF6_TPORT(PlayerType *player_ptr, MONSTER_IDX m_idx, in
     const auto m_name = monster_name(player_ptr, m_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
     if (SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
         if (see_monster(player_ptr, m_idx)) {
@@ -458,7 +458,7 @@ MonsterSpellResult spell_RF6_DARKNESS(PlayerType *player_ptr, POSITION y, POSITI
 MonsterSpellResult spell_RF6_TRAPS(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
     const auto m_name = monster_name(player_ptr, m_idx);
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
 
     if (player_ptr->effects()->blindness().is_blind()) {
         msg_format(_("%s^が何かをつぶやいて邪悪に微笑んだ。", "%s^ mumbles, and then cackles evilly."), m_name.data());

@@ -43,7 +43,7 @@ static void summon_disturb(PlayerType *player_ptr, int target_type, bool known, 
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
     if (mon_to_player || (mon_to_mon && known && see_either)) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 }
 

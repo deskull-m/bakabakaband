@@ -44,7 +44,7 @@ void do_cmd_tunnel(PlayerType *player_ptr)
 
     const auto dir = get_rep_dir(player_ptr);
     if (!dir) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
         return;
     }
 
@@ -65,6 +65,6 @@ void do_cmd_tunnel(PlayerType *player_ptr)
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }

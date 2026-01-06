@@ -355,7 +355,7 @@ bool monst_attack_monst(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t
     }
 
     if (mam_ptr->m_ptr->is_riding()) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     repeat_melee(player_ptr, mam_ptr);

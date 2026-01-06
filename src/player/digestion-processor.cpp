@@ -71,7 +71,7 @@ void starve_player(PlayerType *player_ptr)
 
     if (!is_sushi_eater(player_ptr) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
         (void)BadStatusSetter(player_ptr).mod_paralysis(1 + randint0(5));
     }
 
@@ -219,7 +219,7 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
     }
 
     if (disturb_state) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

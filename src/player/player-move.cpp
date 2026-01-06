@@ -64,13 +64,13 @@ static void discover_hidden_things(PlayerType *player_ptr, const Pos2D &pos)
     if (grid.mimic && floor.has_trap_at(pos)) {
         disclose_grid(player_ptr, pos);
         msg_print(_("トラップを発見した。", "You have found a trap."));
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     if (grid.is_hidden_door()) {
         msg_print(_("隠しドアを発見した。", "You have found a secret door."));
         disclose_grid(player_ptr, pos);
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     for (const auto this_o_idx : grid.o_idx_list) {
@@ -86,7 +86,7 @@ static void discover_hidden_things(PlayerType *player_ptr, const Pos2D &pos)
         if (!item.is_known()) {
             msg_print(_("箱に仕掛けられたトラップを発見した！", "You have discovered a trap on the chest!"));
             item.mark_as_known();
-            disturb(player_ptr, false, false);
+            disturb(*player_ptr, false, false);
         }
     }
 }
@@ -255,15 +255,15 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
 
     PlayerEnergy energy(player_ptr);
     if (terrain_new.flags.has(TerrainCharacteristics::STORE)) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         energy.reset_player_turn();
         command_new = SPECIAL_KEY_STORE;
     } else if (terrain_new.flags.has(TerrainCharacteristics::BLDG)) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         energy.reset_player_turn();
         command_new = SPECIAL_KEY_BUILDING;
     } else if (terrain_new.flags.has(TerrainCharacteristics::QUEST_ENTER)) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         energy.reset_player_turn();
         command_new = SPECIAL_KEY_QUEST;
     } else if (terrain_new.flags.has(TerrainCharacteristics::QUEST_EXIT)) {
@@ -281,7 +281,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
         player_ptr->oldpy = 0;
         player_ptr->leaving = true;
     } else if (terrain_new.flags.has(TerrainCharacteristics::HIT_TRAP) && !(mpe_mode & MPE_STAYING)) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         if (grid_new.mimic || terrain_new.flags.has(TerrainCharacteristics::SECRET)) {
             msg_print(_("トラップだ！", "You found a trap!"));
             disclose_grid(player_ptr, player_ptr->get_position());
@@ -301,7 +301,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             }
 
             if (disturb_trap_detect) {
-                disturb(player_ptr, false, true);
+                disturb(*player_ptr, false, true);
             }
         }
     }

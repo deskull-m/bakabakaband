@@ -104,7 +104,7 @@ void AllianceDiabolique::panishment(PlayerType &player_ptr)
         const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("デアボリカの復讐者があなたを狙っている！", "Diabolique's avenger is targeting you!"));
-            disturb(&player_ptr, true, true);
+            disturb(player_ptr, true, true);
 
             // 復讐者の仲間を呼ぶ（低確率）
             for (int k = 0; k < 2; k++) {

@@ -77,7 +77,7 @@ void execute_recall(PlayerType *player_ptr)
         return;
     }
 
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
     auto &floor = *player_ptr->current_floor_ptr;
     if (floor.is_underground() || floor.is_in_quest() || floor.is_entering_dungeon()) {
         msg_print(_("上に引っ張りあげられる感じがする！", "You feel yourself yanked upwards!"));
@@ -161,7 +161,7 @@ void execute_floor_reset(PlayerType *player_ptr)
         return;
     }
 
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
     if (!inside_quest(floor.get_quest_id()) && floor.is_underground()) {
         msg_print(_("世界が変わった！", "The world changes!"));
 

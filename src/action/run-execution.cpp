@@ -368,14 +368,14 @@ void run_step(PlayerType *player_ptr, const Direction &dir)
         if (see_wall(player_ptr, dir, player_ptr->get_position())) {
             sound(SoundKind::HITWALL);
             msg_print(_("その方向には走れません。", "You cannot run in that direction."));
-            disturb(player_ptr, false, false);
+            disturb(*player_ptr, false, false);
             return;
         }
 
         run_init(player_ptr, dir);
     } else {
         if (run_test(player_ptr)) {
-            disturb(player_ptr, false, false);
+            disturb(*player_ptr, false, false);
             return;
         }
     }
@@ -389,6 +389,6 @@ void run_step(PlayerType *player_ptr, const Direction &dir)
     if (player_ptr->is_located_at_running_destination()) {
         player_ptr->run_py = 0;
         player_ptr->run_px = 0;
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }

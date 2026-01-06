@@ -140,7 +140,7 @@ void do_cmd_open(PlayerType *player_ptr)
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }
 
@@ -187,7 +187,7 @@ void do_cmd_close(PlayerType *player_ptr)
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }
 
@@ -238,7 +238,7 @@ void do_cmd_disarm(PlayerType *player_ptr)
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }
 
@@ -288,7 +288,7 @@ void do_cmd_bash(PlayerType *player_ptr)
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }
 

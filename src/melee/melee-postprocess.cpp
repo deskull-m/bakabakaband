@@ -281,7 +281,7 @@ void mon_take_hit_mon(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *
     (void)set_monster_csleep(*player_ptr->current_floor_ptr, m_idx, 0);
 
     if (monster.is_riding()) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     if (process_invulnerability(mam_pp_ptr) || process_all_resistances(mam_pp_ptr)) {

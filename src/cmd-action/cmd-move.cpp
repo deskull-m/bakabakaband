@@ -418,7 +418,7 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }
 

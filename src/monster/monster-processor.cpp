@@ -1048,7 +1048,7 @@ bool process_stalking(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     teleport_monster_to(player_ptr, m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_SPONTANEOUS);
 
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
 
     if (see_monster(player_ptr, m_idx)) {
         const auto message_stalker = monrace.get_message(m_name, MonsterMessageType::MESSAGE_STALKER);

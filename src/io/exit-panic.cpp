@@ -34,7 +34,7 @@ void exit_game_panic(PlayerType *player_ptr)
     msg_flag = false;
 
     prt("", 0, 0);
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     if (player_ptr->hp < 0) {
         player_ptr->is_dead_ = false;
     }

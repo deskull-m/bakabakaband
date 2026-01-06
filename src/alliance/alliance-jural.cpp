@@ -49,7 +49,7 @@ void AllianceJural::panishment(PlayerType &player_ptr)
         const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, MonraceId::ALIEN_JURAL, PM_ALLOW_GROUP | PM_JURAL);
         if (m_idx) {
             msg_print(_("「おーい、行ってみよう！」ジュラル星人があなたに報復すべく追跡してきた！", "\"Hey, let's go!\" Alien Jurals is chasing you for revenge!"));
-            disturb(&player_ptr, true, true);
+            disturb(player_ptr, true, true);
             for (int k = 0; k < 4; k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
