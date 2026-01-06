@@ -418,7 +418,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
     m_ptr->initialize_equivalent_player_classes();
 
     // 種族が指定されている場合、身長・体重を設定
-    get_height_weight_for_creature(m_ptr);
+    get_height_weight(m_ptr);
 
     // 所持金を初期化（能力値に基づいて計算）
     get_money_for_creature(m_ptr);
