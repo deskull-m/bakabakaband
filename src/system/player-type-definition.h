@@ -116,7 +116,6 @@ public:
 
     /* プレイヤーの防御状態の定義 / Bit flags for the "p_ptr->special_defense" variable. -LM- */
     BIT_FLAGS special_defense{};
-    byte action{}; /*!< プレイヤーが現在取っている常時行動のID / Currently action */
     BIT_FLAGS spell_learned1{}; /* bit mask of spells learned */
     BIT_FLAGS spell_learned2{}; /* bit mask of spells learned */
     BIT_FLAGS spell_worked1{}; /* bit mask of spells tried and worked */
@@ -221,7 +220,6 @@ public:
 
     /*** Extracted fields ***/
 
-    int16_t running{}; /* Current counter for running, if any */
     bool suppress_multi_reward{}; /*!< 複数レベルアップ時のパトロンからの報酬多重受け取りを防止 */
 
     int16_t stat_add[A_MAX]{}; /* Modifiers to stat values */

@@ -120,7 +120,7 @@ void verify_panel(PlayerType *player_ptr)
     panel_row_min = prow_min;
     panel_col_min = pcol_min;
     if (disturb_panel && !center_player) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     panel_bounds_center();

@@ -195,15 +195,15 @@ void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, 
             msg_print(_("動けない！", "Can't move!"));
             energy.reset_player_turn();
             can_move = false;
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         } else if (riding_monster.is_fearful()) {
             const auto steed_name = monster_desc(player_ptr, riding_monster, 0);
             msg_format(_("%sが恐怖していて制御できない。", "%s^ is too scared to control."), steed_name.data());
             can_move = false;
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         } else if (player_ptr->riding_ryoute) {
             can_move = false;
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         } else if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && (riding_monrace.feature_flags.has(MonsterFeatureType::CAN_FLY))) {
             /* Allow moving */
         } else if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && (riding_monrace.feature_flags.has(MonsterFeatureType::CAN_SWIM))) {
@@ -212,26 +212,26 @@ void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, 
             msg_print(_(format("%sの上に行けない。", grid.get_terrain(TerrainKind::MIMIC).name.data()), "Can't swim."));
             energy.reset_player_turn();
             can_move = false;
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         } else if (terrain.flags.has_not(TerrainCharacteristics::WATER) && riding_monrace.feature_flags.has(MonsterFeatureType::AQUATIC)) {
             constexpr auto fmt = _("%sから上がれない。", "Can't land from %s.");
             const auto p_pos = player_ptr->get_position();
             msg_format(fmt, floor.get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name.data());
             energy.reset_player_turn();
             can_move = false;
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && riding_monrace.resistance_flags.has_none_of(RFR_EFF_IM_FIRE_MASK)) {
             msg_print(_(format("%sの上に行けない。", grid.get_terrain(TerrainKind::MIMIC).name.data()), "Too hot to go through."));
             energy.reset_player_turn();
             can_move = false;
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         }
 
         if (can_move && riding_monster.is_stunned() && one_in_(2)) {
             const auto steed_name = monster_desc(player_ptr, riding_monster, 0);
             msg_format(_("%sが朦朧としていてうまく動けない！", "You cannot control stunned %s!"), steed_name.data());
             can_move = false;
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         }
     }
 
@@ -293,7 +293,7 @@ void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, 
             }
         }
 
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         if (!boundary_floor(grid, terrain, terrain_mimic)) {
             sound(SoundKind::HITWALL);
         }
@@ -308,7 +308,7 @@ void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, 
             energy.reset_player_turn();
         }
 
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         can_move = false;
     }
 

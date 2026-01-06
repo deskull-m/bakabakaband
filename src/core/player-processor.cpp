@@ -89,7 +89,7 @@ static void process_fishing(PlayerType *player_ptr)
             msg_print(_("餌だけ食われてしまった！くっそ～！", "Damn!  The fish stole your bait!"));
         }
 
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 }
 
@@ -174,7 +174,7 @@ void process_player(PlayerType *player_ptr)
             inkey_scan = true;
             if (inkey()) {
                 flush();
-                disturb(player_ptr, false, true);
+                disturb(*player_ptr, false, true);
                 msg_print(_("中断しました。", "Canceled."));
             }
         }

@@ -80,7 +80,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     static constexpr auto flags_srf = {
@@ -170,7 +170,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     handle_stuff(this->player_ptr);
@@ -216,7 +216,7 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     handle_stuff(this->player_ptr);
@@ -267,7 +267,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     handle_stuff(this->player_ptr);
@@ -320,7 +320,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
@@ -376,7 +376,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, true);
+        disturb(*this->player_ptr, false, true);
     }
 
     static constexpr auto flags_mwrf = {
@@ -438,7 +438,7 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -476,7 +476,7 @@ bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -516,7 +516,7 @@ bool BadStatusSetter::set_cut(const TIME_EFFECT tmp_v)
     }
 
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -573,7 +573,7 @@ void BadStatusSetter::clear_head()
 
     msg_print(_("やっと朦朧状態から回復した。", "You are no longer stunned."));
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 }
 
@@ -663,6 +663,6 @@ void BadStatusSetter::stop_blooding(const PlayerCutRank new_rank)
                               : _("出血が止まった", "bleeding");
     msg_format(_("やっと%s。", "You are no longer %s."), blood_stop_mes);
     if (disturb_state) {
-        disturb(this->player_ptr, false, false);
+        disturb(*this->player_ptr, false, false);
     }
 }

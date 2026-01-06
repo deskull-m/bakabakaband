@@ -69,7 +69,7 @@ bool monspell_message_base(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_ID
     const auto t_name = monster_name(player_ptr, t_idx);
 
     if (mon_to_player || (mon_to_mon && known && see_either)) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     if (msg_flag_aux) {

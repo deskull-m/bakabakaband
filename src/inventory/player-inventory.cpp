@@ -277,7 +277,7 @@ void carry(PlayerType *player_ptr, bool pickup)
     autopick_pickup_items(player_ptr, grid);
 
     if (!grid.o_idx_list.empty()) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     py_pickup_all_golds_on_floor(player_ptr, grid);

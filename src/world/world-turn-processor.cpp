@@ -331,7 +331,7 @@ void WorldTurnProcessor::ring_nightmare_bell(int prev_min)
     }
 
     if ((this->hour == 23) && !(this->min % 15)) {
-        disturb(this->player_ptr, false, true);
+        disturb(*this->player_ptr, false, true);
         switch (this->min / 15) {
         case 0:
             msg_print(_("遠くで不気味な鐘の音が鳴った。", "You hear a distant bell toll ominously."));
@@ -355,7 +355,7 @@ void WorldTurnProcessor::ring_nightmare_bell(int prev_min)
         return;
     }
 
-    disturb(this->player_ptr, true, true);
+    disturb(*this->player_ptr, true, true);
     msg_print(_("遠くで鐘が何回も鳴り、死んだような静けさの中へ消えていった。", "A distant bell tolls many times, fading into an deathly silence."));
     if (AngbandWorld::get_instance().is_wild_mode()) {
         this->player_ptr->oldpy = randint1(MAX_HGT - 2);

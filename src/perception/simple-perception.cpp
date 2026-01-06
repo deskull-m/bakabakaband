@@ -90,7 +90,7 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
     }
 
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));

@@ -100,7 +100,7 @@ void AllianceTzeentch::panishment(PlayerType &player_ptr)
 
         const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_TZEENTCH);
         if (m_idx) {
-            disturb(&player_ptr, true, true);
+            disturb(player_ptr, true, true);
 
             // 追加の配下召喚（知識と変幻の混沌）
             int summon_count = 1;

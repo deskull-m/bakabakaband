@@ -362,7 +362,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         PlayerMutationType::TENTACLES,
     };
 
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
 

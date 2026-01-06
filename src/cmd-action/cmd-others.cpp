@@ -116,7 +116,7 @@ void do_cmd_alter(PlayerType *player_ptr)
     }
 
     if (!exe_alter(player_ptr)) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }
 

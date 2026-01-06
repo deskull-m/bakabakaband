@@ -313,7 +313,7 @@ void update_dungeon_feeling(PlayerType *player_ptr)
     select_floor_music(player_ptr);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 }
 

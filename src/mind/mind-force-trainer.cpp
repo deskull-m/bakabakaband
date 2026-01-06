@@ -135,7 +135,7 @@ void set_lightspeed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -181,7 +181,7 @@ bool set_tim_sh_force(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     handle_stuff(player_ptr);

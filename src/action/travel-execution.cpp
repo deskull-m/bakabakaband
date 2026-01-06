@@ -274,7 +274,7 @@ void Travel::step(PlayerType *player_ptr)
             this->reset_goal();
         }
 
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         return;
     }
 

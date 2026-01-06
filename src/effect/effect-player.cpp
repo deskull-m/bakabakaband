@@ -110,7 +110,7 @@ static bool process_bolt_reflection(PlayerType *player_ptr, EffectPlayerType *ep
     }
 
     (*project)(player_ptr, 0, 0, pos.y, pos.x, ep_ptr->dam, ep_ptr->attribute, (PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE), tl::nullopt);
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     return true;
 }
 
@@ -223,7 +223,7 @@ bool affect_player(MONSTER_IDX src_idx, PlayerType *player_ptr, concptr src_name
         fall_off_horse_effect.set_fall_off(ep_ptr->dam);
     }
 
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     if (ep_ptr->dam && ep_ptr->is_monster() && (!ep_ptr->src_ptr || !ep_ptr->src_ptr->is_riding())) {
         (void)kawarimi(player_ptr, false);
     }

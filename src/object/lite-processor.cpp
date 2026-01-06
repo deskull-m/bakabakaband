@@ -56,7 +56,7 @@ void notice_lite_change(PlayerType *player_ptr, ItemEntity *o_ptr)
             o_ptr->fuel++;
         }
     } else if (o_ptr->fuel == 0) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         msg_print(_("明かりが消えてしまった！", "Your light has gone out!"));
         static constexpr auto flags = {
             StatusRecalculatingFlag::TORCH,
@@ -66,13 +66,13 @@ void notice_lite_change(PlayerType *player_ptr, ItemEntity *o_ptr)
     } else if (o_ptr->ego_idx == EgoType::LITE_LONG) {
         if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5)) && (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 2))) {
             if (disturb_minor) {
-                disturb(player_ptr, false, true);
+                disturb(*player_ptr, false, true);
             }
             msg_print(_("明かりが微かになってきている。", "Your light is growing faint."));
         }
     } else if ((o_ptr->fuel < 100) && (!(o_ptr->fuel % 10))) {
         if (disturb_minor) {
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         }
         msg_print(_("明かりが微かになってきている。", "Your light is growing faint."));
     }

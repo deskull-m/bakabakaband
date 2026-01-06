@@ -227,11 +227,11 @@ static void curse_teleport(PlayerType *player_ptr)
     const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sがテレポートの能力を発動させようとしている。", "Your %s tries to teleport you."), item_name.data());
     if (input_check_strict(player_ptr, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         teleport_player(player_ptr, 50, TELEPORT_SPONTANEOUS);
     } else {
         msg_format(_("%sに{.}(ピリオド)と銘を刻むと発動を抑制できます。", "You can inscribe {.} on your %s to disable random teleportation. "), item_name.data());
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 }
 
@@ -250,7 +250,7 @@ static void occur_chainsword_effect(PlayerType *player_ptr)
         msg_print(noise.value());
     }
 
-    disturb(player_ptr, false, false);
+    disturb(*player_ptr, false, false);
 }
 
 static void curse_drain_exp(PlayerType *player_ptr)
@@ -337,7 +337,7 @@ static void curse_call_monster(PlayerType *player_ptr)
         if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_ANIMAL, call_type)) {
             const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_ANIMAL), obj_desc_type);
             msg_format(_("%sが動物を引き寄せた！", "Your %s has attracted an animal!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         }
     }
 
@@ -345,7 +345,7 @@ static void curse_call_monster(PlayerType *player_ptr)
         if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DEMON, call_type)) {
             const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_DEMON), obj_desc_type);
             msg_format(_("%sが悪魔を引き寄せた！", "Your %s has attracted a demon!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         }
     }
 
@@ -353,7 +353,7 @@ static void curse_call_monster(PlayerType *player_ptr)
         if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DRAGON, call_type)) {
             const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_DRAGON), obj_desc_type);
             msg_format(_("%sがドラゴンを引き寄せた！", "Your %s has attracted a dragon!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         }
     }
 
@@ -361,7 +361,7 @@ static void curse_call_monster(PlayerType *player_ptr)
         if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_UNDEAD, call_type)) {
             const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_UNDEAD), obj_desc_type);
             msg_format(_("%sが死霊を引き寄せた！", "Your %s has attracted an undead!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(*player_ptr, false, true);
         }
     }
 }
@@ -384,7 +384,7 @@ static void curse_cowardice(PlayerType *player_ptr)
         return;
     }
 
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
     msg_print(_("とても暗い... とても恐い！", "It's so dark... so scary!"));
     (void)BadStatusSetter(player_ptr).mod_fear(duration);
 }
@@ -412,7 +412,7 @@ static void curse_berserk_rage(PlayerType *player_ptr)
         return;
     }
 
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
     msg_print(_("ウガァァア！", "RAAAAGHH!"));
     msg_print(_("激怒の発作に襲われた！", "You feel a fit of rage coming over you!"));
     (void)set_berserk(player_ptr, duration, false);
@@ -503,7 +503,7 @@ static void occur_curse_effects(PlayerType *player_ptr)
     curse_cowardice(player_ptr);
     curse_berserk_rage(player_ptr);
     if (player_ptr->cursed.has(CurseTraitType::TELEPORT) && one_in_(200) && !player_ptr->anti_tele) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
         teleport_player(player_ptr, 40, TELEPORT_PASSIVE);
     }
 

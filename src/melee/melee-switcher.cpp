@@ -125,7 +125,7 @@ void describe_melee_method(PlayerType *player_ptr, mam_type *mam_ptr)
     }
     case RaceBlowMethodType::EXPLODE: {
         if (mam_ptr->see_either) {
-            disturb(player_ptr, true, true);
+            disturb(*player_ptr, true, true);
         }
 
         mam_ptr->act = _("爆発した。", "explodes.");

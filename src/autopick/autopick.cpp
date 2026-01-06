@@ -111,7 +111,7 @@ void autopick_pickup_items(PlayerType *player_ptr, const Grid &grid)
             continue;
         }
 
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
         const auto item_name = describe_flavor(player_ptr, item, 0);
 
         if (!check_get_item(&item)) {

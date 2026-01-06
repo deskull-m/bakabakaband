@@ -245,7 +245,7 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
  */
 bool MonsterAttackPlayer::process_monster_attack_hit()
 {
-    disturb(this->player_ptr, true, true);
+    disturb(*this->player_ptr, true, true);
     if (this->effect_protecion_from_evil()) {
         return false;
     }
@@ -448,7 +448,7 @@ void MonsterAttackPlayer::describe_attack_evasion()
         return;
     }
 
-    disturb(this->player_ptr, true, true);
+    disturb(*this->player_ptr, true, true);
 #ifdef JP
     auto is_suiken = any_bits(this->player_ptr->special_attack, ATTACK_SUIKEN);
     if (this->abbreviate) {

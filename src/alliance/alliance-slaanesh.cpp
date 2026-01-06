@@ -85,7 +85,7 @@ void AllianceSlaanesh::panishment(PlayerType &player_ptr)
 
         const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_SLAANESH);
         if (m_idx) {
-            disturb(&player_ptr, true, true);
+            disturb(player_ptr, true, true);
 
             // 追加の配下召喚（快楽と誘惑の混沌）
             for (int k = 0; k < 2 + (impression < -250 ? 3 : 0); k++) {
@@ -109,7 +109,7 @@ void AllianceSlaanesh::panishment(PlayerType &player_ptr)
         const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("スラーネッシュの選ばれし者があなたを誘惑すべく現れた！", "Slaanesh's Chosen appears to seduce you!"));
-            disturb(&player_ptr, true, true);
+            disturb(player_ptr, true, true);
             for (int k = 0; k < 2; k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 3), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }

@@ -26,7 +26,7 @@ void pack_overflow(PlayerType *player_ptr)
     }
 
     auto &item = *player_ptr->inventory[INVEN_PACK];
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
     msg_print(_("ザックからアイテムがあふれた！", "Your pack overflows!"));
 
     const auto item_name = describe_flavor(player_ptr, item, 0);

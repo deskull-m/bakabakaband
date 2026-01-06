@@ -18,7 +18,7 @@ static bool update_sight(PlayerType *player_ptr, const bool notice)
     }
 
     if (disturb_state) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     static constexpr auto flags = {

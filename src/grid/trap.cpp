@@ -293,7 +293,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     const auto &terrain = grid.get_terrain();
     TrapType trap_feat_type = terrain.flags.has(TerrainCharacteristics::TRAP) ? i2enum<TrapType>(terrain.subtype) : TrapType::NOT_TRAP;
 
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
 
     cave_alter_feat(player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::HIT_TRAP);
     player_ptr->plus_incident_tree("TRAPPED", 1);

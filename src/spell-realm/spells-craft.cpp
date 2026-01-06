@@ -90,7 +90,7 @@ bool set_ele_attack(PlayerType *player_ptr, uint32_t attack_type, TIME_EFFECT v)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -166,7 +166,7 @@ bool set_ele_immune(PlayerType *player_ptr, uint32_t immune_type, TIME_EFFECT v)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

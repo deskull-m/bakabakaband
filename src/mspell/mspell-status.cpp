@@ -65,7 +65,7 @@ void spell_badstatus_message_to_player(PlayerType *player_ptr, MONSTER_IDX m_idx
 {
     const auto m_name = monster_name(player_ptr, m_idx);
 
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     if (player_ptr->effects()->blindness().is_blind()) {
         msg_format(msgs.blind, m_name.data());
     } else {
@@ -142,7 +142,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(PlayerType *player_ptr, POSITION y, POSI
     const auto t_name = monster_name(player_ptr, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     } else if (target_type == MONSTER_TO_MONSTER && see_monster(player_ptr, m_idx)) {
         /* Basic message */
         msg_format(_("%s^は精神エネルギーを%sから吸いとった。", "%s^ draws psychic energy from %s."), m_name.data(), t_name.data());
@@ -179,7 +179,7 @@ MonsterSpellResult spell_RF5_MIND_BLAST(PlayerType *player_ptr, POSITION y, POSI
     const auto t_name = monster_name(player_ptr, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
         if (!seen) {
             msg_print(_("何かがあなたの精神に念を放っているようだ。", "You feel something focusing on your mind."));
         } else {
@@ -217,7 +217,7 @@ MonsterSpellResult spell_RF5_BRAIN_SMASH(PlayerType *player_ptr, POSITION y, POS
     const auto t_name = monster_name(player_ptr, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
         if (!seen) {
             msg_print(_("何かがあなたの精神に念を放っているようだ。", "You feel something focusing on your mind."));
         } else {
@@ -688,7 +688,7 @@ MonsterSpellResult spell_RF6_FORGET(PlayerType *player_ptr, MONSTER_IDX m_idx)
     DEPTH rlev = monster_level_idx(*player_ptr->current_floor_ptr, m_idx);
     const auto m_name = monster_name(player_ptr, m_idx);
 
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
 
     msg_format(_("%s^があなたの記憶を消去しようとしている。", "%s^ tries to blank your mind."), m_name.data());
 

@@ -38,7 +38,7 @@ static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
                 msg_format("Your %s is recharged.", item_name.data());
             }
 #endif
-            disturb(player_ptr, false, false);
+            disturb(*player_ptr, false, false);
             return;
         }
 

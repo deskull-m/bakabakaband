@@ -330,7 +330,7 @@ bool set_superstealth(PlayerType *player_ptr, bool set)
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state) {
-        disturb(player_ptr, false, false);
+        disturb(*player_ptr, false, false);
     }
 
     return true;

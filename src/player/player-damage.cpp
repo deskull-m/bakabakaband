@@ -314,7 +314,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
     }
 
     if (damage_type != DAMAGE_USELIFE) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
         if (auto_more) {
             player_ptr->now_damaged = true;
         }
@@ -704,7 +704,7 @@ void player_defecate(PlayerType *player_ptr)
 {
     auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
-    disturb(player_ptr, false, true);
+    disturb(*player_ptr, false, true);
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
     msg_erase();
     item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));

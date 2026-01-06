@@ -40,7 +40,7 @@ void AllianceShittoDan::panishment(PlayerType &player_ptr)
         if (m_idx) {
             msg_print(_("「アベックもリア充も死にさらせええ！」しっと団の襲撃だ！",
                 "\"Death to couples and people with fulfilling social lives!\" It's an attack by the Shitto Dan!"));
-            disturb(&player_ptr, true, true);
+            disturb(player_ptr, true, true);
             for (int k = 0; k < 3; k++) {
                 summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }

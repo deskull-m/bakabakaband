@@ -738,7 +738,7 @@ bool affect_monster(
     make_description_of_affecred_monster(player_ptr, em_ptr);
 
     if (is_monster(target_m_idx) && em_ptr->m_ptr->is_riding()) {
-        disturb(player_ptr, true, true);
+        disturb(*player_ptr, true, true);
     }
 
     ProcessResult result = exe_affect_monster_by_effect(player_ptr, em_ptr, cap_mon_ptr);

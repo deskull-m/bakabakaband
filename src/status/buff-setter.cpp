@@ -155,7 +155,7 @@ bool set_acceleration(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(player_ptr);
@@ -207,7 +207,7 @@ bool set_shield(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -255,7 +255,7 @@ bool set_magicdef(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -303,7 +303,7 @@ bool set_blessed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -351,7 +351,7 @@ bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     static constexpr auto flags = {
@@ -410,7 +410,7 @@ bool set_mimic(PlayerType *player_ptr, TIME_EFFECT v, MimicKindType mimic_race_i
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -473,7 +473,7 @@ bool set_berserk(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     static constexpr auto flags = {
@@ -539,7 +539,7 @@ bool set_wraith_form(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -593,7 +593,7 @@ bool set_tsuyoshi(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     static constexpr auto flags = {

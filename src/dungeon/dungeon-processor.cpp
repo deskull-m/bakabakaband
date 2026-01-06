@@ -118,7 +118,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     player_ptr->ambush_flag = false;
     health_track(player_ptr, 0);
 
-    disturb(player_ptr, true, true);
+    disturb(*player_ptr, true, true);
     const auto quest_id = floor.get_quest_id();
     auto &quests = QuestList::get_instance();
     auto &monrace_questor = quests.get_quest(quest_id).get_bounty();

@@ -53,7 +53,7 @@ bool set_oppose_acid(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     handle_stuff(player_ptr);
@@ -100,7 +100,7 @@ bool set_oppose_elec(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     handle_stuff(player_ptr);
@@ -149,7 +149,7 @@ bool set_oppose_fire(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     handle_stuff(player_ptr);
@@ -195,7 +195,7 @@ bool set_oppose_cold(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     handle_stuff(player_ptr);
@@ -245,7 +245,7 @@ bool set_oppose_pois(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(*player_ptr, false, true);
     }
 
     handle_stuff(player_ptr);
