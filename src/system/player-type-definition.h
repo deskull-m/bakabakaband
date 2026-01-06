@@ -80,8 +80,6 @@ public:
     std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
     std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
-    int16_t town_num{}; /* Current town number */
-
     PERCENTAGE mutant_regenerate_mod{};
 
     int16_t max_plv{}; /* Max Player Level */
@@ -133,8 +131,6 @@ public:
     ClassSpecificData class_specific_data;
 
     int player_hp[PY_MAX_LEVEL]{};
-    std::string died_from{}; /* What killed the player */
-    MonraceId killer_monrace_id{}; /* MonraceId of the killer */
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
 
