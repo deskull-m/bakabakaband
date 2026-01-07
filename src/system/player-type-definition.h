@@ -112,8 +112,6 @@ public:
      */
     BIT_FLAGS special_attack{};
 
-    /* プレイヤーの防御状態の定義 / Bit flags for the "p_ptr->special_defense" variable. -LM- */
-    BIT_FLAGS special_defense{};
     BIT_FLAGS spell_learned1{}; /* bit mask of spells learned */
     BIT_FLAGS spell_learned2{}; /* bit mask of spells learned */
     BIT_FLAGS spell_worked1{}; /* bit mask of spells tried and worked */
