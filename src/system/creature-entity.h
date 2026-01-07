@@ -362,6 +362,9 @@ public:
     TIME_EFFECT ele_attack{}; /* Timed -- Elemental Attack */
     TIME_EFFECT ele_immune{}; /* Timed -- Elemental Immune */
 
+    /* クリーチャーの防御状態の定義 / Bit flags for the "special_defense" variable. -LM- */
+    BIT_FLAGS special_defense{};
+
     TIME_EFFECT oppose_acid{}; /* Timed -- oppose acid */
     TIME_EFFECT oppose_elec{}; /* Timed -- oppose lightning */
     TIME_EFFECT oppose_fire{}; /* Timed -- oppose heat */
