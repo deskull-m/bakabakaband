@@ -15,6 +15,8 @@
 #include "io-dump/score-sender.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
+#include "monster/monster-describer.h"
+#include "monster/monster-description-types.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "perception/object-perception.h"
@@ -22,6 +24,7 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
+#include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -259,6 +262,33 @@ void print_tomb(CreatureEntity &creature)
         */
 #endif
     }
+}
+
+/*!
+ * @brief モンスター用の墓石表示 /
+ * Display a simple tomb-stone for a monster (joke option)
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param monster モンスターへの参照
+ */
+void print_monster_tomb(PlayerType *player_ptr, MonsterEntity &monster)
+{
+    term_clear();
+    read_dead_file(false);
+
+    const auto m_name = monster_desc(player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+    show_tomb_line(m_name, GRAVE_PLAYER_NAME_ROW);
+
+#ifdef JP
+    show_tomb_line("モンスター", GRAVE_PLAYER_TITLE_ROW);
+#else
+    show_tomb_line("Monster", GRAVE_PLAYER_TITLE_ROW);
+#endif
+
+    show_tomb_line(format(_("レベル: %d", "Level: %d"), monster.level), GRAVE_LEVEL_ROW);
+    show_tomb_line(format(_("HP: %d/%d", "HP: %d/%d"), monster.hp, monster.maxhp), GRAVE_EXP_ROW);
+
+    time_t ct = time((time_t *)0);
+    show_tomb_line(format("%-.24s", ctime(&ct)), GRAVE_DEAD_DATETIME_ROW);
 }
 
 /*!

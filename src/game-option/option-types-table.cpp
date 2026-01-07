@@ -167,6 +167,8 @@ const std::vector<GameOption> option_info = {
 
     { &last_words, true, 0, 28, "last_words", _("キャラクターが死んだ時遺言をのこす", "Leave last words when your character dies"), GameOptionPage::GAMEPLAY },
 
+    { &monster_tombstones, false, 2, 32, "monster_tombstones", _("モンスターが死ぬ度に墓石を立てる（ジョーク）", "Erect tombstones for all dead monsters (joke option)"), GameOptionPage::GAMEPLAY },
+
     { &auto_dump, false, 4, 5, "auto_dump", _("自動的にキャラクターの記録をファイルに書き出す", "Dump a character record automatically"), GameOptionPage::GAMEPLAY },
 
 #ifdef WORLD_SCORE
