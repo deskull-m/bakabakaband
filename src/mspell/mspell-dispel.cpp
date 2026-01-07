@@ -49,11 +49,11 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_invuln(player_ptr, 0, true);
     (void)set_wraith_form(player_ptr, 0, true);
     (void)set_pass_wall(player_ptr, 0, true);
-    (void)set_tim_res_nether(player_ptr, 0, true);
-    (void)set_tim_res_time(player_ptr, 0, true);
-    (void)set_tim_res_lite(player_ptr, 0, true);
-    (void)set_tim_res_dark(player_ptr, 0, true);
-    (void)set_tim_res_fear(player_ptr, 0, true);
+    (void)set_tim_res_nether(*player_ptr, 0, true);
+    (void)set_tim_res_time(*player_ptr, 0, true);
+    (void)set_tim_res_lite(*player_ptr, 0, true);
+    (void)set_tim_res_dark(*player_ptr, 0, true);
+    (void)set_tim_res_fear(*player_ptr, 0, true);
     (void)set_tim_reflect(player_ptr, 0, true);
     (void)set_multishadow(player_ptr, 0, true);
     (void)set_dustrobe(player_ptr, 0, true);
