@@ -360,37 +360,37 @@ static void rd_status(PlayerType *player_ptr)
     player_ptr->ult_res = rd_s16b();
 }
 
-static void set_timed_effects(PlayerType *player_ptr)
+static void set_timed_effects(CreatureEntity &creature)
 {
-    player_ptr->tim_esp = rd_s16b();
-    player_ptr->wraith_form = rd_s16b();
-    player_ptr->resist_magic = rd_s16b();
-    player_ptr->tim_regen = rd_s16b();
-    player_ptr->tim_pass_wall = rd_s16b();
-    player_ptr->tim_stealth = rd_s16b();
-    player_ptr->tim_levitation = rd_s16b();
-    player_ptr->tim_sh_touki = rd_s16b();
-    player_ptr->lightspeed = rd_s16b();
-    player_ptr->tsubureru = rd_s16b();
-    player_ptr->magicdef = rd_s16b();
-    player_ptr->tim_res_nether = rd_s16b();
-    player_ptr->tim_res_time = rd_s16b();
-    player_ptr->mimic_form = i2enum<MimicKindType>(rd_byte());
-    player_ptr->tim_mimic = rd_s16b();
-    player_ptr->tim_sh_fire = rd_s16b();
-    player_ptr->tim_sh_holy = rd_s16b();
-    player_ptr->tim_eyeeye = rd_s16b();
-    player_ptr->tim_reflect = rd_s16b();
-    player_ptr->multishadow = rd_s16b();
-    player_ptr->dustrobe = rd_s16b();
+    creature.tim_esp = rd_s16b();
+    creature.wraith_form = rd_s16b();
+    creature.resist_magic = rd_s16b();
+    creature.tim_regen = rd_s16b();
+    creature.tim_pass_wall = rd_s16b();
+    creature.tim_stealth = rd_s16b();
+    creature.tim_levitation = rd_s16b();
+    creature.tim_sh_touki = rd_s16b();
+    creature.lightspeed = rd_s16b();
+    creature.tsubureru = rd_s16b();
+    creature.magicdef = rd_s16b();
+    creature.tim_res_nether = rd_s16b();
+    creature.tim_res_time = rd_s16b();
+    creature.mimic_form = i2enum<MimicKindType>(rd_byte());
+    creature.tim_mimic = rd_s16b();
+    creature.tim_sh_fire = rd_s16b();
+    creature.tim_sh_holy = rd_s16b();
+    creature.tim_eyeeye = rd_s16b();
+    creature.tim_reflect = rd_s16b();
+    creature.multishadow = rd_s16b();
+    creature.dustrobe = rd_s16b();
 
     if (!loading_savefile_version_is_older_than(37)) {
-        player_ptr->tim_res_lite = rd_s16b();
-        player_ptr->tim_res_dark = rd_s16b();
-        player_ptr->tim_res_fear = rd_s16b();
-        player_ptr->tim_emission = rd_s16b();
-        player_ptr->tim_exorcism = rd_s16b();
-        player_ptr->tim_imm_dark = rd_s16b();
+        creature.tim_res_lite = rd_s16b();
+        creature.tim_res_dark = rd_s16b();
+        creature.tim_res_fear = rd_s16b();
+        creature.tim_emission = rd_s16b();
+        creature.tim_exorcism = rd_s16b();
+        creature.tim_imm_dark = rd_s16b();
     }
 }
 
@@ -434,7 +434,7 @@ static void set_virtues(PlayerType *player_ptr)
  */
 static void rd_timed_effects(PlayerType *player_ptr)
 {
-    set_timed_effects(player_ptr);
+    set_timed_effects(*player_ptr);
     player_ptr->patron = rd_s16b();
     set_mutations(player_ptr);
     set_virtues(player_ptr);
