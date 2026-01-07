@@ -182,7 +182,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_tim_res_nether(player_ptr, dice.roll() + base, false);
+            set_tim_res_nether(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -395,7 +395,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_tim_res_time(player_ptr, dice.roll() + base, false);
+            set_tim_res_time(*player_ptr, dice.roll() + base, false);
         }
     } break;
 

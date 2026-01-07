@@ -3,6 +3,7 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
@@ -97,35 +98,35 @@ bool set_ultimate_res(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     return true;
 }
 
-bool set_tim_res_nether(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_res_nether(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_res_nether && !do_dec) {
-            if (player_ptr->tim_res_nether > v) {
+        if (creature.tim_res_nether && !do_dec) {
+            if (creature.tim_res_nether > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_res_nether) {
+        } else if (!creature.tim_res_nether) {
             msg_print(_("地獄の力に対して耐性がついた気がする！", "You feel nether-resistant!"));
             notice = true;
         }
     }
 
     else {
-        if (player_ptr->tim_res_nether) {
+        if (creature.tim_res_nether) {
             msg_print(_("地獄の力に対する耐性が薄れた気がする。", "You feel less nether-resistant"));
             notice = true;
         }
     }
 
-    player_ptr->tim_res_nether = v;
+    creature.tim_res_nether = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -133,40 +134,40 @@ bool set_tim_res_nether(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(static_cast<PlayerType *>(&creature));
     return true;
 }
 
-bool set_tim_res_lite(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_res_lite(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_res_lite && !do_dec) {
-            if (player_ptr->tim_res_lite > v) {
+        if (creature.tim_res_lite && !do_dec) {
+            if (creature.tim_res_lite > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_res_lite) {
+        } else if (!creature.tim_res_lite) {
             msg_print(_("閃光の力に対して耐性がついた気がする！", "You feel lite-resistant!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_res_lite) {
+        if (creature.tim_res_lite) {
             msg_print(_("閃光の力に対する耐性が薄れた気がする。", "You feel less lite-resistant"));
             notice = true;
         }
     }
 
-    player_ptr->tim_res_lite = v;
+    creature.tim_res_lite = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -174,40 +175,40 @@ bool set_tim_res_lite(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(static_cast<PlayerType *>(&creature));
     return true;
 }
 
-bool set_tim_res_dark(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_res_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_res_dark && !do_dec) {
-            if (player_ptr->tim_res_dark > v) {
+        if (creature.tim_res_dark && !do_dec) {
+            if (creature.tim_res_dark > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_res_dark) {
+        } else if (!creature.tim_res_dark) {
             msg_print(_("暗黒の力に対して耐性がついた気がする！", "You feel dark-resistant!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_res_dark) {
+        if (creature.tim_res_dark) {
             msg_print(_("暗黒の力に対する耐性が薄れた気がする。", "You feel less dark-resistant"));
             notice = true;
         }
     }
 
-    player_ptr->tim_res_dark = v;
+    creature.tim_res_dark = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -215,77 +216,77 @@ bool set_tim_res_dark(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(static_cast<PlayerType *>(&creature));
     return true;
 }
 
-bool set_tim_res_fear(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_res_fear(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
     if (v) {
-        if (player_ptr->tim_res_fear && !do_dec) {
-            if (player_ptr->tim_res_fear > v) {
+        if (creature.tim_res_fear && !do_dec) {
+            if (creature.tim_res_fear > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_res_fear) {
+        } else if (!creature.tim_res_fear) {
             msg_print(_("恐怖の力に対して耐性がついた気がする！", "You feel fear-resistant!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_res_fear) {
+        if (creature.tim_res_fear) {
             msg_print(_("恐怖の力に対する耐性が薄れた気がする。", "You feel less fear-resistant"));
             notice = true;
         }
     }
-    player_ptr->tim_res_fear = v;
+    creature.tim_res_fear = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(static_cast<PlayerType *>(&creature));
     return true;
 }
 
-bool set_tim_res_time(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_res_time(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_res_time && !do_dec) {
-            if (player_ptr->tim_res_time > v) {
+        if (creature.tim_res_time && !do_dec) {
+            if (creature.tim_res_time > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_res_time) {
+        } else if (!creature.tim_res_time) {
             msg_print(_("時間逆転の力に対して耐性がついた気がする！", "You feel time-resistant!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_res_time) {
+        if (creature.tim_res_time) {
             msg_print(_("時間逆転の力に対する耐性が薄れた気がする。", "You feel less time-resistant"));
             notice = true;
         }
     }
 
-    player_ptr->tim_res_time = v;
+    creature.tim_res_time = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -293,11 +294,11 @@ bool set_tim_res_time(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(static_cast<PlayerType *>(&creature));
     return true;
 }
 

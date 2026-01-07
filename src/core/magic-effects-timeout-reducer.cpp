@@ -102,23 +102,23 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_res_nether) {
-        (void)set_tim_res_nether(player_ptr, player_ptr->tim_res_nether - 1, true);
+        (void)set_tim_res_nether(*player_ptr, player_ptr->tim_res_nether - 1, true);
     }
 
     if (player_ptr->tim_res_lite) {
-        (void)set_tim_res_lite(player_ptr, player_ptr->tim_res_lite - 1, true);
+        (void)set_tim_res_lite(*player_ptr, player_ptr->tim_res_lite - 1, true);
     }
 
     if (player_ptr->tim_res_dark) {
-        (void)set_tim_res_dark(player_ptr, player_ptr->tim_res_dark - 1, true);
+        (void)set_tim_res_dark(*player_ptr, player_ptr->tim_res_dark - 1, true);
     }
 
     if (player_ptr->tim_res_fear) {
-        (void)set_tim_res_fear(player_ptr, player_ptr->tim_res_fear - 1, true);
+        (void)set_tim_res_fear(*player_ptr, player_ptr->tim_res_fear - 1, true);
     }
 
     if (player_ptr->tim_res_time) {
-        (void)set_tim_res_time(player_ptr, player_ptr->tim_res_time - 1, true);
+        (void)set_tim_res_time(*player_ptr, player_ptr->tim_res_time - 1, true);
     }
 
     if (player_ptr->tim_reflect) {
