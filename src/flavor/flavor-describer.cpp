@@ -30,6 +30,7 @@
 #include "sv-definition/sv-ring-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
@@ -138,13 +139,13 @@ static bool should_show_slaying_bonus(const ItemEntity &item)
     return false;
 }
 
-static std::string describe_weapon_dice(PlayerType *player_ptr, const ItemEntity &item, const describe_option_type &opt)
+static std::string describe_weapon_dice(CreatureEntity &creature, const ItemEntity &item, const describe_option_type &opt)
 {
-    if (!opt.known && item.is_target_of(player_ptr->current_floor_ptr->quest_number)) {
+    if (!opt.known && item.is_target_of(creature.current_floor_ptr->quest_number)) {
         return "";
     }
 
-    const auto is_bonus = (player_ptr->riding > 0) && item.is_lance();
+    const auto is_bonus = (creature.riding > 0) && item.is_lance();
     auto bonused_dice = item.damage_dice;
     if (is_bonus) {
         bonused_dice.num += 2;
@@ -152,7 +153,7 @@ static std::string describe_weapon_dice(PlayerType *player_ptr, const ItemEntity
     return format(" (%s)", bonused_dice.to_string().data());
 }
 
-static std::string describe_bow_power(PlayerType *player_ptr, const ItemEntity &item, const describe_option_type &opt)
+static std::string describe_bow_power(CreatureEntity &creature, const ItemEntity &item, const describe_option_type &opt)
 {
     auto power = item.get_arrow_magnification();
     const auto tr_flags = item.get_flags();
@@ -165,6 +166,7 @@ static std::string describe_bow_power(PlayerType *player_ptr, const ItemEntity &
 
     auto num_fire = 100;
     if (none_bits(opt.mode, OD_DEBUG)) {
+        auto *player_ptr = static_cast<PlayerType *>(&creature);
         num_fire = calc_num_fire(player_ptr, &item);
     } else {
         if (tr_flags.has(TR_XTRA_SHOTS)) {
@@ -182,7 +184,7 @@ static std::string describe_bow_power(PlayerType *player_ptr, const ItemEntity &
     return ss.str();
 }
 
-static std::string describe_weapon_dice_or_bow_power(PlayerType *player_ptr, const ItemEntity &item, const describe_option_type &opt)
+static std::string describe_weapon_dice_or_bow_power(CreatureEntity &creature, const ItemEntity &item, const describe_option_type &opt)
 {
     switch (item.bi_key.tval()) {
     case ItemKindType::SHOT:
@@ -192,9 +194,9 @@ static std::string describe_weapon_dice_or_bow_power(PlayerType *player_ptr, con
     case ItemKindType::POLEARM:
     case ItemKindType::SWORD:
     case ItemKindType::DIGGING:
-        return describe_weapon_dice(player_ptr, item, opt);
+        return describe_weapon_dice(creature, item, opt);
     case ItemKindType::BOW:
-        return describe_bow_power(player_ptr, item, opt);
+        return describe_bow_power(creature, item, opt);
     default:
         return "";
     }
@@ -588,7 +590,7 @@ std::string describe_flavor(PlayerType *player_ptr, const ItemEntity &item, BIT_
     }
 
     ss << describe_chest(item, opt)
-       << describe_weapon_dice_or_bow_power(player_ptr, item, opt)
+       << describe_weapon_dice_or_bow_power(*player_ptr, item, opt)
        << describe_accuracy_and_damage_bonus(item, opt);
 
     if (none_bits(mode, OD_DEBUG)) {
