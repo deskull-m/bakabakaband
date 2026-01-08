@@ -21,7 +21,7 @@ void player_immunity(PlayerType *player_ptr, TrFlags &flags)
 {
     flags.clear();
 
-    const auto p_flags = (PlayerRace(player_ptr).tr_flags() | PlayerClass(player_ptr).tr_flags());
+    const auto p_flags = (CreatureRace(player_ptr).tr_flags() | PlayerClass(player_ptr).tr_flags());
 
     if (p_flags.has(TR_IM_ACID)) {
         flags.set(TR_RES_ACID);
@@ -42,7 +42,7 @@ void player_immunity(PlayerType *player_ptr, TrFlags &flags)
         flags.set(TR_RES_LITE);
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
         flags.set(TR_RES_NETHER);
     }
 }
@@ -121,7 +121,7 @@ void player_vulnerability_flags(PlayerType *player_ptr, TrFlags &flags)
         flags.set(TR_RES_COLD);
     }
 
-    const auto p_flags = PlayerRace(player_ptr).tr_flags();
+    const auto p_flags = CreatureRace(player_ptr).tr_flags();
 
     if (p_flags.has(TR_VUL_ACID)) {
         flags.set(TR_RES_ACID);

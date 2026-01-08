@@ -50,7 +50,7 @@ int16_t PlayerBasicStatistics::get_value()
  */
 int16_t PlayerBasicStatistics::race_bonus()
 {
-    return PlayerRace(this->player_ptr).get_info()->r_adj[this->ability_type];
+    return CreatureRace(this->player_ptr).get_info()->r_adj[this->ability_type];
 }
 
 /*!

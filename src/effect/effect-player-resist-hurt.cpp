@@ -182,7 +182,7 @@ void effect_player_nether(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     bool evaded = check_multishadow(player_ptr);
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
         if (!evaded) {
             hp_player(player_ptr, ep_ptr->dam / 4);
         }
@@ -419,7 +419,7 @@ void effect_player_lite(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_lite_damage_rate(player_ptr, CALC_RAND) / 100;
 
-    PlayerRace race(player_ptr);
+    CreatureRace race(player_ptr);
     if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE)) {
         if (!check_multishadow(player_ptr)) {
             msg_print(_("光で肉体が焦がされた！", "The light scorches your flesh!"));
@@ -478,7 +478,7 @@ static void effect_player_time_addition(PlayerType *player_ptr)
     case 3:
     case 4:
     case 5: {
-        if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+        if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
             break;
         }
 

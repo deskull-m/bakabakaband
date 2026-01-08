@@ -58,7 +58,7 @@ BIT_FLAGS common_cause_flags(PlayerType *player_ptr, tr_type tr_flag)
 {
     BIT_FLAGS result = check_equipment_flags(*player_ptr, tr_flag);
 
-    if (PlayerRace(player_ptr).tr_flags().has(tr_flag)) {
+    if (CreatureRace(player_ptr).tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_RACE);
     }
 
@@ -525,7 +525,7 @@ bool has_pass_wall(PlayerType *player_ptr)
 {
     auto can_player_pass_wall = player_ptr->wraith_form > 0;
     can_player_pass_wall |= player_ptr->tim_pass_wall > 0;
-    can_player_pass_wall |= PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE);
+    can_player_pass_wall |= CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE);
     if (player_ptr->riding == 0) {
         return can_player_pass_wall;
     }
@@ -1733,7 +1733,7 @@ BIT_FLAGS has_lite(PlayerType *player_ptr)
         result |= FLAG_CAUSE_PERSONALITY;
     }
 
-    if (PlayerRace(player_ptr).tr_flags().has(TR_LITE_1)) {
+    if (CreatureRace(player_ptr).tr_flags().has(TR_LITE_1)) {
         result |= FLAG_CAUSE_RACE;
     }
 
@@ -1864,7 +1864,7 @@ BIT_FLAGS player_aggravate_state(PlayerType *player_ptr)
     }
 
     if (player_ptr->cursed.has(CurseTraitType::AGGRAVATE)) {
-        if ((PlayerRace(player_ptr).equals(PlayerRaceType::S_FAIRY)) && (player_ptr->ppersonality != PERSONALITY_SEXY)) {
+        if ((CreatureRace(player_ptr).equals(PlayerRaceType::S_FAIRY)) && (player_ptr->ppersonality != PERSONALITY_SEXY)) {
             return flags | AGGRAVATE_S_FAIRY;
         }
         return flags | AGGRAVATE_NORMAL;

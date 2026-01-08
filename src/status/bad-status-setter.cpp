@@ -46,7 +46,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    PlayerRace pr(this->player_ptr);
+    CreatureRace pr(this->player_ptr);
     auto &blindness = this->player_ptr->effects()->blindness();
     const auto is_blind = blindness.is_blind();
     if (v > 0) {
@@ -465,7 +465,7 @@ bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    if (PlayerRace(this->player_ptr).has_stun_immunity() || PlayerClass(this->player_ptr).has_stun_immunity()) {
+    if (CreatureRace(this->player_ptr).has_stun_immunity() || PlayerClass(this->player_ptr).has_stun_immunity()) {
         v = 0;
     }
 
@@ -505,7 +505,7 @@ bool BadStatusSetter::set_cut(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    if (PlayerRace(this->player_ptr).has_cut_immunity()) {
+    if (CreatureRace(this->player_ptr).has_cut_immunity()) {
         v = 0;
     }
 
@@ -658,7 +658,7 @@ void BadStatusSetter::stop_blooding(const PlayerCutRank new_rank)
         return;
     }
 
-    auto blood_stop_mes = PlayerRace(this->player_ptr).equals(PlayerRaceType::ANDROID)
+    auto blood_stop_mes = CreatureRace(this->player_ptr).equals(PlayerRaceType::ANDROID)
                               ? _("怪我が直った", "leaking fluid")
                               : _("出血が止まった", "bleeding");
     msg_format(_("やっと%s。", "You are no longer %s."), blood_stop_mes);

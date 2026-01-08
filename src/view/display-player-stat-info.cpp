@@ -46,7 +46,7 @@ static int calc_basic_stat(PlayerType *player_ptr, int stat_num)
  */
 static int compensate_special_race(PlayerType *player_ptr, int stat_num)
 {
-    if (!PlayerRace(player_ptr).equals(PlayerRaceType::ENT)) {
+    if (!CreatureRace(player_ptr).equals(PlayerRaceType::ENT)) {
         return 0;
     }
 

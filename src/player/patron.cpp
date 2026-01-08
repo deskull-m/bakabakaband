@@ -207,7 +207,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_GAIN_EXP:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝は良く行いたり！続けよ！」", "'Well done, mortal! Lead on!'"));
-            if (PlayerRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
+            if (CreatureRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
                 msg_print(_("しかし何も起こらなかった。", "But, nothing happens."));
             } else if (this->player_ptr->exp < PY_MAX_EXP) {
                 int32_t ee = (this->player_ptr->exp / 2) + 10;
@@ -224,7 +224,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_LOSE_EXP:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「下僕よ、汝それに値せず。」", "'Thou didst not deserve that, slave.'"));
-            if (PlayerRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
+            if (CreatureRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
                 msg_print(_("しかし何も起こらなかった。", "But, nothing happens."));
             } else {
                 lose_exp(static_cast<CreatureEntity &>(*this->player_ptr), this->player_ptr->exp / 6);

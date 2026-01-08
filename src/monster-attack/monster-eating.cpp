@@ -262,7 +262,7 @@ bool check_drain_hp(PlayerType *player_ptr, const int32_t d)
 {
     bool resist_drain = !drain_exp(player_ptr, d, d / 10, 50);
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        return PlayerRace(player_ptr).is_mimic_nonliving() ? true : resist_drain;
+        return CreatureRace(player_ptr).is_mimic_nonliving() ? true : resist_drain;
     }
 
     switch (player_ptr->prace) {

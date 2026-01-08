@@ -388,7 +388,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
     const auto &floor = *player_ptr->current_floor_ptr;
     auto &world = AngbandWorld::get_instance();
     if (player_ptr->hp < 0 && !cheat_immortal) {
-        const auto is_android = PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID);
+        const auto is_android = CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID);
         sound(SoundKind::DEATH);
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 10);
         handle_stuff(player_ptr);

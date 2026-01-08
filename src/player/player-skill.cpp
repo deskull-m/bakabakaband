@@ -503,7 +503,7 @@ void PlayerSkill::apply_special_weapon_skill_max_values()
         w_exp_max[ItemKindType::HAFTED][SV_WHIP] = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::MERFOLK)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::MERFOLK)) {
         w_exp_max[ItemKindType::POLEARM][SV_TRIDENT] = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
         w_exp_max[ItemKindType::POLEARM][SV_TRIFURCATE_SPEAR] = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
     }

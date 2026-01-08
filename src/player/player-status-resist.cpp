@@ -219,7 +219,7 @@ PERCENTAGE calc_deathray_damage_rate(PlayerType *player_ptr, rate_calc_type_mode
 {
     (void)mode; // unused
     if (player_ptr->mimic_form != MimicKindType::NONE) {
-        if (PlayerRace(player_ptr).is_mimic_nonliving()) {
+        if (CreatureRace(player_ptr).is_mimic_nonliving()) {
             return 0;
         }
     }
@@ -252,7 +252,7 @@ PERCENTAGE calc_lite_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mod
         return 0;
     }
 
-    PlayerRace race(player_ptr);
+    CreatureRace race(player_ptr);
 
     if (race.tr_flags().has(TR_VUL_LITE)) {
         switch (race.life()) {
@@ -417,7 +417,7 @@ PERCENTAGE calc_nether_damage_rate(PlayerType *player_ptr, rate_calc_type_mode m
     PERCENTAGE per = 100;
 
     if (has_resist_neth(player_ptr)) {
-        if (!PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
+        if (!CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
             per *= 6;
         }
         per *= 100;

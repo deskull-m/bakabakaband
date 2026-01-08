@@ -42,7 +42,7 @@ static void race_dependent_mutation(CreatureEntity &creature, glm_type *gm_ptr)
         return;
     }
 
-    PlayerRace pr(&player);
+    CreatureRace pr(&player);
     if (pr.equals(PlayerRaceType::VAMPIRE) && creature.muta.has_not(PlayerMutationType::HYPN_GAZE) && (randint1(10) < 7)) {
         gm_ptr->muta_which = PlayerMutationType::HYPN_GAZE;
         gm_ptr->muta_desc = _("眼が幻惑的になった...", "Your eyes look mesmerizing...");

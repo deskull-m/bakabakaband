@@ -306,7 +306,7 @@ static void wiz_change_status_max(PlayerType *player_ptr)
 
     player_ptr->au = 999999999;
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 
@@ -381,7 +381,7 @@ void wiz_change_status(PlayerType *player_ptr)
     }
 
     player_ptr->au = *gold;
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 

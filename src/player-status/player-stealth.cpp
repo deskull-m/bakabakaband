@@ -32,7 +32,7 @@ PlayerStealth::PlayerStealth(PlayerType *player_ptr)
  */
 int16_t PlayerStealth::race_bonus()
 {
-    return PlayerRace(this->player_ptr).get_info()->r_stl;
+    return CreatureRace(this->player_ptr).get_info()->r_stl;
 }
 
 /*!

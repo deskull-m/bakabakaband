@@ -45,7 +45,7 @@ int calc_mutant_regenerate_mod(PlayerType *player_ptr)
         count--;
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::BEASTMAN)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::BEASTMAN)) {
         count -= 10;
         mod = 5;
     }

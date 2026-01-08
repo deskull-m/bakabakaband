@@ -474,7 +474,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
         player_ptr->is_dead_ = true;
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         calc_android_exp(player_ptr);
     }
 

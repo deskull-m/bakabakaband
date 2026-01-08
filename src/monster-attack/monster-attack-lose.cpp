@@ -38,7 +38,7 @@ void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     }
 
     bool disease_possibility = randint1(100) > calc_nuke_damage_rate(player_ptr);
-    if (disease_possibility || (randint1(100) > 10) || PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (disease_possibility || (randint1(100) > 10) || CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 

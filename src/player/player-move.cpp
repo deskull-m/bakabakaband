@@ -208,7 +208,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             set_action(player_ptr, ACTION_NONE);
         }
 
-        if (PlayerRace(player_ptr).equals(PlayerRaceType::MERFOLK)) {
+        if (CreatureRace(player_ptr).equals(PlayerRaceType::MERFOLK)) {
             if (terrain_new.flags.has(Tc::WATER) ^ terrain_old.flags.has(Tc::WATER)) {
                 rfu.set_flag(StatusRecalculatingFlag::BONUS);
                 update_creature(player_ptr);

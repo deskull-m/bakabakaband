@@ -81,7 +81,7 @@ void get_money(PlayerType *player_ptr)
     } else if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
         gold = 10000000;
     }
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         gold /= 5;
     }
 

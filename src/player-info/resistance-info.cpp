@@ -8,7 +8,7 @@
 
 void set_element_resistance_info(PlayerType *player_ptr, self_info_type *self_ptr)
 {
-    const auto race_tr_flags = PlayerRace(player_ptr).tr_flags();
+    const auto race_tr_flags = CreatureRace(player_ptr).tr_flags();
 
     if (has_immune_acid(player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは酸に対する完全なる免疫を持っている。", "You are completely immune to acid."));
@@ -105,7 +105,7 @@ void set_high_resistance_info(PlayerType *player_ptr, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたは因果混乱の攻撃への耐性を持っている。", "You are resistant to nexus attacks."));
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
         self_ptr->info_list.emplace_back(_("あなたは地獄の力を吸収できる。", "You can drain nether forces."));
     } else if (has_resist_neth(player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは地獄の力への耐性を持っている。", "You are resistant to nether forces."));

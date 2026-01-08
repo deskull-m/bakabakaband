@@ -128,7 +128,7 @@ void player_birth(PlayerType *player_ptr, std::optional<QuestId> initial_quest_i
     }
 
     WildernessGrids::get_instance().initialize_seeds();
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::BEASTMAN)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::BEASTMAN)) {
         player_ptr->hack_mutation = true;
     } else {
         player_ptr->hack_mutation = false;

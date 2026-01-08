@@ -55,7 +55,7 @@ void PlayerSpeed::set_locals()
  */
 int16_t PlayerSpeed::race_bonus()
 {
-    return PlayerRace(this->player_ptr).speed();
+    return CreatureRace(this->player_ptr).speed();
 }
 
 /*!
@@ -71,7 +71,7 @@ int16_t PlayerSpeed::class_bonus()
 {
     int16_t bonus = 0;
     PlayerClass pc(this->player_ptr);
-    PlayerRace pr(this->player_ptr);
+    CreatureRace pr(this->player_ptr);
     auto has_speed = pr.equals(PlayerRaceType::KLACKON);
     has_speed |= pr.equals(PlayerRaceType::SPRITE);
     has_speed |= this->player_ptr->ppersonality == PERSONALITY_MUNCHKIN;
@@ -121,7 +121,7 @@ int16_t PlayerSpeed::class_bonus()
  */
 int16_t PlayerSpeed::personality_bonus()
 {
-    PlayerRace pr(this->player_ptr);
+    CreatureRace pr(this->player_ptr);
     if (this->player_ptr->ppersonality != PERSONALITY_MUNCHKIN) {
         return 0;
     }

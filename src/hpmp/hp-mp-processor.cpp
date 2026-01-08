@@ -139,7 +139,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    const PlayerRace race(player_ptr);
+    const CreatureRace race(player_ptr);
     if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE)) {
         if (!floor.is_underground() && !has_resist_lite(player_ptr) && !is_invuln(player_ptr) && AngbandWorld::get_instance().is_daytime()) {
             if ((floor.grid_array[player_ptr->y][player_ptr->x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {

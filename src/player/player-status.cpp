@@ -1372,7 +1372,7 @@ static ACTION_SKILL_POWER calc_skill_dig(PlayerType *player_ptr)
 
     pow = 0;
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ENT) && !player_ptr->inventory[INVEN_MAIN_HAND]->is_valid()) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::ENT) && !player_ptr->inventory[INVEN_MAIN_HAND]->is_valid()) {
         pow += player_ptr->level * 10;
     }
 
@@ -1737,7 +1737,7 @@ static ARMOUR_CLASS calc_to_ac(PlayerType *player_ptr, bool is_real_value)
         }
     }
 
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     if (pr.equals(PlayerRaceType::GOLEM) || pr.equals(PlayerRaceType::ANDROID)) {
         ac += 10 + (player_ptr->level * 2 / 5);
     }
@@ -2808,7 +2808,7 @@ void check_experience(CreatureEntity &creature)
     rfu.set_flag(MainWindowRedrawingFlag::EXP);
     handle_stuff(player_ptr);
 
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     bool android = pr.equals(PlayerRaceType::ANDROID);
     PLAYER_LEVEL old_lev = player_ptr->level;
     static constexpr auto flags_srf = {
@@ -3055,7 +3055,7 @@ uint32_t calc_score(PlayerType *player_ptr)
         point *= 2;
     }
     if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
-        if (PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
+        if (CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
             point = point / 5;
         }
     }

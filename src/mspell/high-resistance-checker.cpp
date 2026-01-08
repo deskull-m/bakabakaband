@@ -72,7 +72,7 @@ static void check_nether_resistance(PlayerType *player_ptr, msr_type *msr_ptr)
         return;
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_NETH);
         msr_ptr->ability_flags.reset(MonsterAbilityType::BA_NETH);
         msr_ptr->ability_flags.reset(MonsterAbilityType::BO_NETH);
