@@ -18,6 +18,7 @@
 #include "monster/monster-util.h"
 #include "player/player-status.h"
 #include "spell/range-calc.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
@@ -32,15 +33,15 @@
 #include <vector>
 
 namespace {
-Pos2D decide_source_position(PlayerType *player_ptr, MONSTER_IDX src_idx, const Pos2D &pos_target, BIT_FLAGS flag)
+Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, const Pos2D &pos_target, BIT_FLAGS flag)
 {
     if (any_bits(flag, PROJECT_JUMP)) {
         return pos_target;
     }
     if (is_monster(src_idx)) {
-        return player_ptr->current_floor_ptr->m_list[src_idx].get_position();
+        return creature.current_floor_ptr->m_list[src_idx].get_position();
     }
-    return player_ptr->get_position();
+    return creature.get_position();
 }
 }
 
@@ -69,7 +70,7 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
 
     ProjectResult res;
     const Pos2D pos_target(target_y, target_x);
-    const auto pos_source = decide_source_position(player_ptr, src_idx, pos_target, flag);
+    const auto pos_source = decide_source_position(*player_ptr, src_idx, pos_target, flag);
 
     if (flag & (PROJECT_THRU)) {
         if (pos_source == pos_target) {
