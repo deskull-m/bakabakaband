@@ -207,7 +207,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_kill_target(player_ptr, 0, (AttributeType)command_arg, true);
         return true;
     case 'm':
-        map_area(player_ptr, DETECT_RAD_ALL * 3);
+        map_area(*player_ptr, DETECT_RAD_ALL * 3);
         return true;
     case 'M':
         wiz_mutation_menu(player_ptr);

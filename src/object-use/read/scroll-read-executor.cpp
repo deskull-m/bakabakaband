@@ -241,7 +241,7 @@ bool ScrollReadExecutor::read()
         break;
 
     case SV_SCROLL_MAPPING:
-        map_area(this->player_ptr, DETECT_RAD_MAP);
+        map_area(*this->player_ptr, DETECT_RAD_MAP);
         this->ident = true;
         break;
 

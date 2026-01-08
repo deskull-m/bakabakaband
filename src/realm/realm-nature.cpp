@@ -220,7 +220,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            map_area(player_ptr, rad1);
+            map_area(*player_ptr, rad1);
             detect_traps(player_ptr, rad2, true);
             detect_doors(player_ptr, rad2);
             detect_stairs(player_ptr, rad2);

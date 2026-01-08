@@ -375,7 +375,7 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
             set_tim_esp(player_ptr, (TIME_EFFECT)plev, false);
         }
         if (plev + tmp > 38) {
-            map_area(player_ptr, DETECT_RAD_MAP);
+            map_area(*player_ptr, DETECT_RAD_MAP);
         }
         if (tmp == 0 && plev < 5) {
             msg_print(_("鏡がなくて集中できなかった！", "You need a mirror to concentrate!"));

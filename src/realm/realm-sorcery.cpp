@@ -161,7 +161,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            map_area(player_ptr, rad);
+            map_area(*player_ptr, rad);
         }
     } break;
 

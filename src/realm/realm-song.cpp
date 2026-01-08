@@ -281,7 +281,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
                     wiz_lite(player_ptr, false);
                 }
                 if (count >= 11) {
-                    map_area(player_ptr, rad);
+                    map_area(*player_ptr, rad);
                     if (plev > 39 && count < 19) {
                         set_singing_count(player_ptr, count + 1);
                     }
