@@ -3,6 +3,7 @@
 #include "artifact/fixed-art-types.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-ability/player-ability-types.h"
+#include "player-info/class-specific-data.h"
 #include "player/player-personality-types.h"
 #include "system/angband.h"
 #include "util/flag-group.h"
@@ -298,6 +299,9 @@ public:
     PlayerClassType pclass{}; /*!< クラス / Class index */
     player_personality_type ppersonality{}; /*!< 性格 / Personality index */
     int16_t town_num{}; /*!< 現在いる街番号 / Current town number */
+
+    // クラス固有データ / Class-specific data
+    ClassSpecificData class_specific_data;
 
     // 変異関連
     EnumClassFlagGroup<PlayerMutationType> muta{}; /*!< 突然変異 / mutations */

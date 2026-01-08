@@ -126,8 +126,6 @@ public:
     std::map<PlayerSkillKindType, SUB_EXP> skill_exp{}; /* Proficiency of misc. skill */
     MartialArtsStyleType martial_arts_style{ MartialArtsStyleType::TRADITIONAL }; /* Martial arts fighting style */
 
-    ClassSpecificData class_specific_data;
-
     int player_hp[PY_MAX_LEVEL]{};
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
