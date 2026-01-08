@@ -56,7 +56,7 @@ namespace {
  */
 BIT_FLAGS common_cause_flags(PlayerType *player_ptr, tr_type tr_flag)
 {
-    BIT_FLAGS result = check_equipment_flags(player_ptr, tr_flag);
+    BIT_FLAGS result = check_equipment_flags(*player_ptr, tr_flag);
 
     if (PlayerRace(player_ptr).tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_RACE);
@@ -114,12 +114,12 @@ BIT_FLAGS convert_inventory_slot_type_to_flag_cause(inventory_slot_type inventor
 /*!
  * @brief 装備による所定の特性フラグを得ているかを一括して取得する関数。
  */
-BIT_FLAGS check_equipment_flags(PlayerType *player_ptr, tr_type tr_flag)
+BIT_FLAGS check_equipment_flags(CreatureEntity &creature, tr_type tr_flag)
 {
     ItemEntity *o_ptr;
     BIT_FLAGS result = 0L;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+        o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -211,7 +211,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_MAGIC_MASTERY:
         return has_magic_mastery(player_ptr);
     case TR_FORCE_WEAPON:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_STEALTH:
         return PlayerStealth(player_ptr).get_all_flags();
     case TR_SEARCH:
@@ -240,7 +240,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_KILL_MALE:
     case TR_KILL_FEMALE:
     case TR_VORPAL:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_EARTHQUAKE:
         return has_earthquake(player_ptr);
     case TR_BRAND_POIS:
@@ -267,7 +267,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_SUST_CHR:
         return has_sustain_chr(player_ptr);
     case TR_RIDING:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_EASY_SPELL:
         return has_easy_spell(player_ptr);
     case TR_IM_ACID:
@@ -279,7 +279,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_IM_COLD:
         return has_immune_cold(player_ptr);
     case TR_THROW:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_REFLECT:
         return has_reflect(player_ptr);
     case TR_FREE_ACT:
@@ -330,7 +330,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_SH_ELEC:
         return has_sh_elec(player_ptr);
     case TR_SLAY_HUMAN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_SH_COLD:
         return has_sh_cold(player_ptr);
     case TR_NO_TELE:
@@ -340,13 +340,13 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_DEC_MANA:
         return has_dec_mana(player_ptr);
     case TR_TY_CURSE:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_WARNING:
         return has_warning(player_ptr);
     case TR_HIDE_TYPE:
     case TR_SHOW_MODS:
     case TR_SLAY_GOOD:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_LEVITATION:
         return has_levitation(player_ptr);
     case TR_LITE_1:
@@ -369,7 +369,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_ACTIVATE:
     case TR_DRAIN_EXP:
     case TR_TELEPORT:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_AGGRAVATE:
     case TR_NASTY_AGGRAVATE:
         return 0;
@@ -385,7 +385,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_KILL_TROLL:
     case TR_KILL_GIANT:
     case TR_KILL_HUMAN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_ESP_ANIMAL:
         return has_esp_animal(player_ptr);
     case TR_ESP_NASTY:
@@ -433,12 +433,12 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_COWARDICE:
     case TR_LOW_MELEE:
     case TR_LOW_AC:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_HARD_SPELL:
         return has_hard_spell(player_ptr);
     case TR_FAST_DIGEST:
     case TR_SLOW_REGEN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_MIGHTY_THROW:
         return has_mighty_throw(player_ptr);
     case TR_EASY2_WEAPON:
@@ -448,14 +448,14 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_NO_AC:
         return has_no_ac(player_ptr);
     case TR_XXX_142:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_INVULN_ARROW:
         return has_invuln_arrow(player_ptr);
     case TR_DARK_SOURCE:
     case TR_SUPPORTIVE:
     case TR_BERS_RAGE:
     case TR_BRAND_MAGIC:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_IMPACT:
         return has_impact(player_ptr);
     case TR_VUL_ACID:
@@ -481,7 +481,7 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_WORLD_END:
     case TR_PERSISTENT_CURSE:
     case TR_MEGATON_COIN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(*player_ptr, tr_flag);
     case TR_VUL_CURSE:
         return has_vuln_curse(player_ptr);
     case TR_SUSHI:

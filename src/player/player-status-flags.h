@@ -52,7 +52,7 @@ enum aggravate_state {
 class CreatureEntity;
 class PlayerType;
 BIT_FLAGS convert_inventory_slot_type_to_flag_cause(inventory_slot_type inventory_slot);
-BIT_FLAGS check_equipment_flags(PlayerType *player_ptr, tr_type tr_flag);
+BIT_FLAGS check_equipment_flags(CreatureEntity &creature, tr_type tr_flag);
 BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag);
 bool has_pass_wall(PlayerType *player_ptr);
 bool has_kill_wall(PlayerType *player_ptr);
