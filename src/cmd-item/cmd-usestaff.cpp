@@ -298,7 +298,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
 
     case SV_STAFF_NOTHING: {
         msg_print(_("何も起らなかった。", "Nothing happens."));
-        if (PlayerRace(player_ptr).food() == PlayerRaceFoodType::MANA) {
+        if (CreatureRace(player_ptr).food() == PlayerRaceFoodType::MANA) {
             msg_print(_("もったいない事をしたような気がする。食べ物は大切にしなくては。", "What a waste.  It's your food!"));
         }
         break;

@@ -126,7 +126,7 @@ uint16_t get_expfact(PlayerType *player_ptr)
 {
     uint16_t expfact = player_ptr->race->r_exp;
 
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     if (!pr.equals(PlayerRaceType::ANDROID)) {
         expfact += (*player_ptr->pclass_ref).c_exp;
     }

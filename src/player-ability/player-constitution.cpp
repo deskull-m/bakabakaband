@@ -36,7 +36,7 @@ int16_t PlayerConstitution::race_bonus()
 {
     int16_t result = PlayerBasicStatistics::race_bonus();
 
-    result += PlayerRace(this->player_ptr).additional_constitution();
+    result += CreatureRace(this->player_ptr).additional_constitution();
 
     return result;
 }

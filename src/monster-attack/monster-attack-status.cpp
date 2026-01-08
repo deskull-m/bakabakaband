@@ -28,7 +28,7 @@ void process_blind_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr
 
     auto is_dio = monap_ptr->m_ptr->r_idx == MonraceId::DIO;
     auto dio_msg = _("どうだッ！この血の目潰しはッ！", "How is it! This blood-blinding!");
-    if (is_dio && PlayerRace(player_ptr).equals(PlayerRaceType::SKELETON)) {
+    if (is_dio && CreatureRace(player_ptr).equals(PlayerRaceType::SKELETON)) {
         msg_print(dio_msg);
         msg_print(_("しかし、あなたには元々目はなかった！", "However, you don't have eyes!"));
         return;
@@ -171,7 +171,7 @@ void process_monster_attack_time(PlayerType *player_ptr)
     case 3:
     case 4:
     case 5:
-        if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+        if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
             break;
         }
 

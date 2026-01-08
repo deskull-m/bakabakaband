@@ -224,7 +224,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
             return true;
         } else {
             msg_print(_("うぇ！思わず吐いてしまった。", "The potion makes you vomit!"));
-            switch (PlayerRace(this->player_ptr).food()) {
+            switch (CreatureRace(this->player_ptr).food()) {
             case PlayerRaceFoodType::RATION:
             case PlayerRaceFoodType::WATER:
             case PlayerRaceFoodType::BLOOD:
@@ -253,7 +253,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
 bool QuaffEffects::salt_water()
 {
     msg_print(_("うぇ！思わず吐いてしまった。", "The potion makes you vomit!"));
-    switch (PlayerRace(this->player_ptr).food()) {
+    switch (CreatureRace(this->player_ptr).food()) {
     case PlayerRaceFoodType::RATION:
     case PlayerRaceFoodType::WATER:
     case PlayerRaceFoodType::BLOOD:
@@ -510,7 +510,7 @@ bool QuaffEffects::star_enlightenment()
  */
 bool QuaffEffects::experience()
 {
-    if (PlayerRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
 

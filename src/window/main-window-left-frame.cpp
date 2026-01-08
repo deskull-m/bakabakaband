@@ -74,7 +74,7 @@ void print_exp(PlayerType *player_ptr)
 {
     std::string out_val;
 
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
         out_val = format("%8d", player_ptr->exp);
     } else {

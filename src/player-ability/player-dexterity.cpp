@@ -36,7 +36,7 @@ int16_t PlayerDexterity::race_bonus()
 {
     int16_t result = PlayerBasicStatistics::race_bonus();
 
-    result += PlayerRace(this->player_ptr).additional_dexterity();
+    result += CreatureRace(this->player_ptr).additional_dexterity();
 
     return result;
 }

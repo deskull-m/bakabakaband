@@ -181,7 +181,7 @@ void init_dungeon_quests(PlayerType *player_ptr)
 void init_turn(PlayerType *player_ptr)
 {
     auto &world = AngbandWorld::get_instance();
-    if (PlayerRace(player_ptr).life() == PlayerRaceLifeType::UNDEAD) {
+    if (CreatureRace(player_ptr).life() == PlayerRaceLifeType::UNDEAD) {
         world.game_turn = (TURNS_PER_TICK * 3 * TOWN_DAWN) / 4 + 1;
     } else {
         world.game_turn = 1;

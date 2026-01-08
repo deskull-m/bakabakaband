@@ -59,7 +59,7 @@ static bool is_healthy_stay(PlayerType *player_ptr)
 
 static bool is_player_undead(PlayerType *player_ptr)
 {
-    return PlayerRace(player_ptr, true).life() == PlayerRaceLifeType::UNDEAD;
+    return CreatureRace(player_ptr, true).life() == PlayerRaceLifeType::UNDEAD;
 }
 
 /*!

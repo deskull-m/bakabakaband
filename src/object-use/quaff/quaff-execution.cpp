@@ -56,7 +56,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
     sound(SoundKind::QUAFF);
     player_ptr->plus_incident_tree("QUAFF", 1);
     auto ident = QuaffEffects(this->player_ptr).influence(item, is_rectal);
-    if (PlayerRace(this->player_ptr).equals(PlayerRaceType::SKELETON)) {
+    if (CreatureRace(this->player_ptr).equals(PlayerRaceType::SKELETON)) {
         msg_print(_("液体の一部はあなたのアゴを素通りして落ちた！", "Some of the fluid falls through your jaws!"));
         (void)potion_smash_effect(this->player_ptr, 0, this->player_ptr->y, this->player_ptr->x, item.bi_id);
     }
@@ -80,7 +80,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
         SubWindowRedrawingFlag::PLAYER,
     };
     rfu.set_flags(flags);
-    if (PlayerRace(this->player_ptr).equals(PlayerRaceType::SKELETON)) {
+    if (CreatureRace(this->player_ptr).equals(PlayerRaceType::SKELETON)) {
         return;
     }
 
@@ -130,7 +130,7 @@ ItemEntity ObjectQuaffEntity::copy_object(const INVENTORY_IDX i_idx)
 
 void ObjectQuaffEntity::moisten(const ItemEntity &o_ref)
 {
-    switch (PlayerRace(this->player_ptr).food()) {
+    switch (CreatureRace(this->player_ptr).food()) {
     case PlayerRaceFoodType::WATER:
         msg_print(_("水分を取り込んだ。", "You are moistened."));
         set_food(this->player_ptr, std::min<short>(this->player_ptr->food + o_ref.pval + std::max<short>(0, o_ref.pval * 10) + 2000, PY_FOOD_MAX - 1));

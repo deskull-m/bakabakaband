@@ -32,7 +32,7 @@ void PlayerInfravision::set_locals()
  */
 int16_t PlayerInfravision::race_bonus()
 {
-    return PlayerRace(this->player_ptr).get_info()->infra;
+    return CreatureRace(this->player_ptr).get_info()->infra;
 }
 
 /*!

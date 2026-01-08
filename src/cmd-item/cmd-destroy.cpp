@@ -114,7 +114,7 @@ static tl::optional<SelectionResult> select_destroying_item(PlayerType *player_p
  */
 static bool decide_magic_book_exp(PlayerType *player_ptr, const ItemEntity &destroyed_item)
 {
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
 

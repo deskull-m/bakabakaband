@@ -251,7 +251,7 @@ void do_cmd_wield(PlayerType *player_ptr)
         }
     }
 
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     auto should_change_vampire = o_ptr->is_specific_artifact(FixedArtifactId::STONEMASK);
     should_change_vampire &= o_ptr->is_known();
     should_change_vampire &= !pr.equals(PlayerRaceType::VAMPIRE);

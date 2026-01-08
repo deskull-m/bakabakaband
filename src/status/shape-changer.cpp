@@ -78,7 +78,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     bool is_special_class = pc.equals(PlayerClassType::MONK);
     is_special_class |= pc.equals(PlayerClassType::FORCETRAINER);
     is_special_class |= pc.equals(PlayerClassType::NINJA);
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     bool is_special_race = pr.equals(PlayerRaceType::KLACKON);
     is_special_race |= pr.equals(PlayerRaceType::SPRITE);
     if (is_special_class && is_special_race) {
@@ -111,7 +111,7 @@ void do_poly_self(PlayerType *player_ptr)
     msg_print(_("あなたは変化の訪れを感じた...", "You feel a change coming over you..."));
     chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
 
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     if ((power > randint0(20)) && one_in_(3) && !pr.equals(PlayerRaceType::ANDROID)) {
         char effect_msg[80] = "";
         char sex_msg[32] = "";

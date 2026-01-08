@@ -258,7 +258,7 @@ static void display_player_speed(PlayerType *player_ptr, TERM_COLOR attr, int ba
  */
 static void display_player_exp(PlayerType *player_ptr)
 {
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(player_ptr);
     int e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_ANDR : ENTRY_CUR_EXP;
     if (player_ptr->exp >= player_ptr->max_exp) {
         display_player_one_line(e, format("%ld", player_ptr->exp), TERM_L_GREEN);

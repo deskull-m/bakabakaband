@@ -42,7 +42,7 @@ bool item_tester_hook_quaff(PlayerType *player_ptr, const ItemEntity *o_ptr)
         return true;
     }
 
-    return (PlayerRace(player_ptr).food() == PlayerRaceFoodType::OIL) && (bi_key == BaseitemKey(ItemKindType::FLASK, SV_FLASK_OIL));
+    return (CreatureRace(player_ptr).food() == PlayerRaceFoodType::OIL) && (bi_key == BaseitemKey(ItemKindType::FLASK, SV_FLASK_OIL));
 }
 
 /*!

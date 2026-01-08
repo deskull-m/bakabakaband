@@ -478,7 +478,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
  */
 static bool exe_eat_charge_of_magic_device(PlayerType *player_ptr, ItemEntity *o_ptr, short i_idx)
 {
-    if (!o_ptr->is_wand_staff() || (PlayerRace(player_ptr).food() != PlayerRaceFoodType::MANA)) {
+    if (!o_ptr->is_wand_staff() || (CreatureRace(player_ptr).food() != PlayerRaceFoodType::MANA)) {
         return false;
     }
 
@@ -619,7 +619,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         return;
     }
 
-    auto food_type = PlayerRace(player_ptr).food();
+    auto food_type = CreatureRace(player_ptr).food();
 
     /* Balrogs change humanoid corpses to energy */
     if (food_type == PlayerRaceFoodType::CORPSE) {
@@ -634,7 +634,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         }
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::SKELETON)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::SKELETON)) {
         const auto sval = bi_key.sval();
         if ((sval != SV_FOOD_WAYBREAD) && (sval >= SV_FOOD_BISCUIT)) {
             ItemEntity item(bi_key);

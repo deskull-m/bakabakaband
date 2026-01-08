@@ -107,7 +107,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
 
         msg_print(monrace.build_eldritch_horror_message(m_name));
         monrace.r_misc_flags.set(MonsterMiscType::ELDRITCH_HORROR);
-        switch (PlayerRace(player_ptr).life()) {
+        switch (CreatureRace(player_ptr).life()) {
         case PlayerRaceLifeType::DEMON:
             return;
         case PlayerRaceLifeType::UNDEAD:
@@ -154,7 +154,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
 
         msg_print(monrace.build_eldritch_horror_message(desc));
         monrace.r_misc_flags.set(MonsterMiscType::ELDRITCH_HORROR);
-        switch (PlayerRace(player_ptr).life()) {
+        switch (CreatureRace(player_ptr).life()) {
         case PlayerRaceLifeType::DEMON:
             if (evaluate_percent(20 + player_ptr->level)) {
                 return;

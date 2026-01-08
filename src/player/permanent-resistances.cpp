@@ -102,7 +102,7 @@ void player_flags(PlayerType *player_ptr, TrFlags &flags)
     flags.clear();
 
     flags.set(PlayerClass(player_ptr).tr_flags());
-    flags.set(PlayerRace(player_ptr).tr_flags());
+    flags.set(CreatureRace(player_ptr).tr_flags());
 
     add_mutation_flags(player_ptr, flags);
     add_personality_flags(player_ptr, flags);

@@ -90,7 +90,7 @@ void do_cmd_redraw(PlayerType *player_ptr)
     rfu.set_flags(flags_swrf);
     AngbandWorld::get_instance().play_time.update();
     handle_stuff(player_ptr);
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         calc_android_exp(player_ptr);
     }
 
