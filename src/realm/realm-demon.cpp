@@ -169,7 +169,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            map_area(player_ptr, rad);
+            map_area(*player_ptr, rad);
         }
     } break;
 

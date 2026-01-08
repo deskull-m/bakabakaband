@@ -152,7 +152,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
             wiz_lite(player_ptr, false);
         } else if (plev > 19) {
-            map_area(player_ptr, DETECT_RAD_MAP);
+            map_area(*player_ptr, DETECT_RAD_MAP);
         }
 
         if (plev < 30) {

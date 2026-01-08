@@ -185,7 +185,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            map_area(player_ptr, rad);
+            map_area(*player_ptr, rad);
         }
     } break;
 

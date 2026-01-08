@@ -129,7 +129,7 @@ void check_emission(PlayerType *player_ptr)
 {
     if (player_ptr->tim_emission > 0) {
         if (player_ptr->level > 29) {
-            map_area(player_ptr, player_ptr->cur_lite);
+            map_area(*player_ptr, player_ptr->cur_lite);
         }
         if (player_ptr->level > 24) {
             detect_traps(player_ptr, player_ptr->cur_lite, true);

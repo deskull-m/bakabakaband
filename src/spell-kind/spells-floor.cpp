@@ -170,9 +170,9 @@ void wiz_dark(PlayerType *player_ptr)
 /*
  * Hack -- map the current panel (plus some) ala "magic mapping"
  */
-void map_area(PlayerType *player_ptr, POSITION range)
+void map_area(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -180,7 +180,7 @@ void map_area(PlayerType *player_ptr, POSITION range)
     /* Scan that area */
     const auto &terrains = TerrainList::get_instance();
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
-        if (Grid::calc_distance(player_ptr->get_position(), pos) > range) {
+        if (Grid::calc_distance(creature.get_position(), pos) > range) {
             continue;
         }
 

@@ -352,7 +352,7 @@ bool activate_terror(PlayerType *player_ptr)
 bool activate_map_light(PlayerType *player_ptr)
 {
     msg_print(_("眩しく輝いた...", "It shines brightly..."));
-    map_area(player_ptr, DETECT_RAD_MAP);
+    map_area(*player_ptr, DETECT_RAD_MAP);
     lite_area(player_ptr, Dice::roll(2, 15), 3);
     return true;
 }
