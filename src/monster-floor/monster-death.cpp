@@ -2,12 +2,15 @@
 #include "alliance/alliance.h"
 #include "artifact/fixed-art-generator.h"
 #include "artifact/fixed-art-types.h"
+#include "cmd-visual/cmd-draw.h"
 #include "dungeon/quest-completion-checker.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/floor-object.h"
 #include "game-option/birth-options.h"
+#include "game-option/game-play-options.h"
 #include "game-option/play-record-options.h"
+#include "io/input-key-acceptor.h"
 #include "io/write-diary.h"
 #include "main/music-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -26,6 +29,7 @@
 #include "object-enchant/item-magic-applier.h"
 #include "pet/pet-fall-off.h"
 #include "player/patron.h"
+#include "player/process-death.h"
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-scroll-types.h"
 #include "system/angband-system.h"
@@ -44,6 +48,7 @@
 #include "system/redrawing-flags-updater.h"
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"
+#include "term/screen-processor.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -415,6 +420,15 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
     if (md.m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         md.m_ptr->reset_chameleon_polymorph();
         md.r_ptr = &md.m_ptr->get_monrace();
+    }
+
+    // ジョークオプション：モンスターの墓石を立てる
+    if (monster_tombstones) {
+        screen_save();
+        print_monster_tomb(player_ptr, *md.m_ptr);
+        msg_print(_("-続けるには何かキーを押してください-", "-Press any key to continue-"));
+        screen_load();
+        do_cmd_redraw(player_ptr);
     }
 
     QuestCompletionChecker(player_ptr, *md.m_ptr).complete();

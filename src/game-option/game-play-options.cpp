@@ -8,6 +8,7 @@ bool always_small_levels; /* Always create unusually small dungeon levels */
 bool empty_levels; /* Allow empty 'on_defeat_arena_monster' levels */
 bool bound_walls_perm; /* Boundary walls become 'permanent wall' */
 bool last_words; /* Leave last words when your character dies */
+bool monster_tombstones; /* Erect tombstones for all dead monsters (joke option) */
 bool auto_dump; /* Dump a character record automatically */
 bool auto_debug_save; /* Dump a debug savedata every key input */
 bool send_score; /* Send score dump to the world score server */

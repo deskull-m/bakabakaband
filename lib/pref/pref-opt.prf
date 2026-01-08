@@ -84,6 +84,7 @@ X:always_small_levels
 Y:empty_levels
 Y:bound_walls_perm
 Y:last_words
+X:monster_tombstones
 X:auto_dump
 Y:send_score
 X:allow_debug_opts
