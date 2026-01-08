@@ -166,8 +166,7 @@ static std::string describe_bow_power(CreatureEntity &creature, const ItemEntity
 
     auto num_fire = 100;
     if (none_bits(opt.mode, OD_DEBUG)) {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        num_fire = calc_num_fire(player_ptr, &item);
+        num_fire = calc_num_fire(creature, &item);
     } else {
         if (tr_flags.has(TR_XTRA_SHOTS)) {
             num_fire += 100;

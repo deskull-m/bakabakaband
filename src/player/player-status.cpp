@@ -316,7 +316,7 @@ static void update_bonuses(PlayerType *player_ptr)
     o_ptr = player_ptr->inventory[INVEN_BOW].get();
     if (o_ptr->is_valid()) {
         player_ptr->tval_ammo = o_ptr->get_arrow_kind();
-        player_ptr->num_fire = calc_num_fire(player_ptr, o_ptr);
+        player_ptr->num_fire = calc_num_fire(*player_ptr, o_ptr);
     }
 
     for (int i = 0; i < 2; i++) {
@@ -948,13 +948,13 @@ static void update_max_mana(PlayerType *player_ptr)
  * @param o_ptr 計算する射撃武器のアイテム情報参照ポインタ
  * @return 射撃倍率の値(100で1.00倍)
  */
-short calc_num_fire(PlayerType *player_ptr, const ItemEntity *o_ptr)
+short calc_num_fire(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     int extra_shots = 0;
 
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         ItemEntity *q_ptr;
-        q_ptr = player_ptr->inventory[i].get();
+        q_ptr = creature.inventory[i].get();
         if (!q_ptr->is_valid()) {
             continue;
         }
@@ -980,6 +980,7 @@ short calc_num_fire(PlayerType *player_ptr, const ItemEntity *o_ptr)
     num = 100;
     num += (extra_shots * 100);
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (is_heavy_shoot(player_ptr, o_ptr)) {
         return (int16_t)num;
     }
@@ -987,27 +988,27 @@ short calc_num_fire(PlayerType *player_ptr, const ItemEntity *o_ptr)
     const auto tval_ammo = o_ptr->get_arrow_kind();
     PlayerClass pc(player_ptr);
     if (pc.equals(PlayerClassType::RANGER) && (tval_ammo == ItemKindType::ARROW)) {
-        num += (player_ptr->level * 4);
+        num += (creature.level * 4);
     }
 
     if (pc.equals(PlayerClassType::CAVALRY) && (tval_ammo == ItemKindType::ARROW)) {
-        num += (player_ptr->level * 3);
+        num += (creature.level * 3);
     }
 
     if (pc.equals(PlayerClassType::ARCHER)) {
         if (tval_ammo == ItemKindType::ARROW) {
-            num += ((player_ptr->level * 5) + 50);
+            num += ((creature.level * 5) + 50);
         } else if ((tval_ammo == ItemKindType::BOLT) || (tval_ammo == ItemKindType::SHOT)) {
-            num += (player_ptr->level * 4);
+            num += (creature.level * 4);
         }
     }
 
     if (pc.equals(PlayerClassType::WARRIOR) && (tval_ammo <= ItemKindType::BOLT) && (tval_ammo >= ItemKindType::SHOT)) {
-        num += (player_ptr->level * 2);
+        num += (creature.level * 2);
     }
 
     if (pc.equals(PlayerClassType::ROGUE) && (tval_ammo == ItemKindType::SHOT)) {
-        num += (player_ptr->level * 4);
+        num += (creature.level * 4);
     }
 
     return (int16_t)num;
