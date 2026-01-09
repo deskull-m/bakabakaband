@@ -1,6 +1,6 @@
 /*!
  * @file movement-execution.cpp
- * @brief プレイヤーの歩行勝利実行定義
+ * @brief プレイヤーの歩行処理実装
  */
 
 #include "action/movement-execution.h"
