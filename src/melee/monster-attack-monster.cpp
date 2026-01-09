@@ -240,7 +240,7 @@ static void process_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 {
     const auto remaining_stun = mam_ptr->m_ptr->get_remaining_stun();
     if (mam_ptr->effect != RaceBlowEffectType::NONE && !check_hit_from_monster_to_monster(mam_ptr->power, mam_ptr->rlev, mam_ptr->ac, remaining_stun)) {
-        describe_monster_missed_monster(player_ptr, mam_ptr);
+        describe_monster_missed_monster(*player_ptr->current_floor_ptr, mam_ptr);
         return;
     }
 

@@ -358,7 +358,7 @@ void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
     }
 }
 
-void describe_monster_missed_monster(PlayerType *player_ptr, mam_type *mam_ptr)
+void describe_monster_missed_monster(FloorType &floor, mam_type *mam_ptr)
 {
     switch (mam_ptr->method) {
     case RaceBlowMethodType::HIT:
@@ -378,7 +378,7 @@ void describe_monster_missed_monster(PlayerType *player_ptr, mam_type *mam_ptr)
     case RaceBlowMethodType::STAMP:
     case RaceBlowMethodType::BIND:
     case RaceBlowMethodType::FECES: {
-        (void)set_monster_csleep(*player_ptr->current_floor_ptr, mam_ptr->t_idx, 0);
+        (void)set_monster_csleep(floor, mam_ptr->t_idx, 0);
         if (mam_ptr->see_m) {
 #ifdef JP
             msg_format("%sは%s^の攻撃をかわした。", mam_ptr->t_name, mam_ptr->m_name);
