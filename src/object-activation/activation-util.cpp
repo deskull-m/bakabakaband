@@ -5,7 +5,7 @@
 
 ae_type *initialize_ae_type(PlayerType *player_ptr, ae_type *ae_ptr, const INVENTORY_IDX i_idx)
 {
-    ae_ptr->o_ptr = ref_item(player_ptr, i_idx);
+    ae_ptr->o_ptr = ref_item(*player_ptr, i_idx);
     ae_ptr->lev = ae_ptr->o_ptr->get_baseitem_level();
     ae_ptr->broken = 0;
     return ae_ptr;

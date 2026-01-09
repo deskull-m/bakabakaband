@@ -504,7 +504,7 @@ static bool exe_eat_charge_of_magic_device(PlayerType *player_ptr, ItemEntity *o
     o_ptr->pval--;
 
     /* Eat a charge */
-    set_food(player_ptr, player_ptr->food + 5000);
+    set_food(*player_ptr, player_ptr->food + 5000);
 
     /* XXX Hack -- unstack if necessary */
     if (is_staff && (i_idx >= 0) && (o_ptr->number > 1)) {
@@ -549,7 +549,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         (void)spell_hex.stop_all_spells();
     }
 
-    auto *o_ptr = ref_item(player_ptr, i_idx);
+    auto *o_ptr = ref_item(*player_ptr, i_idx);
 
     sound(SoundKind::EAT);
 
@@ -626,7 +626,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         if (o_ptr->is_corpse() && o_ptr->get_monrace().is_human()) {
             const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_format(_("%sは燃え上り灰になった。精力を吸収した気がする。", "%s^ is burnt to ashes.  You absorb its vitality!"), item_name.data());
-            (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+            (void)set_food(*player_ptr, PY_FOOD_MAX - 1);
 
             rfu.set_flags(flags_srf);
             vary_item(player_ptr, i_idx, -1);
@@ -649,7 +649,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         }
     } else if (food_type == PlayerRaceFoodType::BLOOD) {
         /* Vampires are filled only by bloods, so reduced nutritional benefit */
-        (void)set_food(player_ptr, player_ptr->food + (o_ptr->pval / 10));
+        (void)set_food(*player_ptr, player_ptr->food + (o_ptr->pval / 10));
         msg_print(_("あなたのような者にとって食糧など僅かな栄養にしかならない。", "Mere victuals hold scant sustenance for a being such as yourself."));
 
         if (player_ptr->food < PY_FOOD_ALERT) {
@@ -660,20 +660,20 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     } else if (food_type == PlayerRaceFoodType::WATER) {
         msg_print(_("動物の食物はあなたにとってほとんど栄養にならない。", "The food of animals is poor sustenance for you."));
-        set_food(player_ptr, player_ptr->food + ((o_ptr->pval) / 20));
+        set_food(*player_ptr, player_ptr->food + ((o_ptr->pval) / 20));
         ate = true;
     } else if (food_type != PlayerRaceFoodType::RATION) {
         msg_print(_("生者の食物はあなたにとってほとんど栄養にならない。", "The food of mortals is poor sustenance for you."));
-        set_food(player_ptr, player_ptr->food + ((o_ptr->pval) / 20));
+        set_food(*player_ptr, player_ptr->food + ((o_ptr->pval) / 20));
         ate = true;
     } else {
         if (bi_key == BaseitemKey(ItemKindType::FOOD, SV_FOOD_WAYBREAD)) {
             /* Waybread is always fully satisfying. */
-            set_food(player_ptr, std::max<short>(player_ptr->food, PY_FOOD_MAX - 1));
+            set_food(*player_ptr, std::max<short>(player_ptr->food, PY_FOOD_MAX - 1));
             ate = true;
         } else if (bi_key.tval() == ItemKindType::FOOD) {
             /* Food can feed the player */
-            (void)set_food(player_ptr, player_ptr->food + o_ptr->pval);
+            (void)set_food(*player_ptr, player_ptr->food + o_ptr->pval);
             ate = true;
         }
     }

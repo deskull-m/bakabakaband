@@ -33,7 +33,7 @@ void starve_player(PlayerType *player_ptr)
     }
 
     if (player_ptr->food >= PY_FOOD_MAX) {
-        (void)set_food(player_ptr, player_ptr->food - 100);
+        (void)set_food(*player_ptr, player_ptr->food - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
         int digestion = speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
         if (player_ptr->regenerate) {
@@ -62,7 +62,7 @@ void starve_player(PlayerType *player_ptr)
             digestion *= 100;
         }
 
-        (void)set_food(player_ptr, player_ptr->food - digestion);
+        (void)set_food(*player_ptr, player_ptr->food - digestion);
     }
 
     if ((player_ptr->food >= PY_FOOD_FAINT)) {
@@ -109,8 +109,13 @@ void starve_player(PlayerType *player_ptr)
  * game turns, or 500/(100/5) = 25 player turns (if nothing else is
  * affecting the player speed).\n
  */
-bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
+bool set_food(CreatureEntity &creature, TIME_EFFECT v)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     int old_aux, new_aux;
 
     bool notice = false;
@@ -145,15 +150,15 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
     }
 
     if (old_aux < 1 && new_aux > 0) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, 2);
+        chg_virtue(creature, Virtue::PATIENCE, 2);
     } else if (old_aux < 3 && (old_aux != new_aux)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, 1);
+        chg_virtue(creature, Virtue::PATIENCE, 1);
     }
     if (old_aux == 2) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
+        chg_virtue(creature, Virtue::TEMPERANCE, 1);
     }
     if (old_aux == 0) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, -1);
+        chg_virtue(creature, Virtue::TEMPERANCE, -1);
     }
 
     if (new_aux > old_aux) {
@@ -173,9 +178,9 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
 
         case 5:
             msg_print(_("食べ過ぎだ！", "You have gorged yourself!"));
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, -1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, -2);
+            chg_virtue(creature, Virtue::HARMONY, -1);
+            chg_virtue(creature, Virtue::PATIENCE, -1);
+            chg_virtue(creature, Virtue::TEMPERANCE, -2);
             break;
         }
 
@@ -219,7 +224,7 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
     }
 
     if (disturb_state) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

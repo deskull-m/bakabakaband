@@ -10,5 +10,6 @@
 #define PY_FOOD_STARVE 100 /*!< 衰弱(赤表示/麻痺)～飢餓ダメージの閾値 / Food value (Starving) */
 
 class PlayerType;
+class CreatureEntity;
 void starve_player(PlayerType *player_ptr);
-bool set_food(PlayerType *player_ptr, TIME_EFFECT v);
+bool set_food(CreatureEntity &creature, TIME_EFFECT v);

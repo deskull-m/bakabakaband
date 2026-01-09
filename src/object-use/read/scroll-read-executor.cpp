@@ -284,7 +284,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_SATISFY_HUNGER: {
-        if (set_food(this->player_ptr, PY_FOOD_MAX - 1)) {
+        if (set_food(*this->player_ptr, PY_FOOD_MAX - 1)) {
             this->ident = true;
         }
 

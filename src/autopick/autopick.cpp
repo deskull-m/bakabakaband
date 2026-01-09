@@ -40,7 +40,7 @@
  */
 static void autopick_delayed_alter_aux(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 {
-    const auto *o_ptr = ref_item(player_ptr, i_idx);
+    const auto *o_ptr = ref_item(*player_ptr, i_idx);
     if (!o_ptr->is_valid() || o_ptr->marked.has_not(OmType::AUTODESTROY)) {
         return;
     }
@@ -88,7 +88,7 @@ void autopick_delayed_alter(PlayerType *player_ptr)
 void autopick_alter_item(PlayerType *player_ptr, INVENTORY_IDX i_idx, bool destroy)
 {
     ItemEntity *o_ptr;
-    o_ptr = ref_item(player_ptr, i_idx);
+    o_ptr = ref_item(*player_ptr, i_idx);
     int idx = find_autopick_list(player_ptr, o_ptr);
     auto_inscribe_item(o_ptr, idx);
     if (destroy && i_idx <= INVEN_PACK) {

@@ -38,7 +38,7 @@ ObjectZapWandEntity::ObjectZapWandEntity(PlayerType *player_ptr)
 void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 {
     auto old_target_pet = target_pet;
-    auto *o_ptr = ref_item(this->player_ptr, i_idx);
+    auto *o_ptr = ref_item(*this->player_ptr, i_idx);
     if ((i_idx < 0) && (o_ptr->number > 1)) {
         msg_print(_("まずは魔法棒を拾わなければ。", "You must first pick up the wands."));
         return;

@@ -126,7 +126,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
 
     case 7: {
         if (cast) {
-            set_food(player_ptr, PY_FOOD_MAX - 1);
+            set_food(*player_ptr, PY_FOOD_MAX - 1);
         }
     } break;
 

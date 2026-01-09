@@ -53,7 +53,7 @@ bool vampirism(PlayerType *player_ptr)
     /* But if we ARE Gorged,  it won't cure us */
     dummy = player_ptr->food + std::min(5000, 100 * dummy);
     if (player_ptr->food < PY_FOOD_MAX) { /* Not gorged already */
-        (void)set_food(player_ptr, dummy >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dummy);
+        (void)set_food(*player_ptr, dummy >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dummy);
     }
 
     return true;

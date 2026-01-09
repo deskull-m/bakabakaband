@@ -44,7 +44,7 @@ ObjectZapRodEntity::ObjectZapRodEntity(PlayerType *player_ptr)
 void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 {
     auto use_charge = true;
-    auto *o_ptr = ref_item(this->player_ptr, i_idx);
+    auto *o_ptr = ref_item(*this->player_ptr, i_idx);
     if ((i_idx < 0) && (o_ptr->number > 1)) {
         msg_print(_("まずはロッドを拾わなければ。", "You must first pick up the rods."));
         return;
