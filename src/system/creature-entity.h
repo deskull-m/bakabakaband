@@ -2,6 +2,7 @@
 
 #include "artifact/fixed-art-types.h"
 #include "mutation/mutation-flag-types.h"
+#include "object-enchant/trc-types.h"
 #include "player-ability/player-ability-types.h"
 #include "player-info/class-specific-data.h"
 #include "player/player-personality-types.h"
@@ -407,6 +408,37 @@ public:
     TIME_EFFECT tim_emission{}; /* Timed -- Player Emission */
     TIME_EFFECT tim_exorcism{}; /* Timed -- Exorcism */
     TIME_EFFECT tim_imm_dark{}; /* Timed -- Darkness immunity */
+
+    // 装備・能力関連フラグ / Equipment and ability flags
+    bool hack_mutation{};
+    bool is_fired{};
+    bool level_up_message{};
+
+    BIT_FLAGS anti_magic{}; /* Anti-magic */
+    BIT_FLAGS anti_tele{}; /* Prevent teleportation */
+
+    EnumClassFlagGroup<CurseTraitType> cursed{}; /* Player is cursed */
+    EnumClassFlagGroup<CurseSpecialTraitType> cursed_special{}; /* Player is special type cursed */
+
+    BIT_FLAGS levitation{}; /* No damage falling */
+    BIT_FLAGS lite{}; /* Permanent light */
+    BIT_FLAGS free_act{}; /* Never paralyzed */
+    BIT_FLAGS see_inv{}; /* Can see invisible */
+    BIT_FLAGS regenerate{}; /* Regenerate hit pts */
+    BIT_FLAGS hold_exp{}; /* Resist exp draining */
+
+    BIT_FLAGS slow_digest{}; /* Slower digestion */
+    BIT_FLAGS bless_blade{}; //!< 祝福された装備をしている / Blessed by inventory items
+    BIT_FLAGS xtra_might{}; /* Extra might bow */
+    BIT_FLAGS impact{}; //!< クリティカル率を上げる装備をしている / Critical blows
+    BIT_FLAGS earthquake{}; //!< 地震を起こす装備をしている / Earthquake blows
+    BIT_FLAGS dec_mana{};
+    BIT_FLAGS easy_spell{};
+    BIT_FLAGS hard_spell{};
+    BIT_FLAGS warning{};
+    BIT_FLAGS mighty_throw{};
+    BIT_FLAGS see_nocto{}; /* Noctovision */
+    bool invoking_midnight_curse{};
 
     // 死亡情報
     std::string died_from{}; /*!< 何によって殺されたか / What killed the creature */

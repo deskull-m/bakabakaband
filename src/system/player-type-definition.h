@@ -217,36 +217,6 @@ public:
     int16_t stat_add[A_MAX]{}; /* Modifiers to stat values */
     int16_t stat_index[A_MAX]{}; /* Indexes into stat tables */
 
-    bool hack_mutation{};
-    bool is_fired{};
-    bool level_up_message{};
-
-    BIT_FLAGS anti_magic{}; /* Anti-magic */
-    BIT_FLAGS anti_tele{}; /* Prevent teleportation */
-
-    EnumClassFlagGroup<CurseTraitType> cursed{}; /* Player is cursed */
-    EnumClassFlagGroup<CurseSpecialTraitType> cursed_special{}; /* Player is special type cursed */
-
-    BIT_FLAGS levitation{}; /* No damage falling */
-    BIT_FLAGS lite{}; /* Permanent light */
-    BIT_FLAGS free_act{}; /* Never paralyzed */
-    BIT_FLAGS see_inv{}; /* Can see invisible */
-    BIT_FLAGS regenerate{}; /* Regenerate hit pts */
-    BIT_FLAGS hold_exp{}; /* Resist exp draining */
-
-    BIT_FLAGS slow_digest{}; /* Slower digestion */
-    BIT_FLAGS bless_blade{}; //!< 祝福された装備をしている / Blessed by inventory items
-    BIT_FLAGS xtra_might{}; /* Extra might bow */
-    BIT_FLAGS impact{}; //!< クリティカル率を上げる装備をしている / Critical blows
-    BIT_FLAGS earthquake{}; //!< 地震を起こす装備をしている / Earthquake blows
-    BIT_FLAGS dec_mana{};
-    BIT_FLAGS easy_spell{};
-    BIT_FLAGS hard_spell{};
-    BIT_FLAGS warning{};
-    BIT_FLAGS mighty_throw{};
-    BIT_FLAGS see_nocto{}; /* Noctovision */
-    bool invoking_midnight_curse{};
-
     Dice damage_dice_bonus[2]{}; /* Extra damage dice num/sides */
 
     HIT_PROB dis_to_h[2]{}; /*!< 判明している現在の表記上の近接武器命中修正値 /  Known bonus to hit (wield) */
