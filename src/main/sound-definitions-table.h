@@ -93,6 +93,12 @@ enum class SoundKind {
     SMITE_HIT, /*!< vorpal hit - smite */
     EVISCERATE_HIT, /*!< vorpal hit - eviscerate */
     SHRED_HIT, /*!< vorpal hit - shred */
+    BACKSTAB_HIT,
+    SURPRISE_HIT,
+    FLEEING_HIT,
+    NINJA_CRITICAL_HIT,
+    NINJA_FATAL_HIT,
+    FATAL_SPOT, /*!< dokubari or ninja fatal hit */
     WIELD,
     TAKE_OFF,
     TERRAIN_DAMAGE,
