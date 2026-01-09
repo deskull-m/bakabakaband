@@ -75,9 +75,9 @@ int virtue_number(CreatureEntity &creature, Virtue virtue)
 
 /*!
  * @brief プレイヤーの職業や種族に依存しないランダムな徳を取得する / Aux function
- * @param which 確認したい徳のID
+ * @param creature クリーチャーへの参照
  */
-static void get_random_virtue(PlayerType *player_ptr)
+static void get_random_virtue(CreatureEntity &creature)
 {
     ProbabilityTable<Virtue> pt;
     pt.entry_item(Virtue::SACRIFICE, 3);
@@ -92,8 +92,8 @@ static void get_random_virtue(PlayerType *player_ptr)
 
     while (true) {
         const auto type = pt.pick_one_at_random();
-        if (player_ptr->virtues.find(type) == player_ptr->virtues.end()) {
-            player_ptr->virtues[type] = 0;
+        if (creature.virtues.find(type) == creature.virtues.end()) {
+            creature.virtues[type] = 0;
             return;
         }
     }
@@ -384,7 +384,7 @@ void initialize_virtues(CreatureEntity &creature)
 
     /* Fill up to 8 virtues with random ones */
     while (creature.virtues.size() < 8) {
-        get_random_virtue(player_ptr);
+        get_random_virtue(creature);
     }
 }
 
