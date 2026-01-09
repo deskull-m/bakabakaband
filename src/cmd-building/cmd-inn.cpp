@@ -35,7 +35,7 @@ static bool buy_food(PlayerType *player_ptr)
     }
 
     msg_print(_("バーテンはいくらかの食べ物とビールをくれた。", "The barkeep gives you some gruel and a beer."));
-    (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+    (void)set_food(*player_ptr, PY_FOOD_MAX - 1);
     return true;
 }
 

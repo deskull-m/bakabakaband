@@ -442,7 +442,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(*player_ptr, false, true);
         msg_print(_("胃が痙攣し、食事を失った！", "Your stomach roils, and you lose your lunch!"));
         msg_erase();
-        set_food(player_ptr, PY_FOOD_WEAK);
+        set_food(*player_ptr, PY_FOOD_WEAK);
         if (music_singing_any(player_ptr)) {
             stop_singing(player_ptr);
         }

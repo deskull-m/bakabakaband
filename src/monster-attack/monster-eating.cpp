@@ -329,10 +329,10 @@ void process_monster_attack_hungry(PlayerType *player_ptr, MonsterAttackPlayer *
     msg_format(_("あなたは腹が減った！", "You feel hungry!"));
     auto subtracted_food = static_cast<int16_t>(player_ptr->food - monap_ptr->damage);
     if ((player_ptr->food >= PY_FOOD_ALERT) && (PY_FOOD_ALERT > subtracted_food)) {
-        set_food(player_ptr, PY_FOOD_ALERT - 1);
+        set_food(*player_ptr, PY_FOOD_ALERT - 1);
     } else if ((player_ptr->food > PY_FOOD_FAINT) && (PY_FOOD_FAINT >= subtracted_food)) {
-        set_food(player_ptr, PY_FOOD_FAINT);
+        set_food(*player_ptr, PY_FOOD_FAINT);
     } else {
-        set_food(player_ptr, subtracted_food);
+        set_food(*player_ptr, subtracted_food);
     }
 }

@@ -326,7 +326,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 23: {
         if (cast) {
-            set_food(player_ptr, PY_FOOD_MAX - 1);
+            set_food(*player_ptr, PY_FOOD_MAX - 1);
         }
     } break;
 

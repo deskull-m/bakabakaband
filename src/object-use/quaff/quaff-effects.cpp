@@ -228,7 +228,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
             case PlayerRaceFoodType::RATION:
             case PlayerRaceFoodType::WATER:
             case PlayerRaceFoodType::BLOOD:
-                (void)set_food(player_ptr, PY_FOOD_STARVE - 1);
+                (void)set_food(*player_ptr, PY_FOOD_STARVE - 1);
                 break;
             default:
                 break;
@@ -257,7 +257,7 @@ bool QuaffEffects::salt_water()
     case PlayerRaceFoodType::RATION:
     case PlayerRaceFoodType::WATER:
     case PlayerRaceFoodType::BLOOD:
-        (void)set_food(this->player_ptr, PY_FOOD_STARVE - 1);
+        (void)set_food(*this->player_ptr, PY_FOOD_STARVE - 1);
         break;
     default:
         break;

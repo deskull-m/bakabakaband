@@ -92,7 +92,7 @@ void wiz_cure_all(PlayerType *player_ptr)
 {
     (void)life_stream(player_ptr, false, false);
     (void)restore_mana(player_ptr, true);
-    (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+    (void)set_food(*player_ptr, PY_FOOD_MAX - 1);
     BadStatusSetter bss(player_ptr);
     (void)bss.set_fear(0);
     (void)bss.set_deceleration(0, false);
@@ -825,7 +825,7 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
     reserve_alter_reality(player_ptr, 0);
 
     player_ptr->died_from = _("死の欺き", "Cheating death");
-    (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+    (void)set_food(*player_ptr, PY_FOOD_MAX - 1);
 
     auto &floor = *player_ptr->current_floor_ptr;
     floor.dun_level = 0;

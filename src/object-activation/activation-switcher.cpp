@@ -304,7 +304,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::RUNE_PROT:
         return activate_protection_rune(player_ptr);
     case RandomArtActType::SATIATE:
-        (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+        (void)set_food(*player_ptr, PY_FOOD_MAX - 1);
         return true;
     case RandomArtActType::DEST_DOOR:
         return activate_door_destroy(player_ptr);

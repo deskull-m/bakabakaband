@@ -307,7 +307,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
                 /* Not gorged already */
                 if (player_ptr->food < PY_FOOD_MAX) {
-                    set_food(player_ptr, dam >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dam);
+                    set_food(*player_ptr, dam >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dam);
                 }
             }
         }
