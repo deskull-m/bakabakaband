@@ -581,5 +581,5 @@ ItemEntity *choose_object(PlayerType *player_ptr, short *initial_i_idx, concptr 
         return nullptr;
     }
 
-    return ref_item(player_ptr, i_idx);
+    return ref_item(*player_ptr, i_idx);
 }

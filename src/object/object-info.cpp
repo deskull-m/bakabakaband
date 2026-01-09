@@ -179,8 +179,8 @@ bool check_book_realm(PlayerType *player_ptr, const BaseitemKey &bi_key)
     return pr.realm1().equals(book_realm) || pr.realm2().equals(book_realm);
 }
 
-ItemEntity *ref_item(PlayerType *player_ptr, INVENTORY_IDX i_idx)
+ItemEntity *ref_item(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    return i_idx >= 0 ? player_ptr->inventory[i_idx].get() : floor.o_list[0 - i_idx].get();
+    auto &floor = *creature.current_floor_ptr;
+    return i_idx >= 0 ? creature.inventory[i_idx].get() : floor.o_list[0 - i_idx].get();
 }

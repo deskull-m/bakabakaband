@@ -549,7 +549,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         (void)spell_hex.stop_all_spells();
     }
 
-    auto *o_ptr = ref_item(player_ptr, i_idx);
+    auto *o_ptr = ref_item(*player_ptr, i_idx);
 
     sound(SoundKind::EAT);
 

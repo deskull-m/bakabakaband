@@ -46,7 +46,7 @@ ObjectUseEntity::ObjectUseEntity(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 void ObjectUseEntity::execute()
 {
     auto use_charge = true;
-    auto *o_ptr = ref_item(this->player_ptr, this->i_idx);
+    auto *o_ptr = ref_item(*this->player_ptr, this->i_idx);
     if ((this->i_idx < 0) && (o_ptr->number > 1)) {
         msg_print(_("まずは杖を拾わなければ。", "You must first pick up the staffs."));
         return;
