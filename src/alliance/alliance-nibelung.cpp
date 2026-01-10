@@ -140,7 +140,7 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
  * @param player_ptr プレイヤー情報
  * @details 段階的に制裁が厳しくなる
  */
-void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     /*
     auto impression = this->calcImpressionPoint(&player_ptr);

@@ -25,7 +25,7 @@ int AllianceFeanorNoldor::calcImpressionPoint(PlayerType *creature_ptr) const
  * @param player_ptr プレイヤー情報
  * @details 現在は空実装
  */
-void AllianceFeanorNoldor::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceFeanorNoldor::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: フェアノール統ノルドールの制裁システムを実装
     // msg_print("フェアノール統ノルドールの制裁が発動した！");

@@ -25,24 +25,28 @@ bool AllianceShittoDan::isAnnihilated()
     return MonraceList::get_instance().get_monrace(MonraceId::SHITTO_MASK).mob_num == 0;
 }
 
-void AllianceShittoDan::panishment(PlayerType &player_ptr)
+void AllianceShittoDan::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+    auto impression = calcImpressionPoint(player_ptr);
     if (isAnnihilated() || impression > -50) {
         return;
     }
 
     if (one_in_(20)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 8, PROJECT_NONE);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(player_ptr, m_pos, 8, PROJECT_NONE);
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, MonraceId::SHITTO_MASK, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, MonraceId::SHITTO_MASK, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("「アベックもリア充も死にさらせええ！」しっと団の襲撃だ！",
                 "\"Death to couples and people with fulfilling social lives!\" It's an attack by the Shitto Dan!"));
-            disturb(player_ptr, true, true);
+            disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(player_ptr, m_pos.y, m_pos.x, 5, SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

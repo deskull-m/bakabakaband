@@ -16,10 +16,14 @@ int AllianceTurbanKids::calcImpressionPoint([[maybe_unused]] PlayerType *creatur
 /**
  * @note ターバンのガキ共は無条件に一定確率でプレイヤーを襲う。
  */
-void AllianceTurbanKids::panishment(PlayerType &player_ptr)
+void AllianceTurbanKids::panishment(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
     if (one_in_(19)) {
-        summon_specific(&player_ptr, player_ptr.y, player_ptr.x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
+        summon_specific(player_ptr, player_ptr->y, player_ptr->x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
     }
     return;
 }

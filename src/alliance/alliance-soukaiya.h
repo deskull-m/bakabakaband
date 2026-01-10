@@ -8,5 +8,5 @@ public:
     virtual ~AllianceSoukaiya() = default;
     int calcImpressionPoint(PlayerType *creature_ptr) const override;
     bool isAnnihilated() override;
-    void panishment(PlayerType &player_ptr) override;
+    void panishment(CreatureEntity &creature) override;
 };

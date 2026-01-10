@@ -200,7 +200,7 @@ int Alliance::calcIronmanHostilityPenalty()
     return 0;
 }
 
-void Alliance::panishment([[maybe_unused]] PlayerType &player_ptr)
+void Alliance::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     return;
 }

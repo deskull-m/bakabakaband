@@ -31,7 +31,7 @@ int AllianceAnorLondo::calcImpressionPoint(PlayerType *creature_ptr) const
  * @brief アノール・ロンドのアライアンス懲罰処理
  * @param player_ptr プレイヤーへの参照
  */
-void AllianceAnorLondo::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceAnorLondo::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // 基本的な懲罰処理を実装
 }

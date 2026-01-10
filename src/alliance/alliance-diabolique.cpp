@@ -70,9 +70,13 @@ bool AllianceDiabolique::isAnnihilated()
     return true;
 }
 
-void AllianceDiabolique::panishment(PlayerType &player_ptr)
+void AllianceDiabolique::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+    auto impression = calcImpressionPoint(player_ptr);
     if (isAnnihilated() || impression > -40) {
         return;
     }

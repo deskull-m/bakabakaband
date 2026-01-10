@@ -22,7 +22,7 @@ int AllianceIncubetor::calcImpressionPoint(PlayerType *creature_ptr) const
  * @param player_ptr プレイヤー情報
  * @details 契約違反に対する制裁
  */
-void AllianceIncubetor::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceIncubetor::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: インキュベーターの制裁システムを実装
     // msg_print("契約に基づく制裁が発動した！");

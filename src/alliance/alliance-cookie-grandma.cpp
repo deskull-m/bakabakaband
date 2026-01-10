@@ -23,7 +23,7 @@ int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] PlayerType *crea
  * @param player_ptr プレイヤー情報
  * @details 現在は空実装
  */
-void AllianceCookieGrandma::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceCookieGrandma::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: クッキーババアの制裁システムを実装
     // msg_print("クッキーババアの制裁が発動した！");

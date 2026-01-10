@@ -31,7 +31,7 @@ int AllianceBoletaria::calcImpressionPoint(PlayerType *creature_ptr) const
  * @brief ボーレタリアのアライアンス懲罰処理
  * @param player_ptr プレイヤーへの参照
  */
-void AllianceBoletaria::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceBoletaria::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // 基本的な懲罰処理を実装
 }

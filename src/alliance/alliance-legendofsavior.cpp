@@ -29,17 +29,21 @@ bool AllianceLegendOfSavior::isAnnihilated()
     return MonraceList::get_instance().get_monrace(MonraceId::KENSHIROU).mob_num == 0;
 }
 
-void AllianceLegendOfSavior::panishment(PlayerType &player_ptr)
+void AllianceLegendOfSavior::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+    auto impression = calcImpressionPoint(player_ptr);
     if (isAnnihilated() || impression > -100) {
         return;
     }
 
     if (one_in_(30)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 6, PROJECT_NONE);
-        if (summon_named_creature(&player_ptr, 0, m_pos.y, m_pos.x, MonraceId::KENSHIROU, 0)) {
+        Pos2D m_pos(player_ptr->get_position());
+        m_pos = scatter(player_ptr, m_pos, 6, PROJECT_NONE);
+        if (summon_named_creature(player_ptr, 0, m_pos.y, m_pos.x, MonraceId::KENSHIROU, 0)) {
             msg_print(_("「てめえに今日を生きる資格はねえ！」", "You don't deserve to live today!"));
             msg_print(_("ケンシロウはあなたがミスミ老人を殺したことに義憤を覚えて襲ってきた！", "Kenshiro attacked you because you killed old man Misumi!"));
         }
