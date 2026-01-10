@@ -145,9 +145,8 @@ void wipe_o_list(FloorType &floor)
  *
  * Currently the "m" parameter is unused.
  */
-Pos2D scatter(PlayerType *player_ptr, const Pos2D &pos, int d, uint32_t mode)
+Pos2D scatter(const FloorType &floor, const Pos2D &pos, int d, uint32_t mode)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
     while (true) {
         const auto ny = rand_spread(pos.y, d);
         const auto nx = rand_spread(pos.x, d);

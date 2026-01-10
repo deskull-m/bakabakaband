@@ -49,7 +49,7 @@ void AllianceJural::panishment(CreatureEntity &creature)
 
     if (one_in_(20)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(player_ptr, m_pos, 12, PROJECT_NONE);
+        m_pos = scatter(*player_ptr->current_floor_ptr, m_pos, 12, PROJECT_NONE);
         const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, MonraceId::ALIEN_JURAL, PM_ALLOW_GROUP | PM_JURAL);
         if (m_idx) {
             msg_print(_("「おーい、行ってみよう！」ジュラル星人があなたに報復すべく追跡してきた！", "\"Hey, let's go!\" Alien Jurals is chasing you for revenge!"));

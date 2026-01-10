@@ -42,7 +42,7 @@ void vault_monsters(PlayerType *player_ptr, const Pos2D &pos_center, int num)
     for (auto k = 0; k < num; k++) {
         for (auto i = 0; i < 9; i++) {
             const auto d = 1;
-            const auto pos = scatter(player_ptr, pos_center, d, 0);
+            const auto pos = scatter(*player_ptr->current_floor_ptr, pos_center, d, 0);
             auto &grid = floor.get_grid(pos);
             if (!is_cave_empty_grid(player_ptr, grid)) {
                 continue;
