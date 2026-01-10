@@ -26,7 +26,7 @@ int AllianceFingolfinNoldor::calcImpressionPoint(PlayerType *creature_ptr) const
  * @param player_ptr プレイヤー情報
  * @details 現在は空実装
  */
-void AllianceFingolfinNoldor::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceFingolfinNoldor::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: フィンゴルフィン統ノルドールの制裁システムを実装
     // msg_print("フィンゴルフィン統ノルドールの制裁が発動した！");

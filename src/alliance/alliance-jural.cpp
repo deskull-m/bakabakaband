@@ -36,22 +36,26 @@ bool AllianceJural::isAnnihilated()
     return MonraceList::get_instance().get_monrace(MonraceId::JURAL_WITCHKING).mob_num == 0;
 }
 
-void AllianceJural::panishment(PlayerType &player_ptr)
+void AllianceJural::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+    auto impression = calcImpressionPoint(player_ptr);
     if (isAnnihilated() || impression > -40) {
         return;
     }
 
     if (one_in_(20)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 12, PROJECT_NONE);
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, MonraceId::ALIEN_JURAL, PM_ALLOW_GROUP | PM_JURAL);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(player_ptr, m_pos, 12, PROJECT_NONE);
+        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, MonraceId::ALIEN_JURAL, PM_ALLOW_GROUP | PM_JURAL);
         if (m_idx) {
             msg_print(_("「おーい、行ってみよう！」ジュラル星人があなたに報復すべく追跡してきた！", "\"Hey, let's go!\" Alien Jurals is chasing you for revenge!"));
-            disturb(player_ptr, true, true);
+            disturb(creature, true, true);
             for (int k = 0; k < 4; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

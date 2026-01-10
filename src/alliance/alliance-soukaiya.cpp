@@ -27,7 +27,7 @@ bool AllianceSoukaiya::isAnnihilated()
     return false;
 }
 
-void AllianceSoukaiya::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceSoukaiya::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // ソウカイヤの復讐処理
     // TODO: 適切な復讐モンスターを召喚

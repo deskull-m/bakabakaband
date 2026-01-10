@@ -66,16 +66,20 @@ bool AllianceTzeentch::isAnnihilated()
     return false; // TODO: MonraceList::get_instance().get_monrace(MonraceId::TZEENTCH_GOD).mob_num == 0;
 }
 
-void AllianceTzeentch::panishment(PlayerType &player_ptr)
+void AllianceTzeentch::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+    auto impression = calcImpressionPoint(player_ptr);
     if (isAnnihilated() || impression > -60) {
         return;
     }
 
     if (one_in_(22)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 15, PROJECT_NONE);
+        Pos2D m_pos(player_ptr->get_position());
+        m_pos = scatter(player_ptr, m_pos, 15, PROJECT_NONE);
 
         // ティーンチの知識と変幻レベルに応じて異なる復讐者を派遣
         /*

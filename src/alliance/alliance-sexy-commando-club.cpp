@@ -184,7 +184,7 @@ bool AllianceSexyCommandoClub::isAnnihilated()
     return false;
 }
 
-void AllianceSexyCommandoClub::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceSexyCommandoClub::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     /*
     if (this->impression >= -50) {

@@ -9,7 +9,7 @@ public:
     AllianceJural() = delete;
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラsグ
     int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    void panishment(PlayerType &player_ptr) override;
+    void panishment(CreatureEntity &creature) override;
     bool isAnnihilated() override;
     std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const override;
     std::string get_ambush_message() const override;

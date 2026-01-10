@@ -52,9 +52,13 @@ bool AllianceKhorne::isAnnihilated()
     return monrace_list.get_monrace(MonraceId::KHORNE).mob_num == 0;
 }
 
-void AllianceKhorne::panishment(PlayerType &player_ptr)
+void AllianceKhorne::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+    auto impression = calcImpressionPoint(player_ptr);
     if (isAnnihilated() || impression > -60) {
         return;
     }
@@ -101,14 +105,14 @@ void AllianceKhorne::panishment(PlayerType &player_ptr)
     */
 
     if (one_in_(20)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 12, PROJECT_NONE);
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(player_ptr, m_pos, 12, PROJECT_NONE);
+        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("コーンの選ばれし者があなたを誅すべく追跡してきた！", "Khorne's Chosen is chasing you for revenge!"));
-            disturb(player_ptr, true, true);
+            disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

@@ -24,7 +24,7 @@ int AllianceFriezaClan::calcImpressionPoint(PlayerType *creature_ptr) const
  * @param player_ptr プレイヤー情報
  * @details 裏切り者に対する厳しい制裁
  */
-void AllianceFriezaClan::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceFriezaClan::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: フリーザ一族の制裁システムを実装
     // msg_print("宇宙の帝王の怒りが降り注ぐ！");

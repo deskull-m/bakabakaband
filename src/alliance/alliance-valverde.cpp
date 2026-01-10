@@ -23,7 +23,7 @@ int AllianceValVerde::calcImpressionPoint([[maybe_unused]] PlayerType *creature_
  * @param player_ptr プレイヤー情報
  * @details 現在は空実装
  */
-void AllianceValVerde::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceValVerde::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: バルベルデ共和国の制裁システムを実装
     // msg_print("バルベルデ共和国の制裁が発動した！");

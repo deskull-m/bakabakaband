@@ -23,7 +23,7 @@ int AllianceGondor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_pt
  * @param player_ptr プレイヤー情報
  * @details 現在は空実装
  */
-void AllianceGondor::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceGondor::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: ゴンドールの制裁システムを実装
     // msg_print("ゴンドールの制裁が発動した！");

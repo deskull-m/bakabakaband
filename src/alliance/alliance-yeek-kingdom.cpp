@@ -67,7 +67,7 @@ bool AllianceYeekKingdom::isAnnihilated()
  * @param player_ptr プレイヤーへの参照
  * @note 印象が悪いほど襲撃される確率が高まる
  */
-void AllianceYeekKingdom::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceYeekKingdom::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     /*
     int impression = this->calcImpressionPoint(&player_ptr);

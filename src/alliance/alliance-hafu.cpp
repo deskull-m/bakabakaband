@@ -56,9 +56,13 @@ bool AllianceHafu::isAnnihilated()
     return false; // MonraceList::get_instance().get_monrace(MonraceId::HAFU_SHOGUN).mob_num == 0;
 }
 
-void AllianceHafu::panishment(PlayerType &player_ptr)
+void AllianceHafu::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+    auto impression = calcImpressionPoint(player_ptr);
     if (isAnnihilated() || impression > -50) {
         return;
     }

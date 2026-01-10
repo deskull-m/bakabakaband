@@ -28,7 +28,7 @@ int AllianceKhaine::calcImpressionPoint(PlayerType *creature_ptr) const
  * @brief カインのアライアンス懲罰処理
  * @param player_ptr プレイヤーへの参照
  */
-void AllianceKhaine::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceKhaine::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // カインの懲罰処理 - 戦闘の神なので体力を減らす
     // 基本的な懲罰処理を実装

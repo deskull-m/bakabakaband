@@ -8,6 +8,7 @@
 enum class MonraceId : int16_t;
 class MonsterEntity;
 class MonraceDefinition;
+class CreatureEntity;
 
 typedef int ALLIANCE_ID;
 class PlayerType;
@@ -109,7 +110,7 @@ public:
     virtual int calcImpressionPoint(PlayerType *creature_ptr) const = 0;
     virtual ~Alliance() = default;
     int64_t AnnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
-    virtual void panishment(PlayerType &player_ptr);
+    virtual void panishment(CreatureEntity &creature);
     virtual std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const;
     virtual std::string get_ambush_message() const;
     virtual bool is_hostile_to(const MonsterEntity &monster_other, const MonraceDefinition &monrace) const;
