@@ -303,7 +303,7 @@ bool starlight(PlayerType *player_ptr, bool magic)
         Pos2D pos(0, 0);
         auto attempts = 1000;
         while (attempts--) {
-            pos = scatter(player_ptr, p_pos, 4, PROJECT_LOS);
+            pos = scatter(*player_ptr->current_floor_ptr, p_pos, 4, PROJECT_LOS);
             if (!player_ptr->current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }

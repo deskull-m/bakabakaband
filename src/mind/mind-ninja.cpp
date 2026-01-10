@@ -485,7 +485,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
             auto attempts = 1000;
             Pos2D pos(0, 0);
             while (attempts--) {
-                pos = scatter(player_ptr, player_ptr->get_position(), 4, PROJECT_NONE);
+                pos = scatter(*player_ptr->current_floor_ptr, player_ptr->get_position(), 4, PROJECT_NONE);
                 if (!player_ptr->is_located_at(pos)) {
                     break;
                 }

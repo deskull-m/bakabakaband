@@ -45,7 +45,7 @@ void AllianceFangFamily::panishment(CreatureEntity &creature)
 
     if (one_in_(25)) {
         Pos2D m_pos(creature.get_position());
-        m_pos = scatter(player_ptr, m_pos, 10, PROJECT_NONE);
+        m_pos = scatter(*player_ptr->current_floor_ptr, m_pos, 10, PROJECT_NONE);
         MonraceId avenger_id;
         if (impression < -200) {
             avenger_id = MonraceId::KING_FANG_FAMILY;

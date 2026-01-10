@@ -141,7 +141,7 @@ void wall_breaker(PlayerType *player_ptr)
     if (randint1(80 + player_ptr->level) < 70) {
         Pos2D pos(0, 0);
         while (attempts--) {
-            pos = scatter(player_ptr, p_pos, 4, PROJECT_NONE);
+            pos = scatter(*player_ptr->current_floor_ptr, p_pos, 4, PROJECT_NONE);
             if (!player_ptr->current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
@@ -165,7 +165,7 @@ void wall_breaker(PlayerType *player_ptr)
     for (auto i = 0; i < num; i++) {
         Pos2D pos(0, 0);
         while (true) {
-            pos = scatter(player_ptr, p_pos, 10, PROJECT_NONE);
+            pos = scatter(*player_ptr->current_floor_ptr, p_pos, 10, PROJECT_NONE);
             if (!player_ptr->is_located_at(pos)) {
                 break;
             }

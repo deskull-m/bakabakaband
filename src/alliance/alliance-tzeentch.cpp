@@ -79,7 +79,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
 
     if (one_in_(22)) {
         Pos2D m_pos(player_ptr->get_position());
-        m_pos = scatter(player_ptr, m_pos, 15, PROJECT_NONE);
+        m_pos = scatter(*player_ptr->current_floor_ptr, m_pos, 15, PROJECT_NONE);
 
         // ティーンチの知識と変幻レベルに応じて異なる復讐者を派遣
         /*
