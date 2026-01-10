@@ -900,7 +900,7 @@ static bool try_cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx, 
 void do_cmd_element(PlayerType *player_ptr)
 {
     SPELL_IDX i;
-    if (cmd_limit_confused(player_ptr) || !get_element_power(player_ptr, &i, false)) {
+    if (cmd_limit_confused(*player_ptr) || !get_element_power(player_ptr, &i, false)) {
         return;
     }
 

@@ -616,15 +616,15 @@ static bool cast_sniper_spell(PlayerType *player_ptr, int spell)
  */
 void do_cmd_snipe(PlayerType *player_ptr)
 {
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return;
     }
 
-    if (cmd_limit_image(player_ptr)) {
+    if (cmd_limit_image(*player_ptr)) {
         return;
     }
 
-    if (cmd_limit_stun(player_ptr)) {
+    if (cmd_limit_stun(*player_ptr)) {
         return;
     }
 

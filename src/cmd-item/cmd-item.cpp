@@ -249,7 +249,7 @@ void do_cmd_inscribe(PlayerType *player_ptr)
  */
 void do_cmd_use(PlayerType *player_ptr)
 {
-    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(player_ptr)) {
+    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(*player_ptr)) {
         return;
     }
 
@@ -283,7 +283,7 @@ void do_cmd_use(PlayerType *player_ptr)
         ObjectQuaffEntity(player_ptr).execute(i_idx);
         break;
     case ItemKindType::SCROLL:
-        if (cmd_limit_blind(player_ptr) || cmd_limit_confused(player_ptr)) {
+        if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
             return;
         }
 
@@ -306,7 +306,7 @@ void do_cmd_use(PlayerType *player_ptr)
  */
 void do_cmd_activate(PlayerType *player_ptr)
 {
-    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(player_ptr)) {
+    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(*player_ptr)) {
         return;
     }
 

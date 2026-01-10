@@ -334,7 +334,7 @@ void do_cmd_aim_wand(PlayerType *player_ptr)
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
-    if (cmd_limit_arena(player_ptr)) {
+    if (cmd_limit_arena(*player_ptr)) {
         return;
     }
     PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });

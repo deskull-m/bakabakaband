@@ -294,7 +294,7 @@ void do_cmd_zap_rod(PlayerType *player_ptr)
         return;
     }
 
-    if (cmd_limit_arena(player_ptr)) {
+    if (cmd_limit_arena(*player_ptr)) {
         return;
     }
 

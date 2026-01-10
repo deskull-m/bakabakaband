@@ -316,7 +316,7 @@ void do_cmd_use_staff(PlayerType *player_ptr)
         return;
     }
 
-    if (cmd_limit_arena(player_ptr)) {
+    if (cmd_limit_arena(*player_ptr)) {
         return;
     }
 
