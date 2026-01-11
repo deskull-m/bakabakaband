@@ -50,7 +50,7 @@ void resize_map()
     panel_col_max = 0;
     panel_row_min = p_ptr->current_floor_ptr->height;
     panel_col_min = p_ptr->current_floor_ptr->width;
-    verify_panel(p_ptr);
+    verify_panel(*p_ptr);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {

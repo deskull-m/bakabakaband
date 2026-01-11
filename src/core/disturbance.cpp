@@ -38,7 +38,7 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
     if (creature.running) {
         creature.running = 0;
         if (center_player && !center_running) {
-            verify_panel(player_ptr);
+            verify_panel(*player_ptr);
         }
 
         static constexpr auto flags = {
@@ -51,7 +51,7 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
     if (stop_travel) {
         Travel::get_instance().stop();
         if (center_player && !center_running) {
-            verify_panel(player_ptr);
+            verify_panel(*player_ptr);
         }
 
         rfu.set_flag(StatusRecalculatingFlag::TORCH);

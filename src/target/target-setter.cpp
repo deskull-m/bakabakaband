@@ -278,7 +278,7 @@ Direction TargetSetter::switch_target_input()
         this->change_interest_index(-1);
         return Direction::none();
     case 'p': {
-        verify_panel(this->player_ptr);
+        verify_panel(*this->player_ptr);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -450,7 +450,7 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
         this->done = true;
         return tl::nullopt;
     case 'p': {
-        verify_panel(this->player_ptr);
+        verify_panel(*this->player_ptr);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -555,7 +555,7 @@ Target target_set(PlayerType *player_ptr, target_type mode)
     TargetSetter ts(player_ptr, mode);
     ts.sweep_target_grids();
     prt("", 0, 0);
-    verify_panel(player_ptr);
+    verify_panel(*player_ptr);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);

@@ -140,7 +140,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
 
     (void)calculate_upkeep(player_ptr);
     panel_bounds_center();
-    verify_panel(player_ptr);
+    verify_panel(*player_ptr);
     msg_erase();
 
     redraw_character_xtra(player_ptr);

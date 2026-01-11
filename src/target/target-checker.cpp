@@ -39,13 +39,13 @@ POSITION target_row;
  * The map is reprinted if necessary, and "TRUE" is returned.
  * @return 実際に再描画が必要だった場合TRUEを返す
  */
-void verify_panel(PlayerType *player_ptr)
+void verify_panel(CreatureEntity &creature)
 {
-    POSITION y = player_ptr->y;
-    POSITION x = player_ptr->x;
+    POSITION y = creature.y;
+    POSITION x = creature.x;
     const auto &[wid, hgt] = get_screen_size();
-    int max_prow_min = player_ptr->current_floor_ptr->height - hgt;
-    int max_pcol_min = player_ptr->current_floor_ptr->width - wid;
+    int max_prow_min = creature.current_floor_ptr->height - hgt;
+    int max_pcol_min = creature.current_floor_ptr->width - wid;
     if (max_prow_min < 0) {
         max_prow_min = 0;
     }
@@ -55,7 +55,7 @@ void verify_panel(PlayerType *player_ptr)
 
     int prow_min;
     int pcol_min;
-    if (center_player && (center_running || !player_ptr->running)) {
+    if (center_player && (center_running || !creature.running)) {
         prow_min = y - hgt / 2;
         if (prow_min < 0) {
             prow_min = 0;
@@ -120,7 +120,7 @@ void verify_panel(PlayerType *player_ptr)
     panel_row_min = prow_min;
     panel_col_min = pcol_min;
     if (disturb_panel && !center_player) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     panel_bounds_center();
