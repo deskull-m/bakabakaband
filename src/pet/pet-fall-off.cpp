@@ -142,7 +142,7 @@ bool process_fall_off_horse(PlayerType *player_ptr, int dam, bool force)
 
         lite_spot(player_ptr, player_ptr->get_position());
         lite_spot(player_ptr, *pos_fall_off);
-        verify_panel(player_ptr);
+        verify_panel(*player_ptr);
     }
 
     player_ptr->ride_monster(0);

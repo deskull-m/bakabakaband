@@ -267,7 +267,7 @@ void process_player_pickup_item(PlayerType *player_ptr, OBJECT_IDX o_idx)
  */
 void carry(PlayerType *player_ptr, bool pickup)
 {
-    verify_panel(player_ptr);
+    verify_panel(*player_ptr);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
