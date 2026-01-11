@@ -190,7 +190,7 @@ tl::optional<Pos2D> new_player_spot(PlayerType *player_ptr)
             }
         }
 
-        if (!player_can_enter(player_ptr, grid.feat, 0)) {
+        if (!player_can_enter(*player_ptr, grid.feat, 0)) {
             continue;
         }
 
@@ -909,7 +909,7 @@ bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION 
         return true;
     }
 
-    if (!player_can_enter(player_ptr, grid.feat, 0)) {
+    if (!player_can_enter(*player_ptr, grid.feat, 0)) {
         return false;
     }
 
@@ -938,12 +938,13 @@ bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION 
  * @param mode 移動に関するオプションフラグ
  * @return 移動可能ならばTRUEを返す
  */
-bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode)
+bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mode)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &terrain = TerrainList::get_instance().get_terrain(feature);
-    if (player_ptr->riding) {
+    if (player.riding) {
         return monster_can_cross_terrain(
-            player_ptr, feature, player_ptr->current_floor_ptr->m_list[player_ptr->riding].get_monrace(), mode | CEM_RIDING);
+            &player, feature, player.current_floor_ptr->m_list[player.riding].get_monrace(), mode | CEM_RIDING);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::PATTERN)) {
@@ -952,13 +953,13 @@ bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && player_ptr->levitation) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && player.levitation) {
         return true;
     }
-    if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && player_ptr->can_swim) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && player.can_swim) {
         return true;
     }
-    if (terrain.flags.has(TerrainCharacteristics::CAN_PASS) && has_pass_wall(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_PASS) && has_pass_wall(creature)) {
         return true;
     }
 

@@ -80,7 +80,7 @@ static void decide_enemy_approch_direction(PlayerType *player_ptr, MONSTER_IDX m
             continue;
         }
 
-        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster_from.is_riding() || has_pass_wall(player_ptr));
+        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster_from.is_riding() || has_pass_wall(*player_ptr));
         const auto can_kill_wall = monrace.feature_flags.has(MonsterFeatureType::KILL_WALL) && !monster_from.is_riding();
         const auto m_pos_from = monster_from.get_position();
         const auto m_pos_to = monster_to.get_position();

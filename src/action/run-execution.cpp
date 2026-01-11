@@ -58,7 +58,7 @@ static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &
 
     const auto terrain_id = grid.get_terrain_id(TerrainKind::MIMIC);
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
-    if (!player_can_enter(player_ptr, terrain_id, 0)) {
+    if (!player_can_enter(*player_ptr, terrain_id, 0)) {
         return terrain.flags.has_not(TerrainCharacteristics::DOOR);
     }
 
