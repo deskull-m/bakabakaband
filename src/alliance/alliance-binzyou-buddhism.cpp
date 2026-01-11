@@ -4,7 +4,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
-int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int result = 0;
     result += calcIronmanHostilityPenalty();

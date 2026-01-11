@@ -5,17 +5,17 @@
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
-int AllianceAryanFamily::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceAryanFamily::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 14, 22);
+    impression += Alliance::calcPlayerPower(creature, 14, 22);
     impression += calcIronmanHostilityPenalty();
 
     // アーリアン・ファミリーのアライアンス所属モンスター撃破による印象値減少
     const std::string aryan_family_tag = get_alliance_type_tag(AllianceType::ARYAN_FAMILY);
     const std::string alliance_kill_key = "KILL/ALLIANCE/" + aryan_family_tag;
-    if (creature_ptr->incident_tree.count(alliance_kill_key)) {
-        impression -= creature_ptr->incident_tree.at(alliance_kill_key) * 15; // 1体につき-15
+    if (creature.incident_tree.count(alliance_kill_key)) {
+        impression -= creature.incident_tree.at(alliance_kill_key) * 15; // 1体につき-15
     }
 
     // 個別モンスター撃破による追加印象値減少

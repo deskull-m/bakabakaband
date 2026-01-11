@@ -14,20 +14,21 @@
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceHafu::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceHafu::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
     // 覇府は政治的権力と統治能力を重視
-    impression += Alliance::calcPlayerPower(*creature_ptr, 4, 25);
+    impression += Alliance::calcPlayerPower(creature, 4, 25);
 
     // 魅力と知恵による統治者としての評価
-    impression += (creature_ptr->stat_use[A_CHR] - 10) * 3;
-    impression += (creature_ptr->stat_use[A_WIS] - 10) * 2;
+    impression += (player.stat_use[A_CHR] - 10) * 3;
+    impression += (player.stat_use[A_WIS] - 10) * 2;
 
     // レベルによる権威の評価
-    impression += creature_ptr->level * 2;
+    impression += player.level * 2;
 
     /*
     // 覇府関連のモンスター討伐による減点
@@ -62,7 +63,7 @@ void AllianceHafu::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -50) {
         return;
     }

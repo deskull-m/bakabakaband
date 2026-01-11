@@ -14,12 +14,13 @@
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceValinor::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceValinor::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += (creature_ptr->alignment > 0) ? creature_ptr->alignment : -creature_ptr->alignment * 3;
-    impression += Alliance::calcPlayerPower(*creature_ptr, -16, 30);
+    impression += (player.alignment > 0) ? player.alignment : -player.alignment * 3;
+    impression += Alliance::calcPlayerPower(creature, -16, 30);
     return impression;
 }

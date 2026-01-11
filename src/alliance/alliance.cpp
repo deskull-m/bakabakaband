@@ -176,16 +176,16 @@ Alliance::Alliance(AllianceType id, std::string tag, std::string name, int64_t b
 
 /*!
  * @brief プレイヤーのレベル自体を印象値に加減算する処理
- * @param player_ptr 評価対象とするプレイヤー
+ * @param creature 評価対象とするクリーチャー
  * @param bias 倍率
  * @param min_level 評価基準最低レベル
  */
-int Alliance::calcPlayerPower(PlayerType const &player_ptr, const int bias, const int min_level)
+int Alliance::calcPlayerPower(const CreatureEntity &creature, const int bias, const int min_level)
 {
-    if (min_level > player_ptr.level) {
+    if (min_level > creature.level) {
         return 0;
     }
-    return (2000 + 10 * (player_ptr.level - min_level + 1) * (player_ptr.level - min_level + 1)) * bias / 100;
+    return (2000 + 10 * (creature.level - min_level + 1) * (creature.level - min_level + 1)) * bias / 100;
 }
 
 /*!

@@ -23,25 +23,26 @@
  * @return 印象ポイント
  * @details 腐敗、病気、耐久力を重視し、美しさや清浄さを嫌う
  */
-int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
     // 基本的な戦力による評価（控えめ）
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 25);
+    impression += Alliance::calcPlayerPower(creature, 10, 25);
 
     // 耐久力を最重視（病気に耐える力）
-    impression += (creature_ptr->stat_use[A_CON] - 10) * 6;
+    impression += (player.stat_use[A_CON] - 10) * 6;
 
     // 筋力も評価（腐敗した肉体でも力強く）
-    impression += (creature_ptr->stat_use[A_STR] - 10) * 3;
+    impression += (player.stat_use[A_STR] - 10) * 3;
 
     // 魅力は逆に低い方が好まれる（醜さは美徳）
-    impression -= (creature_ptr->stat_use[A_CHR] - 10) * 4;
+    impression -= (player.stat_use[A_CHR] - 10) * 4;
 
     // 種族による評価
-    switch (creature_ptr->prace) {
+    switch (player.prace) {
     case PlayerRaceType::ZOMBIE:
     case PlayerRaceType::SKELETON:
         impression += 200; // アンデッドは最高評価
@@ -74,7 +75,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // 職業による評価
-    switch (creature_ptr->pclass) {
+    switch (player.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::BERSERKER:
         impression += 100; // 戦場で傷つく者
@@ -104,7 +105,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // 現在のHP状況（傷ついているほど好まれる）
     /*
-    int hp_ratio = (creature_ptr->hp * 100) / creature_ptr->maxhp;
+    int hp_ratio = (player.hp * 100) / player.maxhp;
     if (hp_ratio <= 25)
         impression += 60;
     else if (hp_ratio <= 50)
@@ -115,13 +116,13 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // 状態異常持ちを評価
     /*
-    if (creature_ptr->poisoned)
+    if (player.poisoned)
         impression += 50;
-    if (creature_ptr->diseased)
+    if (player.diseased)
         impression += 80;
-    if (creature_ptr->cut)
+    if (player.cut)
         impression += 30;
-    if (creature_ptr->stun)
+    if (player.stun)
         impression += 20;
     */
 
@@ -140,7 +141,7 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         return;
     }
     // 印象に応じて段階的な制裁
-    if (this->calcImpressionPoint(player_ptr) <= -50) {
+    if (this->calcImpressionPoint(*player_ptr) <= -50) {
         // 軽微な制裁：軽い病気
         msg_print("あなたの体に軽い不調を感じる...");
         msg_print("「ナーグルの小さな贈り物だ」");
@@ -153,7 +154,7 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         return;
     }
 
-    if (this->calcImpressionPoint(player_ptr) <= -100) {
+    if (this->calcImpressionPoint(*player_ptr) <= -100) {
         // 中程度の制裁：疫病の使者
         msg_print("腐敗の悪臭が漂ってきた...");
         msg_print("「ナーグルの慈悲深い疫病を受けるがよい」");
@@ -179,7 +180,7 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         */
     }
 
-    if (this->calcImpressionPoint(player_ptr) <= -150) {
+    if (this->calcImpressionPoint(*player_ptr) <= -150) {
         // 重い制裁：大悪疫
         msg_print("恐ろしい疫病があなたを襲う！");
         msg_print("「ナーグルの偉大なる慈悲を味わうがよい！」");
@@ -215,7 +216,7 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         */
     }
 
-    if (this->calcImpressionPoint(player_ptr) <= -250) {
+    if (this->calcImpressionPoint(*player_ptr) <= -250) {
         // 最重の制裁：腐敗の庭園
         msg_print("周囲の世界が腐敗し始めた！");
         msg_print("「我が庭園へようこそ...永遠の腐敗と再生の世界へ」");

@@ -11,10 +11,10 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceSoukaiya::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceSoukaiya::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     // プレイヤーレベルによる基本印象値
-    auto impression = Alliance::calcPlayerPower(*creature_ptr, 10, 5);
+    auto impression = Alliance::calcPlayerPower(creature, 10, 5);
 
     return impression;
 }

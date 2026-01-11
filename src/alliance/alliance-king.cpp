@@ -3,12 +3,12 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
-int AllianceKING::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceKING::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 15);
+    impression += Alliance::calcPlayerPower(creature, 15, 15);
 
     // KINGアライアンスのモンスター撃破による印象値低下
     impression -= MonraceList::get_instance().get_monrace(MonraceId::KING_SOLDIER).r_akills * 5;

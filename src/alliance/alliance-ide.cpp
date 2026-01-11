@@ -12,15 +12,16 @@
  * @param creature_ptr プレイヤーへの参照ポインタ
  * @return 印象値
  */
-int AllianceIde::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceIde::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     // bias = 20, level = 35 (イデは無限力の存在なので、非常に高い基準を持つ)
     int bias = 20;
     int level = 35;
 
     // INTとWISの平均をベースとした印象値計算（無限力らしく知性と叡智を重視）
-    int base_stat = (creature_ptr->stat_max[A_INT] + creature_ptr->stat_max[A_WIS]) / 2;
-    int impression = base_stat + bias + creature_ptr->level / level;
+    int base_stat = (player.stat_max[A_INT] + player.stat_max[A_WIS]) / 2;
+    int impression = base_stat + bias + player.level / level;
 
     // 最低値保証
     if (impression < 1) {

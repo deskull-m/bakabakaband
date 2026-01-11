@@ -15,13 +15,14 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceDiabolique::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceDiabolique::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
     // プレイヤーレベルによる基本印象値
-    impression += creature_ptr->level * 10;
+    impression += player.level * 10;
 
     // デアボリカのロードたちを殺害した場合の大幅減点（レベル×10）
     const auto &monrace_list = MonraceList::get_instance();
@@ -76,7 +77,7 @@ void AllianceDiabolique::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -40) {
         return;
     }

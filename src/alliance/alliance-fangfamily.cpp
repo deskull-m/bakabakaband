@@ -15,10 +15,10 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceFangFamily::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceFangFamily::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 17, 25);
+    impression += Alliance::calcPlayerPower(creature, 17, 25);
     impression += calcIronmanHostilityPenalty();
     impression -= MonraceList::get_instance().get_monrace(MonraceId::FANG_FAMILY).r_akills * 5;
     if (MonraceList::get_instance().get_monrace(MonraceId::KING_FANG_FAMILY).mob_num == 0) {
@@ -38,7 +38,7 @@ void AllianceFangFamily::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -30) {
         return;
     }

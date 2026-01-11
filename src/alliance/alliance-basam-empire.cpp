@@ -4,10 +4,10 @@
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
-int AllianceBasamEmpire::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceBasamEmpire::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 13, 24);
+    impression += Alliance::calcPlayerPower(creature, 13, 24);
     impression += calcIronmanHostilityPenalty();
 
     return impression;

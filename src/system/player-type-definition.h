@@ -64,7 +64,6 @@ class PlayerType : public CreatureEntity {
 public:
     PlayerType();
     void plus_incident(INCIDENT incidentID, int num);
-    void plus_incident_tree(const std::string &incident_id, int num);
     bool is_true_winner() const;
 
     RealmType realm1{}; /* First magic realm */
@@ -78,7 +77,6 @@ public:
                          */
 
     std::map<INCIDENT, int32_t> incident{}; /*!< これまでに行った出来事カウント（従来型、enumベース） */
-    std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
 
     PERCENTAGE mutant_regenerate_mod{};
 

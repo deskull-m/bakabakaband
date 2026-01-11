@@ -13,12 +13,12 @@ AllianceKenohgun::AllianceKenohgun(AllianceType id, std::string tag, std::string
 {
 }
 
-int AllianceKenohgun::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceKenohgun::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 20);
+    impression += Alliance::calcPlayerPower(creature, 15, 20);
     return impression;
 }
 

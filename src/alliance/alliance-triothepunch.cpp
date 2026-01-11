@@ -10,9 +10,9 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceTrioThePunch::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceTrioThePunch::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    auto impression = Alliance::calcPlayerPower(*creature_ptr, 10, 5);
+    auto impression = Alliance::calcPlayerPower(creature, 10, 5);
 
     // トリオ・ザ・パンチのメンバーを殺害した場合の減点
     const auto &monrace_list = MonraceList::get_instance();

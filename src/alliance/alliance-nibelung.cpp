@@ -42,13 +42,14 @@
  * @return 印象ポイント
  * @details ドワーフ系種族や鍛冶関連要素を重視する
  */
-int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int point = 0;
     point += calcIronmanHostilityPenalty();
 
     // 種族ボーナス
-    switch (creature_ptr->prace) {
+    switch (player.prace) {
     case PlayerRaceType::DWARF:
         point += 50; // ドワーフは大幅ボーナス
         break;
@@ -70,7 +71,7 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // 職業ボーナス
-    switch (creature_ptr->pclass) {
+    switch (player.pclass) {
     case PlayerClassType::SMITH:
         point += 35; // 鍛冶師は高評価
         break;
@@ -92,27 +93,27 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // ステータスボーナス
-    point += (creature_ptr->stat_index[A_STR] - 10) * 2; // 筋力重視
-    point += (creature_ptr->stat_index[A_CON] - 10) * 2; // 耐久力重視
-    point += (creature_ptr->stat_index[A_DEX] - 10) * 1; // 器用さも評価
-    point -= (creature_ptr->stat_index[A_CHR] - 10) * 1; // 魅力はそれほど重要視しない
+    point += (player.stat_index[A_STR] - 10) * 2; // 筋力重視
+    point += (player.stat_index[A_CON] - 10) * 2; // 耐久力重視
+    point += (player.stat_index[A_DEX] - 10) * 1; // 器用さも評価
+    point -= (player.stat_index[A_CHR] - 10) * 1; // 魅力はそれほど重要視しない
 
     // 性格ボーナス
-    if (creature_ptr->ppersonality == PERSONALITY_ORDINARY) {
+    if (player.ppersonality == PERSONALITY_ORDINARY) {
         point += 10; // 普通の性格は安定感で評価
     }
-    if (creature_ptr->ppersonality == PERSONALITY_SHREWD) {
+    if (player.ppersonality == PERSONALITY_SHREWD) {
         point += 15; // 抜け目ない性格は商売上手で評価
     }
-    if (creature_ptr->ppersonality == PERSONALITY_PATIENT) {
+    if (player.ppersonality == PERSONALITY_PATIENT) {
         point += 20; // 我慢強い性格は鍛冶に向く
     }
-    if (creature_ptr->ppersonality == PERSONALITY_MIGHTY) {
+    if (player.ppersonality == PERSONALITY_MIGHTY) {
         point += 15; // 豪快な性格も評価
     }
 
     // レベルボーナス
-    point += creature_ptr->level / 3;
+    point += player.level / 3;
 
     // ニーベルング族のメンバーを殺害した場合の減点
     const auto &monrace_list = MonraceList::get_instance();
@@ -143,7 +144,7 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
 void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     /*
-    auto impression = this->calcImpressionPoint(&player_ptr);
+    auto impression = this->calcImpressionPoint(player_ptr);
     if (impression >= -50) {
         // 軽微な制裁：工房の煙で視界を妨害
         msg_print("地下深くから黒い煙が立ち上り、あなたの視界を曇らせた！");

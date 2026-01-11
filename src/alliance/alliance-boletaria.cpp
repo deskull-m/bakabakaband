@@ -12,13 +12,14 @@
  * @param creature_ptr プレイヤーへの参照ポインタ
  * @return 印象値
  */
-int AllianceBoletaria::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceBoletaria::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int bias = 10;
     int level = 22;
 
-    int base_stat = (creature_ptr->stat_max[A_STR] + creature_ptr->stat_max[A_CON]) / 2;
-    int impression = base_stat + bias + creature_ptr->level / level;
+    int base_stat = (player.stat_max[A_STR] + player.stat_max[A_CON]) / 2;
+    int impression = base_stat + bias + player.level / level;
 
     if (impression < 1) {
         impression = 1;

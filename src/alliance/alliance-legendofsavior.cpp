@@ -15,7 +15,7 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceLegendOfSavior::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceLegendOfSavior::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     auto impression = 0;
     if (MonraceList::get_instance().get_monrace(MonraceId::MISUMI).mob_num == 0) {
@@ -35,7 +35,7 @@ void AllianceLegendOfSavior::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -100) {
         return;
     }

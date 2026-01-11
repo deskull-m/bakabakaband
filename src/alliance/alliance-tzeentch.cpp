@@ -14,28 +14,29 @@
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceTzeentch::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceTzeentch::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
     // ティーンチは知識と魔法の力を重視
-    impression += Alliance::calcPlayerPower(*creature_ptr, 2, 35);
+    impression += Alliance::calcPlayerPower(creature, 2, 35);
 
     // 知力と魔法能力による追加評価
-    impression += (creature_ptr->stat_use[A_INT] - 10) * 4;
-    impression += (creature_ptr->stat_use[A_WIS] - 10) * 2;
+    impression += (player.stat_use[A_INT] - 10) * 4;
+    impression += (player.stat_use[A_WIS] - 10) * 2;
 
     /*
     // 魔法使用による大幅な好感度向上
-    if (creature_ptr->realm1 != REALM_NONE || creature_ptr->realm2 != REALM_NONE) {
+    if (player.realm1 != REALM_NONE || player.realm2 != REALM_NONE) {
         impression += 100;
     }
 
     // 特に混沌魔法やソーサリーを好む
-    if (creature_ptr->realm1 == REALM_CHAOS || creature_ptr->realm2 == REALM_CHAOS) {
+    if (player.realm1 == REALM_CHAOS || player.realm2 == REALM_CHAOS) {
         impression += 150;
     }
-    if (creature_ptr->realm1 == REALM_SORCERY || creature_ptr->realm2 == REALM_SORCERY) {
+    if (player.realm1 == REALM_SORCERY || player.realm2 == REALM_SORCERY) {
         impression += 100;
     }
     */
@@ -72,7 +73,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -60) {
         return;
     }

@@ -9,11 +9,11 @@
  * @return 印象ポイント
  * @details 宇宙の帝王として高い戦闘力を求める
  */
-int AllianceFriezaClan::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceFriezaClan::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     // 宇宙の帝王として、高レベルの強者を重視
-    impression += Alliance::calcPlayerPower(*creature_ptr, 25, 30);
+    impression += Alliance::calcPlayerPower(creature, 25, 30);
     impression += calcIronmanHostilityPenalty();
 
     return impression;
