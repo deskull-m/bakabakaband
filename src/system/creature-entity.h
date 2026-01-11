@@ -440,6 +440,9 @@ public:
     BIT_FLAGS see_nocto{}; /* Noctovision */
     bool invoking_midnight_curse{};
 
+    // インシデント記録（ツリー構造）
+    std::map<std::string, int32_t> incident_tree{}; /*!< ツリー構造ID（例: "root/attack/critical"）で記録するインシデントカウント */
+
     // 死亡情報
     std::string died_from{}; /*!< 何によって殺されたか / What killed the creature */
     MonraceId killer_monrace_id{}; /*!< 死因となったモンスターのID / MonraceId of the killer */
@@ -455,6 +458,13 @@ public:
      * @return 時限効果管理オブジェクトへの共有ポインタ
      */
     std::shared_ptr<TimedEffects> effects() const;
+
+    /*!
+     * @brief ツリー構造インシデント数加算
+     * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）
+     * @param num 加算量
+     */
+    void plus_incident_tree(const std::string &incident_id, int num);
 
 protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */

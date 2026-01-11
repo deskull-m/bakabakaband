@@ -10,13 +10,13 @@
  * @param creature_ptr プレイヤーへの参照ポインタ
  * @return 印象値
  */
-int AllianceAnorLondo::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceAnorLondo::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int bias = 12;
     int level = 25;
 
-    int base_stat = (creature_ptr->stat_max[A_INT] + creature_ptr->stat_max[A_CHR]) / 2;
-    int impression = base_stat + bias + creature_ptr->level / level;
+    int base_stat = (creature.stat_max[A_INT] + creature.stat_max[A_CHR]) / 2;
+    int impression = base_stat + bias + creature.level / level;
     impression += calcIronmanHostilityPenalty();
 
     // 最低値保証

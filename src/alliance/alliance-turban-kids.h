@@ -6,7 +6,7 @@ public:
     using Alliance::Alliance;
     AllianceTurbanKids() = delete;
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
+    int calcImpressionPoint(const CreatureEntity &creature) const override;
     void panishment(CreatureEntity &creature) override;
     virtual ~AllianceTurbanKids() = default;
 };

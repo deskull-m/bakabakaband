@@ -5,7 +5,7 @@ public:
     using Alliance::Alliance;
     AllianceTophamHatt() = delete;
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラsグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
+    int calcImpressionPoint(const CreatureEntity &creature) const override;
     bool isAnnihilated() override;
     virtual ~AllianceTophamHatt() = default;
 };

@@ -8,7 +8,7 @@
 /**
  * @note ターバンのガキ共は印象値の正負を一切持たない。
  */
-int AllianceTurbanKids::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceTurbanKids::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     return 0;
 }

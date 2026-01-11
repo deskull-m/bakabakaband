@@ -11,10 +11,10 @@
  * @param creature_ptr プレイヤー情報
  * @return 印象ポイント
  */
-int AllianceFeanorNoldor::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceFeanorNoldor::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 19, 26);
+    impression += Alliance::calcPlayerPower(creature, 19, 26);
     impression += calcIronmanHostilityPenalty();
 
     return impression;

@@ -35,7 +35,7 @@ void do_cmd_knowledge_alliance(PlayerType *player_ptr, bool detail)
         st << a.second->calcCurrentPower();
 
         if (detail) {
-            fprintf(fff, _("%-30s/ あなたへの印象値: %+5d \n", "%-30s/ Impression to you: %+5d \n"), a.second->name.c_str(), a.second->calcImpressionPoint(player_ptr));
+            fprintf(fff, _("%-30s/ あなたへの印象値: %+5d \n", "%-30s/ Impression to you: %+5d \n"), a.second->name.c_str(), a.second->calcImpressionPoint(*player_ptr));
             fprintf(fff, _("  勢力指数: %s \n", "  Power Value: %s \n"), st.str().c_str());
             fprintf(fff, _("  (%s) \n", "  (%s) \n"), (a.second->isAnnihilated() ? _("壊滅", "Annihilated") : _("健在", "Alive")));
 
@@ -69,7 +69,7 @@ void do_cmd_knowledge_alliance(PlayerType *player_ptr, bool detail)
             }
             fprintf(fff, "\n\n");
         } else {
-            fprintf(fff, "%s %-30s %+6d %12s\n", (a.second->isAnnihilated() ? _("壊滅", "Annihilated") : _("健在", "Alive")), a.second->name.c_str(), a.second->calcImpressionPoint(player_ptr), st.str().c_str());
+            fprintf(fff, "%s %-30s %+6d %12s\n", (a.second->isAnnihilated() ? _("壊滅", "Annihilated") : _("健在", "Alive")), a.second->name.c_str(), a.second->calcImpressionPoint(*player_ptr), st.str().c_str());
         }
     }
 

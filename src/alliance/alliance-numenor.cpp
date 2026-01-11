@@ -3,12 +3,12 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
-int AllianceNumenor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceNumenor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 20);
+    impression += Alliance::calcPlayerPower(creature, 10, 20);
 
     // ヌメノール・アライアンスに属するモンスターの撃破による印象値減少
     const auto &monrace_list = MonraceList::get_instance();

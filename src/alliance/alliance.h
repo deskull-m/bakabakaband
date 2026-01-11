@@ -107,7 +107,7 @@ public:
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
     virtual bool isFriendly(PlayerType *creature_ptr) const;
-    virtual int calcImpressionPoint(PlayerType *creature_ptr) const = 0;
+    virtual int calcImpressionPoint(const CreatureEntity &creature) const = 0;
     virtual ~Alliance() = default;
     int64_t AnnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
     virtual void panishment(CreatureEntity &creature);
@@ -136,7 +136,7 @@ public:
     }
 
 protected:
-    static int calcPlayerPower(PlayerType const &player_ptr, const int bias, const int base_level);
+    static int calcPlayerPower(const CreatureEntity &creature, const int bias, const int base_level);
     static int calcIronmanHostilityPenalty();
 };
 

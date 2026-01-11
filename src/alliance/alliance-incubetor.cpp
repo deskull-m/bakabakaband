@@ -8,12 +8,12 @@
  * @return 印象ポイント
  * @details 魔法少女や契約に関連した特殊な評価基準
  */
-int AllianceIncubetor::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceIncubetor::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
     // 魔法少女的な存在として、魔力や知力を重視
-    impression += Alliance::calcPlayerPower(*creature_ptr, 12, 15);
+    impression += Alliance::calcPlayerPower(creature, 12, 15);
     return impression;
 }
 

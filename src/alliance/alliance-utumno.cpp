@@ -9,12 +9,12 @@ AllianceUtumno::AllianceUtumno(AllianceType id, std::string tag, std::string nam
 {
 }
 
-int AllianceUtumno::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceUtumno::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 30);
+    impression += Alliance::calcPlayerPower(creature, 10, 30);
     return impression;
 }
 

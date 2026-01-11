@@ -15,10 +15,10 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceJural::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceJural::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 2, 40);
+    impression += Alliance::calcPlayerPower(creature, 2, 40);
     impression += calcIronmanHostilityPenalty();
 
     impression -= MonraceList::get_instance().get_monrace(MonraceId::ALIEN_JURAL).r_akills * 10;
@@ -42,7 +42,7 @@ void AllianceJural::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -40) {
         return;
     }

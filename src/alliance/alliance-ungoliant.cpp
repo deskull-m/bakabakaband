@@ -9,12 +9,12 @@ AllianceUngoliant::AllianceUngoliant(AllianceType id, std::string tag, std::stri
 {
 }
 
-int AllianceUngoliant::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceUngoliant::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 8, 30);
+    impression += Alliance::calcPlayerPower(creature, 8, 30);
 
     // ウンゴリアント一族の指導者を殺害した場合の大幅減点
     const auto &monrace_list = MonraceList::get_instance();

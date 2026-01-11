@@ -9,7 +9,7 @@
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();

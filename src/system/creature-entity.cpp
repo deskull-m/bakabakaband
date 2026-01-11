@@ -52,3 +52,16 @@ Pos2D CreatureEntity::get_neighbor(const Direction &dir) const
 {
     return this->get_position() + dir.vec();
 }
+
+/*!
+ * @brief ツリー構造インシデント数加算
+ * @param incident_id 階層構造のインシデントID（例: "root/attack/critical"）
+ * @param num 加算量
+ */
+void CreatureEntity::plus_incident_tree(const std::string &incident_id, int num)
+{
+    if (this->incident_tree.count(incident_id) == 0) {
+        this->incident_tree[incident_id] = 0;
+    }
+    this->incident_tree[incident_id] += num;
+}

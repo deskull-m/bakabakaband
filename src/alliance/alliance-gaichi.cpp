@@ -4,10 +4,10 @@
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
-int AllianceGaichi::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceGaichi::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 30, 4);
+    impression += Alliance::calcPlayerPower(creature, 30, 4);
     impression += calcIronmanHostilityPenalty();
     impression -= MonraceList::get_instance().get_monrace(MonraceId::BIO_CORE).r_pkills * 1500;
     impression -= MonraceList::get_instance().get_monrace(MonraceId::GAICHI_MOA).r_pkills * 1200;

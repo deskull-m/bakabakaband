@@ -9,7 +9,7 @@
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceNanman::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceNanman::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     // TODO: 南蛮の価値観に基づく印象ポイント計算を実装
     return 0;

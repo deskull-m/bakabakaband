@@ -4,7 +4,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
 
-int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceDokachans::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     auto impression = 0;
     impression += calcIronmanHostilityPenalty();

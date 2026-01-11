@@ -3,12 +3,12 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
-int AllianceSilvanElf::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceSilvanElf::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 12, 25);
+    impression += Alliance::calcPlayerPower(creature, 12, 25);
 
     // シルヴァンエルフの指導者を殺害した場合の大幅減点
     const auto &monrace_list = MonraceList::get_instance();
@@ -28,7 +28,7 @@ void AllianceSilvanElf::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -40) {
         return;
     }

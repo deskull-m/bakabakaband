@@ -10,9 +10,9 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceTophamHatt::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceTophamHatt::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    auto impression = Alliance::calcPlayerPower(*creature_ptr, 10, 5);
+    auto impression = Alliance::calcPlayerPower(creature, 10, 5);
 
     const auto &monraces = MonraceList::get_instance();
 

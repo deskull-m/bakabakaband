@@ -26,12 +26,12 @@ AllianceNantoOrthodox::AllianceNantoOrthodox(AllianceType id, std::string tag, s
  * @param creature_ptr プレイヤーへの参照ポインタ
  * @return 印象度
  */
-int AllianceNantoOrthodox::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceNantoOrthodox::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 20);
+    impression += Alliance::calcPlayerPower(creature, 15, 20);
     return impression;
 }
 

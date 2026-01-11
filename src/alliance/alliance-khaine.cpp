@@ -9,14 +9,15 @@
  * @param creature_ptr プレイヤーへの参照ポインタ
  * @return 印象値
  */
-int AllianceKhaine::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceKhaine::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     // bias = 15, level = 30 (Khaineは戦闘と殺戮の神なので、攻撃的な傾向)
     int bias = 15;
     int level = 30;
 
     // STRベースでパトロンの傾向を反映した印象値計算
-    int impression = creature_ptr->stat_max[A_STR] + bias + creature_ptr->level / level;
+    int impression = player.stat_max[A_STR] + bias + player.level / level;
     if (impression < 1) {
         impression = 1;
     }

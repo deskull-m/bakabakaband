@@ -14,19 +14,20 @@
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceSlaanesh::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
 {
+    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
     // プレイヤーの魅力と魔法力を評価（スラーネッシュは快楽と魔法を重視）
-    impression += Alliance::calcPlayerPower(*creature_ptr, 2, 30);
+    impression += Alliance::calcPlayerPower(creature, 2, 30);
 
     // 魅力による追加ボーナス
-    impression += (creature_ptr->stat_use[A_CHR] - 10) * 5;
+    impression += (player.stat_use[A_CHR] - 10) * 5;
 
     // 魔法使用による好感度向上（コーンとは逆）
-    // if (creature_ptr->realm1 != REALM_NONE || creature_ptr->realm2 != REALM_NONE) {
+    // if (player.realm1 != REALM_NONE || player.realm2 != REALM_NONE) {
     //     impression += 50;
     // }
 
@@ -61,7 +62,7 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -40) {
         return;
     }

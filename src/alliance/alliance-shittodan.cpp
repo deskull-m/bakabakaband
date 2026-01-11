@@ -15,7 +15,7 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceShittoDan::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceShittoDan::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     return 0;
 }
@@ -31,7 +31,7 @@ void AllianceShittoDan::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -50) {
         return;
     }

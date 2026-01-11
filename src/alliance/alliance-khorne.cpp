@@ -14,12 +14,12 @@
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceKhorne::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceKhorne::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
     // プレイヤーの戦闘力を評価（コーンは戦闘を重視）
-    impression += Alliance::calcPlayerPower(*creature_ptr, 3, 50);
+    impression += Alliance::calcPlayerPower(creature, 3, 50);
 
     /*
 
@@ -39,7 +39,7 @@ int AllianceKhorne::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // 魔法使用による減点（コーンは魔法を嫌う）
-    if (creature_ptr->realm1 != REALM_NONE || creature_ptr->realm2 != REALM_NONE) {
+    if (player.realm1 != REALM_NONE || player.realm2 != REALM_NONE) {
         impression -= 100;
     }
     */
@@ -58,7 +58,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
     if (!player_ptr) {
         return;
     }
-    auto impression = calcImpressionPoint(player_ptr);
+    auto impression = calcImpressionPoint(*player_ptr);
     if (isAnnihilated() || impression > -60) {
         return;
     }
