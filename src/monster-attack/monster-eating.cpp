@@ -83,7 +83,7 @@ bool check_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
         return false;
     }
 
-    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
         return false;
     }
 
@@ -303,7 +303,7 @@ void process_drain_life(MonsterAttackPlayer *monap_ptr, const bool resist_drain)
 
 void process_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (check_multishadow(player_ptr)) {
+    if (check_multishadow(*player_ptr)) {
         msg_print(_("攻撃は幻影に命中し、あなたには届かなかった。", "The attack hits Shadow, but you are unharmed!"));
         return;
     }

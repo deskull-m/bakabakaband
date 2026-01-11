@@ -249,7 +249,7 @@ static bool hit_trap_dart(PlayerType *player_ptr)
     if (check_hit_from_monster_to_player(player_ptr, 125)) {
         msg_print(_("小さなダーツが飛んできて刺さった！", "A small dart hits you!"));
         take_hit(player_ptr, DAMAGE_ATTACK, Dice::roll(1, 4), _("ダーツの罠", "a dart trap"));
-        if (!check_multishadow(player_ptr)) {
+        if (!check_multishadow(*player_ptr)) {
             hit = true;
         }
     } else {

@@ -50,7 +50,7 @@ static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         return;
     }
 
-    if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) && !check_multishadow(player_ptr) && BadStatusSetter(player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 
@@ -70,7 +70,7 @@ static void calc_blow_disenchant(PlayerType *player_ptr, MonsterAttackPlayer *mo
         return;
     }
 
-    if (!has_resist_disen(player_ptr) && !check_multishadow(player_ptr) && apply_disenchant(player_ptr, 0)) {
+    if (!has_resist_disen(player_ptr) && !check_multishadow(*player_ptr) && apply_disenchant(player_ptr, 0)) {
         update_creature(player_ptr);
         monap_ptr->obvious = true;
     }
@@ -107,7 +107,7 @@ static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *mona
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 1000;
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -165,7 +165,7 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
         return;
     }
 
-    if (!has_resist_conf(player_ptr) && !check_multishadow(player_ptr) && BadStatusSetter(player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+    if (!has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }
 
@@ -232,7 +232,7 @@ static void calc_blow_drain_exp(PlayerType *player_ptr, MonsterAttackPlayer *mon
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 1000;
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -272,7 +272,7 @@ static void calc_blow_drain_life(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -313,7 +313,7 @@ static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap
     }
 
     monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+    if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -346,7 +346,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->damage = 0;
         break;
     case RaceBlowEffectType::SUPERHURT: { /* AC軽減あり / Player armor reduces total damage */
-        if (((randint1(monap_ptr->rlev * 2 + 300) > (monap_ptr->ac + 200)) || one_in_(13)) && !check_multishadow(player_ptr)) {
+        if (((randint1(monap_ptr->rlev * 2 + 300) > (monap_ptr->ac + 200)) || one_in_(13)) && !check_multishadow(*player_ptr)) {
             monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
             msg_print(_("痛恨の一撃！", "It was a critical hit!"));
             monap_ptr->damage = std::max(monap_ptr->damage, monap_ptr->damage * 2);
@@ -372,7 +372,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     case RaceBlowEffectType::EAT_GOLD:
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (monap_ptr->m_ptr->is_confused() || player_ptr->is_dead() || check_multishadow(player_ptr)) {
+        if (monap_ptr->m_ptr->is_confused() || player_ptr->is_dead() || check_multishadow(*player_ptr)) {
             break;
         }
 
@@ -391,7 +391,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
 
     case RaceBlowEffectType::EAT_FOOD: {
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+        if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
             break;
         }
 
@@ -401,7 +401,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
     case RaceBlowEffectType::EAT_LITE: {
         monap_ptr->o_ptr = player_ptr->inventory[INVEN_LITE].get();
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+        if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
             break;
         }
 
@@ -551,7 +551,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         if (randint1(5) < 3) {
             monap_ptr->obvious = true;
             if (!has_chaos_resist) {
-                if (player_ptr->is_dead() || check_multishadow(player_ptr)) {
+                if (player_ptr->is_dead() || check_multishadow(*player_ptr)) {
                     return;
                 }
 
@@ -579,7 +579,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             }
             monap_ptr->obvious = true;
 
-            if (!has_chaos_resist && !has_resist_conf(player_ptr) && !check_multishadow(player_ptr) && BadStatusSetter(player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+            if (!has_chaos_resist && !has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
                 monap_ptr->obvious = true;
             }
             break;

@@ -28,7 +28,7 @@
 void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int perc)
 {
     int j, amt;
-    if (check_multishadow(player_ptr) || player_ptr->current_floor_ptr->inside_arena) {
+    if (check_multishadow(*player_ptr) || player_ptr->current_floor_ptr->inside_arena) {
         return;
     }
 

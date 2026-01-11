@@ -54,9 +54,9 @@
 /*
  * @brief Multishadow effects is determined by turn
  */
-bool check_multishadow(PlayerType *player_ptr)
+bool check_multishadow(const CreatureEntity &creature)
 {
-    return (player_ptr->multishadow != 0) && ((AngbandWorld::get_instance().game_turn & 1) != 0);
+    return (creature.multishadow != 0) && ((AngbandWorld::get_instance().game_turn & 1) != 0);
 }
 
 /*!

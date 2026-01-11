@@ -153,7 +153,7 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
         return 0;
     }
 
-    if (aura || !check_multishadow(player_ptr)) {
+    if (aura || !check_multishadow(*player_ptr)) {
         if ((!(double_resist || has_resist_acid(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_CHR);
         }
@@ -193,7 +193,7 @@ int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
         return 0;
     }
 
-    if (aura || !check_multishadow(player_ptr)) {
+    if (aura || !check_multishadow(*player_ptr)) {
         if ((!(double_resist || has_resist_elec(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_DEX);
         }
@@ -229,7 +229,7 @@ int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     }
 
     dam = dam * calc_fire_damage_rate(player_ptr) / 100;
-    if (aura || !check_multishadow(player_ptr)) {
+    if (aura || !check_multishadow(*player_ptr)) {
         if ((!(double_resist || has_resist_fire(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_STR);
         }
@@ -263,7 +263,7 @@ int cold_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     }
 
     dam = dam * calc_cold_damage_rate(player_ptr) / 100;
-    if (aura || !check_multishadow(player_ptr)) {
+    if (aura || !check_multishadow(*player_ptr)) {
         if ((!(double_resist || has_resist_cold(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_STR);
         }
@@ -331,7 +331,7 @@ int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_vi
             }
         }
 
-        if (check_multishadow(player_ptr)) {
+        if (check_multishadow(*player_ptr)) {
             if (damage_type == DAMAGE_FORCE) {
                 msg_print(_("幻影もろとも体が切り裂かれた！", "The attack hits Shadow together with you!"));
             } else if (damage_type == DAMAGE_ATTACK) {
