@@ -102,7 +102,7 @@ static bool reflects_psi_with_currupted_mind(PlayerType *player_ptr, EffectMonst
  */
 static void effect_monster_psi_reflect_extra_effect(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (!one_in_(4) || check_multishadow(player_ptr)) {
+    if (!one_in_(4) || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -151,7 +151,7 @@ static void effect_monster_psi_resist(PlayerType *player_ptr, EffectMonster *em_
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < player_ptr->skill_sav) && !check_multishadow(player_ptr)) {
+    if ((randint0(100 + em_ptr->r_ptr->level / 2) < player_ptr->skill_sav) && !check_multishadow(*player_ptr)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;
@@ -244,14 +244,14 @@ static void effect_monster_psi_drain_resist(PlayerType *player_ptr, EffectMonste
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < player_ptr->skill_sav) && !check_multishadow(player_ptr)) {
+    if ((randint0(100 + em_ptr->r_ptr->level / 2) < player_ptr->skill_sav) && !check_multishadow(*player_ptr)) {
         msg_print(_("あなたは効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;
     }
 
     angband_strcpy(em_ptr->killer, monster_desc(player_ptr, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
-    if (check_multishadow(player_ptr)) {
+    if (check_multishadow(*player_ptr)) {
         take_hit(player_ptr, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
         em_ptr->dam = 0;
         return;

@@ -17,7 +17,7 @@
 
 void effect_player_drain_mana(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 {
-    if (check_multishadow(player_ptr)) {
+    if (check_multishadow(*player_ptr)) {
         msg_print(_("攻撃は幻影に命中し、あなたには届かなかった。", "The attack hits Shadow, but you are unharmed!"));
         ep_ptr->dam = 0;
         return;
@@ -74,12 +74,12 @@ void effect_player_drain_mana(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
 void effect_player_mind_blast(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, player_ptr->skill_sav)) && !check_multishadow(player_ptr)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, player_ptr->skill_sav)) && !check_multishadow(*player_ptr)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         return;
     }
 
-    if (check_multishadow(player_ptr)) {
+    if (check_multishadow(*player_ptr)) {
         ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
         return;
     }
@@ -106,12 +106,12 @@ void effect_player_mind_blast(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
 void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, player_ptr->skill_sav)) && !check_multishadow(player_ptr)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, player_ptr->skill_sav)) && !check_multishadow(*player_ptr)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         return;
     }
 
-    if (!check_multishadow(player_ptr)) {
+    if (!check_multishadow(*player_ptr)) {
         msg_print(_("霊的エネルギーで精神が攻撃された。", "Your mind is blasted by psionic energy."));
         player_ptr->csp -= 100;
         if (player_ptr->csp < 0) {
@@ -123,7 +123,7 @@ void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
-    if (check_multishadow(player_ptr)) {
+    if (check_multishadow(*player_ptr)) {
         return;
     }
 
