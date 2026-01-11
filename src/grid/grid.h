@@ -71,7 +71,7 @@ enum class TerrainTag;
 void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, TerrainTag tag);
 void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terrain_id);
 tl::optional<Pos2D> new_player_spot(PlayerType *player_ptr);
-bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode);
+bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mode);
 void update_local_illumination(PlayerType *player_ptr, const Pos2D &pos);
 bool no_lite(PlayerType *player_ptr);
 void print_rel(PlayerType *player_ptr, const DisplaySymbol &symbol, const Pos2D &pos);

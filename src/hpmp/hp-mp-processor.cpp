@@ -383,12 +383,12 @@ void process_player_hp_mp(PlayerType *player_ptr)
         auto should_damage = !is_invuln(player_ptr);
         should_damage &= player_ptr->wraith_form == 0;
         should_damage &= player_ptr->tim_pass_wall == 0;
-        should_damage &= (player_ptr->hp > (player_ptr->level / 5)) || !has_pass_wall(player_ptr);
+        should_damage &= (player_ptr->hp > (player_ptr->level / 5)) || !has_pass_wall(*player_ptr);
         if (should_damage) {
             concptr dam_desc;
             cave_no_regen = true;
 
-            if (has_pass_wall(player_ptr)) {
+            if (has_pass_wall(*player_ptr)) {
                 msg_print(_("体の分子が分解した気がする！", "Your molecules feel disrupted!"));
                 dam_desc = _("密度", "density");
             } else {

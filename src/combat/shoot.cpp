@@ -904,7 +904,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                                 }
 
                                 /* Stopped by walls/doors */
-                                if (!player_can_enter(player_ptr, floor.get_grid(pos_to).feat, 0)) {
+                                if (!player_can_enter(*player_ptr, floor.get_grid(pos_to).feat, 0)) {
                                     break;
                                 }
 

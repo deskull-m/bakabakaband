@@ -147,7 +147,7 @@ bool rush_attack(PlayerType *player_ptr, bool *mdeath)
     auto moved = false;
     for (const auto &pos : path_g) {
         const auto &grid_new = floor.get_grid(pos);
-        if (floor.is_empty_at(pos) && (pos != p_pos) && player_can_enter(player_ptr, grid_new.feat, 0)) {
+        if (floor.is_empty_at(pos) && (pos != p_pos) && player_can_enter(*player_ptr, grid_new.feat, 0)) {
             p_pos_new = pos;
             continue;
         }

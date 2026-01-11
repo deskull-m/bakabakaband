@@ -521,16 +521,17 @@ bool has_kill_wall(PlayerType *player_ptr)
  * @details 騎乗状態でなければ、時限または種族特性で壁抜けできるか否か.
  * 騎乗状態ならば、そのモンスターとプレイヤーが両方壁抜けできるか否か.
  */
-bool has_pass_wall(PlayerType *player_ptr)
+bool has_pass_wall(CreatureEntity &creature)
 {
-    auto can_player_pass_wall = player_ptr->wraith_form > 0;
-    can_player_pass_wall |= player_ptr->tim_pass_wall > 0;
-    can_player_pass_wall |= CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE);
-    if (player_ptr->riding == 0) {
+    auto &player = static_cast<const PlayerType &>(creature);
+    auto can_player_pass_wall = player.wraith_form > 0;
+    can_player_pass_wall |= player.tim_pass_wall > 0;
+    can_player_pass_wall |= CreatureRace(&creature).equals(PlayerRaceType::SPECTRE);
+    if (player.riding == 0) {
         return can_player_pass_wall;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    const auto &monster = player.current_floor_ptr->m_list[player.riding];
     const auto &monrace = monster.get_monrace();
     return can_player_pass_wall && monrace.feature_flags.has(MonsterFeatureType::PASS_WALL);
 }
@@ -747,7 +748,7 @@ void check_no_flowed(PlayerType *player_ptr)
 
     player_ptr->no_flowed = false;
 
-    if (has_pass_wall(player_ptr) && !has_kill_wall(player_ptr)) {
+    if (has_pass_wall(*player_ptr) && !has_kill_wall(player_ptr)) {
         player_ptr->no_flowed = true;
         return;
     }
