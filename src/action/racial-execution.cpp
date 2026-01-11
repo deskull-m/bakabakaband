@@ -140,7 +140,7 @@ racial_level_check_result check_racial_level(PlayerType *player_ptr, rpi_type *r
         return RACIAL_CANCEL;
     }
 
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         energy.reset_player_turn();
         return RACIAL_CANCEL;
     } else if (player_ptr->hp < use_hp) {

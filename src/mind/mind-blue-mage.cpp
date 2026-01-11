@@ -30,7 +30,7 @@
  */
 bool do_cmd_cast_learned(PlayerType *player_ptr)
 {
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return false;
     }
 

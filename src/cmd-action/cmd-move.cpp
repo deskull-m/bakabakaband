@@ -429,7 +429,7 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
  */
 void do_cmd_run(PlayerType *player_ptr)
 {
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return;
     }
 

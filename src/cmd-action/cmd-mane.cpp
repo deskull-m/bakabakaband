@@ -1198,7 +1198,7 @@ bool do_cmd_mane(PlayerType *player_ptr, bool baigaesi)
     monster_power spell;
     bool cast;
 
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return false;
     }
 

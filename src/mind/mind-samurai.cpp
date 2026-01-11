@@ -374,7 +374,7 @@ bool choose_samurai_stance(PlayerType *player_ptr)
 {
     char choice;
 
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return false;
     }
 

@@ -469,7 +469,7 @@ void do_cmd_racial_power(PlayerType *player_ptr)
     }
 
     PlayerEnergy energy(player_ptr);
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         energy.reset_player_turn();
         return;
     }

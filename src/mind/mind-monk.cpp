@@ -36,7 +36,7 @@ static void set_stance(PlayerType *player_ptr, const MonkStanceType new_stance)
  */
 bool choose_monk_stance(PlayerType *player_ptr)
 {
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return false;
     }
 

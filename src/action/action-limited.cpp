@@ -44,9 +44,9 @@ bool cmd_limit_cast(PlayerType *player_ptr)
     return false;
 }
 
-bool cmd_limit_confused(PlayerType *player_ptr)
+bool cmd_limit_confused(const CreatureEntity &creature)
 {
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (creature.effects()->confusion().is_confused()) {
         msg_print(_("混乱していてできない！", "You are too confused!"));
         return true;
     }
@@ -54,9 +54,9 @@ bool cmd_limit_confused(PlayerType *player_ptr)
     return false;
 }
 
-bool cmd_limit_image(PlayerType *player_ptr)
+bool cmd_limit_image(const CreatureEntity &creature)
 {
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.effects()->hallucination().is_hallucinated()) {
         msg_print(_("幻覚が見えて集中できない！", "Your hallucinations prevent you from concentrating!"));
         return true;
     }
@@ -64,9 +64,9 @@ bool cmd_limit_image(PlayerType *player_ptr)
     return false;
 }
 
-bool cmd_limit_stun(PlayerType *player_ptr)
+bool cmd_limit_stun(const CreatureEntity &creature)
 {
-    if (player_ptr->effects()->stun().is_stunned()) {
+    if (creature.effects()->stun().is_stunned()) {
         msg_print(_("頭が朦朧としていて集中できない！", "You are too stunned!"));
         return true;
     }
@@ -74,9 +74,9 @@ bool cmd_limit_stun(PlayerType *player_ptr)
     return false;
 }
 
-bool cmd_limit_arena(PlayerType *player_ptr)
+bool cmd_limit_arena(const CreatureEntity &creature)
 {
-    if (player_ptr->current_floor_ptr->inside_arena) {
+    if (creature.current_floor_ptr->inside_arena) {
         msg_print(_("アリーナが魔法を吸収した！", "The arena absorbs all attempted magic!"));
         msg_erase();
         return true;

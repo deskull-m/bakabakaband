@@ -305,7 +305,7 @@ void do_cmd_hissatsu(PlayerType *player_ptr)
 {
     SPELL_IDX n = 0;
 
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return;
     }
     if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
@@ -367,7 +367,7 @@ void do_cmd_hissatsu(PlayerType *player_ptr)
 void do_cmd_gain_hissatsu(PlayerType *player_ptr)
 {
     PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
-    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
         return;
     }
 

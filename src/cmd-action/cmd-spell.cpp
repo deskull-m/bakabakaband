@@ -718,7 +718,7 @@ void do_cmd_study(PlayerType *player_ptr)
         return;
     }
 
-    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
         return;
     }
 
@@ -926,7 +926,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
         return false;
     }
 
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr)) {
         return false;
     }
 

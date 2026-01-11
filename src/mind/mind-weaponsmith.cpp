@@ -546,7 +546,7 @@ void do_cmd_kaji(PlayerType *player_ptr, bool only_browse)
 {
     COMMAND_CODE menu_line = (use_menu ? 1 : 0);
     if (!only_browse) {
-        if (cmd_limit_confused(player_ptr)) {
+        if (cmd_limit_confused(*player_ptr)) {
             return;
         }
 
@@ -554,7 +554,7 @@ void do_cmd_kaji(PlayerType *player_ptr, bool only_browse)
             return;
         }
 
-        if (cmd_limit_image(player_ptr)) {
+        if (cmd_limit_image(*player_ptr)) {
             return;
         }
     }

@@ -222,7 +222,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         player_ptr->pet_extra_flags &= ~(PF_TWO_HANDS);
         player_ptr->riding_ryoute = player_ptr->old_riding_ryoute = false;
     } else {
-        if (cmd_limit_confused(player_ptr)) {
+        if (cmd_limit_confused(*player_ptr)) {
             return false;
         }
 
