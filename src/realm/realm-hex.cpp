@@ -203,7 +203,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_PATIENCE: {
-        SpellHex spell_hex(player_ptr);
+        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
         power = std::min(200, spell_hex.get_revenge_power() * 2);
         if (info) {
             return info_damage(power);
@@ -270,7 +270,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_INHALE: {
-        SpellHex spell_hex(player_ptr);
+        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
         if (cast) {
             spell_hex.set_casting_flag(HEX_INHALE);
             do_cmd_quaff_potion(player_ptr);
@@ -472,7 +472,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 
             if ((!o_ptr->is_valid()) || (!o_ptr->is_cursed())) {
                 exe_spell(player_ptr, RealmType::HEX, spell, SpellProcessType::STOP);
-                SpellHex spell_hex(player_ptr);
+                SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
                 spell_hex.reset_casting_flag(spell);
                 if (!spell_hex.is_spelling_any()) {
                     set_action(player_ptr, ACTION_NONE);
@@ -551,7 +551,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             if (!flag) {
                 const auto &spell_name = PlayerRealm::get_spell_name(RealmType::HEX, HEX_RESTORE);
                 msg_format(_("%sの呪文の詠唱をやめた。", "Finish casting '%s^'."), spell_name.data());
-                SpellHex spell_hex(player_ptr);
+                SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
                 spell_hex.reset_casting_flag(HEX_RESTORE);
                 if (!spell_hex.is_spelling_any()) {
                     set_action(player_ptr, ACTION_NONE);
@@ -686,7 +686,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_REVENGE: {
-        SpellHex spell_hex(player_ptr);
+        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
         power = spell_hex.get_revenge_power();
         if (info) {
             return info_damage(power);
@@ -740,7 +740,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
     }
 
     if (cast && should_continue) {
-        SpellHex spell_hex(player_ptr);
+        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
         spell_hex.set_casting_flag(spell);
         if (player_ptr->action != ACTION_SPELL) {
             set_action(player_ptr, ACTION_SPELL);

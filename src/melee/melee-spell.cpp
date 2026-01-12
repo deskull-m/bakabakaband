@@ -46,7 +46,7 @@ static bool try_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr)
 
 static bool disturb_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr)
 {
-    if (spell_is_inate(ms_ptr->thrown_spell) || !SpellHex(player_ptr).check_hex_barrier(ms_ptr->m_idx, HEX_ANTI_MAGIC)) {
+    if (spell_is_inate(ms_ptr->thrown_spell) || !SpellHex(*player_ptr).check_hex_barrier(ms_ptr->m_idx, HEX_ANTI_MAGIC)) {
         return false;
     }
 

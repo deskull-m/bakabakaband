@@ -53,9 +53,9 @@ void ObjectReadEntity::execute(bool known)
         stop_singing(this->player_ptr);
     }
 
-    SpellHex spell_hex(this->player_ptr);
+    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
     if (spell_hex.is_spelling_any() && ((this->player_ptr->level < 35) || spell_hex.is_casting_full_capacity())) {
-        (void)SpellHex(this->player_ptr).stop_all_spells();
+        (void)SpellHex(dynamic_cast<CreatureEntity &>(*this->player_ptr)).stop_all_spells();
     }
 
     auto executor = ReadExecutorFactory::create(player_ptr, o_ptr, known);

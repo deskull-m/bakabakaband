@@ -83,7 +83,7 @@ void set_action(PlayerType *player_ptr, uint8_t typ)
     }
 
     if (prev_typ == ACTION_SPELL) {
-        SpellHex spell_hex(player_ptr);
+        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
         if (spell_hex.is_spelling_any()) {
             spell_hex.stop_all_spells();
         }

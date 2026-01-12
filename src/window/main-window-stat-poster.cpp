@@ -364,7 +364,7 @@ static void add_hex_status_flags(PlayerType *player_ptr, BIT_FLAGS *bar_flags)
         return;
     }
 
-    SpellHex spell_hex(player_ptr);
+    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
     if (spell_hex.is_spelling_specific(HEX_BLESS)) {
         ADD_BAR_FLAG(BAR_BLESSED);
     }

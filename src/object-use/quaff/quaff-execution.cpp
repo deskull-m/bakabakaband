@@ -98,9 +98,9 @@ bool ObjectQuaffEntity::can_influence()
         stop_singing(this->player_ptr);
     }
 
-    SpellHex spell_hex(this->player_ptr);
+    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
     if (spell_hex.is_spelling_any() && !spell_hex.is_spelling_specific(HEX_INHALE)) {
-        (void)SpellHex(this->player_ptr).stop_all_spells();
+        (void)SpellHex(dynamic_cast<CreatureEntity &>(*this->player_ptr)).stop_all_spells();
     }
 
     return true;

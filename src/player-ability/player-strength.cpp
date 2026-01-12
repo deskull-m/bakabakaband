@@ -55,7 +55,7 @@ int16_t PlayerStrength::time_effect_bonus()
     int16_t result = 0;
 
     if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        SpellHex spell_hex(this->player_ptr);
+        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
         if (spell_hex.is_spelling_specific(HEX_XTRA_MIGHT)) {
             result += 4;
         }

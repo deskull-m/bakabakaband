@@ -36,7 +36,7 @@ void do_cmd_quaff_potion(PlayerType *player_ptr)
         return;
     }
 
-    if (!SpellHex(player_ptr).is_spelling_specific(HEX_INHALE) && cmd_limit_arena(*player_ptr)) {
+    if (!SpellHex(*player_ptr).is_spelling_specific(HEX_INHALE) && cmd_limit_arena(*player_ptr)) {
         return;
     }
 

@@ -53,7 +53,7 @@ int16_t PlayerConstitution::time_effect_bonus()
     int16_t result = 0;
 
     if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        if (SpellHex(this->player_ptr).is_spelling_specific(HEX_BUILDING)) {
+        if (SpellHex(dynamic_cast<CreatureEntity &>(*this->player_ptr)).is_spelling_specific(HEX_BUILDING)) {
             result += 4;
         }
     }

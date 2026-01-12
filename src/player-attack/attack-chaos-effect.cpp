@@ -282,7 +282,7 @@ void change_monster_stat(PlayerType *player_ptr, player_attack_type *pa_ptr, con
     auto should_confuse = any_bits(player_ptr->special_attack, ATTACK_CONFUSE);
     should_confuse |= pa_ptr->chaos_effect == CE_CONFUSION;
     should_confuse |= pa_ptr->mode == HISSATSU_CONF;
-    should_confuse |= SpellHex(player_ptr).is_spelling_specific(HEX_CONFUSION);
+    should_confuse |= SpellHex(*player_ptr).is_spelling_specific(HEX_CONFUSION);
     if (should_confuse) {
         attack_confuse(player_ptr, pa_ptr);
     }

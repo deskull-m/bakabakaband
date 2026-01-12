@@ -555,7 +555,7 @@ BIT_FLAGS has_esp_evil(PlayerType *player_ptr)
 {
     BIT_FLAGS result = common_cause_flags(player_ptr, TR_ESP_EVIL);
     if (PlayerRealm(player_ptr).is_realm_hex()) {
-        if (SpellHex(player_ptr).is_spelling_specific(HEX_DETECT_EVIL)) {
+        if (SpellHex(*player_ptr).is_spelling_specific(HEX_DETECT_EVIL)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -863,7 +863,7 @@ BIT_FLAGS has_sh_fire(PlayerType *player_ptr)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_DEMON_AURA) || player_ptr->ult_res || player_ptr->tim_sh_fire) {
+    if (SpellHex(*player_ptr).is_spelling_specific(HEX_DEMON_AURA) || player_ptr->ult_res || player_ptr->tim_sh_fire) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -878,7 +878,7 @@ BIT_FLAGS has_sh_elec(PlayerType *player_ptr)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_SHOCK_CLOAK) || player_ptr->ult_res) {
+    if (SpellHex(*player_ptr).is_spelling_specific(HEX_SHOCK_CLOAK) || player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -889,7 +889,7 @@ BIT_FLAGS has_sh_cold(PlayerType *player_ptr)
 {
     BIT_FLAGS result = common_cause_flags(player_ptr, TR_SH_COLD);
 
-    if (player_ptr->ult_res || SpellHex(player_ptr).is_spelling_specific(HEX_ICE_ARMOR)) {
+    if (player_ptr->ult_res || SpellHex(*player_ptr).is_spelling_specific(HEX_ICE_ARMOR)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1079,7 +1079,7 @@ BIT_FLAGS has_regenerate(PlayerType *player_ptr)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_DEMON_AURA) || player_ptr->ult_res || player_ptr->tim_regen) {
+    if (SpellHex(*player_ptr).is_spelling_specific(HEX_DEMON_AURA) || player_ptr->ult_res || player_ptr->tim_regen) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 

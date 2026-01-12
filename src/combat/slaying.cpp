@@ -174,7 +174,7 @@ int calc_attack_damage_with_slay(PlayerType *player_ptr, ItemEntity *o_ptr, int 
         }
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_RUNESWORD)) {
+    if (SpellHex(*player_ptr).is_spelling_specific(HEX_RUNESWORD)) {
         flags.set(TR_SLAY_GOOD);
     }
 
@@ -282,7 +282,7 @@ AttributeFlags melee_attribute(PlayerType *player_ptr, ItemEntity *o_ptr, combat
         flags.set(TR_BRAND_POIS);
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_RUNESWORD)) {
+    if (SpellHex(*player_ptr).is_spelling_specific(HEX_RUNESWORD)) {
         flags.set(TR_SLAY_GOOD);
     }
 

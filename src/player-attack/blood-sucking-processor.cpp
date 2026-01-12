@@ -31,7 +31,7 @@ void decide_blood_sucking(PlayerType *player_ptr, player_attack_type *pa_ptr)
     bool is_blood_sucker = pa_ptr->flags.has(TR_VAMPIRIC);
     is_blood_sucker |= pa_ptr->chaos_effect == CE_VAMPIRIC;
     is_blood_sucker |= pa_ptr->mode == HISSATSU_DRAIN;
-    is_blood_sucker |= SpellHex(player_ptr).is_spelling_specific(HEX_VAMP_BLADE);
+    is_blood_sucker |= SpellHex(*player_ptr).is_spelling_specific(HEX_VAMP_BLADE);
     if (!is_blood_sucker) {
         return;
     }
@@ -131,7 +131,7 @@ static void drain_result(PlayerType *player_ptr, player_attack_type *pa_ptr, boo
 
     int drain_heal = Dice::roll(2, pa_ptr->drain_result / 6);
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_VAMP_BLADE)) {
+    if (SpellHex(*player_ptr).is_spelling_specific(HEX_VAMP_BLADE)) {
         drain_heal *= 2;
     }
 

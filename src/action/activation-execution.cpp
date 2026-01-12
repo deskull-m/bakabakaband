@@ -212,8 +212,8 @@ static bool activate_whistle(PlayerType *player_ptr, ae_type *ae_ptr)
         stop_singing(player_ptr);
     }
 
-    if (SpellHex(player_ptr).is_spelling_any()) {
-        (void)SpellHex(player_ptr).stop_all_spells();
+    if (SpellHex(*player_ptr).is_spelling_any()) {
+        (void)SpellHex(*player_ptr).stop_all_spells();
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;

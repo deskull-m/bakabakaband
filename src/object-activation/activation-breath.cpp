@@ -40,8 +40,8 @@ bool activate_dragon_breath(PlayerType *player_ptr, ItemEntity *o_ptr)
         stop_singing(player_ptr);
     }
 
-    if (SpellHex(player_ptr).is_spelling_any()) {
-        (void)SpellHex(player_ptr).stop_all_spells();
+    if (SpellHex(*player_ptr).is_spelling_any()) {
+        (void)SpellHex(*player_ptr).stop_all_spells();
     }
 
     const auto &breath = rand_choice(breaths);
