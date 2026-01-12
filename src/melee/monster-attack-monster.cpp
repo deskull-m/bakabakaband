@@ -258,7 +258,7 @@ static void process_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 
 static void thief_runaway_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 {
-    if (SpellHex(player_ptr).check_hex_barrier(mam_ptr->m_idx, HEX_ANTI_TELE)) {
+    if (SpellHex(*player_ptr).check_hex_barrier(mam_ptr->m_idx, HEX_ANTI_TELE)) {
         if (mam_ptr->see_m) {
             msg_print(_("泥棒は笑って逃げ...ようとしたがバリアに防がれた。", "The thief flees laughing...? But a magic barrier obstructs it."));
         } else if (mam_ptr->known) {

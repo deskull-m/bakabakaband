@@ -887,7 +887,7 @@ bool change_wild_mode(PlayerType *player_ptr, bool encount)
     energy.set_player_turn_energy(1000);
     player_ptr->oldpx = player_ptr->x;
     player_ptr->oldpy = player_ptr->y;
-    SpellHex spell_hex(player_ptr);
+    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
     if (spell_hex.is_spelling_any()) {
         spell_hex.stop_all_spells();
     }

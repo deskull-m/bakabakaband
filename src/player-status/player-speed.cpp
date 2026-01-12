@@ -199,7 +199,7 @@ int16_t PlayerSpeed::time_effect_bonus()
     }
 
     if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        if (SpellHex(this->player_ptr).is_spelling_specific(HEX_SHOCK_CLOAK)) {
+        if (SpellHex(dynamic_cast<CreatureEntity &>(*this->player_ptr)).is_spelling_specific(HEX_SHOCK_CLOAK)) {
             bonus += 3;
         }
     }

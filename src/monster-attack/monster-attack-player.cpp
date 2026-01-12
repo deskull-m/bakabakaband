@@ -535,7 +535,7 @@ void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
 
 void MonsterAttackPlayer::postprocess_monster_blows()
 {
-    SpellHex spell_hex(this->player_ptr);
+    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
     spell_hex.store_vengeful_damage(this->get_damage);
     spell_hex.eyes_on_eyes(this->m_idx, this->get_damage);
     musou_counterattack(this->player_ptr, this);

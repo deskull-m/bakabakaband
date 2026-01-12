@@ -931,12 +931,12 @@ bool do_cmd_cast(PlayerType *player_ptr)
     }
 
     if (pr.is_realm_hex()) {
-        if (SpellHex(player_ptr).is_casting_full_capacity()) {
+        if (SpellHex(*player_ptr).is_casting_full_capacity()) {
             auto flag = false;
             msg_print(_("これ以上新しい呪文を詠唱することはできない。", "Can not cast more spells."));
             flush();
             if (player_ptr->level >= 35) {
-                flag = SpellHex(player_ptr).stop_spells_with_selection();
+                flag = SpellHex(*player_ptr).stop_spells_with_selection();
             }
 
             if (!flag) {
@@ -1001,7 +1001,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
 #endif
 
     if (use_realm == RealmType::HEX) {
-        if (SpellHex(player_ptr).is_spelling_specific(spell_id)) {
+        if (SpellHex(*player_ptr).is_spelling_specific(spell_id)) {
             msg_print(_("その呪文はすでに詠唱中だ。", "You are already casting it."));
             return false;
         }

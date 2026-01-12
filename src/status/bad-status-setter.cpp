@@ -146,7 +146,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
             /* Sniper */
             reset_concentration(this->player_ptr, true);
 
-            SpellHex spell_hex(this->player_ptr);
+            SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
             if (spell_hex.is_spelling_any()) {
                 (void)spell_hex.stop_all_spells();
             }
@@ -298,7 +298,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
             msg_print(_("体が麻痺してしまった！", "You are paralyzed!"));
             reset_concentration(this->player_ptr, true);
 
-            SpellHex spell_hex(this->player_ptr);
+            SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
             if (spell_hex.is_spelling_any()) {
                 (void)spell_hex.stop_all_spells();
             }
@@ -559,7 +559,7 @@ void BadStatusSetter::process_stun_status(const PlayerStunRank new_rank, const s
 
     reset_concentration(this->player_ptr, true);
 
-    SpellHex spell_hex(this->player_ptr);
+    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
     if (spell_hex.is_spelling_any()) {
         (void)spell_hex.stop_all_spells();
     }

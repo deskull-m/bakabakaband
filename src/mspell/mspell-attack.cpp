@@ -195,7 +195,7 @@ static bool check_mspell_unexploded(PlayerType *player_ptr, msa_type *msa_ptr)
         return true;
     }
 
-    if (!spell_is_inate(msa_ptr->thrown_spell) && SpellHex(player_ptr).check_hex_barrier(msa_ptr->m_idx, HEX_ANTI_MAGIC)) {
+    if (!spell_is_inate(msa_ptr->thrown_spell) && SpellHex(*player_ptr).check_hex_barrier(msa_ptr->m_idx, HEX_ANTI_MAGIC)) {
         msg_format(_("反魔法バリアが%s^の呪文をかき消した。", "Anti magic barrier cancels the spell which %s^ casts."), msa_ptr->m_name.data());
         return true;
     }

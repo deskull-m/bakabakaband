@@ -92,7 +92,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         return sword_dancing(player_ptr);
     case PlayerClassType::HIGH_MAGE:
         if (PlayerRealm(player_ptr).is_realm_hex()) {
-            const auto retval = SpellHex(player_ptr).stop_spells_with_selection();
+            const auto retval = SpellHex(*player_ptr).stop_spells_with_selection();
             if (retval) {
                 PlayerEnergy(player_ptr).set_player_turn_energy(10);
             }

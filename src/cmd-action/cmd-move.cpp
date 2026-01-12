@@ -513,7 +513,7 @@ void do_cmd_rest(PlayerType *player_ptr)
         }
     }
 
-    SpellHex spell_hex(player_ptr);
+    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
     if (spell_hex.is_spelling_any()) {
         (void)spell_hex.stop_all_spells();
     }

@@ -96,8 +96,8 @@ bool activate_scare(PlayerType *player_ptr)
         stop_singing(player_ptr);
     }
 
-    if (SpellHex(player_ptr).is_spelling_any()) {
-        (void)SpellHex(player_ptr).stop_all_spells();
+    if (SpellHex(*player_ptr).is_spelling_any()) {
+        (void)SpellHex(*player_ptr).stop_all_spells();
     }
 
     msg_print(_("あなたは力強い突風を吹き鳴らした。周囲の敵が震え上っている!", "You wind a mighty blast; your enemies tremble!"));
@@ -459,8 +459,8 @@ bool activate_whistle(PlayerType *player_ptr, const ItemEntity &item)
         stop_singing(player_ptr);
     }
 
-    if (SpellHex(player_ptr).is_spelling_any()) {
-        (void)SpellHex(player_ptr).stop_all_spells();
+    if (SpellHex(*player_ptr).is_spelling_any()) {
+        (void)SpellHex(*player_ptr).stop_all_spells();
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;

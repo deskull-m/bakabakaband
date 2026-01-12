@@ -459,7 +459,7 @@ void process_upkeep_with_speed(PlayerType *player_ptr)
             check_demigod(player_ptr);
         }
 
-        SpellHex spell_hex(player_ptr);
+        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
         if (!load) {
             spell_hex.decrease_mana();
         }

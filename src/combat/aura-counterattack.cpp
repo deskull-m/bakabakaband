@@ -190,7 +190,7 @@ static void aura_force_by_monster_attack(PlayerType *player_ptr, MonsterAttackPl
 
 static void aura_shadow_by_monster_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (!SpellHex(player_ptr).is_spelling_specific(HEX_SHADOW_CLOAK) || !monap_ptr->alive || player_ptr->is_dead()) {
+    if (!SpellHex(*player_ptr).is_spelling_specific(HEX_SHADOW_CLOAK) || !monap_ptr->alive || player_ptr->is_dead()) {
         return;
     }
 

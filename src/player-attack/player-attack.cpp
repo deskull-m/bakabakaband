@@ -490,7 +490,7 @@ static void apply_actual_attack(
     decide_blood_sucking(player_ptr, pa_ptr);
     decide_exorcism(player_ptr, pa_ptr);
 
-    bool vorpal_cut = (pa_ptr->flags.has(TR_VORPAL) || SpellHex(player_ptr).is_spelling_specific(HEX_RUNESWORD)) && (randint1(vorpal_chance * 3 / 2) == 1) && !is_zantetsu_nullified;
+    bool vorpal_cut = (pa_ptr->flags.has(TR_VORPAL) || SpellHex(*player_ptr).is_spelling_specific(HEX_RUNESWORD)) && (randint1(vorpal_chance * 3 / 2) == 1) && !is_zantetsu_nullified;
     calc_attack_damage(player_ptr, pa_ptr, do_quake, vorpal_cut, vorpal_chance);
     apply_damage_bonus(player_ptr, pa_ptr);
     apply_damage_negative_effect(pa_ptr, is_zantetsu_nullified, is_ej_nullified);
