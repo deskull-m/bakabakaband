@@ -102,7 +102,7 @@ void AllianceDiabolique::panishment(CreatureEntity &creature)
                 "\"In the name of Diabolique!\" An Imp appears to attack you!"));
         }
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("デアボリカの復讐者があなたを狙っている！", "Diabolique's avenger is targeting you!"));
             disturb(player_ptr, true, true);

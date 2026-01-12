@@ -198,7 +198,7 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
                 continue;
             }
 
-            if (place_monster_one(player_ptr, pos.y, pos.x, monrace_id, mode, summoner_m_idx)) {
+            if (place_monster_one(*player_ptr, pos.y, pos.x, monrace_id, mode, summoner_m_idx)) {
                 positions.push_back(pos);
             }
         }
@@ -224,7 +224,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
         mode |= PM_KAGE;
     }
 
-    const auto m_idx = place_monster_one(player_ptr, y, x, r_idx, mode, summoner_m_idx);
+    const auto m_idx = place_monster_one(*player_ptr, y, x, r_idx, mode, summoner_m_idx);
     if (!m_idx) {
         return tl::nullopt;
     }
@@ -245,7 +245,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
             int d;
             for (d = scatter_min; d <= scatter_max; d++) {
                 const auto pos_neighbor = scatter(*player_ptr->current_floor_ptr, pos, d, PROJECT_NONE);
-                if (place_monster_one(player_ptr, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode | PM_HAVE_MASTER, *m_idx)) {
+                if (place_monster_one(*player_ptr, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode | PM_HAVE_MASTER, *m_idx)) {
                     break;
                 }
             }
@@ -278,7 +278,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
             break;
         }
 
-        (void)place_monster_one(player_ptr, pos_neighbor.y, pos_neighbor.x, monrace_id, mode, *m_idx);
+        (void)place_monster_one(*player_ptr, pos_neighbor.y, pos_neighbor.x, monrace_id, mode, *m_idx);
         if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS) || monrace.misc_flags.has(MonsterMiscType::MORE_ESCORT)) {
             place_monster_group(player_ptr, pos_neighbor, monrace_id, mode | PM_HAVE_MASTER, *m_idx);
         }
