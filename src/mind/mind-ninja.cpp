@@ -498,7 +498,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
         break;
     }
     case MindNinjaType::ALTER_EGO:
-        set_multishadow(player_ptr, 6 + randint1(6), false);
+        set_multishadow(*player_ptr, 6 + randint1(6), false);
         break;
     default:
         msg_print(_("なに？", "Zap?"));
