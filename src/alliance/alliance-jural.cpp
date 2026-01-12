@@ -38,15 +38,15 @@ bool AllianceJural::isAnnihilated()
 
 void AllianceJural::panishment(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
-        return;
-    }
-    auto impression = calcImpressionPoint(*player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -40) {
         return;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
     if (one_in_(20)) {
         Pos2D m_pos(creature.get_position());
         m_pos = scatter(*player_ptr->current_floor_ptr, m_pos, 12, PROJECT_NONE);

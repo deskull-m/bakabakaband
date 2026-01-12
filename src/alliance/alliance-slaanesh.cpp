@@ -59,10 +59,7 @@ bool AllianceSlaanesh::isAnnihilated()
 void AllianceSlaanesh::panishment(CreatureEntity &creature)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
-        return;
-    }
-    auto impression = calcImpressionPoint(*player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -40) {
         return;
     }
