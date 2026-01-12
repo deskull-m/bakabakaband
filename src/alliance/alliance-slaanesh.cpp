@@ -85,7 +85,7 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
                        "\"Beautiful destruction!\" Daemonettes appear, dancing to seduce you!"));
         }
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_SLAANESH);
+        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_SLAANESH);
         if (m_idx) {
             disturb(player_ptr, true, true);
 
@@ -108,7 +108,7 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
     if (one_in_(25)) {
         Pos2D m_pos(creature.get_position());
         m_pos = scatter(*player_ptr->current_floor_ptr, m_pos, 10, PROJECT_NONE);
-        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(*player_ptr, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("スラーネッシュの選ばれし者があなたを誘惑すべく現れた！", "Slaanesh's Chosen appears to seduce you!"));
             disturb(creature, true, true);

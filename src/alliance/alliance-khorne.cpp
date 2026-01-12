@@ -80,7 +80,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
                 "\"For Khorne!\" Berserkers charge at you for revenge!"));
         }
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_KHORNE);
+        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_KHORNE);
         if (m_idx) {
             disturb(player_ptr, true, true);
 
@@ -104,7 +104,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
     if (one_in_(20)) {
         Pos2D m_pos(creature.get_position());
         m_pos = scatter(*creature.current_floor_ptr, m_pos, 12, PROJECT_NONE);
-        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(*player_ptr, m_pos.y, m_pos.x, MonraceId::KHORNE_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("コーンの選ばれし者があなたを誅すべく追跡してきた！", "Khorne's Chosen is chasing you for revenge!"));
             disturb(creature, true, true);

@@ -215,7 +215,7 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
 
 /*!
  * @brief モンスターを一体生成する / Attempt to place a monster of the given race at the given location.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param player プレイヤーへの参照
  * @param y 生成位置y座標
  * @param x 生成位置x座標
  * @param r_idx 生成モンスター種族
@@ -223,9 +223,10 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
  * @return 生成に成功したらモンスターID、失敗したらtl::nullopt
  */
-tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
+tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = const_cast<PlayerType *>(dynamic_cast<const PlayerType *>(&player));
+    auto &floor = *player.current_floor_ptr;
     auto pos = Pos2D(y, x);
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
@@ -264,7 +265,7 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
 
     m_ptr->mflag.clear();
     m_ptr->mflag2.clear();
-    m_ptr->current_floor_ptr = player_ptr->current_floor_ptr;
+    m_ptr->current_floor_ptr = player.current_floor_ptr;
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;

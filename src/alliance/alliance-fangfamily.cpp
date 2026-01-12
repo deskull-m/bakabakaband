@@ -52,7 +52,7 @@ void AllianceFangFamily::panishment(CreatureEntity &creature)
         } else {
             avenger_id = MonraceId::FANG_FAMILY;
         }
-        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(*player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
         if (m_idx) {
             if (avenger_id == MonraceId::KING_FANG_FAMILY) {
                 msg_print(_("「一族の復讐を受けよ！」族長があなたを始末しに現れた！",

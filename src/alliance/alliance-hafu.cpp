@@ -85,7 +85,7 @@ if (one_in_(18)) {
             "\"In the name of Hafu, commit seppuku!\" A Samurai throws down a challenge to you!"));
     }
 
-    const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_HAFU);
+    const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_HAFU);
     if (m_idx) {
         disturb(player_ptr, true, true);
 

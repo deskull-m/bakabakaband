@@ -103,7 +103,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
                 "\"Receive Tzeentch's blessing!\" Pink Horrors appear to bestow the blessing of change upon you!"));
         }
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_TZEENTCH);
+        const auto m_idx = place_monster_one(player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_TZEENTCH);
         if (m_idx) {
             disturb(player_ptr, true, true);
 

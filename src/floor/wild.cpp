@@ -407,7 +407,7 @@ static void generate_wild_monsters(PlayerType *player_ptr)
                     for (int i = 0; i < 3; i++) { // 各モンスターを3体ずつ配置
                         auto y = randint0(player_ptr->current_floor_ptr->height);
                         auto x = randint0(player_ptr->current_floor_ptr->width);
-                        (void)place_monster_one(player_ptr, y, x, monster_id, PM_ALLOW_GROUP);
+                        (void)place_monster_one(*player_ptr, y, x, monster_id, PM_ALLOW_GROUP);
                     }
                 }
             }
