@@ -69,15 +69,15 @@ bool AllianceTzeentch::isAnnihilated()
 
 void AllianceTzeentch::panishment(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
-        return;
-    }
-    auto impression = calcImpressionPoint(*player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -60) {
         return;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
     if (one_in_(22)) {
         Pos2D m_pos(player_ptr->get_position());
         m_pos = scatter(*player_ptr->current_floor_ptr, m_pos, 15, PROJECT_NONE);

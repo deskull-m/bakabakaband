@@ -59,11 +59,7 @@ bool AllianceHafu::isAnnihilated()
 
 void AllianceHafu::panishment(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
-        return;
-    }
-    auto impression = calcImpressionPoint(*player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -50) {
         return;
     }

@@ -137,11 +137,13 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 void AllianceNurgle::panishment(CreatureEntity &creature)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
-        return;
-    }
+
     // 印象に応じて段階的な制裁
-    if (this->calcImpressionPoint(*player_ptr) <= -50) {
+    if (this->calcImpressionPoint(creature) <= -50) {
+        auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+        if (!player_ptr) {
+            return;
+        }
         // 軽微な制裁：軽い病気
         msg_print("あなたの体に軽い不調を感じる...");
         msg_print("「ナーグルの小さな贈り物だ」");
@@ -154,7 +156,10 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         return;
     }
 
-    if (this->calcImpressionPoint(*player_ptr) <= -100) {
+    if (this->calcImpressionPoint(creature) <= -100) {
+        if (!player_ptr) {
+            return;
+        }
         // 中程度の制裁：疫病の使者
         msg_print("腐敗の悪臭が漂ってきた...");
         msg_print("「ナーグルの慈悲深い疫病を受けるがよい」");
