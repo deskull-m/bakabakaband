@@ -250,33 +250,33 @@ bool confusing_light(PlayerType *player_ptr)
 /*
  * Set "multishadow", notice observable changes
  */
-bool set_multishadow(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_multishadow(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->multishadow && !do_dec) {
-            if (player_ptr->multishadow > v) {
+        if (creature.multishadow && !do_dec) {
+            if (creature.multishadow > v) {
                 return false;
             }
-        } else if (!player_ptr->multishadow) {
+        } else if (!creature.multishadow) {
             msg_print(_("あなたの周りに幻影が生まれた。", "Your Shadow enveloped you."));
             notice = true;
         }
     } else {
-        if (player_ptr->multishadow) {
+        if (creature.multishadow) {
             msg_print(_("幻影が消えた。", "Your Shadow disappears."));
             notice = true;
         }
     }
 
-    player_ptr->multishadow = v;
+    creature.multishadow = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -284,11 +284,11 @@ bool set_multishadow(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(dynamic_cast<PlayerType *>(&creature));
     return true;
 }
 
@@ -500,7 +500,7 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
     case MindMirrorMasterType::RECALL_MIRROR:
         return recall_player(player_ptr, randint0(21) + 15);
     case MindMirrorMasterType::MULTI_SHADOW:
-        set_multishadow(player_ptr, 6 + randint1(6), false);
+        set_multishadow(*player_ptr, 6 + randint1(6), false);
         break;
     case MindMirrorMasterType::BINDING_FIELD:
         if (!binding_field(player_ptr, plev * 11 + 5)) {

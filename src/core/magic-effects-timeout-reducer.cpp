@@ -126,7 +126,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->multishadow) {
-        (void)set_multishadow(player_ptr, player_ptr->multishadow - 1, true);
+        (void)set_multishadow(*player_ptr, player_ptr->multishadow - 1, true);
     }
 
     if (player_ptr->dustrobe) {
