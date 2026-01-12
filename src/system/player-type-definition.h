@@ -194,9 +194,6 @@ public:
 
     POSITION cur_lite{}; /* Radius of lite (if any) */
 
-    int16_t stat_use[A_MAX]{}; /* Current modified stats */
-    int16_t stat_top[A_MAX]{}; /* Maximal modified stats */
-
     bool sutemi{};
     bool counter{};
 
