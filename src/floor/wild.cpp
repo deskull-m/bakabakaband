@@ -399,7 +399,7 @@ static void generate_wild_monsters(PlayerType *player_ptr)
         if (alliance_it != alliance_list.end()) {
             const auto &alliance = alliance_it->second;
             int impression = alliance->calcImpressionPoint(*player_ptr);
-            auto ambush_monsters = alliance->get_ambush_monsters(player_ptr, impression);
+            auto ambush_monsters = alliance->get_ambush_monsters(*player_ptr, impression);
 
             // アライアンス固有のモンスターを配置
             if (!ambush_monsters.empty()) {

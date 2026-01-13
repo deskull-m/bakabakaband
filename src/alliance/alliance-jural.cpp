@@ -69,7 +69,7 @@ void AllianceJural::panishment(CreatureEntity &creature)
  * @param impression_point 印象値
  * @return ジュラル星人のモンスターIDのリスト（印象値が低い場合はジュラル星人）
  */
-std::vector<MonraceId> AllianceJural::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, int impression_point) const
+std::vector<MonraceId> AllianceJural::get_ambush_monsters([[maybe_unused]] CreatureEntity &creature, int impression_point) const
 {
     std::vector<MonraceId> monsters;
 
