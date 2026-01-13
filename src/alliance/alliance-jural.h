@@ -11,7 +11,7 @@ public:
     int calcImpressionPoint(const CreatureEntity &creature) const override;
     void panishment(CreatureEntity &creature) override;
     bool isAnnihilated() override;
-    std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const override;
+    std::vector<MonraceId> get_ambush_monsters(CreatureEntity &creature, int impression_point) const override;
     std::string get_ambush_message() const override;
     virtual ~AllianceJural() = default;
 };

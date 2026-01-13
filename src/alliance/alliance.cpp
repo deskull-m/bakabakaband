@@ -238,7 +238,7 @@ bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
  * @param impression_point 印象値
  * @return モンスターIDのリスト（デフォルトは空）
  */
-std::vector<MonraceId> Alliance::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, [[maybe_unused]] int impression_point) const
+std::vector<MonraceId> Alliance::get_ambush_monsters([[maybe_unused]] CreatureEntity &creature, [[maybe_unused]] int impression_point) const
 {
     return std::vector<MonraceId>();
 }

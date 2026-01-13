@@ -46,7 +46,7 @@ int AllianceCourtOfChaos::calcImpressionPoint(const CreatureEntity &creature) co
  * @param impression_point 印象値
  * @return 混沌の宮廷のモンスターIDのリスト（印象値が低い場合はカオス系モンスター）
  */
-std::vector<MonraceId> AllianceCourtOfChaos::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, int impression_point) const
+std::vector<MonraceId> AllianceCourtOfChaos::get_ambush_monsters([[maybe_unused]] CreatureEntity &creature, int impression_point) const
 {
     std::vector<MonraceId> monsters;
 
