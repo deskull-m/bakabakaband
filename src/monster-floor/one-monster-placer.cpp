@@ -174,7 +174,7 @@ static bool check_procection_rune(PlayerType *player_ptr, MonraceId monrace_id, 
     reset_bits(grid.info, CAVE_MARK);
     reset_bits(grid.info, CAVE_OBJECT);
     grid.mimic = 0;
-    note_spot(player_ptr, pos);
+    note_spot(*player_ptr, pos);
     return true;
 }
 

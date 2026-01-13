@@ -428,7 +428,7 @@ void wiz_create_feature(PlayerType *player_ptr)
         grid.info |= CAVE_GLOW | CAVE_OBJECT;
     }
 
-    note_spot(player_ptr, *pos);
+    note_spot(*player_ptr, *pos);
     lite_spot(player_ptr, *pos);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
 }

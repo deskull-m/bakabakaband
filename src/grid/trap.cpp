@@ -130,7 +130,7 @@ void disclose_grid(PlayerType *player_ptr, const Pos2D &pos)
         /* No longer hidden */
         grid.mimic = 0;
 
-        note_spot(player_ptr, pos);
+        note_spot(*player_ptr, pos);
         lite_spot(player_ptr, pos);
     }
 }

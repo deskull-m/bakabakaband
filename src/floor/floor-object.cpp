@@ -470,7 +470,7 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
         artifact.floor_id = player_ptr->floor_id;
     }
 
-    note_spot(player_ptr, pos_drop);
+    note_spot(*player_ptr, pos_drop);
     lite_spot(player_ptr, pos_drop);
     sound(SoundKind::DROP);
 

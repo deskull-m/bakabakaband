@@ -157,7 +157,7 @@ static void delayed_visual_update(PlayerType *player_ptr)
     for (const auto &pos : points) {
         auto &grid = floor.get_grid(pos);
         if (any_bits(grid.info, CAVE_NOTE)) {
-            note_spot(player_ptr, pos);
+            note_spot(*player_ptr, pos);
         }
 
         lite_spot(player_ptr, pos);

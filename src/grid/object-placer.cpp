@@ -37,7 +37,7 @@ void place_gold(PlayerType *player_ptr, const Pos2D &pos)
     *floor.o_list[item_idx] = std::move(item);
     grid.o_idx_list.add(floor, item_idx);
 
-    note_spot(player_ptr, pos);
+    note_spot(*player_ptr, pos);
     lite_spot(player_ptr, pos);
 }
 
@@ -71,6 +71,6 @@ void place_object(PlayerType *player_ptr, const Pos2D &pos, uint32_t mode, Basei
     *floor.o_list[item_idx] = std::move(*item);
     grid.o_idx_list.add(floor, item_idx);
 
-    note_spot(player_ptr, pos);
+    note_spot(*player_ptr, pos);
     lite_spot(player_ptr, pos);
 }

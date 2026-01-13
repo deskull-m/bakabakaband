@@ -74,7 +74,7 @@ void day_break(PlayerType *player_ptr)
             grid.add_info(CAVE_MARK);
         }
 
-        note_spot(player_ptr, pos);
+        note_spot(*player_ptr, pos);
     }
 
     update_sun_light(player_ptr);
@@ -100,7 +100,7 @@ void night_falls(PlayerType *player_ptr)
         grid.info &= ~(CAVE_GLOW);
         if (terrain.flags.has_not(Tc::REMEMBER)) {
             grid.info &= ~(CAVE_MARK);
-            note_spot(player_ptr, pos);
+            note_spot(*player_ptr, pos);
         }
     }
 
