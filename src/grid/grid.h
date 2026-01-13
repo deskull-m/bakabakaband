@@ -60,6 +60,7 @@ enum grid_bold_type {
     GB_WATER
 };
 
+class CreatureEntity;
 class DisplaySymbol;
 class FloorType;
 class Grid;
@@ -76,7 +77,7 @@ void update_local_illumination(PlayerType *player_ptr, const Pos2D &pos);
 bool no_lite(PlayerType *player_ptr);
 void print_rel(PlayerType *player_ptr, const DisplaySymbol &symbol, const Pos2D &pos);
 void print_bolt_pict(PlayerType *player_ptr, const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ);
-void note_spot(PlayerType *player_ptr, const Pos2D &pos);
+void note_spot(CreatureEntity &creature, const Pos2D &pos);
 void lite_spot(PlayerType *player_ptr, const Pos2D &pos);
 void update_flow(PlayerType *player_ptr);
 void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainCharacteristics action);

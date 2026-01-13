@@ -109,7 +109,7 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
         update_monster(player_ptr, grid.m_idx, false);
     }
 
-    note_spot(player_ptr, pos);
+    note_spot(*player_ptr, pos);
     lite_spot(player_ptr, pos);
     if (old_los ^ terrain.flags.has(TerrainCharacteristics::LOS)) {
         static constexpr auto flags = {
@@ -138,7 +138,7 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
                 update_monster(player_ptr, grid_neighbor.m_idx, false);
             }
 
-            note_spot(player_ptr, pos_neighbor);
+            note_spot(*player_ptr, pos_neighbor);
             lite_spot(player_ptr, pos_neighbor);
         }
 
@@ -230,7 +230,7 @@ static void update_local_illumination_aux(PlayerType *player_ptr, const Pos2D &p
         update_monster(player_ptr, grid.m_idx, false);
     }
 
-    note_spot(player_ptr, pos);
+    note_spot(*player_ptr, pos);
     lite_spot(player_ptr, pos);
 }
 
@@ -360,13 +360,13 @@ void print_bolt_pict(PlayerType *player_ptr, const Pos2D &pos_src, const Pos2D &
  * optimized primarily for the most common cases, that is, for the
  * non-marked floor grids.
  */
-void note_spot(PlayerType *player_ptr, const Pos2D &pos)
+void note_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(pos);
 
     /* Blind players see nothing */
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.effects()->blindness().is_blind()) {
         return;
     }
 
@@ -380,7 +380,7 @@ void note_spot(PlayerType *player_ptr, const Pos2D &pos)
         /* Require "perma-lite" of the grid */
         if ((grid.info & (CAVE_GLOW | CAVE_MNDK)) != CAVE_GLOW) {
             /* Not Ninja */
-            if (!player_ptr->see_nocto) {
+            if (!creature.see_nocto) {
                 return;
             }
         }
@@ -401,7 +401,7 @@ void note_spot(PlayerType *player_ptr, const Pos2D &pos)
         /* Memorize some "boring" grids */
         if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER)) {
             /* Option -- memorize all torch-lit floors */
-            if (view_torch_grids && ((grid.info & (CAVE_LITE | CAVE_MNLT)) || player_ptr->see_nocto)) {
+            if (view_torch_grids && ((grid.info & (CAVE_LITE | CAVE_MNLT)) || creature.see_nocto)) {
                 grid.info |= (CAVE_MARK);
             }
 
@@ -422,12 +422,12 @@ void note_spot(PlayerType *player_ptr, const Pos2D &pos)
         }
 
         /* Memorize walls seen by noctovision of Ninja */
-        else if (player_ptr->see_nocto) {
+        else if (creature.see_nocto) {
             grid.info |= (CAVE_MARK);
         }
 
         /* Memorize certain non-torch-lit wall grids */
-        else if (floor.is_illuminated_at(player_ptr->get_position(), pos)) {
+        else if (floor.is_illuminated_at(creature.get_position(), pos)) {
             grid.info |= (CAVE_MARK);
         }
     }
