@@ -275,8 +275,8 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                     monster.x = pos_target.x;
 
                     update_monster(player_ptr, m_idx, true);
-                    lite_spot(player_ptr, pos_origin);
-                    lite_spot(player_ptr, pos_target);
+                    lite_spot(*player_ptr, pos_origin);
+                    lite_spot(*player_ptr, pos_target);
 
                     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
                         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
@@ -562,10 +562,10 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 update_monster(player_ptr, m_idx, true);
 
                 /* Redraw the old spot */
-                lite_spot(player_ptr, pos);
+                lite_spot(*player_ptr, pos);
 
                 /* Redraw the new spot */
-                lite_spot(player_ptr, pos_new);
+                lite_spot(*player_ptr, pos_new);
 
                 /* Player can move forward? */
                 if (player_can_enter(*player_ptr, grid.feat, 0)) {

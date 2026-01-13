@@ -110,7 +110,7 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
     }
 
     note_spot(*player_ptr, pos);
-    lite_spot(player_ptr, pos);
+    lite_spot(*player_ptr, pos);
     if (old_los ^ terrain.flags.has(TerrainCharacteristics::LOS)) {
         static constexpr auto flags = {
             StatusRecalculatingFlag::VIEW,
@@ -139,7 +139,7 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
             }
 
             note_spot(*player_ptr, pos_neighbor);
-            lite_spot(player_ptr, pos_neighbor);
+            lite_spot(*player_ptr, pos_neighbor);
         }
 
         update_local_illumination(player_ptr, pos_neighbor);
@@ -231,7 +231,7 @@ static void update_local_illumination_aux(PlayerType *player_ptr, const Pos2D &p
     }
 
     note_spot(*player_ptr, pos);
-    lite_spot(player_ptr, pos);
+    lite_spot(*player_ptr, pos);
 }
 
 /*!
@@ -441,11 +441,12 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
  *
  * This function should only be called on "legal" grids
  */
-void lite_spot(PlayerType *player_ptr, const Pos2D &pos)
+void lite_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (panel_contains(pos) && player_ptr->current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
-        auto symbol_pair = map_info(player_ptr, pos);
-        symbol_pair.symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_pair.symbol_foreground.color);
+    auto &player = dynamic_cast<PlayerType&>(creature);
+    if (panel_contains(pos) && player.current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        auto symbol_pair = map_info(&player, pos);
+        symbol_pair.symbol_foreground.color = get_monochrome_display_color(&player).value_or(symbol_pair.symbol_foreground.color);
 
         term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, symbol_pair);
         static constexpr auto flags = {

@@ -142,7 +142,7 @@ void wiz_summon_specific_monster_common(PlayerType *player_ptr, MonraceId monrac
         wiz_select_chameleon_polymorph(*monster);
     }
 
-    lite_spot(player_ptr, monster->get_position());
+    lite_spot(*player_ptr, monster->get_position());
 }
 } // namespace
 

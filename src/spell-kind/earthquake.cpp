@@ -186,8 +186,8 @@ void move_monster_to(PlayerType *player_ptr, MonsterEntity &monster, const Pos2D
     grid_to.m_idx = std::exchange(grid_from.m_idx, {});
     monster.set_position(pos_to);
     update_monster(player_ptr, grid_to.m_idx, true);
-    lite_spot(player_ptr, pos_from);
-    lite_spot(player_ptr, pos_to);
+    lite_spot(*player_ptr, pos_from);
+    lite_spot(*player_ptr, pos_to);
 }
 
 bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool has_dodged)

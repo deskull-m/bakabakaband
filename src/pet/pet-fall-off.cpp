@@ -140,8 +140,8 @@ bool process_fall_off_horse(PlayerType *player_ptr, int dam, bool force)
             return false;
         }
 
-        lite_spot(player_ptr, player_ptr->get_position());
-        lite_spot(player_ptr, *pos_fall_off);
+        lite_spot(*player_ptr, player_ptr->get_position());
+        lite_spot(*player_ptr, *pos_fall_off);
         verify_panel(*player_ptr);
     }
 

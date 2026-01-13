@@ -160,8 +160,8 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             }
         }
 
-        lite_spot(player_ptr, pos_old);
-        lite_spot(player_ptr, pos_new);
+        lite_spot(*player_ptr, pos_old);
+        lite_spot(*player_ptr, pos_new);
         verify_panel(*player_ptr);
         if (mpe_mode & MPE_FORGET_FLOW) {
             forget_flow(floor);

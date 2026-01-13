@@ -151,8 +151,8 @@ bool fetch_monster(PlayerType *player_ptr)
     monster.set_position(pos_target);
     (void)set_monster_csleep(floor, m_idx, 0);
     update_monster(player_ptr, m_idx, true);
-    lite_spot(player_ptr, *pos);
-    lite_spot(player_ptr, pos_target);
+    lite_spot(*player_ptr, *pos);
+    lite_spot(*player_ptr, pos_target);
     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }

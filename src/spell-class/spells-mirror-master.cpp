@@ -70,7 +70,7 @@ void SpellsMirrorMaster::remove_mirror(int y, int x)
     }
 
     note_spot(*this->player_ptr, pos);
-    lite_spot(this->player_ptr, pos);
+    lite_spot(*this->player_ptr, pos);
 }
 
 /*!
@@ -134,7 +134,7 @@ tl::optional<std::string> SpellsMirrorMaster::place_mirror()
     grid.set_terrain_id(TerrainTag::MIRROR, TerrainKind::MIMIC);
 
     note_spot(*this->player_ptr, p_pos);
-    lite_spot(this->player_ptr, p_pos);
+    lite_spot(*this->player_ptr, p_pos);
     update_local_illumination(this->player_ptr, p_pos);
     return tl::nullopt;
 }
@@ -273,7 +273,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
                     move_cursor_relative(pos_dst.y, pos_dst.x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
-                    lite_spot(this->player_ptr, pos_dst);
+                    lite_spot(*this->player_ptr, pos_dst);
                     term_fresh();
 
                     print_bolt_pict(this->player_ptr, pos_dst, pos_dst, typ);
@@ -375,7 +375,7 @@ static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std:
     term_xtra(TERM_XTRA_DELAY, delay_factor);
 
     for (const auto &pos : drawn_pos_list) {
-        lite_spot(player_ptr, pos);
+        lite_spot(*player_ptr, pos);
     }
 }
 
@@ -445,7 +445,7 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
                 move_cursor_relative(pos_dst.y, pos_dst.x);
                 term_fresh();
                 term_xtra(TERM_XTRA_DELAY, delay_factor);
-                lite_spot(this->player_ptr, pos_dst);
+                lite_spot(*this->player_ptr, pos_dst);
                 term_fresh();
                 print_bolt_pict(this->player_ptr, pos_dst, pos_dst, typ);
                 drawn_pos_list.push_back(pos_dst);
@@ -463,7 +463,7 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     }
 
     for (const auto &pos : drawn_pos_list) {
-        lite_spot(this->player_ptr, pos);
+        lite_spot(*this->player_ptr, pos);
     }
 
     if (const auto &pos = path_g.back(); floor.get_grid(pos).is_mirror()) {
