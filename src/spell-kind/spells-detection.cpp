@@ -58,14 +58,14 @@ static bool detect_feat_flag(PlayerType *player_ptr, POSITION range, TerrainChar
 
                 grid.info &= ~(CAVE_UNSAFE);
 
-                lite_spot(player_ptr, pos);
+                lite_spot(*player_ptr, pos);
             }
         }
 
         if (grid.has(flag)) {
             disclose_grid(player_ptr, pos);
             grid.info |= (CAVE_MARK);
-            lite_spot(player_ptr, pos);
+            lite_spot(*player_ptr, pos);
             detect = true;
         }
     }
@@ -195,7 +195,7 @@ bool detect_objects_gold(PlayerType *player_ptr, POSITION range)
 
         if (item_ptr->bi_key.tval() == ItemKindType::GOLD) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(player_ptr, i_pos);
+            lite_spot(*player_ptr, i_pos);
             detect = true;
         }
     }
@@ -244,7 +244,7 @@ bool detect_objects_normal(PlayerType *player_ptr, POSITION range)
 
         if (item_ptr->bi_key.tval() != ItemKindType::GOLD) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(player_ptr, i_pos);
+            lite_spot(*player_ptr, i_pos);
             detect = true;
         }
     }
@@ -309,7 +309,7 @@ bool detect_objects_magic(PlayerType *player_ptr, POSITION range)
         has_bonus |= item_ptr->to_h + item_ptr->to_d > 0;
         if (item_ptr->is_fixed_or_random_artifact() || item_ptr->is_ego() || is_object_magically(item_ptr->bi_key.tval()) || item_ptr->is_spell_book() || has_bonus) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(player_ptr, i_pos);
+            lite_spot(*player_ptr, i_pos);
             detect = true;
         }
     }

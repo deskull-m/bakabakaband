@@ -86,7 +86,7 @@ void delete_monster_idx(PlayerType *player_ptr, short m_idx)
 
     monster = {};
     floor.m_cnt--;
-    lite_spot(player_ptr, m_pos);
+    lite_spot(*player_ptr, m_pos);
     if (monrace.brightness_flags.has_any_of(ld_mask)) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }

@@ -281,7 +281,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
             affected_potions.push_back(item.bi_id);
         }
 
-        lite_spot(player_ptr, pos);
+        lite_spot(*player_ptr, pos);
     }
 
     delete_items(player_ptr, std::move(delete_i_idx_list));

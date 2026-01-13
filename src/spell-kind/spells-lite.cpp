@@ -69,7 +69,7 @@ static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D>
         }
 
         note_spot(*player_ptr, pos);
-        lite_spot(player_ptr, pos);
+        lite_spot(*player_ptr, pos);
         update_local_illumination(player_ptr, pos);
     }
 }
@@ -122,7 +122,7 @@ static void cave_temp_room_unlite(PlayerType *player_ptr, const std::vector<Pos2
             update_monster(player_ptr, grid.m_idx, false);
         }
 
-        lite_spot(player_ptr, pos);
+        lite_spot(*player_ptr, pos);
         update_local_illumination(player_ptr, pos);
     }
 }

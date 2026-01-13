@@ -190,7 +190,7 @@ void delete_all_items_from_floor(PlayerType *player_ptr, const Pos2D &pos)
     auto &grid = floor.get_grid(pos);
     delete_items(player_ptr, grid.o_idx_list);
 
-    lite_spot(player_ptr, pos);
+    lite_spot(*player_ptr, pos);
 }
 
 /*!
@@ -259,7 +259,7 @@ void delete_object_idx(PlayerType *player_ptr, OBJECT_IDX o_idx)
     excise_object_idx(floor, o_idx);
     auto &item_ptr = floor.o_list[o_idx];
     if (!item_ptr->is_held_by_monster()) {
-        lite_spot(player_ptr, item_ptr->get_position());
+        lite_spot(*player_ptr, item_ptr->get_position());
     }
 
     // 最後尾のアイテムを削除対象の要素に移動することで配列を詰める
@@ -471,7 +471,7 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
     }
 
     note_spot(*player_ptr, pos_drop);
-    lite_spot(player_ptr, pos_drop);
+    lite_spot(*player_ptr, pos_drop);
     sound(SoundKind::DROP);
 
     const auto is_located = player_ptr->is_located_at(pos_drop);
