@@ -61,7 +61,7 @@ bool AllianceAmber::isAnnihilated()
  * @param impression_point 印象値
  * @return アンバーのモンスターIDのリスト（印象値が低い場合は天使系や騎士系モンスター）
  */
-std::vector<MonraceId> AllianceAmber::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, int impression_point) const
+std::vector<MonraceId> AllianceAmber::get_ambush_monsters([[maybe_unused]] CreatureEntity &creature, int impression_point) const
 {
     std::vector<MonraceId> monsters;
 
