@@ -308,7 +308,7 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction 
         msg_format(_("%sを解除した。", "You have disarmed the %s."), name.data());
         gain_exp(static_cast<CreatureEntity &>(*player_ptr), power);
         cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::DISARM);
-        exe_movement(player_ptr, dir, easy_disarm, false);
+        exe_movement(*player_ptr, dir, easy_disarm, false);
 
         (void)drop_near(player_ptr, item, pos);
 
@@ -321,7 +321,7 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction 
         more = true;
     } else {
         msg_format(_("%sを作動させてしまった！", "You set off the %s!"), name.data());
-        exe_movement(player_ptr, dir, easy_disarm, false);
+        exe_movement(*player_ptr, dir, easy_disarm, false);
     }
 
     return more;
@@ -372,7 +372,7 @@ bool exe_bash(PlayerType *player_ptr, POSITION y, POSITION x, const Direction &d
             cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
         }
 
-        exe_movement(player_ptr, dir, false, false);
+        exe_movement(*player_ptr, dir, false, false);
     } else if (evaluate_percent(adj_dex_safe[player_ptr->stat_index[A_DEX]] + player_ptr->level)) {
         msg_format(_("この%sは頑丈だ。", "The %s holds firm."), name.data());
         more = true;

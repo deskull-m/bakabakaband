@@ -80,8 +80,9 @@ static bool boundary_floor(const Grid &grid, const TerrainType &terrain, const T
  * any monster which might be in the destination grid.  Previously,\n
  * moving into walls was "free" and did NOT hit invisible monsters.\n
  */
-void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, bool break_trap)
+void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup, bool break_trap)
 {
+    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     const auto pos = player_ptr->get_neighbor(dir);
     auto &floor = *player_ptr->current_floor_ptr;
     auto &grid = floor.get_grid(pos);

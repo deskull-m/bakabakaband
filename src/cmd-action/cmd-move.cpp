@@ -393,7 +393,7 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
             energy.set_player_turn_energy(energy_use);
         }
 
-        exe_movement(player_ptr, dir, pickup, false);
+        exe_movement(*player_ptr, dir, pickup, false);
         more = true;
     }
 

@@ -279,7 +279,7 @@ void Travel::step(PlayerType *player_ptr)
     }
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    exe_movement(player_ptr, this->dir, always_pickup, false);
+    exe_movement(*player_ptr, this->dir, always_pickup, false);
     if (this->state == TravelState::STOP) {
         return;
     }
