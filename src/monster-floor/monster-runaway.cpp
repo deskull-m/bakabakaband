@@ -37,13 +37,14 @@ static bool is_acting_monster(const MonraceId r_idx)
 
 /*!
  * @brief HPが1/3未満になった友好的なユニークモンスターの逃走処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param player プレイヤーへの参照
  * @param is_riding_mon 騎乗状態ならばTRUE
  * @param m_ptr モンスターへの参照ポインタ
  * @param m_name モンスター名称
  */
-static void escape_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, concptr m_name)
+static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, const MonsterEntity &monster, concptr m_name)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&player);
     if (turn_flags_ptr->is_riding_mon) {
         msg_format(_("%sはあなたの束縛から脱出した。", "%s^ succeeded to escape from your restriction!"), m_name);
         if (process_fall_off_horse(player_ptr, -1, false)) {
@@ -60,10 +61,10 @@ static void escape_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, c
 
         auto speak = monster.get_monrace().speak_flags.has_any_of(flags);
         speak &= !is_acting_monster(monster.r_idx);
-        const auto &floor = *player_ptr->current_floor_ptr;
-        const auto p_pos = player_ptr->get_position();
+        const auto &floor = *player.current_floor_ptr;
+        const auto p_pos = player.get_position();
         const auto m_pos = monster.get_position();
-        speak &= player_ptr->current_floor_ptr->has_los_at(m_pos);
+        speak &= player.current_floor_ptr->has_los_at(m_pos);
         speak &= projectable(floor, m_pos, p_pos);
         if (speak) {
             msg_format(_("%s^「ピンチだ！退却させてもらう！」", "%s^ says 'It is the pinch! I will retreat'."), m_name);
@@ -117,7 +118,7 @@ bool runaway_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER
         return false;
     }
 
-    escape_monster(player_ptr, turn_flags_ptr, monster, m_name.data());
+    escape_monster(*player_ptr, turn_flags_ptr, monster, m_name.data());
     QuestCompletionChecker(player_ptr, monster).complete();
     delete_monster_idx(player_ptr, m_idx);
     return true;
