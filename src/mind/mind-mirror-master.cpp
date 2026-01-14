@@ -439,7 +439,7 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
     case MindMirrorMasterType::SLEEPING_MIRROR:
         for (const auto &pos : player_ptr->current_floor_ptr->get_area()) {
             if (player_ptr->current_floor_ptr->get_grid(pos).is_mirror()) {
-                project(player_ptr, 0, 2, pos.y, pos.x, (int)plev, AttributeType::OLD_SLEEP,
+                project(*player_ptr, 0, 2, pos.y, pos.x, (int)plev, AttributeType::OLD_SLEEP,
                     (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI));
             }
         }

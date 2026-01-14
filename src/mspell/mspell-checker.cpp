@@ -181,7 +181,7 @@ ProjectResult bolt(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION y, POSITI
         flg |= PROJECT_REFLECTABLE;
     }
 
-    return project(player_ptr, m_idx, 0, y, x, dam_hp, typ, flg);
+    return project(*player_ptr, m_idx, 0, y, x, dam_hp, typ, flg);
 }
 
 /*!
@@ -207,7 +207,7 @@ ProjectResult beam(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION y, POSITI
         break;
     }
 
-    return project(player_ptr, m_idx, 0, y, x, dam_hp, typ, flg);
+    return project(*player_ptr, m_idx, 0, y, x, dam_hp, typ, flg);
 }
 
 ProjectResult ball(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, AttributeType typ, int dam_hp, POSITION rad, int target_type)
@@ -217,7 +217,7 @@ ProjectResult ball(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m
         flg |= PROJECT_PLAYER;
     }
 
-    return project(player_ptr, m_idx, rad, y, x, dam_hp, typ, flg);
+    return project(*player_ptr, m_idx, rad, y, x, dam_hp, typ, flg);
 }
 
 /*!
@@ -246,7 +246,7 @@ ProjectResult breath(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX
         rad = monrace.misc_flags.has(MonsterMiscType::POWERFUL) ? 3 : 2;
     }
 
-    return project(player_ptr, m_idx, rad, y, x, dam_hp, typ, flg);
+    return project(*player_ptr, m_idx, rad, y, x, dam_hp, typ, flg);
 }
 
 ProjectResult pointed(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, AttributeType typ, int dam_hp, int target_type)
@@ -256,7 +256,7 @@ ProjectResult pointed(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_ID
         flg |= PROJECT_PLAYER;
     }
 
-    return project(player_ptr, m_idx, 0, y, x, dam_hp, typ, flg);
+    return project(*player_ptr, m_idx, 0, y, x, dam_hp, typ, flg);
 }
 
 ProjectResult rocket(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, AttributeType typ, int dam_hp, POSITION rad, int target_type)
@@ -266,7 +266,7 @@ ProjectResult rocket(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX
         flg |= PROJECT_PLAYER;
     }
 
-    return project(player_ptr, m_idx, rad, y, x, dam_hp, typ, flg);
+    return project(*player_ptr, m_idx, rad, y, x, dam_hp, typ, flg);
 }
 
 /*!

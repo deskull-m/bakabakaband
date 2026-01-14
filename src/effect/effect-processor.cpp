@@ -62,15 +62,16 @@ Pos2D decide_source_position(CreatureEntity &creature, MONSTER_IDX src_idx, cons
  * @todo 似たような処理が山ほど並んでいる、何とかならないものか
  * @todo 引数にそのまま再代入していてカオスすぎる。直すのは簡単ではない
  */
-ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITION rad, const POSITION target_y, const POSITION target_x, const int dam,
+ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSITION rad, const POSITION target_y, const POSITION target_x, const int dam,
     const AttributeType typ, BIT_FLAGS flag, tl::optional<CapturedMonsterType *> cap_mon_ptr)
 {
-    monster_target_y = player_ptr->y;
-    monster_target_x = player_ptr->x;
+    auto &player = static_cast<PlayerType &>(creature);
+    monster_target_y = player.y;
+    monster_target_x = player.x;
 
     ProjectResult res;
     const Pos2D pos_target(target_y, target_x);
-    const auto pos_source = decide_source_position(*player_ptr, src_idx, pos_target, flag);
+    const auto pos_source = decide_source_position(player, src_idx, pos_target, flag);
 
     if (flag & (PROJECT_THRU)) {
         if (pos_source == pos_target) {
@@ -113,15 +114,15 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
     /* Calculate the projection path */
     const auto &system = AngbandSystem::get_instance();
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
-    auto &floor = *player_ptr->current_floor_ptr;
-    ProjectionPath path_g(floor, range, player_ptr->get_position(), pos_source, pos_target, flag);
-    handle_stuff(player_ptr);
+    auto &floor = *player.current_floor_ptr;
+    ProjectionPath path_g(floor, range, player.get_position(), pos_source, pos_target, flag);
+    handle_stuff(&player);
 
     auto k = 0;
     Pos2D pos_path = pos_source;
     auto visual = false;
     auto see_s_msg = true;
-    const auto is_blind = player_ptr->effects()->blindness().is_blind();
+    const auto is_blind = player.effects()->blindness().is_blind();
     for (const auto &pos : path_g) {
         if (flag & PROJECT_DISI) {
             if (floor.can_block_disintegration_at(pos) && (rad > 0)) {
@@ -143,14 +144,14 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
         if (delay_factor > 0) {
             if (!is_blind && !(flag & (PROJECT_HIDE | PROJECT_FAST))) {
                 if (panel_contains(pos) && floor.has_los_at(pos)) {
-                    print_bolt_pict(player_ptr, pos_path, pos, typ);
+                    print_bolt_pict(&player, pos_path, pos, typ);
                     move_cursor_relative(pos.y, pos.x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
-                    lite_spot(*player_ptr, pos);
+                    lite_spot(player, pos);
                     term_fresh();
                     if (flag & (PROJECT_BEAM)) {
-                        print_bolt_pict(player_ptr, pos, pos, typ);
+                        print_bolt_pict(&player, pos, pos, typ);
                     }
 
                     visual = true;
@@ -189,10 +190,10 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
 
         if (breath) {
             flag &= ~(PROJECT_HIDE);
-            auto breath_positions = breath_shape(player_ptr, path_g, path_n, rad, pos_source, pos_impact, typ);
+            auto breath_positions = breath_shape(&player, path_g, path_n, rad, pos_source, pos_impact, typ);
             positions.insert(positions.end(), std::make_move_iterator(breath_positions.begin()), std::make_move_iterator(breath_positions.end()));
         } else {
-            auto ball_positions = ball_shape(player_ptr, pos_impact, rad, typ);
+            auto ball_positions = ball_shape(&player, pos_impact, rad, typ);
             positions.insert(positions.end(), std::make_move_iterator(ball_positions.begin()), std::make_move_iterator(ball_positions.end()));
         }
     }
@@ -213,7 +214,7 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
                 }
                 if (panel_contains(pos) && (can_see_disi || floor.has_los_at(pos))) {
                     drawn = true;
-                    print_bolt_pict(player_ptr, pos, pos, typ);
+                    print_bolt_pict(&player, pos, pos, typ);
                 }
                 pos_total++;
             }
@@ -228,7 +229,7 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
         if (drawn) {
             for (const auto &[_, pos] : positions) {
                 if (panel_contains(pos) && floor.has_los_at(pos)) {
-                    lite_spot(*player_ptr, pos);
+                    lite_spot(player, pos);
                 }
             }
 
@@ -237,34 +238,34 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
         }
     }
 
-    update_creature(player_ptr);
+    update_creature(&player);
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = player.get_position();
     if (flag & PROJECT_KILL) {
-        see_s_msg = is_monster(src_idx) ? is_seen(player_ptr, floor.m_list[src_idx])
-                                        : (is_player(src_idx) ? true : (player_can_see_bold(player_ptr, pos_source.y, pos_source.x) && projectable(floor, p_pos, pos_source)));
+        see_s_msg = is_monster(src_idx) ? is_seen(&player, floor.m_list[src_idx])
+                                        : (is_player(src_idx) ? true : (player_can_see_bold(&player, pos_source.y, pos_source.x) && projectable(floor, p_pos, pos_source)));
     }
 
     if (flag & (PROJECT_GRID)) {
         for (const auto &[dist, pos] : positions) {
             const auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
-            if (affect_feature(player_ptr, src_idx, effective_dist, pos.y, pos.x, dam, typ)) {
+            if (affect_feature(&player, src_idx, effective_dist, pos.y, pos.x, dam, typ)) {
                 res.notice = true;
             }
         }
     }
 
-    update_creature(player_ptr);
+    update_creature(&player);
     if (flag & (PROJECT_ITEM)) {
         for (const auto &[dist, pos] : positions) {
             const auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
-            if (affect_item(player_ptr, src_idx, effective_dist, pos.y, pos.x, dam, typ)) {
+            if (affect_item(&player, src_idx, effective_dist, pos.y, pos.x, dam, typ)) {
                 res.notice = true;
             }
         }
     }
 
-    FallOffHorseEffect fall_off_horse_effect(player_ptr);
+    FallOffHorseEffect fall_off_horse_effect(&player);
     if (flag & (PROJECT_KILL)) {
         project_m_n = 0;
         project_m_x = 0;
@@ -289,8 +290,8 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
                         pos_reflection = pos_source;
                     }
 
-                    if (is_seen(player_ptr, monster)) {
-                        const auto m_name = monster.ml ? monster_desc(player_ptr, monster, 0) : std::string(_("それ", "It"));
+                    if (is_seen(&player, monster)) {
+                        const auto m_name = monster.ml ? monster_desc(&player, monster, 0) : std::string(_("それ", "It"));
                         sound(SoundKind::REFLECT);
                         const auto reflect_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_REFLECT);
                         if (reflect_message) {
@@ -300,17 +301,17 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
                         sound(SoundKind::REFLECT);
                     }
 
-                    if (is_original_ap_and_seen(player_ptr, monster)) {
+                    if (is_original_ap_and_seen(&player, monster)) {
                         monrace.r_misc_flags.set(MonsterMiscType::REFLECTING);
                     }
 
-                    if (player_ptr->is_located_at(pos) || one_in_(2)) {
+                    if (player.is_located_at(pos) || one_in_(2)) {
                         flag &= ~(PROJECT_PLAYER);
                     } else {
                         flag |= PROJECT_PLAYER;
                     }
 
-                    project(player_ptr, grid.m_idx, 0, pos_reflection.y, pos_reflection.x, dam, typ, flag);
+                    project(creature, grid.m_idx, 0, pos_reflection.y, pos_reflection.x, dam, typ, flag);
                     continue;
                 }
             }
@@ -318,7 +319,7 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
             /* Find the closest point in the blast */
             auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
 
-            if (player_ptr->riding && player_ptr->is_located_at(pos)) {
+            if (player.riding && player.is_located_at(pos)) {
                 if (flag & PROJECT_PLAYER) {
                     if (flag & (PROJECT_BEAM | PROJECT_REFLECTABLE | PROJECT_AIMED)) {
                         /*
@@ -373,7 +374,7 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
                 }
             }
 
-            if (affect_monster(player_ptr, src_idx, effective_dist, pos.y, pos.x, dam, typ, flag, see_s_msg, cap_mon_ptr, &fall_off_horse_effect)) {
+            if (affect_monster(&player, src_idx, effective_dist, pos.y, pos.x, dam, typ, flag, see_s_msg, cap_mon_ptr, &fall_off_horse_effect)) {
                 res.notice = true;
             }
         }
@@ -384,11 +385,11 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
             if (grid.has_monster()) {
                 auto &monster = floor.m_list[grid.m_idx];
                 if (monster.ml) {
-                    if (!player_ptr->effects()->hallucination().is_hallucinated()) {
+                    if (!player.effects()->hallucination().is_hallucinated()) {
                         tracker.set_trackee(monster.ap_r_idx);
                     }
 
-                    health_track(player_ptr, grid.m_idx);
+                    health_track(&player, grid.m_idx);
                 }
             }
         }
@@ -396,14 +397,14 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
 
     if (flag & (PROJECT_KILL)) {
         for (const auto &[dist, pos] : positions) {
-            if (!player_ptr->is_located_at(pos)) {
+            if (!player.is_located_at(pos)) {
                 continue;
             }
 
             /* Find the closest point in the blast */
             auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
 
-            if (player_ptr->riding) {
+            if (player.riding) {
                 if (flag & PROJECT_PLAYER) {
                     /* Hit the player with full damage */
                 }
@@ -437,10 +438,10 @@ ProjectResult project(PlayerType *player_ptr, const MONSTER_IDX src_idx, POSITIO
 
             std::string who_name;
             if (is_monster(src_idx)) {
-                who_name = monster_desc(player_ptr, floor.m_list[src_idx], MD_WRONGDOER_NAME);
+                who_name = monster_desc(&player, floor.m_list[src_idx], MD_WRONGDOER_NAME);
             }
 
-            if (affect_player(src_idx, player_ptr, who_name.data(), effective_dist, pos.y, pos.x, dam, typ, flag, fall_off_horse_effect, project)) {
+            if (affect_player(src_idx, &player, who_name.data(), effective_dist, pos.y, pos.x, dam, typ, flag, fall_off_horse_effect, project)) {
                 res.notice = true;
                 res.affected_player = true;
             }

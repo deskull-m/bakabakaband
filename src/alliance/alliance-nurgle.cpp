@@ -196,7 +196,7 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
 
         if (one_in_(2)) {
             msg_print("あなたの体が腐敗し始めた...");
-            project(player_ptr, 0, 3, player_ptr->y, player_ptr->x,
+            project(*player_ptr, 0, 3, player_ptr->y, player_ptr->x,
                 player_ptr->level * 2, AttributeType::POIS,
                 PROJECT_KILL | PROJECT_ITEM);
         }
@@ -231,8 +231,8 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         (void)BadStatusSetter(player_ptr).set_cut(randint1(200) + 100);
         (void)BadStatusSetter(player_ptr).set_stun(randint1(100) + 50);
 
-        // 大ダメージ（腐敗エリア攻撃）
-        project(player_ptr, 0, 5, player_ptr->y, player_ptr->x,
+        // 大ダメージ（腐敗エリア放撃）
+        project(*player_ptr, 0, 5, player_ptr->y, player_ptr->x,
             player_ptr->level * 4, AttributeType::POIS,
             PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 

@@ -246,7 +246,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
     case MindMindcrafterType::MIND_WAVE:
         msg_print(_("精神を捻じ曲げる波動を発生させた！", "Mind-warping forces emanate from your brain!"));
         if (plev < 25) {
-            project(player_ptr, 0, 2 + plev / 10, player_ptr->y, player_ptr->x, (plev * 3), AttributeType::PSI, PROJECT_KILL);
+            project(*player_ptr, 0, 2 + plev / 10, player_ptr->y, player_ptr->x, (plev * 3), AttributeType::PSI, PROJECT_KILL);
         } else {
             (void)mindblast_monsters(player_ptr, randint1(plev * ((plev - 5) / 10 + 1)));
         }

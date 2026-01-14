@@ -243,7 +243,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM);
+            project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM);
         }
     } break;
 

@@ -476,7 +476,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         if (cast) {
             dispel_monsters(player_ptr, d_dam);
             earthquake(player_ptr, player_ptr->get_position(), q_rad);
-            project(player_ptr, 0, b_rad, player_ptr->y, player_ptr->x, b_dam, AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
+            project(*player_ptr, 0, b_rad, player_ptr->y, player_ptr->x, b_dam, AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
         }
     } break;
     }

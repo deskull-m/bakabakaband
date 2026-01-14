@@ -531,7 +531,7 @@ void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
         msg_format(_("%sが突然機能停止し、爆発した！", "%s suddenly malfunctions and explodes!"), m_name.data());
 
         // 破片のボール攻撃
-        project(player_ptr, m_idx, 2, pos.y, pos.x, monrace.level + randint1(monrace.level), AttributeType::SHARDS,
+        project(*player_ptr, m_idx, 2, pos.y, pos.x, monrace.level + randint1(monrace.level), AttributeType::SHARDS,
             PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 
         // モンスターを削除

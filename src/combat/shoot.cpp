@@ -717,7 +717,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
             /* Sniper */
             if (snipe_type == SP_KILL_TRAP) {
                 constexpr auto flags = PROJECT_JUMP | PROJECT_HIDE | PROJECT_GRID | PROJECT_ITEM;
-                project(player_ptr, 0, 0, pos_impact.y, pos_impact.x, 0, AttributeType::KILL_TRAP, flags);
+                project(*player_ptr, 0, 0, pos_impact.y, pos_impact.x, 0, AttributeType::KILL_TRAP, flags);
             }
 
             /* Sniper */
@@ -839,7 +839,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                         uint16_t flg = (PROJECT_STOP | PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID);
 
                         sound(SoundKind::EXPLODE); /* No explode sound - use breath fire instead */
-                        project(player_ptr, 0, ((sniper_concent + 1) / 2 + 1), pos_impact.y, pos_impact.x, base_dam, AttributeType::MISSILE, flg);
+                        project(*player_ptr, 0, ((sniper_concent + 1) / 2 + 1), pos_impact.y, pos_impact.x, base_dam, AttributeType::MISSILE, flg);
                         break;
                     }
 

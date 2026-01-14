@@ -492,7 +492,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
             }
 
             const uint32_t flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL;
-            project(player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + plev / 8, 10), type, flags);
+            project(*player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + plev / 8, 10), type, flags);
         }
 
         break;

@@ -823,7 +823,7 @@ void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainChar
     if (TerrainType::has(action, TerrainAction::CRASH_GLASS)) {
         const auto &old_terrain = terrains.get_terrain(old_terrain_id);
         if (old_terrain.flags.has(TerrainCharacteristics::GLASS) && world.character_dungeon) {
-            project(player_ptr, PROJECT_WHO_GLASS_SHARDS, 1, pos.y, pos.x, std::min(floor.dun_level, 100) / 4, AttributeType::SHARDS,
+            project(*player_ptr, PROJECT_WHO_GLASS_SHARDS, 1, pos.y, pos.x, std::min(floor.dun_level, 100) / 4, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_HIDE | PROJECT_JUMP | PROJECT_NO_HANGEKI));
         }
     }

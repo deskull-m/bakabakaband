@@ -204,7 +204,7 @@ bool activate_grand_cross(PlayerType *player_ptr)
 {
     msg_print(_("「闇に還れ！」", "You say, 'Return to darkness!'"));
     constexpr auto flags = PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID;
-    (void)project(player_ptr, 0, 8, player_ptr->y, player_ptr->x, (randint1(100) + 200) * 2, AttributeType::HOLY_FIRE, flags);
+    (void)project(*player_ptr, 0, 8, player_ptr->y, player_ptr->x, (randint1(100) + 200) * 2, AttributeType::HOLY_FIRE, flags);
     return true;
 }
 
@@ -263,7 +263,7 @@ bool activate_fully_identification(PlayerType *player_ptr)
 bool activate_huge_stinking_storm(PlayerType *player_ptr)
 {
     msg_print(_("「ンアッー－－！」", "You shout, 'NAAAAAHHHHHHH!!'"));
-    (void)project(player_ptr, 0, 8, player_ptr->y, player_ptr->x, (randint1(100) + 1500) * 2, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
+    (void)project(*player_ptr, 0, 8, player_ptr->y, player_ptr->x, (randint1(100) + 1500) * 2, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
     return true;
 }
 /*!

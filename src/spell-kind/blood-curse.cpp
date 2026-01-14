@@ -44,7 +44,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             if (!count) {
                 int extra_dam = Dice::roll(10, 10);
                 msg_print(_("純粋な魔力の次元への扉が開いた！", "A portal opens to a plane of raw mana!"));
-                project(player_ptr, 0, 8, monster.y, monster.x, extra_dam, AttributeType::MANA, curse_flg);
+                project(*player_ptr, 0, 8, monster.y, monster.x, extra_dam, AttributeType::MANA, curse_flg);
                 if (!one_in_(6)) {
                     break;
                 }
@@ -69,7 +69,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
         case 10:
         case 11:
             msg_print(_("エネルギーのうねりを感じた！", "You feel a surge of energy!"));
-            project(player_ptr, 0, 7, monster.y, monster.x, 50, AttributeType::DISINTEGRATE, curse_flg);
+            project(*player_ptr, 0, 7, monster.y, monster.x, 50, AttributeType::DISINTEGRATE, curse_flg);
             if (!one_in_(6)) {
                 break;
             }

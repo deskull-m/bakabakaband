@@ -231,7 +231,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             if ((spell_hex.get_revenge_turn() == 0) || (power >= 200)) {
                 msg_print(_("我慢が解かれた！", "My patience is at an end!"));
                 if (power) {
-                    project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, power, AttributeType::HELL_FIRE, (PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL));
+                    project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, power, AttributeType::HELL_FIRE, (PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL));
                 }
 
                 if (AngbandWorld::get_instance().wizard) {

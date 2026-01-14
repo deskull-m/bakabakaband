@@ -413,7 +413,7 @@ void wiz_kill_target(PlayerType *player_ptr, int initial_dam, AttributeType effe
     }
 
     if (self) {
-        project(player_ptr, -1, 0, player_ptr->y, player_ptr->x, dam, idx, PROJECT_KILL | PROJECT_PLAYER);
+        project(*player_ptr, -1, 0, player_ptr->y, player_ptr->x, dam, idx, PROJECT_KILL | PROJECT_PLAYER);
         return;
     }
 
