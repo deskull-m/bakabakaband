@@ -197,8 +197,6 @@ public:
     bool sutemi{};
     bool counter{};
 
-    POSITION run_py{};
-    POSITION run_px{};
     DIRECTION fishing_dir{};
 
     MONSTER_IDX pet_t_m_idx{};

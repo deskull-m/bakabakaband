@@ -43,9 +43,10 @@ static bool find_breakleft;
  * @param pos_orig 移動元の座標
  * @return 移動先が既知の壁ならばTRUE
  */
-static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &pos_orig)
+static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D &pos_orig)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     const auto pos = pos_orig + dir.vec();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return false;
@@ -90,35 +91,36 @@ static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &
  *       \#x\#                  \@x\#\n
  *       \@\@p.                  p\n
  */
-static void run_init(PlayerType *player_ptr, const Direction &dir)
+static void run_init(CreatureEntity &creature, const Direction &dir)
 {
+    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     find_current = dir;
     find_prevdir = dir;
     find_openarea = true;
     find_breakright = find_breakleft = false;
-    const auto pos = player_ptr->get_position();
-    player_ptr->run_py = pos.y;
-    player_ptr->run_px = pos.x;
+    const auto pos = creature.get_position();
+    creature.run_py = pos.y;
+    creature.run_px = pos.x;
     const auto pos_neighbor = player_ptr->get_neighbor(dir);
     ignore_avoid_run = player_ptr->current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
     const auto dir_left45 = dir.rotated_45degree(1);
     const auto dir_right45 = dir.rotated_45degree(-1);
     auto deepleft = false;
     auto shortleft = false;
-    if (see_wall(player_ptr, dir_left45, pos)) {
+    if (see_wall(creature, dir_left45, pos)) {
         find_breakleft = true;
         shortleft = true;
-    } else if (see_wall(player_ptr, dir_left45, pos_neighbor)) {
+    } else if (see_wall(creature, dir_left45, pos_neighbor)) {
         find_breakleft = true;
         deepleft = true;
     }
 
     auto deepright = false;
     auto shortright = false;
-    if (see_wall(player_ptr, dir_right45, pos)) {
+    if (see_wall(creature, dir_right45, pos)) {
         find_breakright = true;
         shortright = true;
-    } else if (see_wall(player_ptr, dir_right45, pos_neighbor)) {
+    } else if (see_wall(creature, dir_right45, pos_neighbor)) {
         find_breakright = true;
         deepright = true;
     }
@@ -138,7 +140,7 @@ static void run_init(PlayerType *player_ptr, const Direction &dir)
         return;
     }
 
-    if (!see_wall(player_ptr, dir, pos_neighbor)) {
+    if (!see_wall(creature, dir, pos_neighbor)) {
         return;
     }
 
@@ -251,7 +253,7 @@ static bool run_test(PlayerType *player_ptr)
             inv = false;
         }
 
-        if (!inv && see_wall(player_ptr, Direction::self(), pos)) {
+        if (!inv && see_wall(*player_ptr, Direction::self(), pos)) {
             if (find_openarea) {
                 if (i < 0) {
                     find_breakright = true;
@@ -293,7 +295,7 @@ static bool run_test(PlayerType *player_ptr)
 
     if (find_openarea) {
         for (int i = -max; i < 0; i++) {
-            if (!see_wall(player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
+            if (!see_wall(*player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakright) {
                     return true;
                 }
@@ -305,7 +307,7 @@ static bool run_test(PlayerType *player_ptr)
         }
 
         for (int i = max; i > 0; i--) {
-            if (!see_wall(player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
+            if (!see_wall(*player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakleft) {
                     return true;
                 }
@@ -316,7 +318,7 @@ static bool run_test(PlayerType *player_ptr)
             }
         }
 
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(*player_ptr, find_current, p_pos);
     }
 
     if (!option) {
@@ -326,19 +328,19 @@ static bool run_test(PlayerType *player_ptr)
     if (!option2) {
         find_current = option;
         find_prevdir = option;
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(*player_ptr, find_current, p_pos);
     } else if (!find_cut) {
         find_current = option;
         find_prevdir = option2;
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(*player_ptr, find_current, p_pos);
     }
 
     const auto pos = player_ptr->get_neighbor(option);
-    if (!see_wall(player_ptr, option, pos) || !see_wall(player_ptr, check_dir, pos)) {
+    if (!see_wall(*player_ptr, option, pos) || !see_wall(*player_ptr, check_dir, pos)) {
         if (see_nothing(player_ptr, option, pos) && see_nothing(player_ptr, option2, pos)) {
             find_current = option;
             find_prevdir = option2;
-            return see_wall(player_ptr, find_current, p_pos);
+            return see_wall(*player_ptr, find_current, p_pos);
         }
 
         return true;
@@ -347,12 +349,12 @@ static bool run_test(PlayerType *player_ptr)
     if (find_cut) {
         find_current = option2;
         find_prevdir = option2;
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(*player_ptr, find_current, p_pos);
     }
 
     find_current = option;
     find_prevdir = option2;
-    return see_wall(player_ptr, find_current, p_pos);
+    return see_wall(*player_ptr, find_current, p_pos);
 }
 
 /*!
@@ -365,14 +367,14 @@ void run_step(PlayerType *player_ptr, const Direction &dir)
 {
     if (dir) {
         ignore_avoid_run = true;
-        if (see_wall(player_ptr, dir, player_ptr->get_position())) {
+        if (see_wall(*player_ptr, dir, player_ptr->get_position())) {
             sound(SoundKind::HITWALL);
             msg_print(_("その方向には走れません。", "You cannot run in that direction."));
             disturb(*player_ptr, false, false);
             return;
         }
 
-        run_init(player_ptr, dir);
+        run_init(*player_ptr, dir);
     } else {
         if (run_test(player_ptr)) {
             disturb(*player_ptr, false, false);
