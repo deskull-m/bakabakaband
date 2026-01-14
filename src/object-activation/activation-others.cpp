@@ -189,7 +189,7 @@ bool activate_dispel_curse(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが真実を照らし出す...", "The %s exhibits the truth..."), name.data());
     (void)remove_all_curse(player_ptr);
-    (void)probing(player_ptr);
+    (void)probing(*player_ptr);
     return true;
 }
 
@@ -248,7 +248,7 @@ bool activate_extra_detection(PlayerType *player_ptr)
 {
     msg_print(_("明るく輝いている...", "It glows brightly..."));
     detect_all(player_ptr, DETECT_RAD_DEFAULT);
-    probing(player_ptr);
+    probing(*player_ptr);
     identify_fully(player_ptr, false);
     return true;
 }

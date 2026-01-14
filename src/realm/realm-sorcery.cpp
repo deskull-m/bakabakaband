@@ -351,7 +351,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 24: {
         if (cast) {
-            probing(player_ptr);
+            probing(*player_ptr);
         }
     } break;
 

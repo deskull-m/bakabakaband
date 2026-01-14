@@ -431,14 +431,15 @@ std::string probed_monster_info(PlayerType *player_ptr, MonsterEntity &monster, 
  * @brief 周辺モンスターを調査する / Probe nearby monsters
  * @return 効力があった場合TRUEを返す
  */
-bool probing(PlayerType *player_ptr)
+bool probing(CreatureEntity &creature)
 {
+    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     bool cu = game_term->scr->cu;
     bool cv = game_term->scr->cv;
     game_term->scr->cu = 0;
     game_term->scr->cv = 1;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto probe = false;
     for (short i = 1; i < floor.m_max; i++) {
@@ -485,7 +486,7 @@ bool probing(PlayerType *player_ptr)
     term_fresh();
 
     if (probe) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
+        chg_virtue(creature, Virtue::KNOWLEDGE, 1);
         msg_print(_("これで全部です。", "That's all."));
     }
 

@@ -247,7 +247,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_PROBING: {
-        ident = probing(player_ptr);
+        ident = probing(*player_ptr);
         break;
     }
 

@@ -118,7 +118,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     case PlayerClassType::RANGER:
     case PlayerClassType::SNIPER:
         msg_print(_("敵を調査した...", "You examine your foes..."));
-        probing(player_ptr);
+        probing(*player_ptr);
         return true;
     case PlayerClassType::PALADIN: {
         const auto dir = get_aim_dir(player_ptr);
@@ -378,7 +378,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     }
     case PlayerRaceType::HALF_TITAN:
         msg_print(_("敵を調査した...", "You examine your foes..."));
-        (void)probing(player_ptr);
+        (void)probing(*player_ptr);
         return true;
     case PlayerRaceType::CYCLOPS: {
         const auto dir = get_aim_dir(player_ptr);

@@ -234,13 +234,13 @@ static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
     return true;
 }
 
-static bool scouter_probing(PlayerType *player_ptr, ae_type *ae_ptr)
+static bool scouter_probing(CreatureEntity &user, ae_type *ae_ptr)
 {
     if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::HELM || ae_ptr->o_ptr->bi_key.sval() != SV_SCOUTER) {
         return false;
     }
 
-    probing(player_ptr);
+    probing(user);
     return true;
 }
 
@@ -356,7 +356,7 @@ void exe_activate(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     if (activate_whistle(*player_ptr, ae_ptr)) {
         activated = true;
-    } else if (scouter_probing(player_ptr, ae_ptr)) {
+    } else if (scouter_probing(*player_ptr, ae_ptr)) {
         activated = true;
     } else if (exe_monster_capture(player_ptr, *ae_ptr->o_ptr)) {
         activated = true;
