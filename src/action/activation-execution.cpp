@@ -323,7 +323,7 @@ void exe_activate(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     }
 
     ae_type tmp_ae;
-    ae_type *ae_ptr = initialize_ae_type(player_ptr, &tmp_ae, i_idx);
+    ae_type *ae_ptr = initialize_ae_type(*player_ptr, &tmp_ae, i_idx);
 
     if (ae_ptr->o_ptr->ego_idx == EgoType::SHATTERED || ae_ptr->o_ptr->ego_idx == EgoType::BLASTED) {
         msg_print(_("このアイテムはもう壊れていて始動できない。", "That broken object can't be activated."));
