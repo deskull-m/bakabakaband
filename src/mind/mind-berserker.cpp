@@ -66,7 +66,7 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
             return false;
         }
 
-        exe_movement(player_ptr, dir, easy_disarm, true);
+        exe_movement(*player_ptr, dir, easy_disarm, true);
         return true;
     }
     case MindBerserkerType::QUAKE:
