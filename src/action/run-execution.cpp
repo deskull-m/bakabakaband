@@ -186,11 +186,12 @@ static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2
  * ダッシュ移動が継続できるならばTRUEを返す。
  * Return TRUE if the running should be stopped
  */
-static bool run_test(PlayerType *player_ptr)
+static bool run_test(CreatureEntity &creature)
 {
+    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     const auto prev_dir = find_prevdir;
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     const auto &p_grid = floor.get_grid(p_pos);
     if ((disturb_trap_detect || alert_trap_detect) && player_ptr->dtrap && !(p_grid.info & CAVE_IN_DETECT)) {
         player_ptr->dtrap = false;
@@ -253,7 +254,7 @@ static bool run_test(PlayerType *player_ptr)
             inv = false;
         }
 
-        if (!inv && see_wall(*player_ptr, Direction::self(), pos)) {
+        if (!inv && see_wall(creature, Direction::self(), pos)) {
             if (find_openarea) {
                 if (i < 0) {
                     find_breakright = true;
@@ -295,7 +296,7 @@ static bool run_test(PlayerType *player_ptr)
 
     if (find_openarea) {
         for (int i = -max; i < 0; i++) {
-            if (!see_wall(*player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
+            if (!see_wall(creature, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakright) {
                     return true;
                 }
@@ -307,7 +308,7 @@ static bool run_test(PlayerType *player_ptr)
         }
 
         for (int i = max; i > 0; i--) {
-            if (!see_wall(*player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
+            if (!see_wall(creature, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakleft) {
                     return true;
                 }
@@ -318,7 +319,7 @@ static bool run_test(PlayerType *player_ptr)
             }
         }
 
-        return see_wall(*player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     }
 
     if (!option) {
@@ -328,19 +329,19 @@ static bool run_test(PlayerType *player_ptr)
     if (!option2) {
         find_current = option;
         find_prevdir = option;
-        return see_wall(*player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     } else if (!find_cut) {
         find_current = option;
         find_prevdir = option2;
-        return see_wall(*player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     }
 
     const auto pos = player_ptr->get_neighbor(option);
-    if (!see_wall(*player_ptr, option, pos) || !see_wall(*player_ptr, check_dir, pos)) {
+    if (!see_wall(creature, option, pos) || !see_wall(creature, check_dir, pos)) {
         if (see_nothing(player_ptr, option, pos) && see_nothing(player_ptr, option2, pos)) {
             find_current = option;
             find_prevdir = option2;
-            return see_wall(*player_ptr, find_current, p_pos);
+            return see_wall(creature, find_current, p_pos);
         }
 
         return true;
@@ -349,12 +350,12 @@ static bool run_test(PlayerType *player_ptr)
     if (find_cut) {
         find_current = option2;
         find_prevdir = option2;
-        return see_wall(*player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     }
 
     find_current = option;
     find_prevdir = option2;
-    return see_wall(*player_ptr, find_current, p_pos);
+    return see_wall(creature, find_current, p_pos);
 }
 
 /*!
@@ -376,7 +377,7 @@ void run_step(PlayerType *player_ptr, const Direction &dir)
 
         run_init(*player_ptr, dir);
     } else {
-        if (run_test(player_ptr)) {
+        if (run_test(*player_ptr)) {
             disturb(*player_ptr, false, false);
             return;
         }
