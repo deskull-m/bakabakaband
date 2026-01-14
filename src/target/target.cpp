@@ -35,7 +35,7 @@ public:
     }
     bool operator()(const TargetMonster &target_monster) const
     {
-        return target_able(this->player_ptr, target_monster.m_idx);
+        return target_able(*this->player_ptr, target_monster.m_idx);
     }
 
 private:

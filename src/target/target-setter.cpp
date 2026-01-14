@@ -192,7 +192,7 @@ std::string TargetSetter::describe_projectablity() const
     const auto &floor = *this->player_ptr->current_floor_ptr;
     std::string info;
     const auto &grid = floor.get_grid(this->pos_target);
-    if (target_able(this->player_ptr, grid.m_idx)) {
+    if (target_able(*this->player_ptr, grid.m_idx)) {
         info = _("q止 t決 p自 o現 +次 -前", "q,t,p,o,+,-,<dir>");
     } else {
         info = _("q止 p自 o現 +次 -前", "q,p,o,+,-,<dir>");
@@ -259,7 +259,7 @@ Direction TargetSetter::switch_target_input()
     case '5':
     case '0': {
         const auto &grid = this->player_ptr->current_floor_ptr->get_grid(this->pos_target);
-        if (!target_able(this->player_ptr, grid.m_idx)) {
+        if (!target_able(*this->player_ptr, grid.m_idx)) {
             bell();
             return Direction::none();
         }
