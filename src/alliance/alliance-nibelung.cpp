@@ -44,12 +44,11 @@
  */
 int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int point = 0;
     point += calcIronmanHostilityPenalty();
 
     // 種族ボーナス
-    switch (player.prace) {
+    switch (creature.prace) {
     case PlayerRaceType::DWARF:
         point += 50; // ドワーフは大幅ボーナス
         break;
@@ -71,7 +70,7 @@ int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
     }
 
     // 職業ボーナス
-    switch (player.pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::SMITH:
         point += 35; // 鍛冶師は高評価
         break;
@@ -93,27 +92,27 @@ int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
     }
 
     // ステータスボーナス
-    point += (player.stat_index[A_STR] - 10) * 2; // 筋力重視
-    point += (player.stat_index[A_CON] - 10) * 2; // 耐久力重視
-    point += (player.stat_index[A_DEX] - 10) * 1; // 器用さも評価
-    point -= (player.stat_index[A_CHR] - 10) * 1; // 魅力はそれほど重要視しない
+    point += (creature.stat_cur[A_STR] - 10) * 2; // 筋力重視
+    point += (creature.stat_cur[A_CON] - 10) * 2; // 耐久力重視
+    point += (creature.stat_cur[A_DEX] - 10) * 1; // 器用さも評価
+    point -= (creature.stat_cur[A_CHR] - 10) * 1; // 魅力はそれほど重要視しない
 
     // 性格ボーナス
-    if (player.ppersonality == PERSONALITY_ORDINARY) {
+    if (creature.ppersonality == PERSONALITY_ORDINARY) {
         point += 10; // 普通の性格は安定感で評価
     }
-    if (player.ppersonality == PERSONALITY_SHREWD) {
+    if (creature.ppersonality == PERSONALITY_SHREWD) {
         point += 15; // 抜け目ない性格は商売上手で評価
     }
-    if (player.ppersonality == PERSONALITY_PATIENT) {
+    if (creature.ppersonality == PERSONALITY_PATIENT) {
         point += 20; // 我慢強い性格は鍛冶に向く
     }
-    if (player.ppersonality == PERSONALITY_MIGHTY) {
+    if (creature.ppersonality == PERSONALITY_MIGHTY) {
         point += 15; // 豪快な性格も評価
     }
 
     // レベルボーナス
-    point += player.level / 3;
+    point += creature.level / 3;
 
     // ニーベルング族のメンバーを殺害した場合の減点
     const auto &monrace_list = MonraceList::get_instance();

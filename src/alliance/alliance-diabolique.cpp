@@ -17,13 +17,11 @@
 
 int AllianceDiabolique::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
     // プレイヤーレベルによる基本印象値
-    impression += player.level * 10;
-
+    impression += creature.level * 10;
     // デアボリカのロードたちを殺害した場合の大幅減点（レベル×10）
     const auto &monrace_list = MonraceList::get_instance();
     if (monrace_list.get_monrace(MonraceId::DIABOLIQUE_GOLDO).r_pkills > 0) {

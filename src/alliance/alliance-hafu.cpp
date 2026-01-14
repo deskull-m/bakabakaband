@@ -16,7 +16,6 @@
 #include "view/display-messages.h"
 int AllianceHafu::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
@@ -24,12 +23,11 @@ int AllianceHafu::calcImpressionPoint(const CreatureEntity &creature) const
     impression += Alliance::calcPlayerPower(creature, 4, 25);
 
     // 魅力と知恵による統治者としての評価
-    impression += (player.stat_use[A_CHR] - 10) * 3;
-    impression += (player.stat_use[A_WIS] - 10) * 2;
+    impression += (creature.stat_use[A_CHR] - 10) * 3;
+    impression += (creature.stat_use[A_WIS] - 10) * 2;
 
     // レベルによる権威の評価
-    impression += player.level * 2;
-
+    impression += creature.level * 2;
     /*
     // 覇府関連のモンスター討伐による減点
     impression -= MonraceList::get_instance().get_monrace(MonraceId::HAFU_SHOGUN).r_akills * 100;

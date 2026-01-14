@@ -16,7 +16,6 @@
 #include "view/display-messages.h"
 int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
@@ -24,7 +23,7 @@ int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
     impression += Alliance::calcPlayerPower(creature, 2, 30);
 
     // 魅力による追加ボーナス
-    impression += (player.stat_use[A_CHR] - 10) * 5;
+    impression += (creature.stat_use[A_CHR] - 10) * 5;
 
     // 魔法使用による好感度向上（コーンとは逆）
     // if (player.realm1 != REALM_NONE || player.realm2 != REALM_NONE) {

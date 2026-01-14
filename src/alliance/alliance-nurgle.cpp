@@ -25,7 +25,6 @@
  */
 int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    const auto &player = dynamic_cast<const PlayerType &>(creature);
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
@@ -33,16 +32,16 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
     impression += Alliance::calcPlayerPower(creature, 10, 25);
 
     // 耐久力を最重視（病気に耐える力）
-    impression += (player.stat_use[A_CON] - 10) * 6;
+    impression += (creature.stat_use[A_CON] - 10) * 6;
 
     // 筋力も評価（腐敗した肉体でも力強く）
-    impression += (player.stat_use[A_STR] - 10) * 3;
+    impression += (creature.stat_use[A_STR] - 10) * 3;
 
     // 魅力は逆に低い方が好まれる（醜さは美徳）
-    impression -= (player.stat_use[A_CHR] - 10) * 4;
+    impression -= (creature.stat_use[A_CHR] - 10) * 4;
 
     // 種族による評価
-    switch (player.prace) {
+    switch (creature.prace) {
     case PlayerRaceType::ZOMBIE:
     case PlayerRaceType::SKELETON:
         impression += 200; // アンデッドは最高評価
@@ -75,7 +74,7 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
     }
 
     // 職業による評価
-    switch (player.pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::BERSERKER:
         impression += 100; // 戦場で傷つく者
@@ -116,13 +115,13 @@ int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 
     // 状態異常持ちを評価
     /*
-    if (player.poisoned)
+    if (creature.poisoned)
         impression += 50;
-    if (player.diseased)
+    if (creature.diseased)
         impression += 80;
-    if (player.cut)
+    if (creature.cut)
         impression += 30;
-    if (player.stun)
+    if (creature.stun)
         impression += 20;
     */
 
