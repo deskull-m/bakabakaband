@@ -248,6 +248,9 @@ public:
     ACTION_SKILL_POWER skill_tht{}; /*!< 行動技能値:投射命中能力 / Skill: To hit (throwing) */
     ACTION_SKILL_POWER skill_dig{}; /*!< 行動技能値:掘削 / Skill: Digging */
 
+    POSITION run_py{}; /*!< 走行中の目標Y座標 / Target Y position while running */
+    POSITION run_px{}; /*!< 走行中の目標X座標 / Target X position while running */
+
     // 基本情報
     int16_t age{}; /*!< 年齢 / Age */
     int16_t ht{}; /*!< 身長 / Height */

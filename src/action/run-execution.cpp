@@ -91,35 +91,36 @@ static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D
  *       \#x\#                  \@x\#\n
  *       \@\@p.                  p\n
  */
-static void run_init(PlayerType *player_ptr, const Direction &dir)
+static void run_init(CreatureEntity &creature, const Direction &dir)
 {
+    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     find_current = dir;
     find_prevdir = dir;
     find_openarea = true;
     find_breakright = find_breakleft = false;
-    const auto pos = player_ptr->get_position();
-    player_ptr->run_py = pos.y;
-    player_ptr->run_px = pos.x;
+    const auto pos = creature.get_position();
+    creature.run_py = pos.y;
+    creature.run_px = pos.x;
     const auto pos_neighbor = player_ptr->get_neighbor(dir);
     ignore_avoid_run = player_ptr->current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
     const auto dir_left45 = dir.rotated_45degree(1);
     const auto dir_right45 = dir.rotated_45degree(-1);
     auto deepleft = false;
     auto shortleft = false;
-    if (see_wall(*player_ptr, dir_left45, pos)) {
+    if (see_wall(creature, dir_left45, pos)) {
         find_breakleft = true;
         shortleft = true;
-    } else if (see_wall(*player_ptr, dir_left45, pos_neighbor)) {
+    } else if (see_wall(creature, dir_left45, pos_neighbor)) {
         find_breakleft = true;
         deepleft = true;
     }
 
     auto deepright = false;
     auto shortright = false;
-    if (see_wall(*player_ptr, dir_right45, pos)) {
+    if (see_wall(creature, dir_right45, pos)) {
         find_breakright = true;
         shortright = true;
-    } else if (see_wall(*player_ptr, dir_right45, pos_neighbor)) {
+    } else if (see_wall(creature, dir_right45, pos_neighbor)) {
         find_breakright = true;
         deepright = true;
     }
@@ -139,7 +140,7 @@ static void run_init(PlayerType *player_ptr, const Direction &dir)
         return;
     }
 
-    if (!see_wall(*player_ptr, dir, pos_neighbor)) {
+    if (!see_wall(creature, dir, pos_neighbor)) {
         return;
     }
 
@@ -373,7 +374,7 @@ void run_step(PlayerType *player_ptr, const Direction &dir)
             return;
         }
 
-        run_init(player_ptr, dir);
+        run_init(*player_ptr, dir);
     } else {
         if (run_test(player_ptr)) {
             disturb(*player_ptr, false, false);
