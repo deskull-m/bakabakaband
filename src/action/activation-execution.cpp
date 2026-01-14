@@ -240,7 +240,7 @@ static bool scouter_probing(CreatureEntity &user, ae_type *ae_ptr)
         return false;
     }
 
-    probing(&dynamic_cast<PlayerType &>(user));
+    probing(user);
     return true;
 }
 

@@ -4,6 +4,7 @@
 #include "system/angband.h"
 #include <string>
 
+class CreatureEntity;
 class MonraceDefinition;
 class MonsterEntity;
 class PlayerType;
@@ -32,4 +33,4 @@ bool turn_evil(PlayerType *player_ptr, int dam);
 bool turn_monsters(PlayerType *player_ptr, int dam);
 bool deathray_monsters(PlayerType *player_ptr);
 std::string probed_monster_info(PlayerType *player_ptr, MonsterEntity &monster, const MonraceDefinition &monrace);
-bool probing(PlayerType *player_ptr);
+bool probing(CreatureEntity &creature);

@@ -294,7 +294,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_zap_floor_monsters(player_ptr);
         return true;
     case '_':
-        probing(player_ptr);
+        probing(*player_ptr);
         return true;
     case '@':
         wiz_debug_spell(player_ptr);
