@@ -19,7 +19,7 @@
 bool door_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_DOOR, flg).notice;
+    return project(*player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_DOOR, flg).notice;
 }
 
 /*!
@@ -32,7 +32,7 @@ bool door_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 bool trap_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_TRAP, flg).notice;
+    return project(*player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_TRAP, flg).notice;
 }
 
 /*!
@@ -43,7 +43,7 @@ bool trap_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 bool tree_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_TREE, flg).notice;
+    return project(*player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_TREE, flg).notice;
 }
 
 /*!
@@ -54,7 +54,7 @@ bool tree_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 bool wall_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_WALL, flg).notice;
+    return project(*player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_WALL, flg).notice;
 }
 
 /*!
@@ -65,7 +65,7 @@ bool wall_creation(PlayerType *player_ptr, POSITION y, POSITION x)
 bool create_rune_protection_area(PlayerType *player_ptr, POSITION y, POSITION x)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM;
-    return project(player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_RUNE_PROTECTION, flg).notice;
+    return project(*player_ptr, 0, 1, y, x, 0, AttributeType::MAKE_RUNE_PROTECTION, flg).notice;
 }
 
 /*!
@@ -76,7 +76,7 @@ bool create_rune_protection_area(PlayerType *player_ptr, POSITION y, POSITION x)
 bool wall_stone(PlayerType *player_ptr)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    bool dummy = project(player_ptr, 0, 1, player_ptr->y, player_ptr->x, 0, AttributeType::STONE_WALL, flg).notice;
+    bool dummy = project(*player_ptr, 0, 1, player_ptr->y, player_ptr->x, 0, AttributeType::STONE_WALL, flg).notice;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::FLOW);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -91,7 +91,7 @@ bool wall_stone(PlayerType *player_ptr)
 bool destroy_doors_touch(PlayerType *player_ptr)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, player_ptr->y, player_ptr->x, 0, AttributeType::KILL_DOOR, flg).notice;
+    return project(*player_ptr, 0, 1, player_ptr->y, player_ptr->x, 0, AttributeType::KILL_DOOR, flg).notice;
 }
 
 /*!
@@ -102,7 +102,7 @@ bool destroy_doors_touch(PlayerType *player_ptr)
 bool disarm_traps_touch(PlayerType *player_ptr)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, player_ptr->y, player_ptr->x, 0, AttributeType::KILL_TRAP, flg).notice;
+    return project(*player_ptr, 0, 1, player_ptr->y, player_ptr->x, 0, AttributeType::KILL_TRAP, flg).notice;
 }
 
 /*!
@@ -113,7 +113,7 @@ bool disarm_traps_touch(PlayerType *player_ptr)
 bool sleep_monsters_touch(PlayerType *player_ptr)
 {
     BIT_FLAGS flg = PROJECT_KILL | PROJECT_HIDE;
-    return project(player_ptr, 0, 1, player_ptr->y, player_ptr->x, player_ptr->level, AttributeType::OLD_SLEEP, flg).notice;
+    return project(*player_ptr, 0, 1, player_ptr->y, player_ptr->x, player_ptr->level, AttributeType::OLD_SLEEP, flg).notice;
 }
 
 /*!
@@ -127,7 +127,7 @@ bool sleep_monsters_touch(PlayerType *player_ptr)
 bool animate_dead(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y, POSITION x)
 {
     BIT_FLAGS flg = PROJECT_ITEM | PROJECT_HIDE;
-    return project(player_ptr, src_idx, 5, y, x, 0, AttributeType::ANIM_DEAD, flg).notice;
+    return project(*player_ptr, src_idx, 5, y, x, 0, AttributeType::ANIM_DEAD, flg).notice;
 }
 
 /*!
@@ -152,7 +152,7 @@ void wall_breaker(PlayerType *player_ptr)
         }
 
         constexpr auto flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-        project(player_ptr, 0, 0, pos.y, pos.x, 20 + randint1(30), AttributeType::KILL_WALL, flags);
+        project(*player_ptr, 0, 0, pos.y, pos.x, 20 + randint1(30), AttributeType::KILL_WALL, flags);
         return;
     }
 
@@ -172,6 +172,6 @@ void wall_breaker(PlayerType *player_ptr)
         }
 
         constexpr auto flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-        project(player_ptr, 0, 0, pos.y, pos.x, 20 + randint1(30), AttributeType::KILL_WALL, flags);
+        project(*player_ptr, 0, 0, pos.y, pos.x, 20 + randint1(30), AttributeType::KILL_WALL, flags);
     }
 }

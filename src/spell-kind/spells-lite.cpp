@@ -314,7 +314,7 @@ bool starlight(PlayerType *player_ptr, bool magic)
         }
 
         constexpr uint flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL | PROJECT_LOS;
-        project(player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + player_ptr->level / 8, 10), AttributeType::LITE_WEAK, flags);
+        project(*player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + player_ptr->level / 8, 10), AttributeType::LITE_WEAK, flags);
     }
 
     return true;
@@ -339,7 +339,7 @@ bool lite_area(PlayerType *player_ptr, int dam, int rad)
     }
 
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_KILL;
-    (void)project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::LITE_WEAK, flg);
+    (void)project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::LITE_WEAK, flg);
 
     lite_room(player_ptr, player_ptr->get_position());
 
@@ -360,7 +360,7 @@ bool unlite_area(PlayerType *player_ptr, int dam, int rad)
     }
 
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_KILL;
-    (void)project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::DARK_WEAK, flg);
+    (void)project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::DARK_WEAK, flg);
 
     unlite_room(player_ptr, player_ptr->get_position());
 

@@ -92,7 +92,7 @@ void SpellsMirrorMaster::remove_all_mirrors(bool explode)
         }
 
         constexpr BIT_FLAGS projection = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI;
-        project(this->player_ptr, 0, 2, pos.y, pos.x, this->player_ptr->level / 2 + 5, AttributeType::SHARDS, projection);
+        project(*this->player_ptr, 0, 2, pos.y, pos.x, this->player_ptr->level / 2 + 5, AttributeType::SHARDS, projection);
     }
 }
 

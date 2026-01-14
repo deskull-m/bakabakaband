@@ -353,7 +353,7 @@ bool activate_ball_lite(PlayerType *player_ptr, std::string_view name)
         }
 
         constexpr uint32_t flags = PROJECT_THRU | PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-        project(player_ptr, 0, 3, pos.y, pos.x, 150, AttributeType::ELEC, flags);
+        project(*player_ptr, 0, 3, pos.y, pos.x, 150, AttributeType::ELEC, flags);
     }
 
     return true;

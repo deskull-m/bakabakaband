@@ -220,6 +220,6 @@ void cast_meteor(PlayerType *player_ptr, int dam, POSITION rad)
             continue;
         }
 
-        project(player_ptr, 0, rad, pos.y, pos.x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
+        project(*player_ptr, 0, rad, pos.y, pos.x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
     }
 }

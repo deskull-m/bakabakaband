@@ -50,7 +50,7 @@ static void process_volcanic_crater(PlayerType *player_ptr, const Pos2D &pos)
     const auto damage = 100 + floor.dun_level * 2;
 
     // 半径3の火炎ボール効果
-    project(player_ptr, -1, 3, pos.y, pos.x, damage, AttributeType::FIRE,
+    project(*player_ptr, -1, 3, pos.y, pos.x, damage, AttributeType::FIRE,
         (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP));
 }
 

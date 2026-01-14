@@ -586,7 +586,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
             }
 
             constexpr auto flag = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL;
-            project(player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + plev / 8, 7), typ, flag);
+            project(*player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + plev / 8, 7), typ, flag);
         }
 
         return true;
@@ -876,7 +876,7 @@ static bool try_cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx, 
         msg_print(_("元素の力が制御できない氾流となって解放された！", "The elemental power surges from you in an uncontrollable torrent!"));
         const auto element = get_element_types(player_ptr->element_realm)[0];
         constexpr auto flags = PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
-        project(player_ptr, PROJECT_WHO_UNCTRL_POWER, 2 + plev / 10, player_ptr->y, player_ptr->x, plev * 2, element, flags);
+        project(*player_ptr, PROJECT_WHO_UNCTRL_POWER, 2 + plev / 10, player_ptr->y, player_ptr->x, plev * 2, element, flags);
         player_ptr->csp = std::max(0, player_ptr->csp - player_ptr->msp * 10 / (20 + randint1(10)));
 
         PlayerEnergy(player_ptr).set_player_turn_energy(100);
@@ -1480,7 +1480,7 @@ bool switch_element_execution(PlayerType *player_ptr)
         (void)lite_area(player_ptr, Dice::roll(2, plev / 2), plev / 10);
         return true;
     case ElementRealmType::ICE:
-        (void)project(player_ptr, 0, 5, player_ptr->y, player_ptr->x, 1, AttributeType::COLD, PROJECT_ITEM);
+        (void)project(*player_ptr, 0, 5, player_ptr->y, player_ptr->x, 1, AttributeType::COLD, PROJECT_ITEM);
         (void)project_all_los(player_ptr, AttributeType::OLD_SLEEP, 20 + plev * 3 / 2);
         return true;
     case ElementRealmType::SKY:

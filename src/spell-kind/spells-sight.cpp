@@ -70,7 +70,7 @@ bool project_all_los(PlayerType *player_ptr, AttributeType typ, int dam)
 
         monster.mflag.reset(MonsterTemporaryFlagType::LOS);
         const auto m_pos = monster.get_position();
-        if (project(player_ptr, 0, 0, m_pos.y, m_pos.x, dam, typ, flg).notice) {
+        if (project(*player_ptr, 0, 0, m_pos.y, m_pos.x, dam, typ, flg).notice) {
             obvious = true;
         }
     }

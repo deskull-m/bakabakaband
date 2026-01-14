@@ -364,7 +364,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
              * MP不足で鑑定が発動される前に歌が中断してしまうのを防止。
              */
             if (cont || cast) {
-                project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, 0, AttributeType::IDENTIFY, PROJECT_ITEM);
+                project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, 0, AttributeType::IDENTIFY, PROJECT_ITEM);
             }
         }
 
@@ -493,7 +493,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
              * MP不足で効果が発動される前に歌が中断してしまうのを防止。
              */
             if (cont || cast) {
-                project(player_ptr, 0, 0, player_ptr->y, player_ptr->x, 0, AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM | PROJECT_HIDE);
+                project(*player_ptr, 0, 0, player_ptr->y, player_ptr->x, 0, AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM | PROJECT_HIDE);
             }
         }
         break;
@@ -567,7 +567,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             msg_print(_("歌が空間を歪めた．．．", "Reality whirls wildly as you sing a dizzying melody..."));
-            project(player_ptr, 0, rad, player_ptr->y, player_ptr->x, power, AttributeType::AWAY_ALL, PROJECT_KILL);
+            project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, power, AttributeType::AWAY_ALL, PROJECT_KILL);
         }
     } break;
 

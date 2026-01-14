@@ -35,7 +35,7 @@ bool fire_ball(PlayerType *player_ptr, AttributeType typ, const Direction &dir, 
         flg &= ~(PROJECT_STOP);
     }
 
-    return project(player_ptr, 0, rad, ty, tx, dam, typ, flg, cap_mon_ptr).notice;
+    return project(*player_ptr, 0, rad, ty, tx, dam, typ, flg, cap_mon_ptr).notice;
 }
 
 /*!
@@ -62,7 +62,7 @@ bool fire_breath(PlayerType *player_ptr, AttributeType typ, const Direction &dir
         reset_bits(flg, PROJECT_STOP);
     }
 
-    return project(player_ptr, 0, rad, ty, tx, dam, typ, flg).notice;
+    return project(*player_ptr, 0, rad, ty, tx, dam, typ, flg).notice;
 }
 
 /*!
@@ -85,7 +85,7 @@ bool fire_rocket(PlayerType *player_ptr, AttributeType typ, const Direction &dir
     const auto [ty, tx] = dir.get_target_position(player_ptr->get_position(), 99);
 
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-    return project(player_ptr, 0, rad, ty, tx, dam, typ, flg).notice;
+    return project(*player_ptr, 0, rad, ty, tx, dam, typ, flg).notice;
 }
 
 /*!
@@ -111,7 +111,7 @@ bool fire_ball_hide(PlayerType *player_ptr, AttributeType typ, const Direction &
         flg &= ~(PROJECT_STOP);
     }
 
-    return project(player_ptr, 0, rad, ty, tx, dam, typ, flg).notice;
+    return project(*player_ptr, 0, rad, ty, tx, dam, typ, flg).notice;
 }
 
 /*!
@@ -136,7 +136,7 @@ bool fire_ball_hide(PlayerType *player_ptr, AttributeType typ, const Direction &
 bool fire_meteor(PlayerType *player_ptr, MONSTER_IDX src_idx, AttributeType typ, POSITION y, POSITION x, int dam, POSITION rad)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-    return project(player_ptr, src_idx, rad, y, x, dam, typ, flg).notice;
+    return project(*player_ptr, src_idx, rad, y, x, dam, typ, flg).notice;
 }
 
 /*!
@@ -177,7 +177,7 @@ bool fire_blast(PlayerType *player_ptr, AttributeType typ, const Direction &dir,
         }
 
         /* Analyze the "dir" and the "target". */
-        const auto proj_res = project(player_ptr, 0, 0, y, x, dice.roll(), typ, flg);
+        const auto proj_res = project(*player_ptr, 0, 0, y, x, dice.roll(), typ, flg);
         if (!proj_res.notice) {
             result = false;
         }
@@ -263,5 +263,5 @@ bool project_hook(PlayerType *player_ptr, AttributeType typ, const Direction &di
 {
     flg |= (PROJECT_THRU);
     const auto pos = dir.get_target_position(player_ptr->get_position());
-    return project(player_ptr, 0, 0, pos.y, pos.x, dam, typ, flg).notice;
+    return project(*player_ptr, 0, 0, pos.y, pos.x, dam, typ, flg).notice;
 }

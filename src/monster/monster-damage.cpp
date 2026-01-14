@@ -313,7 +313,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
             break;
         case 5:
             // ランダムな属性ダメージ
-            project(this->player_ptr, 0, 2, this->player_ptr->y, this->player_ptr->x,
+            project(*this->player_ptr, 0, 2, this->player_ptr->y, this->player_ptr->x,
                 randint1(100), static_cast<AttributeType>(randint1(15) + 1), PROJECT_KILL);
             break;
         }
