@@ -202,32 +202,32 @@ static bool activate_artifact(PlayerType *player_ptr, ItemEntity *o_ptr)
     }
 }
 
-static bool activate_whistle(PlayerType *player_ptr, ae_type *ae_ptr)
+static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
 {
     if (ae_ptr->o_ptr->bi_key.tval() != ItemKindType::WHISTLE) {
         return false;
     }
 
-    if (music_singing_any(player_ptr)) {
-        stop_singing(player_ptr);
+    if (music_singing_any(&dynamic_cast<PlayerType &>(user))) {
+        stop_singing(&dynamic_cast<PlayerType &>(user));
     }
 
-    if (SpellHex(*player_ptr).is_spelling_any()) {
-        (void)SpellHex(*player_ptr).stop_all_spells();
+    if (SpellHex(user).is_spelling_any()) {
+        (void)SpellHex(user).stop_all_spells();
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *user.current_floor_ptr;
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.m_list[pet_indice];
-        if (monster.is_pet() && (player_ptr->riding != pet_indice)) {
+        if (monster.is_pet() && (user.riding != pet_indice)) {
             pet_index.push_back(pet_indice);
         }
     }
 
     std::stable_sort(pet_index.begin(), pet_index.end(), [&floor](auto x, auto y) { return floor.order_pet_whistle(x, y); });
     for (auto pet_indice : pet_index) {
-        teleport_monster_to(player_ptr, pet_indice, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(&dynamic_cast<PlayerType &>(user), pet_indice, user.y, user.x, 100, TELEPORT_PASSIVE);
     }
 
     ae_ptr->o_ptr->timeout = 100 + randint1(100);
@@ -354,7 +354,7 @@ void exe_activate(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         return;
     }
 
-    if (activate_whistle(player_ptr, ae_ptr)) {
+    if (activate_whistle(*player_ptr, ae_ptr)) {
         activated = true;
     } else if (scouter_probing(player_ptr, ae_ptr)) {
         activated = true;
