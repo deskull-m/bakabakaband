@@ -14,5 +14,5 @@ struct ae_type {
     PERCENTAGE broken;
 };
 
-class PlayerType;
-ae_type *initialize_ae_type(PlayerType *player_ptr, ae_type *ae_ptr, const INVENTORY_IDX i_idx);
+class CreatureEntity;
+ae_type *initialize_ae_type(CreatureEntity &player, ae_type *ae_ptr, const INVENTORY_IDX i_idx);
