@@ -31,15 +31,15 @@
  * Future versions may restrict the ability to target "trappers"
  * and "mimics", but the semantics is a little bit weird.
  */
-bool target_able(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     if (!monster.is_valid()) {
         return false;
     }
 
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.effects()->hallucination().is_hallucinated()) {
         return false;
     }
 
@@ -51,7 +51,7 @@ bool target_able(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (!projectable(floor, p_pos, monster.get_position())) {
         return false;
     }
@@ -135,7 +135,7 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
             }
 
             const auto &grid = floor.get_grid(pos);
-            if (is_killable && !target_able(player_ptr, grid.m_idx)) {
+            if (is_killable && !target_able(*player_ptr, grid.m_idx)) {
                 continue;
             }
 
