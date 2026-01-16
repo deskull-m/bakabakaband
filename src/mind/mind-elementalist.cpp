@@ -517,7 +517,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = std::min(150, player_ptr->hp / 2);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_breath(player_ptr, typ, dir, dam, 3)) {
+        if (fire_breath(*player_ptr, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -615,7 +615,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = player_ptr->hp * 2 / 3;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_breath(player_ptr, typ, dir, dam, 3);
+        (void)fire_breath(*player_ptr, typ, dir, dam, 3);
         return true;
     }
     case ElementSpells::STORM_3ND: {

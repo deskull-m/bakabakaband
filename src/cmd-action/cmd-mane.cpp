@@ -434,102 +434,102 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::BR_ACID:
         msg_print(_("酸のブレスを吐いた。", "You breathe acid."));
-        fire_breath(player_ptr, AttributeType::ACID, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::ACID, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_ELEC:
         msg_print(_("稲妻のブレスを吐いた。", "You breathe lightning."));
-        fire_breath(player_ptr, AttributeType::ELEC, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::ELEC, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_FIRE:
         msg_print(_("火炎のブレスを吐いた。", "You breathe fire."));
-        fire_breath(player_ptr, AttributeType::FIRE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::FIRE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_COLD:
         msg_print(_("冷気のブレスを吐いた。", "You breathe frost."));
-        fire_breath(player_ptr, AttributeType::COLD, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::COLD, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_POIS:
         msg_print(_("ガスのブレスを吐いた。", "You breathe gas."));
-        fire_breath(player_ptr, AttributeType::POIS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::POIS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_NETH:
         msg_print(_("地獄のブレスを吐いた。", "You breathe nether."));
-        fire_breath(player_ptr, AttributeType::NETHER, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::NETHER, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_LITE:
         msg_print(_("閃光のブレスを吐いた。", "You breathe light."));
-        fire_breath(player_ptr, AttributeType::LITE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::LITE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_DARK:
         msg_print(_("暗黒のブレスを吐いた。", "You breathe darkness."));
-        fire_breath(player_ptr, AttributeType::DARK, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::DARK, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_CONF:
         msg_print(_("混乱のブレスを吐いた。", "You breathe confusion."));
-        fire_breath(player_ptr, AttributeType::CONFUSION, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::CONFUSION, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_SOUN:
         msg_print(_("轟音のブレスを吐いた。", "You breathe sound."));
-        fire_breath(player_ptr, AttributeType::SOUND, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::SOUND, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_CHAO:
         msg_print(_("カオスのブレスを吐いた。", "You breathe chaos."));
-        fire_breath(player_ptr, AttributeType::CHAOS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::CHAOS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_DISE:
         msg_print(_("劣化のブレスを吐いた。", "You breathe disenchantment."));
-        fire_breath(player_ptr, AttributeType::DISENCHANT, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::DISENCHANT, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_NEXU:
         msg_print(_("因果混乱のブレスを吐いた。", "You breathe nexus."));
-        fire_breath(player_ptr, AttributeType::NEXUS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::NEXUS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_TIME:
         msg_print(_("時間逆転のブレスを吐いた。", "You breathe time."));
-        fire_breath(player_ptr, AttributeType::TIME, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::TIME, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_INER:
         msg_print(_("遅鈍のブレスを吐いた。", "You breathe inertia."));
-        fire_breath(player_ptr, AttributeType::INERTIAL, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::INERTIAL, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_GRAV:
         msg_print(_("重力のブレスを吐いた。", "You breathe gravity."));
-        fire_breath(player_ptr, AttributeType::GRAVITY, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::GRAVITY, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_SHAR:
         msg_print(_("破片のブレスを吐いた。", "You breathe shards."));
-        fire_breath(player_ptr, AttributeType::SHARDS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::SHARDS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_PLAS:
         msg_print(_("プラズマのブレスを吐いた。", "You breathe plasma."));
-        fire_breath(player_ptr, AttributeType::PLASMA, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::PLASMA, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_FORC:
         msg_print(_("フォースのブレスを吐いた。", "You breathe force."));
-        fire_breath(player_ptr, AttributeType::FORCE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::FORCE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_MANA:
         msg_print(_("魔力のブレスを吐いた。", "You breathe mana."));
-        fire_breath(player_ptr, AttributeType::MANA, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::MANA, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BA_NUKE:
@@ -539,7 +539,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::BR_NUKE:
         msg_print(_("放射性廃棄物のブレスを吐いた。", "You breathe toxic waste."));
-        fire_breath(player_ptr, AttributeType::NUKE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::NUKE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BA_CHAO:
@@ -548,16 +548,16 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::BR_DISI:
         msg_print(_("分解のブレスを吐いた。", "You breathe disintegration."));
-        fire_breath(player_ptr, AttributeType::DISINTEGRATE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::DISINTEGRATE, dir, damage, (plev > 35 ? 3 : 2));
         break;
     case MonsterAbilityType::BR_VOID:
         msg_print(_("虚無のブレスを吐いた。", "You breathe void."));
-        fire_breath(player_ptr, AttributeType::VOID_MAGIC, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::VOID_MAGIC, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_ABYSS:
         msg_print(_("深淵のブレスを吐いた。", "You breathe abyss."));
-        fire_breath(player_ptr, AttributeType::ABYSS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::ABYSS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BA_ACID:
@@ -1148,11 +1148,11 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     }
     case MonsterAbilityType::BR_FECES:
         msg_print(_("糞便のブレスを吐いた。", "You breathe feces."));
-        fire_breath(player_ptr, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
         break;
     case MonsterAbilityType::BR_SPIDER_STRING:
         msg_print(_("蜘蛛糸のブレスを吐いた。", "You breathe spider string."));
-        fire_breath(player_ptr, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(*player_ptr, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
         break;
     case MonsterAbilityType::S_WALL: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();

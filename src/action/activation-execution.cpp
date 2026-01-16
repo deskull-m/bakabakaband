@@ -256,7 +256,7 @@ static bool activate_firethrowing(PlayerType *player_ptr, ae_type *ae_ptr)
     }
 
     msg_print(_("汚物は消毒だあ！", "The filth must be disinfected!"));
-    fire_breath(player_ptr, AttributeType::FIRE, dir, 20 + player_ptr->level * 5, 2);
+    fire_breath(*player_ptr, AttributeType::FIRE, dir, 20 + player_ptr->level * 5, 2);
     return true;
 }
 
@@ -271,7 +271,7 @@ static bool activate_rosmarinus(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    fire_breath(player_ptr, AttributeType::MISSILE, dir, 20 + player_ptr->level * 5, 2);
+    fire_breath(*player_ptr, AttributeType::MISSILE, dir, 20 + player_ptr->level * 5, 2);
     return true;
 }
 

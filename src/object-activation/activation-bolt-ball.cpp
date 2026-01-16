@@ -44,7 +44,7 @@ bool activate_missile_3(PlayerType *player_ptr)
     }
 
     msg_print(_("あなたはエレメントのブレスを吐いた。", "You breathe the elements."));
-    fire_breath(player_ptr, AttributeType::MISSILE, dir, 300, 4);
+    fire_breath(*player_ptr, AttributeType::MISSILE, dir, 300, 4);
     return true;
 }
 

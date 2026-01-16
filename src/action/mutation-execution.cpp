@@ -84,7 +84,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
 
         stop_mouth(player_ptr);
         msg_print(_("あなたは火炎のブレスを吐いた...", "You breathe fire..."));
-        fire_breath(player_ptr, AttributeType::FIRE, dir, lvl * 2, 1 + (lvl / 20));
+        fire_breath(*player_ptr, AttributeType::FIRE, dir, lvl * 2, 1 + (lvl / 20));
         return true;
     }
     case PlayerMutationType::HYPN_GAZE: {
