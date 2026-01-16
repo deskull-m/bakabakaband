@@ -238,25 +238,25 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_ACID_BALL: {
-        fire_ball(player_ptr, AttributeType::ACID, dir, 60 + lev, rad);
+        fire_ball(*player_ptr, AttributeType::ACID, dir, 60 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_ELEC_BALL: {
-        fire_ball(player_ptr, AttributeType::ELEC, dir, 40 + lev, rad);
+        fire_ball(*player_ptr, AttributeType::ELEC, dir, 40 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_FIRE_BALL: {
-        fire_ball(player_ptr, AttributeType::FIRE, dir, 70 + lev, rad);
+        fire_ball(*player_ptr, AttributeType::FIRE, dir, 70 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_COLD_BALL: {
-        fire_ball(player_ptr, AttributeType::COLD, dir, 50 + lev, rad);
+        fire_ball(*player_ptr, AttributeType::COLD, dir, 50 + lev, rad);
         ident = true;
         break;
     }

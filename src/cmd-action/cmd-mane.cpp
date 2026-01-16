@@ -534,7 +534,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::BA_NUKE:
         msg_print(_("放射能球を放った。", "You cast a ball of radiation."));
-        fire_ball(player_ptr, AttributeType::NUKE, dir, damage, 2);
+        fire_ball(*player_ptr, AttributeType::NUKE, dir, damage, 2);
         break;
 
     case MonsterAbilityType::BR_NUKE:
@@ -544,7 +544,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::BA_CHAO:
         msg_print(_("純ログルスを放った。", "You invoke a raw Logrus."));
-        fire_ball(player_ptr, AttributeType::CHAOS, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::CHAOS, dir, damage, 4);
         break;
     case MonsterAbilityType::BR_DISI:
         msg_print(_("分解のブレスを吐いた。", "You breathe disintegration."));
@@ -562,55 +562,55 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::BA_ACID:
         msg_print(_("アシッド・ボールの呪文を唱えた。", "You cast an acid ball."));
-        fire_ball(player_ptr, AttributeType::ACID, dir, damage, 2);
+        fire_ball(*player_ptr, AttributeType::ACID, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_ELEC:
         msg_print(_("サンダー・ボールの呪文を唱えた。", "You cast a lightning ball."));
-        fire_ball(player_ptr, AttributeType::ELEC, dir, damage, 2);
+        fire_ball(*player_ptr, AttributeType::ELEC, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_FIRE:
         msg_print(_("ファイア・ボールの呪文を唱えた。", "You cast a fire ball."));
-        fire_ball(player_ptr, AttributeType::FIRE, dir, damage, 2);
+        fire_ball(*player_ptr, AttributeType::FIRE, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_COLD:
         msg_print(_("アイス・ボールの呪文を唱えた。", "You cast a frost ball."));
-        fire_ball(player_ptr, AttributeType::COLD, dir, damage, 2);
+        fire_ball(*player_ptr, AttributeType::COLD, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_POIS:
         msg_print(_("悪臭雲の呪文を唱えた。", "You cast a stinking cloud."));
-        fire_ball(player_ptr, AttributeType::POIS, dir, damage, 2);
+        fire_ball(*player_ptr, AttributeType::POIS, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_NETH:
         msg_print(_("地獄球の呪文を唱えた。", "You cast a nether ball."));
-        fire_ball(player_ptr, AttributeType::NETHER, dir, damage, 2);
+        fire_ball(*player_ptr, AttributeType::NETHER, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_WATE:
         msg_print(_("流れるような身振りをした。", "You gesture fluidly."));
-        fire_ball(player_ptr, AttributeType::WATER, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::WATER, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_MANA:
         msg_print(_("魔力の嵐の呪文を念じた。", "You invoke a mana storm."));
-        fire_ball(player_ptr, AttributeType::MANA, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::MANA, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_DARK:
         msg_print(_("暗黒の嵐の呪文を念じた。", "You invoke a darkness storm."));
-        fire_ball(player_ptr, AttributeType::DARK, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::DARK, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_VOID:
         msg_print(_("虚無の嵐の呪文を念じた。", "You cast a void ball."));
-        fire_ball(player_ptr, AttributeType::VOID_MAGIC, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::VOID_MAGIC, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_ABYSS:
         msg_print(_("深淵の嵐の呪文を念じた。", "You cast a abyss ball."));
-        fire_ball(player_ptr, AttributeType::ABYSS, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::ABYSS, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_METEOR:
         msg_print(_("メテオスウォームの呪文を念じた。", "You cast a meteor swarm."));
-        fire_ball(player_ptr, AttributeType::METEOR, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::METEOR, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_GRAVITY:
         msg_print(_("超重力の呪文を念じた。", "You invoke a gravity storm."));
-        fire_ball(player_ptr, AttributeType::GRAVITY, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::GRAVITY, dir, damage, 4);
         break;
     case MonsterAbilityType::DRAIN_MANA:
         fire_ball_hide(player_ptr, AttributeType::DRAIN_MANA, dir, randint1(plev * 3) + plev, 0);
@@ -651,7 +651,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::BA_LITE:
         msg_print(_("スターバーストの呪文を念じた。", "You invoke a starburst."));
-        fire_ball(player_ptr, AttributeType::LITE, dir, damage, 4);
+        fire_ball(*player_ptr, AttributeType::LITE, dir, damage, 4);
         break;
     case MonsterAbilityType::BO_NETH:
         msg_print(_("地獄の矢の呪文を唱えた。", "You cast a nether bolt."));

@@ -41,7 +41,7 @@ bool android_inside_weapon(PlayerType *player_ptr)
 
     if (player_ptr->level < 35) {
         msg_print(_("バズーカを発射した。", "You fire your bazooka."));
-        fire_ball(player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2, 2);
+        fire_ball(*player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2, 2);
         return true;
     }
 

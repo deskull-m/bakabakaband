@@ -73,7 +73,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
 
         stop_mouth(player_ptr);
         msg_print(_("酸を吐きかけた...", "You spit acid..."));
-        fire_ball(player_ptr, AttributeType::ACID, dir, lvl, 1 + (lvl / 30));
+        fire_ball(*player_ptr, AttributeType::ACID, dir, lvl, 1 + (lvl / 30));
         return true;
     }
     case PlayerMutationType::BR_FIRE: {
@@ -123,7 +123,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     }
     case PlayerMutationType::RADIATION:
         msg_print(_("体から放射能が発生した！", "Radiation flows from your body!"));
-        fire_ball(player_ptr, AttributeType::NUKE, Direction::self(), (lvl * 2), 3 + (lvl / 20));
+        fire_ball(*player_ptr, AttributeType::NUKE, Direction::self(), (lvl * 2), 3 + (lvl / 20));
         return true;
     case PlayerMutationType::VAMPIRISM:
         vampirism(player_ptr);
@@ -155,7 +155,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     }
     case PlayerMutationType::SHRIEK:
         stop_mouth(player_ptr);
-        (void)fire_ball(player_ptr, AttributeType::SOUND, Direction::self(), 2 * lvl, 8);
+        (void)fire_ball(*player_ptr, AttributeType::SOUND, Direction::self(), 2 * lvl, 8);
         (void)aggravate_monsters(player_ptr, 0);
         return true;
     case PlayerMutationType::ILLUMINE:

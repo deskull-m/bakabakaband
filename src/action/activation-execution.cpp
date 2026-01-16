@@ -288,7 +288,7 @@ static bool activate_stungun(PlayerType *player_ptr, ae_type *ae_ptr)
     }
 
     msg_print(_("『バチィ』", "'bzzt'"));
-    fire_ball(player_ptr, AttributeType::STUNGUN, dir, player_ptr->level, 0);
+    fire_ball(*player_ptr, AttributeType::STUNGUN, dir, player_ptr->level, 0);
     project_length = 0;
     return true;
 }

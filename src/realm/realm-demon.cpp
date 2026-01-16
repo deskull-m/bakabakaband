@@ -146,7 +146,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::NETHER, dir, dice.roll() + base, rad);
+            fire_ball(*player_ptr, AttributeType::NETHER, dir, dice.roll() + base, rad);
         }
     } break;
 
@@ -217,7 +217,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -303,7 +303,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
             fire_ball_hide(player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 2 + randint1(2), rad);
         }
     } break;
@@ -322,7 +322,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::PLASMA, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::PLASMA, dir, dam, rad);
         }
     } break;
 
@@ -352,7 +352,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -369,7 +369,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::NEXUS, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::NEXUS, dir, dam, rad);
         }
     } break;
 
@@ -409,9 +409,9 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), dam, rad);
-            fire_ball(player_ptr, AttributeType::CONFUSION, Direction::self(), dam, rad);
-            fire_ball(player_ptr, AttributeType::CHARM, Direction::self(), power, rad);
+            fire_ball(*player_ptr, AttributeType::CHAOS, Direction::self(), dam, rad);
+            fire_ball(*player_ptr, AttributeType::CONFUSION, Direction::self(), dam, rad);
+            fire_ball(*player_ptr, AttributeType::CHARM, Direction::self(), power, rad);
         }
     } break;
 
@@ -443,7 +443,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -461,7 +461,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::NETHER, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::NETHER, dir, dam, rad);
         }
     } break;
 

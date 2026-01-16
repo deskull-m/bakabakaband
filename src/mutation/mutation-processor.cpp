@@ -177,14 +177,14 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(*player_ptr, false, true);
         msg_print(_("ブゥーーッ！おっと。", "BRRAAAP! Oops."));
         msg_erase();
-        fire_ball(player_ptr, AttributeType::POIS, Direction::self(), player_ptr->level, 3);
+        fire_ball(*player_ptr, AttributeType::POIS, Direction::self(), player_ptr->level, 3);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::IKISUGI) && (randint1(3000) == 13)) {
         disturb(*player_ptr, false, true);
         msg_print(_("ンアアアアー！", "NAAAAAAAH!"));
         msg_erase();
-        fire_ball(player_ptr, AttributeType::SOUND, Direction::self(), player_ptr->level, 3);
+        fire_ball(*player_ptr, AttributeType::SOUND, Direction::self(), player_ptr->level, 3);
         aggravate_monsters(player_ptr, 0);
     }
 
@@ -214,7 +214,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         flush();
         msg_erase();
         const auto dir = get_aim_dir(player_ptr, false);
-        fire_ball(player_ptr, AttributeType::MANA, dir ? dir : Direction::self(), player_ptr->level * 2, 3);
+        fire_ball(*player_ptr, AttributeType::MANA, dir ? dir : Direction::self(), player_ptr->level * 2, 3);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::ATT_DEMON) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
@@ -345,7 +345,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(*player_ptr, false, true);
         msg_print(_("周りの空間が歪んでいる気がする！", "You feel the world warping around you!"));
         msg_erase();
-        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), player_ptr->level, 8);
+        fire_ball(*player_ptr, AttributeType::CHAOS, Direction::self(), player_ptr->level, 8);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::NORMALITY) && one_in_(5000)) {

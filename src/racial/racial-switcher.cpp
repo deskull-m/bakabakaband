@@ -412,7 +412,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         if (player_ptr->level < 25) {
             (void)fire_bolt(player_ptr, AttributeType::ACID, dir, player_ptr->level);
         } else {
-            (void)fire_ball(player_ptr, AttributeType::ACID, dir, player_ptr->level, 2);
+            (void)fire_ball(*player_ptr, AttributeType::ACID, dir, player_ptr->level, 2);
         }
 
         return true;
@@ -463,7 +463,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
 
         if (player_ptr->level >= 30) {
             msg_print(_("ファイア・ボールを放った。", "You cast a ball of fire."));
-            (void)fire_ball(player_ptr, AttributeType::FIRE, dir, player_ptr->level, 2);
+            (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, player_ptr->level, 2);
         } else {
             msg_print(_("ファイア・ボルトを放った。", "You cast a bolt of fire."));
             (void)fire_bolt(player_ptr, AttributeType::FIRE, dir, player_ptr->level);

@@ -200,7 +200,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_STINKING_CLOUD: {
-        fire_ball(player_ptr, AttributeType::POIS, dir, 12 + lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::POIS, dir, 12 + lev / 4, rad);
         ident = true;
         break;
     }
@@ -237,25 +237,25 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_ACID_BALL: {
-        fire_ball(player_ptr, AttributeType::ACID, dir, 60 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::ACID, dir, 60 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_ELEC_BALL: {
-        fire_ball(player_ptr, AttributeType::ELEC, dir, 40 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::ELEC, dir, 40 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_FIRE_BALL: {
-        fire_ball(player_ptr, AttributeType::FIRE, dir, 70 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::FIRE, dir, 70 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_COLD_BALL: {
-        fire_ball(player_ptr, AttributeType::COLD, dir, 50 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::COLD, dir, 50 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
@@ -299,7 +299,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_DISINTEGRATE: {
-        fire_ball(player_ptr, AttributeType::DISINTEGRATE, dir, 200 + randint1(lev * 2), rad);
+        fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, 200 + randint1(lev * 2), rad);
         ident = true;
         break;
     }

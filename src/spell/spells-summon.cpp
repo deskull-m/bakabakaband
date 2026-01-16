@@ -528,7 +528,7 @@ void cast_invoke_spirits(PlayerType *player_ptr, const Direction &dir)
     } else if (die < 41) {
         confuse_monster(player_ptr, dir, plev);
     } else if (die < 46) {
-        fire_ball(player_ptr, AttributeType::POIS, dir, 20 + (plev / 2), 3);
+        fire_ball(*player_ptr, AttributeType::POIS, dir, 20 + (plev / 2), 3);
     } else if (die < 51) {
         (void)lite_line(player_ptr, dir, Dice::roll(6, 8));
     } else if (die < 56) {
@@ -542,13 +542,13 @@ void cast_invoke_spirits(PlayerType *player_ptr, const Direction &dir)
     } else if (die < 76) {
         hypodynamic_bolt(player_ptr, dir, 75);
     } else if (die < 81) {
-        fire_ball(player_ptr, AttributeType::ELEC, dir, 30 + plev / 2, 2);
+        fire_ball(*player_ptr, AttributeType::ELEC, dir, 30 + plev / 2, 2);
     } else if (die < 86) {
-        fire_ball(player_ptr, AttributeType::ACID, dir, 40 + plev, 2);
+        fire_ball(*player_ptr, AttributeType::ACID, dir, 40 + plev, 2);
     } else if (die < 91) {
-        fire_ball(player_ptr, AttributeType::ICE, dir, 70 + plev, 3);
+        fire_ball(*player_ptr, AttributeType::ICE, dir, 70 + plev, 3);
     } else if (die < 96) {
-        fire_ball(player_ptr, AttributeType::FIRE, dir, 80 + plev, 3);
+        fire_ball(*player_ptr, AttributeType::FIRE, dir, 80 + plev, 3);
     } else if (die < 101) {
         hypodynamic_bolt(player_ptr, dir, 100 + plev);
     } else if (die < 104) {

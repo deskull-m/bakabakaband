@@ -23,19 +23,19 @@
  * Affect grids, objects, and monsters
  * </pre>
  */
-bool fire_ball(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam, POSITION rad, tl::optional<CapturedMonsterType *> cap_mon_ptr)
+bool fire_ball(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam, POSITION rad, tl::optional<CapturedMonsterType *> cap_mon_ptr)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
     if (typ == AttributeType::CHARM_LIVING) {
         flg |= PROJECT_HIDE;
     }
 
-    const auto [ty, tx] = dir.get_target_position(player_ptr->get_position(), 99);
+    const auto [ty, tx] = dir.get_target_position(creature.get_position(), 99);
     if (dir.is_target_okay()) {
         flg &= ~(PROJECT_STOP);
     }
 
-    return project(*player_ptr, 0, rad, ty, tx, dam, typ, flg, cap_mon_ptr).notice;
+    return project(creature, 0, rad, ty, tx, dam, typ, flg, cap_mon_ptr).notice;
 }
 
 /*!

@@ -61,7 +61,7 @@ void call_chaos(PlayerType *player_ptr)
             if (line_chaos) {
                 fire_beam(player_ptr, chaos_type, dir, 150);
             } else {
-                fire_ball(player_ptr, chaos_type, dir, 150, 2);
+                fire_ball(*player_ptr, chaos_type, dir, 150, 2);
             }
         }
 
@@ -69,7 +69,7 @@ void call_chaos(PlayerType *player_ptr)
     }
 
     if (one_in_(3)) {
-        fire_ball(player_ptr, chaos_type, Direction::self(), 500, 8);
+        fire_ball(*player_ptr, chaos_type, Direction::self(), 500, 8);
         return;
     }
 
@@ -80,7 +80,7 @@ void call_chaos(PlayerType *player_ptr)
     if (line_chaos) {
         fire_beam(player_ptr, chaos_type, dir, 250);
     } else {
-        fire_ball(player_ptr, chaos_type, dir, 250, 3 + (player_ptr->level / 35));
+        fire_ball(*player_ptr, chaos_type, dir, 250, 3 + (player_ptr->level / 35));
     }
 }
 
@@ -323,7 +323,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         lose_all_info(player_ptr);
         break;
     case 32:
-        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), spell + 5, 1 + (spell / 10));
+        fire_ball(*player_ptr, AttributeType::CHAOS, Direction::self(), spell + 5, 1 + (spell / 10));
         break;
     case 33:
         wall_stone(player_ptr);
@@ -421,7 +421,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 46) {
-        fire_ball(player_ptr, AttributeType::POIS, dir, 20 + (plev / 2), 3);
+        fire_ball(*player_ptr, AttributeType::POIS, dir, 20 + (plev / 2), 3);
         return;
     }
 
@@ -456,22 +456,22 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 81) {
-        fire_ball(player_ptr, AttributeType::ELEC, dir, 30 + plev / 2, 2);
+        fire_ball(*player_ptr, AttributeType::ELEC, dir, 30 + plev / 2, 2);
         return;
     }
 
     if (die < 86) {
-        fire_ball(player_ptr, AttributeType::ACID, dir, 40 + plev, 2);
+        fire_ball(*player_ptr, AttributeType::ACID, dir, 40 + plev, 2);
         return;
     }
 
     if (die < 91) {
-        fire_ball(player_ptr, AttributeType::ICE, dir, 70 + plev, 3);
+        fire_ball(*player_ptr, AttributeType::ICE, dir, 70 + plev, 3);
         return;
     }
 
     if (die < 96) {
-        fire_ball(player_ptr, AttributeType::FIRE, dir, 80 + plev, 3);
+        fire_ball(*player_ptr, AttributeType::FIRE, dir, 80 + plev, 3);
         return;
     }
 

@@ -408,7 +408,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
         set_tim_levitation(player_ptr, randint1(20) + 20, false);
         break;
     case MindNinjaType::HIDE_FLAMES:
-        fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), 50 + plev, plev / 10 + 2);
+        fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), 50 + plev, plev / 10 + 2);
         teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
         set_oppose_fire(player_ptr, (TIME_EFFECT)plev, false);
         break;
@@ -449,7 +449,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
             return false;
         }
 
-        fire_ball(player_ptr, AttributeType::OLD_CONF, dir, plev * 3, 3);
+        fire_ball(*player_ptr, AttributeType::OLD_CONF, dir, plev * 3, 3);
         break;
     }
     case MindNinjaType::SWAP_POSITION: {
@@ -472,9 +472,9 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
         set_oppose_acid(player_ptr, (TIME_EFFECT)plev, false);
         break;
     case MindNinjaType::HIDE_MIST:
-        fire_ball(player_ptr, AttributeType::POIS, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
-        fire_ball(player_ptr, AttributeType::HYPODYNAMIA, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
-        fire_ball(player_ptr, AttributeType::CONFUSION, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
+        fire_ball(*player_ptr, AttributeType::POIS, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
+        fire_ball(*player_ptr, AttributeType::HYPODYNAMIA, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
+        fire_ball(*player_ptr, AttributeType::CONFUSION, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
         teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::PURGATORY_FLAME: {

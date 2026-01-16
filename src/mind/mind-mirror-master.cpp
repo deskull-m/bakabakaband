@@ -433,7 +433,7 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
             return false;
         }
 
-        fire_ball(player_ptr, AttributeType::SHARDS, dir, Dice::roll(8 + ((plev - 5) / 4), 8), (plev > 20 ? (plev - 20) / 8 + 1 : 0));
+        fire_ball(*player_ptr, AttributeType::SHARDS, dir, Dice::roll(8 + ((plev - 5) / 4), 8), (plev > 20 ? (plev - 20) / 8 + 1 : 0));
         break;
     }
     case MindMirrorMasterType::SLEEPING_MIRROR:

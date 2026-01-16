@@ -115,7 +115,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::MISSILE, dir, dice.roll() + base, rad);
+            fire_ball(*player_ptr, AttributeType::MISSILE, dir, dice.roll() + base, rad);
 
             /*
              * Shouldn't actually use MANA, as
@@ -155,7 +155,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::DISINTEGRATE, dir, dice.roll(), 0);
+            fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, dice.roll(), 0);
         }
     } break;
 
@@ -249,7 +249,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -293,7 +293,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::CHAOS, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::CHAOS, dir, dam, rad);
         }
     } break;
 
@@ -355,7 +355,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::DISINTEGRATE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, dam, rad);
         }
     } break;
 
@@ -441,7 +441,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
         }
     } break;
 
@@ -477,7 +477,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::MANA, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::MANA, dir, dam, rad);
         }
     } break;
 
@@ -495,7 +495,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::CHAOS, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::CHAOS, dir, dam, rad);
         }
     } break;
 

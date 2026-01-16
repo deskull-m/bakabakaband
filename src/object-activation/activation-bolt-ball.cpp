@@ -172,7 +172,7 @@ bool activate_ball_pois_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::POIS, dir, 12, 3);
+    (void)fire_ball(*player_ptr, AttributeType::POIS, dir, 12, 3);
     return true;
 }
 
@@ -184,7 +184,7 @@ bool activate_ball_cold_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::COLD, dir, 48, 2);
+    (void)fire_ball(*player_ptr, AttributeType::COLD, dir, 48, 2);
     return true;
 }
 
@@ -196,7 +196,7 @@ bool activate_ball_cold_2(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::COLD, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::COLD, dir, 100, 2);
     return true;
 }
 
@@ -208,7 +208,7 @@ bool activate_ball_cold_3(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::COLD, dir, 400, 3);
+    (void)fire_ball(*player_ptr, AttributeType::COLD, dir, 400, 3);
     return true;
 }
 
@@ -220,7 +220,7 @@ bool activate_ball_fire_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::FIRE, dir, 72, 2);
+    (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, 72, 2);
     return true;
 }
 
@@ -232,7 +232,7 @@ bool activate_ball_fire_2(PlayerType *player_ptr, std::string_view name)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::FIRE, dir, 120, 3);
+    (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, 120, 3);
     return true;
 }
 
@@ -244,7 +244,7 @@ bool activate_ball_fire_3(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::FIRE, dir, 300, 3);
+    (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, 300, 3);
     return true;
 }
 
@@ -256,7 +256,7 @@ bool activate_ball_fire_4(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::FIRE, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, 100, 2);
     return true;
 }
 
@@ -268,7 +268,7 @@ bool activate_ball_elec_2(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::ELEC, dir, 100, 3);
+    (void)fire_ball(*player_ptr, AttributeType::ELEC, dir, 100, 3);
     return true;
 }
 
@@ -280,7 +280,7 @@ bool activate_ball_elec_3(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::ELEC, dir, 500, 3);
+    (void)fire_ball(*player_ptr, AttributeType::ELEC, dir, 500, 3);
     return true;
 }
 
@@ -292,7 +292,7 @@ bool activate_ball_acid_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::ACID, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::ACID, dir, 100, 2);
     return true;
 }
 
@@ -304,7 +304,7 @@ bool activate_ball_nuke_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::NUKE, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::NUKE, dir, 100, 2);
     return true;
 }
 
@@ -316,7 +316,7 @@ bool activate_rocket(PlayerType *player_ptr)
     }
 
     msg_print(_("ロケットを発射した！", "You launch a rocket!"));
-    (void)fire_ball(player_ptr, AttributeType::ROCKET, dir, 250 + player_ptr->level * 3, 2);
+    (void)fire_ball(*player_ptr, AttributeType::ROCKET, dir, 250 + player_ptr->level * 3, 2);
     return true;
 }
 
@@ -328,7 +328,7 @@ bool activate_ball_water(PlayerType *player_ptr, std::string_view name)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::WATER, dir, 200, 3);
+    (void)fire_ball(*player_ptr, AttributeType::WATER, dir, 200, 3);
     return true;
 }
 
@@ -367,7 +367,7 @@ bool activate_ball_dark(PlayerType *player_ptr, std::string_view name)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::DARK, dir, 250, 4);
+    (void)fire_ball(*player_ptr, AttributeType::DARK, dir, 250, 4);
     return true;
 }
 
@@ -379,6 +379,6 @@ bool activate_ball_mana(PlayerType *player_ptr, std::string_view name)
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::MANA, dir, 250, 4);
+    (void)fire_ball(*player_ptr, AttributeType::MANA, dir, 250, 4);
     return true;
 }

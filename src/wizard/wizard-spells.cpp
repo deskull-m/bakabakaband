@@ -421,5 +421,5 @@ void wiz_kill_target(PlayerType *player_ptr, int initial_dam, AttributeType effe
     if (!dir) {
         return;
     }
-    fire_ball(player_ptr, idx, dir, dam, 0);
+    fire_ball(*player_ptr, idx, dir, dam, 0);
 }

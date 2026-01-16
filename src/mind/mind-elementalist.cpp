@@ -494,7 +494,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto typ = get_element_spells_type(player_ptr, power.elem);
         const auto dam = 50 + plev * 2;
-        (void)fire_ball(player_ptr, typ, dir, dam, 1);
+        (void)fire_ball(*player_ptr, typ, dir, dam, 1);
         project_length = 0;
         return true;
     }
@@ -506,7 +506,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 55 + plev;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_ball(player_ptr, typ, dir, dam, 2);
+        (void)fire_ball(*player_ptr, typ, dir, dam, 2);
         return true;
     }
     case ElementSpells::BREATH_2ND: {
@@ -559,7 +559,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 75 + plev * 3 / 2;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_ball(player_ptr, typ, dir, dam, 3)) {
+        if (fire_ball(*player_ptr, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -599,7 +599,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 115 + plev * 5 / 2;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_ball(player_ptr, typ, dir, dam, 4)) {
+        if (fire_ball(*player_ptr, typ, dir, dam, 4)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -626,7 +626,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 300 + plev * 5;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_ball(player_ptr, typ, dir, dam, 5);
+        (void)fire_ball(*player_ptr, typ, dir, dam, 5);
         return true;
     }
     default:
