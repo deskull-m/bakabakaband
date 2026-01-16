@@ -133,10 +133,10 @@ bool fire_ball_hide(CreatureEntity &creature, AttributeType typ, const Direction
  * Option to hurt the player.
  * </pre>
  */
-bool fire_meteor(PlayerType *player_ptr, MONSTER_IDX src_idx, AttributeType typ, POSITION y, POSITION x, int dam, POSITION rad)
+bool fire_meteor(CreatureEntity &creature, MONSTER_IDX src_idx, AttributeType typ, POSITION y, POSITION x, int dam, POSITION rad)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-    return project(*player_ptr, src_idx, rad, y, x, dam, typ, flg).notice;
+    return project(creature, src_idx, rad, y, x, dam, typ, flg).notice;
 }
 
 /*!
