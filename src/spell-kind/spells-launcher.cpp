@@ -80,12 +80,12 @@ bool fire_breath(CreatureEntity &creature, AttributeType typ, const Direction &d
  * Affect grids, objects, and monsters
  * </pre>
  */
-bool fire_rocket(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam, POSITION rad)
+bool fire_rocket(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam, POSITION rad)
 {
-    const auto [ty, tx] = dir.get_target_position(player_ptr->get_position(), 99);
+    const auto [ty, tx] = dir.get_target_position(creature.get_position(), 99);
 
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-    return project(*player_ptr, 0, rad, ty, tx, dam, typ, flg).notice;
+    return project(creature, 0, rad, ty, tx, dam, typ, flg).notice;
 }
 
 /*!

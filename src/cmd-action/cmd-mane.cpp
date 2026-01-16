@@ -415,7 +415,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::ROCKET:
         msg_print(_("ロケットを発射した。", "You fire a rocket."));
-        fire_rocket(player_ptr, AttributeType::ROCKET, dir, damage, 2);
+        fire_rocket(*player_ptr, AttributeType::ROCKET, dir, damage, 2);
         break;
 
     case MonsterAbilityType::SHOOT:

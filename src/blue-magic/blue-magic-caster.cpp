@@ -68,7 +68,7 @@ static bool cast_blue_rocket(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     msg_print(_("ロケットを発射した。", "You fire a rocket."));
     const auto damage = monspell_bluemage_damage(player_ptr, MonsterAbilityType::ROCKET, bmc_ptr->plev, DAM_ROLL);
-    fire_rocket(player_ptr, AttributeType::ROCKET, dir, damage, 2);
+    fire_rocket(*player_ptr, AttributeType::ROCKET, dir, damage, 2);
     return true;
 }
 

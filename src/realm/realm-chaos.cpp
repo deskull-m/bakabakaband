@@ -387,7 +387,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             msg_print(_("ロケット発射！", "You launch a rocket!"));
-            fire_rocket(player_ptr, AttributeType::ROCKET, dir, dam, rad);
+            fire_rocket(*player_ptr, AttributeType::ROCKET, dir, dam, rad);
         }
     } break;
 

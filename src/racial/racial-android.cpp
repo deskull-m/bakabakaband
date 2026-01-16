@@ -52,7 +52,7 @@ bool android_inside_weapon(PlayerType *player_ptr)
     }
 
     msg_print(_("ロケットを発射した。", "You fire a rocket."));
-    fire_rocket(player_ptr, AttributeType::ROCKET, dir, player_ptr->level * 5, 2);
+    fire_rocket(*player_ptr, AttributeType::ROCKET, dir, player_ptr->level * 5, 2);
     return true;
 }
 

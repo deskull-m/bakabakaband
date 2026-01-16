@@ -306,7 +306,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
 
     case SV_WAND_ROCKETS: {
         msg_print(_("ロケットを発射した！", "You launch a rocket!"));
-        fire_rocket(player_ptr, AttributeType::ROCKET, dir, 250 + lev * 3, rad);
+        fire_rocket(*player_ptr, AttributeType::ROCKET, dir, 250 + lev * 3, rad);
         ident = true;
         break;
     }
