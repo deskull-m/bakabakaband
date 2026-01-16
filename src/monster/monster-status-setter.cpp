@@ -52,7 +52,7 @@ void anger_monster(PlayerType *player_ptr, MonsterEntity &monster)
         return;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     msg_format(_("%s^は怒った！", "%s^ gets angry!"), m_name.data());
     monster.set_hostile();
     chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
@@ -349,7 +349,7 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
     }
 
     if (vs_player) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(*player_ptr, monster, 0);
         const auto time_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_TIMESTOP);
         if (time_message) {
             msg_print(*time_message);
@@ -394,7 +394,7 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
     auto should_output_message = floor.has_los_at(m_pos);
     should_output_message &= projectable(floor, p_pos, m_pos);
     if (vs_player || should_output_message) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(*player_ptr, monster, 0);
         const auto time_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_TIMESTART);
         if (time_message) {
             msg_print(*time_message);

@@ -256,7 +256,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 auto pos_origin = pos;
                 const auto m_idx = grid.m_idx;
                 auto &monster = floor.m_list[m_idx];
-                const auto m_name = monster_desc(player_ptr, monster, 0);
+                const auto m_name = monster_desc(*player_ptr, monster, 0);
                 const auto p_pos = player_ptr->get_position();
                 auto pos_neighbor = pos;
                 for (auto i = 0; i < 5; i++) {
@@ -442,7 +442,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                     continue;
                 }
 
-                const auto m_name = monster_desc(player_ptr, monster, 0);
+                const auto m_name = monster_desc(*player_ptr, monster, 0);
                 msg_format(_("%sには効果がない！", "%s is unharmed!"), m_name.data());
             }
         }

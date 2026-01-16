@@ -147,7 +147,7 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     decide_drop_from_monster(player_ptr, m_idx, turn_flags_ptr->is_riding_mon);
     if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON) && one_in_(13) && !monster.is_asleep()) {
         const auto &floor = *player_ptr->current_floor_ptr;
-        const auto old_m_name = monster_desc(player_ptr, monster, 0);
+        const auto old_m_name = monster_desc(*player_ptr, monster, 0);
         const auto &monrace = monster.get_monrace();
         const auto m_pos = monster.get_position();
         const auto &grid = floor.get_grid(m_pos);
@@ -164,7 +164,7 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
             msg_format(_("突然%sが変身した。", "Suddenly, %s transforms!"), old_m_name.data());
             if (new_monrace.misc_flags.has_not(MonsterMiscType::RIDING)) {
                 if (process_fall_off_horse(player_ptr, 0, true)) {
-                    const auto m_name = monster_desc(player_ptr, monster, 0);
+                    const auto m_name = monster_desc(*player_ptr, monster, 0);
                     msg_print(_("地面に落とされた。", format("You have fallen from %s.", m_name.data())));
                 }
             }
@@ -354,7 +354,7 @@ void decide_drop_from_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, bool is
 #ifdef JP
         msg_print("地面に落とされた。");
 #else
-        const auto m_name = monster_desc(player_ptr, player_ptr->current_floor_ptr->m_list[player_ptr->riding], 0);
+        const auto m_name = monster_desc(*player_ptr, player_ptr->current_floor_ptr->m_list[player_ptr->riding], 0);
         msg_format("You have fallen from %s.", m_name.data());
 #endif
     }
@@ -382,7 +382,7 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
         return false;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
         if (see_m) {
             msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
@@ -400,7 +400,7 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
     }
 
     if (record_named_pet && monster.is_named_pet()) {
-        const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+        const auto m_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOSE_PARENT, m_name);
     }
 
@@ -433,7 +433,7 @@ bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     (void)set_monster_csleep(*player_ptr->current_floor_ptr, m_idx, 0);
     if (monster.ml) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(*player_ptr, monster, 0);
         msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
     }
 
@@ -467,7 +467,7 @@ void process_angar(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
         return;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, monster.is_pet() ? MD_ASSUME_VISIBLE : 0);
+    const auto m_name = monster_desc(*player_ptr, monster, monster.is_pet() ? MD_ASSUME_VISIBLE : 0);
 
     /* When riding a hostile alignment pet */
     if (monster.is_riding()) {
@@ -526,7 +526,7 @@ void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     // 違法改造モンスターの自滅処理
     if (monster.mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED) && one_in_(50)) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(*player_ptr, monster, 0);
         const auto pos = monster.get_position();
         msg_format(_("%sが突然機能停止し、爆発した！", "%s suddenly malfunctions and explodes!"), m_name.data());
 
@@ -788,7 +788,7 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
 {
     const auto &baseitems = BaseitemList::get_instance();
     auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(player_ptr, *m_ptr, 0);
+    const auto m_name = monster_desc(*player_ptr, *m_ptr, 0);
     const auto &monrace = m_ptr->get_monrace();
 
     if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) &&
@@ -912,7 +912,7 @@ void sweep_monster_process(PlayerType *player_ptr)
         }
 
         monster.energy_need += ENERGY_NEED();
-        auto m_name = monster_desc(player_ptr, monster, 0);
+        auto m_name = monster_desc(*player_ptr, monster, 0);
 
         if (monster.death_count > 0) {
             monster.death_count--;

@@ -156,7 +156,7 @@ MonsterSpellResult spell_RF6_S_KIN(PlayerType *player_ptr, POSITION y, POSITION 
     const auto &monster = floor.m_list[m_idx];
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto m_name = monster_name(player_ptr, m_idx);
-    const auto m_poss = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+    const auto m_poss = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
     bool known = monster_near_player(floor, m_idx, t_idx);

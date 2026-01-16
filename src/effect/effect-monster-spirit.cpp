@@ -56,7 +56,7 @@ ProcessResult effect_monster_drain_mana(PlayerType *player_ptr, EffectMonster *e
     }
 
     if (em_ptr->see_s_msg) {
-        angband_strcpy(em_ptr->killer, monster_desc(player_ptr, *em_ptr->m_caster_ptr, 0), sizeof(em_ptr->killer));
+        angband_strcpy(em_ptr->killer, monster_desc(*player_ptr, *em_ptr->m_caster_ptr, 0), sizeof(em_ptr->killer));
         msg_format(_("%s^は気分が良さそうだ。", "%s^ appears healthier."), em_ptr->killer);
     }
 

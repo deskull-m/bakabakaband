@@ -156,7 +156,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
 
     this->death_special_flag_monster();
     this->increase_kill_numbers();
-    const auto m_name = monster_desc(this->player_ptr, monster, MD_TRUE_NAME);
+    const auto m_name = monster_desc(*this->player_ptr, monster, MD_TRUE_NAME);
     this->death_amberites(m_name);
     this->death_choasians(m_name);
     this->dying_scream(m_name);
@@ -606,7 +606,7 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     const auto old_hp = monster.hp;
     const auto old_maxhp = monster.max_maxhp;
     const auto old_sub_align = monster.sub_align;
-    const auto old_name = monster_desc(this->player_ptr, monster, MD_INDEF_VISIBLE);
+    const auto old_name = monster_desc(*this->player_ptr, monster, MD_INDEF_VISIBLE);
 
     // 種族カウンターの更新
     monster.get_real_monrace().decrement_current_numbers();
@@ -640,7 +640,7 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
 
     // メッセージ表示
     if (monster.ml) {
-        const auto new_name = monster_desc(this->player_ptr, monster, MD_INDEF_VISIBLE);
+        const auto new_name = monster_desc(*this->player_ptr, monster, MD_INDEF_VISIBLE);
         msg_format(_("%sは%sに変身した！", "%s^ transforms into %s!"),
             old_name.data(), new_name.data());
     }

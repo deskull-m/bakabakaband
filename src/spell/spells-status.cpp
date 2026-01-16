@@ -547,7 +547,7 @@ bool fishing(PlayerType *player_ptr)
 
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
-        const auto m_name = monster_desc(player_ptr, floor.m_list[grid.m_idx], 0);
+        const auto m_name = monster_desc(*player_ptr, floor.m_list[grid.m_idx], 0);
         msg_format(_("%sが邪魔だ！", "%s^ is standing in your way."), m_name.data());
         PlayerEnergy(player_ptr).reset_player_turn();
         return false;

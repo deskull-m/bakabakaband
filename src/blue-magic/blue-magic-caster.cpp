@@ -109,7 +109,7 @@ static tl::optional<std::string> exe_blue_teleport_back(PlayerType *player_ptr, 
 
     const auto &monster = floor.m_list[grid.m_idx];
     auto &monrace = monster.get_monrace();
-    auto m_name = monster_desc(player_ptr, monster, 0);
+    auto m_name = monster_desc(*player_ptr, monster, 0);
     if (monrace.resistance_flags.has_not(MonsterResistanceType::RESIST_TELEPORT)) {
         return m_name;
     }

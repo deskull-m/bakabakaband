@@ -147,7 +147,7 @@ Direction get_direction(PlayerType *player_ptr)
     }
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     const auto fmt = monster.is_confused()
                          ? _("%sは混乱している。", "%s^ is confused.")
                          : _("%sは思い通りに動いてくれない。", "You cannot control %s.");
@@ -221,7 +221,7 @@ Direction get_rep_dir(PlayerType *player_ptr, bool under)
             msg_print(_("あなたは混乱している。", "You are confused."));
         } else {
             const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto m_name = monster_desc(*player_ptr, monster, 0);
             if (monster.is_confused()) {
                 msg_format(_("%sは混乱している。", "%s^ is confused."), m_name.data());
             } else {

@@ -783,7 +783,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                     /* Handle visible monster */
                     else {
                         /* Get "the monster" or "it" */
-                        const auto m_name = monster_desc(player_ptr, monster, 0);
+                        const auto m_name = monster_desc(*player_ptr, monster, 0);
 
                         msg_format(_("%sが%sに命中した。", "The %s hits %s."), item_name.data(), m_name.data());
 
@@ -802,7 +802,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                         const auto no_instantly_death = monrace.resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH);
                         if ((randint1(fatality) == 1) && !is_unique && !no_instantly_death) {
                             /* Get "the monster" or "it" */
-                            const auto m_name = monster_desc(player_ptr, monster, 0);
+                            const auto m_name = monster_desc(*player_ptr, monster, 0);
 
                             tdam = monster.hp + 1;
                             base_dam = tdam;
@@ -858,7 +858,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
 
                     /* No death */
                     else {
-                        const auto m_name = monster_desc(player_ptr, monster, 0);
+                        const auto m_name = monster_desc(*player_ptr, monster, 0);
                         /* STICK TO */
                         if (fire_item.is_fixed_artifact() && (sniper_concent == 0)) {
                             stick_to = true;
@@ -1046,7 +1046,7 @@ bool test_hit_fire(PlayerType *player_ptr, int chance, const MonsterEntity &mons
     /* Power competes against armor */
     if (randint0(chance) < (ac * 3 / 4)) {
         if (monster.r_idx == MonraceId::GOEMON && !monster.is_asleep()) {
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto m_name = monster_desc(*player_ptr, monster, 0);
             msg_format(_("%sは%sを斬り捨てた！", "%s cuts down %s!"), m_name.data(), item_name.data());
         }
         return false;

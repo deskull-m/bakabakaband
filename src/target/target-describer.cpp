@@ -201,7 +201,7 @@ static bool describe_grid_lore(PlayerType *player_ptr, GridExamination *ge_ptr)
 static void describe_grid_monster(PlayerType *player_ptr, GridExamination *ge_ptr)
 {
     bool recall = false;
-    const auto m_name = monster_desc(player_ptr, *ge_ptr->m_ptr, MD_INDEF_VISIBLE);
+    const auto m_name = monster_desc(*player_ptr, *ge_ptr->m_ptr, MD_INDEF_VISIBLE);
     while (true) {
         if (recall) {
             if (describe_grid_lore(player_ptr, ge_ptr)) {

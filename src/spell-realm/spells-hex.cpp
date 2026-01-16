@@ -381,11 +381,11 @@ void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
     }
 
     const auto &monster = this->player.current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
 #ifdef JP
     msg_format("攻撃が%s自身を傷つけた！", m_name.data());
 #else
-    const auto m_name_self = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
+    const auto m_name_self = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
     msg_format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data());
 #endif
     const auto y = monster.y;

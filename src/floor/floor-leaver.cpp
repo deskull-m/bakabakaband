@@ -114,7 +114,7 @@ static void record_pet_diary(PlayerType *player_ptr)
             continue;
         }
 
-        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_MOVED, monster_desc(player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE));
+        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_MOVED, monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE));
     }
 }
 
@@ -139,7 +139,7 @@ static void preserve_pet(PlayerType *player_ptr)
         }
 
         if (is_seen(player_ptr, monster)) {
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto m_name = monster_desc(*player_ptr, monster, 0);
             msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
         }
 

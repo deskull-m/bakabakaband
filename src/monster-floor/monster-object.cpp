@@ -199,7 +199,7 @@ void update_object_by_monster_movement(PlayerType *player_ptr, turn_flags *turn_
 
         const auto flags = item.get_flags();
         const auto item_name = describe_flavor(player_ptr, item, 0);
-        const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_HIDDEN);
+        const auto m_name = monster_desc(*player_ptr, monster, MD_INDEF_HIDDEN);
         update_object_flags(flags, flg_monster_kind, flgr);
 
         auto is_unpickable_object = item.is_fixed_or_random_artifact();

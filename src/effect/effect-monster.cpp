@@ -110,8 +110,8 @@ static ProcessResult is_affective(EffectMonster *em_ptr)
 static void make_description_of_affecred_monster(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
     em_ptr->dam = (em_ptr->dam + em_ptr->r) / (em_ptr->r + 1);
-    angband_strcpy(em_ptr->m_name, monster_desc(player_ptr, *em_ptr->m_ptr, 0), sizeof(em_ptr->m_name));
-    angband_strcpy(em_ptr->m_poss, monster_desc(player_ptr, *em_ptr->m_ptr, MD_PRON_VISIBLE | MD_POSSESSIVE), sizeof(em_ptr->m_poss));
+    angband_strcpy(em_ptr->m_name, monster_desc(*player_ptr, *em_ptr->m_ptr, 0), sizeof(em_ptr->m_name));
+    angband_strcpy(em_ptr->m_poss, monster_desc(*player_ptr, *em_ptr->m_ptr, MD_PRON_VISIBLE | MD_POSSESSIVE), sizeof(em_ptr->m_poss));
 }
 
 /*!
@@ -183,7 +183,7 @@ static void effect_damage_killed_pet(PlayerType *player_ptr, EffectMonster *em_p
 {
     bool sad = em_ptr->m_ptr->is_pet() && !(em_ptr->m_ptr->ml);
     if (em_ptr->known && !em_ptr->note.empty()) {
-        angband_strcpy(em_ptr->m_name, monster_desc(player_ptr, *em_ptr->m_ptr, MD_TRUE_NAME), sizeof(em_ptr->m_name));
+        angband_strcpy(em_ptr->m_name, monster_desc(*player_ptr, *em_ptr->m_ptr, MD_TRUE_NAME), sizeof(em_ptr->m_name));
         if (em_ptr->see_s_msg) {
             msg_format("%s^%s", em_ptr->m_name, em_ptr->note.data());
         } else {
@@ -212,7 +212,7 @@ static void effect_damage_makes_sleep(PlayerType *player_ptr, EffectMonster *em_
     if (!em_ptr->note.empty() && em_ptr->seen_msg) {
         msg_format("%s^%s", em_ptr->m_name, em_ptr->note.data());
     } else if (em_ptr->see_s_msg) {
-        const auto m_name = monster_desc(player_ptr, *em_ptr->m_ptr, 0);
+        const auto m_name = monster_desc(*player_ptr, *em_ptr->m_ptr, 0);
         const auto pain_message = em_ptr->m_ptr->get_pain_message(m_name, em_ptr->dam);
         if (pain_message) {
             msg_print(*pain_message);
@@ -273,7 +273,7 @@ static bool heal_leaper(PlayerType *player_ptr, EffectMonster *em_ptr)
     }
 
     if (record_named_pet && em_ptr->m_ptr->is_named_pet()) {
-        const auto m2_name = monster_desc(player_ptr, *em_ptr->m_ptr, MD_INDEF_VISIBLE);
+        const auto m2_name = monster_desc(*player_ptr, *em_ptr->m_ptr, MD_INDEF_VISIBLE);
         exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::NAMED_PET, RECORD_NAMED_PET_HEAL_LEPER, m2_name);
     }
 
@@ -304,7 +304,7 @@ static bool deal_effect_damage_from_player(PlayerType *player_ptr, EffectMonster
     if (!em_ptr->note.empty() && em_ptr->seen) {
         msg_format(_("%s%s", "%s^%s"), em_ptr->m_name, em_ptr->note.data());
     } else if (em_ptr->known && (em_ptr->dam || !em_ptr->do_fear)) {
-        const auto m_name = monster_desc(player_ptr, *em_ptr->m_ptr, 0);
+        const auto m_name = monster_desc(*player_ptr, *em_ptr->m_ptr, 0);
         const auto pain_message = em_ptr->m_ptr->get_pain_message(m_name, em_ptr->dam);
         if (pain_message) {
             msg_print(*pain_message);
