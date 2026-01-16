@@ -83,8 +83,8 @@ static bool boundary_floor(const Grid &grid, const TerrainType &terrain, const T
 void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup, bool break_trap)
 {
     auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
-    const auto pos = player_ptr->get_neighbor(dir);
-    auto &floor = *player_ptr->current_floor_ptr;
+    const auto pos = creature.get_neighbor(dir);
+    auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(pos);
     bool p_can_enter = player_can_enter(*player_ptr, grid.feat, CEM_P_CAN_ENTER_PATTERN);
     const auto &world = AngbandWorld::get_instance();
@@ -93,43 +93,43 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             auto &wilderness = WildernessGrids::get_instance();
             if ((pos.y == 0) && (pos.x == 0)) {
                 wilderness.move_player_to(Direction(7));
-                player_ptr->oldpy = floor.height - 2;
-                player_ptr->oldpx = floor.width - 2;
+                creature.oldpy = floor.height - 2;
+                creature.oldpx = floor.width - 2;
                 player_ptr->ambush_flag = false;
             } else if ((pos.y == 0) && (pos.x == MAX_WID - 1)) {
                 wilderness.move_player_to(Direction(9));
-                player_ptr->oldpy = floor.height - 2;
-                player_ptr->oldpx = 1;
+                creature.oldpy = floor.height - 2;
+                creature.oldpx = 1;
                 player_ptr->ambush_flag = false;
             } else if ((pos.y == MAX_HGT - 1) && (pos.x == 0)) {
                 wilderness.move_player_to(Direction(1));
-                player_ptr->oldpy = 1;
-                player_ptr->oldpx = floor.width - 2;
+                creature.oldpy = 1;
+                creature.oldpx = floor.width - 2;
                 player_ptr->ambush_flag = false;
             } else if ((pos.y == MAX_HGT - 1) && (pos.x == MAX_WID - 1)) {
                 wilderness.move_player_to(Direction(3));
-                player_ptr->oldpy = 1;
-                player_ptr->oldpx = 1;
+                creature.oldpy = 1;
+                creature.oldpx = 1;
                 player_ptr->ambush_flag = false;
             } else if (pos.y == 0) {
                 wilderness.move_player_to(Direction(8));
-                player_ptr->oldpy = floor.height - 2;
-                player_ptr->oldpx = pos.x;
+                creature.oldpy = floor.height - 2;
+                creature.oldpx = pos.x;
                 player_ptr->ambush_flag = false;
             } else if (pos.y == MAX_HGT - 1) {
                 wilderness.move_player_to(Direction(2));
-                player_ptr->oldpy = 1;
-                player_ptr->oldpx = pos.x;
+                creature.oldpy = 1;
+                creature.oldpx = pos.x;
                 player_ptr->ambush_flag = false;
             } else if (pos.x == 0) {
                 wilderness.move_player_to(Direction(4));
-                player_ptr->oldpx = floor.width - 2;
-                player_ptr->oldpy = pos.y;
+                creature.oldpx = floor.width - 2;
+                creature.oldpy = pos.y;
                 player_ptr->ambush_flag = false;
             } else if (pos.x == MAX_WID - 1) {
                 wilderness.move_player_to(Direction(6));
-                player_ptr->oldpx = 1;
-                player_ptr->oldpy = pos.y;
+                creature.oldpx = 1;
+                creature.oldpy = pos.y;
                 player_ptr->ambush_flag = false;
             }
 
@@ -175,7 +175,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             if ((player_ptr->is_wielding(FixedArtifactId::STORMBRINGER) && (randint1(1000) > 666)) || PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
                 do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 can_move = false;
-            } else if (monster_can_cross_terrain(player_ptr, floor.get_grid(player_ptr->get_position()).feat, monrace, 0)) {
+            } else if (monster_can_cross_terrain(player_ptr, floor.get_grid(creature.get_position()).feat, monrace, 0)) {
                 do_past = true;
             } else {
                 msg_format(_("%s^が邪魔だ！", "%s^ is in your way!"), m_name.data());
@@ -216,7 +216,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             disturb(*player_ptr, false, true);
         } else if (terrain.flags.has_not(TerrainCharacteristics::WATER) && riding_monrace.feature_flags.has(MonsterFeatureType::AQUATIC)) {
             constexpr auto fmt = _("%sから上がれない。", "Can't land from %s.");
-            const auto p_pos = player_ptr->get_position();
+            const auto p_pos = creature.get_position();
             msg_format(fmt, floor.get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name.data());
             energy.reset_player_turn();
             can_move = false;
@@ -329,22 +329,22 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     if (world.is_wild_mode()) {
         const auto vec = dir.vec();
         if (vec.y > 0) {
-            player_ptr->oldpy = 1;
+            creature.oldpy = 1;
         }
         if (vec.y < 0) {
-            player_ptr->oldpy = MAX_HGT - 2;
+            creature.oldpy = MAX_HGT - 2;
         }
         if (vec.y == 0) {
-            player_ptr->oldpy = MAX_HGT / 2;
+            creature.oldpy = MAX_HGT / 2;
         }
         if (vec.x > 0) {
-            player_ptr->oldpx = 1;
+            creature.oldpx = 1;
         }
         if (vec.x < 0) {
-            player_ptr->oldpx = MAX_WID - 2;
+            creature.oldpx = MAX_WID - 2;
         }
         if (vec.x == 0) {
-            player_ptr->oldpx = MAX_WID / 2;
+            creature.oldpx = MAX_WID / 2;
         }
     }
 
