@@ -149,20 +149,20 @@ bool fire_meteor(CreatureEntity &creature, MONSTER_IDX src_idx, AttributeType ty
  * @param dev 回数分散
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool fire_blast(PlayerType *player_ptr, AttributeType typ, const Direction &dir, const Dice &dice, int num, int dev)
+bool fire_blast(CreatureEntity &creature, AttributeType typ, const Direction &dir, const Dice &dice, int num, int dev)
 {
     POSITION y, x;
     POSITION ly, lx;
-    const auto [ty, tx] = dir.get_target_position(player_ptr->get_position(), 20);
+    const auto [ty, tx] = dir.get_target_position(creature.get_position(), 20);
     if (dir.is_targetting()) {
-        lx = 20 * (tx - player_ptr->x) + player_ptr->x;
-        ly = 20 * (ty - player_ptr->y) + player_ptr->y;
+        lx = 20 * (tx - creature.x) + creature.x;
+        ly = 20 * (ty - creature.y) + creature.y;
     } else {
         ly = ty;
         lx = tx;
     }
 
-    const auto ld = Grid::calc_distance(player_ptr->get_position(), { ly, lx });
+    const auto ld = Grid::calc_distance(creature.get_position(), { ly, lx });
     BIT_FLAGS flg = PROJECT_FAST | PROJECT_THRU | PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE | PROJECT_GRID;
     bool result = true;
     for (int i = 0; i < num; i++) {
@@ -177,7 +177,7 @@ bool fire_blast(PlayerType *player_ptr, AttributeType typ, const Direction &dir,
         }
 
         /* Analyze the "dir" and the "target". */
-        const auto proj_res = project(*player_ptr, 0, 0, y, x, dice.roll(), typ, flg);
+        const auto proj_res = project(creature, 0, 0, y, x, dice.roll(), typ, flg);
         if (!proj_res.notice) {
             result = false;
         }
