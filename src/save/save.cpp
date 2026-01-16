@@ -155,7 +155,7 @@ static bool wr_savefile_new(PlayerType *player_ptr)
     wr_s32b(pos.x);
     wr_s32b(pos.y);
     wr_bool(world.is_wild_mode());
-    wr_bool(player_ptr->ambush_flag);
+    wr_bool(static_cast<CreatureEntity &>(*player_ptr).ambush_flag);
     const auto &area = wilderness.get_area();
     wr_s32b(area.width());
     wr_s32b(area.height());

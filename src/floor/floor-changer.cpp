@@ -419,7 +419,7 @@ void change_floor(PlayerType *player_ptr)
     panel_row_max = 0;
     panel_col_min = 0;
     panel_col_max = 0;
-    player_ptr->ambush_flag = false;
+    static_cast<CreatureEntity &>(*player_ptr).ambush_flag = false;
     update_floor(player_ptr);
     place_pet(player_ptr);
     Travel::get_instance().reset_goal();

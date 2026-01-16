@@ -130,7 +130,6 @@ public:
 
     bool is_dead_{}; /* Player is dead */
     bool now_damaged{};
-    bool ambush_flag{};
 
 #define KNOW_STAT 0x01
 #define KNOW_HPRATE 0x02

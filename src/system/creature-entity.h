@@ -251,6 +251,8 @@ public:
     POSITION run_py{}; /*!< 走行中の目標Y座標 / Target Y position while running */
     POSITION run_px{}; /*!< 走行中の目標X座標 / Target X position while running */
 
+    bool ambush_flag{}; /*!< 待ち伏せフラグ / Ambush flag */
+
     // 基本情報
     int16_t age{}; /*!< 年齢 / Age */
     int16_t ht{}; /*!< 身長 / Height */

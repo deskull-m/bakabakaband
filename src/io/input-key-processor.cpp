@@ -329,7 +329,7 @@ void process_command(PlayerType *player_ptr)
                 break;
             }
 
-            if (player_ptr->ambush_flag) {
+            if (static_cast<CreatureEntity &>(*player_ptr).ambush_flag) {
                 msg_print(_("襲撃から逃げるにはマップの端まで移動しなければならない。", "To flee the ambush you have to reach the edge of the map."));
                 break;
             }
