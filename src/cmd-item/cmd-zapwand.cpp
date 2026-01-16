@@ -312,7 +312,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_STRIKING: {
-        fire_bolt(player_ptr, AttributeType::METEOR, dir, Dice::roll(15 + lev / 3, 13));
+        fire_bolt(*player_ptr, AttributeType::METEOR, dir, Dice::roll(15 + lev / 3, 13));
         ident = true;
         break;
     }

@@ -199,13 +199,13 @@ bool fire_blast(PlayerType *player_ptr, AttributeType typ, const Direction &dir,
  * Affect monsters and grids (not objects).
  * </pre>
  */
-bool fire_bolt(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam)
+bool fire_bolt(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_GRID;
     if (typ != AttributeType::MONSTER_SHOOT) {
         flg |= PROJECT_REFLECTABLE;
     }
-    return project_hook(player_ptr, typ, dir, dam, flg);
+    return project_hook(creature, typ, dir, dam, flg);
 }
 
 /*!
@@ -224,7 +224,7 @@ bool fire_bolt(PlayerType *player_ptr, AttributeType typ, const Direction &dir, 
 bool fire_beam(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam)
 {
     BIT_FLAGS flg = PROJECT_BEAM | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
-    return project_hook(player_ptr, typ, dir, dam, flg);
+    return project_hook(*player_ptr, typ, dir, dam, flg);
 }
 
 /*!
@@ -247,7 +247,7 @@ bool fire_bolt_or_beam(PlayerType *player_ptr, PERCENTAGE prob, AttributeType ty
         return (fire_beam(player_ptr, typ, dir, dam));
     }
 
-    return (fire_bolt(player_ptr, typ, dir, dam));
+    return (fire_bolt(*player_ptr, typ, dir, dam));
 }
 
 /*!
@@ -259,9 +259,9 @@ bool fire_bolt_or_beam(PlayerType *player_ptr, PERCENTAGE prob, AttributeType ty
  * @param flg フラグ
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool project_hook(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam, BIT_FLAGS flg)
+bool project_hook(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam, BIT_FLAGS flg)
 {
     flg |= (PROJECT_THRU);
-    const auto pos = dir.get_target_position(player_ptr->get_position());
-    return project(*player_ptr, 0, 0, pos.y, pos.x, dam, typ, flg).notice;
+    const auto pos = dir.get_target_position(creature.get_position());
+    return project(creature, 0, 0, pos.y, pos.x, dam, typ, flg).notice;
 }

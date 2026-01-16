@@ -420,7 +420,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::SHOOT:
         msg_print(_("矢を放った。", "You fire an arrow."));
-        fire_bolt(player_ptr, AttributeType::MONSTER_SHOOT, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::MONSTER_SHOOT, dir, damage);
         break;
 
     case MonsterAbilityType::XXX2:
@@ -635,19 +635,19 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::BO_ACID:
         msg_print(_("アシッド・ボルトの呪文を唱えた。", "You cast an acid bolt."));
-        fire_bolt(player_ptr, AttributeType::ACID, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::ACID, dir, damage);
         break;
     case MonsterAbilityType::BO_ELEC:
         msg_print(_("サンダー・ボルトの呪文を唱えた。", "You cast a lightning bolt."));
-        fire_bolt(player_ptr, AttributeType::ELEC, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::ELEC, dir, damage);
         break;
     case MonsterAbilityType::BO_FIRE:
         msg_print(_("ファイア・ボルトの呪文を唱えた。", "You cast a fire bolt."));
-        fire_bolt(player_ptr, AttributeType::FIRE, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::FIRE, dir, damage);
         break;
     case MonsterAbilityType::BO_COLD:
         msg_print(_("アイス・ボルトの呪文を唱えた。", "You cast a frost bolt."));
-        fire_bolt(player_ptr, AttributeType::COLD, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::COLD, dir, damage);
         break;
     case MonsterAbilityType::BA_LITE:
         msg_print(_("スターバーストの呪文を念じた。", "You invoke a starburst."));
@@ -655,43 +655,43 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::BO_NETH:
         msg_print(_("地獄の矢の呪文を唱えた。", "You cast a nether bolt."));
-        fire_bolt(player_ptr, AttributeType::NETHER, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::NETHER, dir, damage);
         break;
     case MonsterAbilityType::BO_WATE:
         msg_print(_("ウォーター・ボルトの呪文を唱えた。", "You cast a water bolt."));
-        fire_bolt(player_ptr, AttributeType::WATER, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::WATER, dir, damage);
         break;
     case MonsterAbilityType::BO_MANA:
         msg_print(_("魔力の矢の呪文を唱えた。", "You cast a mana bolt."));
-        fire_bolt(player_ptr, AttributeType::MANA, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::MANA, dir, damage);
         break;
     case MonsterAbilityType::BO_PLAS:
         msg_print(_("プラズマ・ボルトの呪文を唱えた。", "You cast a plasma bolt."));
-        fire_bolt(player_ptr, AttributeType::PLASMA, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::PLASMA, dir, damage);
         break;
     case MonsterAbilityType::BO_ICEE:
         msg_print(_("極寒の矢の呪文を唱えた。", "You cast a ice bolt."));
-        fire_bolt(player_ptr, AttributeType::ICE, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::ICE, dir, damage);
         break;
     case MonsterAbilityType::BO_VOID:
         msg_print(_("虚無の矢の呪文を唱えた。", "You cast a void bolt."));
-        fire_bolt(player_ptr, AttributeType::VOID_MAGIC, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::VOID_MAGIC, dir, damage);
         break;
     case MonsterAbilityType::BO_ABYSS:
         msg_print(_("深淵の矢の呪文を唱えた。", "You cast a abyss bolt."));
-        fire_bolt(player_ptr, AttributeType::ABYSS, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::ABYSS, dir, damage);
         break;
     case MonsterAbilityType::BO_METEOR:
         msg_print(_("メテオストライクの呪文を唱えた。", "You cast a meteor strike."));
-        fire_bolt(player_ptr, AttributeType::METEOR, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::METEOR, dir, damage);
         break;
     case MonsterAbilityType::BO_LITE:
         msg_print(_("スターライトアローの呪文を唱えた。", "You cast a starlight arrow."));
-        fire_bolt(player_ptr, AttributeType::LITE, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::LITE, dir, damage);
         break;
     case MonsterAbilityType::MISSILE:
         msg_print(_("マジック・ミサイルの呪文を唱えた。", "You cast a magic missile."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, damage);
+        fire_bolt(*player_ptr, AttributeType::MISSILE, dir, damage);
         break;
     case MonsterAbilityType::SCARE:
         msg_print(_("恐ろしげな幻覚を作り出した。", "You cast a fearful illusion."));

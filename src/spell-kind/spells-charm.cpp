@@ -14,7 +14,7 @@
 bool charm_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(player_ptr, AttributeType::CHARM, dir, plev, flg);
+    return project_hook(*player_ptr, AttributeType::CHARM, dir, plev, flg);
 }
 
 /*!
@@ -27,7 +27,7 @@ bool charm_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL pl
 bool control_one_undead(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(player_ptr, AttributeType::CONTROL_UNDEAD, dir, plev, flg);
+    return project_hook(*player_ptr, AttributeType::CONTROL_UNDEAD, dir, plev, flg);
 }
 
 /*!
@@ -40,7 +40,7 @@ bool control_one_undead(PlayerType *player_ptr, const Direction &dir, PLAYER_LEV
 bool control_one_demon(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(player_ptr, AttributeType::CONTROL_DEMON, dir, plev, flg);
+    return project_hook(*player_ptr, AttributeType::CONTROL_DEMON, dir, plev, flg);
 }
 
 /*!
@@ -53,5 +53,5 @@ bool control_one_demon(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVE
 bool charm_animal(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(player_ptr, AttributeType::CONTROL_ANIMAL, dir, plev, flg);
+    return project_hook(*player_ptr, AttributeType::CONTROL_ANIMAL, dir, plev, flg);
 }

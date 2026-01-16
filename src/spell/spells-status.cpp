@@ -63,7 +63,7 @@
 bool heal_monster(PlayerType *player_ptr, const Direction &dir, int dam)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_HEAL, dir, dam, flg);
+    return project_hook(*player_ptr, AttributeType::OLD_HEAL, dir, dam, flg);
 }
 
 /*!
@@ -76,7 +76,7 @@ bool heal_monster(PlayerType *player_ptr, const Direction &dir, int dam)
 bool speed_monster(PlayerType *player_ptr, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_SPEED, dir, power, flg);
+    return project_hook(*player_ptr, AttributeType::OLD_SPEED, dir, power, flg);
 }
 
 /*!
@@ -89,7 +89,7 @@ bool speed_monster(PlayerType *player_ptr, const Direction &dir, int power)
 bool slow_monster(PlayerType *player_ptr, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_SLOW, dir, power, flg);
+    return project_hook(*player_ptr, AttributeType::OLD_SLOW, dir, power, flg);
 }
 
 /*!
@@ -102,7 +102,7 @@ bool slow_monster(PlayerType *player_ptr, const Direction &dir, int power)
 bool sleep_monster(PlayerType *player_ptr, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_SLEEP, dir, power, flg);
+    return project_hook(*player_ptr, AttributeType::OLD_SLEEP, dir, power, flg);
 }
 
 /*!
@@ -139,7 +139,7 @@ bool stasis_evil(PlayerType *player_ptr, const Direction &dir)
 bool confuse_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_CONF, dir, plev, flg);
+    return project_hook(*player_ptr, AttributeType::OLD_CONF, dir, plev, flg);
 }
 
 /*!
@@ -152,7 +152,7 @@ bool confuse_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL 
 bool stun_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::STUN, dir, plev, flg);
+    return project_hook(*player_ptr, AttributeType::STUN, dir, plev, flg);
 }
 
 /*!
@@ -165,7 +165,7 @@ bool stun_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL ple
 bool poly_monster(PlayerType *player_ptr, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    bool tester = (project_hook(player_ptr, AttributeType::OLD_POLY, dir, power, flg));
+    bool tester = (project_hook(*player_ptr, AttributeType::OLD_POLY, dir, power, flg));
     if (tester) {
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
     }
@@ -181,7 +181,7 @@ bool poly_monster(PlayerType *player_ptr, const Direction &dir, int power)
 bool clone_monster(PlayerType *player_ptr, const Direction &dir)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_CLONE, dir, 0, flg);
+    return project_hook(*player_ptr, AttributeType::OLD_CLONE, dir, 0, flg);
 }
 
 /*!
@@ -194,7 +194,7 @@ bool clone_monster(PlayerType *player_ptr, const Direction &dir)
 bool fear_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::TURN_ALL, dir, plev, flg);
+    return project_hook(*player_ptr, AttributeType::TURN_ALL, dir, plev, flg);
 }
 
 bool time_walk(PlayerType *player_ptr)

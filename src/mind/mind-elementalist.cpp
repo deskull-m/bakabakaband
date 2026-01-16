@@ -453,7 +453,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = Dice::roll(3 + ((plev - 1) / 5), 4);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_bolt(player_ptr, typ, dir, dam);
+        (void)fire_bolt(*player_ptr, typ, dir, dam);
         return true;
     }
     case ElementSpells::MON_DETECT:

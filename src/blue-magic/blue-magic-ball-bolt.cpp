@@ -101,6 +101,6 @@ bool cast_blue_magic_bolt(PlayerType *player_ptr, bmc_type *bmc_ptr)
     const auto &[attribute_type, message] = magic->second;
     msg_print(message);
     const auto damage = monspell_bluemage_damage(player_ptr, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
-    fire_bolt(player_ptr, attribute_type, dir, damage);
+    fire_bolt(*player_ptr, attribute_type, dir, damage);
     return true;
 };

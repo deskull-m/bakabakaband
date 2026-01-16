@@ -20,7 +20,7 @@ bool activate_missile_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_bolt(player_ptr, AttributeType::MISSILE, dir, Dice::roll(2, 6));
+    (void)fire_bolt(*player_ptr, AttributeType::MISSILE, dir, Dice::roll(2, 6));
     return true;
 }
 
@@ -32,7 +32,7 @@ bool activate_missile_2(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_bolt(player_ptr, AttributeType::MISSILE, dir, 150);
+    (void)fire_bolt(*player_ptr, AttributeType::MISSILE, dir, 150);
     return true;
 }
 
@@ -56,7 +56,7 @@ bool activate_bolt_acid_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_bolt(player_ptr, AttributeType::ACID, dir, Dice::roll(5, 8));
+    (void)fire_bolt(*player_ptr, AttributeType::ACID, dir, Dice::roll(5, 8));
     return true;
 }
 
@@ -68,7 +68,7 @@ bool activate_bolt_elec_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_bolt(player_ptr, AttributeType::ELEC, dir, Dice::roll(4, 8));
+    (void)fire_bolt(*player_ptr, AttributeType::ELEC, dir, Dice::roll(4, 8));
     return true;
 }
 
@@ -80,7 +80,7 @@ bool activate_bolt_fire_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_bolt(player_ptr, AttributeType::FIRE, dir, Dice::roll(9, 8));
+    (void)fire_bolt(*player_ptr, AttributeType::FIRE, dir, Dice::roll(9, 8));
     return true;
 }
 
@@ -92,7 +92,7 @@ bool activate_bolt_cold_1(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_bolt(player_ptr, AttributeType::COLD, dir, Dice::roll(6, 8));
+    (void)fire_bolt(*player_ptr, AttributeType::COLD, dir, Dice::roll(6, 8));
     return true;
 }
 
@@ -160,7 +160,7 @@ bool activate_bolt_mana(PlayerType *player_ptr, std::string_view name)
         return false;
     }
 
-    (void)fire_bolt(player_ptr, AttributeType::MISSILE, dir, 150);
+    (void)fire_bolt(*player_ptr, AttributeType::MISSILE, dir, 150);
     return true;
 }
 

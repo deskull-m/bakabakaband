@@ -253,7 +253,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt(player_ptr, AttributeType::ABYSS, dir, dam);
+            fire_bolt(*player_ptr, AttributeType::ABYSS, dir, dam);
         }
     } break;
 

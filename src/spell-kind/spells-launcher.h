@@ -14,9 +14,8 @@ bool fire_breath(CreatureEntity &creature, AttributeType typ, const Direction &d
 bool fire_rocket(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam, POSITION rad);
 bool fire_ball_hide(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam, POSITION rad);
 bool fire_meteor(CreatureEntity &creature, MONSTER_IDX src_idx, AttributeType typ, POSITION x, POSITION y, int dam, POSITION rad);
-bool fire_bolt(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam);
-bool fire_bolt(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam);
+bool fire_bolt(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam);
 bool fire_blast(PlayerType *player_ptr, AttributeType typ, const Direction &dir, const Dice &dice, int num, int dev);
 bool fire_beam(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam);
 bool fire_bolt_or_beam(PlayerType *player_ptr, PERCENTAGE prob, AttributeType typ, const Direction &dir, int dam);
-bool project_hook(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam, BIT_FLAGS flg);
+bool project_hook(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam, BIT_FLAGS flg);

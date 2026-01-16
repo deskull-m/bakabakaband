@@ -401,7 +401,7 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
         if (plev > 9 && grid.is_mirror()) {
             fire_beam(player_ptr, AttributeType::LITE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
         } else {
-            fire_bolt(player_ptr, AttributeType::LITE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
+            fire_bolt(*player_ptr, AttributeType::LITE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
         }
 
         break;

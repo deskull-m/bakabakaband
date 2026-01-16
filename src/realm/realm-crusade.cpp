@@ -222,7 +222,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt(player_ptr, AttributeType::LITE, dir, dam);
+            fire_bolt(*player_ptr, AttributeType::LITE, dir, dam);
         }
     } break;
 

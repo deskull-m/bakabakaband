@@ -305,7 +305,7 @@ static bool activate_raygun(PlayerType *player_ptr, ae_type *ae_ptr)
     }
 
     msg_print(_("『ビィーム！』", "'ZAP! ZAP!'"));
-    fire_bolt(player_ptr, AttributeType::MISSILE, dir, 10 + player_ptr->level * 2);
+    fire_bolt(*player_ptr, AttributeType::MISSILE, dir, 10 + player_ptr->level * 2);
     return true;
 }
 

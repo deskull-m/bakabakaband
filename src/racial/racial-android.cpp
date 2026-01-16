@@ -29,13 +29,13 @@ bool android_inside_weapon(PlayerType *player_ptr)
 
     if (player_ptr->level < 10) {
         msg_print(_("レイガンを発射した。", "You fire your ray gun."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, (player_ptr->level + 1) / 2);
+        fire_bolt(*player_ptr, AttributeType::MISSILE, dir, (player_ptr->level + 1) / 2);
         return true;
     }
 
     if (player_ptr->level < 25) {
         msg_print(_("ブラスターを発射した。", "You fire your blaster."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, player_ptr->level);
+        fire_bolt(*player_ptr, AttributeType::MISSILE, dir, player_ptr->level);
         return true;
     }
 

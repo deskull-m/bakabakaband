@@ -118,7 +118,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         }
 
         msg_print(_("集中している...", "You concentrate..."));
-        fire_bolt(player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((lvl - 1) / 5), 3));
+        fire_bolt(*player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((lvl - 1) / 5), 3));
         return true;
     }
     case PlayerMutationType::RADIATION:
@@ -304,7 +304,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
             return true;
         }
 
-        fire_bolt(player_ptr, AttributeType::COLD, dir, 2 * lvl);
+        fire_bolt(*player_ptr, AttributeType::COLD, dir, 2 * lvl);
         return true;
     }
     case PlayerMutationType::LAUNCHER:

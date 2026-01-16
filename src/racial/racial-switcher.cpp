@@ -318,7 +318,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
         msg_print(_("社会的抹殺ボルトを放った！", "You fire a social genocide bolt!"));
-        fire_bolt(player_ptr, AttributeType::SOCIAL_GENOCIDE, dir, player_ptr->level * 2);
+        fire_bolt(*player_ptr, AttributeType::SOCIAL_GENOCIDE, dir, player_ptr->level * 2);
         return true;
     }
 
@@ -387,7 +387,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("巨大な岩を投げた。", "You throw a huge boulder."));
-        (void)fire_bolt(player_ptr, AttributeType::MISSILE, dir, (3 * player_ptr->level) / 2);
+        (void)fire_bolt(*player_ptr, AttributeType::MISSILE, dir, (3 * player_ptr->level) / 2);
         return true;
     }
     case PlayerRaceType::YEEK: {
@@ -410,7 +410,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         stop_mouth(player_ptr);
         msg_print(_("酸を吐いた。", "You spit acid."));
         if (player_ptr->level < 25) {
-            (void)fire_bolt(player_ptr, AttributeType::ACID, dir, player_ptr->level);
+            (void)fire_bolt(*player_ptr, AttributeType::ACID, dir, player_ptr->level);
         } else {
             (void)fire_ball(*player_ptr, AttributeType::ACID, dir, player_ptr->level, 2);
         }
@@ -424,7 +424,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("毒のダーツを投げた。", "You throw a poisoned dart."));
-        (void)fire_bolt(player_ptr, AttributeType::POIS, dir, player_ptr->level);
+        (void)fire_bolt(*player_ptr, AttributeType::POIS, dir, player_ptr->level);
         return true;
     }
     case PlayerRaceType::NIBELUNG:
@@ -452,7 +452,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("あなたは集中し、目が赤く輝いた...", "You concentrate and your eyes glow red..."));
-        (void)fire_bolt(player_ptr, AttributeType::PSI, dir, player_ptr->level);
+        (void)fire_bolt(*player_ptr, AttributeType::PSI, dir, player_ptr->level);
         return true;
     }
     case PlayerRaceType::IMP: {
@@ -466,7 +466,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, player_ptr->level, 2);
         } else {
             msg_print(_("ファイア・ボルトを放った。", "You cast a bolt of fire."));
-            (void)fire_bolt(player_ptr, AttributeType::FIRE, dir, player_ptr->level);
+            (void)fire_bolt(*player_ptr, AttributeType::FIRE, dir, player_ptr->level);
         }
 
         return true;
