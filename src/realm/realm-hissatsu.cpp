@@ -75,7 +75,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            project_hook(player_ptr, AttributeType::ATTACK, dir, HISSATSU_2, PROJECT_STOP | PROJECT_KILL);
+            project_hook(*player_ptr, AttributeType::ATTACK, dir, HISSATSU_2, PROJECT_STOP | PROJECT_KILL);
         }
         break;
 
@@ -501,7 +501,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                     total_damage = total_damage * 7 / 10;
                 }
             }
-            fire_beam(player_ptr, AttributeType::FORCE, dir, total_damage);
+            fire_beam(*player_ptr, AttributeType::FORCE, dir, total_damage);
         }
         break;
 

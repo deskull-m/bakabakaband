@@ -40,13 +40,13 @@ static void exe_ring_of_power(PlayerType *player_ptr, const Direction &dir)
     case 4:
     case 5:
     case 6:
-        fire_ball(player_ptr, AttributeType::MANA, dir, 600, 3);
+        fire_ball(*player_ptr, AttributeType::MANA, dir, 600, 3);
         break;
     case 7:
     case 8:
     case 9:
     case 10:
-        fire_bolt(player_ptr, AttributeType::MANA, dir, 500);
+        fire_bolt(*player_ptr, AttributeType::MANA, dir, 500);
         break;
     default:
         break;

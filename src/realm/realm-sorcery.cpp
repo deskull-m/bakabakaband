@@ -215,7 +215,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 

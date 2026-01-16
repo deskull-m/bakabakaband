@@ -91,7 +91,7 @@ bool teleport_swap(PlayerType *player_ptr, const Direction &dir)
 bool teleport_monster(PlayerType *player_ptr, const Direction &dir, int distance)
 {
     BIT_FLAGS flg = PROJECT_BEAM | PROJECT_KILL;
-    return project_hook(player_ptr, AttributeType::AWAY_ALL, dir, distance, flg);
+    return project_hook(*player_ptr, AttributeType::AWAY_ALL, dir, distance, flg);
 }
 
 /*!

@@ -184,9 +184,9 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         }
 
         if (randint1(100) < plev * 2) {
-            fire_beam(player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((plev - 1) / 4), (3 + plev / 15)));
+            fire_beam(*player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((plev - 1) / 4), (3 + plev / 15)));
         } else {
-            fire_ball(player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((plev - 1) / 4), (3 + plev / 15)), 0);
+            fire_ball(*player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((plev - 1) / 4), (3 + plev / 15)), 0);
         }
         break;
     }
@@ -203,7 +203,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
                 return false;
             }
 
-            fire_ball(player_ptr, AttributeType::DOMINATION, dir, plev, 0);
+            fire_ball(*player_ptr, AttributeType::DOMINATION, dir, plev, 0);
         } else {
             charm_monsters(player_ptr, plev * 2);
         }
@@ -215,7 +215,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
             return false;
         }
 
-        fire_ball(player_ptr, AttributeType::TELEKINESIS, dir, Dice::roll(8 + ((plev - 5) / 4), 8), (plev > 20 ? (plev - 20) / 8 + 1 : 0));
+        fire_ball(*player_ptr, AttributeType::TELEKINESIS, dir, Dice::roll(8 + ((plev - 5) / 4), 8), (plev > 20 ? (plev - 20) / 8 + 1 : 0));
         break;
     }
     case MindMindcrafterType::CHARACTER_ARMOR:
@@ -281,7 +281,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         }
 
         dam = Dice::roll(plev / 2, 6);
-        if (fire_ball(player_ptr, AttributeType::PSI_DRAIN, dir, dam, 0)) {
+        if (fire_ball(*player_ptr, AttributeType::PSI_DRAIN, dir, dam, 0)) {
             player_ptr->energy_need += randnum1<short>(150);
         }
 
@@ -293,7 +293,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
             return false;
         }
 
-        fire_beam(player_ptr, AttributeType::PSY_SPEAR, dir, randint1(plev * 3) + plev * 3);
+        fire_beam(*player_ptr, AttributeType::PSY_SPEAR, dir, randint1(plev * 3) + plev * 3);
         break;
     }
     case MindMindcrafterType::THE_WORLD:

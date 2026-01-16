@@ -297,7 +297,7 @@ bool activate_whirlwind(PlayerType *player_ptr)
 bool activate_blinding_light(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが眩しい光で輝いた...", "The %s gleams with blinding light..."), name.data());
-    (void)fire_ball(player_ptr, AttributeType::LITE, Direction::self(), 300, 6);
+    (void)fire_ball(*player_ptr, AttributeType::LITE, Direction::self(), 300, 6);
     confuse_monsters(player_ptr, 3 * player_ptr->level / 2);
     return true;
 }

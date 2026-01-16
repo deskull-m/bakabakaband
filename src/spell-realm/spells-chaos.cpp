@@ -45,13 +45,13 @@ void call_the_void(PlayerType *player_ptr)
 
     if (do_call) {
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(player_ptr, AttributeType::ROCKET, dir, 175, 2);
+            fire_ball(*player_ptr, AttributeType::ROCKET, dir, 175, 2);
         }
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(player_ptr, AttributeType::MANA, dir, 175, 3);
+            fire_ball(*player_ptr, AttributeType::MANA, dir, 175, 3);
         }
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(player_ptr, AttributeType::NUKE, dir, 175, 4);
+            fire_ball(*player_ptr, AttributeType::NUKE, dir, 175, 4);
         }
 
         return;

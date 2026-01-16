@@ -38,7 +38,7 @@ bool activate_acid_ball_and_resistance(PlayerType *player_ptr, std::string_view 
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::ACID, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::ACID, dir, 100, 2);
     (void)set_oppose_acid(player_ptr, randint1(20) + 20, false);
 
     return true;
@@ -59,7 +59,7 @@ bool activate_elec_ball_and_resistance(PlayerType *player_ptr, std::string_view 
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::ELEC, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::ELEC, dir, 100, 2);
     (void)set_oppose_elec(player_ptr, randint1(20) + 20, false);
 
     return true;
@@ -80,7 +80,7 @@ bool activate_fire_ball_and_resistance(PlayerType *player_ptr, std::string_view 
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::FIRE, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, 100, 2);
     (void)set_oppose_fire(player_ptr, randint1(20) + 20, false);
 
     return true;
@@ -101,7 +101,7 @@ bool activate_cold_ball_and_resistance(PlayerType *player_ptr, std::string_view 
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::COLD, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::COLD, dir, 100, 2);
     (void)set_oppose_cold(player_ptr, randint1(20) + 20, false);
 
     return true;
@@ -122,7 +122,7 @@ bool activate_pois_ball_and_resistance(PlayerType *player_ptr, std::string_view 
         return false;
     }
 
-    (void)fire_ball(player_ptr, AttributeType::POIS, dir, 100, 2);
+    (void)fire_ball(*player_ptr, AttributeType::POIS, dir, 100, 2);
     (void)set_oppose_pois(player_ptr, randint1(20) + 20, false);
 
     return true;

@@ -209,7 +209,7 @@ bool shock_power(PlayerType *player_ptr)
     auto pos = player_ptr->get_neighbor(dir);
     PLAYER_LEVEL plev = player_ptr->level;
     const auto dam = Dice::roll(8 + ((plev - 5) / 4) + boost / 12, 8);
-    fire_beam(player_ptr, AttributeType::MISSILE, dir, dam);
+    fire_beam(*player_ptr, AttributeType::MISSILE, dir, dam);
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
     if (!grid.has_monster()) {
@@ -281,7 +281,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
             return false;
         }
 
-        fire_ball(player_ptr, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5) + boost / 12, 4), 0);
+        fire_ball(*player_ptr, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5) + boost / 12, 4), 0);
         break;
     }
     case MindForceTrainerType::FLASH_LIGHT:
@@ -297,7 +297,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
             return false;
         }
 
-        fire_beam(player_ptr, AttributeType::MISSILE, dir, Dice::roll(5 + ((plev - 1) / 5) + boost / 10, 5));
+        fire_beam(*player_ptr, AttributeType::MISSILE, dir, Dice::roll(5 + ((plev - 1) / 5) + boost / 10, 5));
         break;
     }
     case MindForceTrainerType::MAGIC_RESISTANCE:
@@ -309,7 +309,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
         if (randint1(get_current_ki(player_ptr)) > (plev * 4 + 120)) {
             msg_print(_("気が暴走した！", "The Force exploded!"));
-            fire_ball(player_ptr, AttributeType::MANA, Direction::self(), get_current_ki(player_ptr) / 2, 10);
+            fire_ball(*player_ptr, AttributeType::MANA, Direction::self(), get_current_ki(player_ptr) / 2, 10);
             auto data = PlayerClass(player_ptr).get_specific_data<force_trainer_data_type>();
             take_hit(player_ptr, DAMAGE_LOSELIFE, data->ki / 2, _("気の暴走", "Explosion of the Force"));
         } else {
@@ -329,7 +329,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
             return false;
         }
 
-        fire_ball(player_ptr, AttributeType::MISSILE, dir, Dice::roll(10, 6) + plev * 3 / 2 + boost * 3 / 5, (plev < 30) ? 2 : 3);
+        fire_ball(*player_ptr, AttributeType::MISSILE, dir, Dice::roll(10, 6) + plev * 3 / 2 + boost * 3 / 5, (plev < 30) ? 2 : 3);
         break;
     }
     case MindForceTrainerType::DISPEL_MAGIC: {
@@ -367,7 +367,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
         break;
     }
     case MindForceTrainerType::EXPLODING_FLAME:
-        fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), 200 + (2 * plev) + boost * 2, 10);
+        fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), 200 + (2 * plev) + boost * 2, 10);
         break;
     case MindForceTrainerType::SUPER_KAMEHAMEHA: {
         const auto dir = get_aim_dir(player_ptr);
@@ -375,7 +375,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
             return false;
         }
 
-        fire_beam(player_ptr, AttributeType::MANA, dir, Dice::roll(10 + (plev / 2) + boost * 3 / 10, 15));
+        fire_beam(*player_ptr, AttributeType::MANA, dir, Dice::roll(10 + (plev / 2) + boost * 3 / 10, 15));
         break;
     }
     case MindForceTrainerType::LIGHT_SPEED:

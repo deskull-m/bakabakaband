@@ -453,7 +453,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = Dice::roll(3 + ((plev - 1) / 5), 4);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_bolt(player_ptr, typ, dir, dam);
+        (void)fire_bolt(*player_ptr, typ, dir, dam);
         return true;
     }
     case ElementSpells::MON_DETECT:
@@ -474,7 +474,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = Dice::roll(8 + ((plev - 5) / 4), 8);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_bolt_or_beam(player_ptr, plev, typ, dir, dam)) {
+        if (fire_bolt_or_beam(*player_ptr, plev, typ, dir, dam)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -494,7 +494,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto typ = get_element_spells_type(player_ptr, power.elem);
         const auto dam = 50 + plev * 2;
-        (void)fire_ball(player_ptr, typ, dir, dam, 1);
+        (void)fire_ball(*player_ptr, typ, dir, dam, 1);
         project_length = 0;
         return true;
     }
@@ -506,7 +506,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 55 + plev;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_ball(player_ptr, typ, dir, dam, 2);
+        (void)fire_ball(*player_ptr, typ, dir, dam, 2);
         return true;
     }
     case ElementSpells::BREATH_2ND: {
@@ -517,7 +517,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = std::min(150, player_ptr->hp / 2);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_breath(player_ptr, typ, dir, dam, 3)) {
+        if (fire_breath(*player_ptr, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -531,7 +531,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
             return false;
         }
 
-        fire_ball_hide(player_ptr, AttributeType::E_GENOCIDE, dir, plev + 50, 0);
+        fire_ball_hide(*player_ptr, AttributeType::E_GENOCIDE, dir, plev + 50, 0);
         return true;
     }
     case ElementSpells::BOLT_3RD: {
@@ -542,7 +542,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = Dice::roll(12 + ((plev - 5) / 4), 8);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        fire_bolt_or_beam(player_ptr, plev, typ, dir, dam);
+        fire_bolt_or_beam(*player_ptr, plev, typ, dir, dam);
         return true;
     }
     case ElementSpells::WAVE_1ST: {
@@ -559,7 +559,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 75 + plev * 3 / 2;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_ball(player_ptr, typ, dir, dam, 3)) {
+        if (fire_ball(*player_ptr, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -599,7 +599,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 115 + plev * 5 / 2;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_ball(player_ptr, typ, dir, dam, 4)) {
+        if (fire_ball(*player_ptr, typ, dir, dam, 4)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -615,7 +615,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = player_ptr->hp * 2 / 3;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_breath(player_ptr, typ, dir, dam, 3);
+        (void)fire_breath(*player_ptr, typ, dir, dam, 3);
         return true;
     }
     case ElementSpells::STORM_3ND: {
@@ -626,7 +626,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = 300 + plev * 5;
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        (void)fire_ball(player_ptr, typ, dir, dam, 5);
+        (void)fire_ball(*player_ptr, typ, dir, dam, 5);
         return true;
     }
     default:

@@ -720,7 +720,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                         dir = get_aim_dir(player_ptr);
                     } while (!dir);
 
-                    fire_ball(player_ptr, AttributeType::HELL_FIRE, dir, power, 1);
+                    fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, power, 1);
 
                     if (AngbandWorld::get_instance().wizard) {
                         msg_format(_("%d点のダメージを返した。", "You return %d damage."), power);

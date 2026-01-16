@@ -160,7 +160,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     this->death_amberites(m_name);
     this->death_choasians(m_name);
     this->dying_scream(m_name);
-    AvatarChanger ac(this->player_ptr, monster);
+    AvatarChanger ac(*this->player_ptr, monster);
     ac.change_virtue();
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) && record_destroy_uniq) {
         std::stringstream ss;

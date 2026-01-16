@@ -55,7 +55,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
         }
     } break;
 
@@ -115,7 +115,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::MISSILE, dir, dice.roll() + base, rad);
+            fire_ball(*player_ptr, AttributeType::MISSILE, dir, dice.roll() + base, rad);
 
             /*
              * Shouldn't actually use MANA, as
@@ -138,7 +138,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 
@@ -155,7 +155,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::DISINTEGRATE, dir, dice.roll(), 0);
+            fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, dice.roll(), 0);
         }
     } break;
 
@@ -200,7 +200,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::CHAOS, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::CHAOS, dir, dice.roll());
         }
     } break;
 
@@ -231,7 +231,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::MANA, dir, dice.roll());
+            fire_beam(*player_ptr, AttributeType::MANA, dir, dice.roll());
         }
     } break;
 
@@ -249,7 +249,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -266,7 +266,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 
@@ -293,7 +293,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::CHAOS, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::CHAOS, dir, dam, rad);
         }
     } break;
 
@@ -323,7 +323,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             for (const auto &dir : Direction::directions_8()) {
-                fire_beam(player_ptr, AttributeType::ELEC, dir, dice.roll());
+                fire_beam(*player_ptr, AttributeType::ELEC, dir, dice.roll());
             }
         }
     } break;
@@ -355,7 +355,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::DISINTEGRATE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, dam, rad);
         }
     } break;
 
@@ -387,7 +387,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             msg_print(_("ロケット発射！", "You launch a rocket!"));
-            fire_rocket(player_ptr, AttributeType::ROCKET, dir, dam, rad);
+            fire_rocket(*player_ptr, AttributeType::ROCKET, dir, dam, rad);
         }
     } break;
 
@@ -415,7 +415,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_beam(player_ptr, AttributeType::GRAVITY, dir, dice.roll());
+            fire_beam(*player_ptr, AttributeType::GRAVITY, dir, dice.roll());
         }
     } break;
 
@@ -441,7 +441,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
+            fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
         }
     } break;
 
@@ -477,7 +477,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::MANA, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::MANA, dir, dam, rad);
         }
     } break;
 
@@ -495,7 +495,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::CHAOS, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::CHAOS, dir, dam, rad);
         }
     } break;
 

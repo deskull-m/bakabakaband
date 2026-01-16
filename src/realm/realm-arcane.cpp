@@ -55,7 +55,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, dice.roll());
         }
     } break;
 
@@ -373,7 +373,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 
@@ -399,7 +399,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             };
 
             const auto type = rand_choice(element_types);
-            fire_ball(player_ptr, type, dir, dam, rad);
+            fire_ball(*player_ptr, type, dir, dam, rad);
         }
     } break;
 

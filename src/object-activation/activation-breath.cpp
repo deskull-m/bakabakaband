@@ -46,7 +46,7 @@ bool activate_dragon_breath(PlayerType *player_ptr, ItemEntity *o_ptr)
 
     const auto &breath = rand_choice(breaths);
     msg_format(_("あなたは%sのブレスを吐いた。", "You breathe %s."), breath.second.data());
-    fire_breath(player_ptr, breath.first, dir, 250, 4);
+    fire_breath(*player_ptr, breath.first, dir, 250, 4);
     return true;
 }
 
@@ -57,7 +57,7 @@ bool activate_breath_fire(PlayerType *player_ptr, ItemEntity *o_ptr)
         return false;
     }
 
-    fire_breath(player_ptr, AttributeType::FIRE, dir, 200, 2);
+    fire_breath(*player_ptr, AttributeType::FIRE, dir, 200, 2);
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_FLAMES)) {
         (void)set_oppose_fire(player_ptr, randint1(20) + 20, false);
     }
@@ -72,7 +72,7 @@ bool activate_breath_cold(PlayerType *player_ptr, ItemEntity *o_ptr)
         return false;
     }
 
-    fire_breath(player_ptr, AttributeType::COLD, dir, 200, 2);
+    fire_breath(*player_ptr, AttributeType::COLD, dir, 200, 2);
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_ICE)) {
         (void)set_oppose_cold(player_ptr, randint1(20) + 20, false);
     }

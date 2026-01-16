@@ -124,7 +124,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 

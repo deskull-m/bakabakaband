@@ -17,7 +17,7 @@ bool activate_bladeturner(PlayerType *player_ptr)
     }
 
     msg_print(_("あなたはエレメントのブレスを吐いた。", "You breathe the elements."));
-    fire_breath(player_ptr, AttributeType::MISSILE, dir, 300, 4);
+    fire_breath(*player_ptr, AttributeType::MISSILE, dir, 300, 4);
     msg_print(_("鎧が様々な色に輝いた...", "Your armor glows many colours..."));
     (void)BadStatusSetter(player_ptr).set_fear(0);
     (void)set_hero(player_ptr, randint1(50) + 50, false);

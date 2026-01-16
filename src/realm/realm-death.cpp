@@ -78,20 +78,20 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
              * travel to the monster.
              */
 
-            fire_ball(player_ptr, AttributeType::HELL_FIRE, dir, dice.roll(), rad);
+            fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, dice.roll(), rad);
 
             if (one_in_(5)) {
                 /* Special effect first */
                 int effect = randint1(1000);
 
                 if (effect == 666) {
-                    fire_ball_hide(player_ptr, AttributeType::DEATH_RAY, dir, plev * 200, 0);
+                    fire_ball_hide(*player_ptr, AttributeType::DEATH_RAY, dir, plev * 200, 0);
                 } else if (effect < 500) {
-                    fire_ball_hide(player_ptr, AttributeType::TURN_ALL, dir, plev, 0);
+                    fire_ball_hide(*player_ptr, AttributeType::TURN_ALL, dir, plev, 0);
                 } else if (effect < 800) {
-                    fire_ball_hide(player_ptr, AttributeType::OLD_CONF, dir, plev, 0);
+                    fire_ball_hide(*player_ptr, AttributeType::OLD_CONF, dir, plev, 0);
                 } else {
-                    fire_ball_hide(player_ptr, AttributeType::STUN, dir, plev, 0);
+                    fire_ball_hide(*player_ptr, AttributeType::STUN, dir, plev, 0);
                 }
             }
         }
@@ -123,7 +123,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::POIS, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::POIS, dir, dam, rad);
         }
     } break;
 
@@ -213,7 +213,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::HYPODYNAMIA, dir, dice.roll() + base, rad);
+            fire_ball(*player_ptr, AttributeType::HYPODYNAMIA, dir, dice.roll() + base, rad);
         }
     } break;
 
@@ -230,7 +230,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::NETHER, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::NETHER, dir, dice.roll());
         }
     } break;
 
@@ -260,7 +260,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball_hide(player_ptr, AttributeType::GENOCIDE, dir, power, 0);
+            fire_ball_hide(*player_ptr, AttributeType::GENOCIDE, dir, power, 0);
         }
     } break;
 
@@ -372,7 +372,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::DARK, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::DARK, dir, dice.roll());
         }
     } break;
 
@@ -450,7 +450,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::DARK, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::DARK, dir, dam, rad);
         }
     } break;
 
@@ -530,7 +530,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::HELL_FIRE, dir, dam, rad);
+            fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, dam, rad);
             take_hit(player_ptr, DAMAGE_USELIFE, 20 + randint1(30), _("地獄の劫火の呪文を唱えた疲労", "the strain of casting Hellfire"));
         }
     } break;

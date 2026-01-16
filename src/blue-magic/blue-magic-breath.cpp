@@ -70,6 +70,6 @@ bool cast_blue_magic_breath(PlayerType *player_ptr, bmc_type *bmc_ptr)
     msg_print(message);
     const auto radius = (bmc_ptr->plev > 40 ? 3 : 2);
     const auto damage = monspell_bluemage_damage(player_ptr, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
-    fire_breath(player_ptr, attribute_type, dir, damage, radius);
+    fire_breath(*player_ptr, attribute_type, dir, damage, radius);
     return true;
 }

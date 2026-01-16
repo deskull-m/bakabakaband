@@ -200,19 +200,19 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_STINKING_CLOUD: {
-        fire_ball(player_ptr, AttributeType::POIS, dir, 12 + lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::POIS, dir, 12 + lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_MAGIC_MISSILE: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::MISSILE, dir, Dice::roll(2 + lev / 10, 6));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::MISSILE, dir, Dice::roll(2 + lev / 10, 6));
         ident = true;
         break;
     }
 
     case SV_WAND_ACID_BOLT: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
         ident = true;
         break;
     }
@@ -225,37 +225,37 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_FIRE_BOLT: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
         ident = true;
         break;
     }
 
     case SV_WAND_COLD_BOLT: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
         ident = true;
         break;
     }
 
     case SV_WAND_ACID_BALL: {
-        fire_ball(player_ptr, AttributeType::ACID, dir, 60 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::ACID, dir, 60 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_ELEC_BALL: {
-        fire_ball(player_ptr, AttributeType::ELEC, dir, 40 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::ELEC, dir, 40 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_FIRE_BALL: {
-        fire_ball(player_ptr, AttributeType::FIRE, dir, 70 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::FIRE, dir, 70 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_COLD_BALL: {
-        fire_ball(player_ptr, AttributeType::COLD, dir, 50 + 3 * lev / 4, rad);
+        fire_ball(*player_ptr, AttributeType::COLD, dir, 50 + 3 * lev / 4, rad);
         ident = true;
         break;
     }
@@ -266,13 +266,13 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_DRAGON_FIRE: {
-        fire_breath(player_ptr, AttributeType::FIRE, dir, (powerful ? 300 : 200), 3);
+        fire_breath(*player_ptr, AttributeType::FIRE, dir, (powerful ? 300 : 200), 3);
         ident = true;
         break;
     }
 
     case SV_WAND_DRAGON_COLD: {
-        fire_breath(player_ptr, AttributeType::COLD, dir, (powerful ? 270 : 180), 3);
+        fire_breath(*player_ptr, AttributeType::COLD, dir, (powerful ? 270 : 180), 3);
         ident = true;
         break;
     }
@@ -292,33 +292,33 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
             dam = (dam * 3) / 2;
         }
 
-        fire_breath(player_ptr, type, dir, dam, 3);
+        fire_breath(*player_ptr, type, dir, dam, 3);
 
         ident = true;
         break;
     }
 
     case SV_WAND_DISINTEGRATE: {
-        fire_ball(player_ptr, AttributeType::DISINTEGRATE, dir, 200 + randint1(lev * 2), rad);
+        fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, 200 + randint1(lev * 2), rad);
         ident = true;
         break;
     }
 
     case SV_WAND_ROCKETS: {
         msg_print(_("ロケットを発射した！", "You launch a rocket!"));
-        fire_rocket(player_ptr, AttributeType::ROCKET, dir, 250 + lev * 3, rad);
+        fire_rocket(*player_ptr, AttributeType::ROCKET, dir, 250 + lev * 3, rad);
         ident = true;
         break;
     }
 
     case SV_WAND_STRIKING: {
-        fire_bolt(player_ptr, AttributeType::METEOR, dir, Dice::roll(15 + lev / 3, 13));
+        fire_bolt(*player_ptr, AttributeType::METEOR, dir, Dice::roll(15 + lev / 3, 13));
         ident = true;
         break;
     }
 
     case SV_WAND_GENOCIDE: {
-        fire_ball_hide(player_ptr, AttributeType::GENOCIDE, dir, magic ? lev + 50 : 250, 0);
+        fire_ball_hide(*player_ptr, AttributeType::GENOCIDE, dir, magic ? lev + 50 : 250, 0);
         ident = true;
         break;
     }
