@@ -16,7 +16,7 @@ using scene_feel_func = bool (*)(PlayerType *player_ptr, scene_type *value);
 
 static bool scene_basic(PlayerType *player_ptr, scene_type *value)
 {
-    if (player_ptr->ambush_flag) {
+    if (static_cast<CreatureEntity &>(*player_ptr).ambush_flag) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_AMBUSH;
         return true;

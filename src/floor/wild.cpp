@@ -591,7 +591,7 @@ void wilderness_gen(PlayerType *player_ptr)
 
     generate_wild_monsters(player_ptr);
     if (generate_encounter) {
-        player_ptr->ambush_flag = true;
+        static_cast<CreatureEntity &>(*player_ptr).ambush_flag = true;
     }
 
     generate_encounter = false;

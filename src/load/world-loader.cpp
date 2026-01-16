@@ -122,7 +122,7 @@ void load_wilderness_info(PlayerType *player_ptr)
 
     auto &world = AngbandWorld::get_instance();
     world.set_wild_mode(rd_bool());
-    player_ptr->ambush_flag = rd_bool();
+    static_cast<CreatureEntity &>(*player_ptr).ambush_flag = rd_bool();
 }
 
 errr analyze_wilderness(void)
