@@ -243,5 +243,5 @@ bool is_original_ap_and_seen(PlayerType *player_ptr, const MonsterEntity &monste
 std::string monster_name(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    return monster_desc(player_ptr, monster, 0x00);
+    return monster_desc(*player_ptr, monster, 0x00);
 }

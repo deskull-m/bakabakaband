@@ -6,6 +6,7 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -232,8 +233,9 @@ static std::string add_cameleon_name(const MonsterEntity &monster, const BIT_FLA
  * @param mode 呼称オプション
  * @return std::string 要求されたモンスターの説明を含む文字列
  */
-std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, BIT_FLAGS mode)
+std::string monster_desc(CreatureEntity &subject, const MonsterEntity &monster, BIT_FLAGS mode)
 {
+    auto &player = dynamic_cast<PlayerType &>(subject);
     const auto pronoun = decide_monster_personal_pronoun(monster, mode);
     const auto &monrace = monster.get_monrace();
     if (pronoun) {
@@ -245,15 +247,15 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
         return *pronoun_self;
     }
 
-    const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = player.effects()->hallucination().is_hallucinated();
     const auto name = get_describing_monster_name(monster, is_hallucinated, mode);
     std::stringstream ss;
 
     if (monster.parent_m_idx > 0) {
-        const auto parent_monster = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx];
+        const auto parent_monster = player.current_floor_ptr->m_list[monster.parent_m_idx];
         // 親ID＝自身のIDでは主を失った状態なのでスキップ
         if (parent_monster.r_idx != monster.r_idx) {
-            auto parent_name = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
+            auto parent_name = player.current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
             if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
                 ss << parent_name << _("が産んだ", "-born ");
             } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
@@ -328,7 +330,7 @@ std::string monster_desc(PlayerType *player_ptr, const MonsterEntity &monster, B
     if (monster.is_pet() && !monster.is_original_ap()) {
         ss << _(replace_monster_name_undefined(name), format("%s?", name.data()));
     } else {
-        ss << describe_non_pet(*player_ptr, monster, name, mode);
+        ss << describe_non_pet(static_cast<PlayerType &>(subject), monster, name, mode);
     }
 
     if (monster.is_named()) {

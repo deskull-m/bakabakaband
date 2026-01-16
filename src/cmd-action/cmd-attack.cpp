@@ -105,7 +105,7 @@ static void natural_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, PlayerMuta
         THROW_EXCEPTION(std::range_error, _("未定義の部位", "undefined body part"));
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5);
     int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
 
@@ -170,7 +170,7 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     WEIGHT n_weight = 20; // 重量（角攻撃より重い）
     concptr atk_desc = _("頭突き", "headbutt");
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5);
 
     // 狂戦士状態の場合は命中とダメージにボーナス
@@ -257,7 +257,7 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
     // プレイヤーの体重による影響（推定）
     int body_weight_bonus = (player_ptr->level + player_ptr->stat_index[A_STR]) / 3;
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5) + body_weight_bonus;
 
     // 狂戦士状態や英雄状態での強化
@@ -372,7 +372,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         return false;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     const auto effects = player_ptr->effects();
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
     if (monster.ml) {
@@ -517,7 +517,7 @@ bool do_cmd_headbutt(PlayerType *player_ptr)
     }
 
     const auto &monster = floor.m_list[grid.m_idx];
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
 
     // エネルギー消費
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
@@ -606,7 +606,7 @@ void do_cmd_body_slam(PlayerType *player_ptr)
     const auto m_idx = grid.m_idx;
     const auto &monster = floor.m_list[m_idx];
 
-    auto m_name = monster_desc(player_ptr, monster, 0);
+    auto m_name = monster_desc(*player_ptr, monster, 0);
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
 
@@ -670,7 +670,7 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
     WEIGHT n_weight = 10; // 重い攻撃
     concptr atk_desc = _("浣腸", "enema");
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     int bonus = player_ptr->to_h_m + (player_ptr->level * 6 / 5) + (player_ptr->level + player_ptr->stat_index[A_DEX]) / 3;
     ;
 
@@ -747,7 +747,7 @@ void do_cmd_enema(PlayerType *player_ptr)
     const auto m_idx = grid.m_idx;
     const auto &monster = floor.m_list[m_idx];
 
-    auto m_name = monster_desc(player_ptr, monster, 0);
+    auto m_name = monster_desc(*player_ptr, monster, 0);
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
 

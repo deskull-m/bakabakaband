@@ -135,7 +135,7 @@ bool fetch_monster(PlayerType *player_ptr)
         return false;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     msg_print(_("{}を引き戻した。", "You pull back {}."), m_name);
     ProjectionPath path_g(floor, AngbandSystem::get_instance().get_max_range(), *pos, p_pos);
     Pos2D pos_target = *pos;

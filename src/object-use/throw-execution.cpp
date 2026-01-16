@@ -261,7 +261,7 @@ void ObjectThrowEntity::display_potion_throw()
         return;
     }
 
-    const auto angry_m_name = monster_desc(this->player_ptr, monster, 0);
+    const auto angry_m_name = monster_desc(*this->player_ptr, monster, 0);
     msg_format(_("%sは怒った！", "%s^ gets angry!"), angry_m_name.data());
     monster.set_hostile();
 }

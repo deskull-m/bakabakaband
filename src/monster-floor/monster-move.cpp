@@ -623,7 +623,7 @@ void process_speak(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy, POSIT
         return;
     }
 
-    const auto m_name = monster.ml ? monster_desc(player_ptr, monster, 0) : std::string(_("それ", "It"));
+    const auto m_name = monster.ml ? monster_desc(*player_ptr, monster, 0) : std::string(_("それ", "It"));
     const auto message_type = get_speak_type(monster);
     if (!message_type) {
         return;

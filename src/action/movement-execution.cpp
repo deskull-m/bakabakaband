@@ -163,7 +163,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         can_cast &= player_ptr->muta.has_not(PlayerMutationType::BERS_RAGE) || !is_shero(player_ptr);
         if (!monster.is_hostile() && can_cast && pattern_seq(player_ptr, pos) && (p_can_enter || p_can_kill_walls)) {
             (void)set_monster_csleep(*player_ptr->current_floor_ptr, grid.m_idx, 0);
-            m_name = monster_desc(player_ptr, monster, 0);
+            m_name = monster_desc(*player_ptr, monster, 0);
             if (monster.ml) {
                 if (!is_hallucinated) {
                     LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
@@ -198,7 +198,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             can_move = false;
             disturb(*player_ptr, false, true);
         } else if (riding_monster.is_fearful()) {
-            const auto steed_name = monster_desc(player_ptr, riding_monster, 0);
+            const auto steed_name = monster_desc(*player_ptr, riding_monster, 0);
             msg_format(_("%sが恐怖していて制御できない。", "%s^ is too scared to control."), steed_name.data());
             can_move = false;
             disturb(*player_ptr, false, true);
@@ -229,7 +229,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         }
 
         if (can_move && riding_monster.is_stunned() && one_in_(2)) {
-            const auto steed_name = monster_desc(player_ptr, riding_monster, 0);
+            const auto steed_name = monster_desc(*player_ptr, riding_monster, 0);
             msg_format(_("%sが朦朧としていてうまく動けない！", "You cannot control stunned %s!"), steed_name.data());
             can_move = false;
             disturb(*player_ptr, false, true);

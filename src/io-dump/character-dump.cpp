@@ -82,7 +82,7 @@ static void dump_aux_pet(PlayerType *player_ptr, FILE *fff)
             pet = true;
         }
 
-        const auto pet_name = monster_desc(player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
         fmt::println(fff, "{}", pet_name);
     }
 

@@ -85,8 +85,8 @@ void MonsterAttackPlayer::make_attack_normal()
 
     const auto &monrace = this->m_ptr->get_monrace();
     this->rlev = ((monrace.level >= 1) ? monrace.level : 1);
-    angband_strcpy(this->m_name, monster_desc(this->player_ptr, *this->m_ptr, 0), sizeof(this->m_name));
-    angband_strcpy(this->ddesc, monster_desc(this->player_ptr, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
+    angband_strcpy(this->m_name, monster_desc(*this->player_ptr, *this->m_ptr, 0), sizeof(this->m_name));
+    angband_strcpy(this->ddesc, monster_desc(*this->player_ptr, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
     if (PlayerClass(this->player_ptr).samurai_stance_is(SamuraiStanceType::IAI)) {
         msg_format(_("相手が襲いかかる前に素早く武器を振るった。", "You took sen, drew and cut in one motion before %s moved."), this->m_name);
         if (do_cmd_attack(this->player_ptr, this->m_ptr->y, this->m_ptr->x, HISSATSU_IAI)) {

@@ -275,7 +275,7 @@ void print_monster_tomb(PlayerType *player_ptr, MonsterEntity &monster)
     term_clear();
     read_dead_file(false);
 
-    const auto m_name = monster_desc(player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+    const auto m_name = monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
     show_tomb_line(m_name, GRAVE_PLAYER_NAME_ROW);
 
 #ifdef JP

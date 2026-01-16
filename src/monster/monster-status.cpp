@@ -82,7 +82,7 @@ int mon_damage_mod(PlayerType *player_ptr, const MonsterEntity &monster, int dam
         race_info.r_special_flags.set(MonsterSpecialType::DIMINISH_MAX_DAMAGE);
         if (dam > monster.hp / 10) {
             dam = std::max(monster.hp / 10, monster.maxhp * 7 / 500);
-            msg_format(_("%s^は致命的なダメージを抑えた！", "%s^ resisted a critical damage!"), monster_desc(player_ptr, monster, 0).data());
+            msg_format(_("%s^は致命的なダメージを抑えた！", "%s^ resisted a critical damage!"), monster_desc(*player_ptr, monster, 0).data());
         }
     }
 
@@ -170,7 +170,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
 
         /* Notice the "waking up" */
         if (monster.ml) {
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto m_name = monster_desc(*player_ptr, monster, 0);
             msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
         }
 
@@ -187,7 +187,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
         /* Reduce by one, note if expires */
         if (set_monster_fast(floor, m_idx, monster.get_remaining_acceleration() - 1)) {
             if (is_seen(player_ptr, monster)) {
-                const auto m_name = monster_desc(player_ptr, monster, 0);
+                const auto m_name = monster_desc(*player_ptr, monster, 0);
                 msg_format(_("%s^はもう加速されていない。", "%s^ is no longer fast."), m_name.data());
             }
         }
@@ -197,7 +197,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
         /* Reduce by one, note if expires */
         if (set_monster_slow(floor, m_idx, monster.get_remaining_deceleration() - 1)) {
             if (is_seen(player_ptr, monster)) {
-                const auto m_name = monster_desc(player_ptr, monster, 0);
+                const auto m_name = monster_desc(*player_ptr, monster, 0);
                 msg_format(_("%s^はもう減速されていない。", "%s^ is no longer slow."), m_name.data());
             }
         }
@@ -210,7 +210,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
         if (set_monster_stunned(floor, m_idx, (randint0(10000) <= rlev * rlev) ? 0 : (monster.get_remaining_stun() - 1))) {
             /* Message if visible */
             if (is_seen(player_ptr, monster)) {
-                const auto m_name = monster_desc(player_ptr, monster, 0);
+                const auto m_name = monster_desc(*player_ptr, monster, 0);
                 msg_format(_("%s^は朦朧状態から立ち直った。", "%s^ is no longer stunned."), m_name.data());
             }
         }
@@ -225,7 +225,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
 
         /* Message if visible */
         if (is_seen(player_ptr, monster)) {
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto m_name = monster_desc(*player_ptr, monster, 0);
             msg_format(_("%s^は混乱から立ち直った。", "%s^ is no longer confused."), m_name.data());
         }
 
@@ -239,11 +239,11 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
 
         /* Visual note */
         if (is_seen(player_ptr, monster)) {
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto m_name = monster_desc(*player_ptr, monster, 0);
 #ifdef JP
 #else
             /* Acquire the monster possessive */
-            const auto m_poss = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+            const auto m_poss = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 #endif
 #ifdef JP
             msg_format("%s^は勇気を取り戻した。", m_name.data());
@@ -261,7 +261,7 @@ static void process_monsters_mtimed_aux(PlayerType *player_ptr, MONSTER_IDX m_id
         }
 
         if (is_seen(player_ptr, monster)) {
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto m_name = monster_desc(*player_ptr, monster, 0);
             msg_format(_("%s^はもう無敵でない。", "%s^ is no longer invulnerable."), m_name.data());
         }
 
@@ -307,7 +307,7 @@ void dispel_monster_status(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     if (set_monster_invulner(floor, m_idx, 0, true)) {
         if (monster.ml) {
             msg_format(_("%sはもう無敵ではない。", "%s^ is no longer invulnerable."), m_name.data());
@@ -382,7 +382,7 @@ void monster_gain_exp(PlayerType *player_ptr, MONSTER_IDX m_idx, MonraceId monra
     /* Hack -- Reduce the racial counter of previous monster */
     monster.get_real_monrace().decrement_current_numbers();
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     monster.r_idx = old_monrace.next_r_idx;
 
     /* Count the monsters on the level */

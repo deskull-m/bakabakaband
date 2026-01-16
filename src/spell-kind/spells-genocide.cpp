@@ -64,7 +64,7 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
         resist = true;
     } else {
         if (record_named_pet && monster.is_named_pet()) {
-            const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+            const auto m_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_GENOCIDE, m_name);
         }
 
@@ -74,7 +74,7 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
 
     if (resist && player_cast) {
         const auto see_m = is_seen(player_ptr, monster);
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(*player_ptr, monster, 0);
         if (see_m) {
             msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), m_name.data());
         }

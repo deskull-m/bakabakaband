@@ -486,7 +486,7 @@ MonsterSpellResult spell_RF6_HASTE(PlayerType *player_ptr, MONSTER_IDX m_idx, MO
     bool see_m = see_monster(player_ptr, m_idx);
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     const auto m_name = monster_name(player_ptr, m_idx);
-    const auto m_poss = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+    const auto m_poss = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     mspell_cast_msg msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())),
@@ -588,7 +588,7 @@ MonsterSpellResult spell_RF6_HEAL(PlayerType *player_ptr, MONSTER_IDX m_idx, MON
     DEPTH rlev = monster_level_idx(floor, m_idx);
     const auto is_blind = player_ptr->effects()->blindness().is_blind();
     const auto seen = (!is_blind && monster.ml);
-    const auto m_poss = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+    const auto m_poss = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     msg.to_player_true = _("%s^が何かをつぶやいた。", "%s^ mumbles.");
     msg.to_mons_true = _("%s^は自分の傷に念を集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
@@ -654,7 +654,7 @@ MonsterSpellResult spell_RF6_INVULNER(PlayerType *player_ptr, MONSTER_IDX m_idx,
 
     if (monster.ml) {
         MonraceId r_idx = monster.r_idx;
-        const auto m_name = monster_desc(player_ptr, monster, MD_NONE);
+        const auto m_name = monster_desc(*player_ptr, monster, MD_NONE);
         switch (r_idx) {
         case MonraceId::MARIO:
         case MonraceId::LUIGI:

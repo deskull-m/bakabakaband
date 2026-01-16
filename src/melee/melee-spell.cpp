@@ -111,7 +111,7 @@ bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return false;
     }
 
-    ms_ptr->m_name = monster_desc(player_ptr, *ms_ptr->m_ptr, 0x00);
+    ms_ptr->m_name = monster_desc(*player_ptr, *ms_ptr->m_ptr, 0x00);
     ms_ptr->thrown_spell = rand_choice(ms_ptr->spells);
     if (ms_ptr->m_ptr->is_riding()) {
         disturb(*player_ptr, true, true);

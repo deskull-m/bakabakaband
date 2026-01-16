@@ -380,7 +380,7 @@ std::string probed_monster_info(PlayerType *player_ptr, MonsterEntity &monster, 
         lite_spot(*player_ptr, monster.get_position());
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
+    const auto m_name = monster_desc(*player_ptr, monster, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
 
     concptr align;
     if (monrace.kind_flags.has_all_of(alignment_mask)) {

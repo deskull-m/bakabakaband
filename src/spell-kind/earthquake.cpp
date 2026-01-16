@@ -98,7 +98,7 @@ std::string build_killer_on_earthquake(PlayerType *player_ptr, int m_idx)
     }
 
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(player_ptr, monster, MD_WRONGDOER_NAME);
+    const auto m_name = monster_desc(*player_ptr, monster, MD_WRONGDOER_NAME);
     return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
 }
 
@@ -202,12 +202,12 @@ bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool
     }
 
     if (!ignore_unview || is_seen(player_ptr, monster)) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(*player_ptr, monster, 0);
         msg_format(_("%s^は岩石に埋もれてしまった！", "%s^ is embedded in the rock!"), m_name.data());
     }
 
     if (record_named_pet && monster.is_named_pet()) {
-        const auto m2_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+        const auto m2_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_EARTHQUAKE, m2_name);
     }
 
@@ -219,7 +219,7 @@ void process_hit_to_monster(PlayerType *player_ptr, MonsterEntity &monster, std:
 {
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto pos_dodge = decide_monster_dodge_position(floor, player_ptr->get_position(), monster, pos_collapses);
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto m_name = monster_desc(*player_ptr, monster, 0);
     if (!ignore_unview || is_seen(player_ptr, monster)) {
         msg_format(_("%s^は苦痛で泣きわめいた！", "%s^ wails out in pain!"), m_name.data());
     }

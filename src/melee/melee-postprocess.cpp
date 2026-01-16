@@ -70,7 +70,7 @@ mam_pp_type::mam_pp_type(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, boo
 {
     this->seen = is_seen(player_ptr, *this->m_ptr);
     this->known = this->m_ptr->cdis <= MAX_PLAYER_SIGHT;
-    this->m_name = monster_desc(player_ptr, *this->m_ptr, 0);
+    this->m_name = monster_desc(*player_ptr, *this->m_ptr, 0);
 }
 
 static void prepare_redraw(mam_pp_type *mam_pp_ptr)
@@ -147,7 +147,7 @@ static void print_monster_dead_by_monster(PlayerType *player_ptr, mam_pp_type *m
         return;
     }
 
-    mam_pp_ptr->m_name = monster_desc(player_ptr, *mam_pp_ptr->m_ptr, MD_TRUE_NAME);
+    mam_pp_ptr->m_name = monster_desc(*player_ptr, *mam_pp_ptr->m_ptr, MD_TRUE_NAME);
     if (!mam_pp_ptr->seen) {
         player_ptr->current_floor_ptr->monster_noise = true;
         return;
@@ -250,7 +250,7 @@ static void fall_off_horse_by_melee(PlayerType *player_ptr, mam_pp_type *mam_pp_
         return;
     }
 
-    mam_pp_ptr->m_name = monster_desc(player_ptr, *mam_pp_ptr->m_ptr, 0);
+    mam_pp_ptr->m_name = monster_desc(*player_ptr, *mam_pp_ptr->m_ptr, 0);
     if (mam_pp_ptr->m_ptr->hp > mam_pp_ptr->m_ptr->maxhp / 3) {
         mam_pp_ptr->dam = (mam_pp_ptr->dam + 1) / 2;
     }

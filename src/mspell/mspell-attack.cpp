@@ -174,7 +174,7 @@ static bool check_mspell_continuation(PlayerType *player_ptr, msa_type *msa_ptr)
         return false;
     }
 
-    msa_ptr->m_name = monster_desc(player_ptr, *msa_ptr->m_ptr, 0x00);
+    msa_ptr->m_name = monster_desc(*player_ptr, *msa_ptr->m_ptr, 0x00);
     if (!switch_do_spell(player_ptr, msa_ptr) || (msa_ptr->thrown_spell == MonsterAbilityType::MAX)) {
         return false;
     }
