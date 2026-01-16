@@ -304,7 +304,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         if (cast) {
             fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
-            fire_ball_hide(player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 2 + randint1(2), rad);
+            fire_ball_hide(*player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 2 + randint1(2), rad);
         }
     } break;
 
@@ -382,7 +382,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
                 msg_print(_("<破滅の手>を放った！", "You invoke the Hand of Doom!"));
             }
 
-            fire_ball_hide(player_ptr, AttributeType::HAND_DOOM, dir, plev * 2, 0);
+            fire_ball_hide(*player_ptr, AttributeType::HAND_DOOM, dir, plev * 2, 0);
         }
     } break;
 
@@ -479,7 +479,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_ball_hide(player_ptr, AttributeType::ABYSS, dir, dam, rad);
+            fire_ball_hide(*player_ptr, AttributeType::ABYSS, dir, dam, rad);
         }
     } break;
 

@@ -318,7 +318,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_GENOCIDE: {
-        fire_ball_hide(player_ptr, AttributeType::GENOCIDE, dir, magic ? lev + 50 : 250, 0);
+        fire_ball_hide(*player_ptr, AttributeType::GENOCIDE, dir, magic ? lev + 50 : 250, 0);
         ident = true;
         break;
     }

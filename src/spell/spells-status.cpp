@@ -114,7 +114,7 @@ bool sleep_monster(PlayerType *player_ptr, const Direction &dir, int power)
  */
 bool stasis_monster(PlayerType *player_ptr, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS, dir, player_ptr->level * 2, 0);
+    return fire_ball_hide(*player_ptr, AttributeType::STASIS, dir, player_ptr->level * 2, 0);
 }
 
 /*!
@@ -126,7 +126,7 @@ bool stasis_monster(PlayerType *player_ptr, const Direction &dir)
  */
 bool stasis_evil(PlayerType *player_ptr, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS_EVIL, dir, player_ptr->level * 2, 0);
+    return fire_ball_hide(*player_ptr, AttributeType::STASIS_EVIL, dir, player_ptr->level * 2, 0);
 }
 
 /*!

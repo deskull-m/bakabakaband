@@ -531,7 +531,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
             return false;
         }
 
-        fire_ball_hide(player_ptr, AttributeType::E_GENOCIDE, dir, plev + 50, 0);
+        fire_ball_hide(*player_ptr, AttributeType::E_GENOCIDE, dir, plev + 50, 0);
         return true;
     }
     case ElementSpells::BOLT_3RD: {

@@ -613,25 +613,25 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         fire_ball(*player_ptr, AttributeType::GRAVITY, dir, damage, 4);
         break;
     case MonsterAbilityType::DRAIN_MANA:
-        fire_ball_hide(player_ptr, AttributeType::DRAIN_MANA, dir, randint1(plev * 3) + plev, 0);
+        fire_ball_hide(*player_ptr, AttributeType::DRAIN_MANA, dir, randint1(plev * 3) + plev, 0);
         break;
     case MonsterAbilityType::MIND_BLAST:
-        fire_ball_hide(player_ptr, AttributeType::MIND_BLAST, dir, damage, 0);
+        fire_ball_hide(*player_ptr, AttributeType::MIND_BLAST, dir, damage, 0);
         break;
     case MonsterAbilityType::BRAIN_SMASH:
-        fire_ball_hide(player_ptr, AttributeType::BRAIN_SMASH, dir, damage, 0);
+        fire_ball_hide(*player_ptr, AttributeType::BRAIN_SMASH, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_1:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_1, dir, damage, 0);
+        fire_ball_hide(*player_ptr, AttributeType::CAUSE_1, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_2:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_2, dir, damage, 0);
+        fire_ball_hide(*player_ptr, AttributeType::CAUSE_2, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_3:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_3, dir, damage, 0);
+        fire_ball_hide(*player_ptr, AttributeType::CAUSE_3, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_4:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_4, dir, damage, 0);
+        fire_ball_hide(*player_ptr, AttributeType::CAUSE_4, dir, damage, 0);
         break;
     case MonsterAbilityType::BO_ACID:
         msg_print(_("アシッド・ボルトの呪文を唱えた。", "You cast an acid bolt."));
@@ -715,7 +715,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::HAND_DOOM: {
         msg_print(_("<破滅の手>を放った！", "You invoke the Hand of Doom!"));
-        fire_ball_hide(player_ptr, AttributeType::HAND_DOOM, dir, 200, 0);
+        fire_ball_hide(*player_ptr, AttributeType::HAND_DOOM, dir, 200, 0);
         break;
     }
     case MonsterAbilityType::HEAL: {

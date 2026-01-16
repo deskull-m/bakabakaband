@@ -190,7 +190,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
                 return false;
             }
 
-            (void)fire_ball_hide(player_ptr, AttributeType::CHARM_LIVING, dir, player_ptr->level, 0);
+            (void)fire_ball_hide(*player_ptr, AttributeType::CHARM_LIVING, dir, player_ptr->level, 0);
             return true;
         }
 
@@ -511,7 +511,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         return android_inside_weapon(player_ptr);
     case PlayerRaceType::MERFOLK: {
         msg_print(_("あなたは水流を呼び寄せた！", "You have summoned a stream of water!"));
-        fire_ball_hide(player_ptr, AttributeType::WATER_FLOW, Direction::self(), 3, 5);
+        fire_ball_hide(*player_ptr, AttributeType::WATER_FLOW, Direction::self(), 3, 5);
         return true;
     }
     default:

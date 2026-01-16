@@ -480,7 +480,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         msg_print(_("突然壁から水が溢れ出した！ピラニアがいる！", "Suddenly, the room is filled with water with piranhas!"));
 
         /* Water fills room */
-        fire_ball_hide(player_ptr, AttributeType::WATER_FLOW, Direction::self(), 1, 10);
+        fire_ball_hide(*player_ptr, AttributeType::WATER_FLOW, Direction::self(), 1, 10);
 
         /* Summon Piranhas */
         const auto num = 1 + player_ptr->current_floor_ptr->dun_level / 20;
@@ -492,13 +492,13 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
 
     case TrapType::LAVA: {
         msg_print(_("突然溶岩が溢れだした！", "Suddenly, the room is filled with lava!"));
-        fire_ball_hide(player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 1, 10);
+        fire_ball_hide(*player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 1, 10);
         break;
     }
 
     case TrapType::DUNG_POOL: {
         msg_print(_("突然糞便が溢れだした！ああ＾～たまらねえぜ！", "Suddenly, the room is filled with dung! Ahh^- how marvelous!"));
-        fire_ball_hide(player_ptr, AttributeType::DIRT, Direction::self(), 1, 10);
+        fire_ball_hide(*player_ptr, AttributeType::DIRT, Direction::self(), 1, 10);
         break;
     }
 

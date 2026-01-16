@@ -75,7 +75,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball_hide(player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
+            fire_ball_hide(*player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
         }
     } break;
 
@@ -148,7 +148,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball_hide(player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
+            fire_ball_hide(*player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
         }
     } break;
 
@@ -261,7 +261,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball_hide(player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
+            fire_ball_hide(*player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
         }
     } break;
 

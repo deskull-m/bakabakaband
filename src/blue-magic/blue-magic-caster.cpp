@@ -93,7 +93,7 @@ static bool cast_blue_hand_doom(PlayerType *player_ptr, bmc_type *bmc_ptr)
     }
 
     msg_print(_("<破滅の手>を放った！", "You invoke the Hand of Doom!"));
-    fire_ball_hide(player_ptr, AttributeType::HAND_DOOM, dir, bmc_ptr->plev * 3, 0);
+    fire_ball_hide(*player_ptr, AttributeType::HAND_DOOM, dir, bmc_ptr->plev * 3, 0);
     return true;
 }
 
