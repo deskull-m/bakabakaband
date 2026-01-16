@@ -411,7 +411,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 36) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
+        fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
         return;
     }
 
@@ -431,22 +431,22 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 56) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, Dice::roll(3 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, Dice::roll(3 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 61) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, Dice::roll(5 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, Dice::roll(5 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 66) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::ACID, dir, Dice::roll(6 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::ACID, dir, Dice::roll(6 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 71) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, Dice::roll(8 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, Dice::roll(8 + ((plev - 5) / 4), 8));
         return;
     }
 

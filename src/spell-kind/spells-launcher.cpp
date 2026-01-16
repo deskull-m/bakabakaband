@@ -241,13 +241,13 @@ bool fire_beam(CreatureEntity &creature, AttributeType typ, const Direction &dir
  * Affect monsters, grids and objects.
  * </pre>
  */
-bool fire_bolt_or_beam(PlayerType *player_ptr, PERCENTAGE prob, AttributeType typ, const Direction &dir, int dam)
+bool fire_bolt_or_beam(CreatureEntity &creature, PERCENTAGE prob, AttributeType typ, const Direction &dir, int dam)
 {
     if (evaluate_percent(prob)) {
-        return (fire_beam(*player_ptr, typ, dir, dam));
+        return (fire_beam(creature, typ, dir, dam));
     }
 
-    return (fire_bolt(*player_ptr, typ, dir, dam));
+    return (fire_bolt(creature, typ, dir, dam));
 }
 
 /*!

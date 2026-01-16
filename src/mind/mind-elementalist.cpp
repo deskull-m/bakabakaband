@@ -474,7 +474,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = Dice::roll(8 + ((plev - 5) / 4), 8);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        if (fire_bolt_or_beam(player_ptr, plev, typ, dir, dam)) {
+        if (fire_bolt_or_beam(*player_ptr, plev, typ, dir, dam)) {
             if (typ == AttributeType::HYPODYNAMIA) {
                 (void)hp_player(player_ptr, dam / 2);
             }
@@ -542,7 +542,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
 
         const auto dam = Dice::roll(12 + ((plev - 5) / 4), 8);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        fire_bolt_or_beam(player_ptr, plev, typ, dir, dam);
+        fire_bolt_or_beam(*player_ptr, plev, typ, dir, dam);
         return true;
     }
     case ElementSpells::WAVE_1ST: {

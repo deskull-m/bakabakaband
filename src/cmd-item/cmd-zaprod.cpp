@@ -214,25 +214,25 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_ACID_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
+        fire_bolt_or_beam(*player_ptr, 10, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_ELEC_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::ELEC, dir, Dice::roll(4 + lev / 9, 8));
+        fire_bolt_or_beam(*player_ptr, 10, AttributeType::ELEC, dir, Dice::roll(4 + lev / 9, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_FIRE_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
+        fire_bolt_or_beam(*player_ptr, 10, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_COLD_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
+        fire_bolt_or_beam(*player_ptr, 10, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
         ident = true;
         break;
     }

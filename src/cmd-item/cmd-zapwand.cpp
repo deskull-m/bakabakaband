@@ -206,13 +206,13 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_MAGIC_MISSILE: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::MISSILE, dir, Dice::roll(2 + lev / 10, 6));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::MISSILE, dir, Dice::roll(2 + lev / 10, 6));
         ident = true;
         break;
     }
 
     case SV_WAND_ACID_BOLT: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
         ident = true;
         break;
     }
@@ -225,13 +225,13 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_FIRE_BOLT: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
         ident = true;
         break;
     }
 
     case SV_WAND_COLD_BOLT: {
-        fire_bolt_or_beam(player_ptr, 20, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
+        fire_bolt_or_beam(*player_ptr, 20, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
         ident = true;
         break;
     }

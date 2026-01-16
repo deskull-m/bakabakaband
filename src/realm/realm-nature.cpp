@@ -207,7 +207,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, dice.roll());
         }
     } break;
 
@@ -240,7 +240,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 

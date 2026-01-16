@@ -55,7 +55,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
         }
     } break;
 
@@ -138,7 +138,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 
@@ -200,7 +200,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::CHAOS, dir, dice.roll());
+            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::CHAOS, dir, dice.roll());
         }
     } break;
 
