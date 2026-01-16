@@ -160,7 +160,7 @@ static bool cast_blue_teleport_away(PlayerType *player_ptr)
         return false;
     }
 
-    (void)fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, 100);
+    (void)fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, 100);
     return true;
 }
 
@@ -173,7 +173,7 @@ static bool cast_blue_psy_spear(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     msg_print(_("光の剣を放った。", "You throw a psycho-spear."));
     const auto damage = monspell_bluemage_damage(player_ptr, MonsterAbilityType::PSY_SPEAR, bmc_ptr->plev, DAM_ROLL);
-    (void)fire_beam(player_ptr, AttributeType::PSY_SPEAR, dir, damage);
+    (void)fire_beam(*player_ptr, AttributeType::PSY_SPEAR, dir, damage);
     return true;
 }
 

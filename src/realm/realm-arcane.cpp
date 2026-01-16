@@ -373,7 +373,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 

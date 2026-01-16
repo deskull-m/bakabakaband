@@ -783,7 +783,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::TELE_AWAY:
-        (void)fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, plev);
+        (void)fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, plev);
         break;
 
     case MonsterAbilityType::TELE_LEVEL:
@@ -792,7 +792,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::PSY_SPEAR:
         msg_print(_("光の剣を放った。", "You throw a psycho-spear."));
-        (void)fire_beam(player_ptr, AttributeType::PSY_SPEAR, dir, damage);
+        (void)fire_beam(*player_ptr, AttributeType::PSY_SPEAR, dir, damage);
         break;
 
     case MonsterAbilityType::DARKNESS:

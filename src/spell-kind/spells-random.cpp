@@ -59,7 +59,7 @@ void call_chaos(PlayerType *player_ptr)
     if (one_in_(6)) {
         for (const auto &dir : Direction::directions_8()) {
             if (line_chaos) {
-                fire_beam(player_ptr, chaos_type, dir, 150);
+                fire_beam(*player_ptr, chaos_type, dir, 150);
             } else {
                 fire_ball(*player_ptr, chaos_type, dir, 150, 2);
             }
@@ -78,7 +78,7 @@ void call_chaos(PlayerType *player_ptr)
         return;
     }
     if (line_chaos) {
-        fire_beam(player_ptr, chaos_type, dir, 250);
+        fire_beam(*player_ptr, chaos_type, dir, 250);
     } else {
         fire_ball(*player_ptr, chaos_type, dir, 250, 3 + (player_ptr->level / 35));
     }

@@ -246,7 +246,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
             return false;
         }
 
-        fire_beam(player_ptr, AttributeType::LITE, dir, 2 * lvl);
+        fire_beam(*player_ptr, AttributeType::LITE, dir, 2 * lvl);
         return true;
     }
     case PlayerMutationType::RECALL:

@@ -641,7 +641,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::SOUND, dir, dice.roll());
+            fire_beam(*player_ptr, AttributeType::SOUND, dir, dice.roll());
         }
     } break;
 

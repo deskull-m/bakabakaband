@@ -47,7 +47,7 @@ bool android_inside_weapon(PlayerType *player_ptr)
 
     if (player_ptr->level < 45) {
         msg_print(_("ビームキャノンを発射した。", "You fire a beam cannon."));
-        fire_beam(player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2);
+        fire_beam(*player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2);
         return true;
     }
 

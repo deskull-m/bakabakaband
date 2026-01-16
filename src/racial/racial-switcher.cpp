@@ -126,7 +126,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             return false;
         }
 
-        fire_beam(player_ptr, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, player_ptr->level * 3);
+        fire_beam(*player_ptr, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, player_ptr->level * 3);
         return true;
     }
     case PlayerClassType::WARRIOR_MAGE:
@@ -175,7 +175,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             }
 
             project_length = 1;
-            fire_beam(player_ptr, AttributeType::PHOTO, dir, 1);
+            fire_beam(*player_ptr, AttributeType::PHOTO, dir, 1);
             return true;
         }
 

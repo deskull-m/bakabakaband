@@ -184,7 +184,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         }
 
         if (randint1(100) < plev * 2) {
-            fire_beam(player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((plev - 1) / 4), (3 + plev / 15)));
+            fire_beam(*player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((plev - 1) / 4), (3 + plev / 15)));
         } else {
             fire_ball(*player_ptr, AttributeType::PSI, dir, Dice::roll(3 + ((plev - 1) / 4), (3 + plev / 15)), 0);
         }
@@ -293,7 +293,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
             return false;
         }
 
-        fire_beam(player_ptr, AttributeType::PSY_SPEAR, dir, randint1(plev * 3) + plev * 3);
+        fire_beam(*player_ptr, AttributeType::PSY_SPEAR, dir, randint1(plev * 3) + plev * 3);
         break;
     }
     case MindMindcrafterType::THE_WORLD:

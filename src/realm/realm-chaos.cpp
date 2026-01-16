@@ -231,7 +231,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::MANA, dir, dice.roll());
+            fire_beam(*player_ptr, AttributeType::MANA, dir, dice.roll());
         }
     } break;
 
@@ -266,7 +266,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 
@@ -323,7 +323,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             for (const auto &dir : Direction::directions_8()) {
-                fire_beam(player_ptr, AttributeType::ELEC, dir, dice.roll());
+                fire_beam(*player_ptr, AttributeType::ELEC, dir, dice.roll());
             }
         }
     } break;
@@ -415,7 +415,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_beam(player_ptr, AttributeType::GRAVITY, dir, dice.roll());
+            fire_beam(*player_ptr, AttributeType::GRAVITY, dir, dice.roll());
         }
     } break;
 

@@ -209,7 +209,7 @@ bool shock_power(PlayerType *player_ptr)
     auto pos = player_ptr->get_neighbor(dir);
     PLAYER_LEVEL plev = player_ptr->level;
     const auto dam = Dice::roll(8 + ((plev - 5) / 4) + boost / 12, 8);
-    fire_beam(player_ptr, AttributeType::MISSILE, dir, dam);
+    fire_beam(*player_ptr, AttributeType::MISSILE, dir, dam);
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
     if (!grid.has_monster()) {
@@ -297,7 +297,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
             return false;
         }
 
-        fire_beam(player_ptr, AttributeType::MISSILE, dir, Dice::roll(5 + ((plev - 1) / 5) + boost / 10, 5));
+        fire_beam(*player_ptr, AttributeType::MISSILE, dir, Dice::roll(5 + ((plev - 1) / 5) + boost / 10, 5));
         break;
     }
     case MindForceTrainerType::MAGIC_RESISTANCE:
@@ -375,7 +375,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
             return false;
         }
 
-        fire_beam(player_ptr, AttributeType::MANA, dir, Dice::roll(10 + (plev / 2) + boost * 3 / 10, 15));
+        fire_beam(*player_ptr, AttributeType::MANA, dir, Dice::roll(10 + (plev / 2) + boost * 3 / 10, 15));
         break;
     }
     case MindForceTrainerType::LIGHT_SPEED:

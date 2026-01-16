@@ -221,10 +221,10 @@ bool fire_bolt(CreatureEntity &creature, AttributeType typ, const Direction &dir
  * Affect monsters, grids and objects.
  * </pre>
  */
-bool fire_beam(PlayerType *player_ptr, AttributeType typ, const Direction &dir, int dam)
+bool fire_beam(CreatureEntity &creature, AttributeType typ, const Direction &dir, int dam)
 {
     BIT_FLAGS flg = PROJECT_BEAM | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
-    return project_hook(*player_ptr, typ, dir, dam, flg);
+    return project_hook(creature, typ, dir, dam, flg);
 }
 
 /*!
@@ -244,7 +244,7 @@ bool fire_beam(PlayerType *player_ptr, AttributeType typ, const Direction &dir, 
 bool fire_bolt_or_beam(PlayerType *player_ptr, PERCENTAGE prob, AttributeType typ, const Direction &dir, int dam)
 {
     if (evaluate_percent(prob)) {
-        return (fire_beam(player_ptr, typ, dir, dam));
+        return (fire_beam(*player_ptr, typ, dir, dam));
     }
 
     return (fire_bolt(*player_ptr, typ, dir, dam));

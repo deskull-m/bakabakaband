@@ -85,7 +85,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::ELEC, dir, dice.roll());
+            fire_beam(*player_ptr, AttributeType::ELEC, dir, dice.roll());
         }
     } break;
 
