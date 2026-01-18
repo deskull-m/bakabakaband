@@ -509,7 +509,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
         if (cast) {
             msg_print(_("雄叫びをあげた！", "You roar!"));
             project_all_los(*player_ptr, AttributeType::SOUND, randint1(plev * 3));
-            aggravate_monsters(player_ptr, 0);
+            aggravate_monsters(*player_ptr, 0);
         }
         break;
 

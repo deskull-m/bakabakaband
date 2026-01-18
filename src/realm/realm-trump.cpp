@@ -267,7 +267,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            banish_monsters(player_ptr, power);
+            banish_monsters(*player_ptr, power);
         }
     } break;
 

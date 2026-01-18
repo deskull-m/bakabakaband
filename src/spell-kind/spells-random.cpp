@@ -156,7 +156,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 3:
         case 16:
         case 17:
-            aggravate_monsters(player_ptr, 0);
+            aggravate_monsters(*player_ptr, 0);
             if (!one_in_(6)) {
                 break;
             }
@@ -306,7 +306,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
     case 23:
     case 24:
     case 25:
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(*player_ptr, 0);
         break;
     case 26:
         earthquake(player_ptr, player_ptr->get_position(), 5);
@@ -496,12 +496,12 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 110) {
-        dispel_monsters(player_ptr, 120);
+        dispel_monsters(*player_ptr, 120);
         return;
     }
 
-    dispel_monsters(player_ptr, 150);
-    slow_monsters(player_ptr, plev);
-    sleep_monsters(player_ptr, plev);
+    dispel_monsters(*player_ptr, 150);
+    slow_monsters(*player_ptr, plev);
+    sleep_monsters(*player_ptr, plev);
     hp_player(player_ptr, 300);
 }

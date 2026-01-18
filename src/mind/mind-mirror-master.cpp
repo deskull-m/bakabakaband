@@ -239,11 +239,11 @@ bool binding_field(PlayerType *player_ptr, int dam)
 bool confusing_light(PlayerType *player_ptr)
 {
     msg_print(_("辺りを睨んだ...", "You glare at nearby monsters..."));
-    slow_monsters(player_ptr, player_ptr->level);
-    stun_monsters(player_ptr, player_ptr->level * 4);
-    confuse_monsters(player_ptr, player_ptr->level * 4);
-    turn_monsters(player_ptr, player_ptr->level * 4);
-    stasis_monsters(player_ptr, player_ptr->level * 4);
+    slow_monsters(*player_ptr, player_ptr->level);
+    stun_monsters(*player_ptr, player_ptr->level * 4);
+    confuse_monsters(*player_ptr, player_ptr->level * 4);
+    turn_monsters(*player_ptr, player_ptr->level * 4);
+    stasis_monsters(*player_ptr, player_ptr->level * 4);
     return true;
 }
 
@@ -480,11 +480,11 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
     }
     case MindMirrorMasterType::ILLUSION_LIGHT:
         tmp = grid.is_mirror() ? 4 : 3;
-        slow_monsters(player_ptr, plev);
-        stun_monsters(player_ptr, plev * tmp * 2);
-        confuse_monsters(player_ptr, plev * tmp);
-        turn_monsters(player_ptr, plev * tmp);
-        stasis_monsters(player_ptr, plev * tmp);
+        slow_monsters(*player_ptr, plev);
+        stun_monsters(*player_ptr, plev * tmp * 2);
+        confuse_monsters(*player_ptr, plev * tmp);
+        turn_monsters(*player_ptr, plev * tmp);
+        stasis_monsters(*player_ptr, plev * tmp);
         break;
     case MindMirrorMasterType::MIRROR_SHIFT:
         if (!grid.is_mirror()) {

@@ -631,7 +631,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_power(power);
         }
         if (cast || continuation) {
-            stun_monsters(player_ptr, power);
+            stun_monsters(*player_ptr, power);
         }
         break;
     }

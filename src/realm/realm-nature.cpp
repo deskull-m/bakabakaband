@@ -267,7 +267,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_power(power);
         }
         if (cast) {
-            slow_monsters(player_ptr, plev);
+            slow_monsters(*player_ptr, plev);
         }
     } break;
 
@@ -338,7 +338,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_power(power);
         }
         if (cast) {
-            charm_animals(player_ptr, power);
+            charm_animals(*player_ptr, power);
         }
     } break;
 
@@ -474,7 +474,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            dispel_monsters(player_ptr, d_dam);
+            dispel_monsters(*player_ptr, d_dam);
             earthquake(player_ptr, player_ptr->get_position(), q_rad);
             project(*player_ptr, 0, b_rad, player_ptr->y, player_ptr->x, b_dam, AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
         }

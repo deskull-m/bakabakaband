@@ -88,7 +88,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                slow_monsters(player_ptr, plev);
+                slow_monsters(*player_ptr, plev);
             }
         }
         break;
@@ -155,7 +155,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                stun_monsters(player_ptr, dice.roll());
+                stun_monsters(*player_ptr, dice.roll());
             }
         }
 
@@ -408,7 +408,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                confuse_monsters(player_ptr, power);
+                confuse_monsters(*player_ptr, power);
             }
         }
 
@@ -470,7 +470,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                charm_monsters(player_ptr, dice.roll());
+                charm_monsters(*player_ptr, dice.roll());
             }
         }
 
@@ -591,8 +591,8 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                dispel_monsters(player_ptr, m_dice.roll());
-                dispel_evil(player_ptr, e_dice.roll());
+                dispel_monsters(*player_ptr, m_dice.roll());
+                dispel_evil(*player_ptr, e_dice.roll());
             }
         }
         break;
@@ -616,8 +616,8 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                slow_monsters(player_ptr, plev);
-                sleep_monsters(player_ptr, plev);
+                slow_monsters(*player_ptr, plev);
+                sleep_monsters(*player_ptr, plev);
             }
         }
 
@@ -708,7 +708,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                stasis_monsters(player_ptr, power);
+                stasis_monsters(*player_ptr, power);
             }
         }
 
@@ -757,7 +757,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cont) {
-            dispel_monsters(player_ptr, dice.roll());
+            dispel_monsters(*player_ptr, dice.roll());
         }
 
         break;

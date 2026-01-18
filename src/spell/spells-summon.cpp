@@ -362,10 +362,10 @@ void mitokohmon(PlayerType *player_ptr)
         _("「者ども、ひかえおろう！！！このお方をどなたとこころえる。」", "%s^ says 'WHO do you think this person is! Bow your head, down to your knees!'"),
         sukekakusan);
     sukekaku = true;
-    stun_monsters(player_ptr, 120);
-    confuse_monsters(player_ptr, 120);
-    turn_monsters(player_ptr, 120);
-    stasis_monsters(player_ptr, 120);
+    stun_monsters(*player_ptr, 120);
+    confuse_monsters(*player_ptr, 120);
+    turn_monsters(*player_ptr, 120);
+    stasis_monsters(*player_ptr, 120);
     sukekaku = false;
 }
 
@@ -558,11 +558,11 @@ void cast_invoke_spirits(PlayerType *player_ptr, const Direction &dir)
     } else if (die < 108) {
         symbol_genocide(player_ptr, plev + 50, true);
     } else if (die < 110) {
-        dispel_monsters(player_ptr, 120);
+        dispel_monsters(*player_ptr, 120);
     } else {
-        dispel_monsters(player_ptr, 150);
-        slow_monsters(player_ptr, plev);
-        sleep_monsters(player_ptr, plev);
+        dispel_monsters(*player_ptr, 150);
+        slow_monsters(*player_ptr, plev);
+        sleep_monsters(*player_ptr, plev);
         hp_player(player_ptr, 300);
     }
 

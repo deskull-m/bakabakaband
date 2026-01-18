@@ -156,7 +156,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     case PlayerMutationType::SHRIEK:
         stop_mouth(player_ptr);
         (void)fire_ball(*player_ptr, AttributeType::SOUND, Direction::self(), 2 * lvl, 8);
-        (void)aggravate_monsters(player_ptr, 0);
+        (void)aggravate_monsters(*player_ptr, 0);
         return true;
     case PlayerMutationType::ILLUMINE:
         (void)lite_area(player_ptr, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
@@ -236,9 +236,9 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     case PlayerMutationType::HIT_AND_AWAY:
         return hit_and_away(player_ptr);
     case PlayerMutationType::DAZZLE:
-        stun_monsters(player_ptr, lvl * 4);
-        confuse_monsters(player_ptr, lvl * 4);
-        turn_monsters(player_ptr, lvl * 4);
+        stun_monsters(*player_ptr, lvl * 4);
+        confuse_monsters(*player_ptr, lvl * 4);
+        turn_monsters(*player_ptr, lvl * 4);
         return true;
     case PlayerMutationType::LASER_EYE: {
         const auto dir = get_aim_dir(player_ptr);

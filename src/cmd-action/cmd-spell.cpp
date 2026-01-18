@@ -1107,7 +1107,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
             }
         } else if ((tval == ItemKindType::MUSIC_BOOK) && (randint1(200) < spell_id)) {
             msg_print(_("いやな音が響いた", "An infernal sound echoed."));
-            aggravate_monsters(player_ptr, 0);
+            aggravate_monsters(*player_ptr, 0);
         }
         if (randint1(100) >= chance) {
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);

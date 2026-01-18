@@ -145,7 +145,7 @@ void check_demigod(PlayerType *player_ptr)
     if (player_ptr->mimic_form == MimicKindType::DEMIGOD) {
         const Dice dice(1, player_ptr->level * 4);
 
-        dispel_evil(player_ptr, dice.roll());
+        dispel_evil(*player_ptr, dice.roll());
     }
 }
 

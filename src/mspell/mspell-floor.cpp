@@ -66,7 +66,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, PlayerType *player_ptr, M
     }
 
     if (target_type == MONSTER_TO_PLAYER) {
-        aggravate_monsters(player_ptr, m_idx);
+        aggravate_monsters(*player_ptr, m_idx);
     } else if (target_type == MONSTER_TO_MONSTER) {
         set_monster_csleep(*player_ptr->current_floor_ptr, t_idx, 0);
     }

@@ -185,7 +185,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         msg_print(_("ンアアアアー！", "NAAAAAAAH!"));
         msg_erase();
         fire_ball(*player_ptr, AttributeType::SOUND, Direction::self(), player_ptr->level, 3);
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(*player_ptr, 0);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::DEFECATION) && (randint1(1500) == 13)) {
@@ -290,7 +290,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(*player_ptr, false, true);
         msg_print(_("突然ほとんど孤独になった気がする。", "You suddenly feel almost lonely."));
 
-        banish_monsters(player_ptr, 100);
+        banish_monsters(*player_ptr, 100);
         msg_erase();
     }
 

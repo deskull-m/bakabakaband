@@ -153,7 +153,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_PESTICIDE: {
-        if (dispel_monsters(player_ptr, powerful ? 8 : 4)) {
+        if (dispel_monsters(*player_ptr, powerful ? 8 : 4)) {
             ident = true;
         }
         break;
@@ -276,7 +276,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_AGGRAVATE: {
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(*player_ptr, 0);
         ident = true;
         break;
     }

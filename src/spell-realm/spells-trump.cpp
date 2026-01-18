@@ -91,7 +91,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 22) {
         msg_print(_("《不調和の剣》だ。", "It's the swords of discord."));
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(*player_ptr, 0);
         return;
     }
 
