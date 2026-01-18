@@ -195,7 +195,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         }
 
         if (command == -4) {
-            project_all_los(player_ptr, AttributeType::CHARM_LIVING, player_ptr->level);
+            project_all_los(*player_ptr, AttributeType::CHARM_LIVING, player_ptr->level);
         }
 
         return true;

@@ -548,7 +548,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
     case ElementSpells::WAVE_1ST: {
         const auto dam = 50 + randint1(plev * 3);
         const auto typ = get_element_spells_type(player_ptr, power.elem);
-        project_all_los(player_ptr, typ, dam);
+        project_all_los(*player_ptr, typ, dam);
         return true;
     }
     case ElementSpells::BALL_2ND: {
@@ -1481,7 +1481,7 @@ bool switch_element_execution(PlayerType *player_ptr)
         return true;
     case ElementRealmType::ICE:
         (void)project(*player_ptr, 0, 5, player_ptr->y, player_ptr->x, 1, AttributeType::COLD, PROJECT_ITEM);
-        (void)project_all_los(player_ptr, AttributeType::OLD_SLEEP, 20 + plev * 3 / 2);
+        (void)project_all_los(*player_ptr, AttributeType::OLD_SLEEP, 20 + plev * 3 / 2);
         return true;
     case ElementRealmType::SKY:
         (void)recharge(player_ptr, 120);

@@ -226,7 +226,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                project_all_los(player_ptr, AttributeType::TURN_ALL, power);
+                project_all_los(*player_ptr, AttributeType::TURN_ALL, power);
             }
         }
 
@@ -335,7 +335,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                project_all_los(player_ptr, AttributeType::PSI, dice.roll());
+                project_all_los(*player_ptr, AttributeType::PSI, dice.roll());
             }
         }
 
@@ -433,7 +433,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                project_all_los(player_ptr, AttributeType::SOUND, dice.roll());
+                project_all_los(*player_ptr, AttributeType::SOUND, dice.roll());
             }
         }
 

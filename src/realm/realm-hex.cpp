@@ -113,7 +113,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_damage(dice);
         }
         if (cast || continuation) {
-            project_all_los(player_ptr, AttributeType::POIS, dice.roll());
+            project_all_los(*player_ptr, AttributeType::POIS, dice.roll());
         }
         break;
     }
@@ -286,7 +286,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_damage(dice);
         }
         if (cast || continuation) {
-            project_all_los(player_ptr, AttributeType::HYPODYNAMIA, dice.roll());
+            project_all_los(*player_ptr, AttributeType::HYPODYNAMIA, dice.roll());
         }
         break;
     }
@@ -490,7 +490,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_damage(dice);
         }
         if (cast || continuation) {
-            project_all_los(player_ptr, AttributeType::PSI_DRAIN, dice.roll());
+            project_all_los(*player_ptr, AttributeType::PSI_DRAIN, dice.roll());
         }
         break;
     }
