@@ -104,29 +104,29 @@ static void get_random_virtue(CreatureEntity &creature)
  * @param realm 魔法領域のID
  * @return 対応する徳のID
  */
-static enum Virtue get_realm_virtues(PlayerType *player_ptr, RealmType realm)
+static enum Virtue get_realm_virtues(CreatureEntity &creature, RealmType realm)
 {
     switch (realm) {
     case RealmType::LIFE:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY)) {
+        if (virtue_number(creature, Virtue::VITALITY)) {
             return Virtue::TEMPERANCE;
         } else {
             return Virtue::VITALITY;
         }
     case RealmType::SORCERY:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE)) {
+        if (virtue_number(creature, Virtue::KNOWLEDGE)) {
             return Virtue::ENCHANT;
         } else {
             return Virtue::KNOWLEDGE;
         }
     case RealmType::NATURE:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE)) {
+        if (virtue_number(creature, Virtue::NATURE)) {
             return Virtue::HARMONY;
         } else {
             return Virtue::NATURE;
         }
     case RealmType::CHAOS:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE)) {
+        if (virtue_number(creature, Virtue::CHANCE)) {
             return Virtue::INDIVIDUALISM;
         } else {
             return Virtue::CHANCE;
@@ -138,25 +138,25 @@ static enum Virtue get_realm_virtues(PlayerType *player_ptr, RealmType realm)
     case RealmType::ARCANE:
         return Virtue::NONE;
     case RealmType::CRAFT:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT)) {
+        if (virtue_number(creature, Virtue::ENCHANT)) {
             return Virtue::INDIVIDUALISM;
         } else {
             return Virtue::ENCHANT;
         }
     case RealmType::DAEMON:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE)) {
+        if (virtue_number(creature, Virtue::JUSTICE)) {
             return Virtue::FAITH;
         } else {
             return Virtue::JUSTICE;
         }
     case RealmType::CRUSADE:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE)) {
+        if (virtue_number(creature, Virtue::JUSTICE)) {
             return Virtue::HONOUR;
         } else {
             return Virtue::JUSTICE;
         }
     case RealmType::HEX:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION)) {
+        if (virtue_number(creature, Virtue::COMPASSION)) {
             return Virtue::JUSTICE;
         } else {
             return Virtue::COMPASSION;
@@ -373,12 +373,12 @@ void initialize_virtues(CreatureEntity &creature)
     /* Get virtues for realms */
     PlayerRealm pr(player_ptr);
     if (pr.realm1().is_available()) {
-        auto tmp_vir = get_realm_virtues(player_ptr, pr.realm1().to_enum());
+        auto tmp_vir = get_realm_virtues(creature, pr.realm1().to_enum());
         add_virtue(tmp_vir);
     }
 
     if (pr.realm2().is_available()) {
-        auto tmp_vir = get_realm_virtues(player_ptr, pr.realm2().to_enum());
+        auto tmp_vir = get_realm_virtues(creature, pr.realm2().to_enum());
         add_virtue(tmp_vir);
     }
 
