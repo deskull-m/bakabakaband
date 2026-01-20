@@ -29,7 +29,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
         (void)set_mimic(player_ptr, player_ptr->tim_mimic - 1, player_ptr->mimic_form, true);
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     const auto effects = player_ptr->effects();
     if (effects->hallucination().is_hallucinated()) {
         (void)bss.mod_hallucination(-1);

@@ -260,7 +260,7 @@ static std::vector<TextCommand> get_text_commands()
                 // 重傷状態を設定
                 auto cut_plus = PlayerCut::get_accumulation(100, 200);
                 if (cut_plus > 0) {
-                    (void)BadStatusSetter(player_ptr).mod_cut(cut_plus);
+                    (void)BadStatusSetter(*player_ptr).mod_cut(cut_plus);
                 }
 
                 // 画面更新

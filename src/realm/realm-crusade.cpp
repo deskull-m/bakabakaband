@@ -124,7 +124,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 6: {
         if (cast) {
-            BadStatusSetter bss(player_ptr);
+            BadStatusSetter bss(*player_ptr);
             (void)bss.set_cut(0);
             (void)bss.set_poison(0);
             (void)bss.set_stun(0);
@@ -233,7 +233,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return format(_("損:1d%d/回%d", "dam:d%d/h%d"), dam_sides, heal);
         }
         if (cast) {
-            BadStatusSetter bss(player_ptr);
+            BadStatusSetter bss(*player_ptr);
             dispel_evil(*player_ptr, randint1(dam_sides));
             hp_player(player_ptr, heal);
             (void)bss.set_fear(0);

@@ -218,7 +218,7 @@ static void check_mind_mindcrafter(PlayerType *player_ptr, cm_type *cm_ptr)
         return;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     if (cm_ptr->b < 15) {
         msg_print(_("奇妙な光景が目の前で踊っている...", "Weird visions seem to dance before your eyes..."));
         (void)bss.mod_hallucination(5 + randint1(10));
@@ -260,7 +260,7 @@ static void check_mind_mirror_master(PlayerType *player_ptr, cm_type *cm_ptr)
 
     if (cm_ptr->b < 96) {
         msg_print(_("まわりのものがキラキラ輝いている！", "Your brain is addled!"));
-        (void)BadStatusSetter(player_ptr).mod_hallucination(5 + randint1(10));
+        (void)BadStatusSetter(*player_ptr).mod_hallucination(5 + randint1(10));
         return;
     }
 
@@ -357,7 +357,7 @@ static void mind_reflection(PlayerType *player_ptr, cm_type *cm_ptr)
 
     player_ptr->csp = std::max(0, player_ptr->csp - cm_ptr->mana_cost);
     msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
-    (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
+    (void)BadStatusSetter(*player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
     if (one_in_(2)) {
         return;
     }

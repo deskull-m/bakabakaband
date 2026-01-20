@@ -464,7 +464,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
         return psychometry(player_ptr);
     case ElementSpells::CURE:
         (void)hp_player(player_ptr, Dice::roll(2, 8));
-        (void)BadStatusSetter(player_ptr).mod_cut(-10);
+        (void)BadStatusSetter(*player_ptr).mod_cut(-10);
         return true;
     case ElementSpells::BOLT_2ND: {
         const auto dir = get_aim_dir(player_ptr);
@@ -923,7 +923,7 @@ void do_cmd_element(PlayerType *player_ptr)
         player_ptr->csp = 0;
         player_ptr->csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
-        (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
+        (void)BadStatusSetter(*player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);

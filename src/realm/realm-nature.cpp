@@ -170,7 +170,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            BadStatusSetter bss(player_ptr);
+            BadStatusSetter bss(*player_ptr);
             hp_player(player_ptr, dice.roll());
             (void)bss.set_cut(0);
             (void)bss.set_poison(0);

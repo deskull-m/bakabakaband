@@ -126,7 +126,7 @@ void process_player_damage_dodged(PlayerType *player_ptr, int m_idx)
     }
 
     const auto killer = build_killer_on_earthquake(player_ptr, m_idx);
-    BadStatusSetter(player_ptr).mod_stun(randnum1<short>(50));
+    BadStatusSetter(*player_ptr).mod_stun(randnum1<short>(50));
     take_hit(player_ptr, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
 }
 

@@ -426,7 +426,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
         if (cast) {
             const auto current_cut = player_ptr->effects()->cut().current();
             short new_cut = current_cut < 300 ? current_cut + 300 : current_cut * 2;
-            (void)BadStatusSetter(player_ptr).set_cut(new_cut);
+            (void)BadStatusSetter(*player_ptr).set_cut(new_cut);
             const auto &floor = *player_ptr->current_floor_ptr;
             for (const auto &d : Direction::directions_8()) {
                 const auto pos = player_ptr->get_position();

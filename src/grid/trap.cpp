@@ -220,7 +220,7 @@ static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
 
     msg_format(_("%sが刺さった！", "You are impaled on %s!"), spike_name);
     dam = dam * 2;
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     (void)bss.mod_cut(randnum1<short>(dam));
     if (trap_feat_type != TrapType::POISON_PIT) {
         take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
@@ -276,7 +276,7 @@ static void hit_trap_lose_stat(PlayerType *player_ptr, int stat)
 static void hit_trap_slow(PlayerType *player_ptr)
 {
     if (hit_trap_dart(player_ptr)) {
-        (void)BadStatusSetter(player_ptr).mod_deceleration(randint0(20) + 20, false);
+        (void)BadStatusSetter(*player_ptr).mod_deceleration(randint0(20) + 20, false);
     }
 }
 
@@ -389,21 +389,21 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     case TrapType::BLIND:
         msg_print(_("黒いガスに包み込まれた！", "A black gas surrounds you!"));
         if (has_resist_blind(player_ptr) == 0) {
-            (void)BadStatusSetter(player_ptr).mod_blindness(randint0(50) + 25);
+            (void)BadStatusSetter(*player_ptr).mod_blindness(randint0(50) + 25);
         }
 
         break;
     case TrapType::CONFUSE:
         msg_print(_("きらめくガスに包み込まれた！", "A gas of scintillating colors surrounds you!"));
         if (has_resist_conf(player_ptr) == 0) {
-            (void)BadStatusSetter(player_ptr).mod_confusion(randint0(20) + 10);
+            (void)BadStatusSetter(*player_ptr).mod_confusion(randint0(20) + 10);
         }
 
         break;
     case TrapType::POISON:
         msg_print(_("刺激的な緑色のガスに包み込まれた！", "A pungent green gas surrounds you!"));
         if (has_resist_pois(player_ptr) == 0) {
-            (void)BadStatusSetter(player_ptr).mod_poison(randint0(20) + 10);
+            (void)BadStatusSetter(*player_ptr).mod_poison(randint0(20) + 10);
         }
 
         break;
@@ -419,7 +419,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
             sanity_blast(player_ptr);
         }
 
-        (void)BadStatusSetter(player_ptr).mod_paralysis(randint0(10) + 5);
+        (void)BadStatusSetter(*player_ptr).mod_paralysis(randint0(10) + 5);
         break;
     case TrapType::TRAPS:
         msg_print(_("まばゆい閃光が走った！", "There is a bright flash of light!"));

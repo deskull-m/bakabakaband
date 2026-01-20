@@ -147,10 +147,10 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         msg_print("あなたの体に軽い不調を感じる...");
         msg_print("「ナーグルの小さな贈り物だ」");
 
-        (void)BadStatusSetter(player_ptr).set_poison(randint1(20) + 10);
+        (void)BadStatusSetter(*player_ptr).set_poison(randint1(20) + 10);
         if (one_in_(3)) {
             msg_print("体がだるく重い...");
-            (void)BadStatusSetter(player_ptr).set_stun(randint1(10) + 10);
+            (void)BadStatusSetter(*player_ptr).set_stun(randint1(10) + 10);
         }
         return;
     }
@@ -163,10 +163,10 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         msg_print("腐敗の悪臭が漂ってきた...");
         msg_print("「ナーグルの慈悲深い疫病を受けるがよい」");
 
-        (void)BadStatusSetter(player_ptr).set_poison(randint1(40) + 20);
+        (void)BadStatusSetter(*player_ptr).set_poison(randint1(40) + 20);
         if (one_in_(2)) {
             msg_print("体の傷口が膿み始めた...");
-            (void)BadStatusSetter(player_ptr).set_cut(randint1(50) + 25);
+            (void)BadStatusSetter(*player_ptr).set_cut(randint1(50) + 25);
         }
 
         // 疫病の使者召喚
@@ -189,9 +189,9 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         msg_print("恐ろしい疫病があなたを襲う！");
         msg_print("「ナーグルの偉大なる慈悲を味わうがよい！」");
 
-        (void)BadStatusSetter(player_ptr).set_poison(randint1(80) + 40);
-        (void)BadStatusSetter(player_ptr).set_cut(randint1(100) + 50);
-        (void)BadStatusSetter(player_ptr).set_stun(randint1(50) + 25);
+        (void)BadStatusSetter(*player_ptr).set_poison(randint1(80) + 40);
+        (void)BadStatusSetter(*player_ptr).set_cut(randint1(100) + 50);
+        (void)BadStatusSetter(*player_ptr).set_stun(randint1(50) + 25);
 
         if (one_in_(2)) {
             msg_print("あなたの体が腐敗し始めた...");
@@ -202,7 +202,7 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
 
         if (one_in_(3)) {
             msg_print("意識が朦朧としてきた...");
-            (void)BadStatusSetter(player_ptr).set_paralysis(randint1(10) + 5);
+            (void)BadStatusSetter(*player_ptr).set_paralysis(randint1(10) + 5);
         }
 
         // より強力な悪魔軍団
@@ -226,9 +226,9 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
         msg_print("「我が庭園へようこそ...永遠の腐敗と再生の世界へ」");
 
         // 極限状態異常
-        (void)BadStatusSetter(player_ptr).set_poison(randint1(200) + 100);
-        (void)BadStatusSetter(player_ptr).set_cut(randint1(200) + 100);
-        (void)BadStatusSetter(player_ptr).set_stun(randint1(100) + 50);
+        (void)BadStatusSetter(*player_ptr).set_poison(randint1(200) + 100);
+        (void)BadStatusSetter(*player_ptr).set_cut(randint1(200) + 100);
+        (void)BadStatusSetter(*player_ptr).set_stun(randint1(100) + 50);
 
         // 大ダメージ（腐敗エリア放撃）
         project(*player_ptr, 0, 5, player_ptr->y, player_ptr->x,
@@ -237,7 +237,7 @@ void AllianceNurgle::panishment(CreatureEntity &creature)
 
         if (one_in_(2)) {
             msg_print("あなたの魂まで腐敗の影響を受けている...");
-            (void)BadStatusSetter(player_ptr).set_paralysis(randint1(20) + 10);
+            (void)BadStatusSetter(*player_ptr).set_paralysis(randint1(20) + 10);
         }
     }
 

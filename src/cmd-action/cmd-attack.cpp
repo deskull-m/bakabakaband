@@ -193,7 +193,7 @@ static void headbutt_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
         // 頭突きを外した場合のペナルティ（少しふらつく）
         if (one_in_(4)) {
             msg_print(_("勢い余ってふらついた。", "You stagger from the missed headbutt."));
-            BadStatusSetter bss(player_ptr);
+            BadStatusSetter bss(*player_ptr);
             bss.set_stun(randint0(3) + 5);
         }
         return;
@@ -284,7 +284,7 @@ static void bodyslam_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fea
         // 体当たりを外した場合のペナルティ（転倒リスク）
         if (one_in_(5)) {
             msg_print(_("勢い余って転倒しそうになった。", "You nearly fall from the missed body slam."));
-            BadStatusSetter bss(player_ptr);
+            BadStatusSetter bss(*player_ptr);
             bss.set_stun(randint0(4) + 3);
         }
         return;

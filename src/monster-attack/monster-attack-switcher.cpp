@@ -50,7 +50,7 @@ static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         return;
     }
 
-    if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 
@@ -165,7 +165,7 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
         return;
     }
 
-    if (!has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+    if (!has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }
 
@@ -317,7 +317,7 @@ static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap
         return;
     }
 
-    if (BadStatusSetter(player_ptr).mod_deceleration(4 + randint0(monap_ptr->rlev / 10), false)) {
+    if (BadStatusSetter(*player_ptr).mod_deceleration(4 + randint0(monap_ptr->rlev / 10), false)) {
         monap_ptr->obvious = true;
     }
 }
@@ -579,7 +579,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             }
             monap_ptr->obvious = true;
 
-            if (!has_chaos_resist && !has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+            if (!has_chaos_resist && !has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
                 monap_ptr->obvious = true;
             }
             break;

@@ -34,7 +34,7 @@ void process_blind_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr
         return;
     }
 
-    if (!BadStatusSetter(player_ptr).mod_blindness(10 + randint1(monap_ptr->rlev))) {
+    if (!BadStatusSetter(*player_ptr).mod_blindness(10 + randint1(monap_ptr->rlev))) {
         return;
     }
 
@@ -64,7 +64,7 @@ void process_terrify_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
         return;
     }
 
-    if (BadStatusSetter(player_ptr).mod_fear(3 + randint1(monap_ptr->rlev))) {
+    if (BadStatusSetter(*player_ptr).mod_fear(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }
 }
@@ -89,7 +89,7 @@ void process_paralyze_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_
     }
 
     const auto is_paralyzed = player_ptr->effects()->paralysis().is_paralyzed();
-    if (!is_paralyzed && BadStatusSetter(player_ptr).set_paralysis(3 + randint1(monap_ptr->rlev))) {
+    if (!is_paralyzed && BadStatusSetter(*player_ptr).set_paralysis(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }
 }
@@ -128,7 +128,7 @@ void process_stun_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     }
 
     const auto &monrace = monap_ptr->m_ptr->get_monrace();
-    if (BadStatusSetter(player_ptr).mod_stun(10 + randint1(monrace.level / 4))) {
+    if (BadStatusSetter(*player_ptr).mod_stun(10 + randint1(monrace.level / 4))) {
         monap_ptr->obvious = true;
     }
 }
@@ -149,7 +149,7 @@ void process_groin_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr
 
         // 朦朧状態を付与
         const auto &monrace = monap_ptr->m_ptr->get_monrace();
-        if (BadStatusSetter(player_ptr).mod_stun(15 + randint1(monrace.level / 3))) {
+        if (BadStatusSetter(*player_ptr).mod_stun(15 + randint1(monrace.level / 3))) {
             monap_ptr->obvious = true;
         }
 

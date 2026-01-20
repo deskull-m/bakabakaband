@@ -65,7 +65,7 @@ bool ScrollReadExecutor::read()
     switch (*this->o_ptr->bi_key.sval()) {
     case SV_SCROLL_DARKNESS:
         if (!has_resist_blind(this->player_ptr) && !has_resist_dark(this->player_ptr)) {
-            (void)BadStatusSetter(this->player_ptr).mod_blindness(3 + randint1(5));
+            (void)BadStatusSetter(*this->player_ptr).mod_blindness(3 + randint1(5));
         }
 
         if (unlite_area(this->player_ptr, 10, 3)) {

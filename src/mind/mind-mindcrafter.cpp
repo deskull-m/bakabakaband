@@ -253,7 +253,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
 
         break;
     case MindMindcrafterType::ADRENALINE_CHANNELING: {
-        BadStatusSetter bss(player_ptr);
+        BadStatusSetter bss(*player_ptr);
         (void)bss.set_fear(0);
         (void)bss.set_stun(0);
         if (!is_fast(player_ptr) || !is_hero(player_ptr)) {
