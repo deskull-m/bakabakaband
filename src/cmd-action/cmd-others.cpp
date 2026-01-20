@@ -90,7 +90,7 @@ static bool exe_alter(PlayerType *player_ptr)
     }
 
     if (terrain.flags.has(TerrainCharacteristics::CLOSE)) {
-        return exe_close(player_ptr, pos.y, pos.x);
+        return exe_close(player_ptr, pos);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::DISARM)) {

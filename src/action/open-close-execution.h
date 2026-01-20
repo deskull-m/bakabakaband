@@ -10,7 +10,7 @@
 class Direction;
 class PlayerType;
 bool exe_open(PlayerType *player_ptr, POSITION y, POSITION x);
-bool exe_close(PlayerType *player_ptr, POSITION y, POSITION x);
+bool exe_close(PlayerType *player_ptr, const Pos2D &pos);
 bool easy_open_door(PlayerType *player_ptr, const Pos2D &pos);
 bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction &dir);
 bool exe_disarm_chest(PlayerType *player_ptr, POSITION y, POSITION x, OBJECT_IDX o_idx);

@@ -182,7 +182,7 @@ void do_cmd_close(PlayerType *player_ptr)
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
             do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else {
-            more = exe_close(player_ptr, pos.y, pos.x);
+            more = exe_close(player_ptr, pos);
         }
     }
 
