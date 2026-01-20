@@ -19,6 +19,7 @@
 # N:serial number:terrain name
 # G:symbol:color
 # M:mimic
+# R:probability:target_terrain
 
 # 'N' indicates the beginning of an entry. The serial number must
 # increase for each new item.
@@ -28,6 +29,11 @@
 
 # 'M' is for fixed mimicing terrain type.  Pretend other terrain with
 # all visual effects.  No effect on temporal mimic.
+
+# 'R' is for random terrain change over time. The first parameter is
+# the inverse probability (e.g., 100 means 1/100 chance per 10 game turns).
+# The second parameter is the target terrain ID or tag. Example:
+#   R:2000:FLOWER  - means 1/2000 chance to change to FLOWER
 
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
@@ -989,6 +995,7 @@ W:2
 F:LOS | PROJECTION | MOVE | PLACE | REMEMBER | WATER | DEEP | CAN_FLY | CAN_SWIM |
 F:TELEPORTABLE
 F:C-PRIORITY_40
+R:3000:SHALLOW_WATER
 
 N:84:SHALLOW_WATER
 J:浅い水の流れ
@@ -998,6 +1005,7 @@ W:2
 F:LOS | PROJECTION | MOVE | PLACE | DROP | FLOOR | REMEMBER | WATER | SHALLOW |
 F:CAN_FLY | CAN_SWIM | TELEPORTABLE
 F:C-PRIORITY_20
+R:4000:DEEP_WATER
 
 N:85:DEEP_LAVA
 J:深い溶岩溜り
@@ -1038,6 +1046,7 @@ E:patch of grass
 G:.:g:LIT
 W:2
 F:LOS | PROJECTION | MOVE | PLACE | DROP | FLOOR | CAN_FLY | PLANT | TELEPORTABLE
+R:2000:FLOWER
 
 N:90:TRAP_TRAPS
 J:コンパクトルーン
@@ -1075,6 +1084,7 @@ W:2
 K:DESTROYED:GRASS
 F:LOS | PROJECTION | MOVE | PLACE | DROP | FLOOR | REMEMBER | CAN_FLY | PLANT |
 F:HURT_DISI | TELEPORTABLE
+R:5000:GRASS
 
 N:94:BRAKE
 J:草むら
@@ -2015,7 +2025,7 @@ J:生体壁
 E:Organic wall
 G:#:o:LIT
 W:2
-K:DESTROYED:*FLOOR*
+K:DESTROYED:COLLAPSED_ORGANIC_WALL
 F:POWER_30 | REMEMBER | TUNNEL | WALL | CAN_PASS | HURT_DISI
 
 N:251:BAEBED_WIRE
@@ -2764,6 +2774,16 @@ G:*:v:LIT
 W:15
 F:LOS | PROJECTION | MOVE | PLACE | REMEMBER | GLOW | CAN_FLY | TELEPORTABLE
 F:C-PRIORITY_60
+
+N:339:COLLAPSED_ORGANIC_WALL
+J:崩れた生体壁
+E:collapsed organic wall
+G:::o:LIT
+W:2
+K:DESTROYED:*FLOOR*
+F:POWER_8 | MOVE | REMEMBER | TUNNEL | HAS_ITEM | HURT_ROCK | CAN_PASS | CAN_DIG |
+F:HURT_DISI
+R:600:ORGANIC_WALL
 
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown

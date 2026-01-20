@@ -67,6 +67,11 @@ public:
     int change_priority;
     int hygiene = 0;
 
+    // 時間経過による確率的地形変化
+    int random_change_prob = 0; /*!< ランダム変化確率の逆数 (0=変化しない, 100なら1/100の確率) */
+    std::string random_change_tag{}; /*!< ランダム変化先地形タグ */
+    FEAT_IDX random_change = 0; /*!< ランダム変化先地形ID */
+
     static bool has(TerrainCharacteristics tc, TerrainAction ta);
 
     bool is_permanent_wall() const;

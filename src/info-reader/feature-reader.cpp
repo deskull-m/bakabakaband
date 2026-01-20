@@ -294,6 +294,23 @@ errr parse_terrains_info(std::string_view buf, angband_header *)
         return PARSE_ERROR_NONE;
     }
 
+    // R:prob:feat - ランダム変化 (prob=確率の逆数)
+    if (tokens[0] == "R") {
+        if (tokens.size() < 3) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        if (tokens[1].size() == 0 || tokens[2].size() == 0) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+
+        auto &terrain = *terrains.rbegin();
+        info_set_value(terrain.random_change_prob, tokens[1]);
+        terrain.random_change_tag = tokens[2];
+
+        return PARSE_ERROR_NONE;
+    }
+
     return PARSE_ERROR_UNDEFINED_DIRECTIVE;
 }
 
