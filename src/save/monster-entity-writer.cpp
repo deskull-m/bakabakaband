@@ -26,9 +26,9 @@ void MonsterEntityWriter::write_to_savedata() const
 
     wr_byte((byte)this->monster.y);
     wr_byte((byte)this->monster.x);
-    wr_s16b((int16_t)this->monster.hp);
-    wr_s16b((int16_t)this->monster.maxhp);
-    wr_s16b((int16_t)this->monster.max_maxhp);
+    wr_s32b(this->monster.hp);
+    wr_s32b(this->monster.maxhp);
+    wr_s32b(this->monster.max_maxhp);
     wr_u32b(this->monster.dealt_damage);
 
     if (any_bits(flags, SaveDataMonsterFlagType::AP_R_IDX)) {

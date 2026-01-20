@@ -60,8 +60,8 @@ public:
     RandomArtActType activation_id{}; /*!< エゴ/アーティファクトの発動ID / Extra info activation index */
     byte chest_level = 0; /*!< 箱の中身レベル */
     uint8_t captured_monster_speed = 0; /*!< 捕らえたモンスターの速度 */
-    short captured_monster_current_hp = 0; /*!< 捕らえたモンスターの現HP */
-    short captured_monster_max_hp = 0; /*!< 捕らえたモンスターの最大HP */
+    int32_t captured_monster_current_hp = 0; /*!< 捕らえたモンスターの現HP */
+    int32_t captured_monster_max_hp = 0; /*!< 捕らえたモンスターの最大HP */
     EnumClassFlagGroup<MonsterConstantFlagType> captured_monster_mflag2{}; /*!< 捕らえたモンスターのフラグ */
     ushort fuel = 0; /*!< 光源の残り寿命 / Extra info fuel or captured monster's current HP */
 
