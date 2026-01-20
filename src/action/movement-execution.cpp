@@ -279,7 +279,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                     energy.reset_player_turn();
                 }
             } else {
-                if (easy_open && floor.has_closed_door_at(pos, true) && easy_open_door(player_ptr, pos.y, pos.x)) {
+                if (easy_open && floor.has_closed_door_at(pos, true) && easy_open_door(player_ptr, pos)) {
                     return;
                 }
 

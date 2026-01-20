@@ -150,9 +150,8 @@ bool exe_close(PlayerType *player_ptr, POSITION y, POSITION x)
  *	do_cmd_open_test() and exe_open().
  * </pre>
  */
-bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
+bool easy_open_door(PlayerType *player_ptr, const Pos2D &pos)
 {
-    const Pos2D pos(y, x);
     const auto &floor = *player_ptr->current_floor_ptr;
     if (!floor.has_closed_door_at(pos)) {
         return false;
@@ -182,7 +181,7 @@ bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
 
         if (evaluate_percent(power_terrain)) {
             msg_print(_("鍵をはずした。", "You have picked the lock."));
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
+            cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::OPEN);
             sound(SoundKind::OPENDOOR);
             gain_exp(static_cast<CreatureEntity &>(*player_ptr), 1);
         } else {
@@ -193,7 +192,7 @@ bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
             msg_print(_("鍵をはずせなかった。", "You failed to pick the lock."));
         }
     } else {
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
+        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::OPEN);
         sound(SoundKind::OPENDOOR);
     }
 
