@@ -19,7 +19,7 @@
  * The "hold_o_idx" field points to the first object of a stack
  * of objects (if any) being carried by the monster (see above).
  */
-constexpr int MONSTER_MAXHP = 30000; //!< モンスターの最大HP
+constexpr int MONSTER_MAXHP = 10000000; //!< モンスターの最大HP
 
 enum class MonraceId : int16_t;
 enum class PlayerRaceType;

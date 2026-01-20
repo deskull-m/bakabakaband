@@ -207,7 +207,7 @@ static void write_item_info(const ItemEntity &item, const BIT_FLAGS flags)
     }
 
     if (any_bits(flags, SaveDataItemFlagType::CAPTURED_MONSTER_CURRENT_HP)) {
-        wr_s16b(item.captured_monster_current_hp);
+        wr_s32b(item.captured_monster_current_hp);
     }
 
     if (any_bits(flags, SaveDataItemFlagType::XTRA5)) {

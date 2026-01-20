@@ -34,9 +34,15 @@ void MonsterLoader50::rd_monster(MonsterEntity &monster)
     monster.y = rd_byte();
     monster.x = rd_byte();
 
-    monster.hp = rd_s16b();
-    monster.maxhp = rd_s16b();
-    monster.max_maxhp = rd_s16b();
+    if (loading_savefile_version_is_older_than(46)) {
+        monster.hp = rd_s16b();
+        monster.maxhp = rd_s16b();
+        monster.max_maxhp = rd_s16b();
+    } else {
+        monster.hp = rd_s32b();
+        monster.maxhp = rd_s32b();
+        monster.max_maxhp = rd_s32b();
+    }
 
     monster.dealt_damage = rd_s32b();
 

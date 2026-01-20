@@ -128,7 +128,9 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
         }
     } else {
         o_ptr->fuel = any_bits(flags, SaveDataItemFlagType::FUEL) ? rd_u16b() : 0;
-        o_ptr->captured_monster_current_hp = any_bits(flags, SaveDataItemFlagType::CAPTURED_MONSTER_CURRENT_HP) ? rd_s16b() : 0;
+        o_ptr->captured_monster_current_hp = any_bits(flags, SaveDataItemFlagType::CAPTURED_MONSTER_CURRENT_HP)
+                                                 ? (loading_savefile_version_is_older_than(46) ? rd_s16b() : rd_s32b())
+                                                 : 0;
     }
 
     if (o_ptr->is_fuel() && (o_ptr->bi_key.tval() == ItemKindType::LITE)) {
@@ -138,7 +140,7 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
         }
     }
 
-    o_ptr->captured_monster_max_hp = any_bits(flags, SaveDataItemFlagType::XTRA5) ? rd_s16b() : 0;
+    o_ptr->captured_monster_max_hp = any_bits(flags, SaveDataItemFlagType::XTRA5) ? (loading_savefile_version_is_older_than(46) ? rd_s16b() : rd_s32b()) : 0;
     o_ptr->feeling = any_bits(flags, SaveDataItemFlagType::FEELING) ? rd_byte() : 0;
     o_ptr->stack_idx = any_bits(flags, SaveDataItemFlagType::STACK_IDX) ? rd_s16b() : 0;
     if (any_bits(flags, SaveDataItemFlagType::SMITH) && !loading_savefile_version_is_older_than(7)) {
