@@ -193,7 +193,7 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
         for (auto i = 0; (i < 8) && (positions.size() < total_size); i++) {
             //!< @details 要素数が変わると参照がダングリング状態になるので毎回取得する必要がある.
             const auto &pos_neighbor = positions.at(n);
-            const auto pos = scatter(*player_ptr->current_floor_ptr, pos_neighbor, 4, PROJECT_NONE);
+            const auto pos = scatter(floor, pos_neighbor, 4, PROJECT_NONE);
             if (!floor.can_generate_monster_at(pos) || (p_pos == pos)) {
                 continue;
             }
@@ -219,6 +219,7 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
 tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
     const Pos2D pos(y, x);
+    const auto &floor = *player_ptr->current_floor_ptr;
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     if (!(mode & PM_NO_KAGE) && one_in_(333)) {
         mode |= PM_KAGE;
@@ -244,8 +245,8 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
             constexpr auto scatter_max = 40;
             int d;
             for (d = scatter_min; d <= scatter_max; d++) {
-                const auto pos_neighbor = scatter(*player_ptr->current_floor_ptr, pos, d, PROJECT_NONE);
-                if (place_monster_one(*player_ptr, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode | PM_HAVE_MASTER, *m_idx)) {
+                const auto pos_neighbor = scatter(floor, pos, d, PROJECT_NONE);
+                if (place_monster_one(*player_ptr, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode, *m_idx)) {
                     break;
                 }
             }
@@ -263,7 +264,6 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
         return m_idx;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
     const auto p_pos = player_ptr->get_position();
     for (auto i = 0; i < 32; i++) {
         constexpr auto d = 3;
@@ -373,8 +373,8 @@ bool alloc_horde(PlayerType *player_ptr, POSITION y, POSITION x, summon_specific
     const auto m_idx = floor.get_grid(pos).m_idx;
     const auto &monentity = floor.m_list[m_idx];
     for (auto attempts = randint1(10) + 5; attempts > 0; attempts--) {
-        const auto pos_scat = scatter(*player_ptr->current_floor_ptr, pos, 5, PROJECT_NONE);
-        (void)(*summon_specific)(player_ptr, pos_scat.y, pos_scat.x, floor.dun_level + 5, SUMMON_KIN, PM_ALLOW_GROUP, 0);
+        const auto pos_scat = scatter(floor, pos, 5, PROJECT_NONE);
+        (void)(*summon_specific)(player_ptr, pos_scat.y, pos_scat.x, floor.dun_level + 5, SUMMON_KIN, PM_ALLOW_GROUP, m_idx);
         pos = pos_scat;
     }
 

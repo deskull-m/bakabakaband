@@ -2757,7 +2757,7 @@ void wreck_the_pattern(PlayerType *player_ptr)
 
     auto to_ruin = randint1(45) + 35;
     while (to_ruin--) {
-        const auto pos = scatter(*player_ptr->current_floor_ptr, p_pos, 4, PROJECT_NONE);
+        const auto pos = scatter(floor, p_pos, 4, PROJECT_NONE);
         if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PATTERN) && (floor.get_grid(pos).get_terrain().subtype != PATTERN_TILE_WRECKED)) {
             set_terrain_id_to_grid(player_ptr, pos, TerrainTag::PATTERN_CORRUPTED);
         }

@@ -215,7 +215,7 @@ void wiz_summon_horde(PlayerType *player_ptr)
     auto pos = p_pos;
     auto attempts = 1000;
     while (--attempts) {
-        pos = scatter(*player_ptr->current_floor_ptr, p_pos, 3, PROJECT_NONE);
+        pos = scatter(floor, p_pos, 3, PROJECT_NONE);
         if (floor.is_empty_at(pos) && (pos != p_pos)) {
             break;
         }

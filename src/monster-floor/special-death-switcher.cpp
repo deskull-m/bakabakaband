@@ -92,7 +92,7 @@ static tl::optional<bool> final_summon(PlayerType *player_ptr, MonsterDeath *md_
         auto m_pos = md_ptr->get_position();
         auto attempts = 0;
         for (; attempts < 100; attempts++) {
-            m_pos = scatter(*player_ptr->current_floor_ptr, md_ptr->get_position(), summon_data.radius, PROJECT_NONE);
+            m_pos = scatter(floor, md_ptr->get_position(), summon_data.radius, PROJECT_NONE);
             if (floor.contains(m_pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) && floor.can_generate_monster_at(m_pos) && (p_pos != m_pos)) {
                 break;
             }

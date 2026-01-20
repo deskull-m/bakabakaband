@@ -200,7 +200,7 @@ MONSTER_NUMBER summon_NAZGUL(PlayerType *player_ptr, POSITION y, POSITION x, MON
         if (!summon_possible(player_ptr, pos_scat.y, pos_scat.x) || !floor.is_empty_at(pos_scat) || (pos_scat == p_pos)) {
             int j;
             for (j = 100; j > 0; j--) {
-                pos_scat = scatter(*player_ptr->current_floor_ptr, pos, 2, PROJECT_NONE);
+                pos_scat = scatter(floor, pos, 2, PROJECT_NONE);
                 if (floor.is_empty_at(pos_scat) && (pos_scat != p_pos)) {
                     break;
                 }
