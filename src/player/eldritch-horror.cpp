@@ -44,7 +44,7 @@ static bool process_mod_hallucination(PlayerType *player_ptr, std::string_view m
     msg_format(_("%s%sの顔を見てしまった！", "You behold the %s visage of %s!"), rand_choice(funny_desc).data(), m_name.data());
     if (one_in_(3)) {
         msg_print(rand_choice(funny_comments));
-        BadStatusSetter(player_ptr).mod_hallucination(randnum1<short>(monrace.level));
+        BadStatusSetter(*player_ptr).mod_hallucination(randnum1<short>(monrace.level));
     }
 
     return true;
@@ -238,7 +238,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 10:
     case 11:
     case 12: {
-        BadStatusSetter bss(player_ptr);
+        BadStatusSetter bss(*player_ptr);
         if (!has_resist_conf(player_ptr)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
@@ -254,7 +254,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 13:
     case 14:
     case 15: {
-        BadStatusSetter bss(player_ptr);
+        BadStatusSetter bss(*player_ptr);
         if (!has_resist_conf(player_ptr)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }

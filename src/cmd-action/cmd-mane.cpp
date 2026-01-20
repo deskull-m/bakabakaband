@@ -721,7 +721,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     case MonsterAbilityType::HEAL: {
         msg_print(_("自分の傷に念を集中した。", "You concentrate on your wounds!"));
         (void)hp_player(player_ptr, plev * 6);
-        BadStatusSetter bss(player_ptr);
+        BadStatusSetter bss(*player_ptr);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
         break;

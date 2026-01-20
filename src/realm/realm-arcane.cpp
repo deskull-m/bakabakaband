@@ -200,7 +200,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 13:
         if (cast) {
-            (void)BadStatusSetter(player_ptr).set_poison(0);
+            (void)BadStatusSetter(*player_ptr).set_poison(0);
         }
 
         break;

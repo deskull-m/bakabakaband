@@ -62,7 +62,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     player_ptr->plus_incident_tree("ZAP_STAFF", 1);
 
     /* Analyze the staff */
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     switch (sval) {
     case SV_STAFF_DARKNESS:
         if (!has_resist_blind(player_ptr) && !has_resist_dark(player_ptr)) {

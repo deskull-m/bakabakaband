@@ -198,7 +198,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
             if (!is_statue) {
                 msg_print(_("彫像になった気分だ！", "You feel like a statue!"));
                 TIME_EFFECT turns = player_ptr->free_act ? randint1(3) : randint1(13);
-                (void)BadStatusSetter(player_ptr).mod_paralysis(turns);
+                (void)BadStatusSetter(*player_ptr).mod_paralysis(turns);
                 stop_ty = true;
             }
 

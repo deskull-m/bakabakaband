@@ -75,7 +75,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
         msg_print("ワーォ！貴方は糞を喰った！");
         msg_print("『涙が出るほどうめぇ……』");
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
-            (void)BadStatusSetter(player_ptr).mod_poison(10 + randint1(10));
+            (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
         PlayerSkill(player_ptr).gain_riding_skill_exp_on_gross_eating();
@@ -85,7 +85,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
         msg_print("ワーォ！貴方はゲロを喰った！");
         msg_print("『涙が出るほどうめぇ……』");
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
-            (void)BadStatusSetter(player_ptr).mod_poison(10 + randint1(10));
+            (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
         PlayerSkill(player_ptr).gain_riding_skill_exp_on_gross_eating();
@@ -138,11 +138,11 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::BLIND)) {
-        BadStatusSetter(player_ptr).mod_blindness(200 + randint1(200));
+        BadStatusSetter(*player_ptr).mod_blindness(200 + randint1(200));
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::CONF)) {
-        BadStatusSetter(player_ptr).mod_confusion(200 + randint1(200));
+        BadStatusSetter(*player_ptr).mod_confusion(200 + randint1(200));
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::MANA)) {
@@ -155,7 +155,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::SLEEP)) {
         if (!player_ptr->free_act) {
-            BadStatusSetter(player_ptr).set_paralysis(10 + randint1(10));
+            BadStatusSetter(*player_ptr).set_paralysis(10 + randint1(10));
         }
     }
 
@@ -199,7 +199,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::POISONOUS)) {
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
-            (void)BadStatusSetter(player_ptr).mod_poison(10 + randint1(15));
+            (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(15));
         }
     }
 
@@ -274,7 +274,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         return false;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     switch (bi_key.sval().value()) {
     case SV_FOOD_POISON:
         if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
@@ -391,7 +391,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_WELCOME_DRINK_OF_ARE:
     case SV_FOOD_ABA_TEA:
         player_ptr->plus_incident_tree("EAT_POISON", 1);
-        (void)BadStatusSetter(player_ptr).mod_poison(10);
+        (void)BadStatusSetter(*player_ptr).mod_poison(10);
         msg_print("「非常に新鮮で……非常においしい……」");
         player_ptr->plus_incident_tree("EAT_FECES", 1);
         return true;
@@ -402,7 +402,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         player_ptr->plus_incident_tree("EAT_POISON", 1);
         msg_print("ヴォエ！食ったら尻の肉だった！");
         msg_erase();
-        (void)BadStatusSetter(player_ptr).mod_poison(10);
+        (void)BadStatusSetter(*player_ptr).mod_poison(10);
         msg_print("「作者は広告で収入得てないけど、こんな卑猥なアイテム放置するなよ」");
         msg_erase();
         player_ptr->plus_incident_tree("EAT_FECES", 1);
@@ -411,10 +411,10 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         msg_print("悪臭が周囲を取り巻いた！");
         msg_erase();
         fire_ball(*player_ptr, AttributeType::POIS, Direction::self(), 30, 4);
-        (void)BadStatusSetter(player_ptr).mod_poison(10);
+        (void)BadStatusSetter(*player_ptr).mod_poison(10);
         return true;
     case SV_FOOD_HOMOTEA:
-        (void)BadStatusSetter(player_ptr).mod_stun(200);
+        (void)BadStatusSetter(*player_ptr).mod_stun(200);
         msg_print("「お、大丈夫か？大丈夫か？……」");
         return true;
     case SV_FOOD_GOLDEN_EGG:
@@ -450,7 +450,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 100);
         msg_print("あなたは突如狂ったように踊り始めた！");
         msg_print("「みずのよーうにのようにやさしく！はなのよーうにはげしく！ふーるえ……」");
-        (void)BadStatusSetter(player_ptr).mod_stun(25 + randint1(25));
+        (void)BadStatusSetter(*player_ptr).mod_stun(25 + randint1(25));
         (void)set_hero(player_ptr, randint1(25) + 25, false);
         (void)set_berserk(player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {

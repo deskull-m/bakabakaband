@@ -289,7 +289,7 @@ bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
     }
 
     restore_level(static_cast<CreatureEntity &>(*player_ptr));
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     (void)bss.set_poison(0);
     (void)bss.set_blindness(0);
     (void)bss.set_confusion(0);
@@ -308,7 +308,7 @@ bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
 bool heroism(PlayerType *player_ptr, int base)
 {
     auto ident = false;
-    if (BadStatusSetter(player_ptr).set_fear(0)) {
+    if (BadStatusSetter(*player_ptr).set_fear(0)) {
         ident = true;
     }
 
@@ -326,7 +326,7 @@ bool heroism(PlayerType *player_ptr, int base)
 bool berserk(PlayerType *player_ptr, int base)
 {
     auto ident = false;
-    if (BadStatusSetter(player_ptr).set_fear(0)) {
+    if (BadStatusSetter(*player_ptr).set_fear(0)) {
         ident = true;
     }
 
@@ -348,7 +348,7 @@ bool cure_light_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -371,7 +371,7 @@ bool cure_serious_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -398,7 +398,7 @@ bool cure_critical_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -433,7 +433,7 @@ bool true_healing(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -596,7 +596,7 @@ bool cosmic_cast_off(PlayerType *player_ptr, ItemEntity **o_ptr_ptr)
     /* Get effects */
     msg_print(_("「燃え上がれ俺の小宇宙！」", "You say, 'Burn up my cosmo!"));
     TIME_EFFECT t = 20 + randint1(20);
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     (void)bss.mod_blindness(t);
     (void)bss.set_fear(0);
     (void)set_tim_esp(player_ptr, player_ptr->tim_esp + t, false);

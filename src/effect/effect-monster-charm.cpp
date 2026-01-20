@@ -252,7 +252,7 @@ ProcessResult effect_monster_charm_living(PlayerType *player_ptr, EffectMonster 
 
 static void effect_monster_domination_corrupted_addition(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     switch (randint1(4)) {
     case 1:
         (void)bss.mod_stun(em_ptr->dam / 2);

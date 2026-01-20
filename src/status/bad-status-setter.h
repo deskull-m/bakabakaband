@@ -10,10 +10,10 @@
  */
 enum class PlayerCutRank;
 enum class PlayerStunRank;
-class PlayerType;
+class CreatureEntity;
 class BadStatusSetter {
 public:
-    BadStatusSetter(PlayerType *player_ptr);
+    BadStatusSetter(CreatureEntity &creature);
     ~BadStatusSetter() = default;
 
     bool set_blindness(const TIME_EFFECT tmp_v);
@@ -36,7 +36,7 @@ public:
     bool mod_cut(const TIME_EFFECT tmp_v);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 
     bool process_stun_effect(const short v);
     void process_stun_status(const PlayerStunRank new_rank, const short v);

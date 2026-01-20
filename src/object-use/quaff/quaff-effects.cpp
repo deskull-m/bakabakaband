@@ -78,7 +78,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
         }
         return false;
     case SV_POTION_SLOWNESS:
-        return BadStatusSetter(this->player_ptr).set_deceleration(randint1(25) + 15, false);
+        return BadStatusSetter(*this->player_ptr).set_deceleration(randint1(25) + 15, false);
     case SV_POTION_SALT_WATER:
         if (!is_rectal) {
             return this->salt_water();
@@ -119,11 +119,11 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_DETECT_INVIS:
         return set_tim_invis(this->player_ptr, this->player_ptr->tim_invis + 12 + randint1(12), false);
     case SV_POTION_SLOW_POISON:
-        return BadStatusSetter(this->player_ptr).set_poison(this->player_ptr->effects()->poison().current() / 2);
+        return BadStatusSetter(*this->player_ptr).set_poison(this->player_ptr->effects()->poison().current() / 2);
     case SV_POTION_CURE_POISON:
-        return BadStatusSetter(this->player_ptr).set_poison(0);
+        return BadStatusSetter(*this->player_ptr).set_poison(0);
     case SV_POTION_BOLDNESS:
-        return BadStatusSetter(this->player_ptr).set_fear(0);
+        return BadStatusSetter(*this->player_ptr).set_fear(0);
     case SV_POTION_SPEED:
         return this->speed();
     case SV_POTION_RESIST_HEAT:
@@ -208,7 +208,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
         player_ptr->tsuyoshi = 1;
         (void)set_tsuyoshi(player_ptr, 0, true);
         if (!has_resist_chaos(player_ptr)) {
-            (void)BadStatusSetter(player_ptr).mod_hallucination(50 + randint1(100));
+            (void)BadStatusSetter(*player_ptr).mod_hallucination(50 + randint1(100));
         }
         return true;
 
@@ -233,8 +233,8 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
             default:
                 break;
             }
-            (void)BadStatusSetter(player_ptr).set_poison(0);
-            BadStatusSetter(player_ptr).mod_paralysis(4);
+            (void)BadStatusSetter(*player_ptr).set_poison(0);
+            BadStatusSetter(*player_ptr).mod_paralysis(4);
             msg_print(_("この薬は直腸に注入するものらしい。", "The potion seems to be injected into the rectum"));
             return true;
         }
@@ -263,7 +263,7 @@ bool QuaffEffects::salt_water()
         break;
     }
 
-    BadStatusSetter bss(this->player_ptr);
+    BadStatusSetter bss(*this->player_ptr);
     (void)bss.set_poison(0);
     (void)bss.mod_paralysis(4);
     return true;
@@ -279,7 +279,7 @@ bool QuaffEffects::poison()
         return false;
     }
 
-    return BadStatusSetter(this->player_ptr).mod_poison(randint0(15) + 10);
+    return BadStatusSetter(*this->player_ptr).mod_poison(randint0(15) + 10);
 }
 
 /*!
@@ -292,7 +292,7 @@ bool QuaffEffects::blindness()
         return false;
     }
 
-    return BadStatusSetter(this->player_ptr).mod_blindness(randint0(100) + 100);
+    return BadStatusSetter(*this->player_ptr).mod_blindness(randint0(100) + 100);
 }
 
 /*!
@@ -309,7 +309,7 @@ bool QuaffEffects::booze()
         set_bits(this->player_ptr->special_attack, ATTACK_SUIKEN);
     }
 
-    BadStatusSetter bss(this->player_ptr);
+    BadStatusSetter bss(*this->player_ptr);
     if (!has_resist_conf(this->player_ptr) && bss.set_confusion(randint0(20) + 15)) {
         ident = true;
     }
@@ -356,7 +356,7 @@ bool QuaffEffects::sleep()
         sanity_blast(this->player_ptr);
     }
 
-    return BadStatusSetter(this->player_ptr).mod_paralysis(randint0(4) + 4);
+    return BadStatusSetter(*this->player_ptr).mod_paralysis(randint0(4) + 4);
 }
 
 /*!
@@ -400,7 +400,7 @@ bool QuaffEffects::detonation()
 {
     msg_print(_("体の中で激しい爆発が起きた！", "Massive explosions rupture your body!"));
     take_hit(this->player_ptr, DAMAGE_NOESCAPE, Dice::roll(50, 20), _("爆発の薬", "a potion of Detonation"));
-    BadStatusSetter bss(this->player_ptr);
+    BadStatusSetter bss(*this->player_ptr);
     (void)bss.mod_stun(75);
     (void)bss.mod_cut(5000);
     return true;
@@ -563,7 +563,7 @@ bool QuaffEffects::new_life()
  */
 bool QuaffEffects::neo_tsuyoshi()
 {
-    (void)BadStatusSetter(this->player_ptr).hallucination(0);
+    (void)BadStatusSetter(*this->player_ptr).hallucination(0);
     (void)set_tsuyoshi(this->player_ptr, this->player_ptr->tsuyoshi + randint1(100) + 100, false);
     return true;
 }
@@ -579,7 +579,7 @@ bool QuaffEffects::tsuyoshi()
     this->player_ptr->tsuyoshi = 1;
     (void)set_tsuyoshi(this->player_ptr, 0, true);
     if (!has_resist_chaos(this->player_ptr)) {
-        (void)BadStatusSetter(this->player_ptr).hallucination(50 + randint1(50));
+        (void)BadStatusSetter(*this->player_ptr).hallucination(50 + randint1(50));
     }
 
     return true;

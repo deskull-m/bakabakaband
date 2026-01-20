@@ -107,7 +107,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         return;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     if (player_ptr->muta.has(PlayerMutationType::BERS_RAGE) && one_in_(3000)) {
         disturb(*player_ptr, false, true);
         msg_print(_("ウガァァア！", "RAAAAGHH!"));

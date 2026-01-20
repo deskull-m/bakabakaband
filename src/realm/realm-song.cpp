@@ -241,7 +241,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             msg_print(_("激しい戦いの歌を歌った．．．", "You start singing a song of intense fighting..."));
 
             (void)hp_player(player_ptr, 10);
-            (void)BadStatusSetter(player_ptr).set_fear(0);
+            (void)BadStatusSetter(*player_ptr).set_fear(0);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(player_ptr, spell, MUSIC_HERO);
         }
@@ -735,7 +735,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast) {
             msg_print(_("英雄の歌を口ずさんだ．．．", "You chant a powerful, heroic call to arms..."));
             (void)hp_player(player_ptr, 10);
-            (void)BadStatusSetter(player_ptr).set_fear(0);
+            (void)BadStatusSetter(*player_ptr).set_fear(0);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(player_ptr, spell, MUSIC_SHERO);
         }
@@ -780,7 +780,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cont) {
             hp_player(player_ptr, dice.roll());
-            BadStatusSetter bss(player_ptr);
+            BadStatusSetter bss(*player_ptr);
             (void)bss.set_stun(0);
             (void)bss.set_cut(0);
         }

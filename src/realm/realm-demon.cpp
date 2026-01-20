@@ -288,7 +288,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
             set_oppose_fire(player_ptr, dur, false);
             set_oppose_cold(player_ptr, dur, false);
             set_tim_sh_fire(player_ptr, dur, false);
-            (void)BadStatusSetter(player_ptr).set_fear(0);
+            (void)BadStatusSetter(*player_ptr).set_fear(0);
             break;
         }
 

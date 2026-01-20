@@ -34,7 +34,7 @@ bool cleansing_nova(PlayerType *player_ptr, bool magic, bool powerful)
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(*player_ptr);
     if (bss.set_poison(0)) {
         ident = true;
     }

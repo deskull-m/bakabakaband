@@ -351,7 +351,7 @@ void MonsterAttackPlayer::calc_player_cut()
 
     auto cut_plus = PlayerCut::get_accumulation(this->damage_dice.maxroll(), this->damage);
     if (cut_plus > 0) {
-        (void)BadStatusSetter(this->player_ptr).mod_cut(cut_plus);
+        (void)BadStatusSetter(*this->player_ptr).mod_cut(cut_plus);
     }
 }
 
@@ -394,7 +394,7 @@ void MonsterAttackPlayer::process_player_stun()
 
     auto stun_plus = PlayerStun::get_accumulation(accumulation_rank);
     if (stun_plus > 0) {
-        (void)BadStatusSetter(this->player_ptr).mod_stun(stun_plus);
+        (void)BadStatusSetter(*this->player_ptr).mod_stun(stun_plus);
     }
 }
 
