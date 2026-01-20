@@ -91,6 +91,32 @@ static void process_summoning_circle(PlayerType *player_ptr, const Pos2D &pos)
 }
 
 /*!
+ * @brief 地形のランダム変化処理
+ * @param player_ptr プレイヤーへの参照ポインタ
+ * @param pos 地形の座標
+ * @param terrain 地形情報
+ */
+static void process_random_terrain_change(PlayerType *player_ptr, const Pos2D &pos, const TerrainType &terrain)
+{
+    // 確率チェック
+    if (terrain.random_change_prob <= 0) {
+        return;
+    }
+
+    if (randint0(terrain.random_change_prob) != 0) {
+        return;
+    }
+
+    // 変化先が無効な場合はスキップ
+    if (terrain.random_change == 0) {
+        return;
+    }
+
+    // 地形を変化させる
+    set_terrain_id_to_grid(player_ptr, pos, terrain.random_change);
+}
+
+/*!
  * @brief 地形の時間経過処理メイン関数
  * @param player_ptr プレイヤーへの参照ポインタ
  */
@@ -118,12 +144,18 @@ void process_terrain_effects(PlayerType *player_ptr)
         for (auto x = 1; x < MAX_WID - 1; x++) {
             const Pos2D pos(y, x);
             const auto &grid = floor.get_grid(pos);
+            const auto feat_id = grid.feat;
+            const auto &terrain = terrains.get_terrain(feat_id);
 
-            if (grid.feat == volcanic_crater_id) {
+            // 特定の地形の特殊処理
+            if (feat_id == volcanic_crater_id) {
                 process_volcanic_crater(player_ptr, pos);
-            } else if (grid.feat == summoning_circle_id) {
+            } else if (feat_id == summoning_circle_id) {
                 process_summoning_circle(player_ptr, pos);
             }
+
+            // ランダム変化処理（全地形で可能）
+            process_random_terrain_change(player_ptr, pos, terrain);
         }
     }
 }

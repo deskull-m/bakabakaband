@@ -110,6 +110,10 @@ void TerrainList::retouch()
         for (auto &ts : terrain.state) {
             ts.result = this->search_real_terrain(ts.result_tag).value_or(ts.result);
         }
+        // ランダム変化先タグの解決
+        if (!terrain.random_change_tag.empty()) {
+            terrain.random_change = this->search_real_terrain(terrain.random_change_tag).value_or(0);
+        }
     }
 }
 
