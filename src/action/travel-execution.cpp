@@ -266,7 +266,6 @@ int Travel::get_cost(const Pos2D &pos) const
  */
 void Travel::step(PlayerType *player_ptr)
 {
-
     this->dir = decide_travel_step_dir(player_ptr, this->dir, this->costs);
     if (!this->dir) {
         if (this->state != TravelState::EXECUTING) {
@@ -280,14 +279,16 @@ void Travel::step(PlayerType *player_ptr)
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     exe_movement(*player_ptr, this->dir, always_pickup, false);
+
+    if (player_ptr->get_position() == this->get_goal()) {
+        this->reset_goal();
+    }
+
     if (this->state == TravelState::STOP) {
         return;
     }
-    if (player_ptr->get_position() == this->get_goal()) {
-        this->reset_goal();
-    } else {
-        this->state = TravelState::EXECUTING;
-    }
+
+    this->state = TravelState::EXECUTING;
 }
 
 /*!
