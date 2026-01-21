@@ -86,7 +86,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_RECALL: {
-        if (!recall_player(player_ptr, randint0(21) + 15)) {
+        if (!recall_player(*player_ptr, randint0(21) + 15)) {
             *use_charge = false;
         }
         ident = true;

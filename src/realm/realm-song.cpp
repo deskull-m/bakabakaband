@@ -660,7 +660,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             msg_print(_("周囲が変化し始めた．．．", "You sing of the primeval shaping of Middle-earth..."));
-            reserve_alter_reality(player_ptr, dice.roll() + base);
+            reserve_alter_reality(*player_ptr, dice.roll() + base);
         }
     } break;
 

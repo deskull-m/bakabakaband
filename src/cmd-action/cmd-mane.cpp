@@ -787,7 +787,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
 
     case MonsterAbilityType::TELE_LEVEL:
-        return teleport_level_other(player_ptr);
+        return teleport_level_other(*player_ptr);
         break;
 
     case MonsterAbilityType::PSY_SPEAR:

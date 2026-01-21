@@ -454,7 +454,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     }
 
     if (player_ptr->muta.has(PlayerMutationType::WALK_SHAD) && !player_ptr->anti_magic && one_in_(12000) && !player_ptr->current_floor_ptr->inside_arena) {
-        reserve_alter_reality(player_ptr, randint0(21) + 15);
+        reserve_alter_reality(*player_ptr, randint0(21) + 15);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::WARNING) && one_in_(1000)) {

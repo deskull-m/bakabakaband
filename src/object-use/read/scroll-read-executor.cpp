@@ -147,12 +147,12 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_TELEPORT_LEVEL: {
-        (void)teleport_level(this->player_ptr, 0);
+        (void)teleport_level(*this->player_ptr, 0);
         this->ident = true;
         break;
     }
     case SV_SCROLL_WORD_OF_RECALL:
-        if (!recall_player(this->player_ptr, randint0(21) + 15)) {
+        if (!recall_player(*this->player_ptr, randint0(21) + 15)) {
             used_up = false;
         }
 
@@ -418,7 +418,7 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_RESET_RECALL:
         this->ident = true;
-        if (!reset_recall(this->player_ptr)) {
+        if (!reset_recall(*this->player_ptr)) {
             used_up = false;
         }
 

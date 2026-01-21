@@ -368,7 +368,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            reserve_alter_reality(player_ptr, dice.roll() + base);
+            reserve_alter_reality(*player_ptr, dice.roll() + base);
         }
     } break;
 

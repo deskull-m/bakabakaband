@@ -317,7 +317,7 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
     case MonsterAbilityType::TELE_AWAY:
         return cast_blue_teleport_away(player_ptr);
     case MonsterAbilityType::TELE_LEVEL:
-        return teleport_level_other(player_ptr);
+        return teleport_level_other(*player_ptr);
     case MonsterAbilityType::PSY_SPEAR:
         return cast_blue_psy_spear(player_ptr, bmc_ptr);
     case MonsterAbilityType::DARKNESS:

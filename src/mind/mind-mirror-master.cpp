@@ -492,13 +492,13 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
             break;
         }
 
-        reserve_alter_reality(player_ptr, randint0(21) + 15);
+        reserve_alter_reality(*player_ptr, randint0(21) + 15);
         break;
     case MindMirrorMasterType::MIRROR_TUNNEL:
         msg_print(_("鏡の世界を通り抜け…  ", "You try to enter the mirror..."));
         return SpellsMirrorMaster(player_ptr).mirror_tunnel();
     case MindMirrorMasterType::RECALL_MIRROR:
-        return recall_player(player_ptr, randint0(21) + 15);
+        return recall_player(*player_ptr, randint0(21) + 15);
     case MindMirrorMasterType::MULTI_SHADOW:
         set_multishadow(*player_ptr, 6 + randint1(6), false);
         break;

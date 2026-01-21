@@ -250,7 +250,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     }
     case PlayerMutationType::RECALL:
-        return recall_player(player_ptr, randint0(21) + 15);
+        return recall_player(*player_ptr, randint0(21) + 15);
     case PlayerMutationType::BANISH: {
         const auto dir = get_direction(player_ptr);
         if (!dir) {

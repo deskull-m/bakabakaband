@@ -259,7 +259,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     case PlayerClassType::CAVALRY:
         return rodeo(player_ptr);
     case PlayerClassType::BERSERKER:
-        return recall_player(player_ptr, randint0(21) + 15);
+        return recall_player(*player_ptr, randint0(21) + 15);
     case PlayerClassType::SMITH:
         if (player_ptr->level <= 29) {
             return ident_spell(player_ptr, true);
@@ -346,7 +346,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     case PlayerRaceType::AMBERITE:
         if (command == -1) {
             msg_print(_("あなたは歩き周り始めた。", "You start walking around. "));
-            reserve_alter_reality(player_ptr, randint0(21) + 15);
+            reserve_alter_reality(*player_ptr, randint0(21) + 15);
             return true;
         }
 

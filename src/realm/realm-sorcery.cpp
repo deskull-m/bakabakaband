@@ -298,7 +298,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 19: {
         if (cast) {
-            if (!tele_town(player_ptr)) {
+            if (!tele_town(*player_ptr)) {
                 return tl::nullopt;
             }
         }
@@ -315,7 +315,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
             if (!input_check(_("本当に他の階にテレポートしますか？", "Are you sure? (Teleport Level)"))) {
                 return tl::nullopt;
             }
-            teleport_level(player_ptr, 0);
+            teleport_level(*player_ptr, 0);
         }
     } break;
 
@@ -328,7 +328,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            if (!recall_player(player_ptr, dice.roll() + base)) {
+            if (!recall_player(*player_ptr, dice.roll() + base)) {
                 return tl::nullopt;
             }
         }

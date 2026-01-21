@@ -639,7 +639,7 @@ void apply_nexus(const MonsterEntity &monster, PlayerType *player_ptr)
             break;
         }
 
-        teleport_level(player_ptr, 0);
+        teleport_level(*player_ptr, 0);
         break;
     }
 
