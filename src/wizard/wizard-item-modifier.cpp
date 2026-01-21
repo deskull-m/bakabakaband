@@ -553,32 +553,32 @@ static tl::optional<ItemEntity> wiz_apply_magic_to_item(PlayerType *player_ptr, 
     switch (tolower(command)) {
     case 'w': { // 呪われた高級品.
         ItemEntity item(bi_id);
-        ItemMagicApplier(player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+        ItemMagicApplier(*player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
         return item;
     }
     case 'c': { // 呪われた上質.
         ItemEntity item(bi_id);
-        ItemMagicApplier(player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+        ItemMagicApplier(*player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
         return item;
     }
     case 'n': { // 普通品.
         ItemEntity item(bi_id);
-        ItemMagicApplier(player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(*player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART).execute();
         return item;
     }
     case 'g': { // 上質.
         ItemEntity item(bi_id);
-        ItemMagicApplier(player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+        ItemMagicApplier(*player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
         return item;
     }
     case 'e': { // 高級品.
         ItemEntity item(bi_id);
-        ItemMagicApplier(player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+        ItemMagicApplier(*player_ptr, &item, floor.dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
         return item;
     }
     case 's': { // アーティファクト.
         ItemEntity item(bi_id);
-        ItemMagicApplier(player_ptr, &item, floor.dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+        ItemMagicApplier(*player_ptr, &item, floor.dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
         if (!item.is_fixed_or_random_artifact()) {
             become_random_artifact(player_ptr, &item, false);
         }
@@ -1114,7 +1114,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
                 ItemEntity item;
                 do {
                     item.generate(bi_id);
-                    ItemMagicApplier(player_ptr, &item, baseitem.level, AM_SPECIAL | AM_NO_FIXED_ART).execute();
+                    ItemMagicApplier(*player_ptr, &item, baseitem.level, AM_SPECIAL | AM_NO_FIXED_ART).execute();
                 } while (!item.is_random_artifact() || item.is_ego() || item.is_cursed());
 
                 if (item.is_random_artifact()) {
@@ -1139,7 +1139,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
                     auto i = 0;
                     for (i = 0; i < max_roll; i++) {
                         item.generate(bi_id);
-                        ItemMagicApplier(player_ptr, &item, baseitem.level, AM_GREAT | AM_NO_FIXED_ART).execute();
+                        ItemMagicApplier(*player_ptr, &item, baseitem.level, AM_GREAT | AM_NO_FIXED_ART).execute();
                         if (item.is_random_artifact()) {
                             continue;
                         }
@@ -1174,7 +1174,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
         } else {
             for (auto i = 0; i < 100; i++) {
                 item.generate(bi_id);
-                ItemMagicApplier(player_ptr, &item, 0, AM_NO_FIXED_ART).execute();
+                ItemMagicApplier(*player_ptr, &item, 0, AM_NO_FIXED_ART).execute();
                 if (!item.is_cursed()) {
                     break;
                 }

@@ -109,7 +109,7 @@ struct AmusementRewardItemVisitor {
 
         ItemEntity item(artifact.bi_key);
         item.fa_id = fa_id;
-        ItemMagicApplier(player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(*player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
 
         return item;
     }
@@ -117,7 +117,7 @@ struct AmusementRewardItemVisitor {
     tl::optional<ItemEntity> operator()(const BaseitemKey &bi_key) const
     {
         ItemEntity item(bi_key);
-        ItemMagicApplier(player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(*player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
 
         if (this->flag == AmusementFlagType::NO_UNIQUE) {
             if (item.has_monrace() && item.get_monrace().kind_flags.has(MonsterKindType::UNIQUE)) {

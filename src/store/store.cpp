@@ -303,7 +303,7 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
         ItemEntity *q_ptr;
         q_ptr = &forge;
         q_ptr->generate(bi_id);
-        ItemMagicApplier(player_ptr, q_ptr, level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(*player_ptr, q_ptr, level, AM_NO_FIXED_ART).execute();
         if (!store_will_buy(player_ptr, q_ptr, store_num)) {
             continue;
         }

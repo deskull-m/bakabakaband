@@ -177,7 +177,7 @@ static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
                 item = floor.make_gold(item.bi_key);
             }
 
-            ItemMagicApplier(player_ptr, &item, floor.base_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+            ItemMagicApplier(*player_ptr, &item, floor.base_level, AM_NO_FIXED_ART | AM_GOOD).execute();
             drop_here(floor, std::move(item), *qtwg_ptr->y, *qtwg_ptr->x);
         }
 
