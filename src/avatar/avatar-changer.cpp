@@ -57,8 +57,7 @@ void AvatarChanger::change_virtue()
  */
 void AvatarChanger::change_virtue_non_beginner()
 {
-    auto *player_ptr = &dynamic_cast<PlayerType &>(this->creature);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature.current_floor_ptr;
     const auto &monrace = this->m_ptr->get_monrace();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::BEGINNER)) {
         return;
@@ -76,7 +75,7 @@ void AvatarChanger::change_virtue_non_beginner()
         chg_virtue(this->creature, Virtue::VALOUR, 1);
     }
 
-    if (monrace.level >= 2 * (player_ptr->level + 1)) {
+    if (monrace.level >= 2 * (this->creature.level + 1)) {
         chg_virtue(this->creature, Virtue::VALOUR, 2);
     }
 }
@@ -111,8 +110,7 @@ void AvatarChanger::change_virtue_unique()
  */
 void AvatarChanger::change_virtue_good_evil()
 {
-    auto *player_ptr = &dynamic_cast<PlayerType &>(this->creature);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature.current_floor_ptr;
     const auto &monrace = this->m_ptr->get_monrace();
     if (monrace.kind_flags.has(MonsterKindType::GOOD) && ((monrace.level) / 10 + (3 * floor.dun_level) >= randint1(100))) {
         chg_virtue(this->creature, Virtue::UNLIFE, 1);
@@ -143,8 +141,7 @@ void AvatarChanger::change_virtue_good_evil()
  */
 void AvatarChanger::change_virtue_revenge()
 {
-    auto *player_ptr = &dynamic_cast<PlayerType &>(this->creature);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature.current_floor_ptr;
     const auto &monrace = this->m_ptr->get_monrace();
     if (monrace.r_deaths == 0) {
         return;
@@ -165,8 +162,7 @@ void AvatarChanger::change_virtue_revenge()
  */
 void AvatarChanger::change_virtue_wild_thief()
 {
-    auto *player_ptr = &dynamic_cast<PlayerType &>(this->creature);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature.current_floor_ptr;
     const auto &monrace = this->m_ptr->get_monrace();
     auto innocent = true;
     auto thief = false;
