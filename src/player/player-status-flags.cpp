@@ -54,19 +54,19 @@ namespace {
  * @param tr_flag 特性フラグ
  * @return tr_flag が得られる要因となるフラグの集合
  */
-BIT_FLAGS common_cause_flags(PlayerType *player_ptr, tr_type tr_flag)
+BIT_FLAGS common_cause_flags(CreatureEntity &creature, tr_type tr_flag)
 {
-    BIT_FLAGS result = check_equipment_flags(*player_ptr, tr_flag);
+    BIT_FLAGS result = check_equipment_flags(creature, tr_flag);
 
-    if (CreatureRace(player_ptr).tr_flags().has(tr_flag)) {
+    if (CreatureRace(&creature).tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_RACE);
     }
 
-    if (CreatureClass(*player_ptr).tr_flags().has(tr_flag)) {
+    if (CreatureClass(creature).tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_CLASS);
     }
 
-    if (CreatureClass(*player_ptr).stance_tr_flags().has(tr_flag)) {
+    if (CreatureClass(creature).stance_tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_STANCE);
     }
 
@@ -135,7 +135,7 @@ BIT_FLAGS check_equipment_flags(CreatureEntity &creature, tr_type tr_flag)
 
 BIT_FLAGS player_flags_brand_pois(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_POIS);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_BRAND_POIS);
 
     if (player_ptr->special_attack & ATTACK_POIS) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
@@ -146,7 +146,7 @@ BIT_FLAGS player_flags_brand_pois(PlayerType *player_ptr)
 
 BIT_FLAGS player_flags_brand_acid(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_ACID);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_BRAND_ACID);
 
     if (player_ptr->special_attack & ATTACK_ACID) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
@@ -157,7 +157,7 @@ BIT_FLAGS player_flags_brand_acid(PlayerType *player_ptr)
 
 BIT_FLAGS player_flags_brand_elec(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_ELEC);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_BRAND_ELEC);
 
     if (player_ptr->special_attack & ATTACK_ELEC) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
@@ -168,7 +168,7 @@ BIT_FLAGS player_flags_brand_elec(PlayerType *player_ptr)
 
 BIT_FLAGS player_flags_brand_fire(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_FIRE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_BRAND_FIRE);
 
     if (player_ptr->special_attack & ATTACK_FIRE) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
@@ -179,7 +179,7 @@ BIT_FLAGS player_flags_brand_fire(PlayerType *player_ptr)
 
 BIT_FLAGS player_flags_brand_cold(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_COLD);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_BRAND_COLD);
 
     if (player_ptr->special_attack & ATTACK_COLD) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
@@ -543,7 +543,7 @@ bool has_pass_wall(CreatureEntity &creature)
  */
 BIT_FLAGS has_xtra_might(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_XTRA_MIGHT);
+    return common_cause_flags(*player_ptr, TR_XTRA_MIGHT);
 }
 
 /*!
@@ -553,7 +553,7 @@ BIT_FLAGS has_xtra_might(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_evil(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_ESP_EVIL);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_ESP_EVIL);
     if (PlayerRealm(player_ptr).is_realm_hex()) {
         if (SpellHex(*player_ptr).is_spelling_specific(HEX_DETECT_EVIL)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -569,7 +569,7 @@ BIT_FLAGS has_esp_evil(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_animal(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_ANIMAL);
+    return common_cause_flags(*player_ptr, TR_ESP_ANIMAL);
 }
 
 /*!
@@ -579,7 +579,7 @@ BIT_FLAGS has_esp_animal(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_nasty(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_NASTY);
+    return common_cause_flags(*player_ptr, TR_ESP_NASTY);
 }
 
 /*!
@@ -589,7 +589,7 @@ BIT_FLAGS has_esp_nasty(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_homo(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_HOMO);
+    return common_cause_flags(*player_ptr, TR_ESP_HOMO);
 }
 
 /*!
@@ -599,7 +599,7 @@ BIT_FLAGS has_esp_homo(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_undead(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_UNDEAD);
+    return common_cause_flags(*player_ptr, TR_ESP_UNDEAD);
 }
 
 /*!
@@ -609,7 +609,7 @@ BIT_FLAGS has_esp_undead(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_demon(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_DEMON);
+    return common_cause_flags(*player_ptr, TR_ESP_DEMON);
 }
 
 /*!
@@ -619,7 +619,7 @@ BIT_FLAGS has_esp_demon(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_orc(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_ORC);
+    return common_cause_flags(*player_ptr, TR_ESP_ORC);
 }
 
 /*!
@@ -629,7 +629,7 @@ BIT_FLAGS has_esp_orc(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_troll(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_TROLL);
+    return common_cause_flags(*player_ptr, TR_ESP_TROLL);
 }
 
 /*!
@@ -639,7 +639,7 @@ BIT_FLAGS has_esp_troll(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_giant(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_GIANT);
+    return common_cause_flags(*player_ptr, TR_ESP_GIANT);
 }
 
 /*!
@@ -649,7 +649,7 @@ BIT_FLAGS has_esp_giant(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_dragon(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_DRAGON);
+    return common_cause_flags(*player_ptr, TR_ESP_DRAGON);
 }
 
 /*!
@@ -659,7 +659,7 @@ BIT_FLAGS has_esp_dragon(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_human(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_HUMAN);
+    return common_cause_flags(*player_ptr, TR_ESP_HUMAN);
 }
 
 /*!
@@ -669,7 +669,7 @@ BIT_FLAGS has_esp_human(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_good(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_GOOD);
+    return common_cause_flags(*player_ptr, TR_ESP_GOOD);
 }
 
 /*!
@@ -679,7 +679,7 @@ BIT_FLAGS has_esp_good(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_nonliving(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_NONLIVING);
+    return common_cause_flags(*player_ptr, TR_ESP_NONLIVING);
 }
 
 /*!
@@ -689,7 +689,7 @@ BIT_FLAGS has_esp_nonliving(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_unique(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_ESP_UNIQUE);
+    return common_cause_flags(*player_ptr, TR_ESP_UNIQUE);
 }
 
 /*!
@@ -699,7 +699,7 @@ BIT_FLAGS has_esp_unique(PlayerType *player_ptr)
  */
 BIT_FLAGS has_esp_telepathy(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_TELEPATHY);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_TELEPATHY);
 
     if (is_time_limit_esp(player_ptr) || player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -714,22 +714,22 @@ BIT_FLAGS has_esp_telepathy(PlayerType *player_ptr)
 
 BIT_FLAGS has_bless_blade(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_BLESSED);
+    return common_cause_flags(*player_ptr, TR_BLESSED);
 }
 
 BIT_FLAGS has_easy2_weapon(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_EASY2_WEAPON);
+    return common_cause_flags(*player_ptr, TR_EASY2_WEAPON);
 }
 
 BIT_FLAGS has_down_saving(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_DOWN_SAVING);
+    return common_cause_flags(*player_ptr, TR_DOWN_SAVING);
 }
 
 BIT_FLAGS has_no_ac(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_NO_AC);
+    return common_cause_flags(*player_ptr, TR_NO_AC);
 }
 
 BIT_FLAGS has_invuln_arrow(PlayerType *player_ptr)
@@ -738,7 +738,7 @@ BIT_FLAGS has_invuln_arrow(PlayerType *player_ptr)
         return 0;
     }
 
-    return common_cause_flags(player_ptr, TR_INVULN_ARROW);
+    return common_cause_flags(*player_ptr, TR_INVULN_ARROW);
 }
 
 void check_no_flowed(PlayerType *player_ptr)
@@ -799,17 +799,17 @@ void check_no_flowed(PlayerType *player_ptr)
 
 BIT_FLAGS has_mighty_throw(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_MIGHTY_THROW);
+    return common_cause_flags(*player_ptr, TR_MIGHTY_THROW);
 }
 
 BIT_FLAGS has_dec_mana(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_DEC_MANA);
+    return common_cause_flags(*player_ptr, TR_DEC_MANA);
 }
 
 BIT_FLAGS has_reflect(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_REFLECT);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_REFLECT);
 
     if (player_ptr->ult_res || player_ptr->wraith_form || player_ptr->magicdef || player_ptr->tim_reflect) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -847,17 +847,17 @@ BIT_FLAGS has_warning(PlayerType *player_ptr)
 
 BIT_FLAGS has_anti_magic(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_NO_MAGIC);
+    return common_cause_flags(*player_ptr, TR_NO_MAGIC);
 }
 
 BIT_FLAGS has_anti_tele(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_NO_TELE);
+    return common_cause_flags(*player_ptr, TR_NO_TELE);
 }
 
 BIT_FLAGS has_sh_fire(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SH_FIRE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SH_FIRE);
 
     if (player_ptr->muta.has(PlayerMutationType::FIRE_BODY)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -872,7 +872,7 @@ BIT_FLAGS has_sh_fire(PlayerType *player_ptr)
 
 BIT_FLAGS has_sh_elec(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SH_ELEC);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SH_ELEC);
 
     if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -887,7 +887,7 @@ BIT_FLAGS has_sh_elec(PlayerType *player_ptr)
 
 BIT_FLAGS has_sh_cold(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SH_COLD);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SH_COLD);
 
     if (player_ptr->ult_res || SpellHex(*player_ptr).is_spelling_specific(HEX_ICE_ARMOR)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -898,17 +898,17 @@ BIT_FLAGS has_sh_cold(PlayerType *player_ptr)
 
 BIT_FLAGS has_easy_spell(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_EASY_SPELL);
+    return common_cause_flags(*player_ptr, TR_EASY_SPELL);
 }
 
 BIT_FLAGS has_hard_spell(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_HARD_SPELL);
+    return common_cause_flags(*player_ptr, TR_HARD_SPELL);
 }
 
 BIT_FLAGS has_hold_exp(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_HOLD_EXP);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_HOLD_EXP);
 
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
         result |= FLAG_CAUSE_PERSONALITY;
@@ -923,7 +923,7 @@ BIT_FLAGS has_hold_exp(PlayerType *player_ptr)
 
 BIT_FLAGS has_see_inv(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SEE_INVIS);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SEE_INVIS);
 
     if (player_ptr->ult_res || player_ptr->tim_invis) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -934,12 +934,12 @@ BIT_FLAGS has_see_inv(PlayerType *player_ptr)
 
 BIT_FLAGS has_magic_mastery(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_MAGIC_MASTERY);
+    return common_cause_flags(*player_ptr, TR_MAGIC_MASTERY);
 }
 
 BIT_FLAGS has_free_act(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_FREE_ACT);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_FREE_ACT);
 
     if (player_ptr->muta.has(PlayerMutationType::MOTION)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -954,7 +954,7 @@ BIT_FLAGS has_free_act(PlayerType *player_ptr)
 
 BIT_FLAGS has_sustain_str(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_STR);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SUST_STR);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -965,7 +965,7 @@ BIT_FLAGS has_sustain_str(PlayerType *player_ptr)
 
 BIT_FLAGS has_sustain_int(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_INT);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SUST_INT);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -976,7 +976,7 @@ BIT_FLAGS has_sustain_int(PlayerType *player_ptr)
 
 BIT_FLAGS has_sustain_wis(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_WIS);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SUST_WIS);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -987,7 +987,7 @@ BIT_FLAGS has_sustain_wis(PlayerType *player_ptr)
 
 BIT_FLAGS has_sustain_dex(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_DEX);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SUST_DEX);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -998,7 +998,7 @@ BIT_FLAGS has_sustain_dex(PlayerType *player_ptr)
 
 BIT_FLAGS has_sustain_con(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_CON);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SUST_CON);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1009,7 +1009,7 @@ BIT_FLAGS has_sustain_con(PlayerType *player_ptr)
 
 BIT_FLAGS has_sustain_chr(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_CHR);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SUST_CHR);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1020,7 +1020,7 @@ BIT_FLAGS has_sustain_chr(PlayerType *player_ptr)
 
 BIT_FLAGS has_levitation(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_LEVITATION);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_LEVITATION);
 
     if (player_ptr->muta.has(PlayerMutationType::WINGS)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -1062,7 +1062,7 @@ bool has_can_swim(CreatureEntity *creature_ptr)
 
 BIT_FLAGS has_slow_digest(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SLOW_DIGEST);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_SLOW_DIGEST);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1073,7 +1073,7 @@ BIT_FLAGS has_slow_digest(PlayerType *player_ptr)
 
 BIT_FLAGS has_regenerate(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_REGEN);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_REGEN);
 
     if (player_ptr->muta.has(PlayerMutationType::REGEN)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -1200,12 +1200,12 @@ void update_curses(PlayerType *player_ptr)
 
 BIT_FLAGS has_impact(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_IMPACT);
+    return common_cause_flags(*player_ptr, TR_IMPACT);
 }
 
 BIT_FLAGS has_earthquake(PlayerType *player_ptr)
 {
-    return common_cause_flags(player_ptr, TR_EARTHQUAKE);
+    return common_cause_flags(*player_ptr, TR_EARTHQUAKE);
 }
 
 void update_extra_blows(PlayerType *player_ptr)
@@ -1238,7 +1238,7 @@ void update_extra_blows(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_acid(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_ACID);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_ACID);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1251,7 +1251,7 @@ BIT_FLAGS has_resist_acid(PlayerType *player_ptr)
 
 BIT_FLAGS has_vuln_acid(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_ACID);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_VUL_ACID);
 
     if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -1262,7 +1262,7 @@ BIT_FLAGS has_vuln_acid(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_elec(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_ELEC);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_ELEC);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1275,7 +1275,7 @@ BIT_FLAGS has_resist_elec(PlayerType *player_ptr)
 
 BIT_FLAGS has_vuln_elec(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_ELEC);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_VUL_ELEC);
 
     if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -1286,7 +1286,7 @@ BIT_FLAGS has_vuln_elec(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_fire(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_FIRE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_FIRE);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1299,7 +1299,7 @@ BIT_FLAGS has_resist_fire(PlayerType *player_ptr)
 
 BIT_FLAGS has_vuln_fire(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_FIRE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_VUL_FIRE);
 
     if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -1310,7 +1310,7 @@ BIT_FLAGS has_vuln_fire(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_cold(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_COLD);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_COLD);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1323,7 +1323,7 @@ BIT_FLAGS has_resist_cold(PlayerType *player_ptr)
 
 BIT_FLAGS has_vuln_cold(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_COLD);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_VUL_COLD);
 
     if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -1334,7 +1334,7 @@ BIT_FLAGS has_vuln_cold(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_pois(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_POIS);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_POIS);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1345,7 +1345,7 @@ BIT_FLAGS has_resist_pois(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_conf(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_CONF);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_CONF);
 
     if (player_ptr->ppersonality == PERSONALITY_CHARGEMAN || player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
         result |= FLAG_CAUSE_PERSONALITY;
@@ -1360,7 +1360,7 @@ BIT_FLAGS has_resist_conf(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_sound(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_SOUND);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_SOUND);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1371,7 +1371,7 @@ BIT_FLAGS has_resist_sound(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_lite(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_LITE) | common_cause_flags(player_ptr, TR_IM_LITE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_LITE) | common_cause_flags(*player_ptr, TR_IM_LITE);
 
     if (player_ptr->ult_res || player_ptr->tim_res_lite || player_ptr->mimic_form == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1382,7 +1382,7 @@ BIT_FLAGS has_resist_lite(PlayerType *player_ptr)
 
 BIT_FLAGS has_vuln_lite(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_LITE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_VUL_LITE);
 
     if (player_ptr->wraith_form) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1393,7 +1393,7 @@ BIT_FLAGS has_vuln_lite(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_dark(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_DARK) | common_cause_flags(player_ptr, TR_IM_DARK);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_DARK) | common_cause_flags(*player_ptr, TR_IM_DARK);
 
     if (player_ptr->ult_res || player_ptr->tim_res_dark || player_ptr->tim_imm_dark) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1404,7 +1404,7 @@ BIT_FLAGS has_resist_dark(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_chaos(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_CHAOS);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_CHAOS);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1415,7 +1415,7 @@ BIT_FLAGS has_resist_chaos(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_disen(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_DISEN);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_DISEN);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1426,7 +1426,7 @@ BIT_FLAGS has_resist_disen(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_shard(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_SHARDS);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_SHARDS);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1437,7 +1437,7 @@ BIT_FLAGS has_resist_shard(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_nexus(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_NEXUS);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_NEXUS);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1448,7 +1448,7 @@ BIT_FLAGS has_resist_nexus(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_blind(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_BLIND);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_BLIND);
 
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
         result |= FLAG_CAUSE_PERSONALITY;
@@ -1463,7 +1463,7 @@ BIT_FLAGS has_resist_blind(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_neth(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_NETHER);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_NETHER);
 
     if (player_ptr->ult_res || player_ptr->tim_res_nether) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1474,7 +1474,7 @@ BIT_FLAGS has_resist_neth(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_time(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_TIME);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_TIME);
 
     if (player_ptr->ult_res || player_ptr->tim_res_time) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1485,7 +1485,7 @@ BIT_FLAGS has_resist_time(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_water(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_WATER);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_WATER);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1501,7 +1501,7 @@ BIT_FLAGS has_resist_water(PlayerType *player_ptr)
  */
 BIT_FLAGS has_resist_curse(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_CURSE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_CURSE);
 
     if (player_ptr->ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1562,7 +1562,7 @@ BIT_FLAGS has_heavy_vuln_curse(PlayerType *player_ptr)
 
 BIT_FLAGS has_resist_fear(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_FEAR);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_RES_FEAR);
 
     if (player_ptr->muta.has(PlayerMutationType::FEARLESS)) {
         result |= FLAG_CAUSE_MUTATION;
@@ -1577,7 +1577,7 @@ BIT_FLAGS has_resist_fear(PlayerType *player_ptr)
 
 BIT_FLAGS has_immune_acid(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_ACID);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_IM_ACID);
 
     if (player_ptr->ele_immune) {
         if (player_ptr->special_defense & DEFENSE_ACID) {
@@ -1590,7 +1590,7 @@ BIT_FLAGS has_immune_acid(PlayerType *player_ptr)
 
 BIT_FLAGS has_immune_elec(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_ELEC);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_IM_ELEC);
 
     if (player_ptr->ele_immune) {
         if (player_ptr->special_defense & DEFENSE_ELEC) {
@@ -1603,7 +1603,7 @@ BIT_FLAGS has_immune_elec(PlayerType *player_ptr)
 
 BIT_FLAGS has_immune_fire(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_FIRE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_IM_FIRE);
 
     if (player_ptr->ele_immune) {
         if (player_ptr->special_defense & DEFENSE_FIRE) {
@@ -1616,7 +1616,7 @@ BIT_FLAGS has_immune_fire(PlayerType *player_ptr)
 
 BIT_FLAGS has_immune_cold(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_COLD);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_IM_COLD);
 
     if (player_ptr->ele_immune) {
         if (player_ptr->special_defense & DEFENSE_COLD) {
@@ -1629,7 +1629,7 @@ BIT_FLAGS has_immune_cold(PlayerType *player_ptr)
 
 BIT_FLAGS has_immune_dark(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_DARK);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_IM_DARK);
 
     if (player_ptr->wraith_form || player_ptr->tim_imm_dark) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
@@ -1640,7 +1640,7 @@ BIT_FLAGS has_immune_dark(PlayerType *player_ptr)
 
 BIT_FLAGS has_immune_lite(PlayerType *player_ptr)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_LITE);
+    BIT_FLAGS result = common_cause_flags(*player_ptr, TR_IM_LITE);
     if (player_ptr->mimic_form == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
