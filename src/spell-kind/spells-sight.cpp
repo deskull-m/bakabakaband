@@ -44,8 +44,7 @@
  */
 bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
 {
-    auto &player = dynamic_cast<PlayerType &>(creature);
-    auto &floor = *player.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto p_pos = creature.get_position();
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.m_list[i];
@@ -86,8 +85,7 @@ bool project_all_los(CreatureEntity &creature, AttributeType typ, int dam)
  */
 bool speed_monsters(CreatureEntity &creature)
 {
-    auto &player = dynamic_cast<PlayerType &>(creature);
-    return project_all_los(creature, AttributeType::OLD_SPEED, player.level);
+    return project_all_los(creature, AttributeType::OLD_SPEED, creature.level);
 }
 
 /*!
@@ -126,8 +124,7 @@ bool banish_evil(CreatureEntity &creature, int dist)
  */
 bool turn_undead(CreatureEntity &creature)
 {
-    auto &player = dynamic_cast<PlayerType &>(creature);
-    bool tester = (project_all_los(creature, AttributeType::TURN_UNDEAD, player.level));
+    bool tester = (project_all_los(creature, AttributeType::TURN_UNDEAD, creature.level));
     if (tester) {
         chg_virtue(creature, Virtue::UNLIFE, -1);
     }
@@ -205,8 +202,7 @@ bool dispel_demons(CreatureEntity &creature, int dam)
  */
 bool crusade(CreatureEntity &creature)
 {
-    auto &player = dynamic_cast<PlayerType &>(creature);
-    return project_all_los(creature, AttributeType::CRUSADE, player.level * 4);
+    return project_all_los(creature, AttributeType::CRUSADE, creature.level * 4);
 }
 
 /*!
@@ -216,7 +212,6 @@ bool crusade(CreatureEntity &creature)
  */
 void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
 {
-    auto &player = dynamic_cast<PlayerType &>(creature);
     auto sleep = false;
     auto speed = false;
     auto &floor = *creature.current_floor_ptr;
@@ -253,7 +248,7 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
         msg_print(_("何かが突如興奮したような騒々しい音が遠くに聞こえた！", "You hear a sudden stirring in the distance!"));
     }
 
-    if (player.riding) {
+    if (creature.riding) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 }
@@ -364,8 +359,7 @@ bool turn_monsters(CreatureEntity &creature, int dam)
  */
 bool deathray_monsters(CreatureEntity &creature)
 {
-    auto &player = dynamic_cast<PlayerType &>(creature);
-    return project_all_los(creature, AttributeType::DEATH_RAY, player.level * 200);
+    return project_all_los(creature, AttributeType::DEATH_RAY, creature.level * 200);
 }
 
 /*!
