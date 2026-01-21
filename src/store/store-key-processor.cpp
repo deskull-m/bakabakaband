@@ -155,7 +155,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case 'b': {
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (pc.can_browse()) {
             do_cmd_mind_browse(player_ptr);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {

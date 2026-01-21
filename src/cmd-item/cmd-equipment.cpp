@@ -132,7 +132,7 @@ void do_cmd_wield(PlayerType *player_ptr)
 {
     concptr act;
     OBJECT_IDX need_switch_wielding = 0;
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     constexpr auto selection_q = _("どれを装備しますか? ", "Wear/Wield which item? ");
     constexpr auto selection_s = _("装備可能なアイテムがない。", "You have nothing you can wear or wield.");
@@ -373,7 +373,7 @@ void do_cmd_wield(PlayerType *player_ptr)
  */
 void do_cmd_takeoff(PlayerType *player_ptr)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     pc.break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     constexpr auto q = _("どれを装備からはずしますか? ", "Take off which item? ");

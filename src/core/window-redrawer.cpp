@@ -225,7 +225,7 @@ void redraw_stuff(PlayerType *player_ptr)
         print_speed(player_ptr);
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::IMITATOR)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::IMITATOR)) {
         if (rfu.has(MainWindowRedrawingFlag::IMITATION)) {
             rfu.reset_flag(MainWindowRedrawingFlag::IMITATION);
             print_imitation(player_ptr);

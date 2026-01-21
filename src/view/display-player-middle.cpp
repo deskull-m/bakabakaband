@@ -75,7 +75,7 @@ static void display_sub_hand(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (!pc.equals(PlayerClassType::MONK) || ((empty_hands(player_ptr, true) & EMPTY_HAND_MAIN) == 0)) {
         return;
     }

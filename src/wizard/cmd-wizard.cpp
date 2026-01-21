@@ -268,7 +268,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         }
     }
     case 'w':
-        wiz_lite(player_ptr, PlayerClass(player_ptr).equals(PlayerClassType::NINJA));
+        wiz_lite(player_ptr, CreatureClass(*player_ptr).equals(PlayerClassType::NINJA));
         return true;
     case 'x':
         gain_exp(static_cast<CreatureEntity &>(*player_ptr), command_arg ? command_arg : (player_ptr->exp + 1));

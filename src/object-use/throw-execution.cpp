@@ -171,7 +171,7 @@ void ObjectThrowEntity::set_class_specific_throw_params()
 {
     PlayerEnergy energy(this->player_ptr);
     energy.set_player_turn_energy(100);
-    PlayerClass pc(this->player_ptr);
+    CreatureClass pc(*this->player_ptr);
     if (pc.equals(PlayerClassType::ROGUE) || pc.equals(PlayerClassType::NINJA)) {
         energy.sub_player_turn_energy(this->player_ptr->level);
     }

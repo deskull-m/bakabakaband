@@ -421,7 +421,7 @@ static int calcutate_capturable_hp(PlayerType *player_ptr, const MonsterEntity &
         return hp * 4L;
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER) && monster.has_living_flag()) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BEASTMASTER) && monster.has_living_flag()) {
         return hp * 3 / 10;
     }
 

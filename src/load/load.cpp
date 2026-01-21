@@ -224,7 +224,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
     mp_ptr = &class_magics_info[short_pclass];
 
     load_spells(player_ptr);
-    if (PlayerClass(player_ptr).equals(PlayerClassType::MINDCRAFTER)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::MINDCRAFTER)) {
         player_ptr->add_spells = 0;
     }
 
@@ -317,7 +317,7 @@ static bool on_read_save_data_not_supported(PlayerType *player_ptr, bool *new_ga
  */
 static bool can_takeover_savefile(PlayerType *player_ptr)
 {
-    if (loading_savefile_version_is_older_than(8) && PlayerClass(player_ptr).equals(PlayerClassType::SMITH)) {
+    if (loading_savefile_version_is_older_than(8) && CreatureClass(*player_ptr).equals(PlayerClassType::SMITH)) {
         return false;
     }
 

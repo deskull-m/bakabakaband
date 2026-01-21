@@ -26,7 +26,7 @@
  */
 static void display_diary(PlayerType *player_ptr)
 {
-    const auto subtitle_candidates = PlayerClass(player_ptr).get_subtitle_candidates();
+    const auto subtitle_candidates = CreatureClass(*player_ptr).get_subtitle_candidates();
     const auto choice = Rand_external(subtitle_candidates.size());
     const auto &subtitle = subtitle_candidates[choice];
 #ifdef JP

@@ -36,7 +36,7 @@ struct learnt_spell_table {
  */
 static void dump_magic_eater(PlayerType *player_ptr, FILE *fff)
 {
-    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
+    auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
     if (!magic_eater_data) {
         return;
     }
@@ -164,7 +164,7 @@ static void add_monster_spell_type(char p[][80], int col, BlueMagicType SpellPro
  */
 static void dump_blue_mage(PlayerType *player_ptr, FILE *fff)
 {
-    const auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+    const auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
     if (!bluemage_data) {
         return;
     }

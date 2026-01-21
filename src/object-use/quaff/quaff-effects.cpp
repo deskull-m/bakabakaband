@@ -302,7 +302,7 @@ bool QuaffEffects::blindness()
 bool QuaffEffects::booze()
 {
     auto ident = false;
-    auto is_monk = PlayerClass(this->player_ptr).equals(PlayerClassType::MONK);
+    auto is_monk = CreatureClass(*this->player_ptr).equals(PlayerClassType::MONK);
     if (!is_monk) {
         chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::HARMONY, -1);
     } else if (!has_resist_conf(this->player_ptr)) {

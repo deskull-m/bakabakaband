@@ -90,7 +90,7 @@ void save_prev_data(PlayerType *player_ptr, birther *birther_ptr)
     birther_ptr->pclass = player_ptr->pclass;
     birther_ptr->ppersonality = player_ptr->ppersonality;
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
         birther_ptr->realm1 = static_cast<int16_t>(player_ptr->element_realm);
         birther_ptr->realm2 = 0;
     } else {
@@ -141,7 +141,7 @@ void load_prev_data(PlayerType *player_ptr, bool swap)
 
     PlayerRealm pr(player_ptr);
     pr.reset();
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
         player_ptr->element_realm = i2enum<ElementRealmType>(previous_char.realm1);
     } else {
         const auto realm1 = i2enum<RealmType>(previous_char.realm1);
@@ -171,7 +171,7 @@ void load_prev_data(PlayerType *player_ptr, bool swap)
     player_ptr->patron = previous_char.patron;
     player_ptr->virtues = previous_char.virtues;
 
-    PlayerClass(player_ptr).init_specific_data();
+    CreatureClass(*player_ptr).init_specific_data();
 
     for (int i = 0; i < 4; i++) {
         strcpy(player_ptr->history[i], previous_char.history[i]);

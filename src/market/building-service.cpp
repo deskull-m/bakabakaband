@@ -63,7 +63,7 @@ bool is_member(PlayerType *player_ptr, const building_type &bldg)
         return true;
     }
 
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::SORCERER)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::SORCERER)) {
         return false;
     }
 

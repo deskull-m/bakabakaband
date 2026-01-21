@@ -392,7 +392,7 @@ MonsterSpellResult spell_RF6_DARKNESS(PlayerType *player_ptr, POSITION y, POSITI
     bool monster_to_player = target_type == MONSTER_TO_PLAYER;
     const auto t_name = monster_name(player_ptr, t_idx);
 
-    const auto is_ninja = PlayerClass(player_ptr).equals(PlayerClassType::NINJA);
+    const auto is_ninja = CreatureClass(*player_ptr).equals(PlayerClassType::NINJA);
     const auto is_living_monster = monrace.kind_flags.has_not(MonsterKindType::UNDEAD);
     const auto is_not_weak_lite = monrace.resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
     if (is_ninja && is_living_monster && is_not_weak_lite && monrace.brightness_flags.has_none_of(dark_mask)) {

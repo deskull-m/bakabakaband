@@ -299,7 +299,7 @@ void update_mon_lite(PlayerType *player_ptr)
     floor.set_mon_lite(points, end_temp);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
     player_ptr->monlite = (floor.get_grid(p_pos).info & CAVE_MNLT) != 0;
-    const auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    const auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
         player_ptr->old_monlite = player_ptr->monlite;
         return;

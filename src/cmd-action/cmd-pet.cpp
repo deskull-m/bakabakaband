@@ -196,7 +196,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
     const auto pos = player_ptr->get_neighbor(dir);
     auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (creature.riding) {
         /* Skip non-empty grids */

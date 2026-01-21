@@ -464,11 +464,11 @@ bool true_healing(PlayerType *player_ptr, int pow)
 bool restore_mana(PlayerType *player_ptr, bool magic_eater)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (PlayerClass(player_ptr).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
         // 魔力復活による、魔道具術師の取り込んだ魔法の回復量
         // 取り込み数が10回未満: 3 回分回復
         // 取り込み数が10回以上: 取り込み回数/3 回分回復
-        auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
+        auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
         for (auto tval : { ItemKindType::STAFF, ItemKindType::WAND }) {
             for (auto &item : magic_eater_data->get_item_group(tval)) {
                 item.charge += (item.count < 10) ? EATER_CHARGE * 3 : item.count * EATER_CHARGE / 3;
@@ -605,7 +605,7 @@ bool cosmic_cast_off(PlayerType *player_ptr, ItemEntity **o_ptr_ptr)
     (void)set_blessed(player_ptr, player_ptr->blessed + t, false);
     (void)mod_acceleration(player_ptr, t, false);
     (void)set_berserk(player_ptr, player_ptr->berserk + t, false);
-    if (PlayerClass(player_ptr).equals(PlayerClassType::FORCETRAINER)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER)) {
         set_current_ki(player_ptr, true, player_ptr->level * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }

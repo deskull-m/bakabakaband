@@ -17,7 +17,7 @@
 static void set_stance(PlayerType *player_ptr, const MonkStanceType new_stance)
 {
     set_action(player_ptr, ACTION_MONK_STANCE);
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.monk_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));
         return;

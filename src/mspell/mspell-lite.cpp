@@ -233,7 +233,7 @@ void decide_lite_area(PlayerType *player_ptr, msa_type *msa_ptr)
         return;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     auto can_use_lite_area = pc.equals(PlayerClassType::NINJA);
     can_use_lite_area &= !msa_ptr->m_ptr->has_undead_flag();
     can_use_lite_area &= msa_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);

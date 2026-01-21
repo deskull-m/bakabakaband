@@ -32,25 +32,34 @@
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerClass::PlayerClass(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+CreatureClass::CreatureClass(CreatureEntity &creature)
+    : creature(creature)
 {
 }
 
-bool PlayerClass::equals(PlayerClassType type) const
+bool CreatureClass::equals(PlayerClassType type) const
 {
-    return this->player_ptr->pclass == type;
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    if (!player_ptr) {
+        return false;
+    }
+    return player_ptr->pclass == type;
 }
 
 /*!
  * @brief プレイヤーの職業により得られる特性フラグを返す
  */
-TrFlags PlayerClass::tr_flags() const
+TrFlags CreatureClass::tr_flags() const
 {
-    TrFlags flags;
-    const auto plev = this->player_ptr->level;
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    if (!player_ptr) {
+        return TrFlags();
+    }
 
-    switch (this->player_ptr->pclass) {
+    TrFlags flags;
+    const auto plev = player_ptr->level;
+
+    switch (player_ptr->pclass) {
     case PlayerClassType::WARRIOR: {
         if (plev > 29) {
             flags.set(TR_RES_FEAR);
@@ -87,24 +96,24 @@ TrFlags PlayerClass::tr_flags() const
     }
     case PlayerClassType::MONK:
     case PlayerClassType::FORCETRAINER: {
-        if ((plev > 9) && !heavy_armor(this->player_ptr)) {
+        if ((plev > 9) && !heavy_armor(player_ptr)) {
             flags.set(TR_SPEED);
         }
-        if ((plev > 24) && !heavy_armor(this->player_ptr)) {
+        if ((plev > 24) && !heavy_armor(player_ptr)) {
             flags.set(TR_FREE_ACT);
         }
 
         break;
     }
     case PlayerClassType::NINJA: {
-        if (heavy_armor(this->player_ptr)) {
+        if (heavy_armor(player_ptr)) {
             flags.set(TR_SPEED);
         } else {
             if (this->has_ninja_speed()) {
                 flags.set(TR_SPEED);
             }
 
-            if (plev > 24 && !this->player_ptr->is_icky_wield[0] && !this->player_ptr->is_icky_wield[1]) {
+            if (plev > 24 && !player_ptr->is_icky_wield[0] && !player_ptr->is_icky_wield[1]) {
                 flags.set(TR_FREE_ACT);
             }
         }
@@ -164,52 +173,52 @@ TrFlags PlayerClass::tr_flags() const
         break;
     }
     case PlayerClassType::ELEMENTALIST:
-        if (has_element_resist(this->player_ptr, ElementRealmType::FIRE, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::FIRE, 1)) {
             flags.set(TR_RES_FIRE);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::FIRE, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::FIRE, 30)) {
             flags.set(TR_IM_FIRE);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::ICE, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::ICE, 1)) {
             flags.set(TR_RES_COLD);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::ICE, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::ICE, 30)) {
             flags.set(TR_IM_COLD);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::SKY, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::SKY, 1)) {
             flags.set(TR_RES_ELEC);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::SKY, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::SKY, 30)) {
             flags.set(TR_IM_ELEC);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::SEA, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::SEA, 1)) {
             flags.set(TR_RES_ACID);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::SEA, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::SEA, 30)) {
             flags.set(TR_IM_ACID);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::DARKNESS, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::DARKNESS, 1)) {
             flags.set(TR_RES_DARK);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::DARKNESS, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::DARKNESS, 30)) {
             flags.set(TR_RES_NETHER);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::CHAOS, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::CHAOS, 1)) {
             flags.set(TR_RES_CONF);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::CHAOS, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::CHAOS, 30)) {
             flags.set(TR_RES_CHAOS);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::EARTH, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::EARTH, 1)) {
             flags.set(TR_RES_SHARDS);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::EARTH, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::EARTH, 30)) {
             flags.set(TR_REFLECT);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::DEATH, 1)) {
+        if (has_element_resist(player_ptr, ElementRealmType::DEATH, 1)) {
             flags.set(TR_RES_POIS);
         }
-        if (has_element_resist(this->player_ptr, ElementRealmType::DEATH, 30)) {
+        if (has_element_resist(player_ptr, ElementRealmType::DEATH, 30)) {
             flags.set(TR_RES_DISEN);
         }
         break;
@@ -220,13 +229,18 @@ TrFlags PlayerClass::tr_flags() const
     return flags;
 }
 
-TrFlags PlayerClass::stance_tr_flags() const
+TrFlags CreatureClass::stance_tr_flags() const
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    if (!player_ptr) {
+        return TrFlags();
+    }
+
     TrFlags flags;
 
     switch (this->get_samurai_stance()) {
     case SamuraiStanceType::FUUJIN:
-        if (!this->player_ptr->effects()->blindness().is_blind()) {
+        if (!player_ptr->effects()->blindness().is_blind()) {
             flags.set(TR_REFLECT);
         }
         break;
@@ -265,14 +279,16 @@ TrFlags PlayerClass::stance_tr_flags() const
     return flags;
 }
 
-bool PlayerClass::has_stun_immunity() const
+bool CreatureClass::has_stun_immunity() const
 {
-    return this->equals(PlayerClassType::BERSERKER) && (this->player_ptr->level > 34);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    return this->equals(PlayerClassType::BERSERKER) && player_ptr && (player_ptr->level > 34);
 }
 
-bool PlayerClass::has_poison_resistance() const
+bool CreatureClass::has_poison_resistance() const
 {
-    return this->equals(PlayerClassType::NINJA) && (this->player_ptr->level > 44);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    return this->equals(PlayerClassType::NINJA) && player_ptr && (player_ptr->level > 44);
 }
 
 /*!
@@ -282,7 +298,7 @@ bool PlayerClass::has_poison_resistance() const
  * 種族と職業の両方で特性による加速が得られる場合、重複して加速することはない.
  * 代りに経験値補正が軽くなる.
  */
-bool PlayerClass::has_additional_speed() const
+bool CreatureClass::has_additional_speed() const
 {
     auto has_additional_speed = this->equals(PlayerClassType::MONK);
     has_additional_speed |= this->equals(PlayerClassType::FORCETRAINER);
@@ -290,7 +306,7 @@ bool PlayerClass::has_additional_speed() const
     return has_additional_speed;
 }
 
-bool PlayerClass::is_soldier() const
+bool CreatureClass::is_soldier() const
 {
     auto is_soldier = this->equals(PlayerClassType::WARRIOR);
     is_soldier |= this->equals(PlayerClassType::ARCHER);
@@ -300,7 +316,7 @@ bool PlayerClass::is_soldier() const
     return is_soldier;
 }
 
-bool PlayerClass::is_wizard() const
+bool CreatureClass::is_wizard() const
 {
     auto is_wizard = this->equals(PlayerClassType::MAGE);
     is_wizard |= this->equals(PlayerClassType::HIGH_MAGE);
@@ -311,14 +327,14 @@ bool PlayerClass::is_wizard() const
     return is_wizard;
 }
 
-bool PlayerClass::is_tamer() const
+bool CreatureClass::is_tamer() const
 {
     auto is_tamer = this->equals(PlayerClassType::BEASTMASTER);
     is_tamer |= this->equals(PlayerClassType::CAVALRY);
     return is_tamer;
 }
 
-bool PlayerClass::can_browse() const
+bool CreatureClass::can_browse() const
 {
     auto can_browse = this->equals(PlayerClassType::MINDCRAFTER);
     can_browse |= this->equals(PlayerClassType::BERSERKER);
@@ -327,7 +343,7 @@ bool PlayerClass::can_browse() const
     return can_browse;
 }
 
-bool PlayerClass::has_listed_magics() const
+bool CreatureClass::has_listed_magics() const
 {
     auto has_listed_magics = this->can_browse();
     has_listed_magics |= this->equals(PlayerClassType::FORCETRAINER);
@@ -339,7 +355,7 @@ bool PlayerClass::has_listed_magics() const
  * @brief プレイ日記のタイトルが「最高の肉体を求めて」になり得るクラスを判定する
  * @return 該当のクラスか否か
  */
-bool PlayerClass::is_tough() const
+bool CreatureClass::is_tough() const
 {
     auto is_tough = this->equals(PlayerClassType::WARRIOR);
     is_tough |= this->equals(PlayerClassType::MONK);
@@ -348,14 +364,14 @@ bool PlayerClass::is_tough() const
     return is_tough;
 }
 
-bool PlayerClass::is_martial_arts_pro() const
+bool CreatureClass::is_martial_arts_pro() const
 {
     auto is_martial_arts_pro = this->equals(PlayerClassType::MONK);
     is_martial_arts_pro |= this->equals(PlayerClassType::FORCETRAINER);
     return is_martial_arts_pro;
 }
 
-bool PlayerClass::is_every_magic() const
+bool CreatureClass::is_every_magic() const
 {
     auto is_every_magic = this->equals(PlayerClassType::SORCERER);
     is_every_magic |= this->equals(PlayerClassType::RED_MAGE);
@@ -366,7 +382,7 @@ bool PlayerClass::is_every_magic() const
  * @brief 「覚えた呪文の数」という概念を持つクラスかをチェックする.
  * @return 呪文の数を持つか否か
  */
-bool PlayerClass::has_number_of_spells_learned() const
+bool CreatureClass::has_number_of_spells_learned() const
 {
     auto has_number_of_spells_learned = this->equals(PlayerClassType::MAGE);
     has_number_of_spells_learned |= this->equals(PlayerClassType::PRIEST);
@@ -384,9 +400,10 @@ bool PlayerClass::has_number_of_spells_learned() const
     return has_number_of_spells_learned;
 }
 
-bool PlayerClass::lose_balance()
+bool CreatureClass::lose_balance()
 {
-    if (this->player_ptr->pclass != PlayerClassType::SAMURAI) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    if (!player_ptr || player_ptr->pclass != PlayerClassType::SAMURAI) {
         return false;
     }
 
@@ -406,11 +423,11 @@ bool PlayerClass::lose_balance()
         MainWindowRedrawingFlag::TIMED_EFFECT,
     };
     rfu.set_flags(flags_mwrf);
-    this->player_ptr->action = ACTION_NONE;
+    player_ptr->action = ACTION_NONE;
     return true;
 }
 
-SamuraiStanceType PlayerClass::get_samurai_stance() const
+SamuraiStanceType CreatureClass::get_samurai_stance() const
 {
     auto samurai_data = this->get_specific_data<samurai_data_type>();
     if (!samurai_data) {
@@ -420,7 +437,7 @@ SamuraiStanceType PlayerClass::get_samurai_stance() const
     return samurai_data->stance;
 }
 
-bool PlayerClass::samurai_stance_is(SamuraiStanceType stance) const
+bool CreatureClass::samurai_stance_is(SamuraiStanceType stance) const
 {
     return this->get_samurai_stance() == stance;
 }
@@ -430,7 +447,7 @@ bool PlayerClass::samurai_stance_is(SamuraiStanceType stance) const
  *
  * @param stance_list 崩す型を指定する。取っている型が指定された型に含まれない場合は崩さない。
  */
-void PlayerClass::break_samurai_stance(std::initializer_list<SamuraiStanceType> stance_list)
+void CreatureClass::break_samurai_stance(std::initializer_list<SamuraiStanceType> stance_list)
 {
     auto samurai_data = this->get_specific_data<samurai_data_type>();
     if (!samurai_data) {
@@ -439,14 +456,14 @@ void PlayerClass::break_samurai_stance(std::initializer_list<SamuraiStanceType> 
 
     for (auto stance : stance_list) {
         if (samurai_data->stance == stance) {
-            set_action(player_ptr, ACTION_NONE);
+            set_action(&static_cast<PlayerType &>(this->creature), ACTION_NONE);
             samurai_data->stance = SamuraiStanceType::NONE;
             break;
         }
     }
 }
 
-void PlayerClass::set_samurai_stance(SamuraiStanceType stance) const
+void CreatureClass::set_samurai_stance(SamuraiStanceType stance) const
 {
     auto samurai_data = this->get_specific_data<samurai_data_type>();
     if (!samurai_data) {
@@ -456,7 +473,7 @@ void PlayerClass::set_samurai_stance(SamuraiStanceType stance) const
     samurai_data->stance = stance;
 }
 
-MonkStanceType PlayerClass::get_monk_stance() const
+MonkStanceType CreatureClass::get_monk_stance() const
 {
     auto monk_data = this->get_specific_data<monk_data_type>();
     if (!monk_data) {
@@ -466,12 +483,12 @@ MonkStanceType PlayerClass::get_monk_stance() const
     return monk_data->stance;
 }
 
-bool PlayerClass::monk_stance_is(MonkStanceType stance) const
+bool CreatureClass::monk_stance_is(MonkStanceType stance) const
 {
     return this->get_monk_stance() == stance;
 }
 
-void PlayerClass::set_monk_stance(MonkStanceType stance) const
+void CreatureClass::set_monk_stance(MonkStanceType stance) const
 {
     auto monk_data = this->get_specific_data<monk_data_type>();
     if (!monk_data) {
@@ -485,58 +502,68 @@ void PlayerClass::set_monk_stance(MonkStanceType stance) const
  * @brief プレイヤーの職業にで使用する職業固有データ領域を初期化する
  * @details 事前条件: PlayerType の職業や領域が決定済みであること
  */
-void PlayerClass::init_specific_data()
+void CreatureClass::init_specific_data()
 {
-    switch (this->player_ptr->pclass) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    if (!player_ptr) {
+        return;
+    }
+
+    switch (player_ptr->pclass) {
     case PlayerClassType::SMITH:
-        this->player_ptr->class_specific_data = std::make_shared<smith_data_type>();
+        player_ptr->class_specific_data = std::make_shared<smith_data_type>();
         break;
     case PlayerClassType::FORCETRAINER:
-        this->player_ptr->class_specific_data = std::make_shared<force_trainer_data_type>();
+        player_ptr->class_specific_data = std::make_shared<force_trainer_data_type>();
         break;
     case PlayerClassType::BLUE_MAGE:
-        this->player_ptr->class_specific_data = std::make_shared<bluemage_data_type>();
+        player_ptr->class_specific_data = std::make_shared<bluemage_data_type>();
         break;
     case PlayerClassType::MAGIC_EATER:
-        this->player_ptr->class_specific_data = std::make_shared<MagicEaterDataList>();
+        player_ptr->class_specific_data = std::make_shared<MagicEaterDataList>();
         break;
     case PlayerClassType::BARD:
-        this->player_ptr->class_specific_data = std::make_shared<bard_data_type>();
+        player_ptr->class_specific_data = std::make_shared<bard_data_type>();
         break;
     case PlayerClassType::IMITATOR:
-        this->player_ptr->class_specific_data = std::make_shared<mane_data_type>();
+        player_ptr->class_specific_data = std::make_shared<mane_data_type>();
         break;
     case PlayerClassType::SNIPER:
-        this->player_ptr->class_specific_data = std::make_shared<SniperData>();
+        player_ptr->class_specific_data = std::make_shared<SniperData>();
         break;
     case PlayerClassType::SAMURAI:
-        this->player_ptr->class_specific_data = std::make_shared<samurai_data_type>();
+        player_ptr->class_specific_data = std::make_shared<samurai_data_type>();
         break;
     case PlayerClassType::MONK:
-        this->player_ptr->class_specific_data = std::make_shared<monk_data_type>();
+        player_ptr->class_specific_data = std::make_shared<monk_data_type>();
         break;
     case PlayerClassType::NINJA:
-        this->player_ptr->class_specific_data = std::make_shared<ninja_data_type>();
+        player_ptr->class_specific_data = std::make_shared<ninja_data_type>();
         break;
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-            this->player_ptr->class_specific_data = std::make_shared<spell_hex_data_type>();
+        if (PlayerRealm(player_ptr).is_realm_hex()) {
+            player_ptr->class_specific_data = std::make_shared<spell_hex_data_type>();
         } else {
-            this->player_ptr->class_specific_data = no_class_specific_data();
+            player_ptr->class_specific_data = no_class_specific_data();
         }
         break;
     default:
-        this->player_ptr->class_specific_data = no_class_specific_data();
+        player_ptr->class_specific_data = no_class_specific_data();
         break;
     }
 }
 
-bool PlayerClass::has_ninja_speed() const
+bool CreatureClass::has_ninja_speed() const
 {
-    auto has_ninja_speed_main = !this->player_ptr->inventory[INVEN_MAIN_HAND]->is_valid();
-    has_ninja_speed_main |= can_attack_with_main_hand(this->player_ptr);
-    auto has_ninja_speed_sub = !this->player_ptr->inventory[INVEN_SUB_HAND]->is_valid();
-    has_ninja_speed_sub |= can_attack_with_sub_hand(this->player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    if (!player_ptr) {
+        return false;
+    }
+
+    auto has_ninja_speed_main = !player_ptr->inventory[INVEN_MAIN_HAND]->is_valid();
+    has_ninja_speed_main |= can_attack_with_main_hand(player_ptr);
+    auto has_ninja_speed_sub = !player_ptr->inventory[INVEN_SUB_HAND]->is_valid();
+    has_ninja_speed_sub |= can_attack_with_sub_hand(player_ptr);
     return has_ninja_speed_main && has_ninja_speed_sub;
 }
 
@@ -548,7 +575,7 @@ bool PlayerClass::has_ninja_speed() const
  *
  * @return 候補一覧を参照するstd::spanオブジェクト
  */
-std::span<const std::string> PlayerClass::get_subtitle_candidates() const
+std::span<const std::string> CreatureClass::get_subtitle_candidates() const
 {
     const std::span candidates(diary_subtitles);
     const auto max = diary_subtitles.size();

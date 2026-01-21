@@ -68,7 +68,7 @@ int16_t PlayerStealth::class_base_bonus()
  */
 int16_t PlayerStealth::class_bonus()
 {
-    PlayerClass pc(this->player_ptr);
+    CreatureClass pc(*this->player_ptr);
     if (!pc.equals(PlayerClassType::NINJA)) {
         return 0;
     }

@@ -26,7 +26,7 @@
  */
 void check_music(PlayerType *player_ptr)
 {
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::BARD)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::BARD)) {
         return;
     }
 
@@ -136,7 +136,7 @@ bool set_tim_stealth(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  */
 void stop_singing(PlayerType *player_ptr)
 {
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::BARD)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::BARD)) {
         return;
     }
 
@@ -163,19 +163,19 @@ void stop_singing(PlayerType *player_ptr)
 
 bool music_singing(PlayerType *player_ptr, int music_songs)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     return bird_data && (bird_data->singing_song == music_songs);
 }
 
 bool music_singing_any(PlayerType *player_ptr)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     return bird_data && (bird_data->singing_song != MUSIC_NONE);
 }
 
 int32_t get_singing_song_effect(PlayerType *player_ptr)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -185,7 +185,7 @@ int32_t get_singing_song_effect(PlayerType *player_ptr)
 
 void set_singing_song_effect(PlayerType *player_ptr, const int32_t magic_num)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }
@@ -195,7 +195,7 @@ void set_singing_song_effect(PlayerType *player_ptr, const int32_t magic_num)
 
 int32_t get_interrupting_song_effect(PlayerType *player_ptr)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -205,7 +205,7 @@ int32_t get_interrupting_song_effect(PlayerType *player_ptr)
 
 void set_interrupting_song_effect(PlayerType *player_ptr, const int32_t magic_num)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }
@@ -215,7 +215,7 @@ void set_interrupting_song_effect(PlayerType *player_ptr, const int32_t magic_nu
 
 int32_t get_singing_count(PlayerType *player_ptr)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -225,7 +225,7 @@ int32_t get_singing_count(PlayerType *player_ptr)
 
 void set_singing_count(PlayerType *player_ptr, const int32_t magic_num)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }
@@ -235,7 +235,7 @@ void set_singing_count(PlayerType *player_ptr, const int32_t magic_num)
 
 byte get_singing_song_id(PlayerType *player_ptr)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -245,7 +245,7 @@ byte get_singing_song_id(PlayerType *player_ptr)
 
 void set_singing_song_id(PlayerType *player_ptr, const byte magic_num)
 {
-    auto bird_data = PlayerClass(player_ptr).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(*player_ptr).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }

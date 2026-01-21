@@ -194,7 +194,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             handle_stuff(player_ptr);
         }
 
-        if (PlayerClass(player_ptr).equals(PlayerClassType::NINJA)) {
+        if (CreatureClass(*player_ptr).equals(PlayerClassType::NINJA)) {
             if (grid_new.info & (CAVE_GLOW)) {
                 set_superstealth(player_ptr, false);
             } else if (player_ptr->cur_lite <= 0) {

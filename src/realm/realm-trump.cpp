@@ -175,7 +175,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 y = player_ptr->y;
             }
 
-            if (PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER)) {
+            if (CreatureClass(*player_ptr).equals(PlayerClassType::BEASTMASTER)) {
                 type = SUMMON_KAMIKAZE_LIVING;
             } else {
                 type = SUMMON_KAMIKAZE;
@@ -315,7 +315,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast || fail) {
             summon_type type;
             msg_print(_("あなたはモンスターのカードに集中する...", "You concentrate on several trumps at once..."));
-            if (PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER)) {
+            if (CreatureClass(*player_ptr).equals(PlayerClassType::BEASTMASTER)) {
                 type = SUMMON_LIVING;
             } else {
                 type = SUMMON_NONE;
@@ -459,7 +459,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast) {
             summon_type type;
 
-            if (PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER)) {
+            if (CreatureClass(*player_ptr).equals(PlayerClassType::BEASTMASTER)) {
                 type = SUMMON_HI_DRAGON_LIVING;
             } else {
                 type = SUMMON_HI_DRAGON;

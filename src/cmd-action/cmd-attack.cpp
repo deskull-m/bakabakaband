@@ -406,7 +406,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
-        } else if (!PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+        } else if (!CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
             if (input_check(_("本当に攻撃しますか？", "Really hit it? "))) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
@@ -486,7 +486,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         }
     }
 
-    if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::IAI) && ((mode != HISSATSU_IAI) || mdeath)) {
+    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::IAI) && ((mode != HISSATSU_IAI) || mdeath)) {
         set_action(player_ptr, ACTION_NONE);
     }
 
@@ -548,7 +548,7 @@ bool do_cmd_headbutt(PlayerType *player_ptr)
     const auto is_stunned = effects->stun().is_stunned();
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
     if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || is_shero(player_ptr) || !monster.ml)) {
-        if (!PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+        if (!CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
             if (!input_check(_("本当に頭突きしますか？", "Really headbutt it? "))) {
                 msg_format(_("%sへの頭突きを止めた。", "You stop to avoid headbutting %s."), m_name.data());
                 return false;

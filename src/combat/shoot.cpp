@@ -558,7 +558,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
     tdam_base *= tmul;
     tdam_base /= 100;
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
     /* Base range */
@@ -947,7 +947,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
         }
 
         /* Chance of breakage (during attacks) */
-        auto j = (hit_body ? breakage_chance(player_ptr, &fire_item, PlayerClass(player_ptr).equals(PlayerClassType::ARCHER), snipe_type) : 0);
+        auto j = (hit_body ? breakage_chance(player_ptr, &fire_item, CreatureClass(*player_ptr).equals(PlayerClassType::ARCHER), snipe_type) : 0);
         const Pos2D pos_impact(y, x);
         if (stick_to) {
             const auto m_idx = floor.get_grid(pos_impact).m_idx;
@@ -1006,7 +1006,7 @@ bool test_hit_fire(PlayerType *player_ptr, int chance, const MonsterEntity &mons
     /* Percentile dice */
     k = randint1(100);
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
     /* Snipers with high-concentration reduce instant miss percentage.*/
@@ -1086,7 +1086,7 @@ int critical_shot(PlayerType *player_ptr, WEIGHT weight, int plus_ammo, int plus
         }
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     const auto sniper_data = pc.get_specific_data<SniperData>();
     const auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
@@ -1139,7 +1139,7 @@ int calc_crit_ratio_shot(PlayerType *player_ptr, int plus_ammo, int plus_bow)
         i = (player_ptr->skill_thb + ((player_ptr->weapon_exp[tval][sval] - (PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2)) / 200 + i) * BTH_PLUS_ADJ);
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     auto sniper_data = pc.get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
@@ -1241,7 +1241,7 @@ int calc_expect_crit(PlayerType *player_ptr, WEIGHT weight, int plus, int dam, i
         num = sum / CRITICAL_DIE_SIDES;
     }
 
-    int pow = PlayerClass(player_ptr).equals(PlayerClassType::NINJA) ? 4444 : 5000;
+    int pow = CreatureClass(*player_ptr).equals(PlayerClassType::NINJA) ? 4444 : 5000;
     if (impact) {
         pow /= 2;
     }
@@ -1309,7 +1309,7 @@ uint32_t calc_expect_dice(
     }
 
     // 理力
-    bool is_force = !PlayerClass(player_ptr).equals(PlayerClassType::SAMURAI);
+    bool is_force = !CreatureClass(*player_ptr).equals(PlayerClassType::SAMURAI);
     is_force &= flags.has(TR_FORCE_WEAPON);
     is_force &= player_ptr->csp > (o_ptr->damage_dice.maxroll() / 5);
 

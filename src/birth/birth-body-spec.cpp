@@ -54,7 +54,7 @@ void get_ahw(CreatureEntity &creature)
 void get_money(CreatureEntity &creature)
 {
     int gold = (creature.prestige * 6) + randint1(100) + 300;
-    if (PlayerClass(&dynamic_cast<PlayerType &>(creature)).equals(PlayerClassType::TOURIST)) {
+    if (CreatureClass(creature).equals(PlayerClassType::TOURIST)) {
         gold += 2000;
     }
 

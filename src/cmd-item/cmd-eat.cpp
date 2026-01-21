@@ -704,7 +704,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
  */
 void do_cmd_eat_food(PlayerType *player_ptr)
 {
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どれを食べますか? ", "Eat which item? ");
     constexpr auto s = _("食べ物がない。", "You have nothing to eat.");
     short i_idx;

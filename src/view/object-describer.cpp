@@ -88,7 +88,7 @@ void display_koff(PlayerType *player_ptr)
             return;
         }
     } else {
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (!pc.is_every_magic()) {
             return;
         }

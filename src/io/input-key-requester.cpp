@@ -354,7 +354,7 @@ std::string InputKeyRequestor::switch_special_menu_condition(const SpecialMenuCo
     case SpecialMenuType::NONE:
         return "";
     case SpecialMenuType::CLASS:
-        if (PlayerClass(this->player_ptr).equals(special_menu.class_condition.value())) {
+        if (CreatureClass(*this->player_ptr).equals(special_menu.class_condition.value())) {
             return std::string(special_menu.name);
         }
 

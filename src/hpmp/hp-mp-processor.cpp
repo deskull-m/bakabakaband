@@ -410,7 +410,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pattern_effect(player_ptr)) {
         cave_no_regen = true;
     } else {

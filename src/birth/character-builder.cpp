@@ -87,7 +87,7 @@ static void write_birth_diary(PlayerType *player_ptr)
 
     const auto mes_personality = format(_("%s性格に%sを選択した。", "%schose %s personality."), indent, personality_info[player_ptr->ppersonality].title.data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_personality);
-    if (PlayerClass(player_ptr).equals(PlayerClassType::CHAOS_WARRIOR)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::CHAOS_WARRIOR)) {
         const auto fmt_patron = _("%s守護神%sと契約を交わした。", "%smade a contract with patron %s.");
         const auto mes_patron = format(fmt_patron, indent, patron_list[player_ptr->patron].name.data());
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_patron);

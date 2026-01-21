@@ -239,7 +239,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (player_ptr->berserk && !pc.equals(PlayerClassType::BERSERKER)) {
         return true;
     }

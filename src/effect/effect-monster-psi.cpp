@@ -278,7 +278,7 @@ static void effect_monster_psi_drain_resist(PlayerType *player_ptr, EffectMonste
 static void effect_monster_psi_drain_change_power(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
     int b = Dice::roll(5, em_ptr->dam) / 4;
-    concptr str = PlayerClass(player_ptr).equals(PlayerClassType::MINDCRAFTER) ? _("超能力パワー", "psychic energy") : _("魔力", "mana");
+    concptr str = CreatureClass(*player_ptr).equals(PlayerClassType::MINDCRAFTER) ? _("超能力パワー", "psychic energy") : _("魔力", "mana");
     concptr msg = _("あなたは%sの苦痛を%sに変換した！", (em_ptr->seen ? "You convert %s's pain into %s!" : "You convert %ss pain into %s!"));
     msg_format(msg, em_ptr->m_name, str);
 

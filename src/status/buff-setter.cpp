@@ -104,7 +104,7 @@ void reset_tim_flags(PlayerType *player_ptr)
         (void)set_monster_invulner(*player_ptr->current_floor_ptr, player_ptr->riding, 0, false);
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BARD)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BARD)) {
         set_singing_song_effect(player_ptr, MUSIC_NONE);
         set_singing_song_id(player_ptr, 0);
     }
@@ -444,7 +444,7 @@ bool set_berserk(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
         v = 1;
         return false;
     }

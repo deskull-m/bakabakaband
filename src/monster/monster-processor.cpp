@@ -313,7 +313,7 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
  */
 bool process_stealth(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
         return true;
     }

@@ -206,7 +206,7 @@ int calc_attack_damage_with_slay(PlayerType *player_ptr, ItemEntity *o_ptr, int 
 
         mult = mult_brand(player_ptr, mult, flags, monster);
 
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (pc.equals(PlayerClassType::SAMURAI)) {
             mult = mult_hissatsu(player_ptr, mult, flags, monster, mode);
         }
@@ -243,7 +243,7 @@ AttributeFlags melee_attribute(PlayerType *player_ptr, ItemEntity *o_ptr, combat
     AttributeFlags attribute_flags{};
     attribute_flags.set(AttributeType::PLAYER_MELEE);
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::SAMURAI)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::SAMURAI)) {
         static const struct samurai_convert_table_t {
             combat_options hissatsu_type;
             AttributeType attribute;

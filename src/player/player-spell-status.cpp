@@ -43,7 +43,7 @@ void PlayerSpellStatus::Realm::initialize()
     auto &worked = this->is_realm1 ? this->player_ptr->spell_worked1 : this->player_ptr->spell_worked2;
     auto &forgotten = this->is_realm1 ? this->player_ptr->spell_forgotten1 : this->player_ptr->spell_forgotten2;
 
-    const auto is_sorcerer = PlayerClass(player_ptr).equals(PlayerClassType::SORCERER);
+    const auto is_sorcerer = CreatureClass(*player_ptr).equals(PlayerClassType::SORCERER);
     learned = worked = is_sorcerer ? 0xffffffffU : 0;
     forgotten = 0;
 

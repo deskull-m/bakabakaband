@@ -47,7 +47,7 @@ bool ThrowCommand::do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken)
         return false;
     }
 
-    PlayerClass pc(this->player_ptr);
+    CreatureClass pc(*this->player_ptr);
     pc.break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     ItemEntity tmp_object;

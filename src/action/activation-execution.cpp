@@ -108,7 +108,7 @@ static void decide_chance_fail(PlayerType *player_ptr, ae_type *ae_ptr)
 
 static void decide_activation_success(PlayerType *player_ptr, ae_type *ae_ptr)
 {
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
         ae_ptr->success = false;
         return;
     }

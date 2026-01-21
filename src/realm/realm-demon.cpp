@@ -130,7 +130,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         POSITION rad = (plev < 30) ? 2 : 3;
         int base;
 
-        if (PlayerClass(player_ptr).is_wizard()) {
+        if (CreatureClass(*player_ptr).is_wizard()) {
             base = plev * 3;
         } else {
             base = plev * 2 + plev / 2;

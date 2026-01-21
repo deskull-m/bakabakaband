@@ -64,7 +64,7 @@ static void calc_shot_params(PlayerType *player_ptr, ItemEntity *o_ptr, int *sho
 
     *shots = 1;
     *shot_frac = 0;
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::ARCHER)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::ARCHER)) {
         return;
     }
 
@@ -96,7 +96,7 @@ static bool calc_weapon_damage_limit(PlayerType *player_ptr, int hand, int *dama
         return false;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.equals(PlayerClassType::FORCETRAINER)) {
         level = std::max<short>(1, level - 3);
     }
@@ -231,7 +231,7 @@ static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
     for (int i = 0; i < 2; i++) {
         int basedam;
         damage[i] = player_ptr->dis_to_d[i] * 100;
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (pc.is_martial_arts_pro() && (empty_hands(player_ptr, true) & EMPTY_HAND_MAIN)) {
             if (!calc_weapon_damage_limit(player_ptr, i, damage, &basedam, o_ptr)) {
                 break;
@@ -275,7 +275,7 @@ static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
  */
 static int calculate_hp_regen_rate(PlayerType *player_ptr)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return 0;
     }
@@ -378,7 +378,7 @@ static int calculate_mp_regen_rate(PlayerType *player_ptr)
     }
 
     // 構え・型による補正
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
         regen_amount /= 2;
     }

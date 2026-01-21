@@ -241,7 +241,7 @@ bool report_score(PlayerType *player_ptr)
     personality_desc.append(_((*player_ptr->personality).no ? "の" : "", " "));
 
     PlayerRealm pr(player_ptr);
-    const auto &realm1_name = PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
+    const auto &realm1_name = CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
     score_ss << fmt::format("name: {}\n", player_ptr->name)
              << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
              << fmt::format("score: {}\n", calc_score(player_ptr))

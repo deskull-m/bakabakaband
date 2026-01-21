@@ -442,7 +442,7 @@ static bool check_fear_death(PlayerType *player_ptr, player_attack_type *pa_ptr,
     }
 
     *(pa_ptr->mdeath) = true;
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER) && player_ptr->energy_use) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER) && player_ptr->energy_use) {
         PlayerEnergy energy(player_ptr);
         if (can_attack_with_main_hand(player_ptr) && can_attack_with_sub_hand(player_ptr)) {
             ENERGY energy_use;
@@ -497,7 +497,7 @@ static void apply_actual_attack(
     mineuchi(player_ptr, pa_ptr);
 
     const auto is_death_scythe = o_ptr->bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE);
-    const auto is_berserker = PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER);
+    const auto is_berserker = CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER);
     pa_ptr->attack_damage = mon_damage_mod(player_ptr, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
     critical_attack(player_ptr, pa_ptr);
     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"),

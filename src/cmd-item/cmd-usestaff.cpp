@@ -320,7 +320,7 @@ void do_cmd_use_staff(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どの杖を使いますか? ", "Use which staff? ");
     constexpr auto s = _("使える杖がない。", "You have no staff to use.");
     short i_idx;

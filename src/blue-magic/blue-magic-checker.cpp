@@ -35,7 +35,7 @@ void learn_spell(PlayerType *player_ptr, MonsterAbilityType monspell)
         return;
     }
 
-    auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+    auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
     if (!bluemage_data || bluemage_data->learnt_blue_magics.has(monspell)) {
         return;
     }

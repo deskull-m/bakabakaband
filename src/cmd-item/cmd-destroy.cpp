@@ -118,7 +118,7 @@ static bool decide_magic_book_exp(PlayerType *player_ptr, const ItemEntity &dest
         return false;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     const auto tval = destroyed_item.bi_key.tval();
     if (pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER)) {
         return tval != ItemKindType::HISSATSU_BOOK;
@@ -213,7 +213,7 @@ static void exe_destroy_item(PlayerType *player_ptr, ItemEntity &destroying_item
  */
 void do_cmd_destroy(PlayerType *player_ptr)
 {
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     const auto selection_result = select_destroying_item(player_ptr, (command_arg > 0));
     if (!selection_result) {

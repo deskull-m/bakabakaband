@@ -103,7 +103,7 @@ void do_cmd_open(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     auto &floor = *player_ptr->current_floor_ptr;
     if (easy_open) {
         const auto &[num_doors, dir_door] = floor.count_doors_traps(player_ptr->get_position(), GridCountKind::CLOSED_DOOR, false);
@@ -157,7 +157,7 @@ void do_cmd_close(PlayerType *player_ptr)
     }
 
     const auto &floor = *player_ptr->current_floor_ptr;
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_open) {
         const auto &[num_doors, dir] = floor.count_doors_traps(player_ptr->get_position(), GridCountKind::OPEN, false);
         if (num_doors == 1) {
@@ -202,7 +202,7 @@ void do_cmd_disarm(PlayerType *player_ptr)
     }
 
     auto &floor = *player_ptr->current_floor_ptr;
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_disarm) {
         const auto &[num_traps, dir_trap] = floor.count_doors_traps(player_ptr->get_position(), GridCountKind::TRAP, true);
         const auto &[num_chests, dir_chest] = count_chests(player_ptr, true);
@@ -265,7 +265,7 @@ void do_cmd_bash(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (command_arg) {
         command_rep = command_arg - 1;
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
@@ -334,7 +334,7 @@ void do_cmd_spike(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     const auto dir = get_rep_dir(player_ptr);
     if (!dir) {
         return;

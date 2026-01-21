@@ -132,7 +132,7 @@ uint16_t get_expfact(PlayerType *player_ptr)
     }
 
     auto is_race_gaining_additional_speed = pr.equals(PlayerRaceType::KLACKON) || pr.equals(PlayerRaceType::SPRITE);
-    auto is_class_gaining_additional_speed = PlayerClass(player_ptr).has_additional_speed();
+    auto is_class_gaining_additional_speed = CreatureClass(*player_ptr).has_additional_speed();
     if (is_race_gaining_additional_speed && is_class_gaining_additional_speed) {
         expfact -= 15;
     }
@@ -153,7 +153,7 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
     player_ptr->old_race2 = 0L;
     player_ptr->old_realm = 0;
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
     for (int i = 0; i < 64; i++) {
         if (is_sorcerer) {

@@ -43,7 +43,7 @@ static bool is_leave_special_item(PlayerType *player_ptr, ItemEntity *o_ptr)
         return true;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     const auto &bi_key = o_ptr->bi_key;
     const auto tval = bi_key.tval();
     if (CreatureRace(player_ptr).equals(PlayerRaceType::BALROG)) {

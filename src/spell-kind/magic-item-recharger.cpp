@@ -131,7 +131,7 @@ bool recharge(PlayerType *player_ptr, int power)
 
     const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto fail_type = 1;
-    if (PlayerClass(player_ptr).is_wizard()) {
+    if (CreatureClass(*player_ptr).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */
         if (tval == ItemKindType::ROD) {
             if (one_in_(10)) {

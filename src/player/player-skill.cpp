@@ -470,7 +470,7 @@ PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)
  */
 EXP PlayerSkill::exp_of_spell(RealmType realm, int spell_idx) const
 {
-    PlayerClass pc(this->player_ptr);
+    CreatureClass pc(*this->player_ptr);
     PlayerRealm pr(this->player_ptr);
     if (pc.equals(PlayerClassType::SORCERER)) {
         return SPELL_EXP_MASTER;
@@ -494,7 +494,7 @@ EXP PlayerSkill::exp_of_spell(RealmType realm, int spell_idx) const
 void PlayerSkill::apply_special_weapon_skill_max_values()
 {
     this->player_ptr->weapon_exp_max = class_skills_info[enum2i(this->player_ptr->pclass)].w_max;
-    if (PlayerClass(this->player_ptr).equals(PlayerClassType::SORCERER)) {
+    if (CreatureClass(*this->player_ptr).equals(PlayerClassType::SORCERER)) {
         return;
     }
 
