@@ -397,7 +397,7 @@ static bool decide_body_spec(PlayerType *player_ptr, chara_limit_type chara_limi
         return false;
     }
 
-    get_ahw(player_ptr);
+    get_ahw(*player_ptr);
     get_history(*player_ptr);
 
     if (autochara) {
@@ -440,7 +440,7 @@ static bool display_auto_roller_count(PlayerType *player_ptr, const int col)
     term_fresh();
     inkey_scan = true;
     if (inkey()) {
-        get_ahw(player_ptr);
+        get_ahw(*player_ptr);
         get_history(*player_ptr);
         return true;
     }
@@ -548,7 +548,7 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
             put_str(_("(ESCで停止)", "(Hit ESC to stop)"), 13, col + 13);
         } else {
             get_stats(player_ptr);
-            get_ahw(player_ptr);
+            get_ahw(*player_ptr);
             get_history(*player_ptr);
         }
 
@@ -561,7 +561,7 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
         flush();
 
         get_extra(player_ptr, true);
-        get_money(player_ptr);
+        get_money(*player_ptr);
 
         char c;
         if (!display_auto_roller_result(player_ptr, prev, &c)) {
