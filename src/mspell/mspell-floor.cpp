@@ -342,7 +342,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(PlayerType *player_ptr, MONSTER_IDX m_id
         spell_badstatus_message_to_player(player_ptr, m_idx, msg, resist, saving_throw);
 
         if (!resist && !saving_throw) {
-            teleport_level(player_ptr, 0);
+            teleport_level(*player_ptr, 0);
         }
 
         update_smart_learn(player_ptr, m_idx, DRS_NEXUS);
@@ -362,7 +362,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(PlayerType *player_ptr, MONSTER_IDX m_id
     spell_badstatus_message_to_mons(player_ptr, m_idx, t_idx, msg, resist, saving_throw);
 
     if (!resist && !saving_throw) {
-        teleport_level(player_ptr, monster_target.is_riding() ? 0 : t_idx);
+        teleport_level(*player_ptr, monster_target.is_riding() ? 0 : t_idx);
     }
 
     return res;

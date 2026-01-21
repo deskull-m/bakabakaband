@@ -51,12 +51,17 @@
 /*!
  * @brief プレイヤー及びモンスターをレベルテレポートさせる /
  * Teleport the player one level up or down (random when legal)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx テレポートの対象となるモンスターID(0ならばプレイヤー) / If m_idx <= 0, target is player.
  * @todo cmd-save.h への依存あり。コールバックで何とかしたい
  */
-void teleport_level(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+
     std::string m_name;
     auto see_m = true;
     auto &floor = *player_ptr->current_floor_ptr;
@@ -219,8 +224,13 @@ void teleport_level(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 }
 
-bool teleport_level_other(PlayerType *player_ptr)
+bool teleport_level_other(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
     if (!pos) {
         return false;
@@ -247,7 +257,7 @@ bool teleport_level_other(PlayerType *player_ptr)
     if (has_immune || (monrace.misc_flags.has(MonsterMiscType::QUESTOR)) || (monrace.level + randint1(50) > player_ptr->level + randint1(60))) {
         msg_print(_("しかし効果がなかった！", format("%s^ is unaffected!", m_name.data())));
     } else {
-        teleport_level(player_ptr, target_m_idx);
+        teleport_level(*player_ptr, target_m_idx);
     }
 
     return true;
@@ -255,11 +265,16 @@ bool teleport_level_other(PlayerType *player_ptr)
 
 /*!
  * @brief 町間のテレポートを行うメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return テレポート処理を決定したか否か
  */
-bool tele_town(PlayerType *player_ptr)
+bool tele_town(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     if (player_ptr->current_floor_ptr->is_underground()) {
         msg_print(_("この魔法は地上でしか使えない！", "This spell can only be used on the surface!"));
         return false;
@@ -329,10 +344,15 @@ bool tele_town(PlayerType *player_ptr)
 
 /*!
  * @brief 現実変容処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void reserve_alter_reality(PlayerType *player_ptr, TIME_EFFECT turns)
+void reserve_alter_reality(CreatureEntity &creature, TIME_EFFECT turns)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+
     if (player_ptr->current_floor_ptr->inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
         return;
@@ -405,13 +425,18 @@ static tl::optional<DungeonId> choose_dungeon(std::string_view note, int row, in
 /*!
  * @brief プレイヤーの帰還発動及び中止処理 /
  * Recall the player to town or dungeon
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turns 発動までのターン数
  * @return 常にTRUEを返す
  * @todo Recall the player to the last visited town when in the wilderness
  */
-bool recall_player(PlayerType *player_ptr, TIME_EFFECT turns)
+bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return true;
+    }
+
     const auto &floor = *player_ptr->current_floor_ptr;
     if (floor.inside_arena || ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));
@@ -461,8 +486,13 @@ bool recall_player(PlayerType *player_ptr, TIME_EFFECT turns)
     return true;
 }
 
-bool free_level_recall(PlayerType *player_ptr)
+bool free_level_recall(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     const auto select_dungeon = choose_dungeon(_("にテレポート", "teleport"), 4, 0);
     if (!select_dungeon) {
         return false;
@@ -500,11 +530,16 @@ bool free_level_recall(PlayerType *player_ptr)
 
 /*!
  * @brief フロア・リセット処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return リセット処理が実際に行われたらTRUEを返す
  */
-bool reset_recall(PlayerType *player_ptr)
+bool reset_recall(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return false;
+    }
+
     const auto select_dungeon = choose_dungeon(_("をセット", "reset"), 2, 14);
     if (ironman_downward) {
         msg_print(_("何も起こらなかった。", "Nothing happens."));

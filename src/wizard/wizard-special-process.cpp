@@ -821,8 +821,8 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
     player_ptr->is_dead_ = false;
     (void)life_stream(player_ptr, false, false);
     (void)restore_mana(player_ptr, true);
-    (void)recall_player(player_ptr, 0);
-    reserve_alter_reality(player_ptr, 0);
+    (void)recall_player(*player_ptr, 0);
+    reserve_alter_reality(*player_ptr, 0);
 
     player_ptr->died_from = _("死の欺き", "Cheating death");
     (void)set_food(*player_ptr, PY_FOOD_MAX - 1);

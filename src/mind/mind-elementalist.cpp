@@ -1498,7 +1498,7 @@ bool switch_element_execution(PlayerType *player_ptr)
     case ElementRealmType::DARKNESS:
         return door_to_darkness(player_ptr, 15 + plev / 2);
     case ElementRealmType::CHAOS:
-        reserve_alter_reality(player_ptr, randint0(21) + 15);
+        reserve_alter_reality(*player_ptr, randint0(21) + 15);
         return true;
     case ElementRealmType::EARTH:
         (void)earthquake(player_ptr, player_ptr->get_position(), 10);

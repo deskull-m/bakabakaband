@@ -144,7 +144,7 @@ bool activate_judgement(PlayerType *player_ptr, std::string_view name)
     (void)detect_stairs(player_ptr, DETECT_RAD_DEFAULT);
 
     if (input_check(_("帰還の力を使いますか？", "Activate recall? "))) {
-        (void)recall_player(player_ptr, randint0(21) + 15);
+        (void)recall_player(*player_ptr, randint0(21) + 15);
     }
 
     return true;
@@ -394,7 +394,7 @@ bool activate_light(PlayerType *player_ptr, std::string_view name)
 bool activate_recall(PlayerType *player_ptr)
 {
     msg_print(_("やわらかな白色に輝いている...", "It glows soft white..."));
-    return recall_player(player_ptr, randint0(21) + 15);
+    return recall_player(*player_ptr, randint0(21) + 15);
 }
 
 bool activate_tree_creation(PlayerType *player_ptr, ItemEntity *o_ptr, std::string_view name)

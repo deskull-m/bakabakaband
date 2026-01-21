@@ -210,14 +210,14 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         enchant_item(player_ptr, building_cost, 1, 1, 0, TvalItemTester(ItemKindType::BOW));
         return false;
     case BACT_RECALL:
-        if (recall_player(player_ptr, 1)) {
+        if (recall_player(*player_ptr, 1)) {
             player_ptr->au -= building_cost;
         }
 
         return false;
     case BACT_TELEPORT_LEVEL:
         clear_bldg(4, 20);
-        if (free_level_recall(player_ptr)) {
+        if (free_level_recall(*player_ptr)) {
             player_ptr->au -= building_cost;
         }
 
@@ -281,7 +281,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         player_ptr->au -= building_cost;
         return false;
     case BACT_TELE_TOWN:
-        if (!tele_town(player_ptr)) {
+        if (!tele_town(*player_ptr)) {
             return false;
         }
 

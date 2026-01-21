@@ -80,7 +80,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 3: {
         if (cast) {
-            if (!reset_recall(player_ptr)) {
+            if (!reset_recall(*player_ptr)) {
                 return tl::nullopt;
             }
         }
@@ -225,7 +225,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
             if (!input_check(_("本当に他の階にテレポートしますか？", "Are you sure? (Teleport Level)"))) {
                 return tl::nullopt;
             }
-            teleport_level(player_ptr, 0);
+            teleport_level(*player_ptr, 0);
         }
     } break;
 
@@ -253,7 +253,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            if (!recall_player(player_ptr, dice.roll() + base)) {
+            if (!recall_player(*player_ptr, dice.roll() + base)) {
                 return tl::nullopt;
             }
         }

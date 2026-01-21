@@ -274,7 +274,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            if (!recall_player(player_ptr, dice.roll() + base)) {
+            if (!recall_player(*player_ptr, dice.roll() + base)) {
                 return tl::nullopt;
             }
         }
@@ -289,7 +289,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            reserve_alter_reality(player_ptr, dice.roll() + base);
+            reserve_alter_reality(*player_ptr, dice.roll() + base);
         }
     } break;
 

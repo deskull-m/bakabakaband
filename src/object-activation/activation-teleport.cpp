@@ -63,7 +63,7 @@ bool activate_teleport_level(PlayerType *player_ptr)
         return false;
     }
 
-    teleport_level(player_ptr, 0);
+    teleport_level(*player_ptr, 0);
     return true;
 }
 
