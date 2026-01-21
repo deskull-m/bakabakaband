@@ -23,19 +23,19 @@
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたいオブジェクトの構造体参照ポインタ
  * @param lev 生成基準階
  * @param mode 生成オプション
  */
-ItemMagicApplier::ItemMagicApplier(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH lev, BIT_FLAGS mode)
-    : player_ptr(player_ptr)
+ItemMagicApplier::ItemMagicApplier(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH lev, BIT_FLAGS mode)
+    : creature(creature)
     , o_ptr(o_ptr)
     , lev(lev)
     , mode(mode)
 {
-    if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
-        this->lev += randint0(player_ptr->level / 2 + 10);
+    if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
+        this->lev += randint0(creature.level / 2 + 10);
     }
 
     if (this->lev > MAX_DEPTH - 1) {
@@ -62,7 +62,7 @@ void ItemMagicApplier::execute()
         return;
     }
 
-    auto enchanter = EnchanterFactory::create_enchanter(this->player_ptr, this->o_ptr, this->lev, power);
+    auto enchanter = EnchanterFactory::create_enchanter(&static_cast<PlayerType &>(this->creature), this->o_ptr, this->lev, power);
     enchanter->apply_magic();
     if (this->o_ptr->is_ego()) {
         apply_ego(this->o_ptr, this->lev);
@@ -79,21 +79,21 @@ void ItemMagicApplier::execute()
 std::tuple<int, int> ItemMagicApplier::calculate_chances()
 {
     auto chance_good = this->lev + 10;
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (chance_good > dungeon.obj_good) {
         chance_good = dungeon.obj_good;
     }
 
     auto chance_great = chance_good * 2 / 3;
-    if ((this->player_ptr->ppersonality != PERSONALITY_MUNCHKIN) && (chance_great > dungeon.obj_great)) {
+    if ((this->creature.ppersonality != PERSONALITY_MUNCHKIN) && (chance_great > dungeon.obj_great)) {
         chance_great = dungeon.obj_great;
     }
 
-    if (has_good_luck(this->player_ptr)) {
+    if (has_good_luck(&static_cast<PlayerType &>(this->creature))) {
         chance_good += 5;
         chance_great += 2;
-    } else if (this->player_ptr->muta.has(PlayerMutationType::BAD_LUCK)) {
+    } else if (this->creature.muta.has(PlayerMutationType::BAD_LUCK)) {
         chance_good -= 5;
         chance_great -= 2;
     }
@@ -166,7 +166,7 @@ int ItemMagicApplier::calculate_rolls(const int power)
  */
 void ItemMagicApplier::try_make_artifact(const int rolls)
 {
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature.current_floor_ptr;
     if (!floor.is_underground()) {
         return;
     }
@@ -176,7 +176,7 @@ void ItemMagicApplier::try_make_artifact(const int rolls)
             break;
         }
 
-        if (!has_good_luck(this->player_ptr) || !one_in_(77)) {
+        if (!has_good_luck(&static_cast<PlayerType &>(this->creature)) || !one_in_(77)) {
             continue;
         }
 
@@ -195,7 +195,7 @@ bool ItemMagicApplier::set_fixed_artifact_generation_info()
         return false;
     }
 
-    apply_artifact(this->player_ptr, this->o_ptr);
+    apply_artifact(&static_cast<PlayerType &>(this->creature), this->o_ptr);
     this->o_ptr->get_fixed_artifact().is_generated = true;
     return true;
 }

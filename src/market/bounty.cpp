@@ -187,7 +187,7 @@ bool exchange_cash(PlayerType *player_ptr)
             msg_format(_("これで合計 %d ポイント獲得しました。", "You earned %d point%s total."), num, (num > 1 ? "s" : ""));
 
             ItemEntity prize_item(prize_list[num - 1]);
-            ItemMagicApplier(player_ptr, &prize_item, player_ptr->current_floor_ptr->object_level, AM_NO_FIXED_ART).execute();
+            ItemMagicApplier(*player_ptr, &prize_item, player_ptr->current_floor_ptr->object_level, AM_NO_FIXED_ART).execute();
             object_aware(player_ptr, prize_item);
             prize_item.mark_as_known();
 
