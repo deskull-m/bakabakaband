@@ -176,8 +176,6 @@ public:
     bool old_monlite{};
     int extra_blows[2]{};
 
-    POSITION old_lite{}; /* Old radius of lite (if any) */
-
     bool cumber_armor{}; /* Mana draining armor */
     bool cumber_glove{}; /* Mana draining gloves */
     bool heavy_wield[2]{}; /* Heavy weapon */
@@ -188,8 +186,6 @@ public:
     BIT_FLAGS yoiyami{};
     BIT_FLAGS easy_2weapon{};
     BIT_FLAGS down_saving{};
-
-    POSITION cur_lite{}; /* Radius of lite (if any) */
 
     bool sutemi{};
     bool counter{};
