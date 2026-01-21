@@ -192,7 +192,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            BodyImprovement(player_ptr).set_protection(dice.roll() + base);
+            BodyImprovement(*player_ptr).set_protection(dice.roll() + base);
         }
     } break;
 
