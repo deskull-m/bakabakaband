@@ -57,5 +57,5 @@
 #define ENTRY_HP_REGEN 50
 #define ENTRY_MP_REGEN 51
 
-class PlayerType;
-void display_player_various(PlayerType *player_ptr);
+class CreatureEntity;
+void display_player_various(CreatureEntity &creature);

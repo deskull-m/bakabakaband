@@ -43,19 +43,19 @@
 
 /*!
  * @brief
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 装備中の弓への参照ポインタ
  * @param shots 射撃回数
  * @param shot_frac 射撃速度
  */
-static void calc_shot_params(PlayerType *player_ptr, ItemEntity *o_ptr, int *shots, int *shot_frac)
+static void calc_shot_params(CreatureEntity &creature, ItemEntity *o_ptr, int *shots, int *shot_frac)
 {
     if (!o_ptr->is_valid()) {
         return;
     }
 
     const auto energy_fire = o_ptr->get_bow_energy();
-    *shots = player_ptr->num_fire * 100;
+    *shots = creature.num_fire * 100;
     *shot_frac = ((*shots) * 100 / energy_fire) % 100;
     *shots = (*shots) / energy_fire;
     if (!o_ptr->is_specific_artifact(FixedArtifactId::CRIMSON)) {
@@ -64,39 +64,39 @@ static void calc_shot_params(PlayerType *player_ptr, ItemEntity *o_ptr, int *sho
 
     *shots = 1;
     *shot_frac = 0;
-    if (!CreatureClass(*player_ptr).equals(PlayerClassType::ARCHER)) {
+    if (!CreatureClass(creature).equals(PlayerClassType::ARCHER)) {
         return;
     }
 
-    if (player_ptr->level >= 10) {
+    if (creature.level >= 10) {
         (*shots)++;
     }
-    if (player_ptr->level >= 30) {
+    if (creature.level >= 30) {
         (*shots)++;
     }
-    if (player_ptr->level >= 45) {
+    if (creature.level >= 45) {
         (*shots)++;
     }
 }
 
 /*!
  * @brief 武器装備に制限のあるクラスで、直接攻撃のダメージを計算する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param hand 手 (利き手が0、反対の手が1…のはず)
  * @param damage 直接攻撃のダメージ
  * @param basedam 素手における直接攻撃のダメージ
  * @param o_ptr 装備中の武器への参照ポインタ
  * @return 利き手ならTRUE、反対の手ならFALSE
  */
-static bool calc_weapon_damage_limit(PlayerType *player_ptr, int hand, int *damage, int *basedam, ItemEntity *o_ptr)
+static bool calc_weapon_damage_limit(CreatureEntity &creature, int hand, int *damage, int *basedam, ItemEntity *o_ptr)
 {
-    PLAYER_LEVEL level = player_ptr->level;
+    PLAYER_LEVEL level = creature.level;
     if (hand > 0) {
         damage[hand] = 0;
         return false;
     }
 
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::FORCETRAINER)) {
         level = std::max<short>(1, level - 3);
     }
@@ -108,11 +108,11 @@ static bool calc_weapon_damage_limit(PlayerType *player_ptr, int hand, int *dama
     } else {
         *basedam = monk_ave_damage[level][0];
     }
-    bool impact = player_ptr->impact != 0;
-    WEIGHT weight = player_ptr->level * calc_monk_attack_weight(player_ptr);
-    int to_h = player_ptr->level * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
+    bool impact = creature.impact != 0;
+    WEIGHT weight = creature.level * calc_monk_attack_weight(&static_cast<PlayerType &>(creature));
+    int to_h = creature.level * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
 
-    *basedam = calc_expect_crit(player_ptr, weight, to_h, *basedam, player_ptr->to_h[0], false, impact, 100);
+    *basedam = calc_expect_crit(&static_cast<PlayerType &>(creature), weight, to_h, *basedam, creature.to_h[0], false, impact, 100);
 
     damage[hand] += *basedam;
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
@@ -219,28 +219,28 @@ static std::pair<std::string, TERM_COLOR> likert(int x, int y)
 
 /*!
  * @brief 弓＋両手の武器それぞれについてダメージを計算する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param damage 直接攻撃のダメージ
  * @param to_h 命中補正
  */
-static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
+static void calc_two_hands(CreatureEntity &creature, int *damage, int *to_h)
 {
     ItemEntity *o_ptr;
-    o_ptr = player_ptr->inventory[INVEN_BOW].get();
+    o_ptr = creature.inventory[INVEN_BOW].get();
 
     for (int i = 0; i < 2; i++) {
         int basedam;
-        damage[i] = player_ptr->dis_to_d[i] * 100;
-        CreatureClass pc(*player_ptr);
-        if (pc.is_martial_arts_pro() && (empty_hands(player_ptr, true) & EMPTY_HAND_MAIN)) {
-            if (!calc_weapon_damage_limit(player_ptr, i, damage, &basedam, o_ptr)) {
+        damage[i] = creature.dis_to_d[i] * 100;
+        CreatureClass pc(creature);
+        if (pc.is_martial_arts_pro() && (empty_hands(&static_cast<PlayerType &>(creature), true) & EMPTY_HAND_MAIN)) {
+            if (!calc_weapon_damage_limit(creature, i, damage, &basedam, o_ptr)) {
                 break;
             }
 
             continue;
         }
 
-        o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
+        o_ptr = creature.inventory[INVEN_MAIN_HAND + i].get();
         if (!calc_weapon_one_hand(o_ptr, i, damage, &basedam)) {
             continue;
         }
@@ -251,12 +251,12 @@ static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
             damage[i] += o_ptr->to_d * 100;
             to_h[i] += o_ptr->to_h;
         }
+        auto player_ptr = static_cast<PlayerType &>(creature);
+        const auto mindice = (o_ptr->damage_dice.num + player_ptr.damage_dice_bonus[i].num);
+        const auto maxdice = mindice * (o_ptr->damage_dice.sides + player_ptr.damage_dice_bonus[i].sides);
 
-        const auto mindice = (o_ptr->damage_dice.num + player_ptr->damage_dice_bonus[i].num);
-        const auto maxdice = mindice * (o_ptr->damage_dice.sides + player_ptr->damage_dice_bonus[i].sides);
-
-        basedam = calc_expect_dice(player_ptr, mindice, p_ptr->to_h[i], o_ptr);
-        basedam += calc_expect_dice(player_ptr, maxdice, p_ptr->to_h[i], o_ptr);
+        basedam = calc_expect_dice(&player_ptr, mindice, creature.to_h[i], o_ptr);
+        basedam += calc_expect_dice(&player_ptr, maxdice, creature.to_h[i], o_ptr);
         damage[i] += basedam * 50; // x100 for display
 
         if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
@@ -270,26 +270,26 @@ static void calc_two_hands(PlayerType *player_ptr, int *damage, int *to_h)
 
 /*!
  * @brief HP回復量/ターンを計算する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 100倍したHP回復量（小数第2位まで表示するため）
  */
-static int calculate_hp_regen_rate(PlayerType *player_ptr)
+static int calculate_hp_regen_rate(CreatureEntity &creature)
 {
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return 0;
     }
-    if (player_ptr->action == ACTION_HAYAGAKE) {
+    if (creature.action == ACTION_HAYAGAKE) {
         return 0;
     }
 
     int regen_amount = PY_REGEN_NORMAL;
 
     // 満腹度による補正
-    if (player_ptr->food < PY_FOOD_WEAK) {
-        if (player_ptr->food < PY_FOOD_STARVE) {
+    if (creature.food < PY_FOOD_WEAK) {
+        if (creature.food < PY_FOOD_STARVE) {
             regen_amount = 0;
-        } else if (player_ptr->food < PY_FOOD_FAINT) {
+        } else if (creature.food < PY_FOOD_FAINT) {
             regen_amount = PY_REGEN_FAINT;
         } else {
             regen_amount = PY_REGEN_WEAK;
@@ -297,13 +297,13 @@ static int calculate_hp_regen_rate(PlayerType *player_ptr)
     }
 
     // 毒・切り傷で回復しない
-    const auto effects = player_ptr->effects();
+    const auto effects = creature.effects();
     if (effects->poison().is_poisoned() || effects->cut().is_cut()) {
         regen_amount = 0;
     }
 
     // 再生能力
-    if (player_ptr->regenerate) {
+    if (creature.regenerate) {
         regen_amount = regen_amount * 2;
     }
 
@@ -313,18 +313,18 @@ static int calculate_hp_regen_rate(PlayerType *player_ptr)
     }
 
     // 呪いによる補正
-    if (player_ptr->cursed.has(CurseTraitType::SLOW_REGEN)) {
+    if (creature.cursed.has(CurseTraitType::SLOW_REGEN)) {
         regen_amount /= 5;
     }
 
     // 探索・休息中は2倍
-    if ((player_ptr->action == ACTION_SEARCH) || (player_ptr->action == ACTION_REST)) {
+    if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
         regen_amount = regen_amount * 2;
     }
 
     // 地形による衛生補正
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &grid = floor.get_grid(player_ptr->get_position());
+    const auto &floor = *creature.current_floor_ptr;
+    const auto &grid = floor.get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     if (regen_amount > 0 && terrain.hygiene != 0) {
         const int hygiene_modifier = 100 + terrain.hygiene;
@@ -335,31 +335,31 @@ static int calculate_hp_regen_rate(PlayerType *player_ptr)
     }
 
     // ミュータント補正
-    regen_amount = (regen_amount * player_ptr->mutant_regenerate_mod) / 100;
+    regen_amount = (regen_amount * static_cast<PlayerType &>(creature).mutant_regenerate_mod) / 100;
 
     // 実際の回復量を計算 (10ターンごとに処理されるので1ターンあたりの量に変換)
     // percent = regen_amount は 1/2^16 単位なので、実際のHP回復量は:
     // (maxhp * regen_amount + PY_REGEN_HPBASE) >> 16
-    // これを10で割って1ターンあたりにし、さらに100ターン分に変換
-    int64_t hp_per_turn = ((int64_t)player_ptr->maxhp * regen_amount + PY_REGEN_HPBASE) * 10000 >> 16;
+    // これも10で割って1ターンあたりにし、さらに100ターン分に変換
+    int64_t hp_per_turn = ((int64_t)creature.maxhp * regen_amount + PY_REGEN_HPBASE) * 10000 >> 16;
 
     return static_cast<int>(hp_per_turn);
 }
 
 /*!
  * @brief MP回復量/ターンを計算する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 100倍したMP回復量（小数第2位まで表示するため）
  */
-static int calculate_mp_regen_rate(PlayerType *player_ptr)
+static int calculate_mp_regen_rate(CreatureEntity &creature)
 {
     int regen_amount = PY_REGEN_NORMAL;
 
     // 満腹度による補正
-    if (player_ptr->food < PY_FOOD_WEAK) {
-        if (player_ptr->food < PY_FOOD_STARVE) {
+    if (creature.food < PY_FOOD_WEAK) {
+        if (creature.food < PY_FOOD_STARVE) {
             regen_amount = 0;
-        } else if (player_ptr->food < PY_FOOD_FAINT) {
+        } else if (creature.food < PY_FOOD_FAINT) {
             regen_amount = PY_REGEN_FAINT;
         } else {
             regen_amount = PY_REGEN_WEAK;
@@ -367,35 +367,35 @@ static int calculate_mp_regen_rate(PlayerType *player_ptr)
     }
 
     // 毒で回復しない
-    const auto effects = player_ptr->effects();
+    const auto effects = creature.effects();
     if (effects->poison().is_poisoned()) {
         regen_amount = 0;
     }
 
     // 再生能力
-    if (player_ptr->regenerate) {
+    if (creature.regenerate) {
         regen_amount = regen_amount * 2;
     }
 
     // 構え・型による補正
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
         regen_amount /= 2;
     }
 
     // 呪いによる補正
-    if (player_ptr->cursed.has(CurseTraitType::SLOW_REGEN)) {
+    if (creature.cursed.has(CurseTraitType::SLOW_REGEN)) {
         regen_amount /= 5;
     }
 
     // 探索・休息中は2倍
-    if ((player_ptr->action == ACTION_SEARCH) || (player_ptr->action == ACTION_REST)) {
+    if ((creature.action == ACTION_SEARCH) || (creature.action == ACTION_REST)) {
         regen_amount = regen_amount * 2;
     }
 
     // ペットの維持コスト
-    int upkeep_factor = calculate_upkeep(player_ptr);
-    if ((player_ptr->action == ACTION_LEARN) || (player_ptr->action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    int upkeep_factor = calculate_upkeep(&static_cast<PlayerType &>(creature));
+    if ((creature.action == ACTION_LEARN) || (creature.action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         upkeep_factor += 100;
     }
 
@@ -405,14 +405,14 @@ static int calculate_mp_regen_rate(PlayerType *player_ptr)
     // マイナスの場合は回復しない（減少する）
     if (regen_rate < 0) {
         // 減少量を計算 (表示上はマイナス表示)
-        int64_t mp_decay_per_10turn = ((int64_t)player_ptr->msp * (-regen_rate) / 100 + PY_REGEN_MNBASE) >> 16;
+        int64_t mp_decay_per_10turn = ((int64_t)creature.msp * (-regen_rate) / 100 + PY_REGEN_MNBASE) >> 16;
         int64_t mp_per_turn_x100 = (mp_decay_per_10turn * 100) / 10;
         int64_t mp_per_100turn = -(mp_per_turn_x100 * 100); // 100ターン分（マイナス）
         return static_cast<int>(mp_per_100turn);
     }
 
     // 実際の回復量を計算
-    int64_t mp_per_10turn = ((int64_t)player_ptr->msp * regen_rate / 100 + PY_REGEN_MNBASE) >> 16;
+    int64_t mp_per_10turn = ((int64_t)creature.msp * regen_rate / 100 + PY_REGEN_MNBASE) >> 16;
     int64_t mp_per_turn_x100 = (mp_per_10turn * 100) / 10; // 100倍して小数5桁表示用
     int64_t mp_per_100turn = mp_per_turn_x100 * 100; // 100ターン分
 
@@ -421,43 +421,43 @@ static int calculate_mp_regen_rate(PlayerType *player_ptr)
 
 /*!
  * @brief キャラ基本情報及び技能値をメインウィンドウに表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param xthb 武器等を含めた最終命中率
  * @param damage 打撃修正
  * @param shots 射撃回数
  * @param shot_frac 射撃速度
  * @param display_player_one_line 1行表示用のコールバック関数
  */
-static void display_first_page(PlayerType *player_ptr, int xthb, int *damage, int shots, int shot_frac)
+static void display_first_page(CreatureEntity &creature, int xthb, int *damage, int shots, int shot_frac)
 {
-    int xthn = player_ptr->skill_thn + (player_ptr->to_h_m * BTH_PLUS_ADJ);
+    int xthn = creature.skill_thn + (creature.to_h_m * BTH_PLUS_ADJ);
 
     int muta_att = 0;
-    if (player_ptr->muta.has(PlayerMutationType::HORNS)) {
+    if (creature.muta.has(PlayerMutationType::HORNS)) {
         muta_att++;
     }
-    if (player_ptr->muta.has(PlayerMutationType::SCOR_TAIL)) {
+    if (creature.muta.has(PlayerMutationType::SCOR_TAIL)) {
         muta_att++;
     }
-    if (player_ptr->muta.has(PlayerMutationType::BEAK)) {
+    if (creature.muta.has(PlayerMutationType::BEAK)) {
         muta_att++;
     }
-    if (player_ptr->muta.has(PlayerMutationType::TRUNK)) {
+    if (creature.muta.has(PlayerMutationType::TRUNK)) {
         muta_att++;
     }
-    if (player_ptr->muta.has(PlayerMutationType::TENTACLES)) {
+    if (creature.muta.has(PlayerMutationType::TENTACLES)) {
         muta_att++;
     }
 
-    int blows1 = can_attack_with_main_hand(player_ptr) ? player_ptr->num_blow[0] : 0;
-    int blows2 = can_attack_with_sub_hand(player_ptr) ? player_ptr->num_blow[1] : 0;
-    int xdis = player_ptr->skill_dis;
-    int xdev = player_ptr->skill_dev;
-    int xsav = player_ptr->skill_sav;
-    int xstl = player_ptr->skill_stl;
-    int xsrh = player_ptr->skill_srh;
-    int xfos = player_ptr->skill_fos;
-    int xdig = player_ptr->skill_dig;
+    int blows1 = can_attack_with_main_hand(&static_cast<PlayerType &>(creature)) ? creature.num_blow[0] : 0;
+    int blows2 = can_attack_with_sub_hand(&static_cast<PlayerType &>(creature)) ? creature.num_blow[1] : 0;
+    int xdis = creature.skill_dis;
+    int xdev = creature.skill_dev;
+    int xsav = creature.skill_sav;
+    int xstl = creature.skill_stl;
+    int xsrh = creature.skill_srh;
+    int xfos = creature.skill_fos;
+    int xdig = creature.skill_dig;
 
     auto sd = likert(xthn, 12);
     display_player_one_line(ENTRY_SKILL_FIGHT, sd.first, sd.second);
@@ -502,15 +502,15 @@ static void display_first_page(PlayerType *player_ptr, int xthb, int *damage, in
     }
 
     display_player_one_line(ENTRY_AVG_DMG, desc, TERM_L_BLUE);
-    display_player_one_line(ENTRY_INFRA, format("%d feet", player_ptr->see_infra * 10), TERM_WHITE);
+    display_player_one_line(ENTRY_INFRA, format("%d feet", creature.see_infra * 10), TERM_WHITE);
 
     // HP回復量/100ターンの計算
-    int hp_regen_amount = calculate_hp_regen_rate(player_ptr);
+    int hp_regen_amount = calculate_hp_regen_rate(creature);
     std::string hp_regen_desc = format("%+d.%05d", hp_regen_amount / 100000, hp_regen_amount % 100000);
     display_player_one_line(ENTRY_HP_REGEN, hp_regen_desc, TERM_L_BLUE);
 
     // MP回復量/100ターンの計算
-    int mp_regen_amount = calculate_mp_regen_rate(player_ptr);
+    int mp_regen_amount = calculate_mp_regen_rate(creature);
     std::string mp_regen_desc = format("%+d.%05d", mp_regen_amount / 100000, mp_regen_amount % 100000);
     display_player_one_line(ENTRY_MP_REGEN, mp_regen_desc, TERM_L_BLUE);
 }
@@ -518,23 +518,23 @@ static void display_first_page(PlayerType *player_ptr, int xthb, int *damage, in
 /*!
  * @brief プレイヤーステータスの1ページ目各種詳細をまとめて表示する
  * Prints ratings on certain abilities
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param display_player_one_line 1行表示用のコールバック関数
  * @details
  * This code is "imitated" elsewhere to "dump" a character sheet.
  */
-void display_player_various(PlayerType *player_ptr)
+void display_player_various(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
-    o_ptr = player_ptr->inventory[INVEN_BOW].get();
-    int tmp = player_ptr->to_h_b + o_ptr->to_h;
-    int xthb = player_ptr->skill_thb + (tmp * BTH_PLUS_ADJ);
+    o_ptr = creature.inventory[INVEN_BOW].get();
+    int tmp = creature.to_h_b + o_ptr->to_h;
+    int xthb = creature.skill_thb + (tmp * BTH_PLUS_ADJ);
     int shots = 0;
     int shot_frac = 0;
-    calc_shot_params(player_ptr, o_ptr, &shots, &shot_frac);
+    calc_shot_params(creature, o_ptr, &shots, &shot_frac);
 
     int damage[2];
     int to_h[2];
-    calc_two_hands(player_ptr, damage, to_h);
-    display_first_page(player_ptr, xthb, damage, shots, shot_frac);
+    calc_two_hands(creature, damage, to_h);
+    display_first_page(creature, xthb, damage, shots, shot_frac);
 }
