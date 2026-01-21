@@ -223,7 +223,7 @@ void process_player(PlayerType *player_ptr)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (PlayerClass(player_ptr).equals(PlayerClassType::FORCETRAINER) && get_current_ki(player_ptr)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER) && get_current_ki(player_ptr)) {
         if (get_current_ki(player_ptr) < 40) {
             set_current_ki(player_ptr, true, 0);
         } else {
@@ -247,7 +247,7 @@ void process_player(PlayerType *player_ptr)
         rfu.set_flag(MainWindowRedrawingFlag::MP);
     }
 
-    if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
         if (player_ptr->csp < 3) {
             set_action(player_ptr, ACTION_NONE);
         } else {
@@ -381,8 +381,8 @@ void process_player(PlayerType *player_ptr)
                 }
             }
 
-            if (PlayerClass(player_ptr).equals(PlayerClassType::IMITATOR)) {
-                auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
+            if (CreatureClass(*player_ptr).equals(PlayerClassType::IMITATOR)) {
+                auto mane_data = CreatureClass(*player_ptr).get_specific_data<mane_data_type>();
                 if (static_cast<int>(mane_data->mane_list.size()) > (player_ptr->level > 44 ? 3 : player_ptr->level > 29 ? 2
                                                                                                                          : 1)) {
                     mane_data->mane_list.pop_front();
@@ -393,7 +393,7 @@ void process_player(PlayerType *player_ptr)
             }
 
             if (player_ptr->action == ACTION_LEARN) {
-                auto mane_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+                auto mane_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
                 mane_data->new_magic_learned = false;
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
             }
@@ -420,7 +420,7 @@ void process_player(PlayerType *player_ptr)
             break;
         }
 
-        auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+        auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
         if (player_ptr->energy_use && sniper_data && sniper_data->reset_concent) {
             reset_concentration(player_ptr, true);
         }

@@ -83,7 +83,7 @@ void do_cmd_go_up(PlayerType *player_ptr)
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid({ player_ptr->y, player_ptr->x });
     const auto &terrain = grid.get_terrain();
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
         do_cmd_go_portal(player_ptr);
@@ -208,7 +208,7 @@ void do_cmd_go_up(PlayerType *player_ptr)
  */
 void do_cmd_go_down(PlayerType *player_ptr)
 {
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     auto &floor = *player_ptr->current_floor_ptr;
     auto &grid = floor.grid_array[player_ptr->y][player_ptr->x];
@@ -381,7 +381,7 @@ void do_cmd_walk(PlayerType *player_ptr, bool pickup)
         PlayerEnergy energy(player_ptr);
         energy.set_player_turn_energy(100);
         if (dir.has_direction()) {
-            PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+            CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
         }
 
         if (is_wild_mode) {
@@ -433,7 +433,7 @@ void do_cmd_run(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (const auto dir = get_rep_dir(player_ptr)) {
         player_ptr->running = (command_arg ? command_arg : 1000);
@@ -505,7 +505,7 @@ static bool input_rest_turns()
 void do_cmd_rest(PlayerType *player_ptr)
 {
     set_action(player_ptr, ACTION_NONE);
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BARD)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BARD)) {
         auto is_singing = get_singing_song_effect(player_ptr) != 0;
         is_singing |= get_interrupting_song_effect(player_ptr) != 0;
         if (is_singing) {
@@ -557,7 +557,7 @@ void do_cmd_go_portal(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (!confirm_leave_level(player_ptr, false)) {
         return;

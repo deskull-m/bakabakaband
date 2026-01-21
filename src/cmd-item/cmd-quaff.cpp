@@ -40,7 +40,7 @@ void do_cmd_quaff_potion(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの薬を飲みますか? ", "Quaff which potion? ");
     constexpr auto s = _("飲める薬がない。", "You have no potions to quaff.");
@@ -63,7 +63,7 @@ void do_cmd_rectal_absorption(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの薬を直腸吸収しますか? ", "Which potion do you want to absorb rectally? ");
     constexpr auto s = _("直腸吸収できる薬がない。", "You have no potions for rectal absorption.");

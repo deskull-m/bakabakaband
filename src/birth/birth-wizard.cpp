@@ -288,7 +288,7 @@ static bool let_player_build_character(PlayerType *player_ptr)
         return false;
     }
 
-    PlayerClass(player_ptr).init_specific_data();
+    CreatureClass(*player_ptr).init_specific_data();
 
     return true;
 }
@@ -313,7 +313,7 @@ static void display_initial_options(PlayerType *player_ptr)
 
     put_str(_("隠密", "Stealth"), 6, 47);
     std::string stealth;
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
         stealth = "xx";
     } else {
         stealth = format("%+2d", player_ptr->race->r_stl + (*player_ptr->pclass_ref).c_stl + (*player_ptr->personality).a_stl);

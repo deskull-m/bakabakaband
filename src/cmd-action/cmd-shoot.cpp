@@ -53,7 +53,7 @@ void do_cmd_fire(PlayerType *player_ptr, SPELL_IDX snipe_type)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     constexpr auto q = _("どれを撃ちますか? ", "Fire which item? ");
     constexpr auto s = _("発射されるアイテムがありません。", "You have nothing to fire.");
     short i_idx;
@@ -64,12 +64,12 @@ void do_cmd_fire(PlayerType *player_ptr, SPELL_IDX snipe_type)
     }
 
     exe_fire(player_ptr, i_idx, item_ptr, snipe_type);
-    if (!player_ptr->is_fired || !PlayerClass(player_ptr).equals(PlayerClassType::SNIPER)) {
+    if (!player_ptr->is_fired || !CreatureClass(*player_ptr).equals(PlayerClassType::SNIPER)) {
         return;
     }
 
     if (snipe_type == SP_AWAY) {
-        auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+        auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
         teleport_player(player_ptr, 10 + (sniper_data->concent * 2), TELEPORT_SPONTANEOUS);
     }
 

@@ -597,7 +597,7 @@ std::string describe_flavor(PlayerType *player_ptr, const ItemEntity &item, BIT_
         const auto tval = item.bi_key.tval();
         if (bow.is_valid() && (tval == bow.get_arrow_kind())) {
             ss << describe_ammo_detail(player_ptr, item, bow, opt);
-        } else if (PlayerClass(player_ptr).equals(PlayerClassType::NINJA) && (tval == ItemKindType::SPIKE)) {
+        } else if (CreatureClass(*player_ptr).equals(PlayerClassType::NINJA) && (tval == ItemKindType::SPIKE)) {
             ss << describe_spike_detail(player_ptr);
         }
     }

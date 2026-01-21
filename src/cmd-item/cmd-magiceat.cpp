@@ -96,7 +96,7 @@ static tl::optional<BaseitemKey> select_magic_eater(PlayerType *player_ptr, bool
     auto tval = ItemKindType::NONE;
     int menu_line = (use_menu ? 1 : 0);
 
-    const auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
+    const auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
     if (const auto result = magic_eater_data->check_magic_eater_spell_repeat();
         result) {
         return result;
@@ -589,7 +589,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
         }
     }
 
-    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
+    auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
     const auto sval = bi_key->sval();
     if (!sval) {
         return false;

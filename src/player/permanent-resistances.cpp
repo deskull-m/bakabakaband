@@ -80,7 +80,7 @@ static void add_personality_flags(PlayerType *player_ptr, TrFlags &flags)
     flags.set(TR_RES_BLIND);
     flags.set(TR_RES_CONF);
     flags.set(TR_HOLD_EXP);
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::NINJA)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::NINJA)) {
         flags.set(TR_LITE_1);
     }
     if (player_ptr->level > 9) {
@@ -101,7 +101,7 @@ void player_flags(PlayerType *player_ptr, TrFlags &flags)
 {
     flags.clear();
 
-    flags.set(PlayerClass(player_ptr).tr_flags());
+    flags.set(CreatureClass(*player_ptr).tr_flags());
     flags.set(CreatureRace(player_ptr).tr_flags());
 
     add_mutation_flags(player_ptr, flags);

@@ -70,7 +70,7 @@ int16_t PlayerSpeed::race_bonus()
 int16_t PlayerSpeed::class_bonus()
 {
     int16_t bonus = 0;
-    PlayerClass pc(this->player_ptr);
+    CreatureClass pc(*this->player_ptr);
     CreatureRace pr(this->player_ptr);
     auto has_speed = pr.equals(PlayerRaceType::KLACKON);
     has_speed |= pr.equals(PlayerRaceType::SPRITE);
@@ -224,7 +224,7 @@ int16_t PlayerSpeed::time_effect_bonus()
 int16_t PlayerSpeed::stance_bonus()
 {
     int16_t bonus = 0;
-    if (PlayerClass(player_ptr).monk_stance_is(MonkStanceType::SUZAKU)) {
+    if (CreatureClass(*player_ptr).monk_stance_is(MonkStanceType::SUZAKU)) {
         bonus += 10;
     }
 

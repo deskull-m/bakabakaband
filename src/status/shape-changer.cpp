@@ -74,7 +74,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     player_ptr->race = &race_info[enum2i(player_ptr->prace)];
     player_ptr->expfact = player_ptr->race->r_exp + (*player_ptr->pclass_ref).c_exp;
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     bool is_special_class = pc.equals(PlayerClassType::MONK);
     is_special_class |= pc.equals(PlayerClassType::FORCETRAINER);
     is_special_class |= pc.equals(PlayerClassType::NINJA);

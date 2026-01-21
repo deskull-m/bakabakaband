@@ -350,7 +350,7 @@ void concentration(PlayerType *player_ptr)
         return;
     }
 
-    if (!PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::NONE)) {
+    if (!CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::NONE)) {
         msg_print(_("今は構えに集中している。", "You're already concentrating on your stance."));
         return;
     }
@@ -433,7 +433,7 @@ bool choose_samurai_stance(PlayerType *player_ptr)
 
     set_action(player_ptr, ACTION_SAMURAI_STANCE);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (PlayerClass(player_ptr).samurai_stance_is(new_stance)) {
+    if (CreatureClass(*player_ptr).samurai_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));
     } else {
         static constexpr auto flags_srf = {
@@ -442,7 +442,7 @@ bool choose_samurai_stance(PlayerType *player_ptr)
         };
         rfu.set_flags(flags_srf);
         msg_format(_("%sの型で構えた。", "You assume the %s stance."), samurai_stances[enum2i(new_stance) - 1].desc);
-        PlayerClass(player_ptr).set_samurai_stance(new_stance);
+        CreatureClass(*player_ptr).set_samurai_stance(new_stance);
     }
 
     static constexpr auto flags = {
@@ -469,7 +469,7 @@ int calc_attack_quality(PlayerType *player_ptr, player_attack_type *pa_ptr)
         chance += 60;
     }
 
-    if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         chance += 150;
     }
 
@@ -523,7 +523,7 @@ void mineuchi(PlayerType *player_ptr, player_attack_type *pa_ptr)
  */
 void musou_counterattack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    const auto is_musou = PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
+    const auto is_musou = CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
     if ((!player_ptr->counter && !is_musou) || !monap_ptr->alive || player_ptr->is_dead() || !monap_ptr->m_ptr->ml || (player_ptr->csp <= 7)) {
         return;
     }

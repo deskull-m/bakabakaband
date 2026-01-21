@@ -9,7 +9,7 @@
 void switch_gain_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    PlayerClass pc(&player);
+    CreatureClass pc(creature);
 
     // 変異の決定
     PlayerMutationType mutation_type;

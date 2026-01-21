@@ -316,7 +316,7 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
         }
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     auto realm_except_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
     PlayerRealm pr(player_ptr);

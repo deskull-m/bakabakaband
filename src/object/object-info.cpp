@@ -21,6 +21,7 @@
 #include "sv-definition/sv-ring-types.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 #include "util/int-char-converter.h"
 
 /*!
@@ -165,7 +166,7 @@ bool check_book_realm(PlayerType *player_ptr, const BaseitemKey &bi_key)
 
     const auto tval = bi_key.tval();
     const auto book_realm = PlayerRealm::get_realm_of_book(tval);
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.equals(PlayerClassType::SORCERER)) {
         return PlayerRealm::is_magic(book_realm);
     } else if (pc.equals(PlayerClassType::RED_MAGE)) {

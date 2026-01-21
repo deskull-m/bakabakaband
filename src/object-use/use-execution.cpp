@@ -72,7 +72,7 @@ void ObjectUseEntity::execute()
         chance = USE_DEVICE;
     }
 
-    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || PlayerClass(this->player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || CreatureClass(*this->player_ptr).equals(PlayerClassType::BERSERKER)) {
         if (flush_failure) {
             flush();
         }

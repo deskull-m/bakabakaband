@@ -85,7 +85,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
     }
 
     bool success;
-    if (PlayerClass(this->player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(*this->player_ptr).equals(PlayerClassType::BERSERKER)) {
         success = false;
     } else if (chance > fail) {
         success = randint0(chance * 2) >= fail;

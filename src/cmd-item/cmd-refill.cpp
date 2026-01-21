@@ -100,7 +100,7 @@ static void do_cmd_refill_torch(PlayerType *player_ptr)
  */
 void do_cmd_refill(PlayerType *player_ptr)
 {
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     const auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
     const auto &bi_key = o_ptr->bi_key;
     if (bi_key.tval() != ItemKindType::LITE) {

@@ -62,11 +62,11 @@ BIT_FLAGS common_cause_flags(PlayerType *player_ptr, tr_type tr_flag)
         set_bits(result, FLAG_CAUSE_RACE);
     }
 
-    if (PlayerClass(player_ptr).tr_flags().has(tr_flag)) {
+    if (CreatureClass(*player_ptr).tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_CLASS);
     }
 
-    if (PlayerClass(player_ptr).stance_tr_flags().has(tr_flag)) {
+    if (CreatureClass(*player_ptr).stance_tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_STANCE);
     }
 
@@ -781,7 +781,7 @@ void check_no_flowed(PlayerType *player_ptr)
         }
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (has_sw && (pr.realm1().equals(RealmType::NATURE) || pr.realm2().equals(RealmType::NATURE) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::NATURE, SPELL_SW);
         if (player_ptr->level >= spell.slevel) {
@@ -820,7 +820,7 @@ BIT_FLAGS has_reflect(PlayerType *player_ptr)
 
 BIT_FLAGS has_see_nocto(PlayerType *player_ptr)
 {
-    return PlayerClass(player_ptr).equals(PlayerClassType::NINJA) ? FLAG_CAUSE_CLASS : FLAG_CAUSE_NONE;
+    return CreatureClass(*player_ptr).equals(PlayerClassType::NINJA) ? FLAG_CAUSE_CLASS : FLAG_CAUSE_NONE;
 }
 
 BIT_FLAGS has_warning(PlayerType *player_ptr)
@@ -1726,7 +1726,7 @@ bool has_two_handed_weapons(PlayerType *player_ptr)
 BIT_FLAGS has_lite(PlayerType *player_ptr)
 {
     BIT_FLAGS result = 0L;
-    if (PlayerClass(player_ptr).equals(PlayerClassType::NINJA)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::NINJA)) {
         return 0L;
     }
 
@@ -1780,7 +1780,7 @@ bool is_wielding_icky_weapon(PlayerType *player_ptr, int i)
 
     const auto tval = o_ptr->bi_key.tval();
     const auto has_no_weapon = (tval == ItemKindType::NONE) || (tval == ItemKindType::SHIELD);
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.equals(PlayerClassType::PRIEST)) {
         auto is_suitable_weapon = flags.has(TR_BLESSED);
         is_suitable_weapon |= (tval != ItemKindType::SWORD) && (tval != ItemKindType::POLEARM);
@@ -1825,7 +1825,7 @@ bool has_not_ninja_weapon(PlayerType *player_ptr, int i)
     const auto &item = *player_ptr->inventory[INVEN_MAIN_HAND + i];
     const auto tval = item.bi_key.tval();
     const auto sval = *item.bi_key.sval();
-    return PlayerClass(player_ptr).equals(PlayerClassType::NINJA) &&
+    return CreatureClass(*player_ptr).equals(PlayerClassType::NINJA) &&
            !((player_ptr->weapon_exp_max[tval][sval] > PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER)) &&
                (player_ptr->inventory[INVEN_SUB_HAND - i]->bi_key.tval() != ItemKindType::SHIELD));
 }
@@ -1839,7 +1839,7 @@ bool has_not_monk_weapon(PlayerType *player_ptr, int i)
     const auto &item = *player_ptr->inventory[INVEN_MAIN_HAND + i];
     const auto tval = item.bi_key.tval();
     const auto sval = *item.bi_key.sval();
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     return pc.is_martial_arts_pro() && (player_ptr->weapon_exp_max[tval][sval] == PlayerSkill::weapon_exp_at(PlayerSkillRank::UNSKILLED));
 }
 

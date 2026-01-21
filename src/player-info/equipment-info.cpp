@@ -57,7 +57,7 @@ bool can_two_hands_wielding(PlayerType *player_ptr)
  */
 bool heavy_armor(PlayerType *player_ptr)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (!pc.is_martial_arts_pro() && !pc.equals(PlayerClassType::NINJA)) {
         return false;
     }

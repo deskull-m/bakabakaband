@@ -21,7 +21,7 @@ void player_immunity(PlayerType *player_ptr, TrFlags &flags)
 {
     flags.clear();
 
-    const auto p_flags = (CreatureRace(player_ptr).tr_flags() | PlayerClass(player_ptr).tr_flags());
+    const auto p_flags = (CreatureRace(player_ptr).tr_flags() | CreatureClass(*player_ptr).tr_flags());
 
     if (p_flags.has(TR_IM_ACID)) {
         flags.set(TR_RES_ACID);
@@ -114,7 +114,7 @@ void player_vulnerability_flags(PlayerType *player_ptr, TrFlags &flags)
 {
     flags.clear();
 
-    if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM) || PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM) || CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         flags.set(TR_RES_ACID);
         flags.set(TR_RES_ELEC);
         flags.set(TR_RES_FIRE);

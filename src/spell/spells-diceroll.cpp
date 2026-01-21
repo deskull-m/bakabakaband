@@ -94,7 +94,7 @@ bool common_saving_throw_control(PlayerType *player_ptr, int pow, const MonsterE
  */
 PERCENTAGE beam_chance(PlayerType *player_ptr)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.equals(PlayerClassType::MAGE)) {
         return (PERCENTAGE)(player_ptr->level);
     }

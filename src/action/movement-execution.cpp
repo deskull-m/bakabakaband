@@ -172,7 +172,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                 health_track(player_ptr, grid.m_idx);
             }
 
-            if ((player_ptr->is_wielding(FixedArtifactId::STORMBRINGER) && (randint1(1000) > 666)) || PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+            if ((player_ptr->is_wielding(FixedArtifactId::STORMBRINGER) && (randint1(1000) > 666)) || CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
                 do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 can_move = false;
             } else if (monster_can_cross_terrain(player_ptr, floor.get_grid(creature.get_position()).feat, monrace, 0)) {
@@ -244,7 +244,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         can_move = false;
     } else if (terrain.flags.has(TerrainCharacteristics::TREE) && !p_can_kill_walls) {
         const auto riding_wild_wood = player_ptr->riding && riding_monrace.wilderness_flags.has(MonsterWildernessType::WILD_WOOD);
-        if (!PlayerClass(player_ptr).equals(PlayerClassType::RANGER) && !player_ptr->levitation && !riding_wild_wood) {
+        if (!CreatureClass(*player_ptr).equals(PlayerClassType::RANGER) && !player_ptr->levitation && !riding_wild_wood) {
             energy.mul_player_turn_energy(2);
         }
     } else if ((do_pickup != easy_disarm) && terrain.flags.has(TerrainCharacteristics::DISARM) && !grid.mimic) {

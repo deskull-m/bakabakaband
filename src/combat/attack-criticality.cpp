@@ -54,7 +54,7 @@ int critical_norm(PlayerType *player_ptr, WEIGHT weight, int plus, int dam, int1
     int i = (weight + (meichuu * 3 + plus * 5) + player_ptr->skill_thn);
 
     /* Chance */
-    auto pow = PlayerClass(player_ptr).equals(PlayerClassType::NINJA) ? 4444 : 5000;
+    auto pow = CreatureClass(*player_ptr).equals(PlayerClassType::NINJA) ? 4444 : 5000;
     if (impact) {
         pow /= 2;
     }
@@ -146,7 +146,7 @@ void critical_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::NINJA)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::NINJA)) {
         return;
     }
 

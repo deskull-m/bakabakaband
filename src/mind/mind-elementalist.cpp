@@ -1109,7 +1109,7 @@ ProcessResult effect_monster_elemental_genocide(PlayerType *player_ptr, EffectMo
  */
 bool has_element_resist(PlayerType *player_ptr, ElementRealmType realm, PLAYER_LEVEL lev)
 {
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
         return false;
     }
 

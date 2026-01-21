@@ -1,6 +1,7 @@
 #pragma once
 
 #include "object-enchant/tr-flags.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include <initializer_list>
 #include <memory>
@@ -10,10 +11,10 @@
 enum class SamuraiStanceType : uint8_t;
 enum class MonkStanceType : uint8_t;
 enum class PlayerClassType : short;
-class PlayerClass {
+class CreatureClass {
 public:
-    PlayerClass(PlayerType *player_ptr);
-    virtual ~PlayerClass() = default;
+    CreatureClass(CreatureEntity &creature);
+    virtual ~CreatureClass() = default;
 
     bool equals(PlayerClassType type) const;
     TrFlags tr_flags() const;
@@ -50,7 +51,7 @@ public:
     std::span<const std::string> get_subtitle_candidates() const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 };
 
 /**
@@ -62,11 +63,12 @@ private:
  * プレイヤーが職業固有データTを使用できない職業の場合はなにも所有権を持たない std::shared_ptr<T> を返す。
  */
 template <typename T>
-std::shared_ptr<T> PlayerClass::get_specific_data() const
+std::shared_ptr<T> CreatureClass::get_specific_data() const
 {
-    if (!std::holds_alternative<std::shared_ptr<T>>(this->player_ptr->class_specific_data)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&this->creature);
+    if (!player_ptr || !std::holds_alternative<std::shared_ptr<T>>(player_ptr->class_specific_data)) {
         return nullptr;
     }
 
-    return std::get<std::shared_ptr<T>>(this->player_ptr->class_specific_data);
+    return std::get<std::shared_ptr<T>>(player_ptr->class_specific_data);
 }

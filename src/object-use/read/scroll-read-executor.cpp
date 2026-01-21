@@ -353,7 +353,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_SPELL:
-        if (!PlayerClass(this->player_ptr).has_number_of_spells_learned()) {
+        if (!CreatureClass(*this->player_ptr).has_number_of_spells_learned()) {
             break;
         }
 

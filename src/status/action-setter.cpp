@@ -49,17 +49,17 @@ void set_action(PlayerType *player_ptr, uint8_t typ)
         break;
     case ACTION_LEARN: {
         msg_print(_("学習をやめた。", "You stop learning."));
-        auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+        auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
         bluemage_data->new_magic_learned = false;
         break;
     }
     case ACTION_MONK_STANCE:
         msg_print(_("構えをといた。", "You stop assuming the special stance."));
-        PlayerClass(player_ptr).set_monk_stance(MonkStanceType::NONE);
+        CreatureClass(*player_ptr).set_monk_stance(MonkStanceType::NONE);
         break;
     case ACTION_SAMURAI_STANCE:
         msg_print(_("型を崩した。", "You stop assuming the special stance."));
-        PlayerClass(player_ptr).set_samurai_stance(SamuraiStanceType::NONE);
+        CreatureClass(*player_ptr).set_samurai_stance(SamuraiStanceType::NONE);
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         break;

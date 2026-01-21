@@ -719,7 +719,7 @@ static void display_spell_list(PlayerType *player_ptr)
 
     clear_from(0);
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.is_every_magic()) {
         return;
     }

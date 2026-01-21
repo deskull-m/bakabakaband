@@ -166,7 +166,7 @@ void player_outfit(PlayerType *player_ptr)
     item.number = 1;
     add_outfit(player_ptr, item);
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     CreatureRace pr(player_ptr);
     if (pr.equals(PlayerRaceType::VAMPIRE) && !pc.equals(PlayerClassType::NINJA)) {
         ItemEntity item({ ItemKindType::SCROLL, SV_SCROLL_DARKNESS });

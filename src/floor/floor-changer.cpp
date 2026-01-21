@@ -428,7 +428,7 @@ void change_floor(PlayerType *player_ptr)
     player_ptr->floor_id = new_floor_id;
     world.character_dungeon = true;
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
-        wiz_lite(player_ptr, PlayerClass(player_ptr).equals(PlayerClassType::NINJA));
+        wiz_lite(player_ptr, CreatureClass(*player_ptr).equals(PlayerClassType::NINJA));
     }
 
     floor.generated_turn = world.game_turn;

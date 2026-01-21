@@ -66,7 +66,7 @@ static MartialArtsStyleType select_martial_arts_style_menu(MartialArtsStyleType 
 void do_cmd_martial_arts_style(PlayerType *player_ptr)
 {
     // 修行僧、狂戦士、練気術師のみ使用可能
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (!pc.equals(PlayerClassType::MONK) &&
         !pc.equals(PlayerClassType::BERSERKER) &&
         !pc.equals(PlayerClassType::FORCETRAINER)) {

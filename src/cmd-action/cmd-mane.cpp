@@ -227,7 +227,7 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
     flag = false;
     redraw = false;
 
-    auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
+    auto mane_data = CreatureClass(*player_ptr).get_specific_data<mane_data_type>();
 
     num = mane_data->mane_list.size();
 
@@ -1202,7 +1202,7 @@ bool do_cmd_mane(PlayerType *player_ptr, bool baigaesi)
         return false;
     }
 
-    auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
+    auto mane_data = CreatureClass(*player_ptr).get_specific_data<mane_data_type>();
 
     if (mane_data->mane_list.empty()) {
         msg_print(_("まねられるものが何もない！", "You don't remember any action!"));

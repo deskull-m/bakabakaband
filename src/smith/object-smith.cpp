@@ -47,7 +47,7 @@ int addable_count(smith_data_type *smith_data, std::vector<SmithEssenceType> ess
  */
 Smith::Smith(PlayerType *player_ptr)
     : player_ptr(player_ptr)
-    , smith_data(PlayerClass(player_ptr).get_specific_data<smith_data_type>())
+    , smith_data(CreatureClass(*player_ptr).get_specific_data<smith_data_type>())
 {
 }
 

@@ -21,6 +21,7 @@
 #include "specific-object/bloody-moon.h"
 #include "system/artifact-type-definition.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 
 /*!
  * @brief 恐怖の仮面への特殊処理
@@ -84,7 +85,7 @@ static void milim_swimsuit(PlayerType *player_ptr, ItemEntity *o_ptr)
  */
 static void invest_special_artifact_abilities(PlayerType *player_ptr, ItemEntity *o_ptr)
 {
-    const auto pc = PlayerClass(player_ptr);
+    const auto pc = CreatureClass(*player_ptr);
     switch (o_ptr->fa_id) {
     case FixedArtifactId::MURAMASA:
         if (!pc.equals(PlayerClassType::SAMURAI)) {

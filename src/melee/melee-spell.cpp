@@ -59,7 +59,7 @@ static bool disturb_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr
 
 static void process_special_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     bool is_special_magic = ms_ptr->m_ptr->ml;
     is_special_magic &= ms_ptr->maneable;
     is_special_magic &= AngbandWorld::get_instance().timewalk_m_idx == 0;

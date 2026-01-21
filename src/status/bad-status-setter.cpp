@@ -130,20 +130,20 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
             msg_print(_("あなたは混乱した！", "You are confused!"));
             if (player_ptr->action == ACTION_LEARN) {
                 msg_print(_("学習が続けられない！", "You cannot continue learning!"));
-                auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+                auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
                 bluemage_data->new_magic_learned = false;
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
                 player_ptr->action = ACTION_NONE;
             }
             if (player_ptr->action == ACTION_MONK_STANCE) {
                 msg_print(_("構えがとけた。", "You lose your stance."));
-                PlayerClass(player_ptr).set_monk_stance(MonkStanceType::NONE);
+                CreatureClass(*player_ptr).set_monk_stance(MonkStanceType::NONE);
                 rfu.set_flag(StatusRecalculatingFlag::BONUS);
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);
                 player_ptr->action = ACTION_NONE;
             } else if (player_ptr->action == ACTION_SAMURAI_STANCE) {
                 msg_print(_("型が崩れた。", "You lose your stance."));
-                PlayerClass(player_ptr).lose_balance();
+                CreatureClass(*player_ptr).lose_balance();
             }
 
             /* Sniper */
@@ -252,7 +252,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
     if (v > 0) {
         if (!fear.is_fearful()) {
             msg_print(_("何もかも恐くなってきた！", "You are terrified!"));
-            if (PlayerClass(player_ptr).lose_balance()) {
+            if (CreatureClass(*player_ptr).lose_balance()) {
                 msg_print(_("型が崩れた。", "You lose your stance."));
             }
 
@@ -480,7 +480,7 @@ bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    if (CreatureRace(player_ptr).has_stun_immunity() || PlayerClass(player_ptr).has_stun_immunity()) {
+    if (CreatureRace(player_ptr).has_stun_immunity() || CreatureClass(*player_ptr).has_stun_immunity()) {
         v = 0;
     }
 
@@ -573,7 +573,7 @@ void BadStatusSetter::process_stun_status(const PlayerStunRank new_rank, const s
     auto stun_mes = PlayerStun::get_stun_mes(new_rank);
     msg_print(stun_mes);
     this->decrease_int_wis(v);
-    if (PlayerClass(player_ptr).lose_balance()) {
+    if (CreatureClass(*player_ptr).lose_balance()) {
         msg_print(_("型が崩れた。", "You lose your stance."));
     }
 

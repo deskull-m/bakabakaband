@@ -244,7 +244,7 @@ void wiz_teleport_back(PlayerType *player_ptr)
  */
 void wiz_learn_blue_magic_all(PlayerType *player_ptr)
 {
-    auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+    auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
     if (!bluemage_data) {
         return;
     }
@@ -261,7 +261,7 @@ void wiz_learn_blue_magic_all(PlayerType *player_ptr)
  */
 void wiz_fillup_all_smith_essences(PlayerType *player_ptr)
 {
-    auto smith_data = PlayerClass(player_ptr).get_specific_data<smith_data_type>();
+    auto smith_data = CreatureClass(*player_ptr).get_specific_data<smith_data_type>();
     if (!smith_data) {
         return;
     }

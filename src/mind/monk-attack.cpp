@@ -75,7 +75,7 @@ static int calc_stun_resistance(player_attack_type *pa_ptr)
  */
 static int calc_max_blow_selection_times(PlayerType *player_ptr)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.monk_stance_is(MonkStanceType::BYAKKO)) {
         return player_ptr->level < 3 ? 1 : player_ptr->level / 3;
     }
@@ -105,7 +105,7 @@ static int select_blow(PlayerType *player_ptr, player_attack_type *pa_ptr, int m
     for (int times = 0; times < max_blow_selection_times; times++) {
         do {
             pa_ptr->ma_ptr = &rand_choice(ma_blows);
-            if (PlayerClass(player_ptr).equals(PlayerClassType::FORCETRAINER) && (pa_ptr->ma_ptr->min_level > 1)) {
+            if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER) && (pa_ptr->ma_ptr->min_level > 1)) {
                 min_level = pa_ptr->ma_ptr->min_level + 3;
             } else {
                 min_level = pa_ptr->ma_ptr->min_level;
@@ -126,7 +126,7 @@ static int select_blow(PlayerType *player_ptr, player_attack_type *pa_ptr, int m
         }
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::FORCETRAINER)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER)) {
         min_level = std::max(1, pa_ptr->ma_ptr->min_level - 3);
     } else {
         min_level = pa_ptr->ma_ptr->min_level;
@@ -175,7 +175,7 @@ static int process_monk_additional_effect(player_attack_type *pa_ptr, int *stun_
 WEIGHT calc_monk_attack_weight(PlayerType *player_ptr)
 {
     WEIGHT weight = 8;
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
         weight = 4;
     }

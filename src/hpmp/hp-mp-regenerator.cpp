@@ -28,7 +28,7 @@ int wild_regen = 20;
  */
 void regenhp(PlayerType *player_ptr, int percent)
 {
-    if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return;
     }
     if (player_ptr->action == ACTION_HAYAGAKE) {
@@ -126,7 +126,7 @@ void regenmana(PlayerType *player_ptr, MANA_POINT upkeep_factor, MANA_POINT rege
  */
 void regenmagic(PlayerType *player_ptr, int regen_amount)
 {
-    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
+    auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
     if (!magic_eater_data) {
         return;
     }

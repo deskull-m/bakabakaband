@@ -321,7 +321,7 @@ static bool switch_mind_class(PlayerType *player_ptr, cm_type *cm_ptr)
 static void mind_turn_passing(PlayerType *player_ptr, cm_type *cm_ptr)
 {
     PlayerEnergy energy(player_ptr);
-    if (cm_ptr->on_mirror && PlayerClass(player_ptr).equals(PlayerClassType::MIRROR_MASTER)) {
+    if (cm_ptr->on_mirror && CreatureClass(*player_ptr).equals(PlayerClassType::MIRROR_MASTER)) {
         if (cm_ptr->n == 3 || cm_ptr->n == 5 || cm_ptr->n == 7 || cm_ptr->n == 16) {
             energy.set_player_turn_energy(50);
             return;

@@ -61,7 +61,7 @@
  */
 bool kawarimi(PlayerType *player_ptr, bool success)
 {
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->kawarimi) {
         return false;
     }
@@ -218,7 +218,7 @@ void process_surprise_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
         tmp /= 3;
     }
 
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
     if (pa_ptr->m_ptr->is_asleep() && pa_ptr->m_ptr->ml) {
         /* Can't backstab creatures that we can't see, right? */
         pa_ptr->backstab = true;
@@ -303,7 +303,7 @@ bool set_superstealth(PlayerType *player_ptr, bool set)
 {
     bool notice = false;
 
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
     if (!ninja_data || player_ptr->is_dead()) {
         return false;
     }
@@ -351,7 +351,7 @@ bool set_superstealth(PlayerType *player_ptr, bool set)
 bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
 {
     PLAYER_LEVEL plev = player_ptr->level;
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
     switch (spell) {
     case MindNinjaType::DARKNESS_CREATION:
         (void)unlite_area(player_ptr, 0, 3);

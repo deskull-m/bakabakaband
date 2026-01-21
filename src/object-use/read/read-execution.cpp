@@ -93,7 +93,7 @@ bool ObjectReadEntity::can_read() const
         return false;
     }
 
-    if (PlayerClass(this->player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(*this->player_ptr).equals(PlayerClassType::BERSERKER)) {
         msg_print(_("巻物なんて読めない。", "You cannot read."));
         return false;
     }

@@ -105,7 +105,7 @@ static void compare_weapon_aux(PlayerType *player_ptr, ItemEntity *o_ptr, int co
         show_weapon_dmg(r++, col, mindam, maxdam, blow, dmg_bonus, _("切れ味:", "Vorpal:"), TERM_L_RED);
     }
 
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::SAMURAI) && flags.has(TR_FORCE_WEAPON) && (player_ptr->csp > (o_ptr->damage_dice.maxroll() / 5))) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::SAMURAI) && flags.has(TR_FORCE_WEAPON) && (player_ptr->csp > (o_ptr->damage_dice.maxroll() / 5))) {
         force = true;
 
         mindam = calc_expect_dice(player_ptr, mindice, 1, 1, force, o_ptr->weight, o_ptr->to_h, player_ptr->to_h[0], dokubari, impact, vorpal_mult, vorpal_div);

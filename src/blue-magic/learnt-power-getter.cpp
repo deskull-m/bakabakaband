@@ -479,7 +479,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(PlayerType 
  */
 tl::optional<MonsterAbilityType> get_learned_power(PlayerType *player_ptr)
 {
-    auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+    auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
     if (!bluemage_data) {
         return tl::nullopt;
     }

@@ -171,7 +171,7 @@ void process_command(PlayerType *player_ptr)
     COMMAND_CODE old_now_message = now_message;
     repeat_check();
     now_message = 0;
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     if (sniper_data && sniper_data->concent > 0) {
         sniper_data->reset_concent = true;
     }
@@ -376,7 +376,7 @@ void process_command(PlayerType *player_ptr)
         break;
     }
     case 'G': {
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (pc.is_every_magic() || pc.equals(PlayerClassType::ELEMENTALIST)) {
             msg_print(_("呪文を学習する必要はない！", "You don't have to learn spells!"));
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
@@ -394,7 +394,7 @@ void process_command(PlayerType *player_ptr)
         break;
     }
     case 'b': {
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (pc.can_browse()) {
             do_cmd_mind_browse(player_ptr);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
@@ -416,7 +416,7 @@ void process_command(PlayerType *player_ptr)
             break;
         }
 
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::ARCHER) || pc.equals(PlayerClassType::CAVALRY)) {
             msg_print(_("呪文を唱えられない！", "You cannot cast spells!"));
             break;
@@ -707,7 +707,7 @@ void process_command(PlayerType *player_ptr)
         if (!is_wild_mode) {
             do_cmd_travel(player_ptr);
         }
-        PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+        CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
         break;
     }

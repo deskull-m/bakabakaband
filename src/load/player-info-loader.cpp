@@ -41,7 +41,7 @@ static void rd_realms(PlayerType *player_ptr)
     PlayerRealm pr(player_ptr);
     pr.reset();
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
         player_ptr->element_realm = i2enum<ElementRealmType>(rd_byte());
         (void)rd_byte();
         return;
@@ -155,7 +155,7 @@ void rd_experience(PlayerType *player_ptr)
 
 void rd_skills(PlayerType *player_ptr)
 {
-    PlayerClass(player_ptr).init_specific_data();
+    CreatureClass(*player_ptr).init_specific_data();
     std::visit(PlayerClassSpecificDataLoader(), player_ptr->class_specific_data);
 
     if (music_singing_any(player_ptr)) {
@@ -241,7 +241,7 @@ static void rd_base_status(PlayerType *player_ptr)
 static void set_imitation(PlayerType *player_ptr)
 {
     if (loading_savefile_version_is_older_than(11)) {
-        auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
+        auto mane_data = CreatureClass(*player_ptr).get_specific_data<mane_data_type>();
         if (!mane_data) {
             // ものまね師でない場合に読み捨てるためのダミーデータ領域
             mane_data = std::make_shared<mane_data_type>();
@@ -459,7 +459,7 @@ static void rd_player_status(PlayerType *player_ptr)
     strip_bytes(8);
     player_ptr->prestige = rd_s16b();
     if (loading_savefile_version_is_older_than(11)) {
-        auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+        auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
         if (sniper_data) {
             sniper_data->concent = rd_s16b();
         } else {

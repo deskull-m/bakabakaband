@@ -143,7 +143,7 @@ void SniperData::reset_concentration_flag()
  */
 static bool snipe_concentrate(PlayerType *player_ptr)
 {
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     if (!sniper_data) {
         return false;
     }
@@ -164,7 +164,7 @@ static bool snipe_concentrate(PlayerType *player_ptr)
  */
 void reset_concentration(PlayerType *player_ptr, bool msg)
 {
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     if (!sniper_data) {
         return;
     }
@@ -184,7 +184,7 @@ void reset_concentration(PlayerType *player_ptr, bool msg)
  */
 int boost_concentration_damage(PlayerType *player_ptr, int tdam)
 {
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     const auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
     tdam = tdam * (10 + sniper_concent) / 10;
@@ -208,7 +208,7 @@ void display_snipe_list(PlayerType *player_ptr)
     put_str(_("名前", "Name"), y, x + 5);
     put_str(_("Lv   MP", "Lv Mana"), y, x + 35);
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
 
     for (i = 0; i < MAX_SNIPE_POWERS; i++) {
         /* Access the available spell */
@@ -261,7 +261,7 @@ static int get_snipe_power(PlayerType *player_ptr, COMMAND_CODE *sn, bool only_b
     /* Assume cancelled */
     *sn = (-1);
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
 
     /* Repeat previous command */
     /* Get the spell, if available */
@@ -411,7 +411,7 @@ MULTIPLY calc_snipe_damage_with_slay(PlayerType *player_ptr, MULTIPLY mult, cons
     auto &monrace = monster.get_monrace();
     bool seen = is_seen(player_ptr, monster);
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     const auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
     switch (snipe_type) {

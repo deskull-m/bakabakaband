@@ -191,7 +191,7 @@ void print_state(PlayerType *player_ptr)
 
     case ACTION_LEARN: {
         text = _("学習", "lear");
-        auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+        auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
         if (bluemage_data->new_magic_learned) {
             attr = TERM_L_RED;
         }
@@ -202,7 +202,7 @@ void print_state(PlayerType *player_ptr)
         break;
     }
     case ACTION_MONK_STANCE: {
-        if (auto stance = PlayerClass(player_ptr).get_monk_stance();
+        if (auto stance = CreatureClass(*player_ptr).get_monk_stance();
             stance != MonkStanceType::NONE) {
             switch (stance) {
             case MonkStanceType::GENBU:
@@ -225,7 +225,7 @@ void print_state(PlayerType *player_ptr)
         break;
     }
     case ACTION_SAMURAI_STANCE: {
-        if (auto stance = PlayerClass(player_ptr).get_samurai_stance();
+        if (auto stance = CreatureClass(*player_ptr).get_samurai_stance();
             stance != SamuraiStanceType::NONE) {
             text = samurai_stances[enum2i(stance) - 1].desc;
         }
@@ -337,7 +337,7 @@ void print_imitation(PlayerType *player_ptr)
     const auto &[wid, hgt] = term_get_size();
     const auto col_study = wid + COL_STUDY;
     const auto row_study = hgt + ROW_STUDY;
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (!pc.equals(PlayerClassType::IMITATOR)) {
         return;
     }
@@ -481,7 +481,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_SENSEUNSEEN);
     }
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     if (sniper_data && (sniper_data->concent >= CONCENT_RADAR_THRESHOLD)) {
         ADD_BAR_FLAG(BAR_SENSEUNSEEN);
         ADD_BAR_FLAG(BAR_NIGHTSIGHT);
@@ -543,7 +543,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_STONESKIN);
     }
 
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
     if (ninja_data && ninja_data->kawarimi) {
         ADD_BAR_FLAG(BAR_KAWARIMI);
     }

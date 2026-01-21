@@ -47,7 +47,7 @@ TrFlags CreatureRace::tr_flags() const
             continue;
         }
         if (cond.pclass) {
-            auto is_class_equal = PlayerClass(static_cast<PlayerType *>(this->creature_ptr)).equals(*cond.pclass);
+            auto is_class_equal = CreatureClass(*static_cast<PlayerType *>(this->creature_ptr)).equals(*cond.pclass);
             if (cond.not_class && is_class_equal) {
                 continue;
             }

@@ -40,7 +40,7 @@ int16_t PlayerIntelligence::stance_bonus()
 {
     int16_t result = 0;
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         result += 5;
     }

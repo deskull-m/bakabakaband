@@ -258,7 +258,7 @@ static void update_telepathy_sight(PlayerType *player_ptr, um_type *um_ptr, MONS
     auto &monster = *um_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
     const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
-    if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
         um_ptr->flag = true;
         um_ptr->m_ptr->mflag.set(MonsterTemporaryFlagType::ESP);
         if (um_ptr->m_ptr->is_original_ap() && !is_hallucinated) {
@@ -479,7 +479,7 @@ static void decide_sight_invisible_monster(PlayerType *player_ptr, um_type *um_p
         return;
     }
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     if (sniper_data && (sniper_data->concent >= CONCENT_RADAR_THRESHOLD)) {
         um_ptr->easy = true;
         um_ptr->flag = true;

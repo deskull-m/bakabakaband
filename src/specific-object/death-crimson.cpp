@@ -29,7 +29,7 @@ static bool fire_crimson(PlayerType *player_ptr)
     const auto [ty, tx] = dir.get_target_position(player_ptr->get_position(), 99);
 
     int num = 1;
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ARCHER)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::ARCHER)) {
         if (player_ptr->level >= 10) {
             num++;
         }

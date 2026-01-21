@@ -166,7 +166,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         const Dice dice(3, 6);
         const POSITION rad = (plev < 30) ? 2 : 3;
         int base;
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(*player_ptr);
         if (pc.equals(PlayerClassType::PRIEST) || pc.equals(PlayerClassType::HIGH_MAGE) || pc.equals(PlayerClassType::SORCERER)) {
             base = plev + plev / 2;
         } else {

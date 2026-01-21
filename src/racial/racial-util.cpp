@@ -8,7 +8,7 @@ rc_type::rc_type(PlayerType *player_ptr)
 {
     this->ask = true;
     this->lvl = player_ptr->level;
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     this->is_warrior = pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER);
 }
 

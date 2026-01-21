@@ -93,7 +93,7 @@ static bool go_to_arena(PlayerType *player_ptr)
         return false;
     }
 
-    if (player_ptr->riding && !PlayerClass(player_ptr).is_tamer()) {
+    if (player_ptr->riding && !CreatureClass(*player_ptr).is_tamer()) {
         msg_print(_("ペットに乗ったままではアリーナへ入れさせてもらえなかった。", "You don't have permission to enter with pet."));
         msg_erase();
         return false;

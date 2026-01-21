@@ -25,6 +25,7 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
+#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -83,7 +84,7 @@ static bool process_bolt_reflection(PlayerType *player_ptr, EffectPlayerType *ep
     std::string mes;
     if (player_ptr->effects()->blindness().is_blind()) {
         mes = _("何かが跳ね返った！", "Something bounces!");
-    } else if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::FUUJIN)) {
+    } else if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::FUUJIN)) {
         mes = _("風の如く武器を振るって弾き返した！", "The attack bounces!");
     } else {
         mes = _("攻撃が跳ね返った！", "The attack bounces!");

@@ -317,7 +317,7 @@ static void init_io(PlayerType *player_ptr)
 
 static void init_riding_pet(PlayerType *player_ptr, bool new_game)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (!new_game || !pc.is_tamer()) {
         return;
     }

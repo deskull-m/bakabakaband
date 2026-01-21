@@ -43,7 +43,7 @@ static void impose_first_realm(PlayerType *player_ptr, RealmChoices &choices)
         return;
     }
 
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::PRIEST)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::PRIEST)) {
         return;
     }
 
@@ -288,7 +288,7 @@ bool get_player_realms(PlayerType *player_ptr)
     PlayerRealm pr(player_ptr);
     pr.reset();
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
         const auto realm = select_element_realm(player_ptr);
         if (!realm) {
             return false;

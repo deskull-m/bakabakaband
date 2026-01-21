@@ -16,12 +16,12 @@ void rd_special_attack(PlayerType *player_ptr)
 
 void rd_special_action(PlayerType *player_ptr)
 {
-    if (!PlayerClass(player_ptr).monk_stance_is(MonkStanceType::NONE)) {
+    if (!CreatureClass(*player_ptr).monk_stance_is(MonkStanceType::NONE)) {
         player_ptr->action = ACTION_MONK_STANCE;
         return;
     }
 
-    if (!PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::NONE)) {
+    if (!CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::NONE)) {
         player_ptr->action = ACTION_SAMURAI_STANCE;
     }
 }

@@ -46,7 +46,7 @@
  */
 int32_t get_current_ki(PlayerType *player_ptr)
 {
-    auto data = PlayerClass(player_ptr).get_specific_data<force_trainer_data_type>();
+    auto data = CreatureClass(*player_ptr).get_specific_data<force_trainer_data_type>();
 
     return data ? data->ki : 0;
 }
@@ -59,7 +59,7 @@ int32_t get_current_ki(PlayerType *player_ptr)
  */
 void set_current_ki(PlayerType *player_ptr, bool is_reset, int32_t ki)
 {
-    auto data = PlayerClass(player_ptr).get_specific_data<force_trainer_data_type>();
+    auto data = CreatureClass(*player_ptr).get_specific_data<force_trainer_data_type>();
     if (!data) {
         return;
     }
@@ -310,7 +310,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
         if (randint1(get_current_ki(player_ptr)) > (plev * 4 + 120)) {
             msg_print(_("気が暴走した！", "The Force exploded!"));
             fire_ball(*player_ptr, AttributeType::MANA, Direction::self(), get_current_ki(player_ptr) / 2, 10);
-            auto data = PlayerClass(player_ptr).get_specific_data<force_trainer_data_type>();
+            auto data = CreatureClass(*player_ptr).get_specific_data<force_trainer_data_type>();
             take_hit(player_ptr, DAMAGE_LOSELIFE, data->ki / 2, _("気の暴走", "Explosion of the Force"));
         } else {
             return true;

@@ -282,7 +282,7 @@ static bool spell_okay(PlayerType *player_ptr, int spell_id, bool learned, bool 
         return false;
     }
 
-    if (PlayerClass(player_ptr).is_every_magic()) {
+    if (CreatureClass(*player_ptr).is_every_magic()) {
         return true;
     }
 
@@ -359,7 +359,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
         return false;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     PlayerRealm pr(player_ptr);
     auto is_every_magic = pc.is_every_magic();
     if (!pr.realm1().equals(use_realm) && !pr.realm2().equals(use_realm) && !is_every_magic) {
@@ -580,7 +580,7 @@ void do_cmd_browse(PlayerType *player_ptr)
     SPELL_IDX spell = -1;
 
     /* Warriors are illiterate */
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     if (!PlayerRealm(player_ptr).realm1().is_available() && !pc.is_every_magic()) {
         msg_print(_("本を読むことができない！", "You cannot read books!"));
         return;
@@ -727,7 +727,7 @@ void do_cmd_study(PlayerType *player_ptr)
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
 #ifdef JP
     if (player_ptr->new_spells < 10) {
@@ -907,7 +907,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
     auto over_exerted = false;
 
     /* Require spell ability */
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(*player_ptr);
     auto is_every_magic = pc.is_every_magic();
     PlayerRealm pr(player_ptr);
     if (!pr.realm1().is_available() && !is_every_magic) {

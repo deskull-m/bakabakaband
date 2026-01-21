@@ -34,10 +34,10 @@ void cast_shuffle(PlayerType *player_ptr)
     int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
     int i;
 
-    PlayerClass pc(player_ptr);
-    auto is_good_shuffle = PlayerClass(player_ptr).equals(PlayerClassType::ROGUE);
-    is_good_shuffle |= PlayerClass(player_ptr).equals(PlayerClassType::HIGH_MAGE);
-    is_good_shuffle |= PlayerClass(player_ptr).equals(PlayerClassType::SORCERER);
+    CreatureClass pc(*player_ptr);
+    auto is_good_shuffle = CreatureClass(*player_ptr).equals(PlayerClassType::ROGUE);
+    is_good_shuffle |= CreatureClass(*player_ptr).equals(PlayerClassType::HIGH_MAGE);
+    is_good_shuffle |= CreatureClass(*player_ptr).equals(PlayerClassType::SORCERER);
     if (is_good_shuffle) {
         die = (randint1(110)) + plev / 5;
     } else {

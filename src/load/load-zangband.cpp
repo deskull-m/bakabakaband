@@ -101,7 +101,7 @@ void set_zangband_realm(PlayerType *player_ptr)
 
 void set_zangband_skill(PlayerType *player_ptr)
 {
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER)) {
+    if (!CreatureClass(*player_ptr).equals(PlayerClassType::BEASTMASTER)) {
         player_ptr->skill_exp[PlayerSkillKindType::RIDING] /= 2;
     }
 

@@ -108,7 +108,7 @@ static void display_magic_realms(PlayerType *player_ptr)
         return;
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
         display_player_one_line(ENTRY_REALM, get_element_title(player_ptr->element_realm), TERM_L_BLUE);
         return;
     }
@@ -314,7 +314,7 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     if (creature_ptr->is_player()) {
         display_magic_realms(player_ptr);
     }
-    if (PlayerClass(player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
         display_player_one_line(ENTRY_PATRON, patron_list[player_ptr->patron].name, TERM_L_BLUE);
     }
 
