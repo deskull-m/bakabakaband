@@ -14,8 +14,8 @@
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
-BodyImprovement::BodyImprovement(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+BodyImprovement::BodyImprovement(CreatureEntity &player)
+    : player_ptr(&player)
 {
 }
 
@@ -73,7 +73,7 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(this->player_ptr);
+    handle_stuff(static_cast<PlayerType *>(this->player_ptr));
     this->is_affected = true;
 }
 

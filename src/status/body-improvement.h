@@ -1,16 +1,17 @@
 #pragma once
 
 class PlayerType;
+class CreatureEntity;
 class BodyImprovement {
 public:
-    BodyImprovement(PlayerType *player_ptr);
+    BodyImprovement(CreatureEntity &player);
 
     bool has_effect() const;
     void mod_protection(short v, bool is_decrease = false);
     void set_protection(short v, bool is_decrease = false);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *player_ptr;
     bool is_affected = false;
 };
 

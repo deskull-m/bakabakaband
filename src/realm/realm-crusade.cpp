@@ -202,7 +202,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            BodyImprovement(player_ptr).set_protection(dice.roll() + base);
+            BodyImprovement(*player_ptr).set_protection(dice.roll() + base);
         }
     } break;
 
