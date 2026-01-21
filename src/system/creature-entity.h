@@ -495,6 +495,9 @@ public:
 
     int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
 
+    POSITION cur_lite{}; /* Radius of lite (if any) */
+    POSITION old_lite{}; /* Radius of lite (if any) */
+
 protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
 };

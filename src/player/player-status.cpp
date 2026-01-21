@@ -2644,7 +2644,7 @@ void update_creature(PlayerType *player_ptr)
 
     if (rfu.has(StatusRecalculatingFlag::TORCH)) {
         rfu.reset_flag(StatusRecalculatingFlag::TORCH);
-        update_lite_radius(player_ptr);
+        update_lite_radius(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::HP)) {
@@ -2684,7 +2684,7 @@ void update_creature(PlayerType *player_ptr)
 
     if (rfu.has(StatusRecalculatingFlag::LITE)) {
         rfu.reset_flag(StatusRecalculatingFlag::LITE);
-        update_lite(player_ptr);
+        update_lite(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::FLOW)) {
