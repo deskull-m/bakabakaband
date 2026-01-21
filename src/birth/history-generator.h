@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void get_history(PlayerType *player_ptr);
+class CreatureEntity;
+void get_history(CreatureEntity &creature);

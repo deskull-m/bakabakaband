@@ -398,7 +398,7 @@ static bool decide_body_spec(PlayerType *player_ptr, chara_limit_type chara_limi
     }
 
     get_ahw(player_ptr);
-    get_history(player_ptr);
+    get_history(*player_ptr);
 
     if (autochara) {
         if ((player_ptr->age < chara_limit.agemin) || (player_ptr->age > chara_limit.agemax)) {
@@ -441,7 +441,7 @@ static bool display_auto_roller_count(PlayerType *player_ptr, const int col)
     inkey_scan = true;
     if (inkey()) {
         get_ahw(player_ptr);
-        get_history(player_ptr);
+        get_history(*player_ptr);
         return true;
     }
 
@@ -549,7 +549,7 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
         } else {
             get_stats(player_ptr);
             get_ahw(player_ptr);
-            get_history(player_ptr);
+            get_history(*player_ptr);
         }
 
         display_auto_roller_success_rate(player_ptr, col);

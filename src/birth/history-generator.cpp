@@ -8,8 +8,13 @@
 #include <sstream>
 #include <string>
 
-static int get_history_chart(PlayerType *player_ptr)
+static int get_history_chart(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return 0;
+    }
+
     switch (player_ptr->prace) {
     case PlayerRaceType::AMBERITE:
         return 67;
@@ -91,12 +96,17 @@ static int get_history_chart(PlayerType *player_ptr)
 
 /*!
  * @brief 生い立ちを画面に表示しつつ、種族から社会的地位を決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static std::string decide_social_class(PlayerType *player_ptr)
+static std::string decide_social_class(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return "";
+    }
+
     auto social_class = randnum1<short>(4);
-    auto chart = get_history_chart(player_ptr);
+    auto chart = get_history_chart(creature);
     std::stringstream ss;
     while (chart != 0) {
         auto i = 0;
@@ -122,16 +132,21 @@ static std::string decide_social_class(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの生い立ちの自動生成を行う。 / Get the racial history, and prestige, using the "history charts".
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void get_history(PlayerType *player_ptr)
+void get_history(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!player_ptr) {
+        return;
+    }
+
     constexpr auto lines = 4;
     for (int i = 0; i < lines; i++) {
         player_ptr->history[i][0] = '\0';
     }
 
-    auto social_class = decide_social_class(player_ptr);
+    auto social_class = decide_social_class(creature);
     constexpr auto max_line_len = sizeof(player_ptr->history[0]);
     const auto history_lines = shape_buffer(social_class.data(), max_line_len);
     const auto max_lines = std::min<int>(lines, history_lines.size());
