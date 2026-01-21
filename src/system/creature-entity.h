@@ -476,6 +476,25 @@ public:
      */
     void plus_incident_tree(const std::string &incident_id, int num);
 
+    HIT_PROB dis_to_h[2]{}; /*!< 判明している現在の表記上の近接武器命中修正値 /  Known bonus to hit (wield) */
+    HIT_PROB dis_to_h_b{}; /*!< 判明している現在の表記上の射撃武器命中修正値 / Known bonus to hit (bow) */
+    int dis_to_d[2]{}; /*!< 判明している現在の表記上の近接武器ダメージ修正値 / Known bonus to dam (wield) */
+    ARMOUR_CLASS dis_to_a{}; /*!< 判明している現在の表記上の装備AC修正値 / Known bonus to ac */
+    ARMOUR_CLASS dis_ac{}; /*!< 判明している現在の表記上の装備AC基礎値 / Known base ac */
+
+    int16_t to_h[2]{}; /* Bonus to hit (wield) */
+    int16_t to_h_b{}; /* Bonus to hit (bow) */
+    int16_t to_h_m{}; /* Bonus to hit (misc) */
+    int16_t to_d[2]{}; /* Bonus to dam (wield) */
+    int16_t to_d_m{}; /* Bonus to dam (misc) */
+
+    int16_t to_m_chance{}; /* Minusses to cast chance */
+
+    int16_t num_blow[2]{}; /* Number of blows */
+    int16_t num_fire{}; /* Number of shots */
+
+    int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
+
 protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
 };

@@ -99,8 +99,6 @@ public:
 
     ENERGY enchant_energy_need{}; /* Energy needed for next upkeep effect	 */
 
-    int16_t food{}; /*!< ゲーム中の滋養度の型定義 / Current nutrition */
-
     /*
      * p_ptr->special_attackによるプレイヤーの攻撃状態の定義 / Bit flags for the "p_ptr->special_attack" variable. -LM-
      *
@@ -210,24 +208,7 @@ public:
 
     Dice damage_dice_bonus[2]{}; /* Extra damage dice num/sides */
 
-    HIT_PROB dis_to_h[2]{}; /*!< 判明している現在の表記上の近接武器命中修正値 /  Known bonus to hit (wield) */
-    HIT_PROB dis_to_h_b{}; /*!< 判明している現在の表記上の射撃武器命中修正値 / Known bonus to hit (bow) */
-    int dis_to_d[2]{}; /*!< 判明している現在の表記上の近接武器ダメージ修正値 / Known bonus to dam (wield) */
-    ARMOUR_CLASS dis_to_a{}; /*!< 判明している現在の表記上の装備AC修正値 / Known bonus to ac */
-    ARMOUR_CLASS dis_ac{}; /*!< 判明している現在の表記上の装備AC基礎値 / Known base ac */
-
-    int16_t to_h[2]{}; /* Bonus to hit (wield) */
-    int16_t to_h_b{}; /* Bonus to hit (bow) */
-    int16_t to_h_m{}; /* Bonus to hit (misc) */
-    int16_t to_d[2]{}; /* Bonus to dam (wield) */
-    int16_t to_d_m{}; /* Bonus to dam (misc) */
-
-    int16_t to_m_chance{}; /* Minusses to cast chance */
-
     bool no_flowed{};
-
-    int16_t num_blow[2]{}; /* Number of blows */
-    int16_t num_fire{}; /* Number of shots */
 
     byte tval_xtra{}; /* (Unused)Correct xtra tval */
     ItemKindType tval_ammo{}; /* Correct ammo tval */
