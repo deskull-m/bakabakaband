@@ -333,20 +333,21 @@ ObjectIndexList &get_o_idx_list_contains(FloorType &floor, OBJECT_IDX o_idx)
 
 /*!
  * @brief アイテムを所定の位置に落とす。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param subject クリーチャーへの参照
  * @param drop_item 落としたいアイテムへの参照
  * @param pos 配置したい座標
  * @param show_drop_message 足下に転がってきたアイテムのメッセージを表示するかどうか (デフォルトは表示する)
  */
-short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos, bool show_drop_message)
+short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos, bool show_drop_message)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&subject);
     const auto &world = AngbandWorld::get_instance();
-    const auto item_name = describe_flavor(player_ptr, drop_item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = player_ptr ? describe_flavor(player_ptr, drop_item, (OD_OMIT_PREFIX | OD_NAME_ONLY)) : std::string("item");
 
     Pos2D pos_drop = pos; //!< @details 実際に落ちる座標.
     auto bs = -1;
     auto bn = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *subject.current_floor_ptr;
     auto has_floor_space = false;
     for (auto dy = -3; dy <= 3; dy++) {
         for (auto dx = -3; dx <= 3; dx++) {
@@ -465,16 +466,16 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
         grid.o_idx_list.add(floor, item_idx);
     }
 
-    if (drop_item.is_fixed_artifact() && world.character_dungeon) {
+    if (drop_item.is_fixed_artifact() && world.character_dungeon && player_ptr) {
         auto &artifact = drop_item.get_fixed_artifact();
         artifact.floor_id = player_ptr->floor_id;
     }
 
-    note_spot(*player_ptr, pos_drop);
-    lite_spot(*player_ptr, pos_drop);
+    note_spot(subject, pos_drop);
+    lite_spot(subject, pos_drop);
     sound(SoundKind::DROP);
 
-    const auto is_located = player_ptr->is_located_at(pos_drop);
+    const auto is_located = subject.is_located_at(pos_drop);
     if (is_located) {
         static constexpr auto flags = {
             SubWindowRedrawingFlag::FLOOR_ITEMS,
@@ -504,7 +505,7 @@ void drop_ammo_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &
         return;
     }
 
-    (void)drop_near(player_ptr, drop_item, pos, true);
+    (void)drop_near(*player_ptr, drop_item, pos, true);
 }
 
 /*!

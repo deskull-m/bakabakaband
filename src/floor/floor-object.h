@@ -9,6 +9,7 @@
 
 class ObjectIndexList;
 
+class CreatureEntity;
 class FloorType;
 class ItemEntity;
 class PlayerType;
@@ -22,7 +23,7 @@ void excise_object_idx(FloorType &floor, OBJECT_IDX o_idx);
 void delete_items(PlayerType *player_ptr, std::vector<OBJECT_IDX> delete_i_idx_list);
 void delete_items(PlayerType *player_ptr, ObjectIndexList &o_idx_list);
 ObjectIndexList &get_o_idx_list_contains(FloorType &floor, OBJECT_IDX o_idx);
-short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos, bool show_drop_message = true);
+short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos, bool show_drop_message = true);
 void drop_ammo_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos, int destruction_chance);
 void floor_item_charges(const FloorType &floor, INVENTORY_IDX i_idx);
 void floor_item_describe(PlayerType *player_ptr, INVENTORY_IDX i_idx);
