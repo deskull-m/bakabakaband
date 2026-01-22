@@ -61,7 +61,7 @@ void place_object(PlayerType *player_ptr, const Pos2D &pos, uint32_t mode, Basei
         return;
     }
 
-    auto item = make_object(player_ptr, mode, restrict);
+    auto item = make_object(*player_ptr, mode, restrict);
     if (!item) {
         return;
     }

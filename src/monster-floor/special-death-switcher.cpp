@@ -305,14 +305,14 @@ static void on_dead_raal(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
     const auto restrict = ((floor.dun_level > 49) && one_in_(5)) ? kind_is_good_book : kind_is_book;
 
-    if (auto item = make_object(player_ptr, md_ptr->mo_mode, restrict)) {
+    if (auto item = make_object(*player_ptr, md_ptr->mo_mode, restrict)) {
         (void)drop_near(*player_ptr, *item, md_ptr->get_position());
     }
 }
 
 static void drop_sushi(PlayerType *player_ptr, MonsterDeath *md_ptr)
 {
-    if (auto item = make_object(player_ptr, AM_IGNORE_LEVEL, kind_is_sushi, 10)) {
+    if (auto item = make_object(*player_ptr, AM_IGNORE_LEVEL, kind_is_sushi, 10)) {
         (void)drop_near(*player_ptr, *item, md_ptr->get_position());
     }
 }
@@ -422,7 +422,7 @@ static tl::optional<ItemEntity> make_equipment(PlayerType *player_ptr, const BIT
         };
     }
 
-    return make_object(player_ptr, drop_mode, restrict);
+    return make_object(*player_ptr, drop_mode, restrict);
 }
 
 /*!
@@ -481,7 +481,7 @@ static void on_dead_manimani(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
 static void drop_specific_item_on_dead(PlayerType *player_ptr, MonsterDeath *md_ptr, BaseitemRestrict restrict)
 {
-    if (auto item = make_object(player_ptr, md_ptr->mo_mode, restrict)) {
+    if (auto item = make_object(*player_ptr, md_ptr->mo_mode, restrict)) {
         (void)drop_near(*player_ptr, *item, md_ptr->get_position());
     }
 }
