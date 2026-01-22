@@ -129,7 +129,7 @@ static std::vector<TextCommand> get_text_commands()
 
                 // プレイヤーの足下に落とす
                 Pos2D pos(player_ptr->y, player_ptr->x);
-                drop_near(player_ptr, dung_item, pos);
+                drop_near(*player_ptr, dung_item, pos);
 
                 msg_print(_("糞便が足下に落ちた。", "Dung has dropped at your feet."));
 

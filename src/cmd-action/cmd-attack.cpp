@@ -706,7 +706,7 @@ static void enema_attack(PlayerType *player_ptr, MONSTER_IDX m_idx, bool *fear, 
         player_ptr->plus_incident_tree("ATTACK_EXE_COUNT/DEFECATION", 1);
 
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-        (void)drop_near(player_ptr, item, player_ptr->get_position());
+        (void)drop_near(*player_ptr, item, player_ptr->get_position());
     }
 
     k = mon_damage_mod(player_ptr, monster, k, false);

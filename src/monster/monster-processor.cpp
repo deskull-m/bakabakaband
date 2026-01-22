@@ -625,7 +625,7 @@ void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
             ItemEntity item;
             item.generate(kind);
             item.number = 1;
-            (void)drop_near(player_ptr, item, m_ptr->get_position());
+            (void)drop_near(*player_ptr, item, m_ptr->get_position());
         }
     }
 }
@@ -651,7 +651,7 @@ void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
     item.generate(684);
     item.number = 1;
     item.pval = enum2i(m_ptr->ap_r_idx);
-    (void)drop_near(player_ptr, item, m_ptr->get_position());
+    (void)drop_near(*player_ptr, item, m_ptr->get_position());
 }
 
 /*!
@@ -797,7 +797,7 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-        (void)drop_near(player_ptr, item, m_ptr->get_position());
+        (void)drop_near(*player_ptr, item, m_ptr->get_position());
         m_ptr->mflag2.set(MonsterConstantFlagType::DEFECATED);
     }
 
@@ -807,7 +807,7 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
-        (void)drop_near(player_ptr, item, m_ptr->get_position());
+        (void)drop_near(*player_ptr, item, m_ptr->get_position());
         m_ptr->mflag2.set(MonsterConstantFlagType::VOMITED);
     }
 

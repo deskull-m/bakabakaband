@@ -244,7 +244,7 @@ void alloc_specific_floor_items(PlayerType *player_ptr)
             }
 
             // アイテムを床に配置
-            drop_near(player_ptr, item, pos, false);
+            drop_near(*player_ptr, item, pos, false);
             break;
         }
 
