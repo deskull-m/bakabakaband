@@ -137,7 +137,7 @@ bool activate_judgement(PlayerType *player_ptr, std::string_view name)
     wiz_lite(player_ptr, false);
 
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
-    take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(*player_ptr, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
 
     (void)detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
     (void)detect_doors(player_ptr, DETECT_RAD_DEFAULT);

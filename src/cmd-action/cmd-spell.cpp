@@ -1099,7 +1099,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
                 sanity_blast(player_ptr, tl::nullopt, true);
             } else {
                 msg_print(_("痛い！", "It hurts!"));
-                take_hit(player_ptr, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
+                take_hit(*player_ptr, DAMAGE_LOSELIFE, Dice::roll(sval + 1, 6), _("暗黒魔法の逆流", "a miscast Death spell"));
 
                 if ((spell_id > 15) && one_in_(6) && !player_ptr->hold_exp) {
                     lose_exp(static_cast<CreatureEntity &>(*player_ptr), spell_id * 250);

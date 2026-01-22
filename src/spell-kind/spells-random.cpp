@@ -120,7 +120,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
                 int dam = Dice::roll(10, 10);
                 msg_print(_("純粋な魔力の次元への扉が開いた！", "A portal opens to a plane of raw mana!"));
                 project(*player_ptr, 0, 8, player_ptr->y, player_ptr->x, dam, AttributeType::MANA, flg);
-                take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("純粋な魔力の解放", "released pure mana"));
+                take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, _("純粋な魔力の解放", "released pure mana"));
                 if (!one_in_(6)) {
                     break;
                 }
@@ -144,7 +144,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
             wall_breaker(player_ptr);
             if (!randint0(7)) {
                 project(*player_ptr, 0, 7, player_ptr->y, player_ptr->x, 50, AttributeType::KILL_WALL, flg);
-                take_hit(player_ptr, DAMAGE_NOESCAPE, 50, _("エネルギーのうねり", "surge of energy"));
+                take_hit(*player_ptr, DAMAGE_NOESCAPE, 50, _("エネルギーのうねり", "surge of energy"));
             }
 
             if (!one_in_(6)) {

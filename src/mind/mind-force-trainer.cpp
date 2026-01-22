@@ -311,7 +311,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
             msg_print(_("気が暴走した！", "The Force exploded!"));
             fire_ball(*player_ptr, AttributeType::MANA, Direction::self(), get_current_ki(player_ptr) / 2, 10);
             auto data = CreatureClass(*player_ptr).get_specific_data<force_trainer_data_type>();
-            take_hit(player_ptr, DAMAGE_LOSELIFE, data->ki / 2, _("気の暴走", "Explosion of the Force"));
+            take_hit(*player_ptr, DAMAGE_LOSELIFE, data->ki / 2, _("気の暴走", "Explosion of the Force"));
         } else {
             return true;
         }

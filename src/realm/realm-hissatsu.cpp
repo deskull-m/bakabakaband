@@ -753,7 +753,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
             }
-            take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(100), _("慶雲鬼忍剣を使った衝撃", "exhaustion on using Keiun-Kininken"));
+            take_hit(*player_ptr, DAMAGE_NOESCAPE, 100 + randint1(100), _("慶雲鬼忍剣を使った衝撃", "exhaustion on using Keiun-Kininken"));
         }
         break;
 
@@ -775,11 +775,11 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
 
             auto &world = AngbandWorld::get_instance();
             if (world.total_winner) {
-                take_hit(player_ptr, DAMAGE_FORCE, 9999, "Seppuku");
+                take_hit(*player_ptr, DAMAGE_FORCE, 9999, "Seppuku");
                 world.total_winner = true;
             } else {
                 msg_print(_("武士道とは、死ぬことと見つけたり。", "The meaning of bushido is found in death."));
-                take_hit(player_ptr, DAMAGE_FORCE, 9999, "Seppuku");
+                take_hit(*player_ptr, DAMAGE_FORCE, 9999, "Seppuku");
             }
         }
         break;

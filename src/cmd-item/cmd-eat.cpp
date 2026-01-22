@@ -325,27 +325,27 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         break;
     case SV_FOOD_WEAKNESS:
-        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_STR);
         return true;
     case SV_FOOD_SICKNESS:
-        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_CON);
         return true;
     case SV_FOOD_STUPIDITY:
-        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_INT);
         return true;
     case SV_FOOD_NAIVETY:
-        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_WIS);
         return true;
     case SV_FOOD_UNHEALTH:
-        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_CON);
         return true;
     case SV_FOOD_DISEASE:
-        take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
         (void)do_dec_stat(player_ptr, A_STR);
         return true;
     case SV_FOOD_CURE_POISON:

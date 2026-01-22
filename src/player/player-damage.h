@@ -10,9 +10,10 @@
 #define DAMAGE_NOESCAPE 5
 #define DAMAGE_USELIFE 6
 
+class CreatureEntity;
 class MonsterEntity;
 class PlayerType;
-int take_hit(PlayerType *player_ptr, int damage_type, int damage, std::string_view kb_str, MonraceId killer_monrace_id = static_cast<MonraceId>(0));
+int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_view kb_str, MonraceId killer_monrace_id = static_cast<MonraceId>(0));
 int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
 int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
 int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
