@@ -157,7 +157,7 @@ void wall_breaker(PlayerType *player_ptr)
     }
 
     if (randint1(100) > 30) {
-        earthquake(player_ptr, player_ptr->get_position(), 1);
+        earthquake(*player_ptr, player_ptr->get_position(), 1);
         return;
     }
 

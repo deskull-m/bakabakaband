@@ -683,7 +683,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                earthquake(player_ptr, player_ptr->get_position(), 10);
+                earthquake(*player_ptr, player_ptr->get_position(), 10);
             }
         }
 
