@@ -329,9 +329,9 @@ static void display_equipment(PlayerType *player_ptr, const ItemTester &item_tes
         term_putstr(0, cur_row, cur_col, TERM_WHITE, tmp_val);
 
         std::string item_name;
-        auto is_two_handed = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(player_ptr);
-        is_two_handed |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(player_ptr);
-        if (is_two_handed && has_two_handed_weapons(player_ptr)) {
+        auto is_two_handed = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(*player_ptr);
+        is_two_handed |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(*player_ptr);
+        if (is_two_handed && has_two_handed_weapons(*player_ptr)) {
             item_name = _("(武器を両手持ち)", "(wielding with two-hands)");
             attr = TERM_WHITE;
         } else {

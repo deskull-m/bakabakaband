@@ -256,7 +256,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
     const auto &monster = floor_ref.m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ACID)) {
-        if (!has_immune_acid(player_ptr) && (player_ptr->oppose_acid || music_singing(player_ptr, MUSIC_RESIST))) {
+        if (!has_immune_acid(*player_ptr) && (player_ptr->oppose_acid || music_singing(player_ptr, MUSIC_RESIST))) {
             return true;
         }
 
@@ -267,7 +267,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_FIRE)) {
         if (!(CreatureRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->level > 44)) {
-            if (!has_immune_fire(player_ptr) && (player_ptr->oppose_fire || music_singing(player_ptr, MUSIC_RESIST))) {
+            if (!has_immune_fire(*player_ptr) && (player_ptr->oppose_fire || music_singing(player_ptr, MUSIC_RESIST))) {
                 return true;
             }
 
@@ -278,7 +278,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_ELEC)) {
-        if (!has_immune_elec(player_ptr) && (player_ptr->oppose_elec || music_singing(player_ptr, MUSIC_RESIST))) {
+        if (!has_immune_elec(*player_ptr) && (player_ptr->oppose_elec || music_singing(player_ptr, MUSIC_RESIST))) {
             return true;
         }
 
@@ -288,7 +288,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     if (monrace.ability_flags.has(MonsterAbilityType::BR_COLD)) {
-        if (!has_immune_cold(player_ptr) && (player_ptr->oppose_cold || music_singing(player_ptr, MUSIC_RESIST))) {
+        if (!has_immune_cold(*player_ptr) && (player_ptr->oppose_cold || music_singing(player_ptr, MUSIC_RESIST))) {
             return true;
         }
 

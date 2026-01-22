@@ -332,7 +332,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(PlayerType *player_ptr, MONSTER_IDX m_id
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_nexus(player_ptr) != 0);
+        resist = (has_resist_shard(*player_ptr) != 0);
         saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何か奇妙な言葉をつぶやいた。", "%s^ mumbles strangely."),

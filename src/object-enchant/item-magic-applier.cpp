@@ -90,7 +90,7 @@ std::tuple<int, int> ItemMagicApplier::calculate_chances()
         chance_great = dungeon.obj_great;
     }
 
-    if (has_good_luck(&static_cast<PlayerType &>(this->creature))) {
+    if (has_good_luck(this->creature)) {
         chance_good += 5;
         chance_great += 2;
     } else if (this->creature.muta.has(PlayerMutationType::BAD_LUCK)) {
@@ -176,7 +176,7 @@ void ItemMagicApplier::try_make_artifact(const int rolls)
             break;
         }
 
-        if (!has_good_luck(&static_cast<PlayerType &>(this->creature)) || !one_in_(77)) {
+        if (!has_good_luck(this->creature) || !one_in_(77)) {
             continue;
         }
 

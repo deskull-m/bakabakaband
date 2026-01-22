@@ -54,13 +54,13 @@ void effect_player_poison(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(player_ptr) / 100;
 
-    if ((!(double_resist || has_resist_pois(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE) && !check_multishadow(*player_ptr)) {
+    if ((!(double_resist || has_resist_pois(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE) && !check_multishadow(*player_ptr)) {
         do_dec_stat(player_ptr, A_CON);
     }
 
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!(double_resist || has_resist_pois(player_ptr)) && !check_multishadow(*player_ptr)) {
+    if (!(double_resist || has_resist_pois(*player_ptr)) && !check_multishadow(*player_ptr)) {
         (void)BadStatusSetter(*player_ptr).mod_poison(randint0(ep_ptr->dam) + 10);
     }
 }
@@ -75,7 +75,7 @@ void effect_player_nuke(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(player_ptr) / 100;
 
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
-    if ((double_resist || has_resist_pois(player_ptr)) || check_multishadow(*player_ptr)) {
+    if ((double_resist || has_resist_pois(*player_ptr)) || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -134,7 +134,7 @@ void effect_player_arrow(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         return;
     }
 
-    if (has_invuln_arrow(player_ptr)) {
+    if (has_invuln_arrow(*player_ptr)) {
         msg_print(_("矢を斬り捨てた！", "You cut down the arrow!"));
         return;
     }
@@ -156,12 +156,12 @@ void effect_player_plasma(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!has_resist_sound(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_sound(*player_ptr) && !check_multishadow(*player_ptr)) {
         const auto plus_stun = randnum1<short>((ep_ptr->dam > 40) ? 35 : (ep_ptr->dam * 3 / 4 + 5));
         (void)BadStatusSetter(*player_ptr).mod_stun(plus_stun);
     }
 
-    if (!(has_resist_fire(player_ptr) || is_oppose_fire(player_ptr) || has_immune_fire(player_ptr))) {
+    if (!(has_resist_fire(*player_ptr) || is_oppose_fire(player_ptr) || has_immune_fire(*player_ptr))) {
         inventory_damage(player_ptr, BreakerAcid(), 3);
     }
 }
@@ -192,7 +192,7 @@ void effect_player_nether(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_nether_damage_rate(player_ptr, CALC_RAND) / 100;
 
-    if (!has_resist_neth(player_ptr) && !evaded) {
+    if (!has_resist_neth(*player_ptr) && !evaded) {
         drain_exp(player_ptr, 200 + (player_ptr->exp / 100), 200 + (player_ptr->exp / 1000), 75);
     }
 
@@ -219,14 +219,14 @@ void effect_player_water(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_water_damage_rate(player_ptr, CALC_RAND) / 100;
 
-    BIT_FLAGS has_res_water = has_resist_water(player_ptr);
+    BIT_FLAGS has_res_water = has_resist_water(*player_ptr);
     BadStatusSetter bss(*player_ptr);
     if (!check_multishadow(*player_ptr)) {
-        if (!has_resist_sound(player_ptr) && !has_res_water) {
+        if (!has_resist_sound(*player_ptr) && !has_res_water) {
             (void)bss.mod_stun(randnum1<short>(40));
         }
 
-        if (!has_resist_conf(player_ptr) && !has_res_water) {
+        if (!has_resist_conf(*player_ptr) && !has_res_water) {
             (void)bss.mod_confusion(randint1(5) + 5);
         }
 
@@ -251,22 +251,22 @@ void effect_player_chaos(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     BadStatusSetter bss(*player_ptr);
-    if (!has_resist_conf(player_ptr) && !has_resist_chaos(player_ptr)) {
+    if (!has_resist_conf(*player_ptr) && !has_resist_chaos(*player_ptr)) {
         (void)bss.mod_confusion(randint0(20) + 10);
     }
 
-    if (!has_resist_chaos(player_ptr)) {
+    if (!has_resist_chaos(*player_ptr)) {
         (void)bss.mod_hallucination(randnum1<short>(10));
         if (one_in_(3)) {
             msg_print(_("あなたの身体はカオスの力で捻じ曲げられた！", "Your body is twisted by chaos!"));
             (void)gain_mutation(*player_ptr, 0);
         }
     }
-    if (!has_resist_neth(player_ptr) && !has_resist_chaos(player_ptr)) {
+    if (!has_resist_neth(*player_ptr) && !has_resist_chaos(*player_ptr)) {
         drain_exp(player_ptr, 5000 + (player_ptr->exp / 100), 500 + (player_ptr->exp / 1000), 75);
     }
 
-    if (!has_resist_chaos(player_ptr) || one_in_(9)) {
+    if (!has_resist_chaos(*player_ptr) || one_in_(9)) {
         inventory_damage(player_ptr, BreakerElec(), 2);
         inventory_damage(player_ptr, BreakerFire(), 2);
     }
@@ -282,11 +282,11 @@ void effect_player_shards(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_shards_damage_rate(player_ptr, CALC_RAND) / 100;
 
-    if (!has_resist_shard(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_shard(*player_ptr) && !check_multishadow(*player_ptr)) {
         (void)BadStatusSetter(*player_ptr).mod_cut(static_cast<TIME_EFFECT>(ep_ptr->dam));
     }
 
-    if (!has_resist_shard(player_ptr) || one_in_(13)) {
+    if (!has_resist_shard(*player_ptr) || one_in_(13)) {
         inventory_damage(player_ptr, BreakerCold(), 2);
     }
 
@@ -301,12 +301,12 @@ void effect_player_sound(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_sound_damage_rate(player_ptr, CALC_RAND) / 100;
 
-    if (!has_resist_sound(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_sound(*player_ptr) && !check_multishadow(*player_ptr)) {
         const auto plus_stun = randnum1<short>((ep_ptr->dam > 90) ? 35 : (ep_ptr->dam / 3 + 5));
         (void)BadStatusSetter(*player_ptr).mod_stun(plus_stun);
     }
 
-    if (!has_resist_sound(player_ptr) || one_in_(13)) {
+    if (!has_resist_sound(*player_ptr) || one_in_(13)) {
         inventory_damage(player_ptr, BreakerCold(), 2);
     }
 
@@ -321,7 +321,7 @@ void effect_player_confusion(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_conf_damage_rate(player_ptr, CALC_RAND) / 100;
     BadStatusSetter bss(*player_ptr);
-    if (!has_resist_conf(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_conf(*player_ptr) && !check_multishadow(*player_ptr)) {
         (void)bss.mod_confusion(randint1(20) + 10);
     }
 
@@ -336,7 +336,7 @@ void effect_player_disenchant(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_disenchant_damage_rate(player_ptr, CALC_RAND) / 100;
 
-    if (!has_resist_disen(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_disen(*player_ptr) && !check_multishadow(*player_ptr)) {
         (void)apply_disenchant(player_ptr, 0);
     }
 
@@ -351,7 +351,7 @@ void effect_player_nexus(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_nexus_damage_rate(player_ptr, CALC_RAND) / 100;
 
-    if (!has_resist_nexus(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_shard(*player_ptr) && !check_multishadow(*player_ptr)) {
         apply_nexus(*ep_ptr->m_ptr, player_ptr);
     }
 
@@ -363,7 +363,7 @@ void effect_player_force(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     if (player_ptr->effects()->blindness().is_blind()) {
         msg_print(_("運動エネルギーで攻撃された！", "You are hit by kinetic force!"));
     }
-    if (!has_resist_sound(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_sound(*player_ptr) && !check_multishadow(*player_ptr)) {
         (void)BadStatusSetter(*player_ptr).mod_stun(randnum1<short>(20));
     }
 
@@ -377,16 +377,16 @@ void effect_player_rocket(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     BadStatusSetter bss(*player_ptr);
-    if (!has_resist_sound(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_sound(*player_ptr) && !check_multishadow(*player_ptr)) {
         (void)bss.mod_stun(randnum1<short>(20));
     }
 
     ep_ptr->dam = ep_ptr->dam * calc_rocket_damage_rate(player_ptr, CALC_RAND) / 100;
-    if (!has_resist_shard(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!has_resist_shard(*player_ptr) && !check_multishadow(*player_ptr)) {
         (void)bss.mod_cut((ep_ptr->dam / 2));
     }
 
-    if (!has_resist_shard(player_ptr) || one_in_(12)) {
+    if (!has_resist_shard(*player_ptr) || one_in_(12)) {
         inventory_damage(player_ptr, BreakerCold(), 3);
     }
 
@@ -413,7 +413,7 @@ void effect_player_lite(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
 
-    if (!is_blind && !has_resist_lite(player_ptr) && !has_resist_blind(player_ptr) && !check_multishadow(*player_ptr)) {
+    if (!is_blind && !has_resist_lite(*player_ptr) && !has_resist_blind(*player_ptr) && !check_multishadow(*player_ptr)) {
         (void)BadStatusSetter(*player_ptr).mod_blindness(randint1(5) + 2);
     }
 
@@ -459,8 +459,8 @@ void effect_player_dark(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     ep_ptr->dam = ep_ptr->dam * calc_dark_damage_rate(player_ptr, CALC_RAND) / 100;
 
     auto go_blind = !is_blind;
-    go_blind &= !has_resist_blind(player_ptr);
-    go_blind &= !(has_resist_dark(player_ptr) || has_immune_dark(player_ptr));
+    go_blind &= !has_resist_blind(*player_ptr);
+    go_blind &= !(has_resist_dark(*player_ptr) || has_immune_dark(*player_ptr));
     go_blind &= !check_multishadow(*player_ptr);
 
     if (go_blind) {
@@ -513,13 +513,13 @@ void effect_player_time(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     bool evaded = check_multishadow(*player_ptr);
 
-    if (has_resist_time(player_ptr) && !evaded) {
+    if (has_resist_time(*player_ptr) && !evaded) {
         msg_print(_("時間が通り過ぎていく気がする。", "You feel as if time is passing you by."));
     }
 
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    if (!has_resist_time(player_ptr) && !evaded) {
+    if (!has_resist_time(*player_ptr) && !evaded) {
         effect_player_time_addition(player_ptr);
     }
 }
@@ -539,7 +539,7 @@ void effect_player_gravity(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
             (void)bss.mod_deceleration(randint0(4) + 4, false);
         }
 
-        if (!(has_resist_sound(player_ptr) || player_ptr->levitation)) {
+        if (!(has_resist_sound(*player_ptr) || player_ptr->levitation)) {
             const auto plus_stun = randnum1<short>((ep_ptr->dam > 90) ? 35 : (ep_ptr->dam / 3 + 5));
             (void)bss.mod_stun(plus_stun);
         }
@@ -597,8 +597,8 @@ void effect_player_meteor(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
-    if (!has_resist_shard(player_ptr) || one_in_(13)) {
-        if (!has_immune_fire(player_ptr)) {
+    if (!has_resist_shard(*player_ptr) || one_in_(13)) {
+        if (!has_immune_fire(*player_ptr)) {
             inventory_damage(player_ptr, BreakerFire(), 2);
         }
         inventory_damage(player_ptr, BreakerCold(), 2);
@@ -617,16 +617,16 @@ void effect_player_icee(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     BadStatusSetter bss(*player_ptr);
-    if (!has_resist_shard(player_ptr)) {
+    if (!has_resist_shard(*player_ptr)) {
         (void)bss.mod_cut(static_cast<TIME_EFFECT>(Dice::roll(5, 8)));
     }
 
-    if (!has_resist_sound(player_ptr)) {
+    if (!has_resist_sound(*player_ptr)) {
         (void)bss.mod_stun(randnum1<short>(15));
     }
 
-    if ((!(has_resist_cold(player_ptr) || is_oppose_cold(player_ptr))) || one_in_(12)) {
-        if (!has_immune_cold(player_ptr)) {
+    if ((!(has_resist_cold(*player_ptr) || is_oppose_cold(player_ptr))) || one_in_(12)) {
+        if (!has_immune_cold(*player_ptr)) {
             inventory_damage(player_ptr, BreakerCold(), 3);
         }
     }
@@ -687,15 +687,15 @@ void effect_player_abyss(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     msg_print(_("深淵から何かがあなたを覗き込んでいる！", "Something gazes at you from the abyss!"));
-    if (!has_resist_chaos(player_ptr)) {
+    if (!has_resist_chaos(*player_ptr)) {
         (void)bss.mod_hallucination(randnum1<short>(10));
     }
 
-    if (!has_resist_conf(player_ptr)) {
+    if (!has_resist_conf(*player_ptr)) {
         (void)bss.mod_confusion(randnum1<short>(10));
     }
 
-    if (!has_resist_fear(player_ptr)) {
+    if (!has_resist_fear(*player_ptr)) {
         (void)bss.mod_fear(randnum1<short>(10));
     }
     ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);

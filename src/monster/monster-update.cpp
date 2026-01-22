@@ -656,7 +656,7 @@ void update_smart_learn(PlayerType *player_ptr, MONSTER_IDX m_idx, int what)
 
     switch (what) {
     case DRS_ACID:
-        if (has_resist_acid(player_ptr)) {
+        if (has_resist_acid(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_ACID);
         }
 
@@ -664,13 +664,13 @@ void update_smart_learn(PlayerType *player_ptr, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::OPP_ACID);
         }
 
-        if (has_immune_acid(player_ptr)) {
+        if (has_immune_acid(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::IMM_ACID);
         }
 
         break;
     case DRS_ELEC:
-        if (has_resist_elec(player_ptr)) {
+        if (has_resist_elec(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_ELEC);
         }
 
@@ -678,13 +678,13 @@ void update_smart_learn(PlayerType *player_ptr, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::OPP_ELEC);
         }
 
-        if (has_immune_elec(player_ptr)) {
+        if (has_immune_elec(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::IMM_ELEC);
         }
 
         break;
     case DRS_FIRE:
-        if (has_resist_fire(player_ptr)) {
+        if (has_resist_fire(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_FIRE);
         }
 
@@ -692,13 +692,13 @@ void update_smart_learn(PlayerType *player_ptr, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::OPP_FIRE);
         }
 
-        if (has_immune_fire(player_ptr)) {
+        if (has_immune_fire(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::IMM_FIRE);
         }
 
         break;
     case DRS_COLD:
-        if (has_resist_cold(player_ptr)) {
+        if (has_resist_cold(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_COLD);
         }
 
@@ -706,13 +706,13 @@ void update_smart_learn(PlayerType *player_ptr, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::OPP_COLD);
         }
 
-        if (has_immune_cold(player_ptr)) {
+        if (has_immune_cold(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::IMM_COLD);
         }
 
         break;
     case DRS_POIS:
-        if (has_resist_pois(player_ptr)) {
+        if (has_resist_pois(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_POIS);
         }
 
@@ -722,67 +722,67 @@ void update_smart_learn(PlayerType *player_ptr, MONSTER_IDX m_idx, int what)
 
         break;
     case DRS_NETH:
-        if (has_resist_neth(player_ptr)) {
+        if (has_resist_neth(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_NETH);
         }
 
         break;
     case DRS_LITE:
-        if (has_resist_lite(player_ptr)) {
+        if (has_resist_lite(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_LITE);
         }
 
         break;
     case DRS_DARK:
-        if (has_resist_dark(player_ptr) || has_immune_dark(player_ptr)) {
+        if (has_resist_dark(*player_ptr) || has_immune_dark(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_DARK);
         }
 
         break;
     case DRS_FEAR:
-        if (has_resist_fear(player_ptr)) {
+        if (has_resist_fear(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_FEAR);
         }
 
         break;
     case DRS_CONF:
-        if (has_resist_conf(player_ptr)) {
+        if (has_resist_conf(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_CONF);
         }
 
         break;
     case DRS_CHAOS:
-        if (has_resist_chaos(player_ptr)) {
+        if (has_resist_chaos(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_CHAOS);
         }
 
         break;
     case DRS_DISEN:
-        if (has_resist_disen(player_ptr)) {
+        if (has_resist_disen(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_DISEN);
         }
 
         break;
     case DRS_BLIND:
-        if (has_resist_blind(player_ptr)) {
+        if (has_resist_blind(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_BLIND);
         }
 
         break;
     case DRS_NEXUS:
-        if (has_resist_nexus(player_ptr)) {
+        if (has_resist_shard(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_NEXUS);
         }
 
         break;
     case DRS_SOUND:
-        if (has_resist_sound(player_ptr)) {
+        if (has_resist_sound(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_SOUND);
         }
 
         break;
     case DRS_SHARD:
-        if (has_resist_shard(player_ptr)) {
+        if (has_resist_shard(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::RES_SHARD);
         }
 
@@ -800,7 +800,7 @@ void update_smart_learn(PlayerType *player_ptr, MONSTER_IDX m_idx, int what)
 
         break;
     case DRS_REFLECT:
-        if (has_reflect(player_ptr)) {
+        if (has_reflect(*player_ptr)) {
             monster.smart.set(MonsterSmartLearnType::IMM_REFLECT);
         }
 

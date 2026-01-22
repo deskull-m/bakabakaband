@@ -22,7 +22,7 @@
 
 void process_blind_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_blind(player_ptr) || check_multishadow(*player_ptr)) {
+    if (has_resist_blind(*player_ptr) || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -52,7 +52,7 @@ void process_terrify_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
     }
 
     const auto &monrace = monap_ptr->m_ptr->get_monrace();
-    if (has_resist_fear(player_ptr)) {
+    if (has_resist_fear(*player_ptr)) {
         msg_print(_("しかし恐怖に侵されなかった！", "You stand your ground!"));
         monap_ptr->obvious = true;
         return;
@@ -123,7 +123,7 @@ void process_lose_all_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_
 
 void process_stun_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_sound(player_ptr) || check_multishadow(*player_ptr)) {
+    if (has_resist_sound(*player_ptr) || check_multishadow(*player_ptr)) {
         return;
     }
 
@@ -161,7 +161,7 @@ void process_groin_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr
 
 void process_monster_attack_time(PlayerType *player_ptr)
 {
-    if (has_resist_time(player_ptr) || check_multishadow(*player_ptr)) {
+    if (has_resist_time(*player_ptr) || check_multishadow(*player_ptr)) {
         return;
     }
 

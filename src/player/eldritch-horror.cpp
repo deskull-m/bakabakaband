@@ -202,7 +202,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         break;
     }
     case 2: {
-        if (player_ptr->muta.has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(player_ptr)) {
+        if (player_ptr->muta.has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(*player_ptr)) {
             msg_print(_("あなたはパラノイアになった！", "You become paranoid!"));
             if (player_ptr->muta.has(PlayerMutationType::FEARLESS)) {
                 msg_print(_("あなたはもう恐れ知らずではなくなった。", "You are no longer fearless."));
@@ -215,7 +215,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         break;
     }
     case 3: {
-        if (player_ptr->muta.has_not(PlayerMutationType::HALLU) && !has_resist_chaos(player_ptr)) {
+        if (player_ptr->muta.has_not(PlayerMutationType::HALLU) && !has_resist_chaos(*player_ptr)) {
             msg_print(_("幻覚をひき起こす精神錯乱に陥った！", "You are afflicted by a hallucinatory insanity!"));
             player_ptr->muta.set(PlayerMutationType::HALLU);
         }
@@ -223,7 +223,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         break;
     }
     case 4: {
-        if (player_ptr->muta.has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(player_ptr)) {
+        if (player_ptr->muta.has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(*player_ptr)) {
             msg_print(_("激烈な感情の発作におそわれるようになった！", "You become subject to fits of berserk rage!"));
             player_ptr->muta.set(PlayerMutationType::BERS_RAGE);
         }
@@ -239,11 +239,11 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 11:
     case 12: {
         BadStatusSetter bss(*player_ptr);
-        if (!has_resist_conf(player_ptr)) {
+        if (!has_resist_conf(*player_ptr)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
 
-        if (!has_resist_chaos(player_ptr) && one_in_(3)) {
+        if (!has_resist_chaos(*player_ptr) && one_in_(3)) {
             (void)bss.mod_hallucination(randint0(250) + 150);
         }
 
@@ -255,13 +255,13 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 14:
     case 15: {
         BadStatusSetter bss(*player_ptr);
-        if (!has_resist_conf(player_ptr)) {
+        if (!has_resist_conf(*player_ptr)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
         if (!player_ptr->free_act) {
             (void)bss.mod_paralysis(randint0(4) + 4);
         }
-        if (!has_resist_chaos(player_ptr)) {
+        if (!has_resist_chaos(*player_ptr)) {
             (void)bss.mod_hallucination(randint0(250) + 150);
         }
 

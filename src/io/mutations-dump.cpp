@@ -19,7 +19,7 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
         return;
     }
 
-    if (player_ptr->muta.any() || has_good_luck(player_ptr) || has_pervert_attraction(player_ptr)) {
+    if (player_ptr->muta.any() || has_good_luck(*player_ptr) || has_pervert_attraction(*player_ptr)) {
         if (player_ptr->muta.has(PlayerMutationType::SPIT_ACID)) {
             fprintf(out_file, _(" あなたは酸を吹きかけることができる。(ダメージ レベルX1)\n", " You can spit acid (dam lvl).\n"));
         }
@@ -180,7 +180,7 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
             fprintf(out_file, _(" あなたはクッソ汚い輩を引きつける。\n", " You attract nasty creatures.\n"));
         }
 
-        if (has_pervert_attraction(player_ptr)) {
+        if (has_pervert_attraction(*player_ptr)) {
             fprintf(out_file, _(" あなたは変質者を引きつける。\n", " You attract perverts.\n"));
         }
 
@@ -412,7 +412,7 @@ void dump_mutations(PlayerType *player_ptr, FILE *out_file)
             fprintf(out_file, _(" あなたの動作は正確で力強い。(隠密+1)\n", " Your movements are precise and forceful (+1 STL).\n"));
         }
 
-        if (has_good_luck(player_ptr)) {
+        if (has_good_luck(*player_ptr)) {
             fprintf(out_file, _(" あなたは白いオーラにつつまれている。\n", " There is a white aura surrounding you.\n"));
         }
 

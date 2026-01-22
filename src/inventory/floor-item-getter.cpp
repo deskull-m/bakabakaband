@@ -243,7 +243,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
     fis.e1 = INVEN_MAIN_HAND;
     fis.e2 = INVEN_TOTAL - 1;
     test_equipment_floor(player_ptr, &fis, item_tester);
-    if (has_two_handed_weapons(player_ptr) && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
+    if (has_two_handed_weapons(*player_ptr) && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
         fis.max_equip++;
     }
 
@@ -255,12 +255,12 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
         fis.e2--;
     }
 
-    if (fis.equip && has_two_handed_weapons(player_ptr) && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
-        if (can_attack_with_main_hand(player_ptr)) {
+    if (fis.equip && has_two_handed_weapons(*player_ptr) && !(fis.mode & IGNORE_BOTHHAND_SLOT)) {
+        if (can_attack_with_main_hand(*player_ptr)) {
             if (fis.e2 < INVEN_SUB_HAND) {
                 fis.e2 = INVEN_SUB_HAND;
             }
-        } else if (can_attack_with_sub_hand(player_ptr)) {
+        } else if (can_attack_with_sub_hand(*player_ptr)) {
             fis.e1 = INVEN_MAIN_HAND;
         }
     }

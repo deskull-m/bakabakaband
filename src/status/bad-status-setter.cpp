@@ -612,25 +612,25 @@ void BadStatusSetter::decrease_int_wis(const short v)
     auto rand = randint0(5);
     switch (rand) {
     case 0:
-        if (has_sustain_int(player_ptr) == 0) {
+        if (has_sustain_int(*player_ptr) == 0) {
             (void)do_dec_stat(player_ptr, A_INT);
         }
 
-        if (has_sustain_wis(player_ptr) == 0) {
+        if (has_sustain_wis(*player_ptr) == 0) {
             (void)do_dec_stat(player_ptr, A_WIS);
         }
 
         return;
     case 1:
     case 2:
-        if (has_sustain_int(player_ptr) == 0) {
+        if (has_sustain_int(*player_ptr) == 0) {
             (void)do_dec_stat(player_ptr, A_INT);
         }
 
         return;
     case 3:
     case 4:
-        if (has_sustain_wis(player_ptr) == 0) {
+        if (has_sustain_wis(*player_ptr) == 0) {
             (void)do_dec_stat(player_ptr, A_WIS);
         }
 
@@ -668,7 +668,7 @@ void BadStatusSetter::decrease_charisma(const PlayerCutRank new_rank, const shor
         return;
     }
 
-    if (has_sustain_chr(player_ptr)) {
+    if (has_sustain_chr(*player_ptr)) {
         return;
     }
 

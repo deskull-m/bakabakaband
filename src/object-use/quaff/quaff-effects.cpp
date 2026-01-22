@@ -207,7 +207,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
         msg_erase();
         player_ptr->tsuyoshi = 1;
         (void)set_tsuyoshi(player_ptr, 0, true);
-        if (!has_resist_chaos(player_ptr)) {
+        if (!has_resist_chaos(*player_ptr)) {
             (void)BadStatusSetter(*player_ptr).mod_hallucination(50 + randint1(100));
         }
         return true;
@@ -275,7 +275,7 @@ bool QuaffEffects::salt_water()
  */
 bool QuaffEffects::poison()
 {
-    if (has_resist_pois(this->player_ptr) || is_oppose_pois(this->player_ptr)) {
+    if (has_resist_pois(*this->player_ptr) || is_oppose_pois(this->player_ptr)) {
         return false;
     }
 
@@ -288,7 +288,7 @@ bool QuaffEffects::poison()
  */
 bool QuaffEffects::blindness()
 {
-    if (has_resist_blind(this->player_ptr)) {
+    if (has_resist_blind(*this->player_ptr)) {
         return false;
     }
 
@@ -305,16 +305,16 @@ bool QuaffEffects::booze()
     auto is_monk = CreatureClass(*this->player_ptr).equals(PlayerClassType::MONK);
     if (!is_monk) {
         chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::HARMONY, -1);
-    } else if (!has_resist_conf(this->player_ptr)) {
+    } else if (!has_resist_conf(*this->player_ptr)) {
         set_bits(this->player_ptr->special_attack, ATTACK_SUIKEN);
     }
 
     BadStatusSetter bss(*this->player_ptr);
-    if (!has_resist_conf(this->player_ptr) && bss.set_confusion(randint0(20) + 15)) {
+    if (!has_resist_conf(*this->player_ptr) && bss.set_confusion(randint0(20) + 15)) {
         ident = true;
     }
 
-    if (has_resist_chaos(this->player_ptr)) {
+    if (has_resist_chaos(*this->player_ptr)) {
         return ident;
     }
 
@@ -578,7 +578,7 @@ bool QuaffEffects::tsuyoshi()
     msg_erase();
     this->player_ptr->tsuyoshi = 1;
     (void)set_tsuyoshi(this->player_ptr, 0, true);
-    if (!has_resist_chaos(this->player_ptr)) {
+    if (!has_resist_chaos(*this->player_ptr)) {
         (void)BadStatusSetter(*this->player_ptr).hallucination(50 + randint1(50));
     }
 

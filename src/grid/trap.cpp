@@ -227,7 +227,7 @@ static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
         return;
     }
 
-    if (has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) {
+    if (has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) {
         msg_print(_("しかし毒の影響はなかった！", "The poison does not affect you!"));
         take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
         return;
@@ -388,21 +388,21 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         break;
     case TrapType::BLIND:
         msg_print(_("黒いガスに包み込まれた！", "A black gas surrounds you!"));
-        if (has_resist_blind(player_ptr) == 0) {
+        if (has_resist_blind(*player_ptr) == 0) {
             (void)BadStatusSetter(*player_ptr).mod_blindness(randint0(50) + 25);
         }
 
         break;
     case TrapType::CONFUSE:
         msg_print(_("きらめくガスに包み込まれた！", "A gas of scintillating colors surrounds you!"));
-        if (has_resist_conf(player_ptr) == 0) {
+        if (has_resist_conf(*player_ptr) == 0) {
             (void)BadStatusSetter(*player_ptr).mod_confusion(randint0(20) + 10);
         }
 
         break;
     case TrapType::POISON:
         msg_print(_("刺激的な緑色のガスに包み込まれた！", "A pungent green gas surrounds you!"));
-        if (has_resist_pois(player_ptr) == 0) {
+        if (has_resist_pois(*player_ptr) == 0) {
             (void)BadStatusSetter(*player_ptr).mod_poison(randint0(20) + 10);
         }
 

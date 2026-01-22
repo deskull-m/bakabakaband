@@ -57,7 +57,7 @@ static void display_player_melee_bonus(PlayerType *player_ptr, int hand, int han
     const auto buf = format("(%+d,%+d)", (int)show_tohit, (int)show_todam);
     if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
         display_player_one_line(ENTRY_BARE_HAND, buf, TERM_L_BLUE);
-    } else if (has_two_handed_weapons(player_ptr)) {
+    } else if (has_two_handed_weapons(*player_ptr)) {
         display_player_one_line(ENTRY_TWO_HANDS, buf, TERM_L_BLUE);
     } else {
         display_player_one_line(hand_entry, buf, TERM_L_BLUE);
@@ -70,7 +70,7 @@ static void display_player_melee_bonus(PlayerType *player_ptr, int hand, int han
  */
 static void display_sub_hand(PlayerType *player_ptr)
 {
-    if (can_attack_with_sub_hand(player_ptr)) {
+    if (can_attack_with_sub_hand(*player_ptr)) {
         display_player_melee_bonus(player_ptr, 1, left_hander ? ENTRY_RIGHT_HAND2 : ENTRY_LEFT_HAND2);
         return;
     }
@@ -320,7 +320,7 @@ static void display_playtime_in_game(PlayerType *player_ptr)
 void display_player_middle(PlayerType *player_ptr)
 {
     if (player_ptr->is_player()) {
-        if (can_attack_with_main_hand(player_ptr)) {
+        if (can_attack_with_main_hand(*player_ptr)) {
             display_player_melee_bonus(player_ptr, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
         }
 

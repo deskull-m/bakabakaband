@@ -173,7 +173,7 @@ void set_mutation_info(CreatureEntity &creature, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたはクッソ汚い輩を引きつける。", "You attract nasty creatures."));
     }
 
-    if (has_pervert_attraction(&dynamic_cast<PlayerType &>(creature))) {
+    if (has_pervert_attraction(creature)) {
         self_ptr->info_list.emplace_back(_("あなたは変質者を引きつける。", "You attract perverts."));
     }
 
@@ -405,7 +405,7 @@ void set_mutation_info(CreatureEntity &creature, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたの動作は正確で力強い。(隠密+1)", "Your movements are precise and forceful (+1 STL)."));
     }
 
-    if (has_good_luck(&dynamic_cast<PlayerType &>(creature))) {
+    if (has_good_luck(creature)) {
         self_ptr->info_list.emplace_back(_("あなたは白いオーラにつつまれている。", "There is a white aura surrounding you."));
     }
 

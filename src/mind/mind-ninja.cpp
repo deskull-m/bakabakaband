@@ -211,7 +211,7 @@ void process_surprise_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
     if (player_ptr->monlite && (pa_ptr->mode != HISSATSU_NYUSIN)) {
         tmp /= 3;
     }
-    if (has_aggravate(player_ptr)) {
+    if (has_aggravate(*player_ptr)) {
         tmp /= 2;
     }
     if (monrace.level > (player_ptr->level * player_ptr->level / 20 + 10)) {

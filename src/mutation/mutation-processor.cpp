@@ -117,7 +117,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     }
 
     if (player_ptr->muta.has(PlayerMutationType::COWARDICE) && (randint1(3000) == 13)) {
-        if (!has_resist_fear(player_ptr)) {
+        if (!has_resist_fear(*player_ptr)) {
             disturb(*player_ptr, false, true);
             msg_print(_("とても暗い... とても恐い！", "It's so dark... so scary!"));
             (void)bss.mod_fear(13 + randint1(26));
@@ -125,7 +125,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     }
 
     if (player_ptr->muta.has(PlayerMutationType::RTELEPORT) && (randint1(5000) == 88)) {
-        if (!has_resist_nexus(player_ptr) && player_ptr->muta.has_not(PlayerMutationType::VTELEPORT) && !player_ptr->anti_tele) {
+        if (!has_resist_shard(*player_ptr) && player_ptr->muta.has_not(PlayerMutationType::VTELEPORT) && !player_ptr->anti_tele) {
             disturb(*player_ptr, false, true);
             msg_print(_("あなたの位置は突然ひじょうに不確定になった...", "Your position suddenly seems very uncertain..."));
             msg_erase();
@@ -134,17 +134,17 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     }
 
     if (player_ptr->muta.has(PlayerMutationType::ALCOHOL) && (randint1(6400) == 321)) {
-        if (!has_resist_conf(player_ptr) && !has_resist_chaos(player_ptr)) {
+        if (!has_resist_conf(*player_ptr) && !has_resist_chaos(*player_ptr)) {
             disturb(*player_ptr, false, true);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             msg_print(_("いひきがもーろーとひてきたきがふる...ヒック！", "You feel a SSSCHtupor cOmINg over yOu... *HIC*!"));
         }
 
-        if (!has_resist_conf(player_ptr)) {
+        if (!has_resist_conf(*player_ptr)) {
             (void)bss.mod_confusion(randint0(20) + 15);
         }
 
-        if (!has_resist_chaos(player_ptr)) {
+        if (!has_resist_chaos(*player_ptr)) {
             if (one_in_(20)) {
                 msg_erase();
                 if (one_in_(3)) {
@@ -166,7 +166,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     }
 
     if (player_ptr->muta.has(PlayerMutationType::HALLU) && (randint1(6400) == 42)) {
-        if (!has_resist_chaos(player_ptr)) {
+        if (!has_resist_chaos(*player_ptr)) {
             disturb(*player_ptr, false, true);
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             (void)bss.mod_hallucination(randint0(50) + 20);
@@ -249,7 +249,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         }
     }
 
-    if (has_pervert_attraction(player_ptr) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
+    if (has_pervert_attraction(*player_ptr) && !player_ptr->anti_magic && (randint1(6666) == 666)) {
         bool pet = one_in_(6);
         BIT_FLAGS mode = PM_ALLOW_GROUP;
 
@@ -371,32 +371,32 @@ void process_world_aux_mutation(PlayerType *player_ptr)
 
         switch (which_stat) {
         case A_STR:
-            if (has_sustain_str(player_ptr)) {
+            if (has_sustain_str(*player_ptr)) {
                 sustained = true;
             }
             break;
         case A_INT:
-            if (has_sustain_int(player_ptr)) {
+            if (has_sustain_int(*player_ptr)) {
                 sustained = true;
             }
             break;
         case A_WIS:
-            if (has_sustain_wis(player_ptr)) {
+            if (has_sustain_wis(*player_ptr)) {
                 sustained = true;
             }
             break;
         case A_DEX:
-            if (has_sustain_dex(player_ptr)) {
+            if (has_sustain_dex(*player_ptr)) {
                 sustained = true;
             }
             break;
         case A_CON:
-            if (has_sustain_con(player_ptr)) {
+            if (has_sustain_con(*player_ptr)) {
                 sustained = true;
             }
             break;
         case A_CHR:
-            if (has_sustain_chr(player_ptr)) {
+            if (has_sustain_chr(*player_ptr)) {
                 sustained = true;
             }
             break;

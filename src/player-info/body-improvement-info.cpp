@@ -86,35 +86,35 @@ void set_body_improvement_info_3(PlayerType *player_ptr, self_info_type *self_pt
         self_ptr->info_list.emplace_back(_("あなたは自己の経験値をしっかりと維持する。", "You have a firm hold on your experience."));
     }
 
-    if (has_reflect(player_ptr)) {
+    if (has_reflect(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは矢の呪文を反射する。", "You reflect bolt spells."));
     }
 
-    if (has_resist_curse(player_ptr)) {
+    if (has_resist_curse(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたはより強く呪いに抵抗できる。", "You can resist curses powerfully."));
     }
 
-    if (has_sh_fire(player_ptr)) {
+    if (has_sh_fire(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは炎のオーラに包まれている。", "You are surrounded with a fiery aura."));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_FIRE)) {
+    if (get_player_flags(*player_ptr, TR_SELF_FIRE)) {
         self_ptr->info_list.emplace_back(_("あなたは身を焼く炎に包まれている。", "You are being damaged with fire."));
     }
 
-    if (has_sh_elec(player_ptr)) {
+    if (has_sh_elec(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは電気のオーラに包まれている。", "You are surrounded with an electricity aura."));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_ELEC)) {
+    if (get_player_flags(*player_ptr, TR_SELF_ELEC)) {
         self_ptr->info_list.emplace_back(_("あなたは身を焦がす電撃に包まれている。", "You are being damaged with electricity."));
     }
 
-    if (has_sh_cold(player_ptr)) {
+    if (has_sh_cold(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは冷気のオーラに包まれている。", "You are surrounded with an aura of coldness."));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_COLD)) {
+    if (get_player_flags(*player_ptr, TR_SELF_COLD)) {
         self_ptr->info_list.emplace_back(_("あなたは身も凍る冷気に包まれている。", "You are being damaged with coldness."));
     }
 
@@ -158,15 +158,15 @@ void set_body_improvement_info_3(PlayerType *player_ptr, self_info_type *self_pt
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
 void set_body_improvement_info_4(PlayerType *player_ptr, self_info_type *self_ptr)
 {
-    if (has_resist_fear(player_ptr)) {
+    if (has_resist_fear(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは全く恐怖を感じない。", "You are completely fearless."));
     }
 
-    if (has_resist_blind(player_ptr)) {
+    if (has_resist_blind(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたの目は盲目への耐性を持っている。", "Your eyes are resistant to blindness."));
     }
 
-    if (has_resist_time(player_ptr)) {
+    if (has_resist_time(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは時間逆転への耐性を持っている。", "You are resistant to time."));
     }
 }

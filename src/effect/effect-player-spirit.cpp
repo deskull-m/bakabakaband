@@ -86,11 +86,11 @@ void effect_player_mind_blast(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
     msg_print(_("霊的エネルギーで精神が攻撃された。", "Your mind is blasted by psionic energy."));
     BadStatusSetter bss(*player_ptr);
-    if (!has_resist_conf(player_ptr)) {
+    if (!has_resist_conf(*player_ptr)) {
         (void)bss.mod_confusion(randint0(4) + 4);
     }
 
-    if (!has_resist_chaos(player_ptr) && one_in_(3)) {
+    if (!has_resist_chaos(*player_ptr) && one_in_(3)) {
         (void)bss.mod_hallucination(randint0(250) + 150);
     }
 
@@ -128,11 +128,11 @@ void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     }
 
     BadStatusSetter bss(*player_ptr);
-    if (!has_resist_blind(player_ptr)) {
+    if (!has_resist_blind(*player_ptr)) {
         (void)bss.mod_blindness(8 + randint0(8));
     }
 
-    if (!has_resist_conf(player_ptr)) {
+    if (!has_resist_conf(*player_ptr)) {
         (void)bss.mod_confusion(randint0(4) + 4);
     }
 
@@ -149,7 +149,7 @@ void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         (void)do_dec_stat(player_ptr, A_WIS);
     }
 
-    if (!has_resist_chaos(player_ptr)) {
+    if (!has_resist_chaos(*player_ptr)) {
         (void)bss.mod_hallucination(randint0(250) + 150);
     }
 }

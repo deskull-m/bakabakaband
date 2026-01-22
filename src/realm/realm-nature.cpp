@@ -123,7 +123,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             lite_area(player_ptr, dice.roll(), rad);
 
             CreatureRace race(player_ptr);
-            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(player_ptr)) {
+            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(*player_ptr)) {
                 msg_print(_("日の光があなたの肉体を焦がした！", "The daylight scorches your flesh!"));
                 take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(2, 2), _("日の光", "daylight"));
             }
@@ -450,7 +450,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             wiz_lite(player_ptr, false);
 
             CreatureRace race(player_ptr);
-            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(player_ptr)) {
+            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(*player_ptr)) {
                 msg_print(_("日光があなたの肉体を焦がした！", "The sunlight scorches your flesh!"));
                 take_hit(player_ptr, DAMAGE_NOESCAPE, 50, _("日光", "sunlight"));
             }

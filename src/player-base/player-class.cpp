@@ -561,9 +561,9 @@ bool CreatureClass::has_ninja_speed() const
     }
 
     auto has_ninja_speed_main = !player_ptr->inventory[INVEN_MAIN_HAND]->is_valid();
-    has_ninja_speed_main |= can_attack_with_main_hand(player_ptr);
+    has_ninja_speed_main |= can_attack_with_main_hand(*player_ptr);
     auto has_ninja_speed_sub = !player_ptr->inventory[INVEN_SUB_HAND]->is_valid();
-    has_ninja_speed_sub |= can_attack_with_sub_hand(player_ptr);
+    has_ninja_speed_sub |= can_attack_with_sub_hand(*player_ptr);
     return has_ninja_speed_main && has_ninja_speed_sub;
 }
 

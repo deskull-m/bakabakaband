@@ -449,8 +449,8 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
         muta_att++;
     }
 
-    int blows1 = can_attack_with_main_hand(&static_cast<PlayerType &>(creature)) ? creature.num_blow[0] : 0;
-    int blows2 = can_attack_with_sub_hand(&static_cast<PlayerType &>(creature)) ? creature.num_blow[1] : 0;
+    int blows1 = can_attack_with_main_hand(creature) ? creature.num_blow[0] : 0;
+    int blows2 = can_attack_with_sub_hand(creature) ? creature.num_blow[1] : 0;
     int xdis = creature.skill_dis;
     int xdev = creature.skill_dev;
     int xsav = creature.skill_sav;
