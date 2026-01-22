@@ -460,7 +460,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             if (floor.get_grid(pos).has_monster()) {
                 do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_QUAKE);
             } else {
-                earthquake(player_ptr, player_ptr->get_position(), 10);
+                earthquake(*player_ptr, player_ptr->get_position(), 10);
             }
         }
         break;

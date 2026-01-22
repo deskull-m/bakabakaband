@@ -318,7 +318,7 @@ bool activate_door_destroy(PlayerType *player_ptr)
 
 bool activate_earthquake(PlayerType *player_ptr)
 {
-    earthquake(player_ptr, player_ptr->get_position(), 5);
+    earthquake(*player_ptr, player_ptr->get_position(), 5);
     return true;
 }
 

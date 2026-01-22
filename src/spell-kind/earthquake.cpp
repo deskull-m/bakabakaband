@@ -78,40 +78,42 @@ std::vector<Pos2D> decide_collapse_positions(const FloorType &floor, std::span<c
     return pos_collapses;
 }
 
-tl::optional<Pos2D> decide_player_dodge_posistion(PlayerType *player_ptr, std::span<const Pos2D> pos_collapses)
+tl::optional<Pos2D> decide_player_dodge_posistion(CreatureEntity &creature, std::span<const Pos2D> pos_collapses)
 {
     const auto is_collapsed_pos = [&](const auto &pos) { return ranges::contains(pos_collapses, pos); };
     const auto pos_candidates =
         Direction::directions_8() |
-        ranges::views::transform([&](const auto &d) { return player_ptr->get_neighbor(d); }) |
-        ranges::views::filter([&](const auto &pos) { return player_ptr->current_floor_ptr->is_empty_at(pos) && (pos != player_ptr->get_position()); }) |
+        ranges::views::transform([&](const auto &d) { return creature.get_neighbor(d); }) |
+        ranges::views::filter([&](const auto &pos) { return creature.current_floor_ptr->is_empty_at(pos) && (pos != creature.get_position()); }) |
         ranges::views::filter(std::not_fn(is_collapsed_pos)) |
         ranges::to<std::vector<Pos2D>>();
 
     return pos_candidates.empty() ? tl::nullopt : tl::make_optional(rand_choice(pos_candidates));
 }
 
-std::string build_killer_on_earthquake(PlayerType *player_ptr, int m_idx)
+std::string build_killer_on_earthquake(CreatureEntity &creature, int m_idx)
 {
     if (m_idx <= 0) {
         return _("地震", "an earthquake");
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(*player_ptr, monster, MD_WRONGDOER_NAME);
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    const auto m_name = monster_desc(player, monster, MD_WRONGDOER_NAME);
     return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
 }
 
-void process_player_damage_undodged(PlayerType *player_ptr, int m_idx)
+void process_player_damage_undodged(CreatureEntity &creature, int m_idx)
 {
-    const auto killer = build_killer_on_earthquake(player_ptr, m_idx);
+    const auto killer = build_killer_on_earthquake(creature, m_idx);
     constexpr auto direct_hit_damage = 200;
     msg_print(_("あなたはひどい怪我を負った！", "You are severely crushed!"));
     /// FIXME: 避けた時はスタン値が増加するのに直撃時は増加していない。バグ？
-    take_hit(player_ptr, DAMAGE_ATTACK, direct_hit_damage, killer);
+    auto &player = static_cast<PlayerType &>(creature);
+    take_hit(&player, DAMAGE_ATTACK, direct_hit_damage, killer);
 }
 
-void process_player_damage_dodged(PlayerType *player_ptr, int m_idx)
+void process_player_damage_dodged(CreatureEntity &creature, int m_idx)
 {
     constexpr std::array<std::pair<bool, std::string_view>, 3> candidates = { {
         { false, _("降り注ぐ岩をうまく避けた！", "You nimbly dodge the blast!") },
@@ -125,15 +127,17 @@ void process_player_damage_dodged(PlayerType *player_ptr, int m_idx)
         return;
     }
 
-    const auto killer = build_killer_on_earthquake(player_ptr, m_idx);
-    BadStatusSetter(*player_ptr).mod_stun(randnum1<short>(50));
-    take_hit(player_ptr, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto killer = build_killer_on_earthquake(creature, m_idx);
+    BadStatusSetter(player).mod_stun(randnum1<short>(50));
+    take_hit(&player, DAMAGE_ATTACK, Dice::roll(10, 4), killer);
 }
 
-void process_hit_to_player(PlayerType *player_ptr, std::span<const Pos2D> pos_collapses, int m_idx)
+void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_collapses, int m_idx)
 {
-    const auto has_hit = ranges::contains(pos_collapses, player_ptr->get_position());
-    if (!has_hit || has_pass_wall(*player_ptr) || has_kill_wall(*player_ptr)) {
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto has_hit = ranges::contains(pos_collapses, creature.get_position());
+    if (!has_hit || has_pass_wall(creature) || has_kill_wall(creature)) {
         return;
     }
 
@@ -144,12 +148,12 @@ void process_hit_to_player(PlayerType *player_ptr, std::span<const Pos2D> pos_co
     };
     msg_print(rand_choice(msgs));
 
-    if (const auto pos_dodge = decide_player_dodge_posistion(player_ptr, pos_collapses)) {
-        process_player_damage_dodged(player_ptr, m_idx);
-        (void)move_player_effect(player_ptr, pos_dodge->y, pos_dodge->x, MPE_DONT_PICKUP);
+    if (const auto pos_dodge = decide_player_dodge_posistion(creature, pos_collapses)) {
+        process_player_damage_dodged(creature, m_idx);
+        (void)move_player_effect(&player, pos_dodge->y, pos_dodge->x, MPE_DONT_PICKUP);
         return;
     }
-    process_player_damage_undodged(player_ptr, m_idx);
+    process_player_damage_undodged(creature, m_idx);
 }
 
 bool can_monster_dodge_to(const FloorType &floor, const Pos2D &p_pos, const Pos2D &pos, std::span<const Pos2D> collapsing_positions)
@@ -177,17 +181,18 @@ tl::optional<Pos2D> decide_monster_dodge_position(const FloorType &floor, const 
     return pos_candidates.empty() ? tl::nullopt : tl::make_optional(rand_choice(pos_candidates));
 }
 
-void move_monster_to(PlayerType *player_ptr, MonsterEntity &monster, const Pos2D &pos_to)
+void move_monster_to(CreatureEntity &creature, MonsterEntity &monster, const Pos2D &pos_to)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto pos_from = monster.get_position();
     auto &grid_from = floor.get_grid(pos_from);
     auto &grid_to = floor.get_grid(pos_to);
     grid_to.m_idx = std::exchange(grid_from.m_idx, {});
     monster.set_position(pos_to);
-    update_monster(player_ptr, grid_to.m_idx, true);
-    lite_spot(*player_ptr, pos_from);
-    lite_spot(*player_ptr, pos_to);
+    update_monster(&player, grid_to.m_idx, true);
+    lite_spot(player, pos_from);
+    lite_spot(player, pos_to);
 }
 
 bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool has_dodged)
@@ -215,27 +220,28 @@ bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool
     return true;
 }
 
-void process_hit_to_monster(PlayerType *player_ptr, MonsterEntity &monster, std::span<const Pos2D> pos_collapses)
+void process_hit_to_monster(CreatureEntity &creature, MonsterEntity &monster, std::span<const Pos2D> pos_collapses)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto pos_dodge = decide_monster_dodge_position(floor, player_ptr->get_position(), monster, pos_collapses);
-    const auto m_name = monster_desc(*player_ptr, monster, 0);
-    if (!ignore_unview || is_seen(player_ptr, monster)) {
-        msg_format(_("%s^は苦痛で泣きわめいた！", "%s^ wails out in pain!"), m_name.data());
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
+    const auto pos_dodge = decide_monster_dodge_position(floor, creature.get_position(), monster, pos_collapses);
+    const auto m_name = monster_desc(player, monster, 0);
+    if (!ignore_unview || is_seen(&player, monster)) {
+        msg_format(_("% s^は苦痛で泣きわめいた！", "%s^ wails out in pain!"), m_name.data());
     }
 
-    if (process_monster_damage(player_ptr, monster, pos_dodge.has_value())) {
+    if (process_monster_damage(&player, monster, pos_dodge.has_value())) {
         return;
     }
 
     if (pos_dodge) {
-        move_monster_to(player_ptr, monster, *pos_dodge);
+        move_monster_to(creature, monster, *pos_dodge);
     }
 }
 
-void process_hit_to_monsters(PlayerType *player_ptr, std::span<const Pos2D> pos_collapses)
+void process_hit_to_monsters(CreatureEntity &creature, std::span<const Pos2D> pos_collapses)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto has_monster = [&](const auto &pos) { return floor.get_grid(pos).has_monster(); };
     for (const auto &pos : pos_collapses | ranges::views::filter(has_monster)) {
         auto &grid = floor.get_grid(pos);
@@ -249,13 +255,14 @@ void process_hit_to_monsters(PlayerType *player_ptr, std::span<const Pos2D> pos_
             continue;
         }
 
-        process_hit_to_monster(player_ptr, monster, pos_collapses);
+        process_hit_to_monster(creature, monster, pos_collapses);
     }
 }
 
-void destruct_earthquake_area(PlayerType *player_ptr, std::span<const Pos2D> pos_collapses)
+void destruct_earthquake_area(CreatureEntity &creature, std::span<const Pos2D> pos_collapses)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     floor.forget_mon_lite();
     const auto &dungeon = floor.get_dungeon_definition();
     const auto is_changeable = [&](const auto &pos) { return floor.is_grid_changeable(pos); };
@@ -266,12 +273,12 @@ void destruct_earthquake_area(PlayerType *player_ptr, std::span<const Pos2D> pos
     pt.entry_item(TerrainTag::MAGMA_VEIN, 30);
 
     for (const auto &pos : pos_collapses | ranges::views::filter(is_changeable)) {
-        delete_all_items_from_floor(player_ptr, pos);
+        delete_all_items_from_floor(&player, pos);
 
         if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
-            set_terrain_id_to_grid(player_ptr, pos, pt.pick_one_at_random());
+            set_terrain_id_to_grid(&player, pos, pt.pick_one_at_random());
         } else {
-            set_terrain_id_to_grid(player_ptr, pos, dungeon.select_floor_terrain_id());
+            set_terrain_id_to_grid(&player, pos, dungeon.select_floor_terrain_id());
         }
     }
 }
@@ -336,7 +343,7 @@ void set_redrawing_flags()
 /*!
  * @brief 地震処理
  * Induce an "earthquake" of the given radius at the given location.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param center 中心座標
  * @param radius 効果半径
  * @param m_idx 地震を起こしたモンスターID(0ならばプレイヤー)
@@ -344,11 +351,12 @@ void set_redrawing_flags()
  * @note 効果半径は15に制限される。
  * 現状効果半径が15より大きく設定されているのは自然の脅威による地震(半径 20+(レベル/2)、でかすぎ)のみ。
  */
-bool earthquake(PlayerType *player_ptr, const Pos2D &center, int radius, MONSTER_IDX m_idx)
+bool earthquake(CreatureEntity &creature, const Pos2D &center, int radius, MONSTER_IDX m_idx)
 {
     const int earthquake_max = 80;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         return false;
     }
@@ -361,19 +369,19 @@ bool earthquake(PlayerType *player_ptr, const Pos2D &center, int radius, MONSTER
     reset_grid_info(floor, earthquake_area);
 
     auto pos_collapses = decide_collapse_positions(floor, earthquake_area, center);
-    process_hit_to_player(player_ptr, pos_collapses, m_idx);
-    process_hit_to_monsters(player_ptr, pos_collapses);
+    process_hit_to_player(creature, pos_collapses, m_idx);
+    process_hit_to_monsters(creature, pos_collapses);
 
     // プレイヤーが避けられなかった場合でも壁と重ならないようにする
-    ranges::remove(pos_collapses, player_ptr->get_position());
+    ranges::remove(pos_collapses, creature.get_position());
 
-    destruct_earthquake_area(player_ptr, pos_collapses);
+    destruct_earthquake_area(creature, pos_collapses);
     glow_earthquake_area(floor, earthquake_area);
 
     set_redrawing_flags();
 
-    if (floor.get_grid(player_ptr->get_position()).info & CAVE_GLOW) {
-        set_superstealth(player_ptr, false);
+    if (floor.get_grid(creature.get_position()).info & CAVE_GLOW) {
+        set_superstealth(&player, false);
     }
     return true;
 }
