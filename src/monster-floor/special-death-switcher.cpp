@@ -110,8 +110,12 @@ static tl::optional<bool> final_summon(PlayerType *player_ptr, MonsterDeath *md_
     return notice;
 }
 
-static void on_dead_spawn_monsters(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
+    if (!player_ptr) {
+        return;
+    }
     bool notice = false;
 
     for (auto race : md_ptr->r_ptr->dead_spawns) {
@@ -146,7 +150,7 @@ static void on_dead_spawn_monsters(PlayerType *player_ptr, MonsterDeath *md_ptr)
  * @param md_ptr モンスター撃破構造体への参照ポインタ
  * @note 馬鹿馬鹿独自処理
  */
-static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     for (auto kind : md_ptr->r_ptr->drop_kinds) {
         ItemEntity item;
@@ -166,35 +170,35 @@ static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
             switch (grade) {
             /* Apply bad magic, but first clear object */
             case -2:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
                 break;
             /* Apply bad magic, but first clear object */
             case -1:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
                 break;
             /* Apply normal magic, but first clear object */
             case 0:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
                 break;
             /* Apply good magic, but first clear object */
             case 1:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
                 break;
             /* Apply great magic, but first clear object */
             case 2:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
                 break;
             /* Apply special magic, but first clear object */
             case 3:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
                 if (!item.is_fixed_artifact()) {
-                    become_random_artifact(player_ptr, &item, false);
+                    become_random_artifact(&dynamic_cast<PlayerType &>(killer), &item, false);
                 }
                 break;
             default:
                 break;
             }
-            (void)drop_near(*player_ptr, item, md_ptr->get_position());
+            (void)drop_near(killer, item, md_ptr->get_position());
         }
     }
 }
@@ -205,7 +209,7 @@ static void on_dead_drop_kind_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
  * @param md_ptr モンスター撃破構造体への参照ポインタ
  * @note 馬鹿馬鹿独自処理
  */
-static void on_dead_drop_tval_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     for (auto kind : md_ptr->r_ptr->drop_tvals) {
         ItemEntity item;
@@ -225,48 +229,51 @@ static void on_dead_drop_tval_item(PlayerType *player_ptr, MonsterDeath *md_ptr)
             switch (grade) {
             /* Apply bad magic, but first clear object */
             case -2:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
                 break;
             /* Apply bad magic, but first clear object */
             case -1:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
                 break;
             /* Apply normal magic, but first clear object */
             case 0:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
                 break;
             /* Apply good magic, but first clear object */
             case 1:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
                 break;
             /* Apply great magic, but first clear object */
             case 2:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
                 break;
             /* Apply special magic, but first clear object */
             case 3:
-                ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+                ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
                 if (!item.is_fixed_artifact()) {
-                    become_random_artifact(player_ptr, &item, false);
+                    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
+                    if (player_ptr) {
+                        become_random_artifact(player_ptr, &item, false);
+                    }
                 }
                 break;
             default:
                 break;
             }
-            (void)drop_near(*player_ptr, item, md_ptr->get_position());
+            (void)drop_near(killer, item, md_ptr->get_position());
         }
     }
 }
 
-static void on_dead_bottle_gnome(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_bottle_gnome(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     ItemEntity forge;
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::POTION, SV_POTION_CURE_CRITICAL }));
-    (void)drop_near(*player_ptr, *q_ptr, md_ptr->get_position());
+    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
 }
 
-static void on_dead_bloodletter(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_bloodletter(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (!md_ptr->drop_chosen_item || (randint1(100) >= 15)) {
         return;
@@ -274,51 +281,55 @@ static void on_dead_bloodletter(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
     ItemEntity item;
     item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SWORD, SV_BLADE_OF_CHAOS }));
-    ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->object_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(*player_ptr, item, md_ptr->get_position());
+    ItemMagicApplier(killer, &item, killer.current_floor_ptr->object_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
+    (void)drop_near(killer, item, md_ptr->get_position());
 }
 
-static void on_dead_inariman1_2(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_inariman1_2(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     ItemEntity forge;
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI2 }));
-    ItemMagicApplier(*player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(*player_ptr, *q_ptr, md_ptr->get_position());
+    ItemMagicApplier(killer, q_ptr, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
+    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
 }
 
-static void on_dead_inariman3(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_inariman3(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     ItemEntity forge;
     ItemEntity *q_ptr = &forge;
     q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI3 }));
-    ItemMagicApplier(*player_ptr, q_ptr, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(*player_ptr, *q_ptr, md_ptr->get_position());
+    ItemMagicApplier(killer, q_ptr, killer.current_floor_ptr->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
+    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
 }
 
-static void on_dead_raal(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_raal(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *killer.current_floor_ptr;
     if (!md_ptr->drop_chosen_item || (floor.dun_level <= 9)) {
         return;
     }
 
     const auto restrict = ((floor.dun_level > 49) && one_in_(5)) ? kind_is_good_book : kind_is_book;
 
-    if (auto item = make_object(*player_ptr, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(*player_ptr, *item, md_ptr->get_position());
+    if (auto item = make_object(killer, md_ptr->mo_mode, restrict)) {
+        (void)drop_near(killer, *item, md_ptr->get_position());
     }
 }
 
-static void drop_sushi(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void drop_sushi(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    if (auto item = make_object(*player_ptr, AM_IGNORE_LEVEL, kind_is_sushi, 10)) {
-        (void)drop_near(*player_ptr, *item, md_ptr->get_position());
+    if (auto item = make_object(killer, AM_IGNORE_LEVEL, kind_is_sushi, 10)) {
+        (void)drop_near(killer, *item, md_ptr->get_position());
     }
 }
 
-static void on_dead_ninja(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_ninja(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
+    if (!player_ptr) {
+        return;
+    }
     if (is_seen(player_ptr, *md_ptr->m_ptr)) {
         msg_print(_("「サヨナラ！」", "Sayonara!"));
         auto m_name = monster_desc(*player_ptr, *md_ptr->m_ptr, MD_NONE);
@@ -328,15 +339,20 @@ static void on_dead_ninja(PlayerType *player_ptr, MonsterDeath *md_ptr)
     (void)project(*player_ptr, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 20, AttributeType::MISSILE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 }
 
-static void on_dead_earth_destroyer(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_earth_destroyer(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
+    if (!player_ptr) {
+        return;
+    }
     msg_print(_("ワーオ！22世紀の文明の叡知が今炸裂した！", "Wow! The wisdom of 22nd century civilization has now exploded!"));
     (void)project(*player_ptr, md_ptr->m_idx, 10, md_ptr->md_y, md_ptr->md_x, 10000, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 }
 
-static void on_dead_sacred_treasures(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    if ((player_ptr->ppersonality != PERSONALITY_LAZY) || !md_ptr->drop_chosen_item) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
+    if (!player_ptr || (player_ptr->ppersonality != PERSONALITY_LAZY) || !md_ptr->drop_chosen_item) {
         return;
     }
 
@@ -361,7 +377,7 @@ static void on_dead_sacred_treasures(PlayerType *player_ptr, MonsterDeath *md_pt
     create_named_art(player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x);
 }
 
-static void on_dead_serpent(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_serpent(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (!md_ptr->drop_chosen_item) {
         return;
@@ -369,26 +385,26 @@ static void on_dead_serpent(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
     ItemEntity item_grond({ ItemKindType::HAFTED, SV_GROND });
     item_grond.fa_id = FixedArtifactId::GROND;
-    ItemMagicApplier(*player_ptr, &item_grond, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(*player_ptr, item_grond, md_ptr->get_position());
+    ItemMagicApplier(killer, &item_grond, -1, AM_GOOD | AM_GREAT).execute();
+    (void)drop_near(killer, item_grond, md_ptr->get_position());
 
     ItemEntity item_chaos({ ItemKindType::CROWN, SV_CHAOS });
     item_chaos.fa_id = FixedArtifactId::CHAOS;
-    ItemMagicApplier(*player_ptr, &item_chaos, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(*player_ptr, item_chaos, md_ptr->get_position());
+    ItemMagicApplier(killer, &item_chaos, -1, AM_GOOD | AM_GREAT).execute();
+    (void)drop_near(killer, item_chaos, md_ptr->get_position());
 }
 
-static void on_dead_death_sword(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_death_sword(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (!md_ptr->drop_chosen_item) {
         return;
     }
 
     ItemEntity item({ ItemKindType::SWORD, randint1(2) });
-    (void)drop_near(*player_ptr, item, md_ptr->get_position());
+    (void)drop_near(killer, item, md_ptr->get_position());
 }
 
-static void on_dead_can_angel(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     auto is_drop_can = md_ptr->drop_chosen_item;
     auto is_silver = md_ptr->m_ptr->r_idx == MonraceId::A_SILVER;
@@ -400,8 +416,8 @@ static void on_dead_can_angel(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
     ItemEntity item;
     item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::CHEST, SV_CHEST_KANDUME }));
-    ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->object_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(*player_ptr, item, md_ptr->get_position());
+    ItemMagicApplier(killer, &item, killer.current_floor_ptr->object_level, AM_NO_FIXED_ART).execute();
+    (void)drop_near(killer, item, md_ptr->get_position());
 }
 
 /*!
@@ -412,7 +428,7 @@ static void on_dead_can_angel(PlayerType *player_ptr, MonsterDeath *md_ptr)
  * @return 生成した装備品。生成に失敗した場合はtl::nulloptを返す。
  * @todo 汎用的に使えそうだがどこかにいいファイルはないか？
  */
-static tl::optional<ItemEntity> make_equipment(PlayerType *player_ptr, const BIT_FLAGS drop_mode, BaseitemRestrict restrict)
+static tl::optional<ItemEntity> make_equipment(CreatureEntity &killer, const BIT_FLAGS drop_mode, BaseitemRestrict restrict)
 {
     if (!restrict) {
         // アイテムの制約を指定しない場合は、すべての装備品から選ぶ
@@ -422,7 +438,7 @@ static tl::optional<ItemEntity> make_equipment(PlayerType *player_ptr, const BIT
         };
     }
 
-    return make_object(*player_ptr, drop_mode, restrict);
+    return make_object(killer, drop_mode, restrict);
 }
 
 /*!
@@ -435,17 +451,18 @@ static tl::optional<ItemEntity> make_equipment(PlayerType *player_ptr, const BIT
  * 最初のアイテム生成でいきなり☆が生成された場合を除き、中途半端な☆ (例：呪われている)は生成しない.
  * このルーチンで★は生成されないので、★生成フラグのキャンセルも不要
  */
-static void on_dead_random_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr, BaseitemRestrict restrict)
+static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr, BaseitemRestrict restrict)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
     const auto drop_mode = md_ptr->mo_mode | AM_NO_FIXED_ART;
     while (true) {
-        auto item = make_equipment(player_ptr, drop_mode, restrict);
+        auto item = make_equipment(killer, drop_mode, restrict);
         if (!item) {
             return;
         }
 
         if (item->is_random_artifact()) {
-            (void)drop_near(*player_ptr, *item, md_ptr->get_position());
+            (void)drop_near(killer, *item, md_ptr->get_position());
             return;
         }
 
@@ -453,14 +470,16 @@ static void on_dead_random_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr
             continue;
         }
 
-        (void)become_random_artifact(player_ptr, &*item, false);
+        if (player_ptr) {
+            (void)become_random_artifact(player_ptr, &*item, false);
+        }
         auto is_good_random_art = !item->is_cursed();
         is_good_random_art &= item->to_h > 0;
         is_good_random_art &= item->to_d > 0;
         is_good_random_art &= item->to_a > 0;
         is_good_random_art &= item->pval > 0;
         if (is_good_random_art) {
-            (void)drop_near(*player_ptr, *item, md_ptr->get_position());
+            (void)drop_near(killer, *item, md_ptr->get_position());
             return;
         }
     }
@@ -470,23 +489,24 @@ static void on_dead_random_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr
  * @brief マニマニのあくま撃破時メッセージ
  * @todo 死亡時の特殊メッセージを表示するだけの処理を複数作るなら、switch/case文に分けられるように汎用化すること
  */
-static void on_dead_manimani(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_manimani(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    if (!is_seen(player_ptr, *md_ptr->m_ptr)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
+    if (!player_ptr || !is_seen(player_ptr, *md_ptr->m_ptr)) {
         return;
     }
 
     msg_print(_("どこからか声が聞こえる…「ハロー！　そして…グッドバイ！」", "Heard a voice from somewhere... 'Hello! And... good bye!'"));
 }
 
-static void drop_specific_item_on_dead(PlayerType *player_ptr, MonsterDeath *md_ptr, BaseitemRestrict restrict)
+static void drop_specific_item_on_dead(CreatureEntity &killer, MonsterDeath *md_ptr, BaseitemRestrict restrict)
 {
-    if (auto item = make_object(*player_ptr, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(*player_ptr, *item, md_ptr->get_position());
+    if (auto item = make_object(killer, md_ptr->mo_mode, restrict)) {
+        (void)drop_near(killer, *item, md_ptr->get_position());
     }
 }
 
-static void on_dead_mimics(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (!md_ptr->drop_chosen_item) {
         return;
@@ -494,55 +514,56 @@ static void on_dead_mimics(PlayerType *player_ptr, MonsterDeath *md_ptr)
 
     switch (md_ptr->r_ptr->symbol_definition.character) {
     case '(':
-        if (player_ptr->current_floor_ptr->dun_level <= 0) {
+        if (killer.current_floor_ptr->dun_level <= 0) {
             return;
         }
 
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_cloak);
+        drop_specific_item_on_dead(killer, md_ptr, kind_is_cloak);
         return;
     case '/':
-        if (player_ptr->current_floor_ptr->dun_level <= 4) {
+        if (killer.current_floor_ptr->dun_level <= 4) {
             return;
         }
 
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_polearm);
+        drop_specific_item_on_dead(killer, md_ptr, kind_is_polearm);
         return;
     case '[':
-        if (player_ptr->current_floor_ptr->dun_level <= 19) {
+        if (killer.current_floor_ptr->dun_level <= 19) {
             return;
         }
 
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_armor);
+        drop_specific_item_on_dead(killer, md_ptr, kind_is_armor);
         return;
     case '\\':
-        if (player_ptr->current_floor_ptr->dun_level <= 4) {
+        if (killer.current_floor_ptr->dun_level <= 4) {
             return;
         }
 
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_hafted);
+        drop_specific_item_on_dead(killer, md_ptr, kind_is_hafted);
         return;
     case '|':
         if (md_ptr->m_ptr->r_idx == MonraceId::STORMBRINGER) {
             return;
         }
 
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_sword);
+        drop_specific_item_on_dead(killer, md_ptr, kind_is_sword);
         return;
     case ']':
-        if (player_ptr->current_floor_ptr->dun_level <= 19) {
+        if (killer.current_floor_ptr->dun_level <= 19) {
             return;
         }
 
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_boots);
+        drop_specific_item_on_dead(killer, md_ptr, kind_is_boots);
         return;
     default:
         return;
     }
 }
 
-static void on_dead_swordfish(PlayerType *player_ptr, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
+static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
-    if (attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
+    if (!player_ptr || attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
         return;
     }
 
@@ -570,31 +591,31 @@ void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, Attribut
         return;
     }
 
-    on_dead_drop_kind_item(player_ptr, md_ptr);
-    on_dead_drop_tval_item(player_ptr, md_ptr);
-    on_dead_spawn_monsters(player_ptr, md_ptr);
+    on_dead_drop_kind_item(*player_ptr, md_ptr);
+    on_dead_drop_tval_item(*player_ptr, md_ptr);
+    on_dead_spawn_monsters(*player_ptr, md_ptr);
 
     if (md_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
-        on_dead_ninja(player_ptr, md_ptr);
+        on_dead_ninja(*player_ptr, md_ptr);
         return;
     }
 
     if (is_sushi_eater(player_ptr)) {
-        drop_sushi(player_ptr, md_ptr);
+        drop_sushi(*player_ptr, md_ptr);
     }
 
     switch (md_ptr->ap_r_ptr->idx) {
     case MonraceId::EARTH_DESTROYER:
-        on_dead_earth_destroyer(player_ptr, md_ptr);
+        on_dead_earth_destroyer(*player_ptr, md_ptr);
         return;
     case MonraceId::BOTTLE_GNOME:
-        on_dead_bottle_gnome(player_ptr, md_ptr);
+        on_dead_bottle_gnome(*player_ptr, md_ptr);
         return;
     case MonraceId::BLOODLETTER:
-        on_dead_bloodletter(player_ptr, md_ptr);
+        on_dead_bloodletter(*player_ptr, md_ptr);
         return;
     case MonraceId::RAAL:
-        on_dead_raal(player_ptr, md_ptr);
+        on_dead_raal(*player_ptr, md_ptr);
         return;
     case MonraceId::UNMAKER:
         (void)project(*player_ptr, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 100, AttributeType::CHAOS, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
@@ -602,17 +623,17 @@ void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, Attribut
     case MonraceId::UNICORN_ORD:
     case MonraceId::MORGOTH:
     case MonraceId::ONE_RING:
-        on_dead_sacred_treasures(player_ptr, md_ptr);
+        on_dead_sacred_treasures(*player_ptr, md_ptr);
         return;
     case MonraceId::SERPENT:
-        on_dead_serpent(player_ptr, md_ptr);
+        on_dead_serpent(*player_ptr, md_ptr);
         return;
     case MonraceId::B_DEATH_SWORD:
-        on_dead_death_sword(player_ptr, md_ptr);
+        on_dead_death_sword(*player_ptr, md_ptr);
         return;
     case MonraceId::A_GOLD:
     case MonraceId::A_SILVER:
-        on_dead_can_angel(player_ptr, md_ptr);
+        on_dead_can_angel(*player_ptr, md_ptr);
         return;
     case MonraceId::ROLENTO:
         (void)project(*player_ptr, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
@@ -621,40 +642,40 @@ void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, Attribut
         if (player_ptr->current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
             return;
         }
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_boots);
+        drop_specific_item_on_dead(*player_ptr, md_ptr, kind_is_boots);
         return;
     case MonraceId::YENDOR_WIZARD_1:
         if (md_ptr->is_chameleon) {
             return;
         }
-        on_dead_random_artifact(player_ptr, md_ptr, kind_is_amulet);
+        on_dead_random_artifact(*player_ptr, md_ptr, kind_is_amulet);
         return;
     case MonraceId::YENDOR_WIZARD_2:
         if (player_ptr->current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
             return;
         }
-        drop_specific_item_on_dead(player_ptr, md_ptr, kind_is_amulet);
+        drop_specific_item_on_dead(*player_ptr, md_ptr, kind_is_amulet);
         return;
     case MonraceId::MANIMANI:
-        on_dead_manimani(player_ptr, md_ptr);
+        on_dead_manimani(*player_ptr, md_ptr);
         return;
     case MonraceId::LOSTRINGIL:
         if (md_ptr->is_chameleon) {
             return;
         }
-        on_dead_random_artifact(player_ptr, md_ptr, kind_is_sword);
+        on_dead_random_artifact(*player_ptr, md_ptr, kind_is_sword);
         return;
     case MonraceId::INARIMAN_2:
-        on_dead_inariman1_2(player_ptr, md_ptr);
+        on_dead_inariman1_2(*player_ptr, md_ptr);
         return;
     case MonraceId::INARIMAN_3:
-        on_dead_inariman3(player_ptr, md_ptr);
+        on_dead_inariman3(*player_ptr, md_ptr);
         return;
     case MonraceId::SWORDFISH:
-        on_dead_swordfish(player_ptr, md_ptr, attribute_flags);
+        on_dead_swordfish(*player_ptr, md_ptr, attribute_flags);
         break;
     default:
-        on_dead_mimics(player_ptr, md_ptr);
+        on_dead_mimics(*player_ptr, md_ptr);
         return;
     }
 }
