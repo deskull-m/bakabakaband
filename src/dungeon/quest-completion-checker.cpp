@@ -247,7 +247,7 @@ void QuestCompletionChecker::make_reward(const Pos2D pos)
     const auto drop_num = this->player_ptr->current_floor_ptr->dun_level / 15 + 1;
     const auto &monrace = this->m_ptr->get_monrace();
     for (auto i = 0; i < drop_num; i++) {
-        while (auto item = make_object(this->player_ptr, AM_GOOD | AM_GREAT, nullptr, monrace.level)) {
+        while (auto item = make_object(*this->player_ptr, AM_GOOD | AM_GREAT, nullptr, monrace.level)) {
             if (!this->check_quality(*item)) {
                 continue;
             }

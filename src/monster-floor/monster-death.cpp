@@ -329,7 +329,7 @@ static void drop_items_golds(PlayerType *player_ptr, MonsterDeath *md_ptr, int d
             (void)drop_near(*player_ptr, item, md_ptr->get_position());
             dump_gold++;
         } else {
-            if (auto item = make_object(player_ptr, md_ptr->mo_mode)) {
+            if (auto item = make_object(*player_ptr, md_ptr->mo_mode)) {
                 (void)drop_near(*player_ptr, *item, md_ptr->get_position());
                 dump_item++;
             }

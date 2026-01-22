@@ -74,7 +74,7 @@ void Chest::open(bool scatter, const Pos2D &pos, short item_idx)
         if (small && one_in_(4)) {
             item_inner_chest = floor.make_gold();
         } else {
-            auto item = make_object(this->player_ptr, mode);
+            auto item = make_object(*this->player_ptr, mode);
             if (!item) {
                 continue;
             }

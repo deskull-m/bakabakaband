@@ -120,22 +120,23 @@ static void handle_item_disappearance(PlayerType *player_ptr, ItemEntity &disapp
 /*!
  * @brief 生成階に応じたベースアイテムの生成を行う。
  * Attempt to make an object (normal or good/great)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param subject クリーチャーへの参照
  * @param mode オプションフラグ
  * @param restrict ベースアイテム制約関数。see BaseitemAllocationTable::set_restriction()
  * @param rq_mon_level ランダムクエスト討伐対象のレベル。ランダムクエスト以外の生成であれば無効値
  * @return 生成したアイテム。ベースアイテム制約やアイテム生成レベルなどの要因で生成に失敗した場合はtl::nullopt。
  */
-tl::optional<ItemEntity> make_object(PlayerType *player_ptr, BIT_FLAGS mode, BaseitemRestrict restrict, tl::optional<int> rq_mon_level)
+tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, BaseitemRestrict restrict, tl::optional<int> rq_mon_level)
 {
-    const auto apply_magic_to = [player_ptr, mode](ItemEntity &item) {
-        ItemMagicApplier(*player_ptr, &item, player_ptr->current_floor_ptr->object_level, mode).execute();
+    auto *player_ptr = dynamic_cast<PlayerType *>(&subject);
+    const auto apply_magic_to = [&subject, player_ptr, mode](ItemEntity &item) {
+        ItemMagicApplier(subject, &item, subject.current_floor_ptr->object_level, mode).execute();
         set_ammo_quantity(&item);
-        if (cheat_peek) {
+        if (cheat_peek && player_ptr) {
             object_mention(player_ptr, item);
         }
     };
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *subject.current_floor_ptr;
     const auto prob = any_bits(mode, AM_GOOD) ? 10 : 1000;
     const auto base = get_base_floor(floor, mode, rq_mon_level);
     if (!restrict && one_in_(prob)) {

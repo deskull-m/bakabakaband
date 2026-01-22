@@ -118,7 +118,7 @@ static void wiz_item_drop(PlayerType *player_ptr, const int num_items, const Enu
     }
 
     for (auto i = 0; i < num_items; i++) {
-        auto item = make_object(player_ptr, mode);
+        auto item = make_object(*player_ptr, mode);
         if (!item) {
             continue;
         }
@@ -512,7 +512,7 @@ static void wiz_statistics(PlayerType *player_ptr, ItemEntity *o_ptr)
                 term_fresh();
             }
 
-            auto item = make_object(player_ptr, mode);
+            auto item = make_object(*player_ptr, mode);
             if (!item) {
                 continue;
             }
