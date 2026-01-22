@@ -7,6 +7,7 @@
 #include "core/asking-player.h"
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
+#include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/geometry.h"
@@ -16,6 +17,7 @@
 #include "game-option/map-screen-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
+#include "grid/grid.h"
 #include "info-reader/fixed-map-parser.h"
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
@@ -182,6 +184,15 @@ void do_cmd_go_up(PlayerType *player_ptr)
         exe_write_diary(floor, DiaryKind::STAIR, 0 - up_num, _("階段を上った", "climbed up the stairs to"));
     }
 
+    // 一度利用した階段を消滅させる処理（移動前のフロア）
+    const auto &dungeon = floor.get_dungeon_definition();
+    if (dungeon.flags.has(DungeonFeatureType::VANISH_STAIRS) && floor.is_underground()) {
+        const auto p_pos = player_ptr->get_position();
+        const auto floor_terrain_id = dungeon.select_floor_terrain_id();
+        set_terrain_id_to_grid(player_ptr, p_pos, floor_terrain_id);
+        player_ptr->vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
+    }
+
     if (up_num == floor.dun_level) {
         if (is_echizen(player_ptr)) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
@@ -327,6 +338,14 @@ void do_cmd_go_down(PlayerType *player_ptr)
     if (record_stair && !floor.is_in_quest()) {
         const auto note = is_fall_trap ? _("落とし戸に落ちた", "fell through a trap door") : _("階段を下りた", "climbed down the stairs to");
         exe_write_diary(floor, DiaryKind::STAIR, down_num, note);
+    }
+
+    // 一度利用した階段を消滅させる処理（移動前のフロア）
+    if (!is_fall_trap && dungeon.flags.has(DungeonFeatureType::VANISH_STAIRS) && floor.is_underground()) {
+        const auto p_pos = player_ptr->get_position();
+        const auto floor_terrain_id = dungeon.select_floor_terrain_id();
+        set_terrain_id_to_grid(player_ptr, p_pos, floor_terrain_id);
+        player_ptr->vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
     }
 
     if (is_fall_trap) {

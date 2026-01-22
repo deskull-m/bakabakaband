@@ -1,5 +1,6 @@
 #include "floor/floor-changer.h"
 #include "action/travel-execution.h"
+#include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest-monster-placer.h"
 #include "dungeon/quest.h"
 #include "effect/effect-characteristics.h"
@@ -439,4 +440,22 @@ void change_floor(PlayerType *player_ptr)
     fcms->clear();
     select_floor_music(player_ptr);
     fcms->clear();
+
+    // 移動後のフロアで階段を消去する処理
+    if (player_ptr->vanish_stairs_flag) {
+        player_ptr->vanish_stairs_flag = false;
+        const auto &dungeon = floor.get_dungeon_definition();
+        if (dungeon.flags.has(DungeonFeatureType::VANISH_STAIRS) && floor.is_underground()) {
+            const auto p_pos = player_ptr->get_position();
+            auto &grid = floor.grid_array[p_pos.y][p_pos.x];
+            const auto &terrain = grid.get_terrain();
+
+            // 階段かどうかをチェック
+            if (terrain.flags.has_any_of({ TerrainCharacteristics::LESS, TerrainCharacteristics::MORE })) {
+                const auto floor_terrain_id = dungeon.select_floor_terrain_id();
+                set_terrain_id_to_grid(player_ptr, p_pos, floor_terrain_id);
+                msg_print(_("階段が消え去った。", "The staircase vanishes."));
+            }
+        }
+    }
 }

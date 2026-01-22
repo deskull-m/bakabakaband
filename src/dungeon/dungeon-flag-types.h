@@ -41,5 +41,6 @@ enum class DungeonFeatureType {
     WATERWAY,
     VESTIGE,
     NO_TUNNEL,
+    VANISH_STAIRS,
     MAX,
 };
