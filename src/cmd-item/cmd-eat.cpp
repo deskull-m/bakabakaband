@@ -74,7 +74,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
     if (o_ptr->bi_key.sval() == SV_JUNK_FECES || o_ptr->bi_key.sval() == SV_KMR_CURRY) {
         msg_print("ワーォ！貴方は糞を喰った！");
         msg_print("『涙が出るほどうめぇ……』");
-        if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
@@ -84,7 +84,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
     if (o_ptr->bi_key.sval() == SV_JUNK_VOMITTING) {
         msg_print("ワーォ！貴方はゲロを喰った！");
         msg_print("『涙が出るほどうめぇ……』");
-        if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
@@ -198,7 +198,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::POISONOUS)) {
-        if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(15));
         }
     }
@@ -277,7 +277,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     BadStatusSetter bss(*player_ptr);
     switch (bi_key.sval().value()) {
     case SV_FOOD_POISON:
-        if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
             if (bss.mod_poison(randint0(10) + 10)) {
                 player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
@@ -285,7 +285,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         break;
     case SV_FOOD_BLINDNESS:
-        if (!has_resist_blind(player_ptr)) {
+        if (!has_resist_blind(*player_ptr)) {
             if (bss.mod_blindness(randint0(200) + 200)) {
                 player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
@@ -293,7 +293,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         break;
     case SV_FOOD_PARANOIA:
-        if (!has_resist_fear(player_ptr)) {
+        if (!has_resist_fear(*player_ptr)) {
             if (bss.mod_fear(randint0(10) + 10)) {
                 player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
@@ -301,7 +301,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         break;
     case SV_FOOD_CONFUSION:
-        if (!has_resist_conf(player_ptr)) {
+        if (!has_resist_conf(*player_ptr)) {
             if (bss.mod_confusion(randint0(10) + 10)) {
                 player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;
@@ -309,7 +309,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         break;
     case SV_FOOD_HALLUCINATION:
-        if (!has_resist_chaos(player_ptr)) {
+        if (!has_resist_chaos(*player_ptr)) {
             if (bss.mod_hallucination(randint0(250) + 250)) {
                 player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;

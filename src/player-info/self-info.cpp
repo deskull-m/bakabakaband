@@ -70,7 +70,7 @@ static void set_curse_info(PlayerType *player_ptr, self_info_type *self_ptr)
         self_ptr->info_list.emplace_back(_("あなたは邪悪な怨念に包まれている。", "You carry an ancient foul curse."));
     }
 
-    if (has_aggravate(player_ptr)) {
+    if (has_aggravate(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたはモンスターを怒らせている。", "You aggravate monsters."));
     }
 

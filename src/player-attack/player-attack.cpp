@@ -444,7 +444,7 @@ static bool check_fear_death(PlayerType *player_ptr, player_attack_type *pa_ptr,
     *(pa_ptr->mdeath) = true;
     if (CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER) && player_ptr->energy_use) {
         PlayerEnergy energy(player_ptr);
-        if (can_attack_with_main_hand(player_ptr) && can_attack_with_sub_hand(player_ptr)) {
+        if (can_attack_with_main_hand(*player_ptr) && can_attack_with_sub_hand(*player_ptr)) {
             ENERGY energy_use;
             if (pa_ptr->hand) {
                 energy_use = player_ptr->energy_use * 3 / 5 + player_ptr->energy_use * num * 2 / (player_ptr->num_blow[pa_ptr->hand] * 5);

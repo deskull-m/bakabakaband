@@ -154,7 +154,7 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     }
 
     if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_acid(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || has_resist_acid(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_CHR);
         }
 
@@ -164,7 +164,7 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     }
 
     int get_damage = take_hit(player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_acid(player_ptr))) {
+    if (!aura && !(double_resist && has_resist_acid(*player_ptr))) {
         inventory_damage(player_ptr, BreakerAcid(), inv);
     }
 
@@ -194,13 +194,13 @@ int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     }
 
     if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_elec(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || has_resist_elec(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_DEX);
         }
     }
 
     int get_damage = take_hit(player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_elec(player_ptr))) {
+    if (!aura && !(double_resist && has_resist_elec(*player_ptr))) {
         inventory_damage(player_ptr, BreakerElec(), inv);
     }
 
@@ -224,19 +224,19 @@ int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     bool double_resist = is_oppose_fire(player_ptr);
 
     /* Totally immune */
-    if (has_immune_fire(player_ptr) || (dam <= 0)) {
+    if (has_immune_fire(*player_ptr) || (dam <= 0)) {
         return 0;
     }
 
     dam = dam * calc_fire_damage_rate(player_ptr) / 100;
     if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_fire(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || has_resist_fire(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_STR);
         }
     }
 
     int get_damage = take_hit(player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_fire(player_ptr))) {
+    if (!aura && !(double_resist && has_resist_fire(*player_ptr))) {
         inventory_damage(player_ptr, BreakerFire(), inv);
     }
 
@@ -258,19 +258,19 @@ int cold_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
     bool double_resist = is_oppose_cold(player_ptr);
-    if (has_immune_cold(player_ptr) || (dam <= 0)) {
+    if (has_immune_cold(*player_ptr) || (dam <= 0)) {
         return 0;
     }
 
     dam = dam * calc_cold_damage_rate(player_ptr) / 100;
     if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_cold(player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+        if ((!(double_resist || has_resist_cold(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_STR);
         }
     }
 
     int get_damage = take_hit(player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_cold(player_ptr))) {
+    if (!aura && !(double_resist && has_resist_cold(*player_ptr))) {
         inventory_damage(player_ptr, BreakerCold(), inv);
     }
 
@@ -691,9 +691,9 @@ void touch_zap_player(const MonsterEntity &monster, PlayerType *player_ptr)
     constexpr auto fire_mes = _("突然とても熱くなった！", "You are suddenly very hot!");
     constexpr auto cold_mes = _("突然とても寒くなった！", "You are suddenly very cold!");
     constexpr auto elec_mes = _("電撃をくらった！", "You get zapped!");
-    process_aura_damage(monster, player_ptr, has_immune_fire(player_ptr) != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
-    process_aura_damage(monster, player_ptr, has_immune_cold(player_ptr) != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
-    process_aura_damage(monster, player_ptr, has_immune_elec(player_ptr) != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
+    process_aura_damage(monster, player_ptr, has_immune_fire(*player_ptr) != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
+    process_aura_damage(monster, player_ptr, has_immune_cold(*player_ptr) != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
+    process_aura_damage(monster, player_ptr, has_immune_elec(*player_ptr) != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
 }
 
 /*!

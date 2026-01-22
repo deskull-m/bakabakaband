@@ -46,7 +46,7 @@ int travel_flow_cost(PlayerType *player_ptr, const Pos2D &pos)
 
     if (terrain.flags.has(TerrainCharacteristics::LAVA)) {
         int lava = 2;
-        if (!has_resist_fire(player_ptr)) {
+        if (!has_resist_fire(*player_ptr)) {
             lava *= 2;
         }
 

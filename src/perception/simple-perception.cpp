@@ -320,7 +320,7 @@ void sense_inventory1(PlayerType *player_ptr)
             continue;
         }
 
-        if (has_good_luck(player_ptr) && !randint0(13)) {
+        if (has_good_luck(*player_ptr) && !randint0(13)) {
             heavy = true;
         }
 

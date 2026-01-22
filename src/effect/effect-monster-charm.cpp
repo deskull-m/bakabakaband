@@ -36,12 +36,12 @@ static void effect_monster_charm_resist(PlayerType *player_ptr, EffectMonster *e
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate(player_ptr)) {
+    } else if (has_aggravate(*player_ptr)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate_nasty(player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
+    } else if (has_aggravate_nasty(*player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
@@ -100,12 +100,12 @@ ProcessResult effect_monster_control_undead(PlayerType *player_ptr, EffectMonste
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate(player_ptr)) {
+    } else if (has_aggravate(*player_ptr)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate_nasty(player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
+    } else if (has_aggravate_nasty(*player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
@@ -141,12 +141,12 @@ ProcessResult effect_monster_control_demon(PlayerType *player_ptr, EffectMonster
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate(player_ptr)) {
+    } else if (has_aggravate(*player_ptr)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate_nasty(player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
+    } else if (has_aggravate_nasty(*player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
@@ -182,12 +182,12 @@ ProcessResult effect_monster_control_animal(PlayerType *player_ptr, EffectMonste
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate(player_ptr)) {
+    } else if (has_aggravate(*player_ptr)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate_nasty(player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
+    } else if (has_aggravate_nasty(*player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
@@ -228,12 +228,12 @@ ProcessResult effect_monster_charm_living(PlayerType *player_ptr, EffectMonster 
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate(player_ptr)) {
+    } else if (has_aggravate(*player_ptr)) {
         em_ptr->note = _("はあなたに敵意を抱いている！", " hates you too much!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
         }
-    } else if (has_aggravate_nasty(player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
+    } else if (has_aggravate_nasty(*player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY)) {
         em_ptr->note = _("はあなたを玩具だと思い込んでいる！", " thinks you are a toy!");
         if (one_in_(4)) {
             em_ptr->m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
@@ -365,8 +365,8 @@ static bool effect_monster_crusade_domination(PlayerType *player_ptr, EffectMons
     bool failed = em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
     failed |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
     failed |= em_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::NOPET);
-    failed |= has_aggravate(player_ptr);
-    failed |= has_aggravate_nasty(player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY);
+    failed |= has_aggravate(*player_ptr);
+    failed |= has_aggravate_nasty(*player_ptr) && em_ptr->r_ptr->kind_flags.has(MonsterKindType::NASTY);
     failed |= (em_ptr->r_ptr->level + 10) > randint1(em_ptr->dam);
 
     if (failed) {

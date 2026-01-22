@@ -380,7 +380,7 @@ static void curse_cowardice(PlayerType *player_ptr)
         duration *= 2;
     }
 
-    if (!one_in_(chance) || (has_resist_fear(player_ptr) != 0)) {
+    if (!one_in_(chance) || (has_resist_fear(*player_ptr) != 0)) {
         return;
     }
 
@@ -451,7 +451,7 @@ static void curse_drain_mp(PlayerType *player_ptr)
 
 static void curse_megaton_coin(PlayerType *player_ptr)
 {
-    if (!get_player_flags(player_ptr, TR_MEGATON_COIN)) {
+    if (!get_player_flags(*player_ptr, TR_MEGATON_COIN)) {
         return;
     }
     const auto &dungeon = player_ptr->current_floor_ptr->get_dungeon_definition();
@@ -520,7 +520,7 @@ static void occur_curse_effects(PlayerType *player_ptr)
 void execute_cursed_items_effect(PlayerType *player_ptr)
 {
     occur_curse_effects(player_ptr);
-    if (!one_in_(999) || player_ptr->anti_magic || (one_in_(2) && has_resist_curse(player_ptr))) {
+    if (!one_in_(999) || player_ptr->anti_magic || (one_in_(2) && has_resist_curse(*player_ptr))) {
         return;
     }
 

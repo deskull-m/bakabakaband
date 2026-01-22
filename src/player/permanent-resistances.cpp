@@ -122,7 +122,7 @@ void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_fl
         return;
     }
 
-    if (any_bits(has_levitation(player_ptr), FLAG_CAUSE_RIDING)) {
+    if (any_bits(has_levitation(*player_ptr), FLAG_CAUSE_RIDING)) {
         flags.set(TR_LEVITATION);
     } else {
         negative_flags.set(TR_LEVITATION);

@@ -5,5 +5,4 @@
  */
 
 class ItemEntity;
-class PlayerType;
 void random_misc(ItemEntity *o_ptr);

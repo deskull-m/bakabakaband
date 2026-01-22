@@ -212,32 +212,32 @@ bool do_dec_stat(PlayerType *player_ptr, int stat)
     bool sust = false;
     switch (stat) {
     case A_STR:
-        if (has_sustain_str(player_ptr)) {
+        if (has_sustain_str(*player_ptr)) {
             sust = true;
         }
         break;
     case A_INT:
-        if (has_sustain_int(player_ptr)) {
+        if (has_sustain_int(*player_ptr)) {
             sust = true;
         }
         break;
     case A_WIS:
-        if (has_sustain_wis(player_ptr)) {
+        if (has_sustain_wis(*player_ptr)) {
             sust = true;
         }
         break;
     case A_DEX:
-        if (has_sustain_dex(player_ptr)) {
+        if (has_sustain_dex(*player_ptr)) {
             sust = true;
         }
         break;
     case A_CON:
-        if (has_sustain_con(player_ptr)) {
+        if (has_sustain_con(*player_ptr)) {
             sust = true;
         }
         break;
     case A_CHR:
-        if (has_sustain_chr(player_ptr)) {
+        if (has_sustain_chr(*player_ptr)) {
             sust = true;
         }
         break;

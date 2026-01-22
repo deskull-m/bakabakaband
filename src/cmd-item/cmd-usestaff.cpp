@@ -65,7 +65,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     BadStatusSetter bss(*player_ptr);
     switch (sval) {
     case SV_STAFF_DARKNESS:
-        if (!has_resist_blind(player_ptr) && !has_resist_dark(player_ptr)) {
+        if (!has_resist_blind(*player_ptr) && !has_resist_dark(*player_ptr)) {
             if (bss.mod_blindness(3 + randint1(5))) {
                 ident = true;
             }

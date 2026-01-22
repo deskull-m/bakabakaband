@@ -58,11 +58,11 @@ PERCENTAGE calc_acid_damage_rate(PlayerType *player_ptr)
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_acid(player_ptr)) {
+    if (has_immune_acid(*player_ptr)) {
         return 0;
     }
 
-    BIT_FLAGS flags = has_vuln_acid(player_ptr);
+    BIT_FLAGS flags = has_vuln_acid(*player_ptr);
 
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
@@ -74,7 +74,7 @@ PERCENTAGE calc_acid_damage_rate(PlayerType *player_ptr)
         }
     }
 
-    if (has_resist_acid(player_ptr)) {
+    if (has_resist_acid(*player_ptr)) {
         per = (per + 2) / 3;
     }
     if (is_oppose_acid(player_ptr)) {
@@ -91,11 +91,11 @@ PERCENTAGE calc_elec_damage_rate(PlayerType *player_ptr)
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_elec(player_ptr)) {
+    if (has_immune_elec(*player_ptr)) {
         return 0;
     }
 
-    BIT_FLAGS flags = has_vuln_elec(player_ptr);
+    BIT_FLAGS flags = has_vuln_elec(*player_ptr);
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
             if (check_flag == FLAG_CAUSE_MUTATION) {
@@ -106,7 +106,7 @@ PERCENTAGE calc_elec_damage_rate(PlayerType *player_ptr)
         }
     }
 
-    if (has_resist_elec(player_ptr)) {
+    if (has_resist_elec(*player_ptr)) {
         per = (per + 2) / 3;
     }
     if (is_oppose_elec(player_ptr)) {
@@ -122,7 +122,7 @@ PERCENTAGE calc_elec_damage_rate(PlayerType *player_ptr)
 PERCENTAGE calc_fire_damage_rate(PlayerType *player_ptr)
 {
     PERCENTAGE per = 100;
-    BIT_FLAGS flags = has_vuln_fire(player_ptr);
+    BIT_FLAGS flags = has_vuln_fire(*player_ptr);
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
             if (check_flag == FLAG_CAUSE_MUTATION) {
@@ -134,7 +134,7 @@ PERCENTAGE calc_fire_damage_rate(PlayerType *player_ptr)
     }
 
     /* Resist the damage */
-    if (has_resist_fire(player_ptr)) {
+    if (has_resist_fire(*player_ptr)) {
         per = (per + 2) / 3;
     }
     if (is_oppose_fire(player_ptr)) {
@@ -158,7 +158,7 @@ PERCENTAGE calc_plasma_damage_rate(PlayerType *player_ptr)
 PERCENTAGE calc_cold_damage_rate(PlayerType *player_ptr)
 {
     PERCENTAGE per = 100;
-    BIT_FLAGS flags = has_vuln_cold(player_ptr);
+    BIT_FLAGS flags = has_vuln_cold(*player_ptr);
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
             if (check_flag == FLAG_CAUSE_MUTATION) {
@@ -169,7 +169,7 @@ PERCENTAGE calc_cold_damage_rate(PlayerType *player_ptr)
         }
     }
 
-    if (has_resist_cold(player_ptr)) {
+    if (has_resist_cold(*player_ptr)) {
         per = (per + 2) / 3;
     }
     if (is_oppose_cold(player_ptr)) {
@@ -185,7 +185,7 @@ PERCENTAGE calc_cold_damage_rate(PlayerType *player_ptr)
 PERCENTAGE calc_pois_damage_rate(PlayerType *player_ptr)
 {
     PERCENTAGE per = 100;
-    if (has_resist_pois(player_ptr)) {
+    if (has_resist_pois(*player_ptr)) {
         per = (per + 2) / 3;
     }
     if (is_oppose_pois(player_ptr)) {
@@ -202,7 +202,7 @@ PERCENTAGE calc_nuke_damage_rate(PlayerType *player_ptr)
 {
 
     PERCENTAGE per = 100;
-    if (has_resist_pois(player_ptr)) {
+    if (has_resist_pois(*player_ptr)) {
         per = (2 * per + 2) / 5;
     }
     if (is_oppose_pois(player_ptr)) {
@@ -248,7 +248,7 @@ PERCENTAGE calc_lite_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mod
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_lite(player_ptr)) {
+    if (has_immune_lite(*player_ptr)) {
         return 0;
     }
 
@@ -265,7 +265,7 @@ PERCENTAGE calc_lite_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mod
         }
     }
 
-    if (has_resist_lite(player_ptr)) {
+    if (has_resist_lite(*player_ptr)) {
         per *= 400;
         per /= randrate(4, 7, mode);
     }
@@ -284,11 +284,11 @@ PERCENTAGE calc_dark_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mod
 {
     PERCENTAGE per = 100;
 
-    if (has_immune_dark(player_ptr)) {
+    if (has_immune_dark(*player_ptr)) {
         return 0;
     }
 
-    if (has_resist_dark(player_ptr)) {
+    if (has_resist_dark(*player_ptr)) {
         per *= 400;
         per /= randrate(4, 7, mode);
     }
@@ -303,7 +303,7 @@ PERCENTAGE calc_shards_damage_rate(PlayerType *player_ptr, rate_calc_type_mode m
 {
     PERCENTAGE per = 100;
 
-    if (has_resist_shard(player_ptr)) {
+    if (has_resist_shard(*player_ptr)) {
         per *= 600;
         per /= randrate(4, 7, mode);
     }
@@ -318,7 +318,7 @@ PERCENTAGE calc_sound_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mo
 {
     PERCENTAGE per = 100;
 
-    if (has_resist_sound(player_ptr)) {
+    if (has_resist_sound(*player_ptr)) {
         per *= 500;
         per /= randrate(4, 7, mode);
     }
@@ -333,7 +333,7 @@ PERCENTAGE calc_conf_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mod
 {
     PERCENTAGE per = 100;
 
-    if (has_resist_conf(player_ptr)) {
+    if (has_resist_conf(*player_ptr)) {
         per *= 500;
         per /= randrate(4, 7, mode);
     }
@@ -356,7 +356,7 @@ PERCENTAGE calc_chaos_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mo
 {
     PERCENTAGE per = 100;
 
-    if (has_resist_chaos(player_ptr)) {
+    if (has_resist_chaos(*player_ptr)) {
         per *= 600;
         per /= randrate(4, 7, mode);
     }
@@ -371,7 +371,7 @@ PERCENTAGE calc_disenchant_damage_rate(PlayerType *player_ptr, rate_calc_type_mo
 {
     PERCENTAGE per = 100;
 
-    if (has_resist_disen(player_ptr)) {
+    if (has_resist_disen(*player_ptr)) {
         per *= 600;
         per /= randrate(4, 7, mode);
     }
@@ -386,7 +386,7 @@ PERCENTAGE calc_nexus_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mo
 {
     PERCENTAGE per = 100;
 
-    if (has_resist_disen(player_ptr)) {
+    if (has_resist_disen(*player_ptr)) {
         per *= 600;
         per /= randrate(4, 7, mode);
     }
@@ -402,7 +402,7 @@ PERCENTAGE calc_rocket_damage_rate(PlayerType *player_ptr, rate_calc_type_mode m
     (void)mode; // unused
     PERCENTAGE per = 100;
 
-    if (has_resist_shard(player_ptr)) {
+    if (has_resist_shard(*player_ptr)) {
         per /= 2;
     }
 
@@ -416,7 +416,7 @@ PERCENTAGE calc_nether_damage_rate(PlayerType *player_ptr, rate_calc_type_mode m
 {
     PERCENTAGE per = 100;
 
-    if (has_resist_neth(player_ptr)) {
+    if (has_resist_neth(*player_ptr)) {
         if (!CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
             per *= 6;
         }
@@ -435,7 +435,7 @@ PERCENTAGE calc_time_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mod
     (void)mode; // unused
     PERCENTAGE per = 100;
 
-    if (has_resist_time(player_ptr)) {
+    if (has_resist_time(*player_ptr)) {
         per *= 400;
         per /= randrate(4, 7, mode);
     }
@@ -451,7 +451,7 @@ PERCENTAGE calc_water_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mo
     (void)mode; // unused
     PERCENTAGE per = 100;
 
-    if (has_resist_water(player_ptr)) {
+    if (has_resist_water(*player_ptr)) {
         per *= 400;
         per /= randrate(4, 7, mode);
     }
@@ -494,7 +494,7 @@ PERCENTAGE calc_gravity_damage_rate(PlayerType *player_ptr, rate_calc_type_mode 
 {
     (void)mode; // unused
     PERCENTAGE per = 100;
-    if (has_levitation(player_ptr)) {
+    if (has_levitation(*player_ptr)) {
         per = (per * 2) / 3;
     }
     return per;
@@ -517,10 +517,10 @@ PERCENTAGE calc_void_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mod
     PERCENTAGE per = 100;
     if (has_pass_wall(*player_ptr)) {
         per = per * 3 / 2;
-    } else if (has_anti_tele(player_ptr) != 0) {
+    } else if (has_anti_tele(*player_ptr) != 0) {
         per *= 400;
         per /= randrate(4, 7, mode);
-    } else if (has_levitation(player_ptr) != 0) {
+    } else if (has_levitation(*player_ptr) != 0) {
         per = (per * 2) / 3;
     }
     return per;
@@ -534,10 +534,10 @@ PERCENTAGE calc_abyss_damage_rate(PlayerType *player_ptr, rate_calc_type_mode mo
     (void)mode; // unused
     PERCENTAGE per = 100;
 
-    if (has_resist_dark(player_ptr) != 0) {
+    if (has_resist_dark(*player_ptr) != 0) {
         per *= 400;
         per /= randrate(4, 7, mode);
-    } else if ((has_levitation(player_ptr) == 0) && (has_anti_tele(player_ptr) != 0)) {
+    } else if ((has_levitation(*player_ptr) == 0) && (has_anti_tele(*player_ptr) != 0)) {
         per = (per * 5) / 4;
     }
     return per;

@@ -69,22 +69,22 @@ void set_equipment_influence(PlayerType *player_ptr, self_info_type *self_ptr)
 
 void set_status_sustain_info(PlayerType *player_ptr, self_info_type *self_ptr)
 {
-    if (has_sustain_str(player_ptr)) {
+    if (has_sustain_str(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたの腕力は維持されている。", "Your strength is sustained."));
     }
-    if (has_sustain_int(player_ptr)) {
+    if (has_sustain_int(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたの知能は維持されている。", "Your intelligence is sustained."));
     }
-    if (has_sustain_wis(player_ptr)) {
+    if (has_sustain_wis(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたの賢さは維持されている。", "Your wisdom is sustained."));
     }
-    if (has_sustain_con(player_ptr)) {
+    if (has_sustain_con(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたの耐久力は維持されている。", "Your constitution is sustained."));
     }
-    if (has_sustain_dex(player_ptr)) {
+    if (has_sustain_dex(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたの器用さは維持されている。", "Your dexterity is sustained."));
     }
-    if (has_sustain_chr(player_ptr)) {
+    if (has_sustain_chr(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたの魅力は維持されている。", "Your charisma is sustained."));
     }
 }

@@ -50,7 +50,7 @@ static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         return;
     }
 
-    if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 
@@ -70,12 +70,12 @@ static void calc_blow_disenchant(PlayerType *player_ptr, MonsterAttackPlayer *mo
         return;
     }
 
-    if (!has_resist_disen(player_ptr) && !check_multishadow(*player_ptr) && apply_disenchant(player_ptr, 0)) {
+    if (!has_resist_disen(*player_ptr) && !check_multishadow(*player_ptr) && apply_disenchant(player_ptr, 0)) {
         update_creature(player_ptr);
         monap_ptr->obvious = true;
     }
 
-    if (has_resist_disen(player_ptr)) {
+    if (has_resist_disen(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -92,15 +92,15 @@ static void calc_blow_disenchant(PlayerType *player_ptr, MonsterAttackPlayer *mo
 static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
     int damage_ratio = 1000;
-    if (has_dec_mana(player_ptr)) {
+    if (has_dec_mana(*player_ptr)) {
         damage_ratio -= 75;
     }
 
-    if (has_easy_spell(player_ptr)) {
+    if (has_easy_spell(*player_ptr)) {
         damage_ratio -= 75;
     }
 
-    bool is_magic_mastery = has_magic_mastery(player_ptr) != 0;
+    bool is_magic_mastery = has_magic_mastery(*player_ptr) != 0;
     if (is_magic_mastery) {
         damage_ratio -= 75;
     }
@@ -132,7 +132,7 @@ static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *mona
  */
 static void calc_blow_blind(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_blind(player_ptr)) {
+    if (has_resist_blind(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
@@ -156,7 +156,7 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
         return;
     }
 
-    if (has_resist_conf(player_ptr)) {
+    if (has_resist_conf(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
@@ -165,7 +165,7 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
         return;
     }
 
-    if (!has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+    if (!has_resist_conf(*player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
         monap_ptr->obvious = true;
     }
 
@@ -179,7 +179,7 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
  */
 static void calc_blow_fear(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_fear(player_ptr)) {
+    if (has_resist_fear(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
@@ -199,7 +199,7 @@ static void calc_blow_fear(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
  */
 static void calc_blow_paralysis(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_free_act(player_ptr)) {
+    if (has_free_act(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
 
@@ -222,11 +222,11 @@ static void calc_blow_drain_exp(PlayerType *player_ptr, MonsterAttackPlayer *mon
     int32_t d = Dice::roll(drain_value, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     int damage_ratio = 1000;
-    if (has_hold_exp(player_ptr)) {
+    if (has_hold_exp(*player_ptr)) {
         damage_ratio -= 75;
     }
 
-    if (has_resist_neth(player_ptr)) {
+    if (has_resist_neth(*player_ptr)) {
         damage_ratio -= 75;
     }
 
@@ -251,7 +251,7 @@ static void calc_blow_time(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
     }
 
     process_monster_attack_time(player_ptr);
-    if (has_resist_time(player_ptr)) {
+    if (has_resist_time(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -289,15 +289,15 @@ static void calc_blow_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *mo
 {
     monap_ptr->obvious = true;
     int damage_ratio = 100;
-    if (has_dec_mana(player_ptr)) {
+    if (has_dec_mana(*player_ptr)) {
         damage_ratio -= 5;
     }
 
-    if (has_easy_spell(player_ptr)) {
+    if (has_easy_spell(*player_ptr)) {
         damage_ratio -= 5;
     }
 
-    if (has_magic_mastery(player_ptr)) {
+    if (has_magic_mastery(*player_ptr)) {
         damage_ratio -= 5;
     }
 
@@ -543,7 +543,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->damage = monap_ptr->damage * calc_chaos_damage_rate(player_ptr, CALC_RAND) / 100;
         monap_ptr->get_damage += take_hit(player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 
-        const auto has_chaos_resist = has_resist_chaos(player_ptr);
+        const auto has_chaos_resist = has_resist_chaos(*player_ptr);
 
         if (!has_chaos_resist) {
             monap_ptr->obvious = true;
@@ -579,7 +579,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             }
             monap_ptr->obvious = true;
 
-            if (!has_chaos_resist && !has_resist_conf(player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
+            if (!has_chaos_resist && !has_resist_conf(*player_ptr) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_confusion(3 + randint1(monap_ptr->rlev))) {
                 monap_ptr->obvious = true;
             }
             break;

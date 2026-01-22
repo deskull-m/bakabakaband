@@ -238,7 +238,7 @@ static bool run_test(CreatureEntity &creature)
                     notice = false;
                 } else if (find_ignore_stairs && terrain.flags.has(TerrainCharacteristics::STAIRS)) {
                     notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(player_ptr) || is_invuln(player_ptr))) {
+                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(*player_ptr) || is_invuln(player_ptr))) {
                     notice = false;
                 } else if (terrain.flags.has(TerrainCharacteristics::VOID) && is_invuln(player_ptr)) {
                     notice = false;

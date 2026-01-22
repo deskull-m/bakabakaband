@@ -31,7 +31,7 @@
 
 static void aura_fire_by_monster_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (!has_sh_fire(player_ptr) || !monap_ptr->alive || player_ptr->is_dead()) {
+    if (!has_sh_fire(*player_ptr) || !monap_ptr->alive || player_ptr->is_dead()) {
         return;
     }
 
@@ -56,7 +56,7 @@ static void aura_fire_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
 
 static void aura_elec_by_monster_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (!has_sh_elec(player_ptr) || !monap_ptr->alive || player_ptr->is_dead()) {
+    if (!has_sh_elec(*player_ptr) || !monap_ptr->alive || player_ptr->is_dead()) {
         return;
     }
 
@@ -81,7 +81,7 @@ static void aura_elec_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
 
 static void aura_cold_by_monster_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (!has_sh_cold(player_ptr) || !monap_ptr->alive || player_ptr->is_dead()) {
+    if (!has_sh_cold(*player_ptr) || !monap_ptr->alive || player_ptr->is_dead()) {
         return;
     }
 

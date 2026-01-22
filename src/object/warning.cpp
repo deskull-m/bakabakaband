@@ -65,7 +65,7 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
     /* Vulnerability, resistance and immunity */
     switch (typ) {
     case AttributeType::ELEC:
-        if (has_immune_elec(player_ptr)) {
+        if (has_immune_elec(*player_ptr)) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_elec_damage_rate(player_ptr) / 100;
@@ -76,7 +76,7 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         break;
 
     case AttributeType::ACID:
-        if (has_immune_acid(player_ptr)) {
+        if (has_immune_acid(*player_ptr)) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_acid_damage_rate(player_ptr) / 100;
@@ -84,14 +84,14 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
 
     case AttributeType::COLD:
     case AttributeType::ICE:
-        if (has_immune_cold(player_ptr)) {
+        if (has_immune_cold(*player_ptr)) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_cold_damage_rate(player_ptr) / 100;
         break;
 
     case AttributeType::FIRE:
-        if (has_immune_fire(player_ptr)) {
+        if (has_immune_fire(*player_ptr)) {
             ignore_wraith_form = true;
         }
         dam = dam * calc_fire_damage_rate(player_ptr) / 100;
@@ -102,7 +102,7 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         break;
 
     case AttributeType::MONSTER_SHOOT:
-        if (!player_ptr->effects()->blindness().is_blind() && (has_invuln_arrow(player_ptr))) {
+        if (!player_ptr->effects()->blindness().is_blind() && (has_invuln_arrow(*player_ptr))) {
             dam = 0;
             ignore_wraith_form = true;
         }
@@ -114,7 +114,7 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
 
     case AttributeType::DARK:
         dam = dam * calc_dark_damage_rate(player_ptr, CALC_MAX) / 100;
-        if (has_immune_dark(player_ptr) || player_ptr->wraith_form) {
+        if (has_immune_dark(*player_ptr) || player_ptr->wraith_form) {
             ignore_wraith_form = true;
         }
         break;

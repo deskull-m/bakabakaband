@@ -337,27 +337,27 @@ bool trap_can_be_ignored(PlayerType *player_ptr, FEAT_IDX feat)
         }
         break;
     case TrapType::FIRE:
-        if (has_immune_fire(player_ptr)) {
+        if (has_immune_fire(*player_ptr)) {
             return true;
         }
         break;
     case TrapType::ACID:
-        if (has_immune_acid(player_ptr)) {
+        if (has_immune_acid(*player_ptr)) {
             return true;
         }
         break;
     case TrapType::BLIND:
-        if (has_resist_blind(player_ptr)) {
+        if (has_resist_blind(*player_ptr)) {
             return true;
         }
         break;
     case TrapType::CONFUSE:
-        if (has_resist_conf(player_ptr)) {
+        if (has_resist_conf(*player_ptr)) {
             return true;
         }
         break;
     case TrapType::POISON:
-        if (has_resist_pois(player_ptr)) {
+        if (has_resist_pois(*player_ptr)) {
             return true;
         }
         break;

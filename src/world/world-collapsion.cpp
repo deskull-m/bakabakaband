@@ -29,7 +29,7 @@ void WorldCollapsion::plus_timed_world_collapsion(AngbandWorld *w_ptr, PlayerTyp
     if (w_ptr->total_winner && entries.get_current_entry() >= entries.get_max_entries()) {
         return;
     }
-    if (get_player_flags(player_ptr, TR_WORLD_END)) {
+    if (get_player_flags(*player_ptr, TR_WORLD_END)) {
         multi *= 2;
     }
     if (w_ptr->total_winner) {

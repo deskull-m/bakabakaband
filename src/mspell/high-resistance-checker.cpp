@@ -9,51 +9,51 @@
 
 void add_cheat_remove_flags_others(PlayerType *player_ptr, msr_type *msr_ptr)
 {
-    if (has_resist_neth(player_ptr)) {
+    if (has_resist_neth(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_NETH);
     }
 
-    if (has_resist_lite(player_ptr)) {
+    if (has_resist_lite(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_LITE);
     }
 
-    if (has_resist_dark(player_ptr)) {
+    if (has_resist_dark(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_DARK);
     }
 
-    if (has_resist_fear(player_ptr)) {
+    if (has_resist_fear(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_FEAR);
     }
 
-    if (has_resist_conf(player_ptr)) {
+    if (has_resist_conf(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_CONF);
     }
 
-    if (has_resist_chaos(player_ptr)) {
+    if (has_resist_chaos(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_CHAOS);
     }
 
-    if (has_resist_disen(player_ptr)) {
+    if (has_resist_disen(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_DISEN);
     }
 
-    if (has_resist_blind(player_ptr)) {
+    if (has_resist_blind(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_BLIND);
     }
 
-    if (has_resist_nexus(player_ptr)) {
+    if (has_resist_shard(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_NEXUS);
     }
 
-    if (has_resist_sound(player_ptr)) {
+    if (has_resist_sound(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_SOUND);
     }
 
-    if (has_resist_shard(player_ptr)) {
+    if (has_resist_shard(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_SHARD);
     }
 
-    if (has_reflect(player_ptr)) {
+    if (has_reflect(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_REFLECT);
     }
 
@@ -117,7 +117,7 @@ static void check_dark_resistance(PlayerType *player_ptr, msr_type *msr_ptr)
         return;
     }
 
-    if (has_immune_dark(player_ptr)) {
+    if (has_immune_dark(*player_ptr)) {
         msr_ptr->ability_flags.reset(MonsterAbilityType::BR_DARK);
         msr_ptr->ability_flags.reset(MonsterAbilityType::BA_DARK);
         return;

@@ -256,7 +256,7 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, PlayerType *player_ptr, MO
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_fear(player_ptr) != 0);
+        resist = (has_resist_fear(*player_ptr) != 0);
         saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやくと、恐ろしげな音が聞こえた。", "%s^ mumbles, and you hear scary noises."),
@@ -313,7 +313,7 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, PlayerType *player_ptr, MO
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_blind(player_ptr) != 0);
+        resist = (has_resist_blind(*player_ptr) != 0);
         saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
@@ -378,7 +378,7 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, PlayerType *player_ptr, MON
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_conf(player_ptr) != 0);
+        resist = (has_resist_conf(*player_ptr) != 0);
         saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^が何かをつぶやくと、頭を悩ます音がした。", "%s^ mumbles, and you hear puzzling noises."),
@@ -524,7 +524,7 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, PlayerType *player_ptr, MON
     bool resist, saving_throw;
 
     if (target_type == MONSTER_TO_PLAYER) {
-        resist = (has_resist_conf(player_ptr) != 0);
+        resist = (has_resist_conf(*player_ptr) != 0);
         saving_throw = (randint0(100 + rlev / 2) < player_ptr->skill_sav);
 
         mspell_cast_msg_bad_status_to_player msg(_("%s^があなたの筋力を吸い取ろうとした！", "%s^ drains power from your muscles!"),

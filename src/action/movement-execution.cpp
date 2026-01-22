@@ -144,7 +144,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     const auto &monster = floor.m_list[grid.m_idx];
 
     auto &terrain = grid.get_terrain();
-    auto p_can_kill_walls = has_kill_wall(player_ptr);
+    auto p_can_kill_walls = has_kill_wall(creature);
     p_can_kill_walls &= terrain.flags.has(TerrainCharacteristics::HURT_DISI);
     p_can_kill_walls &= !p_can_enter || terrain.flags.has_not(TerrainCharacteristics::LOS);
     p_can_kill_walls &= terrain.flags.has_not(TerrainCharacteristics::PERMANENT);

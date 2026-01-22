@@ -133,7 +133,7 @@ void process_player_damage_dodged(PlayerType *player_ptr, int m_idx)
 void process_hit_to_player(PlayerType *player_ptr, std::span<const Pos2D> pos_collapses, int m_idx)
 {
     const auto has_hit = ranges::contains(pos_collapses, player_ptr->get_position());
-    if (!has_hit || has_pass_wall(*player_ptr) || has_kill_wall(player_ptr)) {
+    if (!has_hit || has_pass_wall(*player_ptr) || has_kill_wall(*player_ptr)) {
         return;
     }
 

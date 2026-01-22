@@ -136,7 +136,7 @@ int16_t PlayerStealth::time_effect_bonus()
 
 bool PlayerStealth::is_aggravated_s_fairy()
 {
-    return player_aggravate_state(this->player_ptr) == AGGRAVATE_S_FAIRY;
+    return player_aggravate_state(*this->player_ptr) == AGGRAVATE_S_FAIRY;
 }
 
 /*!

@@ -366,7 +366,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
 
-    if (!can_attack_with_main_hand(player_ptr) && !can_attack_with_sub_hand(player_ptr) && player_ptr->muta.has_none_of(mutation_attack_methods)) {
+    if (!can_attack_with_main_hand(*player_ptr) && !can_attack_with_sub_hand(*player_ptr) && player_ptr->muta.has_none_of(mutation_attack_methods)) {
         sound(SoundKind::ATTACK_FAILED);
         msg_print(_(format("%s攻撃できない。", (empty_hands(player_ptr, false) == EMPTY_HAND_NONE) ? "両手がふさがって" : ""), "You cannot attack."));
         return false;
@@ -441,7 +441,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
         }
     }
 
-    if (can_attack_with_main_hand(player_ptr) && can_attack_with_sub_hand(player_ptr)) {
+    if (can_attack_with_main_hand(*player_ptr) && can_attack_with_sub_hand(*player_ptr)) {
         if (((player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON] - 1000) / 200) < monrace.level) {
             PlayerSkill(player_ptr).gain_two_weapon_skill_exp();
         }
@@ -456,10 +456,10 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     player_ptr->riding_t_m_idx = grid.m_idx;
     bool fear = false;
     bool mdeath = false;
-    if (can_attack_with_main_hand(player_ptr)) {
+    if (can_attack_with_main_hand(*player_ptr)) {
         exe_player_attack_to_monster(player_ptr, y, x, &fear, &mdeath, 0, mode);
     }
-    if (can_attack_with_sub_hand(player_ptr) && !mdeath) {
+    if (can_attack_with_sub_hand(*player_ptr) && !mdeath) {
         exe_player_attack_to_monster(player_ptr, y, x, &fear, &mdeath, 1, mode);
     }
 

@@ -20,7 +20,7 @@
  */
 void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_resist_pois(player_ptr)) {
+    if (has_resist_pois(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -33,7 +33,7 @@ void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
         return;
     }
 
-    if (!(has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 
@@ -56,7 +56,7 @@ void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
  */
 void calc_blow_lose_strength(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_sustain_str(player_ptr)) {
+    if (has_sustain_str(*player_ptr)) {
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
@@ -77,7 +77,7 @@ void calc_blow_lose_strength(PlayerType *player_ptr, MonsterAttackPlayer *monap_
  */
 void calc_blow_lose_intelligence(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_sustain_int(player_ptr)) {
+    if (has_sustain_int(*player_ptr)) {
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
@@ -98,7 +98,7 @@ void calc_blow_lose_intelligence(PlayerType *player_ptr, MonsterAttackPlayer *mo
  */
 void calc_blow_lose_wisdom(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_sustain_wis(player_ptr)) {
+    if (has_sustain_wis(*player_ptr)) {
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
@@ -119,7 +119,7 @@ void calc_blow_lose_wisdom(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
  */
 void calc_blow_lose_dexterity(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_sustain_dex(player_ptr)) {
+    if (has_sustain_dex(*player_ptr)) {
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
@@ -140,7 +140,7 @@ void calc_blow_lose_dexterity(PlayerType *player_ptr, MonsterAttackPlayer *monap
  */
 void calc_blow_lose_constitution(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_sustain_con(player_ptr)) {
+    if (has_sustain_con(*player_ptr)) {
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
@@ -161,7 +161,7 @@ void calc_blow_lose_constitution(PlayerType *player_ptr, MonsterAttackPlayer *mo
  */
 void calc_blow_lose_charisma(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (has_sustain_chr(player_ptr)) {
+    if (has_sustain_chr(*player_ptr)) {
         monap_ptr->get_damage = monap_ptr->get_damage * (randint1(4) + 4) / 9;
     }
 
@@ -183,27 +183,27 @@ void calc_blow_lose_charisma(PlayerType *player_ptr, MonsterAttackPlayer *monap_
 void calc_blow_lose_all(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
     int damage_ratio = 100;
-    if (has_sustain_str(player_ptr)) {
+    if (has_sustain_str(*player_ptr)) {
         damage_ratio -= 3;
     }
 
-    if (has_sustain_int(player_ptr)) {
+    if (has_sustain_int(*player_ptr)) {
         damage_ratio -= 3;
     }
 
-    if (has_sustain_wis(player_ptr)) {
+    if (has_sustain_wis(*player_ptr)) {
         damage_ratio -= 3;
     }
 
-    if (has_sustain_dex(player_ptr)) {
+    if (has_sustain_dex(*player_ptr)) {
         damage_ratio -= 3;
     }
 
-    if (has_sustain_con(player_ptr)) {
+    if (has_sustain_con(*player_ptr)) {
         damage_ratio -= 3;
     }
 
-    if (has_sustain_chr(player_ptr)) {
+    if (has_sustain_chr(*player_ptr)) {
         damage_ratio -= 3;
     }
 

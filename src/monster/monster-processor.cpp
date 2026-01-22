@@ -325,7 +325,7 @@ bool process_stealth(PlayerType *player_ptr, MONSTER_IDX m_idx)
         tmp /= 3;
     }
 
-    if (has_aggravate(player_ptr)) {
+    if (has_aggravate(*player_ptr)) {
         tmp /= 2;
     }
 
@@ -424,8 +424,8 @@ bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     bool awaken = false;
-    awaken |= has_aggravate(player_ptr);
-    awaken |= has_aggravate_nasty(player_ptr) && monrace.kind_flags.has(MonsterKindType::NASTY);
+    awaken |= has_aggravate(*player_ptr);
+    awaken |= has_aggravate_nasty(*player_ptr) && monrace.kind_flags.has(MonsterKindType::NASTY);
 
     if (!awaken) {
         return false;
@@ -454,7 +454,7 @@ void process_angar(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
 {
     auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
-    auto gets_angry = monster.is_friendly() && has_aggravate(player_ptr);
+    auto gets_angry = monster.is_friendly() && has_aggravate(*player_ptr);
     const auto should_aggravate = monster.is_pet();
     auto has_hostile = monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));
     has_hostile &= monster_has_hostile_to_player(player_ptr, 10, -10, monrace);
@@ -999,7 +999,7 @@ bool decide_process_continue(PlayerType *player_ptr, MonsterEntity &monster)
     }
 
     auto should_continue = (monster.cdis <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
-    should_continue &= player_ptr->current_floor_ptr->has_los_at({ monster.y, monster.x }) || has_aggravate(player_ptr);
+    should_continue &= player_ptr->current_floor_ptr->has_los_at({ monster.y, monster.x }) || has_aggravate(*player_ptr);
     if (should_continue) {
         return true;
     }

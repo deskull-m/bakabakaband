@@ -141,7 +141,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     const CreatureRace race(player_ptr);
     if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE)) {
-        if (!floor.is_underground() && !has_resist_lite(player_ptr) && !is_invuln(player_ptr) && AngbandWorld::get_instance().is_daytime()) {
+        if (!floor.is_underground() && !has_resist_lite(*player_ptr) && !is_invuln(player_ptr) && AngbandWorld::get_instance().is_daytime()) {
             if ((floor.grid_array[player_ptr->y][player_ptr->x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
                 msg_print(_("日光があなたのアンデッドの肉体を焼き焦がした！", "The sun's rays scorch your undead flesh!"));
                 take_hit(player_ptr, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
@@ -151,7 +151,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
         const auto &item = *player_ptr->inventory[INVEN_LITE];
         const auto flags = item.get_flags();
-        if ((player_ptr->inventory[INVEN_LITE]->bi_key.tval() != ItemKindType::NONE) && flags.has_not(TR_DARK_SOURCE) && !has_resist_lite(player_ptr)) {
+        if ((player_ptr->inventory[INVEN_LITE]->bi_key.tval() != ItemKindType::NONE) && flags.has_not(TR_DARK_SOURCE) && !has_resist_lite(*player_ptr)) {
             const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_format(_("%sがあなたのアンデッドの肉体を焼き焦がした！", "The %s scorches your undead flesh!"), item_name.data());
             cave_no_regen = true;
@@ -164,7 +164,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !is_invuln(player_ptr) && !has_immune_fire(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !is_invuln(player_ptr) && !has_immune_fire(*player_ptr)) {
         constexpr auto mes_leviation = _("熱で火傷した！", "The heat burns you!");
         constexpr auto mes_normal = _("で火傷した！", "burns you!");
         if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_fire_damage_rate, nullptr)) {
@@ -173,7 +173,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !is_invuln(player_ptr) && !has_immune_cold(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !is_invuln(player_ptr) && !has_immune_cold(*player_ptr)) {
         constexpr auto mes_leviation = _("冷気に覆われた！", "The cold engulfs you!");
         constexpr auto mes_normal = _("に凍えた！", "frostbites you!");
         if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_cold_damage_rate, nullptr)) {
@@ -182,7 +182,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !is_invuln(player_ptr) && !has_immune_elec(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !is_invuln(player_ptr) && !has_immune_elec(*player_ptr)) {
         constexpr auto mes_leviation = _("電撃を受けた！", "The electricity shocks you!");
         constexpr auto mes_normal = _("に感電した！", "shocks you!");
         if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_elec_damage_rate, nullptr)) {
@@ -191,7 +191,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !is_invuln(player_ptr) && !has_immune_acid(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !is_invuln(player_ptr) && !has_immune_acid(*player_ptr)) {
         constexpr auto mes_leviation = _("酸が飛び散った！", "The acid melts you!");
         constexpr auto mes_normal = _("に溶かされた！", "melts you!");
         if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_acid_damage_rate, nullptr)) {
@@ -205,7 +205,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         constexpr auto mes_normal = _("に毒された！", "poisons you!");
         if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_pois_damage_rate,
                 [](PlayerType *player_ptr, int damage) {
-                    if (!has_resist_pois(player_ptr)) {
+                    if (!has_resist_pois(*player_ptr)) {
                         (void)BadStatusSetter(*player_ptr).mod_poison(static_cast<TIME_EFFECT>(damage));
                     }
                 })) {
@@ -217,14 +217,14 @@ void process_player_hp_mp(PlayerType *player_ptr)
     if (terrain.flags.has(TerrainCharacteristics::DUNG_POOL) && !is_invuln(player_ptr)) {
         cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("糞が飛び散った！", "The feced scatter to you!"), _("に浸かった！", "tainted you!"),
             calc_acid_damage_rate, [](PlayerType *player_ptr, int damage) {
-                if (!has_resist_pois(player_ptr)) {
+                if (!has_resist_pois(*player_ptr)) {
                     (void)BadStatusSetter(*player_ptr).mod_poison(static_cast<TIME_EFFECT>(damage));
                 }
             });
     }
 
     const auto can_drown = terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP });
-    if (can_drown && !player_ptr->levitation && !player_ptr->can_swim && !has_resist_water(player_ptr)) {
+    if (can_drown && !player_ptr->levitation && !player_ptr->can_swim && !has_resist_water(*player_ptr)) {
         if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
             msg_print(_("溺れている！", "You are drowning!"));
             take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->level), _("溺れ", "drowning"));
@@ -263,13 +263,13 @@ void process_player_hp_mp(PlayerType *player_ptr)
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_FIRE) && !has_immune_fire(player_ptr)) {
+    if (get_player_flags(*player_ptr, TR_SELF_FIRE) && !has_immune_fire(*player_ptr)) {
         int damage;
         damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_FIRE)) {
             damage += damage / 3;
         }
-        if (has_resist_fire(player_ptr)) {
+        if (has_resist_fire(*player_ptr)) {
             damage = damage / 3;
         }
         if (is_oppose_fire(player_ptr)) {
@@ -281,13 +281,13 @@ void process_player_hp_mp(PlayerType *player_ptr)
         take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_ELEC) && !has_immune_elec(player_ptr)) {
+    if (get_player_flags(*player_ptr, TR_SELF_ELEC) && !has_immune_elec(*player_ptr)) {
         int damage;
         damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_ELEC)) {
             damage += damage / 3;
         }
-        if (has_resist_elec(player_ptr)) {
+        if (has_resist_elec(*player_ptr)) {
             damage = damage / 3;
         }
         if (is_oppose_elec(player_ptr)) {
@@ -299,13 +299,13 @@ void process_player_hp_mp(PlayerType *player_ptr)
         take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_COLD) && !has_immune_cold(player_ptr)) {
+    if (get_player_flags(*player_ptr, TR_SELF_COLD) && !has_immune_cold(*player_ptr)) {
         int damage;
         damage = player_ptr->level;
         if (race.tr_flags().has(TR_VUL_COLD)) {
             damage += damage / 3;
         }
-        if (has_resist_cold(player_ptr)) {
+        if (has_resist_cold(*player_ptr)) {
             damage = damage / 3;
         }
         if (is_oppose_cold(player_ptr)) {
@@ -320,12 +320,12 @@ void process_player_hp_mp(PlayerType *player_ptr)
     if (player_ptr->riding) {
         int damage;
         auto auras = floor.m_list[player_ptr->riding].get_monrace().aura_flags;
-        if (auras.has(MonsterAuraType::FIRE) && !has_immune_fire(player_ptr)) {
+        if (auras.has(MonsterAuraType::FIRE) && !has_immune_fire(*player_ptr)) {
             damage = floor.m_list[player_ptr->riding].get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_FIRE)) {
                 damage += damage / 3;
             }
-            if (has_resist_fire(player_ptr)) {
+            if (has_resist_fire(*player_ptr)) {
                 damage = damage / 3;
             }
             if (is_oppose_fire(player_ptr)) {
@@ -337,12 +337,12 @@ void process_player_hp_mp(PlayerType *player_ptr)
             take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
         }
 
-        if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(player_ptr)) {
+        if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(*player_ptr)) {
             damage = floor.m_list[player_ptr->riding].get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_ELEC)) {
                 damage += damage / 3;
             }
-            if (has_resist_elec(player_ptr)) {
+            if (has_resist_elec(*player_ptr)) {
                 damage = damage / 3;
             }
             if (is_oppose_elec(player_ptr)) {
@@ -354,12 +354,12 @@ void process_player_hp_mp(PlayerType *player_ptr)
             take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
         }
 
-        if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(player_ptr)) {
+        if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(*player_ptr)) {
             damage = floor.m_list[player_ptr->riding].get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_COLD)) {
                 damage += damage / 3;
             }
-            if (has_resist_cold(player_ptr)) {
+            if (has_resist_cold(*player_ptr)) {
                 damage = damage / 3;
             }
             if (is_oppose_cold(player_ptr)) {

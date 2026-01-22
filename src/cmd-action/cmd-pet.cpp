@@ -473,11 +473,11 @@ void do_cmd_pet(PlayerType *player_ptr)
     power_desc[num] = _("ペットに名前をつける", "name pets");
     powers[num++] = PET_NAME;
 
-    bool empty_main = can_attack_with_main_hand(player_ptr);
+    bool empty_main = can_attack_with_main_hand(*player_ptr);
     empty_main &= empty_hands(player_ptr, false) == EMPTY_HAND_SUB;
     empty_main &= player_ptr->inventory[INVEN_MAIN_HAND]->allow_two_hands_wielding();
 
-    bool empty_sub = can_attack_with_sub_hand(player_ptr);
+    bool empty_sub = can_attack_with_sub_hand(*player_ptr);
     empty_sub &= empty_hands(player_ptr, false) == EMPTY_HAND_MAIN;
     empty_sub &= player_ptr->inventory[INVEN_SUB_HAND]->allow_two_hands_wielding();
 

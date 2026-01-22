@@ -129,7 +129,7 @@ static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr
     if ((o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) || (pa_ptr->mode == HISSATSU_KYUSHO)) {
         int n = 1;
 
-        if (can_attack_with_main_hand(player_ptr) && can_attack_with_sub_hand(player_ptr)) {
+        if (can_attack_with_main_hand(*player_ptr) && can_attack_with_sub_hand(*player_ptr)) {
             n *= 2;
         }
 
