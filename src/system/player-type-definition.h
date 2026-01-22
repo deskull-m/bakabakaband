@@ -152,6 +152,7 @@ public:
 
     bool playing{}; /* True if player is playing */
     bool leaving{}; /* True if player is leaving */
+    bool vanish_stairs_flag{}; /* True if stairs should vanish after floor change */
 
     bool monk_notify_aux{};
 
