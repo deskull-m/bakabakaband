@@ -255,7 +255,7 @@ void self_knowledge(PlayerType *player_ptr)
     }
 
     set_class_ability_info(player_ptr, self_ptr);
-    set_mutation_info(player_ptr, self_ptr);
+    set_mutation_info(*player_ptr, self_ptr);
     set_bad_status_info(*player_ptr->effects(), self_ptr);
     set_curse_info(player_ptr, self_ptr);
     set_body_improvement_info_1(player_ptr, self_ptr);
