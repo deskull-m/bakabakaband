@@ -321,7 +321,7 @@ ProcessResult effect_monster_domination(PlayerType *player_ptr, EffectMonster *e
     const auto is_questor = em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
     const auto is_no_confusion = em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF);
     if (is_unique || is_questor || is_no_confusion || (em_ptr->r_ptr->level > randint1((em_ptr->dam - 10) < 1 ? 1 : (em_ptr->dam - 10)) + 10)) {
-        if ((em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) && is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+        if ((em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) && is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
 
@@ -380,7 +380,7 @@ static bool effect_monster_crusade_domination(PlayerType *player_ptr, EffectMons
     em_ptr->note = _("を支配した。", " is tamed!");
     set_pet(player_ptr, *em_ptr->m_ptr);
     (void)set_monster_fast(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100);
-    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::GOOD);
     }
 
@@ -400,7 +400,7 @@ ProcessResult effect_monster_crusade(PlayerType *player_ptr, EffectMonster *em_p
 
     if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::NO_FEAR)) {
         em_ptr->do_fear = randint1(90) + 10;
-    } else if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+    } else if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::NO_FEAR);
     }
 

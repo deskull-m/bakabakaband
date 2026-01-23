@@ -39,7 +39,7 @@ void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags
     }
 
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::NEVER_BLOW);
         }
 
@@ -49,7 +49,7 @@ void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags
     if (turn_flags_ptr->do_move && floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE) && !monster.is_confused()) {
         if (monrace.behavior_flags.has_not(MonsterBehaviorType::STUPID)) {
             turn_flags_ptr->do_move = false;
-        } else if (is_original_ap_and_seen(player_ptr, monster)) {
+        } else if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::STUPID);
         }
     }
@@ -81,7 +81,7 @@ static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_
         return false;
     }
 
-    if ((monrace.behavior_flags.has_not(MonsterBehaviorType::KILL_BODY)) && is_original_ap_and_seen(player_ptr, monster)) {
+    if ((monrace.behavior_flags.has_not(MonsterBehaviorType::KILL_BODY)) && is_original_ap_and_seen(*player_ptr, monster)) {
         monrace.r_behavior_flags.set(MonsterBehaviorType::KILL_BODY);
     }
 
@@ -101,7 +101,7 @@ static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_
         return false;
     }
 
-    if (is_original_ap_and_seen(player_ptr, monster)) {
+    if (is_original_ap_and_seen(*player_ptr, monster)) {
         monrace.r_behavior_flags.set(MonsterBehaviorType::STUPID);
     }
 

@@ -213,7 +213,7 @@ static bool process_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
                 SubWindowRedrawingFlag::DUNGEON,
             };
             rfu.set_flags(flags);
-            if (is_original_ap_and_seen(player_ptr, monster)) {
+            if (is_original_ap_and_seen(*player_ptr, monster)) {
                 monrace.r_behavior_flags.set(MonsterBehaviorType::BASH_DOOR);
             }
 
@@ -332,7 +332,7 @@ static bool process_post_dig_wall(PlayerType *player_ptr, turn_flags *turn_flags
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags);
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_feature_flags.set(MonsterFeatureType::KILL_WALL);
         }
 
@@ -440,7 +440,7 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
         }
 
         if (turn_flags_ptr->do_move && monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE)) {
-            if (is_original_ap_and_seen(player_ptr, monster)) {
+            if (is_original_ap_and_seen(*player_ptr, monster)) {
                 monrace.r_behavior_flags.set(MonsterBehaviorType::NEVER_MOVE);
             }
 

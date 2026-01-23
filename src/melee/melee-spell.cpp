@@ -121,7 +121,7 @@ bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    ms_ptr->can_remember = is_original_ap_and_seen(player_ptr, *ms_ptr->m_ptr);
+    ms_ptr->can_remember = is_original_ap_and_seen(*player_ptr, *ms_ptr->m_ptr);
     const auto res = monspell_to_monster(player_ptr, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
     if (!res.valid) {
         return false;

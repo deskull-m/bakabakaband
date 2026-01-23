@@ -115,7 +115,7 @@ static tl::optional<std::string> exe_blue_teleport_back(PlayerType *player_ptr, 
     }
 
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
@@ -127,7 +127,7 @@ static tl::optional<std::string> exe_blue_teleport_back(PlayerType *player_ptr, 
         return m_name;
     }
 
-    if (is_original_ap_and_seen(player_ptr, monster)) {
+    if (is_original_ap_and_seen(*player_ptr, monster)) {
         monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
     }
 

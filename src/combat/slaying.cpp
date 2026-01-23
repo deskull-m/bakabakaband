@@ -70,7 +70,7 @@ MULTIPLY mult_slaying(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flag
             continue;
         }
 
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_kind_flags.set(p->affect_race_flag);
         }
 
@@ -112,7 +112,7 @@ MULTIPLY mult_brand(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags,
 
         /* Notice immunity */
         if (monrace.resistance_flags.has_any_of(p->resist_mask)) {
-            if (is_original_ap_and_seen(player_ptr, monster)) {
+            if (is_original_ap_and_seen(*player_ptr, monster)) {
                 monrace.r_resistance_flags.set(monrace.resistance_flags & p->resist_mask);
             }
 
@@ -121,7 +121,7 @@ MULTIPLY mult_brand(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags,
 
         /* Otherwise, take the damage */
         if (monrace.resistance_flags.has(p->hurt_flag)) {
-            if (is_original_ap_and_seen(player_ptr, monster)) {
+            if (is_original_ap_and_seen(*player_ptr, monster)) {
                 monrace.r_resistance_flags.set(p->hurt_flag);
             }
 

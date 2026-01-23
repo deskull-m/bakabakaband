@@ -163,7 +163,7 @@ static ProcessResult exe_affect_monster_by_effect(PlayerType *player_ptr, Effect
 
     em_ptr->note = _("には完全な耐性がある！", " is immune.");
     em_ptr->dam = 0;
-    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
     }
 

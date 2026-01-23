@@ -34,7 +34,7 @@ static bool resisted_psi_because_empty_mind(PlayerType *player_ptr, EffectMonste
 
     em_ptr->dam = 0;
     em_ptr->note = _("には完全な耐性がある！", " is immune.");
-    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
     }
 

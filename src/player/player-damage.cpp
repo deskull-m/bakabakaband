@@ -675,7 +675,7 @@ static void process_aura_damage(const MonsterEntity &monster, PlayerType *player
     int aura_damage = Dice::roll(1 + (monrace.level / 26), 1 + (monrace.level / 17));
     msg_print(message);
     (*dam_func)(player_ptr, aura_damage, monster_desc(*player_ptr, monster, MD_WRONGDOER_NAME).data(), true);
-    if (is_original_ap_and_seen(player_ptr, monster)) {
+    if (is_original_ap_and_seen(*player_ptr, monster)) {
         monrace.r_aura_flags.set(aura_flag);
     }
 

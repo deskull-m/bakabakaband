@@ -437,7 +437,7 @@ bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
         msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
     }
 
-    if (is_original_ap_and_seen(player_ptr, monster) && (monrace.r_wake < MAX_UCHAR)) {
+    if (is_original_ap_and_seen(*player_ptr, monster) && (monrace.r_wake < MAX_UCHAR)) {
         monrace.r_wake++;
     }
 
@@ -555,7 +555,7 @@ void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
         }
     }
 
-    if (count && is_original_ap_and_seen(player_ptr, monster)) {
+    if (count && is_original_ap_and_seen(*player_ptr, monster)) {
         monrace.r_ability_flags.set(MonsterAbilityType::SPECIAL);
     }
 }
@@ -598,10 +598,10 @@ bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
     constexpr auto chance_reproduction = 8;
     if ((k < 4) && (!k || !randint0(k * chance_reproduction))) {
         if (auto multiplied_m_idx = multiply_monster(player_ptr, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
-            if (player_ptr->current_floor_ptr->m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(player_ptr, monster)) {
+            if (player_ptr->current_floor_ptr->m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(*player_ptr, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
-            if (floor.m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(player_ptr, monster)) {
+            if (floor.m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(*player_ptr, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
             return true;
@@ -718,7 +718,7 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
         if (randint1(deno) <= num) {
             if (multiply_monster(player_ptr, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
                 auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-                if (monster.ml && is_original_ap_and_seen(player_ptr, *m_ptr)) {
+                if (monster.ml && is_original_ap_and_seen(*player_ptr, *m_ptr)) {
                     r_ptr->misc_flags.set(MonsterMiscType::MULTIPLY);
                 }
                 return true;

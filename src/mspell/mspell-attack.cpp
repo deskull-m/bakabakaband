@@ -212,7 +212,7 @@ static bool check_thrown_mspell(PlayerType *player_ptr, msa_type *msa_ptr)
 {
     // プレイヤーがモンスターを正しく視認できていれば思い出に残る。
     // FIXME: ここで処理するのはおかしいような?
-    msa_ptr->can_remember = is_original_ap_and_seen(player_ptr, *msa_ptr->m_ptr);
+    msa_ptr->can_remember = is_original_ap_and_seen(*player_ptr, *msa_ptr->m_ptr);
 
     // ターゲットがプレイヤー位置なら直接射線が通っているので常に届く。
     if (player_ptr->is_located_at({ msa_ptr->y, msa_ptr->x })) {
