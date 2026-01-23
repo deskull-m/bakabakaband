@@ -301,7 +301,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                         sound(SoundKind::REFLECT);
                     }
 
-                    if (is_original_ap_and_seen(&player, monster)) {
+                    if (is_original_ap_and_seen(player, monster)) {
                         monrace.r_misc_flags.set(MonsterMiscType::REFLECTING);
                     }
 

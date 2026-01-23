@@ -19,5 +19,5 @@ bool monster_can_enter(CreatureEntity *creature_ptr, POSITION y, POSITION x, con
 bool monster_has_hostile_to_player(PlayerType *player_ptr, int pa_good, int pa_evil, const MonraceDefinition &monrace);
 bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace);
 bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace, AllianceType alliance_id);
-bool is_original_ap_and_seen(PlayerType *player_ptr, const MonsterEntity &monster);
+bool is_original_ap_and_seen(CreatureEntity &subject, const MonsterEntity &monster);
 std::string monster_name(PlayerType *player_ptr, MONSTER_IDX m_idx);

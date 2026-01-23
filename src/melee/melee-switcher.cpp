@@ -33,12 +33,12 @@ static bool monster_has_chaos_resist(PlayerType *player_ptr, const MonsterEntity
 {
     auto &monrace = monster.get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_CHAOS)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
         }
         return true;
     } else if (monrace.kind_flags.has(MonsterKindType::DEMON) && one_in_(3)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_kind_flags.set(MonsterKindType::DEMON);
         }
         return true;

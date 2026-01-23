@@ -56,7 +56,7 @@ static void attack_confuse(PlayerType *player_ptr, player_attack_type *pa_ptr, b
 
     auto &monrace = *pa_ptr->r_ptr;
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
@@ -81,7 +81,7 @@ static void attack_stun(PlayerType *player_ptr, player_attack_type *pa_ptr, bool
 {
     auto &monrace = *pa_ptr->r_ptr;
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_STUN);
         }
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
@@ -105,7 +105,7 @@ static void attack_scare(PlayerType *player_ptr, player_attack_type *pa_ptr, boo
 {
     auto &monrace = *pa_ptr->r_ptr;
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::FRENZY)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_FEAR);
         }
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
@@ -183,7 +183,7 @@ static bool judge_tereprt_resistance(PlayerType *player_ptr, player_attack_type 
     }
 
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
@@ -192,7 +192,7 @@ static bool judge_tereprt_resistance(PlayerType *player_ptr, player_attack_type 
     }
 
     if (monrace.level > randint1(100)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 

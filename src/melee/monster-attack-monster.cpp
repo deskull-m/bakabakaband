@@ -87,7 +87,7 @@ static void aura_fire_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK) && is_original_ap_and_seen(player_ptr, *mam_ptr->m_ptr)) {
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK) && is_original_ap_and_seen(*player_ptr, *mam_ptr->m_ptr)) {
         monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_FIRE_MASK);
         return;
     }
@@ -96,7 +96,7 @@ static void aura_fire_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
         msg_format(_("%s^は突然熱くなった！", "%s^ is suddenly very hot!"), mam_ptr->m_name);
     }
 
-    if (mam_ptr->m_ptr->ml && is_original_ap_and_seen(player_ptr, *mam_ptr->t_ptr)) {
+    if (mam_ptr->m_ptr->ml && is_original_ap_and_seen(*player_ptr, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::FIRE);
     }
 
@@ -114,7 +114,7 @@ static void aura_cold_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK) && is_original_ap_and_seen(player_ptr, monster)) {
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK) && is_original_ap_and_seen(*player_ptr, monster)) {
         monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_COLD_MASK);
         return;
     }
@@ -123,7 +123,7 @@ static void aura_cold_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
         msg_format(_("%s^は突然寒くなった！", "%s^ is suddenly very cold!"), mam_ptr->m_name);
     }
 
-    if (monster.ml && is_original_ap_and_seen(player_ptr, *mam_ptr->t_ptr)) {
+    if (monster.ml && is_original_ap_and_seen(*player_ptr, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::COLD);
     }
 
@@ -141,7 +141,7 @@ static void aura_elec_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK) && is_original_ap_and_seen(player_ptr, monster)) {
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK) && is_original_ap_and_seen(*player_ptr, monster)) {
         monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_ELEC_MASK);
         return;
     }
@@ -150,7 +150,7 @@ static void aura_elec_by_melee(PlayerType *player_ptr, mam_type *mam_ptr)
         msg_format(_("%s^は電撃を食らった！", "%s^ gets zapped!"), mam_ptr->m_name);
     }
 
-    if (monster.ml && is_original_ap_and_seen(player_ptr, *mam_ptr->t_ptr)) {
+    if (monster.ml && is_original_ap_and_seen(*player_ptr, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::ELEC);
     }
 
@@ -315,7 +315,7 @@ static void repeat_melee(PlayerType *player_ptr, mam_type *mam_ptr)
 
         mam_ptr->power = mbe_info[enum2i(mam_ptr->effect)].power;
         process_melee(player_ptr, mam_ptr);
-        if (!is_original_ap_and_seen(player_ptr, *mam_ptr->m_ptr) || mam_ptr->do_silly_attack) {
+        if (!is_original_ap_and_seen(*player_ptr, *mam_ptr->m_ptr) || mam_ptr->do_silly_attack) {
             continue;
         }
 

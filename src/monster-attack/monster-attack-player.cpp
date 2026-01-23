@@ -284,7 +284,7 @@ bool MonsterAttackPlayer::effect_protecion_from_evil()
         return false;
     }
 
-    if (is_original_ap_and_seen(this->player_ptr, *this->m_ptr)) {
+    if (is_original_ap_and_seen(*this->player_ptr, *this->m_ptr)) {
         monrace.r_kind_flags.set(MonsterKindType::EVIL);
     }
 
@@ -515,7 +515,7 @@ void MonsterAttackPlayer::gain_evasion_exp()
  */
 void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
 {
-    if (!is_original_ap_and_seen(this->player_ptr, *this->m_ptr) || this->do_silly_attack) {
+    if (!is_original_ap_and_seen(*this->player_ptr, *this->m_ptr) || this->do_silly_attack) {
         return;
     }
 

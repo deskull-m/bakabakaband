@@ -229,9 +229,9 @@ bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, co
     return alliance->is_hostile_to(monster_other, monrace);
 }
 
-bool is_original_ap_and_seen(PlayerType *player_ptr, const MonsterEntity &monster)
+bool is_original_ap_and_seen(CreatureEntity &subject, const MonsterEntity &monster)
 {
-    return monster.ml && !player_ptr->effects()->hallucination().is_hallucinated() && monster.is_original_ap();
+    return monster.ml && !subject.effects()->hallucination().is_hallucinated() && monster.is_original_ap();
 }
 
 /*!

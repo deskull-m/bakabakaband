@@ -37,7 +37,7 @@ static void aura_fire_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
 
     auto &monrace = monap_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_FIRE_MASK);
         }
 
@@ -62,7 +62,7 @@ static void aura_elec_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
 
     auto &monrace = monap_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_ELEC_MASK);
         }
 
@@ -87,7 +87,7 @@ static void aura_cold_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
 
     auto &monrace = monap_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_COLD_MASK);
         }
 
@@ -112,7 +112,7 @@ static void aura_shards_by_monster_attack(PlayerType *player_ptr, MonsterAttackP
 
     auto &monrace = monap_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_SHARDS_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_RESIST_SHARDS_MASK);
         }
     } else {
@@ -143,7 +143,7 @@ static void aura_holy_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
     }
 
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
 
@@ -159,7 +159,7 @@ static void aura_holy_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
         monap_ptr->alive = false;
     }
 
-    if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
         monrace.r_kind_flags.set(MonsterKindType::EVIL);
     }
 }
@@ -172,7 +172,7 @@ static void aura_force_by_monster_attack(PlayerType *player_ptr, MonsterAttackPl
 
     auto &monrace = monap_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return;
@@ -200,7 +200,7 @@ static void aura_shadow_by_monster_attack(PlayerType *player_ptr, MonsterAttackP
     const EnumClassFlagGroup<MonsterResistanceType> resist_flags = { MonsterResistanceType::RESIST_ALL, MonsterResistanceType::RESIST_DARK };
 
     if (monrace.resistance_flags.has_any_of(resist_flags)) {
-        if (is_original_ap_and_seen(player_ptr, *monap_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *monap_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(monrace.resistance_flags & resist_flags);
         }
 

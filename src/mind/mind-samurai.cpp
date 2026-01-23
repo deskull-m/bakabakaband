@@ -70,7 +70,7 @@ static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_FIRE_MASK);
         }
 
@@ -84,7 +84,7 @@ static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type
                 samurai_slaying_ptr->mult = 70;
             }
 
-            if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
                 samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_FIRE);
             }
 
@@ -100,7 +100,7 @@ static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type
             samurai_slaying_ptr->mult = 50;
         }
 
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_FIRE);
         }
     } else if (samurai_slaying_ptr->mult < 25) {
@@ -125,7 +125,7 @@ static void hissatsu_serpent_tongue(PlayerType *player_ptr, samurai_slaying_type
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_POISON_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_POISON_MASK);
         }
 
@@ -173,7 +173,7 @@ static void hissatsu_rock_smash(PlayerType *player_ptr, samurai_slaying_type *sa
     }
 
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::HURT_ROCK)) {
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_ROCK);
         }
 
@@ -198,7 +198,7 @@ static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_COLD_MASK);
         }
 
@@ -212,7 +212,7 @@ static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying
                 samurai_slaying_ptr->mult = 70;
             }
 
-            if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
                 samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
             }
         } else if (samurai_slaying_ptr->mult < 35) {
@@ -227,7 +227,7 @@ static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying
             samurai_slaying_ptr->mult = 50;
         }
 
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
         }
     } else if (samurai_slaying_ptr->mult < 25) {
@@ -248,7 +248,7 @@ static void hissatsu_lightning_eagle(PlayerType *player_ptr, samurai_slaying_typ
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK)) {
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_ELEC_MASK);
         }
 
@@ -293,7 +293,7 @@ static void hissatsu_keiun_kininken(PlayerType *player_ptr, samurai_slaying_type
     }
 
     if (samurai_slaying_ptr->m_ptr->has_undead_flag()) {
-        if (is_original_ap_and_seen(player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
 
             if (samurai_slaying_ptr->mult == 10) {

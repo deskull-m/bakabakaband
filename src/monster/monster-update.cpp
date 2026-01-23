@@ -145,7 +145,7 @@ void update_lite_flags(turn_flags *turn_flags_ptr, const MonraceDefinition &monr
 void update_monster_race_flags(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster)
 {
     auto &monrace = monster.get_monrace();
-    if (!is_original_ap_and_seen(player_ptr, monster)) {
+    if (!is_original_ap_and_seen(*player_ptr, monster)) {
         return;
     }
 
@@ -315,7 +315,7 @@ static void update_specific_race_telepathy(PlayerType *player_ptr, um_type *um_p
     if ((player_ptr->esp_nasty) && monrace.kind_flags.has(MonsterKindType::NASTY)) {
         um_ptr->flag = true;
         um_ptr->m_ptr->mflag.set(MonsterTemporaryFlagType::ESP);
-        if (is_original_ap_and_seen(player_ptr, *um_ptr->m_ptr) && !is_hallucinated) {
+        if (is_original_ap_and_seen(*player_ptr, *um_ptr->m_ptr) && !is_hallucinated) {
             monrace.r_kind_flags.set(MonsterKindType::NASTY);
         }
     }
@@ -323,7 +323,7 @@ static void update_specific_race_telepathy(PlayerType *player_ptr, um_type *um_p
     if ((player_ptr->esp_homo) && monrace.kind_flags.has(MonsterKindType::HOMO_SEXUAL)) {
         um_ptr->flag = true;
         um_ptr->m_ptr->mflag.set(MonsterTemporaryFlagType::ESP);
-        if (is_original_ap_and_seen(player_ptr, *um_ptr->m_ptr) && !is_hallucinated) {
+        if (is_original_ap_and_seen(*player_ptr, *um_ptr->m_ptr) && !is_hallucinated) {
             monrace.r_kind_flags.set(MonsterKindType::HOMO_SEXUAL);
         }
     }

@@ -197,7 +197,7 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
 
     if (monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
         if (monrace_target.kind_flags.has(MonsterKindType::UNIQUE) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+            if (is_original_ap_and_seen(*player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {
@@ -205,7 +205,7 @@ MonsterSpellResult spell_RF6_TELE_TO(PlayerType *player_ptr, MONSTER_IDX m_idx, 
             }
             resists_tele = true;
         } else if (monrace_target.level > randint1(100)) {
-            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+            if (is_original_ap_and_seen(*player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {
@@ -279,7 +279,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(PlayerType *player_ptr, MONSTER_IDX m_idx
 
     if (monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
         if (monrace_target.kind_flags.has(MonsterKindType::UNIQUE) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+            if (is_original_ap_and_seen(*player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {
@@ -287,7 +287,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(PlayerType *player_ptr, MONSTER_IDX m_idx
             }
             resists_tele = true;
         } else if (monrace_target.level > randint1(100)) {
-            if (is_original_ap_and_seen(player_ptr, monster_target)) {
+            if (is_original_ap_and_seen(*player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(player_ptr, t_idx)) {

@@ -28,14 +28,14 @@ bool common_saving_throw_charm(PlayerType *player_ptr, int pow, const MonsterEnt
 
     /* Memorize a flag */
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return true;
     }
 
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         return true;
@@ -68,7 +68,7 @@ bool common_saving_throw_control(PlayerType *player_ptr, int pow, const MonsterE
 
     /* Memorize a flag */
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return true;

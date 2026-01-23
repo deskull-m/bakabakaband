@@ -154,7 +154,7 @@ static bool random_walk(PlayerType *player_ptr, const MonsterEntity &monster)
 {
     auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has_all_of({ MonsterBehaviorType::RAND_MOVE_50, MonsterBehaviorType::RAND_MOVE_25 }) && evaluate_percent(75)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_behavior_flags.set({ MonsterBehaviorType::RAND_MOVE_50, MonsterBehaviorType::RAND_MOVE_25 });
         }
 
@@ -162,7 +162,7 @@ static bool random_walk(PlayerType *player_ptr, const MonsterEntity &monster)
     }
 
     if (monrace.behavior_flags.has(MonsterBehaviorType::RAND_MOVE_50) && one_in_(2)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::RAND_MOVE_50);
         }
 
@@ -170,7 +170,7 @@ static bool random_walk(PlayerType *player_ptr, const MonsterEntity &monster)
     }
 
     if (monrace.behavior_flags.has(MonsterBehaviorType::RAND_MOVE_25) && one_in_(4)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(*player_ptr, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::RAND_MOVE_25);
         }
 
