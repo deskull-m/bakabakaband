@@ -50,69 +50,69 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::SUNLIGHT:
         return activate_sunlight(player_ptr);
     case RandomArtActType::BO_MISS_1:
-        return activate_missile_1(player_ptr);
+        return activate_missile_1(*player_ptr);
     case RandomArtActType::BA_POIS_1:
-        return activate_ball_pois_1(player_ptr);
+        return activate_ball_pois_1(*player_ptr);
     case RandomArtActType::BO_ELEC_1:
-        return activate_bolt_elec_1(player_ptr);
+        return activate_bolt_elec_1(*player_ptr);
     case RandomArtActType::BO_ACID_1:
-        return activate_bolt_acid_1(player_ptr);
+        return activate_bolt_acid_1(*player_ptr);
     case RandomArtActType::BO_COLD_1:
-        return activate_bolt_cold_1(player_ptr);
+        return activate_bolt_cold_1(*player_ptr);
     case RandomArtActType::BO_FIRE_1:
-        return activate_bolt_fire_1(player_ptr);
+        return activate_bolt_fire_1(*player_ptr);
     case RandomArtActType::BA_COLD_1:
-        return activate_ball_cold_1(player_ptr);
+        return activate_ball_cold_1(*player_ptr);
     case RandomArtActType::BA_COLD_2:
-        return activate_ball_cold_2(player_ptr);
+        return activate_ball_cold_2(*player_ptr);
     case RandomArtActType::BA_COLD_3:
-        return activate_ball_cold_2(player_ptr);
+        return activate_ball_cold_2(*player_ptr);
     case RandomArtActType::BA_FIRE_1:
-        return activate_ball_fire_1(player_ptr);
+        return activate_ball_fire_1(*player_ptr);
     case RandomArtActType::BA_FIRE_2:
-        return activate_ball_fire_2(player_ptr, name);
+        return activate_ball_fire_2(*player_ptr, name);
     case RandomArtActType::BA_FIRE_3:
-        return activate_ball_fire_3(player_ptr);
+        return activate_ball_fire_3(*player_ptr);
     case RandomArtActType::BA_FIRE_4:
-        return activate_ball_fire_4(player_ptr);
+        return activate_ball_fire_4(*player_ptr);
     case RandomArtActType::BA_ELEC_2:
-        return activate_ball_elec_2(player_ptr);
+        return activate_ball_elec_2(*player_ptr);
     case RandomArtActType::BA_ELEC_3:
-        return activate_ball_elec_3(player_ptr);
+        return activate_ball_elec_3(*player_ptr);
     case RandomArtActType::BA_ACID_1:
-        return activate_ball_acid_1(player_ptr);
+        return activate_ball_acid_1(*player_ptr);
     case RandomArtActType::BA_NUKE_1:
-        return activate_ball_nuke_1(player_ptr);
+        return activate_ball_nuke_1(*player_ptr);
     case RandomArtActType::HYPODYNAMIA_1:
-        return activate_bolt_hypodynamia_1(player_ptr, name);
+        return activate_bolt_hypodynamia_1(*player_ptr, name);
     case RandomArtActType::HYPODYNAMIA_2:
-        return activate_bolt_hypodynamia_2(player_ptr);
+        return activate_bolt_hypodynamia_2(*player_ptr);
     case RandomArtActType::DRAIN_1:
-        return activate_bolt_drain_1(player_ptr);
+        return activate_bolt_drain_1(*player_ptr);
     case RandomArtActType::BO_MISS_2:
-        return activate_missile_2(player_ptr);
+        return activate_missile_2(*player_ptr);
     case RandomArtActType::WHIRLWIND:
         return activate_whirlwind(player_ptr);
     case RandomArtActType::DRAIN_2:
-        return activate_bolt_drain_2(player_ptr);
+        return activate_bolt_drain_2(*player_ptr);
     case RandomArtActType::CALL_CHAOS:
         return activate_call_chaos(player_ptr);
     case RandomArtActType::ROCKET:
-        return activate_rocket(player_ptr);
+        return activate_rocket(*player_ptr);
     case RandomArtActType::DISP_EVIL:
         return activate_dispel_evil(player_ptr);
     case RandomArtActType::BA_MISS_3:
-        return activate_missile_3(player_ptr);
+        return activate_missile_3(*player_ptr);
     case RandomArtActType::DISP_GOOD:
         return activate_dispel_good(player_ptr);
     case RandomArtActType::BO_MANA:
-        return activate_bolt_mana(player_ptr, name);
+        return activate_bolt_mana(*player_ptr, name);
     case RandomArtActType::BA_WATER:
-        return activate_ball_water(player_ptr, name);
+        return activate_ball_water(*player_ptr, name);
     case RandomArtActType::BA_DARK:
-        return activate_ball_dark(player_ptr, name);
+        return activate_ball_dark(*player_ptr, name);
     case RandomArtActType::BA_MANA:
-        return activate_ball_mana(player_ptr, name);
+        return activate_ball_mana(*player_ptr, name);
     case RandomArtActType::PESTICIDE:
         return activate_pesticide(player_ptr);
     case RandomArtActType::BLINDING_LIGHT:
@@ -120,7 +120,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BIZARRE:
         return activate_ring_of_power(player_ptr, name);
     case RandomArtActType::CAST_BA_STAR:
-        return activate_ball_lite(player_ptr, name);
+        return activate_ball_lite(*player_ptr, name);
     case RandomArtActType::BLADETURNER:
         return activate_bladeturner(player_ptr);
     case RandomArtActType::BR_FIRE:
