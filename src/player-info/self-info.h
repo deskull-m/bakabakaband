@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
-void self_knowledge(PlayerType *player_ptr);
-void report_magics(PlayerType *player_ptr);
+class CreatureEntity;
+void self_knowledge(CreatureEntity &subject);
+void report_magics(CreatureEntity &subject);

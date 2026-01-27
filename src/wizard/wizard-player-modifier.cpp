@@ -81,7 +81,7 @@ void wizard_player_modifier(PlayerType *player_ptr)
         wiz_change_status(player_ptr);
         break;
     case 'k':
-        self_knowledge(player_ptr);
+        self_knowledge(*player_ptr);
         break;
     case 'l':
         roll_hitdice(player_ptr, i2enum<spell_operation>(SPOP_DISPLAY_MES | SPOP_DEBUG));

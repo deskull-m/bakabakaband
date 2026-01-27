@@ -179,7 +179,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 12: {
         if (cast) {
-            self_knowledge(player_ptr);
+            self_knowledge(*player_ptr);
         }
     } break;
 

@@ -498,6 +498,8 @@ public:
     POSITION cur_lite{}; /* Radius of lite (if any) */
     POSITION old_lite{}; /* Radius of lite (if any) */
 
+    BIT_FLAGS special_attack{};
+
 protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */
 };

@@ -226,7 +226,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     case PlayerMutationType::EAT_MAGIC:
         return eat_magic(player_ptr, player_ptr->level * 2);
     case PlayerMutationType::WEIGH_MAG:
-        report_magics(player_ptr);
+        report_magics(*player_ptr);
         return true;
     case PlayerMutationType::STERILITY:
         msg_print(_("突然頭が痛くなった！", "You suddenly have a headache!"));

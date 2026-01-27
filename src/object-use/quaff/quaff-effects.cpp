@@ -186,7 +186,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_SELF_KNOWLEDGE:
         msg_print(_("自分自身のことが少しは分かった気がする...", "You begin to know yourself a little better..."));
         msg_erase();
-        self_knowledge(this->player_ptr);
+        self_knowledge(*this->player_ptr);
         return true;
     case SV_POTION_EXPERIENCE:
         return this->experience();
@@ -500,7 +500,7 @@ bool QuaffEffects::star_enlightenment()
     (void)detect_objects_gold(this->player_ptr, DETECT_RAD_DEFAULT);
     (void)detect_objects_normal(this->player_ptr, DETECT_RAD_DEFAULT);
     identify_pack(this->player_ptr);
-    self_knowledge(this->player_ptr);
+    self_knowledge(*this->player_ptr);
     return true;
 }
 
