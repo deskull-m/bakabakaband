@@ -211,7 +211,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            if (!choose_ele_attack(player_ptr, base + dice.roll())) {
+            if (!choose_ele_attack(*player_ptr, base + dice.roll())) {
                 return tl::nullopt;
             }
         }
@@ -288,7 +288,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 21: {
         if (cast) {
-            pulish_shield(player_ptr);
+            pulish_shield(*player_ptr);
         }
     } break;
 
@@ -374,7 +374,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            if (!choose_ele_immune(player_ptr, base + dice.roll())) {
+            if (!choose_ele_immune(*player_ptr, base + dice.roll())) {
                 return tl::nullopt;
             }
         }

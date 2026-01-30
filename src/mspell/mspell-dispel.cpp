@@ -77,8 +77,8 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_oppose_pois(player_ptr, 0, true);
     (void)set_ultimate_res(player_ptr, 0, true);
     (void)set_mimic(player_ptr, 0, MimicKindType::NONE, true);
-    (void)set_ele_attack(player_ptr, 0, 0);
-    (void)set_ele_immune(player_ptr, 0, 0);
+    (void)set_ele_attack(*player_ptr, 0, 0);
+    (void)set_ele_immune(*player_ptr, 0, 0);
     (void)set_tim_emission(player_ptr, 0, true);
     (void)set_tim_exorcism(player_ptr, 0, true);
     (void)set_tim_imm_dark(player_ptr, 0, true);

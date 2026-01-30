@@ -54,14 +54,14 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     if (player_ptr->ele_attack) {
         player_ptr->ele_attack--;
         if (!player_ptr->ele_attack) {
-            set_ele_attack(player_ptr, 0, 0);
+            set_ele_attack(*player_ptr, 0, 0);
         }
     }
 
     if (player_ptr->ele_immune) {
         player_ptr->ele_immune--;
         if (!player_ptr->ele_immune) {
-            set_ele_immune(player_ptr, 0, 0);
+            set_ele_immune(*player_ptr, 0, 0);
         }
     }
 
