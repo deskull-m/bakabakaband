@@ -80,7 +80,7 @@ void inven_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
         return;
     }
 
-    set_ele_attack(player_ptr, 0, 0);
+    set_ele_attack(*player_ptr, 0, 0);
 }
 
 /*!
