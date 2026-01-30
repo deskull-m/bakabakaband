@@ -428,7 +428,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            cast_meteor(player_ptr, dam, rad);
+            cast_meteor(*player_ptr, dam, rad);
         }
     } break;
 
@@ -505,7 +505,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            call_the_void(player_ptr);
+            call_the_void(*player_ptr);
         }
     } break;
     }

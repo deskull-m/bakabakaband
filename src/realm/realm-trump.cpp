@@ -428,7 +428,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            cast_meteor(player_ptr, dam, rad);
+            cast_meteor(*player_ptr, dam, rad);
         }
     } break;
 
