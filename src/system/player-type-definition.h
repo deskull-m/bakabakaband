@@ -106,7 +106,6 @@ public:
      * function "set_ele_attack", in spell2.c.  This provides for timeouts and
      * prevents the player from getting more than one at a time.
      */
-    BIT_FLAGS special_attack{};
 
     BIT_FLAGS spell_learned1{}; /* bit mask of spells learned */
     BIT_FLAGS spell_learned2{}; /* bit mask of spells learned */

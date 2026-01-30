@@ -306,7 +306,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 20: {
         if (cast) {
-            self_knowledge(player_ptr);
+            self_knowledge(*player_ptr);
         }
     } break;
 
