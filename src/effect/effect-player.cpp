@@ -216,7 +216,7 @@ bool affect_player(MONSTER_IDX src_idx, PlayerType *player_ptr, concptr src_name
         msg_print(_(format("攻撃が%s自身を傷つけた！", ep_ptr->m_name.data()), format("The attack of %s has wounded %s!", ep_ptr->m_name.data(), m_name_self.data())));
         (*project)(*player_ptr, 0, 0, ep_ptr->m_ptr->y, ep_ptr->m_ptr->x, ep_ptr->get_damage, AttributeType::MISSILE, PROJECT_KILL, tl::nullopt);
         if (player_ptr->tim_eyeeye) {
-            set_tim_eyeeye(player_ptr, player_ptr->tim_eyeeye - 5, true);
+            set_tim_eyeeye(*player_ptr, player_ptr->tim_eyeeye - 5, true);
         }
     }
 

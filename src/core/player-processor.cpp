@@ -452,11 +452,11 @@ void process_upkeep_with_speed(PlayerType *player_ptr)
         }
 
         if (!load) {
-            check_emission(player_ptr);
+            check_emission(*player_ptr);
         }
 
         if (!load) {
-            check_demigod(player_ptr);
+            check_demigod(*player_ptr);
         }
 
         SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));

@@ -86,11 +86,11 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_sh_holy) {
-        (void)set_tim_sh_holy(player_ptr, player_ptr->tim_sh_holy - 1, true);
+        (void)set_tim_sh_holy(*player_ptr, player_ptr->tim_sh_holy - 1, true);
     }
 
     if (player_ptr->tim_eyeeye) {
-        (void)set_tim_eyeeye(player_ptr, player_ptr->tim_eyeeye - 1, true);
+        (void)set_tim_eyeeye(*player_ptr, player_ptr->tim_eyeeye - 1, true);
     }
 
     if (player_ptr->resist_magic) {
