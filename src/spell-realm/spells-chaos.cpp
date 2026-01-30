@@ -22,18 +22,19 @@
 
 /*!
  * @brief 虚無招来処理 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーエンティティの参照
  * @details
  * Sorry, it becomes not (void)...
  */
-void call_the_void(PlayerType *player_ptr)
+void call_the_void(CreatureEntity &creature)
 {
+    auto &player_ptr = static_cast<PlayerType &>(creature);
     auto do_call = true;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *player_ptr.current_floor_ptr;
     /* 虚無招来そのものを唱えることによる時空崩壊度進行(*破壊*とは別) */
     wc_ptr->plus_perm_collapsion(150);
     for (const auto &d : Direction::directions()) {
-        const auto p_pos_neighbor = player_ptr->get_neighbor(d);
+        const auto p_pos_neighbor = player_ptr.get_neighbor(d);
         const auto &grid = floor.get_grid(p_pos_neighbor);
         if (!grid.has(TerrainCharacteristics::PROJECTION)) {
             if (!grid.mimic || grid.get_terrain(TerrainKind::MIMIC_RAW).flags.has_not(TerrainCharacteristics::PROJECTION) || !grid.get_terrain().is_permanent_wall()) {
@@ -45,13 +46,13 @@ void call_the_void(PlayerType *player_ptr)
 
     if (do_call) {
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(*player_ptr, AttributeType::ROCKET, dir, 175, 2);
+            fire_ball(player_ptr, AttributeType::ROCKET, dir, 175, 2);
         }
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(*player_ptr, AttributeType::MANA, dir, 175, 3);
+            fire_ball(player_ptr, AttributeType::MANA, dir, 175, 3);
         }
         for (const auto &dir : Direction::directions_8()) {
-            fire_ball(*player_ptr, AttributeType::NUKE, dir, 175, 4);
+            fire_ball(player_ptr, AttributeType::NUKE, dir, 175, 4);
         }
 
         return;
@@ -73,19 +74,19 @@ void call_the_void(PlayerType *player_ptr)
     msg_print(_("大きな爆発音があった！", "There is a loud explosion!"));
 
     if (one_in_(666)) {
-        if (!vanish_dungeon(player_ptr)) {
+        if (!vanish_dungeon(creature)) {
             msg_print(_("ダンジョンは一瞬静まり返った。", "The dungeon becomes quiet for a moment."));
         }
-        take_hit(*player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+        take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
         return;
     }
 
-    if (destroy_area(player_ptr, player_ptr->y, player_ptr->x, 15 + player_ptr->level + randint0(11), false)) {
+    if (destroy_area(&player_ptr, player_ptr.y, player_ptr.x, 15 + player_ptr.level + randint0(11), false)) {
         msg_print(_("ダンジョンが崩壊した...", "The dungeon collapses..."));
     } else {
         msg_print(_("ダンジョンは大きく揺れた。", "The dungeon trembles."));
     }
-    take_hit(*player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
+    take_hit(player_ptr, DAMAGE_NOESCAPE, 100 + randint1(150), _("自殺的な虚無招来", "a suicidal Call the Void"));
 }
 
 /*!
@@ -125,13 +126,13 @@ static void erase_all_walls(FloorType &floor)
 /*!
  * @brief 虚無招来によるフロア中の全壁除去処理 /
  * Vanish all walls in this floor
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param player_ptr 術者の参照ポインタ
+ * @param creature クリーチャーエンティティの参照
  * @return 実際に処理が反映された場合TRUE
  */
-bool vanish_dungeon(PlayerType *player_ptr)
+bool vanish_dungeon(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player_ptr = static_cast<PlayerType &>(creature);
+    auto &floor = *player_ptr.current_floor_ptr;
     auto is_special_floor = floor.is_in_quest() && QuestType::is_fixed(floor.quest_number);
     is_special_floor |= !floor.is_underground();
     if (is_special_floor) {
@@ -146,13 +147,13 @@ bool vanish_dungeon(PlayerType *player_ptr)
         if (grid.has_monster() && monster.is_asleep()) {
             (void)set_monster_csleep(floor, grid.m_idx, 0);
             if (monster.ml) {
-                const auto m_name = monster_desc(*player_ptr, monster, 0);
+                const auto m_name = monster_desc(player_ptr, monster, 0);
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
         }
 
         if (terrrain.flags.has(TerrainCharacteristics::HURT_DISI)) {
-            cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+            cave_alter_feat(&player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
         }
     }
 
@@ -180,24 +181,25 @@ bool vanish_dungeon(PlayerType *player_ptr)
 /*!
  * @brief カオス魔法「流星群」/トランプ魔法「隕石のカード」の処理としてプレイヤーを中心に隕石落下処理を10+1d10回繰り返す。
  * / Drop 10+1d10 meteor ball at random places near the player
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーエンティティの参照
  * @param dam ダメージ
  * @param rad 効力の半径
  * @details このファイルにいるのは、spells-trump.c と比べて行数が少なかったため。それ以上の意図はない
  */
-void cast_meteor(PlayerType *player_ptr, int dam, POSITION rad)
+void cast_meteor(CreatureEntity &creature, int dam, POSITION rad)
 {
+    auto &player_ptr = static_cast<PlayerType &>(creature);
     const auto b = 10 + randint1(10);
-    const auto p_pos = player_ptr->get_position();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = player_ptr.get_position();
+    const auto &floor = *player_ptr.current_floor_ptr;
     for (auto i = 0; i < b; i++) {
         Pos2D pos(0, 0);
         int count;
         for (count = 0; count <= 20; count++) {
             const Pos2DVec vec(randint0(17) - 8, randint0(17) - 8);
             pos = p_pos + vec;
-            const auto dx = std::abs(player_ptr->x - pos.x);
-            const auto dy = std::abs(player_ptr->y - pos.y);
+            const auto dx = std::abs(player_ptr.x - pos.x);
+            const auto dy = std::abs(player_ptr.y - pos.y);
             const auto d = (dy > dx) ? (dy + (dx >> 1)) : (dx + (dy >> 1));
 
             if (d >= 9) {
@@ -220,6 +222,6 @@ void cast_meteor(PlayerType *player_ptr, int dam, POSITION rad)
             continue;
         }
 
-        project(*player_ptr, 0, rad, pos.y, pos.x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
+        project(player_ptr, 0, rad, pos.y, pos.x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
     }
 }

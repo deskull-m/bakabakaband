@@ -438,7 +438,7 @@ bool ScrollReadExecutor::read()
     }
     case SV_SCROLL_CALL_THE_VOID: {
         ident = true;
-        call_the_void(player_ptr);
+        call_the_void(*player_ptr);
         break;
     }
     case SV_SCROLL_THUNDER: {
