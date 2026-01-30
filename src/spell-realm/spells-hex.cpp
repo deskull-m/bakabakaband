@@ -392,7 +392,7 @@ void SpellHex::eyes_on_eyes(MONSTER_IDX m_idx, int dam)
     const auto x = monster.x;
     project(*player_ptr, 0, 0, y, x, dam, AttributeType::MISSILE, PROJECT_KILL);
     if (this->player.tim_eyeeye) {
-        set_tim_eyeeye(player_ptr, this->player.tim_eyeeye - 5, true);
+        set_tim_eyeeye(*player_ptr, this->player.tim_eyeeye - 5, true);
     }
 }
 

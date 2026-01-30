@@ -250,7 +250,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_sh_holy(player_ptr, dice.roll() + base, false);
+            set_tim_sh_holy(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -368,7 +368,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_eyeeye(player_ptr, dice.roll() + base, false);
+            set_tim_eyeeye(*player_ptr, dice.roll() + base, false);
         }
     } break;
 

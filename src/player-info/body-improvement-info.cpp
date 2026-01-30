@@ -175,15 +175,15 @@ void set_body_improvement_info_4(PlayerType *player_ptr, self_info_type *self_pt
 void set_body_improvement_info_5(PlayerType *player_ptr, self_info_type *self_ptr)
 {
     if (player_ptr->tim_exorcism > 0) {
-        if (has_kill_demon_from_exorcism(player_ptr)) {
+        if (has_kill_demon_from_exorcism(*player_ptr)) {
             self_ptr->info_list.emplace_back(_("あなたはデーモンの天敵である。", "You are a great bane of demons."));
-        } else if (has_slay_demon_from_exorcism(player_ptr)) {
+        } else if (has_slay_demon_from_exorcism(*player_ptr)) {
             self_ptr->info_list.emplace_back(_("あなたはデーモンに対して神聖なる力を発揮する。", "You strikes at demons with holy wrath."));
         }
         self_ptr->info_list.emplace_back(_("あなたはデーモンのエネルギーを吸い取る。", "You drain energy from demons."));
-        if (has_kill_undead_from_exorcism(player_ptr)) {
+        if (has_kill_undead_from_exorcism(*player_ptr)) {
             self_ptr->info_list.emplace_back(_("あなたはアンデッドの天敵である。", "You are a great bane of undeads."));
-        } else if (has_slay_undead_from_exorcism(player_ptr)) {
+        } else if (has_slay_undead_from_exorcism(*player_ptr)) {
             self_ptr->info_list.emplace_back(_("あなたはアンデッドに対して神聖なる力を発揮する。", "You strikes at undead with holy wrath."));
         }
         self_ptr->info_list.emplace_back(_("あなたはアンデッドのエネルギーを吸い取る。", "You drain energy from undead."));

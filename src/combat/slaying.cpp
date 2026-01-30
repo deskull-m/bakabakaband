@@ -178,16 +178,16 @@ int calc_attack_damage_with_slay(PlayerType *player_ptr, ItemEntity *o_ptr, int 
         flags.set(TR_SLAY_GOOD);
     }
 
-    if (has_slay_demon_from_exorcism(player_ptr)) {
+    if (has_slay_demon_from_exorcism(*player_ptr)) {
         flags.set(TR_SLAY_DEMON);
     }
-    if (has_kill_demon_from_exorcism(player_ptr)) {
+    if (has_kill_demon_from_exorcism(*player_ptr)) {
         flags.set(TR_KILL_DEMON);
     }
-    if (has_slay_undead_from_exorcism(player_ptr)) {
+    if (has_slay_undead_from_exorcism(*player_ptr)) {
         flags.set(TR_SLAY_UNDEAD);
     }
-    if (has_kill_undead_from_exorcism(player_ptr)) {
+    if (has_kill_undead_from_exorcism(*player_ptr)) {
         flags.set(TR_KILL_UNDEAD);
     }
 
