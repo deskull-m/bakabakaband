@@ -157,7 +157,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 9: {
         if (cast) {
-            phlogiston(player_ptr);
+            phlogiston(*player_ptr);
         }
     } break;
 
