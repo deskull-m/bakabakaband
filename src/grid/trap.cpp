@@ -19,6 +19,7 @@
 #include "player/player-status-flags.h"
 #include "player/player-status-resist.h"
 #include "player/player-status.h"
+#include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-launcher.h"
 #include "spell-kind/spells-random.h"
 #include "spell-kind/spells-sight.h"
@@ -532,6 +533,12 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     case TrapType::JUMP_VOID: {
         msg_print(_("なんてこった！あなたは猿空間に送られた！", "What a hell! You were sent to the SARU space!"));
         jump_floor(player_ptr, DungeonId::VOID_TERRITORY, player_ptr->current_floor_ptr->dun_level);
+        break;
+    }
+
+    case TrapType::DESTRUCTION: {
+        msg_print(_("罠が発動した！周囲が崩壊していく！", "The trap triggers! The dungeon collapses around you!"));
+        destroy_area(player_ptr, p_pos.y, p_pos.x, 15, false);
         break;
     }
     default:

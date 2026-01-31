@@ -79,6 +79,7 @@ enum class TerrainTag {
     TRAP_CHAOS_STORM,
     TRAP_JUMP_VOID,
     TRAP_LAND_MINE,
+    TRAP_DESTRUCTION,
 
     PATTERN_START,
     PATTERN_1,

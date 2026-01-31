@@ -41,7 +41,8 @@ TerrainList::TerrainList()
         TerrainTag::TRAP_ICE_STORM,
         TerrainTag::TRAP_CHAOS_STORM,
         TerrainTag::TRAP_JUMP_VOID,
-        TerrainTag::TRAP_LAND_MINE
+        TerrainTag::TRAP_LAND_MINE,
+        TerrainTag::TRAP_DESTRUCTION,
     };
 }
 

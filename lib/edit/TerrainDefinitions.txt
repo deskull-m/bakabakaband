@@ -2785,6 +2785,17 @@ F:POWER_8 | MOVE | REMEMBER | TUNNEL | HAS_ITEM | HURT_ROCK | CAN_PASS | CAN_DIG
 F:HURT_DISI
 R:600:ORGANIC_WALL
 
+N:340:TRAP_DESTRUCTION
+J:＊破壊＊の罠
+E:trap of destruction
+G:^:v:LIT
+M:TRAP_DESTRUCTION
+W:2
+K:DESTROYED:*FLOOR*
+K:HIT_TRAP:*FLOOR*
+F:SUBTYPE_28 | POWER_50 | LOS | PROJECTION | MOVE | PLACE | NOTICE | REMEMBER |
+F:DISARM | TRAP | HIT_TRAP | CAN_FLY | HURT_DISI | TELEPORTABLE
+
 # D - Black        w - White          s - Gray          o - Orange
 # r - Red          g - Green          b - Blue          u - Brown
 # d - Dark Gray    W - Light Gray     v - Violet        y - Yellow
