@@ -72,6 +72,8 @@ static std::string describe_chest_trap(const ItemEntity &item)
         return _("(警報装置)", " (Alarm)");
     case ChestTrapType::SCATTER:
         return _("(アイテム散乱)", " (Scatter)");
+    case ChestTrapType::NUKE:
+        return _("(放射性廃棄物)", " (Nuclear Waste)");
     case ChestTrapType::MAX:
         THROW_EXCEPTION(std::logic_error, "Invalid chest trap type is specified!");
     default:

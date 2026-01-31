@@ -75,6 +75,7 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
     { ChestTrapType::LOSE_STR },
     { ChestTrapType::LOSE_CON },
     { ChestTrapType::EXPLODE }, /* 25 == best small iron */
+    { ChestTrapType::NUKE },
     {},
     { ChestTrapType::E_SUMMON },
     { ChestTrapType::POISON, ChestTrapType::LOSE_CON },
@@ -85,6 +86,7 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
     { ChestTrapType::E_SUMMON, ChestTrapType::ALARM },
     { ChestTrapType::EXPLODE },
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON }, /* 35 == best large iron */
+    { ChestTrapType::NUKE },
     {},
     { ChestTrapType::SUMMON, ChestTrapType::ALARM },
     { ChestTrapType::EXPLODE },
@@ -112,7 +114,7 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
-    { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
+    { ChestTrapType::EXPLODE, ChestTrapType::SUMMON, ChestTrapType::NUKE },
 };
 
 /*!

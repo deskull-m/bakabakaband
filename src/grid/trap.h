@@ -20,6 +20,7 @@ enum class ChestTrapType : ushort {
     H_SUMMON = 9,      /*!< 箱のトラップ: 召喚のルーン(強敵) */
     RUNES_OF_EVIL = 10, /*!< 箱のトラップ: 邪悪なルーン */
     ALARM = 11,         /*!< 箱のトラップ: 警報装置 */
+    NUKE = 12,          /*!< 箱のトラップ: 放射性廃棄物の嵐 */
     MAX,
 };
 // clang-format on
