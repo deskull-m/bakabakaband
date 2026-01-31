@@ -147,13 +147,13 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 60) {
         msg_print(_("《塔》だ。", "It's the Tower."));
-        wall_breaker(player_ptr);
+        wall_breaker(*player_ptr);
         return;
     }
 
     if (die < 72) {
         msg_print(_("《節制》だ。", "It's Temperance."));
-        sleep_monsters_touch(player_ptr);
+        sleep_monsters_touch(*player_ptr);
         return;
     }
 
@@ -199,7 +199,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 101) {
         msg_print(_("《隠者》だ。", "It's the Hermit."));
-        wall_stone(player_ptr);
+        wall_stone(*player_ptr);
         return;
     }
 

@@ -287,7 +287,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_ANIMATE_DEAD: {
-        ident = animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+        ident = animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         break;
     }
 

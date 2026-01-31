@@ -377,7 +377,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("死者への呼びかけを始めた。", "You start to call the dead.!"));
         }
         if (cast || continuation) {
-            animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+            animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         }
         break;
     }

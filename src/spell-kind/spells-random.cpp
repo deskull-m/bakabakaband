@@ -141,7 +141,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
             [[fallthrough]];
         case 34:
             msg_print(_("エネルギーのうねりを感じた！", "You feel a surge of energy!"));
-            wall_breaker(player_ptr);
+            wall_breaker(*player_ptr);
             if (!randint0(7)) {
                 project(*player_ptr, 0, 7, player_ptr->y, player_ptr->x, 50, AttributeType::KILL_WALL, flg);
                 take_hit(*player_ptr, DAMAGE_NOESCAPE, 50, _("エネルギーのうねり", "surge of energy"));
@@ -286,22 +286,22 @@ void wild_magic(PlayerType *player_ptr, int spell)
         lite_area(player_ptr, Dice::roll(2, 3), 2);
         break;
     case 15:
-        destroy_doors_touch(player_ptr);
+        destroy_doors_touch(*player_ptr);
         break;
     case 16:
     case 17:
-        wall_breaker(player_ptr);
+        wall_breaker(*player_ptr);
         break;
     case 18:
-        sleep_monsters_touch(player_ptr);
+        sleep_monsters_touch(*player_ptr);
         break;
     case 19:
     case 20:
-        trap_creation(player_ptr, player_ptr->y, player_ptr->x);
+        trap_creation(*player_ptr, player_ptr->y, player_ptr->x);
         break;
     case 21:
     case 22:
-        door_creation(player_ptr, player_ptr->y, player_ptr->x);
+        door_creation(*player_ptr, player_ptr->y, player_ptr->x);
         break;
     case 23:
     case 24:
@@ -326,7 +326,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         fire_ball(*player_ptr, AttributeType::CHAOS, Direction::self(), spell + 5, 1 + (spell / 10));
         break;
     case 33:
-        wall_stone(player_ptr);
+        wall_stone(*player_ptr);
         break;
     case 34:
     case 35:

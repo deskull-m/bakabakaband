@@ -806,7 +806,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
             return false;
         }
         msg_print(_("呪文を唱えて邪悪に微笑んだ。", "You cast a spell and cackle evilly."));
-        trap_creation(player_ptr, pos->y, pos->x);
+        trap_creation(*player_ptr, pos->y, pos->x);
         break;
     }
     case MonsterAbilityType::FORGET:
@@ -814,7 +814,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::RAISE_DEAD:
         msg_print(_("死者復活の呪文を唱えた。", "You animate the dead."));
-        (void)animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+        (void)animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         break;
     case MonsterAbilityType::S_KIN: {
         const auto pos = target_set(player_ptr, TARGET_KILL).get_position();

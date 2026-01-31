@@ -496,7 +496,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     case PlayerRaceType::SPRITE:
         msg_print(_("あなたは魔法の粉を投げつけた...", "You throw some magic dust..."));
         if (player_ptr->level < 25) {
-            (void)sleep_monsters_touch(player_ptr);
+            (void)sleep_monsters_touch(*player_ptr);
         } else {
             (void)sleep_monsters(*player_ptr, player_ptr->level);
         }

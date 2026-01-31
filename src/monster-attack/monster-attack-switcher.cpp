@@ -638,7 +638,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
     case RaceBlowEffectType::LOCKUP: { /* AC軽減あり / Player armor reduces total damage */
         if (player_ptr->anti_tele == 0) {
             teleport_player(player_ptr, 50, TELEPORT_PASSIVE);
-            wall_creation(player_ptr, player_ptr->y, player_ptr->x);
+            wall_creation(*player_ptr, player_ptr->y, player_ptr->x);
         }
         break;
     }

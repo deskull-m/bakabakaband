@@ -67,7 +67,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            destroy_doors_touch(player_ptr);
+            destroy_doors_touch(*player_ptr);
         }
     } break;
 
