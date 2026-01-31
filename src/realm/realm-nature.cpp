@@ -358,7 +358,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 23: {
         if (cast) {
-            if (!rustproof(player_ptr)) {
+            if (!rustproof(*player_ptr)) {
                 return tl::nullopt;
             }
         }
