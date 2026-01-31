@@ -62,7 +62,7 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_tim_infra(player_ptr, 0, true);
     (void)set_tim_esp(player_ptr, 0, true);
     (void)set_tim_regen(player_ptr, 0, true);
-    (void)set_tim_stealth(player_ptr, 0, true);
+    (void)set_tim_stealth(*player_ptr, 0, true);
     (void)set_tim_levitation(player_ptr, 0, true);
     (void)set_tim_sh_force(player_ptr, 0, true);
     (void)set_tim_sh_fire(*player_ptr, 0, true);
@@ -88,13 +88,13 @@ static void dispel_player(PlayerType *player_ptr)
         msg_print(_("手の輝きがなくなった。", "Your hands stop glowing."));
     }
 
-    auto song_interruption = music_singing_any(player_ptr);
+    auto song_interruption = music_singing_any(*player_ptr);
     auto spellhex_interruption = SpellHex(*player_ptr).is_spelling_any();
 
     if (song_interruption || spellhex_interruption) {
         if (song_interruption) {
-            set_interrupting_song_effect(player_ptr, get_singing_song_effect(player_ptr));
-            set_singing_song_effect(player_ptr, MUSIC_NONE);
+            set_interrupting_song_effect(*player_ptr, get_singing_song_effect(*player_ptr));
+            set_singing_song_effect(*player_ptr, MUSIC_NONE);
             msg_print(_("歌が途切れた。", "Your singing is interrupted."));
         }
         if (spellhex_interruption) {

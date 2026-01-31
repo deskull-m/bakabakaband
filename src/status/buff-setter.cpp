@@ -105,8 +105,8 @@ void reset_tim_flags(PlayerType *player_ptr)
     }
 
     if (CreatureClass(*player_ptr).equals(PlayerClassType::BARD)) {
-        set_singing_song_effect(player_ptr, MUSIC_NONE);
-        set_singing_song_id(player_ptr, 0);
+        set_singing_song_effect(*player_ptr, MUSIC_NONE);
+        set_singing_song_id(*player_ptr, 0);
     }
 }
 
@@ -140,8 +140,8 @@ bool set_acceleration(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         }
     } else {
         if (acceleration.is_fast() && !player_ptr->lightspeed) {
-            auto is_singing = music_singing(player_ptr, MUSIC_SPEED);
-            is_singing |= music_singing(player_ptr, MUSIC_SHERO);
+            auto is_singing = music_singing(*player_ptr, MUSIC_SPEED);
+            is_singing |= music_singing(*player_ptr, MUSIC_SHERO);
             if (!is_singing) {
                 msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
                 notice = true;
@@ -289,7 +289,7 @@ bool set_blessed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (player_ptr->blessed && !music_singing(player_ptr, MUSIC_BLESS)) {
+        if (player_ptr->blessed && !music_singing(*player_ptr, MUSIC_BLESS)) {
             msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
             notice = true;
         }
@@ -337,7 +337,7 @@ bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (player_ptr->hero && !music_singing(player_ptr, MUSIC_HERO) && !music_singing(player_ptr, MUSIC_SHERO)) {
+        if (player_ptr->hero && !music_singing(*player_ptr, MUSIC_HERO) && !music_singing(*player_ptr, MUSIC_SHERO)) {
             msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
             notice = true;
         }

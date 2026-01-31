@@ -448,7 +448,7 @@ void process_upkeep_with_speed(PlayerType *player_ptr)
 
     while (player_ptr->enchant_energy_need <= 0) {
         if (!load) {
-            check_music(player_ptr);
+            check_music(*player_ptr);
         }
 
         if (!load) {

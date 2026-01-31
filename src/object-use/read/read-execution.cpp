@@ -49,8 +49,8 @@ void ObjectReadEntity::execute(bool known)
         return;
     }
 
-    if (music_singing_any(this->player_ptr)) {
-        stop_singing(this->player_ptr);
+    if (music_singing_any(*this->player_ptr)) {
+        stop_singing(*this->player_ptr);
     }
 
     SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));

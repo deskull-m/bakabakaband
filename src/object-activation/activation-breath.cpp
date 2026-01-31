@@ -36,8 +36,8 @@ bool activate_dragon_breath(PlayerType *player_ptr, ItemEntity *o_ptr)
         return false;
     }
 
-    if (music_singing_any(player_ptr)) {
-        stop_singing(player_ptr);
+    if (music_singing_any(*player_ptr)) {
+        stop_singing(*player_ptr);
     }
 
     if (SpellHex(*player_ptr).is_spelling_any()) {

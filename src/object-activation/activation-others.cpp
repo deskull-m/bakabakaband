@@ -92,8 +92,8 @@ bool activate_banish_evil(PlayerType *player_ptr)
 
 bool activate_scare(PlayerType *player_ptr)
 {
-    if (music_singing_any(player_ptr)) {
-        stop_singing(player_ptr);
+    if (music_singing_any(*player_ptr)) {
+        stop_singing(*player_ptr);
     }
 
     if (SpellHex(*player_ptr).is_spelling_any()) {
@@ -455,8 +455,8 @@ bool activate_whistle(PlayerType *player_ptr, const ItemEntity &item)
         return false;
     }
 
-    if (music_singing_any(player_ptr)) {
-        stop_singing(player_ptr);
+    if (music_singing_any(*player_ptr)) {
+        stop_singing(*player_ptr);
     }
 
     if (SpellHex(*player_ptr).is_spelling_any()) {

@@ -158,7 +158,7 @@ void rd_skills(PlayerType *player_ptr)
     CreatureClass(*player_ptr).init_specific_data();
     std::visit(PlayerClassSpecificDataLoader(), player_ptr->class_specific_data);
 
-    if (music_singing_any(player_ptr)) {
+    if (music_singing_any(*player_ptr)) {
         player_ptr->action = ACTION_SING;
     }
 }
