@@ -29,8 +29,9 @@
  * falseの場合、かならず方向かターゲットを選択し、繰り返しコマンドの対象とならない。
  * @return 指定した方向、またはターゲット(座標はグローバル変数target_row/target_colに格納される)
  */
-Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
+Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
 {
+    auto &player = static_cast<PlayerType &>(subject);
     auto dir = Direction::none();
     auto target = Target::get_last_target();
     if (enable_repeat) {
@@ -73,7 +74,7 @@ Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
         static const std::unordered_set target_commands = { '*', ' ', '\r', 'T', 't', '.', '5', '0', '*' };
         if (target_commands.contains(command)) {
             if (select_new_target_commands.contains(command)) {
-                target = target_set(player_ptr, TARGET_KILL);
+                target = target_set(&player, TARGET_KILL);
             }
             if (target.is_okay()) {
                 dir = Direction::targetting(target);
@@ -88,7 +89,7 @@ Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
     }
 
     command_dir = dir;
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (player.effects()->confusion().is_confused()) {
         dir = rand_choice(Direction::directions_8());
     }
 
@@ -101,6 +102,11 @@ Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
     }
 
     return dir;
+}
+
+Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
+{
+    return get_aim_dir(static_cast<CreatureEntity &>(*player_ptr), enable_repeat);
 }
 
 /*!

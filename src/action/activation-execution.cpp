@@ -250,7 +250,7 @@ static bool activate_firethrowing(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
@@ -266,7 +266,7 @@ static bool activate_rosmarinus(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
@@ -282,7 +282,7 @@ static bool activate_stungun(PlayerType *player_ptr, ae_type *ae_ptr)
     }
 
     project_length = 1;
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
@@ -299,7 +299,7 @@ static bool activate_raygun(PlayerType *player_ptr, ae_type *ae_ptr)
         return false;
     }
 
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
