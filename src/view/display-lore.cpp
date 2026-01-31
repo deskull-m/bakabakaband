@@ -16,6 +16,10 @@
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster-race/race-era-flags.h"
+#include "object/tval-types.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-key.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -1280,6 +1284,66 @@ void display_monster_dead_spawns(lore_type *lore_ptr)
             numerator, denominator));
 #endif
     }
+}
+
+/*!
+ * @brief モンスターの思い出にdrop_kind情報を表示する
+ * @param lore_ptr モンスターの思い出構造体への参照ポインタ
+ */
+void display_drop_kind_items(lore_type *lore_ptr)
+{
+    if (lore_ptr->r_ptr->drop_kinds.empty()) {
+        return;
+    }
+
+    if (!lore_ptr->know_everything && lore_ptr->r_ptr->r_tkills == 0) {
+        return;
+    }
+
+#ifdef JP
+    hooked_roff(format("%s^は倒すと、", Who::who(lore_ptr->msex).data()));
+#else
+    hooked_roff(format("When defeated, %s^ may drop ", Who::who(lore_ptr->msex).data()));
+#endif
+
+    bool first = true;
+    for (const auto &[numerator, denominator, item_id, grade, dice_num, dice_side] : lore_ptr->r_ptr->drop_kinds) {
+        if (!first) {
+#ifdef JP
+            hooked_roff("、");
+#else
+            hooked_roff(", ");
+#endif
+        }
+        first = false;
+
+        const auto &baseitem = BaseitemList::get_instance().get_baseitem(item_id);
+        const auto &item_name = baseitem.name;
+
+        // グレード修飾語を取得
+        std::string grade_modifier = "";
+#ifdef JP
+        if (grade == 1) {
+            grade_modifier = "上質な";
+        } else if (grade == 2) {
+            grade_modifier = "高級品の";
+        }
+        hooked_roff(format("確率%d/%dで%s%sを%dd%d個", numerator, denominator, grade_modifier.data(), item_name.data(), dice_num, dice_side));
+#else
+        if (grade == 1) {
+            grade_modifier = "excellent ";
+        } else if (grade == 2) {
+            grade_modifier = "premium ";
+        }
+        hooked_roff(format("with probability %d/%d %dd%d %s%s", numerator, denominator, dice_num, dice_side, grade_modifier.data(), item_name.data()));
+#endif
+    }
+
+#ifdef JP
+    hooked_roff("落とす。");
+#else
+    hooked_roff(".  ");
+#endif
 }
 
 void display_monster_guardian(lore_type *lore_ptr)

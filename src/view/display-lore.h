@@ -22,4 +22,5 @@ void display_monster_collective(lore_type *lore_ptr);
 void display_monster_launching(PlayerType *player_ptr, lore_type *lore_ptr);
 void display_monster_sometimes(lore_type *lore_ptr);
 void display_monster_dead_spawns(lore_type *lore_ptr);
+void display_drop_kind_items(lore_type *lore_ptr);
 void display_monster_guardian(lore_type *lore_ptr);
