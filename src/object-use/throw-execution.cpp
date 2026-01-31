@@ -134,7 +134,7 @@ bool ObjectThrowEntity::calc_throw_grid()
     }
 
     project_length = this->tdis + 1;
-    const auto dir = get_aim_dir(this->player_ptr);
+    const auto dir = get_aim_dir(*this->player_ptr);
     if (!dir) {
         return false;
     }

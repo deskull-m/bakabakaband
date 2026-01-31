@@ -52,7 +52,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
     auto dir = Direction::none();
     if (o_ptr->is_aiming_rod() || !o_ptr->is_aware()) {
-        dir = get_aim_dir(this->player_ptr);
+        dir = get_aim_dir(*this->player_ptr);
         if (!dir) {
             return;
         }

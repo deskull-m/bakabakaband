@@ -49,7 +49,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
         target_pet = true;
     }
 
-    const auto dir = get_aim_dir(this->player_ptr);
+    const auto dir = get_aim_dir(*this->player_ptr);
     if (!dir) {
         target_pet = old_target_pet;
         return;

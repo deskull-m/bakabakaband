@@ -59,7 +59,7 @@
 
 bool activate_sunlight(PlayerType *player_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
@@ -72,7 +72,7 @@ bool activate_sunlight(PlayerType *player_ptr)
 bool activate_confusion(PlayerType *player_ptr)
 {
     msg_print(_("様々な色の火花を発している...", "It glows in scintillating colours..."));
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
@@ -120,7 +120,7 @@ bool activate_aggravation(PlayerType *player_ptr, ItemEntity *o_ptr, std::string
 bool activate_stone_mud(PlayerType *player_ptr)
 {
     msg_print(_("鼓動している...", "It pulsates..."));
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
@@ -152,7 +152,7 @@ bool activate_judgement(PlayerType *player_ptr, std::string_view name)
 
 bool activate_telekinesis(PlayerType *player_ptr, std::string_view name)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }

@@ -13,7 +13,7 @@
 
 bool activate_teleport_away(PlayerType *player_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }
