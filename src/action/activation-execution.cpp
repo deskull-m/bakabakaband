@@ -208,8 +208,8 @@ static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
         return false;
     }
 
-    if (music_singing_any(&dynamic_cast<PlayerType &>(user))) {
-        stop_singing(&dynamic_cast<PlayerType &>(user));
+    if (music_singing_any(user)) {
+        stop_singing(user);
     }
 
     if (SpellHex(user).is_spelling_any()) {

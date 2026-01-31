@@ -508,7 +508,7 @@ BIT_FLAGS get_player_flags(CreatureEntity &creature, tr_type tr_flag)
 bool has_kill_wall(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (player.mimic_form == MimicKindType::DEMON_LORD || music_singing(&player, MUSIC_WALL)) {
+    if (player.mimic_form == MimicKindType::DEMON_LORD || music_singing(player, MUSIC_WALL)) {
         return true;
     }
 

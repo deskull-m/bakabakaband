@@ -115,7 +115,7 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
             rfu.set_flags(flags_swrf);
         }
     } else {
-        if (player_ptr->invuln && !music_singing(player_ptr, MUSIC_INVULN)) {
+        if (player_ptr->invuln && !music_singing(*player_ptr, MUSIC_INVULN)) {
             msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
             notice = true;
             rfu.set_flag(MainWindowRedrawingFlag::MAP);

@@ -70,7 +70,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_stealth) {
-        (void)set_tim_stealth(player_ptr, player_ptr->tim_stealth - 1, true);
+        (void)set_tim_stealth(*player_ptr, player_ptr->tim_stealth - 1, true);
     }
 
     if (player_ptr->tim_levitation) {

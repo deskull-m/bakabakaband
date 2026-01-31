@@ -36,10 +36,10 @@
 static void start_singing(PlayerType *player_ptr, SPELL_IDX spell, int32_t song)
 {
     /* Remember the song index */
-    set_singing_song_effect(player_ptr, song);
+    set_singing_song_effect(*player_ptr, song);
 
     /* Remember the index of the spell which activated the song */
-    set_singing_song_id(player_ptr, (byte)spell);
+    set_singing_song_id(*player_ptr, (byte)spell);
 
     /* Now the player is singing */
     set_action(player_ptr, ACTION_SING);
@@ -72,7 +72,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 0:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -96,7 +96,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 1:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -115,7 +115,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 2:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         {
@@ -139,7 +139,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 3:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -164,7 +164,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 4:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -189,7 +189,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 5:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         {
@@ -210,7 +210,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 6:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -234,7 +234,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 7:
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -257,13 +257,13 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 8:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
             msg_print(_("静かな音楽が感覚を研ぎ澄まさせた．．．", "Your quiet music sharpens your sense of hearing..."));
             /* Hack -- Initialize the turn count */
-            set_singing_count(player_ptr, 0);
+            set_singing_count(*player_ptr, 0);
             start_singing(player_ptr, spell, MUSIC_DETECT);
         }
 
@@ -275,7 +275,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
             }
 
             if (cont) {
-                int count = get_singing_count(player_ptr);
+                int count = get_singing_count(*player_ptr);
 
                 if (count >= 19) {
                     wiz_lite(player_ptr, false);
@@ -283,7 +283,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
                 if (count >= 11) {
                     map_area(*player_ptr, rad);
                     if (plev > 39 && count < 19) {
-                        set_singing_count(player_ptr, count + 1);
+                        set_singing_count(*player_ptr, count + 1);
                     }
                 }
                 if (count >= 6) {
@@ -293,7 +293,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
                     detect_objects_normal(player_ptr, rad);
 
                     if (plev > 24 && count < 11) {
-                        set_singing_count(player_ptr, count + 1);
+                        set_singing_count(*player_ptr, count + 1);
                     }
                 }
                 if (count >= 3) {
@@ -301,7 +301,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
                     detect_monsters_normal(player_ptr, rad);
 
                     if (plev > 19 && count < A_MAX) {
-                        set_singing_count(player_ptr, count + 1);
+                        set_singing_count(*player_ptr, count + 1);
                     }
                 }
                 detect_traps(player_ptr, rad, true);
@@ -309,7 +309,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
                 detect_stairs(player_ptr, rad);
 
                 if (plev > 14 && count < 3) {
-                    set_singing_count(player_ptr, count + 1);
+                    set_singing_count(*player_ptr, count + 1);
                 }
             }
         }
@@ -319,7 +319,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 9:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -344,7 +344,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 10:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -373,7 +373,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 11:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -392,7 +392,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 12:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -417,7 +417,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 13:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -442,7 +442,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 14: {
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -454,7 +454,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 15:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -479,7 +479,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 16:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -501,7 +501,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 17:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -536,7 +536,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 18:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -562,7 +562,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -574,7 +574,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 20:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -600,7 +600,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 21:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -632,7 +632,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -655,7 +655,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -667,7 +667,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 24:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -692,7 +692,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 25:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -717,7 +717,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 26: {
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -729,7 +729,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 27: {
 
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -765,7 +765,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 28: {
 
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -790,7 +790,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 29: {
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -811,7 +811,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {
@@ -827,7 +827,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 31:
         /* Stop singing before start another */
         if (cast || fail) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
 
         if (cast) {

@@ -525,10 +525,10 @@ void do_cmd_rest(PlayerType *player_ptr)
 {
     set_action(player_ptr, ACTION_NONE);
     if (CreatureClass(*player_ptr).equals(PlayerClassType::BARD)) {
-        auto is_singing = get_singing_song_effect(player_ptr) != 0;
-        is_singing |= get_interrupting_song_effect(player_ptr) != 0;
+        auto is_singing = get_singing_song_effect(*player_ptr) != 0;
+        is_singing |= get_interrupting_song_effect(*player_ptr) != 0;
         if (is_singing) {
-            stop_singing(player_ptr);
+            stop_singing(*player_ptr);
         }
     }
 

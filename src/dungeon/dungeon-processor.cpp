@@ -174,8 +174,8 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         }
     }
 
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::BARD) && (get_singing_song_effect(player_ptr) > MUSIC_DETECT)) {
-        set_singing_song_effect(player_ptr, MUSIC_DETECT);
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::BARD) && (get_singing_song_effect(*player_ptr) > MUSIC_DETECT)) {
+        set_singing_song_effect(*player_ptr, MUSIC_DETECT);
     }
 
     if (!player_ptr->playing || player_ptr->is_dead()) {

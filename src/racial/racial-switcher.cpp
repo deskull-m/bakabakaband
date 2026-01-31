@@ -208,11 +208,11 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
 
         return (command != -4) || (!cmd_limit_cast(player_ptr) && do_cmd_magic_eater(player_ptr, false, true));
     case PlayerClassType::BARD:
-        if ((get_singing_song_effect(player_ptr) == 0) && (get_interrupting_song_effect(player_ptr) == 0)) {
+        if ((get_singing_song_effect(*player_ptr) == 0) && (get_interrupting_song_effect(*player_ptr) == 0)) {
             return false;
         }
 
-        stop_singing(player_ptr);
+        stop_singing(*player_ptr);
         PlayerEnergy(player_ptr).set_player_turn_energy(10);
         return true;
     case PlayerClassType::RED_MAGE:

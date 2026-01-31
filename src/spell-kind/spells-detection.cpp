@@ -93,7 +93,7 @@ bool detect_traps(PlayerType *player_ptr, POSITION range, bool known)
         player_ptr->dtrap = true;
     }
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 0) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
         detect = false;
     }
 
@@ -114,7 +114,7 @@ bool detect_doors(PlayerType *player_ptr, POSITION range)
 {
     bool detect = detect_feat_flag(player_ptr, range, TerrainCharacteristics::DOOR, true);
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 0) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
         detect = false;
     }
     if (detect) {
@@ -134,7 +134,7 @@ bool detect_stairs(PlayerType *player_ptr, POSITION range)
 {
     bool detect = detect_feat_flag(player_ptr, range, TerrainCharacteristics::STAIRS, true);
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 0) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
         detect = false;
     }
     if (detect) {
@@ -154,7 +154,7 @@ bool detect_treasure(PlayerType *player_ptr, POSITION range)
 {
     bool detect = detect_feat_flag(player_ptr, range, TerrainCharacteristics::HAS_GOLD, true);
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 6) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 6) {
         detect = false;
     }
     if (detect) {
@@ -200,7 +200,7 @@ bool detect_objects_gold(PlayerType *player_ptr, POSITION range)
         }
     }
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 6) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 6) {
         detect = false;
     }
     if (detect) {
@@ -249,7 +249,7 @@ bool detect_objects_normal(PlayerType *player_ptr, POSITION range)
         }
     }
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 6) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 6) {
         detect = false;
     }
     if (detect) {
@@ -356,7 +356,7 @@ bool detect_monsters_normal(PlayerType *player_ptr, POSITION range)
         }
     }
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 3) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 3) {
         flag = false;
     }
     if (flag) {
@@ -408,7 +408,7 @@ bool detect_monsters_invis(PlayerType *player_ptr, POSITION range)
         }
     }
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 3) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 3) {
         flag = false;
     }
     if (flag) {
@@ -605,7 +605,7 @@ bool detect_monsters_string(PlayerType *player_ptr, POSITION range, concptr Matc
         }
     }
 
-    if (music_singing(player_ptr, MUSIC_DETECT) && get_singing_count(player_ptr) > 3) {
+    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 3) {
         flag = false;
     }
     if (flag) {

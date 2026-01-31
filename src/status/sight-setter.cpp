@@ -56,7 +56,7 @@ bool set_tim_esp(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             notice = true;
         }
     } else {
-        if (player_ptr->tim_esp && !music_singing(player_ptr, MUSIC_MIND)) {
+        if (player_ptr->tim_esp && !music_singing(*player_ptr, MUSIC_MIND)) {
             msg_print(_("意識は元に戻った。", "Your consciousness contracts again."));
             notice = true;
         }

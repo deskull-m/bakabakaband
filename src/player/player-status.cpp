@@ -3080,31 +3080,31 @@ uint32_t calc_score(PlayerType *player_ptr)
  */
 bool is_blessed(PlayerType *player_ptr)
 {
-    return player_ptr->blessed || music_singing(player_ptr, MUSIC_BLESS) || SpellHex(*player_ptr).is_spelling_specific(HEX_BLESS);
+    return player_ptr->blessed || music_singing(*player_ptr, MUSIC_BLESS) || SpellHex(*player_ptr).is_spelling_specific(HEX_BLESS);
 }
 
 bool is_tim_esp(PlayerType *player_ptr)
 {
     auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return player_ptr->tim_esp || music_singing(player_ptr, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+    return player_ptr->tim_esp || music_singing(*player_ptr, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
 }
 
 bool is_tim_stealth(PlayerType *player_ptr)
 {
-    return player_ptr->tim_stealth || music_singing(player_ptr, MUSIC_STEALTH);
+    return player_ptr->tim_stealth || music_singing(*player_ptr, MUSIC_STEALTH);
 }
 
 bool is_time_limit_esp(PlayerType *player_ptr)
 {
     auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
     auto sniper_concent = sniper_data ? sniper_data->concent : 0;
-    return player_ptr->tim_esp || music_singing(player_ptr, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
+    return player_ptr->tim_esp || music_singing(*player_ptr, MUSIC_MIND) || (sniper_concent >= CONCENT_TELE_THRESHOLD);
 }
 
 bool is_time_limit_stealth(PlayerType *player_ptr)
 {
-    return player_ptr->tim_stealth || music_singing(player_ptr, MUSIC_STEALTH);
+    return player_ptr->tim_stealth || music_singing(*player_ptr, MUSIC_STEALTH);
 }
 
 /*!
@@ -3113,8 +3113,8 @@ bool is_time_limit_stealth(PlayerType *player_ptr)
  */
 void stop_mouth(PlayerType *player_ptr)
 {
-    if (music_singing_any(player_ptr)) {
-        stop_singing(player_ptr);
+    if (music_singing_any(*player_ptr)) {
+        stop_singing(*player_ptr);
     }
 
     if (SpellHex(*player_ptr).is_spelling_any()) {
@@ -3124,17 +3124,17 @@ void stop_mouth(PlayerType *player_ptr)
 
 bool is_fast(PlayerType *player_ptr)
 {
-    return player_ptr->effects()->acceleration().is_fast() || music_singing(player_ptr, MUSIC_SPEED) || music_singing(player_ptr, MUSIC_SHERO);
+    return player_ptr->effects()->acceleration().is_fast() || music_singing(*player_ptr, MUSIC_SPEED) || music_singing(*player_ptr, MUSIC_SHERO);
 }
 
 bool is_invuln(PlayerType *player_ptr)
 {
-    return player_ptr->invuln || music_singing(player_ptr, MUSIC_INVULN);
+    return player_ptr->invuln || music_singing(*player_ptr, MUSIC_INVULN);
 }
 
 bool is_hero(PlayerType *player_ptr)
 {
-    return player_ptr->hero || music_singing(player_ptr, MUSIC_HERO) || music_singing(player_ptr, MUSIC_SHERO);
+    return player_ptr->hero || music_singing(*player_ptr, MUSIC_HERO) || music_singing(*player_ptr, MUSIC_SHERO);
 }
 
 bool is_shero(PlayerType *player_ptr)

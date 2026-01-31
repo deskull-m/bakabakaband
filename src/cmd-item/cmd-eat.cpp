@@ -540,8 +540,8 @@ static bool exe_eat_charge_of_magic_device(PlayerType *player_ptr, ItemEntity *o
  */
 void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 {
-    if (music_singing_any(player_ptr)) {
-        stop_singing(player_ptr);
+    if (music_singing_any(*player_ptr)) {
+        stop_singing(*player_ptr);
     }
 
     SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
