@@ -447,7 +447,7 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             msg_print(_("生命と復活のテーマを奏で始めた．．．", "The themes of life and revival are woven into your song..."));
-            animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+            animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         }
     } break;
 

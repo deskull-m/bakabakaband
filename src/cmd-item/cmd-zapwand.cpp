@@ -125,7 +125,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
         if (disarm_trap(player_ptr, dir)) {
             ident = true;
         }
-        if (powerful && disarm_traps_touch(player_ptr)) {
+        if (powerful && disarm_traps_touch(*player_ptr)) {
             ident = true;
         }
         break;
@@ -135,7 +135,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
         if (destroy_door(player_ptr, dir)) {
             ident = true;
         }
-        if (powerful && destroy_doors_touch(player_ptr)) {
+        if (powerful && destroy_doors_touch(*player_ptr)) {
             ident = true;
         }
         break;

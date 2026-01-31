@@ -133,7 +133,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_TRAP_CREATION:
-        if (trap_creation(this->player_ptr, this->player_ptr->y, this->player_ptr->x)) {
+        if (trap_creation(*this->player_ptr, this->player_ptr->y, this->player_ptr->x)) {
             this->ident = true;
         }
 
@@ -333,7 +333,7 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_TRAP_DOOR_DESTRUCTION:
-        if (destroy_doors_touch(this->player_ptr)) {
+        if (destroy_doors_touch(*this->player_ptr)) {
             this->ident = true;
         }
 
@@ -457,7 +457,7 @@ bool ScrollReadExecutor::read()
         break;
     }
     case SV_SCROLL_TREE_CREATION: {
-        tree_creation(player_ptr, player_ptr->y, player_ptr->x);
+        tree_creation(*player_ptr, player_ptr->y, player_ptr->x);
         break;
     }
     default:

@@ -466,7 +466,7 @@ MonsterSpellResult spell_RF6_TRAPS(PlayerType *player_ptr, POSITION y, POSITION 
         msg_format(_("%s^が呪文を唱えて邪悪に微笑んだ。", "%s^ casts a spell and cackles evilly."), m_name.data());
     }
 
-    (void)trap_creation(player_ptr, y, x);
+    (void)trap_creation(*player_ptr, y, x);
 
     auto res = MonsterSpellResult::make_valid();
     res.learnable = true;
@@ -491,7 +491,7 @@ MonsterSpellResult spell_RF6_RAISE_DEAD(PlayerType *player_ptr, MONSTER_IDX m_id
 
     monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
-    animate_dead(player_ptr, m_idx, monster.y, monster.x);
+    animate_dead(*player_ptr, m_idx, monster.y, monster.x);
 
     return MonsterSpellResult::make_valid();
 }

@@ -305,14 +305,14 @@ bool activate_blinding_light(PlayerType *player_ptr, std::string_view name)
 bool activate_sleep(PlayerType *player_ptr)
 {
     msg_print(_("深青色に輝いている...", "It glows deep blue..."));
-    sleep_monsters_touch(player_ptr);
+    sleep_monsters_touch(*player_ptr);
     return true;
 }
 
 bool activate_door_destroy(PlayerType *player_ptr)
 {
     msg_print(_("明るい赤色に輝いている...", "It glows bright red..."));
-    destroy_doors_touch(player_ptr);
+    destroy_doors_touch(*player_ptr);
     return true;
 }
 
@@ -401,7 +401,7 @@ bool activate_tree_creation(PlayerType *player_ptr, ItemEntity *o_ptr, std::stri
 {
     const auto randart_name = o_ptr->is_random_artifact() ? o_ptr->randart_name->data() : "";
     msg_format(_("%s%sから明るい緑の光があふれ出た...", "The %s%s wells with clear light..."), name.data(), randart_name);
-    return tree_creation(player_ptr, player_ptr->y, player_ptr->x);
+    return tree_creation(*player_ptr, player_ptr->y, player_ptr->x);
 }
 
 bool activate_animate_dead(PlayerType *player_ptr, ItemEntity *o_ptr)
@@ -411,7 +411,7 @@ bool activate_animate_dead(PlayerType *player_ptr, ItemEntity *o_ptr)
         msg_print(_("ぴぴるぴるぴるぴぴるぴ～♪", "Pipiru piru piru pipiru pii"));
     }
 
-    return animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+    return animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
 }
 
 bool activate_detect_treasure(PlayerType *player_ptr)

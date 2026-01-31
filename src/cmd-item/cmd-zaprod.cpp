@@ -171,7 +171,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
         if (disarm_trap(player_ptr, dir)) {
             ident = true;
         }
-        if (powerful && disarm_traps_touch(player_ptr)) {
+        if (powerful && disarm_traps_touch(*player_ptr)) {
             ident = true;
         }
         break;

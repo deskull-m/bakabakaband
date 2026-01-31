@@ -315,7 +315,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 14: {
         if (cast) {
-            animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+            animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         }
     } break;
 

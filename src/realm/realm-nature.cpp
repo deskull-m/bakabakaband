@@ -328,7 +328,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 19: {
         if (cast) {
-            tree_creation(player_ptr, player_ptr->y, player_ptr->x);
+            tree_creation(*player_ptr, player_ptr->y, player_ptr->x);
         }
     } break;
 
@@ -352,7 +352,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 22: {
         if (cast) {
-            wall_stone(player_ptr);
+            wall_stone(*player_ptr);
         }
     } break;
 

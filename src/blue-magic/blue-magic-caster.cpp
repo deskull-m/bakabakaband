@@ -184,8 +184,8 @@ static bool cast_blue_make_trap(PlayerType *player_ptr)
         return false;
     }
 
-    msg_print(_("呪文を唱えて邪悪に微笑んだ。", "You cast a spell and cackle evilly."));
-    trap_creation(player_ptr, pos->y, pos->x);
+    msg_print(_("呆文を唱えて邪悪に微笑んだ。", "You cast a spell and cackle evilly."));
+    trap_creation(*player_ptr, pos->y, pos->x);
     return true;
 }
 
@@ -331,7 +331,7 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         return true;
     case MonsterAbilityType::RAISE_DEAD:
         msg_print(_("死者復活の呪文を唱えた。", "You animate the dead."));
-        (void)animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+        (void)animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         return true;
     case MonsterAbilityType::S_KIN:
         return cast_blue_summon_kin(player_ptr, bmc_ptr);
