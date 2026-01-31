@@ -1,6 +1,7 @@
 #include "view/display-lore-drops.h"
 #include "lore/lore-util.h"
 #include "util/bit-flags-calculator.h"
+#include "view/display-lore.h"
 
 void display_monster_drop_quantity(lore_type *lore_ptr)
 {
@@ -115,4 +116,5 @@ void display_monster_drops(lore_type *lore_ptr)
     display_monster_drop_items(lore_ptr);
     display_monster_drop_golds(lore_ptr);
     hooked_roff(_("を持っていることがある。", ".  "));
+    display_drop_kind_items(lore_ptr);
 }
