@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool rustproof(PlayerType *player_ptr);
+class CreatureEntity;
+bool rustproof(CreatureEntity &creature);

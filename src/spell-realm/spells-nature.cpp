@@ -7,6 +7,7 @@
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "racial/racial-android.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -14,15 +15,16 @@
 
 /*!
  * @brief 防具の錆止め防止処理
- * @param player_ptr 錆止め実行者の参照ポインタ
+ * @param creature 錆止め実行者の参照
  * @return ターン消費を要する処理を行ったならばTRUEを返す
  */
-bool rustproof(PlayerType *player_ptr)
+bool rustproof(CreatureEntity &creature)
 {
     constexpr auto q = _("どの防具に錆止めをしますか？", "Rustproof which piece of armour? ");
     constexpr auto s = _("錆止めできるものがありません。", "You have nothing to rustproof.");
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_protector));
     if (o_ptr == nullptr) {
         return false;
