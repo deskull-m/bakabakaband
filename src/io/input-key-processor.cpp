@@ -475,7 +475,7 @@ void process_command(PlayerType *player_ptr)
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
             do_cmd_element(player_ptr);
         } else if (pc.equals(PlayerClassType::IMITATOR)) {
-            do_cmd_mane(player_ptr, false);
+            do_cmd_mane(*player_ptr, false);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
             do_cmd_magic_eater(player_ptr, false, false);
         } else if (pc.equals(PlayerClassType::SAMURAI)) {

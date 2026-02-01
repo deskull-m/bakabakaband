@@ -182,7 +182,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         return (command != -4) || identify_fully(player_ptr, false);
     case PlayerClassType::IMITATOR:
         handle_stuff(player_ptr);
-        return do_cmd_mane(player_ptr, true);
+        return do_cmd_mane(*player_ptr, true);
     case PlayerClassType::BEASTMASTER:
         if (command == -3) {
             const auto dir = get_aim_dir(player_ptr);
