@@ -75,9 +75,8 @@ bool create_rune_protection_area(CreatureEntity &creature, POSITION y, POSITION 
  */
 bool wall_stone(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    bool dummy = project(creature, 0, 1, player.y, player.x, 0, AttributeType::STONE_WALL, flg).notice;
+    bool dummy = project(creature, 0, 1, creature.y, creature.x, 0, AttributeType::STONE_WALL, flg).notice;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::FLOW);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -91,9 +90,8 @@ bool wall_stone(CreatureEntity &creature)
  */
 bool destroy_doors_touch(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(creature, 0, 1, player.y, player.x, 0, AttributeType::KILL_DOOR, flg).notice;
+    return project(creature, 0, 1, creature.y, creature.x, 0, AttributeType::KILL_DOOR, flg).notice;
 }
 
 /*!
@@ -103,9 +101,8 @@ bool destroy_doors_touch(CreatureEntity &creature)
  */
 bool disarm_traps_touch(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
-    return project(creature, 0, 1, player.y, player.x, 0, AttributeType::KILL_TRAP, flg).notice;
+    return project(creature, 0, 1, creature.y, creature.x, 0, AttributeType::KILL_TRAP, flg).notice;
 }
 
 /*!
@@ -115,9 +112,8 @@ bool disarm_traps_touch(CreatureEntity &creature)
  */
 bool sleep_monsters_touch(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     BIT_FLAGS flg = PROJECT_KILL | PROJECT_HIDE;
-    return project(creature, 0, 1, player.y, player.x, player.level, AttributeType::OLD_SLEEP, flg).notice;
+    return project(creature, 0, 1, creature.y, creature.x, creature.level, AttributeType::OLD_SLEEP, flg).notice;
 }
 
 /*!
@@ -140,18 +136,17 @@ bool animate_dead(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION y, POS
  */
 void wall_breaker(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    const auto p_pos = player.get_position();
+    const auto p_pos = creature.get_position();
     auto attempts = 1000;
-    if (randint1(80 + player.level) < 70) {
+    if (randint1(80 + creature.level) < 70) {
         Pos2D pos(0, 0);
         while (attempts--) {
-            pos = scatter(*player.current_floor_ptr, p_pos, 4, PROJECT_NONE);
-            if (!player.current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
+            pos = scatter(*creature.current_floor_ptr, p_pos, 4, PROJECT_NONE);
+            if (!creature.current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
 
-            if (!player.is_located_at(pos)) {
+            if (!creature.is_located_at(pos)) {
                 break;
             }
         }
@@ -162,7 +157,7 @@ void wall_breaker(CreatureEntity &creature)
     }
 
     if (randint1(100) > 30) {
-        earthquake(creature, player.get_position(), 1);
+        earthquake(creature, creature.get_position(), 1);
         return;
     }
 
@@ -170,8 +165,8 @@ void wall_breaker(CreatureEntity &creature)
     for (auto i = 0; i < num; i++) {
         Pos2D pos(0, 0);
         while (true) {
-            pos = scatter(*player.current_floor_ptr, p_pos, 10, PROJECT_NONE);
-            if (!player.is_located_at(pos)) {
+            pos = scatter(*creature.current_floor_ptr, p_pos, 10, PROJECT_NONE);
+            if (!creature.is_located_at(pos)) {
                 break;
             }
         }
