@@ -226,12 +226,10 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
 
 bool teleport_level_other(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
-        return false;
-    }
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
 
-    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    const auto pos = target_set(creature, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }

@@ -163,7 +163,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
             summon_type type;
 
             if (cast) {
-                const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+                const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
                 if (!pos) {
                     return tl::nullopt;
                 }

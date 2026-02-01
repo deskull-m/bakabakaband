@@ -550,12 +550,13 @@ void TargetSetter::sweep_target_grids()
 /*
  * Handle "target" and "look".
  */
-Target target_set(PlayerType *player_ptr, target_type mode)
+Target target_set(CreatureEntity &creature, target_type mode)
 {
-    TargetSetter ts(player_ptr, mode);
+    auto &player = static_cast<PlayerType &>(creature);
+    TargetSetter ts(&player, mode);
     ts.sweep_target_grids();
     prt("", 0, 0);
-    verify_panel(*player_ptr);
+    verify_panel(player);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -564,7 +565,7 @@ Target target_set(PlayerType *player_ptr, target_type mode)
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
     rfu.set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(&player);
     Target::set_last_target(ts.get_target());
     return ts.get_target();
 }

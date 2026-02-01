@@ -42,7 +42,7 @@
 
 bool cast_blue_dispel(PlayerType *player_ptr)
 {
-    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }
@@ -137,7 +137,7 @@ static tl::optional<std::string> exe_blue_teleport_back(PlayerType *player_ptr, 
 
 static bool cast_blue_teleport_back(PlayerType *player_ptr)
 {
-    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }
@@ -179,7 +179,7 @@ static bool cast_blue_psy_spear(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
 static bool cast_blue_make_trap(PlayerType *player_ptr)
 {
-    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }

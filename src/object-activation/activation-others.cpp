@@ -429,7 +429,7 @@ bool activate_create_ammo(PlayerType *player_ptr)
 bool activate_dispel_magic(PlayerType *player_ptr)
 {
     msg_print(_("鈍い色に光った...", "It glowed in a dull color..."));
-    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }

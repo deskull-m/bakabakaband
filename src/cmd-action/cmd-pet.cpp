@@ -307,7 +307,7 @@ static void do_name_pet(PlayerType *player_ptr)
 {
     auto old_target_pet = target_pet;
     target_pet = true;
-    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
     if (!pos) {
         target_pet = old_target_pet;
         return;
@@ -689,7 +689,7 @@ void do_cmd_pet(PlayerType *player_ptr)
     }
     case PET_TARGET: {
         project_length = -1;
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             player_ptr->pet_t_m_idx = 0;
         } else {

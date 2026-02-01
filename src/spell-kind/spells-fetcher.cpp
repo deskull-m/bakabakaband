@@ -112,7 +112,7 @@ void fetch_item(PlayerType *player_ptr, const Direction &dir, WEIGHT wgt, bool r
 
 bool fetch_monster(PlayerType *player_ptr)
 {
-    const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+    const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }
