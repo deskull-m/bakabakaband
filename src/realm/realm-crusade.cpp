@@ -331,7 +331,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             if (!(pet && (plev < 50))) {
                 flg |= PM_ALLOW_GROUP;
             }
-            if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, (plev * 3) / 2, SUMMON_ANGEL, flg)) {
+            if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, (plev * 3) / 2, SUMMON_ANGEL, flg)) {
                 if (pet) {
                     msg_print(_("「ご用でございますか、ご主人様」", "'What is thy bidding... Master?'"));
                 } else {

@@ -548,7 +548,7 @@ void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
     BIT_FLAGS p_mode = monster.is_pet() ? PM_FORCE_PET : PM_NONE;
 
     for (int k = 0; k < A_MAX; k++) {
-        if (auto summoned_m_idx = summon_specific(player_ptr, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
+        if (auto summoned_m_idx = summon_specific(*player_ptr, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
             if (player_ptr->current_floor_ptr->m_list[*summoned_m_idx].ml) {
                 count++;
             }

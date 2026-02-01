@@ -839,7 +839,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
             max_cyber = 4;
         }
         for (auto k = 0; k < max_cyber; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CYBER, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_CYBER, mode);
         }
         break;
     }
@@ -850,7 +850,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("仲間を召喚した。", "You summon help."));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
         }
         break;
     }
@@ -861,7 +861,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("モンスターを召喚した！", "You summon monsters!"));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
         }
         break;
     }
@@ -872,7 +872,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("アリを召喚した。", "You summon ants."));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_ANT, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_ANT, mode);
         }
         break;
     }
@@ -883,7 +883,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("蜘蛛を召喚した。", "You summon spiders."));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_SPIDER, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_SPIDER, mode);
         }
         break;
     }
@@ -894,7 +894,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("ハウンドを召喚した。", "You summon hounds."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HOUND, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_HOUND, mode);
         }
         break;
     }
@@ -905,7 +905,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("ヒドラを召喚した。", "You summon hydras."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HYDRA, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_HYDRA, mode);
         }
         break;
     }
@@ -916,7 +916,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("フェアリーを召喚した。", "You summon fairies."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_FAIRY, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_FAIRY, mode);
         }
         break;
     }
@@ -927,7 +927,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("類人猿を召喚した。", "You summon apes."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_APE, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_APE, mode);
         }
         break;
     }
@@ -938,7 +938,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("鳥を召喚した。", "You summon birds."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_BIRD, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_BIRD, mode);
         }
         break;
     }
@@ -949,7 +949,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("昆虫を召喚した！", "You summon insects!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_INSECT, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_INSECT, mode);
         }
         break;
     }
@@ -960,7 +960,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("エルドラージを召喚した！", "You summon Eldrazi!"));
         for (auto k = 0; k < std::max(1, plev / 30); k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_ELDRAZI, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_ELDRAZI, mode);
         }
         break;
     }
@@ -971,7 +971,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("天使を召喚した！", "You summon an angel!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_ANGEL, mode);
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_ANGEL, mode);
         }
         break;
     }
@@ -982,7 +982,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("混沌の宮廷から悪魔を召喚した！", "You summon a demon from the Courts of Chaos!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_DEMON, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_DEMON, (mode | u_mode));
         }
         break;
     }
@@ -993,7 +993,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("アンデッドの強敵を召喚した！", "You summon an undead adversary!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_UNDEAD, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_UNDEAD, (mode | u_mode));
         }
         break;
     }
@@ -1004,7 +1004,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("ドラゴンを召喚した！", "You summon a dragon!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_DRAGON, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_DRAGON, (mode | u_mode));
         }
         break;
     }
@@ -1015,7 +1015,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("強力なアンデッドを召喚した！", "You summon greater undead!"));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
         }
         break;
     }
@@ -1026,7 +1026,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("古代ドラゴンを召喚した！", "You summon ancient dragons!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HI_DRAGON, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_HI_DRAGON, (mode | u_mode));
         }
         break;
     }
@@ -1037,7 +1037,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("アンバーの王族を召喚した！", "You summon Lords of Amber!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_AMBERITES, (mode | PM_ALLOW_UNIQUE));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_AMBERITES, (mode | PM_ALLOW_UNIQUE));
         }
         break;
     }
@@ -1048,7 +1048,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("混沌の王族を召喚した！", "You summon Lords of Chaos!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CHOASIANS, (mode | PM_ALLOW_UNIQUE));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_CHOASIANS, (mode | PM_ALLOW_UNIQUE));
         }
         break;
     }
@@ -1060,12 +1060,12 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("特別な強敵を召喚した！", "You summon special opponents!"));
         for (auto k = 0; k < 4; k++) {
-            if (summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_UNIQUE, (mode | PM_ALLOW_UNIQUE))) {
+            if (summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_UNIQUE, (mode | PM_ALLOW_UNIQUE))) {
                 count++;
             }
         }
         for (auto k = count; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
         }
         break;
     }
@@ -1076,7 +1076,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("特別な強敵を蘇生した！", "You summon special dead opponents!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_DEAD_UNIQUE, (mode | PM_ALLOW_UNIQUE | PM_CLONE));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_DEAD_UNIQUE, (mode | PM_ALLOW_UNIQUE | PM_CLONE));
         }
         break;
     }
@@ -1087,7 +1087,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("汚い怪物を召喚した！", "You summon nasty monsters!"));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_NASTY, (mode | PM_ALLOW_GROUP));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_NASTY, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
@@ -1098,7 +1098,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("ゴーレムを召喚した！", "You summon golems!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_GOLEM, (mode | PM_ALLOW_GROUP));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_GOLEM, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
@@ -1109,7 +1109,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("猫を召喚した！", "You summon cats!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CATS, (mode | PM_ALLOW_GROUP));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_CATS, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
@@ -1120,7 +1120,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("変質者を召喚した！", "You summon perverts!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PERVERTS, (mode | PM_ALLOW_GROUP));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_PERVERTS, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
@@ -1131,7 +1131,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("ぷよを召喚した！", "You summon puyo!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PUYO, (mode | PM_ALLOW_GROUP));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_PUYO, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
@@ -1142,7 +1142,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("ホモを召喚した！", "You summon homos!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HOMO, (mode | PM_ALLOW_GROUP));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_HOMO, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
@@ -1161,7 +1161,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_print(_("壁を召喚した！", "You summon walls!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_WALL, (mode | u_mode));
+            summon_specific(*player_ptr, pos->y, pos->x, plev, SUMMON_WALL, (mode | u_mode));
         }
         break;
     }

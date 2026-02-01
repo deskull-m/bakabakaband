@@ -109,7 +109,7 @@ void AllianceKhorne::panishment(CreatureEntity &creature)
             msg_print(_("コーンの選ばれし者があなたを誅すべく追跡してきた！", "Khorne's Chosen is chasing you for revenge!"));
             disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(player_ptr, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(*player_ptr, m_pos.y, m_pos.x, std::max(creature.current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

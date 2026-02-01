@@ -33,7 +33,7 @@ static bool is_dead_summoning(summon_type type)
 
 /*!
  * @brief モンスターを召喚により配置する / Place a monster (of the specified "type") near the given location. Return TRUE if a monster was actually summoned.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param subject 召喚処理の主体
  * @param y1 目標地点y座標
  * @param x1 目標地点x座標
  * @param lev 相当生成階
@@ -42,28 +42,29 @@ static bool is_dead_summoning(summon_type type)
  * @param summoner_m_idx モンスターの召喚による場合、召喚者のモンスターID
  * @return 召喚に成功したらモンスターID、失敗したらtl::nullopt
  */
-tl::optional<MONSTER_IDX> summon_specific(PlayerType *player_ptr, POSITION y1, POSITION x1, DEPTH lev, summon_type type, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
+tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, POSITION x1, DEPTH lev, summon_type type, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(subject);
+    const auto &floor = *player.current_floor_ptr;
     if (floor.inside_arena) {
         return tl::nullopt;
     }
 
-    const auto pos = mon_scatter(*player_ptr, MonraceList::empty_id(), { y1, x1 }, 2);
+    const auto pos = mon_scatter(subject, MonraceList::empty_id(), { y1, x1 }, 2);
     if (!pos) {
         return tl::nullopt;
     }
 
     const auto hook = floor.get_monrace_hook_terrain_at(*pos);
     SummonCondition condition(type, mode, summoner_m_idx, hook);
-    get_mon_num_prep_summon(player_ptr, condition);
+    get_mon_num_prep_summon(&player, condition);
 
     auto dlev = MAX_DEPTH;
     if (!(mode & PM_IGNORE_LEVEL)) {
         dlev = floor.is_underground() ? floor.get_level() : WildernessGrids::get_instance().get_player_grid().get_level();
     }
 
-    const auto r_idx = get_mon_num(player_ptr, 0, (dlev + lev) / 2 + 5, mode);
+    const auto r_idx = get_mon_num(&player, 0, (dlev + lev) / 2 + 5, mode);
     if (!MonraceList::is_valid(r_idx)) {
         return tl::nullopt;
     }
@@ -72,7 +73,7 @@ tl::optional<MONSTER_IDX> summon_specific(PlayerType *player_ptr, POSITION y1, P
         mode |= PM_NO_KAGE;
     }
 
-    auto summoned_m_idx = place_specific_monster(player_ptr, pos->y, pos->x, r_idx, mode, summoner_m_idx);
+    auto summoned_m_idx = place_specific_monster(&player, pos->y, pos->x, r_idx, mode, summoner_m_idx);
     if (!summoned_m_idx) {
         return tl::nullopt;
     }
@@ -81,12 +82,12 @@ tl::optional<MONSTER_IDX> summon_specific(PlayerType *player_ptr, POSITION y1, P
     if (!summoner_m_idx) {
         notice = true;
     } else {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[*summoner_m_idx];
+        const auto &monster = player.current_floor_ptr->m_list[*summoner_m_idx];
         if (monster.is_pet()) {
             notice = true;
-        } else if (is_seen(player_ptr, monster)) {
+        } else if (is_seen(&player, monster)) {
             notice = true;
-        } else if (player_can_see_bold(player_ptr, pos->y, pos->x)) {
+        } else if (player_can_see_bold(&player, pos->y, pos->x)) {
             notice = true;
         }
     }

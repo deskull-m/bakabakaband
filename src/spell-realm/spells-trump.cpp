@@ -78,7 +78,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 14) {
         msg_print(_("なんてこった！《悪魔》だ！", "Oh no! It's the Devil!"));
-        summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DEMON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+        summon_specific(*player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DEMON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
         return;
     }
 

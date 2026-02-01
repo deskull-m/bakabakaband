@@ -112,7 +112,7 @@ void AllianceSlaanesh::panishment(CreatureEntity &creature)
             msg_print(_("スラーネッシュの選ばれし者があなたを誘惑すべく現れた！", "Slaanesh's Chosen appears to seduce you!"));
             disturb(creature, true, true);
             for (int k = 0; k < 2; k++) {
-                summon_specific(player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 3), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(*player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 3), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

@@ -273,7 +273,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 14: {
         if (cast) {
-            if (!(summon_specific(player_ptr, player_ptr->y, player_ptr->x, plev, SUMMON_ANIMAL_RANGER, (PM_ALLOW_GROUP | PM_FORCE_PET)))) {
+            if (!(summon_specific(*player_ptr, player_ptr->y, player_ptr->x, plev, SUMMON_ANIMAL_RANGER, (PM_ALLOW_GROUP | PM_FORCE_PET)))) {
                 msg_print(_("動物は現れなかった。", "No animals arrive."));
             }
             break;
