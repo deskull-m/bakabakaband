@@ -55,7 +55,7 @@ void AllianceJural::panishment(CreatureEntity &creature)
             msg_print(_("「おーい、行ってみよう！」ジュラル星人があなたに報復すべく追跡してきた！", "\"Hey, let's go!\" Alien Jurals is chasing you for revenge!"));
             disturb(creature, true, true);
             for (int k = 0; k < 4; k++) {
-                summon_specific(player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(*player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

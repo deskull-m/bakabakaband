@@ -91,7 +91,7 @@ void process_world_aux_sudden_attack(PlayerType *player_ptr)
                 break;
             }
             if (one_in_(5)) {
-                summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_KACHO, PM_IGNORE_LEVEL | PM_NO_KAGE);
+                summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_KACHO, PM_IGNORE_LEVEL | PM_NO_KAGE);
             }
         }
     }
@@ -227,7 +227,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DEMON, mode)) {
+        if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DEMON, mode)) {
             msg_print(_("あなたはデーモンを引き寄せた！", "You have attracted a demon!"));
             disturb(*player_ptr, false, true);
         }
@@ -243,7 +243,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_NASTY, mode)) {
+        if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_NASTY, mode)) {
             msg_print(_("あなたはクッソ汚い輩を引き寄せた！", "You have attracted nasty creatures!"));
             disturb(*player_ptr, false, true);
         }
@@ -259,7 +259,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_PERVERTS, mode)) {
+        if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_PERVERTS, mode)) {
             msg_print(_("あなたは変質者を引き寄せた！", "You have attracted perverts!"));
             disturb(*player_ptr, false, true);
         }
@@ -335,7 +335,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_ANIMAL, mode)) {
+        if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_ANIMAL, mode)) {
             msg_print(_("動物を引き寄せた！", "You have attracted an animal!"));
             disturb(*player_ptr, false, true);
         }
@@ -422,7 +422,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             mode |= (PM_ALLOW_UNIQUE | PM_NO_PET);
         }
 
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DRAGON, mode)) {
+        if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DRAGON, mode)) {
             msg_print(_("ドラゴンを引き寄せた！", "You have attracted a dragon!"));
             disturb(*player_ptr, false, true);
         }

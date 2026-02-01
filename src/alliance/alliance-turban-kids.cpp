@@ -23,7 +23,7 @@ void AllianceTurbanKids::panishment(CreatureEntity &creature)
         return;
     }
     if (one_in_(19)) {
-        summon_specific(player_ptr, player_ptr->y, player_ptr->x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
+        summon_specific(*player_ptr, player_ptr->y, player_ptr->x, 100, SUMMON_TURBAN_KID, PM_AMBUSH);
     }
     return;
 }

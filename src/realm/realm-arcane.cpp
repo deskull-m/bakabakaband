@@ -345,7 +345,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 25: {
         if (cast) {
-            if (!summon_specific(player_ptr, player_ptr->y, player_ptr->x, plev, SUMMON_ELEMENTAL, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
+            if (!summon_specific(*player_ptr, player_ptr->y, player_ptr->x, plev, SUMMON_ELEMENTAL, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
                 msg_print(_("エレメンタルは現れなかった。", "No elementals arrive."));
             }
         }

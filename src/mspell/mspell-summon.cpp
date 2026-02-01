@@ -77,7 +77,7 @@ static MONSTER_NUMBER summon_Kin(PlayerType *player_ptr, POSITION y, POSITION x,
 {
     int count = 0;
     for (int k = 0; k < 4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_KIN, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_KIN, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     return count;
@@ -96,7 +96,7 @@ static MONSTER_NUMBER summon_Alliance(PlayerType *player_ptr, POSITION y, POSITI
 {
     int count = 0;
     for (int k = 0; k < 4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx) ? 1 : 0;
     }
 
     return count;
@@ -281,7 +281,7 @@ MonsterSpellResult spell_RF6_S_CYBER(PlayerType *player_ptr, POSITION y, POSITIO
 
     int count = 0;
     if (monster.is_friendly() && mon_to_mon) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_CYBER, (PM_ALLOW_GROUP), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_CYBER, (PM_ALLOW_GROUP), m_idx) ? 1 : 0;
     } else {
         count += summon_cyber(player_ptr, y, x, m_idx);
     }
@@ -329,11 +329,11 @@ MonsterSpellResult spell_RF6_S_MONSTER(PlayerType *player_ptr, POSITION y, POSIT
     int count = 0;
     for (int k = 0; k < 1; k++) {
         if (mon_to_player) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
         }
 
         if (mon_to_mon) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, PM_ALLIANCE_LIMIT | (monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_NONE, PM_ALLIANCE_LIMIT | (monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
         }
     }
 
@@ -380,11 +380,11 @@ MonsterSpellResult spell_RF6_S_MONSTERS(PlayerType *player_ptr, POSITION y, POSI
     int count = 0;
     for (auto k = 0; k < S_NUM_6; k++) {
         if (mon_to_player) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
         }
 
         if (mon_to_mon) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
         }
     }
 
@@ -430,7 +430,7 @@ MonsterSpellResult spell_RF6_S_ANT(PlayerType *player_ptr, POSITION y, POSITION 
 
     int count = 0;
     for (auto k = 0; k < S_NUM_6; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_ANT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_ANT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -475,7 +475,7 @@ MonsterSpellResult spell_RF6_S_SPIDER(PlayerType *player_ptr, POSITION y, POSITI
 
     int count = 0;
     for (auto k = 0; k < S_NUM_6; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_SPIDER, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_SPIDER, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -520,7 +520,7 @@ MonsterSpellResult spell_RF6_S_HOUND(PlayerType *player_ptr, POSITION y, POSITIO
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_HOUND, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HOUND, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -565,7 +565,7 @@ MonsterSpellResult spell_RF6_S_HYDRA(PlayerType *player_ptr, POSITION y, POSITIO
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_HYDRA, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HYDRA, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -610,7 +610,7 @@ MonsterSpellResult spell_RF6_S_FAIRY(PlayerType *player_ptr, POSITION y, POSITIO
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_FAIRY, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_FAIRY, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -655,7 +655,7 @@ MonsterSpellResult spell_RF6_S_APE(PlayerType *player_ptr, POSITION y, POSITION 
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_APE, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_APE, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -700,7 +700,7 @@ MonsterSpellResult spell_RF6_S_BIRD(PlayerType *player_ptr, POSITION y, POSITION
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_BIRD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_BIRD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -751,7 +751,7 @@ MonsterSpellResult spell_RF6_S_ANGEL(PlayerType *player_ptr, POSITION y, POSITIO
 
     int count = 0;
     for (int k = 0; k < num; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_ANGEL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_ANGEL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     const auto is_blind = player_ptr->effects()->blindness().is_blind();
@@ -803,7 +803,7 @@ MonsterSpellResult spell_RF6_S_DEMON(PlayerType *player_ptr, POSITION y, POSITIO
 
     int count = 0;
     for (int k = 0; k < 1; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DEMON, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_DEMON, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count) {
@@ -848,7 +848,7 @@ MonsterSpellResult spell_RF6_S_UNDEAD(PlayerType *player_ptr, POSITION y, POSITI
 
     int count = 0;
     for (int k = 0; k < 1; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_UNDEAD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_UNDEAD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count) {
@@ -893,11 +893,11 @@ MonsterSpellResult spell_RF6_S_DRAGON(PlayerType *player_ptr, POSITION y, POSITI
 
     int count = 0;
     if (mon_to_player) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
     }
 
     if (mon_to_mon) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count) {
@@ -949,11 +949,11 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(PlayerType *player_ptr, POSITION y, POS
 
         for (auto k = 0; k < S_NUM_6; k++) {
             if (mon_to_player) {
-                count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
+                count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
             }
 
             if (mon_to_mon) {
-                count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+                count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HI_UNDEAD, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
             }
         }
     }
@@ -1002,11 +1002,11 @@ MonsterSpellResult spell_RF6_S_HI_DRAGON(PlayerType *player_ptr, POSITION y, POS
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
         if (mon_to_player) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
         }
 
         if (mon_to_mon) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HI_DRAGON, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
         }
     }
 
@@ -1053,7 +1053,7 @@ MonsterSpellResult spell_RF6_S_AMBERITES(PlayerType *player_ptr, POSITION y, POS
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -1099,7 +1099,7 @@ MonsterSpellResult spell_RF6_S_CHOASIANS(PlayerType *player_ptr, POSITION y, POS
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_CHOASIANS, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_CHOASIANS, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -1147,7 +1147,7 @@ MonsterSpellResult spell_RF6_S_UNIQUE(PlayerType *player_ptr, POSITION y, POSITI
     bool uniques_are_summoned = false;
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_UNIQUE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_UNIQUE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
     if (count) {
@@ -1162,7 +1162,7 @@ MonsterSpellResult spell_RF6_S_UNIQUE(PlayerType *player_ptr, POSITION y, POSITI
     }
 
     for (auto k = count; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, non_unique_type, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, non_unique_type, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -1209,7 +1209,7 @@ MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(PlayerType *player_ptr, POSITION y, P
 
     auto count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_DEAD_UNIQUE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE | PM_CLONE), m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_DEAD_UNIQUE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE | PM_CLONE), m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
@@ -1250,7 +1250,7 @@ MonsterSpellResult spell_RF6_S_NASTY(PlayerType *player_ptr, POSITION y, POSITIO
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
     for (auto k = 0; k < std::min(1, rlev / 20); k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_NASTY, (PM_ALLOW_GROUP)) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_NASTY, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
     if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
@@ -1292,7 +1292,7 @@ MonsterSpellResult spell_RF6_S_GOLEM(PlayerType *player_ptr, POSITION y, POSITIO
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
     for (auto k = 0; k < std::min(1, rlev / 25); k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_GOLEM, (PM_ALLOW_GROUP)) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_GOLEM, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
     if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
@@ -1334,7 +1334,7 @@ MonsterSpellResult spell_RF6_S_CATS(PlayerType *player_ptr, POSITION y, POSITION
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
     for (auto k = 0; k < std::max(1, rlev / 25); k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_CATS, (PM_ALLOW_GROUP)) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_CATS, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
     if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
@@ -1376,7 +1376,7 @@ MonsterSpellResult spell_RF6_S_PERVERTS(PlayerType *player_ptr, POSITION y, POSI
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
     for (auto k = 0; k < std::max(1, rlev / 25); k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_PERVERTS, (PM_ALLOW_GROUP)) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_PERVERTS, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
     if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
@@ -1418,7 +1418,7 @@ MonsterSpellResult spell_RF6_S_PUYO(PlayerType *player_ptr, POSITION y, POSITION
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
     for (auto k = 0; k < std::max(1, rlev / 25); k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_PUYO, (PM_ALLOW_GROUP)) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_PUYO, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
     if (monster_near_player(floor, m_idx, t_idx) && !see_monster(player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
@@ -1460,11 +1460,11 @@ MonsterSpellResult spell_RF6_S_HOMO(PlayerType *player_ptr, POSITION y, POSITION
     auto count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
         if (mon_to_player) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HOMO, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HOMO, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_ALLIANCE_LIMIT), m_idx) ? 1 : 0;
         }
 
         if (mon_to_mon) {
-            count += summon_specific(player_ptr, y, x, rlev, SUMMON_HOMO, PM_ALLIANCE_LIMIT | (monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
+            count += summon_specific(*player_ptr, y, x, rlev, SUMMON_HOMO, PM_ALLIANCE_LIMIT | (monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
         }
     }
 
@@ -1509,7 +1509,7 @@ MonsterSpellResult spell_RF6_S_WALL(PlayerType *player_ptr, POSITION y, POSITION
 
     int count = 0;
     for (int k = 0; k < 1; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_WALL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_WALL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count) {
@@ -1554,7 +1554,7 @@ MonsterSpellResult spell_RF6_S_INSECT(PlayerType *player_ptr, POSITION y, POSITI
 
     int count = 0;
     for (int k = 0; k < 1; k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_INSECT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_INSECT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count) {
@@ -1598,7 +1598,7 @@ MonsterSpellResult spell_RF6_S_ELDRAZI(PlayerType *player_ptr, POSITION y, POSIT
 
     int count = 0;
     for (int k = 0; k < std::max(1, rlev / 30); k++) {
-        count += summon_specific(player_ptr, y, x, rlev, SUMMON_ELDRAZI, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+        count += summon_specific(*player_ptr, y, x, rlev, SUMMON_ELDRAZI, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
     if (player_ptr->effects()->blindness().is_blind() && count) {

@@ -46,7 +46,7 @@ void AllianceShittoDan::panishment(CreatureEntity &creature)
                 "\"Death to couples and people with fulfilling social lives!\" It's an attack by the Shitto Dan!"));
             disturb(creature, true, true);
             for (int k = 0; k < 3; k++) {
-                summon_specific(player_ptr, m_pos.y, m_pos.x, 5, SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(*player_ptr, m_pos.y, m_pos.x, 5, SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

@@ -119,7 +119,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 5: {
         if (cast) {
-            if (!summon_specific(player_ptr, player_ptr->y, player_ptr->x, (plev * 3) / 2, SUMMON_MANES, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
+            if (!summon_specific(*player_ptr, player_ptr->y, player_ptr->x, (plev * 3) / 2, SUMMON_MANES, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
                 msg_print(_("古代の死霊は現れなかった。", "No Manes arrive."));
             }
         }

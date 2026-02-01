@@ -64,7 +64,7 @@ void AllianceFangFamily::panishment(CreatureEntity &creature)
 
             disturb(*player_ptr, true, true);
             for (int k = 0; k < 4; k++) {
-                summon_specific(player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(*player_ptr, m_pos.y, m_pos.x, std::max(player_ptr->current_floor_ptr->monster_level, 5), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

@@ -173,7 +173,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 8:
         case 9:
         case 18:
-            (*count) += summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET)) ? 1 : 0;
+            (*count) += summon_specific(*player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET)) ? 1 : 0;
             if (!one_in_(6)) {
                 break;
             }
@@ -332,7 +332,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
     case 35:
         for (int counter = 0; counter < 8; counter++) {
             (void)summon_specific(
-                player_ptr, player_ptr->y, player_ptr->x, (floor.dun_level * 3) / 2, i2enum<summon_type>(type), (PM_ALLOW_GROUP | PM_NO_PET));
+                *player_ptr, player_ptr->y, player_ptr->x, (floor.dun_level * 3) / 2, i2enum<summon_type>(type), (PM_ALLOW_GROUP | PM_NO_PET));
         }
 
         break;
