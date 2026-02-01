@@ -14,6 +14,7 @@
 #include "realm/realm-song-numbers.h"
 #include "realm/realm-song.h"
 #include "spell-realm/spells-song.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -28,22 +29,23 @@
 
 /*!
  * @brief プレイヤー周辺の地形を感知する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @param flag 特定地形ID
  * @param known 地形から危険フラグを外すならTRUE
  * @return 効力があった場合TRUEを返す
  */
-static bool detect_feat_flag(PlayerType *player_ptr, POSITION range, TerrainCharacteristics flag, bool known)
+static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCharacteristics flag, bool known)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *player.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
 
     auto detect = false;
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
-        auto dist = Grid::calc_distance(player_ptr->get_position(), pos);
+        auto dist = Grid::calc_distance(creature.get_position(), pos);
         if (dist > range) {
             continue;
         }
@@ -58,14 +60,14 @@ static bool detect_feat_flag(PlayerType *player_ptr, POSITION range, TerrainChar
 
                 grid.info &= ~(CAVE_UNSAFE);
 
-                lite_spot(*player_ptr, pos);
+                lite_spot(player, pos);
             }
         }
 
         if (grid.has(flag)) {
-            disclose_grid(player_ptr, pos);
+            disclose_grid(&player, pos);
             grid.info |= (CAVE_MARK);
-            lite_spot(*player_ptr, pos);
+            lite_spot(player, pos);
             detect = true;
         }
     }
@@ -84,9 +86,9 @@ static bool detect_feat_flag(PlayerType *player_ptr, POSITION range, TerrainChar
  */
 bool detect_traps(PlayerType *player_ptr, POSITION range, bool known)
 {
-    bool detect = detect_feat_flag(player_ptr, range, TerrainCharacteristics::TRAP, known);
+    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::TRAP, known);
     if (!known && detect) {
-        detect_feat_flag(player_ptr, range, TerrainCharacteristics::TRAP, true);
+        detect_feat_flag(*player_ptr, range, TerrainCharacteristics::TRAP, true);
     }
 
     if (known || detect) {
@@ -112,7 +114,7 @@ bool detect_traps(PlayerType *player_ptr, POSITION range, bool known)
  */
 bool detect_doors(PlayerType *player_ptr, POSITION range)
 {
-    bool detect = detect_feat_flag(player_ptr, range, TerrainCharacteristics::DOOR, true);
+    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::DOOR, true);
 
     if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
         detect = false;
@@ -132,7 +134,7 @@ bool detect_doors(PlayerType *player_ptr, POSITION range)
  */
 bool detect_stairs(PlayerType *player_ptr, POSITION range)
 {
-    bool detect = detect_feat_flag(player_ptr, range, TerrainCharacteristics::STAIRS, true);
+    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::STAIRS, true);
 
     if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
         detect = false;
@@ -152,7 +154,7 @@ bool detect_stairs(PlayerType *player_ptr, POSITION range)
  */
 bool detect_treasure(PlayerType *player_ptr, POSITION range)
 {
-    bool detect = detect_feat_flag(player_ptr, range, TerrainCharacteristics::HAS_GOLD, true);
+    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::HAS_GOLD, true);
 
     if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 6) {
         detect = false;
