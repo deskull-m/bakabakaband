@@ -333,7 +333,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
         break;
     }
     case MindForceTrainerType::DISPEL_MAGIC: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }

@@ -393,7 +393,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
 
     case MonsterAbilityType::DISPEL: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -742,7 +742,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     case MonsterAbilityType::SPECIAL:
         break;
     case MonsterAbilityType::TELE_TO: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -801,7 +801,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
 
     case MonsterAbilityType::TRAPS: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -817,7 +817,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         (void)animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         break;
     case MonsterAbilityType::S_KIN: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -830,7 +830,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     }
     case MonsterAbilityType::S_CYBER: {
         int max_cyber = (player_ptr->current_floor_ptr->dun_level / 50) + randint1(3);
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -844,7 +844,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_MONSTER: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -855,7 +855,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_MONSTERS: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -866,7 +866,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_ANT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -877,7 +877,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_SPIDER: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -888,7 +888,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_HOUND: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -899,7 +899,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_HYDRA: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -910,7 +910,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_FAIRY: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -921,7 +921,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_APE: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -932,7 +932,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_BIRD: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -943,7 +943,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_INSECT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -954,7 +954,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_ELDRAZI: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -965,7 +965,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_ANGEL: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -976,7 +976,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_DEMON: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -987,7 +987,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_UNDEAD: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -998,7 +998,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_DRAGON: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1009,7 +1009,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_HI_UNDEAD: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1020,7 +1020,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_HI_DRAGON: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1031,7 +1031,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_AMBERITES: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1042,7 +1042,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_CHOASIANS: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1054,7 +1054,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     }
     case MonsterAbilityType::S_UNIQUE: {
         int count = 0;
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1070,7 +1070,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_DEAD_UNIQUE: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1081,7 +1081,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_NASTY: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1092,7 +1092,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_GOLEM: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1103,7 +1103,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_CAT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1114,7 +1114,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_PERVERT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1125,7 +1125,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_PUYO: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1136,7 +1136,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_HOMO: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -1155,7 +1155,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         fire_breath(*player_ptr, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
         break;
     case MonsterAbilityType::S_WALL: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }

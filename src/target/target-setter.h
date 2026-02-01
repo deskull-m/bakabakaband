@@ -4,5 +4,5 @@
 #include <cstdint>
 
 enum target_type : uint32_t;
-class PlayerType;
-Target target_set(PlayerType *player_ptr, target_type mode);
+class CreatureEntity;
+Target target_set(CreatureEntity &creature, target_type mode);

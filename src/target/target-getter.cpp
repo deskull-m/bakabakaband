@@ -74,7 +74,7 @@ Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
         static const std::unordered_set target_commands = { '*', ' ', '\r', 'T', 't', '.', '5', '0', '*' };
         if (target_commands.contains(command)) {
             if (select_new_target_commands.contains(command)) {
-                target = target_set(&player, TARGET_KILL);
+                target = target_set(player, TARGET_KILL);
             }
             if (target.is_okay()) {
                 dir = Direction::targetting(target);
