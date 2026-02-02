@@ -1,8 +1,8 @@
 #pragma once
 
-class PlayerType;
-bool activate_charm_animal(PlayerType *player_ptr);
-bool activate_charm_undead(PlayerType *player_ptr);
-bool activate_charm_other(PlayerType *player_ptr);
-bool activate_charm_animals(PlayerType *player_ptr);
-bool activate_charm_others(PlayerType *player_ptr);
+class CreatureEntity;
+bool activate_charm_animal(CreatureEntity &creature);
+bool activate_charm_undead(CreatureEntity &creature);
+bool activate_charm_other(CreatureEntity &creature);
+bool activate_charm_animals(CreatureEntity &creature);
+bool activate_charm_others(CreatureEntity &creature);

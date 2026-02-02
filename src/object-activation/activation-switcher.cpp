@@ -154,15 +154,15 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::AGGRAVATE:
         return activate_aggravation(player_ptr, o_ptr, name);
     case RandomArtActType::CHARM_ANIMAL:
-        return activate_charm_animal(player_ptr);
+        return activate_charm_animal(*player_ptr);
     case RandomArtActType::CHARM_UNDEAD:
-        return activate_charm_undead(player_ptr);
+        return activate_charm_undead(*player_ptr);
     case RandomArtActType::CHARM_OTHER:
-        return activate_charm_other(player_ptr);
+        return activate_charm_other(*player_ptr);
     case RandomArtActType::CHARM_ANIMALS:
-        return activate_charm_animals(player_ptr);
+        return activate_charm_animals(*player_ptr);
     case RandomArtActType::CHARM_OTHERS:
-        return activate_charm_others(player_ptr);
+        return activate_charm_others(*player_ptr);
     case RandomArtActType::SUMMON_ANIMAL:
         (void)summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->level, SUMMON_ANIMAL_RANGER, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
