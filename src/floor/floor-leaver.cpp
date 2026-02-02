@@ -454,7 +454,7 @@ void leave_floor(PlayerType *player_ptr)
 {
     preserve_pet(player_ptr);
     SpellsMirrorMaster(player_ptr).remove_all_mirrors(false);
-    set_superstealth(player_ptr, false);
+    set_superstealth(*player_ptr, false);
 
     new_floor_id = 0;
 

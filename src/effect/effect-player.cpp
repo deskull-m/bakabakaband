@@ -133,7 +133,7 @@ static ProcessResult check_continue_player_effect(PlayerType *player_ptr, Effect
     is_effective &= randint0(55) < (player_ptr->level * 3 / 5 + 20);
     is_effective &= ep_ptr->is_monster();
     is_effective &= !ep_ptr->src_ptr || !ep_ptr->src_ptr->is_riding();
-    if (is_effective && kawarimi(player_ptr, true)) {
+    if (is_effective && kawarimi(*player_ptr, true)) {
         return ProcessResult::PROCESS_FALSE;
     }
 
@@ -226,7 +226,7 @@ bool affect_player(MONSTER_IDX src_idx, PlayerType *player_ptr, concptr src_name
 
     disturb(*player_ptr, true, true);
     if (ep_ptr->dam && ep_ptr->is_monster() && (!ep_ptr->src_ptr || !ep_ptr->src_ptr->is_riding())) {
-        (void)kawarimi(player_ptr, false);
+        (void)kawarimi(*player_ptr, false);
     }
 
     return true;

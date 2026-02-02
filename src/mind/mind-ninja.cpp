@@ -55,22 +55,22 @@
 
 /*!
  * @brief 変わり身処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param success 判定成功上の処理ならばTRUE
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool kawarimi(PlayerType *player_ptr, bool success)
+bool kawarimi(CreatureEntity &creature, bool success)
 {
-    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->kawarimi) {
         return false;
     }
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
-    const auto effects = player_ptr->effects();
+    const auto effects = creature.effects();
     const auto is_confused = effects->confusion().is_confused();
     const auto is_blind = effects->blindness().is_blind();
     const auto is_hallucinated = effects->hallucination().is_hallucinated();
@@ -91,12 +91,13 @@ bool kawarimi(PlayerType *player_ptr, bool success)
         return false;
     }
 
-    const auto p_pos_orig = player_ptr->get_position(); //!< @details 元の位置に変わり身を置く.
-    teleport_player(player_ptr, 10 + randint1(90), TELEPORT_SPONTANEOUS);
+    const auto p_pos_orig = creature.get_position(); //!< @details 元の位置に変わり身を置く.
+    auto &player = static_cast<PlayerType &>(creature);
+    teleport_player(&player, 10 + randint1(90), TELEPORT_SPONTANEOUS);
     constexpr auto sv_wooden_statue = 0;
     ItemEntity item({ ItemKindType::STATUE, sv_wooden_statue });
     item.pval = enum2i(MonraceId::NINJA);
-    (void)drop_near(*player_ptr, item, p_pos_orig);
+    (void)drop_near(creature, item, p_pos_orig);
 
     if (success) {
         msg_print(_("攻撃を受ける前に素早く身をひるがえした。", "You have turned around just before the attack hit you."));
@@ -111,27 +112,27 @@ bool kawarimi(PlayerType *player_ptr, bool success)
 
 /*!
  * @brief 入身処理 / "Rush Attack" routine for Samurai or Ninja
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mdeath 目標モンスターが死亡したかを返す
  * @return 作用が実際にあった場合TRUEを返す /  Return value is for checking "done"
  */
-bool rush_attack(PlayerType *player_ptr, bool *mdeath)
+bool rush_attack(CreatureEntity &creature, bool *mdeath)
 {
     if (mdeath) {
         *mdeath = false;
     }
 
     project_length = 5;
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     const auto pos_target = dir.get_target_position(p_pos, project_length);
 
     auto tm_idx = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (floor.contains(pos_target, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         tm_idx = floor.get_grid(pos_target).m_idx;
     }
@@ -142,12 +143,14 @@ bool rush_attack(PlayerType *player_ptr, bool *mdeath)
         return true;
     }
 
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     auto p_pos_new = p_pos;
     auto tmp_mdeath = false;
     auto moved = false;
     for (const auto &pos : path_g) {
         const auto &grid_new = floor.get_grid(pos);
-        if (floor.is_empty_at(pos) && (pos != p_pos) && player_can_enter(*player_ptr, grid_new.feat, 0)) {
+        if (floor.is_empty_at(pos) && (pos != p_pos) && player_can_enter(creature, grid_new.feat, 0)) {
             p_pos_new = pos;
             continue;
         }
@@ -158,7 +161,7 @@ bool rush_attack(PlayerType *player_ptr, bool *mdeath)
             break;
         }
 
-        if (!player_ptr->is_located_at(p_pos_new)) {
+        if (!creature.is_located_at(p_pos_new)) {
             teleport_player_to(player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
         }
 
@@ -170,12 +173,12 @@ bool rush_attack(PlayerType *player_ptr, bool *mdeath)
 #else
             msg_format("There is %s in the way!", monster.ml ? (tm_idx > 0 ? "another monster" : "a monster") : "someone");
 #endif
-        } else if (!player_ptr->is_located_at(p_pos_new)) {
-            const auto m_name = monster_desc(*player_ptr, monster, 0);
+        } else if (!creature.is_located_at(p_pos_new)) {
+            const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("素早く%sの懐に入り込んだ！", "You quickly jump in and attack %s!"), m_name.data());
         }
 
-        if (!player_ptr->is_located_at(p_pos_new)) {
+        if (!creature.is_located_at(p_pos_new)) {
             teleport_player_to(player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
         }
 
@@ -184,7 +187,7 @@ bool rush_attack(PlayerType *player_ptr, bool *mdeath)
         break;
     }
 
-    if (!moved && !player_ptr->is_located_at(p_pos_new)) {
+    if (!moved && !creature.is_located_at(p_pos_new)) {
         teleport_player_to(player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
     }
 
@@ -197,11 +200,14 @@ bool rush_attack(PlayerType *player_ptr, bool *mdeath)
 
 /*!
  * @brief 盗賊と忍者における不意打ち
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void process_surprise_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (!has_melee_weapon(player_ptr, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand) || player_ptr->is_icky_wield[pa_ptr->hand]) {
         return;
@@ -211,14 +217,14 @@ void process_surprise_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
     if (player_ptr->monlite && (pa_ptr->mode != HISSATSU_NYUSIN)) {
         tmp /= 3;
     }
-    if (has_aggravate(*player_ptr)) {
+    if (has_aggravate(creature)) {
         tmp /= 2;
     }
     if (monrace.level > (player_ptr->level * player_ptr->level / 20 + 10)) {
         tmp /= 3;
     }
 
-    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (pa_ptr->m_ptr->is_asleep() && pa_ptr->m_ptr->ml) {
         /* Can't backstab creatures that we can't see, right? */
         pa_ptr->backstab = true;
@@ -248,18 +254,18 @@ void print_surprise_attack(player_attack_type *pa_ptr)
 
 /*!
  * @brief 盗賊と忍者における不意打ちのダメージ計算
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void calc_surprise_attack_damage(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void calc_surprise_attack_damage(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     if (pa_ptr->backstab) {
-        pa_ptr->attack_damage *= (3 + (player_ptr->level / 20));
+        pa_ptr->attack_damage *= (3 + (creature.level / 20));
         return;
     }
 
     if (pa_ptr->surprise_attack) {
-        pa_ptr->attack_damage = pa_ptr->attack_damage * (5 + (player_ptr->level * 2 / 25)) / 2;
+        pa_ptr->attack_damage = pa_ptr->attack_damage * (5 + (creature.level * 2 / 25)) / 2;
         return;
     }
 
@@ -270,11 +276,13 @@ void calc_surprise_attack_damage(PlayerType *player_ptr, player_attack_type *pa_
 
 /*!
  * @brief 速駆け処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 常にTRUE
  */
-bool hayagake(PlayerType *player_ptr)
+bool hayagake(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     PlayerEnergy energy(player_ptr);
     if (player_ptr->action == ACTION_HAYAGAKE) {
         set_action(player_ptr, ACTION_NONE);
@@ -282,7 +290,7 @@ bool hayagake(PlayerType *player_ptr)
         return true;
     }
 
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(player_ptr->get_position());
+    const auto &grid = creature.current_floor_ptr->get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has_not(TerrainCharacteristics::PROJECTION) || (!player_ptr->levitation && terrain.flags.has(TerrainCharacteristics::DEEP))) {
         msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
@@ -296,21 +304,25 @@ bool hayagake(PlayerType *player_ptr)
 
 /*!
  * @brief 超隠密状態をセットする
+ * @param creature クリーチャーへの参照
  * @param set TRUEならば超隠密状態になる。
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_superstealth(PlayerType *player_ptr, bool set)
+bool set_superstealth(CreatureEntity &creature, bool set)
 {
     bool notice = false;
 
-    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
-    if (!ninja_data || player_ptr->is_dead()) {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
+    auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
+    if (!ninja_data || creature.is_dead()) {
         return false;
     }
 
     if (set) {
         if (!ninja_data->s_stealth) {
-            if (player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x].info & CAVE_MNLT) {
+            if (creature.current_floor_ptr->grid_array[creature.y][creature.x].info & CAVE_MNLT) {
                 msg_print(_("敵の目から薄い影の中に覆い隠された。", "You are mantled in weak shadow from ordinary eyes."));
                 player_ptr->monlite = player_ptr->old_monlite = true;
             } else {
@@ -335,7 +347,7 @@ bool set_superstealth(PlayerType *player_ptr, bool set)
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     return true;
@@ -344,14 +356,16 @@ bool set_superstealth(PlayerType *player_ptr, bool set)
 /*!
  * @brief 忍術の発動 /
  * do_cmd_cast calls this function if the player's class is 'ninja'.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 発動する特殊技能のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
-bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
+bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
 {
-    PLAYER_LEVEL plev = player_ptr->level;
-    auto ninja_data = CreatureClass(*player_ptr).get_specific_data<ninja_data_type>();
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+    PLAYER_LEVEL plev = creature.level;
+    auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     switch (spell) {
     case MindNinjaType::DARKNESS_CREATION:
         (void)unlite_area(player_ptr, 0, 3);
@@ -385,7 +399,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
 
         break;
     case MindNinjaType::ABSCONDING:
-        teleport_player(player_ptr, player_ptr->level * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::HIT_AND_AWAY:
         if (!hit_and_away(player_ptr)) {
@@ -394,7 +408,7 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
 
         break;
     case MindNinjaType::BIND_MONSTER: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
@@ -408,12 +422,12 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
         set_tim_levitation(player_ptr, randint1(20) + 20, false);
         break;
     case MindNinjaType::HIDE_FLAMES:
-        fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), 50 + plev, plev / 10 + 2);
+        fire_ball(creature, AttributeType::FIRE, Direction::self(), 50 + plev, plev / 10 + 2);
         teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
         set_oppose_fire(player_ptr, (TIME_EFFECT)plev, false);
         break;
     case MindNinjaType::NYUSIN:
-        return rush_attack(player_ptr, nullptr);
+        return rush_attack(creature, nullptr);
     case MindNinjaType::SYURIKEN_SPREADING: {
         for (int i = 0; i < 8; i++) {
             OBJECT_IDX slot;
@@ -444,17 +458,17 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
         (void)fetch_monster(player_ptr);
         break;
     case MindNinjaType::SMOKE_BALL: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
-        fire_ball(*player_ptr, AttributeType::OLD_CONF, dir, plev * 3, 3);
+        fire_ball(creature, AttributeType::OLD_CONF, dir, plev * 3, 3);
         break;
     }
     case MindNinjaType::SWAP_POSITION: {
         project_length = -1;
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             project_length = 0;
             return false;
@@ -465,16 +479,16 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
         break;
     }
     case MindNinjaType::EXPLOSIVE_RUNE:
-        create_rune_explosion(player_ptr, player_ptr->y, player_ptr->x);
+        create_rune_explosion(player_ptr, creature.y, creature.x);
         break;
     case MindNinjaType::HIDE_MUD:
         (void)set_pass_wall(player_ptr, randint1(plev / 2) + plev / 2, false);
         set_oppose_acid(player_ptr, (TIME_EFFECT)plev, false);
         break;
     case MindNinjaType::HIDE_MIST:
-        fire_ball(*player_ptr, AttributeType::POIS, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
-        fire_ball(*player_ptr, AttributeType::HYPODYNAMIA, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
-        fire_ball(*player_ptr, AttributeType::CONFUSION, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
+        fire_ball(creature, AttributeType::POIS, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
+        fire_ball(creature, AttributeType::HYPODYNAMIA, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
+        fire_ball(creature, AttributeType::CONFUSION, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
         teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::PURGATORY_FLAME: {
@@ -485,20 +499,20 @@ bool cast_ninja_spell(PlayerType *player_ptr, MindNinjaType spell)
             auto attempts = 1000;
             Pos2D pos(0, 0);
             while (attempts--) {
-                pos = scatter(*player_ptr->current_floor_ptr, player_ptr->get_position(), 4, PROJECT_NONE);
-                if (!player_ptr->is_located_at(pos)) {
+                pos = scatter(*creature.current_floor_ptr, creature.get_position(), 4, PROJECT_NONE);
+                if (!creature.is_located_at(pos)) {
                     break;
                 }
             }
 
             const uint32_t flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL;
-            project(*player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + plev / 8, 10), type, flags);
+            project(creature, 0, 0, pos.y, pos.x, Dice::roll(6 + plev / 8, 10), type, flags);
         }
 
         break;
     }
     case MindNinjaType::ALTER_EGO:
-        set_multishadow(*player_ptr, 6 + randint1(6), false);
+        set_multishadow(creature, 6 + randint1(6), false);
         break;
     default:
         msg_print(_("なに？", "Zap?"));

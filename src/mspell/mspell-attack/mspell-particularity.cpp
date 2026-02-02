@@ -67,7 +67,7 @@ static auto project_hand_doom(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITIO
     ProjectResult proj_res;
     auto attribute = AttributeType::HAND_DOOM;
     if (target_type == MONSTER_TO_PLAYER) {
-        const auto dam = monspell_damage(player_ptr, MonsterAbilityType::HAND_DOOM, m_idx, DAM_ROLL);
+        const auto dam = monspell_damage(*player_ptr, MonsterAbilityType::HAND_DOOM, m_idx, DAM_ROLL);
         proj_res = pointed(player_ptr, y, x, m_idx, attribute, dam, MONSTER_TO_PLAYER);
     } else if (target_type == MONSTER_TO_MONSTER) {
         const auto dam = 20; /* Dummy power */

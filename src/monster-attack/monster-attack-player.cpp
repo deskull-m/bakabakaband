@@ -95,7 +95,7 @@ void MonsterAttackPlayer::make_attack_normal()
     }
 
     auto can_activate_kawarimi = randint0(55) < (this->player_ptr->level * 3 / 5 + 20);
-    if (can_activate_kawarimi && kawarimi(this->player_ptr, true)) {
+    if (can_activate_kawarimi && kawarimi(*this->player_ptr, true)) {
         return;
     }
 
@@ -202,7 +202,7 @@ bool MonsterAttackPlayer::process_monster_blows()
             check_fall_off_horse(this->player_ptr, this);
 
             // 変わり身のテレポートが成功したら攻撃を打ち切り、プレイヤーが離脱した旨を返す。
-            if (kawarimi(this->player_ptr, false)) {
+            if (kawarimi(*this->player_ptr, false)) {
                 return true;
             }
         } else {

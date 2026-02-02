@@ -141,7 +141,7 @@ bool MonsterDamageProcessor::genocide_patron()
 
     this->set_redraw();
     (void)set_monster_csleep(*this->player_ptr->current_floor_ptr, this->m_idx, 0);
-    set_superstealth(this->player_ptr, false);
+    set_superstealth(*this->player_ptr, false);
 
     return this->m_idx == 0;
 }

@@ -147,7 +147,7 @@ MonsterSpellResult spell_RF4_BREATH(PlayerType *player_ptr, MonsterAbilityType m
     std::unique_ptr<MSpellData> data;
 
     if (breath_list.find(ms_type) != breath_list.end()) {
-        dam = monspell_damage(player_ptr, ms_type, m_idx, DAM_ROLL);
+        dam = monspell_damage(*player_ptr, ms_type, m_idx, DAM_ROLL);
         data = std::make_unique<MSpellData>(breath_list.at(ms_type));
     } else {
         dam = 0;

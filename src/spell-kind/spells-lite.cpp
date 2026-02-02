@@ -247,7 +247,7 @@ void lite_room(PlayerType *player_ptr, const Pos2D &pos_start)
 
     cave_temp_room_lite(player_ptr, positions);
     if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
-        set_superstealth(player_ptr, false);
+        set_superstealth(*player_ptr, false);
     }
 }
 
