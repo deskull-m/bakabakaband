@@ -120,18 +120,22 @@ void wiz_select_chameleon_polymorph(MonsterEntity &monster)
     }
 }
 
-void wiz_summon_specific_monster_common(PlayerType *player_ptr, MonraceId monrace_id, BIT_FLAGS mode)
+void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monrace_id, BIT_FLAGS mode)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto summon_monrace_id = MonraceList::is_valid(monrace_id) ? monrace_id : wiz_select_summon_monrace_id();
     if (!summon_monrace_id) {
         return;
     }
 
+    const auto p_pos = creature.get_position();
     const auto index_to_monster = [player_ptr](auto index) -> MonsterEntity & {
         return player_ptr->current_floor_ptr->m_list[index];
     };
     auto monster =
-        summon_named_creature(player_ptr, 0, player_ptr->y, player_ptr->x, *summon_monrace_id, mode)
+        summon_named_creature(player_ptr, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
             .transform(index_to_monster);
     if (!monster) {
         msg_print_wizard(player_ptr, 1, "Monster isn't summoned correctly...");
@@ -142,16 +146,19 @@ void wiz_summon_specific_monster_common(PlayerType *player_ptr, MonraceId monrac
         wiz_select_chameleon_polymorph(*monster);
     }
 
-    lite_spot(*player_ptr, monster->get_position());
+    lite_spot(creature, monster->get_position());
 }
 } // namespace
 
 /*!
  * @brief コマンド入力により任意にスペル効果を起こす / Wizard spells
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_debug_spell(PlayerType *player_ptr)
+void wiz_debug_spell(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto spell = input_string("SPELL: ", 50);
     if (!spell.has_value()) {
         return;
@@ -192,10 +199,13 @@ void wiz_debug_spell(PlayerType *player_ptr)
 
 /*!
  * @brief 必ず成功するウィザードモード用次元の扉処理 / Wizard Dimension Door
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_dimension_door(PlayerType *player_ptr)
+void wiz_dimension_door(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto pos = point_target(player_ptr);
     if (!pos) {
         return;
@@ -206,12 +216,15 @@ void wiz_dimension_door(PlayerType *player_ptr)
 
 /*!
  * @brief ウィザードモード用モンスターの群れ生成 / Summon a horde of monsters
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_summon_horde(PlayerType *player_ptr)
+void wiz_summon_horde(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
+    const auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     auto pos = p_pos;
     auto attempts = 1000;
     while (--attempts) {
@@ -227,8 +240,11 @@ void wiz_summon_horde(PlayerType *player_ptr)
 /*!
  * @brief ウィザードモード用処理としてターゲット中の相手をテレポートバックする / Hack -- Teleport to the target
  */
-void wiz_teleport_back(PlayerType *player_ptr)
+void wiz_teleport_back(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto target = Target::get_last_target();
     const auto pos = target.get_position();
     if (!pos || !target.get_m_idx()) {
@@ -242,9 +258,9 @@ void wiz_teleport_back(PlayerType *player_ptr)
  * @brief 青魔導師の魔法を全て習得済みにする /
  * debug command for blue mage
  */
-void wiz_learn_blue_magic_all(PlayerType *player_ptr)
+void wiz_learn_blue_magic_all(CreatureEntity &creature)
 {
-    auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
+    auto bluemage_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
     if (!bluemage_data) {
         return;
     }
@@ -259,9 +275,9 @@ void wiz_learn_blue_magic_all(PlayerType *player_ptr)
 /*!
  * @brief 鍛冶師の全てのエッセンスを最大所持量にする
  */
-void wiz_fillup_all_smith_essences(PlayerType *player_ptr)
+void wiz_fillup_all_smith_essences(CreatureEntity &creature)
 {
-    auto smith_data = CreatureClass(*player_ptr).get_specific_data<smith_data_type>();
+    auto smith_data = CreatureClass(creature).get_specific_data<smith_data_type>();
     if (!smith_data) {
         return;
     }
@@ -273,12 +289,15 @@ void wiz_fillup_all_smith_essences(PlayerType *player_ptr)
 
 /*!
  * @brief 現在のフロアに合ったモンスターをランダムに生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param num 生成処理回数
  * @details 半径5マス以内に生成する。生成場所がなかったらキャンセル。
  */
-void wiz_generate_random_monster(PlayerType *player_ptr, int num)
+void wiz_generate_random_monster(CreatureEntity &creature, int num)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     constexpr auto flags = PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_QUEST;
     for (auto i = 0; i < num; i++) {
         if (!alloc_monster(player_ptr, 0, flags, summon_specific, 5)) {
@@ -290,18 +309,20 @@ void wiz_generate_random_monster(PlayerType *player_ptr, int num)
 
 /*!
  * @brief 現在のフロアに合ったモンスターをランダムに召喚する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param num 生成処理回数
  * @details 現在のレベル+5F からランダムに選定する。生成場所がなかったらキャンセル。
  */
-void wiz_summon_random_monster(PlayerType *player_ptr, int num)
+void wiz_summon_random_monster(CreatureEntity &creature, int num)
 {
-    const auto level = player_ptr->current_floor_ptr->dun_level;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
+    const auto level = creature.current_floor_ptr->dun_level;
     constexpr auto flags = PM_ALLOW_GROUP | PM_ALLOW_UNIQUE;
-    const auto y = player_ptr->y;
-    const auto x = player_ptr->x;
+    const auto p_pos = creature.get_position();
     for (auto i = 0; i < num; i++) {
-        if (!summon_specific(*player_ptr, y, x, level, SUMMON_NONE, flags)) {
+        if (!summon_specific(creature, p_pos.y, p_pos.x, level, SUMMON_NONE, flags)) {
             msg_print_wizard(player_ptr, 1, "Monster isn't summoned correctly...");
             return;
         }
@@ -311,17 +332,21 @@ void wiz_summon_random_monster(PlayerType *player_ptr, int num)
 /*!
  * @brief モンスターを種族IDを指定して自然生成と同じように召喚する /
  * Summon a creature of the specified type
+ * @param creature クリーチャーへの参照
  * @param monrace_id モンスター種族ID（回数指定コマンド'0'で指定した回数がIDになる）
  * @details
  * This function is rather dangerous
  */
-void wiz_summon_specific_monster(PlayerType *player_ptr, MonraceId monrace_id)
+void wiz_summon_specific_monster(CreatureEntity &creature, MonraceId monrace_id)
 {
-    wiz_summon_specific_monster_common(player_ptr, monrace_id, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+    wiz_summon_specific_monster_common(creature, monrace_id, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
 }
 
-void wiz_generate_room(PlayerType *player_ptr, int v_idx)
+void wiz_generate_room(CreatureEntity &creature, int v_idx)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     if (v_idx <= 0) {
         const auto val = input_integer("VaultID", 1, vaults_info.size() - 1, 1);
         if (!val.has_value()) {
@@ -330,7 +355,8 @@ void wiz_generate_room(PlayerType *player_ptr, int v_idx)
 
         v_idx = val.value();
         vault_type *v_ptr = &vaults_info[v_idx];
-        build_vault(*v_ptr, player_ptr, player_ptr->y, player_ptr->x, v_ptr->hgt, v_ptr->wid, v_ptr->text.data(), 0, 0, 0);
+        const auto p_pos = creature.get_position();
+        build_vault(*v_ptr, player_ptr, p_pos.y, p_pos.x, v_ptr->hgt, v_ptr->wid, v_ptr->text.data(), 0, 0, 0);
 
         const auto flags = { StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::UN_VIEW, StatusRecalculatingFlag::UN_LITE, StatusRecalculatingFlag::VIEW, StatusRecalculatingFlag::LITE,
             StatusRecalculatingFlag::FLOW, StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::MONSTER_STATUSES };
@@ -349,33 +375,36 @@ void wiz_generate_room(PlayerType *player_ptr, int v_idx)
 /*!
  * @brief モンスターを種族IDを指定してペット召喚する /
  * Summon a creature of the specified type
+ * @param creature クリーチャーへの参照
  * @param monrace_id モンスター種族ID（回数指定コマンド'0'で指定した回数がIDになる）
  * @details
  * This function is rather dangerous
  */
-void wiz_summon_pet(PlayerType *player_ptr, MonraceId monrace_id)
+void wiz_summon_pet(CreatureEntity &creature, MonraceId monrace_id)
 {
-    wiz_summon_specific_monster_common(player_ptr, monrace_id, PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_FORCE_PET);
+    wiz_summon_specific_monster_common(creature, monrace_id, PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_FORCE_PET);
 }
 
 /*!
  * @brief モンスターを種族IDを指定してクローン召喚（口寄せ）する /
  * Summon a creature of the specified type
+ * @param creature クリーチャーへの参照
  * @param monrace_id モンスター種族ID（回数指定コマンド'0'で指定した回数がIDになる）
  */
-void wiz_summon_clone(PlayerType *player_ptr, MonraceId monrace_id)
+void wiz_summon_clone(CreatureEntity &creature, MonraceId monrace_id)
 {
-    wiz_summon_specific_monster_common(player_ptr, monrace_id, PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_CLONE);
+    wiz_summon_specific_monster_common(creature, monrace_id, PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_CLONE);
 }
 
 /*!
  * @brief ターゲットを指定して指定ダメージ・指定属性・半径0のボールを放つ
+ * @param creature クリーチャーへの参照
  * @param dam ダメージ量
  * @param effect_idx 属性ID
  * @param self 自分に与えるか否か
  * @details デフォルトは100万・GF_ARROW(射撃)。RES_ALL持ちも一撃で殺せる。
  */
-void wiz_kill_target(PlayerType *player_ptr, int initial_dam, AttributeType effect_idx, const bool self)
+void wiz_kill_target(CreatureEntity &creature, int initial_dam, AttributeType effect_idx, const bool self)
 {
     auto dam = initial_dam;
     if (dam <= 0) {
@@ -413,13 +442,14 @@ void wiz_kill_target(PlayerType *player_ptr, int initial_dam, AttributeType effe
     }
 
     if (self) {
-        project(*player_ptr, -1, 0, player_ptr->y, player_ptr->x, dam, idx, PROJECT_KILL | PROJECT_PLAYER);
+        const auto p_pos = creature.get_position();
+        project(creature, -1, 0, p_pos.y, p_pos.x, dam, idx, PROJECT_KILL | PROJECT_PLAYER);
         return;
     }
 
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return;
     }
-    fire_ball(*player_ptr, idx, dir, dam, 0);
+    fire_ball(creature, idx, dir, dam, 0);
 }
