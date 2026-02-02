@@ -146,7 +146,7 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
     }
 
     if (floor.get_grid(player_ptr->get_position()).info & CAVE_GLOW) {
-        set_superstealth(player_ptr, false);
+        set_superstealth(*player_ptr, false);
     }
 }
 

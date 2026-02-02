@@ -91,7 +91,7 @@ static void attack_classify(PlayerType *player_ptr, player_attack_type *pa_ptr)
     switch (player_ptr->pclass) {
     case PlayerClassType::ROGUE:
     case PlayerClassType::NINJA:
-        process_surprise_attack(player_ptr, pa_ptr);
+        process_surprise_attack(*player_ptr, pa_ptr);
         return;
     case PlayerClassType::MONK:
     case PlayerClassType::FORCETRAINER:
@@ -330,7 +330,7 @@ static void process_weapon_attack(PlayerType *player_ptr, player_attack_type *pa
     const auto num = o_ptr->damage_dice.num + player_ptr->damage_dice_bonus[pa_ptr->hand].num + magical_brand_extra_dice(pa_ptr);
     const auto sides = o_ptr->damage_dice.sides + player_ptr->damage_dice_bonus[pa_ptr->hand].sides;
     pa_ptr->attack_damage = calc_attack_damage_with_slay(player_ptr, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
-    calc_surprise_attack_damage(player_ptr, pa_ptr);
+    calc_surprise_attack_damage(*player_ptr, pa_ptr);
 
     if (does_equip_cause_earthquake(player_ptr, pa_ptr) || (pa_ptr->chaos_effect == CE_QUAKE) || (pa_ptr->mode == HISSATSU_QUAKE)) {
         *do_quake = true;

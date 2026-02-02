@@ -129,7 +129,7 @@ void update_lite_radius(CreatureEntity &creature)
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
     creature.old_lite = creature.cur_lite;
     if (creature.cur_lite > 0) {
-        set_superstealth(static_cast<PlayerType *>(&creature), false);
+        set_superstealth(creature, false);
     }
 }
 

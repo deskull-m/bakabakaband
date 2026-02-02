@@ -380,7 +380,7 @@ bool earthquake(CreatureEntity &creature, const Pos2D &center, int radius, MONST
     set_redrawing_flags();
 
     if (floor.get_grid(creature.get_position()).info & CAVE_GLOW) {
-        set_superstealth(&player, false);
+        set_superstealth(player, false);
     }
     return true;
 }

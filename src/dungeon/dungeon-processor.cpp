@@ -201,7 +201,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     }
 
     if (!load_game) {
-        set_superstealth(player_ptr, false);
+        set_superstealth(*player_ptr, false);
     }
 
     floor.monster_level = floor.base_level;

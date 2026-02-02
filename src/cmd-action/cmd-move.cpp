@@ -541,7 +541,7 @@ void do_cmd_rest(PlayerType *player_ptr)
         return;
     }
 
-    set_superstealth(player_ptr, false);
+    set_superstealth(*player_ptr, false);
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     if (command_arg > 100) {
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, -1);

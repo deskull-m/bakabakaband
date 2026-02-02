@@ -280,7 +280,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         return true;
     }
     case PlayerClassType::NINJA:
-        return hayagake(player_ptr);
+        return hayagake(*player_ptr);
     case PlayerClassType::ELEMENTALIST:
         if (command == -3) {
             return clear_mind(player_ptr);

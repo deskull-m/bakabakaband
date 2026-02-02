@@ -34,7 +34,7 @@ MonsterSpellResult AbstractMSpellAttack::shoot(POSITION y, POSITION x)
 
     this->data.msg.output(this->player_ptr, this->m_idx, this->t_idx, this->target_type);
 
-    const auto dam = monspell_damage(this->player_ptr, this->ability, this->m_idx, DAM_ROLL);
+    const auto dam = monspell_damage(*this->player_ptr, this->ability, this->m_idx, DAM_ROLL);
     const auto proj_res = fire(y, x, dam, data.type);
     if (this->target_type == MONSTER_TO_PLAYER) {
         this->data.drs.execute(this->player_ptr, this->m_idx);

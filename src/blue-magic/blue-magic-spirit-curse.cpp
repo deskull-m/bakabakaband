@@ -42,7 +42,7 @@ bool cast_blue_magic_spirit_curse(PlayerType *player_ptr, bmc_type *bmc_ptr)
     }
 
     const auto attribute_type = magic->second;
-    const auto damage = monspell_bluemage_damage(player_ptr, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
+    const auto damage = monspell_bluemage_damage(*player_ptr, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
     fire_ball_hide(*player_ptr, attribute_type, dir, damage, 0);
     return true;
 }

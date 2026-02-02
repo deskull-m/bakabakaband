@@ -107,7 +107,7 @@ void wiz_lite(PlayerType *player_ptr, bool ninja)
     };
     rfu.set_flags(flags_swrf);
     if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
-        set_superstealth(player_ptr, false);
+        set_superstealth(*player_ptr, false);
     }
 }
 
@@ -469,7 +469,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
     };
     rfu.set_flags(flags_swrf);
     if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
-        set_superstealth(player_ptr, false);
+        set_superstealth(*player_ptr, false);
     }
 
     return true;

@@ -366,7 +366,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
 
         if (player_ptr->is_located_at(pos)) {
-            set_superstealth(player_ptr, false);
+            set_superstealth(*player_ptr, false);
         }
 
         break;

@@ -416,7 +416,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
 
     case 18:
         if (cast) {
-            if (!rush_attack(player_ptr, nullptr)) {
+            if (!rush_attack(*player_ptr, nullptr)) {
                 return tl::nullopt;
             }
         }
@@ -617,7 +617,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto &spell = PlayerRealm::get_spell_info(RealmType::HISSATSU, spell_id);
 
             do {
-                if (!rush_attack(player_ptr, &mdeath)) {
+                if (!rush_attack(*player_ptr, &mdeath)) {
                     break;
                 }
                 if (is_new) {
