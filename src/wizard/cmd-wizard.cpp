@@ -198,7 +198,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         (void)ident_spell(player_ptr, false);
         return true;
     case 'I':
-        wizard_item_modifier(player_ptr);
+        wizard_item_modifier(*player_ptr);
         return true;
     case 'j':
         wiz_jump_to_dungeon(player_ptr);
@@ -228,7 +228,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_summon_clone(player_ptr, i2enum<MonraceId>(command_arg));
         return true;
     case 'o':
-        wiz_modify_item(player_ptr);
+        wiz_modify_item(*player_ptr);
         return true;
     case 'O':
         wiz_dump_options();
