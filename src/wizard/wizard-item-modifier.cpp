@@ -94,11 +94,13 @@ void display_wizard_sub_menu()
 }
 
 void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx, bool aware = false);
-void wiz_modify_item_activation(PlayerType *player_ptr);
-void wiz_identify_full_inventory(PlayerType *player_ptr);
+void wiz_modify_item_activation(CreatureEntity &creature);
+void wiz_identify_full_inventory(CreatureEntity &creature);
 
-static void wiz_item_drop(PlayerType *player_ptr, const int num_items, const EnumClassFlagGroup<ItemMagicAppliance> &appliance)
+static void wiz_item_drop(CreatureEntity &creature, const int num_items, const EnumClassFlagGroup<ItemMagicAppliance> &appliance)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     uint mode = AM_NONE;
     const auto is_cursed = appliance.has(ItemMagicAppliance::CURSED);
     if (is_cursed) {
@@ -118,7 +120,7 @@ static void wiz_item_drop(PlayerType *player_ptr, const int num_items, const Enu
     }
 
     for (auto i = 0; i < num_items; i++) {
-        auto item = make_object(*player_ptr, mode);
+        auto item = make_object(creature, mode);
         if (!item) {
             continue;
         }
@@ -133,7 +135,7 @@ static void wiz_item_drop(PlayerType *player_ptr, const int num_items, const Enu
             continue;
         }
 
-        if (!drop_near(*player_ptr, *item, player_ptr->get_position())) {
+        if (!drop_near(creature, *item, creature.get_position())) {
             msg_print_wizard(player_ptr, 0, "No item dropping space!");
             return;
         }
@@ -144,8 +146,10 @@ static void wiz_item_drop(PlayerType *player_ptr, const int num_items, const Enu
  * @brief ゲーム設定コマンドの入力を受け付ける
  * @param player_ptr プレイヤーの情報へのポインタ
  */
-void wizard_item_modifier(PlayerType *player_ptr)
+void wizard_item_modifier(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     screen_save();
     display_wizard_sub_menu();
 
@@ -167,31 +171,31 @@ void wizard_item_modifier(PlayerType *player_ptr)
         break;
     case 'B':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_item_drop(player_ptr, command_arg, { ItemMagicAppliance::CURSED });
+        wiz_item_drop(creature, command_arg, { ItemMagicAppliance::CURSED });
         break;
     case 'c':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_item_drop(player_ptr, command_arg, { ItemMagicAppliance::NO_FIXED_ART });
+        wiz_item_drop(creature, command_arg, { ItemMagicAppliance::NO_FIXED_ART });
         break;
     case 'C':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_item_drop(player_ptr, command_arg, {});
+        wiz_item_drop(creature, command_arg, {});
         break;
     case 'd':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_item_drop(player_ptr, command_arg, { ItemMagicAppliance::GOOD });
+        wiz_item_drop(creature, command_arg, { ItemMagicAppliance::GOOD });
         break;
     case 'D':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_item_drop(player_ptr, command_arg, { ItemMagicAppliance::GOOD, ItemMagicAppliance::GREAT });
+        wiz_item_drop(creature, command_arg, { ItemMagicAppliance::GOOD, ItemMagicAppliance::GREAT });
         break;
     case 'e':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_item_drop(player_ptr, command_arg, { ItemMagicAppliance::GOOD, ItemMagicAppliance::GREAT, ItemMagicAppliance::EGO });
+        wiz_item_drop(creature, command_arg, { ItemMagicAppliance::GOOD, ItemMagicAppliance::GREAT, ItemMagicAppliance::EGO });
         break;
     case 'E':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_item_drop(player_ptr, command_arg, { ItemMagicAppliance::GOOD, ItemMagicAppliance::GREAT, ItemMagicAppliance::SPECIAL });
+        wiz_item_drop(creature, command_arg, { ItemMagicAppliance::GOOD, ItemMagicAppliance::GREAT, ItemMagicAppliance::SPECIAL });
         break;
     case 'f':
         identify_fully(player_ptr, false);
@@ -200,16 +204,16 @@ void wizard_item_modifier(PlayerType *player_ptr)
         (void)ident_spell(player_ptr, false);
         break;
     case 'I':
-        wiz_identify_full_inventory(player_ptr);
+        wiz_identify_full_inventory(creature);
         break;
     case 'l':
         wiz_learn_items_all(player_ptr);
         break;
     case 'U':
-        wiz_modify_item_activation(player_ptr);
+        wiz_modify_item_activation(creature);
         break;
     case 'w':
-        do_cmd_wishing(player_ptr, -1, true, true, true);
+        do_cmd_wishing(creature, -1, true, true, true);
         break;
     }
 }
@@ -242,8 +246,10 @@ void wiz_restore_aware_flag_of_fixed_arfifact(FixedArtifactId reset_artifact_idx
  * @brief オブジェクトに発動を追加する/変更する
  * @param catser_ptr プレイヤー情報への参照ポインタ
  */
-void wiz_modify_item_activation(PlayerType *player_ptr)
+void wiz_modify_item_activation(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     constexpr auto q = _("どのアイテムの発動を変更しますか？ ", "Which item? ");
     constexpr auto s = _("発動を変更するアイテムがない。", "Nothing to do with.");
     short i_idx;
@@ -268,8 +274,10 @@ void wiz_modify_item_activation(PlayerType *player_ptr)
  * @brief インベントリ内のアイテムを全て*鑑定*済みにする
  * @param catser_ptr プレイヤー情報への参照ポインタ
  */
-void wiz_identify_full_inventory(PlayerType *player_ptr)
+void wiz_identify_full_inventory(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     for (int i = 0; i < INVEN_TOTAL; i++) {
         auto *o_ptr = player_ptr->inventory[i].get();
         if (!o_ptr->is_valid()) {
@@ -376,8 +384,10 @@ static void prt_binary(BIT_FLAGS flags, const int row, int col)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_ptr 詳細を表示するアイテム情報の参照ポインタ
  */
-static void wiz_display_item(PlayerType *player_ptr, ItemEntity *o_ptr)
+static void wiz_display_item(CreatureEntity &creature, ItemEntity *o_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     auto get_seq_32bits = [](const TrFlags &flags, uint start) {
         BIT_FLAGS result = 0U;
         for (auto i = 0U; i < 32 && start + i < flags.size(); i++) {
@@ -455,7 +465,7 @@ static void wiz_display_item(PlayerType *player_ptr, ItemEntity *o_ptr)
  * counter flags to prevent weirdness.  We use the items to collect
  * statistics on item creation relative to the initial item.
  */
-static void wiz_statistics(PlayerType *player_ptr, ItemEntity *o_ptr)
+static void wiz_statistics(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     constexpr auto prompt = "Roll for [n]ormal, [g]ood, or [e]xcellent treasure? ";
     if (o_ptr->is_fixed_artifact()) {
@@ -464,7 +474,7 @@ static void wiz_statistics(PlayerType *player_ptr, ItemEntity *o_ptr)
 
     auto rolls = 1000000;
     while (true) {
-        wiz_display_item(player_ptr, o_ptr);
+        wiz_display_item(creature, o_ptr);
         const auto command = input_command(prompt);
         if (!command.has_value()) {
             break;
@@ -492,7 +502,7 @@ static void wiz_statistics(PlayerType *player_ptr, ItemEntity *o_ptr)
         }
 
         constexpr auto q = "Rolls: %d  Correct: %d  Matches: %d  Better: %d  Worse: %d  Other: %d";
-        msg_format("Creating a lot of %s items. Base level = %d.", quality.data(), player_ptr->current_floor_ptr->dun_level);
+        msg_format("Creating a lot of %s items. Base level = %d.", quality.data(), creature.get_floor()->dun_level);
         msg_erase();
         auto correct = 0;
         auto matches = 0;
@@ -512,7 +522,7 @@ static void wiz_statistics(PlayerType *player_ptr, ItemEntity *o_ptr)
                 term_fresh();
             }
 
-            auto item = make_object(*player_ptr, mode);
+            auto item = make_object(creature, mode);
             if (!item) {
                 continue;
             }
@@ -547,9 +557,11 @@ static void wiz_statistics(PlayerType *player_ptr, ItemEntity *o_ptr)
     }
 }
 
-static tl::optional<ItemEntity> wiz_apply_magic_to_item(PlayerType *player_ptr, char command, short bi_id)
+static tl::optional<ItemEntity> wiz_apply_magic_to_item(CreatureEntity &creature, char command, short bi_id)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+    const auto &floor = *creature.get_floor();
     switch (tolower(command)) {
     case 'w': { // 呪われた高級品.
         ItemEntity item(bi_id);
@@ -595,7 +607,7 @@ static tl::optional<ItemEntity> wiz_apply_magic_to_item(PlayerType *player_ptr, 
  * Apply magic to an item or turn it into an artifact. -Bernd-
  * @param o_ptr 再生成の対象となるアイテム情報の参照ポインタ
  */
-static void wiz_reroll_item(PlayerType *player_ptr, ItemEntity *o_ptr)
+static void wiz_reroll_item(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     if (o_ptr->is_fixed_or_random_artifact()) {
         return;
@@ -605,7 +617,7 @@ static void wiz_reroll_item(PlayerType *player_ptr, ItemEntity *o_ptr)
     auto changed = false;
     constexpr auto prompt = "[a]ccept, [w]orthless, [c]ursed, [n]ormal, [g]ood, [e]xcellent, [s]pecial? ";
     while (true) {
-        wiz_display_item(player_ptr, &item);
+        wiz_display_item(creature, &item);
         const auto command = input_command(prompt);
         if (!command) {
             if (item.is_fixed_artifact()) {
@@ -627,7 +639,7 @@ static void wiz_reroll_item(PlayerType *player_ptr, ItemEntity *o_ptr)
             item.fa_id = FixedArtifactId::NONE;
         }
 
-        auto applied_item = wiz_apply_magic_to_item(player_ptr, *command, o_ptr->bi_id);
+        auto applied_item = wiz_apply_magic_to_item(creature, *command, o_ptr->bi_id);
         if (applied_item) {
             item = std::move(*applied_item);
         }
@@ -665,7 +677,7 @@ static void wiz_reroll_item(PlayerType *player_ptr, ItemEntity *o_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_ptr 調整するアイテムの参照ポインタ
  */
-static void wiz_tweak_item(PlayerType *player_ptr, ItemEntity *o_ptr)
+static void wiz_tweak_item(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     if (o_ptr->is_fixed_or_random_artifact()) {
         return;
@@ -677,28 +689,28 @@ static void wiz_tweak_item(PlayerType *player_ptr, ItemEntity *o_ptr)
     }
 
     o_ptr->pval = *pval;
-    wiz_display_item(player_ptr, o_ptr);
+    wiz_display_item(creature, o_ptr);
     const auto bonus_ac = input_numerics("Enter new AC Bonus setting: ", -MAX_SHORT, MAX_SHORT, o_ptr->to_a);
     if (!bonus_ac.has_value()) {
         return;
     }
 
     o_ptr->to_a = *bonus_ac;
-    wiz_display_item(player_ptr, o_ptr);
+    wiz_display_item(creature, o_ptr);
     const auto bonus_hit = input_numerics("Enter new Hit Bonus setting: ", -MAX_SHORT, MAX_SHORT, o_ptr->to_h);
     if (!bonus_hit.has_value()) {
         return;
     }
 
     o_ptr->to_h = *bonus_hit;
-    wiz_display_item(player_ptr, o_ptr);
+    wiz_display_item(creature, o_ptr);
     const auto bonus_damage = input_numerics("Enter new Damage Bonus setting: ", -MAX_SHORT, MAX_SHORT, o_ptr->to_d);
     if (!bonus_damage.has_value()) {
         return;
     }
 
     o_ptr->to_d = *bonus_damage;
-    wiz_display_item(player_ptr, o_ptr);
+    wiz_display_item(creature, o_ptr);
 }
 
 /*!
@@ -731,8 +743,10 @@ static void wiz_quantity_item(ItemEntity *o_ptr)
  *   - Change properties (via wiz_tweak_item)<br>
  *   - Change the number of items (via wiz_quantity_item)<br>
  */
-void wiz_modify_item(PlayerType *player_ptr)
+void wiz_modify_item(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     constexpr auto q = "Play with which object? ";
     constexpr auto s = "You have nothing to play with.";
     short i_idx;
@@ -747,7 +761,7 @@ void wiz_modify_item(PlayerType *player_ptr)
     auto changed = false;
     constexpr auto prompt = "[a]ccept [s]tatistics [r]eroll [t]weak [q]uantity? ";
     while (true) {
-        wiz_display_item(player_ptr, &modified_item);
+        wiz_display_item(creature, &modified_item);
         const auto command = input_command(prompt);
         if (!command.has_value()) {
             changed = false;
@@ -760,15 +774,15 @@ void wiz_modify_item(PlayerType *player_ptr)
         }
 
         if (command == 's' || command == 'S') {
-            wiz_statistics(player_ptr, &modified_item);
+            wiz_statistics(creature, &modified_item);
         }
 
         if (command == 'r' || command == 'R') {
-            wiz_reroll_item(player_ptr, &modified_item);
+            wiz_reroll_item(creature, &modified_item);
         }
 
         if (command == 't' || command == 'T') {
-            wiz_tweak_item(player_ptr, &modified_item);
+            wiz_tweak_item(creature, &modified_item);
         }
 
         if (command == 'q' || command == 'Q') {
@@ -802,8 +816,10 @@ void wiz_modify_item(PlayerType *player_ptr)
     }
 }
 
-static std::vector<FixedArtifactId> find_wishing_fixed_artifact(PlayerType *player_ptr, std::string_view pray_chars)
+static std::vector<FixedArtifactId> find_wishing_fixed_artifact(CreatureEntity &creature, std::string_view pray_chars)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     std::vector<FixedArtifactId> fa_ids;
     for (const auto &[fa_id, artifact] : ArtifactList::get_instance()) {
         ItemEntity item(artifact.bi_key);
@@ -860,10 +876,11 @@ static std::vector<FixedArtifactId> find_wishing_fixed_artifact(PlayerType *play
 /*!
  * @brief オブジェクトの装備スロットがエゴが有効なスロットかどうか判定
  */
-static int is_slot_able_to_be_ego(PlayerType *player_ptr, ItemEntity *o_ptr)
+static int is_slot_able_to_be_ego(CreatureEntity &creature, ItemEntity *o_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     int slot = wield_slot(player_ptr, o_ptr);
-
     if (slot > -1) {
         return slot;
     }
@@ -893,8 +910,10 @@ static void wishing_puff_of_smoke(void)
  * @param confirm 願わない場合に確認するかどうか
  * @return 願った結果
  */
-WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, bool allow_ego, bool confirm)
+WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art, bool allow_ego, bool confirm)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     const std::array<std::string, _(4, 6)> fixed_expressions = {
 #ifdef JP
         "燃えない",
@@ -910,7 +929,6 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
         "fixed",
 #endif
     };
-
     auto wish_art = false;
     auto wish_randart = false;
     auto wish_ego = false;
@@ -1049,7 +1067,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
                 }
 
                 if (std::string(pray_chars).find(item_name) != std::string::npos) {
-                    if (is_slot_able_to_be_ego(player_ptr, &item) != ego.slot) {
+                    if (is_slot_able_to_be_ego(creature, &item) != ego.slot) {
                         continue;
                     }
 
@@ -1059,7 +1077,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
         }
     }
 
-    const auto wishing_fa_ids = allow_art ? find_wishing_fixed_artifact(player_ptr, pray_chars) : std::vector<FixedArtifactId>{};
+    const auto wishing_fa_ids = allow_art ? find_wishing_fixed_artifact(creature, pray_chars) : std::vector<FixedArtifactId>{};
     if (AngbandWorld::get_instance().wizard && ((wishing_fa_ids.size() > 1) || (ego_ids.size() > 1))) {
         msg_print(_("候補が多すぎる！", "Too many matches!"));
         return WishResultType::FAIL;
@@ -1118,7 +1136,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
                 } while (!item.is_random_artifact() || item.is_ego() || item.is_cursed());
 
                 if (item.is_random_artifact()) {
-                    drop_near(*player_ptr, item, player_ptr->get_position());
+                    drop_near(creature, item, creature.get_position());
                 }
             } else {
                 wishing_puff_of_smoke();
@@ -1133,7 +1151,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
                 if (ego_ids.size() > 0) {
                     item.generate(bi_id);
                     item.ego_idx = ego_ids[0];
-                    apply_ego(&item, player_ptr->current_floor_ptr->base_level);
+                    apply_ego(&item, creature.get_floor()->base_level);
                 } else {
                     auto max_roll = 1000;
                     auto i = 0;
@@ -1192,7 +1210,7 @@ WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool allow_art, 
             item.art_flags.set(TR_IGNORE_FIRE);
         }
 
-        (void)drop_near(*player_ptr, item, player_ptr->get_position());
+        (void)drop_near(creature, item, creature.get_position());
         return res;
     }
 
