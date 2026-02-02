@@ -154,7 +154,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_cure_all(player_ptr);
         return true;
     case 'b':
-        wiz_teleport_back(player_ptr);
+        wiz_teleport_back(*player_ptr);
         return true;
     case 'c':
         wiz_create_item(player_ptr);
@@ -166,7 +166,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         detect_all(player_ptr, DETECT_RAD_ALL * 3);
         return true;
     case 'D':
-        wiz_dimension_door(player_ptr);
+        wiz_dimension_door(*player_ptr);
         return true;
     case 'e':
         wiz_change_status(player_ptr);
@@ -174,10 +174,10 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
     case 'E':
         switch (player_ptr->pclass) {
         case PlayerClassType::BLUE_MAGE:
-            wiz_learn_blue_magic_all(player_ptr);
+            wiz_learn_blue_magic_all(*player_ptr);
             return true;
         case PlayerClassType::SMITH:
-            wiz_fillup_all_smith_essences(player_ptr);
+            wiz_fillup_all_smith_essences(*player_ptr);
             return true;
         default:
             return false;
@@ -192,7 +192,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wizard_game_modifier(player_ptr);
         return true;
     case 'H':
-        wiz_summon_horde(player_ptr);
+        wiz_summon_horde(*player_ptr);
         return true;
     case 'i':
         (void)ident_spell(player_ptr, false);
@@ -204,7 +204,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_jump_to_dungeon(player_ptr);
         return true;
     case 'k':
-        wiz_kill_target(player_ptr, 0, (AttributeType)command_arg, true);
+        wiz_kill_target(*player_ptr, 0, (AttributeType)command_arg, true);
         return true;
     case 'm':
         map_area(*player_ptr, DETECT_RAD_ALL * 3);
@@ -213,19 +213,19 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_mutation_menu(player_ptr);
         return true;
     case 'R':
-        wiz_generate_room(player_ptr, command_arg);
+        wiz_generate_room(*player_ptr, command_arg);
         return true;
     case 'r':
         patron_list[player_ptr->patron].gain_level_reward(player_ptr, command_arg);
         return true;
     case 'n':
-        wiz_summon_specific_monster(player_ptr, i2enum<MonraceId>(command_arg));
+        wiz_summon_specific_monster(*player_ptr, i2enum<MonraceId>(command_arg));
         return true;
     case 'N':
-        wiz_summon_pet(player_ptr, i2enum<MonraceId>(command_arg));
+        wiz_summon_pet(*player_ptr, i2enum<MonraceId>(command_arg));
         return true;
     case KTRL('N'):
-        wiz_summon_clone(player_ptr, i2enum<MonraceId>(command_arg));
+        wiz_summon_clone(*player_ptr, i2enum<MonraceId>(command_arg));
         return true;
     case 'o':
         wiz_modify_item(*player_ptr);
@@ -241,11 +241,11 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         return true;
     case 's':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_generate_random_monster(player_ptr, command_arg);
+        wiz_generate_random_monster(*player_ptr, command_arg);
         return true;
     case 'S':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_summon_random_monster(player_ptr, command_arg);
+        wiz_summon_random_monster(*player_ptr, command_arg);
         return true;
     case 't':
         teleport_player(player_ptr, 100, TELEPORT_SPONTANEOUS);
@@ -282,10 +282,10 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         player_outfit(player_ptr);
         return true;
     case 'y':
-        wiz_kill_target(player_ptr);
+        wiz_kill_target(*player_ptr);
         return true;
     case 'Y':
-        wiz_kill_target(player_ptr, 0, (AttributeType)command_arg);
+        wiz_kill_target(*player_ptr, 0, (AttributeType)command_arg);
         return true;
     case 'z':
         wiz_zap_surrounding_monsters(player_ptr);
@@ -297,7 +297,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         probing(*player_ptr);
         return true;
     case '@':
-        wiz_debug_spell(player_ptr);
+        wiz_debug_spell(*player_ptr);
         return true;
     case '"':
         exe_output_spoilers();

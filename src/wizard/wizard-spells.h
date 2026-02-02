@@ -5,6 +5,7 @@
 
 enum class MonraceId : int16_t;
 
+class CreatureEntity;
 class FloorType;
 class PlayerType;
 typedef union spell_functions {
@@ -36,16 +37,16 @@ struct debug_spell_command {
     spell_functions command_function;
 };
 
-void wiz_debug_spell(PlayerType *player_ptr);
-void wiz_dimension_door(PlayerType *player_ptr);
-void wiz_summon_horde(PlayerType *player_ptr);
-void wiz_teleport_back(PlayerType *player_ptr);
-void wiz_learn_blue_magic_all(PlayerType *player_ptr);
-void wiz_fillup_all_smith_essences(PlayerType *player_ptr);
-void wiz_generate_random_monster(PlayerType *player_ptr, int num);
-void wiz_summon_random_monster(PlayerType *player_ptr, int num);
-void wiz_summon_specific_monster(PlayerType *player_ptr, MonraceId monrace_id);
-void wiz_summon_pet(PlayerType *player_ptr, MonraceId monrace_id);
-void wiz_summon_clone(PlayerType *player_ptr, MonraceId monrace_id);
-void wiz_generate_room(PlayerType *player_ptr, int v_idx);
-void wiz_kill_target(PlayerType *player_ptr, int initial_dam = 1000000, AttributeType effect_idx = AttributeType::DEBUG, const bool self = false);
+void wiz_debug_spell(CreatureEntity &creature);
+void wiz_dimension_door(CreatureEntity &creature);
+void wiz_summon_horde(CreatureEntity &creature);
+void wiz_teleport_back(CreatureEntity &creature);
+void wiz_learn_blue_magic_all(CreatureEntity &creature);
+void wiz_fillup_all_smith_essences(CreatureEntity &creature);
+void wiz_generate_random_monster(CreatureEntity &creature, int num);
+void wiz_summon_random_monster(CreatureEntity &creature, int num);
+void wiz_summon_specific_monster(CreatureEntity &creature, MonraceId monrace_id);
+void wiz_summon_pet(CreatureEntity &creature, MonraceId monrace_id);
+void wiz_summon_clone(CreatureEntity &creature, MonraceId monrace_id);
+void wiz_generate_room(CreatureEntity &creature, int v_idx);
+void wiz_kill_target(CreatureEntity &creature, int initial_dam = 1000000, AttributeType effect_idx = AttributeType::DEBUG, const bool self = false);
