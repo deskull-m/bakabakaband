@@ -70,7 +70,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
 
     // clang-format off
     switch (ms_type) {
-    case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF4_SHRIEK */
+    case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, *player_ptr, 0, MONSTER_TO_PLAYER); /* RF4_SHRIEK */
     case MonsterAbilityType::XXX1: break;   /* RF4_XXX1 */
     case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF4_DISPEL */
     case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF4_ROCKET */
@@ -166,18 +166,18 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HAND_DOOM */
     case MonsterAbilityType::HEAL: return spell_RF6_HEAL(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HEAL */
     case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_INVULNER */
-    case MonsterAbilityType::BLINK: return spell_RF6_BLINK(player_ptr, m_idx, MONSTER_TO_PLAYER, false); /* RF6_BLINK */
-    case MonsterAbilityType::TPORT: return spell_RF6_TPORT(player_ptr, m_idx, MONSTER_TO_PLAYER); /* RF6_TPORT */
-    case MonsterAbilityType::WORLD: return spell_RF6_WORLD(player_ptr, m_idx); /* RF6_WORLD */
+    case MonsterAbilityType::BLINK: return spell_RF6_BLINK(*player_ptr, m_idx, MONSTER_TO_PLAYER, false); /* RF6_BLINK */
+    case MonsterAbilityType::TPORT: return spell_RF6_TPORT(*player_ptr, m_idx, MONSTER_TO_PLAYER); /* RF6_TPORT */
+    case MonsterAbilityType::WORLD: return spell_RF6_WORLD(*player_ptr, m_idx); /* RF6_WORLD */
     case MonsterAbilityType::SPECIAL: return spell_RF6_SPECIAL(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);   /* RF6_SPECIAL */
-    case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_TO */
-    case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_AWAY */
-    case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_LEVEL */
+    case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_TO */
+    case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_AWAY */
+    case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_LEVEL */
     case MonsterAbilityType::PSY_SPEAR: return spell_RF6_PSY_SPEAR(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_PSY_SPEAR */
-    case MonsterAbilityType::DARKNESS: return spell_RF6_DARKNESS(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_DARKNESS */
-    case MonsterAbilityType::TRAPS: return spell_RF6_TRAPS(player_ptr, y, x, m_idx); /* RF6_TRAPS */
+    case MonsterAbilityType::DARKNESS: return spell_RF6_DARKNESS(*player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_DARKNESS */
+    case MonsterAbilityType::TRAPS: return spell_RF6_TRAPS(*player_ptr, y, x, m_idx); /* RF6_TRAPS */
     case MonsterAbilityType::FORGET: return spell_RF6_FORGET(player_ptr, m_idx); /* RF6_FORGET */
-    case MonsterAbilityType::RAISE_DEAD: return spell_RF6_RAISE_DEAD(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_RAISE_DEAD */
+    case MonsterAbilityType::RAISE_DEAD: return spell_RF6_RAISE_DEAD(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_RAISE_DEAD */
     case MonsterAbilityType::S_KIN: return spell_RF6_S_KIN(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_KIN */
     case MonsterAbilityType::S_CYBER: return spell_RF6_S_CYBER(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_CYBER */
     case MonsterAbilityType::S_MONSTER: return spell_RF6_S_MONSTER(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_MONSTER */
@@ -255,7 +255,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     }
     // clang-format off
     switch (ms_type) {
-    case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF4_SHRIEK */
+    case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, *player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF4_SHRIEK */
     case MonsterAbilityType::XXX1: break;   /* RF4_XXX1 */
     case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF4_DISPEL */
     case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF4_ROCKET */
@@ -351,18 +351,18 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HAND_DOOM */
     case MonsterAbilityType::HEAL: return spell_RF6_HEAL(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HEAL */
     case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_INVULNER */
-    case MonsterAbilityType::BLINK: return spell_RF6_BLINK(player_ptr, m_idx, MONSTER_TO_MONSTER, is_special_spell); /* RF6_BLINK */
-    case MonsterAbilityType::TPORT: return spell_RF6_TPORT(player_ptr, m_idx, MONSTER_TO_MONSTER); /* RF6_TPORT */
+    case MonsterAbilityType::BLINK: return spell_RF6_BLINK(*player_ptr, m_idx, MONSTER_TO_MONSTER, is_special_spell); /* RF6_BLINK */
+    case MonsterAbilityType::TPORT: return spell_RF6_TPORT(*player_ptr, m_idx, MONSTER_TO_MONSTER); /* RF6_TPORT */
     case MonsterAbilityType::WORLD: break; /* RF6_WORLD */
     case MonsterAbilityType::SPECIAL: return spell_RF6_SPECIAL(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER);   /* RF6_SPECIAL */
-    case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_TO */
-    case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_AWAY */
-    case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_LEVEL */
+    case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(*player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_TO */
+    case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(*player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_AWAY */
+    case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(*player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_LEVEL */
     case MonsterAbilityType::PSY_SPEAR: return spell_RF6_PSY_SPEAR(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_PSY_SPEAR */
-    case MonsterAbilityType::DARKNESS: return spell_RF6_DARKNESS(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_DARKNESS */
+    case MonsterAbilityType::DARKNESS: return spell_RF6_DARKNESS(*player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_DARKNESS */
     case MonsterAbilityType::TRAPS: break; /* RF6_TRAPS */
     case MonsterAbilityType::FORGET: break; /* RF6_FORGET */
-    case MonsterAbilityType::RAISE_DEAD: return spell_RF6_RAISE_DEAD(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_RAISE_DEAD */
+    case MonsterAbilityType::RAISE_DEAD: return spell_RF6_RAISE_DEAD(*player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_RAISE_DEAD */
     case MonsterAbilityType::S_KIN: return spell_RF6_S_KIN(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_KIN */
     case MonsterAbilityType::S_CYBER: return spell_RF6_S_CYBER(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_CYBER */
     case MonsterAbilityType::S_MONSTER: return spell_RF6_S_MONSTER(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_MONSTER */
