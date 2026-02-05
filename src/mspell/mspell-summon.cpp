@@ -175,62 +175,62 @@ MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITIO
         case MonraceId::MENELDOR:
         case MonraceId::GWAIHIR:
         case MonraceId::THORONDOR:
-            count += summon_EAGLE(&player_ptr, y, x, rlev, m_idx);
+            count += summon_EAGLE(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::BULLGATES:
-            count += summon_EDGE(&player_ptr, y, x, rlev, m_idx);
+            count += summon_EDGE(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::SERPENT:
         case MonraceId::ZOMBI_SERPENT:
-            count += summon_guardian(&player_ptr, y, x, rlev, m_idx, t_idx, target_type);
+            count += summon_guardian(creature, y, x, rlev, m_idx, t_idx, target_type);
             break;
         case MonraceId::TIAMAT:
-            count += summon_HIGHEST_DRAGON(&player_ptr, y, x, m_idx);
+            count += summon_HIGHEST_DRAGON(creature, y, x, m_idx);
             break;
         case MonraceId::CALDARM:
-            count += summon_LOCKE_CLONE(&player_ptr, y, x, m_idx);
+            count += summon_LOCKE_CLONE(creature, y, x, m_idx);
             break;
         case MonraceId::LOUSY:
-            count += summon_LOUSE(&player_ptr, y, x, rlev, m_idx);
+            count += summon_LOUSE(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::VAIF:
-            count += summon_MOAI(&player_ptr, y, x, rlev, m_idx);
+            count += summon_MOAI(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::DESLAYER_SENIOR:
-            count += summon_DEMON_SLAYER(&player_ptr, y, x, m_idx);
+            count += summon_DEMON_SLAYER(creature, y, x, m_idx);
             break;
         case MonraceId::ALDUIN:
-            count += summon_HIGHEST_DRAGON(&player_ptr, y, x, m_idx);
+            count += summon_HIGHEST_DRAGON(creature, y, x, m_idx);
             break;
         case MonraceId::MIRAAK:
-            count += summon_APOCRYPHA(&player_ptr, y, x, m_idx);
+            count += summon_APOCRYPHA(creature, y, x, m_idx);
             break;
         case MonraceId::IMHOTEP:
-            count += summon_PYRAMID(&player_ptr, y, x, rlev, m_idx);
+            count += summon_PYRAMID(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::JOBZ:
-            count += summon_EYE_PHORN(&player_ptr, y, x, rlev, m_idx);
+            count += summon_EYE_PHORN(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::QUEEN_VESPOID:
-            count += summon_VESPOID(&player_ptr, y, x, rlev, m_idx);
+            count += summon_VESPOID(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::YENDOR_WIZARD_1:
-            count += summon_YENDER_WIZARD(&player_ptr, y, x, m_idx);
+            count += summon_YENDER_WIZARD(creature, y, x, m_idx);
             break;
         case MonraceId::LEE_QIEZI:
             msg_print(_("しかし、誰も来てくれなかった…。", "However, no one answered the call..."));
             break;
         case MonraceId::THUNDERS:
-            count += summon_THUNDERS(&player_ptr, y, x, rlev, m_idx);
+            count += summon_THUNDERS(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::OOTSUKI:
-            count += summon_PLASMA(&player_ptr, y, x, rlev, m_idx);
+            count += summon_PLASMA(creature, y, x, rlev, m_idx);
             break;
         case MonraceId::LAFFEY_II:
-            count += summon_LAFFEY_II(&player_ptr, Pos2D(y, x), m_idx);
+            count += summon_LAFFEY_II(creature, Pos2D(y, x), m_idx);
             break;
         case MonraceId::HUNGRY_OLD_MAN:
-            count += summon_POLYGON(&player_ptr, y, x, m_idx);
+            count += summon_POLYGON(creature, y, x, m_idx);
             break;
         default:
             count += summon_Kin(creature, y, x, rlev, m_idx);
@@ -956,7 +956,7 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
 
     int count = 0;
     if (monster.can_ring_boss_call_nazgul() && mon_to_player) {
-        count += summon_NAZGUL(&player_ptr, y, x, m_idx);
+        count += summon_NAZGUL(creature, y, x, m_idx);
     } else {
         mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
             _("%s^が魔法で強力なアンデッドを召喚した！", "%s^ magically summons greater undead!"),
