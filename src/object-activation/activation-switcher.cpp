@@ -48,7 +48,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     auto *o_ptr = *o_ptr_ptr;
     switch (index) {
     case RandomArtActType::SUNLIGHT:
-        return activate_sunlight(player_ptr);
+        return activate_sunlight(*player_ptr);
     case RandomArtActType::BO_MISS_1:
         return activate_missile_1(*player_ptr);
     case RandomArtActType::BA_POIS_1:
@@ -92,19 +92,19 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BO_MISS_2:
         return activate_missile_2(*player_ptr);
     case RandomArtActType::WHIRLWIND:
-        return activate_whirlwind(player_ptr);
+        return activate_whirlwind(*player_ptr);
     case RandomArtActType::DRAIN_2:
         return activate_bolt_drain_2(*player_ptr);
     case RandomArtActType::CALL_CHAOS:
-        return activate_call_chaos(player_ptr);
+        return activate_call_chaos(*player_ptr);
     case RandomArtActType::ROCKET:
         return activate_rocket(*player_ptr);
     case RandomArtActType::DISP_EVIL:
-        return activate_dispel_evil(player_ptr);
+        return activate_dispel_evil(*player_ptr);
     case RandomArtActType::BA_MISS_3:
         return activate_missile_3(*player_ptr);
     case RandomArtActType::DISP_GOOD:
-        return activate_dispel_good(player_ptr);
+        return activate_dispel_good(*player_ptr);
     case RandomArtActType::BO_MANA:
         return activate_bolt_mana(*player_ptr, name);
     case RandomArtActType::BA_WATER:
@@ -114,9 +114,9 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BA_MANA:
         return activate_ball_mana(*player_ptr, name);
     case RandomArtActType::PESTICIDE:
-        return activate_pesticide(player_ptr);
+        return activate_pesticide(*player_ptr);
     case RandomArtActType::BLINDING_LIGHT:
-        return activate_blinding_light(player_ptr, name);
+        return activate_blinding_light(*player_ptr, name);
     case RandomArtActType::BIZARRE:
         return activate_ring_of_power(player_ptr, name);
     case RandomArtActType::CAST_BA_STAR:
@@ -130,29 +130,29 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BR_DRAGON:
         return activate_dragon_breath(player_ptr, o_ptr);
     case RandomArtActType::TREE_CREATION:
-        return activate_tree_creation(player_ptr, o_ptr, name);
+        return activate_tree_creation(*player_ptr, o_ptr, name);
     case RandomArtActType::ANIM_DEAD:
-        return activate_animate_dead(player_ptr, o_ptr);
+        return activate_animate_dead(*player_ptr, o_ptr);
     case RandomArtActType::CONFUSE:
-        return activate_confusion(player_ptr);
+        return activate_confusion(*player_ptr);
     case RandomArtActType::SLEEP:
-        return activate_sleep(player_ptr);
+        return activate_sleep(*player_ptr);
     case RandomArtActType::QUAKE:
-        return activate_earthquake(player_ptr);
+        return activate_earthquake(*player_ptr);
     case RandomArtActType::TERROR:
-        return activate_terror(player_ptr);
+        return activate_terror(*player_ptr);
     case RandomArtActType::TELE_AWAY:
         return activate_teleport_away(player_ptr);
     case RandomArtActType::BANISH_EVIL:
-        return activate_banish_evil(player_ptr);
+        return activate_banish_evil(*player_ptr);
     case RandomArtActType::GENOCIDE:
         return activate_genocide(player_ptr);
     case RandomArtActType::MASS_GENO:
         return activate_mass_genocide(player_ptr);
     case RandomArtActType::SCARE_AREA:
-        return activate_scare(player_ptr);
+        return activate_scare(*player_ptr);
     case RandomArtActType::AGGRAVATE:
-        return activate_aggravation(player_ptr, o_ptr, name);
+        return activate_aggravation(*player_ptr, o_ptr, name);
     case RandomArtActType::CHARM_ANIMAL:
         return activate_charm_animal(*player_ptr);
     case RandomArtActType::CHARM_UNDEAD:
@@ -191,7 +191,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)set_hero(player_ptr, randint1(25) + 25, false);
         return true;
     case RandomArtActType::CURE_LW:
-        return activate_cure_lw(player_ptr);
+        return activate_cure_lw(*player_ptr);
     case RandomArtActType::CURE_MW:
         msg_print(_("深紫色の光を発している...", "It radiates deep purple..."));
         (void)cure_serious_wounds(player_ptr, Dice::roll(4, 8));
@@ -288,30 +288,30 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::RESIST_POIS:
         return activate_resistance_pois(player_ptr, name);
     case RandomArtActType::LIGHT:
-        return activate_light(player_ptr, name);
+        return activate_light(*player_ptr, name);
     case RandomArtActType::MAP_LIGHT:
-        return activate_map_light(player_ptr);
+        return activate_map_light(*player_ptr);
     case RandomArtActType::DETECT_ALL:
-        return activate_all_detection(player_ptr);
+        return activate_all_detection(*player_ptr);
     case RandomArtActType::DETECT_XTRA:
-        return activate_extra_detection(player_ptr);
+        return activate_extra_detection(*player_ptr);
     case RandomArtActType::ID_FULL:
-        return activate_fully_identification(player_ptr);
+        return activate_fully_identification(*player_ptr);
     case RandomArtActType::ID_PLAIN:
-        return activate_identification(player_ptr);
+        return activate_identification(*player_ptr);
     case RandomArtActType::RUNE_EXPLO:
-        return activate_exploding_rune(player_ptr);
+        return activate_exploding_rune(*player_ptr);
     case RandomArtActType::RUNE_PROT:
-        return activate_protection_rune(player_ptr);
+        return activate_protection_rune(*player_ptr);
     case RandomArtActType::SATIATE:
         (void)set_food(*player_ptr, PY_FOOD_MAX - 1);
         return true;
     case RandomArtActType::DEST_DOOR:
-        return activate_door_destroy(player_ptr);
+        return activate_door_destroy(*player_ptr);
     case RandomArtActType::STONE_MUD:
-        return activate_stone_mud(player_ptr);
+        return activate_stone_mud(*player_ptr);
     case RandomArtActType::RECHARGE:
-        return activate_recharge(player_ptr);
+        return activate_recharge(*player_ptr);
     case RandomArtActType::ALCHEMY:
         msg_print(_("明るい黄色に輝いている...", "It glows bright yellow..."));
         (void)alchemy(player_ptr);
@@ -321,44 +321,44 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::TELEPORT:
         return activate_teleport(player_ptr);
     case RandomArtActType::RECALL:
-        return activate_recall(player_ptr);
+        return activate_recall(*player_ptr);
     case RandomArtActType::JUDGE:
-        return activate_judgement(player_ptr, name);
+        return activate_judgement(*player_ptr, name);
     case RandomArtActType::TELEKINESIS:
-        return activate_telekinesis(player_ptr, name);
+        return activate_telekinesis(*player_ptr, name);
     case RandomArtActType::DETECT_UNIQUE:
-        return activate_unique_detection(player_ptr);
+        return activate_unique_detection(*player_ptr);
     case RandomArtActType::ESCAPE:
         return activate_escape(player_ptr);
     case RandomArtActType::DISP_CURSE_XTRA:
-        return activate_dispel_curse(player_ptr, name);
+        return activate_dispel_curse(*player_ptr, name);
     case RandomArtActType::BRAND_FIRE_BOLTS:
         msg_format(_("%sが深紅に輝いた...", "Your %s glows deep red..."), name.data());
         brand_bolts(player_ptr);
         return true;
     case RandomArtActType::RECHARGE_XTRA:
-        return activate_recharge_extra(player_ptr, name);
+        return activate_recharge_extra(*player_ptr, name);
     case RandomArtActType::LORE:
         return StoneOfLore(player_ptr).perilous_secrets();
     case RandomArtActType::SHIKOFUMI:
-        return activate_shikofumi(player_ptr);
+        return activate_shikofumi(*player_ptr);
     case RandomArtActType::PHASE_DOOR:
         return activate_phase_door(player_ptr);
     case RandomArtActType::DETECT_ALL_MONS:
-        return activate_all_monsters_detection(player_ptr);
+        return activate_all_monsters_detection(*player_ptr);
     case RandomArtActType::ULTIMATE_RESIST:
         return activate_ultimate_resistance(player_ptr);
     case RandomArtActType::ELBERETH:
-        return activate_protection_elbereth(player_ptr);
+        return activate_protection_elbereth(*player_ptr);
     case RandomArtActType::DETECT_TREASURE:
-        return activate_detect_treasure(player_ptr);
+        return activate_detect_treasure(*player_ptr);
     case RandomArtActType::CAST_OFF:
         (void)cosmic_cast_off(player_ptr, o_ptr_ptr);
         return true;
     case RandomArtActType::FALLING_STAR:
         return activate_toragoroshi(player_ptr);
     case RandomArtActType::GRAND_CROSS:
-        return activate_grand_cross(player_ptr);
+        return activate_grand_cross(*player_ptr);
     case RandomArtActType::TELEPORT_LEVEL:
         return activate_teleport_level(player_ptr);
     case RandomArtActType::STRAIN_HASTE:
@@ -382,15 +382,15 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)set_blessed(player_ptr, randint1(25) + 25, true);
         return true;
     case RandomArtActType::CREATE_AMMO:
-        return activate_create_ammo(player_ptr);
+        return activate_create_ammo(*player_ptr);
     case RandomArtActType::DISPEL_MAGIC:
-        return activate_dispel_magic(player_ptr);
+        return activate_dispel_magic(*player_ptr);
     case RandomArtActType::DESTRUCTION:
         return destroy_area(player_ptr, player_ptr->y, player_ptr->x, (13) + randint0(5), false);
     case RandomArtActType::HUGE_STINKING_STORM:
-        return activate_huge_stinking_storm(player_ptr);
+        return activate_huge_stinking_storm(*player_ptr);
     case RandomArtActType::WHISTLE:
-        return activate_whistle(player_ptr, *o_ptr);
+        return activate_whistle(*player_ptr, *o_ptr);
     case RandomArtActType::CAPTURE_MONSTER:
         return exe_monster_capture(player_ptr, *o_ptr);
     case RandomArtActType::THE_WORLD:
