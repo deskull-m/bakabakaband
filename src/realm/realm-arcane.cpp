@@ -78,7 +78,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_invis(player_ptr, rad);
+            detect_monsters_invis(*player_ptr, rad);
         }
     } break;
 
@@ -90,7 +90,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_normal(player_ptr, rad);
+            detect_monsters_normal(*player_ptr, rad);
         }
     } break;
 
@@ -149,9 +149,9 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_traps(player_ptr, rad, true);
-            detect_doors(player_ptr, rad);
-            detect_stairs(player_ptr, rad);
+            detect_traps(*player_ptr, rad, true);
+            detect_doors(*player_ptr, rad);
+            detect_stairs(*player_ptr, rad);
         }
     } break;
 
@@ -169,8 +169,8 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_treasure(player_ptr, rad);
-            detect_objects_gold(player_ptr, rad);
+            detect_treasure(*player_ptr, rad);
+            detect_objects_gold(*player_ptr, rad);
         }
     } break;
 
@@ -182,7 +182,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_objects_magic(player_ptr, rad);
+            detect_objects_magic(*player_ptr, rad);
         }
     } break;
 
@@ -194,7 +194,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_objects_normal(player_ptr, rad);
+            detect_objects_normal(*player_ptr, rad);
         }
     } break;
 
@@ -411,7 +411,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_all(player_ptr, rad);
+            detect_all(*player_ptr, rad);
         }
     } break;
 

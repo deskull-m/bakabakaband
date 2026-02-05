@@ -246,8 +246,8 @@ bool ScrollReadExecutor::read()
         break;
 
     case SV_SCROLL_DETECT_GOLD: {
-        const auto detected_treasure = detect_treasure(this->player_ptr, DETECT_RAD_DEFAULT);
-        const auto detected_gold = detect_objects_gold(this->player_ptr, DETECT_RAD_DEFAULT);
+        const auto detected_treasure = detect_treasure(*this->player_ptr, DETECT_RAD_DEFAULT);
+        const auto detected_gold = detect_objects_gold(*this->player_ptr, DETECT_RAD_DEFAULT);
 
         if (detected_treasure || detected_gold) {
             this->ident = true;
@@ -256,20 +256,20 @@ bool ScrollReadExecutor::read()
     }
 
     case SV_SCROLL_DETECT_ITEM:
-        if (detect_objects_normal(this->player_ptr, DETECT_RAD_DEFAULT)) {
+        if (detect_objects_normal(*this->player_ptr, DETECT_RAD_DEFAULT)) {
             this->ident = true;
         }
         break;
 
     case SV_SCROLL_DETECT_TRAP:
-        if (detect_traps(this->player_ptr, DETECT_RAD_DEFAULT, this->known)) {
+        if (detect_traps(*this->player_ptr, DETECT_RAD_DEFAULT, this->known)) {
             this->ident = true;
         }
 
         break;
     case SV_SCROLL_DETECT_DOOR: {
-        const auto detected_doors = detect_doors(this->player_ptr, DETECT_RAD_DEFAULT);
-        const auto detected_stairs = detect_stairs(this->player_ptr, DETECT_RAD_DEFAULT);
+        const auto detected_doors = detect_doors(*this->player_ptr, DETECT_RAD_DEFAULT);
+        const auto detected_stairs = detect_stairs(*this->player_ptr, DETECT_RAD_DEFAULT);
 
         if (detected_doors || detected_stairs) {
             this->ident = true;
@@ -278,7 +278,7 @@ bool ScrollReadExecutor::read()
 
     break;
     case SV_SCROLL_DETECT_INVIS:
-        if (detect_monsters_invis(this->player_ptr, DETECT_RAD_DEFAULT)) {
+        if (detect_monsters_invis(*this->player_ptr, DETECT_RAD_DEFAULT)) {
             this->ident = true;
         }
 

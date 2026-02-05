@@ -147,34 +147,34 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_DETECT_GOLD: {
-        if (detect_treasure(player_ptr, detect_rad)) {
+        if (detect_treasure(*player_ptr, detect_rad)) {
             ident = true;
         }
-        if (detect_objects_gold(player_ptr, detect_rad)) {
+        if (detect_objects_gold(*player_ptr, detect_rad)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_ITEM: {
-        if (detect_objects_normal(player_ptr, detect_rad)) {
+        if (detect_objects_normal(*player_ptr, detect_rad)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_TRAP: {
-        if (detect_traps(player_ptr, detect_rad, known)) {
+        if (detect_traps(*player_ptr, detect_rad, known)) {
             ident = true;
         }
         break;
     }
 
     case SV_STAFF_DETECT_DOOR: {
-        if (detect_doors(player_ptr, detect_rad)) {
+        if (detect_doors(*player_ptr, detect_rad)) {
             ident = true;
         }
-        if (detect_stairs(player_ptr, detect_rad)) {
+        if (detect_stairs(*player_ptr, detect_rad)) {
             ident = true;
         }
         break;
@@ -188,7 +188,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_DETECT_EVIL: {
-        if (detect_monsters_evil(player_ptr, detect_rad)) {
+        if (detect_monsters_evil(*player_ptr, detect_rad)) {
             ident = true;
         }
         break;

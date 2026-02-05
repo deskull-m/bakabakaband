@@ -52,7 +52,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            detect_monsters_nonliving(player_ptr, rad);
+            detect_monsters_nonliving(*player_ptr, rad);
         }
     } break;
 
@@ -105,7 +105,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            detect_monsters_evil(player_ptr, rad);
+            detect_monsters_evil(*player_ptr, rad);
         }
     } break;
 

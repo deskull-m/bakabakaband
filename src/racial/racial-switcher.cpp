@@ -325,9 +325,9 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     switch (player_ptr->prace) {
     case PlayerRaceType::DWARF:
         msg_print(_("周囲を調べた。", "You examine your surroundings."));
-        (void)detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
-        (void)detect_doors(player_ptr, DETECT_RAD_DEFAULT);
-        (void)detect_stairs(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_traps(*player_ptr, DETECT_RAD_DEFAULT, true);
+        (void)detect_doors(*player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_stairs(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::HOBBIT:
         return create_ration(player_ptr);
@@ -429,9 +429,9 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     }
     case PlayerRaceType::NIBELUNG:
         msg_print(_("周囲を調査した。", "You examine your surroundings."));
-        (void)detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
-        (void)detect_doors(player_ptr, DETECT_RAD_DEFAULT);
-        (void)detect_stairs(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_traps(*player_ptr, DETECT_RAD_DEFAULT, true);
+        (void)detect_doors(*player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_stairs(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::DARK_ELF: {
         const auto dir = get_aim_dir(player_ptr);

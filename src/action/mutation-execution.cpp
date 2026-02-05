@@ -130,11 +130,11 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     case PlayerMutationType::SMELL_MET:
         stop_mouth(player_ptr);
-        (void)detect_treasure(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_treasure(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case PlayerMutationType::SMELL_MON:
         stop_mouth(player_ptr);
-        (void)detect_monsters_normal(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_monsters_normal(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case PlayerMutationType::BLINK:
         teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);

@@ -371,7 +371,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            detect_all(player_ptr, rad);
+            detect_all(*player_ptr, rad);
         }
     } break;
 

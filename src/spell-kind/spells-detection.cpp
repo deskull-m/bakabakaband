@@ -77,25 +77,26 @@ static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCh
 
 /*!
  * @brief プレイヤー周辺のトラップを感知する / Detect all traps on current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @param known 感知外範囲を超える警告フラグを立てる場合TRUEを返す
  * @return 効力があった場合TRUEを返す
  * @details
  * 吟遊詩人による感知についてはFALSEを返す
  */
-bool detect_traps(PlayerType *player_ptr, POSITION range, bool known)
+bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
 {
-    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::TRAP, known);
+    auto &player = static_cast<PlayerType &>(creature);
+    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, known);
     if (!known && detect) {
-        detect_feat_flag(*player_ptr, range, TerrainCharacteristics::TRAP, true);
+        detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, true);
     }
 
     if (known || detect) {
-        player_ptr->dtrap = true;
+        player.dtrap = true;
     }
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
         detect = false;
     }
 
@@ -108,15 +109,16 @@ bool detect_traps(PlayerType *player_ptr, POSITION range, bool known)
 
 /*!
  * @brief プレイヤー周辺のドアを感知する / Detect all doors on current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_doors(PlayerType *player_ptr, POSITION range)
+bool detect_doors(CreatureEntity &creature, POSITION range)
 {
-    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::DOOR, true);
+    auto &player = static_cast<PlayerType &>(creature);
+    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::DOOR, true);
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
         detect = false;
     }
     if (detect) {
@@ -128,15 +130,16 @@ bool detect_doors(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief プレイヤー周辺の階段を感知する / Detect all stairs on current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_stairs(PlayerType *player_ptr, POSITION range)
+bool detect_stairs(CreatureEntity &creature, POSITION range)
 {
-    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::STAIRS, true);
+    auto &player = static_cast<PlayerType &>(creature);
+    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::STAIRS, true);
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 0) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 0) {
         detect = false;
     }
     if (detect) {
@@ -148,15 +151,16 @@ bool detect_stairs(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief プレイヤー周辺の地形財宝を感知する / Detect any treasure on the current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_treasure(PlayerType *player_ptr, POSITION range)
+bool detect_treasure(CreatureEntity &creature, POSITION range)
 {
-    bool detect = detect_feat_flag(*player_ptr, range, TerrainCharacteristics::HAS_GOLD, true);
+    auto &player = static_cast<PlayerType &>(creature);
+    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::HAS_GOLD, true);
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 6) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 6) {
         detect = false;
     }
     if (detect) {
@@ -167,13 +171,14 @@ bool detect_treasure(PlayerType *player_ptr, POSITION range)
 }
 /*!
  * @brief プレイヤー周辺のアイテム財宝を感知する / Detect all "gold" objects on the current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_objects_gold(PlayerType *player_ptr, POSITION range)
+bool detect_objects_gold(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range2 /= 3;
@@ -191,25 +196,25 @@ bool detect_objects_gold(PlayerType *player_ptr, POSITION range)
         }
 
         const auto i_pos = item_ptr->get_position();
-        if (Grid::calc_distance(player_ptr->get_position(), i_pos) > range2) {
+        if (Grid::calc_distance(creature.get_position(), i_pos) > range2) {
             continue;
         }
 
         if (item_ptr->bi_key.tval() == ItemKindType::GOLD) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(*player_ptr, i_pos);
+            lite_spot(player, i_pos);
             detect = true;
         }
     }
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 6) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 6) {
         detect = false;
     }
     if (detect) {
         msg_print(_("財宝の存在を感じとった！", "You sense the presence of treasure!"));
     }
 
-    if (detect_monsters_string(player_ptr, range, "$")) {
+    if (detect_monsters_string(creature, range, "$")) {
         detect = true;
     }
 
@@ -218,13 +223,14 @@ bool detect_objects_gold(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief 通常のアイテムオブジェクトを感知する / Detect all "normal" objects on the current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_objects_normal(PlayerType *player_ptr, POSITION range)
+bool detect_objects_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     POSITION range2 = range;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range2 /= 3;
@@ -240,18 +246,18 @@ bool detect_objects_normal(PlayerType *player_ptr, POSITION range)
         }
 
         const auto i_pos = item_ptr->get_position();
-        if (Grid::calc_distance(player_ptr->get_position(), i_pos) > range2) {
+        if (Grid::calc_distance(creature.get_position(), i_pos) > range2) {
             continue;
         }
 
         if (item_ptr->bi_key.tval() != ItemKindType::GOLD) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(*player_ptr, i_pos);
+            lite_spot(player, i_pos);
             detect = true;
         }
     }
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 6) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 6) {
         detect = false;
     }
     if (detect) {
@@ -259,7 +265,7 @@ bool detect_objects_normal(PlayerType *player_ptr, POSITION range)
         msg_print(_("アイテムの存在を感じとった！", "You sense the presence of objects!"));
     }
 
-    if (detect_monsters_string(player_ptr, range, "!=?|/`")) {
+    if (detect_monsters_string(creature, range, "!=?|/`")) {
         detect = true;
     }
 
@@ -285,13 +291,14 @@ static bool is_object_magically(const ItemKindType tval)
 
 /*!
  * @brief 魔法効果のあるのアイテムオブジェクトを感知する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 1つ以上感知したか否か
  */
-bool detect_objects_magic(PlayerType *player_ptr, POSITION range)
+bool detect_objects_magic(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -303,7 +310,7 @@ bool detect_objects_magic(PlayerType *player_ptr, POSITION range)
         }
 
         const auto i_pos = item_ptr->get_position();
-        if (Grid::calc_distance(player_ptr->get_position(), i_pos) > range) {
+        if (Grid::calc_distance(creature.get_position(), i_pos) > range) {
             continue;
         }
 
@@ -311,7 +318,7 @@ bool detect_objects_magic(PlayerType *player_ptr, POSITION range)
         has_bonus |= item_ptr->to_h + item_ptr->to_d > 0;
         if (item_ptr->is_fixed_or_random_artifact() || item_ptr->is_ego() || is_object_magically(item_ptr->bi_key.tval()) || item_ptr->is_spell_book() || has_bonus) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(*player_ptr, i_pos);
+            lite_spot(player, i_pos);
             detect = true;
         }
     }
@@ -326,13 +333,14 @@ bool detect_objects_magic(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief 一般のモンスターを感知する / Detect all "normal" monsters on the current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_monsters_normal(PlayerType *player_ptr, POSITION range)
+bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -347,18 +355,18 @@ bool detect_monsters_normal(PlayerType *player_ptr, POSITION range)
 
         POSITION y = monster.y;
         POSITION x = monster.x;
-        if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
+        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
             continue;
         }
 
-        if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || player_ptr->see_inv) {
+        if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || player.see_inv) {
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player_ptr, i, false);
+            update_monster(&player, i, false);
             flag = true;
         }
     }
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 3) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 3) {
         flag = false;
     }
     if (flag) {
@@ -370,13 +378,14 @@ bool detect_monsters_normal(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief 不可視のモンスターを感知する / Detect all "invisible" monsters around the player
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_monsters_invis(PlayerType *player_ptr, POSITION range)
+bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -395,7 +404,7 @@ bool detect_monsters_invis(PlayerType *player_ptr, POSITION range)
         POSITION y = monster.y;
         POSITION x = monster.x;
 
-        if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
+        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
             continue;
         }
 
@@ -405,12 +414,12 @@ bool detect_monsters_invis(PlayerType *player_ptr, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player_ptr, i, false);
+            update_monster(&player, i, false);
             flag = true;
         }
     }
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 3) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 3) {
         flag = false;
     }
     if (flag) {
@@ -422,13 +431,14 @@ bool detect_monsters_invis(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief 邪悪なモンスターを感知する / Detect all "evil" monsters on current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_monsters_evil(PlayerType *player_ptr, POSITION range)
+bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -446,7 +456,7 @@ bool detect_monsters_evil(PlayerType *player_ptr, POSITION range)
         POSITION y = monster.y;
         POSITION x = monster.x;
 
-        if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
+        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
             continue;
         }
 
@@ -459,7 +469,7 @@ bool detect_monsters_evil(PlayerType *player_ptr, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player_ptr, i, false);
+            update_monster(&player, i, false);
             flag = true;
         }
     }
@@ -473,13 +483,14 @@ bool detect_monsters_evil(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief 無生命のモンスターを感知する(アンデッド、悪魔系を含む) / Detect all "nonliving", "undead" or "demonic" monsters on current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_monsters_nonliving(PlayerType *player_ptr, POSITION range)
+bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -495,7 +506,7 @@ bool detect_monsters_nonliving(PlayerType *player_ptr, POSITION range)
 
         POSITION y = monster.y;
         POSITION x = monster.x;
-        if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
+        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
             continue;
         }
 
@@ -505,7 +516,7 @@ bool detect_monsters_nonliving(PlayerType *player_ptr, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player_ptr, i, false);
+            update_monster(&player, i, false);
             flag = true;
         }
     }
@@ -519,13 +530,14 @@ bool detect_monsters_nonliving(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief 精神のあるモンスターを感知する / Detect all monsters it has mind on current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_monsters_mind(PlayerType *player_ptr, POSITION range)
+bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -543,7 +555,7 @@ bool detect_monsters_mind(PlayerType *player_ptr, POSITION range)
         POSITION y = monster.y;
         POSITION x = monster.x;
 
-        if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
+        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
             continue;
         }
 
@@ -553,7 +565,7 @@ bool detect_monsters_mind(PlayerType *player_ptr, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player_ptr, i, false);
+            update_monster(&player, i, false);
             flag = true;
         }
     }
@@ -567,14 +579,15 @@ bool detect_monsters_mind(PlayerType *player_ptr, POSITION range)
 
 /*!
  * @brief 該当シンボルのモンスターを感知する / Detect all (string) monsters on current panel
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @param Match 対応シンボルの混じったモンスター文字列(複数指定化)
  * @return 効力があった場合TRUEを返す
  */
-bool detect_monsters_string(PlayerType *player_ptr, POSITION range, concptr Match)
+bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Match)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
@@ -592,7 +605,7 @@ bool detect_monsters_string(PlayerType *player_ptr, POSITION range, concptr Matc
         POSITION y = monster.y;
         POSITION x = monster.x;
 
-        if (Grid::calc_distance(player_ptr->get_position(), { y, x }) > range) {
+        if (Grid::calc_distance(creature.get_position(), { y, x }) > range) {
             continue;
         }
 
@@ -602,12 +615,12 @@ bool detect_monsters_string(PlayerType *player_ptr, POSITION range, concptr Matc
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player_ptr, i, false);
+            update_monster(&player, i, false);
             flag = true;
         }
     }
 
-    if (music_singing(*player_ptr, MUSIC_DETECT) && get_singing_count(*player_ptr) > 3) {
+    if (music_singing(player, MUSIC_DETECT) && get_singing_count(player) > 3) {
         flag = false;
     }
     if (flag) {
@@ -619,32 +632,32 @@ bool detect_monsters_string(PlayerType *player_ptr, POSITION range, concptr Matc
 
 /*!
  * @brief 全感知処理 / Detect everything
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_all(PlayerType *player_ptr, POSITION range)
+bool detect_all(CreatureEntity &creature, POSITION range)
 {
     bool detect = false;
-    if (detect_traps(player_ptr, range, true)) {
+    if (detect_traps(creature, range, true)) {
         detect = true;
     }
-    if (detect_doors(player_ptr, range)) {
+    if (detect_doors(creature, range)) {
         detect = true;
     }
-    if (detect_stairs(player_ptr, range)) {
+    if (detect_stairs(creature, range)) {
         detect = true;
     }
-    if (detect_objects_gold(player_ptr, range)) {
+    if (detect_objects_gold(creature, range)) {
         detect = true;
     }
-    if (detect_objects_normal(player_ptr, range)) {
+    if (detect_objects_normal(creature, range)) {
         detect = true;
     }
-    if (detect_monsters_invis(player_ptr, range)) {
+    if (detect_monsters_invis(creature, range)) {
         detect = true;
     }
-    if (detect_monsters_normal(player_ptr, range)) {
+    if (detect_monsters_normal(creature, range)) {
         detect = true;
     }
     return detect;

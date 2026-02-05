@@ -25,7 +25,7 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
 {
     switch (spell) {
     case MindBerserkerType::DETECT_MANACE:
-        detect_monsters_mind(player_ptr, DETECT_RAD_DEFAULT);
+        detect_monsters_mind(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case MindBerserkerType::CHARGE: {
         if (player_ptr->riding) {

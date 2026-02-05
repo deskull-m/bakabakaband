@@ -55,17 +55,17 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
 
     switch (sval) {
     case SV_ROD_DETECT_TRAP: {
-        if (detect_traps(player_ptr, detect_rad, !dir)) {
+        if (detect_traps(*player_ptr, detect_rad, !dir)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_DETECT_DOOR: {
-        if (detect_doors(player_ptr, detect_rad)) {
+        if (detect_doors(*player_ptr, detect_rad)) {
             ident = true;
         }
-        if (detect_stairs(player_ptr, detect_rad)) {
+        if (detect_stairs(*player_ptr, detect_rad)) {
             ident = true;
         }
         break;
@@ -107,7 +107,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_DETECTION: {
-        detect_all(player_ptr, detect_rad);
+        detect_all(*player_ptr, detect_rad);
         ident = true;
         break;
     }

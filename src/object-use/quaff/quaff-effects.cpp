@@ -493,12 +493,12 @@ bool QuaffEffects::star_enlightenment()
     wiz_lite(this->player_ptr, false);
     (void)do_inc_stat(this->player_ptr, A_INT);
     (void)do_inc_stat(this->player_ptr, A_WIS);
-    (void)detect_traps(this->player_ptr, DETECT_RAD_DEFAULT, true);
-    (void)detect_doors(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_stairs(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_treasure(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_objects_gold(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_objects_normal(this->player_ptr, DETECT_RAD_DEFAULT);
+    (void)detect_traps(*this->player_ptr, DETECT_RAD_DEFAULT, true);
+    (void)detect_doors(*this->player_ptr, DETECT_RAD_DEFAULT);
+    (void)detect_stairs(*this->player_ptr, DETECT_RAD_DEFAULT);
+    (void)detect_treasure(*this->player_ptr, DETECT_RAD_DEFAULT);
+    (void)detect_objects_gold(*this->player_ptr, DETECT_RAD_DEFAULT);
+    (void)detect_objects_normal(*this->player_ptr, DETECT_RAD_DEFAULT);
     identify_pack(this->player_ptr);
     self_knowledge(*this->player_ptr);
     return true;

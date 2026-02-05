@@ -131,27 +131,25 @@ bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 
 void check_emission(CreatureEntity &creature)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     if (creature.tim_emission > 0) {
         if (creature.level > 29) {
-            map_area(player_ptr, creature.cur_lite);
+            map_area(creature, creature.cur_lite);
         }
         if (creature.level > 24) {
-            detect_traps(&player_ptr, creature.cur_lite, true);
+            detect_traps(creature, creature.cur_lite, true);
         }
         if (creature.level > 19) {
-            detect_monsters_evil(&player_ptr, creature.cur_lite);
+            detect_monsters_evil(creature, creature.cur_lite);
         }
     }
 }
 
 void check_demigod(CreatureEntity &creature)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     if (creature.mimic_form == MimicKindType::DEMIGOD) {
         const Dice dice(1, creature.level * 4);
 
-        dispel_evil(player_ptr, dice.roll());
+        dispel_evil(creature, dice.roll());
     }
 }
 
