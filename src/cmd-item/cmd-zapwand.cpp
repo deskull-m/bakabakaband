@@ -186,7 +186,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_HYPODYNAMIA: {
-        if (hypodynamic_bolt(player_ptr, dir, 80 + lev)) {
+        if (hypodynamic_bolt(*player_ptr, dir, 80 + lev)) {
             ident = true;
         }
         break;

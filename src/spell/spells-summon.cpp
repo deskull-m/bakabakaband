@@ -540,7 +540,7 @@ void cast_invoke_spirits(PlayerType *player_ptr, const Direction &dir)
     } else if (die < 71) {
         fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, Dice::roll(8 + ((plev - 5) / 4), 8));
     } else if (die < 76) {
-        hypodynamic_bolt(player_ptr, dir, 75);
+        hypodynamic_bolt(*player_ptr, dir, 75);
     } else if (die < 81) {
         fire_ball(*player_ptr, AttributeType::ELEC, dir, 30 + plev / 2, 2);
     } else if (die < 86) {
@@ -550,7 +550,7 @@ void cast_invoke_spirits(PlayerType *player_ptr, const Direction &dir)
     } else if (die < 96) {
         fire_ball(*player_ptr, AttributeType::FIRE, dir, 80 + plev, 3);
     } else if (die < 101) {
-        hypodynamic_bolt(player_ptr, dir, 100 + plev);
+        hypodynamic_bolt(*player_ptr, dir, 100 + plev);
     } else if (die < 104) {
         earthquake(*player_ptr, player_ptr->get_position(), 12);
     } else if (die < 106) {
