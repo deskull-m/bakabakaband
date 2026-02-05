@@ -271,7 +271,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
             return false;
         }
 
-        fetch_item(player_ptr, dir, plev * 15, false);
+        fetch_item(*player_ptr, dir, plev * 15, false);
         break;
     }
     case MindMindcrafterType::PSYCHIC_DRAIN: {

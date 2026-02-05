@@ -455,7 +455,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         break;
     }
     case MindNinjaType::CHAIN_HOOK:
-        (void)fetch_monster(player_ptr);
+        (void)fetch_monster(creature);
         break;
     case MindNinjaType::SMOKE_BALL: {
         const auto dir = get_aim_dir(creature);
