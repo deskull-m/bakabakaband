@@ -289,24 +289,24 @@ tl::optional<std::string> do_music_spell(PlayerType *player_ptr, SPELL_IDX spell
                 if (count >= 6) {
                     /* There are too many hidden treasure.  So... */
                     /* detect_treasure(rad); */
-                    detect_objects_gold(player_ptr, rad);
-                    detect_objects_normal(player_ptr, rad);
+                    detect_objects_gold(*player_ptr, rad);
+                    detect_objects_normal(*player_ptr, rad);
 
                     if (plev > 24 && count < 11) {
                         set_singing_count(*player_ptr, count + 1);
                     }
                 }
                 if (count >= 3) {
-                    detect_monsters_invis(player_ptr, rad);
-                    detect_monsters_normal(player_ptr, rad);
+                    detect_monsters_invis(*player_ptr, rad);
+                    detect_monsters_normal(*player_ptr, rad);
 
                     if (plev > 19 && count < A_MAX) {
                         set_singing_count(*player_ptr, count + 1);
                     }
                 }
-                detect_traps(player_ptr, rad, true);
-                detect_doors(player_ptr, rad);
-                detect_stairs(player_ptr, rad);
+                detect_traps(*player_ptr, rad, true);
+                detect_doors(*player_ptr, rad);
+                detect_stairs(*player_ptr, rad);
 
                 if (plev > 14 && count < 3) {
                     set_singing_count(*player_ptr, count + 1);

@@ -70,7 +70,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_nonliving(player_ptr, rad);
+            detect_monsters_nonliving(*player_ptr, rad);
         }
     } break;
 

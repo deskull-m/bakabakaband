@@ -156,16 +156,16 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         }
 
         if (plev < 30) {
-            b = detect_monsters_normal(player_ptr, DETECT_RAD_DEFAULT);
+            b = detect_monsters_normal(*player_ptr, DETECT_RAD_DEFAULT);
             if (plev > 14) {
-                b |= detect_monsters_invis(player_ptr, DETECT_RAD_DEFAULT);
+                b |= detect_monsters_invis(*player_ptr, DETECT_RAD_DEFAULT);
             }
             if (plev > 4) {
-                b |= detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
-                b |= detect_doors(player_ptr, DETECT_RAD_DEFAULT);
+                b |= detect_traps(*player_ptr, DETECT_RAD_DEFAULT, true);
+                b |= detect_doors(*player_ptr, DETECT_RAD_DEFAULT);
             }
         } else {
-            b = detect_all(player_ptr, DETECT_RAD_DEFAULT);
+            b = detect_all(*player_ptr, DETECT_RAD_DEFAULT);
         }
 
         if ((plev > 24) && (plev < 40)) {

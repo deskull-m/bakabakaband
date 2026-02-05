@@ -65,7 +65,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_normal(player_ptr, rad);
+            detect_monsters_normal(*player_ptr, rad);
         }
     } break;
 
@@ -97,9 +97,9 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_traps(player_ptr, rad, true);
-            detect_doors(player_ptr, rad);
-            detect_stairs(player_ptr, rad);
+            detect_traps(*player_ptr, rad, true);
+            detect_doors(*player_ptr, rad);
+            detect_stairs(*player_ptr, rad);
         }
     } break;
 
@@ -221,10 +221,10 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         if (cast) {
             map_area(*player_ptr, rad1);
-            detect_traps(player_ptr, rad2, true);
-            detect_doors(player_ptr, rad2);
-            detect_stairs(player_ptr, rad2);
-            detect_monsters_normal(player_ptr, rad2);
+            detect_traps(*player_ptr, rad2, true);
+            detect_doors(*player_ptr, rad2);
+            detect_stairs(*player_ptr, rad2);
+            detect_monsters_normal(*player_ptr, rad2);
         }
     } break;
 

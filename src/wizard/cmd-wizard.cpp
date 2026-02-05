@@ -163,7 +163,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_create_named_art(player_ptr);
         return true;
     case 'd':
-        detect_all(player_ptr, DETECT_RAD_ALL * 3);
+        detect_all(*player_ptr, DETECT_RAD_ALL * 3);
         return true;
     case 'D':
         wiz_dimension_door(*player_ptr);

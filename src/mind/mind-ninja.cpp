@@ -375,15 +375,15 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
             wiz_lite(player_ptr, true);
         }
 
-        detect_monsters_normal(player_ptr, DETECT_RAD_DEFAULT);
+        detect_monsters_normal(creature, DETECT_RAD_DEFAULT);
         if (plev > 4) {
-            detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
-            detect_doors(player_ptr, DETECT_RAD_DEFAULT);
-            detect_stairs(player_ptr, DETECT_RAD_DEFAULT);
+            detect_traps(creature, DETECT_RAD_DEFAULT, true);
+            detect_doors(creature, DETECT_RAD_DEFAULT);
+            detect_stairs(creature, DETECT_RAD_DEFAULT);
         }
 
         if (plev > 14) {
-            detect_objects_normal(player_ptr, DETECT_RAD_DEFAULT);
+            detect_objects_normal(creature, DETECT_RAD_DEFAULT);
         }
 
         break;

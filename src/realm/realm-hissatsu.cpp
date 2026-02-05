@@ -130,7 +130,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
 
     case 4:
         if (cast) {
-            detect_monsters_mind(player_ptr, DETECT_RAD_DEFAULT);
+            detect_monsters_mind(*player_ptr, DETECT_RAD_DEFAULT);
         }
         break;
 

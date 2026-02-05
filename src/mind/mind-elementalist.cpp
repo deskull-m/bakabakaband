@@ -457,8 +457,8 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
         return true;
     }
     case ElementSpells::MON_DETECT:
-        (void)detect_monsters_normal(player_ptr, DETECT_RAD_DEFAULT);
-        (void)detect_monsters_invis(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_monsters_normal(*player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_monsters_invis(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case ElementSpells::PERCEPT:
         return psychometry(player_ptr);
@@ -483,7 +483,7 @@ static bool cast_element_spell(PlayerType *player_ptr, SPELL_IDX spell_idx)
         return true;
     }
     case ElementSpells::MAG_DETECT:
-        (void)detect_objects_magic(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_objects_magic(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case ElementSpells::BALL_3RD: {
         project_length = 4;

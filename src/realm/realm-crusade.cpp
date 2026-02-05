@@ -71,7 +71,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_radius(rad);
         }
         if (cast) {
-            detect_monsters_evil(player_ptr, rad);
+            detect_monsters_evil(*player_ptr, rad);
         }
     } break;
 

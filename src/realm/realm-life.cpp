@@ -100,9 +100,9 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            detect_traps(player_ptr, rad, true);
-            detect_doors(player_ptr, rad);
-            detect_stairs(player_ptr, rad);
+            detect_traps(*player_ptr, rad, true);
+            detect_doors(*player_ptr, rad);
+            detect_stairs(*player_ptr, rad);
         }
     } break;
 
@@ -320,7 +320,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            detect_all(player_ptr, rad);
+            detect_all(*player_ptr, rad);
         }
     } break;
 

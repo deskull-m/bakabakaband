@@ -144,9 +144,9 @@ bool activate_judgement(CreatureEntity &creature, std::string_view name)
     msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
     take_hit(player, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("審判の宝石", "the Jewel of Judgement"));
 
-    (void)detect_traps(&player, DETECT_RAD_DEFAULT, true);
-    (void)detect_doors(&player, DETECT_RAD_DEFAULT);
-    (void)detect_stairs(&player, DETECT_RAD_DEFAULT);
+    (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
+    (void)detect_doors(creature, DETECT_RAD_DEFAULT);
+    (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
 
     if (input_check(_("帰還の力を使いますか？", "Activate recall? "))) {
         (void)recall_player(creature, randint0(21) + 15);
@@ -240,9 +240,8 @@ bool activate_dispel_good(CreatureEntity &creature)
 
 bool activate_all_monsters_detection(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)detect_monsters_invis(&player, 255);
-    (void)detect_monsters_normal(&player, 255);
+    (void)detect_monsters_invis(creature, 255);
+    (void)detect_monsters_normal(creature, 255);
     return true;
 }
 
@@ -250,8 +249,7 @@ bool activate_all_detection(CreatureEntity &creature)
 {
     msg_print(_("白く明るく輝いている...", "It glows bright white..."));
     msg_print(_("心にイメージが浮かんできた...", "An image forms in your mind..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    detect_all(&player, DETECT_RAD_DEFAULT);
+    detect_all(creature, DETECT_RAD_DEFAULT);
     return true;
 }
 
@@ -259,7 +257,7 @@ bool activate_extra_detection(CreatureEntity &creature)
 {
     msg_print(_("明るく輝いている...", "It glows brightly..."));
     auto &player = static_cast<PlayerType &>(creature);
-    detect_all(&player, DETECT_RAD_DEFAULT);
+    detect_all(creature, DETECT_RAD_DEFAULT);
     probing(creature);
     identify_fully(&player, false);
     return true;
@@ -441,8 +439,7 @@ bool activate_animate_dead(CreatureEntity &creature, ItemEntity *o_ptr)
 bool activate_detect_treasure(CreatureEntity &creature)
 {
     msg_print(_("金と銀に彩られている...", "It shines with gold and silver..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    return detect_treasure(&player, DETECT_RAD_DEFAULT);
+    return detect_treasure(creature, DETECT_RAD_DEFAULT);
 }
 
 bool activate_create_ammo(CreatureEntity &creature)

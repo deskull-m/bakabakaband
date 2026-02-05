@@ -366,10 +366,10 @@ bool cast_mirror_spell(PlayerType *player_ptr, MindMirrorMasterType spell)
     case MindMirrorMasterType::MIRROR_SEEING:
         tmp = grid.is_mirror() ? 4 : 0;
         if (plev + tmp > 4) {
-            detect_monsters_normal(player_ptr, DETECT_RAD_DEFAULT);
+            detect_monsters_normal(*player_ptr, DETECT_RAD_DEFAULT);
         }
         if (plev + tmp > 18) {
-            detect_monsters_invis(player_ptr, DETECT_RAD_DEFAULT);
+            detect_monsters_invis(*player_ptr, DETECT_RAD_DEFAULT);
         }
         if (plev + tmp > 28) {
             set_tim_esp(player_ptr, (TIME_EFFECT)plev, false);
