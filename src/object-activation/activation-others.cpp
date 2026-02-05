@@ -163,8 +163,7 @@ bool activate_telekinesis(CreatureEntity &creature, std::string_view name)
     }
 
     msg_format(_("%sを伸ばした。", "You stretched your %s."), name.data());
-    auto &player = static_cast<PlayerType &>(creature);
-    fetch_item(&player, dir, 500, true);
+    fetch_item(creature, dir, 500, true);
     return true;
 }
 

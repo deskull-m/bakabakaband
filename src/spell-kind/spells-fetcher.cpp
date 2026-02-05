@@ -27,15 +27,15 @@
 /*!
  * @brief アイテム引き寄せ処理 /
  * Fetch an item (teleport it right underneath the caster)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 魔法の発動方向
  * @param wgt 許容重量
  * @param require_los 射線の通りを要求するならばTRUE
  */
-void fetch_item(PlayerType *player_ptr, const Direction &dir, WEIGHT wgt, bool require_los)
+void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool require_los)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     if (!floor.get_grid(p_pos).o_idx_list.empty()) {
         msg_print(_("自分の足の下にある物は取れません。", "You can't fetch when you're already standing on something."));
         return;
@@ -104,20 +104,22 @@ void fetch_item(PlayerType *player_ptr, const Direction &dir, WEIGHT wgt, bool r
     floor.get_grid(p_pos).o_idx_list.add(floor, item_idx); /* 'move' it */
     item.set_position(p_pos);
 
-    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto item_name = describe_flavor(&player, item, OD_NAME_ONLY);
     msg_format(_("%s^があなたの足元に飛んできた。", "%s^ flies through the air to your feet."), item_name.data());
-    note_spot(*player_ptr, p_pos);
+    note_spot(player, p_pos);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
 }
 
-bool fetch_monster(PlayerType *player_ptr)
+bool fetch_monster(CreatureEntity &creature)
 {
-    const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto pos = target_set(player, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto m_idx = floor.get_grid(*pos).m_idx;
     if (!is_monster(m_idx)) {
         return false;
@@ -130,12 +132,12 @@ bool fetch_monster(PlayerType *player_ptr)
         return false;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (!projectable(floor, p_pos, *pos)) {
         return false;
     }
 
-    const auto m_name = monster_desc(*player_ptr, monster, 0);
+    const auto m_name = monster_desc(player, monster, 0);
     msg_print(_("{}を引き戻した。", "You pull back {}."), m_name);
     ProjectionPath path_g(floor, AngbandSystem::get_instance().get_max_range(), *pos, p_pos);
     Pos2D pos_target = *pos;
@@ -150,19 +152,19 @@ bool fetch_monster(PlayerType *player_ptr)
     floor.get_grid(pos_target).m_idx = m_idx;
     monster.set_position(pos_target);
     (void)set_monster_csleep(floor, m_idx, 0);
-    update_monster(player_ptr, m_idx, true);
-    lite_spot(*player_ptr, *pos);
-    lite_spot(*player_ptr, pos_target);
+    update_monster(&player, m_idx, true);
+    lite_spot(player, *pos);
+    lite_spot(player, pos_target);
     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
     if (monster.ml) {
-        if (!player_ptr->effects()->hallucination().is_hallucinated()) {
+        if (!player.effects()->hallucination().is_hallucinated()) {
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }
 
-        health_track(player_ptr, m_idx);
+        health_track(&player, m_idx);
     }
 
     return true;

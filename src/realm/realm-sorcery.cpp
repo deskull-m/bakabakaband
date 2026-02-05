@@ -381,7 +381,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            fetch_item(player_ptr, dir, weight, false);
+            fetch_item(*player_ptr, dir, weight, false);
         }
     } break;
 

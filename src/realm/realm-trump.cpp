@@ -153,7 +153,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fetch_item(player_ptr, dir, weight, false);
+            fetch_item(*player_ptr, dir, weight, false);
         }
     } break;
 

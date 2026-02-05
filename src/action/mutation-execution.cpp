@@ -104,7 +104,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         }
 
         msg_print(_("集中している...", "You concentrate..."));
-        fetch_item(player_ptr, dir, lvl * 10, true);
+        fetch_item(*player_ptr, dir, lvl * 10, true);
         return true;
     }
     case PlayerMutationType::VTELEPORT:
