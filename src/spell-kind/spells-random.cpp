@@ -451,7 +451,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 76) {
-        hypodynamic_bolt(player_ptr, dir, 75);
+        hypodynamic_bolt(*player_ptr, dir, 75);
         return;
     }
 
@@ -476,7 +476,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 101) {
-        hypodynamic_bolt(player_ptr, dir, 100 + plev);
+        hypodynamic_bolt(*player_ptr, dir, 100 + plev);
         return;
     }
 

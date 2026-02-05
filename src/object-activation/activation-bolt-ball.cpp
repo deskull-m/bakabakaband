@@ -105,8 +105,7 @@ bool activate_bolt_hypodynamia_1(CreatureEntity &creature, std::string_view name
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
-    hypodynamic_bolt(&player, dir, 100);
+    hypodynamic_bolt(creature, dir, 100);
     return true;
 }
 
@@ -118,8 +117,7 @@ bool activate_bolt_hypodynamia_2(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
-    hypodynamic_bolt(&player, dir, 120);
+    hypodynamic_bolt(creature, dir, 120);
     return true;
 }
 
@@ -132,7 +130,7 @@ bool activate_bolt_drain_1(CreatureEntity &creature)
 
     auto &player = static_cast<PlayerType &>(creature);
     for (int dummy = 0; dummy < 3; dummy++) {
-        if (hypodynamic_bolt(&player, dir, 50)) {
+        if (hypodynamic_bolt(creature, dir, 50)) {
             hp_player(&player, 50);
         }
     }
@@ -149,7 +147,7 @@ bool activate_bolt_drain_2(CreatureEntity &creature)
 
     auto &player = static_cast<PlayerType &>(creature);
     for (int dummy = 0; dummy < 3; dummy++) {
-        if (hypodynamic_bolt(&player, dir, 100)) {
+        if (hypodynamic_bolt(creature, dir, 100)) {
             hp_player(&player, 100);
         }
     }

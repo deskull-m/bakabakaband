@@ -200,7 +200,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_HYPODYNAMIA: {
-        if (hypodynamic_bolt(player_ptr, dir, 70 + 3 * lev / 2)) {
+        if (hypodynamic_bolt(*player_ptr, dir, 70 + 3 * lev / 2)) {
             ident = true;
         }
         break;

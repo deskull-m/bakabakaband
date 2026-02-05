@@ -286,7 +286,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            if (hypodynamic_bolt(player_ptr, dir, dam)) {
+            if (hypodynamic_bolt(*player_ptr, dir, dam)) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
 
@@ -417,7 +417,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
 
             for (i = 0; i < 3; i++) {
-                if (hypodynamic_bolt(player_ptr, dir, dam)) {
+                if (hypodynamic_bolt(*player_ptr, dir, dam)) {
                     hp_player(player_ptr, dam);
                 }
             }
@@ -461,7 +461,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            death_ray(player_ptr, dir, plev);
+            death_ray(*player_ptr, dir, plev);
         }
     } break;
 
