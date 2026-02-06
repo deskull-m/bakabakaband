@@ -59,10 +59,10 @@ samurai_slaying_type::samurai_slaying_type(MULTIPLY mult, const TrFlags &flags, 
 
 /*!
  * @nrief 焔霊 (焼棄スレイ)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
-static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type *samurai_slaying_ptr)
+static void hissatsu_burning_strike(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
     if (samurai_slaying_ptr->mode != HISSATSU_FIRE) {
         return;
@@ -70,7 +70,7 @@ static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK)) {
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_FIRE_MASK);
         }
 
@@ -84,7 +84,7 @@ static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type
                 samurai_slaying_ptr->mult = 70;
             }
 
-            if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
                 samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_FIRE);
             }
 
@@ -100,7 +100,7 @@ static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type
             samurai_slaying_ptr->mult = 50;
         }
 
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_FIRE);
         }
     } else if (samurai_slaying_ptr->mult < 25) {
@@ -114,10 +114,10 @@ static void hissatsu_burning_strike(PlayerType *player_ptr, samurai_slaying_type
  */
 /*!
  * @brief サーペンツタン (毒殺スレイ)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
-static void hissatsu_serpent_tongue(PlayerType *player_ptr, samurai_slaying_type *samurai_slaying_ptr)
+static void hissatsu_serpent_tongue(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
     if (samurai_slaying_ptr->mode != HISSATSU_POISON) {
         return;
@@ -125,7 +125,7 @@ static void hissatsu_serpent_tongue(PlayerType *player_ptr, samurai_slaying_type
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_POISON_MASK)) {
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_POISON_MASK);
         }
 
@@ -163,17 +163,17 @@ static void hissatsu_zanma_ken(samurai_slaying_type *samurai_slaying_ptr)
 
 /*!
  * @brief 破岩斬 (岩石スレイ)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
-static void hissatsu_rock_smash(PlayerType *player_ptr, samurai_slaying_type *samurai_slaying_ptr)
+static void hissatsu_rock_smash(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
     if (samurai_slaying_ptr->mode != HISSATSU_HAGAN) {
         return;
     }
 
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::HURT_ROCK)) {
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_ROCK);
         }
 
@@ -187,10 +187,10 @@ static void hissatsu_rock_smash(PlayerType *player_ptr, samurai_slaying_type *sa
 
 /*!
  * @brief 乱れ雪月花 (冷気スレイ)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
-static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying_type *samurai_slaying_ptr)
+static void hissatsu_midare_setsugetsuka(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
     if (samurai_slaying_ptr->mode != HISSATSU_COLD) {
         return;
@@ -198,7 +198,7 @@ static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK)) {
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_COLD_MASK);
         }
 
@@ -212,7 +212,7 @@ static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying
                 samurai_slaying_ptr->mult = 70;
             }
 
-            if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
                 samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
             }
         } else if (samurai_slaying_ptr->mult < 35) {
@@ -227,7 +227,7 @@ static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying
             samurai_slaying_ptr->mult = 50;
         }
 
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_COLD);
         }
     } else if (samurai_slaying_ptr->mult < 25) {
@@ -237,10 +237,10 @@ static void hissatsu_midare_setsugetsuka(PlayerType *player_ptr, samurai_slaying
 
 /*!
  * @brief 雷撃鷲爪斬
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
-static void hissatsu_lightning_eagle(PlayerType *player_ptr, samurai_slaying_type *samurai_slaying_ptr)
+static void hissatsu_lightning_eagle(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
     if (samurai_slaying_ptr->mode != HISSATSU_ELEC) {
         return;
@@ -248,7 +248,7 @@ static void hissatsu_lightning_eagle(PlayerType *player_ptr, samurai_slaying_typ
 
     /* Notice immunity */
     if (samurai_slaying_ptr->r_ptr->resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK)) {
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_resistance_flags.set(samurai_slaying_ptr->r_ptr->resistance_flags & RFR_EFF_IM_ELEC_MASK);
         }
 
@@ -267,12 +267,13 @@ static void hissatsu_lightning_eagle(PlayerType *player_ptr, samurai_slaying_typ
 
 /*!
  * @brief 赤流渦 (ペインバッカー)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
-static void hissatsu_bloody_maelstroem(PlayerType *player_ptr, samurai_slaying_type *samurai_slaying_ptr)
+static void hissatsu_bloody_maelstroem(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
-    const auto &player_cut = player_ptr->effects()->cut();
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &player_cut = player.effects()->cut();
     if ((samurai_slaying_ptr->mode == HISSATSU_SEKIRYUKA) && player_cut.is_cut() && samurai_slaying_ptr->m_ptr->has_living_flag()) {
         auto tmp = std::min<short>(100, std::max<short>(10, player_cut.current() / 10));
         if (samurai_slaying_ptr->mult < tmp) {
@@ -283,17 +284,17 @@ static void hissatsu_bloody_maelstroem(PlayerType *player_ptr, samurai_slaying_t
 
 /*!
  * @brief 慶雲鬼忍剣 (アンデッドスレイ)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param samurai_slaying_ptr スレイ計算に必要なパラメータ群への参照ポインタ
  */
-static void hissatsu_keiun_kininken(PlayerType *player_ptr, samurai_slaying_type *samurai_slaying_ptr)
+static void hissatsu_keiun_kininken(CreatureEntity &creature, samurai_slaying_type *samurai_slaying_ptr)
 {
     if (samurai_slaying_ptr->mode != HISSATSU_UNDEAD) {
         return;
     }
 
     if (samurai_slaying_ptr->m_ptr->has_undead_flag()) {
-        if (is_original_ap_and_seen(*player_ptr, *samurai_slaying_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *samurai_slaying_ptr->m_ptr)) {
             samurai_slaying_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
 
             if (samurai_slaying_ptr->mult == 10) {
@@ -320,19 +321,19 @@ static void hissatsu_keiun_kininken(PlayerType *player_ptr, samurai_slaying_type
  * @param mode 剣術のスレイ型ID
  * @return スレイの倍率(/10倍)
  */
-MULTIPLY mult_hissatsu(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster, combat_options mode)
+MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster, combat_options mode)
 {
     auto &monrace = monster.get_monrace();
     samurai_slaying_type tmp_slaying(mult, flags, monster, mode, monrace);
     samurai_slaying_type *samurai_slaying_ptr = &tmp_slaying;
-    hissatsu_burning_strike(player_ptr, samurai_slaying_ptr);
-    hissatsu_serpent_tongue(player_ptr, samurai_slaying_ptr);
+    hissatsu_burning_strike(creature, samurai_slaying_ptr);
+    hissatsu_serpent_tongue(creature, samurai_slaying_ptr);
     hissatsu_zanma_ken(samurai_slaying_ptr);
-    hissatsu_rock_smash(player_ptr, samurai_slaying_ptr);
-    hissatsu_midare_setsugetsuka(player_ptr, samurai_slaying_ptr);
-    hissatsu_lightning_eagle(player_ptr, samurai_slaying_ptr);
-    hissatsu_bloody_maelstroem(player_ptr, samurai_slaying_ptr);
-    hissatsu_keiun_kininken(player_ptr, samurai_slaying_ptr);
+    hissatsu_rock_smash(creature, samurai_slaying_ptr);
+    hissatsu_midare_setsugetsuka(creature, samurai_slaying_ptr);
+    hissatsu_lightning_eagle(creature, samurai_slaying_ptr);
+    hissatsu_bloody_maelstroem(creature, samurai_slaying_ptr);
+    hissatsu_keiun_kininken(creature, samurai_slaying_ptr);
 
     if (samurai_slaying_ptr->mult > 150) {
         samurai_slaying_ptr->mult = 150;
@@ -341,26 +342,27 @@ MULTIPLY mult_hissatsu(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &fla
     return samurai_slaying_ptr->mult;
 }
 
-void concentration(PlayerType *player_ptr)
+void concentration(CreatureEntity &creature)
 {
-    int max_csp = std::max(player_ptr->msp * 4, player_ptr->level * 5 + 5);
+    auto &player = static_cast<PlayerType &>(creature);
+    int max_csp = std::max(player.msp * 4, player.level * 5 + 5);
 
     if (total_friends) {
         msg_print(_("今はペットを操ることに集中していないと。", "Your pets demand all of your attention."));
         return;
     }
 
-    if (!CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::NONE)) {
+    if (!CreatureClass(creature).samurai_stance_is(SamuraiStanceType::NONE)) {
         msg_print(_("今は構えに集中している。", "You're already concentrating on your stance."));
         return;
     }
 
     msg_print(_("精神を集中して気合いを溜めた。", "You concentrate to charge your power."));
 
-    player_ptr->csp += player_ptr->msp / 2;
-    if (player_ptr->csp >= max_csp) {
-        player_ptr->csp = max_csp;
-        player_ptr->csp_frac = 0;
+    player.csp += player.msp / 2;
+    if (player.csp >= max_csp) {
+        player.csp = max_csp;
+        player.csp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
@@ -370,15 +372,16 @@ void concentration(PlayerType *player_ptr)
  * @brief 剣術家の型設定処理
  * @return 型を変化させたらTRUE、型の構え不能かキャンセルしたらFALSEを返す。
  */
-bool choose_samurai_stance(PlayerType *player_ptr)
+bool choose_samurai_stance(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     char choice;
 
-    if (cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_confused(player)) {
         return false;
     }
 
-    const auto effects = player_ptr->effects();
+    const auto effects = player.effects();
     if (effects->stun().is_stunned()) {
         msg_print(_("意識がはっきりとしない。", "You are not clear-headed"));
         return false;
@@ -392,7 +395,7 @@ bool choose_samurai_stance(PlayerType *player_ptr)
     screen_save();
     prt(_(" a) 型を崩す", " a) No Form"), 2, 20);
     for (auto i = 0U; i < samurai_stances.size(); i++) {
-        if (player_ptr->level >= samurai_stances[i].min_level) {
+        if (player.level >= samurai_stances[i].min_level) {
             const auto buf = format(_(" %c) %sの型    %s", " %c) Stance of %-12s  %s"), I2A(i + 1), samurai_stances[i].desc, samurai_stances[i].info);
             prt(buf, 3 + i, 20);
         }
@@ -409,8 +412,8 @@ bool choose_samurai_stance(PlayerType *player_ptr)
             screen_load();
             return false;
         } else if ((choice == 'a') || (choice == 'A')) {
-            if (player_ptr->action == ACTION_SAMURAI_STANCE) {
-                set_action(player_ptr, ACTION_NONE);
+            if (player.action == ACTION_SAMURAI_STANCE) {
+                set_action(&player, ACTION_NONE);
             } else {
                 msg_print(_("もともと構えていない。", "You are not in a special stance."));
             }
@@ -419,21 +422,21 @@ bool choose_samurai_stance(PlayerType *player_ptr)
         } else if ((choice == 'b') || (choice == 'B')) {
             new_stance = SamuraiStanceType::IAI;
             break;
-        } else if (((choice == 'c') || (choice == 'C')) && (player_ptr->level > 29)) {
+        } else if (((choice == 'c') || (choice == 'C')) && (player.level > 29)) {
             new_stance = SamuraiStanceType::FUUJIN;
             break;
-        } else if (((choice == 'd') || (choice == 'D')) && (player_ptr->level > 34)) {
+        } else if (((choice == 'd') || (choice == 'D')) && (player.level > 34)) {
             new_stance = SamuraiStanceType::KOUKIJIN;
             break;
-        } else if (((choice == 'e') || (choice == 'E')) && (player_ptr->level > 39)) {
+        } else if (((choice == 'e') || (choice == 'E')) && (player.level > 39)) {
             new_stance = SamuraiStanceType::MUSOU;
             break;
         }
     }
 
-    set_action(player_ptr, ACTION_SAMURAI_STANCE);
+    set_action(&player, ACTION_SAMURAI_STANCE);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (CreatureClass(*player_ptr).samurai_stance_is(new_stance)) {
+    if (CreatureClass(creature).samurai_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));
     } else {
         static constexpr auto flags_srf = {
@@ -442,7 +445,7 @@ bool choose_samurai_stance(PlayerType *player_ptr)
         };
         rfu.set_flags(flags_srf);
         msg_format(_("%sの型で構えた。", "You assume the %s stance."), samurai_stances[enum2i(new_stance) - 1].desc);
-        CreatureClass(*player_ptr).set_samurai_stance(new_stance);
+        CreatureClass(creature).set_samurai_stance(new_stance);
     }
 
     static constexpr auto flags = {
@@ -456,29 +459,30 @@ bool choose_samurai_stance(PlayerType *player_ptr)
 
 /*!
  * @brief 剣術家限定で、型等に応じて命中率を高める
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @return 上昇後の命中率
  */
-int calc_attack_quality(PlayerType *player_ptr, player_attack_type *pa_ptr)
+int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
-    int bonus = player_ptr->to_h[pa_ptr->hand] + o_ptr->to_h;
-    int chance = (player_ptr->skill_thn + (bonus * BTH_PLUS_ADJ));
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *o_ptr = player.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
+    int bonus = player.to_h[pa_ptr->hand] + o_ptr->to_h;
+    int chance = (player.skill_thn + (bonus * BTH_PLUS_ADJ));
     if (pa_ptr->mode == HISSATSU_IAI) {
         chance += 60;
     }
 
-    if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         chance += 150;
     }
 
-    if (player_ptr->sutemi) {
+    if (player.sutemi) {
         chance = std::max(chance * 3 / 2, chance + 60);
     }
 
-    auto it = player_ptr->virtues.find(Virtue::VALOUR);
-    if (it != player_ptr->virtues.end()) {
+    auto it = player.virtues.find(Virtue::VALOUR);
+    if (it != player.virtues.end()) {
         chance += (it->second / 10);
     }
 
@@ -487,17 +491,18 @@ int calc_attack_quality(PlayerType *player_ptr, player_attack_type *pa_ptr)
 
 /*!
  * @brief 峰打ちの効果処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void mineuchi(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     if (pa_ptr->mode != HISSATSU_MINEUCHI) {
         return;
     }
 
     pa_ptr->attack_damage = 0;
-    anger_monster(player_ptr, *pa_ptr->m_ptr);
+    anger_monster(&player, *pa_ptr->m_ptr);
 
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
@@ -505,7 +510,7 @@ void mineuchi(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    int tmp = (10 + randint1(15) + player_ptr->level / 5);
+    int tmp = (10 + randint1(15) + creature.level / 5);
     if (pa_ptr->m_ptr->get_remaining_stun()) {
         msg_format(_("%sはひどくもうろうとした。", "%s is more dazed."), pa_ptr->m_name);
         tmp /= 2;
@@ -513,25 +518,26 @@ void mineuchi(PlayerType *player_ptr, player_attack_type *pa_ptr)
         msg_format(_("%s はもうろうとした。", "%s is dazed."), pa_ptr->m_name);
     }
 
-    (void)set_monster_stunned(*player_ptr->current_floor_ptr, pa_ptr->g_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + tmp);
+    (void)set_monster_stunned(*creature.current_floor_ptr, pa_ptr->g_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + tmp);
 }
 
 /*!
  * @brief 無想による反撃処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void musou_counterattack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    const auto is_musou = CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
-    if ((!player_ptr->counter && !is_musou) || !monap_ptr->alive || player_ptr->is_dead() || !monap_ptr->m_ptr->ml || (player_ptr->csp <= 7)) {
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto is_musou = CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
+    if ((!player.counter && !is_musou) || !monap_ptr->alive || player.is_dead() || !monap_ptr->m_ptr->ml || (player.csp <= 7)) {
         return;
     }
 
-    const auto m_target_name = monster_desc(*player_ptr, *monap_ptr->m_ptr, 0);
-    player_ptr->csp -= 7;
+    const auto m_target_name = monster_desc(creature, *monap_ptr->m_ptr, 0);
+    player.csp -= 7;
     msg_format(_("%s^に反撃した！", "You counterattacked %s!"), m_target_name.data());
-    do_cmd_attack(player_ptr, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
+    do_cmd_attack(&player, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
     monap_ptr->fear = false;
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }

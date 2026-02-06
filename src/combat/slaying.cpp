@@ -208,7 +208,7 @@ int calc_attack_damage_with_slay(PlayerType *player_ptr, ItemEntity *o_ptr, int 
 
         CreatureClass pc(*player_ptr);
         if (pc.equals(PlayerClassType::SAMURAI)) {
-            mult = mult_hissatsu(player_ptr, mult, flags, monster, mode);
+            mult = mult_hissatsu(*player_ptr, mult, flags, monster, mode);
         }
 
         if (!pc.equals(PlayerClassType::SAMURAI) && (flags.has(TR_FORCE_WEAPON)) && (player_ptr->csp > (o_ptr->damage_dice.maxroll() / 5))) {
