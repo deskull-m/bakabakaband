@@ -233,7 +233,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         return true;
     case PlayerClassType::SAMURAI:
         if (command == -3) {
-            concentration(player_ptr);
+            concentration(*player_ptr);
             return true;
         }
 
@@ -242,11 +242,11 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         }
 
         if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
-            msg_print(_("武器を持たないといけません。", "You need to wield a weapon."));
+            msg_print(_("\u6b66\u5668\u3092\u6301\u305f\u306a\u3044\u3068\u3044\u3051\u307e\u305b\u3093\u3002", "You need to wield a weapon."));
             return false;
         }
 
-        if (!choose_samurai_stance(player_ptr)) {
+        if (!choose_samurai_stance(*player_ptr)) {
             return false;
         }
 

@@ -538,7 +538,7 @@ void MonsterAttackPlayer::postprocess_monster_blows()
     SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
     spell_hex.store_vengeful_damage(this->get_damage);
     spell_hex.eyes_on_eyes(this->m_idx, this->get_damage);
-    musou_counterattack(this->player_ptr, this);
+    musou_counterattack(*this->player_ptr, this);
     this->process_thief_teleport(spell_hex);
     auto &monrace = this->m_ptr->get_monrace();
     if (this->player_ptr->is_dead() && (monrace.r_deaths < MAX_SHORT) && !this->player_ptr->current_floor_ptr->inside_arena) {

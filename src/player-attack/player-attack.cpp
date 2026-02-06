@@ -494,7 +494,7 @@ static void apply_actual_attack(
     calc_attack_damage(player_ptr, pa_ptr, do_quake, vorpal_cut, vorpal_chance);
     apply_damage_bonus(player_ptr, pa_ptr);
     apply_damage_negative_effect(pa_ptr, is_zantetsu_nullified, is_ej_nullified);
-    mineuchi(player_ptr, pa_ptr);
+    mineuchi(*player_ptr, pa_ptr);
 
     const auto is_death_scythe = o_ptr->bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE);
     const auto is_berserker = CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER);
@@ -554,7 +554,7 @@ void exe_player_attack_to_monster(PlayerType *player_ptr, POSITION y, POSITION x
     (void)set_monster_csleep(*player_ptr->current_floor_ptr, pa_ptr->m_idx, 0);
     angband_strcpy(pa_ptr->m_name, monster_desc(*player_ptr, *pa_ptr->m_ptr, 0), sizeof(pa_ptr->m_name));
 
-    int chance = calc_attack_quality(player_ptr, pa_ptr);
+    int chance = calc_attack_quality(*player_ptr, pa_ptr);
     auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto is_zantetsu_nullified = o_ptr->is_specific_artifact(FixedArtifactId::ZANTETSU) && pa_ptr->r_ptr->symbol_char_is_any_of("j");
     const auto is_ej_nullified = o_ptr->is_specific_artifact(FixedArtifactId::EXCALIBUR_J) && pa_ptr->r_ptr->symbol_char_is_any_of("S");
