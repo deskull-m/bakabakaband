@@ -1,9 +1,10 @@
 #pragma once
 #include "player-status/player-status-base.h"
 
+class CreatureEntity;
 class PlayerInfravision : public PlayerStatusBase {
 public:
-    PlayerInfravision(PlayerType *player_ptr);
+    PlayerInfravision(CreatureEntity &creature);
 
 protected:
     void set_locals() override;

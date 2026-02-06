@@ -1,9 +1,10 @@
 #pragma once
 #include "player-status/player-status-base.h"
 
+class CreatureEntity;
 class PlayerSpeed : public PlayerStatusBase {
 public:
-    PlayerSpeed(PlayerType *player_ptr);
+    PlayerSpeed(CreatureEntity &creature);
 
 protected:
     void set_locals() override;

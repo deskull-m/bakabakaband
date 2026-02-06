@@ -1,14 +1,17 @@
 #pragma once
 
 #include "artifact/fixed-art-types.h"
+#include "combat/martial-arts-style.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/trc-types.h"
 #include "player-ability/player-ability-types.h"
 #include "player-info/class-specific-data.h"
 #include "player/player-personality-types.h"
+#include "player/player-skill.h"
 #include "system/angband.h"
 #include "util/flag-group.h"
 #include "util/point-2d.h"
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -266,6 +269,8 @@ public:
     short stat_cur[A_MAX]{}; /*!< 現在の基本能力値 / Current "natural" stat values */
     int16_t stat_use[A_MAX]{}; /*!< 現在の修正済み能力値 / Current modified stats */
     int16_t stat_top[A_MAX]{}; /*!< 最大の修正済み能力値 / Maximal modified stats */
+    int16_t stat_add[A_MAX]{}; /* Modifiers to stat values */
+    int16_t stat_index[A_MAX]{}; /* Indexes into stat tables */
 
     // 徳関連
     std::map<Virtue, int16_t> virtues; /*!< 徳の値 / Virtue values */
@@ -499,6 +504,12 @@ public:
     POSITION old_lite{}; /* Radius of lite (if any) */
 
     BIT_FLAGS special_attack{};
+
+    SUB_EXP spell_exp[64]{}; /* Proficiency of spells */
+    std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp{}; /* Proficiency of weapons */
+    std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp_max{}; /* Maximum proficiency of weapons */
+    std::map<PlayerSkillKindType, SUB_EXP> skill_exp{}; /* Proficiency of misc. skill */
+    MartialArtsStyleType martial_arts_style{ MartialArtsStyleType::TRADITIONAL }; /* Martial arts fighting style */
 
 protected:
     std::shared_ptr<TimedEffects> timed_effects; /*!< 時限効果管理オブジェクト */

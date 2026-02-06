@@ -200,34 +200,33 @@ BIT_FLAGS player_flags_brand_cold(CreatureEntity &creature)
  */
 BIT_FLAGS get_player_flags(CreatureEntity &creature, tr_type tr_flag)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     switch (tr_flag) {
     case TR_STR:
-        return PlayerStrength(&player).get_all_flags();
+        return PlayerStrength(creature).get_all_flags();
     case TR_INT:
-        return PlayerIntelligence(&player).get_all_flags();
+        return PlayerIntelligence(creature).get_all_flags();
     case TR_WIS:
-        return PlayerWisdom(&player).get_all_flags();
+        return PlayerWisdom(creature).get_all_flags();
     case TR_DEX:
-        return PlayerDexterity(&player).get_all_flags();
+        return PlayerDexterity(creature).get_all_flags();
     case TR_CON:
-        return PlayerConstitution(&player).get_all_flags();
+        return PlayerConstitution(creature).get_all_flags();
     case TR_CHR:
-        return PlayerCharisma(&player).get_all_flags();
+        return PlayerCharisma(creature).get_all_flags();
     case TR_MAGIC_MASTERY:
         return has_magic_mastery(creature);
     case TR_FORCE_WEAPON:
         return check_equipment_flags(creature, tr_flag);
     case TR_STEALTH:
-        return PlayerStealth(&player).get_all_flags();
+        return PlayerStealth(creature).get_all_flags();
     case TR_SEARCH:
         return 0;
     case TR_INFRA:
-        return PlayerInfravision(&player).get_all_flags();
+        return PlayerInfravision(creature).get_all_flags();
     case TR_TUNNEL:
         return 0;
     case TR_SPEED:
-        return PlayerSpeed(&player).get_all_flags();
+        return PlayerSpeed(creature).get_all_flags();
     case TR_BLOWS:
         return 0;
     case TR_CHAOTIC:

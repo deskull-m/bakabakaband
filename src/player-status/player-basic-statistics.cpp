@@ -15,8 +15,8 @@
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
-PlayerBasicStatistics::PlayerBasicStatistics(PlayerType *player_ptr)
-    : PlayerStatusBase(player_ptr)
+PlayerBasicStatistics::PlayerBasicStatistics(CreatureEntity &creature)
+    : PlayerStatusBase(creature)
 {
 }
 
@@ -38,7 +38,7 @@ int16_t PlayerBasicStatistics::modification_value()
 int16_t PlayerBasicStatistics::get_value()
 {
     this->set_locals();
-    return this->player_ptr->stat_index[(int)this->ability_type];
+    return this->creature.stat_index[(int)this->ability_type];
 }
 
 /*!
@@ -50,7 +50,7 @@ int16_t PlayerBasicStatistics::get_value()
  */
 int16_t PlayerBasicStatistics::race_bonus()
 {
-    return CreatureRace(this->player_ptr).get_info()->r_adj[this->ability_type];
+    return CreatureRace(&this->creature).get_info()->r_adj[this->ability_type];
 }
 
 /*!
@@ -62,7 +62,7 @@ int16_t PlayerBasicStatistics::race_bonus()
  */
 int16_t PlayerBasicStatistics::class_bonus()
 {
-    const auto &player_class = class_info.at(this->player_ptr->pclass);
+    const auto &player_class = class_info.at(this->creature.pclass);
     return player_class.c_adj[this->ability_type];
 }
 
@@ -75,14 +75,14 @@ int16_t PlayerBasicStatistics::class_bonus()
  */
 int16_t PlayerBasicStatistics::personality_bonus()
 {
-    const player_personality *a_ptr = &personality_info[this->player_ptr->ppersonality];
+    const player_personality *a_ptr = &personality_info[this->creature.ppersonality];
     return a_ptr->a_adj[this->ability_type];
 }
 
 /*!
  * @brief ステータス更新処理
  * @details
- * * player_ptrのステータスを更新する
+ * * creatureのステータスを更新する
  */
 void PlayerBasicStatistics::update_value()
 {
@@ -95,16 +95,16 @@ void PlayerBasicStatistics::update_value()
 /*!
  * @brief ステータス最大値更新処理
  * @details
- * * player_ptrのステータス最大値を更新する
+ * * creatureのステータス最大値を更新する
  * * 更新対象はset_locals()で設定したstatus_typeで決定される
  */
 void PlayerBasicStatistics::update_top_status()
 {
     int status = (int)this->ability_type;
-    int top = modify_stat_value(this->player_ptr->stat_max[status], this->player_ptr->stat_add[status]);
+    int top = modify_stat_value(this->creature.stat_max[status], this->creature.stat_add[status]);
 
-    if (this->player_ptr->stat_top[status] != top) {
-        this->player_ptr->stat_top[status] = (int16_t)top;
+    if (this->creature.stat_top[status] != top) {
+        this->creature.stat_top[status] = (int16_t)top;
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
@@ -127,18 +127,18 @@ int16_t PlayerBasicStatistics::set_exception_use_status(int16_t value)
 /*!
  * @brief ステータス現在値更新処理
  * @details
- * * player_ptrのステータス現在値を更新する
+ * * creatureのステータス現在値を更新する
  * * 更新対象はset_locals()で設定したstatus_typeで決定される
  */
 void PlayerBasicStatistics::update_use_status()
 {
     int status = (int)this->ability_type;
-    int16_t use = modify_stat_value(this->player_ptr->stat_cur[status], this->player_ptr->stat_add[status]);
+    int16_t use = modify_stat_value(this->creature.stat_cur[status], this->creature.stat_add[status]);
 
     use = this->set_exception_use_status(use);
 
-    if (this->player_ptr->stat_use[status] != use) {
-        this->player_ptr->stat_use[status] = (int16_t)use;
+    if (this->creature.stat_use[status] != use) {
+        this->creature.stat_use[status] = (int16_t)use;
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
@@ -148,7 +148,7 @@ void PlayerBasicStatistics::update_use_status()
 /*!
  * @brief ステータス内部値更新処理
  * @details
- * * player_ptrのステータス内部値を更新する
+ * * creatureのステータス内部値を更新する
  * * ステータス内部値は実際の数値処理に使われる0-37の整数値
  * * 更新対象はset_locals()で設定したstatus_typeで決定される
  */
@@ -159,19 +159,19 @@ void PlayerBasicStatistics::update_index_status()
     // 新形式: 30-400 -> 0-37のインデックスに変換
     // 30-180: 0-15 (旧3-18相当)
     // 190-400: 16-37 (旧18/10-18/220相当)
-    if (this->player_ptr->stat_use[status] <= 180) {
-        index = (this->player_ptr->stat_use[status] - 30) / 10;
-    } else if (this->player_ptr->stat_use[status] <= 400) {
-        index = 15 + (this->player_ptr->stat_use[status] - 180) / 10;
+    if (this->creature.stat_use[status] <= 180) {
+        index = (this->creature.stat_use[status] - 30) / 10;
+    } else if (this->creature.stat_use[status] <= 400) {
+        index = 15 + (this->creature.stat_use[status] - 180) / 10;
     } else {
         index = 37;
     }
 
-    if (this->player_ptr->stat_index[status] == index) {
+    if (this->creature.stat_index[status] == index) {
         return;
     }
 
-    this->player_ptr->stat_index[status] = (int16_t)index;
+    this->creature.stat_index[status] = (int16_t)index;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {
         StatusRecalculatingFlag::MP,

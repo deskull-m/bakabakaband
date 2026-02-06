@@ -28,8 +28,8 @@
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerSpeed::PlayerSpeed(PlayerType *player_ptr)
-    : PlayerStatusBase(player_ptr)
+PlayerSpeed::PlayerSpeed(CreatureEntity &creature)
+    : PlayerStatusBase(creature)
 {
 }
 
@@ -55,7 +55,7 @@ void PlayerSpeed::set_locals()
  */
 int16_t PlayerSpeed::race_bonus()
 {
-    return CreatureRace(this->player_ptr).speed();
+    return CreatureRace(&this->creature).speed();
 }
 
 /*!
@@ -69,43 +69,45 @@ int16_t PlayerSpeed::race_bonus()
  */
 int16_t PlayerSpeed::class_bonus()
 {
+    auto player_ptr = static_cast<PlayerType *>(&this->creature);
+
     int16_t bonus = 0;
-    CreatureClass pc(*this->player_ptr);
-    CreatureRace pr(this->player_ptr);
+    CreatureClass pc(this->creature);
+    CreatureRace pr(&this->creature);
     auto has_speed = pr.equals(PlayerRaceType::KLACKON);
     has_speed |= pr.equals(PlayerRaceType::SPRITE);
-    has_speed |= this->player_ptr->ppersonality == PERSONALITY_MUNCHKIN;
+    has_speed |= this->creature.ppersonality == PERSONALITY_MUNCHKIN;
     if (pc.equals(PlayerClassType::NINJA)) {
-        if (heavy_armor(this->player_ptr)) {
-            bonus -= (this->player_ptr->level) / 10;
+        if (heavy_armor(player_ptr)) {
+            bonus -= (this->creature.level) / 10;
         } else if (pc.has_ninja_speed()) {
             bonus += 3;
             if (!has_speed) {
-                bonus += (this->player_ptr->level) / 10;
+                bonus += (this->creature.level) / 10;
             }
         }
     }
 
-    if ((pc.equals(PlayerClassType::MONK) || pc.equals(PlayerClassType::FORCETRAINER)) && !heavy_armor(this->player_ptr)) {
+    if ((pc.equals(PlayerClassType::MONK) || pc.equals(PlayerClassType::FORCETRAINER)) && !heavy_armor(player_ptr)) {
         if (!has_speed) {
-            bonus += (this->player_ptr->level) / 10;
+            bonus += (this->creature.level) / 10;
         }
     }
 
     if (pc.equals(PlayerClassType::BERSERKER)) {
         bonus += 2;
-        if (this->player_ptr->level > 29) {
+        if (this->creature.level > 29) {
             bonus++;
         }
 
-        if (this->player_ptr->level > 39) {
+        if (this->creature.level > 39) {
             bonus++;
         }
-        if (this->player_ptr->level > 44) {
+        if (this->creature.level > 44) {
             bonus++;
         }
 
-        if (this->player_ptr->level > 49) {
+        if (this->creature.level > 49) {
             bonus++;
         }
     }
@@ -121,8 +123,8 @@ int16_t PlayerSpeed::class_bonus()
  */
 int16_t PlayerSpeed::personality_bonus()
 {
-    CreatureRace pr(this->player_ptr);
-    if (this->player_ptr->ppersonality != PERSONALITY_MUNCHKIN) {
+    CreatureRace pr(&this->creature);
+    if (this->creature.ppersonality != PERSONALITY_MUNCHKIN) {
         return 0;
     }
 
@@ -130,7 +132,7 @@ int16_t PlayerSpeed::personality_bonus()
         return 0;
     }
 
-    return this->player_ptr->level / 10 + 5;
+    return this->creature.level / 10 + 5;
 }
 
 /*!
@@ -143,20 +145,21 @@ int16_t PlayerSpeed::personality_bonus()
  */
 int16_t PlayerSpeed::special_weapon_set_value()
 {
+    auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    if (!has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND) || !has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) || !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
         return bonus;
     }
 
-    if (set_quick_and_tiny(this->player_ptr)) {
+    if (set_quick_and_tiny(player_ptr)) {
         bonus += 7;
     }
 
-    if (set_icing_and_twinkle(this->player_ptr)) {
+    if (set_icing_and_twinkle(player_ptr)) {
         bonus += 5;
     }
 
-    if (set_anubis_and_chariot(this->player_ptr)) {
+    if (set_anubis_and_chariot(player_ptr)) {
         bonus += 5;
     }
 
@@ -189,26 +192,27 @@ int16_t PlayerSpeed::equipments_bonus()
  */
 int16_t PlayerSpeed::time_effect_bonus()
 {
+    auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    if (is_fast(this->player_ptr)) {
+    if (is_fast(player_ptr)) {
         bonus += 10;
     }
 
-    if (this->player_ptr->effects()->deceleration().is_slow()) {
+    if (this->creature.effects()->deceleration().is_slow()) {
         bonus -= 10;
     }
 
-    if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        if (SpellHex(dynamic_cast<CreatureEntity &>(*this->player_ptr)).is_spelling_specific(HEX_SHOCK_CLOAK)) {
+    if (PlayerRealm(dynamic_cast<PlayerType *>(&this->creature)).is_realm_hex()) {
+        if (SpellHex(this->creature).is_spelling_specific(HEX_SHOCK_CLOAK)) {
             bonus += 3;
         }
     }
 
-    if (this->player_ptr->food >= PY_FOOD_MAX) {
+    if (this->creature.food >= PY_FOOD_MAX) {
         bonus -= 10;
     }
 
-    if (this->player_ptr->lightspeed) {
+    if (this->creature.lightspeed) {
         bonus += 999;
     }
 
@@ -224,7 +228,7 @@ int16_t PlayerSpeed::time_effect_bonus()
 int16_t PlayerSpeed::stance_bonus()
 {
     int16_t bonus = 0;
-    if (CreatureClass(*player_ptr).monk_stance_is(MonkStanceType::SUZAKU)) {
+    if (CreatureClass(this->creature).monk_stance_is(MonkStanceType::SUZAKU)) {
         bonus += 10;
     }
 
@@ -244,7 +248,7 @@ int16_t PlayerSpeed::stance_bonus()
 int16_t PlayerSpeed::mutation_bonus()
 {
     int16_t bonus = 0;
-    const auto &muta = this->player_ptr->muta;
+    const auto &muta = this->creature.muta;
     if (muta.has(PlayerMutationType::XTRA_FAT)) {
         bonus -= 2;
     }
@@ -276,16 +280,16 @@ int16_t PlayerSpeed::mutation_bonus()
  */
 int16_t PlayerSpeed::riding_bonus()
 {
-    const auto &monster = (this->player_ptr)->current_floor_ptr->m_list[this->player_ptr->riding];
+    const auto &monster = (&this->creature)->current_floor_ptr->m_list[this->creature.riding];
     int16_t speed = monster.speed;
     int16_t bonus = 0;
-    if (!this->player_ptr->riding) {
+    if (!this->creature.riding) {
         return 0;
     }
 
     if (monster.speed > STANDARD_SPEED) {
-        const auto skill_exp = this->player_ptr->skill_exp[PlayerSkillKindType::RIDING];
-        bonus = (int16_t)((speed - STANDARD_SPEED) * (skill_exp * 3 + this->player_ptr->level * 160L - 10000L) / (22000L));
+        const auto skill_exp = this->creature.skill_exp[PlayerSkillKindType::RIDING];
+        bonus = (int16_t)((speed - STANDARD_SPEED) * (skill_exp * 3 + this->creature.level * 160L - 10000L) / (22000L));
         if (bonus < 0) {
             bonus = 0;
         }
@@ -293,7 +297,7 @@ int16_t PlayerSpeed::riding_bonus()
         bonus = speed - 110;
     }
 
-    bonus += (this->player_ptr->skill_exp[PlayerSkillKindType::RIDING] + this->player_ptr->level * 160L) / 3200;
+    bonus += (this->creature.skill_exp[PlayerSkillKindType::RIDING] + this->creature.level * 160L) / 3200;
     if (monster.is_accelerated()) {
         bonus += 10;
     }
@@ -313,17 +317,18 @@ int16_t PlayerSpeed::riding_bonus()
  */
 int16_t PlayerSpeed::inventory_weight_bonus()
 {
+    auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    auto weight = calc_inventory_weight(this->player_ptr);
-    if (this->player_ptr->riding) {
-        const auto &monster = this->player_ptr->current_floor_ptr->m_list[this->player_ptr->riding];
+    auto weight = calc_inventory_weight(player_ptr);
+    if (this->creature.riding) {
+        const auto &monster = this->creature.current_floor_ptr->m_list[this->creature.riding];
         const auto &monrace = monster.get_monrace();
         auto count = 1500 + monrace.level * 25;
         if (weight > count) {
             bonus -= ((weight - count) / (count / 5));
         }
     } else {
-        auto count = calc_weight_limit(this->player_ptr);
+        auto count = calc_weight_limit(player_ptr);
         if (weight > count) {
             bonus -= ((weight - count) / (count / 5));
         }
@@ -341,7 +346,7 @@ int16_t PlayerSpeed::inventory_weight_bonus()
 int16_t PlayerSpeed::action_bonus()
 {
     int16_t bonus = 0;
-    if (this->player_ptr->action == ACTION_SEARCH) {
+    if (this->creature.action == ACTION_SEARCH) {
         bonus -= 10;
     }
 
@@ -373,7 +378,7 @@ BIT_FLAGS PlayerSpeed::equipments_flags(tr_type check_flag)
  */
 int16_t PlayerSpeed::set_exception_bonus(int16_t value)
 {
-    if (!this->player_ptr->riding) {
+    if (!this->creature.riding) {
         return value;
     }
 

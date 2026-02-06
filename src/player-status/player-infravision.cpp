@@ -7,8 +7,8 @@
 #include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 
-PlayerInfravision::PlayerInfravision(PlayerType *player_ptr)
-    : PlayerStatusBase(player_ptr)
+PlayerInfravision::PlayerInfravision(CreatureEntity &creature)
+    : PlayerStatusBase(creature)
 {
 }
 
@@ -32,7 +32,7 @@ void PlayerInfravision::set_locals()
  */
 int16_t PlayerInfravision::race_bonus()
 {
-    return CreatureRace(this->player_ptr).get_info()->infra;
+    return CreatureRace(&this->creature).get_info()->infra;
 }
 
 /*!
@@ -44,7 +44,7 @@ int16_t PlayerInfravision::race_bonus()
 int16_t PlayerInfravision::mutation_bonus()
 {
     int16_t bonus = 0;
-    if (this->player_ptr->muta.has(PlayerMutationType::INFRAVIS)) {
+    if (this->creature.muta.has(PlayerMutationType::INFRAVIS)) {
         bonus += 3;
     }
 
@@ -60,7 +60,7 @@ int16_t PlayerInfravision::mutation_bonus()
 int16_t PlayerInfravision::time_effect_bonus()
 {
     int16_t bonus = 0;
-    if (this->player_ptr->tim_infra) {
+    if (this->creature.tim_infra) {
         bonus += 3;
     }
 
