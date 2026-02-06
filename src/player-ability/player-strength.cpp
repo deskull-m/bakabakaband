@@ -14,8 +14,8 @@
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerStrength::PlayerStrength(PlayerType *player_ptr)
-    : PlayerBasicStatistics(player_ptr)
+PlayerStrength::PlayerStrength(CreatureEntity &creature)
+    : PlayerBasicStatistics(creature)
 {
 }
 
@@ -36,7 +36,7 @@ int16_t PlayerStrength::race_bonus()
 {
     int16_t result = PlayerBasicStatistics::race_bonus();
 
-    result += CreatureRace(this->player_ptr).additional_strength();
+    result += CreatureRace(&this->creature).additional_strength();
 
     return result;
 }
@@ -54,8 +54,8 @@ int16_t PlayerStrength::time_effect_bonus()
 {
     int16_t result = 0;
 
-    if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*this->player_ptr));
+    if (PlayerRealm(dynamic_cast<PlayerType *>(&this->creature)).is_realm_hex()) {
+        SpellHex spell_hex(this->creature);
         if (spell_hex.is_spelling_specific(HEX_XTRA_MIGHT)) {
             result += 4;
         }
@@ -64,7 +64,7 @@ int16_t PlayerStrength::time_effect_bonus()
         }
     }
 
-    if (this->player_ptr->tsuyoshi) {
+    if (this->creature.tsuyoshi) {
         result += 4;
     }
 
@@ -84,7 +84,7 @@ int16_t PlayerStrength::stance_bonus()
 {
     int16_t result = 0;
 
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(this->creature);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         result += 5;
     }
@@ -111,16 +111,16 @@ int16_t PlayerStrength::mutation_bonus()
 {
     int16_t result = 0;
 
-    if (this->player_ptr->muta.any()) {
-        if (this->player_ptr->muta.has(PlayerMutationType::HYPER_STR)) {
+    if (this->creature.muta.any()) {
+        if (this->creature.muta.has(PlayerMutationType::HYPER_STR)) {
             result += 4;
         }
 
-        if (this->player_ptr->muta.has(PlayerMutationType::PUNY)) {
+        if (this->creature.muta.has(PlayerMutationType::PUNY)) {
             result -= 4;
         }
 
-        if (this->player_ptr->muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
+        if (this->creature.muta.has(PlayerMutationType::WEAK_LOWER_BODY)) {
             result += 2;
         }
     }

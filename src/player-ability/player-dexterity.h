@@ -2,10 +2,10 @@
 
 #include "player-status/player-basic-statistics.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerDexterity : public PlayerBasicStatistics {
 public:
-    PlayerDexterity(PlayerType *player_ptr);
+    PlayerDexterity(CreatureEntity &creature);
 
 protected:
     void set_locals() override;

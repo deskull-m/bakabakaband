@@ -2,10 +2,10 @@
 
 #include "player-status/player-basic-statistics.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerCharisma : public PlayerBasicStatistics {
 public:
-    PlayerCharisma(PlayerType *player_ptr);
+    PlayerCharisma(CreatureEntity &creature);
 
     BIT_FLAGS get_all_flags() override;
     BIT_FLAGS get_bad_flags() override;

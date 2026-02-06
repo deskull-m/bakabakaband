@@ -201,12 +201,12 @@ int calc_inventory_weight(PlayerType *player_ptr)
 
 static void update_ability_scores(PlayerType *player_ptr)
 {
-    PlayerStrength player_str(player_ptr);
-    PlayerIntelligence player_int(player_ptr);
-    PlayerWisdom player_wis(player_ptr);
-    PlayerDexterity player_dex(player_ptr);
-    PlayerConstitution player_con(player_ptr);
-    PlayerCharisma player_chr(player_ptr);
+    PlayerStrength player_str(*player_ptr);
+    PlayerIntelligence player_int(*player_ptr);
+    PlayerWisdom player_wis(*player_ptr);
+    PlayerDexterity player_dex(*player_ptr);
+    PlayerConstitution player_con(*player_ptr);
+    PlayerCharisma player_chr(*player_ptr);
     PlayerBasicStatistics *player_stats[] = { &player_str, &player_int, &player_wis, &player_dex, &player_con, &player_chr };
     for (auto i = 0; i < A_MAX; ++i) {
         player_ptr->stat_add[i] = player_stats[i]->modification_value();
@@ -328,9 +328,9 @@ static void update_bonuses(PlayerType *player_ptr)
         player_ptr->damage_dice_bonus[i].sides = 0;
     }
 
-    static_cast<CreatureEntity &>(*player_ptr).set_speed(PlayerSpeed(player_ptr).get_value());
-    player_ptr->see_infra = PlayerInfravision(player_ptr).get_value();
-    player_ptr->skill_stl = PlayerStealth(player_ptr).get_value();
+    static_cast<CreatureEntity &>(*player_ptr).set_speed(PlayerSpeed(*player_ptr).get_value());
+    player_ptr->see_infra = PlayerInfravision(*player_ptr).get_value();
+    player_ptr->skill_stl = PlayerStealth(*player_ptr).get_value();
     player_ptr->skill_dis = calc_disarming(player_ptr);
     player_ptr->skill_dev = calc_device_ability(player_ptr);
     player_ptr->skill_sav = calc_saving_throw(player_ptr);

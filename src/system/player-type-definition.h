@@ -115,12 +115,6 @@ public:
     BIT_FLAGS spell_forgotten2{}; /* bit mask of spells learned but forgotten */
     std::vector<int> spell_order_learned{}; /* order spells learned */
 
-    SUB_EXP spell_exp[64]{}; /* Proficiency of spells */
-    std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp{}; /* Proficiency of weapons */
-    std::map<ItemKindType, std::array<SUB_EXP, 64>> weapon_exp_max{}; /* Maximum proficiency of weapons */
-    std::map<PlayerSkillKindType, SUB_EXP> skill_exp{}; /* Proficiency of misc. skill */
-    MartialArtsStyleType martial_arts_style{ MartialArtsStyleType::TRADITIONAL }; /* Martial arts fighting style */
-
     int player_hp[PY_MAX_LEVEL]{};
     std::string last_message = ""; /* Last message on death or retirement */
     char history[4][60]{}; /* Textual "history" for the Player */
@@ -198,9 +192,6 @@ public:
     /*** Extracted fields ***/
 
     bool suppress_multi_reward{}; /*!< 複数レベルアップ時のパトロンからの報酬多重受け取りを防止 */
-
-    int16_t stat_add[A_MAX]{}; /* Modifiers to stat values */
-    int16_t stat_index[A_MAX]{}; /* Indexes into stat tables */
 
     Dice damage_dice_bonus[2]{}; /* Extra damage dice num/sides */
 
