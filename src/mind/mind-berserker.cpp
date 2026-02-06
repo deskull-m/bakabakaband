@@ -73,7 +73,7 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
         earthquake(*player_ptr, player_ptr->get_position(), 8 + randint0(5));
         return true;
     case MindBerserkerType::MASSACRE:
-        massacre(player_ptr);
+        massacre(*player_ptr);
         return true;
     default:
         msg_print(_("なに？", "Zap?"));

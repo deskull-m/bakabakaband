@@ -457,10 +457,10 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
     bool fear = false;
     bool mdeath = false;
     if (can_attack_with_main_hand(*player_ptr)) {
-        exe_player_attack_to_monster(player_ptr, y, x, &fear, &mdeath, 0, mode);
+        exe_player_attack_to_monster(*player_ptr, y, x, &fear, &mdeath, 0, mode);
     }
     if (can_attack_with_sub_hand(*player_ptr) && !mdeath) {
-        exe_player_attack_to_monster(player_ptr, y, x, &fear, &mdeath, 1, mode);
+        exe_player_attack_to_monster(*player_ptr, y, x, &fear, &mdeath, 1, mode);
     }
 
     if (!mdeath) {
