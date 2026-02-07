@@ -401,7 +401,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         grid.info &= ~(CAVE_GLOW);
 
         /* Hack -- Forget "boring" grids */
-        if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER) || has_element_resist(player_ptr, ElementRealmType::DARKNESS, 1)) {
+        if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER) || has_element_resist(*player_ptr, ElementRealmType::DARKNESS, 1)) {
             /* Forget */
             grid.info &= ~(CAVE_MARK);
             note_spot(*player_ptr, pos);

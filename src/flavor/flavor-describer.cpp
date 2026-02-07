@@ -268,7 +268,7 @@ static std::string describe_ammo_detail(PlayerType *player_ptr, const ItemEntity
     tmul = tmul * (100 + static_cast<int>(adj_str_td[player_ptr->stat_index[A_STR]]) - 128);
     avgdam *= tmul;
     avgdam /= (100 * 10);
-    avgdam = boost_concentration_damage(player_ptr, avgdam);
+    avgdam = boost_concentration_damage(*player_ptr, avgdam);
 
     if (avgdam < 0) {
         avgdam = 0;

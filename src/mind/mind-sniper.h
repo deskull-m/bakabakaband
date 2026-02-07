@@ -2,11 +2,11 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class MonsterEntity;
-class PlayerType;
-void reset_concentration(PlayerType *player_ptr, bool msg);
-void display_snipe_list(PlayerType *player_ptr);
-MULTIPLY calc_snipe_damage_with_slay(PlayerType *player_ptr, MULTIPLY mult, const MonsterEntity &monster, SPELL_IDX snipe_type);
-void do_cmd_snipe(PlayerType *player_ptr);
-void do_cmd_snipe_browse(PlayerType *player_ptr);
-int boost_concentration_damage(PlayerType *player_ptr, int tdam);
+void reset_concentration(CreatureEntity &creature, bool msg);
+void display_snipe_list(CreatureEntity &creature);
+MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, const MonsterEntity &monster, SPELL_IDX snipe_type);
+void do_cmd_snipe(CreatureEntity &creature);
+void do_cmd_snipe_browse(CreatureEntity &creature);
+int boost_concentration_damage(CreatureEntity &creature, int tdam);

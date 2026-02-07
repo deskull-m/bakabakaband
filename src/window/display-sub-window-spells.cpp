@@ -43,7 +43,7 @@ static void display_spell_list(PlayerType *player_ptr)
     }
 
     if (pc.equals(PlayerClassType::SNIPER)) {
-        display_snipe_list(player_ptr);
+        display_snipe_list(*player_ptr);
         return;
     }
 

@@ -131,14 +131,14 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     }
     case PlayerClassType::WARRIOR_MAGE:
         if (command == -3) {
-            return comvert_hp_to_mp(player_ptr);
+            return comvert_hp_to_mp(*player_ptr);
         } else if (command == -4) {
-            return comvert_mp_to_hp(player_ptr);
+            return comvert_mp_to_hp(*player_ptr);
         }
 
         return true;
     case PlayerClassType::CHAOS_WARRIOR:
-        return confusing_light(player_ptr);
+        return confusing_light(*player_ptr);
     case PlayerClassType::MONK:
         if (none_bits(empty_hands(player_ptr, true), EMPTY_HAND_MAIN)) {
             msg_print(_("素手じゃないとできません。", "You need to be barehanded."));
@@ -286,7 +286,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             return clear_mind(player_ptr);
         }
         if (command == -4) {
-            return switch_element_execution(player_ptr);
+            return switch_element_execution(*player_ptr);
         }
         return true;
     default:

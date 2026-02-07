@@ -159,13 +159,13 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         if (pc.can_browse()) {
             do_cmd_mind_browse(player_ptr);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
-            do_cmd_element_browse(player_ptr);
+            do_cmd_element_browse(*player_ptr);
         } else if (pc.equals(PlayerClassType::SMITH)) {
-            do_cmd_kaji(player_ptr, true);
+            do_cmd_kaji(*player_ptr, true);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
             do_cmd_magic_eater(player_ptr, true, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
-            do_cmd_snipe_browse(player_ptr);
+            do_cmd_snipe_browse(*player_ptr);
         } else {
             do_cmd_browse(player_ptr);
         }

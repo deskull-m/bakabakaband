@@ -130,7 +130,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->dustrobe) {
-        (void)set_dustrobe(player_ptr, player_ptr->dustrobe - 1, true);
+        (void)set_dustrobe(*player_ptr, player_ptr->dustrobe - 1, true);
     }
 
     if (player_ptr->tim_pass_wall) {
