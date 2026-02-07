@@ -295,7 +295,7 @@ void do_cmd_use(PlayerType *player_ptr)
         exe_fire(player_ptr, i_idx, player_ptr->inventory[INVEN_BOW].get(), SP_NONE);
         break;
     default:
-        exe_activate(player_ptr, i_idx);
+        exe_activate(*player_ptr, i_idx);
         break;
     }
 }
@@ -318,5 +318,5 @@ void do_cmd_activate(PlayerType *player_ptr)
         return;
     }
 
-    exe_activate(player_ptr, i_idx);
+    exe_activate(*player_ptr, i_idx);
 }
