@@ -478,7 +478,7 @@ static MULTIPLY calc_shot_damage_with_slay(
 
     /* Sniper */
     if (snipe_type) {
-        mult = calc_snipe_damage_with_slay(player_ptr, mult, monster, snipe_type);
+        mult = calc_snipe_damage_with_slay(*player_ptr, mult, monster, snipe_type);
     }
 
     /* Return the total damage */
@@ -772,7 +772,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                     auto base_dam = tdam; //!< @note 補正前の与えるダメージ(無傷、全ての耐性など)
 
                     /* Get extra damage from concentration */
-                    tdam = boost_concentration_damage(player_ptr, tdam);
+                    tdam = boost_concentration_damage(*player_ptr, tdam);
 
                     /* Handle unseen monster */
                     if (!visible) {
@@ -986,7 +986,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
     }
 
     /* Sniper - Loose his/her concentration after any shot */
-    reset_concentration(player_ptr, false);
+    reset_concentration(*player_ptr, false);
 }
 
 /*!

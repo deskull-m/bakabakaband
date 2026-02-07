@@ -289,7 +289,7 @@ bool get_player_realms(PlayerType *player_ptr)
     pr.reset();
 
     if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        const auto realm = select_element_realm(player_ptr);
+        const auto realm = select_element_realm(*player_ptr);
         if (!realm) {
             return false;
         }

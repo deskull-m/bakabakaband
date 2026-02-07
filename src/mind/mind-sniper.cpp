@@ -141,14 +141,14 @@ void SniperData::reset_concentration_flag()
  * @brief スナイパーの集中度加算
  * @return 集中度を加算した場合は true、そうでなければ false
  */
-static bool snipe_concentrate(PlayerType *player_ptr)
+static bool snipe_concentrate(CreatureEntity &creature)
 {
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     if (!sniper_data) {
         return false;
     }
 
-    if (sniper_data->concent < (2 + (player_ptr->level + 5) / 10)) {
+    if (sniper_data->concent < (2 + (creature.level + 5) / 10)) {
         sniper_data->concent++;
     }
 
@@ -162,9 +162,9 @@ static bool snipe_concentrate(PlayerType *player_ptr)
  * スナイパーではない、もしくは集中度がすでに0であればなにもしない。
  * @param msg TRUEならばメッセージを表示する
  */
-void reset_concentration(PlayerType *player_ptr, bool msg)
+void reset_concentration(CreatureEntity &creature, bool msg)
 {
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     if (!sniper_data) {
         return;
     }
@@ -182,9 +182,9 @@ void reset_concentration(PlayerType *player_ptr, bool msg)
  * @param tdam 算出中のダメージ
  * @return 集中度修正を加えたダメージ
  */
-int boost_concentration_damage(PlayerType *player_ptr, int tdam)
+int boost_concentration_damage(CreatureEntity &creature, int tdam)
 {
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     const auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
     tdam = tdam * (10 + sniper_concent) / 10;
@@ -195,12 +195,12 @@ int boost_concentration_damage(PlayerType *player_ptr, int tdam)
 /*!
  * @brief スナイパーの技能リストを表示する
  */
-void display_snipe_list(PlayerType *player_ptr)
+void display_snipe_list(CreatureEntity &creature)
 {
     int i;
     TERM_LEN y = 1;
     TERM_LEN x = 1;
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
     snipe_power spell;
 
     /* Display a list of spells */
@@ -208,7 +208,7 @@ void display_snipe_list(PlayerType *player_ptr)
     put_str(_("名前", "Name"), y, x + 5);
     put_str(_("Lv   MP", "Lv Mana"), y, x + 35);
 
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
 
     for (i = 0; i < MAX_SNIPE_POWERS; i++) {
         /* Access the available spell */
@@ -245,13 +245,14 @@ void display_snipe_list(PlayerType *player_ptr)
  * when you run it. It's probably easy to fix but I haven't tried,\n
  * sorry.\n
  */
-static int get_snipe_power(PlayerType *player_ptr, COMMAND_CODE *sn, bool only_browse)
+static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only_browse)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     COMMAND_CODE i;
     int num = 0;
     TERM_LEN y = 1;
     TERM_LEN x = 20;
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
     concptr p = _("射撃術", "power");
     snipe_power spell;
     bool flag, redraw;
@@ -261,7 +262,7 @@ static int get_snipe_power(PlayerType *player_ptr, COMMAND_CODE *sn, bool only_b
     /* Assume cancelled */
     *sn = (-1);
 
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
 
     /* Repeat previous command */
     /* Get the spell, if available */
@@ -383,7 +384,7 @@ static int get_snipe_power(PlayerType *player_ptr, COMMAND_CODE *sn, bool only_b
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player_ptr);
+    handle_stuff(&player);
 
     /* Abort if needed */
     if (!flag) {
@@ -406,12 +407,13 @@ static int get_snipe_power(PlayerType *player_ptr, COMMAND_CODE *sn, bool only_b
  * @param m_ptr 目標となるモンスターの構造体参照ポインタ
  * @return スレイの倍率(/10倍)
  */
-MULTIPLY calc_snipe_damage_with_slay(PlayerType *player_ptr, MULTIPLY mult, const MonsterEntity &monster, SPELL_IDX snipe_type)
+MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, const MonsterEntity &monster, SPELL_IDX snipe_type)
 {
     auto &monrace = monster.get_monrace();
-    bool seen = is_seen(player_ptr, monster);
+    auto &player = static_cast<PlayerType &>(creature);
+    bool seen = is_seen(&player, monster);
 
-    auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     const auto sniper_concent = sniper_data ? sniper_data->concent : 0;
 
     switch (snipe_type) {
@@ -539,9 +541,10 @@ MULTIPLY calc_snipe_damage_with_slay(PlayerType *player_ptr, MULTIPLY mult, cons
  * @param spell 発動する特殊技能のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
-static bool cast_sniper_spell(PlayerType *player_ptr, int spell)
+static bool cast_sniper_spell(CreatureEntity &creature, int spell)
 {
-    auto *o_ptr = player_ptr->inventory[INVEN_BOW].get();
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *o_ptr = player.inventory[INVEN_BOW].get();
     if (o_ptr->bi_key.tval() != ItemKindType::BOW) {
         msg_print(_("弓を装備していない！", "You wield no bow!"));
         return false;
@@ -551,10 +554,10 @@ static bool cast_sniper_spell(PlayerType *player_ptr, int spell)
     switch (spell) {
     case 0: /* Concentration */
         sound(SoundKind::ZAP);
-        if (!snipe_concentrate(player_ptr)) {
+        if (!snipe_concentrate(creature)) {
             return false;
         }
-        PlayerEnergy(player_ptr).set_player_turn_energy(100);
+        PlayerEnergy(&player).set_player_turn_energy(100);
         return true;
     case 1:
         snipe_type = SP_LITE;
@@ -606,34 +609,35 @@ static bool cast_sniper_spell(PlayerType *player_ptr, int spell)
     }
 
     command_cmd = 'f';
-    do_cmd_fire(player_ptr, snipe_type);
+    do_cmd_fire(&player, snipe_type);
 
-    return player_ptr->is_fired;
+    return player.is_fired;
 }
 
 /*!
  * @brief スナイパー技能コマンドのメインルーチン /
  */
-void do_cmd_snipe(PlayerType *player_ptr)
+void do_cmd_snipe(CreatureEntity &creature)
 {
-    if (cmd_limit_confused(*player_ptr)) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (cmd_limit_confused(player)) {
         return;
     }
 
-    if (cmd_limit_image(*player_ptr)) {
+    if (cmd_limit_image(player)) {
         return;
     }
 
-    if (cmd_limit_stun(*player_ptr)) {
+    if (cmd_limit_stun(player)) {
         return;
     }
 
     COMMAND_CODE n = 0;
-    if (!get_snipe_power(player_ptr, &n, false)) {
+    if (!get_snipe_power(creature, &n, false)) {
         return;
     }
 
-    if (!cast_sniper_spell(player_ptr, n)) {
+    if (!cast_sniper_spell(creature, n)) {
         return;
     }
 
@@ -653,14 +657,14 @@ void do_cmd_snipe(PlayerType *player_ptr)
 /*!
  * @brief スナイパー技能コマンドの表示 /
  */
-void do_cmd_snipe_browse(PlayerType *player_ptr)
+void do_cmd_snipe_browse(CreatureEntity &creature)
 {
     COMMAND_CODE n = 0;
 
     screen_save();
 
     while (true) {
-        if (!get_snipe_power(player_ptr, &n, true)) {
+        if (!get_snipe_power(creature, &n, true)) {
             screen_load();
             return;
         }

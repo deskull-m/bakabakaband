@@ -342,7 +342,7 @@ void switch_class_racial(PlayerType *player_ptr, rc_type *rc_ptr)
         rpi.fail = 10;
         rc_ptr->add_power(rpi, RC_IDX_CLASS_0);
 
-        switch_element_racial(player_ptr, rc_ptr);
+        switch_element_racial(*player_ptr, rc_ptr);
         break;
     default:
         break;

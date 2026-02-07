@@ -422,7 +422,7 @@ void process_player(PlayerType *player_ptr)
 
         auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
         if (player_ptr->energy_use && sniper_data && sniper_data->reset_concent) {
-            reset_concentration(player_ptr, true);
+            reset_concentration(*player_ptr, true);
         }
 
         if (player_ptr->leaving) {

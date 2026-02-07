@@ -530,7 +530,7 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
     case AttributeType::WOUNDS:
         return effect_monster_wounds(em_ptr);
     case AttributeType::E_GENOCIDE:
-        return effect_monster_elemental_genocide(player_ptr, em_ptr);
+        return effect_monster_elemental_genocide(*player_ptr, em_ptr);
     case AttributeType::VOID_MAGIC:
         return effect_monster_void(player_ptr, em_ptr);
     case AttributeType::ABYSS:

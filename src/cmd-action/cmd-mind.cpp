@@ -307,7 +307,7 @@ static bool switch_mind_class(PlayerType *player_ptr, cm_type *cm_ptr)
             cm_ptr->on_mirror = true;
         }
 
-        cm_ptr->cast = cast_mirror_spell(player_ptr, i2enum<MindMirrorMasterType>(cm_ptr->n));
+        cm_ptr->cast = cast_mirror_spell(*player_ptr, i2enum<MindMirrorMasterType>(cm_ptr->n));
         return true;
     case MindKindType::NINJUTSU:
         cm_ptr->cast = cast_ninja_spell(*player_ptr, i2enum<MindNinjaType>(cm_ptr->n));
