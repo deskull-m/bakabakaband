@@ -33,6 +33,7 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "player/process-name.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -49,8 +50,9 @@
 #include "world/world.h"
 #include <sstream>
 
-static void display_initial_birth_message(PlayerType *player_ptr)
+static void display_initial_birth_message(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     term_clear();
     display_player_name(player_ptr, true);
     put_str(_("性別        :", "Sex         :"), 3, 1);
@@ -62,12 +64,13 @@ static void display_initial_birth_message(PlayerType *player_ptr)
 
 /*!
  * @prief 性別選択画面でヘルプを表示させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param c 入力したコマンド
  * @details 他の関数名と被りそうだったので少し眺め
  */
-static void display_help_on_sex_select(PlayerType *player_ptr, char c)
+static void display_help_on_sex_select(CreatureEntity &creature, char c)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (c == '?') {
         do_cmd_help(player_ptr);
     } else if (c == '=') {
@@ -99,10 +102,10 @@ static std::string birth_sex_label(int cs)
 
 /*!
  * @brief プレイヤーの性別選択を行う / Player sex
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return やり直すならFALSE、それ以外はTRUE
  */
-static bool get_player_sex(PlayerType *player_ptr)
+static bool get_player_sex(CreatureEntity &creature)
 {
     int k = -1;
     int cs = 0;
@@ -161,26 +164,27 @@ static bool get_player_sex(PlayerType *player_ptr)
             k = -1;
         }
 
-        display_help_on_sex_select(player_ptr, c);
+        display_help_on_sex_select(creature, c);
     }
 
-    player_ptr->psex = i2enum<player_sex>(k);
-    sp_ptr = &sex_info[player_ptr->psex];
+    creature.psex = i2enum<player_sex>(k);
+    sp_ptr = &sex_info[creature.psex];
     c_put_str(TERM_L_BLUE, sp_ptr->title, 3, 15);
     return true;
 }
 
-static bool let_player_select_race(PlayerType *player_ptr)
+static bool let_player_select_race(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     clear_from(10);
-    player_ptr->prace = PlayerRaceType::HUMAN;
+    creature.prace = PlayerRaceType::HUMAN;
     while (true) {
         if (!get_player_race(player_ptr)) {
             return false;
         }
 
         clear_from(10);
-        display_wrap_around(race_explanations[enum2i(player_ptr->prace)], 74, 12, 3);
+        display_wrap_around(race_explanations[enum2i(creature.prace)], 74, 12, 3);
         if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
         }
@@ -192,17 +196,18 @@ static bool let_player_select_race(PlayerType *player_ptr)
     return true;
 }
 
-static bool let_player_select_class(PlayerType *player_ptr)
+static bool let_player_select_class(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     clear_from(10);
-    player_ptr->pclass = PlayerClassType::WARRIOR;
+    creature.pclass = PlayerClassType::WARRIOR;
     while (true) {
         if (!get_player_class(player_ptr)) {
             return false;
         }
 
         clear_from(10);
-        display_wrap_around(class_explanations[enum2i(player_ptr->pclass)], 74, 12, 3);
+        display_wrap_around(class_explanations[enum2i(creature.pclass)], 74, 12, 3);
 
         if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
@@ -214,16 +219,17 @@ static bool let_player_select_class(PlayerType *player_ptr)
     return true;
 }
 
-static bool let_player_select_personality(PlayerType *player_ptr)
+static bool let_player_select_personality(CreatureEntity &creature)
 {
-    player_ptr->ppersonality = PERSONALITY_ORDINARY;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    creature.ppersonality = PERSONALITY_ORDINARY;
     while (true) {
         if (!get_player_personality(player_ptr)) {
             return false;
         }
 
         clear_from(10);
-        display_wrap_around(personality_explanations[player_ptr->ppersonality], 74, 12, 3);
+        display_wrap_around(personality_explanations[creature.ppersonality], 74, 12, 3);
 
         if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
@@ -235,15 +241,16 @@ static bool let_player_select_personality(PlayerType *player_ptr)
     return true;
 }
 
-static bool let_player_select_patron(PlayerType *player_ptr)
+static bool let_player_select_patron(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 混沌の戦士以外はパトロンを選択しない
-    if (player_ptr->pclass != PlayerClassType::CHAOS_WARRIOR) {
-        player_ptr->patron = randnum0<short>(MAX_PATRON);
+    if (creature.pclass != PlayerClassType::CHAOS_WARRIOR) {
+        creature.patron = randnum0<short>(MAX_PATRON);
         return true;
     }
 
-    player_ptr->patron = 0; // 初期値
+    creature.patron = 0; // 初期値
     while (true) {
         if (!get_player_patron(player_ptr)) {
             return false;
@@ -262,17 +269,18 @@ static bool let_player_select_patron(PlayerType *player_ptr)
     return true;
 }
 
-static bool let_player_build_character(PlayerType *player_ptr)
+static bool let_player_build_character(CreatureEntity &creature)
 {
-    if (!get_player_sex(player_ptr)) {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    if (!get_player_sex(creature)) {
         return false;
     }
 
-    if (!let_player_select_race(player_ptr)) {
+    if (!let_player_select_race(creature)) {
         return false;
     }
 
-    if (!let_player_select_class(player_ptr)) {
+    if (!let_player_select_class(creature)) {
         return false;
     }
 
@@ -280,25 +288,26 @@ static bool let_player_build_character(PlayerType *player_ptr)
         return false;
     }
 
-    if (!let_player_select_personality(player_ptr)) {
+    if (!let_player_select_personality(creature)) {
         return false;
     }
 
-    if (!let_player_select_patron(player_ptr)) {
+    if (!let_player_select_patron(creature)) {
         return false;
     }
 
-    CreatureClass(*player_ptr).init_specific_data();
+    CreatureClass(creature).init_specific_data();
 
     return true;
 }
 
-static void display_initial_options(PlayerType *player_ptr)
+static void display_initial_options(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto expfact_mod = static_cast<int>(get_expfact(player_ptr)) - 100;
     int16_t adj[A_MAX]{};
     for (int i = 0; i < A_MAX; i++) {
-        adj[i] = player_ptr->race->r_adj[i] + (*player_ptr->pclass_ref).c_adj[i] + (*player_ptr->personality).a_adj[i];
+        adj[i] = creature.race->r_adj[i] + (*creature.pclass_ref).c_adj[i] + (*creature.personality).a_adj[i];
     }
 
     put_str("                                   ", 3, 40);
@@ -308,20 +317,20 @@ static void display_initial_options(PlayerType *player_ptr)
     c_put_str(TERM_L_BLUE, stats, 5, 40);
 
     put_str("HD ", 6, 40);
-    const auto hd = format("%2d", player_ptr->race->r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
+    const auto hd = format("%2d", creature.race->r_mhp + (*creature.pclass_ref).c_mhp + (*creature.personality).a_mhp);
     c_put_str(TERM_L_BLUE, hd, 6, 43);
 
     put_str(_("隠密", "Stealth"), 6, 47);
     std::string stealth;
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         stealth = "xx";
     } else {
-        stealth = format("%+2d", player_ptr->race->r_stl + (*player_ptr->pclass_ref).c_stl + (*player_ptr->personality).a_stl);
+        stealth = format("%+2d", creature.race->r_stl + (*creature.pclass_ref).c_stl + (*creature.personality).a_stl);
     }
     c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
     put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-    const auto infra = format(_("%%2dft", "%%2dft"), 10 * player_ptr->race->infra);
+    const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.race->infra);
     c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
 
     clear_from(10);
@@ -330,7 +339,7 @@ static void display_initial_options(PlayerType *player_ptr)
     screen_load();
 }
 
-static void display_auto_roller_success_rate(PlayerType *player_ptr, const int col)
+static void display_auto_roller_success_rate(CreatureEntity &creature, const int col)
 {
     if (!autoroller) {
         return;
@@ -354,7 +363,7 @@ static void display_auto_roller_success_rate(PlayerType *player_ptr, const int c
 
     for (int i = 0; i < A_MAX; i++) {
         put_str(stat_names[i], 3 + i, col + 8);
-        int j = player_ptr->race->r_adj[i] + (*player_ptr->pclass_ref).c_adj[i] + (*player_ptr->personality).a_adj[i];
+        int j = creature.race->r_adj[i] + (*creature.pclass_ref).c_adj[i] + (*creature.personality).a_adj[i];
         int m = adjust_stat(stat_limit[i], j);
         c_put_str(TERM_L_BLUE, cnv_stat(m), 3 + i, col + 13);
     }
@@ -374,7 +383,7 @@ static void auto_roller_count(void)
     auto_upper_round++;
 }
 
-static bool decide_initial_stat(PlayerType *player_ptr)
+static bool decide_initial_stat(CreatureEntity &creature)
 {
     if (!autoroller) {
         return true;
@@ -382,7 +391,7 @@ static bool decide_initial_stat(PlayerType *player_ptr)
 
     bool accept = true;
     for (int i = 0; i < A_MAX; i++) {
-        if (player_ptr->stat_max[i] < stat_limit[i]) {
+        if (creature.stat_max[i] < stat_limit[i]) {
             accept = false;
             break;
         }
@@ -391,27 +400,27 @@ static bool decide_initial_stat(PlayerType *player_ptr)
     return accept;
 }
 
-static bool decide_body_spec(PlayerType *player_ptr, chara_limit_type chara_limit, bool *accept)
+static bool decide_body_spec(CreatureEntity &creature, chara_limit_type chara_limit, bool *accept)
 {
     if (!*accept) {
         return false;
     }
 
-    get_ahw(*player_ptr);
-    get_history(*player_ptr);
+    get_ahw(creature);
+    get_history(creature);
 
     if (autochara) {
-        if ((player_ptr->age < chara_limit.agemin) || (player_ptr->age > chara_limit.agemax)) {
+        if ((creature.age < chara_limit.agemin) || (creature.age > chara_limit.agemax)) {
             *accept = false;
         }
-        const auto ht = _(inch_to_cm(player_ptr->ht), player_ptr->ht);
+        const auto ht = _(inch_to_cm(creature.ht), creature.ht);
         if ((ht < chara_limit.htmin) || (ht > chara_limit.htmax)) {
             *accept = false;
         }
-        const auto wt = _(lb_to_kg(player_ptr->wt), player_ptr->wt);
+        const auto wt = _(lb_to_kg(creature.wt), creature.wt);
         if ((wt < chara_limit.wtmin) || (wt > chara_limit.wtmax)) {
             *accept = false;
-            if ((player_ptr->prestige < chara_limit.scmin) || (player_ptr->prestige > chara_limit.scmax)) {
+            if ((creature.prestige < chara_limit.scmin) || (creature.prestige > chara_limit.scmax)) {
                 *accept = false;
             }
         }
@@ -419,8 +428,9 @@ static bool decide_body_spec(PlayerType *player_ptr, chara_limit_type chara_limi
     return *accept;
 }
 
-static bool display_auto_roller_count(PlayerType *player_ptr, const int col)
+static bool display_auto_roller_count(CreatureEntity &creature, const int col)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /*!
      * @details ここで指定された回数だけロールする度にその時の結果を画面に表示する
      * @todo この定数を定義した時代に比べて、CPUパワーが相当に上がっている.
@@ -440,33 +450,35 @@ static bool display_auto_roller_count(PlayerType *player_ptr, const int col)
     term_fresh();
     inkey_scan = true;
     if (inkey()) {
-        get_ahw(*player_ptr);
-        get_history(*player_ptr);
+        get_ahw(creature);
+        get_history(creature);
         return true;
     }
 
     return false;
 }
 
-static void exe_auto_roller(PlayerType *player_ptr, chara_limit_type chara_limit, const int col)
+static void exe_auto_roller(CreatureEntity &creature, chara_limit_type chara_limit, const int col)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     while (autoroller || autochara) {
         get_stats(player_ptr);
         auto_round++;
         auto_roller_count();
-        bool accept = decide_initial_stat(player_ptr);
-        if (decide_body_spec(player_ptr, chara_limit, &accept)) {
+        bool accept = decide_initial_stat(creature);
+        if (decide_body_spec(creature, chara_limit, &accept)) {
             return;
         }
 
-        if (display_auto_roller_count(player_ptr, col)) {
+        if (display_auto_roller_count(creature, col)) {
             return;
         }
     }
 }
 
-static bool display_auto_roller_result(PlayerType *player_ptr, bool prev, char *c)
+static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char *c)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     BIT_FLAGS mode = 0;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {
@@ -476,8 +488,8 @@ static bool display_auto_roller_result(PlayerType *player_ptr, bool prev, char *
     while (true) {
         rfu.set_flags(flags);
         update_creature(player_ptr);
-        player_ptr->hp = player_ptr->maxhp;
-        player_ptr->csp = player_ptr->msp;
+        creature.hp = creature.maxhp;
+        creature.csp = creature.msp;
         (void)display_player(player_ptr, mode);
         term_gotoxy(2, 23);
         const char b1 = '[';
@@ -532,12 +544,13 @@ static bool display_auto_roller_result(PlayerType *player_ptr, bool prev, char *
 
 /*
  * @brief オートロールを回して結果を表示し、その数値に決めるかさらに回すか確認する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param chara_limit 社会的地位の要求水準
  * @details 2つめの結果以降は、'p'キーで1つ前のロール結果に戻せる。
  */
-static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_limit)
+static bool display_auto_roller(CreatureEntity &creature, chara_limit_type chara_limit)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool prev = false;
 
     while (true) {
@@ -548,12 +561,12 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
             put_str(_("(ESCで停止)", "(Hit ESC to stop)"), 13, col + 13);
         } else {
             get_stats(player_ptr);
-            get_ahw(*player_ptr);
-            get_history(*player_ptr);
+            get_ahw(creature);
+            get_history(creature);
         }
 
-        display_auto_roller_success_rate(player_ptr, col);
-        exe_auto_roller(player_ptr, chara_limit, col);
+        display_auto_roller_success_rate(creature, col);
+        exe_auto_roller(creature, chara_limit, col);
         if (autoroller || autochara) {
             sound(SoundKind::LEVEL);
         }
@@ -561,10 +574,10 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
         flush();
 
         get_extra(player_ptr, true);
-        get_money(*player_ptr);
+        get_money(creature);
 
         char c;
-        if (!display_auto_roller_result(player_ptr, prev, &c)) {
+        if (!display_auto_roller_result(creature, prev, &c)) {
             return false;
         }
 
@@ -582,17 +595,18 @@ static bool display_auto_roller(PlayerType *player_ptr, chara_limit_type chara_l
 
 /*!
  * @brief 名前と生い立ちを設定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details ついでにステータス限界もここで決めている
  */
-static void set_name_history(PlayerType *player_ptr)
+static void set_name_history(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     clear_from(23);
     get_name(player_ptr);
     process_player_name(player_ptr, AngbandWorld::get_instance().creating_savefile);
     edit_history(player_ptr);
     get_max_stats(player_ptr);
-    initialize_virtues(static_cast<CreatureEntity &>(*player_ptr));
+    initialize_virtues(creature);
     prt(_("[ 'Q' 中断, 'S' 初めから, Enter ゲーム開始 ]", "['Q'uit, 'S'tart over, or Enter to continue]"), 23, _(14, 10));
 }
 
@@ -605,16 +619,17 @@ static void set_name_history(PlayerType *player_ptr)
  */
 bool player_birth_wizard(PlayerType *player_ptr)
 {
-    display_initial_birth_message(player_ptr);
+    CreatureEntity &creature = *player_ptr;
+    display_initial_birth_message(creature);
     for (int n = 0; n < MAX_SEXES; n++) {
         put_str(birth_sex_label(n), 12 + (n / 5), 2 + 15 * (n % 5));
     }
 
-    if (!let_player_build_character(player_ptr)) {
+    if (!let_player_build_character(creature)) {
         return false;
     }
 
-    display_initial_options(player_ptr);
+    display_initial_options(creature);
     if (autoroller || autochara) {
         auto_round = 0L;
         auto_upper_round = 0L;
@@ -637,11 +652,11 @@ bool player_birth_wizard(PlayerType *player_ptr)
 
     clear_from(10);
     init_turn(player_ptr);
-    if (!display_auto_roller(player_ptr, chara_limit)) {
+    if (!display_auto_roller(creature, chara_limit)) {
         return false;
     }
 
-    set_name_history(player_ptr);
+    set_name_history(creature);
     char c = inkey();
     if (c == 'Q') {
         birth_quit();
