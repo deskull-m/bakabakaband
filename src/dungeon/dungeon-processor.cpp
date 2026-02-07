@@ -240,7 +240,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
             break;
         }
 
-        process_monsters(player_ptr);
+        process_monsters(*player_ptr);
         handle_stuff(player_ptr);
 
         move_cursor_relative(player_ptr->y, player_ptr->x);
