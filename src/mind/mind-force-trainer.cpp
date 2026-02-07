@@ -248,7 +248,7 @@ bool shock_power(PlayerType *player_ptr)
     monster.y = pos_target.y;
     monster.x = pos_target.x;
 
-    update_monster(player_ptr, m_idx, true);
+    update_monster(*player_ptr, m_idx, true);
     lite_spot(*player_ptr, pos_origin);
     lite_spot(*player_ptr, pos_target);
 

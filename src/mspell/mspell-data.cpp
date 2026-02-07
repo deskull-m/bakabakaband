@@ -63,13 +63,13 @@ MSpellDrsData::MSpellDrsData()
 MSpellDrsData::MSpellDrsData(std::initializer_list<drs_type> drs)
     : execute([drs = std::vector<drs_type>(drs)](auto player_ptr, auto m_idx) {
         for (auto &d : drs) {
-            update_smart_learn(player_ptr, m_idx, d);
+            update_smart_learn(*player_ptr, m_idx, d);
         }
     })
 {
 }
 
 MSpellDrsData::MSpellDrsData(const drs_type &drs)
-    : execute([drs](auto player_ptr, auto m_idx) { update_smart_learn(player_ptr, m_idx, drs); })
+    : execute([drs](auto player_ptr, auto m_idx) { update_smart_learn(*player_ptr, m_idx, drs); })
 {
 }

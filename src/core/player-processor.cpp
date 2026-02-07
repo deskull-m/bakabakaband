@@ -129,7 +129,7 @@ void process_player(PlayerType *player_ptr)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player_ptr, m_idx, false);
+            update_monster(*player_ptr, m_idx, false);
         }
 
         WorldTurnProcessor(player_ptr).print_time();
@@ -263,7 +263,7 @@ void process_player(PlayerType *player_ptr)
         player_ptr->counter = false;
         player_ptr->now_damaged = false;
 
-        update_monsters(player_ptr, false);
+        update_monsters(*player_ptr, false);
         handle_stuff(player_ptr);
         move_cursor_relative(player_ptr->y, player_ptr->x);
         if (fresh_before) {
@@ -370,7 +370,7 @@ void process_player(PlayerType *player_ptr)
                     } else {
                         monster.mflag2.reset(MonsterConstantFlagType::MARK);
                         monster.ml = false;
-                        update_monster(player_ptr, m_idx, false);
+                        update_monster(*player_ptr, m_idx, false);
                         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
                         if (monster.is_riding()) {
                             rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);

@@ -168,7 +168,7 @@ bool teleport_away(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION dis, tele
     floor.get_grid(m_pos).m_idx = m_idx;
     monster.set_position(m_pos);
     monster.reset_target();
-    update_monster(player_ptr, m_idx, true);
+    update_monster(*player_ptr, m_idx, true);
     lite_spot(*player_ptr, m_pos_orig);
     lite_spot(*player_ptr, m_pos);
 
@@ -244,7 +244,7 @@ void teleport_monster_to(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION ty,
     floor.get_grid(m_pos_orig).m_idx = 0;
     floor.get_grid(m_pos).m_idx = m_idx;
     monster.set_position(m_pos);
-    update_monster(player_ptr, m_idx, true);
+    update_monster(*player_ptr, m_idx, true);
     lite_spot(*player_ptr, m_pos_orig);
     lite_spot(*player_ptr, m_pos);
 

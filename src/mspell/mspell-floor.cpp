@@ -352,7 +352,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
             teleport_level(player_ptr, 0);
         }
 
-        update_smart_learn(&player_ptr, m_idx, DRS_NEXUS);
+        update_smart_learn(player_ptr, m_idx, DRS_NEXUS);
         return res;
     }
 

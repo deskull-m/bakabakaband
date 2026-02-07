@@ -149,7 +149,7 @@ static void place_pet(PlayerType *player_ptr)
         const auto &[m_idx, pos] = decide_pet_index(player_ptr, current_monster);
         if (m_idx != 0) {
             const auto &monrace = set_pet_params(player_ptr, current_monster, m_idx, pos.y, pos.x);
-            update_monster(player_ptr, m_idx, true);
+            update_monster(*player_ptr, m_idx, true);
             lite_spot(*player_ptr, pos);
             if (monrace.misc_flags.has(MonsterMiscType::MULTIPLY)) {
                 floor.num_repro++;

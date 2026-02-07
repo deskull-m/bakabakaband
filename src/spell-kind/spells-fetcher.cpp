@@ -152,7 +152,7 @@ bool fetch_monster(CreatureEntity &creature)
     floor.get_grid(pos_target).m_idx = m_idx;
     monster.set_position(pos_target);
     (void)set_monster_csleep(floor, m_idx, 0);
-    update_monster(&player, m_idx, true);
+    update_monster(player, m_idx, true);
     lite_spot(player, *pos);
     lite_spot(player, pos_target);
     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {

@@ -362,7 +362,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             obvious = true;
         }
         if (grid.has_monster()) {
-            update_monster(player_ptr, grid.m_idx, false);
+            update_monster(*player_ptr, grid.m_idx, false);
         }
 
         if (player_ptr->is_located_at(pos)) {
@@ -415,7 +415,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             obvious = true;
         }
         if (grid.has_monster()) {
-            update_monster(player_ptr, grid.m_idx, false);
+            update_monster(*player_ptr, grid.m_idx, false);
         }
 
         break;

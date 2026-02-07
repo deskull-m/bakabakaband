@@ -56,7 +56,7 @@ static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_
 
     monap_ptr->damage = monap_ptr->damage * calc_nuke_damage_rate(player_ptr) / 100;
     monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_POIS);
+    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_POIS);
 }
 
 /*!
@@ -80,7 +80,7 @@ static void calc_blow_disenchant(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-    update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_DISEN);
+    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_DISEN);
 }
 
 /*!
@@ -142,7 +142,7 @@ static void calc_blow_blind(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
     }
 
     process_blind_attack(player_ptr, monap_ptr);
-    update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_BLIND);
+    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_BLIND);
 }
 
 /*!
@@ -169,7 +169,7 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
         monap_ptr->obvious = true;
     }
 
-    update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_CONF);
+    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_CONF);
 }
 
 /*!
@@ -189,7 +189,7 @@ static void calc_blow_fear(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
     }
 
     process_terrify_attack(player_ptr, monap_ptr);
-    update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_FEAR);
+    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FEAR);
 }
 
 /*!
@@ -209,7 +209,7 @@ static void calc_blow_paralysis(PlayerType *player_ptr, MonsterAttackPlayer *mon
     }
 
     process_paralyze_attack(player_ptr, monap_ptr);
-    update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_FREE);
+    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FREE);
 }
 
 /*!
@@ -303,7 +303,7 @@ static void calc_blow_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *mo
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 100;
     process_drain_mana(player_ptr, monap_ptr);
-    update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_MANA);
+    update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_MANA);
 }
 
 static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
@@ -417,7 +417,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         msg_print(_("酸を浴びせられた！", "You are covered in acid!"));
         monap_ptr->get_damage += acid_dam(player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
         update_creature(player_ptr);
-        update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_ACID);
+        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_ACID);
         break;
     }
     case RaceBlowEffectType::ELEC: {
@@ -428,7 +428,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->obvious = true;
         msg_print(_("電撃を浴びせられた！", "You are struck by electricity!"));
         monap_ptr->get_damage += elec_dam(player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_ELEC);
+        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_ELEC);
         break;
     }
     case RaceBlowEffectType::FIRE: {
@@ -439,7 +439,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->obvious = true;
         msg_print(_("全身が炎に包まれた！", "You are enveloped in flames!"));
         monap_ptr->get_damage += fire_dam(player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_FIRE);
+        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FIRE);
         break;
     }
     case RaceBlowEffectType::COLD: {
@@ -450,7 +450,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->obvious = true;
         msg_print(_("全身が冷気で覆われた！", "You are covered with frost!"));
         monap_ptr->get_damage += cold_dam(player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_COLD);
+        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_COLD);
         break;
     }
     case RaceBlowEffectType::BLIND:
@@ -539,7 +539,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         calc_blow_hungry(player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::CHAOS: {
-        update_smart_learn(player_ptr, monap_ptr->m_idx, DRS_CHAOS);
+        update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_CHAOS);
         monap_ptr->damage = monap_ptr->damage * calc_chaos_damage_rate(player_ptr, CALC_RAND) / 100;
         monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 

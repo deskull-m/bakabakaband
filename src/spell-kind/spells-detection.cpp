@@ -361,7 +361,7 @@ bool detect_monsters_normal(CreatureEntity &creature, POSITION range)
 
         if (monrace.misc_flags.has_not(MonsterMiscType::INVISIBLE) || player.see_inv) {
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(&player, i, false);
+            update_monster(player, i, false);
             flag = true;
         }
     }
@@ -414,7 +414,7 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(&player, i, false);
+            update_monster(player, i, false);
             flag = true;
         }
     }
@@ -469,7 +469,7 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(&player, i, false);
+            update_monster(player, i, false);
             flag = true;
         }
     }
@@ -516,7 +516,7 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(&player, i, false);
+            update_monster(player, i, false);
             flag = true;
         }
     }
@@ -565,7 +565,7 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(&player, i, false);
+            update_monster(player, i, false);
             flag = true;
         }
     }
@@ -615,7 +615,7 @@ bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Ma
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(&player, i, false);
+            update_monster(player, i, false);
             flag = true;
         }
     }

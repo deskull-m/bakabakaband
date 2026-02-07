@@ -153,7 +153,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         const auto m_pos = monster.get_position();
         const auto &grid = floor.get_grid(m_pos);
         choose_chameleon_polymorph(&player, m_idx, grid.get_terrain_id());
-        update_monster(&player, m_idx, false);
+        update_monster(creature, m_idx, false);
         lite_spot(creature, m_pos);
         const auto &new_monrace = monster.get_monrace();
 
@@ -295,7 +295,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     update_map_flags(turn_flags_ptr);
     update_lite_flags(turn_flags_ptr, monrace);
-    update_monster_race_flags(&player, turn_flags_ptr, monster);
+    update_monster_race_flags(creature, turn_flags_ptr, monster);
 
     if (!process_monster_fear(creature, turn_flags_ptr, m_idx)) {
         return;
