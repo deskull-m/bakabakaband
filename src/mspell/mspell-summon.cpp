@@ -105,8 +105,7 @@ static MONSTER_NUMBER summon_Alliance(CreatureEntity &creature, POSITION y, POSI
 static void decide_summon_kin_caster(
     CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, concptr m_name, concptr m_poss, const bool known)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
@@ -123,7 +122,7 @@ static void decide_summon_kin_caster(
 
     summon_disturb(creature, target_type, known, see_either);
 
-    if (player_ptr.effects()->blindness().is_blind()) {
+    if (creature.effects()->blindness().is_blind()) {
         if (mon_to_player) {
             msg_format(_("%s^が何かをつぶやいた。", "%s^ mumbles."), m_name);
         }
@@ -153,12 +152,11 @@ static void decide_summon_kin_caster(
  */
 MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     DEPTH rlev = monster_level_idx(floor, m_idx);
-    const auto m_name = monster_name(&player_ptr, m_idx);
-    const auto m_poss = monster_desc(player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+    const auto m_name = monster_name(static_cast<PlayerType *>(&creature), m_idx);
+    const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(floor, m_idx, t_idx);
@@ -240,7 +238,7 @@ MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITIO
         count += summon_Alliance(creature, y, x, rlev, m_idx);
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && (target_type == MONSTER_TO_PLAYER)) {
+    if (creature.effects()->blindness().is_blind() && count && (target_type == MONSTER_TO_PLAYER)) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -267,8 +265,7 @@ MonsterSpellResult spell_RF6_S_KIN(CreatureEntity &creature, POSITION y, POSITIO
  */
 MonsterSpellResult spell_RF6_S_CYBER(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
@@ -286,10 +283,10 @@ MonsterSpellResult spell_RF6_S_CYBER(CreatureEntity &creature, POSITION y, POSIT
     if (monster.is_friendly() && mon_to_mon) {
         count += summon_specific(creature, y, x, rlev, SUMMON_CYBER, (PM_ALLOW_GROUP), m_idx) ? 1 : 0;
     } else {
-        count += summon_cyber(&player_ptr, y, x, m_idx);
+        count += summon_cyber(static_cast<PlayerType *>(&creature), y, x, m_idx);
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("重厚な足音が近くで聞こえる。", "You hear heavy steps nearby."));
     }
 
@@ -316,8 +313,7 @@ MonsterSpellResult spell_RF6_S_CYBER(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_MONSTER(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -341,7 +337,7 @@ MonsterSpellResult spell_RF6_S_MONSTER(CreatureEntity &creature, POSITION y, POS
         }
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -368,8 +364,7 @@ MonsterSpellResult spell_RF6_S_MONSTER(CreatureEntity &creature, POSITION y, POS
  */
 MonsterSpellResult spell_RF6_S_MONSTERS(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -393,7 +388,7 @@ MonsterSpellResult spell_RF6_S_MONSTERS(CreatureEntity &creature, POSITION y, PO
         }
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -420,8 +415,7 @@ MonsterSpellResult spell_RF6_S_MONSTERS(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF6_S_ANT(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -439,7 +433,7 @@ MonsterSpellResult spell_RF6_S_ANT(CreatureEntity &creature, POSITION y, POSITIO
         count += summon_specific(creature, y, x, rlev, SUMMON_ANT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -466,8 +460,7 @@ MonsterSpellResult spell_RF6_S_ANT(CreatureEntity &creature, POSITION y, POSITIO
  */
 MonsterSpellResult spell_RF6_S_SPIDER(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -485,7 +478,7 @@ MonsterSpellResult spell_RF6_S_SPIDER(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_SPIDER, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -512,8 +505,7 @@ MonsterSpellResult spell_RF6_S_SPIDER(CreatureEntity &creature, POSITION y, POSI
  */
 MonsterSpellResult spell_RF6_S_HOUND(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -531,7 +523,7 @@ MonsterSpellResult spell_RF6_S_HOUND(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_HOUND, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -558,8 +550,7 @@ MonsterSpellResult spell_RF6_S_HOUND(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_HYDRA(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -577,7 +568,7 @@ MonsterSpellResult spell_RF6_S_HYDRA(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_HYDRA, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -604,18 +595,17 @@ MonsterSpellResult spell_RF6_S_HYDRA(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_FAIRY(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    bool see_either = see_monster(*player_ptr, m_idx) || see_monster(*player_ptr, t_idx);
+    bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(floor, m_idx, t_idx);
 
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が魔法でフェアリーを召喚した。", "%s^ magically summons fairies."), _("%s^が魔法でフェアリーを召喚した。", "%s^ magically summons fairies."));
 
-    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
 
     int count = 0;
@@ -627,7 +617,7 @@ MonsterSpellResult spell_RF6_S_FAIRY(CreatureEntity &creature, POSITION y, POSIT
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
         floor.monster_noise = true;
     }
 
@@ -650,8 +640,7 @@ MonsterSpellResult spell_RF6_S_FAIRY(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_APE(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -669,7 +658,7 @@ MonsterSpellResult spell_RF6_S_APE(CreatureEntity &creature, POSITION y, POSITIO
         count += summon_specific(creature, y, x, rlev, SUMMON_APE, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -696,8 +685,7 @@ MonsterSpellResult spell_RF6_S_APE(CreatureEntity &creature, POSITION y, POSITIO
  */
 MonsterSpellResult spell_RF6_S_BIRD(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -715,7 +703,7 @@ MonsterSpellResult spell_RF6_S_BIRD(CreatureEntity &creature, POSITION y, POSITI
         count += summon_specific(creature, y, x, rlev, SUMMON_BIRD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
     }
 
@@ -742,8 +730,7 @@ MonsterSpellResult spell_RF6_S_BIRD(CreatureEntity &creature, POSITION y, POSITI
  */
 MonsterSpellResult spell_RF6_S_ANGEL(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
@@ -767,7 +754,7 @@ MonsterSpellResult spell_RF6_S_ANGEL(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_ANGEL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    const auto is_blind = player_ptr.effects()->blindness().is_blind();
+    const auto is_blind = creature.effects()->blindness().is_blind();
     if (count < 2) {
         if (is_blind && count) {
             msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
@@ -801,8 +788,7 @@ MonsterSpellResult spell_RF6_S_ANGEL(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_DEMON(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
@@ -820,7 +806,7 @@ MonsterSpellResult spell_RF6_S_DEMON(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_DEMON, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count) {
+    if (creature.effects()->blindness().is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -847,8 +833,7 @@ MonsterSpellResult spell_RF6_S_DEMON(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_UNDEAD(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
@@ -866,7 +851,7 @@ MonsterSpellResult spell_RF6_S_UNDEAD(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_UNDEAD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count) {
+    if (creature.effects()->blindness().is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -893,8 +878,7 @@ MonsterSpellResult spell_RF6_S_UNDEAD(CreatureEntity &creature, POSITION y, POSI
  */
 MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -916,7 +900,7 @@ MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count) {
+    if (creature.effects()->blindness().is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -943,8 +927,7 @@ MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSI
  */
 MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
@@ -975,7 +958,7 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
         }
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("間近で何か多くのものが這い回る音が聞こえる。", "You hear many creepy things appear nearby."));
     }
 
@@ -1002,8 +985,7 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
  */
 MonsterSpellResult spell_RF6_S_HI_DRAGON(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -1028,7 +1010,7 @@ MonsterSpellResult spell_RF6_S_HI_DRAGON(CreatureEntity &creature, POSITION y, P
         }
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("多くの力強いものが間近に現れた音が聞こえる。", "You hear many powerful things appear nearby."));
     }
 
@@ -1055,8 +1037,7 @@ MonsterSpellResult spell_RF6_S_HI_DRAGON(CreatureEntity &creature, POSITION y, P
  */
 MonsterSpellResult spell_RF6_S_AMBERITES(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -1075,7 +1056,7 @@ MonsterSpellResult spell_RF6_S_AMBERITES(CreatureEntity &creature, POSITION y, P
         count += summon_specific(creature, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("何者かが次元を超えて現れた気配がした。", "You feel shadow shifting by immortal beings."));
     }
 
@@ -1102,8 +1083,7 @@ MonsterSpellResult spell_RF6_S_AMBERITES(CreatureEntity &creature, POSITION y, P
  */
 MonsterSpellResult spell_RF6_S_CHOASIANS(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -1122,7 +1102,7 @@ MonsterSpellResult spell_RF6_S_CHOASIANS(CreatureEntity &creature, POSITION y, P
         count += summon_specific(creature, y, x, rlev, SUMMON_CHOASIANS, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("混沌のざわめきが響いた。", "You feel chaotic entities materializing nearby."));
     }
 
@@ -1149,8 +1129,7 @@ MonsterSpellResult spell_RF6_S_CHOASIANS(CreatureEntity &creature, POSITION y, P
  */
 MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -1186,7 +1165,7 @@ MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, non_unique_type, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_format(_("多くの%sが間近に現れた音が聞こえる。", "You hear many %s appear nearby."),
             uniques_are_summoned ? _("力強いもの", "powerful things") : _("もの", "things"));
     }
@@ -1214,8 +1193,7 @@ MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSI
  */
 MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto rlev = monster_level_idx(floor, m_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
@@ -1234,7 +1212,7 @@ MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(CreatureEntity &creature, POSITION y,
         count += summon_specific(creature, y, x, rlev, SUMMON_DEAD_UNIQUE, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE | PM_CLONE), m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_format(_("多くの力強いものが間近に蘇った音が聞こえる。", "You hear many powerful things animate nearby."));
     }
 
@@ -1259,7 +1237,6 @@ MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(CreatureEntity &creature, POSITION y,
  */
 MonsterSpellResult spell_RF6_S_NASTY(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^がクッソ汚いモンスターを召喚した！", "%s^ summons nasty monsters!"),
@@ -1268,7 +1245,7 @@ MonsterSpellResult spell_RF6_S_NASTY(CreatureEntity &creature, POSITION y, POSIT
     const bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     const bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
 
-    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
@@ -1276,11 +1253,11 @@ MonsterSpellResult spell_RF6_S_NASTY(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_NASTY, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
         msg_format(_("クッソ汚いものが間近にひしめく音が聞こえる。", "You hear many nasty things crowding nearby."));
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
         floor.monster_noise = true;
     }
 
@@ -1302,7 +1279,6 @@ MonsterSpellResult spell_RF6_S_NASTY(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_GOLEM(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
 
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
@@ -1312,7 +1288,7 @@ MonsterSpellResult spell_RF6_S_GOLEM(CreatureEntity &creature, POSITION y, POSIT
     const bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     const bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
 
-    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
@@ -1320,11 +1296,11 @@ MonsterSpellResult spell_RF6_S_GOLEM(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_GOLEM, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
         msg_format(_("ゴーレムが間近にひしめく音が聞こえる。", "You hear many golems crowding nearby."));
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
         floor.monster_noise = true;
     }
 
@@ -1346,7 +1322,6 @@ MonsterSpellResult spell_RF6_S_GOLEM(CreatureEntity &creature, POSITION y, POSIT
  */
 MonsterSpellResult spell_RF6_S_CATS(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が魔法で猫を召喚した！", "%s^ magically summons cats!"),
@@ -1355,7 +1330,7 @@ MonsterSpellResult spell_RF6_S_CATS(CreatureEntity &creature, POSITION y, POSITI
     const bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     const bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
 
-    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
@@ -1363,11 +1338,11 @@ MonsterSpellResult spell_RF6_S_CATS(CreatureEntity &creature, POSITION y, POSITI
         count += summon_specific(creature, y, x, rlev, SUMMON_CATS, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
         msg_format(_("猫が間近にたくさんいる音が聞こえる。", "You hear many cats crowding nearby."));
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
         floor.monster_noise = true;
     }
 
@@ -1389,7 +1364,6 @@ MonsterSpellResult spell_RF6_S_CATS(CreatureEntity &creature, POSITION y, POSITI
  */
 MonsterSpellResult spell_RF6_S_PERVERTS(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
 
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
@@ -1399,7 +1373,7 @@ MonsterSpellResult spell_RF6_S_PERVERTS(CreatureEntity &creature, POSITION y, PO
     const bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     const bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
 
-    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
@@ -1407,11 +1381,11 @@ MonsterSpellResult spell_RF6_S_PERVERTS(CreatureEntity &creature, POSITION y, PO
         count += summon_specific(creature, y, x, rlev, SUMMON_PERVERTS, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
         msg_format(_("変質者が間近にたくさんいる気配を感じる。", "You sense many perverts crowding nearby."));
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
         floor.monster_noise = true;
     }
 
@@ -1433,7 +1407,6 @@ MonsterSpellResult spell_RF6_S_PERVERTS(CreatureEntity &creature, POSITION y, PO
  */
 MonsterSpellResult spell_RF6_S_PUYO(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
 
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
@@ -1443,7 +1416,7 @@ MonsterSpellResult spell_RF6_S_PUYO(CreatureEntity &creature, POSITION y, POSITI
     const bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     const bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
 
-    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
@@ -1451,11 +1424,11 @@ MonsterSpellResult spell_RF6_S_PUYO(CreatureEntity &creature, POSITION y, POSITI
         count += summon_specific(creature, y, x, rlev, SUMMON_PUYO, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon && mon_to_player) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
         msg_format(_("ぷよが間近にたくさんいる音が聞こえる。", "You hear many puyo crowding nearby."));
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
         floor.monster_noise = true;
     }
 
@@ -1476,7 +1449,6 @@ MonsterSpellResult spell_RF6_S_PUYO(CreatureEntity &creature, POSITION y, POSITI
  */
 MonsterSpellResult spell_RF6_S_HOMO(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
 
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
@@ -1500,11 +1472,11 @@ MonsterSpellResult spell_RF6_S_HOMO(CreatureEntity &creature, POSITION y, POSITI
         }
     }
 
-    if (player_ptr->effects()->blindness().is_blind() && count && mon_to_player) {
+    if (creature.effects()->blindness().is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
-    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(*player_ptr, t_idx) && count && mon_to_mon) {
+    if (monster_near_player(floor, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
         floor.monster_noise = true;
     }
 
@@ -1526,8 +1498,7 @@ MonsterSpellResult spell_RF6_S_HOMO(CreatureEntity &creature, POSITION y, POSITI
  */
 MonsterSpellResult spell_RF6_S_WALL(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
@@ -1545,7 +1516,7 @@ MonsterSpellResult spell_RF6_S_WALL(CreatureEntity &creature, POSITION y, POSITI
         count += summon_specific(creature, y, x, rlev, SUMMON_WALL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count) {
+    if (creature.effects()->blindness().is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1572,8 +1543,7 @@ MonsterSpellResult spell_RF6_S_WALL(CreatureEntity &creature, POSITION y, POSITI
  */
 MonsterSpellResult spell_RF6_S_INSECT(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     DEPTH rlev = monster_level_idx(floor, m_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
@@ -1591,7 +1561,7 @@ MonsterSpellResult spell_RF6_S_INSECT(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_INSECT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count) {
+    if (creature.effects()->blindness().is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1617,8 +1587,7 @@ MonsterSpellResult spell_RF6_S_INSECT(CreatureEntity &creature, POSITION y, POSI
  */
 MonsterSpellResult spell_RF6_S_ELDRAZI(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto rlev = monster_level_idx(floor, m_idx);
     const auto known = monster_near_player(floor, m_idx, t_idx);
     const auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
@@ -1636,7 +1605,7 @@ MonsterSpellResult spell_RF6_S_ELDRAZI(CreatureEntity &creature, POSITION y, POS
         count += summon_specific(creature, y, x, rlev, SUMMON_ELDRAZI, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (player_ptr.effects()->blindness().is_blind() && count) {
+    if (creature.effects()->blindness().is_blind() && count) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
