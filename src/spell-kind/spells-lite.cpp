@@ -51,7 +51,7 @@ static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D>
             auto chance = 25;
             const auto &monster = floor.m_list[grid.m_idx];
             const auto &monrace = monster.get_monrace();
-            update_monster(player_ptr, grid.m_idx, false);
+            update_monster(*player_ptr, grid.m_idx, false);
             if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
                 chance = 10;
             }
@@ -119,7 +119,7 @@ static void cave_temp_room_unlite(PlayerType *player_ptr, const std::vector<Pos2
         }
 
         if (grid.has_monster()) {
-            update_monster(player_ptr, grid.m_idx, false);
+            update_monster(*player_ptr, grid.m_idx, false);
         }
 
         lite_spot(*player_ptr, pos);

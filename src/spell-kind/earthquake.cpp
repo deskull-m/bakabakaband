@@ -189,7 +189,7 @@ void move_monster_to(CreatureEntity &creature, MonsterEntity &monster, const Pos
     auto &grid_to = floor.get_grid(pos_to);
     grid_to.m_idx = std::exchange(grid_from.m_idx, {});
     monster.set_position(pos_to);
-    update_monster(&player, grid_to.m_idx, true);
+    update_monster(player, grid_to.m_idx, true);
     lite_spot(player, pos_from);
     lite_spot(player, pos_to);
 }

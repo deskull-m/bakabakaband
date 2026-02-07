@@ -162,7 +162,7 @@ static void delayed_visual_update(PlayerType *player_ptr)
 
         lite_spot(*player_ptr, pos);
         if (grid.has_monster()) {
-            update_monster(player_ptr, grid.m_idx, false);
+            update_monster(*player_ptr, grid.m_idx, false);
         }
 
         reset_bits(grid.info, (CAVE_NOTE | CAVE_REDRAW));
@@ -2694,7 +2694,7 @@ void update_creature(PlayerType *player_ptr)
 
     if (rfu.has(StatusRecalculatingFlag::DISTANCE)) {
         rfu.reset_flag(StatusRecalculatingFlag::DISTANCE);
-        update_monsters(player_ptr, true);
+        update_monsters(*player_ptr, true);
     }
 
     if (rfu.has(StatusRecalculatingFlag::MONSTER_LITE)) {
@@ -2709,7 +2709,7 @@ void update_creature(PlayerType *player_ptr)
 
     if (rfu.has(StatusRecalculatingFlag::MONSTER_STATUSES)) {
         rfu.reset_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-        update_monsters(player_ptr, false);
+        update_monsters(*player_ptr, false);
     }
 }
 

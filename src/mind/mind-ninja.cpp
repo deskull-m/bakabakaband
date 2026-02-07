@@ -165,7 +165,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
             teleport_player_to(player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
         }
 
-        update_monster(player_ptr, grid_new.m_idx, true);
+        update_monster(*player_ptr, grid_new.m_idx, true);
         const auto &monster = floor.m_list[grid_new.m_idx];
         if (tm_idx != grid_new.m_idx) {
 #ifdef JP

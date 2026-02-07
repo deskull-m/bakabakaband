@@ -650,7 +650,7 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
 
     // モンスターの情報を更新
-    update_monster(this->player_ptr, this->m_idx, true);
+    update_monster(*this->player_ptr, this->m_idx, true);
 
     return true;
 }

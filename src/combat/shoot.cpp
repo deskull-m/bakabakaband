@@ -916,7 +916,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                                 floor.get_grid(pos_to).m_idx = m_idx;
                                 floor.get_grid(pos_orig).m_idx = 0;
                                 monster.set_position(pos_to);
-                                update_monster(player_ptr, m_idx, true);
+                                update_monster(*player_ptr, m_idx, true);
                                 if (delay_factor > 0) {
                                     lite_spot(*player_ptr, pos_to);
                                     lite_spot(*player_ptr, pos_orig);

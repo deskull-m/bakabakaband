@@ -281,7 +281,7 @@ static void generate_gambling_arena(PlayerType *player_ptr)
         }
 
         monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-        update_monster(player_ptr, i, false);
+        update_monster(*player_ptr, i, false);
     }
 }
 

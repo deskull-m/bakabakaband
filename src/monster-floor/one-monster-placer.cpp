@@ -558,7 +558,7 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
-    update_monster(player_ptr, g_ptr->m_idx, true);
+    update_monster(*player_ptr, g_ptr->m_idx, true);
     m_ptr->get_real_monrace().increment_current_numbers();
 
     if (any_bits(mode, PM_AMBUSH)) {

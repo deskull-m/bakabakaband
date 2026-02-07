@@ -274,7 +274,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                     monster.y = pos_target.y;
                     monster.x = pos_target.x;
 
-                    update_monster(player_ptr, m_idx, true);
+                    update_monster(*player_ptr, m_idx, true);
                     lite_spot(*player_ptr, pos_origin);
                     lite_spot(*player_ptr, pos_target);
 
@@ -559,7 +559,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 monster.y = pos_new.y;
                 monster.x = pos_new.x;
 
-                update_monster(player_ptr, m_idx, true);
+                update_monster(*player_ptr, m_idx, true);
 
                 /* Redraw the old spot */
                 lite_spot(*player_ptr, pos);

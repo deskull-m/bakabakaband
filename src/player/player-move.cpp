@@ -150,13 +150,13 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             if (om_idx > 0) {
                 auto &monster = floor.m_list[om_idx];
                 monster.set_position(pos_new);
-                update_monster(player_ptr, om_idx, true);
+                update_monster(*player_ptr, om_idx, true);
             }
 
             if (nm_idx > 0) {
                 auto &monster = floor.m_list[nm_idx];
                 monster.set_position(pos_old);
-                update_monster(player_ptr, nm_idx, true);
+                update_monster(*player_ptr, nm_idx, true);
             }
         }
 

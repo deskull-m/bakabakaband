@@ -151,7 +151,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(PlayerType *player_ptr, POSITION y, POSI
     const auto dam = monspell_damage(*player_ptr, MonsterAbilityType::DRAIN_MANA, m_idx, DAM_ROLL);
     const auto proj_res = pointed(player_ptr, y, x, m_idx, AttributeType::DRAIN_MANA, dam, target_type);
     if (target_type == MONSTER_TO_PLAYER) {
-        update_smart_learn(player_ptr, m_idx, DRS_MANA);
+        update_smart_learn(*player_ptr, m_idx, DRS_MANA);
     }
 
     auto res = MonsterSpellResult::make_valid();
@@ -269,7 +269,7 @@ MonsterSpellResult spell_RF5_SCARE(MONSTER_IDX m_idx, PlayerType *player_ptr, MO
             (void)BadStatusSetter(*player_ptr).mod_fear(randint0(4) + 4);
         }
 
-        update_smart_learn(player_ptr, m_idx, DRS_FEAR);
+        update_smart_learn(*player_ptr, m_idx, DRS_FEAR);
         return res;
     }
 
@@ -326,7 +326,7 @@ MonsterSpellResult spell_RF5_BLIND(MONSTER_IDX m_idx, PlayerType *player_ptr, MO
             (void)BadStatusSetter(*player_ptr).set_blindness(12 + randint0(4));
         }
 
-        update_smart_learn(player_ptr, m_idx, DRS_BLIND);
+        update_smart_learn(*player_ptr, m_idx, DRS_BLIND);
         return res;
     }
 
@@ -392,7 +392,7 @@ MonsterSpellResult spell_RF5_CONF(MONSTER_IDX m_idx, PlayerType *player_ptr, MON
             (void)BadStatusSetter(*player_ptr).mod_confusion(randint0(4) + 4);
         }
 
-        update_smart_learn(player_ptr, m_idx, DRS_CONF);
+        update_smart_learn(*player_ptr, m_idx, DRS_CONF);
         return res;
     }
 
@@ -449,7 +449,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, PlayerType *player_ptr, MON
             (void)BadStatusSetter(*player_ptr).mod_paralysis(randint0(4) + 4);
         }
 
-        update_smart_learn(player_ptr, m_idx, DRS_FREE);
+        update_smart_learn(*player_ptr, m_idx, DRS_FREE);
         return res;
     }
 
@@ -537,7 +537,7 @@ MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, PlayerType *player_ptr, MON
             (void)BadStatusSetter(*player_ptr).mod_deceleration(randint0(4) + 4, false);
         }
 
-        update_smart_learn(player_ptr, m_idx, DRS_FREE);
+        update_smart_learn(*player_ptr, m_idx, DRS_FREE);
         return res;
     }
 

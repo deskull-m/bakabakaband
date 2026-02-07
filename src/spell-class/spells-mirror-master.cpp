@@ -63,7 +63,7 @@ void SpellsMirrorMaster::remove_mirror(int y, int x)
         }
 
         if (grid.has_monster()) {
-            update_monster(this->player_ptr, grid.m_idx, false);
+            update_monster(*this->player_ptr, grid.m_idx, false);
         }
 
         update_local_illumination(*this->player_ptr, pos);

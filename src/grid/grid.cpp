@@ -107,7 +107,7 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short te
     }
 
     if (grid.has_monster()) {
-        update_monster(&player, grid.m_idx, false);
+        update_monster(player, grid.m_idx, false);
     }
 
     note_spot(creature, pos);
@@ -136,7 +136,7 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short te
         grid_neighbor.info |= CAVE_GLOW;
         if (grid_neighbor.is_view()) {
             if (grid_neighbor.has_monster()) {
-                update_monster(&player, grid_neighbor.m_idx, false);
+                update_monster(player, grid_neighbor.m_idx, false);
             }
 
             note_spot(creature, pos_neighbor);
@@ -229,7 +229,7 @@ static void update_local_illumination_aux(CreatureEntity &creature, const Pos2D 
     }
 
     if (grid.has_monster()) {
-        update_monster(&player, grid.m_idx, false);
+        update_monster(player, grid.m_idx, false);
     }
 
     note_spot(creature, pos);

@@ -443,7 +443,7 @@ void monster_gain_exp(PlayerType *player_ptr, MONSTER_IDX m_idx, MonraceId monra
         monster.parent_m_idx = 0;
     }
 
-    update_monster(player_ptr, m_idx, false);
+    update_monster(*player_ptr, m_idx, false);
     lite_spot(*player_ptr, monster.get_position());
 
     if (monster.is_riding()) {
