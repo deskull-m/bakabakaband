@@ -83,22 +83,21 @@ static tl::optional<DungeonId> select_random_non_beginner_dungeon()
 
 static void check_arena_floor(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     if (!dd_ptr->empty_level) {
         for (const auto &pos : floor.get_area()) {
-            place_bold(&player, pos.y, pos.x, GB_EXTRA);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA);
         }
 
         return;
     }
 
     for (const auto &pos : floor.get_area()) {
-        place_bold(&player, pos.y, pos.x, GB_FLOOR);
+        place_bold(creature, pos.y, pos.x, GB_FLOOR);
     }
 
     floor.get_area().each_edge([&](const Pos2D &pos) {
-        place_bold(&player, pos.y, pos.x, GB_EXTRA);
+        place_bold(creature, pos.y, pos.x, GB_EXTRA);
     });
 }
 
@@ -144,7 +143,6 @@ static void place_cave_contents(CreatureEntity &creature, DungeonData *dd_ptr, c
  */
 static void generate_circular_waterway(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     const auto margin = 2; // 外壁からのマージン
 
@@ -156,22 +154,22 @@ static void generate_circular_waterway(CreatureEntity &creature)
 
     // 上辺: 左から右へ
     for (int x = start_x; x <= end_x; x++) {
-        place_bold(&player, start_y, x, GB_WATER);
+        place_bold(creature, start_y, x, GB_WATER);
     }
 
     // 右辺: 上から下へ（角を重複させないため start_y+1 から）
     for (int y = start_y + 1; y <= end_y; y++) {
-        place_bold(&player, y, end_x, GB_WATER);
+        place_bold(creature, y, end_x, GB_WATER);
     }
 
     // 下辺: 右から左へ（角を重複させないため end_x-1 から）
     for (int x = end_x - 1; x >= start_x; x--) {
-        place_bold(&player, end_y, x, GB_WATER);
+        place_bold(creature, end_y, x, GB_WATER);
     }
 
     // 左辺: 下から上へ（角を重複させないため end_y-1 から start_y+1 まで）
     for (int y = end_y - 1; y > start_y; y--) {
-        place_bold(&player, y, start_x, GB_WATER);
+        place_bold(creature, y, start_x, GB_WATER);
     }
 }
 
@@ -200,14 +198,13 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
 
 static void make_tunnels(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     for (size_t i = 0; i < dd_ptr->tunn_n; i++) {
         dd_ptr->tunnel_pos = dd_ptr->tunnels[i];
         auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
         const auto &terrain = grid.get_terrain();
         if (terrain.flags.has_not(TerrainCharacteristics::MOVE) || terrain.flags.has_none_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::LAVA })) {
             grid.mimic = 0;
-            place_grid(&player, grid, GB_FLOOR);
+            place_grid(creature, grid, GB_FLOOR);
         }
     }
 }
@@ -219,7 +216,7 @@ static void make_walls(CreatureEntity &creature, DungeonData *dd_ptr, const Dung
         dd_ptr->tunnel_pos = dd_ptr->walls[j];
         auto &grid = creature.current_floor_ptr->get_grid(dd_ptr->tunnel_pos);
         grid.mimic = 0;
-        place_grid(&player, grid, GB_FLOOR);
+        place_grid(creature, grid, GB_FLOOR);
         if (evaluate_percent(dt_ptr->dun_tun_pen) && dungeon.flags.has_not(DungeonFeatureType::NO_DOORS)) {
             place_random_door(&player, dd_ptr->tunnel_pos, true);
         }
@@ -397,10 +394,9 @@ static void make_aqua_streams(CreatureEntity &creature, DungeonData *dd_ptr, con
  */
 static void place_bound_perm_wall(CreatureEntity &creature, Grid &grid)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if (bound_walls_perm) {
         grid.mimic = 0;
-        place_grid(&player, grid, GB_SOLID_PERM);
+        place_grid(creature, grid, GB_SOLID_PERM);
         return;
     }
 
@@ -410,7 +406,7 @@ static void place_bound_perm_wall(CreatureEntity &creature, Grid &grid)
     }
 
     grid.mimic = grid.feat;
-    place_grid(&player, grid, GB_SOLID_PERM);
+    place_grid(creature, grid, GB_SOLID_PERM);
 }
 
 static void make_perm_walls(CreatureEntity &creature)
@@ -424,7 +420,7 @@ static void make_perm_walls(CreatureEntity &creature)
 static bool check_place_necessary_objects(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto p_pos = new_player_spot(&player);
+    const auto p_pos = new_player_spot(creature);
     if (!p_pos) {
         dd_ptr->why = _("プレイヤー配置に失敗", "Failed to place a player");
         return false;
@@ -714,7 +710,7 @@ void apply_vestige_terrain_replacement(CreatureEntity &creature)
         // 4%の確率で地形を差し替え
         if (one_in_(replacement_chance)) {
             const auto terrain = rand_choice(replaceable_terrain_ids);
-            set_terrain_id_to_grid(&player, pos, terrain);
+            set_terrain_id_to_grid(creature, pos, terrain);
             replacement_count++;
         }
     }
@@ -778,7 +774,7 @@ void apply_void_terrain_placement(CreatureEntity &creature)
 
         // 計算された確率で地形を虚空に置き換え
         if (one_in_(placement_chance)) {
-            set_terrain_id_to_grid(&player, pos, void_terrain_id);
+            set_terrain_id_to_grid(creature, pos, void_terrain_id);
             placement_count++;
         }
     }

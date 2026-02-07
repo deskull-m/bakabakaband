@@ -128,7 +128,7 @@ void disclose_grid(PlayerType *player_ptr, const Pos2D &pos)
 
     if (grid.has(TerrainCharacteristics::SECRET)) {
         /* No longer hidden */
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::SECRET);
+        cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::SECRET);
     } else if (grid.mimic) {
         /* No longer hidden */
         grid.mimic = 0;
@@ -298,7 +298,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
 
     disturb(*player_ptr, false, true);
 
-    cave_alter_feat(player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::HIT_TRAP);
+    cave_alter_feat(*player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::HIT_TRAP);
     player_ptr->plus_incident_tree("TRAPPED", 1);
 
     /* Analyze */
@@ -548,7 +548,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     }
 
     if (break_trap && floor.has_trap_at(p_pos)) {
-        cave_alter_feat(player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::DISARM);
+        cave_alter_feat(*player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::DISARM);
         msg_print(_("トラップを粉砕した。", "You destroyed the trap."));
     }
 }

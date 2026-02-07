@@ -2689,7 +2689,7 @@ void update_creature(PlayerType *player_ptr)
 
     if (rfu.has(StatusRecalculatingFlag::FLOW)) {
         rfu.reset_flag(StatusRecalculatingFlag::FLOW);
-        update_flow(player_ptr);
+        update_flow(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::DISTANCE)) {
@@ -2759,11 +2759,11 @@ void wreck_the_pattern(PlayerType *player_ptr)
     while (to_ruin--) {
         const auto pos = scatter(floor, p_pos, 4, PROJECT_NONE);
         if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PATTERN) && (floor.get_grid(pos).get_terrain().subtype != PATTERN_TILE_WRECKED)) {
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::PATTERN_CORRUPTED);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::PATTERN_CORRUPTED);
         }
     }
 
-    set_terrain_id_to_grid(player_ptr, p_pos, TerrainTag::PATTERN_CORRUPTED);
+    set_terrain_id_to_grid(*player_ptr, p_pos, TerrainTag::PATTERN_CORRUPTED);
 }
 
 /*!

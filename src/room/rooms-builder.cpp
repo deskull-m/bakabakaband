@@ -65,20 +65,20 @@ void build_small_room(PlayerType *player_ptr, POSITION x0, POSITION y0)
 {
     const Pos2D pos(y0, x0);
     for (auto y = y0 - 1; y <= y0 + 1; y++) {
-        place_bold(player_ptr, y, pos.x - 1, GB_INNER);
-        place_bold(player_ptr, y, pos.x + 1, GB_INNER);
+        place_bold(*player_ptr, y, pos.x - 1, GB_INNER);
+        place_bold(*player_ptr, y, pos.x + 1, GB_INNER);
     }
 
     for (auto x = x0 - 1; x <= x0 + 1; x++) {
-        place_bold(player_ptr, pos.y - 1, x, GB_INNER);
-        place_bold(player_ptr, pos.y + 1, x, GB_INNER);
+        place_bold(*player_ptr, pos.y - 1, x, GB_INNER);
+        place_bold(*player_ptr, pos.y + 1, x, GB_INNER);
     }
 
     const auto d = rand_choice(Direction::directions_4());
     place_secret_door(player_ptr, pos + d.vec());
 
     player_ptr->current_floor_ptr->set_terrain_id_at(pos, TerrainTag::NONE, TerrainKind::MIMIC);
-    place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+    place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
 }
 
 /*
@@ -167,16 +167,16 @@ void build_room(PlayerType *player_ptr, POSITION x1, POSITION x2, POSITION y1, P
     POSITION ysize = y2 - y1;
     auto &floor = *player_ptr->current_floor_ptr;
     for (int i = 0; i <= xsize; i++) {
-        place_bold(player_ptr, y1, x1 + i, GB_OUTER_NOPERM);
+        place_bold(*player_ptr, y1, x1 + i, GB_OUTER_NOPERM);
         floor.grid_array[y1][x1 + i].info |= (CAVE_ROOM | CAVE_ICKY);
-        place_bold(player_ptr, y2, x1 + i, GB_OUTER_NOPERM);
+        place_bold(*player_ptr, y2, x1 + i, GB_OUTER_NOPERM);
         floor.grid_array[y2][x1 + i].info |= (CAVE_ROOM | CAVE_ICKY);
     }
 
     for (int i = 1; i < ysize; i++) {
-        place_bold(player_ptr, y1 + i, x1, GB_OUTER_NOPERM);
+        place_bold(*player_ptr, y1 + i, x1, GB_OUTER_NOPERM);
         floor.grid_array[y1 + i][x1].info |= (CAVE_ROOM | CAVE_ICKY);
-        place_bold(player_ptr, y1 + i, x2, GB_OUTER_NOPERM);
+        place_bold(*player_ptr, y1 + i, x2, GB_OUTER_NOPERM);
         floor.grid_array[y1 + i][x2].info |= (CAVE_ROOM | CAVE_ICKY);
     }
 
@@ -184,7 +184,7 @@ void build_room(PlayerType *player_ptr, POSITION x1, POSITION x2, POSITION y1, P
         for (POSITION y = 1; y < ysize; y++) {
             auto &grid = floor.grid_array[y1 + y][x1 + x];
             if (grid.is_extra()) {
-                place_bold(player_ptr, y1 + y, x1 + x, GB_FLOOR);
+                place_bold(*player_ptr, y1 + y, x1 + x, GB_FLOOR);
                 grid.info |= (CAVE_ROOM | CAVE_ICKY);
             } else {
                 grid.info |= (CAVE_ROOM | CAVE_ICKY);
@@ -227,23 +227,23 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         int x;
         int y;
         for (x = x1; x <= x2; x++) {
-            place_bold(player_ptr, y1, x, GB_OUTER);
-            place_bold(player_ptr, y2, x, GB_OUTER);
+            place_bold(*player_ptr, y1, x, GB_OUTER);
+            place_bold(*player_ptr, y2, x, GB_OUTER);
         }
 
         for (y = y1 + 1; y < y2; y++) {
-            place_bold(player_ptr, y, x1, GB_OUTER);
-            place_bold(player_ptr, y, x2, GB_OUTER);
+            place_bold(*player_ptr, y, x1, GB_OUTER);
+            place_bold(*player_ptr, y, x2, GB_OUTER);
         }
 
         if (one_in_(2)) {
             y = randint1(ysize) + y1;
-            place_bold(player_ptr, y, x1, GB_FLOOR);
-            place_bold(player_ptr, y, x2, GB_FLOOR);
+            place_bold(*player_ptr, y, x1, GB_FLOOR);
+            place_bold(*player_ptr, y, x2, GB_FLOOR);
         } else {
             x = randint1(xsize) + x1;
-            place_bold(player_ptr, y1, x, GB_FLOOR);
-            place_bold(player_ptr, y2, x, GB_FLOOR);
+            place_bold(*player_ptr, y1, x, GB_FLOOR);
+            place_bold(*player_ptr, y2, x, GB_FLOOR);
         }
 
         int t1 = randint1(ysize / 3) + y1;
@@ -271,7 +271,7 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         if ((xsize < 3) || (ysize < 3)) {
             for (int y = y1; y < y2; y++) {
                 for (int x = x1; x < x2; x++) {
-                    place_bold(player_ptr, y, x, GB_INNER);
+                    place_bold(*player_ptr, y, x, GB_INNER);
                 }
             }
 
@@ -279,22 +279,22 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         }
 
         for (int x = x1 + 1; x <= x2 - 1; x++) {
-            place_bold(player_ptr, y1 + 1, x, GB_INNER);
-            place_bold(player_ptr, y2 - 1, x, GB_INNER);
+            place_bold(*player_ptr, y1 + 1, x, GB_INNER);
+            place_bold(*player_ptr, y2 - 1, x, GB_INNER);
         }
 
         for (int y = y1 + 1; y <= y2 - 1; y++) {
-            place_bold(player_ptr, y, x1 + 1, GB_INNER);
-            place_bold(player_ptr, y, x2 - 1, GB_INNER);
+            place_bold(*player_ptr, y, x1 + 1, GB_INNER);
+            place_bold(*player_ptr, y, x2 - 1, GB_INNER);
         }
 
         int y = randint1(ysize - 3) + y1 + 1;
         if (one_in_(2)) {
             /* left */
-            place_bold(player_ptr, y, x1 + 1, GB_FLOOR);
+            place_bold(*player_ptr, y, x1 + 1, GB_FLOOR);
         } else {
             /* right */
-            place_bold(player_ptr, y, x2 - 1, GB_FLOOR);
+            place_bold(*player_ptr, y, x2 - 1, GB_FLOOR);
         }
 
         build_recursive_room(player_ptr, x1 + 2, y1 + 2, x2 - 2, y2 - 2, power + 3);
@@ -305,7 +305,7 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         if (xsize < 3) {
             for (int y = y1; y < y2; y++) {
                 for (int x = x1; x < x2; x++) {
-                    place_bold(player_ptr, y, x, GB_INNER);
+                    place_bold(*player_ptr, y, x, GB_INNER);
                 }
             }
             return;
@@ -321,7 +321,7 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         if (ysize < 3) {
             for (int y = y1; y < y2; y++) {
                 for (int x = x1; x < x2; x++) {
-                    place_bold(player_ptr, y, x, GB_INNER);
+                    place_bold(*player_ptr, y, x, GB_INNER);
                 }
             }
 
@@ -373,7 +373,7 @@ void add_outer_wall(PlayerType *player_ptr, POSITION x, POSITION y, int light, P
     }
 
     if (grid.is_extra()) {
-        place_bold(player_ptr, pos.y, pos.x, GB_OUTER);
+        place_bold(*player_ptr, pos.y, pos.x, GB_OUTER);
         if (light) {
             grid.info |= CAVE_GLOW;
         }

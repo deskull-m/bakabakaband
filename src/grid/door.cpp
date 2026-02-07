@@ -37,14 +37,14 @@ void add_door(PlayerType *player_ptr, const Pos2D &pos)
     const auto pos_right = pos + Pos2DVec(0, 1);
     if (floor.get_grid(pos_top).is_floor() && floor.get_grid(pos_bottom).is_floor() && floor.get_grid(pos_left).is_outer() && floor.get_grid(pos_right).is_outer()) {
         place_secret_door(player_ptr, pos);
-        place_bold(player_ptr, pos_left.y, pos_left.x, GB_SOLID);
-        place_bold(player_ptr, pos_right.y, pos_right.x, GB_SOLID);
+        place_bold(*player_ptr, pos_left.y, pos_left.x, GB_SOLID);
+        place_bold(*player_ptr, pos_right.y, pos_right.x, GB_SOLID);
     }
 
     if (floor.get_grid(pos_top).is_outer() && floor.get_grid(pos_bottom).is_outer() && floor.get_grid(pos_left).is_floor() && floor.get_grid(pos_right).is_floor()) {
         place_secret_door(player_ptr, pos);
-        place_bold(player_ptr, pos_top.y, pos_top.x, GB_SOLID);
-        place_bold(player_ptr, pos_bottom.y, pos_bottom.x, GB_SOLID);
+        place_bold(*player_ptr, pos_top.y, pos_top.x, GB_SOLID);
+        place_bold(*player_ptr, pos_bottom.y, pos_bottom.x, GB_SOLID);
     }
 }
 
@@ -59,7 +59,7 @@ void place_secret_door(PlayerType *player_ptr, const Pos2D &pos, tl::optional<Do
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (dungeon.flags.has(DungeonFeatureType::NO_DOORS)) {
-        place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
         return;
     }
 
@@ -85,7 +85,7 @@ void place_locked_door(PlayerType *player_ptr, const Pos2D &pos)
     auto &floor = *player_ptr->current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (dungeon.flags.has(DungeonFeatureType::NO_DOORS)) {
-        place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
         return;
     }
 
@@ -108,7 +108,7 @@ void place_random_door(PlayerType *player_ptr, const Pos2D &pos, bool is_room_do
     grid.set_terrain_id(TerrainTag::NONE, TerrainKind::MIMIC);
     const auto &dungeon = floor.get_dungeon_definition();
     if (dungeon.flags.has(DungeonFeatureType::NO_DOORS)) {
-        place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
         return;
     }
 
@@ -139,7 +139,7 @@ void place_random_door(PlayerType *player_ptr, const Pos2D &pos, bool is_room_do
     }
 
     if (tag == TerrainTag::NONE) {
-        place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
     } else {
         floor.set_terrain_id_at(pos, tag);
     }
@@ -157,7 +157,7 @@ void place_closed_door(PlayerType *player_ptr, const Pos2D &pos, DoorKind door_k
 {
     auto &floor = *player_ptr->current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_DOORS)) {
-        place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
         return;
     }
 
@@ -173,10 +173,10 @@ void place_closed_door(PlayerType *player_ptr, const Pos2D &pos, DoorKind door_k
     }
 
     if (tag == TerrainTag::NONE) {
-        place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
         return;
     }
 
-    set_terrain_id_to_grid(player_ptr, pos, tag);
+    set_terrain_id_to_grid(*player_ptr, pos, tag);
     floor.get_grid(pos).info &= ~(CAVE_MASK);
 }

@@ -73,7 +73,7 @@ void generate_room_floor(PlayerType *player_ptr, const Rect2D &rectangle, int li
 
     for (const auto &pos : rectangle) {
         auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-        place_grid(player_ptr, grid, GB_FLOOR);
+        place_grid(*player_ptr, grid, GB_FLOOR);
         grid.add_info(info);
     }
 }
@@ -81,7 +81,7 @@ void generate_room_floor(PlayerType *player_ptr, const Rect2D &rectangle, int li
 void generate_fill_perm_bold(PlayerType *player_ptr, const Rect2D &rectangle)
 {
     for (const auto &pos : rectangle) {
-        place_bold(player_ptr, pos.y, pos.x, GB_INNER_PERM);
+        place_bold(*player_ptr, pos.y, pos.x, GB_INNER_PERM);
     }
 }
 
@@ -113,7 +113,7 @@ void build_stores(PlayerType *player_ptr, const Pos2D &pos_ug, const std::vector
             continue;
         }
 
-        set_terrain_id_to_grid(player_ptr, pos_ug + vec, it->idx);
+        set_terrain_id_to_grid(*player_ptr, pos_ug + vec, it->idx);
         store_init(VALID_TOWNS, stores[i]);
     }
 }

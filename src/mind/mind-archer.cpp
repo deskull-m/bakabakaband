@@ -133,7 +133,7 @@ bool create_ammo(PlayerType *player_ptr)
             autopick_alter_item(player_ptr, slot, false);
         }
 
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_ROCK);
+        cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_ROCK);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         return true;
     }

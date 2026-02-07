@@ -110,7 +110,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         if (message) {
             msg_format(_("木は%s。", "A tree %s"), message);
-            set_terrain_id_to_grid(player_ptr, pos, one_in_(3) ? TerrainTag::BRAKE : TerrainTag::GRASS);
+            set_terrain_id_to_grid(*player_ptr, pos, one_in_(3) ? TerrainTag::BRAKE : TerrainTag::GRASS);
 
             /* Observe */
             if (grid.is_mark()) {
@@ -130,7 +130,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         }
         if (message) {
             msg_format(_("氷は%s。", "The ice %s"), message);
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::FLOOR);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::FLOOR);
 
             /* Observe */
             if (grid.is_mark()) {
@@ -188,12 +188,12 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
                 obvious = true;
             }
 
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::DISARM);
+            cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::DISARM);
         }
 
         if (floor.has_closed_door_at(pos) && terrain.power && terrain.flags.has(TerrainCharacteristics::OPEN)) {
             FEAT_IDX old_feat = grid.feat;
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::DISARM);
+            cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::DISARM);
             if (known && (old_feat != grid.feat)) {
                 msg_print(_("カチッと音がした！", "Click!"));
                 obvious = true;
@@ -216,7 +216,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
                 obvious = true;
             }
 
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::TUNNEL);
+            cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::TUNNEL);
         }
 
         if (player_ptr->effects()->blindness().is_blind() || !grid.has_los()) {
@@ -236,7 +236,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         int16_t old_mimic = grid.mimic;
         const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
 
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::SPIKE);
+        cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::SPIKE);
         grid.mimic = old_mimic;
 
         note_spot(*player_ptr, pos);
@@ -260,7 +260,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             obvious = true;
         }
 
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);
+        cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
@@ -269,7 +269,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             break;
         }
 
-        set_terrain_id_to_grid(player_ptr, pos, Doors::get_instance().get_door(DoorKind::DOOR).closed);
+        set_terrain_id_to_grid(*player_ptr, pos, Doors::get_instance().get_door(DoorKind::DOOR).closed);
         if (grid.is_mark()) {
             obvious = true;
         }
@@ -283,7 +283,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             break;
         }
 
-        set_terrain_id_to_grid(player_ptr, pos, TerrainTag::MAGMA_VEIN);
+        set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::MAGMA_VEIN);
         if (grid.is_mark()) {
             obvious = true;
         }
@@ -294,7 +294,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             break;
         }
 
-        set_terrain_id_to_grid(player_ptr, pos, TerrainTag::TREE);
+        set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::TREE);
         if (grid.is_mark()) {
             obvious = true;
         }
@@ -315,7 +315,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             break;
         }
 
-        set_terrain_id_to_grid(player_ptr, pos, TerrainTag::GRANITE_WALL);
+        set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::GRANITE_WALL);
         break;
     case AttributeType::LAVA_FLOW: {
         if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
@@ -325,9 +325,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (terrain.flags.has_not(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SHALLOW_LAVA);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::SHALLOW_LAVA);
         } else if (dam) {
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::DEEP_LAVA);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::DEEP_LAVA);
         }
 
         break;
@@ -340,9 +340,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (terrain.flags.has_not(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SHALLOW_WATER);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::SHALLOW_WATER);
         } else if (dam) {
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::DEEP_WATER);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::DEEP_WATER);
         }
 
         break;
@@ -356,7 +356,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         grid.info |= (CAVE_GLOW);
         note_spot(*player_ptr, pos);
         lite_spot(*player_ptr, pos);
-        update_local_illumination(player_ptr, pos);
+        update_local_illumination(*player_ptr, pos);
 
         if (player_can_see_bold(player_ptr, y, x)) {
             obvious = true;
@@ -409,7 +409,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         lite_spot(*player_ptr, pos);
 
-        update_local_illumination(player_ptr, pos);
+        update_local_illumination(*player_ptr, pos);
 
         if (player_can_see_bold(player_ptr, y, x)) {
             obvious = true;
@@ -439,7 +439,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             sound(SoundKind::GLASS);
         }
 
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);
+        cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
@@ -461,7 +461,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             sound(SoundKind::GLASS);
         }
 
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);
+        cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::HURT_ROCK);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
@@ -474,7 +474,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             break;
         }
 
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::HURT_DISI);
+        cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::HURT_DISI);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
@@ -486,9 +486,9 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (!terrain.flags.has(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SHALLOW_DUNG_POOL);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::SHALLOW_DUNG_POOL);
         } else if (dam) {
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::DEEP_DUNG_POOL);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::DEEP_DUNG_POOL);
         }
 
         break;
@@ -500,7 +500,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
             if (!terrain.flags.has(TerrainCharacteristics::FLOOR)) {
                 break;
             }
-            set_terrain_id_to_grid(player_ptr, pos, TerrainTag::SPIDER_SILK_NET);
+            set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::SPIDER_SILK_NET);
         }
 
         break;

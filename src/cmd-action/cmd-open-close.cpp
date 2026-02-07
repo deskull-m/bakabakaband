@@ -54,7 +54,7 @@ static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX 
         flag = false;
         int i = player_ptr->skill_dis;
         const auto effects = player_ptr->effects();
-        if (effects->blindness().is_blind() || no_lite(player_ptr)) {
+        if (effects->blindness().is_blind() || no_lite(*player_ptr)) {
             i = i / 10;
         }
 
@@ -355,7 +355,7 @@ void do_cmd_spike(PlayerType *player_ptr)
     } else {
         PlayerEnergy(player_ptr).set_player_turn_energy(100);
         msg_format(_("%sにくさびを打ち込んだ。", "You jam the %s with a spike."), terrain_mimic.name.data());
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::SPIKE);
+        cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::SPIKE);
         vary_item(player_ptr, i_idx, -1);
     }
 }

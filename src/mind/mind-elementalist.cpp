@@ -1456,7 +1456,7 @@ static bool door_to_darkness(PlayerType *player_ptr, int distance)
         break;
     }
 
-    const auto flag = cave_player_teleportable_bold(player_ptr, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS) && is_target_grid_dark(floor, *p_pos);
+    const auto flag = cave_player_teleportable_bold(*player_ptr, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS) && is_target_grid_dark(floor, *p_pos);
     if (flag) {
         teleport_player_to(player_ptr, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS);
     } else {

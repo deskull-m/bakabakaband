@@ -55,7 +55,7 @@ bool build_type1(PlayerType *player_ptr, DungeonData *dd_ptr)
     for (auto y = top - 1; y <= bottom + 1; y++) {
         for (auto x = left - 1; x <= right + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            place_grid(player_ptr, grid, GB_FLOOR);
+            place_grid(*player_ptr, grid, GB_FLOOR);
             grid.info |= (CAVE_ROOM);
             if (should_brighten) {
                 grid.info |= (CAVE_GLOW);
@@ -65,13 +65,13 @@ bool build_type1(PlayerType *player_ptr, DungeonData *dd_ptr)
 
     /* Walls around the room */
     for (auto y = top - 1; y <= bottom + 1; y++) {
-        place_grid(player_ptr, floor.get_grid({ y, left - 1 }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y, right + 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, left - 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, right + 1 }), GB_OUTER);
     }
 
     for (auto x = left - 1; x <= right + 1; x++) {
-        place_grid(player_ptr, floor.get_grid({ top - 1, x }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ bottom + 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ top - 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ bottom + 1, x }), GB_OUTER);
     }
 
     /* Hack -- Occasional curtained room */
@@ -92,7 +92,7 @@ bool build_type1(PlayerType *player_ptr, DungeonData *dd_ptr)
         for (auto y = top; y <= bottom; y += 2) {
             for (auto x = left; x <= right; x += 2) {
                 auto &grid = floor.get_grid({ y, x });
-                place_grid(player_ptr, grid, GB_INNER);
+                place_grid(*player_ptr, grid, GB_INNER);
             }
         }
 
@@ -102,10 +102,10 @@ bool build_type1(PlayerType *player_ptr, DungeonData *dd_ptr)
     /* Hack -- Occasional room with four pillars */
     if (one_in_(20)) {
         if ((top + 4 < bottom) && (left + 4 < right)) {
-            place_grid(player_ptr, floor.get_grid({ top + 1, left + 1 }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ top + 1, right - 1 }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ bottom - 1, left + 1 }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ bottom - 1, right - 1 }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ top + 1, left + 1 }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ top + 1, right - 1 }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ bottom - 1, left + 1 }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ bottom - 1, right - 1 }), GB_INNER);
         }
 
         return true;
@@ -114,13 +114,13 @@ bool build_type1(PlayerType *player_ptr, DungeonData *dd_ptr)
     /* Hack -- Occasional ragged-edge room */
     if (one_in_(50)) {
         for (auto y = top + 2; y <= bottom - 2; y += 2) {
-            place_grid(player_ptr, floor.get_grid({ y, left }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ y, right }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ y, left }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ y, right }), GB_INNER);
         }
 
         for (auto x = left + 2; x <= right - 2; x += 2) {
-            place_grid(player_ptr, floor.get_grid({ top, x }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ bottom, x }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ top, x }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ bottom, x }), GB_INNER);
         }
 
         return true;
@@ -136,27 +136,27 @@ bool build_type1(PlayerType *player_ptr, DungeonData *dd_ptr)
     if (randint1(100) < 50) {
         /* Horizontal wall */
         for (auto x = left; x <= right; x++) {
-            place_bold(player_ptr, center->y, x, GB_INNER);
+            place_bold(*player_ptr, center->y, x, GB_INNER);
             if (should_close_curtain) {
                 floor.set_terrain_id_at({ center->y, x }, doors.get_door(DoorKind::CURTAIN).closed);
             }
         }
 
         /* Prevent edge of wall from being tunneled */
-        place_bold(player_ptr, center->y, left - 1, GB_SOLID);
-        place_bold(player_ptr, center->y, right + 1, GB_SOLID);
+        place_bold(*player_ptr, center->y, left - 1, GB_SOLID);
+        place_bold(*player_ptr, center->y, right + 1, GB_SOLID);
     } else {
         /* Vertical wall */
         for (auto y = top; y <= bottom; y++) {
-            place_bold(player_ptr, y, center->x, GB_INNER);
+            place_bold(*player_ptr, y, center->x, GB_INNER);
             if (should_close_curtain) {
                 floor.set_terrain_id_at({ y, center->x }, doors.get_door(DoorKind::CURTAIN).closed);
             }
         }
 
         /* Prevent edge of wall from being tunneled */
-        place_bold(player_ptr, top - 1, center->x, GB_SOLID);
-        place_bold(player_ptr, bottom + 1, center->x, GB_SOLID);
+        place_bold(*player_ptr, top - 1, center->x, GB_SOLID);
+        place_bold(*player_ptr, bottom + 1, center->x, GB_SOLID);
     }
 
     place_random_door(player_ptr, *center, true);
@@ -198,7 +198,7 @@ bool build_type2(PlayerType *player_ptr, DungeonData *dd_ptr)
     for (auto y = y1a - 1; y <= y2a + 1; y++) {
         for (auto x = x1a - 1; x <= x2a + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            place_grid(player_ptr, grid, GB_FLOOR);
+            place_grid(*player_ptr, grid, GB_FLOOR);
             grid.info |= (CAVE_ROOM);
             if (should_brighten) {
                 grid.info |= (CAVE_GLOW);
@@ -210,7 +210,7 @@ bool build_type2(PlayerType *player_ptr, DungeonData *dd_ptr)
     for (auto y = y1b - 1; y <= y2b + 1; y++) {
         for (auto x = x1b - 1; x <= x2b + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            place_grid(player_ptr, grid, GB_FLOOR);
+            place_grid(*player_ptr, grid, GB_FLOOR);
             grid.info |= (CAVE_ROOM);
             if (should_brighten) {
                 grid.info |= (CAVE_GLOW);
@@ -220,35 +220,35 @@ bool build_type2(PlayerType *player_ptr, DungeonData *dd_ptr)
 
     /* Place the walls around room "a" */
     for (auto y = y1a - 1; y <= y2a + 1; y++) {
-        place_grid(player_ptr, floor.get_grid({ y, x1a - 1 }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y, x2a + 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x1a - 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x2a + 1 }), GB_OUTER);
     }
     for (auto x = x1a - 1; x <= x2a + 1; x++) {
-        place_grid(player_ptr, floor.get_grid({ y1a - 1, x }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y2a + 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y1a - 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y2a + 1, x }), GB_OUTER);
     }
 
     /* Place the walls around room "b" */
     for (auto y = y1b - 1; y <= y2b + 1; y++) {
-        place_grid(player_ptr, floor.get_grid({ y, x1b - 1 }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y, x2b + 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x1b - 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x2b + 1 }), GB_OUTER);
     }
     for (auto x = x1b - 1; x <= x2b + 1; x++) {
-        place_grid(player_ptr, floor.get_grid({ y1b - 1, x }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y2b + 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y1b - 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y2b + 1, x }), GB_OUTER);
     }
 
     /* Replace the floor for room "a" */
     for (auto y = y1a; y <= y2a; y++) {
         for (auto x = x1a; x <= x2a; x++) {
-            place_grid(player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
+            place_grid(*player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
         }
     }
 
     /* Replace the floor for room "b" */
     for (auto y = y1b; y <= y2b; y++) {
         for (auto x = x1b; x <= x2b; x++) {
-            place_grid(player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
+            place_grid(*player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
         }
     }
 
@@ -306,7 +306,7 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
     for (auto y = y1a - 1; y <= y2a + 1; y++) {
         for (auto x = x1a - 1; x <= x2a + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            place_grid(player_ptr, grid, GB_FLOOR);
+            place_grid(*player_ptr, grid, GB_FLOOR);
             grid.info |= (CAVE_ROOM);
             if (should_brighten) {
                 grid.info |= (CAVE_GLOW);
@@ -318,7 +318,7 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
     for (auto y = y1b - 1; y <= y2b + 1; y++) {
         for (auto x = x1b - 1; x <= x2b + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            place_grid(player_ptr, grid, GB_FLOOR);
+            place_grid(*player_ptr, grid, GB_FLOOR);
             grid.info |= (CAVE_ROOM);
             if (should_brighten) {
                 grid.info |= (CAVE_GLOW);
@@ -328,35 +328,35 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
 
     /* Place the walls around room "a" */
     for (auto y = y1a - 1; y <= y2a + 1; y++) {
-        place_grid(player_ptr, floor.get_grid({ y, x1a - 1 }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y, x2a + 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x1a - 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x2a + 1 }), GB_OUTER);
     }
     for (auto x = x1a - 1; x <= x2a + 1; x++) {
-        place_grid(player_ptr, floor.get_grid({ y1a - 1, x }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y2a + 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y1a - 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y2a + 1, x }), GB_OUTER);
     }
 
     /* Place the walls around room "b" */
     for (auto y = y1b - 1; y <= y2b + 1; y++) {
-        place_grid(player_ptr, floor.get_grid({ y, x1b - 1 }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y, x2b + 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x1b - 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x2b + 1 }), GB_OUTER);
     }
     for (auto x = x1b - 1; x <= x2b + 1; x++) {
-        place_grid(player_ptr, floor.get_grid({ y1b - 1, x }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y2b + 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y1b - 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y2b + 1, x }), GB_OUTER);
     }
 
     /* Replace the floor for room "a" */
     for (auto y = y1a; y <= y2a; y++) {
         for (auto x = x1a; x <= x2a; x++) {
-            place_grid(player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
+            place_grid(*player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
         }
     }
 
     /* Replace the floor for room "b" */
     for (auto y = y1b; y <= y2b; y++) {
         for (auto x = x1b; x <= x2b; x++) {
-            place_grid(player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
+            place_grid(*player_ptr, floor.get_grid({ y, x }), GB_FLOOR);
         }
     }
 
@@ -366,7 +366,7 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
         /* Large solid middle pillar */
     case 1: {
         for (const auto &pos : rect_inner) {
-            place_grid(player_ptr, floor.get_grid(pos), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid(pos), GB_INNER);
         }
         break;
     }
@@ -375,7 +375,7 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
     case 2: {
         /* Build the vault */
         rect_inner.each_edge([&](const auto &pos) {
-            place_grid(player_ptr, floor.get_grid(pos), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid(pos), GB_INNER);
         });
 
         /* Place a secret door on the inner room */
@@ -416,8 +416,8 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
                     continue;
                 }
 
-                place_grid(player_ptr, floor.get_grid({ y, x1a - 1 }), GB_INNER);
-                place_grid(player_ptr, floor.get_grid({ y, x2a + 1 }), GB_INNER);
+                place_grid(*player_ptr, floor.get_grid({ y, x1a - 1 }), GB_INNER);
+                place_grid(*player_ptr, floor.get_grid({ y, x2a + 1 }), GB_INNER);
             }
 
             /* Pinch the north/south sides */
@@ -426,8 +426,8 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
                     continue;
                 }
 
-                place_grid(player_ptr, floor.grid_array[y1b - 1][x], GB_INNER);
-                place_grid(player_ptr, floor.grid_array[y2b + 1][x], GB_INNER);
+                place_grid(*player_ptr, floor.grid_array[y1b - 1][x], GB_INNER);
+                place_grid(*player_ptr, floor.grid_array[y2b + 1][x], GB_INNER);
             }
 
             /* Sometimes shut using secret doors */
@@ -445,16 +445,16 @@ bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr)
 
         /* Occasionally put a "plus" in the center */
         else if (one_in_(3)) {
-            place_grid(player_ptr, floor.get_grid(*center), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ y1b, center->x }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ y2b, center->x }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ center->y, x1a }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ center->y, x2a }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid(*center), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ y1b, center->x }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ y2b, center->x }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ center->y, x1a }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ center->y, x2a }), GB_INNER);
         }
 
         /* Occasionally put a pillar in the center */
         else if (one_in_(3)) {
-            place_grid(player_ptr, floor.get_grid(*center), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid(*center), GB_INNER);
         }
 
         break;
@@ -498,7 +498,7 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
     for (auto y = y1_outer - 1; y <= y2_outer + 1; y++) {
         for (auto x = x1_outer - 1; x <= x2_outer + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            place_grid(player_ptr, grid, GB_FLOOR);
+            place_grid(*player_ptr, grid, GB_FLOOR);
             grid.info |= (CAVE_ROOM);
             if (should_brighten) {
                 grid.info |= (CAVE_GLOW);
@@ -508,12 +508,12 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
 
     /* Outer Walls */
     for (auto y = y1_outer - 1; y <= y2_outer + 1; y++) {
-        place_grid(player_ptr, floor.get_grid({ y, x1_outer - 1 }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y, x2_outer + 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x1_outer - 1 }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y, x2_outer + 1 }), GB_OUTER);
     }
     for (auto x = x1_outer - 1; x <= x2_outer + 1; x++) {
-        place_grid(player_ptr, floor.get_grid({ y1_outer - 1, x }), GB_OUTER);
-        place_grid(player_ptr, floor.get_grid({ y2_outer + 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y1_outer - 1, x }), GB_OUTER);
+        place_grid(*player_ptr, floor.get_grid({ y2_outer + 1, x }), GB_OUTER);
     }
 
     const auto y1_inner = y1_outer + 2;
@@ -523,12 +523,12 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
 
     /* The inner walls */
     for (auto y = y1_inner - 1; y <= y2_inner + 1; y++) {
-        place_grid(player_ptr, floor.get_grid({ y, x1_inner - 1 }), GB_INNER);
-        place_grid(player_ptr, floor.get_grid({ y, x2_inner + 1 }), GB_INNER);
+        place_grid(*player_ptr, floor.get_grid({ y, x1_inner - 1 }), GB_INNER);
+        place_grid(*player_ptr, floor.get_grid({ y, x2_inner + 1 }), GB_INNER);
     }
     for (auto x = x1_inner - 1; x <= x2_inner + 1; x++) {
-        place_grid(player_ptr, floor.get_grid({ y1_inner - 1, x }), GB_INNER);
-        place_grid(player_ptr, floor.get_grid({ y2_inner + 1, x }), GB_INNER);
+        place_grid(*player_ptr, floor.get_grid({ y1_inner - 1, x }), GB_INNER);
+        place_grid(*player_ptr, floor.get_grid({ y2_inner + 1, x }), GB_INNER);
     }
 
     /* Inner room variations */
@@ -582,7 +582,7 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
                     continue;
                 }
 
-                place_grid(player_ptr, floor.get_grid({ y, x }), GB_INNER);
+                place_grid(*player_ptr, floor.get_grid({ y, x }), GB_INNER);
             }
         }
 
@@ -638,7 +638,7 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
         /* Large Inner Pillar */
         for (auto y = center->y - 1; y <= center->y + 1; y++) {
             for (auto x = center->x - 1; x <= center->x + 1; x++) {
-                place_grid(player_ptr, floor.get_grid({ y, x }), GB_INNER);
+                place_grid(*player_ptr, floor.get_grid({ y, x }), GB_INNER);
             }
         }
 
@@ -647,11 +647,11 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
             const auto tmp = randint1(2);
             for (auto y = center->y - 1; y <= center->y + 1; y++) {
                 for (auto x = center->x - 5 - tmp; x <= center->x - 3 - tmp; x++) {
-                    place_grid(player_ptr, floor.get_grid({ y, x }), GB_INNER);
+                    place_grid(*player_ptr, floor.get_grid({ y, x }), GB_INNER);
                 }
 
                 for (auto x = center->x + 3 + tmp; x <= center->x + 5 + tmp; x++) {
-                    place_grid(player_ptr, floor.get_grid({ y, x }), GB_INNER);
+                    place_grid(*player_ptr, floor.get_grid({ y, x }), GB_INNER);
                 }
             }
         }
@@ -664,13 +664,13 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
 
             /* Long horizontal walls */
             for (auto x = center->x - 5; x <= center->x + 5; x++) {
-                place_grid(player_ptr, floor.get_grid({ center->y - 1, x }), GB_INNER);
-                place_grid(player_ptr, floor.get_grid({ center->y + 1, x }), GB_INNER);
+                place_grid(*player_ptr, floor.get_grid({ center->y - 1, x }), GB_INNER);
+                place_grid(*player_ptr, floor.get_grid({ center->y + 1, x }), GB_INNER);
             }
 
             /* Close off the left/right edges */
-            place_grid(player_ptr, floor.get_grid({ center->y, center->x - 5 }), GB_INNER);
-            place_grid(player_ptr, floor.get_grid({ center->y, center->x + 5 }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ center->y, center->x - 5 }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ center->y, center->x + 5 }), GB_INNER);
 
             /* Secret doors (random top/bottom) */
             place_secret_door(player_ptr, { center->y - 3 + (randint1(2) * 2), center->x - 3 }, door_type);
@@ -714,7 +714,7 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
         for (auto y = y1_inner; y <= y2_inner; y++) {
             for (auto x = x1_inner; x <= x2_inner; x++) {
                 if (0x1 & (x + y)) {
-                    place_grid(player_ptr, floor.get_grid({ y, x }), GB_INNER);
+                    place_grid(*player_ptr, floor.get_grid({ y, x }), GB_INNER);
                 }
             }
         }
@@ -741,11 +741,11 @@ bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr)
 
         /* Inner "cross" */
         for (auto y = y1_inner; y <= y2_inner; y++) {
-            place_grid(player_ptr, floor.get_grid({ y, center->x }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ y, center->x }), GB_INNER);
         }
 
         for (auto x = x1_inner; x <= x2_inner; x++) {
-            place_grid(player_ptr, floor.get_grid({ center->y, x }), GB_INNER);
+            place_grid(*player_ptr, floor.get_grid({ center->y, x }), GB_INNER);
         }
 
         /* Doors into the rooms */
@@ -804,10 +804,10 @@ bool build_type11(PlayerType *player_ptr, DungeonData *dd_ptr)
         for (auto y = center->y - rad; y <= center->y + rad; y++) {
             if (Grid::calc_distance(*center, { y, x }) <= rad - 1) {
                 /* inside- so is floor */
-                place_bold(player_ptr, y, x, GB_FLOOR);
+                place_bold(*player_ptr, y, x, GB_FLOOR);
             } else if (Grid::calc_distance(*center, { y, x }) <= rad + 1) {
                 /* make granite outside so on_defeat_arena_monster works */
-                place_bold(player_ptr, y, x, GB_EXTRA);
+                place_bold(*player_ptr, y, x, GB_EXTRA);
             }
         }
     }
@@ -852,17 +852,17 @@ bool build_type12(PlayerType *player_ptr, DungeonData *dd_ptr)
 
             if (dist2(center->y, center->x, y, x, h1, h2, h3, h4) <= rad - 1) {
                 /* inside - so is floor */
-                place_bold(player_ptr, y, x, GB_FLOOR);
+                place_bold(*player_ptr, y, x, GB_FLOOR);
             } else if (Grid::calc_distance(*center, { y, x }) < 3) {
-                place_bold(player_ptr, y, x, GB_FLOOR);
+                place_bold(*player_ptr, y, x, GB_FLOOR);
             } else {
                 /* make granite outside so on_defeat_arena_monster works */
-                place_bold(player_ptr, y, x, GB_EXTRA);
+                place_bold(*player_ptr, y, x, GB_EXTRA);
             }
 
             /* proper boundary for on_defeat_arena_monster */
             if (((y + rad) == center->y) || ((y - rad) == center->y) || ((x + rad) == center->x) || ((x - rad) == center->x)) {
-                place_bold(player_ptr, y, x, GB_EXTRA);
+                place_bold(*player_ptr, y, x, GB_EXTRA);
             }
         }
     }

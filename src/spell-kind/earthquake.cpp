@@ -275,9 +275,9 @@ void destruct_earthquake_area(CreatureEntity &creature, std::span<const Pos2D> p
         delete_all_items_from_floor(&player, pos);
 
         if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
-            set_terrain_id_to_grid(&player, pos, pt.pick_one_at_random());
+            set_terrain_id_to_grid(creature, pos, pt.pick_one_at_random());
         } else {
-            set_terrain_id_to_grid(&player, pos, dungeon.select_floor_terrain_id());
+            set_terrain_id_to_grid(creature, pos, dungeon.select_floor_terrain_id());
         }
     }
 }

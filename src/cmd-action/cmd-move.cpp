@@ -189,7 +189,7 @@ void do_cmd_go_up(PlayerType *player_ptr)
     if (dungeon.flags.has(DungeonFeatureType::VANISH_STAIRS) && floor.is_underground()) {
         const auto p_pos = player_ptr->get_position();
         const auto floor_terrain_id = dungeon.select_floor_terrain_id();
-        set_terrain_id_to_grid(player_ptr, p_pos, floor_terrain_id);
+        set_terrain_id_to_grid(*player_ptr, p_pos, floor_terrain_id);
         player_ptr->vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
     }
 
@@ -344,7 +344,7 @@ void do_cmd_go_down(PlayerType *player_ptr)
     if (!is_fall_trap && dungeon.flags.has(DungeonFeatureType::VANISH_STAIRS) && floor.is_underground()) {
         const auto p_pos = player_ptr->get_position();
         const auto floor_terrain_id = dungeon.select_floor_terrain_id();
-        set_terrain_id_to_grid(player_ptr, p_pos, floor_terrain_id);
+        set_terrain_id_to_grid(*player_ptr, p_pos, floor_terrain_id);
         player_ptr->vanish_stairs_flag = true; // 移動後のフロアでも階段を消す
     }
 

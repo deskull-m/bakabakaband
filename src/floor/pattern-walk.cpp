@@ -122,7 +122,7 @@ bool pattern_effect(PlayerType *player_ptr)
         (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
         (void)cure_critical_wounds(player_ptr, 1000);
 
-        set_terrain_id_to_grid(player_ptr, player_ptr->get_position(), TerrainTag::PATTERN_OLD);
+        set_terrain_id_to_grid(*player_ptr, player_ptr->get_position(), TerrainTag::PATTERN_OLD);
         msg_print(_("「パターン」のこの部分は他の部分より強力でないようだ。", "This section of the Pattern looks less powerful."));
 
         /*

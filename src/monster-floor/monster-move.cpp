@@ -130,7 +130,7 @@ static bool bash_normal_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr,
     }
 
     if (randint0(monster.hp / 10) > terrain.power) {
-        cave_alter_feat(player_ptr, pos.y, pos.x, Tc::DISARM);
+        cave_alter_feat(*player_ptr, pos.y, pos.x, Tc::DISARM);
         turn_flags_ptr->do_turn = true;
         return false;
     }
@@ -204,7 +204,7 @@ static bool process_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
     const auto &dungeon = floor.get_dungeon_definition();
     const auto is_open = dungeon.convert_terrain_id(grid.feat, TerrainCharacteristics::OPEN) == grid.feat;
     if (turn_flags_ptr->did_bash_door && (one_in_(2) || is_open || terrain.flags.has(TerrainCharacteristics::GLASS))) {
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::BASH);
+        cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::BASH);
         if (!monster.is_valid()) {
             auto &rfu = RedrawingFlagsUpdater::get_instance();
             rfu.set_flag(StatusRecalculatingFlag::FLOW);
@@ -220,7 +220,7 @@ static bool process_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
             return false;
         }
     } else {
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::OPEN);
+        cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::OPEN);
     }
 
     turn_flags_ptr->do_view = true;
@@ -322,7 +322,7 @@ static bool process_post_dig_wall(PlayerType *player_ptr, turn_flags *turn_flags
         }
     }
 
-    cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+    cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
 
     if (!monster.is_valid()) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
