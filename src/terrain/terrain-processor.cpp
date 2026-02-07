@@ -113,7 +113,7 @@ static void process_random_terrain_change(PlayerType *player_ptr, const Pos2D &p
     }
 
     // 地形を変化させる
-    set_terrain_id_to_grid(player_ptr, pos, terrain.random_change);
+    set_terrain_id_to_grid(*player_ptr, pos, terrain.random_change);
 }
 
 /*!

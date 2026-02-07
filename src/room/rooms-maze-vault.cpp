@@ -35,7 +35,7 @@ void r_visit(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, POSI
     visited[node] = 1;
     int x = 2 * (node % m) + x1;
     int y = 2 * (node / m) + y1;
-    place_bold(player_ptr, y, x, GB_FLOOR);
+    place_bold(*player_ptr, y, x, GB_FLOOR);
 
     if (one_in_(3)) {
         for (int i = 0; i < 4; i++) {
@@ -69,28 +69,28 @@ void r_visit(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, POSI
         case 0:
             /* (0,+) - check for bottom boundary */
             if ((node / m < n - 1) && (visited[node + m] == 0)) {
-                place_bold(player_ptr, y + 1, x, GB_FLOOR);
+                place_bold(*player_ptr, y + 1, x, GB_FLOOR);
                 r_visit(player_ptr, y1, x1, y2, x2, node + m, dir, visited);
             }
             break;
         case 1:
             /* (0,-) - check for top boundary */
             if ((node / m > 0) && (visited[node - m] == 0)) {
-                place_bold(player_ptr, y - 1, x, GB_FLOOR);
+                place_bold(*player_ptr, y - 1, x, GB_FLOOR);
                 r_visit(player_ptr, y1, x1, y2, x2, node - m, dir, visited);
             }
             break;
         case 2:
             /* (+,0) - check for right boundary */
             if ((node % m < m - 1) && (visited[node + 1] == 0)) {
-                place_bold(player_ptr, y, x + 1, GB_FLOOR);
+                place_bold(*player_ptr, y, x + 1, GB_FLOOR);
                 r_visit(player_ptr, y1, x1, y2, x2, node + 1, dir, visited);
             }
             break;
         case 3:
             /* (-,0) - check for left boundary */
             if ((node % m > 0) && (visited[node - 1] == 0)) {
-                place_bold(player_ptr, y, x - 1, GB_FLOOR);
+                place_bold(*player_ptr, y, x - 1, GB_FLOOR);
                 r_visit(player_ptr, y1, x1, y2, x2, node - 1, dir, visited);
             }
         }
@@ -116,11 +116,11 @@ void build_maze_vault(PlayerType *player_ptr, const Pos2D &center, const Pos2DVe
                 grid.info |= CAVE_ICKY;
             }
             if ((x == x1 - 1) || (x == x2 + 1) || (y == y1 - 1) || (y == y2 + 1)) {
-                place_grid(player_ptr, grid, GB_OUTER);
+                place_grid(*player_ptr, grid, GB_OUTER);
             } else if (!is_vault) {
-                place_grid(player_ptr, grid, GB_EXTRA);
+                place_grid(*player_ptr, grid, GB_EXTRA);
             } else {
-                place_grid(player_ptr, grid, GB_INNER);
+                place_grid(*player_ptr, grid, GB_INNER);
             }
 
             if (light) {

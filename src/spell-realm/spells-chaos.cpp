@@ -153,7 +153,7 @@ bool vanish_dungeon(CreatureEntity &creature)
         }
 
         if (terrrain.flags.has(TerrainCharacteristics::HURT_DISI)) {
-            cave_alter_feat(&player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+            cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
         }
     }
 

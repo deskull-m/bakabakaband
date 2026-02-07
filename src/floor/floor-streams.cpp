@@ -328,13 +328,13 @@ void build_streamer(PlayerType *player_ptr, FEAT_IDX feat, int chance)
             if (streamer_may_have_gold) {
                 /* Hack -- Add some known treasure */
                 if (one_in_(chance)) {
-                    cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
+                    cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
                 }
 
                 /* Hack -- Add some hidden treasure */
                 else if (one_in_(chance / 4)) {
-                    cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
-                    cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::ENSECRET);
+                    cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
+                    cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::ENSECRET);
                 }
             }
         }

@@ -63,13 +63,13 @@ static void build_dead_end(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     player_ptr->current_floor_ptr->width = SCREEN_WID;
     for (POSITION y = 0; y < MAX_HGT; y++) {
         for (POSITION x = 0; x < MAX_WID; x++) {
-            place_bold(player_ptr, y, x, GB_SOLID_PERM);
+            place_bold(*player_ptr, y, x, GB_SOLID_PERM);
         }
     }
 
     player_ptr->y = player_ptr->current_floor_ptr->height / 2;
     player_ptr->x = player_ptr->current_floor_ptr->width / 2;
-    place_bold(player_ptr, player_ptr->y, player_ptr->x, GB_FLOOR);
+    place_bold(*player_ptr, player_ptr->y, player_ptr->x, GB_FLOOR);
     wipe_generate_random_floor_flags(*player_ptr->current_floor_ptr);
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has(FloorChangeMode::UP)) {
@@ -363,7 +363,7 @@ static void cut_off_the_upstair(PlayerType *player_ptr)
 {
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has(FloorChangeMode::RANDOM_PLACE)) {
-        if (const auto p_pos = new_player_spot(player_ptr); p_pos) {
+        if (const auto p_pos = new_player_spot(*player_ptr); p_pos) {
             player_ptr->set_position(*p_pos);
         }
 
@@ -453,7 +453,7 @@ void change_floor(PlayerType *player_ptr)
             // 階段かどうかをチェック
             if (terrain.flags.has_any_of({ TerrainCharacteristics::LESS, TerrainCharacteristics::MORE })) {
                 const auto floor_terrain_id = dungeon.select_floor_terrain_id();
-                set_terrain_id_to_grid(player_ptr, p_pos, floor_terrain_id);
+                set_terrain_id_to_grid(*player_ptr, p_pos, floor_terrain_id);
                 msg_print(_("階段が消え去った。", "The staircase vanishes."));
             }
         }

@@ -142,7 +142,7 @@ bool teleport_away(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION dis, tele
             if (!floor.contains(m_pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                 continue;
             }
-            if (!cave_monster_teleportable_bold(player_ptr, m_idx, m_pos.y, m_pos.x, mode)) {
+            if (!cave_monster_teleportable_bold(*player_ptr, m_idx, m_pos.y, m_pos.x, mode)) {
                 continue;
             }
             if (!floor.is_in_quest() && !floor.inside_arena) {
@@ -224,7 +224,7 @@ void teleport_monster_to(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION ty,
             if (!floor.contains(m_pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
                 continue;
             }
-            if (!cave_monster_teleportable_bold(player_ptr, m_idx, m_pos.y, m_pos.x, mode)) {
+            if (!cave_monster_teleportable_bold(*player_ptr, m_idx, m_pos.y, m_pos.x, mode)) {
                 continue;
             }
 
@@ -302,7 +302,7 @@ bool teleport_player_aux(PlayerType *player_ptr, POSITION dis, bool is_quantum_e
     auto total_candidates = 0;
     for (auto y = top; y <= bottom; y++) {
         for (auto x = left; x <= right; x++) {
-            if (!cave_player_teleportable_bold(player_ptr, y, x, mode)) {
+            if (!cave_player_teleportable_bold(*player_ptr, y, x, mode)) {
                 continue;
             }
 
@@ -336,7 +336,7 @@ bool teleport_player_aux(PlayerType *player_ptr, POSITION dis, bool is_quantum_e
     auto x = 0;
     for (; y <= bottom; y++) {
         for (x = left; x <= right; x++) {
-            if (!cave_player_teleportable_bold(player_ptr, y, x, mode)) {
+            if (!cave_player_teleportable_bold(*player_ptr, y, x, mode)) {
                 continue;
             }
 
@@ -496,7 +496,7 @@ void teleport_player_to(PlayerType *player_ptr, POSITION ny, POSITION nx, telepo
             break;
         }
 
-        if (cave_player_teleportable_bold(player_ptr, pos.y, pos.x, mode)) {
+        if (cave_player_teleportable_bold(*player_ptr, pos.y, pos.x, mode)) {
             break;
         }
 
@@ -573,7 +573,7 @@ bool exe_dimension_door(PlayerType *player_ptr, const Pos2D &pos)
     PLAYER_LEVEL plev = player_ptr->level;
 
     static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + static_cast<short>((60 - plev) * ENERGY_NEED() / 100));
-    auto is_successful = cave_player_teleportable_bold(player_ptr, pos.y, pos.x, TELEPORT_SPONTANEOUS);
+    auto is_successful = cave_player_teleportable_bold(*player_ptr, pos.y, pos.x, TELEPORT_SPONTANEOUS);
     is_successful &= Grid::calc_distance(pos, player_ptr->get_position()) <= plev / 2 + 10;
     is_successful &= !one_in_(plev / 10 + 10);
     if (!is_successful) {

@@ -92,7 +92,7 @@ bool cmd_limit_blind(PlayerType *player_ptr)
         return true;
     }
 
-    if (no_lite(player_ptr)) {
+    if (no_lite(*player_ptr)) {
         msg_print(_("明かりがないので見えない。", "You have no light."));
         return true;
     }

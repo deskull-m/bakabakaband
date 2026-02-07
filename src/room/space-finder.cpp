@@ -42,7 +42,7 @@ static void set_floor(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     if (grid.is_extra()) {
-        place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
     }
 }
 

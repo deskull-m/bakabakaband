@@ -99,7 +99,7 @@ void search(PlayerType *player_ptr)
 {
     PERCENTAGE chance = player_ptr->skill_srh;
     const auto effects = player_ptr->effects();
-    if (effects->blindness().is_blind() || no_lite(player_ptr)) {
+    if (effects->blindness().is_blind() || no_lite(*player_ptr)) {
         chance = chance / 10;
     }
 
@@ -182,7 +182,7 @@ bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FL
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags_swrf);
-        if ((!player_ptr->effects()->blindness().is_blind() && !no_lite(player_ptr)) || !floor.has_trap_at(pos_new)) {
+        if ((!player_ptr->effects()->blindness().is_blind() && !no_lite(*player_ptr)) || !floor.has_trap_at(pos_new)) {
             grid_new.info &= ~(CAVE_UNSAFE);
         }
 

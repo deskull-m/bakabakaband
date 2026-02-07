@@ -349,7 +349,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     }
 
     if (p_can_kill_walls) {
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+        cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
     }
 

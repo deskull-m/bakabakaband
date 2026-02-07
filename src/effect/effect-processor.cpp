@@ -144,14 +144,14 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         if (delay_factor > 0) {
             if (!is_blind && !(flag & (PROJECT_HIDE | PROJECT_FAST))) {
                 if (panel_contains(pos) && floor.has_los_at(pos)) {
-                    print_bolt_pict(&player, pos_path, pos, typ);
+                    print_bolt_pict(creature, pos_path, pos, typ);
                     move_cursor_relative(pos.y, pos.x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
                     lite_spot(player, pos);
                     term_fresh();
                     if (flag & (PROJECT_BEAM)) {
-                        print_bolt_pict(&player, pos, pos, typ);
+                        print_bolt_pict(creature, pos, pos, typ);
                     }
 
                     visual = true;
@@ -214,7 +214,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                 }
                 if (panel_contains(pos) && (can_see_disi || floor.has_los_at(pos))) {
                     drawn = true;
-                    print_bolt_pict(&player, pos, pos, typ);
+                    print_bolt_pict(creature, pos, pos, typ);
                 }
                 pos_total++;
             }

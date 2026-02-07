@@ -100,7 +100,7 @@ bool build_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, dt_type *dt_ptr, 
                 for (auto x = pos_current.x - 1; x <= pos_current.x + 1; x++) {
                     const Pos2D pos_wall(y, x);
                     if (floor.get_grid(pos_wall).is_outer()) {
-                        place_bold(player_ptr, pos_wall.y, pos_wall.x, GB_SOLID_NOPERM);
+                        place_bold(*player_ptr, pos_wall.y, pos_wall.x, GB_SOLID_NOPERM);
                     }
                 }
             }
@@ -190,13 +190,13 @@ static bool set_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, POSITION *y,
         for (auto j = *y - 1; j <= *y + 1; j++) {
             for (auto i = *x - 1; i <= *x + 1; i++) {
                 if (floor.get_grid({ j, i }).is_outer()) {
-                    place_bold(player_ptr, j, i, GB_SOLID_NOPERM);
+                    place_bold(*player_ptr, j, i, GB_SOLID_NOPERM);
                 }
             }
         }
 
         grid.mimic = 0;
-        place_bold(player_ptr, *y, *x, GB_FLOOR);
+        place_bold(*player_ptr, *y, *x, GB_FLOOR);
         return true;
     }
 
@@ -214,7 +214,7 @@ static bool set_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, POSITION *y,
         }
 
         if (i == 0) {
-            place_grid(player_ptr, grid, GB_OUTER);
+            place_grid(*player_ptr, grid, GB_OUTER);
             vec = { 0, 0 };
         }
 
@@ -387,7 +387,7 @@ bool build_tunnel2(PlayerType *player_ptr, DungeonData *dd_ptr, const Pos2D &pos
         }
 
         if (i == 0) {
-            place_bold(player_ptr, pos.y, pos.x, GB_OUTER);
+            place_bold(*player_ptr, pos.y, pos.x, GB_OUTER);
             vec = { 0, 0 };
         }
 

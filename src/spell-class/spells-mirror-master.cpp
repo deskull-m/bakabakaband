@@ -66,7 +66,7 @@ void SpellsMirrorMaster::remove_mirror(int y, int x)
             update_monster(this->player_ptr, grid.m_idx, false);
         }
 
-        update_local_illumination(this->player_ptr, pos);
+        update_local_illumination(*this->player_ptr, pos);
     }
 
     note_spot(*this->player_ptr, pos);
@@ -135,7 +135,7 @@ tl::optional<std::string> SpellsMirrorMaster::place_mirror()
 
     note_spot(*this->player_ptr, p_pos);
     lite_spot(*this->player_ptr, p_pos);
-    update_local_illumination(this->player_ptr, p_pos);
+    update_local_illumination(*this->player_ptr, p_pos);
     return tl::nullopt;
 }
 
@@ -269,14 +269,14 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
             const auto &pos_src = *(path_g_itr == path_g.begin() ? path_g.begin() : path_g_itr - 1);
             if (delay_factor > 0 && !this->player_ptr->effects()->blindness().is_blind()) {
                 if (panel_contains(pos_dst) && floor.has_los_at(pos_dst)) {
-                    print_bolt_pict(this->player_ptr, pos_src, pos_dst, typ);
+                    print_bolt_pict(*this->player_ptr, pos_src, pos_dst, typ);
                     move_cursor_relative(pos_dst.y, pos_dst.x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
                     lite_spot(*this->player_ptr, pos_dst);
                     term_fresh();
 
-                    print_bolt_pict(this->player_ptr, pos_dst, pos_dst, typ);
+                    print_bolt_pict(*this->player_ptr, pos_dst, pos_dst, typ);
 
                     visual = true;
                 } else if (visual) {
@@ -350,11 +350,11 @@ static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std:
             const auto &pos_new = *it;
 
             if (panel_contains(pos) && floor.has_los_at(pos)) {
-                print_bolt_pict(player_ptr, pos, pos, typ);
+                print_bolt_pict(*player_ptr, pos, pos, typ);
                 drawn_pos_list.push_back(pos);
             }
             if (panel_contains(pos_new) && floor.has_los_at(pos_new)) {
-                print_bolt_pict(player_ptr, pos, pos_new, typ);
+                print_bolt_pict(*player_ptr, pos, pos_new, typ);
                 if (std::find(last_pos_list.begin(), last_pos_list.end(), *it) != last_pos_list.end()) {
                     drawn_last_pos_list.push_back(pos_new);
                 }
@@ -365,7 +365,7 @@ static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std:
 
         for (const auto &pos : drawn_last_pos_list) {
             if (panel_contains(pos) && floor.has_los_at(pos)) {
-                print_bolt_pict(player_ptr, pos, pos, typ);
+                print_bolt_pict(*player_ptr, pos, pos, typ);
                 drawn_pos_list.push_back(pos);
             }
         }
@@ -441,13 +441,13 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     for (const auto &pos_dst : path_g) {
         if (delay_factor > 0) {
             if (panel_contains(pos_dst) && floor.has_los_at(pos_dst)) {
-                print_bolt_pict(this->player_ptr, pos_src, pos_dst, typ);
+                print_bolt_pict(*this->player_ptr, pos_src, pos_dst, typ);
                 move_cursor_relative(pos_dst.y, pos_dst.x);
                 term_fresh();
                 term_xtra(TERM_XTRA_DELAY, delay_factor);
                 lite_spot(*this->player_ptr, pos_dst);
                 term_fresh();
-                print_bolt_pict(this->player_ptr, pos_dst, pos_dst, typ);
+                print_bolt_pict(*this->player_ptr, pos_dst, pos_dst, typ);
                 drawn_pos_list.push_back(pos_dst);
                 visual = true;
             } else if (visual) {

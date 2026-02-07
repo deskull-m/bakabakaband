@@ -79,7 +79,7 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
         if (player_ptr->skill_dig > randint0(20 * power)) {
             sound(SoundKind::DIG_THROUGH);
             msg_format(_("%sをくずした。", "You have removed the %s."), name.data());
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::TUNNEL);
+            cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::TUNNEL);
             player_ptr->plus_incident_tree("TUNNEL", 1);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         } else {
@@ -101,7 +101,7 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
                 sound(SoundKind::GLASS);
             }
 
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::TUNNEL);
+            cave_alter_feat(*player_ptr, y, x, TerrainCharacteristics::TUNNEL);
             player_ptr->plus_incident_tree("TUNNEL", 1);
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, -1);

@@ -56,7 +56,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     if (!terrain.power) {
-        cave_alter_feat(&player, y, x, TerrainCharacteristics::OPEN);
+        cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
         sound(SoundKind::OPENDOOR);
         player.plus_incident_tree("OPEN_DOOR", 1);
         return false;
@@ -64,7 +64,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
 
     int i = player.skill_dis;
     const auto effects = player.effects();
-    if (effects->blindness().is_blind() || no_lite(&player)) {
+    if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
@@ -88,7 +88,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     msg_print(_("鍵をはずした。", "You have picked the lock."));
-    cave_alter_feat(&player, y, x, TerrainCharacteristics::OPEN);
+    cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
     sound(SoundKind::OPENDOOR);
     player.plus_incident_tree("OPEN_DOOR", 1);
     gain_exp(creature, 1);
@@ -128,7 +128,7 @@ bool exe_close(CreatureEntity &creature, const Pos2D &pos)
         return more;
     }
 
-    cave_alter_feat(&player, pos.y, pos.x, TerrainCharacteristics::CLOSE);
+    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CLOSE);
     if (terrain_id == grid.feat) {
         msg_print(_("ドアは壊れてしまっている。", "The door appears to be broken."));
     } else {
@@ -169,7 +169,7 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
     } else if (terrain.power) {
         auto power_disarm = player.skill_dis;
         const auto effects = player.effects();
-        if (effects->blindness().is_blind() || no_lite(&player)) {
+        if (effects->blindness().is_blind() || no_lite(creature)) {
             power_disarm = power_disarm / 10;
         }
 
@@ -185,7 +185,7 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
 
         if (evaluate_percent(power_terrain)) {
             msg_print(_("鍵をはずした。", "You have picked the lock."));
-            cave_alter_feat(&player, pos.y, pos.x, TerrainCharacteristics::OPEN);
+            cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::OPEN);
             sound(SoundKind::OPENDOOR);
             gain_exp(creature, 1);
         } else {
@@ -196,7 +196,7 @@ bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
             msg_print(_("鍵をはずせなかった。", "You failed to pick the lock."));
         }
     } else {
-        cave_alter_feat(&player, pos.y, pos.x, TerrainCharacteristics::OPEN);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::OPEN);
         sound(SoundKind::OPENDOOR);
     }
 
@@ -225,7 +225,7 @@ bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_I
     PlayerEnergy(&player).set_player_turn_energy(100);
     int i = player.skill_dis;
     const auto effects = player.effects();
-    if (effects->blindness().is_blind() || no_lite(&player)) {
+    if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
@@ -292,7 +292,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
     int i = player.skill_dis;
     PlayerEnergy(&player).set_player_turn_energy(100);
     auto effects = player.effects();
-    if (effects->blindness().is_blind() || no_lite(&player)) {
+    if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
@@ -312,7 +312,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
         item.pval = grid.feat;
         msg_format(_("%sを解除した。", "You have disarmed the %s."), name.data());
         gain_exp(creature, power);
-        cave_alter_feat(&player, y, x, TerrainCharacteristics::DISARM);
+        cave_alter_feat(creature, y, x, TerrainCharacteristics::DISARM);
         exe_movement(player, dir, easy_disarm, false);
 
         (void)drop_near(player, item, pos);
@@ -373,9 +373,9 @@ bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction 
         sound(terrain.flags.has(TerrainCharacteristics::GLASS) ? SoundKind::GLASS : SoundKind::OPENDOOR);
         const auto &dungeon = floor.get_dungeon_definition();
         if (one_in_(2) || (dungeon.convert_terrain_id(grid.feat, TerrainCharacteristics::OPEN) == grid.feat) || terrain.flags.has(TerrainCharacteristics::GLASS)) {
-            cave_alter_feat(&player, y, x, TerrainCharacteristics::BASH);
+            cave_alter_feat(creature, y, x, TerrainCharacteristics::BASH);
         } else {
-            cave_alter_feat(&player, y, x, TerrainCharacteristics::OPEN);
+            cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
         }
 
         exe_movement(player, dir, false, false);

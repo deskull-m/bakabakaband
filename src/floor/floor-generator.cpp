@@ -77,7 +77,7 @@ static Pos2D build_arena(PlayerType *player_ptr)
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -85,7 +85,7 @@ static Pos2D build_arena(PlayerType *player_ptr)
     for (auto y = y_depth; y >= y_depth - 5; y--) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -93,7 +93,7 @@ static Pos2D build_arena(PlayerType *player_ptr)
     for (auto x = x_left; x <= x_left + 5; x++) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -101,28 +101,28 @@ static Pos2D build_arena(PlayerType *player_ptr)
     for (auto x = x_right; x >= x_right - 5; x--) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
 
     // 柱っぽいもの
-    place_bold(player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_depth - 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_depth - 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
 
-    place_bold(player_ptr, y_height + 9, x_left + 21, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_height + 9, x_left + 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 9, x_left + 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 9, x_left + 21, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_depth - 9, x_left + 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height - 9, x_left + 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_height + 9, x_right - 21, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_height + 9, x_right - 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 9, x_left - 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 9, x_right - 21, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_depth - 9, x_right - 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height - 9, x_left - 21 }).info |= CAVE_GLOW | CAVE_MARK;
 
     const Pos2D pos(y_height + 10, xval);
@@ -145,7 +145,7 @@ static void generate_challenge_arena(PlayerType *player_ptr)
     floor.width = SCREEN_WID;
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
-            place_bold(player_ptr, y, x, GB_SOLID_PERM);
+            place_bold(*player_ptr, y, x, GB_SOLID_PERM);
             floor.get_grid({ y, x }).add_info(CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -188,7 +188,7 @@ static Pos2D build_battle(PlayerType *player_ptr)
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -196,7 +196,7 @@ static Pos2D build_battle(PlayerType *player_ptr)
     for (auto y = y_depth; y >= y_depth - 3; y--) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -204,7 +204,7 @@ static Pos2D build_battle(PlayerType *player_ptr)
     for (auto x = x_left; x <= x_left + 17; x++) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -212,18 +212,18 @@ static Pos2D build_battle(PlayerType *player_ptr)
     for (auto x = x_right; x >= x_right - 17; x--) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(*player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
 
-    place_bold(player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 4, x_left + 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_depth - 4, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 4, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 4, x_right - 18, GB_EXTRA_PERM);
+    place_bold(*player_ptr, y_depth - 4, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 4, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
 
     for (auto y = y_height + 1; y <= y_height + 5; y++) {
@@ -247,7 +247,7 @@ static void generate_gambling_arena(PlayerType *player_ptr)
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, y, x, GB_SOLID_PERM);
+            place_bold(*player_ptr, y, x, GB_SOLID_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -293,7 +293,7 @@ static void generate_fixed_floor(PlayerType *player_ptr)
 {
     auto &floor = *player_ptr->current_floor_ptr;
     for (const auto &pos : floor.get_area()) {
-        place_bold(player_ptr, pos.y, pos.x, GB_SOLID_PERM);
+        place_bold(*player_ptr, pos.y, pos.x, GB_SOLID_PERM);
     }
 
     const auto &quests = QuestList::get_instance();
