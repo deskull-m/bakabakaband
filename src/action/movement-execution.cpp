@@ -249,7 +249,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         }
     } else if ((do_pickup != easy_disarm) && terrain.flags.has(TerrainCharacteristics::DISARM) && !grid.mimic) {
         if (!trap_can_be_ignored(player_ptr, grid.feat)) {
-            (void)exe_disarm(player_ptr, pos.y, pos.x, dir);
+            (void)exe_disarm(*player_ptr, pos.y, pos.x, dir);
             return;
         }
     } else if (!p_can_enter && !p_can_kill_walls) {
@@ -279,7 +279,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                     energy.reset_player_turn();
                 }
             } else {
-                if (easy_open && floor.has_closed_door_at(pos, true) && easy_open_door(player_ptr, pos)) {
+                if (easy_open && floor.has_closed_door_at(pos, true) && easy_open_door(*player_ptr, pos)) {
                     return;
                 }
 
