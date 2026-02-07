@@ -302,8 +302,7 @@ bool activate_pesticide(CreatureEntity &creature)
  */
 bool activate_whirlwind(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    massacre(&player);
+    massacre(creature);
     return true;
 }
 
