@@ -135,7 +135,7 @@ void do_cmd_open(PlayerType *player_ptr)
         } else if (o_idx) {
             more = exe_open_chest(player_ptr, pos, o_idx);
         } else {
-            more = exe_open(player_ptr, pos.y, pos.x);
+            more = exe_open(*player_ptr, pos.y, pos.x);
         }
     }
 
@@ -182,7 +182,7 @@ void do_cmd_close(PlayerType *player_ptr)
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
             do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else {
-            more = exe_close(player_ptr, pos);
+            more = exe_close(*player_ptr, pos);
         }
     }
 
@@ -231,9 +231,9 @@ void do_cmd_disarm(PlayerType *player_ptr)
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
             do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else if (o_idx) {
-            more = exe_disarm_chest(player_ptr, pos.y, pos.x, o_idx);
+            more = exe_disarm_chest(*player_ptr, pos.y, pos.x, o_idx);
         } else {
-            more = exe_disarm(player_ptr, pos.y, pos.x, dir);
+            more = exe_disarm(*player_ptr, pos.y, pos.x, dir);
         }
     }
 
@@ -283,7 +283,7 @@ void do_cmd_bash(PlayerType *player_ptr)
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
             do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else {
-            more = exe_bash(player_ptr, pos.y, pos.x, dir);
+            more = exe_bash(*player_ptr, pos.y, pos.x, dir);
         }
     }
 

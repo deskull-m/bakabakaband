@@ -78,11 +78,11 @@ static bool exe_alter(PlayerType *player_ptr)
     }
 
     if (terrain.flags.has(TerrainCharacteristics::OPEN)) {
-        return exe_open(player_ptr, pos.y, pos.x);
+        return exe_open(*player_ptr, pos.y, pos.x);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::BASH)) {
-        return exe_bash(player_ptr, pos.y, pos.x, dir);
+        return exe_bash(*player_ptr, pos.y, pos.x, dir);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::TUNNEL)) {
@@ -90,11 +90,11 @@ static bool exe_alter(PlayerType *player_ptr)
     }
 
     if (terrain.flags.has(TerrainCharacteristics::CLOSE)) {
-        return exe_close(player_ptr, pos);
+        return exe_close(*player_ptr, pos);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::DISARM)) {
-        return exe_disarm(player_ptr, pos.y, pos.x, dir);
+        return exe_disarm(*player_ptr, pos.y, pos.x, dir);
     }
 
     msg_print(_("何もない空中を攻撃した。", "You attack the empty air."));
