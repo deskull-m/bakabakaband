@@ -35,13 +35,13 @@ static bool message_fire_ball(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER
         msg.to_mons = _("%s^が%sに向かってファイア・ボールの呪文を唱えた。", "%s^ casts a fire ball at %s.");
     }
 
-    return monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    return monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
 }
 
 static bool message_water_ball(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto known = monster_near_player(*player_ptr->current_floor_ptr, m_idx, t_idx);
-    auto see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+    auto see_either = see_monster(*player_ptr, m_idx) || see_monster(*player_ptr, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
     const auto t_name = monster_name(player_ptr, t_idx);
@@ -49,7 +49,7 @@ static bool message_water_ball(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTE
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が流れるような身振りをした。", "%s^ gestures fluidly."),
         _("%s^が%sに対して流れるような身振りをした。", "%s^ gestures fluidly at %s."));
 
-    auto result = monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    auto result = monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
 
     if (mon_to_player) {
         msg_format(_("あなたは渦巻きに飲み込まれた。", "You are engulfed in a whirlpool."));

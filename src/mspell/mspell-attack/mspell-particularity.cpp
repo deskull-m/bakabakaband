@@ -57,7 +57,7 @@ static bool message_hand_doom(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER
     mspell_cast_msg_simple msg(_("%s^が<破滅の手>を放った！", "%s^ invokes the Hand of Doom!"),
         _("%s^が%sに<破滅の手>を放った！", "%s^ invokes the Hand of Doom upon %s!"));
 
-    simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
 
     return true;
 }

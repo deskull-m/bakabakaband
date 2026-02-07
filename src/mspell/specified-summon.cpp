@@ -85,7 +85,7 @@ MONSTER_NUMBER summon_guardian(CreatureEntity &creature, POSITION y, POSITION x,
         mspell_cast_msg_simple msg(_("地面から水が吹き出した！", "Water blew off from the ground!"),
             _("地面から水が吹き出した！", "Water blew off from the ground!"));
 
-        simple_monspell_message(&player_ptr, m_idx, t_idx, msg, target_type);
+        simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
 
         if (mon_to_player) {
             fire_ball_hide(player_ptr, AttributeType::WATER_FLOW, Direction::self(), 3, 8);

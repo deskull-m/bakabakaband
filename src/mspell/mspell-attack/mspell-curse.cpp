@@ -26,7 +26,7 @@ static bool message_curse(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
             msg_format(msg2.data(), m_name.data());
         }
     } else if (target_type == MONSTER_TO_MONSTER) {
-        if (see_monster(player_ptr, m_idx)) {
+        if (see_monster(*player_ptr, m_idx)) {
             msg_format(msg3.data(), m_name.data(), t_name.data());
         } else {
             player_ptr->current_floor_ptr->monster_noise = true;

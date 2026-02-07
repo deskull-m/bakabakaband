@@ -1040,7 +1040,7 @@ bool process_stalking(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     // 呪術魔法によりテレポートが阻害されているならば寄ってこない
     if (SpellHex(*player_ptr).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
-        if (see_monster(player_ptr, m_idx)) {
+        if (see_monster(*player_ptr, m_idx)) {
             msg_format(_("魔法のバリアが%s^のテレポートを邪魔した。", "Magic barrier obstructs teleporting of %s^."), m_name.data());
         }
         return false;
@@ -1050,7 +1050,7 @@ bool process_stalking(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     disturb(*player_ptr, true, true);
 
-    if (see_monster(player_ptr, m_idx)) {
+    if (see_monster(*player_ptr, m_idx)) {
         const auto message_stalker = monrace.get_message(m_name, MonsterMessageType::MESSAGE_STALKER);
         if (message_stalker) {
             msg_print(*message_stalker);
