@@ -94,8 +94,8 @@ void spell_badstatus_message_to_mons(PlayerType *player_ptr, MONSTER_IDX m_idx, 
     bool saved_throw)
 {
     auto &floor = *player_ptr->current_floor_ptr;
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    bool see_t = see_monster(player_ptr, t_idx);
+    bool see_either = see_monster(*player_ptr, m_idx) || see_monster(*player_ptr, t_idx);
+    bool see_t = see_monster(*player_ptr, t_idx);
     bool known = monster_near_player(floor, m_idx, t_idx);
     const auto m_name = monster_name(player_ptr, m_idx);
     const auto t_name = monster_name(player_ptr, t_idx);
@@ -143,7 +143,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(PlayerType *player_ptr, POSITION y, POSI
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(*player_ptr, true, true);
-    } else if (target_type == MONSTER_TO_MONSTER && see_monster(player_ptr, m_idx)) {
+    } else if (target_type == MONSTER_TO_MONSTER && see_monster(*player_ptr, m_idx)) {
         /* Basic message */
         msg_format(_("%s^は精神エネルギーを%sから吸いとった。", "%s^ draws psychic energy from %s."), m_name.data(), t_name.data());
     }
@@ -185,7 +185,7 @@ MonsterSpellResult spell_RF5_MIND_BLAST(PlayerType *player_ptr, POSITION y, POSI
         } else {
             msg_format(_("%s^があなたの瞳をじっとにらんでいる。", "%s^ gazes deep into your eyes."), m_name.data());
         }
-    } else if (target_type == MONSTER_TO_MONSTER && see_monster(player_ptr, m_idx)) {
+    } else if (target_type == MONSTER_TO_MONSTER && see_monster(*player_ptr, m_idx)) {
         msg_format(_("%s^は%sをじっと睨んだ。", "%s^ gazes intently at %s."), m_name.data(), t_name.data());
     }
 
@@ -223,7 +223,7 @@ MonsterSpellResult spell_RF5_BRAIN_SMASH(PlayerType *player_ptr, POSITION y, POS
         } else {
             msg_format(_("%s^があなたの瞳をじっとにらんでいる。", "%s^ gazes deep into your eyes."), m_name.data());
         }
-    } else if (target_type == MONSTER_TO_MONSTER && see_monster(player_ptr, m_idx)) {
+    } else if (target_type == MONSTER_TO_MONSTER && see_monster(*player_ptr, m_idx)) {
         msg_format(_("%s^は%sをじっと睨んだ。", "%s^ gazes intently at %s."), m_name.data(), t_name.data());
     }
 
@@ -483,7 +483,7 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, PlayerType *player_ptr, MON
  */
 MonsterSpellResult spell_RF6_HASTE(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    bool see_m = see_monster(player_ptr, m_idx);
+    bool see_m = see_monster(*player_ptr, m_idx);
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     const auto m_name = monster_name(player_ptr, m_idx);
     const auto m_poss = monster_desc(*player_ptr, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
@@ -493,7 +493,7 @@ MonsterSpellResult spell_RF6_HASTE(PlayerType *player_ptr, MONSTER_IDX m_idx, MO
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())),
         _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())));
 
-    monspell_message_base(player_ptr, m_idx, t_idx, msg, player_ptr->effects()->blindness().is_blind(), target_type);
+    monspell_message_base(*player_ptr, m_idx, t_idx, msg, player_ptr->effects()->blindness().is_blind(), target_type);
 
     if (set_monster_fast(*player_ptr->current_floor_ptr, m_idx, monster.get_remaining_acceleration() + 100)) {
         if (target_type == MONSTER_TO_PLAYER || (target_type == MONSTER_TO_MONSTER && see_m)) {
@@ -595,7 +595,7 @@ MonsterSpellResult spell_RF6_HEAL(PlayerType *player_ptr, MONSTER_IDX m_idx, MON
     msg.to_player_false = _("%s^が自分の傷に集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
     msg.to_mons_false = _("%s^は自分の傷に念を集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
 
-    monspell_message_base(player_ptr, m_idx, t_idx, msg, is_blind, target_type);
+    monspell_message_base(*player_ptr, m_idx, t_idx, msg, is_blind, target_type);
 
     monster.hp += (rlev * 6);
     if (monster.hp >= monster.maxhp) {
@@ -613,7 +613,7 @@ MonsterSpellResult spell_RF6_HEAL(PlayerType *player_ptr, MONSTER_IDX m_idx, MON
         msg.to_mons_false = _("%s^は体力を回復したようだ。", "%s^ looks healthier.");
     }
 
-    monspell_message_base(player_ptr, m_idx, t_idx, msg, !seen, target_type);
+    monspell_message_base(*player_ptr, m_idx, t_idx, msg, !seen, target_type);
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
     if (monster.is_riding()) {
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
@@ -625,7 +625,7 @@ MonsterSpellResult spell_RF6_HEAL(PlayerType *player_ptr, MONSTER_IDX m_idx, MON
 
     (void)set_monster_monfear(*player_ptr->current_floor_ptr, m_idx, 0);
 
-    if (see_monster(player_ptr, m_idx)) {
+    if (see_monster(*player_ptr, m_idx)) {
         const auto m_name = monster_name(player_ptr, m_idx);
         msg_print(_(format("%s^は勇気を取り戻した。", m_name.data()), format("%s^ recovers %s courage.", m_name.data(), m_poss.data())));
     }
@@ -650,7 +650,7 @@ MonsterSpellResult spell_RF6_INVULNER(PlayerType *player_ptr, MONSTER_IDX m_idx,
         _("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."), _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."),
         _("%sは無傷の球の呪文を唱えた。", "%s^ casts a Globe of Invulnerability."));
 
-    monspell_message_base(player_ptr, m_idx, t_idx, msg, !seen, target_type);
+    monspell_message_base(*player_ptr, m_idx, t_idx, msg, !seen, target_type);
 
     if (monster.ml) {
         MonraceId r_idx = monster.r_idx;

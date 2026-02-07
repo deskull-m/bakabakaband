@@ -24,13 +24,14 @@ mspell_cast_msg_simple::mspell_cast_msg_simple(concptr to_player, concptr to_mon
 
 /*!
  * @brief プレイヤーがモンスターを見ることができるかの判定 /
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return プレイヤーがモンスターを見ることができるならTRUE、そうでなければFALSEを返す。
  */
-bool see_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    return is_seen(player_ptr, monster);
+    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    return is_seen(&static_cast<PlayerType &>(creature), monster);
 }
 
 /*!
@@ -57,19 +58,20 @@ bool monster_near_player(const FloorType &floor, MONSTER_IDX m_idx, MONSTER_IDX 
  * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
  * @return メッセージを表示した場合trueを返す。
  */
-bool monspell_message_base(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg &msgs, bool msg_flag_aux, int target_type)
+bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg &msgs, bool msg_flag_aux, int target_type)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     bool known = monster_near_player(floor, m_idx, t_idx);
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+    bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    const auto m_name = monster_name(player_ptr, m_idx);
-    const auto t_name = monster_name(player_ptr, t_idx);
+    const auto m_name = monster_name(&player, m_idx);
+    const auto t_name = monster_name(&player, t_idx);
 
     if (mon_to_player || (mon_to_mon && known && see_either)) {
-        disturb(*player_ptr, true, true);
+        disturb(player, true, true);
     }
 
     if (msg_flag_aux) {
@@ -106,11 +108,12 @@ bool monspell_message_base(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_ID
  * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
  * @return メッセージを表示した場合trueを返す。
  */
-bool monspell_message(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_blind &msgs, int target_type)
+bool monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_blind &msgs, int target_type)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     mspell_cast_msg mcm(msgs.blind, msgs.blind, msgs.to_player, msgs.to_mons);
-    const auto is_blind = player_ptr->effects()->blindness().is_blind();
-    return monspell_message_base(player_ptr, m_idx, t_idx, mcm, is_blind, target_type);
+    const auto is_blind = player.effects()->blindness().is_blind();
+    return monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);
 }
 
 /*!
@@ -121,9 +124,10 @@ bool monspell_message(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_i
  * @param msgs メッセージの構造体
  * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
  */
-void simple_monspell_message(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_simple &msgs, int target_type)
+void simple_monspell_message(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, const mspell_cast_msg_simple &msgs, int target_type)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     mspell_cast_msg mcm(msgs.to_player, msgs.to_mons, msgs.to_player, msgs.to_mons);
-    const auto is_blind = player_ptr->effects()->blindness().is_blind();
-    monspell_message_base(player_ptr, m_idx, t_idx, mcm, is_blind, target_type);
+    const auto is_blind = player.effects()->blindness().is_blind();
+    monspell_message_base(creature, m_idx, t_idx, mcm, is_blind, target_type);
 }

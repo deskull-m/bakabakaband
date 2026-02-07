@@ -51,7 +51,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
     const auto &monster = floor.m_list[m_idx];
     auto dummy_y = monster.y;
     auto dummy_x = monster.x;
-    if (see_monster(player_ptr, m_idx) && monster_near_player(floor, m_idx, 0)) {
+    if (see_monster(*player_ptr, m_idx) && monster_near_player(floor, m_idx, 0)) {
         disturb(*player_ptr, true, true);
     }
 
@@ -143,7 +143,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(PlayerType *player_ptr, POSI
     int num = 1 + randint1(3);
     BIT_FLAGS mode = 0L;
     const auto &floor = *player_ptr->current_floor_ptr;
-    bool see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+    bool see_either = see_monster(*player_ptr, m_idx) || see_monster(*player_ptr, t_idx);
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
     bool known = monster_near_player(floor, m_idx, t_idx);
@@ -151,7 +151,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(PlayerType *player_ptr, POSI
     mspell_cast_msg_blind msg(_("%s^が何か大量に投げた。", "%s^ spreads something."),
         _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."), _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."));
 
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
     if (mon_to_player || (mon_to_mon && known && see_either)) {
         disturb(*player_ptr, true, true);
     }
@@ -192,7 +192,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
         msg.to_player = _("%s^は突然視界から消えた!", "You lose sight of %s!");
         msg.to_mons = _("%s^は突然急上昇して視界から消えた!", "You lose sight of %s!");
 
-        simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+        simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
 
         teleport_away(player_ptr, m_idx, 10, TELEPORT_NONMAGICAL);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -206,7 +206,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
     msg.to_player = _("%s^があなたを掴んで空中から投げ落とした。", "%s^ snatches you, soars into the sky, and drops you.");
     msg.to_mons = _("%s^が%sを掴んで空中から投げ落とした。", "%s^ snatches %s, soars into the sky, and releases its grip.");
 
-    simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
 
     bool fear, dead; /* dummy */
     int dam = Dice::roll(4, 8);
@@ -225,7 +225,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
         msg.to_mons = _("%s^は地面に叩きつけられた。", "%s^ crashed into the ground.");
     }
 
-    simple_monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
     dam += Dice::roll(6, 8);
 
     if (monster_to_player || (monster_to_monster && monster_target.is_riding())) {

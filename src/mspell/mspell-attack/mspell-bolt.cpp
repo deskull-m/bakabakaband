@@ -21,7 +21,7 @@ static bool message_shoot(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
         _("%s^が矢を放った。", "%s^ fires an arrow."),
         _("%s^が%sに矢を放った。", "%s^ fires an arrow at %s."));
 
-    auto notice = monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    auto notice = monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
 
     if (notice) {
         sound(SoundKind::SHOOT);

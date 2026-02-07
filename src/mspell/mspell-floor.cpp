@@ -57,7 +57,7 @@ MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature,
     mspell_cast_msg_simple msg(_("%s^がかん高い金切り声をあげた。", "%s^ makes a high pitched shriek."),
         _("%s^が%sに向かって叫んだ。", "%s^ shrieks at %s."));
 
-    simple_monspell_message(&player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     const auto &monster = player_ptr.current_floor_ptr->m_list[m_idx];
     auto result = MonsterSpellResult::make_valid();
@@ -111,13 +111,13 @@ MonsterSpellResult spell_RF6_BLINK(CreatureEntity &creature, MONSTER_IDX m_idx, 
     }
 
     if (!is_quantum_effect && SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
-        if (see_monster(&player_ptr, m_idx)) {
+        if (see_monster(creature, m_idx)) {
             msg_format(_("魔法のバリアが%s^のテレポートを邪魔した。", "Magic barrier obstructs teleporting of %s^."), m_name.data());
         }
         return res;
     }
 
-    if (see_monster(&player_ptr, m_idx)) {
+    if (see_monster(creature, m_idx)) {
         msg_format(_("%s^が瞬時に消えた。", "%s^ blinks away."), m_name.data());
     }
 
@@ -148,13 +148,13 @@ MonsterSpellResult spell_RF6_TPORT(CreatureEntity &creature, MONSTER_IDX m_idx, 
         disturb(player_ptr, true, true);
     }
     if (SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
-        if (see_monster(&player_ptr, m_idx)) {
+        if (see_monster(creature, m_idx)) {
             msg_format(_("魔法のバリアが%s^のテレポートを邪魔した。", "Magic barrier obstructs teleporting of %s^."), m_name.data());
         }
         return res;
     }
 
-    if (see_monster(&player_ptr, m_idx)) {
+    if (see_monster(creature, m_idx)) {
         msg_format(_("%s^がテレポートした。", "%s^ teleports away."), m_name.data());
     }
 
@@ -186,7 +186,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     mspell_cast_msg_simple msg(_("%s^があなたを引き戻した。", "%s^ commands you to return."),
         _("%s^が%sを引き戻した。", "%s^ commands %s to return."));
 
-    simple_monspell_message(&player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
         teleport_player_to(&player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
@@ -205,7 +205,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
             if (is_original_ap_and_seen(player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
-            if (see_monster(&player_ptr, t_idx)) {
+            if (see_monster(creature, t_idx)) {
                 msg_format(_("%s^には効果がなかった。", "%s^ is unaffected!"), t_name.data());
             }
             resists_tele = true;
@@ -213,7 +213,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
             if (is_original_ap_and_seen(player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
-            if (see_monster(&player_ptr, t_idx)) {
+            if (see_monster(creature, t_idx)) {
                 msg_format(_("%s^は耐性を持っている！", "%s^ resists!"), t_name.data());
             }
             resists_tele = true;
@@ -257,7 +257,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     mspell_cast_msg_simple msg(_("%s^にテレポートさせられた。", "%s^ teleports you away."),
         _("%s^は%sをテレポートさせた。", "%s^ teleports %s away."));
 
-    simple_monspell_message(&player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
         if (is_echizen(&player_ptr)) {
@@ -288,7 +288,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
             if (is_original_ap_and_seen(player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
-            if (see_monster(&player_ptr, t_idx)) {
+            if (see_monster(creature, t_idx)) {
                 msg_format(_("%s^には効果がなかった。", "%s^ is unaffected!"), t_name.data());
             }
             resists_tele = true;
@@ -296,7 +296,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
             if (is_original_ap_and_seen(player_ptr, monster_target)) {
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
-            if (see_monster(&player_ptr, t_idx)) {
+            if (see_monster(creature, t_idx)) {
                 msg_format(_("%s^は耐性を持っている！", "%s^ resists!"), t_name.data());
             }
             resists_tele = true;
@@ -429,9 +429,9 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
         msg_done = _("%s^は暗闇に包まれた。", "%s^ is surrounded by darkness.");
     }
 
-    monspell_message(&player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
-    if (see_monster(&player_ptr, t_idx) && monster_to_monster) {
+    if (see_monster(creature, t_idx) && monster_to_monster) {
         msg_format(msg_done, t_name.data());
     }
 
@@ -499,7 +499,7 @@ MonsterSpellResult spell_RF6_RAISE_DEAD(CreatureEntity &creature, MONSTER_IDX m_
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
         _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."), _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."));
 
-    monspell_message(&player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     animate_dead(player_ptr, m_idx, monster.y, monster.x);
 
