@@ -371,7 +371,7 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<
     panel_row_min = floor.height;
     panel_col_min = floor.width;
 
-    auto result = cave_gen(player_ptr, seed);
+    auto result = cave_gen(*player_ptr, seed);
 
     // 乱数状態を復元
     if (seed_was_fixed) {
