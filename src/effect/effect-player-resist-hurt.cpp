@@ -533,7 +533,7 @@ void effect_player_gravity(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     msg_print(_("周辺の重力がゆがんだ。", "Gravity warps around you."));
 
     if (!check_multishadow(*player_ptr)) {
-        teleport_player(player_ptr, 5, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 5, TELEPORT_PASSIVE);
         BadStatusSetter bss(*player_ptr);
         if (!player_ptr->levitation) {
             (void)bss.mod_deceleration(randint0(4) + 4, false);

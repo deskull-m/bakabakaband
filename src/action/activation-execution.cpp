@@ -229,7 +229,7 @@ static bool activate_whistle(CreatureEntity &user, ae_type *ae_ptr)
 
     std::stable_sort(pet_index.begin(), pet_index.end(), [&floor](auto x, auto y) { return floor.order_pet_whistle(x, y); });
     for (auto pet_indice : pet_index) {
-        teleport_monster_to(&dynamic_cast<PlayerType &>(user), pet_indice, user.y, user.x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(user, pet_indice, user.y, user.x, 100, TELEPORT_PASSIVE);
     }
 
     ae_ptr->o_ptr->timeout = 100 + randint1(100);

@@ -216,7 +216,7 @@ static void attack_teleport_away(PlayerType *player_ptr, player_attack_type *pa_
     }
 
     msg_format(_("%s^は消えた！", "%s^ disappears!"), pa_ptr->m_name);
-    teleport_away(player_ptr, pa_ptr->m_idx, 50, TELEPORT_PASSIVE);
+    teleport_away(*player_ptr, pa_ptr->m_idx, 50, TELEPORT_PASSIVE);
     *num = pa_ptr->num_blow + 1;
     *(pa_ptr->mdeath) = true;
 }

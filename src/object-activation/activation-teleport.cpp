@@ -30,14 +30,14 @@ bool activate_escape(PlayerType *player_ptr)
     case 3:
     case 4:
     case 5:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         return true;
     case 6:
     case 7:
     case 8:
     case 9:
     case 10:
-        teleport_player(player_ptr, 222, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 222, TELEPORT_SPONTANEOUS);
         return true;
     case 11:
     case 12:
@@ -70,18 +70,18 @@ bool activate_teleport_level(PlayerType *player_ptr)
 bool activate_dimension_door(PlayerType *player_ptr)
 {
     msg_print(_("次元の扉が開いた。目的地を選んで下さい。", "You open a dimensional gate. Choose a destination."));
-    return dimension_door(player_ptr);
+    return dimension_door(*player_ptr);
 }
 
 bool activate_teleport(PlayerType *player_ptr)
 {
     msg_print(_("周りの空間が歪んでいる...", "It twists space around you..."));
-    teleport_player(player_ptr, 100, TELEPORT_SPONTANEOUS);
+    teleport_player(*player_ptr, 100, TELEPORT_SPONTANEOUS);
     return true;
 }
 
 bool activate_phase_door(PlayerType *player_ptr)
 {
-    teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+    teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
     return true;
 }

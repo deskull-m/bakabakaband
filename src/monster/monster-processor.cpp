@@ -1059,7 +1059,7 @@ bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
-    teleport_monster_to(&player, m_idx, creature.y, creature.x, 100, TELEPORT_SPONTANEOUS);
+    teleport_monster_to(player, m_idx, creature.y, creature.x, 100, TELEPORT_SPONTANEOUS);
 
     disturb(creature, true, true);
 

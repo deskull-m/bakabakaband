@@ -299,7 +299,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
             break;
         case 2:
             // テレポート
-            teleport_player(this->player_ptr, 100, TELEPORT_NONMAGICAL);
+            teleport_player(*this->player_ptr, 100, TELEPORT_NONMAGICAL);
             break;
         case 3:
             // 一時的な混乱

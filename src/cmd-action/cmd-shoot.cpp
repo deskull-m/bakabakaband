@@ -70,7 +70,7 @@ void do_cmd_fire(PlayerType *player_ptr, SPELL_IDX snipe_type)
 
     if (snipe_type == SP_AWAY) {
         auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
-        teleport_player(player_ptr, 10 + (sniper_data->concent * 2), TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10 + (sniper_data->concent * 2), TELEPORT_SPONTANEOUS);
     }
 
     auto effects = player_ptr->effects();

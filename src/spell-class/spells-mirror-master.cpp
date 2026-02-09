@@ -109,7 +109,7 @@ bool SpellsMirrorMaster::mirror_tunnel()
         return false;
     }
 
-    if (exe_dimension_door(this->player_ptr, *pos)) {
+    if (exe_dimension_door(*this->player_ptr, *pos)) {
         return true;
     }
 

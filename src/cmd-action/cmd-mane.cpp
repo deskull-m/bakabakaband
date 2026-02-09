@@ -735,10 +735,10 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         (void)set_invuln(player_ptr, randint1(7) + 7, false);
         break;
     case MonsterAbilityType::BLINK:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         break;
     case MonsterAbilityType::TPORT:
-        teleport_player(player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MonsterAbilityType::WORLD:
         (void)time_walk(player_ptr);
@@ -783,7 +783,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         }
         msg_format(_("%sを引き戻した。", "You command %s to return."), m_name.data());
 
-        teleport_monster_to(player_ptr, grid_target.m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(*player_ptr, grid_target.m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
         break;
     }
     case MonsterAbilityType::TELE_AWAY:

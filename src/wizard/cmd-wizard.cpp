@@ -234,7 +234,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_dump_options();
         return true;
     case 'p':
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         return true;
     case 'P':
         wizard_player_modifier(player_ptr);
@@ -248,7 +248,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_summon_random_monster(*player_ptr, command_arg);
         return true;
     case 't':
-        teleport_player(player_ptr, 100, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 100, TELEPORT_SPONTANEOUS);
         return true;
     case 'u': {
         auto &floor = *player_ptr->current_floor_ptr;

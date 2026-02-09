@@ -665,7 +665,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 break;
             }
             project(*player_ptr, 0, 0, pos->y, pos->x, HISSATSU_ISSEN, AttributeType::ATTACK, PROJECT_BEAM | PROJECT_KILL);
-            teleport_player_to(player_ptr, pos->y, pos->x, TELEPORT_SPONTANEOUS);
+            teleport_player_to(*player_ptr, pos->y, pos->x, TELEPORT_SPONTANEOUS);
         }
         break;
 

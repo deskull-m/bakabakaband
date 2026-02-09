@@ -665,10 +665,10 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             }
 
             if (flag && randint0(player_ptr->level * player_ptr->level / 2)) {
-                teleport_player_to(player_ptr, pos_target->y, pos_target->x, TELEPORT_SPONTANEOUS);
+                teleport_player_to(*player_ptr, pos_target->y, pos_target->x, TELEPORT_SPONTANEOUS);
             } else {
                 msg_print(_("おっと！", "Oops!"));
-                teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
+                teleport_player(*player_ptr, 30, TELEPORT_SPONTANEOUS);
             }
 
             should_continue = false;

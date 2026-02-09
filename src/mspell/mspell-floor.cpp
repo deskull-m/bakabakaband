@@ -121,7 +121,7 @@ MonsterSpellResult spell_RF6_BLINK(CreatureEntity &creature, MONSTER_IDX m_idx, 
         msg_format(_("%s^が瞬時に消えた。", "%s^ blinks away."), m_name.data());
     }
 
-    teleport_away(&player_ptr, m_idx, 10, TELEPORT_SPONTANEOUS);
+    teleport_away(player_ptr, m_idx, 10, TELEPORT_SPONTANEOUS);
 
     if (target_type == MONSTER_TO_PLAYER) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -158,7 +158,7 @@ MonsterSpellResult spell_RF6_TPORT(CreatureEntity &creature, MONSTER_IDX m_idx, 
         msg_format(_("%s^がテレポートした。", "%s^ teleports away."), m_name.data());
     }
 
-    teleport_away_followable(&player_ptr, m_idx);
+    teleport_away_followable(player_ptr, m_idx);
 
     return res;
 }
@@ -189,7 +189,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        teleport_player_to(&player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
         return res;
     }
 
@@ -226,9 +226,9 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     }
 
     if (monster_target.is_riding()) {
-        teleport_player_to(&player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
+        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
     } else {
-        teleport_monster_to(&player_ptr, t_idx, monster.y, monster.x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(player_ptr, t_idx, monster.y, monster.x, 100, TELEPORT_PASSIVE);
     }
     set_monster_csleep(*player_ptr.current_floor_ptr, t_idx, 0);
 
@@ -272,7 +272,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
-        teleport_player_away(m_idx, &player_ptr, 100, false);
+        teleport_player_away(m_idx, player_ptr, 100, false);
         return res;
     }
 
@@ -309,9 +309,9 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     }
 
     if (monster_target.is_riding()) {
-        teleport_player_away(m_idx, &player_ptr, MAX_PLAYER_SIGHT * 2 + 5, false);
+        teleport_player_away(m_idx, player_ptr, MAX_PLAYER_SIGHT * 2 + 5, false);
     } else {
-        teleport_away(&player_ptr, t_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_PASSIVE);
+        teleport_away(player_ptr, t_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_PASSIVE);
     }
     set_monster_csleep(*player_ptr.current_floor_ptr, t_idx, 0);
 

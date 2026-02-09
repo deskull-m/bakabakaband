@@ -167,7 +167,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 

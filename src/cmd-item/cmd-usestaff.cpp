@@ -102,7 +102,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_TELEPORTATION: {
-        teleport_player(player_ptr, (powerful ? 150 : 100), 0L);
+        teleport_player(*player_ptr, (powerful ? 150 : 100), 0L);
         ident = true;
         break;
     }

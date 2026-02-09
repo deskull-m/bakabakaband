@@ -93,7 +93,7 @@ bool kawarimi(CreatureEntity &creature, bool success)
 
     const auto p_pos_orig = creature.get_position(); //!< @details 元の位置に変わり身を置く.
     auto &player = static_cast<PlayerType &>(creature);
-    teleport_player(&player, 10 + randint1(90), TELEPORT_SPONTANEOUS);
+    teleport_player(player, 10 + randint1(90), TELEPORT_SPONTANEOUS);
     constexpr auto sv_wooden_statue = 0;
     ItemEntity item({ ItemKindType::STATUE, sv_wooden_statue });
     item.pval = enum2i(MonraceId::NINJA);
@@ -162,7 +162,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
         }
 
         if (!creature.is_located_at(p_pos_new)) {
-            teleport_player_to(player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
+            teleport_player_to(*player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
         }
 
         update_monster(*player_ptr, grid_new.m_idx, true);
@@ -179,7 +179,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
         }
 
         if (!creature.is_located_at(p_pos_new)) {
-            teleport_player_to(player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
+            teleport_player_to(*player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
         }
 
         moved = true;
@@ -188,7 +188,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
     }
 
     if (!moved && !creature.is_located_at(p_pos_new)) {
-        teleport_player_to(player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
+        teleport_player_to(*player_ptr, p_pos_new.y, p_pos_new.x, TELEPORT_NONMAGICAL);
     }
 
     if (mdeath) {
@@ -388,7 +388,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
 
         break;
     case MindNinjaType::HIDE_LEAVES:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::KAWARIMI:
         if (ninja_data && !ninja_data->kawarimi) {
@@ -399,7 +399,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
 
         break;
     case MindNinjaType::ABSCONDING:
-        teleport_player(player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::HIT_AND_AWAY:
         if (!hit_and_away(player_ptr)) {
@@ -423,7 +423,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         break;
     case MindNinjaType::HIDE_FLAMES:
         fire_ball(creature, AttributeType::FIRE, Direction::self(), 50 + plev, plev / 10 + 2);
-        teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 30, TELEPORT_SPONTANEOUS);
         set_oppose_fire(player_ptr, (TIME_EFFECT)plev, false);
         break;
     case MindNinjaType::NYUSIN:
@@ -475,7 +475,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         }
 
         project_length = 0;
-        (void)teleport_swap(player_ptr, dir);
+        (void)teleport_swap(*player_ptr, dir);
         break;
     }
     case MindNinjaType::EXPLOSIVE_RUNE:
@@ -489,7 +489,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         fire_ball(creature, AttributeType::POIS, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
         fire_ball(creature, AttributeType::HYPODYNAMIA, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
         fire_ball(creature, AttributeType::CONFUSION, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);
-        teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 30, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::PURGATORY_FLAME: {
         const auto num = Dice::roll(3, 9);

@@ -1474,7 +1474,7 @@ static bool door_to_darkness(CreatureEntity &creature, int distance)
 
     const auto flag = cave_player_teleportable_bold(creature, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS) && is_target_grid_dark(floor, *p_pos);
     if (flag) {
-        teleport_player_to(&player, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS);
+        teleport_player_to(player, p_pos->y, p_pos->x, TELEPORT_SPONTANEOUS);
     } else {
         msg_print(_("闇の扉は開かなかった！", "The door to darkness does not open!"));
     }

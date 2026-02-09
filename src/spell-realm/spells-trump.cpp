@@ -123,7 +123,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 40) {
         msg_print(_("テレポート・カードだ。", "It's a teleport trump card."));
-        teleport_player(player_ptr, 10, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 10, TELEPORT_PASSIVE);
         return;
     }
 
@@ -135,13 +135,13 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 47) {
         msg_print(_("テレポート・カードだ。", "It's a teleport trump card."));
-        teleport_player(player_ptr, 100, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 100, TELEPORT_PASSIVE);
         return;
     }
 
     if (die < 52) {
         msg_print(_("テレポート・カードだ。", "It's a teleport trump card."));
-        teleport_player(player_ptr, 200, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 200, TELEPORT_PASSIVE);
         return;
     }
 

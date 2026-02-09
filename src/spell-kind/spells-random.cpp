@@ -130,7 +130,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 33:
             if (!(*count)) {
                 msg_print(_("周囲の空間が歪んだ！", "Space warps about you!"));
-                teleport_player(player_ptr, Dice::roll(10, 10), TELEPORT_PASSIVE);
+                teleport_player(*player_ptr, Dice::roll(10, 10), TELEPORT_PASSIVE);
                 if (randint0(13)) {
                     (*count) += activate_hi_summon(player_ptr, player_ptr->y, player_ptr->x, false);
                 }
@@ -264,16 +264,16 @@ void wild_magic(PlayerType *player_ptr, int spell)
     case 1:
     case 2:
     case 3:
-        teleport_player(player_ptr, 10, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 10, TELEPORT_PASSIVE);
         break;
     case 4:
     case 5:
     case 6:
-        teleport_player(player_ptr, 100, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 100, TELEPORT_PASSIVE);
         break;
     case 7:
     case 8:
-        teleport_player(player_ptr, 200, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 200, TELEPORT_PASSIVE);
         break;
     case 9:
     case 10:

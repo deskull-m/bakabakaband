@@ -53,7 +53,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -94,7 +94,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -238,7 +238,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             msg_print(_("次元の扉が開いた。目的地を選んで下さい。", "You open a dimensional gate. Choose a destination."));
-            if (!dimension_door(player_ptr)) {
+            if (!dimension_door(*player_ptr)) {
                 return tl::nullopt;
             }
         }
@@ -285,7 +285,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            teleport_swap(player_ptr, dir);
+            teleport_swap(*player_ptr, dir);
         }
     } break;
 

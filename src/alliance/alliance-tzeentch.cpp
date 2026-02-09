@@ -134,7 +134,7 @@ void AllianceTzeentch::panishment(CreatureEntity &creature)
         /*
         if (one_in_(3)) {
             msg_print(_("空間が歪み、あなたは別の場所に飛ばされた！", "Space warps and you are teleported elsewhere!"));
-            teleport_player(&player_ptr, 50, TELEPORT_NONMAGICAL);
+            teleport_player(player_ptr, 50, TELEPORT_NONMAGICAL);
         }
         */
     }

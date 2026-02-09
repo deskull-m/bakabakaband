@@ -118,7 +118,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_range(range);
         }
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
