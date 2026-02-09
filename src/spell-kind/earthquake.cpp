@@ -149,7 +149,7 @@ void process_hit_to_player(CreatureEntity &creature, std::span<const Pos2D> pos_
 
     if (const auto pos_dodge = decide_player_dodge_posistion(creature, pos_collapses)) {
         process_player_damage_dodged(creature, m_idx);
-        (void)move_player_effect(&player, pos_dodge->y, pos_dodge->x, MPE_DONT_PICKUP);
+        (void)move_player_effect(player, pos_dodge->y, pos_dodge->x, MPE_DONT_PICKUP);
         return;
     }
     process_player_damage_undodged(creature, m_idx);

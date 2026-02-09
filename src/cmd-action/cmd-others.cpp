@@ -54,10 +54,10 @@ void do_cmd_search(PlayerType *player_ptr)
     }
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    search(player_ptr);
+    search(*player_ptr);
 
     if (player_ptr->action == ACTION_SEARCH) {
-        search(player_ptr);
+        search(*player_ptr);
     }
 }
 

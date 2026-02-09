@@ -248,7 +248,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             energy.mul_player_turn_energy(2);
         }
     } else if ((do_pickup != easy_disarm) && terrain.flags.has(TerrainCharacteristics::DISARM) && !grid.mimic) {
-        if (!trap_can_be_ignored(player_ptr, grid.feat)) {
+        if (!trap_can_be_ignored(*player_ptr, grid.feat)) {
             (void)exe_disarm(*player_ptr, pos.y, pos.x, dir);
             return;
         }
@@ -374,5 +374,5 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         player_ptr->plus_incident_tree(walk_dir.data(), 1);
     }
 
-    (void)move_player_effect(player_ptr, pos.y, pos.x, mpe_mode);
+    (void)move_player_effect(*player_ptr, pos.y, pos.x, mpe_mode);
 }

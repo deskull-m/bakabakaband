@@ -180,7 +180,7 @@ bool process_fall_off_horse(PlayerType *player_ptr, int dam, bool force)
     }
 
     if (pos_fall_off && !player_ptr->is_dead()) {
-        (void)move_player_effect(player_ptr, pos_fall_off->y, pos_fall_off->x, MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
+        (void)move_player_effect(*player_ptr, pos_fall_off->y, pos_fall_off->x, MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
     }
 
     return fall_dam;

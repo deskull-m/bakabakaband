@@ -78,7 +78,7 @@ bool teleport_swap(CreatureEntity &creature, const Direction &dir)
     }
 
     sound(SoundKind::TELEPORT);
-    (void)move_player_effect(&player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
+    (void)move_player_effect(player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
     return true;
 }
 
@@ -373,7 +373,7 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
         msg_format("『こっちだぁ、%s』", player.name.data());
     }
 #endif
-    (void)move_player_effect(&player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
+    (void)move_player_effect(player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
     return true;
 }
 
@@ -511,7 +511,7 @@ void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, tele
     }
 
     sound(SoundKind::TELEPORT);
-    (void)move_player_effect(&player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
+    (void)move_player_effect(player, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
 }
 
 void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
