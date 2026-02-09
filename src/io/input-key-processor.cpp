@@ -396,7 +396,7 @@ void process_command(PlayerType *player_ptr)
     case 'b': {
         CreatureClass pc(*player_ptr);
         if (pc.can_browse()) {
-            do_cmd_mind_browse(player_ptr);
+            do_cmd_mind_browse(*player_ptr);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
             do_cmd_element_browse(*player_ptr);
         } else if (pc.equals(PlayerClassType::SMITH)) {
@@ -471,7 +471,7 @@ void process_command(PlayerType *player_ptr)
         }
 
         if (pc.can_browse()) {
-            do_cmd_mind(player_ptr);
+            do_cmd_mind(*player_ptr);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
             do_cmd_element(*player_ptr);
         } else if (pc.equals(PlayerClassType::IMITATOR)) {
