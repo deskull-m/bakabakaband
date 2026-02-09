@@ -334,65 +334,65 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         (void)animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
         return true;
     case MonsterAbilityType::S_KIN:
-        return cast_blue_summon_kin(player_ptr, bmc_ptr);
+        return cast_blue_summon_kin(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_CYBER:
-        return cast_blue_summon_cyber(player_ptr, bmc_ptr);
+        return cast_blue_summon_cyber(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_MONSTER:
-        return cast_blue_summon_monster(player_ptr, bmc_ptr);
+        return cast_blue_summon_monster(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_MONSTERS:
-        return cast_blue_summon_monsters(player_ptr, bmc_ptr);
+        return cast_blue_summon_monsters(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_ANT:
-        return cast_blue_summon_ant(player_ptr, bmc_ptr);
+        return cast_blue_summon_ant(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_SPIDER:
-        return cast_blue_summon_spider(player_ptr, bmc_ptr);
+        return cast_blue_summon_spider(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_HOUND:
-        return cast_blue_summon_hound(player_ptr, bmc_ptr);
+        return cast_blue_summon_hound(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_HYDRA:
-        return cast_blue_summon_hydra(player_ptr, bmc_ptr);
+        return cast_blue_summon_hydra(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_FAIRY:
-        return cast_blue_summon_fairy(player_ptr, bmc_ptr);
+        return cast_blue_summon_fairy(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_APE:
-        return cast_blue_summon_ape(player_ptr, bmc_ptr);
+        return cast_blue_summon_ape(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_BIRD:
-        return cast_blue_summon_bird(player_ptr, bmc_ptr);
+        return cast_blue_summon_bird(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_INSECT:
-        return cast_blue_summon_insect(player_ptr, bmc_ptr);
+        return cast_blue_summon_insect(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_ANGEL:
-        return cast_blue_summon_angel(player_ptr, bmc_ptr);
+        return cast_blue_summon_angel(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_DEMON:
-        return cast_blue_summon_demon(player_ptr, bmc_ptr);
+        return cast_blue_summon_demon(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_UNDEAD:
-        return cast_blue_summon_undead(player_ptr, bmc_ptr);
+        return cast_blue_summon_undead(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_DRAGON:
-        return cast_blue_summon_dragon(player_ptr, bmc_ptr);
+        return cast_blue_summon_dragon(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_HI_UNDEAD:
-        return cast_blue_summon_high_undead(player_ptr, bmc_ptr);
+        return cast_blue_summon_high_undead(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_HI_DRAGON:
-        return cast_blue_summon_high_dragon(player_ptr, bmc_ptr);
+        return cast_blue_summon_high_dragon(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_AMBERITES:
-        return cast_blue_summon_amberite(player_ptr, bmc_ptr);
+        return cast_blue_summon_amberite(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_CHOASIANS:
-        return cast_blue_summon_choasian(player_ptr, bmc_ptr);
+        return cast_blue_summon_choasian(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_UNIQUE:
-        return cast_blue_summon_unique(player_ptr, bmc_ptr);
+        return cast_blue_summon_unique(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_DEAD_UNIQUE:
-        return cast_blue_summon_dead_unique(player_ptr, bmc_ptr);
+        return cast_blue_summon_dead_unique(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_NASTY:
-        return cast_blue_summon_nasty(player_ptr, bmc_ptr);
+        return cast_blue_summon_nasty(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_GOLEM:
-        return cast_blue_summon_golem(player_ptr, bmc_ptr);
+        return cast_blue_summon_golem(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_CAT:
-        return cast_blue_summon_cats(player_ptr, bmc_ptr);
+        return cast_blue_summon_cats(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_PERVERT:
-        return cast_blue_summon_perverts(player_ptr, bmc_ptr);
+        return cast_blue_summon_perverts(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_PUYO:
-        return cast_blue_summon_puyo(player_ptr, bmc_ptr);
+        return cast_blue_summon_puyo(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_HOMO:
-        return cast_blue_summon_homo(player_ptr, bmc_ptr);
+        return cast_blue_summon_homo(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_WALL:
-        return cast_blue_summon_wall(player_ptr, bmc_ptr);
+        return cast_blue_summon_wall(*player_ptr, bmc_ptr);
     case MonsterAbilityType::S_ELDRAZI:
-        return cast_blue_summon_eldrazi(player_ptr, bmc_ptr);
+        return cast_blue_summon_eldrazi(*player_ptr, bmc_ptr);
     default:
         msg_print("hoge?");
         return true;
