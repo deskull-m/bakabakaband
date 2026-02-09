@@ -272,30 +272,30 @@ void process_command(PlayerType *player_ptr)
         break;
     }
     case ';': {
-        do_cmd_walk(player_ptr, false);
+        do_cmd_walk(*player_ptr, false);
         break;
     }
     case '-': {
-        do_cmd_walk(player_ptr, true);
+        do_cmd_walk(*player_ptr, true);
         break;
     }
     case '.': {
         if (!is_wild_mode) {
-            do_cmd_run(player_ptr);
+            do_cmd_run(*player_ptr);
         }
 
         break;
     }
     case ',': {
-        do_cmd_stay(player_ptr, always_pickup);
+        do_cmd_stay(*player_ptr, always_pickup);
         break;
     }
     case 'g': {
-        do_cmd_stay(player_ptr, !always_pickup);
+        do_cmd_stay(*player_ptr, !always_pickup);
         break;
     }
     case 'R': {
-        do_cmd_rest(player_ptr);
+        do_cmd_rest(*player_ptr);
         break;
     }
     case 's': {
@@ -341,7 +341,7 @@ void process_command(PlayerType *player_ptr)
 
             change_wild_mode(player_ptr, false);
         } else {
-            do_cmd_go_up(player_ptr);
+            do_cmd_go_up(*player_ptr);
         }
 
         break;
@@ -350,7 +350,7 @@ void process_command(PlayerType *player_ptr)
         if (is_wild_mode) {
             change_wild_mode(player_ptr, false);
         } else {
-            do_cmd_go_down(player_ptr);
+            do_cmd_go_down(*player_ptr);
         }
 
         break;
