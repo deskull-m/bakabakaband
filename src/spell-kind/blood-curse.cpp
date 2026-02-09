@@ -55,7 +55,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             if (!count) {
                 msg_print(_("空間が歪んだ！", "Space warps about you!"));
                 if (monster.is_valid()) {
-                    teleport_away(player_ptr, grid.m_idx, Dice::roll(10, 10), TELEPORT_PASSIVE);
+                    teleport_away(*player_ptr, grid.m_idx, Dice::roll(10, 10), TELEPORT_PASSIVE);
                 }
                 if (one_in_(13)) {
                     count += activate_hi_summon(player_ptr, monster.y, monster.x, true);

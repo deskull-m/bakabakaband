@@ -340,7 +340,7 @@ void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
         if (!has_resist) {
             if (one_in_(2)) {
                 msg_format(_(("%s^はどこかへ消えていった！"), ("%s^ disappears!")), mam_ptr->t_name);
-                teleport_away(player_ptr, mam_ptr->t_idx, 50, TELEPORT_PASSIVE);
+                teleport_away(*player_ptr, mam_ptr->t_idx, 50, TELEPORT_PASSIVE);
             } else {
                 if (polymorph_monster(player_ptr, mam_ptr->t_ptr->y, mam_ptr->t_ptr->x)) {
                     msg_format(_("%s^は変化した！", "%s^ changes!"), mam_ptr->t_name);

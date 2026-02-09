@@ -363,7 +363,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     }
     case TrapType::TELEPORT:
         msg_print(_("テレポート・トラップにひっかかった！", "You hit a teleport trap!"));
-        teleport_player(player_ptr, 100, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 100, TELEPORT_PASSIVE);
         break;
     case TrapType::FIRE: {
         msg_print(_("炎に包まれた！", "You are enveloped in flames!"));

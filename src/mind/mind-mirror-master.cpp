@@ -410,13 +410,13 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         break;
     }
     case MindMirrorMasterType::WRAPPED_MIRROR:
-        teleport_player(&player, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(player, 10, TELEPORT_SPONTANEOUS);
         break;
     case MindMirrorMasterType::MIRROR_LIGHT:
         (void)lite_area(&player, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
         break;
     case MindMirrorMasterType::WANDERING_MIRROR:
-        teleport_player(&player, plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(player, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MindMirrorMasterType::ROBE_DUST:
         set_dustrobe(creature, 20 + randint1(20), false);

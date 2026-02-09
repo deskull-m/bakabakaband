@@ -26,7 +26,7 @@ bool hit_and_away(PlayerType *player_ptr)
         if (randint0(player_ptr->skill_dis) < 7) {
             msg_print(_("うまく逃げられなかった。", "You failed to run away."));
         } else {
-            teleport_player(player_ptr, 30, TELEPORT_SPONTANEOUS);
+            teleport_player(*player_ptr, 30, TELEPORT_SPONTANEOUS);
         }
         return true;
     }

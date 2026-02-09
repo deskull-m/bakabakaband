@@ -237,7 +237,7 @@ void AllianceSexyCommandoClub::panishment([[maybe_unused]] CreatureEntity &creat
         }
         if (one_in_(4)) {
             msg_print("「愛の力で君を別の場所に送ってあげよう♪」");
-            teleport_player(creature_ptr, 200, TELEPORT_NONMAGICAL);
+            teleport_player(*creature_ptr, 200, TELEPORT_NONMAGICAL);
         }
 
         // 部員大量召喚
@@ -268,7 +268,7 @@ void AllianceSexyCommandoClub::panishment([[maybe_unused]] CreatureEntity &creat
 
         if (one_in_(3)) {
             msg_print("「愛と青春の転校生活動〜♪」");
-            teleport_player(creature_ptr, 500, TELEPORT_NONMAGICAL);
+            teleport_player(*creature_ptr, 500, TELEPORT_NONMAGICAL);
         }
 
         // 部員軍団召喚

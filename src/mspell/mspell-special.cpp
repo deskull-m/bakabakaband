@@ -194,7 +194,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
 
         simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
 
-        teleport_away(player_ptr, m_idx, 10, TELEPORT_NONMAGICAL);
+        teleport_away(*player_ptr, m_idx, 10, TELEPORT_NONMAGICAL);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         return MonsterSpellResult::make_valid();
     }
@@ -212,9 +212,9 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
     int dam = Dice::roll(4, 8);
 
     if (monster_to_player || monster_target.is_riding()) {
-        teleport_player_to(player_ptr, monster.y, monster.x, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
+        teleport_player_to(*player_ptr, monster.y, monster.x, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
     } else {
-        teleport_monster_to(player_ptr, t_idx, monster.y, monster.x, 100, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
+        teleport_monster_to(*player_ptr, t_idx, monster.y, monster.x, 100, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
     }
 
     if ((monster_to_player && player_ptr->levitation) || (monster_to_monster && monrace_target.feature_flags.has(MonsterFeatureType::CAN_FLY))) {

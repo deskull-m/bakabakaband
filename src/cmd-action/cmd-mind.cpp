@@ -254,7 +254,7 @@ static void check_mind_mirror_master(PlayerType *player_ptr, cm_type *cm_ptr)
 
     if (cm_ptr->b < 81) {
         msg_print(_("鏡の世界の干渉を受けた！", "Weird visions seem to dance before your eyes..."));
-        teleport_player(player_ptr, 10, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 10, TELEPORT_PASSIVE);
         return;
     }
 

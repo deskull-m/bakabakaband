@@ -498,7 +498,7 @@ bool activate_whistle(CreatureEntity &creature, const ItemEntity &item)
 
     std::stable_sort(pet_index.begin(), pet_index.end(), [&floor](auto x, auto y) { return floor.order_pet_whistle(x, y); });
     for (auto pet_indice : pet_index) {
-        teleport_monster_to(&player, pet_indice, creature.y, creature.x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(player, pet_indice, creature.y, creature.x, 100, TELEPORT_PASSIVE);
     }
 
     return true;

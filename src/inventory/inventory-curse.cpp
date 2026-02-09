@@ -228,7 +228,7 @@ static void curse_teleport(PlayerType *player_ptr)
     msg_format(_("%sがテレポートの能力を発動させようとしている。", "Your %s tries to teleport you."), item_name.data());
     if (input_check_strict(player_ptr, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
         disturb(*player_ptr, false, true);
-        teleport_player(player_ptr, 50, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 50, TELEPORT_SPONTANEOUS);
     } else {
         msg_format(_("%sに{.}(ピリオド)と銘を刻むと発動を抑制できます。", "You can inscribe {.} on your %s to disable random teleportation. "), item_name.data());
         disturb(*player_ptr, true, true);
@@ -504,7 +504,7 @@ static void occur_curse_effects(PlayerType *player_ptr)
     curse_berserk_rage(player_ptr);
     if (player_ptr->cursed.has(CurseTraitType::TELEPORT) && one_in_(200) && !player_ptr->anti_tele) {
         disturb(*player_ptr, false, true);
-        teleport_player(player_ptr, 40, TELEPORT_PASSIVE);
+        teleport_player(*player_ptr, 40, TELEPORT_PASSIVE);
     }
 
     curse_drain_hp(player_ptr);

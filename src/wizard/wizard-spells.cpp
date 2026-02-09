@@ -211,7 +211,7 @@ void wiz_dimension_door(CreatureEntity &creature)
         return;
     }
 
-    teleport_player_to(player_ptr, pos->y, pos->x, TELEPORT_NONMAGICAL);
+    teleport_player_to(*player_ptr, pos->y, pos->x, TELEPORT_NONMAGICAL);
 }
 
 /*!
@@ -251,7 +251,7 @@ void wiz_teleport_back(CreatureEntity &creature)
         return;
     }
 
-    teleport_player_to(player_ptr, pos->y, pos->x, TELEPORT_NONMAGICAL);
+    teleport_player_to(*player_ptr, pos->y, pos->x, TELEPORT_NONMAGICAL);
 }
 
 /*!

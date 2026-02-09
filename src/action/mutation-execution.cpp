@@ -109,7 +109,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     }
     case PlayerMutationType::VTELEPORT:
         msg_print(_("集中している...", "You concentrate..."));
-        teleport_player(player_ptr, 10 + 4 * lvl, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10 + 4 * lvl, TELEPORT_SPONTANEOUS);
         return true;
     case PlayerMutationType::MIND_BLST: {
         const auto dir = get_aim_dir(player_ptr);
@@ -137,7 +137,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         (void)detect_monsters_normal(*player_ptr, DETECT_RAD_DEFAULT);
         return true;
     case PlayerMutationType::BLINK:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         return true;
     case PlayerMutationType::EAT_ROCK:
         return eat_rock(player_ptr);
@@ -149,7 +149,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
             return false;
         }
 
-        (void)teleport_swap(player_ptr, dir);
+        (void)teleport_swap(*player_ptr, dir);
         project_length = 0;
         return true;
     }

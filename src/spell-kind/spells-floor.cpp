@@ -319,7 +319,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                     monster.hp = monster.maxhp;
 
                     /* Try to teleport away quest monsters */
-                    if (!teleport_away(player_ptr, grid.m_idx, (r * 2) + 1, TELEPORT_DEC_VALOUR)) {
+                    if (!teleport_away(*player_ptr, grid.m_idx, (r * 2) + 1, TELEPORT_DEC_VALOUR)) {
                         continue;
                     }
                 } else {

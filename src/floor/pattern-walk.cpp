@@ -66,7 +66,7 @@ void pattern_teleport(PlayerType *player_ptr)
 
         command_arg = *input_level;
     } else if (input_check(_("通常テレポート？", "Normal teleport? "))) {
-        teleport_player(player_ptr, 200, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 200, TELEPORT_SPONTANEOUS);
         return;
     } else {
         return;

@@ -593,7 +593,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
 
             if (!has_chaos_resist && player_ptr->anti_tele == 0) {
                 msg_print(_("突然体が浮きだした！", "Your body floats suddenly!"));
-                teleport_player(player_ptr, 50, TELEPORT_PASSIVE);
+                teleport_player(*player_ptr, 50, TELEPORT_PASSIVE);
             }
         } else if (!has_chaos_resist) {
             if (player_ptr->is_dead()) {
@@ -637,7 +637,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
 
     case RaceBlowEffectType::LOCKUP: { /* AC軽減あり / Player armor reduces total damage */
         if (player_ptr->anti_tele == 0) {
-            teleport_player(player_ptr, 50, TELEPORT_PASSIVE);
+            teleport_player(*player_ptr, 50, TELEPORT_PASSIVE);
             wall_creation(*player_ptr, player_ptr->y, player_ptr->x);
         }
         break;

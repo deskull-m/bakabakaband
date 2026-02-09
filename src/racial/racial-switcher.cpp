@@ -333,7 +333,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         return create_ration(player_ptr);
     case PlayerRaceType::GNOME:
         msg_print(_("パッ！", "Blink!"));
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         return true;
     case PlayerRaceType::HALF_ORC:
         msg_print(_("勇気を出した。", "You play tough."));

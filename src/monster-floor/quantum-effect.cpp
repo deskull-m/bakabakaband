@@ -69,7 +69,7 @@ static void produce_quantum_effect(PlayerType *player_ptr, MONSTER_IDX m_idx, bo
     if (target) {
         (void)monspell_to_monster(player_ptr, MonsterAbilityType::BLINK, monster.y, monster.x, m_idx, m_idx, true);
     } else {
-        teleport_player_away(m_idx, player_ptr, 10, true);
+        teleport_player_away(m_idx, *player_ptr, 10, true);
     }
 }
 

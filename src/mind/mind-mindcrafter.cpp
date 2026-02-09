@@ -191,10 +191,10 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         break;
     }
     case MindMindcrafterType::MINOR_DISPLACEMENT:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         break;
     case MindMindcrafterType::MAJOR_DISPLACEMENT:
-        teleport_player(player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MindMindcrafterType::DOMINATION:
         if (plev < 30) {

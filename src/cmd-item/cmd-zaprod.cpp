@@ -161,7 +161,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
 
     case SV_ROD_TELEPORT_AWAY: {
         int distance = MAX_PLAYER_SIGHT * (powerful ? 8 : 5);
-        if (teleport_monster(player_ptr, dir, distance)) {
+        if (teleport_monster(*player_ptr, dir, distance)) {
             ident = true;
         }
         break;

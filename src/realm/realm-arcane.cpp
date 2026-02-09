@@ -102,7 +102,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -276,7 +276,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 

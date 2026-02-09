@@ -149,7 +149,7 @@ static bool cast_blue_teleport_back(PlayerType *player_ptr)
 
     msg_format(_("%sを引き戻した。", "You command %s to return."), m_name->data());
     teleport_monster_to(
-        player_ptr, player_ptr->current_floor_ptr->get_grid(*pos).m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
+        *player_ptr, player_ptr->current_floor_ptr->get_grid(*pos).m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
     return true;
 }
 
@@ -302,10 +302,10 @@ static bool switch_cast_blue_magic(PlayerType *player_ptr, bmc_type *bmc_ptr)
         (void)set_invuln(player_ptr, randint1(4) + 4, false);
         return true;
     case MonsterAbilityType::BLINK:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
         return true;
     case MonsterAbilityType::TPORT:
-        teleport_player(player_ptr, bmc_ptr->plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(*player_ptr, bmc_ptr->plev * 5, TELEPORT_SPONTANEOUS);
         return true;
     case MonsterAbilityType::WORLD:
         (void)time_walk(player_ptr);

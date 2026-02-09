@@ -139,11 +139,11 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_PHASE_DOOR:
-        teleport_player(this->player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(*this->player_ptr, 10, TELEPORT_SPONTANEOUS);
         this->ident = true;
         break;
     case SV_SCROLL_TELEPORT:
-        teleport_player(this->player_ptr, 100, TELEPORT_SPONTANEOUS);
+        teleport_player(*this->player_ptr, 100, TELEPORT_SPONTANEOUS);
         this->ident = true;
         break;
     case SV_SCROLL_TELEPORT_LEVEL: {
