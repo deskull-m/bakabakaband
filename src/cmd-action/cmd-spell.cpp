@@ -526,7 +526,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
 static void confirm_use_force(PlayerType *player_ptr, bool browse_only)
 {
     if (const auto code = repeat_pull(); code == INVEN_FORCE) {
-        browse_only ? do_cmd_mind_browse(player_ptr) : do_cmd_mind(player_ptr);
+        browse_only ? do_cmd_mind_browse(*player_ptr) : do_cmd_mind(*player_ptr);
         return;
     }
 
@@ -546,7 +546,7 @@ static void confirm_use_force(PlayerType *player_ptr, bool browse_only)
 
     prt("", 0, 0);
     if (which == 'w') {
-        browse_only ? do_cmd_mind_browse(player_ptr) : do_cmd_mind(player_ptr);
+        browse_only ? do_cmd_mind_browse(*player_ptr) : do_cmd_mind(*player_ptr);
     }
 }
 
@@ -606,7 +606,7 @@ void do_cmd_browse(PlayerType *player_ptr)
     if (o_ptr == nullptr) {
         if (i_idx == INVEN_FORCE) /* the_force */
         {
-            do_cmd_mind_browse(player_ptr);
+            do_cmd_mind_browse(*player_ptr);
             return;
         }
         return;
@@ -961,7 +961,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
     const auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, item_tester);
     if (o_ptr == nullptr) {
         if (i_idx == INVEN_FORCE) {
-            do_cmd_mind(player_ptr);
+            do_cmd_mind(*player_ptr);
             return true; //!< 錬気キャンセル時の処理がない
         }
 
