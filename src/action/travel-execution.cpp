@@ -186,7 +186,7 @@ Direction decide_travel_step_dir(PlayerType *player_ptr, const Direction &prev_d
     }
 
     const auto &grid_new = floor.get_grid(pos_new);
-    if (!grid_new.mimic && !trap_can_be_ignored(player_ptr, grid_new.feat)) {
+    if (!grid_new.mimic && !trap_can_be_ignored(*player_ptr, grid_new.feat)) {
         return Direction::none();
     }
 

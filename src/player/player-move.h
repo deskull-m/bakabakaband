@@ -23,7 +23,7 @@
 #define PATTERN_TILE_TELEPORT 7
 #define PATTERN_TILE_WRECKED 8
 
-class PlayerType;
-bool move_player_effect(PlayerType *player_ptr, POSITION ny, POSITION nx, BIT_FLAGS mpe_mode);
-bool trap_can_be_ignored(PlayerType *player_ptr, FEAT_IDX feat);
-void search(PlayerType *player_ptr);
+class CreatureEntity;
+bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_FLAGS mpe_mode);
+bool trap_can_be_ignored(CreatureEntity &creature, FEAT_IDX feat);
+void search(CreatureEntity &creature);

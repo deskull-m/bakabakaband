@@ -63,6 +63,6 @@ bool eat_rock(PlayerType *player_ptr)
     }
 
     cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_ROCK);
-    (void)move_player_effect(player_ptr, pos.y, pos.x, MPE_DONT_PICKUP);
+    (void)move_player_effect(*player_ptr, pos.y, pos.x, MPE_DONT_PICKUP);
     return true;
 }

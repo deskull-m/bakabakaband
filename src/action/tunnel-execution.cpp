@@ -109,7 +109,7 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
             if (tree) {
                 msg_format(_("%sを切っている。", "You chop away at the %s."), name.data());
                 if (one_in_(4)) {
-                    search(player_ptr);
+                    search(*player_ptr);
                 }
             } else {
                 msg_format(_("%sに穴を掘っている。", "You tunnel into the %s."), name.data());
@@ -120,7 +120,7 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     if (grid.is_hidden_door() && one_in_(4)) {
-        search(player_ptr);
+        search(*player_ptr);
     }
 
     return more;

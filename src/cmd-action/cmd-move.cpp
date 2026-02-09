@@ -481,7 +481,7 @@ void do_cmd_stay(PlayerType *player_ptr, bool pickup)
         mpe_mode |= MPE_DO_PICKUP;
     }
 
-    (void)move_player_effect(player_ptr, player_ptr->y, player_ptr->x, mpe_mode);
+    (void)move_player_effect(*player_ptr, player_ptr->y, player_ptr->x, mpe_mode);
 }
 
 /*!

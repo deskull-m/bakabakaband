@@ -82,7 +82,7 @@ bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr,
     auto &grid = player_ptr->current_floor_ptr->grid_array[ny][nx];
     MonsterEntity *y_ptr = &player_ptr->current_floor_ptr->m_list[grid.m_idx];
     if (turn_flags_ptr->is_riding_mon) {
-        return move_player_effect(player_ptr, ny, nx, MPE_DONT_PICKUP);
+        return move_player_effect(*player_ptr, ny, nx, MPE_DONT_PICKUP);
     }
 
     player_ptr->current_floor_ptr->grid_array[oy][ox].m_idx = grid.m_idx;

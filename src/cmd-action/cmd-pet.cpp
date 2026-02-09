@@ -296,7 +296,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         MainWindowRedrawingFlag::UHEALTH,
     };
     rfu.set_flags(flags_mwrf);
-    (void)move_player_effect(player_ptr, pos.y, pos.x, MPE_HANDLE_STUFF | MPE_ENERGY_USE | MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
+    (void)move_player_effect(*player_ptr, pos.y, pos.x, MPE_HANDLE_STUFF | MPE_ENERGY_USE | MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
     return true;
 }
 
