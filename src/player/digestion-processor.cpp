@@ -58,7 +58,7 @@ void starve_player(PlayerType *player_ptr)
             digestion = 100;
         }
 
-        if (is_sushi_eater(player_ptr)) {
+        if (is_sushi_eater(*player_ptr)) {
             digestion *= 100;
         }
 
@@ -69,7 +69,7 @@ void starve_player(PlayerType *player_ptr)
         return;
     }
 
-    if (!is_sushi_eater(player_ptr) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!is_sushi_eater(*player_ptr) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
         disturb(*player_ptr, true, true);
         (void)BadStatusSetter(*player_ptr).mod_paralysis(1 + randint0(5));
@@ -77,7 +77,7 @@ void starve_player(PlayerType *player_ptr)
 
     if (player_ptr->food < PY_FOOD_STARVE) {
         int dam = (PY_FOOD_STARVE - player_ptr->food) / 10;
-        if (!is_invuln(player_ptr)) {
+        if (!is_invuln(*player_ptr)) {
             take_hit(*player_ptr, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
     }
@@ -189,7 +189,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         switch (new_aux) {
         case 0:
             sound(SoundKind::FAINT);
-            if (is_sushi_eater(player_ptr)) {
+            if (is_sushi_eater(*player_ptr)) {
                 msg_print(_("そろそろ寿司を食べないと死ぬぜ！", "'I'm gonna die if I don't eat sushi soon!'"));
             } else {
                 msg_print(_("あまりにも空腹で気を失ってしまった！", "You are getting faint from hunger!"));

@@ -107,7 +107,7 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             if (player.tim_stealth > v) {
                 return false;
             }
-        } else if (!is_time_limit_stealth(&player)) {
+        } else if (!is_time_limit_stealth(player)) {
             msg_print(_("足音が小さくなった！", "You begin to walk silently!"));
             notice = true;
         }

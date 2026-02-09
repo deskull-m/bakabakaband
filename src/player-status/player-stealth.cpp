@@ -125,11 +125,11 @@ int16_t PlayerStealth::time_effect_bonus()
         }
     }
 
-    if (is_shero(player_ptr)) {
+    if (is_shero(*player_ptr)) {
         bonus -= 7;
     }
 
-    if (is_time_limit_stealth(player_ptr)) {
+    if (is_time_limit_stealth(*player_ptr)) {
         bonus += 999;
     }
 

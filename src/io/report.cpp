@@ -244,7 +244,7 @@ bool report_score(PlayerType *player_ptr)
     const auto &realm1_name = CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
     score_ss << fmt::format("name: {}\n", player_ptr->name)
              << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
-             << fmt::format("score: {}\n", calc_score(player_ptr))
+             << fmt::format("score: {}\n", calc_score(*player_ptr))
              << fmt::format("level: {}\n", player_ptr->level)
              << fmt::format("depth: {}\n", player_ptr->current_floor_ptr->dun_level)
              << fmt::format("maxlv: {}\n", player_ptr->max_plv)

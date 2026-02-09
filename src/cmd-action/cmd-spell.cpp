@@ -589,7 +589,7 @@ void do_cmd_browse(PlayerType *player_ptr)
     pc.break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (pc.equals(PlayerClassType::FORCETRAINER)) {
-        if (player_has_no_spellbooks(player_ptr)) {
+        if (player_has_no_spellbooks(*player_ptr)) {
             confirm_use_force(player_ptr, true);
             return;
         }
@@ -888,7 +888,7 @@ void do_cmd_study(PlayerType *player_ptr)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::SPELLS);
-    update_creature(player_ptr);
+    update_creature(*player_ptr);
     rfu.set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
 
@@ -946,7 +946,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
     }
 
     if (pc.equals(PlayerClassType::FORCETRAINER)) {
-        if (player_has_no_spellbooks(player_ptr)) {
+        if (player_has_no_spellbooks(*player_ptr)) {
             confirm_use_force(player_ptr, false);
             return true; //!< 錬気キャンセル時の処理がない
         }

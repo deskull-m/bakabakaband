@@ -356,7 +356,7 @@ void report_magics(CreatureEntity &subject)
             _("あなたはヒーロー気分だ", "You feel heroic"));
     }
 
-    if (is_shero(&player)) {
+    if (is_shero(player)) {
         info.emplace_back(report_magics_aux(player.berserk),
             _("あなたは戦闘狂だ", "You are in a battle rage"));
     }

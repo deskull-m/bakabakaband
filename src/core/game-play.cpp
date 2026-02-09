@@ -131,7 +131,7 @@ static void send_waiting_record(PlayerType *player_ptr)
         StatusRecalculatingFlag::SPELLS,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    update_creature(player_ptr);
+    update_creature(*player_ptr);
     player_ptr->is_dead_ = true;
     auto &world = AngbandWorld::get_instance();
     world.play_time.pause();

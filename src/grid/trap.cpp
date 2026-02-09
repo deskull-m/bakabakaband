@@ -310,11 +310,11 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         }
 
         msg_print(_("落とし戸に落ちた！", "You have fallen through a trap door!"));
-        if (is_echizen(player_ptr)) {
+        if (is_echizen(*player_ptr)) {
             msg_print(_("くっそ～！", ""));
-        } else if (is_chargeman(player_ptr)) {
+        } else if (is_chargeman(*player_ptr)) {
             msg_print(_("ジュラル星人の仕業に違いない！", ""));
-        } else if (is_tough(player_ptr)) {
+        } else if (is_tough(*player_ptr)) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 

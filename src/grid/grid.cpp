@@ -929,7 +929,7 @@ bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITIO
         }
     }
 
-    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || has_immune_fire(player) || is_invuln(&player)) {
+    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || has_immune_fire(player) || is_invuln(player)) {
         return true;
     }
 

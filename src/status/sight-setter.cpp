@@ -51,7 +51,7 @@ bool set_tim_esp(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             if (player_ptr->tim_esp > v) {
                 return false;
             }
-        } else if (!is_time_limit_esp(player_ptr)) {
+        } else if (!is_time_limit_esp(*player_ptr)) {
             msg_print(_("意識が広がった気がする！", "You feel your consciousness expand!"));
             notice = true;
         }

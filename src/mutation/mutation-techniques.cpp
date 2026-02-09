@@ -38,7 +38,7 @@ bool eat_rock(PlayerType *player_ptr)
     const auto &terrain = grid.get_terrain();
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
 
-    stop_mouth(player_ptr);
+    stop_mouth(*player_ptr);
     if (terrain_mimic.flags.has_not(TerrainCharacteristics::HURT_ROCK)) {
         msg_print(_("この地形は食べられない。", "You cannot eat this feature."));
     } else if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {

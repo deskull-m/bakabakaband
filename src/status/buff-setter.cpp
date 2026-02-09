@@ -132,7 +132,7 @@ bool set_acceleration(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             if (acceleration.current() > v) {
                 return false;
             }
-        } else if (!is_fast(player_ptr) && !player_ptr->lightspeed) {
+        } else if (!is_fast(*player_ptr) && !player_ptr->lightspeed) {
             msg_print(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
             notice = true;
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
@@ -284,7 +284,7 @@ bool set_blessed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             if (player_ptr->blessed > v) {
                 return false;
             }
-        } else if (!is_blessed(player_ptr)) {
+        } else if (!is_blessed(*player_ptr)) {
             msg_print(_("高潔な気分になった！", "You feel righteous!"));
             notice = true;
         }
@@ -332,7 +332,7 @@ bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
             if (player_ptr->hero > v) {
                 return false;
             }
-        } else if (!is_hero(player_ptr)) {
+        } else if (!is_hero(*player_ptr)) {
             msg_print(_("ヒーローになった気がする！", "You feel like a hero!"));
             notice = true;
         }

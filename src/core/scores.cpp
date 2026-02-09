@@ -189,7 +189,7 @@ errr top_twenty(PlayerType *player_ptr)
 {
     high_score the_score = {};
     snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(player_ptr));
+    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(*player_ptr));
     the_score.pts[9] = '\0';
 
     snprintf(the_score.gold, sizeof(the_score.gold), "%9d", player_ptr->au);
@@ -256,7 +256,7 @@ errr predict_score(PlayerType *player_ptr)
 
     const auto &igd = InnerGameData::get_instance();
     snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(player_ptr));
+    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(*player_ptr));
     snprintf(the_score.gold, sizeof(the_score.gold), "%9d", player_ptr->au);
     snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
     angband_strcpy(the_score.day, _("今日", "TODAY"), sizeof(the_score.day));

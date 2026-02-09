@@ -151,15 +151,15 @@ int16_t PlayerSpeed::special_weapon_set_value()
         return bonus;
     }
 
-    if (set_quick_and_tiny(player_ptr)) {
+    if (set_quick_and_tiny(*player_ptr)) {
         bonus += 7;
     }
 
-    if (set_icing_and_twinkle(player_ptr)) {
+    if (set_icing_and_twinkle(*player_ptr)) {
         bonus += 5;
     }
 
-    if (set_anubis_and_chariot(player_ptr)) {
+    if (set_anubis_and_chariot(*player_ptr)) {
         bonus += 5;
     }
 
@@ -194,7 +194,7 @@ int16_t PlayerSpeed::time_effect_bonus()
 {
     auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    if (is_fast(player_ptr)) {
+    if (is_fast(*player_ptr)) {
         bonus += 10;
     }
 
@@ -319,7 +319,7 @@ int16_t PlayerSpeed::inventory_weight_bonus()
 {
     auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    auto weight = calc_inventory_weight(player_ptr);
+    auto weight = calc_inventory_weight(*player_ptr);
     if (this->creature.riding) {
         const auto &monster = this->creature.current_floor_ptr->m_list[this->creature.riding];
         const auto &monrace = monster.get_monrace();
@@ -328,7 +328,7 @@ int16_t PlayerSpeed::inventory_weight_bonus()
             bonus -= ((weight - count) / (count / 5));
         }
     } else {
-        auto count = calc_weight_limit(player_ptr);
+        auto count = calc_weight_limit(*player_ptr);
         if (weight > count) {
             bonus -= ((weight - count) / (count / 5));
         }

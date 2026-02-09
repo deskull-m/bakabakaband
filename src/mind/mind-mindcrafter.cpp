@@ -256,7 +256,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         BadStatusSetter bss(*player_ptr);
         (void)bss.set_fear(0);
         (void)bss.set_stun(0);
-        if (!is_fast(player_ptr) || !is_hero(player_ptr)) {
+        if (!is_fast(*player_ptr) || !is_hero(*player_ptr)) {
             hp_player(player_ptr, plev);
         }
 

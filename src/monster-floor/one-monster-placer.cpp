@@ -55,7 +55,7 @@
 static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, BIT_FLAGS generate_mode)
 {
     auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (is_chargeman(player_ptr) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
+    if (is_chargeman(*player_ptr) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
         return MonraceId::ALIEN_JURAL;
     }
 

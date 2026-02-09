@@ -386,9 +386,9 @@ void do_cmd_quest(PlayerType *player_ptr)
     if (!input_check(_("クエストに入りますか？", "Do you enter? "))) {
         return;
     }
-    if (is_echizen(player_ptr)) {
+    if (is_echizen(*player_ptr)) {
         msg_print(_("『とにかく入ってみようぜぇ。』", "\"Let's go in anyway.\""));
-    } else if (is_chargeman(player_ptr)) {
+    } else if (is_chargeman(*player_ptr)) {
         msg_print(_("『全滅してやるぞ！』", "\"I'll annihilate THEM!\""));
     }
 

@@ -369,7 +369,7 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
 
     sound(SoundKind::TELEPORT);
 #ifdef JP
-    if (is_echizen(&player)) {
+    if (is_echizen(player)) {
         msg_format("『こっちだぁ、%s』", player.name.data());
     }
 #endif

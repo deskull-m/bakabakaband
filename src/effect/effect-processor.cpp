@@ -238,7 +238,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         }
     }
 
-    update_creature(&player);
+    update_creature(player);
 
     const auto p_pos = player.get_position();
     if (flag & PROJECT_KILL) {
@@ -255,7 +255,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         }
     }
 
-    update_creature(&player);
+    update_creature(player);
     if (flag & (PROJECT_ITEM)) {
         for (const auto &[dist, pos] : positions) {
             const auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;

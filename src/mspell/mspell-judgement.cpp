@@ -215,7 +215,7 @@ bool dispel_check_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
  */
 bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
-    if (is_invuln(player_ptr)) {
+    if (is_invuln(*player_ptr)) {
         return true;
     }
 
@@ -335,7 +335,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    if ((static_cast<CreatureEntity &>(*player_ptr).get_speed() < 145) && is_fast(player_ptr)) {
+    if ((static_cast<CreatureEntity &>(*player_ptr).get_speed() < 145) && is_fast(*player_ptr)) {
         return true;
     }
 

@@ -81,8 +81,8 @@ void do_cmd_inven(PlayerType *player_ptr)
 
     screen_save();
     (void)show_inventory(player_ptr, 0, USE_FULL, AllMatchItemTester());
-    const auto weight = calc_inventory_weight(player_ptr);
-    const auto weight_lim = calc_weight_limit(player_ptr);
+    const auto weight = calc_inventory_weight(*player_ptr);
+    const auto weight_lim = calc_weight_limit(*player_ptr);
     const auto percentage = weight * 100 / weight_lim;
 #ifdef JP
     const auto mes = format("持ち物： 合計 %3d.%1d kg (限界の%d%%) コマンド: ", lb_to_kg_integer(weight), lb_to_kg_fraction(weight), percentage);

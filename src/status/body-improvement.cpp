@@ -103,7 +103,7 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
             if (player_ptr->invuln > v) {
                 return false;
             }
-        } else if (!is_invuln(player_ptr)) {
+        } else if (!is_invuln(*player_ptr)) {
             msg_print(_("無敵だ！", "Invulnerability!"));
             notice = true;
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);

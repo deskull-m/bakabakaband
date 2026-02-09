@@ -709,7 +709,7 @@ BIT_FLAGS has_esp_telepathy(CreatureEntity &creature)
     BIT_FLAGS result = common_cause_flags(creature, TR_TELEPATHY);
 
     auto &player = static_cast<PlayerType &>(creature);
-    if (is_time_limit_esp(&player) || player.ult_res) {
+    if (is_time_limit_esp(player) || player.ult_res) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1623,7 +1623,7 @@ BIT_FLAGS has_resist_fear(CreatureEntity &creature)
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (is_hero(&player) || is_shero(&player) || player.ult_res || player.tim_res_fear) {
+    if (is_hero(player) || is_shero(player) || player.ult_res || player.tim_res_fear) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1824,7 +1824,7 @@ bool has_disable_two_handed_bonus(CreatureEntity &creature, int i)
     auto &player = static_cast<PlayerType &>(creature);
     if (has_melee_weapon(&player, INVEN_MAIN_HAND + i) && has_two_handed_weapons(creature)) {
         auto *o_ptr = player.inventory[INVEN_MAIN_HAND + i].get();
-        int limit = calc_weapon_weight_limit(&player);
+        int limit = calc_weapon_weight_limit(player);
 
         /* Enable when two hand wields an enough light weapon */
         if (limit >= o_ptr->weight / 5) {
