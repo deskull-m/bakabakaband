@@ -424,7 +424,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
     case MindNinjaType::HIDE_FLAMES:
         fire_ball(creature, AttributeType::FIRE, Direction::self(), 50 + plev, plev / 10 + 2);
         teleport_player(*player_ptr, 30, TELEPORT_SPONTANEOUS);
-        set_oppose_fire(player_ptr, (TIME_EFFECT)plev, false);
+        set_oppose_fire(*player_ptr, (TIME_EFFECT)plev, false);
         break;
     case MindNinjaType::NYUSIN:
         return rush_attack(creature, nullptr);
@@ -483,7 +483,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         break;
     case MindNinjaType::HIDE_MUD:
         (void)set_pass_wall(player_ptr, randint1(plev / 2) + plev / 2, false);
-        set_oppose_acid(player_ptr, (TIME_EFFECT)plev, false);
+        set_oppose_acid(*player_ptr, (TIME_EFFECT)plev, false);
         break;
     case MindNinjaType::HIDE_MIST:
         fire_ball(creature, AttributeType::POIS, Direction::self(), 75 + plev * 2 / 3, plev / 5 + 2);

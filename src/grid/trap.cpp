@@ -230,7 +230,7 @@ static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
         return;
     }
 
-    if (has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) {
+    if (has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr)) {
         msg_print(_("しかし毒の影響はなかった！", "The poison does not affect you!"));
         take_hit(*player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
         return;

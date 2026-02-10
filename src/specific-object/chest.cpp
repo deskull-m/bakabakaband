@@ -143,7 +143,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     /* Poison */
     if (trap.has(ChestTrapType::POISON)) {
         msg_print(_("突如吹き出した緑色のガスに包み込まれた！", "A puff of green gas surrounds you!"));
-        if (!(has_resist_pois(*this->player_ptr) || is_oppose_pois(this->player_ptr))) {
+        if (!(has_resist_pois(*this->player_ptr) || is_oppose_pois(*this->player_ptr))) {
             (void)BadStatusSetter(*this->player_ptr).mod_poison(10 + randint1(20));
         }
     }

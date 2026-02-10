@@ -28,19 +28,19 @@ void tim_player_flags(PlayerType *player_ptr, TrFlags &flags)
 
     flags.clear();
 
-    if (is_oppose_acid(player_ptr) && none_bits(has_immune_acid(*player_ptr), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_acid(*player_ptr) && none_bits(has_immune_acid(*player_ptr), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_ACID);
     }
-    if (is_oppose_elec(player_ptr) && none_bits(has_immune_elec(*player_ptr), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_elec(*player_ptr) && none_bits(has_immune_elec(*player_ptr), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_ELEC);
     }
-    if (is_oppose_fire(player_ptr) && none_bits(has_immune_fire(*player_ptr), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_fire(*player_ptr) && none_bits(has_immune_fire(*player_ptr), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_FIRE);
     }
-    if (is_oppose_cold(player_ptr) && none_bits(has_immune_cold(*player_ptr), (race_class_flag | tmp_effect_flag))) {
+    if (is_oppose_cold(*player_ptr) && none_bits(has_immune_cold(*player_ptr), (race_class_flag | tmp_effect_flag))) {
         flags.set(TR_RES_COLD);
     }
-    if (is_oppose_pois(player_ptr)) {
+    if (is_oppose_pois(*player_ptr)) {
         flags.set(TR_RES_POIS);
     }
 

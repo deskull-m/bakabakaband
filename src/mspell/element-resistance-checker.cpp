@@ -14,7 +14,7 @@ void add_cheat_remove_flags_element(PlayerType *player_ptr, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_ACID);
     }
 
-    if (is_oppose_acid(player_ptr)) {
+    if (is_oppose_acid(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_ACID);
     }
 
@@ -26,7 +26,7 @@ void add_cheat_remove_flags_element(PlayerType *player_ptr, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_ELEC);
     }
 
-    if (is_oppose_elec(player_ptr)) {
+    if (is_oppose_elec(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_ELEC);
     }
 
@@ -38,7 +38,7 @@ void add_cheat_remove_flags_element(PlayerType *player_ptr, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_FIRE);
     }
 
-    if (is_oppose_fire(player_ptr)) {
+    if (is_oppose_fire(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_FIRE);
     }
 
@@ -50,7 +50,7 @@ void add_cheat_remove_flags_element(PlayerType *player_ptr, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_COLD);
     }
 
-    if (is_oppose_cold(player_ptr)) {
+    if (is_oppose_cold(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_COLD);
     }
 
@@ -62,7 +62,7 @@ void add_cheat_remove_flags_element(PlayerType *player_ptr, msr_type *msr_ptr)
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_POIS);
     }
 
-    if (is_oppose_pois(player_ptr)) {
+    if (is_oppose_pois(*player_ptr)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_POIS);
     }
 }

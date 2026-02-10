@@ -156,9 +156,9 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_cold(player_ptr, dice.roll() + base, false);
-            set_oppose_fire(player_ptr, dice.roll() + base, false);
-            set_oppose_elec(player_ptr, dice.roll() + base, false);
+            set_oppose_cold(*player_ptr, dice.roll() + base, false);
+            set_oppose_fire(*player_ptr, dice.roll() + base, false);
+            set_oppose_elec(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -318,11 +318,11 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_acid(player_ptr, dice.roll() + base, false);
-            set_oppose_elec(player_ptr, dice.roll() + base, false);
-            set_oppose_fire(player_ptr, dice.roll() + base, false);
-            set_oppose_cold(player_ptr, dice.roll() + base, false);
-            set_oppose_pois(player_ptr, dice.roll() + base, false);
+            set_oppose_acid(*player_ptr, dice.roll() + base, false);
+            set_oppose_elec(*player_ptr, dice.roll() + base, false);
+            set_oppose_fire(*player_ptr, dice.roll() + base, false);
+            set_oppose_cold(*player_ptr, dice.roll() + base, false);
+            set_oppose_pois(*player_ptr, dice.roll() + base, false);
         }
     } break;
 

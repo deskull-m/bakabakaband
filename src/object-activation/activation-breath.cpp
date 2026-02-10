@@ -59,7 +59,7 @@ bool activate_breath_fire(PlayerType *player_ptr, ItemEntity *o_ptr)
 
     fire_breath(*player_ptr, AttributeType::FIRE, dir, 200, 2);
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_FLAMES)) {
-        (void)set_oppose_fire(player_ptr, randint1(20) + 20, false);
+        (void)set_oppose_fire(*player_ptr, randint1(20) + 20, false);
     }
 
     return true;
@@ -74,7 +74,7 @@ bool activate_breath_cold(PlayerType *player_ptr, ItemEntity *o_ptr)
 
     fire_breath(*player_ptr, AttributeType::COLD, dir, 200, 2);
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_ICE)) {
-        (void)set_oppose_cold(player_ptr, randint1(20) + 20, false);
+        (void)set_oppose_cold(*player_ptr, randint1(20) + 20, false);
     }
 
     return true;

@@ -396,7 +396,7 @@ bool set_mimic(PlayerType *player_ptr, TIME_EFFECT v, MimicKindType mimic_race_i
         if (player_ptr->tim_mimic) {
             msg_print(_("変身が解けた。", "You are no longer transformed."));
             if (player_ptr->mimic_form == MimicKindType::DEMON) {
-                set_oppose_fire(player_ptr, 0, true);
+                set_oppose_fire(*player_ptr, 0, true);
             }
             player_ptr->mimic_form = MimicKindType::NONE;
             notice = true;

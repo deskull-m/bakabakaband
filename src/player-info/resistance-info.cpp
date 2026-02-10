@@ -12,9 +12,9 @@ void set_element_resistance_info(PlayerType *player_ptr, self_info_type *self_pt
 
     if (has_immune_acid(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは酸に対する完全なる免疫を持っている。", "You are completely immune to acid."));
-    } else if (has_resist_acid(*player_ptr) && is_oppose_acid(player_ptr)) {
+    } else if (has_resist_acid(*player_ptr) && is_oppose_acid(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは酸への強力な耐性を持っている。", "You resist acid exceptionally well."));
-    } else if (has_resist_acid(*player_ptr) || is_oppose_acid(player_ptr)) {
+    } else if (has_resist_acid(*player_ptr) || is_oppose_acid(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは酸への耐性を持っている。", "You are resistant to acid."));
     }
 
@@ -24,9 +24,9 @@ void set_element_resistance_info(PlayerType *player_ptr, self_info_type *self_pt
 
     if (has_immune_elec(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは電撃に対する完全なる免疫を持っている。", "You are completely immune to lightning."));
-    } else if (has_resist_elec(*player_ptr) && is_oppose_elec(player_ptr)) {
+    } else if (has_resist_elec(*player_ptr) && is_oppose_elec(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは電撃への強力な耐性を持っている。", "You resist lightning exceptionally well."));
-    } else if (has_resist_elec(*player_ptr) || is_oppose_elec(player_ptr)) {
+    } else if (has_resist_elec(*player_ptr) || is_oppose_elec(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは電撃への耐性を持っている。", "You are resistant to lightning."));
     }
 
@@ -36,9 +36,9 @@ void set_element_resistance_info(PlayerType *player_ptr, self_info_type *self_pt
 
     if (has_immune_fire(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは火に対する完全なる免疫を持っている。", "You are completely immune to fire."));
-    } else if (has_resist_fire(*player_ptr) && is_oppose_fire(player_ptr)) {
+    } else if (has_resist_fire(*player_ptr) && is_oppose_fire(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは火への強力な耐性を持っている。", "You resist fire exceptionally well."));
-    } else if (has_resist_fire(*player_ptr) || is_oppose_fire(player_ptr)) {
+    } else if (has_resist_fire(*player_ptr) || is_oppose_fire(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは火への耐性を持っている。", "You are resistant to fire."));
     }
 
@@ -48,9 +48,9 @@ void set_element_resistance_info(PlayerType *player_ptr, self_info_type *self_pt
 
     if (has_immune_cold(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは冷気に対する完全なる免疫を持っている。", "You are completely immune to cold."));
-    } else if (has_resist_cold(*player_ptr) && is_oppose_cold(player_ptr)) {
+    } else if (has_resist_cold(*player_ptr) && is_oppose_cold(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは冷気への強力な耐性を持っている。", "You resist cold exceptionally well."));
-    } else if (has_resist_cold(*player_ptr) || is_oppose_cold(player_ptr)) {
+    } else if (has_resist_cold(*player_ptr) || is_oppose_cold(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは冷気への耐性を持っている。", "You are resistant to cold."));
     }
 
@@ -58,9 +58,9 @@ void set_element_resistance_info(PlayerType *player_ptr, self_info_type *self_pt
         self_ptr->info_list.emplace_back(_("あなたは冷気に弱い。", "You are susceptible to damage from cold."));
     }
 
-    if (has_resist_pois(*player_ptr) && is_oppose_pois(player_ptr)) {
+    if (has_resist_pois(*player_ptr) && is_oppose_pois(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは毒への強力な耐性を持っている。", "You resist poison exceptionally well."));
-    } else if (has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) {
+    } else if (has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは毒への耐性を持っている。", "You are resistant to poison."));
     }
 }

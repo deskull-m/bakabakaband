@@ -153,7 +153,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_pois(player_ptr, dice.roll() + base, false);
+            set_oppose_pois(*player_ptr, dice.roll() + base, false);
         }
     } break;
 

@@ -90,23 +90,23 @@ static void compensate_death_scythe_reflection_magnification(PlayerType *player_
         *magnification = 20;
     }
 
-    if (!(has_resist_acid(*player_ptr) || is_oppose_acid(player_ptr) || has_immune_acid(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_acid(*player_ptr) || is_oppose_acid(*player_ptr) || has_immune_acid(*player_ptr)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_elec(*player_ptr) || is_oppose_elec(player_ptr) || has_immune_elec(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_elec(*player_ptr) || is_oppose_elec(*player_ptr) || has_immune_elec(*player_ptr)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_fire(*player_ptr) || is_oppose_fire(player_ptr) || has_immune_fire(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_fire(*player_ptr) || is_oppose_fire(*player_ptr) || has_immune_fire(*player_ptr)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_cold(*player_ptr) || is_oppose_cold(player_ptr) || has_immune_cold(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_cold(*player_ptr) || is_oppose_cold(*player_ptr) || has_immune_cold(*player_ptr)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr)) && (*magnification < 25)) {
         *magnification = 25;
     }
 

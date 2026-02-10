@@ -194,27 +194,27 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         int num = lvl / 10;
         TIME_EFFECT dur = randint1(20) + 20;
         if (randint0(5) < num) {
-            (void)set_oppose_acid(player_ptr, dur, false);
+            (void)set_oppose_acid(*player_ptr, dur, false);
             num--;
         }
 
         if (randint0(4) < num) {
-            (void)set_oppose_elec(player_ptr, dur, false);
+            (void)set_oppose_elec(*player_ptr, dur, false);
             num--;
         }
 
         if (randint0(3) < num) {
-            (void)set_oppose_fire(player_ptr, dur, false);
+            (void)set_oppose_fire(*player_ptr, dur, false);
             num--;
         }
 
         if (randint0(2) < num) {
-            (void)set_oppose_cold(player_ptr, dur, false);
+            (void)set_oppose_cold(*player_ptr, dur, false);
             num--;
         }
 
         if (num != 0) {
-            (void)set_oppose_pois(player_ptr, dur, false);
+            (void)set_oppose_pois(*player_ptr, dur, false);
             num--;
         }
 
