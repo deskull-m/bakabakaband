@@ -46,7 +46,7 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
             return false;
         }
 
-        do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
         if (!player_can_enter(*player_ptr, grid.feat, 0) || floor.has_trap_at(pos)) {
             return true;
         }

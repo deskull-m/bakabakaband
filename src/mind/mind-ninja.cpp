@@ -183,7 +183,7 @@ bool rush_attack(CreatureEntity &creature, bool *mdeath)
         }
 
         moved = true;
-        tmp_mdeath = do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NYUSIN);
+        tmp_mdeath = do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NYUSIN);
         break;
     }
 

@@ -537,7 +537,7 @@ void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_pt
     const auto m_target_name = monster_desc(creature, *monap_ptr->m_ptr, 0);
     player.csp -= 7;
     msg_format(_("%s^に反撃した！", "You counterattacked %s!"), m_target_name.data());
-    do_cmd_attack(&player, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
+    do_cmd_attack(player, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
     monap_ptr->fear = false;
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }

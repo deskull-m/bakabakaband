@@ -131,7 +131,7 @@ void do_cmd_open(PlayerType *player_ptr)
         } else if (grid.has_monster() && !floor.m_list[grid.m_idx].is_riding()) {
             PlayerEnergy(player_ptr).set_player_turn_energy(100);
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else if (o_idx) {
             more = exe_open_chest(player_ptr, pos, o_idx);
         } else {
@@ -180,7 +180,7 @@ void do_cmd_close(PlayerType *player_ptr)
         } else if (grid.has_monster()) {
             PlayerEnergy(player_ptr).set_player_turn_energy(100);
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else {
             more = exe_close(*player_ptr, pos);
         }
@@ -229,7 +229,7 @@ void do_cmd_disarm(PlayerType *player_ptr)
             msg_print(_("そこには解除するものが見当たらない。", "You see nothing there to disarm."));
         } else if (grid.has_monster() && !floor.m_list[grid.m_idx].is_riding()) {
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else if (o_idx) {
             more = exe_disarm_chest(*player_ptr, pos.y, pos.x, o_idx);
         } else {
@@ -281,7 +281,7 @@ void do_cmd_bash(PlayerType *player_ptr)
         } else if (grid.has_monster()) {
             PlayerEnergy(player_ptr).set_player_turn_energy(100);
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else {
             more = exe_bash(*player_ptr, pos.y, pos.x, dir);
         }
@@ -351,7 +351,7 @@ void do_cmd_spike(PlayerType *player_ptr)
     } else if (grid.has_monster()) {
         PlayerEnergy(player_ptr).set_player_turn_energy(100);
         msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-        do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
     } else {
         PlayerEnergy(player_ptr).set_player_turn_energy(100);
         msg_format(_("%sにくさびを打ち込んだ。", "You jam the %s with a spike."), terrain_mimic.name.data());

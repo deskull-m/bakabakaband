@@ -91,7 +91,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
 
                 if (grid.has_monster()) {
-                    do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+                    do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 } else {
                     msg_print(_("攻撃は空を切った。", "You attack the empty air."));
                 }
@@ -120,7 +120,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
 
             const auto pos = player_ptr->get_neighbor(dir);
             if (player_ptr->current_floor_ptr->get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_FIRE);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_FIRE);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -143,7 +143,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
 
             const auto pos = player_ptr->get_neighbor(dir);
             if (player_ptr->current_floor_ptr->get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_MINEUCHI);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_MINEUCHI);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -182,7 +182,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            do_cmd_attack(player_ptr, pos_target.y, pos_target.x, HISSATSU_NONE);
+            do_cmd_attack(*player_ptr, pos_target.y, pos_target.x, HISSATSU_NONE);
             if (!player_can_enter(*player_ptr, grid_target.feat, 0) || floor.has_trap_at(pos_target)) {
                 break;
             }
@@ -206,7 +206,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_POISON);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_POISON);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -224,7 +224,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_ZANMA);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_ZANMA);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -243,7 +243,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             auto &floor = *player_ptr->current_floor_ptr;
             const auto &grid = floor.get_grid(pos);
             if (grid.has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -310,7 +310,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_HAGAN);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_HAGAN);
             }
 
             if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::HURT_ROCK)) {
@@ -333,7 +333,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_COLD);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_COLD);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -351,7 +351,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_KYUSHO);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_KYUSHO);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -369,7 +369,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_MAJIN);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_MAJIN);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -387,7 +387,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_SUTEMI);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_SUTEMI);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -406,7 +406,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_ELEC);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_ELEC);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -438,7 +438,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 }
 
                 if (monster.has_living_flag()) {
-                    do_cmd_attack(player_ptr, pos_ddd.y, pos_ddd.x, HISSATSU_SEKIRYUKA);
+                    do_cmd_attack(*player_ptr, pos_ddd.y, pos_ddd.x, HISSATSU_SEKIRYUKA);
                     continue;
                 }
 
@@ -458,7 +458,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_QUAKE);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_QUAKE);
             } else {
                 earthquake(*player_ptr, player_ptr->get_position(), 10);
             }
@@ -526,7 +526,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 auto &grid = floor.get_grid(pos);
 
                 if (grid.has_monster()) {
-                    do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_3DAN);
+                    do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_3DAN);
                 } else {
                     msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                     return tl::nullopt;
@@ -594,7 +594,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_DRAIN);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_DRAIN);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;
@@ -679,10 +679,10 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
             if (grid.has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 if (grid.has_monster()) {
                     handle_stuff(*player_ptr);
-                    do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+                    do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 }
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "You don't see any monster in this direction"));
@@ -748,7 +748,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             const auto pos = player_ptr->get_neighbor(dir);
             const auto &floor = *player_ptr->current_floor_ptr;
             if (floor.get_grid(pos).has_monster()) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_UNDEAD);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_UNDEAD);
             } else {
                 msg_print(_("その方向にはモンスターはいません。", "There is no monster."));
                 return tl::nullopt;

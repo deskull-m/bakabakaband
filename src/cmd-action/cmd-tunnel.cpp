@@ -59,7 +59,7 @@ void do_cmd_tunnel(PlayerType *player_ptr)
     } else if (grid.has_monster()) {
         PlayerEnergy(player_ptr).set_player_turn_energy(100);
         msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-        do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
     } else {
         more = exe_tunnel(player_ptr, pos.y, pos.x);
     }

@@ -214,7 +214,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
 
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
             return false;
         }
 

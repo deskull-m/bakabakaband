@@ -627,7 +627,7 @@ void massacre(CreatureEntity &creature)
         const auto &grid = floor.get_grid(pos);
         const auto &monster = floor.m_list[grid.m_idx];
         if (grid.has_monster() && (monster.ml || floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION))) {
-            do_cmd_attack(&player, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(player, pos.y, pos.x, HISSATSU_NONE);
         }
     }
 }
