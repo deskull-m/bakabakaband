@@ -188,7 +188,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::CHOIR_SINGS:
         msg_print(_("天国の歌が聞こえる...", "A heavenly choir sings..."));
         (void)cure_critical_wounds(player_ptr, 777);
-        (void)set_hero(player_ptr, randint1(25) + 25, false);
+        (void)set_hero(*player_ptr, randint1(25) + 25, false);
         return true;
     case RandomArtActType::CURE_LW:
         return activate_cure_lw(*player_ptr);
@@ -244,18 +244,18 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return activate_resistance_elements(player_ptr);
     case RandomArtActType::SPEED:
         msg_print(_("明るく緑色に輝いている...", "It glows bright green..."));
-        (void)set_acceleration(player_ptr, randint1(20) + 20, false);
+        (void)set_acceleration(*player_ptr, randint1(20) + 20, false);
         return true;
     case RandomArtActType::MID_SPEED:
         msg_print(_("明るく緑色に輝いている...", "It glows bright green..."));
-        (void)set_acceleration(player_ptr, randint1(50) + 50, false);
+        (void)set_acceleration(*player_ptr, randint1(50) + 50, false);
         return true;
     case RandomArtActType::XTRA_SPEED:
         msg_print(_("明るく輝いている...", "It glows brightly..."));
-        (void)set_acceleration(player_ptr, randint1(75) + 75, false);
+        (void)set_acceleration(*player_ptr, randint1(75) + 75, false);
         return true;
     case RandomArtActType::WRAITH:
-        set_wraith_form(player_ptr, randint1(player_ptr->level / 2) + (player_ptr->level / 2), false);
+        set_wraith_form(*player_ptr, randint1(player_ptr->level / 2) + (player_ptr->level / 2), false);
         return true;
     case RandomArtActType::INVULN:
         (void)set_invuln(player_ptr, randint1(8) + 8, false);
@@ -264,7 +264,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)heroism(player_ptr, 25);
         return true;
     case RandomArtActType::HERO_SPEED:
-        (void)set_acceleration(player_ptr, randint1(50) + 50, false);
+        (void)set_acceleration(*player_ptr, randint1(50) + 50, false);
         (void)heroism(player_ptr, 50);
         return true;
     case RandomArtActType::ACID_BALL_AND_RESISTANCE:
@@ -364,7 +364,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::STRAIN_HASTE:
         msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
         take_hit(*player_ptr, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("加速した疲労", "the strain of haste"));
-        (void)mod_acceleration(player_ptr, 25 + randint1(25), false);
+        (void)mod_acceleration(*player_ptr, 25 + randint1(25), false);
         return true;
     case RandomArtActType::FISHING:
         return fishing(player_ptr);
@@ -378,8 +378,8 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::CRIMSON:
         return activate_crimson(player_ptr, o_ptr);
     case RandomArtActType::HERO_BLESS:
-        (void)set_hero(player_ptr, randint1(25) + 25, false);
-        (void)set_blessed(player_ptr, randint1(25) + 25, true);
+        (void)set_hero(*player_ptr, randint1(25) + 25, false);
+        (void)set_blessed(*player_ptr, randint1(25) + 25, true);
         return true;
     case RandomArtActType::CREATE_AMMO:
         return activate_create_ammo(*player_ptr);

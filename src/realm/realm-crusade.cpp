@@ -278,7 +278,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::ANGEL, false);
+            set_mimic(*player_ptr, base + dice.roll(), MimicKindType::ANGEL, false);
         }
     } break;
 
@@ -437,7 +437,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::DEMIGOD, false);
+            set_mimic(*player_ptr, base + dice.roll(), MimicKindType::DEMIGOD, false);
         }
     } break;
     }

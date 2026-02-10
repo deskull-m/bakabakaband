@@ -388,7 +388,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             (void)berserk(player_ptr, b_base + b_dice.roll());
-            set_acceleration(player_ptr, sp_dice.roll() + sp_base, false);
+            set_acceleration(*player_ptr, sp_dice.roll() + sp_base, false);
         }
     } break;
 
@@ -494,7 +494,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::VAMPIRE, false);
+            set_mimic(*player_ptr, base + dice.roll(), MimicKindType::VAMPIRE, false);
         }
     } break;
 
@@ -544,7 +544,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_wraith_form(player_ptr, dice.roll() + base, false);
+            set_wraith_form(*player_ptr, dice.roll() + base, false);
         }
     } break;
     }

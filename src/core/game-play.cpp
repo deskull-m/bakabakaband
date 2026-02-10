@@ -376,7 +376,7 @@ static void decide_arena_death(PlayerType *player_ptr)
     player_ptr->leaving = true;
 
     world.set_arena(true);
-    reset_tim_flags(player_ptr);
+    reset_tim_flags(*player_ptr);
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::RANDOM_CONNECT });
     leave_floor(player_ptr);
 }

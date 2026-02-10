@@ -112,7 +112,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(*player_ptr, false, true);
         msg_print(_("ウガァァア！", "RAAAAGHH!"));
         msg_print(_("激怒の発作に襲われた！", "You feel a fit of rage coming over you!"));
-        (void)set_berserk(player_ptr, 10 + randint1(player_ptr->level), false);
+        (void)set_berserk(*player_ptr, 10 + randint1(player_ptr->level), false);
         (void)bss.set_fear(0);
     }
 
@@ -202,8 +202,8 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         RedrawingFlagsUpdater::get_instance().set_flags(flags);
 
         (void)bss.mod_hallucination(randint0(10) + 20);
-        (void)set_berserk(player_ptr, 10 + randint1(player_ptr->level), false);
-        (void)set_acceleration(player_ptr, 10 + randint1(player_ptr->level), false);
+        (void)set_berserk(*player_ptr, 10 + randint1(player_ptr->level), false);
+        (void)set_acceleration(*player_ptr, 10 + randint1(player_ptr->level), false);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::PROD_MANA) && !player_ptr->anti_magic && one_in_(9000)) {
@@ -270,7 +270,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         if (one_in_(2)) {
             msg_print(_("精力的でなくなった気がする。", "You feel less energetic."));
             if (player_ptr->effects()->acceleration().is_fast()) {
-                set_acceleration(player_ptr, 0, true);
+                set_acceleration(*player_ptr, 0, true);
             } else {
                 (void)bss.set_deceleration(randint1(30) + 10, false);
             }
@@ -279,7 +279,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             if (player_ptr->effects()->deceleration().is_slow()) {
                 (void)bss.set_deceleration(0, true);
             } else {
-                set_acceleration(player_ptr, randint1(30) + 10, false);
+                set_acceleration(*player_ptr, randint1(30) + 10, false);
             }
         }
 
@@ -358,7 +358,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         disturb(*player_ptr, false, true);
         msg_print(_("非物質化した！", "You feel insubstantial!"));
         msg_erase();
-        set_wraith_form(player_ptr, randint1(player_ptr->level / 2) + (player_ptr->level / 2), false);
+        set_wraith_form(*player_ptr, randint1(player_ptr->level / 2) + (player_ptr->level / 2), false);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::POLY_WOUND) && one_in_(3000)) {

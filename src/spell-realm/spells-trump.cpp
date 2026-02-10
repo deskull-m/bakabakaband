@@ -129,7 +129,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 42) {
         msg_print(_("《正義》だ。", "It's Justice."));
-        set_blessed(player_ptr, player_ptr->level, false);
+        set_blessed(*player_ptr, player_ptr->level, false);
         return;
     }
 

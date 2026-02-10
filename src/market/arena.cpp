@@ -62,7 +62,7 @@ static bool check_battle_metal_babble(PlayerType *player_ptr)
     msg_erase();
 
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(player_ptr);
+    reset_tim_flags(*player_ptr);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     player_ptr->current_floor_ptr->inside_arena = true;
     player_ptr->leaving = true;
@@ -100,7 +100,7 @@ static bool go_to_arena(PlayerType *player_ptr)
     }
 
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(player_ptr);
+    reset_tim_flags(*player_ptr);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     player_ptr->current_floor_ptr->inside_arena = true;
     player_ptr->leaving = true;

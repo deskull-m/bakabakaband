@@ -291,19 +291,19 @@ bool ScrollReadExecutor::read()
         break;
     }
     case SV_SCROLL_BLESSING:
-        if (set_blessed(this->player_ptr, this->player_ptr->blessed + randint1(12) + 6, false)) {
+        if (set_blessed(*this->player_ptr, this->player_ptr->blessed + randint1(12) + 6, false)) {
             this->ident = true;
         }
 
         break;
     case SV_SCROLL_HOLY_CHANT:
-        if (set_blessed(this->player_ptr, this->player_ptr->blessed + randint1(24) + 12, false)) {
+        if (set_blessed(*this->player_ptr, this->player_ptr->blessed + randint1(24) + 12, false)) {
             this->ident = true;
         }
 
         break;
     case SV_SCROLL_HOLY_PRAYER:
-        if (set_blessed(this->player_ptr, this->player_ptr->blessed + randint1(48) + 24, false)) {
+        if (set_blessed(*this->player_ptr, this->player_ptr->blessed + randint1(48) + 24, false)) {
             this->ident = true;
         }
 

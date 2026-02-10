@@ -715,7 +715,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         sleep_monster(player_ptr, dir, plev);
         break;
     case MonsterAbilityType::HASTE:
-        (void)set_acceleration(player_ptr, randint1(20 + plev) + plev, false);
+        (void)set_acceleration(*player_ptr, randint1(20 + plev) + plev, false);
         break;
     case MonsterAbilityType::HAND_DOOM: {
         msg_print(_("<破滅の手>を放った！", "You invoke the Hand of Doom!"));

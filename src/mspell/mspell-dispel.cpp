@@ -37,17 +37,17 @@
  */
 static void dispel_player(PlayerType *player_ptr)
 {
-    (void)set_acceleration(player_ptr, 0, true);
+    (void)set_acceleration(*player_ptr, 0, true);
     set_lightspeed(player_ptr, 0, true);
     (void)BadStatusSetter(*player_ptr).set_deceleration(0, true);
-    (void)set_shield(player_ptr, 0, true);
-    (void)set_blessed(player_ptr, 0, true);
-    (void)set_tsuyoshi(player_ptr, 0, true);
-    (void)set_hero(player_ptr, 0, true);
-    (void)set_berserk(player_ptr, 0, true);
+    (void)set_shield(*player_ptr, 0, true);
+    (void)set_blessed(*player_ptr, 0, true);
+    (void)set_tsuyoshi(*player_ptr, 0, true);
+    (void)set_hero(*player_ptr, 0, true);
+    (void)set_berserk(*player_ptr, 0, true);
     BodyImprovement(*player_ptr).set_protection(0, true);
     (void)set_invuln(player_ptr, 0, true);
-    (void)set_wraith_form(player_ptr, 0, true);
+    (void)set_wraith_form(*player_ptr, 0, true);
     (void)set_pass_wall(player_ptr, 0, true);
     (void)set_tim_res_nether(*player_ptr, 0, true);
     (void)set_tim_res_time(*player_ptr, 0, true);
@@ -68,7 +68,7 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_tim_sh_fire(*player_ptr, 0, true);
     (void)set_tim_sh_holy(*player_ptr, 0, true);
     (void)set_tim_eyeeye(*player_ptr, 0, true);
-    (void)set_magicdef(player_ptr, 0, true);
+    (void)set_magicdef(*player_ptr, 0, true);
     (void)set_resist_magic(player_ptr, 0, true);
     (void)set_oppose_acid(*player_ptr, 0, true);
     (void)set_oppose_elec(*player_ptr, 0, true);
@@ -76,7 +76,7 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_oppose_cold(*player_ptr, 0, true);
     (void)set_oppose_pois(*player_ptr, 0, true);
     (void)set_ultimate_res(player_ptr, 0, true);
-    (void)set_mimic(player_ptr, 0, MimicKindType::NONE, true);
+    (void)set_mimic(*player_ptr, 0, MimicKindType::NONE, true);
     (void)set_ele_attack(*player_ptr, 0, 0);
     (void)set_ele_immune(*player_ptr, 0, 0);
     (void)set_tim_emission(player_ptr, 0, true);

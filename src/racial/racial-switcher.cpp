@@ -472,7 +472,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         return true;
     }
     case PlayerRaceType::GOLEM:
-        (void)set_shield(player_ptr, randint1(20) + 30, false);
+        (void)set_shield(*player_ptr, randint1(20) + 30, false);
         return true;
     case PlayerRaceType::SKELETON:
     case PlayerRaceType::ZOMBIE:

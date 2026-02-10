@@ -364,7 +364,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
 
     auto &hallucination = player_ptr->effects()->hallucination();
     if (v > 0) {
-        set_tsuyoshi(player_ptr, 0, true);
+        set_tsuyoshi(*player_ptr, 0, true);
         if (!hallucination.is_hallucinated()) {
             msg_print(_("ワーオ！何もかも虹色に見える！", "Oh, wow! Everything looks so cosmic now!"));
             reset_concentration(*player_ptr, true);
