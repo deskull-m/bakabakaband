@@ -27,7 +27,7 @@ bool vampirism(PlayerType *player_ptr)
 
     const auto pos = player_ptr->get_neighbor(dir);
     const auto &grid = floor.get_grid(pos);
-    stop_mouth(player_ptr);
+    stop_mouth(*player_ptr);
     if (!grid.has_monster()) {
         msg_print(_("何もない場所に噛みついた！", "You bite into thin air!"));
         return false;

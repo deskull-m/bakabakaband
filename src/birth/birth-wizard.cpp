@@ -487,7 +487,7 @@ static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char
     };
     while (true) {
         rfu.set_flags(flags);
-        update_creature(player_ptr);
+        update_creature(*player_ptr);
         creature.hp = creature.maxhp;
         creature.csp = creature.msp;
         (void)display_player(player_ptr, mode);

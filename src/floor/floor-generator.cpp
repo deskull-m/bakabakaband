@@ -583,7 +583,7 @@ void generate_floor(PlayerType *player_ptr)
             why = level_gen(player_ptr);
         }
 
-        if (is_sushi_eater(player_ptr)) {
+        if (is_sushi_eater(*player_ptr)) {
             alloc_object(player_ptr, ALLOC_SET_BOTH, ALLOC_TYP_SUSHI, randnor(floor.width * floor.height / 20, 3));
         }
 

@@ -264,7 +264,7 @@ void print_speed(PlayerType *player_ptr)
 
     const auto speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - STANDARD_SPEED;
     const auto &floor = *player_ptr->current_floor_ptr;
-    bool is_player_fast = is_fast(player_ptr);
+    bool is_player_fast = is_fast(*player_ptr);
     char buf[32] = "";
     TERM_COLOR attr = TERM_WHITE;
     const auto is_slow = player_ptr->effects()->deceleration().is_slow();
@@ -487,7 +487,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_NIGHTSIGHT);
     }
 
-    if (is_time_limit_esp(player_ptr)) {
+    if (is_time_limit_esp(*player_ptr)) {
         ADD_BAR_FLAG(BAR_TELEPATHY);
     }
 
@@ -503,7 +503,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_PROTEVIL);
     }
 
-    if (is_invuln(player_ptr)) {
+    if (is_invuln(*player_ptr)) {
         ADD_BAR_FLAG(BAR_INVULN);
     }
 
@@ -519,15 +519,15 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_REFLECTION);
     }
 
-    if (is_hero(player_ptr)) {
+    if (is_hero(*player_ptr)) {
         ADD_BAR_FLAG(BAR_HEROISM);
     }
 
-    if (is_shero(player_ptr)) {
+    if (is_shero(*player_ptr)) {
         ADD_BAR_FLAG(BAR_BERSERK);
     }
 
-    if (is_blessed(player_ptr)) {
+    if (is_blessed(*player_ptr)) {
         ADD_BAR_FLAG(BAR_BLESSED);
     }
 
@@ -656,7 +656,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_SHFIRE);
     }
 
-    if (is_time_limit_stealth(player_ptr)) {
+    if (is_time_limit_stealth(*player_ptr)) {
         ADD_BAR_FLAG(BAR_STEALTH);
     }
 

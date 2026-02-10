@@ -15,7 +15,7 @@ void handle_stuff(PlayerType *player_ptr)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (rfu.any_stats()) {
-        update_creature(player_ptr);
+        update_creature(*player_ptr);
     }
 
     if (rfu.any_main()) {

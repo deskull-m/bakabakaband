@@ -103,7 +103,7 @@ void do_cmd_go_up(CreatureEntity &creature)
             return;
         }
 
-        if (is_echizen(&player)) {
+        if (is_echizen(player)) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("上の階に登った。", "You enter the up staircase."));
@@ -195,14 +195,14 @@ void do_cmd_go_up(CreatureEntity &creature)
     }
 
     if (up_num == floor.dun_level) {
-        if (is_echizen(&player)) {
+        if (is_echizen(player)) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("地上に戻った。", "You go back to the surface."));
         }
         player.word_recall = 0;
     } else {
-        if (is_echizen(&player)) {
+        if (is_echizen(player)) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("階段を上って新たなる迷宮へと足を踏み入れた。", "You enter a maze of up staircases."));
@@ -248,7 +248,7 @@ void do_cmd_go_down(CreatureEntity &creature)
             return;
         }
 
-        if (is_echizen(&player)) {
+        if (is_echizen(player)) {
             msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
         } else {
             msg_print(_("下の階に降りた。", "You enter the down staircase."));
@@ -360,7 +360,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         if (dungeon_id > DungeonId::WILDERNESS) {
             msg_format(_("%sへ入った。", "You entered %s."), dungeon.text.data());
         } else {
-            if (is_echizen(&player)) {
+            if (is_echizen(player)) {
                 msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
             } else {
                 msg_print(_("階段を下りて新たなる迷宮へと足を踏み入れた。", "You enter a maze of down staircases."));

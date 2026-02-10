@@ -439,7 +439,7 @@ MonsterAbilityType choose_attack_spell(PlayerType *player_ptr, msa_type *msa_ptr
         return rand_choice(raise);
     }
 
-    if (is_invuln(player_ptr)) {
+    if (is_invuln(*player_ptr)) {
         if (!psy_spe.empty() && one_in_(2)) {
             return rand_choice(psy_spe);
         } else if (!attack.empty() && evaluate_percent(40)) {

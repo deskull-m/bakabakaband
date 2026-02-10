@@ -10,15 +10,15 @@
 void set_body_improvement_info_1(PlayerType *player_ptr, self_info_type *self_ptr)
 {
     const auto effects = player_ptr->effects();
-    if (is_blessed(player_ptr)) {
+    if (is_blessed(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは高潔さを感じている。", "You feel rightous."));
     }
 
-    if (is_hero(player_ptr)) {
+    if (is_hero(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたはヒーロー気分だ。", "You feel heroic."));
     }
 
-    if (is_shero(player_ptr)) {
+    if (is_shero(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは戦闘狂だ。", "You are in a battle rage."));
     }
 
@@ -30,7 +30,7 @@ void set_body_improvement_info_1(PlayerType *player_ptr, self_info_type *self_pt
         self_ptr->info_list.emplace_back(_("あなたは神秘のシールドで守られている。", "You are protected by a mystic shield."));
     }
 
-    if (is_invuln(player_ptr)) {
+    if (is_invuln(*player_ptr)) {
         self_ptr->info_list.emplace_back(_("あなたは現在傷つかない。", "You are temporarily invulnerable."));
     }
 

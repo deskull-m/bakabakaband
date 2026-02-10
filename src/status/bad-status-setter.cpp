@@ -358,7 +358,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    if (is_chargeman(player_ptr)) {
+    if (is_chargeman(*player_ptr)) {
         v = 0;
     }
 

@@ -59,7 +59,7 @@
 static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, PlayerType *player_ptr)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (set_anubis_and_chariot(player_ptr) && ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND))) {
+    if (set_anubis_and_chariot(*player_ptr) && ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND))) {
 
         ItemEntity *anubis = player_ptr->inventory[INVEN_MAIN_HAND].get();
         ItemEntity *chariot = player_ptr->inventory[INVEN_SUB_HAND].get();
@@ -101,8 +101,8 @@ void do_cmd_equip(PlayerType *player_ptr)
 
     screen_save();
     (void)show_equipment(player_ptr, 0, USE_FULL, AllMatchItemTester());
-    auto weight = calc_inventory_weight(player_ptr);
-    auto weight_lim = calc_weight_limit(player_ptr);
+    auto weight = calc_inventory_weight(*player_ptr);
+    auto weight_lim = calc_weight_limit(*player_ptr);
     const auto mes = _("装備： 合計 %3d.%1d kg (限界の%d%%) コマンド: ", "Equipment: carrying %d.%d pounds (%d%% of capacity). Command: ");
 #ifdef JP
     const auto out_val = format(mes, lb_to_kg_integer(weight), lb_to_kg_fraction(weight), weight * 100 / weight_lim);

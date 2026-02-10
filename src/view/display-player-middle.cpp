@@ -189,7 +189,7 @@ static int calc_temporary_speed(PlayerType *player_ptr)
     }
     int tmp_speed = 0;
     if (!player_ptr->riding) {
-        if (is_fast(player_ptr)) {
+        if (is_fast(*player_ptr)) {
             tmp_speed += 10;
         }
 

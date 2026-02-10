@@ -112,7 +112,7 @@ bool pattern_effect(PlayerType *player_ptr)
 
     const auto is_cut = player_ptr->effects()->cut().is_cut();
     if ((CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE)) && is_cut && one_in_(10)) {
-        wreck_the_pattern(player_ptr);
+        wreck_the_pattern(*player_ptr);
     }
 
     switch (grid.get_terrain().subtype) {
@@ -142,7 +142,7 @@ bool pattern_effect(PlayerType *player_ptr)
         break;
 
     case PATTERN_TILE_WRECKED:
-        if (!is_invuln(player_ptr)) {
+        if (!is_invuln(*player_ptr)) {
             take_hit(*player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
         break;
@@ -150,7 +150,7 @@ bool pattern_effect(PlayerType *player_ptr)
     default:
         if (CreatureRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
-        } else if (!is_invuln(player_ptr)) {
+        } else if (!is_invuln(*player_ptr)) {
             take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;

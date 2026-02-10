@@ -396,7 +396,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        stop_mouth(player_ptr);
+        stop_mouth(*player_ptr);
         msg_print(_("身の毛もよだつ叫び声を上げた！", "You make a horrible scream!"));
         (void)fear_monster(player_ptr, dir, player_ptr->level);
         return true;
@@ -407,7 +407,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        stop_mouth(player_ptr);
+        stop_mouth(*player_ptr);
         msg_print(_("酸を吐いた。", "You spit acid."));
         if (player_ptr->level < 25) {
             (void)fire_bolt(*player_ptr, AttributeType::ACID, dir, player_ptr->level);
@@ -488,7 +488,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        stop_mouth(player_ptr);
+        stop_mouth(*player_ptr);
         msg_print(_("あなたはおどろおどろしい叫び声をあげた！", "You emit an eldritch howl!"));
         (void)fear_monster(player_ptr, dir, player_ptr->level);
         return true;

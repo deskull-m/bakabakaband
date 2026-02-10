@@ -351,7 +351,7 @@ tl::optional<uint8_t> get_monochrome_display_color(PlayerType *player_ptr)
     if (AngbandWorld::get_instance().timewalk_m_idx) {
         return TERM_DARK;
     }
-    if (is_invuln(player_ptr) || player_ptr->timewalk) {
+    if (is_invuln(*player_ptr) || player_ptr->timewalk) {
         return TERM_WHITE;
     }
     if (player_ptr->wraith_form) {

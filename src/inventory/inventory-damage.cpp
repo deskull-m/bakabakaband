@@ -72,15 +72,15 @@ void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int 
 #endif
 
 #ifdef JP
-        if (is_echizen(player_ptr)) {
+        if (is_echizen(*player_ptr)) {
             msg_print("やりやがったな！");
-        } else if (is_chargeman(player_ptr)) {
+        } else if (is_chargeman(*player_ptr)) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(player_ptr)) {
+        } else if (is_tough(*player_ptr)) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 

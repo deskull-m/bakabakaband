@@ -600,7 +600,7 @@ void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, Attribut
         return;
     }
 
-    if (is_sushi_eater(player_ptr)) {
+    if (is_sushi_eater(*player_ptr)) {
         drop_sushi(*player_ptr, md_ptr);
     }
 

@@ -20,7 +20,7 @@ void pack_overflow(PlayerType *player_ptr)
         return;
     }
 
-    update_creature(player_ptr);
+    update_creature(*player_ptr);
     if (!player_ptr->inventory[INVEN_PACK]->is_valid()) {
         return;
     }

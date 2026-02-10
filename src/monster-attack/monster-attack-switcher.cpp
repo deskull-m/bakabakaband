@@ -71,7 +71,7 @@ static void calc_blow_disenchant(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     if (!has_resist_disen(*player_ptr) && !check_multishadow(*player_ptr) && apply_disenchant(player_ptr, 0)) {
-        update_creature(player_ptr);
+        update_creature(*player_ptr);
         monap_ptr->obvious = true;
     }
 
@@ -416,7 +416,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->obvious = true;
         msg_print(_("酸を浴びせられた！", "You are covered in acid!"));
         monap_ptr->get_damage += acid_dam(player_ptr, monap_ptr->damage, monap_ptr->ddesc, false);
-        update_creature(player_ptr);
+        update_creature(*player_ptr);
         update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_ACID);
         break;
     }

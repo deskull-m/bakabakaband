@@ -213,13 +213,13 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         if (CreatureRace(&player).equals(PlayerRaceType::MERFOLK)) {
             if (terrain_new.flags.has(Tc::WATER) ^ terrain_old.flags.has(Tc::WATER)) {
                 rfu.set_flag(StatusRecalculatingFlag::BONUS);
-                update_creature(&player);
+                update_creature(player);
             }
         }
 
         if (terrain_new.flags.has(TerrainCharacteristics::SLOW) ^ terrain_old.flags.has(TerrainCharacteristics::SLOW)) {
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            update_creature(&player);
+            update_creature(player);
         }
     }
 
