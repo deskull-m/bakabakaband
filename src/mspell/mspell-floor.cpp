@@ -346,7 +346,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
             _("%s^があなたの足を指さした。", "%s^ gestures at your feet."), _("しかし効果がなかった！", "You are unaffected!"),
             _("しかし効力を跳ね返した！", "You resist the effects!"));
 
-        spell_badstatus_message_to_player(&player_ptr, m_idx, msg, resist, saving_throw);
+        spell_badstatus_message_to_player(player_ptr, m_idx, msg, resist, saving_throw);
 
         if (!resist && !saving_throw) {
             teleport_level(player_ptr, 0);
@@ -366,7 +366,7 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
     mspell_cast_msg_bad_status_to_monster msg(_("%s^が%sの足を指さした。", "%s^ gestures at %s's feet."),
         _("%s^には効果がなかった。", "%s^ is unaffected!"), _("%s^は効力を跳ね返した！", "%s^ resist the effects!"), "");
 
-    spell_badstatus_message_to_mons(&player_ptr, m_idx, t_idx, msg, resist, saving_throw);
+    spell_badstatus_message_to_mons(player_ptr, m_idx, t_idx, msg, resist, saving_throw);
 
     if (!resist && !saving_throw) {
         teleport_level(player_ptr, monster_target.is_riding() ? 0 : t_idx);
