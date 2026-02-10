@@ -73,7 +73,7 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(static_cast<PlayerType *>(this->player_ptr));
+    handle_stuff(*player_ptr);
     this->is_affected = true;
 }
 
@@ -137,7 +137,7 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -185,7 +185,7 @@ bool set_tim_regen(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -233,7 +233,7 @@ bool set_tim_reflect(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -281,7 +281,7 @@ bool set_pass_wall(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -330,7 +330,7 @@ bool set_tim_emission(PlayerType *player_ptr, short v, bool do_dec)
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(StatusRecalculatingFlag::TORCH);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 /*!
@@ -377,6 +377,6 @@ bool set_tim_exorcism(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }

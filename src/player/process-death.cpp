@@ -436,7 +436,7 @@ void show_death_info(CreatureEntity &creature)
     home_aware(creature);
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(static_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     flush();
     msg_erase();
 

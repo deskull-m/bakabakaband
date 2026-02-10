@@ -81,7 +81,7 @@ static void redraw_character_xtra(PlayerType *player_ptr)
         StatusRecalculatingFlag::FLOW,
     };
     rfu.set_flags(flags_srf);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     world.character_xtra = false;
 }
 
@@ -116,7 +116,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     player_ptr->pet_t_m_idx = 0;
     player_ptr->riding_t_m_idx = 0;
     static_cast<CreatureEntity &>(*player_ptr).ambush_flag = false;
-    health_track(player_ptr, 0);
+    health_track(*player_ptr, 0);
 
     disturb(*player_ptr, true, true);
     const auto quest_id = floor.get_quest_id();
@@ -153,7 +153,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         StatusRecalculatingFlag::REORDER,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags_srf);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     term_fresh();
 
     auto no_feeling_quest = (quest_id == QuestId::MELKO);
@@ -229,7 +229,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
 
         process_player(player_ptr);
         process_upkeep_with_speed(player_ptr);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
 
         move_cursor_relative(player_ptr->y, player_ptr->x);
         if (fresh_after) {
@@ -241,7 +241,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         }
 
         process_monsters(*player_ptr);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
 
         move_cursor_relative(player_ptr->y, player_ptr->x);
         if (fresh_after) {
@@ -253,7 +253,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         }
 
         WorldTurnProcessor(player_ptr).process_world();
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
 
         move_cursor_relative(player_ptr->y, player_ptr->x);
         if (fresh_after) {

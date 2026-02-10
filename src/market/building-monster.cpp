@@ -6,6 +6,7 @@
 #include "lore/lore-util.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -154,7 +155,7 @@ bool research_mon(PlayerType *player_ptr)
                 }
 
                 tracker.set_trackee(monrace_id);
-                handle_stuff(player_ptr);
+                handle_stuff(static_cast<CreatureEntity &>(*player_ptr));
                 screen_roff(player_ptr, monrace_id, MONSTER_LORE_RESEARCH);
                 notpicked = false;
                 old_sym = *sym;

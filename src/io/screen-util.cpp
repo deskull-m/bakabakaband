@@ -75,7 +75,7 @@ void resize_map()
         MainWindowRedrawingFlag::EQUIPPY,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(p_ptr);
+    handle_stuff(*p_ptr);
     term_redraw();
 
     if (can_save) {

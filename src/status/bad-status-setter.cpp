@@ -99,7 +99,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags_swrf);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -176,7 +176,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
         disturb(*player_ptr, false, false);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -224,7 +224,7 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
         disturb(*player_ptr, false, false);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -277,7 +277,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
         disturb(*player_ptr, false, false);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -333,7 +333,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -402,7 +402,7 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags_swrf);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -455,7 +455,7 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -497,7 +497,7 @@ bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::STUN);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -539,7 +539,7 @@ bool BadStatusSetter::set_cut(const TIME_EFFECT tmp_v)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::CUT);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 

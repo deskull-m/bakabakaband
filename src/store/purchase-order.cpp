@@ -94,7 +94,7 @@ static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, I
 
     const auto item_new = store_item_to_inventory(player_ptr, &item_inventory);
     const auto item_name = describe_flavor(player_ptr, *player_ptr->inventory[item_new], 0);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     msg_format(_("%s(%c)を取った。", "You have %s (%c)."), item_name.data(), index_to_label(item_new));
 
     const auto stock_num = st_ptr->stock_num;
@@ -285,7 +285,7 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
     auto_inscribe_item(&item, idx);
 
     item_new = store_item_to_inventory(player_ptr, &item);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     const auto got_item_name = describe_flavor(player_ptr, *player_ptr->inventory[item_new], 0);
     msg_format(_("%s(%c)を手に入れた。", "You have %s (%c)."), got_item_name.data(), index_to_label(item_new));

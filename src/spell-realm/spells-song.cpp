@@ -130,7 +130,7 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(&player);
+    handle_stuff(player);
     return true;
 }
 

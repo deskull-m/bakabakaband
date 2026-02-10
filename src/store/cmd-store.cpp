@@ -168,7 +168,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
 
         const auto should_redraw_store_inventory = rfu.has(StatusRecalculatingFlag::BONUS);
         world.character_icky_depth = 1;
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         if (player_ptr->inventory[INVEN_PACK]->bi_id) {
             INVENTORY_IDX i_idx = INVEN_PACK;
             const auto &item_inventory = *player_ptr->inventory[i_idx];
@@ -189,7 +189,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
                 const auto item_name = describe_flavor(player_ptr, item, 0);
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
                 vary_item(player_ptr, i_idx, -255);
-                handle_stuff(player_ptr);
+                handle_stuff(*player_ptr);
                 const auto item_pos = home_carry(player_ptr, &item, store_num);
                 if (item_pos >= 0) {
                     store_top = (item_pos / store_bottom) * store_bottom;

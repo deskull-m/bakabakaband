@@ -95,7 +95,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::BASIC);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     if (old_race != player_ptr->prace) {
         autopick_load_pref(player_ptr, false);

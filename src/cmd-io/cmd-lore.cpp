@@ -126,7 +126,7 @@ void do_cmd_query_symbol(PlayerType *player_ptr)
     while (true) {
         const auto monrace_id = monrace_ids[i];
         tracker.set_trackee(monrace_id);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         while (true) {
             if (recall) {
                 screen_save();

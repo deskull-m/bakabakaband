@@ -193,7 +193,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         }
 
         if (mpe_mode & MPE_HANDLE_STUFF) {
-            handle_stuff(&player);
+            handle_stuff(player);
         }
 
         if (CreatureClass(player).equals(PlayerClassType::NINJA)) {

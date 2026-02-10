@@ -343,7 +343,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     /* Abort if needed */
     if (!flag) {

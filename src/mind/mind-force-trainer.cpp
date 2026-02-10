@@ -139,7 +139,7 @@ void set_lightspeed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!
@@ -184,7 +184,7 @@ bool set_tim_sh_force(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 

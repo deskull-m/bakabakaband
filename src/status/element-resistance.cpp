@@ -56,7 +56,7 @@ bool set_oppose_acid(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -103,7 +103,7 @@ bool set_oppose_elec(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -152,7 +152,7 @@ bool set_oppose_fire(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -198,7 +198,7 @@ bool set_oppose_cold(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -248,7 +248,7 @@ bool set_oppose_pois(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         disturb(*player_ptr, false, true);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 

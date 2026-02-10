@@ -434,7 +434,7 @@ void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool v
             symbol_ptr = &monrace.symbol_config;
             if (!visual_only) {
                 tracker.set_trackee(monrace_ids[mon_cur]);
-                handle_stuff(player_ptr);
+                handle_stuff(*player_ptr);
             }
 
             if (visual_list) {

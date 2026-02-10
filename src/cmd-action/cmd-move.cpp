@@ -563,7 +563,7 @@ void do_cmd_rest(CreatureEntity &creature)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::ACTION);
-    handle_stuff(&player);
+    handle_stuff(player);
     term_fresh();
 }
 

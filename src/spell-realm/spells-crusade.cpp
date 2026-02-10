@@ -73,7 +73,7 @@ bool set_tim_sh_holy(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(&player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -125,7 +125,7 @@ bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(&player_ptr);
+    handle_stuff(creature);
     return true;
 }
 

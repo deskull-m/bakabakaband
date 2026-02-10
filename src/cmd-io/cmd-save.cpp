@@ -27,7 +27,7 @@ void do_cmd_save_game(PlayerType *player_ptr, int is_autosave)
     }
 
     msg_erase();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     prt(_("ゲームをセーブしています...", "Saving game..."), 0, 0);
     term_fresh();
     player_ptr->died_from = _("(セーブ)", "(saved)");

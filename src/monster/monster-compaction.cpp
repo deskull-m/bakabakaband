@@ -60,7 +60,7 @@ static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER
     }
 
     if (HealthBarTracker::get_instance().is_tracking(i1)) {
-        health_track(player_ptr, i2);
+        health_track(*player_ptr, i2);
     }
 
     if (monster.is_pet()) {

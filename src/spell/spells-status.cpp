@@ -218,7 +218,7 @@ bool time_walk(PlayerType *player_ptr)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -261,7 +261,7 @@ void roll_hitdice(PlayerType *player_ptr, spell_operation options)
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     if (!(options & SPOP_NO_UPDATE)) {
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
     }
 
     if (!(options & SPOP_DISPLAY_MES)) {
@@ -299,7 +299,7 @@ bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
     (void)bss.set_paralysis(0);
     (void)restore_all_status(player_ptr);
     (void)set_berserk(player_ptr, 0, true);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     hp_player(player_ptr, 5000);
 
     return true;

@@ -47,7 +47,7 @@ void print_path(PlayerType *player_ptr, POSITION y, POSITION x)
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
     ProjectionPath path_g(floor, range, p_pos, p_pos, pos, PROJECT_PATH | PROJECT_THRU);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     for (const auto &pos_path : path_g) {
         const auto &grid = floor.get_grid(pos_path);
         if (panel_contains(pos_path)) {
@@ -120,7 +120,7 @@ bool change_panel(PlayerType *player_ptr, POSITION dy, POSITION dx)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 

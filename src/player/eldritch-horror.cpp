@@ -296,5 +296,5 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }

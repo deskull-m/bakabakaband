@@ -627,7 +627,7 @@ static void update_phase_out_stat(PlayerType *player_ptr, EffectMonster *em_ptr)
     }
 
     HealthBarTracker::get_instance().set_trackee(em_ptr->g_ptr->m_idx);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!

@@ -380,7 +380,7 @@ bool do_cmd_attack(PlayerType *player_ptr, POSITION y, POSITION x, combat_option
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }
 
-        health_track(player_ptr, grid.m_idx);
+        health_track(*player_ptr, grid.m_idx);
     }
 
     const auto is_confused = effects->confusion().is_confused();

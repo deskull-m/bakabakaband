@@ -214,7 +214,7 @@ void process_player(PlayerType *player_ptr)
             }
         }
 
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
     }
 
     load = false;
@@ -264,7 +264,7 @@ void process_player(PlayerType *player_ptr)
         player_ptr->now_damaged = false;
 
         update_monsters(*player_ptr, false);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         move_cursor_relative(player_ptr->y, player_ptr->x);
         if (fresh_before) {
             term_fresh_force();
@@ -305,7 +305,7 @@ void process_player(PlayerType *player_ptr)
         } else if (command_rep) {
             command_rep--;
             rfu.set_flag(MainWindowRedrawingFlag::ACTION);
-            handle_stuff(player_ptr);
+            handle_stuff(*player_ptr);
             msg_flag = false;
             prt("", 0, 0);
             mark_monsters_present(player_ptr);
@@ -411,7 +411,7 @@ void process_player(PlayerType *player_ptr)
                 player_ptr->timewalk = false;
                 player_ptr->energy_need = ENERGY_NEED();
 
-                handle_stuff(player_ptr);
+                handle_stuff(*player_ptr);
             }
         }
 

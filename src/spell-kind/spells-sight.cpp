@@ -465,7 +465,7 @@ bool probing(CreatureEntity &creature)
 
         message_add(probe_result);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         move_cursor_relative(monster.y, monster.x);
         inkey();
         term_erase(0, 0);

@@ -248,7 +248,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
     }
 
     /* Calculate the projection path */
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->player_ptr);
 
     project_m_n = 0;
     project_m_x = 0;
@@ -300,7 +300,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
                     tracker.set_trackee(monster.ap_r_idx);
                 }
 
-                health_track(this->player_ptr, grid.m_idx);
+                health_track(*this->player_ptr, grid.m_idx);
             }
 
             (void)affect_feature(this->player_ptr, 0, 0, py, px, dam, typ);
@@ -400,7 +400,7 @@ static bool activate_super_ray_effect(PlayerType *player_ptr, int y, int x, int 
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }
 
-        health_track(player_ptr, grid.m_idx);
+        health_track(*player_ptr, grid.m_idx);
     }
 
     return notice;
@@ -426,7 +426,7 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     auto range = project_length != 0 ? project_length : system.get_max_range(); //!< @details 変数スコープが長く同一値を保証できないので後で再代入する.
     ProjectionPath path_g(floor, range, p_pos, p_pos, pos_target, flag);
     std::vector<ProjectionPath> second_path_g_list;
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->player_ptr);
 
     if (path_g.path_num() == 0) {
         return;

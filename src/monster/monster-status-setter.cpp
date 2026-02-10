@@ -374,7 +374,7 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
 
         process_monster(*player_ptr, world.timewalk_m_idx);
         monster.reset_target();
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         if (vs_player) {
             term_xtra(TERM_XTRA_DELAY, 500);
         }
@@ -402,6 +402,6 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
         msg_erase();
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }

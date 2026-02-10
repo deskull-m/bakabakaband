@@ -180,7 +180,7 @@ void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
     } else {
         const auto cx = (panel_col_min + panel_col_max) / 2;
         const auto cy = (panel_row_min + panel_row_max) / 2;
@@ -321,6 +321,6 @@ tl::optional<Pos2D> point_target(PlayerType *player_ptr)
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return pos_target;
 }

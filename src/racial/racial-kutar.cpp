@@ -51,6 +51,6 @@ bool set_leveling(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }

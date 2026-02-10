@@ -164,7 +164,7 @@ bool fetch_monster(CreatureEntity &creature)
             LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
         }
 
-        health_track(&player, m_idx);
+        health_track(player, m_idx);
     }
 
     return true;
