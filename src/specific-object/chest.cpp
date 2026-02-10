@@ -230,7 +230,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     if (trap.has(ChestTrapType::NUKE)) {
         msg_print(_("放射性廃棄物の嵐が巻き起こった！", "A storm of radioactive waste erupts!"));
         (void)fire_ball(*this->player_ptr, AttributeType::NUKE, Direction::self(), 150, 2);
-        take_hit(*player_ptr, DAMAGE_NOESCAPE, (150 + randint1(50)) * calc_nuke_damage_rate(player_ptr) / 100, _("放射性廃棄物の罠", "a Huge Nuke Trap"));
+        take_hit(*player_ptr, DAMAGE_NOESCAPE, (150 + randint1(50)) * calc_nuke_damage_rate(*player_ptr) / 100, _("放射性廃棄物の罠", "a Huge Nuke Trap"));
     }
 
     /* Dispel player. */

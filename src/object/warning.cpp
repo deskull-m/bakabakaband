@@ -68,18 +68,18 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         if (has_immune_elec(*player_ptr)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_elec_damage_rate(player_ptr) / 100;
+        dam = dam * calc_elec_damage_rate(*player_ptr) / 100;
         break;
 
     case AttributeType::POIS:
-        dam = dam * calc_pois_damage_rate(player_ptr) / 100;
+        dam = dam * calc_pois_damage_rate(*player_ptr) / 100;
         break;
 
     case AttributeType::ACID:
         if (has_immune_acid(*player_ptr)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_acid_damage_rate(player_ptr) / 100;
+        dam = dam * calc_acid_damage_rate(*player_ptr) / 100;
         break;
 
     case AttributeType::COLD:
@@ -87,14 +87,14 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         if (has_immune_cold(*player_ptr)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_cold_damage_rate(player_ptr) / 100;
+        dam = dam * calc_cold_damage_rate(*player_ptr) / 100;
         break;
 
     case AttributeType::FIRE:
         if (has_immune_fire(*player_ptr)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_fire_damage_rate(player_ptr) / 100;
+        dam = dam * calc_fire_damage_rate(*player_ptr) / 100;
         break;
 
     case AttributeType::PSY_SPEAR:
@@ -109,34 +109,34 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         break;
 
     case AttributeType::LITE:
-        dam = dam * calc_lite_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_lite_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::DARK:
-        dam = dam * calc_dark_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_dark_damage_rate(*player_ptr, CALC_MAX) / 100;
         if (has_immune_dark(*player_ptr) || player_ptr->wraith_form) {
             ignore_wraith_form = true;
         }
         break;
 
     case AttributeType::SHARDS:
-        dam = dam * calc_shards_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_shards_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::SOUND:
-        dam = dam * calc_sound_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_sound_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::CONFUSION:
-        dam = dam * calc_conf_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_conf_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::CHAOS:
-        dam = dam * calc_chaos_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_chaos_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::NETHER:
-        dam = dam * calc_nether_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_nether_damage_rate(*player_ptr, CALC_MAX) / 100;
         if (CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
             ignore_wraith_form = true;
             dam = 0;
@@ -144,50 +144,50 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         break;
 
     case AttributeType::DISENCHANT:
-        dam = dam * calc_disenchant_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_disenchant_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::NEXUS:
-        dam = dam * calc_nexus_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_nexus_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::TIME:
-        dam = dam * calc_time_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_time_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::GRAVITY:
-        dam = dam * calc_gravity_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_gravity_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::ROCKET:
-        dam = dam * calc_rocket_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_rocket_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::NUKE:
-        dam = dam * calc_nuke_damage_rate(player_ptr) / 100;
+        dam = dam * calc_nuke_damage_rate(*player_ptr) / 100;
         break;
 
     case AttributeType::DEATH_RAY:
-        dam = dam * calc_deathray_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_deathray_damage_rate(*player_ptr, CALC_MAX) / 100;
         if (dam == 0) {
             ignore_wraith_form = true;
         }
         break;
 
     case AttributeType::HOLY_FIRE:
-        dam = dam * calc_holy_fire_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_holy_fire_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::HELL_FIRE:
-        dam = dam * calc_hell_fire_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_hell_fire_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::ABYSS:
-        dam = dam * calc_abyss_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_abyss_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::VOID_MAGIC:
-        dam = dam * calc_void_damage_rate(player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_void_damage_rate(*player_ptr, CALC_MAX) / 100;
         break;
 
     case AttributeType::MIND_BLAST:
