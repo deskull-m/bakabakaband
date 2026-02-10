@@ -23,10 +23,10 @@ bool activate_bladeturner(PlayerType *player_ptr)
     (void)set_hero(player_ptr, randint1(50) + 50, false);
     (void)hp_player(player_ptr, 10);
     (void)set_blessed(player_ptr, randint1(50) + 50, false);
-    (void)set_oppose_acid(player_ptr, randint1(50) + 50, false);
-    (void)set_oppose_elec(player_ptr, randint1(50) + 50, false);
-    (void)set_oppose_fire(player_ptr, randint1(50) + 50, false);
-    (void)set_oppose_cold(player_ptr, randint1(50) + 50, false);
-    (void)set_oppose_pois(player_ptr, randint1(50) + 50, false);
+    (void)set_oppose_acid(*player_ptr, randint1(50) + 50, false);
+    (void)set_oppose_elec(*player_ptr, randint1(50) + 50, false);
+    (void)set_oppose_fire(*player_ptr, randint1(50) + 50, false);
+    (void)set_oppose_cold(*player_ptr, randint1(50) + 50, false);
+    (void)set_oppose_pois(*player_ptr, randint1(50) + 50, false);
     return true;
 }

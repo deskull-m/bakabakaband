@@ -10,6 +10,7 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
@@ -20,43 +21,43 @@
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_oppose_acid(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_oppose_acid(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->oppose_acid && !do_dec) {
-            if (player_ptr->oppose_acid > v) {
+        if (creature.oppose_acid && !do_dec) {
+            if (creature.oppose_acid > v) {
                 return false;
             }
-        } else if (!is_oppose_acid(player_ptr)) {
+        } else if (!is_oppose_acid(creature)) {
             msg_print(_("酸への耐性がついた気がする！", "You feel resistant to acid!"));
             notice = true;
         }
     } else {
-        if (player_ptr->oppose_acid && !music_singing(*player_ptr, MUSIC_RESIST) &&
-            !CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+        if (creature.oppose_acid && !music_singing(creature, MUSIC_RESIST) &&
+            !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("酸への耐性が薄れた気がする。", "You feel less resistant to acid."));
             notice = true;
         }
     }
 
-    player_ptr->oppose_acid = v;
+    creature.oppose_acid = v;
     if (!notice) {
         return false;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -66,44 +67,44 @@ bool set_oppose_acid(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_oppose_elec(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_oppose_elec(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->oppose_elec && !do_dec) {
-            if (player_ptr->oppose_elec > v) {
+        if (creature.oppose_elec && !do_dec) {
+            if (creature.oppose_elec > v) {
                 return false;
             }
-        } else if (!is_oppose_elec(player_ptr)) {
+        } else if (!is_oppose_elec(creature)) {
             msg_print(_("電撃への耐性がついた気がする！", "You feel resistant to electricity!"));
             notice = true;
         }
     } else {
-        if (player_ptr->oppose_elec && !music_singing(*player_ptr, MUSIC_RESIST) &&
-            !CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+        if (creature.oppose_elec && !music_singing(creature, MUSIC_RESIST) &&
+            !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("電撃への耐性が薄れた気がする。", "You feel less resistant to electricity."));
             notice = true;
         }
     }
 
-    player_ptr->oppose_elec = v;
+    creature.oppose_elec = v;
     if (!notice) {
         return false;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -113,46 +114,46 @@ bool set_oppose_elec(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_oppose_fire(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_oppose_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
-    if ((CreatureRace(player_ptr).equals(PlayerRaceType::BALROG) && (player_ptr->level > 44)) || (player_ptr->mimic_form == MimicKindType::DEMON)) {
+    if ((CreatureRace(&creature).equals(PlayerRaceType::BALROG) && (creature.level > 44)) || (creature.mimic_form == MimicKindType::DEMON)) {
         v = 1;
     }
     if (v) {
-        if (player_ptr->oppose_fire && !do_dec) {
-            if (player_ptr->oppose_fire > v) {
+        if (creature.oppose_fire && !do_dec) {
+            if (creature.oppose_fire > v) {
                 return false;
             }
-        } else if (!is_oppose_fire(player_ptr)) {
+        } else if (!is_oppose_fire(creature)) {
             msg_print(_("火への耐性がついた気がする！", "You feel resistant to fire!"));
             notice = true;
         }
     } else {
-        if (player_ptr->oppose_fire && !music_singing(*player_ptr, MUSIC_RESIST) &&
-            !CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+        if (creature.oppose_fire && !music_singing(creature, MUSIC_RESIST) &&
+            !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("火への耐性が薄れた気がする。", "You feel less resistant to fire."));
             notice = true;
         }
     }
 
-    player_ptr->oppose_fire = v;
+    creature.oppose_fire = v;
     if (!notice) {
         return false;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -162,43 +163,43 @@ bool set_oppose_fire(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_oppose_cold(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_oppose_cold(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->oppose_cold && !do_dec) {
-            if (player_ptr->oppose_cold > v) {
+        if (creature.oppose_cold && !do_dec) {
+            if (creature.oppose_cold > v) {
                 return false;
             }
-        } else if (!is_oppose_cold(player_ptr)) {
+        } else if (!is_oppose_cold(creature)) {
             msg_print(_("冷気への耐性がついた気がする！", "You feel resistant to cold!"));
             notice = true;
         }
     } else {
-        if (player_ptr->oppose_cold && !music_singing(*player_ptr, MUSIC_RESIST) &&
-            !CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
+        if (creature.oppose_cold && !music_singing(creature, MUSIC_RESIST) &&
+            !CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("冷気への耐性が薄れた気がする。", "You feel less resistant to cold."));
             notice = true;
         }
     }
 
-    player_ptr->oppose_cold = v;
+    creature.oppose_cold = v;
     if (!notice) {
         return false;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -208,89 +209,89 @@ bool set_oppose_cold(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_oppose_pois(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_oppose_pois(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (pc.has_poison_resistance()) {
         v = 1;
     }
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->oppose_pois && !do_dec) {
-            if (player_ptr->oppose_pois > v) {
+        if (creature.oppose_pois && !do_dec) {
+            if (creature.oppose_pois > v) {
                 return false;
             }
-        } else if (!is_oppose_pois(player_ptr)) {
+        } else if (!is_oppose_pois(creature)) {
             msg_print(_("毒への耐性がついた気がする！", "You feel resistant to poison!"));
             notice = true;
         }
     } else {
-        if (player_ptr->oppose_pois && !music_singing(*player_ptr, MUSIC_RESIST) &&
+        if (creature.oppose_pois && !music_singing(creature, MUSIC_RESIST) &&
             !pc.samurai_stance_is(SamuraiStanceType::MUSOU)) {
             msg_print(_("毒への耐性が薄れた気がする。", "You feel less resistant to poison."));
             notice = true;
         }
     }
 
-    player_ptr->oppose_pois = v;
+    creature.oppose_pois = v;
     if (!notice) {
         return false;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
-bool is_oppose_acid(PlayerType *player_ptr)
+bool is_oppose_acid(CreatureEntity &creature)
 {
-    auto can_oppose_acid = player_ptr->oppose_acid != 0;
-    can_oppose_acid |= music_singing(*player_ptr, MUSIC_RESIST);
-    can_oppose_acid |= CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
+    auto can_oppose_acid = creature.oppose_acid != 0;
+    can_oppose_acid |= music_singing(creature, MUSIC_RESIST);
+    can_oppose_acid |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     return can_oppose_acid;
 }
 
-bool is_oppose_elec(PlayerType *player_ptr)
+bool is_oppose_elec(CreatureEntity &creature)
 {
-    auto can_oppose_elec = player_ptr->oppose_elec != 0;
-    can_oppose_elec |= music_singing(*player_ptr, MUSIC_RESIST);
-    can_oppose_elec |= CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
+    auto can_oppose_elec = creature.oppose_elec != 0;
+    can_oppose_elec |= music_singing(creature, MUSIC_RESIST);
+    can_oppose_elec |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     return can_oppose_elec;
 }
 
-bool is_oppose_fire(PlayerType *player_ptr)
+bool is_oppose_fire(CreatureEntity &creature)
 {
-    auto can_oppose_fire = player_ptr->oppose_fire != 0;
-    can_oppose_fire |= music_singing(*player_ptr, MUSIC_RESIST);
-    can_oppose_fire |= CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
-    can_oppose_fire |= player_ptr->mimic_form == MimicKindType::DEMON;
-    can_oppose_fire |= (CreatureRace(player_ptr).equals(PlayerRaceType::BALROG) && player_ptr->level > 44);
+    auto can_oppose_fire = creature.oppose_fire != 0;
+    can_oppose_fire |= music_singing(creature, MUSIC_RESIST);
+    can_oppose_fire |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
+    can_oppose_fire |= creature.mimic_form == MimicKindType::DEMON;
+    can_oppose_fire |= (CreatureRace(&creature).equals(PlayerRaceType::BALROG) && creature.level > 44);
     return can_oppose_fire;
 }
 
-bool is_oppose_cold(PlayerType *player_ptr)
+bool is_oppose_cold(CreatureEntity &creature)
 {
-    auto can_oppose_cold = player_ptr->oppose_cold != 0;
-    can_oppose_cold |= music_singing(*player_ptr, MUSIC_RESIST);
-    can_oppose_cold |= CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU);
+    auto can_oppose_cold = creature.oppose_cold != 0;
+    can_oppose_cold |= music_singing(creature, MUSIC_RESIST);
+    can_oppose_cold |= CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU);
     return can_oppose_cold;
 }
 
-bool is_oppose_pois(PlayerType *player_ptr)
+bool is_oppose_pois(CreatureEntity &creature)
 {
-    CreatureClass pc(*player_ptr);
-    auto can_oppose_pois = player_ptr->oppose_pois != 0;
-    can_oppose_pois |= music_singing(*player_ptr, MUSIC_RESIST);
+    CreatureClass pc(creature);
+    auto can_oppose_pois = creature.oppose_pois != 0;
+    can_oppose_pois |= music_singing(creature, MUSIC_RESIST);
     can_oppose_pois |= pc.samurai_stance_is(SamuraiStanceType::MUSOU);
     can_oppose_pois |= pc.has_poison_resistance();
     return can_oppose_pois;

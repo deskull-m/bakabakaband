@@ -47,7 +47,7 @@ void effect_player_elements(
 
 void effect_player_poison(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 {
-    bool double_resist = is_oppose_pois(player_ptr);
+    bool double_resist = is_oppose_pois(*player_ptr);
     if (player_ptr->effects()->blindness().is_blind()) {
         msg_print(_("毒で攻撃された！", "You are hit by poison!"));
     }
@@ -67,7 +67,7 @@ void effect_player_poison(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 
 void effect_player_nuke(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
 {
-    bool double_resist = is_oppose_pois(player_ptr);
+    bool double_resist = is_oppose_pois(*player_ptr);
     if (player_ptr->effects()->blindness().is_blind()) {
         msg_print(_("放射能で攻撃された！", "You are hit by radiation!"));
     }
@@ -161,7 +161,7 @@ void effect_player_plasma(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         (void)BadStatusSetter(*player_ptr).mod_stun(plus_stun);
     }
 
-    if (!(has_resist_fire(*player_ptr) || is_oppose_fire(player_ptr) || has_immune_fire(*player_ptr))) {
+    if (!(has_resist_fire(*player_ptr) || is_oppose_fire(*player_ptr) || has_immune_fire(*player_ptr))) {
         inventory_damage(player_ptr, BreakerAcid(), 3);
     }
 }
@@ -625,7 +625,7 @@ void effect_player_icee(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         (void)bss.mod_stun(randnum1<short>(15));
     }
 
-    if ((!(has_resist_cold(*player_ptr) || is_oppose_cold(player_ptr))) || one_in_(12)) {
+    if ((!(has_resist_cold(*player_ptr) || is_oppose_cold(*player_ptr))) || one_in_(12)) {
         if (!has_immune_cold(*player_ptr)) {
             inventory_damage(player_ptr, BreakerCold(), 3);
         }

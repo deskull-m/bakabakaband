@@ -221,19 +221,19 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
     case MindMindcrafterType::CHARACTER_ARMOR:
         set_shield(player_ptr, (TIME_EFFECT)plev, false);
         if (plev > 14) {
-            set_oppose_acid(player_ptr, (TIME_EFFECT)plev, false);
+            set_oppose_acid(*player_ptr, (TIME_EFFECT)plev, false);
         }
         if (plev > 19) {
-            set_oppose_fire(player_ptr, (TIME_EFFECT)plev, false);
+            set_oppose_fire(*player_ptr, (TIME_EFFECT)plev, false);
         }
         if (plev > 24) {
-            set_oppose_cold(player_ptr, (TIME_EFFECT)plev, false);
+            set_oppose_cold(*player_ptr, (TIME_EFFECT)plev, false);
         }
         if (plev > 29) {
-            set_oppose_elec(player_ptr, (TIME_EFFECT)plev, false);
+            set_oppose_elec(*player_ptr, (TIME_EFFECT)plev, false);
         }
         if (plev > 34) {
-            set_oppose_pois(player_ptr, (TIME_EFFECT)plev, false);
+            set_oppose_pois(*player_ptr, (TIME_EFFECT)plev, false);
         }
 
         break;

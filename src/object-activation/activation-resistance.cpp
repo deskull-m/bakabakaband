@@ -15,11 +15,11 @@
 bool activate_resistance_elements(PlayerType *player_ptr)
 {
     msg_print(_("様々な色に輝いている...", "It glows many colours..."));
-    (void)set_oppose_acid(player_ptr, randint1(40) + 40, false);
-    (void)set_oppose_elec(player_ptr, randint1(40) + 40, false);
-    (void)set_oppose_fire(player_ptr, randint1(40) + 40, false);
-    (void)set_oppose_cold(player_ptr, randint1(40) + 40, false);
-    (void)set_oppose_pois(player_ptr, randint1(40) + 40, false);
+    (void)set_oppose_acid(*player_ptr, randint1(40) + 40, false);
+    (void)set_oppose_elec(*player_ptr, randint1(40) + 40, false);
+    (void)set_oppose_fire(*player_ptr, randint1(40) + 40, false);
+    (void)set_oppose_cold(*player_ptr, randint1(40) + 40, false);
+    (void)set_oppose_pois(*player_ptr, randint1(40) + 40, false);
     return true;
 }
 
@@ -39,7 +39,7 @@ bool activate_acid_ball_and_resistance(PlayerType *player_ptr, std::string_view 
     }
 
     (void)fire_ball(*player_ptr, AttributeType::ACID, dir, 100, 2);
-    (void)set_oppose_acid(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_acid(*player_ptr, randint1(20) + 20, false);
 
     return true;
 }
@@ -60,7 +60,7 @@ bool activate_elec_ball_and_resistance(PlayerType *player_ptr, std::string_view 
     }
 
     (void)fire_ball(*player_ptr, AttributeType::ELEC, dir, 100, 2);
-    (void)set_oppose_elec(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_elec(*player_ptr, randint1(20) + 20, false);
 
     return true;
 }
@@ -81,7 +81,7 @@ bool activate_fire_ball_and_resistance(PlayerType *player_ptr, std::string_view 
     }
 
     (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, 100, 2);
-    (void)set_oppose_fire(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_fire(*player_ptr, randint1(20) + 20, false);
 
     return true;
 }
@@ -102,7 +102,7 @@ bool activate_cold_ball_and_resistance(PlayerType *player_ptr, std::string_view 
     }
 
     (void)fire_ball(*player_ptr, AttributeType::COLD, dir, 100, 2);
-    (void)set_oppose_cold(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_cold(*player_ptr, randint1(20) + 20, false);
 
     return true;
 }
@@ -123,7 +123,7 @@ bool activate_pois_ball_and_resistance(PlayerType *player_ptr, std::string_view 
     }
 
     (void)fire_ball(*player_ptr, AttributeType::POIS, dir, 100, 2);
-    (void)set_oppose_pois(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_pois(*player_ptr, randint1(20) + 20, false);
 
     return true;
 }
@@ -137,7 +137,7 @@ bool activate_pois_ball_and_resistance(PlayerType *player_ptr, std::string_view 
 bool activate_resistance_acid(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが黒く輝いた...", "The %s grows black."), name.data());
-    (void)set_oppose_acid(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_acid(*player_ptr, randint1(20) + 20, false);
     return true;
 }
 
@@ -150,7 +150,7 @@ bool activate_resistance_acid(PlayerType *player_ptr, std::string_view name)
 bool activate_resistance_elec(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが青く輝いた...", "The %s grows blue."), name.data());
-    (void)set_oppose_elec(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_elec(*player_ptr, randint1(20) + 20, false);
     return true;
 }
 
@@ -163,7 +163,7 @@ bool activate_resistance_elec(PlayerType *player_ptr, std::string_view name)
 bool activate_resistance_fire(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが赤く輝いた...", "The %s grows red."), name.data());
-    (void)set_oppose_fire(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_fire(*player_ptr, randint1(20) + 20, false);
     return true;
 }
 
@@ -176,7 +176,7 @@ bool activate_resistance_fire(PlayerType *player_ptr, std::string_view name)
 bool activate_resistance_cold(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが白く輝いた...", "The %s grows white."), name.data());
-    (void)set_oppose_cold(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_cold(*player_ptr, randint1(20) + 20, false);
     return true;
 }
 
@@ -189,7 +189,7 @@ bool activate_resistance_cold(PlayerType *player_ptr, std::string_view name)
 bool activate_resistance_pois(PlayerType *player_ptr, std::string_view name)
 {
     msg_format(_("%sが緑に輝いた...", "The %s grows green."), name.data());
-    (void)set_oppose_pois(player_ptr, randint1(20) + 20, false);
+    (void)set_oppose_pois(*player_ptr, randint1(20) + 20, false);
     return true;
 }
 
@@ -200,11 +200,11 @@ bool activate_ultimate_resistance(PlayerType *player_ptr)
     (void)set_hero(player_ptr, v, false);
     (void)hp_player(player_ptr, 10);
     (void)set_blessed(player_ptr, v, false);
-    (void)set_oppose_acid(player_ptr, v, false);
-    (void)set_oppose_elec(player_ptr, v, false);
-    (void)set_oppose_fire(player_ptr, v, false);
-    (void)set_oppose_cold(player_ptr, v, false);
-    (void)set_oppose_pois(player_ptr, v, false);
+    (void)set_oppose_acid(*player_ptr, v, false);
+    (void)set_oppose_elec(*player_ptr, v, false);
+    (void)set_oppose_fire(*player_ptr, v, false);
+    (void)set_oppose_cold(*player_ptr, v, false);
+    (void)set_oppose_pois(*player_ptr, v, false);
     (void)set_ultimate_res(player_ptr, v, false);
     return true;
 }

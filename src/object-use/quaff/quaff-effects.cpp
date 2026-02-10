@@ -127,9 +127,9 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_SPEED:
         return this->speed();
     case SV_POTION_RESIST_HEAT:
-        return set_oppose_fire(this->player_ptr, this->player_ptr->oppose_fire + randint1(10) + 10, false);
+        return set_oppose_fire(*this->player_ptr, this->player_ptr->oppose_fire + randint1(10) + 10, false);
     case SV_POTION_RESIST_COLD:
-        return set_oppose_cold(this->player_ptr, this->player_ptr->oppose_cold + randint1(10) + 10, false);
+        return set_oppose_cold(*this->player_ptr, this->player_ptr->oppose_cold + randint1(10) + 10, false);
     case SV_POTION_HEROISM:
         return heroism(this->player_ptr, 25);
     case SV_POTION_BESERK_STRENGTH:
@@ -275,7 +275,7 @@ bool QuaffEffects::salt_water()
  */
 bool QuaffEffects::poison()
 {
-    if (has_resist_pois(*this->player_ptr) || is_oppose_pois(this->player_ptr)) {
+    if (has_resist_pois(*this->player_ptr) || is_oppose_pois(*this->player_ptr)) {
         return false;
     }
 
@@ -536,11 +536,11 @@ bool QuaffEffects::experience()
  */
 bool QuaffEffects::resistance()
 {
-    (void)set_oppose_acid(this->player_ptr, this->player_ptr->oppose_acid + randint1(20) + 20, false);
-    (void)set_oppose_elec(this->player_ptr, this->player_ptr->oppose_elec + randint1(20) + 20, false);
-    (void)set_oppose_fire(this->player_ptr, this->player_ptr->oppose_fire + randint1(20) + 20, false);
-    (void)set_oppose_cold(this->player_ptr, this->player_ptr->oppose_cold + randint1(20) + 20, false);
-    (void)set_oppose_pois(this->player_ptr, this->player_ptr->oppose_pois + randint1(20) + 20, false);
+    (void)set_oppose_acid(*this->player_ptr, this->player_ptr->oppose_acid + randint1(20) + 20, false);
+    (void)set_oppose_elec(*this->player_ptr, this->player_ptr->oppose_elec + randint1(20) + 20, false);
+    (void)set_oppose_fire(*this->player_ptr, this->player_ptr->oppose_fire + randint1(20) + 20, false);
+    (void)set_oppose_cold(*this->player_ptr, this->player_ptr->oppose_cold + randint1(20) + 20, false);
+    (void)set_oppose_pois(*this->player_ptr, this->player_ptr->oppose_pois + randint1(20) + 20, false);
     return true;
 }
 

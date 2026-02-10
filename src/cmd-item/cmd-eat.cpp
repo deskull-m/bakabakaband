@@ -74,7 +74,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
     if (o_ptr->bi_key.sval() == SV_JUNK_FECES || o_ptr->bi_key.sval() == SV_KMR_CURRY) {
         msg_print("ワーォ！貴方は糞を喰った！");
         msg_print("『涙が出るほどうめぇ……』");
-        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr))) {
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
@@ -84,7 +84,7 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
     if (o_ptr->bi_key.sval() == SV_JUNK_VOMITTING) {
         msg_print("ワーォ！貴方はゲロを喰った！");
         msg_print("『涙が出るほどうめぇ……』");
-        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr))) {
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
@@ -175,19 +175,19 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::FIRE_RES)) {
-        set_oppose_fire(player_ptr, randint1(20) + 20, false);
+        set_oppose_fire(*player_ptr, randint1(20) + 20, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::COLD_RES)) {
-        set_oppose_cold(player_ptr, randint1(20) + 20, false);
+        set_oppose_cold(*player_ptr, randint1(20) + 20, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::ELEC_RES)) {
-        set_oppose_elec(player_ptr, randint1(20) + 20, false);
+        set_oppose_elec(*player_ptr, randint1(20) + 20, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::POIS_RES)) {
-        set_oppose_pois(player_ptr, randint1(20) + 20, false);
+        set_oppose_pois(*player_ptr, randint1(20) + 20, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::INSANITY)) {
@@ -198,7 +198,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::POISONOUS)) {
-        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr))) {
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(15));
         }
     }
@@ -277,7 +277,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     BadStatusSetter bss(*player_ptr);
     switch (bi_key.sval().value()) {
     case SV_FOOD_POISON:
-        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr))) {
+        if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr))) {
             if (bss.mod_poison(randint0(10) + 10)) {
                 player_ptr->plus_incident_tree("EAT_POISON", 1);
                 return true;

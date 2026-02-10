@@ -272,7 +272,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         if (has_resist_fire(*player_ptr)) {
             damage = damage / 3;
         }
-        if (is_oppose_fire(player_ptr)) {
+        if (is_oppose_fire(*player_ptr)) {
             damage = damage / 3;
         }
 
@@ -290,7 +290,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         if (has_resist_elec(*player_ptr)) {
             damage = damage / 3;
         }
-        if (is_oppose_elec(player_ptr)) {
+        if (is_oppose_elec(*player_ptr)) {
             damage = damage / 3;
         }
 
@@ -308,7 +308,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         if (has_resist_cold(*player_ptr)) {
             damage = damage / 3;
         }
-        if (is_oppose_cold(player_ptr)) {
+        if (is_oppose_cold(*player_ptr)) {
             damage = damage / 3;
         }
 
@@ -328,7 +328,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
             if (has_resist_fire(*player_ptr)) {
                 damage = damage / 3;
             }
-            if (is_oppose_fire(player_ptr)) {
+            if (is_oppose_fire(*player_ptr)) {
                 damage = damage / 3;
             }
 
@@ -345,7 +345,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
             if (has_resist_elec(*player_ptr)) {
                 damage = damage / 3;
             }
-            if (is_oppose_elec(player_ptr)) {
+            if (is_oppose_elec(*player_ptr)) {
                 damage = damage / 3;
             }
 
@@ -362,7 +362,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
             if (has_resist_cold(*player_ptr)) {
                 damage = damage / 3;
             }
-            if (is_oppose_cold(player_ptr)) {
+            if (is_oppose_cold(*player_ptr)) {
                 damage = damage / 3;
             }
 

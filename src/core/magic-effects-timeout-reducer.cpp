@@ -198,23 +198,23 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->oppose_acid) {
-        (void)set_oppose_acid(player_ptr, player_ptr->oppose_acid - 1, true);
+        (void)set_oppose_acid(*player_ptr, player_ptr->oppose_acid - 1, true);
     }
 
     if (player_ptr->oppose_elec) {
-        (void)set_oppose_elec(player_ptr, player_ptr->oppose_elec - 1, true);
+        (void)set_oppose_elec(*player_ptr, player_ptr->oppose_elec - 1, true);
     }
 
     if (player_ptr->oppose_fire) {
-        (void)set_oppose_fire(player_ptr, player_ptr->oppose_fire - 1, true);
+        (void)set_oppose_fire(*player_ptr, player_ptr->oppose_fire - 1, true);
     }
 
     if (player_ptr->oppose_cold) {
-        (void)set_oppose_cold(player_ptr, player_ptr->oppose_cold - 1, true);
+        (void)set_oppose_cold(*player_ptr, player_ptr->oppose_cold - 1, true);
     }
 
     if (player_ptr->oppose_pois) {
-        (void)set_oppose_pois(player_ptr, player_ptr->oppose_pois - 1, true);
+        (void)set_oppose_pois(*player_ptr, player_ptr->oppose_pois - 1, true);
     }
 
     if (player_ptr->tim_emission) {

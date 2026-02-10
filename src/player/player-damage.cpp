@@ -147,7 +147,7 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_acid(player_ptr);
+    bool double_resist = is_oppose_acid(*player_ptr);
     dam = dam * calc_acid_damage_rate(*player_ptr) / 100;
     if (dam <= 0) {
         return 0;
@@ -185,7 +185,7 @@ int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_elec(player_ptr);
+    bool double_resist = is_oppose_elec(*player_ptr);
 
     dam = dam * calc_elec_damage_rate(*player_ptr) / 100;
 
@@ -221,7 +221,7 @@ int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_fire(player_ptr);
+    bool double_resist = is_oppose_fire(*player_ptr);
 
     /* Totally immune */
     if (has_immune_fire(*player_ptr) || (dam <= 0)) {
@@ -257,7 +257,7 @@ int cold_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_cold(player_ptr);
+    bool double_resist = is_oppose_cold(*player_ptr);
     if (has_immune_cold(*player_ptr) || (dam <= 0)) {
         return 0;
     }

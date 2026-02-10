@@ -672,7 +672,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::RES_ACID);
         }
 
-        if (is_oppose_acid(&player)) {
+        if (is_oppose_acid(player)) {
             monster.smart.set(MonsterSmartLearnType::OPP_ACID);
         }
 
@@ -686,7 +686,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::RES_ELEC);
         }
 
-        if (is_oppose_elec(&player)) {
+        if (is_oppose_elec(player)) {
             monster.smart.set(MonsterSmartLearnType::OPP_ELEC);
         }
 
@@ -700,7 +700,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::RES_FIRE);
         }
 
-        if (is_oppose_fire(&player)) {
+        if (is_oppose_fire(player)) {
             monster.smart.set(MonsterSmartLearnType::OPP_FIRE);
         }
 
@@ -714,7 +714,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::RES_COLD);
         }
 
-        if (is_oppose_cold(&player)) {
+        if (is_oppose_cold(player)) {
             monster.smart.set(MonsterSmartLearnType::OPP_COLD);
         }
 
@@ -728,7 +728,7 @@ void update_smart_learn(CreatureEntity &creature, MONSTER_IDX m_idx, int what)
             monster.smart.set(MonsterSmartLearnType::RES_POIS);
         }
 
-        if (is_oppose_pois(&player)) {
+        if (is_oppose_pois(player)) {
             monster.smart.set(MonsterSmartLearnType::OPP_POIS);
         }
 

@@ -50,7 +50,7 @@ static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         return;
     }
 
-    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr)) && !check_multishadow(*player_ptr) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 

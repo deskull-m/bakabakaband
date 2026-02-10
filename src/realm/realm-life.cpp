@@ -172,8 +172,8 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            set_oppose_cold(player_ptr, dice.roll() + base, false);
-            set_oppose_fire(player_ptr, dice.roll() + base, false);
+            set_oppose_cold(*player_ptr, dice.roll() + base, false);
+            set_oppose_fire(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -378,11 +378,11 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         if (cast) {
             const auto v = static_cast<TIME_EFFECT>(dice.roll() + base);
             set_acceleration(player_ptr, v, false);
-            set_oppose_acid(player_ptr, v, false);
-            set_oppose_elec(player_ptr, v, false);
-            set_oppose_fire(player_ptr, v, false);
-            set_oppose_cold(player_ptr, v, false);
-            set_oppose_pois(player_ptr, v, false);
+            set_oppose_acid(*player_ptr, v, false);
+            set_oppose_elec(*player_ptr, v, false);
+            set_oppose_fire(*player_ptr, v, false);
+            set_oppose_cold(*player_ptr, v, false);
+            set_oppose_pois(*player_ptr, v, false);
             set_ultimate_res(player_ptr, v, false);
         }
     } break;

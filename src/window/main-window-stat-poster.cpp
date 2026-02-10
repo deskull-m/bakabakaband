@@ -552,7 +552,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_IMMACID);
     }
 
-    if (is_oppose_acid(player_ptr)) {
+    if (is_oppose_acid(*player_ptr)) {
         ADD_BAR_FLAG(BAR_RESACID);
     }
 
@@ -560,7 +560,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_IMMELEC);
     }
 
-    if (is_oppose_elec(player_ptr)) {
+    if (is_oppose_elec(*player_ptr)) {
         ADD_BAR_FLAG(BAR_RESELEC);
     }
 
@@ -568,7 +568,7 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_IMMFIRE);
     }
 
-    if (is_oppose_fire(player_ptr)) {
+    if (is_oppose_fire(*player_ptr)) {
         ADD_BAR_FLAG(BAR_RESFIRE);
     }
 
@@ -576,11 +576,11 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_IMMCOLD);
     }
 
-    if (is_oppose_cold(player_ptr)) {
+    if (is_oppose_cold(*player_ptr)) {
         ADD_BAR_FLAG(BAR_RESCOLD);
     }
 
-    if (is_oppose_pois(player_ptr)) {
+    if (is_oppose_pois(*player_ptr)) {
         ADD_BAR_FLAG(BAR_RESPOIS);
     }
 

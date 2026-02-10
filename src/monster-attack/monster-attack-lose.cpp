@@ -24,7 +24,7 @@ void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
-    if (is_oppose_pois(player_ptr)) {
+    if (is_oppose_pois(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
 
@@ -33,7 +33,7 @@ void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
         return;
     }
 
-    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(player_ptr)) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
+    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr)) && BadStatusSetter(*player_ptr).mod_poison(randint1(monap_ptr->rlev) + 5)) {
         monap_ptr->obvious = true;
     }
 

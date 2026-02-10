@@ -77,8 +77,7 @@ PERCENTAGE calc_acid_damage_rate(CreatureEntity &creature)
     if (has_resist_acid(creature)) {
         per = (per + 2) / 3;
     }
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_oppose_acid(player_ptr)) {
+    if (is_oppose_acid(creature)) {
         per = (per + 2) / 3;
     }
 
@@ -110,8 +109,7 @@ PERCENTAGE calc_elec_damage_rate(CreatureEntity &creature)
     if (has_resist_elec(creature)) {
         per = (per + 2) / 3;
     }
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_oppose_elec(player_ptr)) {
+    if (is_oppose_elec(creature)) {
         per = (per + 2) / 3;
     }
 
@@ -139,8 +137,7 @@ PERCENTAGE calc_fire_damage_rate(CreatureEntity &creature)
     if (has_resist_fire(creature)) {
         per = (per + 2) / 3;
     }
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_oppose_fire(player_ptr)) {
+    if (is_oppose_fire(creature)) {
         per = (per + 2) / 3;
     }
 
@@ -175,8 +172,7 @@ PERCENTAGE calc_cold_damage_rate(CreatureEntity &creature)
     if (has_resist_cold(creature)) {
         per = (per + 2) / 3;
     }
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_oppose_cold(player_ptr)) {
+    if (is_oppose_cold(creature)) {
         per = (per + 2) / 3;
     }
 
@@ -192,8 +188,7 @@ PERCENTAGE calc_pois_damage_rate(CreatureEntity &creature)
     if (has_resist_pois(creature)) {
         per = (per + 2) / 3;
     }
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_oppose_pois(player_ptr)) {
+    if (is_oppose_pois(creature)) {
         per = (per + 2) / 3;
     }
 
@@ -209,8 +204,7 @@ PERCENTAGE calc_nuke_damage_rate(CreatureEntity &creature)
     if (has_resist_pois(creature)) {
         per = (2 * per + 2) / 5;
     }
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (is_oppose_pois(player_ptr)) {
+    if (is_oppose_pois(creature)) {
         per = (2 * per + 2) / 5;
     }
 
