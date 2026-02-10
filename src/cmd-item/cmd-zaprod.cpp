@@ -122,7 +122,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
         if (true_healing(player_ptr, 0)) {
             ident = true;
         }
-        if (set_berserk(player_ptr, 0, true)) {
+        if (set_berserk(*player_ptr, 0, true)) {
             ident = true;
         }
         break;
@@ -146,7 +146,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_SPEED: {
-        if (set_acceleration(player_ptr, randint1(30) + (powerful ? 30 : 15), false)) {
+        if (set_acceleration(*player_ptr, randint1(30) + (powerful ? 30 : 15), false)) {
             ident = true;
         }
         break;

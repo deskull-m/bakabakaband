@@ -239,7 +239,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_shield(player_ptr, dice.roll() + base, false);
+            set_shield(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -269,7 +269,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_acceleration(player_ptr, dice.roll() + base, false);
+            set_acceleration(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -311,7 +311,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_magicdef(player_ptr, dice.roll() + base, false);
+            set_magicdef(*player_ptr, dice.roll() + base, false);
         }
     } break;
 

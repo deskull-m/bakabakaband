@@ -462,7 +462,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         break;
     case MindMirrorMasterType::WATER_SHIELD:
         t = 20 + randint1(20);
-        set_shield(&player, t, false);
+        set_shield(player, t, false);
         if (plev > 31) {
             set_tim_reflect(&player, t, false);
         }

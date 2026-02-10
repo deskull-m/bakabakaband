@@ -26,7 +26,7 @@
 void reduce_magic_effects_timeout(PlayerType *player_ptr)
 {
     if (player_ptr->tim_mimic) {
-        (void)set_mimic(player_ptr, player_ptr->tim_mimic - 1, player_ptr->mimic_form, true);
+        (void)set_mimic(*player_ptr, player_ptr->tim_mimic - 1, player_ptr->mimic_form, true);
     }
 
     BadStatusSetter bss(*player_ptr);
@@ -150,7 +150,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (effects->acceleration().is_fast()) {
-        (void)mod_acceleration(player_ptr, -1, true);
+        (void)mod_acceleration(*player_ptr, -1, true);
     }
 
     if (effects->deceleration().is_slow()) {
@@ -166,23 +166,23 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->wraith_form) {
-        (void)set_wraith_form(player_ptr, player_ptr->wraith_form - 1, true);
+        (void)set_wraith_form(*player_ptr, player_ptr->wraith_form - 1, true);
     }
 
     if (player_ptr->hero) {
-        (void)set_hero(player_ptr, player_ptr->hero - 1, true);
+        (void)set_hero(*player_ptr, player_ptr->hero - 1, true);
     }
 
     if (player_ptr->berserk) {
-        (void)set_berserk(player_ptr, player_ptr->berserk - 1, true);
+        (void)set_berserk(*player_ptr, player_ptr->berserk - 1, true);
     }
 
     if (player_ptr->blessed) {
-        (void)set_blessed(player_ptr, player_ptr->blessed - 1, true);
+        (void)set_blessed(*player_ptr, player_ptr->blessed - 1, true);
     }
 
     if (player_ptr->shield) {
-        (void)set_shield(player_ptr, player_ptr->shield - 1, true);
+        (void)set_shield(*player_ptr, player_ptr->shield - 1, true);
     }
 
     if (player_ptr->tsubureru) {
@@ -190,11 +190,11 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->magicdef) {
-        (void)set_magicdef(player_ptr, player_ptr->magicdef - 1, true);
+        (void)set_magicdef(*player_ptr, player_ptr->magicdef - 1, true);
     }
 
     if (player_ptr->tsuyoshi) {
-        (void)set_tsuyoshi(player_ptr, player_ptr->tsuyoshi - 1, true);
+        (void)set_tsuyoshi(*player_ptr, player_ptr->tsuyoshi - 1, true);
     }
 
     if (player_ptr->oppose_acid) {

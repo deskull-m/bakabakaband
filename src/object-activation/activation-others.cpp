@@ -354,7 +354,7 @@ bool activate_shikofumi(CreatureEntity &creature)
     msg_print(_("力強く四股を踏んだ。", "You stamp. (as if you are in a ring.)"));
     auto &player = static_cast<PlayerType &>(creature);
     (void)BadStatusSetter(player).set_fear(0);
-    (void)set_hero(&player, randint1(20) + 20, false);
+    (void)set_hero(player, randint1(20) + 20, false);
     (void)dispel_evil(creature, creature.level * 3);
     return true;
 }
@@ -399,7 +399,7 @@ bool activate_protection_elbereth(CreatureEntity &creature)
     (void)bss.set_fear(0);
     (void)bss.set_blindness(0);
     (void)bss.hallucination(0);
-    set_blessed(&player, randint0(25) + 25, true);
+    set_blessed(player, randint0(25) + 25, true);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
     return true;
 }

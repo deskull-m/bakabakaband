@@ -83,7 +83,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_blessed(player_ptr, dice.roll() + base, false);
+            set_blessed(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -335,7 +335,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::DEMON, false);
+            set_mimic(*player_ptr, base + dice.roll(), MimicKindType::DEMON, false);
         }
     } break;
 
@@ -492,7 +492,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::DEMON_LORD, false);
+            set_mimic(*player_ptr, base + dice.roll(), MimicKindType::DEMON_LORD, false);
         }
     } break;
     }

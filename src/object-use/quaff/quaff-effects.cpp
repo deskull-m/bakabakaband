@@ -206,7 +206,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
         msg_print(_("「新・オクレ兄さん！」", "NEW Brother OKURE!"));
         msg_erase();
         player_ptr->tsuyoshi = 1;
-        (void)set_tsuyoshi(player_ptr, 0, true);
+        (void)set_tsuyoshi(*player_ptr, 0, true);
         if (!has_resist_chaos(*player_ptr)) {
             (void)BadStatusSetter(*player_ptr).mod_hallucination(50 + randint1(100));
         }
@@ -426,11 +426,11 @@ bool QuaffEffects::death()
 bool QuaffEffects::speed()
 {
     if (this->player_ptr->effects()->acceleration().is_fast()) {
-        (void)mod_acceleration(this->player_ptr, 5, false);
+        (void)mod_acceleration(*this->player_ptr, 5, false);
         return false;
     }
 
-    return set_acceleration(this->player_ptr, randint1(25) + 15, false);
+    return set_acceleration(*this->player_ptr, randint1(25) + 15, false);
 }
 
 /*!
@@ -564,7 +564,7 @@ bool QuaffEffects::new_life()
 bool QuaffEffects::neo_tsuyoshi()
 {
     (void)BadStatusSetter(*this->player_ptr).hallucination(0);
-    (void)set_tsuyoshi(this->player_ptr, this->player_ptr->tsuyoshi + randint1(100) + 100, false);
+    (void)set_tsuyoshi(*this->player_ptr, this->player_ptr->tsuyoshi + randint1(100) + 100, false);
     return true;
 }
 
@@ -577,7 +577,7 @@ bool QuaffEffects::tsuyoshi()
     msg_print(_("「オクレ兄さん！」", "Brother OKURE!"));
     msg_erase();
     this->player_ptr->tsuyoshi = 1;
-    (void)set_tsuyoshi(this->player_ptr, 0, true);
+    (void)set_tsuyoshi(*this->player_ptr, 0, true);
     if (!has_resist_chaos(*this->player_ptr)) {
         (void)BadStatusSetter(*this->player_ptr).hallucination(50 + randint1(50));
     }

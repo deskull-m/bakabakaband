@@ -305,7 +305,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_shield(player_ptr, dice.roll() + base, false);
+            set_shield(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
