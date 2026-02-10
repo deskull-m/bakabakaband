@@ -559,7 +559,7 @@ void process_command(PlayerType *player_ptr)
         break;
     }
     case 'U': {
-        do_cmd_racial_power(player_ptr);
+        do_cmd_racial_power(*player_ptr);
         break;
     }
     case 'M': {
