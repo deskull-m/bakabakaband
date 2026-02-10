@@ -292,10 +292,10 @@ bool double_attack(PlayerType *player_ptr)
         msg_print(_("オラオラオラオラオラオラオラオラオラオラオラオラ！！！", "Oraoraoraoraoraoraoraoraoraoraoraoraoraoraoraoraora!!!!"));
     }
 
-    do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+    do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
     if (has_monster) {
         handle_stuff(*player_ptr);
-        do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
     }
 
     static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());

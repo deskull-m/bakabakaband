@@ -516,7 +516,7 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
     case AttributeType::CAPTURE:
         return effect_monster_capture(player_ptr, em_ptr, cap_mon_ptr);
     case AttributeType::ATTACK:
-        return do_cmd_attack(player_ptr, em_ptr->y, em_ptr->x, i2enum<combat_options>(em_ptr->dam)) ? ProcessResult::PROCESS_TRUE : ProcessResult::PROCESS_FALSE;
+        return do_cmd_attack(*player_ptr, em_ptr->y, em_ptr->x, i2enum<combat_options>(em_ptr->dam)) ? ProcessResult::PROCESS_TRUE : ProcessResult::PROCESS_FALSE;
     case AttributeType::ENGETSU:
         return effect_monster_engetsu(player_ptr, em_ptr);
     case AttributeType::GENOCIDE:

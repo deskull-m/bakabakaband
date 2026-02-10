@@ -220,19 +220,19 @@ static std::vector<TextCommand> get_text_commands()
         { { "headbutt", "頭突き", "ずつき", "あたまづき" },
             [](PlayerType *player_ptr) {
                 // 実際の頭突き攻撃処理を実行
-                do_cmd_headbutt(player_ptr);
+                do_cmd_headbutt(*player_ptr);
             },
             _("頭突き", "Headbutt") },
         { { "bodyslam", "体当たり", "たいあたり", "ぼでぃすらむ", "tackle", "タックル" },
             [](PlayerType *player_ptr) {
                 // 実際の体当たり攻撃処理を実行
-                do_cmd_body_slam(player_ptr);
+                do_cmd_body_slam(*player_ptr);
             },
             _("体当たり", "Body Slam") },
         { { "浣腸", "かんちょう", "enema", "カンチョー" },
             [](PlayerType *player_ptr) {
                 // 実際の浣腸攻撃処理を実行
-                do_cmd_enema(player_ptr);
+                do_cmd_enema(*player_ptr);
             },
             _("浣腸", "Enema") },
         { { "ひでぶ", "hidebu", "ヒデブ", "HIDEBU" },

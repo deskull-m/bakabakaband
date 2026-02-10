@@ -173,7 +173,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             }
 
             if ((player_ptr->is_wielding(FixedArtifactId::STORMBRINGER) && (randint1(1000) > 666)) || CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {
-                do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+                do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 can_move = false;
             } else if (monster_can_cross_terrain(player_ptr, floor.get_grid(creature.get_position()).feat, monrace, 0)) {
                 do_past = true;
@@ -183,7 +183,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                 can_move = false;
             }
         } else {
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
             can_move = false;
         }
     }
