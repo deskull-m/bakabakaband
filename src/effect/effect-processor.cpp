@@ -116,7 +116,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
     auto &floor = *player.current_floor_ptr;
     ProjectionPath path_g(floor, range, player.get_position(), pos_source, pos_target, flag);
-    handle_stuff(&player);
+    handle_stuff(player);
 
     auto k = 0;
     Pos2D pos_path = pos_source;
@@ -389,7 +389,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                         tracker.set_trackee(monster.ap_r_idx);
                     }
 
-                    health_track(&player, grid.m_idx);
+                    health_track(player, grid.m_idx);
                 }
             }
         }

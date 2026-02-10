@@ -384,7 +384,7 @@ static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(&player);
+    handle_stuff(player);
 
     /* Abort if needed */
     if (!flag) {

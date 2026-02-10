@@ -335,7 +335,7 @@ PRICE compare_weapons(PlayerType *player_ptr, PRICE bcost)
             }
 
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            handle_stuff(player_ptr);
+            handle_stuff(*player_ptr);
 
             list_weapon(player_ptr, *o_ptr[i], row, col);
             compare_weapon_aux(player_ptr, o_ptr[i], col, row + 8);
@@ -343,7 +343,7 @@ PRICE compare_weapons(PlayerType *player_ptr, PRICE bcost)
         }
 
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
 
         world.character_xtra = old_character_xtra;
 #ifdef JP

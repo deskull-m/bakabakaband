@@ -362,7 +362,7 @@ static bool update_use_graphics(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return false;
 }
 
@@ -402,7 +402,7 @@ void do_cmd_save_screen(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!

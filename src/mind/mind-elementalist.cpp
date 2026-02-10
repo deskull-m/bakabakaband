@@ -826,7 +826,7 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(&player);
+    handle_stuff(player);
     if (!flag) {
         return false;
     }

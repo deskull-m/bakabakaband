@@ -634,7 +634,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
                 command_dir = Direction::none();
 
                 RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
-                handle_stuff(player_ptr);
+                handle_stuff(*player_ptr);
             } while (player_ptr->csp > mana_cost_per_monster);
 
             if (is_new) {
@@ -681,7 +681,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             if (grid.has_monster()) {
                 do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 if (grid.has_monster()) {
-                    handle_stuff(player_ptr);
+                    handle_stuff(*player_ptr);
                     do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
                 }
             } else {

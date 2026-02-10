@@ -379,7 +379,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
     auto redraw = false;
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
     constexpr auto fmt = _("(%s^:%c-%c, '*'で一覧, ESCで中断) どの%sを%s^ますか? ", "(%s^s %c-%c, *=List, ESC=exit) %s^ which %s? ");
@@ -502,7 +502,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     /* Abort if needed */
     if (!flag) {
@@ -618,7 +618,7 @@ void do_cmd_browse(PlayerType *player_ptr)
     const auto use_realm = PlayerRealm::get_realm_of_book(tval);
 
     o_ptr->track_baseitem();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     /* Extract spells */
     std::vector<SPELL_IDX> spells;
@@ -695,7 +695,7 @@ static void change_realm2(PlayerType *player_ptr, PlayerRealm &pr, RealmType nex
         StatusRecalculatingFlag::SPELLS,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     /* Load an autopick preference file */
     autopick_load_pref(player_ptr, false);
@@ -768,7 +768,7 @@ void do_cmd_study(PlayerType *player_ptr)
     }
 
     o_ptr->track_baseitem();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     /* Mage -- Learn a selected spell */
     if (mp_ptr->spell_book != ItemKindType::LIFE_BOOK) {
@@ -976,7 +976,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
     }
 
     o_ptr->track_baseitem();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     /* Ask for a spell */
     SPELL_IDX spell_id;

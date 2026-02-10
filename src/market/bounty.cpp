@@ -201,7 +201,7 @@ bool exchange_cash(PlayerType *player_ptr)
             msg_format(_("%s(%c)を貰った。", "You get %s (%c). "), got_item_name.data(), index_to_label(inventory_new));
 
             autopick_alter_item(player_ptr, inventory_new, false);
-            handle_stuff(player_ptr);
+            handle_stuff(*player_ptr);
             change = true;
         }
     }

@@ -632,7 +632,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
         vary_item(player_ptr, i_idx, -1);
 
         sound(SoundKind::SHOOT);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
 
         prev_y = y;
         prev_x = x;
@@ -792,7 +792,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                                 tracker.set_trackee(monster.ap_r_idx);
                             }
 
-                            health_track(player_ptr, c_mon_ptr->m_idx);
+                            health_track(*player_ptr, c_mon_ptr->m_idx);
                         }
                     }
 

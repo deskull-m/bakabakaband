@@ -53,6 +53,6 @@ bool set_tim_sh_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(static_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     return true;
 }

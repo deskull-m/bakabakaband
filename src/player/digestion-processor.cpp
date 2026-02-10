@@ -230,7 +230,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::HUNGER);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     return true;
 }

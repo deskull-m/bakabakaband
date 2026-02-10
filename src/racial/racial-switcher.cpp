@@ -181,7 +181,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
 
         return (command != -4) || identify_fully(player_ptr, false);
     case PlayerClassType::IMITATOR:
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         return do_cmd_mane(*player_ptr, true);
     case PlayerClassType::BEASTMASTER:
         if (command == -3) {
@@ -220,13 +220,13 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             return false;
         }
 
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         if (!do_cmd_cast(player_ptr)) {
             return false;
         }
 
         if (!player_ptr->effects()->paralysis().is_paralyzed() && !cmd_limit_cast(player_ptr)) {
-            handle_stuff(player_ptr);
+            handle_stuff(*player_ptr);
             command_dir = Direction::none();
             (void)do_cmd_cast(player_ptr);
         }

@@ -392,7 +392,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         const auto is_android = CreatureRace(&player).equals(PlayerRaceType::ANDROID);
         sound(SoundKind::DEATH);
         chg_virtue(creature, Virtue::SACRIFICE, 10);
-        handle_stuff(&player);
+        handle_stuff(player);
         player.leaving = true;
         if (!cheat_immortal) {
             player.is_dead_ = true;
@@ -620,7 +620,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
 #endif
     }
 
-    handle_stuff(&player);
+    handle_stuff(player);
     if (player.hp < hp_warning_threshold) {
         if (old_chp > hp_warning_threshold) {
             bell();
@@ -679,7 +679,7 @@ static void process_aura_damage(const MonsterEntity &monster, PlayerType *player
         monrace.r_aura_flags.set(aura_flag);
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!

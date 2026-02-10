@@ -11,11 +11,12 @@
 /*!
  * @brief 全更新処理をチェックして処理していく
  */
-void handle_stuff(PlayerType *player_ptr)
+void handle_stuff(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (rfu.any_stats()) {
-        update_creature(*player_ptr);
+        update_creature(creature);
     }
 
     if (rfu.any_main()) {
@@ -30,9 +31,9 @@ void handle_stuff(PlayerType *player_ptr)
 /*
  * Track the given monster race
  */
-void monster_race_track(PlayerType *player_ptr, MonraceId r_idx)
+void monster_race_track(CreatureEntity &creature, MonraceId r_idx)
 {
-    (void)player_ptr;
+    (void)creature;
     LoreTracker::get_instance().set_trackee(r_idx);
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
 }
@@ -40,8 +41,9 @@ void monster_race_track(PlayerType *player_ptr, MonraceId r_idx)
 /*
  * Track the given object kind
  */
-void object_kind_track(PlayerType *player_ptr, short bi_id)
+void object_kind_track(CreatureEntity &creature, short bi_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     player_ptr->tracking_bi_id = bi_id;
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
@@ -52,9 +54,9 @@ void object_kind_track(PlayerType *player_ptr, short bi_id)
  * @param m_idx トラッキング対象のモンスターID。0の時キャンセル
  * @param なし
  */
-void health_track(PlayerType *player_ptr, short m_idx)
+void health_track(CreatureEntity &creature, short m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     if (monster.is_riding()) {
         return;
@@ -75,10 +77,10 @@ bool update_player()
     return true;
 }
 
-bool redraw_player(PlayerType *player_ptr)
+bool redraw_player(CreatureEntity &creature)
 {
-    if (player_ptr->csp > player_ptr->msp) {
-        player_ptr->csp = player_ptr->msp;
+    if (creature.csp > creature.msp) {
+        creature.csp = creature.msp;
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

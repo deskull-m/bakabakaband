@@ -99,8 +99,8 @@ void do_cmd_pet_dismiss(PlayerType *player_ptr)
         const auto should_ask = (pet_ctr == riding_index) || monster.is_named();
         const auto friend_name = monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE);
         if (!all_pets) {
-            health_track(player_ptr, pet_ctr);
-            handle_stuff(player_ptr);
+            health_track(*player_ptr, pet_ctr);
+            handle_stuff(*player_ptr);
             constexpr auto mes = _("%sを放しますか？ [Yes/No/Unnamed (%d体)]", "Dismiss %s? [Yes/No/Unnamed (%d remain)]");
             msg_format(mes, friend_name.data(), num_pet_index - i);
             if (monster.ml) {
@@ -173,7 +173,7 @@ void do_cmd_pet_dismiss(PlayerType *player_ptr)
         msg_print(_("'U'nnamed は、乗馬以外の名前のないペットだけを全て解放します。", "'U'nnamed means all your pets except named pets and your mount."));
     }
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!
@@ -277,7 +277,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
         player_ptr->ride_monster(grid.m_idx);
         if (HealthBarTracker::get_instance().is_tracking(player_ptr->riding)) {
-            health_track(player_ptr, 0);
+            health_track(*player_ptr, 0);
         }
     }
 
@@ -812,7 +812,7 @@ void do_cmd_pet(PlayerType *player_ptr)
         }
 
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         break;
     }
     }

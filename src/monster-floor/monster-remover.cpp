@@ -59,7 +59,7 @@ void delete_monster_idx(PlayerType *player_ptr, short m_idx)
     }
 
     if (HealthBarTracker::get_instance().is_tracking(m_idx)) {
-        health_track(player_ptr, 0);
+        health_track(*player_ptr, 0);
     }
 
     if (player_ptr->pet_t_m_idx == m_idx) {
@@ -119,7 +119,7 @@ void wipe_monsters_list(PlayerType *player_ptr)
     Target::clear_last_target();
     player_ptr->pet_t_m_idx = 0;
     player_ptr->riding_t_m_idx = 0;
-    health_track(player_ptr, 0);
+    health_track(*player_ptr, 0);
 }
 
 /*!

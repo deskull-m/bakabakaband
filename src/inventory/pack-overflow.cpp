@@ -34,5 +34,5 @@ void pack_overflow(PlayerType *player_ptr)
     (void)drop_near(*player_ptr, item, player_ptr->get_position(), false);
 
     vary_item(player_ptr, INVEN_PACK, -255);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }

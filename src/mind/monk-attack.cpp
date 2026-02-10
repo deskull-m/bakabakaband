@@ -294,7 +294,7 @@ bool double_attack(PlayerType *player_ptr)
 
     do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
     if (has_monster) {
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
     }
 

@@ -2159,7 +2159,7 @@ static void fit_term_size_to_window(term_data *td, bool recalc_window_size = fal
 
         if (!is_main_term(td)) {
             RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
-            handle_stuff(p_ptr);
+            handle_stuff(*p_ptr);
         }
     }
 }

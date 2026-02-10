@@ -98,7 +98,7 @@ bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(&player_ptr);
+    handle_stuff(creature);
 
     return true;
 }
@@ -176,7 +176,7 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(&player_ptr);
+    handle_stuff(creature);
 
     return true;
 }

@@ -224,7 +224,7 @@ static void desc_obj_fake(PlayerType *player_ptr, short bi_id)
     o_ptr->generate(bi_id);
 
     o_ptr->ident |= IDENT_KNOWN;
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     if (screen_object(player_ptr, *o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {
         return;
@@ -384,7 +384,7 @@ void do_cmd_knowledge_objects(PlayerType *player_ptr, bool *need_redraw, bool vi
             }
 
             if (object_old != object_idx[object_cur]) {
-                handle_stuff(player_ptr);
+                handle_stuff(*player_ptr);
                 object_old = object_idx[object_cur];
             }
         }

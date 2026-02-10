@@ -26,7 +26,7 @@ static bool update_sight(PlayerType *player_ptr, const bool notice)
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
     rfu.set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 

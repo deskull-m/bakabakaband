@@ -267,7 +267,7 @@ static std::vector<TextCommand> get_text_commands()
                 auto &rfu = RedrawingFlagsUpdater::get_instance();
                 rfu.set_flag(MainWindowRedrawingFlag::HP);
                 rfu.set_flag(MainWindowRedrawingFlag::CUT);
-                handle_stuff(player_ptr);
+                handle_stuff(*player_ptr);
 
                 // 警告メッセージ
                 msg_print(_("何ということをしたのだ...", "What have you done..."));

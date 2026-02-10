@@ -126,7 +126,7 @@ bool arena_comm(PlayerType *player_ptr, int cmd)
 
         const auto &monrace = entries.get_monrace();
         LoreTracker::get_instance().set_trackee(monrace.idx);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
         return false;
     }
     case BACT_ARENA_RULES:

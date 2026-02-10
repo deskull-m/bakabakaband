@@ -92,5 +92,5 @@ void do_cmd_martial_arts_style(PlayerType *player_ptr)
     auto style_name = get_martial_arts_style_name(new_style);
     msg_format("武術スタイルを%sに変更しました。", style_name);
 
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }

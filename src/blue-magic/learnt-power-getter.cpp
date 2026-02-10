@@ -506,7 +506,7 @@ tl::optional<MonsterAbilityType> get_learned_power(PlayerType *player_ptr)
                               : select_learnt_spells_by_symbol(player_ptr, *bluemage_data, spells.value());
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     if (!selected_spell) {
         return tl::nullopt;

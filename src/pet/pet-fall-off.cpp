@@ -159,7 +159,7 @@ bool process_fall_off_horse(PlayerType *player_ptr, int dam, bool force)
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
     rfu.set_flags(flags_srf);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::DUNGEON,

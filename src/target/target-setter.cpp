@@ -264,7 +264,7 @@ Direction TargetSetter::switch_target_input()
             return Direction::none();
         }
 
-        health_track(this->player_ptr, grid.m_idx);
+        health_track(*this->player_ptr, grid.m_idx);
         this->target = Target::create_monster_target(this->player_ptr, grid.m_idx);
         this->done = true;
         return Direction::none();
@@ -283,7 +283,7 @@ Direction TargetSetter::switch_target_input()
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-        handle_stuff(this->player_ptr);
+        handle_stuff(*this->player_ptr);
         this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
         this->pos_target = this->player_ptr->get_position();
     }
@@ -357,7 +357,7 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->player_ptr);
 
     this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
 
@@ -455,7 +455,7 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-        handle_stuff(this->player_ptr);
+        handle_stuff(*this->player_ptr);
         this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
         this->pos_target = this->player_ptr->get_position();
         return tl::nullopt;
@@ -565,7 +565,7 @@ Target target_set(CreatureEntity &creature, target_type mode)
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
     rfu.set_flags(flags);
-    handle_stuff(&player);
+    handle_stuff(player);
     Target::set_last_target(ts.get_target());
     return ts.get_target();
 }

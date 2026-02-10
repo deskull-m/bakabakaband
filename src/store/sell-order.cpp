@@ -228,7 +228,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     if (placed && (i_idx >= INVEN_MAIN_HAND)) {
         calc_android_exp(player_ptr);

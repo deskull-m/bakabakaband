@@ -2834,7 +2834,7 @@ void check_experience(CreatureEntity &creature)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::EXP);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 
     CreatureRace pr(player_ptr);
     bool android = pr.equals(PlayerRaceType::ANDROID);
@@ -2854,7 +2854,7 @@ void check_experience(CreatureEntity &creature)
         };
         rfu.set_flags(flags_mwrf);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
     }
 
     bool level_reward = false;
@@ -2894,7 +2894,7 @@ void check_experience(CreatureEntity &creature)
         };
         rfu.set_flags(flags_swrf_levelup);
         player_ptr->level_up_message = true;
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
 
         player_ptr->level_up_message = false;
         if (level_inc_stat) {
@@ -2962,7 +2962,7 @@ void check_experience(CreatureEntity &creature)
             SubWindowRedrawingFlag::SPELL,
         };
         rfu.set_flags(flags_swrf);
-        handle_stuff(player_ptr);
+        handle_stuff(*player_ptr);
     }
 
     if (old_lev != creature.level) {

@@ -52,7 +52,7 @@ bool set_tim_levitation(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -94,7 +94,7 @@ bool set_ultimate_res(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }
 
@@ -138,7 +138,7 @@ bool set_tim_res_nether(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(static_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     return true;
 }
 
@@ -179,7 +179,7 @@ bool set_tim_res_lite(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(static_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     return true;
 }
 
@@ -220,7 +220,7 @@ bool set_tim_res_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(static_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     return true;
 }
 
@@ -257,7 +257,7 @@ bool set_tim_res_fear(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(static_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     return true;
 }
 
@@ -298,7 +298,7 @@ bool set_tim_res_time(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(static_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     return true;
 }
 
@@ -335,6 +335,6 @@ bool set_tim_imm_dark(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         disturb(*player_ptr, false, true);
     }
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }

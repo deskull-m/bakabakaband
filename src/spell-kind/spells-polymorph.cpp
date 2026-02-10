@@ -147,7 +147,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
         }
     }
     if (health_tracked) {
-        health_track(player_ptr, m_idx.value_or(0));
+        health_track(*player_ptr, m_idx.value_or(0));
     }
     return polymorphed;
 }
@@ -208,6 +208,6 @@ bool trans_sex(PlayerType *player_ptr)
     RedrawingFlagsUpdater::get_instance().set_flags(flags3);
 
     sp_ptr = &sex_info[player_ptr->psex];
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     return true;
 }

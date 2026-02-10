@@ -89,7 +89,7 @@ void do_cmd_redraw(PlayerType *player_ptr)
     };
     rfu.set_flags(flags_swrf);
     AngbandWorld::get_instance().play_time.update();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
     if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         calc_android_exp(player_ptr);
     }
@@ -302,7 +302,7 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
         MainWindowRedrawingFlag::MAP,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!

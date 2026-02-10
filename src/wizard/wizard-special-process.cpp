@@ -608,7 +608,7 @@ void wiz_reset_race(PlayerType *player_ptr)
     player_ptr->prace = *chosen_race;
     player_ptr->race = &race_info[enum2i(player_ptr->prace)];
     change_birth_flags();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!
@@ -648,7 +648,7 @@ void wiz_reset_class(PlayerType *player_ptr)
     pss.realm2().initialize();
     player_ptr->learned_spells = 0;
     change_birth_flags();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!
@@ -674,7 +674,7 @@ void wiz_reset_realms(PlayerType *player_ptr)
     pss.realm2().initialize();
     player_ptr->learned_spells = 0;
     change_birth_flags();
-    handle_stuff(player_ptr);
+    handle_stuff(*player_ptr);
 }
 
 /*!

@@ -87,7 +87,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
     }
 
     if (is_eating_successful) {
-        return redraw_player(player_ptr);
+        return redraw_player(*player_ptr);
     }
 
     if (o_ptr->is_fixed_artifact()) {
@@ -99,7 +99,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
             o_ptr->pval = 0;
         }
 
-        return redraw_player(player_ptr);
+        return redraw_player(*player_ptr);
     }
 
     const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
@@ -193,5 +193,5 @@ bool eat_magic(PlayerType *player_ptr, int power)
         vary_item(player_ptr, i_idx, -999);
     }
 
-    return redraw_player(player_ptr);
+    return redraw_player(*player_ptr);
 }

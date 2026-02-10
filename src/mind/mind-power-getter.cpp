@@ -80,7 +80,7 @@ bool MindPowerGetter::get_mind_power(SPELL_IDX *sn, bool only_browse)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->player_ptr);
     if (!this->flag) {
         return false;
     }

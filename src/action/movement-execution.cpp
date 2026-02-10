@@ -169,7 +169,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                     LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
                 }
 
-                health_track(player_ptr, grid.m_idx);
+                health_track(*player_ptr, grid.m_idx);
             }
 
             if ((player_ptr->is_wielding(FixedArtifactId::STORMBRINGER) && (randint1(1000) > 666)) || CreatureClass(*player_ptr).equals(PlayerClassType::BERSERKER)) {

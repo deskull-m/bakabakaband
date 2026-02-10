@@ -178,7 +178,7 @@ void ObjectThrowEntity::set_class_specific_throw_params()
 
     this->y = this->player_ptr->y;
     this->x = this->player_ptr->x;
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->player_ptr);
     const auto tval = this->q_ptr->bi_key.tval();
     const auto is_spike = tval == ItemKindType::SPIKE;
     const auto is_sword = tval == ItemKindType::SWORD;
@@ -488,7 +488,7 @@ void ObjectThrowEntity::display_attack_racial_power()
         LoreTracker::get_instance().set_trackee(this->hit_monster->m_ptr->ap_r_idx);
     }
 
-    health_track(this->player_ptr, this->hit_monster->m_idx);
+    health_track(*this->player_ptr, this->hit_monster->m_idx);
 }
 
 void ObjectThrowEntity::calc_racial_power_damage()

@@ -289,7 +289,7 @@ bool set_multishadow(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(dynamic_cast<PlayerType *>(&creature));
+    handle_stuff(creature);
     return true;
 }
 
@@ -338,7 +338,7 @@ bool set_dustrobe(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(&player);
+    handle_stuff(player);
     return true;
 }
 
