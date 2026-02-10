@@ -130,9 +130,9 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::BA_GRAVITY:
          return MSpellBall(player_ptr, m_idx, ms_type, 4, MONSTER_TO_PLAYER).shoot(y, x);
 
-    case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF5_DRAIN_MANA */
-    case MonsterAbilityType::MIND_BLAST: return spell_RF5_MIND_BLAST(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF5_MIND_BLAST */
-    case MonsterAbilityType::BRAIN_SMASH: return spell_RF5_BRAIN_SMASH(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF5_MIND_BLAST */
+    case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(*player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF5_DRAIN_MANA */
+    case MonsterAbilityType::MIND_BLAST: return spell_RF5_MIND_BLAST(*player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF5_MIND_BLAST */
+    case MonsterAbilityType::BRAIN_SMASH: return spell_RF5_BRAIN_SMASH(*player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF5_MIND_BLAST */
 
     case MonsterAbilityType::CAUSE_1:
     case MonsterAbilityType::CAUSE_2:
@@ -157,15 +157,15 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::MISSILE: 
         return MSpellBolt(player_ptr, m_idx, ms_type, MONSTER_TO_PLAYER).shoot(y,x);
 
-    case MonsterAbilityType::SCARE: return spell_RF5_SCARE(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_SCARE */
-    case MonsterAbilityType::BLIND: return spell_RF5_BLIND(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_BLIND */
-    case MonsterAbilityType::CONF: return spell_RF5_CONF(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_CONF */
-    case MonsterAbilityType::SLOW: return spell_RF5_SLOW(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_SLOW */
-    case MonsterAbilityType::HOLD: return spell_RF5_HOLD(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_HOLD */
-    case MonsterAbilityType::HASTE: return spell_RF6_HASTE(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HASTE */
+    case MonsterAbilityType::SCARE: return spell_RF5_SCARE(m_idx, *player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_SCARE */
+    case MonsterAbilityType::BLIND: return spell_RF5_BLIND(m_idx, *player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_BLIND */
+    case MonsterAbilityType::CONF: return spell_RF5_CONF(m_idx, *player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_CONF */
+    case MonsterAbilityType::SLOW: return spell_RF5_SLOW(m_idx, *player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_SLOW */
+    case MonsterAbilityType::HOLD: return spell_RF5_HOLD(m_idx, *player_ptr, 0, MONSTER_TO_PLAYER); /* RF5_HOLD */
+    case MonsterAbilityType::HASTE: return spell_RF6_HASTE(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HASTE */
     case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HAND_DOOM */
-    case MonsterAbilityType::HEAL: return spell_RF6_HEAL(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HEAL */
-    case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_INVULNER */
+    case MonsterAbilityType::HEAL: return spell_RF6_HEAL(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HEAL */
+    case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_INVULNER */
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(*player_ptr, m_idx, MONSTER_TO_PLAYER, false); /* RF6_BLINK */
     case MonsterAbilityType::TPORT: return spell_RF6_TPORT(*player_ptr, m_idx, MONSTER_TO_PLAYER); /* RF6_TPORT */
     case MonsterAbilityType::WORLD: return spell_RF6_WORLD(*player_ptr, m_idx); /* RF6_WORLD */
@@ -176,7 +176,7 @@ static MonsterSpellResult monspell_to_player_impl(PlayerType *player_ptr, Monste
     case MonsterAbilityType::PSY_SPEAR: return spell_RF6_PSY_SPEAR(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_PSY_SPEAR */
     case MonsterAbilityType::DARKNESS: return spell_RF6_DARKNESS(*player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_DARKNESS */
     case MonsterAbilityType::TRAPS: return spell_RF6_TRAPS(*player_ptr, y, x, m_idx); /* RF6_TRAPS */
-    case MonsterAbilityType::FORGET: return spell_RF6_FORGET(player_ptr, m_idx); /* RF6_FORGET */
+    case MonsterAbilityType::FORGET: return spell_RF6_FORGET(*player_ptr, m_idx); /* RF6_FORGET */
     case MonsterAbilityType::RAISE_DEAD: return spell_RF6_RAISE_DEAD(*player_ptr, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_RAISE_DEAD */
     case MonsterAbilityType::S_KIN: return spell_RF6_S_KIN(*player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_KIN */
     case MonsterAbilityType::S_CYBER: return spell_RF6_S_CYBER(*player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_CYBER */
@@ -315,9 +315,9 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BA_GRAVITY:
          return MSpellBall(player_ptr, m_idx, t_idx, ms_type, 4, MONSTER_TO_MONSTER).shoot(y, x);
 
-    case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_DRAIN_MANA */
-    case MonsterAbilityType::MIND_BLAST: return spell_RF5_MIND_BLAST(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_MIND_BLAST */
-    case MonsterAbilityType::BRAIN_SMASH: return spell_RF5_BRAIN_SMASH(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_BRAIN_SMASH */
+    case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(*player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_DRAIN_MANA */
+    case MonsterAbilityType::MIND_BLAST: return spell_RF5_MIND_BLAST(*player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_MIND_BLAST */
+    case MonsterAbilityType::BRAIN_SMASH: return spell_RF5_BRAIN_SMASH(*player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_BRAIN_SMASH */
 
     case MonsterAbilityType::CAUSE_1:
     case MonsterAbilityType::CAUSE_2:
@@ -342,15 +342,15 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::MISSILE:
          return MSpellBolt(player_ptr, m_idx, t_idx, ms_type, MONSTER_TO_MONSTER).shoot(y, x);
 
-    case MonsterAbilityType::SCARE: return spell_RF5_SCARE(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_SCARE */
-    case MonsterAbilityType::BLIND: return spell_RF5_BLIND(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_BLIND */
-    case MonsterAbilityType::CONF: return spell_RF5_CONF(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_CONF */
-    case MonsterAbilityType::SLOW: return spell_RF5_SLOW(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_SLOW */
-    case MonsterAbilityType::HOLD: return spell_RF5_HOLD(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_HOLD */
-    case MonsterAbilityType::HASTE: return spell_RF6_HASTE(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HASTE */
+    case MonsterAbilityType::SCARE: return spell_RF5_SCARE(m_idx, *player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_SCARE */
+    case MonsterAbilityType::BLIND: return spell_RF5_BLIND(m_idx, *player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_BLIND */
+    case MonsterAbilityType::CONF: return spell_RF5_CONF(m_idx, *player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_CONF */
+    case MonsterAbilityType::SLOW: return spell_RF5_SLOW(m_idx, *player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_SLOW */
+    case MonsterAbilityType::HOLD: return spell_RF5_HOLD(m_idx, *player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF5_HOLD */
+    case MonsterAbilityType::HASTE: return spell_RF6_HASTE(*player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HASTE */
     case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HAND_DOOM */
-    case MonsterAbilityType::HEAL: return spell_RF6_HEAL(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HEAL */
-    case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_INVULNER */
+    case MonsterAbilityType::HEAL: return spell_RF6_HEAL(*player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HEAL */
+    case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(*player_ptr, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_INVULNER */
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(*player_ptr, m_idx, MONSTER_TO_MONSTER, is_special_spell); /* RF6_BLINK */
     case MonsterAbilityType::TPORT: return spell_RF6_TPORT(*player_ptr, m_idx, MONSTER_TO_MONSTER); /* RF6_TPORT */
     case MonsterAbilityType::WORLD: break; /* RF6_WORLD */
