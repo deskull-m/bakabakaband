@@ -69,8 +69,6 @@ int16_t PlayerSpeed::race_bonus()
  */
 int16_t PlayerSpeed::class_bonus()
 {
-    auto player_ptr = static_cast<PlayerType *>(&this->creature);
-
     int16_t bonus = 0;
     CreatureClass pc(this->creature);
     CreatureRace pr(&this->creature);
@@ -78,7 +76,7 @@ int16_t PlayerSpeed::class_bonus()
     has_speed |= pr.equals(PlayerRaceType::SPRITE);
     has_speed |= this->creature.ppersonality == PERSONALITY_MUNCHKIN;
     if (pc.equals(PlayerClassType::NINJA)) {
-        if (heavy_armor(player_ptr)) {
+        if (heavy_armor(this->creature)) {
             bonus -= (this->creature.level) / 10;
         } else if (pc.has_ninja_speed()) {
             bonus += 3;
@@ -88,7 +86,7 @@ int16_t PlayerSpeed::class_bonus()
         }
     }
 
-    if ((pc.equals(PlayerClassType::MONK) || pc.equals(PlayerClassType::FORCETRAINER)) && !heavy_armor(player_ptr)) {
+    if ((pc.equals(PlayerClassType::MONK) || pc.equals(PlayerClassType::FORCETRAINER)) && !heavy_armor(this->creature)) {
         if (!has_speed) {
             bonus += (this->creature.level) / 10;
         }
@@ -147,7 +145,7 @@ int16_t PlayerSpeed::special_weapon_set_value()
 {
     auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) || !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(this->creature, INVEN_MAIN_HAND) || !has_melee_weapon(this->creature, INVEN_SUB_HAND)) {
         return bonus;
     }
 

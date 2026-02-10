@@ -154,7 +154,7 @@ void calc_android_exp(PlayerType *player_ptr)
                 exp += (value - 100000L) / 4 * level;
             }
         }
-        if ((((i == INVEN_MAIN_HAND) || (i == INVEN_SUB_HAND)) && (has_melee_weapon(player_ptr, i))) || (i == INVEN_BOW)) {
+        if ((((i == INVEN_MAIN_HAND) || (i == INVEN_SUB_HAND)) && (has_melee_weapon(*player_ptr, i))) || (i == INVEN_BOW)) {
             total_exp += exp / 48;
         } else {
             total_exp += exp / 16;

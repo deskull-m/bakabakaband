@@ -96,17 +96,17 @@ TrFlags CreatureClass::tr_flags() const
     }
     case PlayerClassType::MONK:
     case PlayerClassType::FORCETRAINER: {
-        if ((plev > 9) && !heavy_armor(player_ptr)) {
+        if ((plev > 9) && !heavy_armor(this->creature)) {
             flags.set(TR_SPEED);
         }
-        if ((plev > 24) && !heavy_armor(player_ptr)) {
+        if ((plev > 24) && !heavy_armor(this->creature)) {
             flags.set(TR_FREE_ACT);
         }
 
         break;
     }
     case PlayerClassType::NINJA: {
-        if (heavy_armor(player_ptr)) {
+        if (heavy_armor(this->creature)) {
             flags.set(TR_SPEED);
         } else {
             if (this->has_ninja_speed()) {

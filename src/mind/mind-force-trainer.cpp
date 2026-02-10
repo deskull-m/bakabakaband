@@ -196,7 +196,7 @@ bool set_tim_sh_force(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
 bool shock_power(PlayerType *player_ptr)
 {
     auto boost = get_current_ki(player_ptr);
-    if (heavy_armor(player_ptr)) {
+    if (heavy_armor(*player_ptr)) {
         boost /= 2;
     }
 
@@ -269,7 +269,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
 {
     PLAYER_LEVEL plev = player_ptr->level;
     int boost = get_current_ki(player_ptr);
-    if (heavy_armor(player_ptr)) {
+    if (heavy_armor(*player_ptr)) {
         boost /= 2;
     }
 

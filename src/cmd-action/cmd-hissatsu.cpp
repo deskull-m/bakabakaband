@@ -308,7 +308,7 @@ void do_cmd_hissatsu(PlayerType *player_ptr)
     if (cmd_limit_confused(*player_ptr)) {
         return;
     }
-    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(*player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
         if (flush_failure) {
             flush();
         }

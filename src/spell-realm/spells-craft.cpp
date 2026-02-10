@@ -186,8 +186,7 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
  */
 bool choose_ele_attack(CreatureEntity &creature, TIME_EFFECT turn)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    if (!has_melee_weapon(&player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(&player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
         msg_format(_("武器を持たないと魔法剣は使えない。", "You cannot use temporary branding with no weapon."));
         return false;
     }

@@ -1710,31 +1710,30 @@ BIT_FLAGS has_immune_lite(CreatureEntity &creature)
 
 melee_type player_melee_type(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if (has_two_handed_weapons(creature)) {
         return MELEE_TYPE_WEAPON_TWOHAND;
     }
 
-    if (has_melee_weapon(&player, INVEN_MAIN_HAND)) {
-        if (has_melee_weapon(&player, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
+        if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
             return MELEE_TYPE_WEAPON_DOUBLE;
         }
         return MELEE_TYPE_WEAPON_MAIN;
     }
 
-    if (has_melee_weapon(&player, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         return MELEE_TYPE_WEAPON_SUB;
     }
 
-    if (empty_hands(&player, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB)) {
+    if (empty_hands(creature, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB)) {
         return MELEE_TYPE_BAREHAND_TWO;
     }
 
-    if (empty_hands(&player, false) == EMPTY_HAND_MAIN) {
+    if (empty_hands(creature, false) == EMPTY_HAND_MAIN) {
         return MELEE_TYPE_BAREHAND_MAIN;
     }
 
-    if (empty_hands(&player, false) == EMPTY_HAND_SUB) {
+    if (empty_hands(creature, false) == EMPTY_HAND_SUB) {
         return MELEE_TYPE_BAREHAND_SUB;
     }
 
@@ -1749,12 +1748,11 @@ melee_type player_melee_type(CreatureEntity &creature)
  */
 bool can_attack_with_main_hand(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    if (has_melee_weapon(&player, INVEN_MAIN_HAND)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         return true;
     }
 
-    if ((empty_hands(&player, true) & EMPTY_HAND_MAIN) && !can_attack_with_sub_hand(creature)) {
+    if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !can_attack_with_sub_hand(creature)) {
         return true;
     }
 
@@ -1768,8 +1766,7 @@ bool can_attack_with_main_hand(CreatureEntity &creature)
  */
 bool can_attack_with_sub_hand(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    return has_melee_weapon(&player, INVEN_SUB_HAND);
+    return has_melee_weapon(creature, INVEN_SUB_HAND);
 }
 
 /*
@@ -1778,10 +1775,10 @@ bool can_attack_with_sub_hand(CreatureEntity &creature)
 bool has_two_handed_weapons(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (can_two_hands_wielding(&player)) {
-        if (can_attack_with_main_hand(creature) && (empty_hands(&player, false) == EMPTY_HAND_SUB) && player.inventory[INVEN_MAIN_HAND]->allow_two_hands_wielding()) {
+    if (can_two_hands_wielding(creature)) {
+        if (can_attack_with_main_hand(creature) && (empty_hands(creature, false) == EMPTY_HAND_SUB) && player.inventory[INVEN_MAIN_HAND]->allow_two_hands_wielding()) {
             return true;
-        } else if (can_attack_with_sub_hand(creature) && (empty_hands(&player, false) == EMPTY_HAND_MAIN) && player.inventory[INVEN_SUB_HAND]->allow_two_hands_wielding()) {
+        } else if (can_attack_with_sub_hand(creature) && (empty_hands(creature, false) == EMPTY_HAND_MAIN) && player.inventory[INVEN_SUB_HAND]->allow_two_hands_wielding()) {
             return true;
         }
     }
@@ -1822,7 +1819,7 @@ BIT_FLAGS has_lite(CreatureEntity &creature)
 bool has_disable_two_handed_bonus(CreatureEntity &creature, int i)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (has_melee_weapon(&player, INVEN_MAIN_HAND + i) && has_two_handed_weapons(creature)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND + i) && has_two_handed_weapons(creature)) {
         auto *o_ptr = player.inventory[INVEN_MAIN_HAND + i].get();
         int limit = calc_weapon_weight_limit(player);
 
@@ -1887,7 +1884,7 @@ bool is_wielding_icky_riding_weapon(CreatureEntity &creature, int i)
 bool has_not_ninja_weapon(CreatureEntity &creature, int i)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (!has_melee_weapon(&player, INVEN_MAIN_HAND + i)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
         return false;
     }
 
@@ -1902,7 +1899,7 @@ bool has_not_ninja_weapon(CreatureEntity &creature, int i)
 bool has_not_monk_weapon(CreatureEntity &creature, int i)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (!has_melee_weapon(&player, INVEN_MAIN_HAND + i)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
         return false;
     }
 

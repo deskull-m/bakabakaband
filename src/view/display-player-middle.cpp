@@ -55,7 +55,7 @@ static void display_player_melee_bonus(PlayerType *player_ptr, int hand, int han
     show_tohit += player_ptr->skill_thn / BTH_PLUS_ADJ;
 
     const auto buf = format("(%+d,%+d)", (int)show_tohit, (int)show_todam);
-    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(*player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
         display_player_one_line(ENTRY_BARE_HAND, buf, TERM_L_BLUE);
     } else if (has_two_handed_weapons(*player_ptr)) {
         display_player_one_line(ENTRY_TWO_HANDS, buf, TERM_L_BLUE);
@@ -76,7 +76,7 @@ static void display_sub_hand(PlayerType *player_ptr)
     }
 
     CreatureClass pc(*player_ptr);
-    if (!pc.equals(PlayerClassType::MONK) || ((empty_hands(player_ptr, true) & EMPTY_HAND_MAIN) == 0)) {
+    if (!pc.equals(PlayerClassType::MONK) || ((empty_hands(*player_ptr, true) & EMPTY_HAND_MAIN) == 0)) {
         return;
     }
 

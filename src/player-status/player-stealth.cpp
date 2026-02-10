@@ -68,14 +68,13 @@ int16_t PlayerStealth::class_base_bonus()
  */
 int16_t PlayerStealth::class_bonus()
 {
-    auto player_ptr = static_cast<PlayerType *>(&this->creature);
     CreatureClass pc(this->creature);
     if (!pc.equals(PlayerClassType::NINJA)) {
         return 0;
     }
 
     int16_t bonus = 0;
-    if (heavy_armor(player_ptr)) {
+    if (heavy_armor(this->creature)) {
         bonus -= (this->creature.level) / 10;
     } else if (pc.has_ninja_speed()) {
         bonus += (this->creature.level) / 10;

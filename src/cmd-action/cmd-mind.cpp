@@ -125,19 +125,19 @@ static void decide_mind_ki_chance(CreatureEntity &creature, cm_type *cm_ptr)
     }
 
     auto &player = static_cast<PlayerType &>(creature);
-    if (heavy_armor(&player)) {
+    if (heavy_armor(creature)) {
         cm_ptr->chance += 20;
     }
 
     if (player.is_icky_wield[0]) {
         cm_ptr->chance += 20;
-    } else if (has_melee_weapon(&player, INVEN_MAIN_HAND)) {
+    } else if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         cm_ptr->chance += 10;
     }
 
     if (player.is_icky_wield[1]) {
         cm_ptr->chance += 20;
-    } else if (has_melee_weapon(&player, INVEN_SUB_HAND)) {
+    } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         cm_ptr->chance += 10;
     }
 
@@ -195,7 +195,7 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
     }
 
     auto &player = static_cast<PlayerType &>(creature);
-    if (heavy_armor(&player)) {
+    if (heavy_armor(creature)) {
         cm_ptr->chance += 5;
     }
 

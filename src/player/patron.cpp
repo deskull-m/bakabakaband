@@ -353,16 +353,16 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             break;
         case REW_CURSE_WP: {
             inventory_slot_type slot;
-            if (!has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+            if (!has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
                 break;
             }
 
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝、武器に頼ることなかれ。」", "'Thou reliest too much on thy weapon.'"));
             slot = INVEN_MAIN_HAND;
-            if (has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+            if (has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
                 slot = INVEN_SUB_HAND;
-                if (has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND) && one_in_(2)) {
+                if (has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND) && one_in_(2)) {
                     slot = INVEN_MAIN_HAND;
                 }
             }
@@ -399,13 +399,13 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             case 3:
                 if (one_in_(2)) {
                     inventory_slot_type slot;
-                    if (!has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+                    if (!has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
                         break;
                     }
                     slot = INVEN_MAIN_HAND;
-                    if (has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+                    if (has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
                         slot = INVEN_SUB_HAND;
-                        if (has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND) && one_in_(2)) {
+                        if (has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND) && one_in_(2)) {
                             slot = INVEN_MAIN_HAND;
                         }
                     }
@@ -445,12 +445,12 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             (void)activate_ty_curse(this->player_ptr, false, &count);
             if (one_in_(2)) {
                 inventory_slot_type slot = INVEN_NONE;
-                if (has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND)) {
+                if (has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND)) {
                     slot = INVEN_MAIN_HAND;
-                    if (has_melee_weapon(this->player_ptr, INVEN_SUB_HAND) && one_in_(2)) {
+                    if (has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND) && one_in_(2)) {
                         slot = INVEN_SUB_HAND;
                     }
-                } else if (has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+                } else if (has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
                     slot = INVEN_SUB_HAND;
                 }
 
