@@ -54,7 +54,7 @@ static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         monap_ptr->obvious = true;
     }
 
-    monap_ptr->damage = monap_ptr->damage * calc_nuke_damage_rate(player_ptr) / 100;
+    monap_ptr->damage = monap_ptr->damage * calc_nuke_damage_rate(*player_ptr) / 100;
     monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
     update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_POIS);
 }
@@ -540,7 +540,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     case RaceBlowEffectType::CHAOS: {
         update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_CHAOS);
-        monap_ptr->damage = monap_ptr->damage * calc_chaos_damage_rate(player_ptr, CALC_RAND) / 100;
+        monap_ptr->damage = monap_ptr->damage * calc_chaos_damage_rate(*player_ptr, CALC_RAND) / 100;
         monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
 
         const auto has_chaos_resist = has_resist_chaos(*player_ptr);

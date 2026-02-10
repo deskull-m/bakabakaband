@@ -148,7 +148,7 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
     bool double_resist = is_oppose_acid(player_ptr);
-    dam = dam * calc_acid_damage_rate(player_ptr) / 100;
+    dam = dam * calc_acid_damage_rate(*player_ptr) / 100;
     if (dam <= 0) {
         return 0;
     }
@@ -187,7 +187,7 @@ int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
                                           : 3;
     bool double_resist = is_oppose_elec(player_ptr);
 
-    dam = dam * calc_elec_damage_rate(player_ptr) / 100;
+    dam = dam * calc_elec_damage_rate(*player_ptr) / 100;
 
     if (dam <= 0) {
         return 0;
@@ -228,7 +228,7 @@ int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
         return 0;
     }
 
-    dam = dam * calc_fire_damage_rate(player_ptr) / 100;
+    dam = dam * calc_fire_damage_rate(*player_ptr) / 100;
     if (aura || !check_multishadow(*player_ptr)) {
         if ((!(double_resist || has_resist_fire(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_STR);
@@ -262,7 +262,7 @@ int cold_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
         return 0;
     }
 
-    dam = dam * calc_cold_damage_rate(player_ptr) / 100;
+    dam = dam * calc_cold_damage_rate(*player_ptr) / 100;
     if (aura || !check_multishadow(*player_ptr)) {
         if ((!(double_resist || has_resist_cold(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
             (void)do_dec_stat(player_ptr, A_STR);

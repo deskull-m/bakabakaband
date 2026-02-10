@@ -59,7 +59,7 @@
  * ダメージを受けた場合、自然回復できない。
  */
 static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concptr msg_levitation, concptr msg_normal,
-    std::function<PERCENTAGE(PlayerType *)> damage_rate, std::function<void(PlayerType *, int)> additional_effect)
+    std::function<PERCENTAGE(CreatureEntity &)> damage_rate, std::function<void(PlayerType *, int)> additional_effect)
 {
     const auto &terrain = grid.get_terrain();
     auto damage = 0;
@@ -73,7 +73,7 @@ static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concpt
         damage = 3000 + randint0(2000);
     }
 
-    damage *= damage_rate(player_ptr);
+    damage *= damage_rate(*player_ptr);
     damage /= 100;
     if (player_ptr->levitation) {
         damage /= 5;
