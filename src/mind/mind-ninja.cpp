@@ -209,7 +209,7 @@ void process_surprise_attack(CreatureEntity &creature, player_attack_type *pa_pt
     auto *player_ptr = &player;
 
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if (!has_melee_weapon(player_ptr, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand) || player_ptr->is_icky_wield[pa_ptr->hand]) {
+    if (!has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand) || player_ptr->is_icky_wield[pa_ptr->hand]) {
         return;
     }
 

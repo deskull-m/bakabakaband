@@ -544,15 +544,15 @@ bool drop_weapons(CreatureEntity &creature)
     }
 
     msg_erase();
-    if (has_melee_weapon(&player, INVEN_MAIN_HAND)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         slot = INVEN_MAIN_HAND;
         o_ptr = creature.inventory[INVEN_MAIN_HAND].get();
 
-        if (has_melee_weapon(&player, INVEN_SUB_HAND) && one_in_(2)) {
+        if (has_melee_weapon(creature, INVEN_SUB_HAND) && one_in_(2)) {
             o_ptr = creature.inventory[INVEN_SUB_HAND].get();
             slot = INVEN_SUB_HAND;
         }
-    } else if (has_melee_weapon(&player, INVEN_SUB_HAND)) {
+    } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         o_ptr = creature.inventory[INVEN_SUB_HAND].get();
         slot = INVEN_SUB_HAND;
     }

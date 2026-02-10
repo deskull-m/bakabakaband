@@ -474,11 +474,11 @@ void do_cmd_pet(PlayerType *player_ptr)
     powers[num++] = PET_NAME;
 
     bool empty_main = can_attack_with_main_hand(*player_ptr);
-    empty_main &= empty_hands(player_ptr, false) == EMPTY_HAND_SUB;
+    empty_main &= empty_hands(*player_ptr, false) == EMPTY_HAND_SUB;
     empty_main &= player_ptr->inventory[INVEN_MAIN_HAND]->allow_two_hands_wielding();
 
     bool empty_sub = can_attack_with_sub_hand(*player_ptr);
-    empty_sub &= empty_hands(player_ptr, false) == EMPTY_HAND_MAIN;
+    empty_sub &= empty_hands(*player_ptr, false) == EMPTY_HAND_MAIN;
     empty_sub &= player_ptr->inventory[INVEN_SUB_HAND]->allow_two_hands_wielding();
 
     if (player_ptr->riding) {
@@ -495,7 +495,7 @@ void do_cmd_pet(PlayerType *player_ptr)
             case PlayerClassType::MONK:
             case PlayerClassType::FORCETRAINER:
             case PlayerClassType::BERSERKER: {
-                if (empty_hands(player_ptr, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB)) {
+                if (empty_hands(*player_ptr, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB)) {
                     if (player_ptr->pet_extra_flags & PF_TWO_HANDS) {
                         power_desc[num] = _("片手で格闘する", "use one hand to control the pet you are riding");
                     } else {
@@ -506,9 +506,9 @@ void do_cmd_pet(PlayerType *player_ptr)
                     break;
                 }
 
-                auto has_any_melee_weapon = has_melee_weapon(player_ptr, INVEN_MAIN_HAND);
-                has_any_melee_weapon |= has_melee_weapon(player_ptr, INVEN_SUB_HAND);
-                if ((empty_hands(player_ptr, false) != EMPTY_HAND_NONE) && !has_any_melee_weapon) {
+                auto has_any_melee_weapon = has_melee_weapon(*player_ptr, INVEN_MAIN_HAND);
+                has_any_melee_weapon |= has_melee_weapon(*player_ptr, INVEN_SUB_HAND);
+                if ((empty_hands(*player_ptr, false) != EMPTY_HAND_NONE) && !has_any_melee_weapon) {
                     if (player_ptr->pet_extra_flags & PF_TWO_HANDS) {
                         power_desc[num] = _("格闘を行わない", "use one hand to control the pet you are riding");
                     } else {

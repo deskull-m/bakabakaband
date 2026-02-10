@@ -295,7 +295,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("あなたの武器が黒く輝いた。");
 #else
-            if (!empty_hands(player_ptr, false)) {
+            if (!empty_hands(*player_ptr, false)) {
                 msg_print("Your weapons glow bright black.");
             } else {
                 msg_print("Your weapon glows bright black.");
@@ -306,7 +306,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("武器の輝きが消え去った。");
 #else
-            msg_format("Your weapon%s.", (empty_hands(player_ptr, false)) ? " no longer glows" : "s no longer glow");
+            msg_format("Your weapon%s.", (empty_hands(*player_ptr, false)) ? " no longer glows" : "s no longer glow");
 #endif
         }
         break;
@@ -609,7 +609,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("あなたの武器が血を欲している。");
 #else
-            if (!empty_hands(player_ptr, false)) {
+            if (!empty_hands(*player_ptr, false)) {
                 msg_print("Your weapons want more blood now.");
             } else {
                 msg_print("Your weapon wants more blood now.");
@@ -620,7 +620,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("武器の渇望が消え去った。");
 #else
-            msg_format("Your weapon%s less thirsty now.", (empty_hands(player_ptr, false)) ? " is" : "s are");
+            msg_format("Your weapon%s less thirsty now.", (empty_hands(*player_ptr, false)) ? " is" : "s are");
 #endif
         }
         break;

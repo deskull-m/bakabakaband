@@ -150,7 +150,7 @@ void critical_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    const auto has_weapon = has_melee_weapon(player_ptr, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand);
+    const auto has_weapon = has_melee_weapon(*player_ptr, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand);
     const auto is_ninja_hit = has_weapon && !player_ptr->is_icky_wield[pa_ptr->hand] && ((player_ptr->cur_lite <= 0) || one_in_(7));
     if (is_ninja_hit) {
         ninja_critical(player_ptr, pa_ptr);

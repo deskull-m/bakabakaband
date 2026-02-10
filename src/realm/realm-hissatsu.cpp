@@ -477,7 +477,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             for (i = 0; i < 2; i++) {
                 int damage;
 
-                if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+                if (!has_melee_weapon(*player_ptr, INVEN_MAIN_HAND + i)) {
                     break;
                 }
                 o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
@@ -708,7 +708,7 @@ tl::optional<std::string> do_hissatsu_spell(PlayerType *player_ptr, SPELL_IDX sp
             msg_print(_("武器を大きく振り下ろした。", "You swing your weapon downward."));
             auto total_damage = 0;
             for (auto i = 0; i < 2; i++) {
-                if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+                if (!has_melee_weapon(*player_ptr, INVEN_MAIN_HAND + i)) {
                     break;
                 }
 

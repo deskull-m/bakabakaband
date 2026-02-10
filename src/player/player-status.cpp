@@ -243,7 +243,7 @@ static void update_ability_scores(CreatureEntity &creature)
 static void update_bonuses(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto empty_hands_status = empty_hands(player_ptr, true);
+    auto empty_hands_status = empty_hands(creature, true);
     ItemEntity *o_ptr;
 
     /* Save the old vision stuff */
@@ -1409,7 +1409,7 @@ static ACTION_SKILL_POWER calc_skill_dig(CreatureEntity &creature)
 
     for (int i = 0; i < 2; i++) {
         o_ptr = creature.inventory[INVEN_MAIN_HAND + i].get();
-        if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i) && !player_ptr->heavy_wield[i]) {
+        if (has_melee_weapon(creature, INVEN_MAIN_HAND + i) && !player_ptr->heavy_wield[i]) {
             pow += (o_ptr->weight / 10);
         }
     }
@@ -1432,15 +1432,14 @@ static bool is_martial_arts_mode(CreatureEntity &creature)
     auto has_martial_arts = pc.equals(PlayerClassType::MONK);
     has_martial_arts |= pc.equals(PlayerClassType::FORCETRAINER);
     has_martial_arts |= pc.equals(PlayerClassType::BERSERKER);
-    return has_martial_arts && any_bits(empty_hands(player_ptr, true), EMPTY_HAND_MAIN) && !can_attack_with_sub_hand(*player_ptr);
+    return has_martial_arts && any_bits(empty_hands(creature, true), EMPTY_HAND_MAIN) && !can_attack_with_sub_hand(*player_ptr);
 }
 
 static bool is_heavy_wield(CreatureEntity &creature, int i)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + i].get();
 
-    return has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i) && (calc_weapon_weight_limit(creature) < o_ptr->weight / 10);
+    return has_melee_weapon(creature, INVEN_MAIN_HAND + i) && (calc_weapon_weight_limit(creature) < o_ptr->weight / 10);
 }
 
 static int16_t calc_num_blow(CreatureEntity &creature, int i)
@@ -1450,7 +1449,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
 
     const auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + i].get();
     CreatureClass pc(*player_ptr);
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
         if (o_ptr->is_valid() && !player_ptr->heavy_wield[i]) {
             int str_index, dex_index;
             int num = 0, wgt = 0, mul = 0, div = 0;
@@ -1567,7 +1566,7 @@ static int16_t calc_num_blow(CreatureEntity &creature, int i)
             }
         }
 
-        if (heavy_armor(player_ptr) && !pc.equals(PlayerClassType::BERSERKER)) {
+        if (heavy_armor(creature) && !pc.equals(PlayerClassType::BERSERKER)) {
             num_blow /= 2;
         }
 
@@ -1781,7 +1780,7 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
         ac += 25;
     }
 
-    if (pc.is_martial_arts_pro() && !heavy_armor(player_ptr)) {
+    if (pc.is_martial_arts_pro() && !heavy_armor(creature)) {
         if (!creature.inventory[INVEN_BODY]->is_valid()) {
             ac += (creature.level * 3) / 2;
         }
@@ -1883,7 +1882,7 @@ int16_t calc_double_weapon_penalty(CreatureEntity &creature, INVENTORY_IDX slot)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     int penalty = 0;
 
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND) && has_melee_weapon(creature, INVEN_SUB_HAND)) {
         const auto flags = creature.inventory[INVEN_SUB_HAND]->get_flags();
 
         penalty = ((100 - player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON] / 160) - (130 - creature.inventory[slot]->weight) / 8);
@@ -1919,7 +1918,7 @@ static bool is_riding_two_hands(CreatureEntity &creature)
         return false;
     }
 
-    if (has_two_handed_weapons(*player_ptr) || (empty_hands(player_ptr, false) == EMPTY_HAND_NONE)) {
+    if (has_two_handed_weapons(*player_ptr) || (empty_hands(creature, false) == EMPTY_HAND_NONE)) {
         return true;
     }
 
@@ -1928,7 +1927,7 @@ static bool is_riding_two_hands(CreatureEntity &creature)
         case PlayerClassType::MONK:
         case PlayerClassType::FORCETRAINER:
         case PlayerClassType::BERSERKER:
-            return (empty_hands(player_ptr, false) != EMPTY_HAND_NONE) && !has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND);
+            return (empty_hands(creature, false) != EMPTY_HAND_NONE) && !has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND);
         default:
             break;
         }
@@ -1985,7 +1984,7 @@ void put_equipment_warning(CreatureEntity &creature)
         if (player_ptr->old_heavy_wield[i] != player_ptr->heavy_wield[i]) {
             if (player_ptr->heavy_wield[i]) {
                 msg_print(_("こんな重い武器を装備しているのは大変だ。", "You have trouble wielding such a heavy weapon."));
-            } else if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+            } else if (has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
                 msg_print(_("これなら装備していても辛くない。", "You have no trouble wielding your weapon."));
             } else if (player_ptr->heavy_wield[1 - i]) {
                 msg_print(_("まだ武器が重い。", "You still have trouble wielding a heavy weapon."));
@@ -2001,7 +2000,7 @@ void put_equipment_warning(CreatureEntity &creature)
                 msg_print(_("この武器は乗馬中に使うにはむかないようだ。", "This weapon is not suitable for use while riding."));
             } else if (!creature.riding) {
                 msg_print(_("この武器は徒歩で使いやすい。", "This weapon is suitable for use on foot."));
-            } else if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+            } else if (has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
                 msg_print(_("これなら乗馬中にぴったりだ。", "This weapon is suitable for use while riding."));
             }
 
@@ -2017,7 +2016,7 @@ void put_equipment_warning(CreatureEntity &creature)
             if (AngbandWorld::get_instance().is_loading_now) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, -1);
             }
-        } else if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+        } else if (has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
             msg_print(_("今の装備は自分にふさわしい気がする。", "You feel comfortable with your weapon."));
         } else {
             msg_print(_("装備をはずしたら随分と気が楽になった。", "You feel more comfortable after removing your weapon."));
@@ -2029,13 +2028,13 @@ void put_equipment_warning(CreatureEntity &creature)
     if (creature.riding && (player_ptr->old_riding_ryoute != player_ptr->riding_ryoute)) {
         if (player_ptr->riding_ryoute) {
 #ifdef JP
-            msg_format("%s馬を操れない。", (empty_hands(player_ptr, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
+            msg_format("%s馬を操れない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
 #else
             msg_print("You are using both hand for fighting, and you can't control the pet you're riding.");
 #endif
         } else {
 #ifdef JP
-            msg_format("%s馬を操れるようになった。", (empty_hands(player_ptr, false) == EMPTY_HAND_NONE) ? "手が空いて" : "");
+            msg_format("%s馬を操れるようになった。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "手が空いて" : "");
 #else
             msg_print("You began to control the pet you're riding with one hand.");
 #endif
@@ -2045,8 +2044,8 @@ void put_equipment_warning(CreatureEntity &creature)
     }
 
     CreatureClass pc(*player_ptr);
-    if ((pc.is_martial_arts_pro() || pc.equals(PlayerClassType::NINJA)) && (heavy_armor(player_ptr) != player_ptr->monk_notify_aux)) {
-        if (heavy_armor(player_ptr)) {
+    if ((pc.is_martial_arts_pro() || pc.equals(PlayerClassType::NINJA)) && (heavy_armor(creature) != player_ptr->monk_notify_aux)) {
+        if (heavy_armor(creature)) {
             msg_print(_("装備が重くてバランスを取れない。", "The weight of your armor disrupts your balance."));
             if (AngbandWorld::get_instance().is_loading_now) {
                 chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, -1);
@@ -2055,15 +2054,14 @@ void put_equipment_warning(CreatureEntity &creature)
             msg_print(_("バランスがとれるようになった。", "You regain your balance."));
         }
 
-        player_ptr->monk_notify_aux = heavy_armor(player_ptr);
+        player_ptr->monk_notify_aux = heavy_armor(creature);
     }
 }
 
 static bool is_bare_knuckle(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto bare_knuckle = is_martial_arts_mode(creature);
-    bare_knuckle &= empty_hands(player_ptr, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB);
+    bare_knuckle &= empty_hands(creature, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB);
     return bare_knuckle;
 }
 
@@ -2128,7 +2126,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         int bonus_to_d = 0;
         o_ptr = creature.inventory[i].get();
-        const auto has_melee = has_melee_weapon(player_ptr, i);
+        const auto has_melee = has_melee_weapon(creature, i);
         if (!o_ptr->is_valid() || (o_ptr->bi_key.tval() == ItemKindType::CAPTURE)) {
             continue;
         }
@@ -2203,7 +2201,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
         }
     }
 
-    if (is_martial_arts_mode(creature) && (!heavy_armor(player_ptr) || !pc.equals(PlayerClassType::BERSERKER))) {
+    if (is_martial_arts_mode(creature) && (!heavy_armor(creature) || !pc.equals(PlayerClassType::BERSERKER))) {
         damage += (creature.level / 6);
     }
 
@@ -2283,7 +2281,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
 
     /* Bonuses and penalties by weapon */
     CreatureClass pc(*player_ptr);
-    if (has_melee_weapon(player_ptr, slot)) {
+    if (has_melee_weapon(creature, slot)) {
         const auto *o_ptr = creature.inventory[slot].get();
 
         /* Traind bonuses */
@@ -2370,7 +2368,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
         auto *o_ptr = creature.inventory[i].get();
 
         /* Ignore empty hands, handed weapons, bows and capture balls */
-        const auto has_melee = has_melee_weapon(player_ptr, i);
+        const auto has_melee = has_melee_weapon(creature, i);
         if (!o_ptr->is_valid() || o_ptr->bi_key.tval() == ItemKindType::CAPTURE) {
             continue;
         }
@@ -2441,7 +2439,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
     }
 
     /* Martial arts bonus */
-    if (is_martial_arts_mode(creature) && (!heavy_armor(player_ptr) || !pc.equals(PlayerClassType::BERSERKER))) {
+    if (is_martial_arts_mode(creature) && (!heavy_armor(creature) || !pc.equals(PlayerClassType::BERSERKER))) {
         hit += (creature.level / 3);
     }
 
@@ -2511,7 +2509,7 @@ static int16_t calc_to_hit_bow(CreatureEntity &creature, bool is_real_value)
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         int bonus_to_h;
         o_ptr = creature.inventory[i].get();
-        const auto has_melee = has_melee_weapon(player_ptr, i);
+        const auto has_melee = has_melee_weapon(creature, i);
         if (!o_ptr->is_valid() || (o_ptr->bi_key.tval() == ItemKindType::CAPTURE)) {
             continue;
         }
@@ -3233,7 +3231,7 @@ static player_hand main_attack_hand(CreatureEntity &creature)
     case MELEE_TYPE_WEAPON_SUB:
         return PLAYER_HAND_SUB;
     case MELEE_TYPE_WEAPON_TWOHAND:
-        return has_melee_weapon(player_ptr, INVEN_MAIN_HAND) ? PLAYER_HAND_MAIN : PLAYER_HAND_SUB;
+        return has_melee_weapon(creature, INVEN_MAIN_HAND) ? PLAYER_HAND_MAIN : PLAYER_HAND_SUB;
     case MELEE_TYPE_WEAPON_DOUBLE:
         return PLAYER_HAND_MAIN;
     case MELEE_TYPE_SHIELD_DOUBLE:

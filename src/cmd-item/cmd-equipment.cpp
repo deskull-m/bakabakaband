@@ -162,7 +162,7 @@ void do_cmd_wield(PlayerType *player_ptr)
     case ItemKindType::CAPTURE:
     case ItemKindType::SHIELD:
     case ItemKindType::CARD:
-        if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+        if (has_melee_weapon(*player_ptr, INVEN_MAIN_HAND) && has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
             constexpr auto q = _("どちらの武器と取り替えますか?", "Replace which weapon? ");
             constexpr auto s = _("おっと。", "Oops.");
             if (!choose_object(player_ptr, &slot, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_melee_weapon))) {
@@ -172,7 +172,7 @@ void do_cmd_wield(PlayerType *player_ptr)
             if (slot == INVEN_MAIN_HAND) {
                 need_switch_wielding = INVEN_SUB_HAND;
             }
-        } else if (has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+        } else if (has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
             slot = INVEN_MAIN_HAND;
         } else if (o_ptr_mh->is_valid() && o_ptr_sh->is_valid() &&
                    ((tval == ItemKindType::CAPTURE) || (!o_ptr_mh->is_melee_weapon() && !o_ptr_sh->is_melee_weapon()))) {
@@ -192,7 +192,7 @@ void do_cmd_wield(PlayerType *player_ptr)
             if (!input_check(_("二刀流で戦いますか？", "Dual wielding? "))) {
                 slot = INVEN_MAIN_HAND;
             }
-        } else if (!o_ptr_mh->is_valid() && has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+        } else if (!o_ptr_mh->is_valid() && has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
             if (!input_check(_("二刀流で戦いますか？", "Dual wielding? "))) {
                 slot = INVEN_SUB_HAND;
             }
@@ -203,7 +203,7 @@ void do_cmd_wield(PlayerType *player_ptr)
                 return;
             }
 
-            if ((slot == INVEN_SUB_HAND) && !has_melee_weapon(player_ptr, INVEN_MAIN_HAND)) {
+            if ((slot == INVEN_SUB_HAND) && !has_melee_weapon(*player_ptr, INVEN_MAIN_HAND)) {
                 need_switch_wielding = INVEN_MAIN_HAND;
             }
         }
@@ -308,7 +308,7 @@ void do_cmd_wield(PlayerType *player_ptr)
 
     switch (slot) {
     case INVEN_MAIN_HAND:
-        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(player_ptr, false) == EMPTY_HAND_SUB) && can_two_hands_wielding(player_ptr)) {
+        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(*player_ptr, false) == EMPTY_HAND_SUB) && can_two_hands_wielding(*player_ptr)) {
             act = STR_WIELD_HANDS_TWO;
         } else {
             act = (left_hander ? STR_WIELD_HAND_LEFT : STR_WIELD_HAND_RIGHT);
@@ -316,7 +316,7 @@ void do_cmd_wield(PlayerType *player_ptr)
 
         break;
     case INVEN_SUB_HAND:
-        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(player_ptr, false) == EMPTY_HAND_MAIN) && can_two_hands_wielding(player_ptr)) {
+        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(*player_ptr, false) == EMPTY_HAND_MAIN) && can_two_hands_wielding(*player_ptr)) {
             act = STR_WIELD_HANDS_TWO;
         } else {
             act = (left_hander ? STR_WIELD_HAND_RIGHT : STR_WIELD_HAND_LEFT);

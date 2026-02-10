@@ -86,12 +86,12 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_CURSE_WEAPON: {
         auto k = 0;
-        if (has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND)) {
+        if (has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND)) {
             k = INVEN_MAIN_HAND;
-            if (has_melee_weapon(this->player_ptr, INVEN_SUB_HAND) && one_in_(2)) {
+            if (has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND) && one_in_(2)) {
                 k = INVEN_SUB_HAND;
             }
-        } else if (has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+        } else if (has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
             k = INVEN_SUB_HAND;
         }
 

@@ -659,7 +659,7 @@ static PERCENTAGE decide_element_chance(CreatureEntity &creature, mind_type spel
     }
 
     chance += player.effects()->stun().get_magic_chance_penalty();
-    if (heavy_armor(&player)) {
+    if (heavy_armor(creature)) {
         chance += 5;
     }
 

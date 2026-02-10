@@ -487,9 +487,9 @@ int monspell_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_typ
     auto &player = static_cast<PlayerType &>(creature);
     ItemEntity *weapon_ptr = nullptr;
 
-    if (has_melee_weapon(&player, INVEN_MAIN_HAND)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         weapon_ptr = player.inventory[INVEN_MAIN_HAND].get();
-    } else if (has_melee_weapon(&player, INVEN_SUB_HAND)) {
+    } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         weapon_ptr = player.inventory[INVEN_SUB_HAND].get();
     }
 

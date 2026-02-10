@@ -360,7 +360,7 @@ bool ObjectThrowEntity::check_what_throw()
 
 bool ObjectThrowEntity::check_throw_boomerang()
 {
-    if (has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND) && has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND) && has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
         concptr q, s;
         q = _("どの武器を投げますか? ", "Throw which item? ");
         s = _("投げる武器がない。", "You have nothing to throw.");
@@ -373,7 +373,7 @@ bool ObjectThrowEntity::check_throw_boomerang()
         return true;
     }
 
-    if (has_melee_weapon(this->player_ptr, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND)) {
         this->i_idx = INVEN_SUB_HAND;
         this->o_ptr = this->player_ptr->inventory[this->i_idx].get();
         return true;

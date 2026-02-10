@@ -253,8 +253,8 @@ bool MindPowerGetter::display_minds_chance(const bool only_browse)
 
 void MindPowerGetter::display_each_mind_chance()
 {
-    const auto has_weapon_main = has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND);
-    const auto has_weapon_sub = has_melee_weapon(this->player_ptr, INVEN_SUB_HAND);
+    const auto has_weapon_main = has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND);
+    const auto has_weapon_sub = has_melee_weapon(*this->player_ptr, INVEN_SUB_HAND);
     for (this->index = 0; this->index < std::ssize(mind_ptr->info); this->index++) {
         this->spell = &mind_ptr->info[this->index];
         if (this->spell->min_lev > this->player_ptr->level) {
@@ -314,7 +314,7 @@ void MindPowerGetter::calculate_ki_chance(bool has_weapon_main, bool has_weapon_
         return;
     }
 
-    if (heavy_armor(this->player_ptr)) {
+    if (heavy_armor(*this->player_ptr)) {
         this->chance += 20;
     }
 
@@ -343,7 +343,7 @@ void MindPowerGetter::add_ki_chance()
         return;
     }
 
-    if (heavy_armor(this->player_ptr)) {
+    if (heavy_armor(*this->player_ptr)) {
         this->chance += 5;
     }
 
