@@ -179,7 +179,7 @@ static bool let_player_select_race(CreatureEntity &creature)
     clear_from(10);
     creature.prace = PlayerRaceType::HUMAN;
     while (true) {
-        if (!get_player_race(player_ptr)) {
+        if (!get_player_race(creature)) {
             return false;
         }
 
