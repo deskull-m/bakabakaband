@@ -267,15 +267,15 @@ void print_tomb(CreatureEntity &creature)
 /*!
  * @brief モンスター用の墓石表示 /
  * Display a simple tomb-stone for a monster (joke option)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster モンスターへの参照
  */
-void print_monster_tomb(PlayerType *player_ptr, MonsterEntity &monster)
+void print_monster_tomb(CreatureEntity &creature, MonsterEntity &monster)
 {
     term_clear();
     read_dead_file(false);
 
-    const auto m_name = monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+    const auto m_name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
     show_tomb_line(m_name, GRAVE_PLAYER_NAME_ROW);
 
 #ifdef JP
@@ -445,7 +445,7 @@ void show_death_info(CreatureEntity &creature)
     }
 
     export_player_info(creature);
-    (void)display_player(static_cast<PlayerType *>(&creature), 0);
+    (void)display_player(&creature, 0);
     prt(_("何かキーを押すとさらに情報が続きます (ESCで中断): ", "Hit any key to see more information (ESC to abort): "), 23, 0);
     if (inkey() == ESCAPE) {
         return;
