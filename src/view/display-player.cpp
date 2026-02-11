@@ -29,6 +29,7 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -57,7 +58,7 @@ static bool display_player_info(PlayerType *player_ptr, int mode)
 {
     if (mode == 2) {
         display_player_misc_info(player_ptr);
-        display_player_stat_info(player_ptr);
+        display_player_stat_info(*player_ptr);
         display_player_flag_info_1(player_ptr, display_player_equippy);
         return true;
     }
