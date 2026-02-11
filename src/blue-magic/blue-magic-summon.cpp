@@ -14,10 +14,9 @@
 
 bool cast_blue_summon_kin(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     msg_print(_("援軍を召喚した。", "You summon one of your kin."));
     for (int k = 0; k < 1; k++) {
-        if (summon_kin_player(&player, bmc_ptr->summon_lev, creature.y, creature.x, (bmc_ptr->pet ? PM_FORCE_PET : PM_NONE))) {
+        if (summon_kin_player(creature, bmc_ptr->summon_lev, creature.y, creature.x, (bmc_ptr->pet ? PM_FORCE_PET : PM_NONE))) {
             if (!bmc_ptr->pet) {
                 msg_print(_("召喚された仲間は怒っている！", "The summoned companion is angry!"));
             }

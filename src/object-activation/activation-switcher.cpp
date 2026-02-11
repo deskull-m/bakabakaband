@@ -171,20 +171,20 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_PHANTOM, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_ELEMENTAL:
-        return cast_summon_elemental(player_ptr, (player_ptr->level * 3) / 2);
+        return cast_summon_elemental(*player_ptr, (player_ptr->level * 3) / 2);
     case RandomArtActType::SUMMON_DEMON:
-        cast_summon_demon(player_ptr, (player_ptr->level * 3) / 2);
+        cast_summon_demon(*player_ptr, (player_ptr->level * 3) / 2);
         return true;
     case RandomArtActType::SUMMON_UNDEAD:
-        return cast_summon_undead(player_ptr, (player_ptr->level * 3) / 2);
+        return cast_summon_undead(*player_ptr, (player_ptr->level * 3) / 2);
     case RandomArtActType::SUMMON_HOUND:
-        return cast_summon_hound(player_ptr, (player_ptr->level * 3) / 2);
+        return cast_summon_hound(*player_ptr, (player_ptr->level * 3) / 2);
     case RandomArtActType::SUMMON_DAWN:
         msg_print(_("暁の師団を召喚した。", "You summon the Legion of the Dawn."));
         (void)summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_DAWN, PM_ALLOW_GROUP | PM_FORCE_PET);
         return true;
     case RandomArtActType::SUMMON_OCTOPUS:
-        return cast_summon_octopus(player_ptr);
+        return cast_summon_octopus(*player_ptr);
     case RandomArtActType::CHOIR_SINGS:
         msg_print(_("天国の歌が聞こえる...", "A heavenly choir sings..."));
         (void)cure_critical_wounds(player_ptr, 777);
@@ -369,7 +369,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::FISHING:
         return fishing(player_ptr);
     case RandomArtActType::INROU:
-        mitokohmon(player_ptr);
+        mitokohmon(*player_ptr);
         return true;
     case RandomArtActType::MURAMASA:
         return activate_muramasa(player_ptr, o_ptr);

@@ -828,7 +828,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 
         msg_print(_("援軍を召喚した。", "You summon minions."));
         for (auto k = 0; k < 4; k++) {
-            (void)summon_kin_player(player_ptr, plev, pos->y, pos->x, (PM_FORCE_PET | PM_ALLOW_GROUP));
+            (void)summon_kin_player(creature, plev, pos->y, pos->x, (PM_FORCE_PET | PM_ALLOW_GROUP));
         }
         break;
     }

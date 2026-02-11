@@ -399,7 +399,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 23: {
         if (cast) {
-            cast_summon_demon(player_ptr, (plev * 3) / 2);
+            cast_summon_demon(*player_ptr, (plev * 3) / 2);
         }
     } break;
 

@@ -259,7 +259,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 15: {
         if (cast) {
-            cast_summon_demon(player_ptr, plev * 2 / 3 + randint1(plev / 2));
+            cast_summon_demon(*player_ptr, plev * 2 / 3 + randint1(plev / 2));
         }
     } break;
 
@@ -423,7 +423,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 27: {
         if (cast) {
-            if (!cast_summon_greater_demon(player_ptr)) {
+            if (!cast_summon_greater_demon(*player_ptr)) {
                 return tl::nullopt;
             }
         }
