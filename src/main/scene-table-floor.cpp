@@ -8,15 +8,15 @@
 #include "floor/dungeon-feeling.h"
 #include "main/music-definitions-table.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "world/world.h"
 
-using scene_feel_func = bool (*)(PlayerType *player_ptr, scene_type *value);
+using scene_feel_func = bool (*)(CreatureEntity &creature, scene_type *value);
 
-static bool scene_basic(PlayerType *player_ptr, scene_type *value)
+static bool scene_basic(CreatureEntity &creature, scene_type *value)
 {
-    if (static_cast<CreatureEntity &>(*player_ptr).ambush_flag) {
+    if (creature.ambush_flag) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_AMBUSH;
         return true;
@@ -28,7 +28,7 @@ static bool scene_basic(PlayerType *player_ptr, scene_type *value)
         return true;
     }
 
-    if (player_ptr->current_floor_ptr->inside_arena) {
+    if (creature.current_floor_ptr->inside_arena) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_ARENA;
         return true;
@@ -43,9 +43,9 @@ static bool scene_basic(PlayerType *player_ptr, scene_type *value)
     return false;
 }
 
-static bool scene_quest(PlayerType *player_ptr, scene_type *value)
+static bool scene_quest(CreatureEntity &creature, scene_type *value)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto quest_id = floor.get_quest_id();
     const bool enable = (inside_quest(quest_id));
     if (enable) {
@@ -56,9 +56,9 @@ static bool scene_quest(PlayerType *player_ptr, scene_type *value)
     return enable;
 }
 
-static bool scene_quest_basic(PlayerType *player_ptr, scene_type *value)
+static bool scene_quest_basic(CreatureEntity &creature, scene_type *value)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto quest_id = floor.get_quest_id();
     const bool enable = (inside_quest(quest_id));
     if (enable) {
@@ -69,19 +69,19 @@ static bool scene_quest_basic(PlayerType *player_ptr, scene_type *value)
     return enable;
 }
 
-static bool scene_town(PlayerType *player_ptr, scene_type *value)
+static bool scene_town(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !player_ptr->current_floor_ptr->is_underground() && (player_ptr->town_num > 0);
+    const auto enable = !creature.current_floor_ptr->is_underground() && (creature.town_num > 0);
     if (enable) {
         value->type = TERM_XTRA_MUSIC_TOWN;
-        value->val = player_ptr->town_num;
+        value->val = creature.town_num;
     }
     return enable;
 }
 
-static bool scene_town_basic(PlayerType *player_ptr, scene_type *value)
+static bool scene_town_basic(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !player_ptr->current_floor_ptr->is_underground() && (player_ptr->town_num > 0);
+    const auto enable = !creature.current_floor_ptr->is_underground() && (creature.town_num > 0);
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_TOWN;
@@ -89,15 +89,15 @@ static bool scene_town_basic(PlayerType *player_ptr, scene_type *value)
     return enable;
 }
 
-static bool scene_field(PlayerType *player_ptr, scene_type *value)
+static bool scene_field(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = !player_ptr->current_floor_ptr->is_underground();
+    const auto enable = !creature.current_floor_ptr->is_underground();
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
 
-        if (player_ptr->level >= 45) {
+        if (creature.level >= 45) {
             value->val = MUSIC_BASIC_FIELD3;
-        } else if (player_ptr->level >= 25) {
+        } else if (creature.level >= 25) {
             value->val = MUSIC_BASIC_FIELD2;
         } else {
             value->val = MUSIC_BASIC_FIELD1;
@@ -106,9 +106,8 @@ static bool scene_field(PlayerType *player_ptr, scene_type *value)
     return enable;
 }
 
-static bool scene_dungeon_feeling(PlayerType *player_ptr, scene_type *value)
+static bool scene_dungeon_feeling(CreatureEntity & /*creature*/, scene_type *value)
 {
-    (void)player_ptr; //!< @details 関数ポインタの都合、後で消す.
     const auto feeling = DungeonFeeling::get_instance().get_feeling();
     const auto enable = (feeling >= 2) && (feeling <= 5);
     if (!enable) {
@@ -125,9 +124,9 @@ static bool scene_dungeon_feeling(PlayerType *player_ptr, scene_type *value)
     return enable;
 }
 
-static bool scene_dungeon(PlayerType *player_ptr, scene_type *value)
+static bool scene_dungeon(CreatureEntity &creature, scene_type *value)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto enable = floor.is_underground();
     if (enable) {
         value->type = TERM_XTRA_MUSIC_DUNGEON;
@@ -136,13 +135,13 @@ static bool scene_dungeon(PlayerType *player_ptr, scene_type *value)
     return enable;
 }
 
-static bool scene_dungeon_basic(PlayerType *player_ptr, scene_type *value)
+static bool scene_dungeon_basic(CreatureEntity &creature, scene_type *value)
 {
-    const auto enable = player_ptr->current_floor_ptr->is_underground();
+    const auto enable = creature.current_floor_ptr->is_underground();
     if (enable) {
         value->type = TERM_XTRA_MUSIC_BASIC;
 
-        const auto dun_level = player_ptr->current_floor_ptr->dun_level;
+        const auto dun_level = creature.current_floor_ptr->dun_level;
         if (dun_level >= 80) {
             value->val = MUSIC_BASIC_DUN_HIGH;
         } else if (dun_level >= 40) {
@@ -154,9 +153,8 @@ static bool scene_dungeon_basic(PlayerType *player_ptr, scene_type *value)
     return enable;
 }
 
-static bool scene_mute(PlayerType *player_ptr, scene_type *value)
+static bool scene_mute(CreatureEntity & /*creature*/, scene_type *value)
 {
-    (void)player_ptr;
     value->type = TERM_XTRA_MUSIC_MUTE;
     value->val = 0;
     return true;
@@ -200,11 +198,11 @@ int get_scene_floor_count()
  * @param list BGM選曲リスト
  * @param from_index リストの更新開始位置
  */
-void refresh_scene_floor(PlayerType *player_ptr, scene_type_list &list, int from_index)
+void refresh_scene_floor(CreatureEntity &creature, scene_type_list &list, int from_index)
 {
     for (auto func : scene_floor_def_list) {
         scene_type &item = list[from_index];
-        if (!func(player_ptr, &item)) {
+        if (!func(creature, &item)) {
             // Note -- 特に定義を設けていないが、type = 0は無効な値とする。
             item.type = 0;
             item.val = 0;

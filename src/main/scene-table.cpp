@@ -6,7 +6,9 @@
 #include "main/scene-table.h"
 #include "main/scene-table-floor.h"
 #include "main/scene-table-monster.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
+#include "system/player-type-definition.h"
 #include "term/z-term.h"
 
 int interrupt_scene_type;
@@ -57,7 +59,7 @@ void refresh_scene_table(PlayerType *player_ptr)
     interrupt_scene(0, 0);
 
     resize_scene_list();
-    refresh_scene_floor(player_ptr, scene_list, 0);
+    refresh_scene_floor(static_cast<CreatureEntity &>(*player_ptr), scene_list, 0);
 }
 
 /*!
@@ -79,7 +81,7 @@ void refresh_scene_table(PlayerType *player_ptr, const std::vector<MONSTER_IDX> 
     item.val = interrupt_scene_val;
     ++index;
 
-    refresh_scene_floor(player_ptr, scene_list, index);
+    refresh_scene_floor(static_cast<CreatureEntity &>(*player_ptr), scene_list, index);
 }
 
 /*!
