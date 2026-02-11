@@ -142,7 +142,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::TERROR:
         return activate_terror(*player_ptr);
     case RandomArtActType::TELE_AWAY:
-        return activate_teleport_away(player_ptr);
+        return activate_teleport_away(*player_ptr);
     case RandomArtActType::BANISH_EVIL:
         return activate_banish_evil(*player_ptr);
     case RandomArtActType::GENOCIDE:
@@ -317,9 +317,9 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)alchemy(player_ptr);
         return true;
     case RandomArtActType::DIM_DOOR:
-        return activate_dimension_door(player_ptr);
+        return activate_dimension_door(*player_ptr);
     case RandomArtActType::TELEPORT:
-        return activate_teleport(player_ptr);
+        return activate_teleport(*player_ptr);
     case RandomArtActType::RECALL:
         return activate_recall(*player_ptr);
     case RandomArtActType::JUDGE:
@@ -329,7 +329,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::DETECT_UNIQUE:
         return activate_unique_detection(*player_ptr);
     case RandomArtActType::ESCAPE:
-        return activate_escape(player_ptr);
+        return activate_escape(*player_ptr);
     case RandomArtActType::DISP_CURSE_XTRA:
         return activate_dispel_curse(*player_ptr, name);
     case RandomArtActType::BRAND_FIRE_BOLTS:
@@ -343,7 +343,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::SHIKOFUMI:
         return activate_shikofumi(*player_ptr);
     case RandomArtActType::PHASE_DOOR:
-        return activate_phase_door(player_ptr);
+        return activate_phase_door(*player_ptr);
     case RandomArtActType::DETECT_ALL_MONS:
         return activate_all_monsters_detection(*player_ptr);
     case RandomArtActType::ULTIMATE_RESIST:
@@ -360,7 +360,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::GRAND_CROSS:
         return activate_grand_cross(*player_ptr);
     case RandomArtActType::TELEPORT_LEVEL:
-        return activate_teleport_level(player_ptr);
+        return activate_teleport_level(*player_ptr);
     case RandomArtActType::STRAIN_HASTE:
         msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
         take_hit(*player_ptr, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("加速した疲労", "the strain of haste"));

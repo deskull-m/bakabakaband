@@ -1,9 +1,9 @@
 #pragma once
 
-class PlayerType;
-bool activate_teleport_away(PlayerType *player_ptr);
-bool activate_escape(PlayerType *player_ptr);
-bool activate_teleport_level(PlayerType *player_ptr);
-bool activate_dimension_door(PlayerType *player_ptr);
-bool activate_teleport(PlayerType *player_ptr);
-bool activate_phase_door(PlayerType *player_ptr);
+class CreatureEntity;
+bool activate_teleport_away(CreatureEntity &creature);
+bool activate_escape(CreatureEntity &creature);
+bool activate_teleport_level(CreatureEntity &creature);
+bool activate_dimension_door(CreatureEntity &creature);
+bool activate_teleport(CreatureEntity &creature);
+bool activate_phase_door(CreatureEntity &creature);
