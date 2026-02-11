@@ -48,7 +48,7 @@ tl::optional<std::string> exe_spell(PlayerType *player_ptr, RealmType realm, SPE
     case RealmType::MUSIC:
         return do_music_spell(player_ptr, spell, mode);
     case RealmType::HISSATSU:
-        return do_hissatsu_spell(player_ptr, spell, mode);
+        return do_hissatsu_spell(*player_ptr, spell, mode);
     case RealmType::HEX:
         return do_hex_spell(player_ptr, i2enum<spell_hex_type>(spell), mode);
     default:
