@@ -241,7 +241,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         BodyImprovement(*player_ptr).set_protection(randint1(25) + player_ptr->level * 3);
         return true;
     case RandomArtActType::RESIST_ALL:
-        return activate_resistance_elements(player_ptr);
+        return activate_resistance_elements(*player_ptr);
     case RandomArtActType::SPEED:
         msg_print(_("明るく緑色に輝いている...", "It glows bright green..."));
         (void)set_acceleration(*player_ptr, randint1(20) + 20, false);
@@ -268,25 +268,25 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)heroism(player_ptr, 50);
         return true;
     case RandomArtActType::ACID_BALL_AND_RESISTANCE:
-        return activate_acid_ball_and_resistance(player_ptr, name);
+        return activate_acid_ball_and_resistance(*player_ptr, name);
     case RandomArtActType::FIRE_BALL_AND_RESISTANCE:
-        return activate_fire_ball_and_resistance(player_ptr, name);
+        return activate_fire_ball_and_resistance(*player_ptr, name);
     case RandomArtActType::COLD_BALL_AND_RESISTANCE:
-        return activate_cold_ball_and_resistance(player_ptr, name);
+        return activate_cold_ball_and_resistance(*player_ptr, name);
     case RandomArtActType::ELEC_BALL_AND_RESISTANCE:
-        return activate_elec_ball_and_resistance(player_ptr, name);
+        return activate_elec_ball_and_resistance(*player_ptr, name);
     case RandomArtActType::POIS_BALL_AND_RESISTANCE:
-        return activate_pois_ball_and_resistance(player_ptr, name);
+        return activate_pois_ball_and_resistance(*player_ptr, name);
     case RandomArtActType::RESIST_ACID:
-        return activate_resistance_acid(player_ptr, name);
+        return activate_resistance_acid(*player_ptr, name);
     case RandomArtActType::RESIST_FIRE:
-        return activate_resistance_fire(player_ptr, name);
+        return activate_resistance_fire(*player_ptr, name);
     case RandomArtActType::RESIST_COLD:
-        return activate_resistance_cold(player_ptr, name);
+        return activate_resistance_cold(*player_ptr, name);
     case RandomArtActType::RESIST_ELEC:
-        return activate_resistance_elec(player_ptr, name);
+        return activate_resistance_elec(*player_ptr, name);
     case RandomArtActType::RESIST_POIS:
-        return activate_resistance_pois(player_ptr, name);
+        return activate_resistance_pois(*player_ptr, name);
     case RandomArtActType::LIGHT:
         return activate_light(*player_ptr, name);
     case RandomArtActType::MAP_LIGHT:
@@ -347,7 +347,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::DETECT_ALL_MONS:
         return activate_all_monsters_detection(*player_ptr);
     case RandomArtActType::ULTIMATE_RESIST:
-        return activate_ultimate_resistance(player_ptr);
+        return activate_ultimate_resistance(*player_ptr);
     case RandomArtActType::ELBERETH:
         return activate_protection_elbereth(*player_ptr);
     case RandomArtActType::DETECT_TREASURE:
