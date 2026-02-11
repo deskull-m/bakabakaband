@@ -283,7 +283,7 @@ MonsterSpellResult spell_RF6_S_CYBER(CreatureEntity &creature, POSITION y, POSIT
     if (monster.is_friendly() && mon_to_mon) {
         count += summon_specific(creature, y, x, rlev, SUMMON_CYBER, (PM_ALLOW_GROUP), m_idx) ? 1 : 0;
     } else {
-        count += summon_cyber(static_cast<PlayerType *>(&creature), y, x, m_idx);
+        count += summon_cyber(creature, y, x, m_idx);
     }
 
     if (creature.effects()->blindness().is_blind() && count && mon_to_player) {

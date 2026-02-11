@@ -127,7 +127,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_SUMMON_KIN:
-        if (summon_kin_player(this->player_ptr, this->player_ptr->level, this->player_ptr->y, this->player_ptr->x, PM_FORCE_PET | PM_ALLOW_GROUP)) {
+        if (summon_kin_player(*this->player_ptr, this->player_ptr->level, this->player_ptr->y, this->player_ptr->x, PM_FORCE_PET | PM_ALLOW_GROUP)) {
             this->ident = true;
         }
 

@@ -162,7 +162,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         msg_print(_("突如吹き出した煙に包み込まれた！", "You are enveloped in a cloud of smoke!"));
         for (auto i = 0; i < num; i++) {
             if (randint1(100) < this->player_ptr->current_floor_ptr->dun_level) {
-                activate_hi_summon(this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
+                activate_hi_summon(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
             } else {
                 (void)summon_specific(*this->player_ptr, pos.y, pos.x, mon_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
             }

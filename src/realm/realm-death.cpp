@@ -355,7 +355,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            cast_invoke_spirits(player_ptr, dir);
+            cast_invoke_spirits(*player_ptr, dir);
         }
     } break;
 
@@ -467,7 +467,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 25:
         if (cast) {
-            cast_summon_undead(player_ptr, (plev * 3) / 2);
+            cast_summon_undead(*player_ptr, (plev * 3) / 2);
         }
         break;
 

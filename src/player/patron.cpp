@@ -281,7 +281,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_H_SUMMON:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝、より強き敵を必要とせり！」", "'Thou needst worthier opponents!'"));
-            activate_hi_summon(this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
+            activate_hi_summon(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
             reward = _("モンスターを召喚された。", "summoning many hostile monsters");
             break;
         case REW_DO_HAVOC:
@@ -393,7 +393,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                 reward = _("禍々しい呪いをかけられた。", "cursing");
                 break;
             case 2:
-                activate_hi_summon(this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
+                activate_hi_summon(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
                 reward = _("モンスターを召喚された。", "summoning hostile monsters");
                 break;
             case 3:
@@ -441,7 +441,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                 (void)dec_stat(this->player_ptr, stat, 10 + randint1(15), false);
             }
 
-            activate_hi_summon(this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
+            activate_hi_summon(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
             (void)activate_ty_curse(this->player_ptr, false, &count);
             if (one_in_(2)) {
                 inventory_slot_type slot = INVEN_NONE;
