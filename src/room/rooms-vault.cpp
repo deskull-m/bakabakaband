@@ -239,7 +239,7 @@ static void build_cave_vault(CreatureEntity &creature, const Pos2D &center, cons
         generate_hmap(floor, center.y, center.x, xsize, ysize, grd, roug, cutoff);
 
         /* Convert to normal format+ clean up */
-        done = generate_fracave(&player, center.y, center.x, xsize, ysize, cutoff, light, room);
+        done = generate_fracave(creature, center.y, center.x, xsize, ysize, cutoff, light, room);
     }
 
     /* Set icky flag because is a vault */
@@ -710,7 +710,7 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
         generate_hmap(floor, center.y, center.x, xsize, ysize, grd, roug, c3);
 
         /* Convert to normal format+ clean up */
-        done = generate_lake(&player, center.y, center.x, xsize, ysize, c1, c2, c3, type);
+        done = generate_lake(creature, center.y, center.x, xsize, ysize, c1, c2, c3, type);
     }
 
     /* Set icky flag because is a vault */

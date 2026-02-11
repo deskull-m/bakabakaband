@@ -105,7 +105,7 @@ void build_cavern(PlayerType *player_ptr)
         int roug = randint1(8) * randint1(4);
         int cutoff = xsize / 2;
         generate_hmap(floor, y0 + 1, x0 + 1, xsize, ysize, grd, roug, cutoff);
-        done = generate_fracave(player_ptr, y0 + 1, x0 + 1, xsize, ysize, cutoff, light, false);
+        done = generate_fracave(*player_ptr, y0 + 1, x0 + 1, xsize, ysize, cutoff, light, false);
     }
 }
 
@@ -134,7 +134,7 @@ void build_lake(PlayerType *player_ptr, int type)
         int c1 = randint0(c3 / 2) + randint0(c3 / 2) - 5;
         int c2 = (c1 + c3) / 2;
         generate_hmap(floor, y0 + 1, x0 + 1, xsize, ysize, grd, roug, c3);
-        done = generate_lake(player_ptr, y0 + 1, x0 + 1, xsize, ysize, c1, c2, c3, type);
+        done = generate_lake(*player_ptr, y0 + 1, x0 + 1, xsize, ysize, c1, c2, c3, type);
     }
 }
 
