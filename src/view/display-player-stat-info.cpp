@@ -17,6 +17,7 @@
 #include "player/player-personality.h"
 #include "player/player-status-table.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
@@ -26,27 +27,27 @@
 
 /*!
  * @brief プレイヤーのパラメータ基礎値 (腕力等)を18以下になるようにして返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stat_num 能力値番号
  * @return 基礎値
  * @details 最大が18になるのはD&D由来
  */
-static int calc_basic_stat(PlayerType *player_ptr, int stat_num)
+static int calc_basic_stat(CreatureEntity &creature, int stat_num)
 {
     // 新形式では単純に差分を返す（すでに10倍スケール）
-    int e_adj = (player_ptr->stat_top[stat_num] - player_ptr->stat_max[stat_num]) / 10;
+    int e_adj = (creature.stat_top[stat_num] - creature.stat_max[stat_num]) / 10;
     return e_adj;
 }
 
 /*!
  * @brief 特殊な種族の時、腕力等の基礎パラメータを変動させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stat_num 能力値番号
  * @return 補正後の基礎パラメータ
  */
-static int compensate_special_race(PlayerType *player_ptr, int stat_num)
+static int compensate_special_race(CreatureEntity &creature, int stat_num)
 {
-    if (!CreatureRace(player_ptr).equals(PlayerRaceType::ENT)) {
+    if (!CreatureRace(&creature).equals(PlayerRaceType::ENT)) {
         return 0;
     }
 
@@ -54,24 +55,24 @@ static int compensate_special_race(PlayerType *player_ptr, int stat_num)
     switch (stat_num) {
     case A_STR:
     case A_CON:
-        if (player_ptr->level > 25) {
+        if (creature.level > 25) {
             r_adj++;
         }
-        if (player_ptr->level > 40) {
+        if (creature.level > 40) {
             r_adj++;
         }
-        if (player_ptr->level > 45) {
+        if (creature.level > 45) {
             r_adj++;
         }
         break;
     case A_DEX:
-        if (player_ptr->level > 25) {
+        if (creature.level > 25) {
             r_adj--;
         }
-        if (player_ptr->level > 40) {
+        if (creature.level > 40) {
             r_adj--;
         }
-        if (player_ptr->level > 45) {
+        if (creature.level > 45) {
             r_adj--;
         }
         break;
@@ -82,14 +83,14 @@ static int compensate_special_race(PlayerType *player_ptr, int stat_num)
 
 /*!
  * @brief 能力値名を(もし一時的減少なら'x'を付けて)表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stat_num 能力値番号
  * @param row 行数
  * @param stat_col 列数
  */
-static void display_basic_stat_name(PlayerType *player_ptr, int stat_num, int row, int stat_col)
+static void display_basic_stat_name(CreatureEntity &creature, int stat_num, int row, int stat_col)
 {
-    if (player_ptr->stat_cur[stat_num] < player_ptr->stat_max[stat_num]) {
+    if (creature.stat_cur[stat_num] < creature.stat_max[stat_num]) {
         c_put_str(TERM_WHITE, stat_names_reduced[stat_num], row + stat_num + 1, stat_col + 1);
     } else {
         c_put_str(TERM_WHITE, stat_names[stat_num], row + stat_num + 1, stat_col + 1);
@@ -98,55 +99,55 @@ static void display_basic_stat_name(PlayerType *player_ptr, int stat_num, int ro
 
 /*!
  * @brief 能力値を、基本・種族補正・職業補正・性格補正・装備補正・合計・現在 (一時的減少のみ) の順で表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stat_num 能力値番号
  * @param r_adj 補正後の基礎パラメータ
  * @param e_adj 種族補正値
  * @param row 行数
  * @param stat_col 列数
  */
-static void display_basic_stat_value(PlayerType *player_ptr, int stat_num, int r_adj, int e_adj, int row, int stat_col)
+static void display_basic_stat_value(CreatureEntity &creature, int stat_num, int r_adj, int e_adj, int row, int stat_col)
 {
     c_put_str(TERM_L_BLUE, format("%3d", r_adj), row + stat_num + 1, stat_col + 13);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)(*player_ptr->pclass_ref).c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
+    c_put_str(TERM_L_BLUE, format("%3d", (int)(*creature.pclass_ref).c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)(*player_ptr->personality).a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
+    c_put_str(TERM_L_BLUE, format("%3d", (int)(*creature.personality).a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
 
     c_put_str(TERM_L_BLUE, format("%3d", (int)e_adj), row + stat_num + 1, stat_col + 22);
 
-    c_put_str(TERM_L_GREEN, cnv_stat(player_ptr->stat_top[stat_num]), row + stat_num + 1, stat_col + 26);
+    c_put_str(TERM_L_GREEN, cnv_stat(creature.stat_top[stat_num]), row + stat_num + 1, stat_col + 26);
 
-    if (player_ptr->stat_use[stat_num] < player_ptr->stat_top[stat_num]) {
-        c_put_str(TERM_YELLOW, cnv_stat(player_ptr->stat_use[stat_num]), row + stat_num + 1, stat_col + 33);
+    if (creature.stat_use[stat_num] < creature.stat_top[stat_num]) {
+        c_put_str(TERM_YELLOW, cnv_stat(creature.stat_use[stat_num]), row + stat_num + 1, stat_col + 33);
     }
 }
 
 /*!
  * @brief 能力値を補正しつつ表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param row 行数
  * @param stat_col 列数
  */
-static void process_stats(PlayerType *player_ptr, int row, int stat_col)
+static void process_stats(CreatureEntity &creature, int row, int stat_col)
 {
     for (int i = 0; i < A_MAX; i++) {
-        int r_adj = player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).r_adj[i] : player_ptr->race->r_adj[i];
-        int e_adj = calc_basic_stat(player_ptr, i);
-        r_adj += compensate_special_race(player_ptr, i);
+        int r_adj = creature.mimic_form != MimicKindType::NONE ? mimic_info.at(creature.mimic_form).r_adj[i] : creature.race->r_adj[i];
+        int e_adj = calc_basic_stat(creature, i);
+        r_adj += compensate_special_race(creature, i);
         e_adj -= r_adj;
-        e_adj -= (*player_ptr->pclass_ref).c_adj[i];
-        e_adj -= (*player_ptr->personality).a_adj[i];
+        e_adj -= (*creature.pclass_ref).c_adj[i];
+        e_adj -= (*creature.personality).a_adj[i];
 
-        display_basic_stat_name(player_ptr, i, row, stat_col);
-        if (player_ptr->stat_max[i] == player_ptr->stat_max_max[i]) {
+        display_basic_stat_name(creature, i, row, stat_col);
+        if (creature.stat_max[i] == creature.stat_max_max[i]) {
             c_put_str(TERM_WHITE, "!", row + i + 1, _(stat_col + 6, stat_col + 4));
         }
 
-        const auto stat_str = cnv_stat(player_ptr->stat_max[i]);
+        const auto stat_str = cnv_stat(creature.stat_max[i]);
         c_put_str(TERM_BLUE, stat_str, row + i + 1, stat_col + 13 - stat_str.length());
 
-        display_basic_stat_value(player_ptr, i, r_adj, e_adj, row, stat_col);
+        display_basic_stat_value(creature, i, r_adj, e_adj, row, stat_col);
     }
 }
 
@@ -184,16 +185,16 @@ static DisplaySymbol compensate_stat_by_weapon(uint8_t color, ItemEntity *o_ptr,
 
 /*!
  * @brief 装備品を走査してpval付きのものをそれと分かるように表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param flags 装備品に立っているフラグ
  * @param row 行数
  * @param col 列数
  */
-static void display_equipments_compensation(PlayerType *player_ptr, int row, int *col)
+static void display_equipments_compensation(CreatureEntity &creature, int row, int *col)
 {
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         ItemEntity *o_ptr;
-        o_ptr = player_ptr->inventory[i].get();
+        o_ptr = creature.inventory[i].get();
         auto flags = o_ptr->get_flags_known();
         for (int stat = 0; stat < A_MAX; stat++) {
             DisplaySymbol symbol(TERM_SLATE, '.');
@@ -212,84 +213,84 @@ static void display_equipments_compensation(PlayerType *player_ptr, int row, int
 
 /*!
  * @brief 各能力値の補正
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stat 能力値番号
  */
-static int compensation_stat_by_mutation(PlayerType *player_ptr, int stat)
+static int compensation_stat_by_mutation(CreatureEntity &creature, int stat)
 {
     int compensation = 0;
     if (stat == A_STR) {
-        if (player_ptr->muta.has(PlayerMutationType::HYPER_STR)) {
+        if (creature.muta.has(PlayerMutationType::HYPER_STR)) {
             compensation += 4;
         }
-        if (player_ptr->muta.has(PlayerMutationType::PUNY)) {
+        if (creature.muta.has(PlayerMutationType::PUNY)) {
             compensation -= 4;
         }
-        if (player_ptr->tsuyoshi) {
+        if (creature.tsuyoshi) {
             compensation += 4;
         }
         return compensation;
     }
 
     if (stat == A_WIS || stat == A_INT) {
-        if (player_ptr->muta.has(PlayerMutationType::HYPER_INT)) {
+        if (creature.muta.has(PlayerMutationType::HYPER_INT)) {
             compensation += 4;
         }
-        if (player_ptr->muta.has(PlayerMutationType::MORONIC)) {
+        if (creature.muta.has(PlayerMutationType::MORONIC)) {
             compensation -= 4;
         }
         return compensation;
     }
 
     if (stat == A_DEX) {
-        if (player_ptr->muta.has(PlayerMutationType::IRON_SKIN)) {
+        if (creature.muta.has(PlayerMutationType::IRON_SKIN)) {
             compensation -= 1;
         }
-        if (player_ptr->muta.has(PlayerMutationType::LIMBER)) {
+        if (creature.muta.has(PlayerMutationType::LIMBER)) {
             compensation += 3;
         }
-        if (player_ptr->muta.has(PlayerMutationType::ARTHRITIS)) {
+        if (creature.muta.has(PlayerMutationType::ARTHRITIS)) {
             compensation -= 3;
         }
         return compensation;
     }
 
     if (stat == A_CON) {
-        if (player_ptr->muta.has(PlayerMutationType::RESILIENT)) {
+        if (creature.muta.has(PlayerMutationType::RESILIENT)) {
             compensation += 4;
         }
-        if (player_ptr->muta.has(PlayerMutationType::XTRA_FAT)) {
+        if (creature.muta.has(PlayerMutationType::XTRA_FAT)) {
             compensation += 2;
         }
-        if (player_ptr->muta.has(PlayerMutationType::ALBINO)) {
+        if (creature.muta.has(PlayerMutationType::ALBINO)) {
             compensation -= 4;
         }
-        if (player_ptr->muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
             compensation -= 2;
         }
-        if (player_ptr->tsuyoshi) {
+        if (creature.tsuyoshi) {
             compensation += 4;
         }
         return compensation;
     }
 
     if (stat == A_CHR) {
-        if (player_ptr->muta.has(PlayerMutationType::SILLY_VOI)) {
+        if (creature.muta.has(PlayerMutationType::SILLY_VOI)) {
             compensation -= 4;
         }
-        if (player_ptr->muta.has(PlayerMutationType::BLANK_FAC)) {
+        if (creature.muta.has(PlayerMutationType::BLANK_FAC)) {
             compensation -= 1;
         }
-        if (player_ptr->muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (creature.muta.has(PlayerMutationType::FLESH_ROT)) {
             compensation -= 1;
         }
-        if (player_ptr->muta.has(PlayerMutationType::SCALES)) {
+        if (creature.muta.has(PlayerMutationType::SCALES)) {
             compensation -= 1;
         }
-        if (player_ptr->muta.has(PlayerMutationType::WART_SKIN)) {
+        if (creature.muta.has(PlayerMutationType::WART_SKIN)) {
             compensation -= 2;
         }
-        if (player_ptr->muta.has(PlayerMutationType::ILL_NORM)) {
+        if (creature.muta.has(PlayerMutationType::ILL_NORM)) {
             compensation = 0;
         }
         return compensation;
@@ -300,14 +301,14 @@ static int compensation_stat_by_mutation(PlayerType *player_ptr, int stat)
 
 /*!
  * @brief 突然変異 (と、つよしスペシャル)による能力値の補正有無で表示する記号を変える
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stat 能力値番号
  * @param c 補正後の表示記号
  * @param a 表示色
  */
-static DisplaySymbol change_display_by_mutation(PlayerType *player_ptr, int stat, const DisplaySymbol &symbol_initial)
+static DisplaySymbol change_display_by_mutation(CreatureEntity &creature, int stat, const DisplaySymbol &symbol_initial)
 {
-    int compensation = compensation_stat_by_mutation(player_ptr, stat);
+    int compensation = compensation_stat_by_mutation(creature, stat);
     if (compensation == 0) {
         return symbol_initial;
     }
@@ -332,17 +333,17 @@ static DisplaySymbol change_display_by_mutation(PlayerType *player_ptr, int stat
 
 /*!
  * @brief 能力値を走査し、突然変異 (と、つよしスペシャル)で補正をかける必要があればかける
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param col 列数
  * @param row 行数
  */
-static void display_mutation_compensation(PlayerType *player_ptr, int row, int col)
+static void display_mutation_compensation(CreatureEntity &creature, int row, int col)
 {
     TrFlags flags;
-    player_flags(player_ptr, flags);
+    player_flags(static_cast<PlayerType *>(&creature), flags);
 
     for (int stat = 0; stat < A_MAX; stat++) {
-        auto symbol = change_display_by_mutation(player_ptr, stat, { TERM_SLATE, '.' });
+        auto symbol = change_display_by_mutation(creature, stat, { TERM_SLATE, '.' });
         if (flags.has(TR_SUST_STATUS_LIST[stat])) {
             symbol = { TERM_GREEN, 's' };
         }
@@ -366,7 +367,7 @@ static void display_mutation_compensation(PlayerType *player_ptr, int row, int c
  * No mod, no sustain, will be a slate '.'
  * </pre>
  */
-void display_player_stat_info(PlayerType *player_ptr)
+void display_player_stat_info(CreatureEntity &creature)
 {
     int stat_col = 22;
     int row = 3;
@@ -375,12 +376,12 @@ void display_player_stat_info(PlayerType *player_ptr)
     c_put_str(TERM_L_BLUE, _(" 種 職 性 装 ", "RacClaPerMod"), row, stat_col + 13);
     c_put_str(TERM_L_GREEN, _("合計", "Actual"), row, stat_col + _(28, 26));
     c_put_str(TERM_YELLOW, _("現在", "Current"), row, stat_col + _(35, 33));
-    process_stats(player_ptr, row, stat_col);
+    process_stats(creature, row, stat_col);
 
     int col = stat_col + 41;
     c_put_str(TERM_WHITE, "abcdefghijkl@", row, col);
     c_put_str(TERM_L_GREEN, _("能力修正", "Modification"), row - 1, col);
 
-    display_equipments_compensation(player_ptr, row, &col);
-    display_mutation_compensation(player_ptr, row, col);
+    display_equipments_compensation(creature, row, &col);
+    display_mutation_compensation(creature, row, col);
 }
