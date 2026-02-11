@@ -46,13 +46,13 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::PIT:
         return build_type6(player_ptr, dd_ptr);
     case RoomType::LESSER_VAULT:
-        return build_fixed_room(player_ptr, dd_ptr, 7, false, -1);
+        return build_fixed_room(*player_ptr, dd_ptr, 7, false, -1);
     case RoomType::GREATER_VAULT:
-        return build_fixed_room(player_ptr, dd_ptr, 8, true, -1);
+        return build_fixed_room(*player_ptr, dd_ptr, 8, true, -1);
     case RoomType::FRACAVE:
         return build_type9(player_ptr, dd_ptr);
     case RoomType::RANDOM_VAULT:
-        return build_type10(player_ptr, dd_ptr);
+        return build_type10(*player_ptr, dd_ptr);
     case RoomType::OVAL:
         return build_type11(player_ptr, dd_ptr);
     case RoomType::CRYPT:
@@ -66,15 +66,15 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::ARCADE:
         return build_type16(player_ptr, dd_ptr);
     case RoomType::FIXED:
-        return build_fixed_room(player_ptr, dd_ptr, 17, false, -1);
+        return build_fixed_room(*player_ptr, dd_ptr, 17, false, -1);
     case RoomType::PERVO:
-        return build_fixed_room(player_ptr, dd_ptr, 18, false, -1);
+        return build_fixed_room(*player_ptr, dd_ptr, 18, false, -1);
     case RoomType::MAZE:
         return build_nonvault_maze(player_ptr, dd_ptr);
     case RoomType::HOUSE:
-        return build_fixed_room(player_ptr, dd_ptr, 19, false, -1);
+        return build_fixed_room(*player_ptr, dd_ptr, 19, false, -1);
     case RoomType::THRONE_ROOM:
-        return build_fixed_room(player_ptr, dd_ptr, 20, false, -1);
+        return build_fixed_room(*player_ptr, dd_ptr, 20, false, -1);
     default:
         return false;
     }
@@ -105,7 +105,7 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
     // 特定階層でのVault生成チェック
     if (dungeon.specific_vault_map.count(floor_ptr->dun_level)) {
         const auto vault_id = dungeon.specific_vault_map.at(floor_ptr->dun_level);
-        if (build_fixed_room(player_ptr, dd_ptr, 7, false, enum2i(vault_id))) {
+        if (build_fixed_room(*player_ptr, dd_ptr, 7, false, enum2i(vault_id))) {
             msg_print_wizard(player_ptr, CHEAT_DUNGEON,
                 _("特定階層Vaultを生成", "Generated specific floor vault"));
         } else {
@@ -227,7 +227,7 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
         auto id = std::get<1>(r);
         auto percentage = std::get<2>(r);
         if (depth == floor_ptr->dun_level && percentage > randint0(100)) {
-            if (!build_fixed_room(player_ptr, dd_ptr, 0, true, id)) {
+            if (!build_fixed_room(*player_ptr, dd_ptr, 0, true, id)) {
                 return false;
             }
         }
