@@ -3,6 +3,7 @@
 #include "io/input-key-acceptor.h"
 #include "player-info/race-info.h"
 #include "player/race-info-table.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -25,15 +26,16 @@ static std::string birth_race_label(int cs, concptr sym)
     return ss.str();
 }
 
-static void enumerate_race_list(PlayerType *player_ptr, char *sym)
+static void enumerate_race_list(CreatureEntity &creature, char *sym)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     int display_index = 0;
     for (int n = 0; n < MAX_RACES; n++) {
         if (!race_info[n].playable) {
             continue;
         }
 
-        player_ptr->race = &race_info[n];
+        player.race = &race_info[n];
         if (display_index < 26) {
             sym[n] = I2A(display_index);
         } else {
@@ -56,8 +58,9 @@ static int get_random_playable_race()
     return playable_races[randint0(playable_races.size())];
 }
 
-static std::string display_race_stat(PlayerType *player_ptr, int cs, int *os, const std::string &cur, concptr sym)
+static std::string display_race_stat(CreatureEntity &creature, int cs, int *os, const std::string &cur, concptr sym)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     if (cs == *os) {
         return cur;
     }
@@ -70,24 +73,24 @@ static std::string display_race_stat(PlayerType *player_ptr, int cs, int *os, co
         put_str("                                   ", 5, 40);
         put_str("                                   ", 6, 40);
     } else {
-        player_ptr->race = &race_info[cs];
-        c_put_str(TERM_L_BLUE, player_ptr->race->title, 3, 40);
+        player.race = &race_info[cs];
+        c_put_str(TERM_L_BLUE, player.race->title, 3, 40);
         put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-        put_str(_("の種族修正", ": Race modification"), 3, 40 + player_ptr->race->title->length());
+        put_str(_("の種族修正", ": Race modification"), 3, 40 + player.race->title->length());
 
-        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", player_ptr->race->r_adj[0], player_ptr->race->r_adj[1], player_ptr->race->r_adj[2], player_ptr->race->r_adj[3], player_ptr->race->r_adj[4], player_ptr->race->r_adj[5], (player_ptr->race->r_exp - 100));
+        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", player.race->r_adj[0], player.race->r_adj[1], player.race->r_adj[2], player.race->r_adj[3], player.race->r_adj[4], player.race->r_adj[5], (player.race->r_exp - 100));
         c_put_str(TERM_L_BLUE, stats, 5, 40);
 
         put_str("HD ", 6, 40);
-        const auto hd = format("%2d", player_ptr->race->r_mhp);
+        const auto hd = format("%2d", player.race->r_mhp);
         c_put_str(TERM_L_BLUE, hd, 6, 43);
 
         put_str(_("隠密", "Stealth"), 6, 47);
-        const auto stealth = format("%+2d", player_ptr->race->r_stl);
+        const auto stealth = format("%+2d", player.race->r_stl);
         c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
         put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-        const auto infra = format(_("%%2dft", "%%2dft"), 10 * player_ptr->race->infra);
+        const auto infra = format(_("%%2dft", "%%2dft"), 10 * player.race->infra);
         c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
     }
 
@@ -123,13 +126,14 @@ static void interpret_race_select_key_move(char c, int *cs)
     }
 }
 
-static bool select_race(PlayerType *player_ptr, char *sym, int *k)
+static bool select_race(CreatureEntity &creature, char *sym, int *k)
 {
-    auto cs = enum2i(player_ptr->prace);
+    auto &player = static_cast<PlayerType &>(creature);
+    auto cs = enum2i(player.prace);
     int os = MAX_RACES;
     std::string cur = birth_race_label(os, sym);
     while (true) {
-        cur = display_race_stat(player_ptr, cs, &os, cur, sym);
+        cur = display_race_stat(creature, cs, &os, cur, sym);
         if (*k >= 0) {
             break;
         }
@@ -177,7 +181,7 @@ static bool select_race(PlayerType *player_ptr, char *sym, int *k)
             *k = -1;
         }
 
-        birth_help_option(player_ptr, c, BirthKind::RACE);
+        birth_help_option(&player, c, BirthKind::RACE);
     }
 
     return true;
@@ -185,23 +189,25 @@ static bool select_race(PlayerType *player_ptr, char *sym, int *k)
 
 /*!
  * @brief プレイヤーの種族選択を行う / Player race
+ * @param creature クリーチャーへの参照
  */
-bool get_player_race(PlayerType *player_ptr)
+bool get_player_race(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     clear_from(10);
     put_str(
         _("注意：《種族》によってキャラクターの先天的な資質やボーナスが変化します。", "Note: Your 'race' determines various intrinsic factors and bonuses."),
         23, 5);
 
     char sym[MAX_RACES];
-    enumerate_race_list(player_ptr, sym);
+    enumerate_race_list(creature, sym);
     int k = -1;
-    if (!select_race(player_ptr, sym, &k)) {
+    if (!select_race(creature, sym, &k)) {
         return false;
     }
 
-    player_ptr->prace = i2enum<PlayerRaceType>(k);
-    player_ptr->race = &race_info[k];
-    c_put_str(TERM_L_BLUE, player_ptr->race->title, 4, 15);
+    player.prace = i2enum<PlayerRaceType>(k);
+    player.race = &race_info[k];
+    c_put_str(TERM_L_BLUE, player.race->title, 4, 15);
     return true;
 }
