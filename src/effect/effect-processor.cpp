@@ -438,10 +438,10 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
             std::string who_name;
             if (is_monster(src_idx)) {
-                who_name = monster_desc(static_cast<PlayerType &>(player), floor.m_list[src_idx], MD_WRONGDOER_NAME);
+                who_name = monster_desc(player, floor.m_list[src_idx], MD_WRONGDOER_NAME);
             }
 
-            if (affect_player(src_idx, &player, who_name.data(), effective_dist, pos.y, pos.x, dam, typ, flag, fall_off_horse_effect, project)) {
+            if (affect_player(src_idx, player, who_name.data(), effective_dist, pos.y, pos.x, dam, typ, flag, fall_off_horse_effect, project)) {
                 res.notice = true;
                 res.affected_player = true;
             }
