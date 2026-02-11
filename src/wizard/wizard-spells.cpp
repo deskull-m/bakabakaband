@@ -344,9 +344,6 @@ void wiz_summon_specific_monster(CreatureEntity &creature, MonraceId monrace_id)
 
 void wiz_generate_room(CreatureEntity &creature, int v_idx)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     if (v_idx <= 0) {
         const auto val = input_integer("VaultID", 1, vaults_info.size() - 1, 1);
         if (!val.has_value()) {
@@ -356,7 +353,7 @@ void wiz_generate_room(CreatureEntity &creature, int v_idx)
         v_idx = val.value();
         vault_type *v_ptr = &vaults_info[v_idx];
         const auto p_pos = creature.get_position();
-        build_vault(*v_ptr, player_ptr, p_pos.y, p_pos.x, v_ptr->hgt, v_ptr->wid, v_ptr->text.data(), 0, 0, 0);
+        build_vault(*v_ptr, creature, p_pos.y, p_pos.x, v_ptr->hgt, v_ptr->wid, v_ptr->text.data(), 0, 0, 0);
 
         const auto flags = { StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::UN_VIEW, StatusRecalculatingFlag::UN_LITE, StatusRecalculatingFlag::VIEW, StatusRecalculatingFlag::LITE,
             StatusRecalculatingFlag::FLOW, StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::MONSTER_STATUSES };
