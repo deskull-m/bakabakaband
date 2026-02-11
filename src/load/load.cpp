@@ -118,8 +118,8 @@ static void load_player_world(PlayerType *player_ptr)
     rd_world_info();
     rd_winner_class();
     rd_alliance_base_power();
-    rd_base_info(player_ptr);
-    rd_player_info(player_ptr);
+    rd_base_info(*player_ptr);
+    rd_player_info(*player_ptr);
     preserve_mode = rd_bool();
     AngbandSystem::get_instance().set_awaiting_report_score(rd_bool());
     rd_dummy2();

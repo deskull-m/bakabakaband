@@ -25,6 +25,7 @@
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
@@ -34,15 +35,16 @@
 
 /*!
  * @brief セーブデータから領域情報を読み込む / Read player realms
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void rd_realms(PlayerType *player_ptr)
+static void rd_realms(CreatureEntity &creature)
 {
-    PlayerRealm pr(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    PlayerRealm pr(&player);
     pr.reset();
 
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        player_ptr->element_realm = i2enum<ElementRealmType>(rd_byte());
+    if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
+        player.element_realm = i2enum<ElementRealmType>(rd_byte());
         (void)rd_byte();
         return;
     }
@@ -60,49 +62,50 @@ static void rd_realms(PlayerType *player_ptr)
 
 /*!
  * @brief セーブデータからプレイヤー基本情報を読み込む / Read player's basic info
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void rd_base_info(PlayerType *player_ptr)
+void rd_base_info(CreatureEntity &creature)
 {
-    player_ptr->name = rd_string();
-    if (player_ptr->name.length() > 40) {
-        player_ptr->name.resize(40);
+    auto &player = static_cast<PlayerType &>(creature);
+    creature.name = rd_string();
+    if (creature.name.length() > 40) {
+        creature.name.resize(40);
     }
-    player_ptr->died_from = rd_string();
-    player_ptr->last_message = rd_string();
+    creature.died_from = rd_string();
+    player.last_message = rd_string();
 
     load_quick_start();
     const int max_history_lines = 4;
     for (int i = 0; i < max_history_lines; i++) {
         const auto history = rd_string();
-        const auto history_len = history.copy(player_ptr->history[i], sizeof(player_ptr->history[i]) - 1);
-        player_ptr->history[i][history_len] = '\0';
+        const auto history_len = history.copy(player.history[i], sizeof(player.history[i]) - 1);
+        player.history[i][history_len] = '\0';
     }
 
-    player_ptr->prace = i2enum<PlayerRaceType>(rd_byte());
-    player_ptr->pclass = i2enum<PlayerClassType>(rd_byte());
-    player_ptr->ppersonality = i2enum<player_personality_type>(rd_byte());
-    player_ptr->psex = i2enum<player_sex>(rd_byte());
+    creature.prace = i2enum<PlayerRaceType>(rd_byte());
+    creature.pclass = i2enum<PlayerClassType>(rd_byte());
+    creature.ppersonality = i2enum<player_personality_type>(rd_byte());
+    creature.psex = i2enum<player_sex>(rd_byte());
 
-    rd_realms(player_ptr);
+    rd_realms(creature);
 
     strip_bytes(1);
 
-    player_ptr->hit_dice = Dice(1, rd_byte());
-    player_ptr->expfact = rd_u16b();
+    player.hit_dice = Dice(1, rd_byte());
+    player.expfact = rd_u16b();
 
-    player_ptr->death_count = rd_s32b();
-    player_ptr->age = rd_s16b();
-    player_ptr->ht = rd_s16b();
-    player_ptr->wt = rd_s16b();
+    creature.death_count = rd_s32b();
+    creature.age = rd_s16b();
+    creature.ht = rd_s16b();
+    creature.wt = rd_s16b();
 
     // 死亡履歴のロード（バージョン44以降）
     if (loading_savefile_version_is_older_than(44)) {
-        player_ptr->death_history.clear();
+        creature.death_history.clear();
     } else {
         const auto death_history_size = rd_u32b();
-        player_ptr->death_history.clear();
-        player_ptr->death_history.reserve(death_history_size);
+        creature.death_history.clear();
+        creature.death_history.reserve(death_history_size);
         for (uint32_t i = 0; i < death_history_size; ++i) {
             DeathRecord record;
             record.game_turn = rd_s32b();
@@ -112,33 +115,33 @@ void rd_base_info(PlayerType *player_ptr)
             record.player_level = rd_s16b();
             record.cause = rd_string();
             record.killer_monrace_id = i2enum<MonraceId>(rd_s16b());
-            player_ptr->death_history.push_back(record);
+            creature.death_history.push_back(record);
         }
     }
 }
 
-void rd_experience(PlayerType *player_ptr)
+void rd_experience(CreatureEntity &creature)
 {
-    player_ptr->max_exp = rd_s32b();
-    player_ptr->max_max_exp = rd_s32b();
+    creature.max_exp = rd_s32b();
+    creature.max_max_exp = rd_s32b();
 
-    player_ptr->exp = rd_s32b();
-    player_ptr->exp_frac = rd_u32b();
+    creature.exp = rd_s32b();
+    creature.exp_frac = rd_u32b();
 
-    player_ptr->level = rd_s16b();
+    creature.level = rd_s16b();
     for (int i = 0; i < 64; i++) {
-        player_ptr->spell_exp[i] = rd_s16b();
+        creature.spell_exp[i] = rd_s16b();
     }
 
     const int max_weapon_exp_size = 64;
     for (auto tval : TV_WEAPON_RANGE) {
         for (int j = 0; j < max_weapon_exp_size; j++) {
-            player_ptr->weapon_exp[tval][j] = rd_s16b();
+            creature.weapon_exp[tval][j] = rd_s16b();
         }
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        player_ptr->skill_exp[i] = rd_s16b();
+        creature.skill_exp[i] = rd_s16b();
     }
 
     // resreved skills
@@ -147,28 +150,29 @@ void rd_experience(PlayerType *player_ptr)
     // Load martial arts style
     if (loading_savefile_version_is_older_than(30)) {
         // 古いセーブファイルではデフォルト値を設定
-        player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
+        creature.martial_arts_style = MartialArtsStyleType::TRADITIONAL;
     } else {
-        player_ptr->martial_arts_style = static_cast<MartialArtsStyleType>(rd_s16b());
+        creature.martial_arts_style = static_cast<MartialArtsStyleType>(rd_s16b());
     }
 }
 
-void rd_skills(PlayerType *player_ptr)
+void rd_skills(CreatureEntity &creature)
 {
-    CreatureClass(*player_ptr).init_specific_data();
-    std::visit(PlayerClassSpecificDataLoader(), player_ptr->class_specific_data);
+    CreatureClass(creature).init_specific_data();
+    std::visit(PlayerClassSpecificDataLoader(), creature.class_specific_data);
 
-    if (music_singing_any(*player_ptr)) {
-        player_ptr->action = ACTION_SING;
+    if (music_singing_any(creature)) {
+        creature.action = ACTION_SING;
     }
 }
 
-static void set_race(PlayerType *player_ptr)
+static void set_race(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     InnerGameData::get_instance().set_start_race(i2enum<PlayerRaceType>(rd_byte()));
-    player_ptr->old_race1 = rd_u32b();
-    player_ptr->old_race2 = rd_u32b();
-    player_ptr->old_realm = rd_s16b();
+    player.old_race1 = rd_u32b();
+    player.old_race2 = rd_u32b();
+    player.old_realm = rd_s16b();
 }
 
 void rd_bounty_uniques()
@@ -192,10 +196,10 @@ void rd_bounty_uniques()
 
 /*!
  * @brief 腕力などの基本ステータス情報を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details セーブファイルバージョン36以降は30-400形式、それ以前は3-18/220形式
  */
-static void rd_base_status(PlayerType *player_ptr)
+static void rd_base_status(CreatureEntity &creature)
 {
     auto convert_old_stat_to_new = [](int16_t old_val) -> int16_t {
         // 旧形式 (3-18/220) を新形式 (30-400) に変換
@@ -217,31 +221,31 @@ static void rd_base_status(PlayerType *player_ptr)
     bool is_old_format = loading_savefile_version_is_older_than(36);
 
     for (int i = 0; i < A_MAX; i++) {
-        player_ptr->stat_max[i] = rd_s16b();
+        creature.stat_max[i] = rd_s16b();
         if (is_old_format) {
-            player_ptr->stat_max[i] = convert_old_stat_to_new(player_ptr->stat_max[i]);
+            creature.stat_max[i] = convert_old_stat_to_new(creature.stat_max[i]);
         }
     }
 
     for (int i = 0; i < A_MAX; i++) {
-        player_ptr->stat_max_max[i] = rd_s16b();
+        creature.stat_max_max[i] = rd_s16b();
         if (is_old_format) {
-            player_ptr->stat_max_max[i] = convert_old_stat_to_new(player_ptr->stat_max_max[i]);
+            creature.stat_max_max[i] = convert_old_stat_to_new(creature.stat_max_max[i]);
         }
     }
 
     for (int i = 0; i < A_MAX; i++) {
-        player_ptr->stat_cur[i] = rd_s16b();
+        creature.stat_cur[i] = rd_s16b();
         if (is_old_format) {
-            player_ptr->stat_cur[i] = convert_old_stat_to_new(player_ptr->stat_cur[i]);
+            creature.stat_cur[i] = convert_old_stat_to_new(creature.stat_cur[i]);
         }
     }
 }
 
-static void set_imitation(PlayerType *player_ptr)
+static void set_imitation(CreatureEntity &creature)
 {
     if (loading_savefile_version_is_older_than(11)) {
-        auto mane_data = CreatureClass(*player_ptr).get_specific_data<mane_data_type>();
+        auto mane_data = CreatureClass(creature).get_specific_data<mane_data_type>();
         if (!mane_data) {
             // ものまね師でない場合に読み捨てるためのダミーデータ領域
             mane_data = std::make_shared<mane_data_type>();
@@ -257,19 +261,19 @@ static void set_imitation(PlayerType *player_ptr)
     }
 }
 
-static void rd_phase_out(PlayerType *player_ptr)
+static void rd_phase_out(CreatureEntity &creature)
 {
     auto &system = AngbandSystem::get_instance();
-    player_ptr->current_floor_ptr->inside_arena = rd_s16b() != 0;
-    player_ptr->current_floor_ptr->quest_number = i2enum<QuestId>(rd_s16b());
+    creature.current_floor_ptr->inside_arena = rd_s16b() != 0;
+    creature.current_floor_ptr->quest_number = i2enum<QuestId>(rd_s16b());
     system.set_phase_out(rd_s16b() != 0);
 }
 
-static void rd_arena(PlayerType *player_ptr)
+static void rd_arena(CreatureEntity &creature)
 {
     set_gambling_monsters();
 
-    player_ptr->town_num = rd_s16b();
+    creature.town_num = rd_s16b();
     auto &entries = ArenaEntryList::get_instance();
     entries.load_current_entry(rd_s16b());
     if (loading_savefile_version < 28) {
@@ -282,72 +286,73 @@ static void rd_arena(PlayerType *player_ptr)
         entries.load_defeated_entry(rd_s16b());
     }
 
-    rd_phase_out(player_ptr);
+    rd_phase_out(creature);
     AngbandWorld::get_instance().set_arena(rd_bool());
     strip_bytes(1);
 
-    player_ptr->oldpx = rd_s16b();
-    player_ptr->oldpy = rd_s16b();
+    creature.oldpx = rd_s16b();
+    creature.oldpy = rd_s16b();
 }
 
 /*!
  * @brief プレイヤーの最大HP/現在HPを読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void rd_hp(PlayerType *player_ptr)
+static void rd_hp(CreatureEntity &creature)
 {
-    player_ptr->maxhp = rd_s32b();
-    player_ptr->hp = rd_s32b();
-    player_ptr->hp_frac = rd_u32b();
+    creature.maxhp = rd_s32b();
+    creature.hp = rd_s32b();
+    creature.hp_frac = rd_u32b();
 
     // セーブファイルバージョン35以降で与ダメージ蓄積を読み込み
     if (!loading_savefile_version_is_older_than(35)) {
-        player_ptr->dealt_damage = rd_s32b();
+        creature.dealt_damage = rd_s32b();
     } else {
-        player_ptr->dealt_damage = 0;
+        creature.dealt_damage = 0;
     }
 }
 
 /*!
  * @brief プレイヤーの最大MP/現在MPを読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void rd_mana(PlayerType *player_ptr)
+static void rd_mana(CreatureEntity &creature)
 {
-    player_ptr->msp = rd_s32b();
-    player_ptr->csp = rd_s32b();
-    player_ptr->csp_frac = rd_u32b();
+    creature.msp = rd_s32b();
+    creature.csp = rd_s32b();
+    creature.csp_frac = rd_u32b();
 }
 
 /*!
  * @brief プレイヤーのバッドステータス (と空腹)を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void rd_bad_status(PlayerType *player_ptr)
+static void rd_bad_status(CreatureEntity &creature)
 {
-    auto effects = player_ptr->effects();
+    const auto effects = creature.effects();
     strip_bytes(2); /* Old "rest" */
     effects->blindness().set(rd_s16b());
     effects->paralysis().set(rd_s16b());
     effects->confusion().set(rd_s16b());
-    player_ptr->food = rd_s16b();
+    creature.food = rd_s16b();
     strip_bytes(4); /* Old "food_digested" / "protection" */
 }
 
-static void rd_energy(PlayerType *player_ptr)
+static void rd_energy(CreatureEntity &creature)
 {
-    player_ptr->energy_need = rd_s16b();
-    player_ptr->enchant_energy_need = rd_s16b();
+    auto &player = static_cast<PlayerType &>(creature);
+    creature.energy_need = rd_s16b();
+    player.enchant_energy_need = rd_s16b();
 }
 
 /*!
  * @brief プレイヤーのグッド/バッドステータスを読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @todo 明らかに関数名がビッグワードだが他に思いつかなかった
  */
-static void rd_status(PlayerType *player_ptr)
+static void rd_status(CreatureEntity &creature)
 {
-    const auto effects = player_ptr->effects();
+    const auto effects = creature.effects();
     effects->acceleration().set(rd_s16b());
     effects->deceleration().set(rd_s16b());
     effects->fear().set(rd_s16b());
@@ -356,8 +361,8 @@ static void rd_status(PlayerType *player_ptr)
     effects->poison().set(rd_s16b());
     effects->hallucination().set(rd_s16b());
     effects->protection().set(rd_s16b());
-    player_ptr->invuln = rd_s16b();
-    player_ptr->ult_res = rd_s16b();
+    creature.invuln = rd_s16b();
+    creature.ult_res = rd_s16b();
 }
 
 static void set_timed_effects(CreatureEntity &creature)
@@ -394,23 +399,23 @@ static void set_timed_effects(CreatureEntity &creature)
     }
 }
 
-static void set_mutations(PlayerType *player_ptr)
+static void set_mutations(CreatureEntity &creature)
 {
     if (loading_savefile_version_is_older_than(2)) {
         for (int i = 0; i < 3; i++) {
             auto tmp32u = rd_u32b();
-            migrate_bitflag_to_flaggroup(player_ptr->muta, tmp32u, i * 32);
+            migrate_bitflag_to_flaggroup(creature.muta, tmp32u, i * 32);
         }
     } else {
-        rd_FlagGroup(player_ptr->muta, rd_byte);
+        rd_FlagGroup(creature.muta, rd_byte);
 
         if (!loading_savefile_version_is_older_than(7)) {
-            rd_FlagGroup(player_ptr->trait, rd_byte);
+            rd_FlagGroup(creature.trait, rd_byte);
         }
     }
 }
 
-static void set_virtues(PlayerType *player_ptr)
+static void set_virtues(CreatureEntity &creature)
 {
     // Load virtue values (8 entries)
     int16_t virtue_values[8];
@@ -419,47 +424,48 @@ static void set_virtues(PlayerType *player_ptr)
     }
 
     // Load virtue types (8 entries) and build map
-    player_ptr->virtues.clear();
+    creature.virtues.clear();
     for (int i = 0; i < 8; i++) {
         auto vir_type = i2enum<Virtue>(rd_s16b());
         if (vir_type != Virtue::NONE && vir_type < Virtue::MAX) {
-            player_ptr->virtues[vir_type] = virtue_values[i];
+            creature.virtues[vir_type] = virtue_values[i];
         }
     }
 }
 
 /*!
  * @brief 各種時限効果を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void rd_timed_effects(PlayerType *player_ptr)
+static void rd_timed_effects(CreatureEntity &creature)
 {
-    set_timed_effects(*player_ptr);
-    player_ptr->patron = rd_s16b();
-    set_mutations(player_ptr);
-    set_virtues(player_ptr);
+    set_timed_effects(creature);
+    creature.patron = rd_s16b();
+    set_mutations(creature);
+    set_virtues(creature);
 }
 
-static void rd_player_status(PlayerType *player_ptr)
+static void rd_player_status(CreatureEntity &creature)
 {
-    rd_base_status(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    rd_base_status(creature);
     strip_bytes(24);
-    player_ptr->au = rd_s32b();
-    rd_experience(player_ptr);
-    rd_skills(player_ptr);
-    set_race(player_ptr);
-    set_imitation(player_ptr);
+    creature.au = rd_s32b();
+    rd_experience(creature);
+    rd_skills(creature);
+    set_race(creature);
+    set_imitation(creature);
     rd_bounty_uniques();
-    rd_arena(player_ptr);
+    rd_arena(creature);
     rd_dummy1();
-    rd_hp(player_ptr);
-    rd_mana(player_ptr);
-    player_ptr->max_plv = rd_s16b();
-    rd_dungeons(player_ptr);
+    rd_hp(creature);
+    rd_mana(creature);
+    player.max_plv = rd_s16b();
+    rd_dungeons(&player);
     strip_bytes(8);
-    player_ptr->prestige = rd_s16b();
+    creature.prestige = rd_s16b();
     if (loading_savefile_version_is_older_than(11)) {
-        auto sniper_data = CreatureClass(*player_ptr).get_specific_data<SniperData>();
+        auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
         if (sniper_data) {
             sniper_data->concent = rd_s16b();
         } else {
@@ -467,27 +473,27 @@ static void rd_player_status(PlayerType *player_ptr)
             strip_bytes(2);
         }
     }
-    rd_bad_status(player_ptr);
-    rd_energy(player_ptr);
-    rd_status(player_ptr);
-    player_ptr->hero = rd_s16b();
-    player_ptr->berserk = rd_s16b();
-    player_ptr->shield = rd_s16b();
-    player_ptr->blessed = rd_s16b();
-    player_ptr->tim_invis = rd_s16b();
-    player_ptr->word_recall = rd_s16b();
-    player_ptr->recall_dungeon = i2enum<DungeonId>(rd_s16b());
-    player_ptr->alter_reality = rd_s16b();
-    player_ptr->see_infra = rd_s16b();
-    player_ptr->tim_infra = rd_s16b();
-    player_ptr->oppose_fire = rd_s16b();
-    player_ptr->oppose_cold = rd_s16b();
-    player_ptr->oppose_acid = rd_s16b();
-    player_ptr->oppose_elec = rd_s16b();
-    player_ptr->oppose_pois = rd_s16b();
-    player_ptr->tsuyoshi = rd_s16b();
-    rd_timed_effects(player_ptr);
-    player_ptr->mutant_regenerate_mod = calc_mutant_regenerate_mod(*player_ptr);
+    rd_bad_status(creature);
+    rd_energy(creature);
+    rd_status(creature);
+    creature.hero = rd_s16b();
+    creature.berserk = rd_s16b();
+    creature.shield = rd_s16b();
+    creature.blessed = rd_s16b();
+    creature.tim_invis = rd_s16b();
+    player.word_recall = rd_s16b();
+    player.recall_dungeon = i2enum<DungeonId>(rd_s16b());
+    player.alter_reality = rd_s16b();
+    creature.see_infra = rd_s16b();
+    creature.tim_infra = rd_s16b();
+    creature.oppose_fire = rd_s16b();
+    creature.oppose_cold = rd_s16b();
+    creature.oppose_acid = rd_s16b();
+    creature.oppose_elec = rd_s16b();
+    creature.oppose_pois = rd_s16b();
+    creature.tsuyoshi = rd_s16b();
+    rd_timed_effects(creature);
+    player.mutant_regenerate_mod = calc_mutant_regenerate_mod(creature);
 
     if (!loading_savefile_version_is_older_than(6)) {
         int32_t num = rd_s32b();
@@ -495,7 +501,7 @@ static void rd_player_status(PlayerType *player_ptr)
             int32_t id, count;
             id = rd_s32b();
             count = rd_s32b();
-            player_ptr->incident[(INCIDENT)id] = count;
+            player.incident[(INCIDENT)id] = count;
         }
     }
 
@@ -505,18 +511,19 @@ static void rd_player_status(PlayerType *player_ptr)
         for (int32_t i = 0; i < num; i++) {
             std::string key = rd_string();
             int32_t count = rd_s32b();
-            player_ptr->incident_tree[key] = count;
+            creature.incident_tree[key] = count;
         }
     }
 }
 
-void rd_player_info(PlayerType *player_ptr)
+void rd_player_info(CreatureEntity &creature)
 {
-    rd_player_status(player_ptr);
-    rd_special_attack(player_ptr);
-    rd_special_action(player_ptr);
-    rd_special_defense(player_ptr);
-    player_ptr->knowledge = rd_byte();
-    rd_autopick(player_ptr);
-    rd_action(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    rd_player_status(creature);
+    rd_special_attack(&player);
+    rd_special_action(&player);
+    rd_special_defense(&player);
+    player.knowledge = rd_byte();
+    rd_autopick(&player);
+    rd_action(&player);
 }
