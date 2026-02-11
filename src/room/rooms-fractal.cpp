@@ -54,7 +54,7 @@ bool build_type9(PlayerType *player_ptr, DungeonData *dd_ptr)
         generate_hmap(floor, center->y, center->x, width, height, grd, roug, cutoff);
 
         /* Convert to normal format + clean up */
-        if (generate_fracave(player_ptr, center->y, center->x, width, height, cutoff, should_brighten, true)) {
+        if (generate_fracave(*player_ptr, center->y, center->x, width, height, cutoff, should_brighten, true)) {
             break;
         }
     }
