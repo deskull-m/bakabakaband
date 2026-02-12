@@ -193,7 +193,7 @@ static void build_room_vault(CreatureEntity &creature, const Pos2D &center, cons
         const auto x2 = randint1(vec_half.x) * 2 + center.x - vec_half.x;
         const auto y1 = randint1(vec_half.y) * 2 + center.y - vec_half.y;
         const auto y2 = randint1(vec_half.y) * 2 + center.y - vec_half.y;
-        build_room(&player, x1, x2, y1, y2);
+        build_room(creature, x1, x2, y1, y2);
     }
 
     /* Add some random doors */
@@ -603,7 +603,7 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
     }
 
     /* Find visible outer walls and set to be FEAT_OUTER */
-    add_outer_wall(&player, center.x, center.y, false, center.x - rad - 1, center.y - rad - 1, center.x + rad + 1, center.y + rad + 1);
+    add_outer_wall(creature, center.x, center.y, false, center.x - rad - 1, center.y - rad - 1, center.x + rad + 1, center.y + rad + 1);
 
     /* Add inner wall */
     for (auto x = center.x - rad / 2; x <= center.x + rad / 2; x++) {
@@ -721,7 +721,7 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
 
     /* make a few rooms in the vault */
     for (auto i = 1; i <= (xsize * ysize) / 50; i++) {
-        build_small_room(&player, center.x + randint0(xsize - 4) - xsize / 2 + 2, center.y + randint0(ysize - 4) - ysize / 2 + 2);
+        build_small_room(creature, center.x + randint0(xsize - 4) - xsize / 2 + 2, center.y + randint0(ysize - 4) - ysize / 2 + 2);
     }
 
     /* Fill with monsters and treasure, low difficulty */
@@ -862,7 +862,7 @@ static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, co
     }
 
     /* Make the castle */
-    build_recursive_room(&player, area.top_left.x, area.top_left.y, area.bottom_right.x, area.bottom_right.y, randint1(5));
+    build_recursive_room(creature, area.top_left.x, area.top_left.y, area.bottom_right.x, area.bottom_right.y, randint1(5));
 
     /* Fill with monsters and treasure, low difficulty */
     fill_treasure(&player, area, randint1(3));

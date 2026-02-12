@@ -813,7 +813,7 @@ bool build_type11(PlayerType *player_ptr, DungeonData *dd_ptr)
     }
 
     /* Find visible outer walls and set to be FEAT_OUTER */
-    add_outer_wall(player_ptr, center->x, center->y, should_brighten, center->x - rad, center->y - rad, center->x + rad, center->y + rad);
+    add_outer_wall(*player_ptr, center->x, center->y, should_brighten, center->x - rad, center->y - rad, center->x + rad, center->y + rad);
     return true;
 }
 
@@ -868,7 +868,7 @@ bool build_type12(PlayerType *player_ptr, DungeonData *dd_ptr)
     }
 
     /* Find visible outer walls and set to be FEAT_OUTER */
-    add_outer_wall(player_ptr, center->x, center->y, should_brighten, center->x - rad - 1, center->y - rad - 1, center->x + rad + 1, center->y + rad + 1);
+    add_outer_wall(*player_ptr, center->x, center->y, should_brighten, center->x - rad - 1, center->y - rad - 1, center->x + rad + 1, center->y + rad + 1);
 
     /* Check to see if there is room for an inner vault */
     auto is_empty = true;
@@ -887,7 +887,7 @@ bool build_type12(PlayerType *player_ptr, DungeonData *dd_ptr)
 
     if (is_empty && one_in_(2)) {
         /* Build the vault */
-        build_small_room(player_ptr, center->x, center->y);
+        build_small_room(*player_ptr, center->x, center->y);
 
         /* Place a treasure in the vault */
         place_object(player_ptr, *center, 0);
