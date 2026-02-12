@@ -36,7 +36,7 @@ void gen_caverns_and_lakes(PlayerType *player_ptr, const DungeonDefinition &dung
     constexpr auto chance_destroyed = 18;
     if ((floor.dun_level > 30) && one_in_(chance_destroyed * 2) && small_levels && dungeon.flags.has(DungeonFeatureType::DESTROY)) {
         dd_ptr->destroyed = true;
-        build_lake(player_ptr, one_in_(2) ? LAKE_T_CAVE : LAKE_T_EARTH_VAULT);
+        build_lake(*player_ptr, one_in_(2) ? LAKE_T_CAVE : LAKE_T_EARTH_VAULT);
     }
 
     constexpr auto chance_water = 24;
@@ -87,7 +87,7 @@ void gen_caverns_and_lakes(PlayerType *player_ptr, const DungeonDefinition &dung
 
         if (dd_ptr->laketype) {
             msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("湖を生成します。", "Lake on the level."));
-            build_lake(player_ptr, dd_ptr->laketype);
+            build_lake(*player_ptr, dd_ptr->laketype);
         }
     }
 
@@ -95,7 +95,7 @@ void gen_caverns_and_lakes(PlayerType *player_ptr, const DungeonDefinition &dung
     if (should_build_cavern) {
         dd_ptr->cavern = true;
         msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("洞窟を生成。", "Cavern on level."));
-        build_cavern(player_ptr);
+        build_cavern(*player_ptr);
     }
 
     if (inside_quest(floor.get_quest_id())) {
