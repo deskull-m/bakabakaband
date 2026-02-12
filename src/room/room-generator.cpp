@@ -64,7 +64,7 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::GLASS:
         return build_type15(player_ptr, dd_ptr);
     case RoomType::ARCADE:
-        return build_type16(player_ptr, dd_ptr);
+        return build_type16(*player_ptr, dd_ptr);
     case RoomType::FIXED:
         return build_fixed_room(*player_ptr, dd_ptr, 17, false, -1);
     case RoomType::PERVO:
