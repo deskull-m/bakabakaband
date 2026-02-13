@@ -42,7 +42,7 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::INNER_FEAT:
         return build_type4(player_ptr, dd_ptr);
     case RoomType::NEST:
-        return build_type5(player_ptr, dd_ptr);
+        return build_type5(*player_ptr, dd_ptr);
     case RoomType::PIT:
         return build_type6(player_ptr, dd_ptr);
     case RoomType::LESSER_VAULT:
