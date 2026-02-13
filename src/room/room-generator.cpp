@@ -34,13 +34,13 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
 {
     switch (typ) {
     case RoomType::NORMAL:
-        return build_type1(player_ptr, dd_ptr);
+        return build_type1(*player_ptr, dd_ptr);
     case RoomType::OVERLAP:
-        return build_type2(player_ptr, dd_ptr);
+        return build_type2(*player_ptr, dd_ptr);
     case RoomType::CROSS:
-        return build_type3(player_ptr, dd_ptr);
+        return build_type3(*player_ptr, dd_ptr);
     case RoomType::INNER_FEAT:
-        return build_type4(player_ptr, dd_ptr);
+        return build_type4(*player_ptr, dd_ptr);
     case RoomType::NEST:
         return build_type5(*player_ptr, dd_ptr);
     case RoomType::PIT:
@@ -54,9 +54,9 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::RANDOM_VAULT:
         return build_type10(*player_ptr, dd_ptr);
     case RoomType::OVAL:
-        return build_type11(player_ptr, dd_ptr);
+        return build_type11(*player_ptr, dd_ptr);
     case RoomType::CRYPT:
-        return build_type12(player_ptr, dd_ptr);
+        return build_type12(*player_ptr, dd_ptr);
     case RoomType::TRAP_PIT:
         return build_type13(player_ptr, dd_ptr);
     case RoomType::TRAP:
@@ -70,7 +70,7 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::PERVO:
         return build_fixed_room(*player_ptr, dd_ptr, 18, false, -1);
     case RoomType::MAZE:
-        return build_nonvault_maze(player_ptr, dd_ptr);
+        return build_nonvault_maze(*player_ptr, dd_ptr);
     case RoomType::HOUSE:
         return build_fixed_room(*player_ptr, dd_ptr, 19, false, -1);
     case RoomType::THRONE_ROOM:

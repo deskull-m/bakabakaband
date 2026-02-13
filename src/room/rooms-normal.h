@@ -1,11 +1,11 @@
 #pragma once
 
+class CreatureEntity;
 class DungeonData;
-class PlayerType;
-bool build_type1(PlayerType *player_ptr, DungeonData *dd_ptr);
-bool build_type2(PlayerType *player_ptr, DungeonData *dd_ptr);
-bool build_type3(PlayerType *player_ptr, DungeonData *dd_ptr);
-bool build_type4(PlayerType *player_ptr, DungeonData *dd_ptr);
-bool build_type11(PlayerType *player_ptr, DungeonData *dd_ptr);
-bool build_type12(PlayerType *player_ptr, DungeonData *dd_ptr);
-bool build_nonvault_maze(PlayerType *player_ptr, DungeonData *dd_ptr);
+bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr);
+bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr);
+bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr);
+bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr);
+bool build_type11(CreatureEntity &creature, DungeonData *dd_ptr);
+bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr);
+bool build_nonvault_maze(CreatureEntity &creature, DungeonData *dd_ptr);

@@ -31,7 +31,7 @@ bool build_type9(PlayerType *player_ptr, DungeonData *dd_ptr)
              * Still no space?!
              * Try normal room
              */
-            return build_type1(player_ptr, dd_ptr);
+            return build_type1(*player_ptr, dd_ptr);
         }
     }
 
