@@ -12,6 +12,7 @@
 #include "room/door-definition.h"
 #include "room/pit-nest-util.h"
 #include "room/space-finder.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -44,8 +45,9 @@ const std::map<NestKind, nest_pit_type> nest_types = {
     { NestKind::UNDEAD, { _("アンデッド", "undead"), MonraceHook::UNDEAD, PitNestHook::NONE, 75, 5 } },
 };
 
-tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(PlayerType *player_ptr, MonsterEntity &align)
+tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(CreatureEntity &creature, MonsterEntity &align)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> nest_mon_info_list{};
     const auto &monraces = MonraceList::get_instance();
     for (auto &nest_mon_info : nest_mon_info_list) {
@@ -69,31 +71,32 @@ tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(
     return nest_mon_info_list;
 }
 
-Rect2D generate_large_room(PlayerType *player_ptr, const Pos2D &center)
+Rect2D generate_large_room(CreatureEntity &creature, const Pos2D &center)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     constexpr Vector2D vec(4, 11);
     const Rect2D rectangle(center, vec);
     for (const auto &pos : rectangle.resized(1)) {
         auto &grid = floor.get_grid(pos);
-        place_grid(*player_ptr, grid, GB_FLOOR);
+        place_grid(creature, grid, GB_FLOOR);
         grid.add_info(CAVE_ROOM);
     }
 
-    rectangle.resized(1).each_edge([player_ptr, &floor](const Pos2D &pos) {
-        place_grid(*player_ptr, floor.get_grid(pos), GB_OUTER);
+    rectangle.resized(1).each_edge([&creature, &floor](const Pos2D &pos) {
+        place_grid(creature, floor.get_grid(pos), GB_OUTER);
     });
 
     return rectangle;
 }
 
-void generate_inner_room(PlayerType *player_ptr, const Pos2D &center, Rect2D &rectangle)
+void generate_inner_room(CreatureEntity &creature, const Pos2D &center, Rect2D &rectangle)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto inner_rectangle = rectangle.resized(-2);
 
-    inner_rectangle.resized(1).each_edge([player_ptr, &floor](const Pos2D &pos) {
-        place_grid(*player_ptr, floor.get_grid(pos), GB_INNER);
+    inner_rectangle.resized(1).each_edge([&creature, &floor](const Pos2D &pos) {
+        place_grid(creature, floor.get_grid(pos), GB_INNER);
     });
 
     for (const auto &pos : inner_rectangle) {
@@ -117,8 +120,9 @@ void generate_inner_room(PlayerType *player_ptr, const Pos2D &center, Rect2D &re
     }
 }
 
-void place_monsters_in_nest(PlayerType *player_ptr, const Pos2D &center, std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> &nest_mon_info_list)
+void place_monsters_in_nest(CreatureEntity &creature, const Pos2D &center, std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> &nest_mon_info_list)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (const auto &pos : Rect2D(center, Pos2DVec(2, 9))) {
         auto &nest_mon_info = rand_choice(nest_mon_info_list);
         (void)place_specific_monster(player_ptr, pos.y, pos.x, nest_mon_info.monrace_id, 0L);
@@ -126,11 +130,13 @@ void place_monsters_in_nest(PlayerType *player_ptr, const Pos2D &center, std::ar
     }
 }
 
-void output_debug_nest(PlayerType *player_ptr, std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> &nest_mon_info_list)
+void output_debug_nest(CreatureEntity &creature, std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> &nest_mon_info_list)
 {
     if (!cheat_room) {
         return;
     }
+
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
 
     std::stable_sort(nest_mon_info_list.begin(), nest_mon_info_list.end(),
         [](const auto &x, const auto &y) { return x.order_nest(y); });
@@ -196,11 +202,12 @@ const MonraceDefinition &NestMonsterInfo::get_monrace() const
 
 /*!
  * @brief タイプ5の部屋…nestを生成する / Type 5 -- Monster nests
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-bool build_type5(PlayerType *player_ptr, DungeonData *dd_ptr)
+bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto nest_type = pick_nest_type(floor, nest_types);
     if (!nest_type) {
         return false;
@@ -212,7 +219,7 @@ bool build_type5(PlayerType *player_ptr, DungeonData *dd_ptr)
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;
 
-    auto nest_mon_info_list = pick_nest_monraces(player_ptr, align);
+    auto nest_mon_info_list = pick_nest_monraces(creature, align);
     if (!nest_mon_info_list) {
         return false;
     }
@@ -222,13 +229,13 @@ bool build_type5(PlayerType *player_ptr, DungeonData *dd_ptr)
         return false;
     }
 
-    auto rectangle = generate_large_room(player_ptr, *center);
-    generate_inner_room(player_ptr, *center, rectangle);
+    auto rectangle = generate_large_room(creature, *center);
+    generate_inner_room(creature, *center, rectangle);
 
     constexpr auto fmt_nest = _("モンスター部屋(nest)(%s%s)を生成します。", "Monster nest (%s%s)");
     const auto &nest_filter = PitNestFilter::get_instance();
     msg_format_wizard(player_ptr, CHEAT_DUNGEON, fmt_nest, nest.name.data(), nest_filter.nest_subtype(*nest_type).data());
-    place_monsters_in_nest(player_ptr, *center, *nest_mon_info_list);
-    output_debug_nest(player_ptr, *nest_mon_info_list);
+    place_monsters_in_nest(creature, *center, *nest_mon_info_list);
+    output_debug_nest(creature, *nest_mon_info_list);
     return true;
 }
