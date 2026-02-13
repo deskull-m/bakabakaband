@@ -44,7 +44,7 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::NEST:
         return build_type5(*player_ptr, dd_ptr);
     case RoomType::PIT:
-        return build_type6(player_ptr, dd_ptr);
+        return build_type6(*player_ptr, dd_ptr);
     case RoomType::LESSER_VAULT:
         return build_fixed_room(*player_ptr, dd_ptr, 7, false, -1);
     case RoomType::GREATER_VAULT:
@@ -58,7 +58,7 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::CRYPT:
         return build_type12(*player_ptr, dd_ptr);
     case RoomType::TRAP_PIT:
-        return build_type13(player_ptr, dd_ptr);
+        return build_type13(*player_ptr, dd_ptr);
     case RoomType::TRAP:
         return build_type14(player_ptr, dd_ptr);
     case RoomType::GLASS:
