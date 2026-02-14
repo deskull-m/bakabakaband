@@ -10,6 +10,7 @@
 #include "pet/pet-util.h"
 #include "racial/racial-android.h"
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -42,11 +43,11 @@ static void inscribe_nickname(ItemEntity &item, const CapturedMonsterType &cap_m
     insc->append(nickname.str());
 }
 
-static bool capture_monster(PlayerType *player_ptr, ItemEntity &item)
+static bool capture_monster(CreatureEntity &creature, ItemEntity &item)
 {
     const auto old_target_pet = target_pet;
     target_pet = true;
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         target_pet = old_target_pet;
         return false;
@@ -54,7 +55,7 @@ static bool capture_monster(PlayerType *player_ptr, ItemEntity &item)
 
     target_pet = old_target_pet;
     CapturedMonsterType cap_mon;
-    if (!fire_ball(*player_ptr, AttributeType::CAPTURE, dir, 0, 0, &cap_mon)) {
+    if (!fire_ball(creature, AttributeType::CAPTURE, dir, 0, 0, &cap_mon)) {
         return true;
     }
 
@@ -93,11 +94,12 @@ static void restore_monster_nickname(MonsterEntity &monster, ItemEntity &item)
     insc->erase(s - insc->data());
 }
 
-static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Direction &dir)
+static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Direction &dir)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &monrace = item.get_monrace();
-    const auto pos = player_ptr->get_neighbor(dir);
-    if (!monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0)) {
+    const auto pos = creature.get_neighbor(dir);
+    if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
         return false;
     }
 
@@ -106,7 +108,7 @@ static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Dire
         return false;
     }
 
-    auto &monster = player_ptr->current_floor_ptr->m_list[*m_idx];
+    auto &monster = creature.current_floor_ptr->m_list[*m_idx];
     if (item.captured_monster_speed > 0) {
         monster.speed = item.captured_monster_speed;
     }
@@ -129,14 +131,15 @@ static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Dire
     return true;
 }
 
-bool exe_monster_capture(PlayerType *player_ptr, ItemEntity &item)
+bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (item.bi_key.tval() != ItemKindType::CAPTURE) {
         return false;
     }
 
     if (item.pval == 0) {
-        if (!capture_monster(player_ptr, item)) {
+        if (!capture_monster(creature, item)) {
             return true;
         }
 
@@ -149,7 +152,7 @@ bool exe_monster_capture(PlayerType *player_ptr, ItemEntity &item)
         return true;
     }
 
-    if (!release_monster(player_ptr, item, dir)) {
+    if (!release_monster(creature, item, dir)) {
         msg_print(_("おっと、解放に失敗した。", "Oops.  You failed to release your pet."));
     }
 
