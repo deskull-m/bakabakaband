@@ -361,7 +361,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
         activated = true;
     } else if (scouter_probing(creature, ae_ptr)) {
         activated = true;
-    } else if (exe_monster_capture(&player, *ae_ptr->o_ptr)) {
+    } else if (exe_monster_capture(player, *ae_ptr->o_ptr)) {
         activated = true;
     } else if (activate_firethrowing(creature, ae_ptr)) {
         activated = true;
