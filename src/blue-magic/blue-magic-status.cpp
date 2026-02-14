@@ -10,59 +10,64 @@
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
-bool cast_blue_scare(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_scare(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     msg_print(_("恐ろしげな幻覚を作り出した。", "You cast a fearful illusion."));
     fear_monster(player_ptr, dir, bmc_ptr->plev + 10);
     return true;
 }
 
-bool cast_blue_blind(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_blind(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     confuse_monster(player_ptr, dir, bmc_ptr->plev * 2);
     return true;
 }
 
-bool cast_blue_confusion(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_confusion(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     msg_print(_("誘惑的な幻覚をつくり出した。", "You cast a mesmerizing illusion."));
     confuse_monster(player_ptr, dir, bmc_ptr->plev * 2);
     return true;
 }
 
-bool cast_blue_slow(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_slow(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     slow_monster(player_ptr, dir, bmc_ptr->plev);
     return true;
 }
 
-bool cast_blue_sleep(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_sleep(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     sleep_monster(player_ptr, dir, bmc_ptr->plev);
     return true;
 }
