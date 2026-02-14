@@ -6,6 +6,7 @@
 #include "player-info/class-info.h"
 #include "player-info/mimic-info-table.h"
 #include "player/player-status-table.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
@@ -33,12 +34,12 @@ struct condition_layout_info {
 /*!
  * @brief プレイヤーの称号を表示する / Prints "title", including "wizard" or "winner" as needed.
  */
-void print_title(PlayerType *player_ptr)
+void print_title(CreatureEntity &creature)
 {
     std::string p;
     const auto &world = AngbandWorld::get_instance();
     if (world.wizard) {
-        p = _("[ウィザード]", "[=-WIZARD-=]");
+        p = _("［ウィザード］", "[=-WIZARD-=]");
     } else if (world.total_winner) {
         if (world.is_player_true_winner()) {
             p = _("*真・勝利者*", "*TRUEWINNER*");
@@ -46,7 +47,7 @@ void print_title(PlayerType *player_ptr)
             p = _("***勝利者***", "***WINNER***");
         }
     } else {
-        p = player_titles.at(player_ptr->pclass).at((player_ptr->level - 1) / 5);
+        p = player_titles.at(creature.pclass).at((creature.level - 1) / 5);
     }
 
     print_field(p, ROW_TITLE, COL_TITLE);
@@ -55,10 +56,11 @@ void print_title(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーのレベルを表示する / Prints level
  */
-void print_level(PlayerType *player_ptr)
+void print_level(CreatureEntity &creature)
 {
-    const auto tmp = format("%5d", player_ptr->level);
-    if (player_ptr->level >= player_ptr->max_plv) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    const auto tmp = format("%5d", creature.level);
+    if (creature.level >= player_ptr->max_plv) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
         c_put_str(TERM_L_GREEN, tmp, ROW_LEVEL, COL_LEVEL + 7);
     } else {
@@ -70,22 +72,23 @@ void print_level(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーの経験値を表示する / Display the experience
  */
-void print_exp(PlayerType *player_ptr)
+void print_exp(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     std::string out_val;
 
-    CreatureRace pr(player_ptr);
+    CreatureRace pr(&creature);
     if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
-        out_val = format("%8d", player_ptr->exp);
+        out_val = format("%8d", creature.exp);
     } else {
-        if (player_ptr->level >= PY_MAX_LEVEL) {
+        if (creature.level >= PY_MAX_LEVEL) {
             (void)sprintf(out_val.data(), "********");
         } else {
-            out_val = format("%8d", player_exp[player_ptr->level - 1] * player_ptr->expfact / 100 - player_ptr->exp);
+            out_val = format("%8d", player_exp[creature.level - 1] * player_ptr->expfact / 100 - creature.exp);
         }
     }
 
-    if (player_ptr->exp >= player_ptr->max_exp) {
+    if (creature.exp >= creature.max_exp) {
         if (pr.equals(PlayerRaceType::ANDROID)) {
             put_str(_("強化 ", "Cst "), ROW_EXP, 0);
         } else {
@@ -101,18 +104,18 @@ void print_exp(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーのACを表示する / Prints current AC
  */
-void print_ac(PlayerType *player_ptr)
+void print_ac(CreatureEntity &creature)
 {
     char tmp[32];
 
 #ifdef JP
     /* AC の表示方式を変更している */
     put_str(" ＡＣ(     )", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", player_ptr->dis_ac + player_ptr->dis_to_a);
+    sprintf(tmp, "%5d", creature.dis_ac + creature.dis_to_a);
     c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 6);
 #else
     put_str("Cur AC ", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", player_ptr->dis_ac + player_ptr->dis_to_a);
+    sprintf(tmp, "%5d", creature.dis_ac + creature.dis_to_a);
     c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 7);
 #endif
 }
@@ -185,14 +188,14 @@ void print_gold(CreatureEntity &creature)
  * @brief 現在のフロアの深さを表示する / Prints depth in stat area
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void print_depth(PlayerType *player_ptr)
+void print_depth(CreatureEntity &creature)
 {
     std::string depths;
     TERM_COLOR attr = TERM_WHITE;
     const auto &[wid, hgt] = term_get_size();
     const auto col_depth = wid + COL_DEPTH;
     const auto row_depth = hgt + ROW_DEPTH;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (!floor.is_underground()) {
         c_prt(attr, format("%7s", _("地上", "Surf.")), row_depth, col_depth);
         return;
@@ -247,33 +250,34 @@ void print_depth(PlayerType *player_ptr)
  * @brief プレイヤーのステータスを一括表示する（左側部分） / Display basic info (mostly left of map)
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void print_frame_basic(PlayerType *player_ptr)
+void print_frame_basic(CreatureEntity &creature)
 {
-    const auto &title = player_ptr->mimic_form == MimicKindType::NONE
-                            ? player_ptr->race->title
-                            : mimic_info.at(player_ptr->mimic_form).title;
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    const auto &title = creature.mimic_form == MimicKindType::NONE
+                            ? creature.race->title
+                            : mimic_info.at(creature.mimic_form).title;
     print_field(title, ROW_RACE, COL_RACE);
-    print_title(player_ptr);
-    print_level(player_ptr);
-    print_exp(player_ptr);
+    print_title(creature);
+    print_level(creature);
+    print_exp(creature);
     for (int i = 0; i < A_MAX; i++) {
         print_stat(player_ptr, i);
     }
 
-    print_ac(player_ptr);
-    print_hp(*player_ptr);
-    print_sp(*player_ptr);
-    print_gold(*player_ptr);
-    print_depth(player_ptr);
-    print_health(player_ptr, true);
-    print_health(player_ptr, false);
+    print_ac(creature);
+    print_hp(creature);
+    print_sp(creature);
+    print_gold(creature);
+    print_depth(creature);
+    print_health(creature, true);
+    print_health(creature, false);
 }
 
 /*!
  * @brief wizardモード中の闘技場情報を表示する
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void print_health_monster_in_arena_for_wizard(PlayerType *player_ptr)
+static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
 {
     int row = ROW_INFO - 1;
     int col = COL_INFO + 2;
@@ -286,7 +290,7 @@ static void print_health_monster_in_arena_for_wizard(PlayerType *player_ptr)
 
         term_putstr(col - 2, row + row_offset, 12, TERM_WHITE, "      /     ");
 
-        auto &monster = player_ptr->current_floor_ptr->m_list[monster_list_index];
+        auto &monster = creature.current_floor_ptr->m_list[monster_list_index];
         if (monster.is_valid()) {
             const auto &monrace = monster.get_monrace();
             const auto &symbol_config = monrace.symbol_config;
@@ -350,21 +354,21 @@ static std::vector<condition_layout_info> get_condition_layout_info(const Monste
  * health-bar stops tracking any monster that "disappears".
  * </pre>
  */
-void print_health(PlayerType *player_ptr, bool riding)
+void print_health(CreatureEntity &creature, bool riding)
 {
     tl::optional<short> monster_idx;
     int row, col;
 
     if (riding) {
-        if (player_ptr->riding > 0) {
-            monster_idx = player_ptr->riding;
+        if (creature.riding > 0) {
+            monster_idx = creature.riding;
         }
         row = ROW_RIDING_INFO;
         col = COL_RIDING_INFO;
     } else {
         // ウィザードモードで闘技場観戦時の表示
         if (AngbandWorld::get_instance().wizard && AngbandSystem::get_instance().is_phase_out()) {
-            print_health_monster_in_arena_for_wizard(player_ptr);
+            print_health_monster_in_arena_for_wizard(creature);
             return;
         }
 
@@ -387,9 +391,9 @@ void print_health(PlayerType *player_ptr, bool riding)
         return;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[monster_idx.value()];
+    const auto &monster = creature.current_floor_ptr->m_list[monster_idx.value()];
 
-    if ((!monster.ml) || (player_ptr->effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
+    if ((!monster.ml) || (creature.effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
         term_putstr(col, row, max_width, TERM_WHITE, "[----------]");
         return;
     }

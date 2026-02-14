@@ -107,7 +107,7 @@ void redraw_stuff(PlayerType *player_ptr)
             MainWindowRedrawingFlag::UHEALTH,
         };
         rfu.reset_flags(flags);
-        print_frame_basic(player_ptr);
+        print_frame_basic(*player_ptr);
         WorldTurnProcessor(player_ptr).print_time();
         WorldTurnProcessor(player_ptr).print_world_collapse();
         WorldTurnProcessor(player_ptr).print_cheat_position();
@@ -121,17 +121,17 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::TITLE)) {
         rfu.reset_flag(MainWindowRedrawingFlag::TITLE);
-        print_title(player_ptr);
+        print_title(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::LEVEL)) {
         rfu.reset_flag(MainWindowRedrawingFlag::LEVEL);
-        print_level(player_ptr);
+        print_level(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::EXP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::EXP);
-        print_exp(player_ptr);
+        print_exp(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::ABILITY_SCORE)) {
@@ -151,7 +151,7 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::AC)) {
         rfu.reset_flag(MainWindowRedrawingFlag::AC);
-        print_ac(player_ptr);
+        print_ac(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::HP)) {
@@ -171,17 +171,17 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::DEPTH)) {
         rfu.reset_flag(MainWindowRedrawingFlag::DEPTH);
-        print_depth(player_ptr);
+        print_depth(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::UHEALTH)) {
         rfu.reset_flag(MainWindowRedrawingFlag::UHEALTH);
-        print_health(player_ptr, true);
+        print_health(*player_ptr, true);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::HEALTH)) {
         rfu.reset_flag(MainWindowRedrawingFlag::HEALTH);
-        print_health(player_ptr, false);
+        print_health(*player_ptr, false);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::EXTRA)) {
