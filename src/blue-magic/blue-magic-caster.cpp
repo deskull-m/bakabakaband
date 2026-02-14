@@ -283,15 +283,15 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     case MonsterAbilityType::MISSILE:
         return cast_blue_magic_bolt(player_ptr, bmc_ptr);
     case MonsterAbilityType::SCARE:
-        return cast_blue_scare(player_ptr, bmc_ptr);
+        return cast_blue_scare(creature, bmc_ptr);
     case MonsterAbilityType::BLIND:
-        return cast_blue_blind(player_ptr, bmc_ptr);
+        return cast_blue_blind(creature, bmc_ptr);
     case MonsterAbilityType::CONF:
-        return cast_blue_confusion(player_ptr, bmc_ptr);
+        return cast_blue_confusion(creature, bmc_ptr);
     case MonsterAbilityType::SLOW:
-        return cast_blue_slow(player_ptr, bmc_ptr);
+        return cast_blue_slow(creature, bmc_ptr);
     case MonsterAbilityType::HOLD:
-        return cast_blue_sleep(player_ptr, bmc_ptr);
+        return cast_blue_sleep(creature, bmc_ptr);
     case MonsterAbilityType::HASTE:
         (void)set_acceleration(creature, randint1(20 + bmc_ptr->plev) + bmc_ptr->plev, false);
         return true;
