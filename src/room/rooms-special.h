@@ -1,5 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class DungeonData;
-class PlayerType;
-bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr);
+bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr);

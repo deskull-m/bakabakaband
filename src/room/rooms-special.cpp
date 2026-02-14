@@ -15,6 +15,7 @@
 #include "object/object-kind-hook.h"
 #include "room/door-definition.h"
 #include "room/space-finder.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -25,42 +26,43 @@
 #include "wizard/wizard-messages.h"
 
 namespace {
-void place_floor_glass(PlayerType *player_ptr, Grid &grid)
+void place_floor_glass(CreatureEntity &creature, Grid &grid)
 {
-    place_grid(*player_ptr, grid, GB_FLOOR);
+    place_grid(creature, grid, GB_FLOOR);
     grid.set_terrain_id(TerrainTag::GLASS_FLOOR);
 }
 
-void place_outer_glass(PlayerType *player_ptr, Grid &grid)
+void place_outer_glass(CreatureEntity &creature, Grid &grid)
 {
-    place_grid(*player_ptr, grid, GB_OUTER);
+    place_grid(creature, grid, GB_OUTER);
     grid.set_terrain_id(TerrainTag::GLASS_WALL);
 }
 
-void place_inner_glass(PlayerType *player_ptr, Grid &grid)
+void place_inner_glass(CreatureEntity &creature, Grid &grid)
 {
-    place_grid(*player_ptr, grid, GB_INNER);
+    place_grid(creature, grid, GB_INNER);
     grid.set_terrain_id(TerrainTag::GLASS_WALL);
 }
 
-void place_inner_perm_glass(PlayerType *player_ptr, Grid &grid)
+void place_inner_perm_glass(CreatureEntity &creature, Grid &grid)
 {
-    place_grid(*player_ptr, grid, GB_INNER_PERM);
+    place_grid(creature, grid, GB_INNER_PERM);
     grid.set_terrain_id(TerrainTag::PERMANENT_GLASS_WALL);
 }
 }
 
 /*!
  * @brief タイプ15の部屋…ガラス部屋の生成 / Type 15 -- glass rooms
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr)
+bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Pick a room size */
     const auto width = rand_range(9, 13);
     const auto height = rand_range(9, 13);
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto center = find_space(player_ptr, dd_ptr, height + 2, width + 2);
     if (!center) {
         return false;
@@ -79,7 +81,7 @@ bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr)
     for (auto y = top - 1; y <= bottom + 1; y++) {
         for (auto x = left - 1; x <= right + 1; x++) {
             auto &grid = floor.get_grid({ y, x });
-            place_floor_glass(player_ptr, grid);
+            place_floor_glass(creature, grid);
             grid.info |= (CAVE_ROOM);
             if (should_brighten) {
                 grid.info |= (CAVE_GLOW);
@@ -89,13 +91,13 @@ bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr)
 
     /* Walls around the room */
     for (auto y = top - 1; y <= bottom + 1; y++) {
-        place_outer_glass(player_ptr, floor.get_grid({ y, left - 1 }));
-        place_outer_glass(player_ptr, floor.get_grid({ y, right + 1 }));
+        place_outer_glass(creature, floor.get_grid({ y, left - 1 }));
+        place_outer_glass(creature, floor.get_grid({ y, right + 1 }));
     }
 
     for (auto x = left - 1; x <= right + 1; x++) {
-        place_outer_glass(player_ptr, floor.get_grid({ top - 1, x }));
-        place_outer_glass(player_ptr, floor.get_grid({ bottom + 1, x }));
+        place_outer_glass(creature, floor.get_grid({ top - 1, x }));
+        place_outer_glass(creature, floor.get_grid({ bottom + 1, x }));
     }
 
     switch (randint1(3)) {
@@ -113,13 +115,13 @@ bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr)
 
             /* Walls around the breather */
             for (const auto &d : Direction::directions_8()) {
-                place_inner_glass(player_ptr, floor.get_grid(pos + d.vec()));
+                place_inner_glass(creature, floor.get_grid(pos + d.vec()));
             }
         }
 
         /* Walls around the potion */
         for (const auto &d : Direction::directions_4()) {
-            place_inner_perm_glass(player_ptr, floor.get_grid(*center + d.vec() * 2));
+            place_inner_perm_glass(creature, floor.get_grid(*center + d.vec() * 2));
             floor.get_grid(*center + d.vec()).info |= CAVE_ICKY;
         }
 
@@ -139,10 +141,10 @@ bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr)
     case 2: /* 1 lite breather + random object */
     {
         /* Pillars */
-        place_inner_glass(player_ptr, floor.get_grid({ top + 1, left + 1 }));
-        place_inner_glass(player_ptr, floor.get_grid({ top + 1, right - 1 }));
-        place_inner_glass(player_ptr, floor.get_grid({ bottom - 1, left + 1 }));
-        place_inner_glass(player_ptr, floor.get_grid({ bottom - 1, right - 1 }));
+        place_inner_glass(creature, floor.get_grid({ top + 1, left + 1 }));
+        place_inner_glass(creature, floor.get_grid({ top + 1, right - 1 }));
+        place_inner_glass(creature, floor.get_grid({ bottom - 1, left + 1 }));
+        place_inner_glass(creature, floor.get_grid({ bottom - 1, right - 1 }));
         get_mon_num_prep_enum(player_ptr, MonraceHook::GLASS);
 
         const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level, 0);
@@ -152,7 +154,7 @@ bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr)
 
         /* Walls around the breather */
         for (const auto &d : Direction::directions_8()) {
-            place_inner_glass(player_ptr, floor.get_grid(*center + d.vec()));
+            place_inner_glass(creature, floor.get_grid(*center + d.vec()));
         }
 
         /* Curtains around the breather */
@@ -175,17 +177,17 @@ bool build_type15(PlayerType *player_ptr, DungeonData *dd_ptr)
     {
         /* Walls around the potion */
         for (auto y = center->y - 2; y <= center->y + 2; y++) {
-            place_inner_glass(player_ptr, floor.get_grid({ y, center->x - 3 }));
-            place_inner_glass(player_ptr, floor.get_grid({ y, center->x + 3 }));
+            place_inner_glass(creature, floor.get_grid({ y, center->x - 3 }));
+            place_inner_glass(creature, floor.get_grid({ y, center->x + 3 }));
         }
 
         for (auto x = center->x - 2; x <= center->x + 2; x++) {
-            place_inner_glass(player_ptr, floor.get_grid({ center->y - 3, x }));
-            place_inner_glass(player_ptr, floor.get_grid({ center->y + 3, x }));
+            place_inner_glass(creature, floor.get_grid({ center->y - 3, x }));
+            place_inner_glass(creature, floor.get_grid({ center->y + 3, x }));
         }
 
         for (const auto &d_diag : Direction::directions_diag4()) {
-            place_inner_glass(player_ptr, floor.get_grid(*center + d_diag.vec() * 2));
+            place_inner_glass(creature, floor.get_grid(*center + d_diag.vec() * 2));
         }
 
         get_mon_num_prep_enum(player_ptr, MonraceHook::SHARDS);
