@@ -252,7 +252,6 @@ void print_depth(CreatureEntity &creature)
  */
 void print_frame_basic(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &title = creature.mimic_form == MimicKindType::NONE
                             ? creature.race->title
                             : mimic_info.at(creature.mimic_form).title;
@@ -261,7 +260,7 @@ void print_frame_basic(CreatureEntity &creature)
     print_level(creature);
     print_exp(creature);
     for (int i = 0; i < A_MAX; i++) {
-        print_stat(player_ptr, i);
+        print_stat(creature, i);
     }
 
     print_ac(creature);

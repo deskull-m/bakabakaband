@@ -136,17 +136,17 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::ABILITY_SCORE)) {
         rfu.reset_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
-        print_stat(player_ptr, A_STR);
-        print_stat(player_ptr, A_INT);
-        print_stat(player_ptr, A_WIS);
-        print_stat(player_ptr, A_DEX);
-        print_stat(player_ptr, A_CON);
-        print_stat(player_ptr, A_CHR);
+        print_stat(*player_ptr, A_STR);
+        print_stat(*player_ptr, A_INT);
+        print_stat(*player_ptr, A_WIS);
+        print_stat(*player_ptr, A_DEX);
+        print_stat(*player_ptr, A_CON);
+        print_stat(*player_ptr, A_CHR);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT)) {
         rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-        print_status(player_ptr);
+        print_status(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::AC)) {
@@ -197,38 +197,38 @@ void redraw_stuff(PlayerType *player_ptr)
             MainWindowRedrawingFlag::TIMED_EFFECT,
         };
         rfu.reset_flags(flags);
-        print_frame_extra(player_ptr);
+        print_frame_extra(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::CUT)) {
         rfu.reset_flag(MainWindowRedrawingFlag::CUT);
-        print_cut(player_ptr);
+        print_cut(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::STUN)) {
         rfu.reset_flag(MainWindowRedrawingFlag::STUN);
-        print_stun(player_ptr);
+        print_stun(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::HUNGER)) {
         rfu.reset_flag(MainWindowRedrawingFlag::HUNGER);
-        print_hunger(player_ptr);
+        print_hunger(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::ACTION)) {
         rfu.reset_flag(MainWindowRedrawingFlag::ACTION);
-        print_state(player_ptr);
+        print_state(*player_ptr);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::SPEED)) {
         rfu.reset_flag(MainWindowRedrawingFlag::SPEED);
-        print_speed(player_ptr);
+        print_speed(*player_ptr);
     }
 
     if (CreatureClass(*player_ptr).equals(PlayerClassType::IMITATOR)) {
         if (rfu.has(MainWindowRedrawingFlag::IMITATION)) {
             rfu.reset_flag(MainWindowRedrawingFlag::IMITATION);
-            print_imitation(player_ptr);
+            print_imitation(*player_ptr);
         }
 
         return;
@@ -236,7 +236,7 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::STUDY)) {
         rfu.reset_flag(MainWindowRedrawingFlag::STUDY);
-        print_study(player_ptr);
+        print_study(*player_ptr);
     }
 }
 
