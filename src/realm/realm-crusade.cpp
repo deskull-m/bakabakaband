@@ -315,7 +315,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 22: {
         if (cast) {
-            cast_blue_dispel(player_ptr);
+            cast_blue_dispel(*player_ptr);
         }
     } break;
 
