@@ -202,7 +202,7 @@ static bool let_player_select_class(CreatureEntity &creature)
     clear_from(10);
     creature.pclass = PlayerClassType::WARRIOR;
     while (true) {
-        if (!get_player_class(player_ptr)) {
+        if (!get_player_class(creature)) {
             return false;
         }
 
