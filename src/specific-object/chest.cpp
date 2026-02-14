@@ -130,14 +130,14 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
     if (trap.has(ChestTrapType::LOSE_STR)) {
         msg_print(_("仕掛けられていた小さな針に刺されてしまった！", "A small needle has pricked you!"));
         take_hit(*this->player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
-        (void)do_dec_stat(this->player_ptr, A_STR);
+        (void)do_dec_stat(*this->player_ptr, A_STR);
     }
 
     /* Lose constitution */
     if (trap.has(ChestTrapType::LOSE_CON)) {
         msg_print(_("仕掛けられていた小さな針に刺されてしまった！", "A small needle has pricked you!"));
         take_hit(*this->player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 4), _("毒針", "a poison needle"));
-        (void)do_dec_stat(this->player_ptr, A_CON);
+        (void)do_dec_stat(*this->player_ptr, A_CON);
     }
 
     /* Poison */
@@ -268,12 +268,12 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
             }
 
             if (one_in_(2)) {
-                (void)do_dec_stat(this->player_ptr, A_STR);
-                (void)do_dec_stat(this->player_ptr, A_DEX);
-                (void)do_dec_stat(this->player_ptr, A_CON);
-                (void)do_dec_stat(this->player_ptr, A_INT);
-                (void)do_dec_stat(this->player_ptr, A_WIS);
-                (void)do_dec_stat(this->player_ptr, A_CHR);
+                (void)do_dec_stat(*this->player_ptr, A_STR);
+                (void)do_dec_stat(*this->player_ptr, A_DEX);
+                (void)do_dec_stat(*this->player_ptr, A_CON);
+                (void)do_dec_stat(*this->player_ptr, A_INT);
+                (void)do_dec_stat(*this->player_ptr, A_WIS);
+                (void)do_dec_stat(*this->player_ptr, A_CHR);
                 continue;
             }
 

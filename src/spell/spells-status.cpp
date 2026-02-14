@@ -509,22 +509,22 @@ bool restore_mana(PlayerType *player_ptr, bool magic_eater)
 bool restore_all_status(PlayerType *player_ptr)
 {
     bool ident = false;
-    if (do_res_stat(player_ptr, A_STR)) {
+    if (do_res_stat(*player_ptr, A_STR)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_INT)) {
+    if (do_res_stat(*player_ptr, A_INT)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_WIS)) {
+    if (do_res_stat(*player_ptr, A_WIS)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_DEX)) {
+    if (do_res_stat(*player_ptr, A_DEX)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_CON)) {
+    if (do_res_stat(*player_ptr, A_CON)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_CHR)) {
+    if (do_res_stat(*player_ptr, A_CHR)) {
         ident = true;
     }
     return ident;

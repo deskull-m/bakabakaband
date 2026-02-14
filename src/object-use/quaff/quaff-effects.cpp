@@ -99,17 +99,17 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_RUINATION:
         return this->ruination();
     case SV_POTION_DEC_STR:
-        return do_dec_stat(this->player_ptr, A_STR);
+        return do_dec_stat(*this->player_ptr, A_STR);
     case SV_POTION_DEC_INT:
-        return do_dec_stat(this->player_ptr, A_INT);
+        return do_dec_stat(*this->player_ptr, A_INT);
     case SV_POTION_DEC_WIS:
-        return do_dec_stat(this->player_ptr, A_WIS);
+        return do_dec_stat(*this->player_ptr, A_WIS);
     case SV_POTION_DEC_DEX:
-        return do_dec_stat(this->player_ptr, A_DEX);
+        return do_dec_stat(*this->player_ptr, A_DEX);
     case SV_POTION_DEC_CON:
-        return do_dec_stat(this->player_ptr, A_CON);
+        return do_dec_stat(*this->player_ptr, A_CON);
     case SV_POTION_DEC_CHR:
-        return do_dec_stat(this->player_ptr, A_CHR);
+        return do_dec_stat(*this->player_ptr, A_CHR);
     case SV_POTION_DETONATIONS:
         return this->detonation();
     case SV_POTION_DEATH:
@@ -151,29 +151,29 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_RESTORE_EXP:
         return restore_level(static_cast<CreatureEntity &>(*this->player_ptr));
     case SV_POTION_RES_STR:
-        return do_res_stat(this->player_ptr, A_STR);
+        return do_res_stat(*this->player_ptr, A_STR);
     case SV_POTION_RES_INT:
-        return do_res_stat(this->player_ptr, A_INT);
+        return do_res_stat(*this->player_ptr, A_INT);
     case SV_POTION_RES_WIS:
-        return do_res_stat(this->player_ptr, A_WIS);
+        return do_res_stat(*this->player_ptr, A_WIS);
     case SV_POTION_RES_DEX:
-        return do_res_stat(this->player_ptr, A_DEX);
+        return do_res_stat(*this->player_ptr, A_DEX);
     case SV_POTION_RES_CON:
-        return do_res_stat(this->player_ptr, A_CON);
+        return do_res_stat(*this->player_ptr, A_CON);
     case SV_POTION_RES_CHR:
-        return do_res_stat(this->player_ptr, A_CHR);
+        return do_res_stat(*this->player_ptr, A_CHR);
     case SV_POTION_INC_STR:
-        return do_inc_stat(this->player_ptr, A_STR);
+        return do_inc_stat(*this->player_ptr, A_STR);
     case SV_POTION_INC_INT:
-        return do_inc_stat(this->player_ptr, A_INT);
+        return do_inc_stat(*this->player_ptr, A_INT);
     case SV_POTION_INC_WIS:
-        return do_inc_stat(this->player_ptr, A_WIS);
+        return do_inc_stat(*this->player_ptr, A_WIS);
     case SV_POTION_INC_DEX:
-        return do_inc_stat(this->player_ptr, A_DEX);
+        return do_inc_stat(*this->player_ptr, A_DEX);
     case SV_POTION_INC_CON:
-        return do_inc_stat(this->player_ptr, A_CON);
+        return do_inc_stat(*this->player_ptr, A_CON);
     case SV_POTION_INC_CHR:
-        return do_inc_stat(this->player_ptr, A_CHR);
+        return do_inc_stat(*this->player_ptr, A_CHR);
     case SV_POTION_POLY_SELF:
         do_poly_self(this->player_ptr);
         return true;
@@ -328,7 +328,7 @@ bool QuaffEffects::booze()
 
     ident = true;
     if (one_in_(3)) {
-        lose_all_info(this->player_ptr);
+        lose_all_info(*this->player_ptr);
     } else {
         wiz_dark(this->player_ptr);
     }
@@ -383,12 +383,12 @@ bool QuaffEffects::ruination()
 {
     msg_print(_("身も心も弱ってきて、精気が抜けていくようだ。", "Your nerves and muscles feel weak and lifeless!"));
     take_hit(*this->player_ptr, DAMAGE_LOSELIFE, Dice::roll(10, 10), _("破滅の薬", "a potion of Ruination"));
-    (void)dec_stat(this->player_ptr, A_DEX, 25, true);
-    (void)dec_stat(this->player_ptr, A_WIS, 25, true);
-    (void)dec_stat(this->player_ptr, A_CON, 25, true);
-    (void)dec_stat(this->player_ptr, A_STR, 25, true);
-    (void)dec_stat(this->player_ptr, A_CHR, 25, true);
-    (void)dec_stat(this->player_ptr, A_INT, 25, true);
+    (void)dec_stat(*this->player_ptr, A_DEX, 25, true);
+    (void)dec_stat(*this->player_ptr, A_WIS, 25, true);
+    (void)dec_stat(*this->player_ptr, A_CON, 25, true);
+    (void)dec_stat(*this->player_ptr, A_STR, 25, true);
+    (void)dec_stat(*this->player_ptr, A_CHR, 25, true);
+    (void)dec_stat(*this->player_ptr, A_INT, 25, true);
     return true;
 }
 
@@ -440,27 +440,27 @@ bool QuaffEffects::speed()
 bool QuaffEffects::augmentation()
 {
     auto ident = false;
-    if (do_inc_stat(this->player_ptr, A_STR)) {
+    if (do_inc_stat(*this->player_ptr, A_STR)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_INT)) {
+    if (do_inc_stat(*this->player_ptr, A_INT)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_WIS)) {
+    if (do_inc_stat(*this->player_ptr, A_WIS)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_DEX)) {
+    if (do_inc_stat(*this->player_ptr, A_DEX)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_CON)) {
+    if (do_inc_stat(*this->player_ptr, A_CON)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_CHR)) {
+    if (do_inc_stat(*this->player_ptr, A_CHR)) {
         ident = true;
     }
 
@@ -491,8 +491,8 @@ bool QuaffEffects::star_enlightenment()
     chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::ENLIGHTEN, 2);
     msg_erase();
     wiz_lite(this->player_ptr, false);
-    (void)do_inc_stat(this->player_ptr, A_INT);
-    (void)do_inc_stat(this->player_ptr, A_WIS);
+    (void)do_inc_stat(*this->player_ptr, A_INT);
+    (void)do_inc_stat(*this->player_ptr, A_WIS);
     (void)detect_traps(*this->player_ptr, DETECT_RAD_DEFAULT, true);
     (void)detect_doors(*this->player_ptr, DETECT_RAD_DEFAULT);
     (void)detect_stairs(*this->player_ptr, DETECT_RAD_DEFAULT);

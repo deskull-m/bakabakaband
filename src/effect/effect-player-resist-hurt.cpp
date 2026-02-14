@@ -55,7 +55,7 @@ void effect_player_poison(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(*player_ptr) / 100;
 
     if ((!(double_resist || has_resist_pois(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE) && !check_multishadow(*player_ptr)) {
-        do_dec_stat(player_ptr, A_CON);
+        do_dec_stat(*player_ptr, A_CON);
     }
 
     ep_ptr->get_damage = take_hit(*player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);

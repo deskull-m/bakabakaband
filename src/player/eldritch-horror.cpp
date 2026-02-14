@@ -266,18 +266,18 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         }
 
         do {
-            (void)do_dec_stat(player_ptr, A_INT);
+            (void)do_dec_stat(*player_ptr, A_INT);
         } while (!player_ptr->try_resist_eldritch_horror());
 
         do {
-            (void)do_dec_stat(player_ptr, A_WIS);
+            (void)do_dec_stat(*player_ptr, A_WIS);
         } while (!player_ptr->try_resist_eldritch_horror());
 
         break;
     }
     case 16:
     case 17: {
-        if (lose_all_info(player_ptr)) {
+        if (lose_all_info(*player_ptr)) {
             msg_print(_("あまりの恐怖に全てのことを忘れてしまった！", "You forget everything in your utmost terror!"));
         }
         break;
@@ -287,8 +287,8 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 20:
     case 21:
     case 22: {
-        do_dec_stat(player_ptr, A_INT);
-        do_dec_stat(player_ptr, A_WIS);
+        do_dec_stat(*player_ptr, A_INT);
+        do_dec_stat(*player_ptr, A_WIS);
         break;
     }
     default:

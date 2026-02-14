@@ -210,14 +210,14 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 21:
         case 22:
         case 23:
-            (void)do_dec_stat(player_ptr, randint0(6));
+            (void)do_dec_stat(*player_ptr, randint0(6));
             if (!one_in_(6)) {
                 break;
             }
             [[fallthrough]];
         case 24:
             msg_print(_("ほえ？私は誰？ここで何してる？", "Huh? Who am I? What am I doing here?"));
-            lose_all_info(player_ptr);
+            lose_all_info(*player_ptr);
             if (!one_in_(6)) {
                 break;
             }
@@ -236,7 +236,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         default:
             for (int i = 0; i < A_MAX; i++) {
                 do {
-                    (void)do_dec_stat(player_ptr, i);
+                    (void)do_dec_stat(*player_ptr, i);
                 } while (one_in_(2));
             }
         }
@@ -320,7 +320,7 @@ void wild_magic(PlayerType *player_ptr, int spell)
         apply_disenchant(player_ptr, 1);
         break;
     case 31:
-        lose_all_info(player_ptr);
+        lose_all_info(*player_ptr);
         break;
     case 32:
         fire_ball(*player_ptr, AttributeType::CHAOS, Direction::self(), spell + 5, 1 + (spell / 10));

@@ -294,9 +294,9 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_format(_("%sの声が鳴り響いた:", "The voice of %s rings out:"), this->name.data());
             msg_print(_("「留まるのだ、下僕よ。余が汝の肉体を鍛えん。」", "'Stay, mortal, and let me mold thee.'"));
             if ((this->boost_stat == A_RANDOM) || !one_in_(3)) {
-                do_inc_stat(this->player_ptr, randint0(6));
+                do_inc_stat(*this->player_ptr, randint0(6));
             } else {
-                do_inc_stat(this->player_ptr, this->boost_stat);
+                do_inc_stat(*this->player_ptr, this->boost_stat);
             }
 
             reward = _("能力値が上がった。", "increasing a stat");
@@ -305,9 +305,9 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「下僕よ、余は汝に飽みたり。」", "'I grow tired of thee, mortal.'"));
             if ((this->boost_stat == A_RANDOM) || !one_in_(3)) {
-                do_dec_stat(this->player_ptr, randint0(6));
+                do_dec_stat(*this->player_ptr, randint0(6));
             } else {
-                do_dec_stat(this->player_ptr, this->boost_stat);
+                do_dec_stat(*this->player_ptr, this->boost_stat);
             }
 
             reward = _("能力値が下がった。", "decreasing a stat");
@@ -317,7 +317,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_print(_("「汝、謙虚たることを学ぶべし！」", "'Thou needst a lesson in humility, mortal!'"));
             msg_print(_("あなたは以前より弱くなった！", "You feel less powerful!"));
             for (int stat = 0; stat < A_MAX; stat++) {
-                (void)dec_stat(this->player_ptr, stat, 10 + randint1(15), true);
+                (void)dec_stat(*this->player_ptr, stat, 10 + randint1(15), true);
             }
 
             reward = _("全能力値が下がった。", "decreasing all stats");
@@ -331,7 +331,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「我がささやかなる賜物を受けとるがよい！」", "'Receive this modest gift from me!'"));
             for (int stat = 0; stat < A_MAX; stat++) {
-                (void)do_inc_stat(this->player_ptr, stat);
+                (void)do_inc_stat(*this->player_ptr, stat);
             }
 
             reward = _("全能力値が上がった。", "increasing all stats");
@@ -425,7 +425,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                 break;
             default:
                 for (int stat = 0; stat < A_MAX; stat++) {
-                    (void)dec_stat(this->player_ptr, stat, 10 + randint1(15), true);
+                    (void)dec_stat(*this->player_ptr, stat, 10 + randint1(15), true);
                 }
                 reward = _("全能力値が下がった。", "decreasing all stats");
                 break;
@@ -438,7 +438,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_print(_("「死ぬがよい、下僕よ！」", "'Die, mortal!'"));
             take_hit(*this->player_ptr, DAMAGE_LOSELIFE, this->player_ptr->level * 4, wrath_reason);
             for (int stat = 0; stat < A_MAX; stat++) {
-                (void)dec_stat(this->player_ptr, stat, 10 + randint1(15), false);
+                (void)dec_stat(*this->player_ptr, stat, 10 + randint1(15), false);
             }
 
             activate_hi_summon(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);

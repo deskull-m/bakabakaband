@@ -2927,10 +2927,10 @@ void check_experience(CreatureEntity &creature)
                         break;
                     }
                 }
-                do_inc_stat(player_ptr, choice - 'a');
+                do_inc_stat(*player_ptr, choice - 'a');
                 screen_load();
             } else if (!(player_ptr->max_plv % 2)) {
-                do_inc_stat(player_ptr, randint0(6));
+                do_inc_stat(*player_ptr, randint0(6));
             }
         }
 

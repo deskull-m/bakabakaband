@@ -8,6 +8,7 @@
 #include "perception/object-perception.h"
 #include "player/player-status-flags.h"
 #include "spell-kind/spells-floor.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -42,33 +43,33 @@ static concptr desc_stat_neg[] = {
  * Note that this function (used by stat potions) now restores\n
  * the stat BEFORE increasing it.\n
  */
-bool inc_stat(PlayerType *player_ptr, int stat)
+bool inc_stat(CreatureEntity &creature, int stat)
 {
-    auto value = player_ptr->stat_cur[stat];
-    if (value >= player_ptr->stat_max_max[stat]) {
+    auto value = creature.stat_cur[stat];
+    if (value >= creature.stat_max_max[stat]) {
         return false;
     }
 
     // 新形式: 30-180は10-20増加、それ以上はスケール調整
     if (value < 180) {
         value += evaluate_percent(75) ? 10 : 20;
-    } else if (value < (player_ptr->stat_max_max[stat] - 20)) {
-        auto gain = (((player_ptr->stat_max_max[stat]) - value) / 2 + 30) / 2;
+    } else if (value < (creature.stat_max_max[stat] - 20)) {
+        auto gain = (((creature.stat_max_max[stat]) - value) / 2 + 30) / 2;
         if (gain < 10) {
             gain = 10;
         }
 
         value += randint1(gain) + gain / 2;
-        if (value > (player_ptr->stat_max_max[stat] - 10)) {
-            value = player_ptr->stat_max_max[stat] - 10;
+        if (value > (creature.stat_max_max[stat] - 10)) {
+            value = creature.stat_max_max[stat] - 10;
         }
     } else {
         value += 10;
     }
 
-    player_ptr->stat_cur[stat] = value;
-    if (value > player_ptr->stat_max[stat]) {
-        player_ptr->stat_max[stat] = value;
+    creature.stat_cur[stat] = value;
+    if (value > creature.stat_max[stat]) {
+        creature.stat_max[stat] = value;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -92,11 +93,11 @@ bool inc_stat(PlayerType *player_ptr, int stat)
  * if your stat is already drained, the "max" value will not drop all\n
  * the way down to the "cur" value.\n
  */
-bool dec_stat(PlayerType *player_ptr, int stat, int amount, int permanent)
+bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
 {
     auto res = false;
-    auto cur = player_ptr->stat_cur[stat];
-    auto max = player_ptr->stat_max[stat];
+    auto cur = creature.stat_cur[stat];
+    auto max = creature.stat_max[stat];
     int same = (cur == max);
     if (cur > 30) {
         if (cur <= 180) {
@@ -131,15 +132,15 @@ bool dec_stat(PlayerType *player_ptr, int stat, int amount, int permanent)
             cur = 30;
         }
 
-        if (cur != player_ptr->stat_cur[stat]) {
+        if (cur != creature.stat_cur[stat]) {
             res = true;
         }
     }
 
     if (permanent && (max > 30)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+        chg_virtue(creature, Virtue::SACRIFICE, 1);
         if (stat == A_WIS || stat == A_INT) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, -2);
+            chg_virtue(creature, Virtue::ENLIGHTEN, -2);
         }
 
         if (max <= 180) {
@@ -170,14 +171,14 @@ bool dec_stat(PlayerType *player_ptr, int stat, int amount, int permanent)
             max = cur;
         }
 
-        if (max != player_ptr->stat_max[stat]) {
+        if (max != creature.stat_max[stat]) {
             res = true;
         }
     }
 
     if (res) {
-        player_ptr->stat_cur[stat] = cur;
-        player_ptr->stat_max[stat] = max;
+        creature.stat_cur[stat] = cur;
+        creature.stat_max[stat] = max;
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -191,10 +192,10 @@ bool dec_stat(PlayerType *player_ptr, int stat, int amount, int permanent)
  * @param stat 回復ステータスID
  * @return 実際に回復した場合TRUEを返す。
  */
-bool res_stat(PlayerType *player_ptr, int stat)
+bool res_stat(CreatureEntity &creature, int stat)
 {
-    if (player_ptr->stat_cur[stat] != player_ptr->stat_max[stat]) {
-        player_ptr->stat_cur[stat] = player_ptr->stat_max[stat];
+    if (creature.stat_cur[stat] != creature.stat_max[stat]) {
+        creature.stat_cur[stat] = creature.stat_max[stat];
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
         rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
@@ -207,37 +208,37 @@ bool res_stat(PlayerType *player_ptr, int stat)
 /*
  * Lose a "point"
  */
-bool do_dec_stat(PlayerType *player_ptr, int stat)
+bool do_dec_stat(CreatureEntity &creature, int stat)
 {
     bool sust = false;
     switch (stat) {
     case A_STR:
-        if (has_sustain_str(*player_ptr)) {
+        if (has_sustain_str(creature)) {
             sust = true;
         }
         break;
     case A_INT:
-        if (has_sustain_int(*player_ptr)) {
+        if (has_sustain_int(creature)) {
             sust = true;
         }
         break;
     case A_WIS:
-        if (has_sustain_wis(*player_ptr)) {
+        if (has_sustain_wis(creature)) {
             sust = true;
         }
         break;
     case A_DEX:
-        if (has_sustain_dex(*player_ptr)) {
+        if (has_sustain_dex(creature)) {
             sust = true;
         }
         break;
     case A_CON:
-        if (has_sustain_con(*player_ptr)) {
+        if (has_sustain_con(creature)) {
             sust = true;
         }
         break;
     case A_CHR:
-        if (has_sustain_chr(*player_ptr)) {
+        if (has_sustain_chr(creature)) {
             sust = true;
         }
         break;
@@ -248,7 +249,7 @@ bool do_dec_stat(PlayerType *player_ptr, int stat)
         return true;
     }
 
-    if (dec_stat(player_ptr, stat, 10, (ironman_nightmare && !randint0(13)))) {
+    if (dec_stat(creature, stat, 10, (ironman_nightmare && !randint0(13)))) {
         msg_format(_("ひどく%sなった気がする。", "You feel %s."), desc_stat_neg[stat]);
         return true;
     }
@@ -259,9 +260,9 @@ bool do_dec_stat(PlayerType *player_ptr, int stat)
 /*
  * Restore lost "points" in a stat
  */
-bool do_res_stat(PlayerType *player_ptr, int stat)
+bool do_res_stat(CreatureEntity &creature, int stat)
 {
-    if (res_stat(player_ptr, stat)) {
+    if (res_stat(creature, stat)) {
         msg_format(_("元通りに%sなった気がする。", "You feel %s."), desc_stat_pos[stat]);
         return true;
     }
@@ -272,18 +273,18 @@ bool do_res_stat(PlayerType *player_ptr, int stat)
 /*
  * Gain a "point" in a stat
  */
-bool do_inc_stat(PlayerType *player_ptr, int stat)
+bool do_inc_stat(CreatureEntity &creature, int stat)
 {
-    bool res = res_stat(player_ptr, stat);
-    if (inc_stat(player_ptr, stat)) {
+    bool res = res_stat(creature, stat);
+    if (inc_stat(creature, stat)) {
         if (stat == A_WIS) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::FAITH, 1);
+            chg_virtue(creature, Virtue::ENLIGHTEN, 1);
+            chg_virtue(creature, Virtue::FAITH, 1);
         } else if (stat == A_INT) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
+            chg_virtue(creature, Virtue::KNOWLEDGE, 1);
+            chg_virtue(creature, Virtue::ENLIGHTEN, 1);
         } else if (stat == A_CON) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
+            chg_virtue(creature, Virtue::VITALITY, 1);
         }
 
         msg_format(_("ワーオ！とても%sなった！", "Wow! You feel %s!"), desc_stat_pos[stat]);
@@ -301,12 +302,12 @@ bool do_inc_stat(PlayerType *player_ptr, int stat)
 /*
  * Forget everything
  */
-bool lose_all_info(PlayerType *player_ptr)
+bool lose_all_info(CreatureEntity &creature)
 {
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -5);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, -5);
+    chg_virtue(creature, Virtue::KNOWLEDGE, -5);
+    chg_virtue(creature, Virtue::ENLIGHTEN, -5);
     for (int i = 0; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = player_ptr->inventory[i].get();
+        auto *o_ptr = creature.inventory[i].get();
         if (!o_ptr->is_valid() || o_ptr->is_fully_known()) {
             continue;
         }
@@ -332,6 +333,6 @@ bool lose_all_info(PlayerType *player_ptr)
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };
     rfu.set_flags(flags_swrf);
-    wiz_dark(player_ptr);
+    wiz_dark(static_cast<PlayerType *>(&creature));
     return true;
 }

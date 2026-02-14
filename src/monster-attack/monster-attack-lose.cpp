@@ -43,7 +43,7 @@ void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     }
 
     bool perm = one_in_(10);
-    if (dec_stat(player_ptr, A_CON, randint1(10), perm)) {
+    if (dec_stat(*player_ptr, A_CON, randint1(10), perm)) {
         msg_print(_("病があなたを蝕んでいる気がする。", "You feel sickly."));
         monap_ptr->obvious = true;
     }
@@ -65,7 +65,7 @@ void calc_blow_lose_strength(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         return;
     }
 
-    if (do_dec_stat(player_ptr, A_STR)) {
+    if (do_dec_stat(*player_ptr, A_STR)) {
         monap_ptr->obvious = true;
     }
 }
@@ -86,7 +86,7 @@ void calc_blow_lose_intelligence(PlayerType *player_ptr, MonsterAttackPlayer *mo
         return;
     }
 
-    if (do_dec_stat(player_ptr, A_INT)) {
+    if (do_dec_stat(*player_ptr, A_INT)) {
         monap_ptr->obvious = true;
     }
 }
@@ -107,7 +107,7 @@ void calc_blow_lose_wisdom(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
         return;
     }
 
-    if (do_dec_stat(player_ptr, A_WIS)) {
+    if (do_dec_stat(*player_ptr, A_WIS)) {
         monap_ptr->obvious = true;
     }
 }
@@ -128,7 +128,7 @@ void calc_blow_lose_dexterity(PlayerType *player_ptr, MonsterAttackPlayer *monap
         return;
     }
 
-    if (do_dec_stat(player_ptr, A_DEX)) {
+    if (do_dec_stat(*player_ptr, A_DEX)) {
         monap_ptr->obvious = true;
     }
 }
@@ -149,7 +149,7 @@ void calc_blow_lose_constitution(PlayerType *player_ptr, MonsterAttackPlayer *mo
         return;
     }
 
-    if (do_dec_stat(player_ptr, A_CON)) {
+    if (do_dec_stat(*player_ptr, A_CON)) {
         monap_ptr->obvious = true;
     }
 }
@@ -170,7 +170,7 @@ void calc_blow_lose_charisma(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         return;
     }
 
-    if (do_dec_stat(player_ptr, A_CHR)) {
+    if (do_dec_stat(*player_ptr, A_CHR)) {
         monap_ptr->obvious = true;
     }
 }

@@ -613,25 +613,25 @@ void BadStatusSetter::decrease_int_wis(const short v)
     switch (rand) {
     case 0:
         if (has_sustain_int(*player_ptr) == 0) {
-            (void)do_dec_stat(player_ptr, A_INT);
+            (void)do_dec_stat(*player_ptr, A_INT);
         }
 
         if (has_sustain_wis(*player_ptr) == 0) {
-            (void)do_dec_stat(player_ptr, A_WIS);
+            (void)do_dec_stat(*player_ptr, A_WIS);
         }
 
         return;
     case 1:
     case 2:
         if (has_sustain_int(*player_ptr) == 0) {
-            (void)do_dec_stat(player_ptr, A_INT);
+            (void)do_dec_stat(*player_ptr, A_INT);
         }
 
         return;
     case 3:
     case 4:
         if (has_sustain_wis(*player_ptr) == 0) {
-            (void)do_dec_stat(player_ptr, A_WIS);
+            (void)do_dec_stat(*player_ptr, A_WIS);
         }
 
         return;
@@ -673,7 +673,7 @@ void BadStatusSetter::decrease_charisma(const PlayerCutRank new_rank, const shor
     }
 
     msg_print(_("ひどい傷跡が残ってしまった。", "You have been horribly scarred."));
-    do_dec_stat(player_ptr, A_CHR);
+    do_dec_stat(*player_ptr, A_CHR);
 }
 
 void BadStatusSetter::stop_blooding(const PlayerCutRank new_rank)

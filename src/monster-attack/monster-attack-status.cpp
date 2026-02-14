@@ -96,27 +96,27 @@ void process_paralyze_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_
 
 void process_lose_all_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 {
-    if (do_dec_stat(player_ptr, A_STR)) {
+    if (do_dec_stat(*player_ptr, A_STR)) {
         monap_ptr->obvious = true;
     }
 
-    if (do_dec_stat(player_ptr, A_DEX)) {
+    if (do_dec_stat(*player_ptr, A_DEX)) {
         monap_ptr->obvious = true;
     }
 
-    if (do_dec_stat(player_ptr, A_CON)) {
+    if (do_dec_stat(*player_ptr, A_CON)) {
         monap_ptr->obvious = true;
     }
 
-    if (do_dec_stat(player_ptr, A_INT)) {
+    if (do_dec_stat(*player_ptr, A_INT)) {
         monap_ptr->obvious = true;
     }
 
-    if (do_dec_stat(player_ptr, A_WIS)) {
+    if (do_dec_stat(*player_ptr, A_WIS)) {
         monap_ptr->obvious = true;
     }
 
-    if (do_dec_stat(player_ptr, A_CHR)) {
+    if (do_dec_stat(*player_ptr, A_CHR)) {
         monap_ptr->obvious = true;
     }
 }
