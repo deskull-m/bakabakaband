@@ -1312,7 +1312,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
         if (one_in_(2)) {
             const auto perm = one_in_(4);
             msg_print(_("体を悪くしてしまった！", "You have damaged your health!"));
-            (void)dec_stat(player_ptr, A_CON, 15 + randint1(10), perm);
+            (void)dec_stat(*player_ptr, A_CON, 15 + randint1(10), perm);
         }
     }
 

@@ -217,7 +217,7 @@ static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
 
     if (cm_ptr->b < 5) {
         msg_print(_("なんてこった！頭の中が真っ白になった！", "Oh, no! Your mind has gone blank!"));
-        lose_all_info(&player);
+        lose_all_info(player);
         return;
     }
 
@@ -372,7 +372,7 @@ static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
 
     const auto perm = one_in_(4);
     msg_print(_("自分の精神を攻撃してしまった！", "You have damaged your mind!"));
-    (void)dec_stat(&player, A_WIS, 15 + randint1(10), perm);
+    (void)dec_stat(player, A_WIS, 15 + randint1(10), perm);
 }
 
 static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr)

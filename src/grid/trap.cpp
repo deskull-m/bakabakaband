@@ -269,7 +269,7 @@ static bool hit_trap_dart(PlayerType *player_ptr)
 static void hit_trap_lose_stat(PlayerType *player_ptr, int stat)
 {
     if (hit_trap_dart(player_ptr)) {
-        do_dec_stat(player_ptr, stat);
+        do_dec_stat(*player_ptr, stat);
     }
 }
 

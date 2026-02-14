@@ -135,11 +135,11 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             if (one_in_(13)) {
                 for (int i = 0; i < A_MAX; i++) {
                     do {
-                        (void)do_dec_stat(player_ptr, i);
+                        (void)do_dec_stat(*player_ptr, i);
                     } while (one_in_(2));
                 }
             } else {
-                (void)do_dec_stat(player_ptr, randint0(6));
+                (void)do_dec_stat(*player_ptr, randint0(6));
             }
 
             break;

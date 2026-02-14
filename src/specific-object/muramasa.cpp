@@ -18,7 +18,7 @@ bool activate_muramasa(PlayerType *player_ptr, ItemEntity *o_ptr)
     }
 
     msg_print(_("村正が震えた．．．", "The Muramasa pulsates..."));
-    do_inc_stat(player_ptr, A_STR);
+    do_inc_stat(*player_ptr, A_STR);
 
     return true;
 }

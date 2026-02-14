@@ -215,7 +215,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_THE_MAGI: {
-        if (do_res_stat(player_ptr, A_INT)) {
+        if (do_res_stat(*player_ptr, A_INT)) {
             ident = true;
         }
         ident |= restore_mana(player_ptr, false);

@@ -708,7 +708,7 @@ MonsterSpellResult spell_RF6_FORGET(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     if (randint0(100 + rlev / 2) < player_ptr->skill_sav) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
-    } else if (lose_all_info(player_ptr)) {
+    } else if (lose_all_info(*player_ptr)) {
         msg_print(_("記憶が薄れてしまった。", "Your memories fade away."));
     }
 

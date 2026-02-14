@@ -143,10 +143,10 @@ void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     (void)bss.mod_deceleration(randint0(4) + 4, false);
 
     while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, player_ptr->skill_sav))) {
-        (void)do_dec_stat(player_ptr, A_INT);
+        (void)do_dec_stat(*player_ptr, A_INT);
     }
     while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, player_ptr->skill_sav))) {
-        (void)do_dec_stat(player_ptr, A_WIS);
+        (void)do_dec_stat(*player_ptr, A_WIS);
     }
 
     if (!has_resist_chaos(*player_ptr)) {

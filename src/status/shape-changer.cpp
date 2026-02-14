@@ -136,13 +136,13 @@ void do_poly_self(PlayerType *player_ptr)
             power -= 15;
             while (tmp < A_MAX) {
                 if (one_in_(2)) {
-                    (void)dec_stat(player_ptr, tmp, randint1(6) + 6, one_in_(3));
+                    (void)dec_stat(*player_ptr, tmp, randint1(6) + 6, one_in_(3));
                     power -= 1;
                 }
                 tmp++;
             }
 
-            (void)dec_stat(player_ptr, A_CHR, randint1(6), true);
+            (void)dec_stat(*player_ptr, A_CHR, randint1(6), true);
 
             if (sex_msg[0]) {
                 sprintf(effect_msg, _("奇形の%s", "deformed %s "), sex_msg);
@@ -172,7 +172,7 @@ void do_poly_self(PlayerType *player_ptr)
         msg_format(_("%sの構成が変化した！", "Your internal organs are rearranged!"), pr.equals(PlayerRaceType::ANDROID) ? "機械" : "内臓");
 
         while (tmp < A_MAX) {
-            (void)dec_stat(player_ptr, tmp, randint1(6) + 6, one_in_(3));
+            (void)dec_stat(*player_ptr, tmp, randint1(6) + 6, one_in_(3));
             tmp++;
         }
         if (one_in_(6)) {

@@ -97,8 +97,8 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 26) {
         msg_print(_("《愚者》だ。", "It's the Fool."));
-        do_dec_stat(player_ptr, A_INT);
-        do_dec_stat(player_ptr, A_WIS);
+        do_dec_stat(*player_ptr, A_INT);
+        do_dec_stat(*player_ptr, A_WIS);
         return;
     }
 

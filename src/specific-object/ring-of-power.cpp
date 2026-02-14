@@ -23,12 +23,12 @@ static void exe_ring_of_power(PlayerType *player_ptr, const Direction &dir)
     case 2:
         msg_print(_("あなたは悪性のオーラに包み込まれた。", "You are surrounded by a malignant aura."));
         sound(SoundKind::EVIL);
-        (void)dec_stat(player_ptr, A_STR, 50, true);
-        (void)dec_stat(player_ptr, A_INT, 50, true);
-        (void)dec_stat(player_ptr, A_WIS, 50, true);
-        (void)dec_stat(player_ptr, A_DEX, 50, true);
-        (void)dec_stat(player_ptr, A_CON, 50, true);
-        (void)dec_stat(player_ptr, A_CHR, 50, true);
+        (void)dec_stat(*player_ptr, A_STR, 50, true);
+        (void)dec_stat(*player_ptr, A_INT, 50, true);
+        (void)dec_stat(*player_ptr, A_WIS, 50, true);
+        (void)dec_stat(*player_ptr, A_DEX, 50, true);
+        (void)dec_stat(*player_ptr, A_CON, 50, true);
+        (void)dec_stat(*player_ptr, A_CHR, 50, true);
         player_ptr->exp -= (player_ptr->exp / 4);
         player_ptr->max_exp -= (player_ptr->exp / 4);
         check_experience(static_cast<CreatureEntity &>(*player_ptr));

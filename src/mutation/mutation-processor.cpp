@@ -148,7 +148,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             if (one_in_(20)) {
                 msg_erase();
                 if (one_in_(3)) {
-                    lose_all_info(player_ptr);
+                    lose_all_info(*player_ptr);
                 } else {
                     wiz_dark(player_ptr);
                 }
@@ -409,7 +409,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
             disturb(*player_ptr, false, true);
             msg_print(_("自分が衰弱していくのが分かる！", "You can feel yourself wasting away!"));
             msg_erase();
-            (void)dec_stat(player_ptr, which_stat, randint1(6) + 6, one_in_(3));
+            (void)dec_stat(*player_ptr, which_stat, randint1(6) + 6, one_in_(3));
         }
     }
 

@@ -204,51 +204,51 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_STR)) {
-        do_inc_stat(player_ptr, A_STR);
+        do_inc_stat(*player_ptr, A_STR);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_INT)) {
-        do_inc_stat(player_ptr, A_INT);
+        do_inc_stat(*player_ptr, A_INT);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_WIS)) {
-        do_inc_stat(player_ptr, A_WIS);
+        do_inc_stat(*player_ptr, A_WIS);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_DEX)) {
-        do_inc_stat(player_ptr, A_DEX);
+        do_inc_stat(*player_ptr, A_DEX);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_CON)) {
-        do_inc_stat(player_ptr, A_CON);
+        do_inc_stat(*player_ptr, A_CON);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::GIVE_CHR)) {
-        do_inc_stat(player_ptr, A_CHR);
+        do_inc_stat(*player_ptr, A_CHR);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_STR)) {
-        do_dec_stat(player_ptr, A_STR);
+        do_dec_stat(*player_ptr, A_STR);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_INT)) {
-        do_dec_stat(player_ptr, A_INT);
+        do_dec_stat(*player_ptr, A_INT);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_WIS)) {
-        do_dec_stat(player_ptr, A_WIS);
+        do_dec_stat(*player_ptr, A_WIS);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_DEX)) {
-        do_dec_stat(player_ptr, A_DEX);
+        do_dec_stat(*player_ptr, A_DEX);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_CON)) {
-        do_dec_stat(player_ptr, A_CON);
+        do_dec_stat(*player_ptr, A_CON);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::LOSE_CHR)) {
-        do_dec_stat(player_ptr, A_CHR);
+        do_dec_stat(*player_ptr, A_CHR);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::DRAIN_MANA)) {
@@ -326,27 +326,27 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         break;
     case SV_FOOD_WEAKNESS:
         take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
-        (void)do_dec_stat(player_ptr, A_STR);
+        (void)do_dec_stat(*player_ptr, A_STR);
         return true;
     case SV_FOOD_SICKNESS:
         take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(6, 6), _("毒入り食料", "poisonous food"));
-        (void)do_dec_stat(player_ptr, A_CON);
+        (void)do_dec_stat(*player_ptr, A_CON);
         return true;
     case SV_FOOD_STUPIDITY:
         take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
-        (void)do_dec_stat(player_ptr, A_INT);
+        (void)do_dec_stat(*player_ptr, A_INT);
         return true;
     case SV_FOOD_NAIVETY:
         take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(8, 8), _("毒入り食料", "poisonous food"));
-        (void)do_dec_stat(player_ptr, A_WIS);
+        (void)do_dec_stat(*player_ptr, A_WIS);
         return true;
     case SV_FOOD_UNHEALTH:
         take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
-        (void)do_dec_stat(player_ptr, A_CON);
+        (void)do_dec_stat(*player_ptr, A_CON);
         return true;
     case SV_FOOD_DISEASE:
         take_hit(*player_ptr, DAMAGE_NOESCAPE, Dice::roll(10, 10), _("毒入り食料", "poisonous food"));
-        (void)do_dec_stat(player_ptr, A_STR);
+        (void)do_dec_stat(*player_ptr, A_STR);
         return true;
     case SV_FOOD_CURE_POISON:
         return bss.set_poison(0);
@@ -359,9 +359,9 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_CURE_SERIOUS:
         return cure_serious_wounds(player_ptr, Dice::roll(4, 8));
     case SV_FOOD_RESTORE_STR:
-        return do_res_stat(player_ptr, A_STR);
+        return do_res_stat(*player_ptr, A_STR);
     case SV_FOOD_RESTORE_CON:
-        return do_res_stat(player_ptr, A_CON);
+        return do_res_stat(*player_ptr, A_CON);
     case SV_FOOD_RESTORING:
         return restore_all_status(player_ptr);
     case SV_FOOD_BISCUIT:
@@ -418,32 +418,32 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         msg_print("「お、大丈夫か？大丈夫か？……」");
         return true;
     case SV_FOOD_GOLDEN_EGG:
-        (void)do_inc_stat(player_ptr, randint0(6));
+        (void)do_inc_stat(*player_ptr, randint0(6));
         return true;
     case SV_FOOD_ABESHI:
         gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 50);
         (void)set_hero(*player_ptr, randint1(10) + 10, false);
         if (one_in_(300)) {
-            (void)do_inc_stat(player_ptr, A_STR);
+            (void)do_inc_stat(*player_ptr, A_STR);
         }
         if (one_in_(300)) {
-            (void)do_inc_stat(player_ptr, A_DEX);
+            (void)do_inc_stat(*player_ptr, A_DEX);
         }
         if (one_in_(300)) {
-            (void)do_inc_stat(player_ptr, A_CON);
+            (void)do_inc_stat(*player_ptr, A_CON);
         }
         return true;
     case SV_FOOD_HIDEBU:
         gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 100);
         (void)set_hero(*player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {
-            (void)do_inc_stat(player_ptr, A_STR);
+            (void)do_inc_stat(*player_ptr, A_STR);
         }
         if (one_in_(100)) {
-            (void)do_inc_stat(player_ptr, A_DEX);
+            (void)do_inc_stat(*player_ptr, A_DEX);
         }
         if (one_in_(100)) {
-            (void)do_inc_stat(player_ptr, A_CON);
+            (void)do_inc_stat(*player_ptr, A_CON);
         }
         return true;
     case SV_FOOD_BASILISK_TIME:
@@ -454,13 +454,13 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         (void)set_hero(*player_ptr, randint1(25) + 25, false);
         (void)set_berserk(*player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {
-            (void)do_inc_stat(player_ptr, A_STR);
+            (void)do_inc_stat(*player_ptr, A_STR);
         }
         if (one_in_(100)) {
-            (void)do_inc_stat(player_ptr, A_DEX);
+            (void)do_inc_stat(*player_ptr, A_DEX);
         }
         if (one_in_(100)) {
-            (void)do_inc_stat(player_ptr, A_CON);
+            (void)do_inc_stat(*player_ptr, A_CON);
         }
         return true;
     default:

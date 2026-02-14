@@ -580,8 +580,8 @@ bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             msg_print(_("肉体が急速にしぼんでいった。", "Your body has quickly shriveled."));
 
             auto *player_ptr = static_cast<PlayerType *>(&creature);
-            (void)dec_stat(player_ptr, A_CON, 20, true);
-            (void)dec_stat(player_ptr, A_STR, 20, true);
+            (void)dec_stat(*player_ptr, A_CON, 20, true);
+            (void)dec_stat(*player_ptr, A_STR, 20, true);
 
             notice = true;
             chg_virtue(creature, Virtue::VITALITY, -3);
