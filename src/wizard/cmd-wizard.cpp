@@ -151,16 +151,16 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
     case '\r':
         return true;
     case 'a':
-        wiz_cure_all(player_ptr);
+        wiz_cure_all(*player_ptr);
         return true;
     case 'b':
         wiz_teleport_back(*player_ptr);
         return true;
     case 'c':
-        wiz_create_item(player_ptr);
+        wiz_create_item(*player_ptr);
         return true;
     case 'C':
-        wiz_create_named_art(player_ptr);
+        wiz_create_named_art(*player_ptr);
         return true;
     case 'd':
         detect_all(*player_ptr, DETECT_RAD_ALL * 3);
@@ -169,7 +169,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_dimension_door(*player_ptr);
         return true;
     case 'e':
-        wiz_change_status(player_ptr);
+        wiz_change_status(*player_ptr);
         return true;
     case 'E':
         switch (player_ptr->pclass) {
@@ -186,7 +186,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         identify_fully(player_ptr, false);
         return true;
     case 'F':
-        wiz_create_feature(player_ptr);
+        wiz_create_feature(*player_ptr);
         return true;
     case 'G':
         wizard_game_modifier(player_ptr);
@@ -201,7 +201,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wizard_item_modifier(*player_ptr);
         return true;
     case 'j':
-        wiz_jump_to_dungeon(player_ptr);
+        wiz_jump_to_dungeon(*player_ptr);
         return true;
     case 'k':
         wiz_kill_target(*player_ptr, 0, (AttributeType)command_arg, true);
@@ -288,10 +288,10 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_kill_target(*player_ptr, 0, (AttributeType)command_arg);
         return true;
     case 'z':
-        wiz_zap_surrounding_monsters(player_ptr);
+        wiz_zap_surrounding_monsters(*player_ptr);
         return true;
     case 'Z':
-        wiz_zap_floor_monsters(player_ptr);
+        wiz_zap_floor_monsters(*player_ptr);
         return true;
     case '_':
         probing(*player_ptr);

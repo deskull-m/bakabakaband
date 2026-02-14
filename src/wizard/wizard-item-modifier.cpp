@@ -207,7 +207,7 @@ void wizard_item_modifier(CreatureEntity &creature)
         wiz_identify_full_inventory(creature);
         break;
     case 'l':
-        wiz_learn_items_all(player_ptr);
+        wiz_learn_items_all(creature);
         break;
     case 'U':
         wiz_modify_item_activation(creature);

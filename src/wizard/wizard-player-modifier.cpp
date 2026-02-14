@@ -75,10 +75,10 @@ void wizard_player_modifier(PlayerType *player_ptr)
         msg_format("Your alignment is %d.", player_ptr->alignment);
         break;
     case 'c':
-        wiz_reset_class(player_ptr);
+        wiz_reset_class(*player_ptr);
         break;
     case 'e':
-        wiz_change_status(player_ptr);
+        wiz_change_status(*player_ptr);
         break;
     case 'k':
         self_knowledge(*player_ptr);
@@ -90,10 +90,10 @@ void wizard_player_modifier(PlayerType *player_ptr)
         (void)gain_mutation(*player_ptr, command_arg);
         break;
     case 'r':
-        wiz_reset_race(player_ptr);
+        wiz_reset_race(*player_ptr);
         break;
     case 'R':
-        wiz_reset_realms(player_ptr);
+        wiz_reset_realms(*player_ptr);
         break;
     default:
         msg_print("That is not a valid debug command.");
