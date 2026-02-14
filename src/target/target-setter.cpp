@@ -393,7 +393,7 @@ bool TargetSetter::set_target_grid()
 
     this->pos_target = this->pos_interests[*this->interest_index];
 
-    fix_floor_item_list(this->player_ptr, this->pos_target);
+    fix_floor_item_list(*this->player_ptr, this->pos_target);
 
     const auto dir = this->switch_target_input();
     if (!dir) {
@@ -538,7 +538,7 @@ void TargetSetter::sweep_target_grids()
             print_path(this->player_ptr, this->pos_target.y, this->pos_target.x);
         }
 
-        fix_floor_item_list(this->player_ptr, this->pos_target);
+        fix_floor_item_list(*this->player_ptr, this->pos_target);
 
         if (auto dir_and_velocity = this->switch_next_grid_command(); dir_and_velocity) {
             const auto &[dir, move_fast] = *dir_and_velocity;
