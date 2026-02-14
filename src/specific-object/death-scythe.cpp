@@ -18,6 +18,7 @@
 #include "player/player-damage.h"
 #include "player/player-status-flags.h"
 #include "status/element-resistance.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -26,12 +27,12 @@
 
 /*!
  * @brief 死の大鎌ダメージが跳ね返ってきた時の、種族ごとのダメージ倍率を返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 倍率 (実際は1/10になる)
  */
-static int calc_death_scythe_reflection_magnification_mimic_none(PlayerType *player_ptr)
+static int calc_death_scythe_reflection_magnification_mimic_none(CreatureEntity &creature)
 {
-    switch (player_ptr->prace) {
+    switch (creature.prace) {
     case PlayerRaceType::YEEK:
     case PlayerRaceType::KLACKON:
     case PlayerRaceType::HUMAN:
@@ -61,14 +62,14 @@ static int calc_death_scythe_reflection_magnification_mimic_none(PlayerType *pla
 
 /*!
  * @brief 死の大鎌ダメージが跳ね返ってきた時の、変身中の種族も考慮したダメージ倍率を返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 倍率 (実際は1/10になる)
  */
-static int calc_death_scythe_reflection_magnification(PlayerType *player_ptr)
+static int calc_death_scythe_reflection_magnification(CreatureEntity &creature)
 {
-    switch (player_ptr->mimic_form) {
+    switch (creature.mimic_form) {
     case MimicKindType::NONE:
-        return calc_death_scythe_reflection_magnification_mimic_none(player_ptr);
+        return calc_death_scythe_reflection_magnification_mimic_none(creature);
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD:
     case MimicKindType::VAMPIRE:
@@ -80,38 +81,38 @@ static int calc_death_scythe_reflection_magnification(PlayerType *player_ptr)
 
 /*!
  * @brief 耐性等に応じて死の大鎌による反射ダメージ倍率を補正する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param magnification ダメージ倍率
  * @param death_scythe_flags 死の大鎌に関するオブジェクトフラグ配列
  */
-static void compensate_death_scythe_reflection_magnification(PlayerType *player_ptr, int *magnification, const TrFlags &death_scythe_flags)
+static void compensate_death_scythe_reflection_magnification(CreatureEntity &creature, int *magnification, const TrFlags &death_scythe_flags)
 {
-    if ((player_ptr->alignment < 0) && (*magnification < 20)) {
+    if ((creature.alignment < 0) && (*magnification < 20)) {
         *magnification = 20;
     }
 
-    if (!(has_resist_acid(*player_ptr) || is_oppose_acid(*player_ptr) || has_immune_acid(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_acid(creature) || is_oppose_acid(creature) || has_immune_acid(creature)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_elec(*player_ptr) || is_oppose_elec(*player_ptr) || has_immune_elec(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_elec(creature) || is_oppose_elec(creature) || has_immune_elec(creature)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_fire(*player_ptr) || is_oppose_fire(*player_ptr) || has_immune_fire(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_fire(creature) || is_oppose_fire(creature) || has_immune_fire(creature)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_cold(*player_ptr) || is_oppose_cold(*player_ptr) || has_immune_cold(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_cold(creature) || is_oppose_cold(creature) || has_immune_cold(creature)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!(has_resist_pois(*player_ptr) || is_oppose_pois(*player_ptr)) && (*magnification < 25)) {
+    if (!(has_resist_pois(creature) || is_oppose_pois(creature)) && (*magnification < 25)) {
         *magnification = 25;
     }
 
-    if (!CreatureClass(*player_ptr).equals(PlayerClassType::SAMURAI) && (death_scythe_flags.has(TR_FORCE_WEAPON)) && (player_ptr->csp > (player_ptr->msp / 30))) {
-        player_ptr->csp -= (1 + (player_ptr->msp / 30));
+    if (!CreatureClass(creature).equals(PlayerClassType::SAMURAI) && (death_scythe_flags.has(TR_FORCE_WEAPON)) && (creature.csp > (creature.msp / 30))) {
+        creature.csp -= (1 + (creature.msp / 30));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
         *magnification = *magnification * 3 / 2 + 20;
     }
@@ -138,31 +139,32 @@ static void death_scythe_reflection_critial_hit(player_attack_type *pa_ptr)
 
 /*!
  * @brief 死の大鎌によるダメージ反射のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void process_death_scythe_reflection(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void process_death_scythe_reflection(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     sound(SoundKind::HIT);
     msg_format(_("ミス！ %sにかわされた。", "You miss %s."), pa_ptr->m_name);
     msg_print(_("振り回した大鎌が自分自身に返ってきた！", "Your scythe returns to you!"));
 
-    auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();
     const auto death_scythe_flags = o_ptr->get_flags();
     const auto num = o_ptr->damage_dice.num + player_ptr->damage_dice_bonus[pa_ptr->hand].num;
     const auto sides = o_ptr->damage_dice.sides + player_ptr->damage_dice_bonus[pa_ptr->hand].sides;
     pa_ptr->attack_damage = Dice::roll(num, sides);
-    int magnification = calc_death_scythe_reflection_magnification(player_ptr);
-    compensate_death_scythe_reflection_magnification(player_ptr, &magnification, death_scythe_flags);
+    int magnification = calc_death_scythe_reflection_magnification(creature);
+    compensate_death_scythe_reflection_magnification(creature, &magnification, death_scythe_flags);
     pa_ptr->attack_damage *= (int)magnification;
     pa_ptr->attack_damage /= 10;
-    pa_ptr->attack_damage = critical_norm(player_ptr, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, player_ptr->to_h[pa_ptr->hand], pa_ptr->mode);
+    pa_ptr->attack_damage = critical_norm(player_ptr, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.to_h[pa_ptr->hand], pa_ptr->mode);
     death_scythe_reflection_critial_hit(pa_ptr);
-    pa_ptr->attack_damage += (player_ptr->to_d[pa_ptr->hand] + o_ptr->to_d);
+    pa_ptr->attack_damage += (creature.to_d[pa_ptr->hand] + o_ptr->to_d);
     if (pa_ptr->attack_damage < 0) {
         pa_ptr->attack_damage = 0;
     }
 
-    take_hit(*player_ptr, DAMAGE_FORCE, pa_ptr->attack_damage, _("死の大鎌", "Death scythe"));
-    handle_stuff(*player_ptr);
+    take_hit(creature, DAMAGE_FORCE, pa_ptr->attack_damage, _("死の大鎌", "Death scythe"));
+    handle_stuff(creature);
 }
