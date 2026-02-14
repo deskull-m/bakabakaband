@@ -348,7 +348,7 @@ static void decide_arena_death(PlayerType *player_ptr)
             char i;
 
             if (!input_check(_("復活せずに何もかも諦めますか? ", "Do you give up everything without resurrection?? "))) {
-                cheat_death(player_ptr, cheat_live);
+                cheat_death(*player_ptr, cheat_live);
                 return;
             }
 
