@@ -76,7 +76,7 @@ void autopick_delayed_alter(PlayerType *player_ptr)
     }
 
     // PW_FLOOR_ITEM_LISTは遅れるので即時更新
-    fix_floor_item_list(player_ptr, p_pos);
+    fix_floor_item_list(*player_ptr, p_pos);
 }
 
 /*!

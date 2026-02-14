@@ -103,8 +103,9 @@ static void display_sub_windows(SubWindowRedrawingFlag pw_flag, std::invocable a
  * @brief サブウィンドウに所持品一覧を表示する / Hack -- display inventory in sub-windows
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void fix_inventory(PlayerType *player_ptr)
+void fix_inventory(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     display_sub_windows(SubWindowRedrawingFlag::INVENTORY,
         [player_ptr] {
             display_inventory(player_ptr, *fix_item_tester);
@@ -218,12 +219,12 @@ void print_monster_list(const FloorType &floor, const std::vector<MONSTER_IDX> &
     }
 }
 
-static void print_pet_list_oneline(PlayerType *player_ptr, const MonsterEntity &monster, TERM_LEN x, TERM_LEN y, TERM_LEN width)
+static void print_pet_list_oneline(CreatureEntity &creature, const MonsterEntity &monster, TERM_LEN x, TERM_LEN y, TERM_LEN width)
 {
     const auto &monrace = monster.get_appearance_monrace();
-    const auto name = monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE | MD_NO_OWNER);
+    const auto name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE | MD_NO_OWNER);
     const auto &[bar_color, bar_len] = monster.get_hp_bar_data();
-    const auto is_visible = monster.ml && !player_ptr->effects()->hallucination().is_hallucinated();
+    const auto is_visible = monster.ml && !creature.effects()->hallucination().is_hallucinated();
 
     term_erase(0, y);
     if (is_visible) {
@@ -242,13 +243,13 @@ static void print_pet_list_oneline(PlayerType *player_ptr, const MonsterEntity &
     }
 }
 
-static void print_pet_list(PlayerType *player_ptr, const std::vector<MONSTER_IDX> &pets, TERM_LEN x, TERM_LEN y, TERM_LEN width, TERM_LEN height)
+static void print_pet_list(CreatureEntity &creature, const std::vector<MONSTER_IDX> &pets, TERM_LEN x, TERM_LEN y, TERM_LEN width, TERM_LEN height)
 {
     for (auto n = 0U; n < pets.size(); ++n) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[pets[n]];
+        const auto &monster = creature.current_floor_ptr->m_list[pets[n]];
         const int line = y + n;
 
-        print_pet_list_oneline(player_ptr, monster, x, line, width);
+        print_pet_list_oneline(creature, monster, x, line, width);
 
         if ((line == height - 2) && (n < pets.size() - 2)) {
             term_erase(0, line + 1);
@@ -266,16 +267,17 @@ static void print_pet_list(PlayerType *player_ptr, const std::vector<MONSTER_IDX
  * @brief 出現中モンスターのリストをサブウィンドウに表示する / Hack -- display monster list in sub-windows
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void fix_monster_list(PlayerType *player_ptr)
+void fix_monster_list(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     static std::vector<MONSTER_IDX> monster_list;
     std::once_flag once;
 
     display_sub_windows(SubWindowRedrawingFlag::SIGHT_MONSTERS,
-        [player_ptr, &once] {
+        [player_ptr, &creature, &once] {
             const auto &[wid, hgt] = term_get_size();
             std::call_once(once, target_sensing_monsters_prepare, player_ptr, monster_list);
-            print_monster_list(*player_ptr->current_floor_ptr, monster_list, 0, 0, hgt);
+            print_monster_list(*creature.current_floor_ptr, monster_list, 0, 0, hgt);
         });
 
     if (use_music && has_monster_music) {
@@ -287,13 +289,14 @@ void fix_monster_list(PlayerType *player_ptr)
 /*!
  * @brief 視界内のペットのリストをサブウィンドウに表示する
  */
-void fix_pet_list(PlayerType *player_ptr)
+void fix_pet_list(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     display_sub_windows(SubWindowRedrawingFlag::PETS,
-        [player_ptr] {
+        [player_ptr, &creature] {
             const auto &[wid, hgt] = term_get_size();
             const auto pets = target_pets_prepare(player_ptr);
-            print_pet_list(player_ptr, pets, 0, 0, wid, hgt);
+            print_pet_list(creature, pets, 0, 0, wid, hgt);
         });
 }
 
@@ -301,12 +304,13 @@ void fix_pet_list(PlayerType *player_ptr)
  * @brief 装備アイテム一覧を表示する /
  * Choice window "shadow" of the "show_equip()" function
  */
-static void display_equipment(PlayerType *player_ptr, const ItemTester &item_tester)
+static void display_equipment(CreatureEntity &creature, const ItemTester &item_tester)
 {
-    if (!player_ptr || player_ptr->inventory.empty()) {
+    if (creature.inventory.empty()) {
         return;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &[wid, hgt] = term_get_size();
     byte attr = TERM_WHITE;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -315,7 +319,7 @@ static void display_equipment(PlayerType *player_ptr, const ItemTester &item_tes
             break;
         }
 
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *creature.inventory[i];
         auto do_disp = player_ptr->select_ring_slot ? is_ring_slot(i) : item_tester.okay(&item);
         std::string tmp_val = "   ";
 
@@ -329,9 +333,9 @@ static void display_equipment(PlayerType *player_ptr, const ItemTester &item_tes
         term_putstr(0, cur_row, cur_col, TERM_WHITE, tmp_val);
 
         std::string item_name;
-        auto is_two_handed = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(*player_ptr);
-        is_two_handed |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(*player_ptr);
-        if (is_two_handed && has_two_handed_weapons(*player_ptr)) {
+        auto is_two_handed = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature);
+        is_two_handed |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature);
+        if (is_two_handed && has_two_handed_weapons(creature)) {
             item_name = _("(武器を両手持ち)", "(wielding with two-hands)");
             attr = TERM_WHITE;
         } else {
@@ -376,11 +380,11 @@ static void display_equipment(PlayerType *player_ptr, const ItemTester &item_tes
  * Hack -- display equipment in sub-windows
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void fix_equip(PlayerType *player_ptr)
+void fix_equip(CreatureEntity &creature)
 {
     display_sub_windows(SubWindowRedrawingFlag::EQUIPMENT,
-        [player_ptr] {
-            display_equipment(player_ptr, *fix_item_tester);
+        [&creature] {
+            display_equipment(creature, *fix_item_tester);
         });
 }
 
@@ -389,12 +393,12 @@ void fix_equip(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * Hack -- display character in sub-windows
  */
-void fix_player(PlayerType *player_ptr)
+void fix_player(CreatureEntity &creature)
 {
     AngbandWorld::get_instance().play_time.update();
     display_sub_windows(SubWindowRedrawingFlag::PLAYER,
-        [player_ptr] {
-            display_player(player_ptr, 0);
+        [&creature] {
+            display_player(&creature, 0);
         });
 }
 
@@ -442,8 +446,9 @@ void fix_message(void)
  * @details
  * Note that the "player" symbol does NOT appear on the map.
  */
-void fix_overhead(PlayerType *player_ptr)
+void fix_overhead(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     display_sub_windows(SubWindowRedrawingFlag::OVERHEAD,
         [player_ptr] {
             const auto &[wid, hgt] = term_get_size();
@@ -458,10 +463,11 @@ void fix_overhead(PlayerType *player_ptr)
  * @brief 自分の周辺の地形をTermに表示する
  * @param プレイヤー情報への参照ポインタ
  */
-static void display_dungeon(PlayerType *player_ptr)
+static void display_dungeon(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    const auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     for (auto x = p_pos.x - game_term->wid / 2 + 1; x <= p_pos.x + game_term->wid / 2; x++) {
         for (auto y = p_pos.y - game_term->hgt / 2 + 1; y <= p_pos.y + game_term->hgt / 2; y++) {
             const Pos2D pos(y, x);
@@ -484,11 +490,11 @@ static void display_dungeon(PlayerType *player_ptr)
  * @brief 自分の周辺のダンジョンの地形をサブウィンドウに表示する / display dungeon view around player in a sub window
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void fix_dungeon(PlayerType *player_ptr)
+void fix_dungeon(CreatureEntity &creature)
 {
     display_sub_windows(SubWindowRedrawingFlag::DUNGEON,
-        [player_ptr] {
-            display_dungeon(player_ptr);
+        [&creature] {
+            display_dungeon(creature);
         });
 }
 
@@ -496,8 +502,9 @@ void fix_dungeon(PlayerType *player_ptr)
  * @brief モンスターの思い出をサブウィンドウに表示する
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void fix_monster(PlayerType *player_ptr)
+void fix_monster(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (!LoreTracker::get_instance().is_tracking()) {
         return;
     }
@@ -513,8 +520,9 @@ void fix_monster(PlayerType *player_ptr)
  * Hack -- display object recall in sub-windows
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void fix_object(PlayerType *player_ptr)
+void fix_object(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     display_sub_windows(SubWindowRedrawingFlag::ITEM_KNOWLEDGE,
         [player_ptr] {
             display_koff(player_ptr);
@@ -545,8 +553,9 @@ static bool is_seeing_monster_on(const FloorType &floor, const Grid &grid)
  * @param y 参照する座標グリッドのy座標
  * @param x 参照する座標グリッドのx座標
  */
-static void display_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
+static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &[wid, hgt] = term_get_size();
     if (hgt <= 0) {
         return;
@@ -555,13 +564,13 @@ static void display_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
     term_clear();
     term_gotoxy(0, 0);
 
-    const auto floor_ptr = player_ptr->current_floor_ptr;
+    const auto floor_ptr = creature.current_floor_ptr;
     const auto *g_ptr = &floor_ptr->get_grid(pos);
     std::string line;
 
     // 先頭行を書く。
-    const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
-    if (player_ptr->is_located_at(pos)) {
+    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
+    if (creature.is_located_at(pos)) {
         line = format(_("(X:%03d Y:%03d) あなたの足元のアイテム一覧", "Items at (%03d,%03d) under you"), pos.x, pos.y);
     } else if (is_seeing_monster_on(*floor_ptr, *g_ptr)) {
         if (is_hallucinated) {
@@ -618,11 +627,11 @@ static void display_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
 /*!
  * @brief (y,x) のアイテム一覧をサブウィンドウに表示する / display item at (y,x) in sub-windows
  */
-void fix_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
+void fix_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
 {
     display_sub_windows(SubWindowRedrawingFlag::FLOOR_ITEMS,
-        [player_ptr, pos] {
-            display_floor_item_list(player_ptr, pos);
+        [&creature, pos] {
+            display_floor_item_list(creature, pos);
         });
 }
 
@@ -630,14 +639,15 @@ void fix_floor_item_list(PlayerType *player_ptr, const Pos2D &pos)
  * @brief 発見済みのアイテム一覧を作成し、表示する
  * @param プレイヤー情報への参照ポインタ
  */
-static void display_found_item_list(PlayerType *player_ptr)
+static void display_found_item_list(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &[wid, hgt] = term_get_size();
     if (hgt <= 0) {
         return;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
 
     // 所持品一覧と同じ順にソートする
     // あらかじめfloor.o_list から↓項目を取り除く
@@ -697,11 +707,11 @@ static void display_found_item_list(PlayerType *player_ptr)
 /*!
  * @brief 発見済みのアイテム一覧をサブウィンドウに表示する
  */
-void fix_found_item_list(PlayerType *player_ptr)
+void fix_found_item_list(CreatureEntity &creature)
 {
     display_sub_windows(SubWindowRedrawingFlag::FOUND_ITEMS,
-        [player_ptr] {
-            display_found_item_list(player_ptr);
+        [&creature] {
+            display_found_item_list(creature);
         });
 }
 
@@ -712,31 +722,32 @@ void fix_found_item_list(PlayerType *player_ptr)
  * Need to analyze size of the window.
  * Need more color coding.
  */
-static void display_spell_list(PlayerType *player_ptr)
+static void display_spell_list(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     TERM_LEN y, x;
     int m[9]{};
 
     clear_from(0);
 
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (pc.is_every_magic()) {
         return;
     }
 
     if (pc.equals(PlayerClassType::SNIPER)) {
-        display_snipe_list(*player_ptr);
+        display_snipe_list(creature);
         return;
     }
 
     if (pc.equals(PlayerClassType::ELEMENTALIST)) {
-        display_element_spell_list(*player_ptr);
+        display_element_spell_list(creature);
         return;
     }
 
     if (pc.has_listed_magics()) {
         PERCENTAGE minfail = 0;
-        PLAYER_LEVEL plev = player_ptr->level;
+        PLAYER_LEVEL plev = creature.level;
         PERCENTAGE chance = 0;
         MindKindType use_mind;
         bool use_hp = false;
@@ -748,7 +759,7 @@ static void display_spell_list(PlayerType *player_ptr)
         put_str(_("名前", "Name"), y, x + 5);
         put_str(_("Lv   MP 失率 効果", "Lv Mana Fail Info"), y, x + 35);
 
-        switch (player_ptr->pclass) {
+        switch (creature.pclass) {
         case PlayerClassType::MINDCRAFTER:
             use_mind = MindKindType::MINDCRAFTER;
             break;
@@ -780,26 +791,26 @@ static void display_spell_list(PlayerType *player_ptr)
             }
 
             chance = spell.fail;
-            chance -= 3 * (player_ptr->level - spell.min_lev);
-            chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
+            chance -= 3 * (creature.level - spell.min_lev);
+            chance -= 3 * (adj_mag_stat[creature.stat_index[mp_ptr->spell_stat]] - 1);
             if (!use_hp) {
-                if (spell.mana_cost > player_ptr->csp) {
-                    chance += 5 * (spell.mana_cost - player_ptr->csp);
+                if (spell.mana_cost > creature.csp) {
+                    chance += 5 * (spell.mana_cost - creature.csp);
                     a = TERM_ORANGE;
                 }
             } else {
-                if (spell.mana_cost > player_ptr->hp) {
+                if (spell.mana_cost > creature.hp) {
                     chance += 100;
                     a = TERM_RED;
                 }
             }
 
-            minfail = adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]];
+            minfail = adj_mag_fail[creature.stat_index[mp_ptr->spell_stat]];
             if (chance < minfail) {
                 chance = minfail;
             }
 
-            chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+            chance += creature.effects()->stun().get_magic_chance_penalty();
             if (chance > 95) {
                 chance = 95;
             }
@@ -857,11 +868,11 @@ static void display_spell_list(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * Hack -- display spells in sub-windows
  */
-void fix_spell(PlayerType *player_ptr)
+void fix_spell(CreatureEntity &creature)
 {
     display_sub_windows(SubWindowRedrawingFlag::SPELL,
-        [player_ptr] {
-            display_spell_list(player_ptr);
+        [&creature] {
+            display_spell_list(creature);
         });
 }
 
