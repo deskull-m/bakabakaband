@@ -13,16 +13,18 @@
 #include "util/string-processor.h"
 #include <string>
 
-void display_life_rating(PlayerType *player_ptr, self_info_type *self_ptr)
+void display_life_rating(CreatureEntity &creature, self_info_type *self_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     player_ptr->knowledge |= KNOW_STAT | KNOW_HPRATE;
     auto info = format(_("現在の体力ランク : %d/100", "Your current Life Rating is %d/100."), player_ptr->calc_life_rating());
     self_ptr->info_list.push_back(std::move(info));
     self_ptr->info_list.emplace_back("");
 }
 
-void display_max_base_status(PlayerType *player_ptr, self_info_type *self_ptr)
+void display_max_base_status(CreatureEntity &creature, self_info_type *self_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     self_ptr->info_list.emplace_back(_("能力の最大値", "Limits of maximum stats"));
     for (int v_nr = 0; v_nr < A_MAX; v_nr++) {
         auto stat = format("%s %4.1f", stat_names[v_nr], player_ptr->stat_max_max[v_nr] / 10.0);
@@ -30,8 +32,9 @@ void display_max_base_status(PlayerType *player_ptr, self_info_type *self_ptr)
     }
 }
 
-void display_virtue(PlayerType *player_ptr, self_info_type *self_ptr)
+void display_virtue(CreatureEntity &creature, self_info_type *self_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     self_ptr->info_list.emplace_back("");
     const std::string alg = PlayerAlignment(player_ptr).get_alignment_description(true);
     self_ptr->info_list.push_back(format(_("現在の属性 : %s", "Your alignment : %s"), alg.data()));
@@ -71,23 +74,23 @@ void display_virtue(PlayerType *player_ptr, self_info_type *self_ptr)
     }
 }
 
-void display_mimic_race_ability(PlayerType *player_ptr, self_info_type *self_ptr)
+void display_mimic_race_ability(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    switch (player_ptr->mimic_form) {
+    switch (creature.mimic_form) {
     case MimicKindType::NONE:
         return;
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD: {
         constexpr auto fmt = _("あなたは %d ダメージの地獄か火炎のブレスを吐くことができる。(%d MP)", "You can breathe nether, dam. %d (cost %d).");
-        const auto dam = 3 * player_ptr->level;
-        const auto cost = 10 + player_ptr->level / 3;
+        const auto dam = 3 * creature.level;
+        const auto cost = 10 + creature.level / 3;
         self_ptr->info_list.push_back(format(fmt, dam, cost));
         return;
     }
     case MimicKindType::VAMPIRE:
-        if (player_ptr->level >= 2) {
+        if (creature.level >= 2) {
             constexpr auto fmt = _("あなたは敵から %d-%d HP の生命力を吸収できる。(%d MP)", "You can steal life from a foe, dam. %d-%d (cost %d).");
-            const auto lev = player_ptr->level;
+            const auto lev = creature.level;
             const auto min_dam = lev + std::max(1, lev / 10);
             const auto max_dam = lev + lev * std::max(1, lev / 10);
             const auto cost = 1 + lev / 3;
