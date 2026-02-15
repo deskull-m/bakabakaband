@@ -511,7 +511,7 @@ void fix_monster(CreatureEntity &creature)
 
     display_sub_windows(SubWindowRedrawingFlag::MONSTER_LORE,
         [player_ptr] {
-            display_roff(player_ptr);
+            display_roff(*player_ptr);
         });
 }
 
