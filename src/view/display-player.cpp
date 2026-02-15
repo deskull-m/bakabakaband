@@ -338,7 +338,7 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
     display_phisique(*creature_ptr);
     display_player_stats(*creature_ptr);
     if (mode == 0) {
-        display_player_middle(player_ptr);
+        display_player_middle(*creature_ptr);
         if (creature_ptr->is_player()) {
             display_player_various(*creature_ptr);
         }
