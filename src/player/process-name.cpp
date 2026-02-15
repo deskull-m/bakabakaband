@@ -127,7 +127,7 @@ void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
 void get_name(PlayerType *player_ptr)
 {
     const auto finalizer = util::make_finalizer([player_ptr]() {
-        display_player_misc_info(player_ptr);
+        display_player_misc_info(*player_ptr);
     });
 
     std::string initial_name = player_ptr->name;

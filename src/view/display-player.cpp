@@ -58,7 +58,7 @@ static bool display_player_info(CreatureEntity &creature, int mode)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (mode == 2) {
-        display_player_misc_info(player_ptr);
+        display_player_misc_info(creature);
         display_player_stat_info(creature);
         display_player_flag_info_1(creature, display_player_equippy);
         return true;
@@ -89,8 +89,7 @@ static bool display_player_info(CreatureEntity &creature, int mode)
  */
 static void display_player_basic_info(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    display_player_name(player_ptr);
+    display_player_name(creature);
     display_player_one_line(ENTRY_SEX, sp_ptr->title, TERM_L_BLUE);
     if (creature.race != nullptr) {
         display_player_one_line(ENTRY_RACE, (creature.mimic_form != MimicKindType::NONE ? mimic_info.at(creature.mimic_form).title : creature.race->title), TERM_L_BLUE);

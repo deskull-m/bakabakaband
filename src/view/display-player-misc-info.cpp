@@ -12,15 +12,17 @@
 /*!
  * @brief 画面上部にプレイヤーの名前を表示する
  *
+ * @param creature クリーチャーへの参照
  * @param name_only trueならば名前のみ表示する。falseならばプレイヤーの性格も表示する。
  */
-void display_player_name(PlayerType *player_ptr, bool name_only)
+void display_player_name(CreatureEntity &creature, bool name_only)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     std::stringstream ss;
     if (!name_only && player_ptr->personality != nullptr) {
         ss << (*player_ptr->personality).title << _((*player_ptr->personality).no == 1 ? "の" : "", " ");
     }
-    ss << player_ptr->name;
+    ss << creature.name;
     const auto display_name = ss.str();
 
     constexpr std::string_view header = _("名前  : ", "Name  : ");
@@ -37,26 +39,26 @@ void display_player_name(PlayerType *player_ptr, bool name_only)
 
 /*!
  * @brief プレイヤーの特性フラグ一覧表示2a /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Special display, part 2a
  */
-void display_player_misc_info(PlayerType *player_ptr)
+void display_player_misc_info(CreatureEntity &creature)
 {
-    display_player_name(player_ptr);
+    display_player_name(creature);
 
     put_str(_("性別  :", "Sex   :"), 3, 1);
     put_str(_("種族  :", "Race  :"), 4, 1);
     put_str(_("職業  :", "Class :"), 5, 1);
 
     c_put_str(TERM_L_BLUE, sp_ptr->title, 3, 9);
-    c_put_str(TERM_L_BLUE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), 4, 9);
-    c_put_str(TERM_L_BLUE, (*player_ptr->pclass_ref).title, 5, 9);
+    c_put_str(TERM_L_BLUE, (creature.mimic_form != MimicKindType::NONE ? mimic_info.at(creature.mimic_form).title : creature.race->title), 4, 9);
+    c_put_str(TERM_L_BLUE, (*creature.pclass_ref).title, 5, 9);
 
     put_str(_("レベル:", "Level :"), 6, 1);
     put_str(_("ＨＰ  :", "Hits  :"), 7, 1);
     put_str(_("ＭＰ  :", "Mana  :"), 8, 1);
 
-    c_put_str(TERM_L_BLUE, format("%d", (int)player_ptr->level), 6, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)player_ptr->hp, (int)player_ptr->maxhp), 7, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)player_ptr->csp, (int)player_ptr->msp), 8, 9);
+    c_put_str(TERM_L_BLUE, format("%d", (int)creature.level), 6, 9);
+    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.hp, (int)creature.maxhp), 7, 9);
+    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.csp, (int)creature.msp), 8, 9);
 }

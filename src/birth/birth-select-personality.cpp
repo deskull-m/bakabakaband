@@ -249,6 +249,6 @@ bool get_player_personality(PlayerType *player_ptr)
 
     player_ptr->ppersonality = (player_personality_type)k;
     player_ptr->personality = &personality_info[player_ptr->ppersonality];
-    display_player_name(player_ptr);
+    display_player_name(*player_ptr);
     return true;
 }
