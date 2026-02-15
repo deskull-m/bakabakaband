@@ -52,9 +52,8 @@
 
 static void display_initial_birth_message(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     term_clear();
-    display_player_name(player_ptr, true);
+    display_player_name(creature, true);
     put_str(_("性別        :", "Sex         :"), 3, 1);
     put_str(_("種族        :", "Race        :"), 4, 1);
     put_str(_("職業        :", "Class       :"), 5, 1);
@@ -235,7 +234,7 @@ static bool let_player_select_personality(CreatureEntity &creature)
             break;
         }
 
-        display_player_name(player_ptr, true);
+        display_player_name(creature, true);
     }
 
     return true;
@@ -263,7 +262,7 @@ static bool let_player_select_patron(CreatureEntity &creature)
             break;
         }
 
-        display_player_name(player_ptr, true);
+        display_player_name(creature, true);
     }
 
     return true;

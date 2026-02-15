@@ -167,6 +167,6 @@ bool get_player_patron(PlayerType *player_ptr)
     }
 
     player_ptr->patron = k;
-    display_player_name(player_ptr);
+    display_player_name(*player_ptr);
     return true;
 }
