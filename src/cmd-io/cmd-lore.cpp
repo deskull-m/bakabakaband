@@ -130,7 +130,7 @@ void do_cmd_query_symbol(PlayerType *player_ptr)
         while (true) {
             if (recall) {
                 screen_save();
-                screen_roff(player_ptr, monrace_ids[i], MONSTER_LORE_NORMAL);
+                screen_roff(*player_ptr, monrace_ids[i], MONSTER_LORE_NORMAL);
             }
 
             roff_top(monrace_id);

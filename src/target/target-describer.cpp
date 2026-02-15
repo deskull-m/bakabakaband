@@ -191,7 +191,7 @@ static ProcessResult describe_hallucinated_target(PlayerType *player_ptr, GridEx
 static bool describe_grid_lore(PlayerType *player_ptr, GridExamination *ge_ptr)
 {
     screen_save();
-    screen_roff(player_ptr, ge_ptr->m_ptr->ap_r_idx, MONSTER_LORE_NORMAL);
+    screen_roff(*player_ptr, ge_ptr->m_ptr->ap_r_idx, MONSTER_LORE_NORMAL);
     term_addstr(-1, TERM_WHITE, format(_("  [r思 %s%s]", "  [r,%s%s]"), ge_ptr->x_info, ge_ptr->info));
     ge_ptr->query = inkey();
     screen_load();

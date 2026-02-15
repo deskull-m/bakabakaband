@@ -71,14 +71,16 @@ void roff_top(MonraceId monrace_id)
 /*!
  * @brief  モンスター情報の表示と共に画面を一時消去するサブルーチン /
  * Hack -- describe the given monster race at the top of the screen
+ * @param creature クリーチャーへの参照
  * @param r_idx モンスターの種族ID
  * @param mode 表示オプション
  */
-void screen_roff(PlayerType *player_ptr, MonraceId r_idx, monster_lore_mode mode)
+void screen_roff(CreatureEntity &creature, MonraceId r_idx, monster_lore_mode mode)
 {
     msg_erase();
     term_erase(0, 1);
     hook_c_roff = c_roff;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     process_monster_lore(player_ptr, r_idx, mode);
     roff_top(r_idx);
 }
@@ -86,9 +88,9 @@ void screen_roff(PlayerType *player_ptr, MonraceId r_idx, monster_lore_mode mode
 /*!
  * @brief モンスター情報の現在のウィンドウに表示する /
  * Hack -- describe the given monster race in the current "term" window
- * @param r_idx モンスターの種族ID
+ * @param creature クリーチャーへの参照
  */
-void display_roff(PlayerType *player_ptr)
+void display_roff(CreatureEntity &creature)
 {
     for (int y = 0; y < game_term->hgt; y++) {
         term_erase(0, y);
@@ -102,6 +104,7 @@ void display_roff(PlayerType *player_ptr)
     }
 
     const auto monrace_id = tracker.get_trackee();
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     process_monster_lore(player_ptr, monrace_id, MONSTER_LORE_NORMAL);
     roff_top(monrace_id);
 }
@@ -1018,10 +1021,10 @@ void display_monster_alignment(lore_type *lore_ptr)
 
 /*!
  * @brief モンスターの経験値の思い出を表示する
- * @param player_ptr プレイヤーの情報へのポインター
+ * @param creature クリーチャーへの参照
  * @param lore_ptr モンスターの思い出の情報へのポインター
  */
-void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
+void display_monster_exp(CreatureEntity &creature, lore_type *lore_ptr)
 {
 #ifdef JP
     hooked_roff("を倒すことは");
@@ -1036,6 +1039,7 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
 #endif
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int64_t base_exp = lore_ptr->r_ptr->mexp * lore_ptr->r_ptr->level * 3 / 2;
     int64_t player_factor = (int64_t)player_ptr->max_plv + 2;
 
@@ -1043,12 +1047,12 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
     int64_t exp_decimal = ((base_exp % player_factor * 1000 / player_factor) + 5) / 10;
 
 #ifdef JP
-    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", player_ptr->level, exp_integer, exp_decimal));
+    hooked_roff(format(" %d レベルのキャラクタにとって 約%lld.%02lld ポイントの経験となる。", creature.level, exp_integer, exp_decimal));
 #else
     hooked_roff(format(" is worth about %lld.%02lld point%s", exp_integer, exp_decimal, ((exp_integer == 1) && (exp_decimal == 0)) ? "" : "s"));
 
     concptr ordinal;
-    switch (player_ptr->level % 10) {
+    switch (creature.level % 10) {
     case 1:
         ordinal = "st";
         break;
@@ -1064,7 +1068,7 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
     }
 
     concptr vowel;
-    switch (player_ptr->level) {
+    switch (creature.level) {
     case 8:
     case 11:
     case 18:
@@ -1075,7 +1079,7 @@ void display_monster_exp(PlayerType *player_ptr, lore_type *lore_ptr)
         break;
     }
 
-    hooked_roff(format(" for a%s %d%s level character.  ", vowel, player_ptr->level, ordinal));
+    hooked_roff(format(" for a%s %d%s level character.  ", vowel, creature.level, ordinal));
 #endif
 }
 
@@ -1102,7 +1106,7 @@ void display_monster_aura(lore_type *lore_ptr)
     }
 }
 
-void display_lore_this(PlayerType *player_ptr, lore_type *lore_ptr)
+void display_lore_this(CreatureEntity &creature, lore_type *lore_ptr)
 {
     if ((lore_ptr->r_ptr->r_tkills == 0) && !lore_ptr->know_everything) {
         return;
@@ -1130,7 +1134,7 @@ void display_lore_this(PlayerType *player_ptr, lore_type *lore_ptr)
 
     display_monster_alignment(lore_ptr);
     display_monster_kind(lore_ptr);
-    display_monster_exp(player_ptr, lore_ptr);
+    display_monster_exp(creature, lore_ptr);
 }
 
 static void display_monster_escort_contents(lore_type *lore_ptr)
@@ -1194,15 +1198,16 @@ void display_monster_collective(lore_type *lore_ptr)
 /*!
  * @brief モンスターの発射に関する情報を表示するルーチン /
  * Display monster launching information
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param lore_ptr モンスターの思い出構造体への参照ポインタ
  * @details
  * This function should only be called when display/dump a recall of
  * a monster.
  * @todo max_blows はゲームの中核的なパラメータの1つなのでどこかのヘッダに定数宣言しておきたい
  */
-void display_monster_launching(PlayerType *player_ptr, lore_type *lore_ptr)
+void display_monster_launching(CreatureEntity &creature, lore_type *lore_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (lore_ptr->ability_flags.has(MonsterAbilityType::ROCKET)) {
         add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::ROCKET, _("ロケット%sを発射する", "shoot a rocket%s"), TERM_UMBER);
         lore_ptr->rocket = true;

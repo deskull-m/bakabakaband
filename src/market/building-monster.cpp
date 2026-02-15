@@ -156,7 +156,7 @@ bool research_mon(PlayerType *player_ptr)
 
                 tracker.set_trackee(monrace_id);
                 handle_stuff(static_cast<CreatureEntity &>(*player_ptr));
-                screen_roff(player_ptr, monrace_id, MONSTER_LORE_RESEARCH);
+                screen_roff(*player_ptr, monrace_id, MONSTER_LORE_RESEARCH);
                 notpicked = false;
                 old_sym = *sym;
                 old_i = i;
