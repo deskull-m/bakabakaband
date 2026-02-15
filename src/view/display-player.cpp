@@ -60,17 +60,17 @@ static bool display_player_info(CreatureEntity &creature, int mode)
     if (mode == 2) {
         display_player_misc_info(player_ptr);
         display_player_stat_info(creature);
-        display_player_flag_info_1(player_ptr, display_player_equippy);
+        display_player_flag_info_1(creature, display_player_equippy);
         return true;
     }
 
     if (mode == 3) {
-        display_player_flag_info_2(player_ptr, display_player_equippy);
+        display_player_flag_info_2(creature, display_player_equippy);
         return true;
     }
 
     if (mode == 4) {
-        display_player_flag_info_3(player_ptr, display_player_equippy);
+        display_player_flag_info_3(creature, display_player_equippy);
         return true;
     }
 
