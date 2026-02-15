@@ -243,14 +243,14 @@ void self_knowledge(CreatureEntity &subject)
     auto &player = static_cast<PlayerType &>(subject);
     self_info_type tmp_si;
     self_info_type *self_ptr = &tmp_si;
-    display_life_rating(&player, self_ptr);
+    display_life_rating(subject, self_ptr);
     chg_virtue(subject, Virtue::KNOWLEDGE, 1);
     chg_virtue(subject, Virtue::ENLIGHTEN, 1);
-    display_max_base_status(&player, self_ptr);
-    display_virtue(&player, self_ptr);
+    display_max_base_status(subject, self_ptr);
+    display_virtue(subject, self_ptr);
     self_ptr->info_list.emplace_back("");
     if (player.mimic_form != MimicKindType::NONE) {
-        display_mimic_race_ability(&player, self_ptr);
+        display_mimic_race_ability(subject, self_ptr);
     } else {
         set_race_ability_info(&player, self_ptr);
     }
