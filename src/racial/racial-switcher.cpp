@@ -77,6 +77,7 @@
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
@@ -85,8 +86,9 @@
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 
-bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command)
+bool switch_class_racial_execution(CreatureEntity &creature, const int32_t command)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (player_ptr->pclass) {
     case PlayerClassType::WARRIOR:
         return sword_dancing(player_ptr);
@@ -106,9 +108,9 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         return eat_magic(player_ptr, player_ptr->level * 2);
     case PlayerClassType::PRIEST:
         if (!PlayerRealm(player_ptr).realm1().is_good_attribute()) {
-            (void)dispel_monsters(*player_ptr, player_ptr->level * 4);
-            turn_monsters(*player_ptr, player_ptr->level * 4);
-            banish_monsters(*player_ptr, player_ptr->level * 4);
+            (void)dispel_monsters(creature, creature.level * 4);
+            turn_monsters(creature, creature.level * 4);
+            banish_monsters(creature, creature.level * 4);
             return true;
         }
 
@@ -118,7 +120,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     case PlayerClassType::RANGER:
     case PlayerClassType::SNIPER:
         msg_print(_("敵を調査した...", "You examine your foes..."));
-        probing(*player_ptr);
+        probing(creature);
         return true;
     case PlayerClassType::PALADIN: {
         const auto dir = get_aim_dir(player_ptr);
@@ -126,7 +128,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             return false;
         }
 
-        fire_beam(*player_ptr, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, player_ptr->level * 3);
+        fire_beam(creature, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.level * 3);
         return true;
     }
     case PlayerClassType::WARRIOR_MAGE:
@@ -175,7 +177,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             }
 
             project_length = 1;
-            fire_beam(*player_ptr, AttributeType::PHOTO, dir, 1);
+            fire_beam(creature, AttributeType::PHOTO, dir, 1);
             return true;
         }
 
@@ -190,12 +192,12 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
                 return false;
             }
 
-            (void)fire_ball_hide(*player_ptr, AttributeType::CHARM_LIVING, dir, player_ptr->level, 0);
+            (void)fire_ball_hide(creature, AttributeType::CHARM_LIVING, dir, creature.level, 0);
             return true;
         }
 
         if (command == -4) {
-            project_all_los(*player_ptr, AttributeType::CHARM_LIVING, player_ptr->level);
+            project_all_los(creature, AttributeType::CHARM_LIVING, creature.level);
         }
 
         return true;
@@ -259,7 +261,7 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     case PlayerClassType::CAVALRY:
         return rodeo(player_ptr);
     case PlayerClassType::BERSERKER:
-        return recall_player(*player_ptr, randint0(21) + 15);
+        return recall_player(creature, randint0(21) + 15);
     case PlayerClassType::SMITH:
         if (player_ptr->level <= 29) {
             return ident_spell(player_ptr, true);
@@ -294,8 +296,9 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     }
 }
 
-bool switch_mimic_racial_execution(PlayerType *player_ptr)
+bool switch_mimic_racial_execution(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (player_ptr->mimic_form) {
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD: {
@@ -309,8 +312,9 @@ bool switch_mimic_racial_execution(PlayerType *player_ptr)
     }
 }
 
-bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
+bool switch_race_racial_execution(CreatureEntity &creature, const int32_t command)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 性格ベースのレイシャル能力をチェック
     if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
         const auto dir = get_aim_dir(player_ptr);
@@ -318,26 +322,26 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
         msg_print(_("社会的抹殺ボルトを放った！", "You fire a social genocide bolt!"));
-        fire_bolt(*player_ptr, AttributeType::SOCIAL_GENOCIDE, dir, player_ptr->level * 2);
+        fire_bolt(creature, AttributeType::SOCIAL_GENOCIDE, dir, creature.level * 2);
         return true;
     }
 
     switch (player_ptr->prace) {
     case PlayerRaceType::DWARF:
         msg_print(_("周囲を調べた。", "You examine your surroundings."));
-        (void)detect_traps(*player_ptr, DETECT_RAD_DEFAULT, true);
-        (void)detect_doors(*player_ptr, DETECT_RAD_DEFAULT);
-        (void)detect_stairs(*player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
+        (void)detect_doors(creature, DETECT_RAD_DEFAULT);
+        (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::HOBBIT:
         return create_ration(player_ptr);
     case PlayerRaceType::GNOME:
         msg_print(_("パッ！", "Blink!"));
-        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         return true;
     case PlayerRaceType::HALF_ORC:
         msg_print(_("勇気を出した。", "You play tough."));
-        (void)BadStatusSetter(*player_ptr).set_fear(0);
+        (void)BadStatusSetter(creature).set_fear(0);
         return true;
     case PlayerRaceType::HALF_TROLL:
         msg_print(_("うがぁぁ！", "RAAAGH!"));
@@ -346,7 +350,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     case PlayerRaceType::AMBERITE:
         if (command == -1) {
             msg_print(_("あなたは歩き周り始めた。", "You start walking around. "));
-            reserve_alter_reality(*player_ptr, randint0(21) + 15);
+            reserve_alter_reality(creature, randint0(21) + 15);
             return true;
         }
 
@@ -357,7 +361,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         msg_print(_("あなたは「パターン」を心に描いてその上を歩いた...", "You picture the Pattern in your mind and walk it..."));
         (void)true_healing(player_ptr, 0);
         (void)restore_all_status(player_ptr);
-        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
+        (void)restore_level(creature);
         return true;
     case PlayerRaceType::BARBARIAN:
         msg_print(_("うぉぉおお！", "Raaagh!"));
@@ -378,7 +382,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     }
     case PlayerRaceType::HALF_TITAN:
         msg_print(_("敵を調査した...", "You examine your foes..."));
-        (void)probing(*player_ptr);
+        (void)probing(creature);
         return true;
     case PlayerRaceType::CYCLOPS: {
         const auto dir = get_aim_dir(player_ptr);
@@ -387,7 +391,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("巨大な岩を投げた。", "You throw a huge boulder."));
-        (void)fire_bolt(*player_ptr, AttributeType::MISSILE, dir, (3 * player_ptr->level) / 2);
+        (void)fire_bolt(creature, AttributeType::MISSILE, dir, (3 * creature.level) / 2);
         return true;
     }
     case PlayerRaceType::YEEK: {
@@ -396,9 +400,9 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        stop_mouth(*player_ptr);
+        stop_mouth(creature);
         msg_print(_("身の毛もよだつ叫び声を上げた！", "You make a horrible scream!"));
-        (void)fear_monster(player_ptr, dir, player_ptr->level);
+        (void)fear_monster(player_ptr, dir, creature.level);
         return true;
     }
     case PlayerRaceType::KLACKON: {
@@ -407,12 +411,12 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        stop_mouth(*player_ptr);
+        stop_mouth(creature);
         msg_print(_("酸を吐いた。", "You spit acid."));
-        if (player_ptr->level < 25) {
-            (void)fire_bolt(*player_ptr, AttributeType::ACID, dir, player_ptr->level);
+        if (creature.level < 25) {
+            (void)fire_bolt(creature, AttributeType::ACID, dir, creature.level);
         } else {
-            (void)fire_ball(*player_ptr, AttributeType::ACID, dir, player_ptr->level, 2);
+            (void)fire_ball(creature, AttributeType::ACID, dir, creature.level, 2);
         }
 
         return true;
@@ -424,14 +428,14 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("毒のダーツを投げた。", "You throw a poisoned dart."));
-        (void)fire_bolt(*player_ptr, AttributeType::POIS, dir, player_ptr->level);
+        (void)fire_bolt(creature, AttributeType::POIS, dir, creature.level);
         return true;
     }
     case PlayerRaceType::NIBELUNG:
         msg_print(_("周囲を調査した。", "You examine your surroundings."));
-        (void)detect_traps(*player_ptr, DETECT_RAD_DEFAULT, true);
-        (void)detect_doors(*player_ptr, DETECT_RAD_DEFAULT);
-        (void)detect_stairs(*player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
+        (void)detect_doors(creature, DETECT_RAD_DEFAULT);
+        (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::DARK_ELF: {
         const auto dir = get_aim_dir(player_ptr);
@@ -440,7 +444,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("マジック・ミサイルを放った。", "You cast a magic missile."));
-        (void)fire_bolt_or_beam(*player_ptr, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((player_ptr->level - 1) / 5), 4));
+        (void)fire_bolt_or_beam(creature, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((creature.level - 1) / 5), 4));
         return true;
     }
     case PlayerRaceType::DRACONIAN:
@@ -452,7 +456,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("あなたは集中し、目が赤く輝いた...", "You concentrate and your eyes glow red..."));
-        (void)fire_bolt(*player_ptr, AttributeType::PSI, dir, player_ptr->level);
+        (void)fire_bolt(creature, AttributeType::PSI, dir, creature.level);
         return true;
     }
     case PlayerRaceType::IMP: {
@@ -461,12 +465,12 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        if (player_ptr->level >= 30) {
+        if (creature.level >= 30) {
             msg_print(_("ファイア・ボールを放った。", "You cast a ball of fire."));
-            (void)fire_ball(*player_ptr, AttributeType::FIRE, dir, player_ptr->level, 2);
+            (void)fire_ball(creature, AttributeType::FIRE, dir, creature.level, 2);
         } else {
             msg_print(_("ファイア・ボルトを放った。", "You cast a bolt of fire."));
-            (void)fire_bolt(*player_ptr, AttributeType::FIRE, dir, player_ptr->level);
+            (void)fire_bolt(creature, AttributeType::FIRE, dir, creature.level);
         }
 
         return true;
@@ -477,7 +481,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
     case PlayerRaceType::SKELETON:
     case PlayerRaceType::ZOMBIE:
         msg_print(_("あなたは失ったエネルギーを取り戻そうと試みた。", "You attempt to restore your lost energies."));
-        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
+        (void)restore_level(creature);
         return true;
     case PlayerRaceType::VAMPIRE:
         (void)vampirism(player_ptr);
@@ -488,17 +492,17 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
             return false;
         }
 
-        stop_mouth(*player_ptr);
+        stop_mouth(creature);
         msg_print(_("あなたはおどろおどろしい叫び声をあげた！", "You emit an eldritch howl!"));
-        (void)fear_monster(player_ptr, dir, player_ptr->level);
+        (void)fear_monster(player_ptr, dir, creature.level);
         return true;
     }
     case PlayerRaceType::SPRITE:
         msg_print(_("あなたは魔法の粉を投げつけた...", "You throw some magic dust..."));
-        if (player_ptr->level < 25) {
-            (void)sleep_monsters_touch(*player_ptr);
+        if (creature.level < 25) {
+            (void)sleep_monsters_touch(creature);
         } else {
-            (void)sleep_monsters(*player_ptr, player_ptr->level);
+            (void)sleep_monsters(creature, creature.level);
         }
 
         return true;
@@ -511,7 +515,7 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         return android_inside_weapon(player_ptr);
     case PlayerRaceType::MERFOLK: {
         msg_print(_("あなたは水流を呼び寄せた！", "You have summoned a stream of water!"));
-        fire_ball_hide(*player_ptr, AttributeType::WATER_FLOW, Direction::self(), 3, 5);
+        fire_ball_hide(creature, AttributeType::WATER_FLOW, Direction::self(), 3, 5);
         return true;
     }
     default:
