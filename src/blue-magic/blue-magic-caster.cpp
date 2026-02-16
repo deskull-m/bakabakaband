@@ -330,7 +330,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         return cast_blue_psy_spear(creature, bmc_ptr);
     case MonsterAbilityType::DARKNESS:
         msg_print(_("暗闇の中で手を振った。", "You gesture in shadow."));
-        (void)unlite_area(player_ptr, 10, 3);
+        (void)unlite_area(*player_ptr, 10, 3);
         return true;
     case MonsterAbilityType::TRAPS:
         return cast_blue_make_trap(creature);

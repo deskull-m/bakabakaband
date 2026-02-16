@@ -152,7 +152,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     case SV_WAND_LITE: {
         int dam = Dice::roll((powerful ? 12 : 6), 8);
         msg_print(_("青く輝く光線が放たれた。", "A line of blue shimmering light appears."));
-        (void)lite_line(player_ptr, dir, dam);
+        (void)lite_line(*player_ptr, dir, dam);
         ident = true;
         break;
     }

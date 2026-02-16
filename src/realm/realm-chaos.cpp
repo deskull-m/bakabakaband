@@ -80,7 +80,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            lite_area(player_ptr, dice.roll(), rad);
+            lite_area(*player_ptr, dice.roll(), rad);
         }
     } break;
 

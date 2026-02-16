@@ -159,7 +159,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         (void)aggravate_monsters(*player_ptr, 0);
         return true;
     case PlayerMutationType::ILLUMINE:
-        (void)lite_area(player_ptr, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
+        (void)lite_area(*player_ptr, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
         return true;
     case PlayerMutationType::DET_CURSE:
         for (int i = 0; i < INVEN_TOTAL; i++) {

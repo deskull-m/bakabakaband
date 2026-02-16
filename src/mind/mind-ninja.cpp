@@ -368,7 +368,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     switch (spell) {
     case MindNinjaType::DARKNESS_CREATION:
-        (void)unlite_area(player_ptr, 0, 3);
+        (void)unlite_area(*player_ptr, 0, 3);
         break;
     case MindNinjaType::DETECT_NEAR:
         if (plev > 44) {

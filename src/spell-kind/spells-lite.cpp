@@ -9,6 +9,7 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-update.h"
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -40,9 +41,11 @@
  * STUPID monsters wake up 1/10 the time when illuminated
  * </pre>
  */
-static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D> &positions)
+/*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
+static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2D> &positions)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     for (const auto &pos : positions) {
         auto &grid = floor.get_grid(pos);
         grid.info &= ~(CAVE_TEMP);
@@ -60,17 +63,17 @@ static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D>
             }
 
             if (monster.is_asleep() && evaluate_percent(chance)) {
-                (void)set_monster_csleep(*player_ptr->current_floor_ptr, grid.m_idx, 0);
+                (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
                 if (monster.ml) {
-                    const auto m_name = monster_desc(*player_ptr, monster, 0);
+                    const auto m_name = monster_desc(creature, monster, 0);
                     msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
                 }
             }
         }
 
-        note_spot(*player_ptr, pos);
-        lite_spot(*player_ptr, pos);
-        update_local_illumination(*player_ptr, pos);
+        note_spot(creature, pos);
+        lite_spot(creature, pos);
+        update_local_illumination(creature, pos);
     }
 }
 
@@ -79,9 +82,11 @@ static void cave_temp_room_lite(PlayerType *player_ptr, const std::vector<Pos2D>
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param points 暗くすべき座標群
  */
-static void cave_temp_room_unlite(PlayerType *player_ptr, const std::vector<Pos2D> &positions)
+/*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
+static void cave_temp_room_unlite(CreatureEntity &creature, const std::vector<Pos2D> &positions)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto &world = AngbandWorld::get_instance();
     for (const auto &pos : positions) {
         auto &grid = floor.get_grid(pos);
@@ -119,11 +124,11 @@ static void cave_temp_room_unlite(PlayerType *player_ptr, const std::vector<Pos2
         }
 
         if (grid.has_monster()) {
-            update_monster(*player_ptr, grid.m_idx, false);
+            update_monster(creature, grid.m_idx, false);
         }
 
-        lite_spot(*player_ptr, pos);
-        update_local_illumination(*player_ptr, pos);
+        lite_spot(creature, pos);
+        update_local_illumination(creature, pos);
     }
 }
 
@@ -220,11 +225,11 @@ static bool cave_temp_room_aux(const FloorType &floor, const Pos2D &pos, const P
  * @param pos_start 起点座標
  * @details pos_start を起点として明るくするマスを記録していく. 実質幅優先探索.
  */
-void lite_room(PlayerType *player_ptr, const Pos2D &pos_start)
+void lite_room(CreatureEntity &creature, const Pos2D &pos_start)
 {
     std::vector<Pos2D> positions;
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     if (cave_temp_room_aux(floor, pos_start, p_pos, TerrainCharacteristics::LOS)) {
         floor.get_grid(pos_start).info |= CAVE_TEMP;
         positions.push_back(pos_start);
@@ -245,7 +250,8 @@ void lite_room(PlayerType *player_ptr, const Pos2D &pos_start)
         }
     }
 
-    cave_temp_room_lite(player_ptr, positions);
+    cave_temp_room_lite(creature, positions);
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
         set_superstealth(*player_ptr, false);
     }
@@ -257,11 +263,11 @@ void lite_room(PlayerType *player_ptr, const Pos2D &pos_start)
  * @param pos_start 指定座標
  * @details pos_start を起点として暗くするマスを記録していく. 実質幅優先探索.
  */
-void unlite_room(PlayerType *player_ptr, const Pos2D &pos_start)
+void unlite_room(CreatureEntity &creature, const Pos2D &pos_start)
 {
     std::vector<Pos2D> positions;
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     if (cave_temp_room_aux(floor, pos_start, p_pos, TerrainCharacteristics::PROJECTION)) {
         floor.get_grid(pos_start).info |= CAVE_TEMP;
         positions.push_back(pos_start);
@@ -282,7 +288,7 @@ void unlite_room(PlayerType *player_ptr, const Pos2D &pos_start)
         }
     }
 
-    cave_temp_room_unlite(player_ptr, positions);
+    cave_temp_room_unlite(creature, positions);
 }
 
 /*!
@@ -291,30 +297,31 @@ void unlite_room(PlayerType *player_ptr, const Pos2D &pos_start)
  * @param magic 魔法による効果であればTRUE、スターライトの杖による効果であればFALSE
  * @return 常にTRUE
  */
-bool starlight(PlayerType *player_ptr, bool magic)
+bool starlight(CreatureEntity &creature, bool magic)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!player_ptr->effects()->blindness().is_blind() && !magic) {
         msg_print(_("杖の先が明るく輝いた...", "The end of the staff glows brightly..."));
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     const auto num = Dice::roll(5, 3);
     for (auto k = 0; k < num; k++) {
         Pos2D pos(0, 0);
         auto attempts = 1000;
         while (attempts--) {
-            pos = scatter(*player_ptr->current_floor_ptr, p_pos, 4, PROJECT_LOS);
-            if (!player_ptr->current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
+            pos = scatter(*creature.current_floor_ptr, p_pos, 4, PROJECT_LOS);
+            if (!creature.current_floor_ptr->has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
                 continue;
             }
 
-            if (!player_ptr->is_located_at(pos)) {
+            if (!creature.is_located_at(pos)) {
                 break;
             }
         }
 
         constexpr uint flags = PROJECT_BEAM | PROJECT_THRU | PROJECT_GRID | PROJECT_KILL | PROJECT_LOS;
-        project(*player_ptr, 0, 0, pos.y, pos.x, Dice::roll(6 + player_ptr->level / 8, 10), AttributeType::LITE_WEAK, flags);
+        project(creature, 0, 0, pos.y, pos.x, Dice::roll(6 + creature.level / 8, 10), AttributeType::LITE_WEAK, flags);
     }
 
     return true;
@@ -327,9 +334,10 @@ bool starlight(PlayerType *player_ptr, bool magic)
  * @param rad 効果半径
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool lite_area(PlayerType *player_ptr, int dam, int rad)
+bool lite_area(CreatureEntity &creature, int dam, int rad)
 {
-    if (player_ptr->current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    if (creature.current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         msg_print(_("ダンジョンが光を吸収した。", "The darkness of this dungeon absorbs your light."));
         return false;
     }
@@ -339,9 +347,9 @@ bool lite_area(PlayerType *player_ptr, int dam, int rad)
     }
 
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_KILL;
-    (void)project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::LITE_WEAK, flg);
+    (void)project(creature, 0, rad, creature.y, creature.x, dam, AttributeType::LITE_WEAK, flg);
 
-    lite_room(player_ptr, player_ptr->get_position());
+    lite_room(creature, creature.get_position());
 
     return true;
 }
@@ -353,16 +361,17 @@ bool lite_area(PlayerType *player_ptr, int dam, int rad)
  * @param rad 効果半径
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool unlite_area(PlayerType *player_ptr, int dam, int rad)
+bool unlite_area(CreatureEntity &creature, int dam, int rad)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!player_ptr->effects()->blindness().is_blind()) {
         msg_print(_("暗闇が辺りを覆った。", "Darkness surrounds you."));
     }
 
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_KILL;
-    (void)project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::DARK_WEAK, flg);
+    (void)project(creature, 0, rad, creature.y, creature.x, dam, AttributeType::DARK_WEAK, flg);
 
-    unlite_room(player_ptr, player_ptr->get_position());
+    unlite_room(creature, creature.get_position());
 
     return true;
 }
@@ -374,8 +383,8 @@ bool unlite_area(PlayerType *player_ptr, int dam, int rad)
  * @param dam 威力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool lite_line(PlayerType *player_ptr, const Direction &dir, int dam)
+bool lite_line(CreatureEntity &creature, const Direction &dir, int dam)
 {
     BIT_FLAGS flg = PROJECT_BEAM | PROJECT_GRID | PROJECT_KILL;
-    return project_hook(*player_ptr, AttributeType::LITE_WEAK, dir, dam, flg);
+    return project_hook(creature, AttributeType::LITE_WEAK, dir, dam, flg);
 }

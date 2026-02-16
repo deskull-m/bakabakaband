@@ -537,7 +537,7 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
     } else if (die < 46) {
         fire_ball(creature, AttributeType::POIS, dir, 20 + (plev / 2), 3);
     } else if (die < 51) {
-        (void)lite_line(&player, dir, Dice::roll(6, 8));
+        (void)lite_line(creature, dir, Dice::roll(6, 8));
     } else if (die < 56) {
         fire_bolt_or_beam(creature, beam_chance(&player) - 10, AttributeType::ELEC, dir, Dice::roll(3 + ((plev - 5) / 4), 8));
     } else if (die < 61) {

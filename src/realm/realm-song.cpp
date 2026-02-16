@@ -205,7 +205,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
             if (cast) {
                 msg_print(_("光り輝く歌が辺りを照らした。", "Your uplifting song brings brightness to dark places..."));
-                lite_area(player_ptr, dice.roll(), rad);
+                lite_area(*player_ptr, dice.roll(), rad);
             }
         }
         break;

@@ -1494,7 +1494,7 @@ bool switch_element_execution(CreatureEntity &creature)
 
     switch (player.element_realm) {
     case ElementRealmType::FIRE:
-        (void)lite_area(&player, Dice::roll(2, plev / 2), plev / 10);
+        (void)lite_area(creature, Dice::roll(2, plev / 2), plev / 10);
         return true;
     case ElementRealmType::ICE:
         (void)project(creature, 0, 5, creature.y, creature.x, 1, AttributeType::COLD, PROJECT_ITEM);

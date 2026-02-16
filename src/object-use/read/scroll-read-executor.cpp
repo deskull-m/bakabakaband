@@ -68,7 +68,7 @@ bool ScrollReadExecutor::read()
             (void)BadStatusSetter(*this->player_ptr).mod_blindness(3 + randint1(5));
         }
 
-        if (unlite_area(this->player_ptr, 10, 3)) {
+        if (unlite_area(*this->player_ptr, 10, 3)) {
             this->ident = true;
         }
 
@@ -234,7 +234,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_LIGHT:
-        if (lite_area(this->player_ptr, Dice::roll(2, 8), 2)) {
+        if (lite_area(*this->player_ptr, Dice::roll(2, 8), 2)) {
             this->ident = true;
         }
 

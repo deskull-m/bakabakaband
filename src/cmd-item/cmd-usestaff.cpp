@@ -71,7 +71,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
             }
         }
 
-        if (unlite_area(player_ptr, 10, (powerful ? 6 : 3))) {
+        if (unlite_area(*player_ptr, 10, (powerful ? 6 : 3))) {
             ident = true;
         }
 
@@ -130,11 +130,11 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_STARLITE:
-        ident = starlight(player_ptr, magic);
+        ident = starlight(*player_ptr, magic);
         break;
 
     case SV_STAFF_LITE: {
-        if (lite_area(player_ptr, Dice::roll(2, 8), (powerful ? 4 : 2))) {
+        if (lite_area(*player_ptr, Dice::roll(2, 8), (powerful ? 4 : 2))) {
             ident = true;
         }
         break;

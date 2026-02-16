@@ -285,7 +285,7 @@ bool cast_force_spell(PlayerType *player_ptr, MindForceTrainerType spell)
         break;
     }
     case MindForceTrainerType::FLASH_LIGHT:
-        (void)lite_area(player_ptr, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
+        (void)lite_area(*player_ptr, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
         break;
     case MindForceTrainerType::FLYING_TECHNIQUE:
         set_tim_levitation(player_ptr, randint1(30) + 30 + boost / 5, false);
