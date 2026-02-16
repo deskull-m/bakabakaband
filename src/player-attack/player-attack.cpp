@@ -598,7 +598,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
         process_drain(&player, pa_ptr, is_human, &drain_msg);
         pa_ptr->can_drain = false;
         pa_ptr->drain_result = 0;
-        change_monster_stat(&player, pa_ptr, y, x, &num);
+        change_monster_stat(creature, pa_ptr, y, x, &num);
         pa_ptr->backstab = false;
         pa_ptr->surprise_attack = false;
     }
