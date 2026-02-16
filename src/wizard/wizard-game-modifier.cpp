@@ -28,8 +28,8 @@
 #include <tuple>
 #include <vector>
 
-void wiz_enter_quest(PlayerType *player_ptr);
-void wiz_complete_quest(PlayerType *player_ptr);
+void wiz_enter_quest(CreatureEntity &creature);
+void wiz_complete_quest(CreatureEntity &creature);
 void wiz_restore_monster_max_num(MonraceId r_idx);
 
 /*!
@@ -63,10 +63,11 @@ static void display_wizard_game_modifier_menu()
 
 /*!
  * @brief ゲーム設定コマンドの入力を受け付ける
- * @param player_ptr プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
-void wizard_game_modifier(PlayerType *player_ptr)
+void wizard_game_modifier(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     screen_save();
     display_wizard_game_modifier_menu();
 
@@ -86,10 +87,10 @@ void wizard_game_modifier(PlayerType *player_ptr)
         break;
     }
     case 'q':
-        wiz_complete_quest(player_ptr);
+        wiz_complete_quest(creature);
         break;
     case 'Q':
-        wiz_enter_quest(player_ptr);
+        wiz_enter_quest(creature);
         break;
     case 'u':
         wiz_restore_monster_max_num(i2enum<MonraceId>(command_arg));
@@ -102,10 +103,11 @@ void wizard_game_modifier(PlayerType *player_ptr)
 
 /*!
  * @brief 指定したクエストに突入する
- * @param プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_enter_quest(PlayerType *player_ptr)
+void wiz_enter_quest(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &quests = QuestList::get_instance();
     const auto quest_max = enum2i(quests.rbegin()->first);
     const auto quest_id = input_numerics("QuestID", 0, quest_max - 1, QuestId::NONE);
@@ -114,7 +116,7 @@ void wiz_enter_quest(PlayerType *player_ptr)
     }
 
     init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
-    player_ptr->current_floor_ptr->quest_number = *quest_id;
+    creature.current_floor_ptr->quest_number = *quest_id;
     parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     auto &quest = quests.get_quest(*quest_id);
     quest.status = QuestStatusType::TAKEN;
@@ -125,11 +127,12 @@ void wiz_enter_quest(PlayerType *player_ptr)
 
 /*!
  * @brief 指定したクエストを完了させる
- * @param プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_complete_quest(PlayerType *player_ptr)
+void wiz_complete_quest(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    const auto &floor = *creature.current_floor_ptr;
     if (!floor.is_in_quest()) {
         msg_print("No current quest");
         msg_erase();

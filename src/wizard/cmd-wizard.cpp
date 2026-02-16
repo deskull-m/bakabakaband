@@ -189,7 +189,7 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         wiz_create_feature(*player_ptr);
         return true;
     case 'G':
-        wizard_game_modifier(player_ptr);
+        wizard_game_modifier(*player_ptr);
         return true;
     case 'H':
         wiz_summon_horde(*player_ptr);
