@@ -259,7 +259,7 @@ void self_knowledge(CreatureEntity &subject)
     set_mutation_info(player, self_ptr);
     set_bad_status_info(*player.effects(), self_ptr);
     set_curse_info(subject, self_ptr);
-    set_body_improvement_info_1(&player, self_ptr);
+    set_body_improvement_info_1(subject, self_ptr);
     set_special_attack_info(subject, self_ptr);
     switch (player.action) {
     case ACTION_SEARCH:
@@ -267,16 +267,16 @@ void self_knowledge(CreatureEntity &subject)
         break;
     }
 
-    set_body_improvement_info_2(&player, self_ptr);
+    set_body_improvement_info_2(subject, self_ptr);
     set_esp_info(subject, self_ptr);
-    set_body_improvement_info_3(&player, self_ptr);
+    set_body_improvement_info_3(subject, self_ptr);
     set_element_resistance_info(&player, self_ptr);
     set_high_resistance_info(&player, self_ptr);
-    set_body_improvement_info_4(&player, self_ptr);
+    set_body_improvement_info_4(subject, self_ptr);
     set_status_sustain_info(&player, self_ptr);
     set_equipment_influence(&player, self_ptr);
     set_weapon_effect_info(&player, self_ptr);
-    set_body_improvement_info_5(&player, self_ptr);
+    set_body_improvement_info_5(subject, self_ptr);
     display_self_info(self_ptr);
 }
 
