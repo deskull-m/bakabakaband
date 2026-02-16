@@ -65,8 +65,7 @@ bool activate_sunlight(CreatureEntity &creature)
     }
 
     msg_print(_("太陽光線が放たれた。", "A line of sunlight appears."));
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)lite_line(&player, dir, Dice::roll(6, 8));
+    (void)lite_line(creature, dir, Dice::roll(6, 8));
     return true;
 }
 
@@ -369,8 +368,7 @@ bool activate_map_light(CreatureEntity &creature)
 {
     msg_print(_("眩しく輝いた...", "It shines brightly..."));
     map_area(creature, DETECT_RAD_MAP);
-    auto &player = static_cast<PlayerType &>(creature);
-    lite_area(&player, Dice::roll(2, 15), 3);
+    lite_area(creature, Dice::roll(2, 15), 3);
     return true;
 }
 
@@ -407,8 +405,7 @@ bool activate_protection_elbereth(CreatureEntity &creature)
 bool activate_light(CreatureEntity &creature, std::string_view name)
 {
     msg_format(_("%sから澄んだ光があふれ出た...", "The %s wells with clear light..."), name.data());
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)lite_area(&player, Dice::roll(2, 15), 3);
+    (void)lite_area(creature, Dice::roll(2, 15), 3);
     return true;
 }
 

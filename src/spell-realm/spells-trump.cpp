@@ -111,7 +111,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 33) {
         msg_print(_("《月》だ。", "It's the Moon."));
-        unlite_area(player_ptr, 10, 3);
+        unlite_area(*player_ptr, 10, 3);
         return;
     }
 

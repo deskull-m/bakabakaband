@@ -322,7 +322,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
          * Unlite the area (radius 10) around player and
          * do 50 points damage to every affected monster
          */
-        unlite_area(player_ptr, 50, 10);
+        unlite_area(*player_ptr, 50, 10);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::ATT_ANIMAL) && !player_ptr->anti_magic && one_in_(7000)) {

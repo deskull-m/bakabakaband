@@ -278,12 +278,12 @@ void wild_magic(PlayerType *player_ptr, int spell)
     case 9:
     case 10:
     case 11:
-        unlite_area(player_ptr, 10, 3);
+        unlite_area(*player_ptr, 10, 3);
         break;
     case 12:
     case 13:
     case 14:
-        lite_area(player_ptr, Dice::roll(2, 3), 2);
+        lite_area(*player_ptr, Dice::roll(2, 3), 2);
         break;
     case 15:
         destroy_doors_touch(*player_ptr);
@@ -426,7 +426,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 51) {
-        (void)lite_line(player_ptr, dir, Dice::roll(6, 8));
+        (void)lite_line(*player_ptr, dir, Dice::roll(6, 8));
         return;
     }
 

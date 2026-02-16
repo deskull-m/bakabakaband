@@ -413,7 +413,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         teleport_player(player, 10, TELEPORT_SPONTANEOUS);
         break;
     case MindMirrorMasterType::MIRROR_LIGHT:
-        (void)lite_area(&player, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
+        (void)lite_area(creature, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
         break;
     case MindMirrorMasterType::WANDERING_MIRROR:
         teleport_player(player, plev * 5, TELEPORT_SPONTANEOUS);

@@ -94,7 +94,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_ILLUMINATION: {
-        if (lite_area(player_ptr, Dice::roll(2, 8), (powerful ? 4 : 2))) {
+        if (lite_area(*player_ptr, Dice::roll(2, 8), (powerful ? 4 : 2))) {
             ident = true;
         }
         break;
@@ -180,7 +180,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     case SV_ROD_LITE: {
         int dam = Dice::roll((powerful ? 12 : 6), 8);
         msg_print(_("青く輝く光線が放たれた。", "A line of blue shimmering light appears."));
-        (void)lite_line(player_ptr, dir, dam);
+        (void)lite_line(*player_ptr, dir, dam);
         ident = true;
         break;
     }

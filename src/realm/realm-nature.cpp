@@ -122,7 +122,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
         }
 
         if (cast) {
-            lite_area(player_ptr, dice.roll(), rad);
+            lite_area(*player_ptr, dice.roll(), rad);
 
             CreatureRace race(&creature);
             if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(creature)) {
@@ -259,7 +259,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
             msg_print(_("太陽光線が現れた。", "A line of sunlight appears."));
-            lite_line(player_ptr, dir, dice.roll());
+            lite_line(*player_ptr, dir, dice.roll());
         }
     } break;
 

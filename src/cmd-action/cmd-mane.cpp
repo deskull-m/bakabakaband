@@ -801,7 +801,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 
     case MonsterAbilityType::DARKNESS:
         msg_print(_("暗闇の中で手を振った。", "You gesture in shadow."));
-        (void)unlite_area(player_ptr, 10, 3);
+        (void)unlite_area(*player_ptr, 10, 3);
         break;
 
     case MonsterAbilityType::TRAPS: {

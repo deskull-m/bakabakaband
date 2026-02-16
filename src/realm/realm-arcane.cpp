@@ -115,7 +115,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            lite_area(player_ptr, dice.roll(), rad);
+            lite_area(*player_ptr, dice.roll(), rad);
         }
     } break;
 
@@ -320,7 +320,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             }
 
             msg_print(_("光線が放たれた。", "A line of light appears."));
-            lite_line(player_ptr, dir, dice.roll());
+            lite_line(*player_ptr, dir, dice.roll());
         }
     } break;
 

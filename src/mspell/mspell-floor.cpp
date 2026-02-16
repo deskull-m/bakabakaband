@@ -437,17 +437,17 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
 
     if (monster_to_player) {
         if (can_use_lite_area) {
-            (void)lite_area(&player_ptr, 0, 3);
+            (void)lite_area(creature, 0, 3);
         } else {
-            (void)unlite_area(&player_ptr, 0, 3);
+            (void)unlite_area(creature, 0, 3);
         }
     } else if (monster_to_monster) {
         if (can_use_lite_area) {
             (void)project(player_ptr, m_idx, 3, y, x, 0, AttributeType::LITE_WEAK, PROJECT_GRID | PROJECT_KILL);
-            lite_room(&player_ptr, pos);
+            lite_room(creature, pos);
         } else {
             (void)project(player_ptr, m_idx, 3, y, x, 0, AttributeType::DARK_WEAK, PROJECT_GRID | PROJECT_KILL);
-            unlite_room(&player_ptr, pos);
+            unlite_room(creature, pos);
         }
     }
 
