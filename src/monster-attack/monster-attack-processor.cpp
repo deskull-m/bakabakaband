@@ -88,7 +88,7 @@ static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_
     if (!monster_target.is_valid() || (monster_target.hp < 0)) {
         return false;
     }
-    if (monst_attack_monst(player_ptr, m_idx, grid.m_idx)) {
+    if (monst_attack_monst(*player_ptr, m_idx, grid.m_idx)) {
         return true;
     }
     if (floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::NO_MELEE)) {
