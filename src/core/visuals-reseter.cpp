@@ -23,8 +23,8 @@ void reset_visuals(PlayerType *player_ptr)
     BaseitemList::get_instance().reset_all_visuals();
     MonraceList::get_instance().reset_all_visuals();
     const auto pref_file = use_graphics ? "graf.prf" : "font.prf";
-    process_pref_file(player_ptr, pref_file);
+    process_pref_file(*player_ptr, pref_file);
     std::stringstream ss;
     ss << (use_graphics ? "graf-" : "font-") << player_ptr->base_name << ".prf";
-    process_pref_file(player_ptr, ss.str());
+    process_pref_file(*player_ptr, ss.str());
 }

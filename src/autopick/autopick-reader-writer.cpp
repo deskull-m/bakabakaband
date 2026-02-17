@@ -24,7 +24,7 @@ void autopick_load_pref(PlayerType *player_ptr, bool disp_mes)
     const auto path = search_pickpref_path(player_ptr->base_name);
     if (!path.empty()) {
         const auto pickpref_filename = path.filename().string();
-        if (process_autopick_file(player_ptr, pickpref_filename) == 0) {
+        if (process_autopick_file(*player_ptr, pickpref_filename) == 0) {
             if (disp_mes) {
                 msg_format(_("%sを読み込みました。", "Loaded '%s'."), pickpref_filename.data());
             }

@@ -90,7 +90,7 @@ void do_cmd_colors(PlayerType *player_ptr)
                 continue;
             }
 
-            (void)process_pref_file(player_ptr, *ask_result, true);
+            (void)process_pref_file(*player_ptr, *ask_result, true);
             term_xtra(TERM_XTRA_REACT, 0);
             term_redraw();
             break;

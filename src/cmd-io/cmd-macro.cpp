@@ -184,7 +184,7 @@ void do_cmd_macros(PlayerType *player_ptr)
                 continue;
             }
 
-            const auto err = process_pref_file(player_ptr, *ask_result, true);
+            const auto err = process_pref_file(*player_ptr, *ask_result, true);
             const auto *mes = ask_result->data();
             if (-2 == err) {
                 msg_format(_("標準の設定ファイル'%s'を読み込みました。", "Loaded default '%s'."), mes);
