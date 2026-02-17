@@ -42,5 +42,5 @@ struct mam_type {
     bool dead = false;
 };
 
-class PlayerType;
-mam_type *initialize_mam_type(PlayerType *player_ptr, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx);
+class CreatureEntity;
+mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx);
