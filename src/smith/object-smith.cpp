@@ -446,7 +446,7 @@ bool Smith::add_essence(SmithEffectType effect, ItemEntity *o_ptr, int number)
         this->smith_data->essences[essence] -= static_cast<int16_t>(total_consumption);
     }
 
-    return info.value()->add_essence(this->player_ptr, o_ptr, number);
+    return info.value()->add_essence(*this->player_ptr, o_ptr, number);
 }
 
 /*!
