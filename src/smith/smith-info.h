@@ -12,7 +12,7 @@ enum class SmithCategoryType;
 enum class SmithEssenceType : int16_t;
 enum class RandomArtActType : short;
 
-class PlayerType;
+class CreatureEntity;
 class ItemEntity;
 
 /*!
@@ -25,11 +25,12 @@ public:
     /*!
      * @brief 鍛冶効果を付与する
      *
+     * @param creature クリーチャーへの参照
      * @param o_ptr 鍛冶効果の付与を行うアイテム構造体へのポインタ
      * @param number 付与を行うエッセンスの個数
      * @return 鍛冶効果の付与に成功した場合は true、失敗した場合は false
      */
-    virtual bool add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const = 0;
+    virtual bool add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const = 0;
 
     /*!
      * @brief 鍛冶効果を消去する
@@ -71,7 +72,7 @@ protected:
 class BasicSmithInfo : public ISmithInfo {
 public:
     BasicSmithInfo(SmithEffectType effect, concptr name, SmithCategoryType category, std::vector<SmithEssenceType> need_essences, int consumption, TrFlags add_flags);
-    virtual bool add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const override;
+    virtual bool add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const override;
     virtual void erase_essence(ItemEntity *o_ptr) const override;
     virtual TrFlags tr_flags() const override;
     virtual bool can_give_smith_effect(const ItemEntity *o_ptr) const final override;
@@ -88,7 +89,7 @@ private:
 class ActivationSmithInfo : public ISmithInfo {
 public:
     ActivationSmithInfo(SmithEffectType effect, concptr name, SmithCategoryType category, std::vector<SmithEssenceType> need_essences, int consumption, RandomArtActType act_idx);
-    virtual bool add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const override;
+    virtual bool add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const override;
     virtual void erase_essence(ItemEntity *) const override;
     virtual bool can_give_smith_effect(const ItemEntity *o_ptr) const override;
 
@@ -103,7 +104,7 @@ private:
 class EnchantWeaponSmithInfo : public ISmithInfo {
 public:
     EnchantWeaponSmithInfo(SmithEffectType effect, concptr name, SmithCategoryType category, std::vector<SmithEssenceType> need_essences, int consumption);
-    virtual bool add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const override;
+    virtual bool add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const override;
     virtual void erase_essence(ItemEntity *) const override {}
     virtual bool can_give_smith_effect(const ItemEntity *o_ptr) const override;
 };
@@ -115,7 +116,7 @@ public:
 class EnchantArmourSmithInfo : public ISmithInfo {
 public:
     EnchantArmourSmithInfo(SmithEffectType effect, concptr name, SmithCategoryType category, std::vector<SmithEssenceType> need_essences, int consumption);
-    virtual bool add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const override;
+    virtual bool add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const override;
     virtual void erase_essence(ItemEntity *) const override {}
     virtual bool can_give_smith_effect(const ItemEntity *o_ptr) const override;
 };
@@ -127,7 +128,7 @@ public:
 class SustainSmithInfo : public ISmithInfo {
 public:
     SustainSmithInfo(SmithEffectType effect, concptr name, SmithCategoryType category, std::vector<SmithEssenceType> need_essences, int consumption);
-    virtual bool add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const override;
+    virtual bool add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const override;
     virtual void erase_essence(ItemEntity *) const override {}
     virtual bool can_give_smith_effect(const ItemEntity *o_ptr) const override;
 };
@@ -139,7 +140,7 @@ public:
 class SlayingGlovesSmithInfo : public BasicSmithInfo {
 public:
     SlayingGlovesSmithInfo(SmithEffectType effect, concptr name, SmithCategoryType category, std::vector<SmithEssenceType> need_essences, int consumption);
-    virtual bool add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const override;
+    virtual bool add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const override;
     virtual void erase_essence(ItemEntity *) const override;
 
 private:
