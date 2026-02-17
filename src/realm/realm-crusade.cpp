@@ -144,7 +144,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            (void)heroism(player_ptr, dice.roll() + base);
+            (void)heroism(*player_ptr, dice.roll() + base);
         }
     } break;
 

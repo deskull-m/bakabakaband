@@ -316,7 +316,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         teleport_player(creature, bmc_ptr->plev * 5, TELEPORT_SPONTANEOUS);
         return true;
     case MonsterAbilityType::WORLD:
-        (void)time_walk(player_ptr);
+        (void)time_walk(*player_ptr);
         return true;
     case MonsterAbilityType::SPECIAL:
         return true;

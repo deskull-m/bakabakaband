@@ -391,22 +391,22 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 8) {
-        clone_monster(player_ptr, dir);
+        clone_monster(*player_ptr, dir);
         return;
     }
 
     if (die < 14) {
-        speed_monster(player_ptr, dir, plev);
+        speed_monster(*player_ptr, dir, plev);
         return;
     }
 
     if (die < 26) {
-        heal_monster(player_ptr, dir, Dice::roll(4, 6));
+        heal_monster(*player_ptr, dir, Dice::roll(4, 6));
         return;
     }
 
     if (die < 31) {
-        poly_monster(player_ptr, dir, plev);
+        poly_monster(*player_ptr, dir, plev);
         return;
     }
 
@@ -416,7 +416,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 41) {
-        confuse_monster(player_ptr, dir, plev);
+        confuse_monster(*player_ptr, dir, plev);
         return;
     }
 

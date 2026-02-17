@@ -146,7 +146,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::MANA)) {
-        restore_mana(player_ptr, false);
+        restore_mana(*player_ptr, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::NEXUS)) {
@@ -171,7 +171,7 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::CURE)) {
-        true_healing(player_ptr, 50);
+        true_healing(*player_ptr, 50);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::FIRE_RES)) {
@@ -357,13 +357,13 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
     case SV_FOOD_CURE_CONFUSION:
         return bss.set_confusion(0);
     case SV_FOOD_CURE_SERIOUS:
-        return cure_serious_wounds(player_ptr, Dice::roll(4, 8));
+        return cure_serious_wounds(*player_ptr, Dice::roll(4, 8));
     case SV_FOOD_RESTORE_STR:
         return do_res_stat(*player_ptr, A_STR);
     case SV_FOOD_RESTORE_CON:
         return do_res_stat(*player_ptr, A_CON);
     case SV_FOOD_RESTORING:
-        return restore_all_status(player_ptr);
+        return restore_all_status(*player_ptr);
     case SV_FOOD_BISCUIT:
         msg_print(_("甘くてサクサクしてとてもおいしい。", "That is sweet, crispy, and very delicious."));
         return true;

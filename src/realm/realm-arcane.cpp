@@ -137,7 +137,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_heal(dice);
         }
         if (cast) {
-            (void)cure_light_wounds(player_ptr, dice.roll());
+            (void)cure_light_wounds(*player_ptr, dice.roll());
         }
     } break;
 
@@ -264,7 +264,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_heal(dice);
         }
         if (cast) {
-            (void)cure_serious_wounds(player_ptr, dice.roll());
+            (void)cure_serious_wounds(*player_ptr, dice.roll());
         }
     } break;
 

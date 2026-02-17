@@ -106,7 +106,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            confuse_monster(player_ptr, dir, power);
+            confuse_monster(*player_ptr, dir, power);
         }
     } break;
 
@@ -135,7 +135,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            sleep_monster(player_ptr, dir, plev);
+            sleep_monster(*player_ptr, dir, plev);
         }
     } break;
 
@@ -186,7 +186,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            slow_monster(player_ptr, dir, plev);
+            slow_monster(*player_ptr, dir, plev);
         }
     } break;
 

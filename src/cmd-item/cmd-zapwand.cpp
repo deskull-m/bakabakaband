@@ -93,21 +93,21 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     switch (sval) {
     case SV_WAND_HEAL_MONSTER: {
         int dam = Dice::roll((powerful ? 20 : 10), 10);
-        if (heal_monster(player_ptr, dir, dam)) {
+        if (heal_monster(*player_ptr, dir, dam)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_HASTE_MONSTER: {
-        if (speed_monster(player_ptr, dir, lev)) {
+        if (speed_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_CLONE_MONSTER: {
-        if (clone_monster(player_ptr, dir)) {
+        if (clone_monster(*player_ptr, dir)) {
             ident = true;
         }
         break;
@@ -158,28 +158,28 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_SLEEP_MONSTER: {
-        if (sleep_monster(player_ptr, dir, lev)) {
+        if (sleep_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_SLOW_MONSTER: {
-        if (slow_monster(player_ptr, dir, lev)) {
+        if (slow_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_CONFUSE_MONSTER: {
-        if (confuse_monster(player_ptr, dir, lev)) {
+        if (confuse_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_WAND_FEAR_MONSTER: {
-        if (fear_monster(player_ptr, dir, lev)) {
+        if (fear_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;
@@ -193,7 +193,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_POLYMORPH: {
-        if (poly_monster(player_ptr, dir, lev)) {
+        if (poly_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;

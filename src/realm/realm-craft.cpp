@@ -102,7 +102,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)heroism(player_ptr, dice.roll() + base);
+            (void)heroism(*player_ptr, dice.roll() + base);
         }
     } break;
 
@@ -173,7 +173,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)berserk(player_ptr, base + dice.roll());
+            (void)berserk(*player_ptr, base + dice.roll());
         }
     } break;
 
@@ -198,7 +198,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 14: {
         if (cast) {
-            (void)true_healing(player_ptr, 0);
+            (void)true_healing(*player_ptr, 0);
         }
     } break;
 

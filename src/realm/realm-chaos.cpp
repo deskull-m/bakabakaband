@@ -310,7 +310,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            poly_monster(player_ptr, dir, plev);
+            poly_monster(*player_ptr, dir, plev);
         }
     } break;
 

@@ -297,7 +297,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         break;
     }
     case MindMindcrafterType::THE_WORLD:
-        time_walk(player_ptr);
+        time_walk(*player_ptr);
         break;
     default:
         msg_print(_("なに？", "Zap?"));

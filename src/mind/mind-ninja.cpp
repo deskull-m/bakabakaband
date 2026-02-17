@@ -413,7 +413,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
             return false;
         }
 
-        (void)stasis_monster(player_ptr, dir);
+        (void)stasis_monster(*player_ptr, dir);
         break;
     }
     case MindNinjaType::ANCIENT_KNOWLEDGE:

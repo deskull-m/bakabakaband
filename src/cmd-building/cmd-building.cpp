@@ -192,13 +192,13 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         do_cmd_study(player_ptr);
         return false;
     case BACT_HEALING:
-        if (cure_critical_wounds(player_ptr, 200)) {
+        if (cure_critical_wounds(*player_ptr, 200)) {
             player_ptr->au -= building_cost;
         }
 
         return false;
     case BACT_RESTORE:
-        if (restore_all_status(player_ptr)) {
+        if (restore_all_status(*player_ptr)) {
             player_ptr->au -= building_cost;
         }
 

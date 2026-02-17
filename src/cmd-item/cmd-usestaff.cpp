@@ -195,12 +195,12 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_CURE_LIGHT: {
-        ident = cure_light_wounds(player_ptr, Dice::roll(powerful ? 4 : 2, 8));
+        ident = cure_light_wounds(*player_ptr, Dice::roll(powerful ? 4 : 2, 8));
         break;
     }
 
     case SV_STAFF_CURING: {
-        ident = true_healing(player_ptr, 0);
+        ident = true_healing(*player_ptr, 0);
         if (set_berserk(*player_ptr, 0, true)) {
             ident = true;
         }
@@ -208,7 +208,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_HEALING: {
-        if (cure_critical_wounds(player_ptr, powerful ? 500 : 300)) {
+        if (cure_critical_wounds(*player_ptr, powerful ? 500 : 300)) {
             ident = true;
         }
         break;
@@ -218,7 +218,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
         if (do_res_stat(*player_ptr, A_INT)) {
             ident = true;
         }
-        ident |= restore_mana(player_ptr, false);
+        ident |= restore_mana(*player_ptr, false);
         if (set_berserk(*player_ptr, 0, true)) {
             ident = true;
         }

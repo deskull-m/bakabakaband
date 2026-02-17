@@ -88,7 +88,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         if (one_in_(4)) { /* 4 */
             do_poly_self(player_ptr);
         } else {
-            status_shuffle(player_ptr);
+            status_shuffle(*player_ptr);
         }
     }
 
@@ -363,7 +363,7 @@ void effect_player_nexus(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) && !check_multishadow(creature)) {
-        apply_nexus(*ep_ptr->m_ptr, player_ptr);
+        apply_nexus(*ep_ptr->m_ptr, *player_ptr);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);

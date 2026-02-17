@@ -218,7 +218,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            speed_monster(player_ptr, dir, plev);
+            speed_monster(*player_ptr, dir, plev);
         }
     } break;
 
@@ -406,7 +406,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            heal_monster(player_ptr, dir, heal);
+            heal_monster(*player_ptr, dir, heal);
         }
     } break;
 
