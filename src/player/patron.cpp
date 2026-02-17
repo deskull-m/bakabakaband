@@ -235,13 +235,13 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_GOOD_OBJ:
             msg_format(_("%sの声がささやいた:", "The voice of %s whispers:"), this->name.data());
             msg_print(_("「我が与えし物を賢明に使うべし。」", "'Use my gift wisely.'"));
-            acquirement(this->player_ptr, this->player_ptr->y, this->player_ptr->x, 1, false);
+            acquirement(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, 1, false);
             reward = _("上質なアイテムを手に入れた。", "a good item");
             break;
         case REW_GREA_OBJ:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
-            msg_print(_("「我が与えし物を賢明に使うべし。」", "'Use my gift wisely.'"));
-            acquirement(this->player_ptr, this->player_ptr->y, this->player_ptr->x, 1, true);
+            msg_print(_("「我が与えし物を賂明に使うべし。」", "'Use my gift wisely.'"));
+            acquirement(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, 1, true);
             reward = _("高級品のアイテムを手に入れた。", "an excellent item");
             break;
         case REW_CHAOS_WP:
@@ -253,13 +253,13 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_GOOD_OBS:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝の行いは貴き報いに値せり。」", "'Thy deed hath earned thee a worthy reward.'"));
-            acquirement(this->player_ptr, this->player_ptr->y, this->player_ptr->x, randint1(2) + 1, false);
+            acquirement(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, randint1(2) + 1, false);
             reward = _("上質なアイテムを手に入れた。", "good items");
             break;
         case REW_GREA_OBS:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「下僕よ、汝の献身への我が惜しみ無き報いを見るがよい。」", "'Behold, mortal, how generously I reward thy loyalty.'"));
-            acquirement(this->player_ptr, this->player_ptr->y, this->player_ptr->x, randint1(2) + 1, true);
+            acquirement(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, randint1(2) + 1, true);
             reward = _("高級品のアイテムを手に入れた。", "excellent items");
             break;
         case REW_TY_CURSE:
@@ -368,7 +368,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             }
 
             const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
-            (void)curse_weapon_object(this->player_ptr, false, this->player_ptr->inventory[slot].get());
+            (void)curse_weapon_object(*this->player_ptr, false, this->player_ptr->inventory[slot].get());
             reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
             break;
         }
@@ -380,7 +380,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝、防具に頼ることなかれ。」", "'Thou reliest too much on thine equipment.'"));
             const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
-            (void)curse_armor(this->player_ptr);
+            (void)curse_armor(*this->player_ptr);
             reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
             break;
         }
@@ -411,7 +411,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                     }
 
                     const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
-                    (void)curse_weapon_object(this->player_ptr, false, this->player_ptr->inventory[slot].get());
+                    (void)curse_weapon_object(*this->player_ptr, false, this->player_ptr->inventory[slot].get());
                     reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
                 } else {
                     if (!this->player_ptr->inventory[INVEN_BODY]->is_valid()) {
@@ -419,7 +419,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                     }
 
                     const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
-                    (void)curse_armor(this->player_ptr);
+                    (void)curse_armor(*this->player_ptr);
                     reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
                 }
                 break;
@@ -455,12 +455,12 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
                 }
 
                 if (slot) {
-                    (void)curse_weapon_object(this->player_ptr, false, this->player_ptr->inventory[slot].get());
+                    (void)curse_weapon_object(*this->player_ptr, false, this->player_ptr->inventory[slot].get());
                 }
             }
 
             if (one_in_(2)) {
-                (void)curse_armor(this->player_ptr);
+                (void)curse_armor(*this->player_ptr);
             }
 
             break;

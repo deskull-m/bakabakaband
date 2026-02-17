@@ -339,7 +339,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 27: {
         if (cast) {
-            if (!enchant_spell(player_ptr, randint0(4) + 1, randint0(4) + 1, 0)) {
+            if (!enchant_spell(*player_ptr, randint0(4) + 1, randint0(4) + 1, 0)) {
                 return tl::nullopt;
             }
         }
@@ -347,7 +347,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 28: {
         if (cast) {
-            if (!enchant_spell(player_ptr, 0, 0, randint0(3) + 2)) {
+            if (!enchant_spell(*player_ptr, 0, 0, randint0(3) + 2)) {
                 return tl::nullopt;
             }
         }
@@ -355,7 +355,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 29: {
         if (cast) {
-            brand_weapon(player_ptr, randint0(18));
+            brand_weapon(*player_ptr, randint0(18));
         }
     } break;
 

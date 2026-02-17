@@ -344,7 +344,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 21: {
         if (cast) {
-            brand_weapon(player_ptr, 5);
+            brand_weapon(*player_ptr, 5);
         }
     } break;
 
