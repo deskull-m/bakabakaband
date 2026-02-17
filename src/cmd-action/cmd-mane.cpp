@@ -699,20 +699,20 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::SCARE:
         msg_print(_("恐ろしげな幻覚を作り出した。", "You cast a fearful illusion."));
-        fear_monster(player_ptr, dir, plev + 10);
+        fear_monster(*player_ptr, dir, plev + 10);
         break;
     case MonsterAbilityType::BLIND:
-        confuse_monster(player_ptr, dir, plev * 2);
+        confuse_monster(*player_ptr, dir, plev * 2);
         break;
     case MonsterAbilityType::CONF:
         msg_print(_("誘惑的な幻覚をつくり出した。", "You cast a mesmerizing illusion."));
-        confuse_monster(player_ptr, dir, plev * 2);
+        confuse_monster(*player_ptr, dir, plev * 2);
         break;
     case MonsterAbilityType::SLOW:
-        slow_monster(player_ptr, dir, plev);
+        slow_monster(*player_ptr, dir, plev);
         break;
     case MonsterAbilityType::HOLD:
-        sleep_monster(player_ptr, dir, plev);
+        sleep_monster(*player_ptr, dir, plev);
         break;
     case MonsterAbilityType::HASTE:
         (void)set_acceleration(*player_ptr, randint1(20 + plev) + plev, false);
@@ -741,7 +741,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         teleport_player(*player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MonsterAbilityType::WORLD:
-        (void)time_walk(player_ptr);
+        (void)time_walk(*player_ptr);
         break;
     case MonsterAbilityType::SPECIAL:
         break;

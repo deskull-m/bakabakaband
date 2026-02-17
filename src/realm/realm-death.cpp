@@ -140,7 +140,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            sleep_monster(player_ptr, dir, plev);
+            sleep_monster(*player_ptr, dir, plev);
         }
     } break;
 
@@ -170,8 +170,8 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            fear_monster(player_ptr, dir, plev);
-            stun_monster(player_ptr, dir, plev);
+            fear_monster(*player_ptr, dir, plev);
+            stun_monster(*player_ptr, dir, plev);
         }
     } break;
 
@@ -340,7 +340,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)berserk(player_ptr, base + dice.roll());
+            (void)berserk(*player_ptr, base + dice.roll());
         }
     } break;
 
@@ -387,7 +387,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)berserk(player_ptr, b_base + b_dice.roll());
+            (void)berserk(*player_ptr, b_base + b_dice.roll());
             set_acceleration(*player_ptr, sp_dice.roll() + sp_base, false);
         }
     } break;

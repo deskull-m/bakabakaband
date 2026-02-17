@@ -288,7 +288,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
             return info_heal(heal);
         }
         if (cast) {
-            (void)cure_critical_wounds(player_ptr, heal);
+            (void)cure_critical_wounds(*player_ptr, heal);
         }
     } break;
 

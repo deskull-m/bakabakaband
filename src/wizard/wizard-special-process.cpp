@@ -92,8 +92,8 @@
 void wiz_cure_all(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (void)life_stream(player_ptr, false, false);
-    (void)restore_mana(player_ptr, true);
+    (void)life_stream(*player_ptr, false, false);
+    (void)restore_mana(*player_ptr, true);
     (void)set_food(creature, PY_FOOD_MAX - 1);
     BadStatusSetter bss(creature);
     (void)bss.set_fear(0);
@@ -831,8 +831,8 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     msg_erase();
 
     player_ptr->is_dead_ = false;
-    (void)life_stream(player_ptr, false, false);
-    (void)restore_mana(player_ptr, true);
+    (void)life_stream(*player_ptr, false, false);
+    (void)restore_mana(*player_ptr, true);
     (void)recall_player(creature, 0);
     reserve_alter_reality(creature, 0);
 

@@ -94,7 +94,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("気分が良くなってくる。", "You feel a little better."));
         }
         if (cast || continuation) {
-            (void)cure_light_wounds(player_ptr, dice.roll());
+            (void)cure_light_wounds(*player_ptr, dice.roll());
         }
         break;
     }
@@ -265,7 +265,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("気分が良くなってくる。", "You feel better."));
         }
         if (cast || continuation) {
-            (void)cure_serious_wounds(player_ptr, dice.roll());
+            (void)cure_serious_wounds(*player_ptr, dice.roll());
         }
         break;
     }
@@ -355,7 +355,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("気分が良くなってくる。", "You feel much better."));
         }
         if (cast || continuation) {
-            (void)cure_critical_wounds(player_ptr, dice.roll());
+            (void)cure_critical_wounds(*player_ptr, dice.roll());
         }
         break;
     }

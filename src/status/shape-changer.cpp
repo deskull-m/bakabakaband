@@ -90,7 +90,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     const auto r_mhp = pc.equals(PlayerClassType::SORCERER) ? player_ptr->race->r_mhp / 2 : player_ptr->race->r_mhp;
     player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
 
-    roll_hitdice(player_ptr, SPOP_NONE);
+    roll_hitdice(*player_ptr, SPOP_NONE);
     check_experience(static_cast<CreatureEntity &>(*player_ptr));
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::BASIC);
@@ -187,7 +187,7 @@ void do_poly_self(PlayerType *player_ptr)
         power -= 10;
 
         get_max_stats(player_ptr);
-        roll_hitdice(player_ptr, SPOP_NONE);
+        roll_hitdice(*player_ptr, SPOP_NONE);
     }
 
     while ((power > randint0(15)) && one_in_(3)) {
@@ -201,7 +201,7 @@ void do_poly_self(PlayerType *player_ptr)
     }
 
     while (power > 0) {
-        status_shuffle(player_ptr);
+        status_shuffle(*player_ptr);
         power--;
     }
 }

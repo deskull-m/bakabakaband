@@ -77,8 +77,7 @@ bool activate_confusion(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
-    confuse_monster(&player, dir, 20);
+    confuse_monster(creature, dir, 20);
     return true;
 }
 

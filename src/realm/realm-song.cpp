@@ -799,7 +799,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         if (cast) {
             msg_print(
                 _("暗黒の中に光と美をふりまいた。体が元の活力を取り戻した。", "You strew light and beauty in the dark as you sing. You feel refreshed."));
-            (void)restore_all_status(player_ptr);
+            (void)restore_all_status(*player_ptr);
             (void)restore_level(creature);
         }
     } break;

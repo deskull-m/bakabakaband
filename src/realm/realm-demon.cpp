@@ -157,7 +157,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_duration(base, dice);
         }
         if (cast) {
-            heroism(player_ptr, dice.roll() + base);
+            heroism(*player_ptr, dice.roll() + base);
         }
     } break;
 

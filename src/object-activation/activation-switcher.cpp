@@ -187,14 +187,14 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return cast_summon_octopus(*player_ptr);
     case RandomArtActType::CHOIR_SINGS:
         msg_print(_("天国の歌が聞こえる...", "A heavenly choir sings..."));
-        (void)cure_critical_wounds(player_ptr, 777);
+        (void)cure_critical_wounds(*player_ptr, 777);
         (void)set_hero(*player_ptr, randint1(25) + 25, false);
         return true;
     case RandomArtActType::CURE_LW:
         return activate_cure_lw(*player_ptr);
     case RandomArtActType::CURE_MW:
         msg_print(_("深紫色の光を発している...", "It radiates deep purple..."));
-        (void)cure_serious_wounds(player_ptr, Dice::roll(4, 8));
+        (void)cure_serious_wounds(*player_ptr, Dice::roll(4, 8));
         return true;
     case RandomArtActType::CURE_POISON: {
         msg_print(_("深青色に輝いている...", "It glows deep blue..."));
@@ -209,32 +209,32 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return true;
     case RandomArtActType::REST_ALL:
         msg_print(_("濃緑色に輝いている...", "It glows a deep green..."));
-        (void)restore_all_status(player_ptr);
+        (void)restore_all_status(*player_ptr);
         (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
         return true;
     case RandomArtActType::CURE_700:
         msg_print(_("深青色に輝いている...", "It glows deep blue..."));
         msg_print(_("体内に暖かい鼓動が感じられる...", "You feel a warm tingling inside..."));
-        (void)cure_critical_wounds(player_ptr, 700);
+        (void)cure_critical_wounds(*player_ptr, 700);
         return true;
     case RandomArtActType::CURE_1000:
         msg_print(_("白く明るく輝いている...", "It glows a bright white..."));
         msg_print(_("ひじょうに気分がよい...", "You feel much better..."));
-        (void)cure_critical_wounds(player_ptr, 1000);
+        (void)cure_critical_wounds(*player_ptr, 1000);
         return true;
     case RandomArtActType::CURING:
         msg_format(_("%sの優しさに癒される...", "the %s cures you affectionately ..."), name.data());
-        true_healing(player_ptr, 0);
+        true_healing(*player_ptr, 0);
         return true;
     case RandomArtActType::CURE_MANA_FULL:
         msg_format(_("%sが青白く光った．．．", "The %s glows palely..."), name.data());
-        restore_mana(player_ptr, true);
+        restore_mana(*player_ptr, true);
         return true;
     case RandomArtActType::ESP:
         (void)set_tim_esp(player_ptr, randint1(30) + 25, false);
         return true;
     case RandomArtActType::BERSERK:
-        (void)berserk(player_ptr, randint1(25) + 25);
+        (void)berserk(*player_ptr, randint1(25) + 25);
         return true;
     case RandomArtActType::PROT_EVIL:
         msg_format(_("%sから鋭い音が流れ出た...", "The %s lets out a shrill wail..."), name.data());
@@ -261,11 +261,11 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)set_invuln(player_ptr, randint1(8) + 8, false);
         return true;
     case RandomArtActType::HERO:
-        (void)heroism(player_ptr, 25);
+        (void)heroism(*player_ptr, 25);
         return true;
     case RandomArtActType::HERO_SPEED:
         (void)set_acceleration(*player_ptr, randint1(50) + 50, false);
-        (void)heroism(player_ptr, 50);
+        (void)heroism(*player_ptr, 50);
         return true;
     case RandomArtActType::ACID_BALL_AND_RESISTANCE:
         return activate_acid_ball_and_resistance(*player_ptr, name);
@@ -353,7 +353,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::DETECT_TREASURE:
         return activate_detect_treasure(*player_ptr);
     case RandomArtActType::CAST_OFF:
-        (void)cosmic_cast_off(player_ptr, o_ptr_ptr);
+        (void)cosmic_cast_off(*player_ptr, o_ptr_ptr);
         return true;
     case RandomArtActType::FALLING_STAR:
         return activate_toragoroshi(player_ptr);
@@ -367,7 +367,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)mod_acceleration(*player_ptr, 25 + randint1(25), false);
         return true;
     case RandomArtActType::FISHING:
-        return fishing(player_ptr);
+        return fishing(*player_ptr);
     case RandomArtActType::INROU:
         mitokohmon(*player_ptr);
         return true;
@@ -394,7 +394,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::CAPTURE_MONSTER:
         return exe_monster_capture(*player_ptr, *o_ptr);
     case RandomArtActType::THE_WORLD:
-        return time_walk(player_ptr);
+        return time_walk(*player_ptr);
     default:
         msg_format(_("Unknown activation effect: %d.", "Unknown activation effect: %d."), enum2i(index));
         return false;

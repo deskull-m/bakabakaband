@@ -131,23 +131,23 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_RESIST_COLD:
         return set_oppose_cold(*this->player_ptr, this->player_ptr->oppose_cold + randint1(10) + 10, false);
     case SV_POTION_HEROISM:
-        return heroism(this->player_ptr, 25);
+        return heroism(*this->player_ptr, 25);
     case SV_POTION_BESERK_STRENGTH:
-        return berserk(this->player_ptr, randint1(25) + 25);
+        return berserk(*this->player_ptr, randint1(25) + 25);
     case SV_POTION_CURE_LIGHT:
-        return cure_light_wounds(this->player_ptr, Dice::roll(2, 8));
+        return cure_light_wounds(*this->player_ptr, Dice::roll(2, 8));
     case SV_POTION_CURE_SERIOUS:
-        return cure_serious_wounds(this->player_ptr, Dice::roll(4, 8));
+        return cure_serious_wounds(*this->player_ptr, Dice::roll(4, 8));
     case SV_POTION_CURE_CRITICAL:
-        return cure_critical_wounds(this->player_ptr, Dice::roll(6, 8));
+        return cure_critical_wounds(*this->player_ptr, Dice::roll(6, 8));
     case SV_POTION_HEALING:
-        return cure_critical_wounds(this->player_ptr, 300);
+        return cure_critical_wounds(*this->player_ptr, 300);
     case SV_POTION_STAR_HEALING:
-        return cure_critical_wounds(this->player_ptr, 1200);
+        return cure_critical_wounds(*this->player_ptr, 1200);
     case SV_POTION_LIFE:
-        return life_stream(this->player_ptr, true, true);
+        return life_stream(*this->player_ptr, true, true);
     case SV_POTION_RESTORE_MANA:
-        return restore_mana(this->player_ptr, true);
+        return restore_mana(*this->player_ptr, true);
     case SV_POTION_RESTORE_EXP:
         return restore_level(static_cast<CreatureEntity &>(*this->player_ptr));
     case SV_POTION_RES_STR:
@@ -193,7 +193,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_RESISTANCE:
         return this->resistance();
     case SV_POTION_CURING:
-        return true_healing(this->player_ptr, 50);
+        return true_healing(*this->player_ptr, 50);
     case SV_POTION_INVULNERABILITY:
         (void)set_invuln(this->player_ptr, this->player_ptr->invuln + randint1(4) + 4, false);
         return true;
@@ -550,7 +550,7 @@ bool QuaffEffects::resistance()
  */
 bool QuaffEffects::new_life()
 {
-    roll_hitdice(this->player_ptr, SPOP_NONE);
+    roll_hitdice(*this->player_ptr, SPOP_NONE);
     get_max_stats(this->player_ptr);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     lose_all_mutations(*this->player_ptr);

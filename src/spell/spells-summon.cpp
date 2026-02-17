@@ -529,11 +529,11 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
         msg_print(_("あなたの頭に大量の幽霊たちの騒々しい声が押し寄せてきた...", "Your head is invaded by a horde of gibbering spectral voices..."));
         (void)bss.mod_confusion(randint1(4) + 4);
     } else if (die < 31) {
-        poly_monster(&player, dir, plev);
+        poly_monster(creature, dir, plev);
     } else if (die < 36) {
         fire_bolt_or_beam(creature, beam_chance(&player) - 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
     } else if (die < 41) {
-        confuse_monster(&player, dir, plev);
+        confuse_monster(creature, dir, plev);
     } else if (die < 46) {
         fire_ball(creature, AttributeType::POIS, dir, 20 + (plev / 2), 3);
     } else if (die < 51) {

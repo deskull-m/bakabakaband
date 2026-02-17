@@ -119,7 +119,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_CURING: {
-        if (true_healing(player_ptr, 0)) {
+        if (true_healing(*player_ptr, 0)) {
             ident = true;
         }
         if (set_berserk(*player_ptr, 0, true)) {
@@ -129,7 +129,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_HEALING: {
-        if (cure_critical_wounds(player_ptr, powerful ? 750 : 500)) {
+        if (cure_critical_wounds(*player_ptr, powerful ? 750 : 500)) {
             ident = true;
         }
         break;
@@ -139,7 +139,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
         if (restore_level(static_cast<CreatureEntity &>(*player_ptr))) {
             ident = true;
         }
-        if (restore_all_status(player_ptr)) {
+        if (restore_all_status(*player_ptr)) {
             ident = true;
         }
         break;
@@ -186,14 +186,14 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_SLEEP_MONSTER: {
-        if (sleep_monster(player_ptr, dir, lev)) {
+        if (sleep_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_SLOW_MONSTER: {
-        if (slow_monster(player_ptr, dir, lev)) {
+        if (slow_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;
@@ -207,7 +207,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_POLYMORPH: {
-        if (poly_monster(player_ptr, dir, lev)) {
+        if (poly_monster(*player_ptr, dir, lev)) {
             ident = true;
         }
         break;

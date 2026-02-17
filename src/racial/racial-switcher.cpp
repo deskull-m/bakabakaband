@@ -345,7 +345,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     case PlayerRaceType::HALF_TROLL:
         msg_print(_("うがぁぁ！", "RAAAGH!"));
-        (void)berserk(player_ptr, 10 + randint1(player_ptr->level));
+        (void)berserk(*player_ptr, 10 + randint1(player_ptr->level));
         return true;
     case PlayerRaceType::AMBERITE:
         if (command == -1) {
@@ -359,13 +359,13 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         }
 
         msg_print(_("あなたは「パターン」を心に描いてその上を歩いた...", "You picture the Pattern in your mind and walk it..."));
-        (void)true_healing(player_ptr, 0);
-        (void)restore_all_status(player_ptr);
+        (void)true_healing(*player_ptr, 0);
+        (void)restore_all_status(*player_ptr);
         (void)restore_level(creature);
         return true;
     case PlayerRaceType::BARBARIAN:
         msg_print(_("うぉぉおお！", "Raaagh!"));
-        (void)berserk(player_ptr, 10 + randint1(player_ptr->level));
+        (void)berserk(*player_ptr, 10 + randint1(player_ptr->level));
         return true;
     case PlayerRaceType::HALF_OGRE:
         msg_print(_("爆発のルーンを慎重に仕掛けた...", "You carefully set an explosive rune..."));
@@ -402,7 +402,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
 
         stop_mouth(creature);
         msg_print(_("身の毛もよだつ叫び声を上げた！", "You make a horrible scream!"));
-        (void)fear_monster(player_ptr, dir, creature.level);
+        (void)fear_monster(*player_ptr, dir, creature.level);
         return true;
     }
     case PlayerRaceType::KLACKON: {
@@ -494,7 +494,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
 
         stop_mouth(creature);
         msg_print(_("あなたはおどろおどろしい叫び声をあげた！", "You emit an eldritch howl!"));
-        (void)fear_monster(player_ptr, dir, creature.level);
+        (void)fear_monster(*player_ptr, dir, creature.level);
         return true;
     }
     case PlayerRaceType::SPRITE:

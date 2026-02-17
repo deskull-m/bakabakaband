@@ -347,8 +347,8 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「甦るがよい、我が下僕よ！」", "'Rise, my servant!'"));
             (void)restore_level(static_cast<CreatureEntity &>(*this->player_ptr));
-            (void)restore_all_status(this->player_ptr);
-            (void)true_healing(this->player_ptr, 5000);
+            (void)restore_all_status(*this->player_ptr);
+            (void)true_healing(*this->player_ptr, 5000);
             reward = _("体力が回復した。", "healing");
             break;
         case REW_CURSE_WP: {
