@@ -15,6 +15,7 @@
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/player-realm.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/buffer-shaper.h"
@@ -106,13 +107,13 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
             file.remove_prefix(2);
             switch (preftype) {
             case PREF_TYPE_AUTOPICK:
-                (void)process_autopick_file(player_ptr, file);
+                (void)process_autopick_file(*player_ptr, file);
                 break;
             case PREF_TYPE_HISTPREF:
-                (void)process_histpref_file(player_ptr, file);
+                (void)process_histpref_file(*player_ptr, file);
                 break;
             default:
-                (void)process_pref_file(player_ptr, file);
+                (void)process_pref_file(*player_ptr, file);
                 break;
             }
 
@@ -147,7 +148,7 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
 /*!
  * @brief pref設定ファイルを読み込み設定を反映させる /
  * Process the "user pref file" with the given name
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param name 読み込むファイル名
  * @param only_user_dir trueを指定するとANGBAND_DIR_USERからの読み込みのみ行う
  * @return エラーコード
@@ -158,8 +159,9 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
  * allow conditional evaluation and filename inclusion.
  * </pre>
  */
-errr process_pref_file(PlayerType *player_ptr, std::string_view name, bool only_user_dir)
+errr process_pref_file(CreatureEntity &creature, std::string_view name, bool only_user_dir)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     errr err1 = 0;
     if (!only_user_dir) {
         const auto path = path_build(ANGBAND_DIR_PREF, name);
@@ -180,31 +182,31 @@ errr process_pref_file(PlayerType *player_ptr, std::string_view name, bool only_
 
 /*!
  * @brief 自動拾いファイルを読み込む /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param name ファイル名
  * @details
  */
-errr process_autopick_file(PlayerType *player_ptr, std::string_view name)
+errr process_autopick_file(CreatureEntity &creature, std::string_view name)
 {
     const auto path = path_build(ANGBAND_DIR_USER, name);
-    return process_pref_file_aux(player_ptr, path, PREF_TYPE_AUTOPICK);
+    return process_pref_file_aux(dynamic_cast<PlayerType *>(&creature), path, PREF_TYPE_AUTOPICK);
 }
 
 /*!
  * @brief プレイヤーの生い立ちファイルを読み込む /
  * Process file for player's history editor.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param name ファイル名
  * @return エラーコード
  * @details
  */
-errr process_histpref_file(PlayerType *player_ptr, std::string_view name)
+errr process_histpref_file(CreatureEntity &creature, std::string_view name)
 {
     auto &world = AngbandWorld::get_instance();
     const auto old_character_xtra = world.character_xtra;
     const auto path = path_build(ANGBAND_DIR_USER, name);
     world.character_xtra = true;
-    errr err = process_pref_file_aux(player_ptr, path, PREF_TYPE_HISTPREF);
+    errr err = process_pref_file_aux(dynamic_cast<PlayerType *>(&creature), path, PREF_TYPE_HISTPREF);
     world.character_xtra = old_character_xtra;
     return err;
 }
@@ -269,26 +271,28 @@ void close_auto_dump(FILE **fpp, std::string_view mark)
 
 /*!
  * @brief 全ユーザプロファイルをロードする / Load some "user pref files"
- * @paaram player_ptr プレイヤーへの参照ポインタ
+ * @paaram creature クリーチャーへの参照
  * @note
  * Modified by Arcum Dagsson to support
  * separate macro files for different realms.
  */
-void load_all_pref_files(PlayerType *player_ptr)
+void load_all_pref_files(CreatureEntity &creature)
 {
-    process_pref_file(player_ptr, "user.prf");
-    process_pref_file(player_ptr, format("user-%s.prf", ANGBAND_SYS));
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+
+    process_pref_file(creature, "user.prf");
+    process_pref_file(creature, format("user-%s.prf", ANGBAND_SYS));
     constexpr auto fmt = "%s.prf";
-    process_pref_file(player_ptr, format(fmt, player_ptr->race->title.data()));
-    process_pref_file(player_ptr, format(fmt, (*player_ptr->pclass_ref).title.data()));
-    process_pref_file(player_ptr, format(fmt, player_ptr->base_name.data()));
+    process_pref_file(creature, format(fmt, player_ptr->race->title.data()));
+    process_pref_file(creature, format(fmt, (*player_ptr->pclass_ref).title.data()));
+    process_pref_file(creature, format(fmt, player_ptr->base_name.data()));
     PlayerRealm pr(player_ptr);
     if (pr.realm1().is_available()) {
-        process_pref_file(player_ptr, format(fmt, pr.realm1().get_name().data()));
+        process_pref_file(creature, format(fmt, pr.realm1().get_name().data()));
     }
 
     if (pr.realm2().is_available()) {
-        process_pref_file(player_ptr, format(fmt, pr.realm2().get_name().data()));
+        process_pref_file(creature, format(fmt, pr.realm2().get_name().data()));
     }
 
     autopick_load_pref(player_ptr, false);
@@ -297,18 +301,20 @@ void load_all_pref_files(PlayerType *player_ptr)
 /*!
  * @brief 生い立ちメッセージをファイルからロードする。
  */
-bool read_histpref(PlayerType *player_ptr)
+bool read_histpref(CreatureEntity &creature)
 {
     if (!input_check(_("生い立ち設定ファイルをロードしますか? ", "Load background history preference file? "))) {
         return false;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+
     histpref_buf = "";
     std::stringstream ss;
     ss << _("histedit-", "histpref-") << player_ptr->base_name << ".prf";
-    auto err = process_histpref_file(player_ptr, ss.str());
+    auto err = process_histpref_file(creature, ss.str());
     if (0 > err) {
-        err = process_histpref_file(player_ptr, _("histedit.prf", "histpref.prf"));
+        err = process_histpref_file(creature, _("histedit.prf", "histpref.prf"));
     }
 
     const auto finalizer = util::make_finalizer([]() { histpref_buf = tl::nullopt; });

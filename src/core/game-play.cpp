@@ -464,7 +464,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
     generate_world(player_ptr, new_game);
     player_ptr->playing = true;
     reset_visuals(player_ptr);
-    load_all_pref_files(player_ptr);
+    load_all_pref_files(*player_ptr);
     if (new_game) {
         player_outfit(player_ptr);
     }

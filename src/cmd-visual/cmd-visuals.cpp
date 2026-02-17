@@ -107,7 +107,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                 continue;
             }
 
-            (void)process_pref_file(player_ptr, *ask_result, true);
+            (void)process_pref_file(*player_ptr, *ask_result, true);
             need_redraw = true;
             break;
         }

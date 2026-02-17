@@ -219,7 +219,7 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
         write_text_lines(filename, tb->lines_list);
     }
 
-    process_autopick_file(player_ptr, filename);
+    process_autopick_file(*player_ptr, filename);
     cx_save = tb->cx;
     cy_save = tb->cy;
 }

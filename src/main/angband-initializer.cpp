@@ -24,8 +24,10 @@
 #include "main/info-initializer.h"
 #include "market/building-initializer.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/player-type-definition.h"
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
@@ -247,8 +249,8 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     init_items_alloc();
 
     init_note(_("[ユーザー設定ファイルを初期化しています...]", "[Initializing user pref files...]"));
-    process_pref_file(player_ptr, "pref.prf");
-    process_pref_file(player_ptr, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
+    process_pref_file(*player_ptr, "pref.prf");
+    process_pref_file(*player_ptr, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
 
     init_note(_("[初期化終了]", "[Initialization complete]"));
 

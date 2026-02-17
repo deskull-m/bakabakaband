@@ -124,7 +124,7 @@ void edit_history(PlayerType *player_ptr)
 
             break;
         } else if (c == KTRL('A')) {
-            if (read_histpref(player_ptr)) {
+            if (read_histpref(*player_ptr)) {
 #ifdef JP
                 if ((x > 0) && (iskanji2(player_ptr->history[y], x - 1))) {
                     x--;
