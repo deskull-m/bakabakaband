@@ -94,8 +94,8 @@ static const std::array<AmuseDefinition, 13> amuse_info = { {
 } };
 
 struct AmusementRewardItemVisitor {
-    AmusementRewardItemVisitor(PlayerType *player_ptr, AmusementFlagType flag)
-        : player_ptr(player_ptr)
+    AmusementRewardItemVisitor(CreatureEntity &creature, AmusementFlagType flag)
+        : creature(creature)
         , flag(flag)
     {
     }
@@ -109,7 +109,7 @@ struct AmusementRewardItemVisitor {
 
         ItemEntity item(artifact.bi_key);
         item.fa_id = fa_id;
-        ItemMagicApplier(*player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &item, 1, AM_NO_FIXED_ART).execute();
 
         return item;
     }
@@ -117,7 +117,7 @@ struct AmusementRewardItemVisitor {
     tl::optional<ItemEntity> operator()(const BaseitemKey &bi_key) const
     {
         ItemEntity item(bi_key);
-        ItemMagicApplier(*player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &item, 1, AM_NO_FIXED_ART).execute();
 
         if (this->flag == AmusementFlagType::NO_UNIQUE) {
             if (item.has_monrace() && item.get_monrace().kind_flags.has(MonsterKindType::UNIQUE)) {
@@ -136,17 +136,17 @@ struct AmusementRewardItemVisitor {
         return item;
     }
 
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     AmusementFlagType flag;
 };
 
 /*!
  * @brief 誰得ドロップを行う。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param num 誰得の処理回数
  * @param known TRUEならばオブジェクトが必ず＊鑑定＊済になる
  */
-void generate_amusement(PlayerType *player_ptr, int num, bool known)
+void generate_amusement(CreatureEntity &creature, int num, bool known)
 {
     ProbabilityTable<const AmuseDefinition *> pt;
     for (const auto &am_ref : amuse_info) {
@@ -156,36 +156,37 @@ void generate_amusement(PlayerType *player_ptr, int num, bool known)
     for (auto i = 0; i < num; i++) {
         auto am_ptr = pt.pick_one_at_random();
 
-        auto item = std::visit(AmusementRewardItemVisitor(player_ptr, am_ptr->flag), am_ptr->reward_item);
+        auto item = std::visit(AmusementRewardItemVisitor(creature, am_ptr->flag), am_ptr->reward_item);
         if (!item) {
             continue;
         }
 
         if (known) {
+            auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
             object_aware(player_ptr, *item);
             item->mark_as_known();
         }
 
-        (void)drop_near(*player_ptr, *item, player_ptr->get_position());
+        (void)drop_near(creature, *item, creature.get_position());
     }
 }
 
 /*!
  * @brief 獲得ドロップを行う。
  * Scatter some "great" objects near the player
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y1 配置したいフロアのY座標
  * @param x1 配置したいフロアのX座標
  * @param num 獲得の処理回数
  * @param great TRUEならば必ず高級品以上を落とす
  */
-void acquirement(PlayerType *player_ptr, POSITION y1, POSITION x1, int num, bool great)
+void acquirement(CreatureEntity &creature, POSITION y1, POSITION x1, int num, bool great)
 {
     const Pos2D pos(y1, x1);
     auto mode = AM_GOOD | (great ? AM_GREAT : AM_NONE);
     for (auto i = 0; i < num; i++) {
-        if (auto item = make_object(*player_ptr, mode)) {
-            (void)drop_near(*player_ptr, *item, pos);
+        if (auto item = make_object(creature, mode)) {
+            (void)drop_near(creature, *item, pos);
         }
     }
 }
@@ -193,11 +194,14 @@ void acquirement(PlayerType *player_ptr, POSITION y1, POSITION x1, int num, bool
 /*!
  * @brief 防具呪縛処理 /
  * Curse the players armor
+ * @param creature クリーチャーへの参照
  * @return 何も持っていない場合を除き、常にTRUEを返す
  * @todo 元のreturnは間違っているが、修正後の↓文がどれくらい正しいかは要チェック
  */
-bool curse_armor(PlayerType *player_ptr)
+bool curse_armor(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+
     /* Curse the body armor */
     auto &item = *player_ptr->inventory[INVEN_BODY];
     if (!item.is_valid()) {
@@ -216,7 +220,7 @@ bool curse_armor(PlayerType *player_ptr)
     }
 
     msg_format(_("恐怖の暗黒オーラがあなたの%sを包み込んだ！", "A terrible black aura blasts your %s!"), item_name.data());
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -5);
+    chg_virtue(creature, Virtue::ENCHANT, -5);
     item.fa_id = FixedArtifactId::NONE;
     item.ego_idx = EgoType::BLASTED;
     item.to_a = 0 - randint1(5) - randint1(5);
@@ -245,18 +249,19 @@ bool curse_armor(PlayerType *player_ptr)
 /*!
  * @brief 武器呪縛処理 /
  * Curse the players weapon
- * @param player_ptr 所持者の参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param force 無条件に呪縛を行うならばTRUE
  * @param o_ptr 呪縛する武器のアイテム情報参照ポインタ
  * @return 何も持っていない場合を除き、常にTRUEを返す
  * @todo 元のreturnは間違っているが、修正後の↓文がどれくらい正しいかは要チェック
  */
-bool curse_weapon_object(PlayerType *player_ptr, bool force, ItemEntity *o_ptr)
+bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity *o_ptr)
 {
     if (!o_ptr->is_valid()) {
         return false;
     }
 
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_OMIT_PREFIX);
     if (o_ptr->is_fixed_or_random_artifact() && one_in_(2) && !force) {
 #ifdef JP
@@ -271,7 +276,7 @@ bool curse_weapon_object(PlayerType *player_ptr, bool force, ItemEntity *o_ptr)
         msg_format(_("恐怖の暗黒オーラがあなたの%sを包み込んだ！", "A terrible black aura blasts your %s!"), item_name.data());
     }
 
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -5);
+    chg_virtue(creature, Virtue::ENCHANT, -5);
     o_ptr->fa_id = FixedArtifactId::NONE;
     o_ptr->ego_idx = EgoType::SHATTERED;
     o_ptr->to_h = 0 - randint1(5) - randint1(5);
@@ -300,10 +305,12 @@ bool curse_weapon_object(PlayerType *player_ptr, bool force, ItemEntity *o_ptr)
 /*!
  * @brief ボルトのエゴ化処理(火炎エゴのみ) /
  * Enchant some bolts
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void brand_bolts(PlayerType *player_ptr)
+void brand_bolts(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+
     for (auto i = 0; i < INVEN_PACK; i++) {
         auto *o_ptr = player_ptr->inventory[i].get();
         if (o_ptr->bi_key.tval() != ItemKindType::BOLT) {
@@ -458,14 +465,16 @@ bool enchant_equipment(ItemEntity *o_ptr, int n, int eflag)
 
 /*!
  * @brief 装備修正強化処理のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param num_hit 命中修正量
  * @param num_dam ダメージ修正量
  * @param num_ac AC修正量
  * @return 強化に成功した場合TRUEを返す
  */
-bool enchant_spell(PlayerType *player_ptr, HIT_PROB num_hit, int num_dam, ARMOUR_CLASS num_ac)
+bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMOUR_CLASS num_ac)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+
     FuncItemTester item_tester(&ItemEntity::allow_enchant_weapon);
     if (num_ac) {
         item_tester = FuncItemTester(&ItemEntity::is_protector);
@@ -506,10 +515,10 @@ bool enchant_spell(PlayerType *player_ptr, HIT_PROB num_hit, int num_dam, ARMOUR
         }
         msg_print(_("強化に失敗した。", "The enchantment failed."));
         if (one_in_(3)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -1);
+            chg_virtue(creature, Virtue::ENCHANT, -1);
         }
     } else {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, 1);
+        chg_virtue(creature, Virtue::ENCHANT, 1);
     }
 
     calc_android_exp(player_ptr);
@@ -518,11 +527,13 @@ bool enchant_spell(PlayerType *player_ptr, HIT_PROB num_hit, int num_dam, ARMOUR
 
 /*!
  * @brief 武器へのエゴ付加処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param brand_type エゴ化ID(EgoDefinitionsとは連動していない)
  */
-void brand_weapon(PlayerType *player_ptr, int brand_type)
+void brand_weapon(CreatureEntity &creature, int brand_type)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+
     constexpr auto q = _("どの武器を強化しますか? ", "Enchant which weapon? ");
     constexpr auto s = _("強化できる武器がない。", "You have nothing to enchant.");
     short i_idx;
@@ -543,7 +554,7 @@ void brand_weapon(PlayerType *player_ptr, int brand_type)
         }
 
         msg_print(_("属性付加に失敗した。", "The branding failed."));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -2);
+        chg_virtue(creature, Virtue::ENCHANT, -2);
         calc_android_exp(player_ptr);
         return;
     }
@@ -555,14 +566,14 @@ void brand_weapon(PlayerType *player_ptr, int brand_type)
         if (o_ptr->bi_key.tval() == ItemKindType::SWORD) {
             act = _("は鋭さを増した！", "becomes very sharp!");
             o_ptr->ego_idx = EgoType::SHARPNESS;
-            o_ptr->pval = (PARAMETER_VALUE)m_bonus(5, player_ptr->current_floor_ptr->dun_level) + 1;
+            o_ptr->pval = (PARAMETER_VALUE)m_bonus(5, creature.current_floor_ptr->dun_level) + 1;
             if ((o_ptr->bi_key.sval() == SV_HAYABUSA) && (o_ptr->pval > 2)) {
                 o_ptr->pval = 2;
             }
         } else {
             act = _("は破壊力を増した！", "seems very powerful.");
             o_ptr->ego_idx = EgoType::EARTHQUAKES;
-            o_ptr->pval = (PARAMETER_VALUE)m_bonus(3, player_ptr->current_floor_ptr->dun_level);
+            o_ptr->pval = (PARAMETER_VALUE)m_bonus(3, creature.current_floor_ptr->dun_level);
         }
 
         break;
@@ -640,6 +651,6 @@ void brand_weapon(PlayerType *player_ptr, int brand_type)
     msg_format(_("あなたの%s%s", "Your %s %s"), item_name.data(), act);
     enchant_equipment(o_ptr, randint0(3) + 4, ENCH_TOHIT | ENCH_TODAM);
     o_ptr->discount = 99;
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, 2);
+    chg_virtue(creature, Virtue::ENCHANT, 2);
     calc_android_exp(player_ptr);
 }

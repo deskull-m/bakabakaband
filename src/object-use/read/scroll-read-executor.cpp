@@ -79,7 +79,7 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_CURSE_ARMOR:
-        if (curse_armor(this->player_ptr)) {
+        if (curse_armor(*this->player_ptr)) {
             this->ident = true;
         }
 
@@ -95,7 +95,7 @@ bool ScrollReadExecutor::read()
             k = INVEN_SUB_HAND;
         }
 
-        if (k && curse_weapon_object(this->player_ptr, false, this->player_ptr->inventory[k].get())) {
+        if (k && curse_weapon_object(*this->player_ptr, false, this->player_ptr->inventory[k].get())) {
             this->ident = true;
         }
 
@@ -186,34 +186,34 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_ENCHANT_ARMOR:
         this->ident = true;
-        if (!enchant_spell(this->player_ptr, 0, 0, 1)) {
+        if (!enchant_spell(*this->player_ptr, 0, 0, 1)) {
             used_up = false;
         }
 
         break;
     case SV_SCROLL_ENCHANT_WEAPON_TO_HIT:
-        if (!enchant_spell(this->player_ptr, 1, 0, 0)) {
+        if (!enchant_spell(*this->player_ptr, 1, 0, 0)) {
             used_up = false;
         }
 
         this->ident = true;
         break;
     case SV_SCROLL_ENCHANT_WEAPON_TO_DAM:
-        if (!enchant_spell(this->player_ptr, 0, 1, 0)) {
+        if (!enchant_spell(*this->player_ptr, 0, 1, 0)) {
             used_up = false;
         }
 
         this->ident = true;
         break;
     case SV_SCROLL_STAR_ENCHANT_ARMOR:
-        if (!enchant_spell(this->player_ptr, 0, 0, randint1(3) + 2)) {
+        if (!enchant_spell(*this->player_ptr, 0, 0, randint1(3) + 2)) {
             used_up = false;
         }
 
         this->ident = true;
         break;
     case SV_SCROLL_STAR_ENCHANT_WEAPON:
-        if (!enchant_spell(this->player_ptr, randnum1<short>(3), randint1(3), 0)) {
+        if (!enchant_spell(*this->player_ptr, randnum1<short>(3), randint1(3), 0)) {
             used_up = false;
         }
 
@@ -370,11 +370,11 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_ACQUIREMENT:
-        acquirement(this->player_ptr, this->player_ptr->y, this->player_ptr->x, this->player_ptr->level / 12 + 1, true);
+        acquirement(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, this->player_ptr->level / 12 + 1, true);
         this->ident = true;
         break;
     case SV_SCROLL_STAR_ACQUIREMENT:
-        acquirement(this->player_ptr, this->player_ptr->y, this->player_ptr->x, this->player_ptr->level / 6 + 3, true);
+        acquirement(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, this->player_ptr->level / 6 + 3, true);
         this->ident = true;
         break;
     case SV_SCROLL_FIRE:
@@ -425,11 +425,11 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_AMUSEMENT:
         this->ident = true;
-        generate_amusement(this->player_ptr, 1, false);
+        generate_amusement(*this->player_ptr, 1, false);
         break;
     case SV_SCROLL_STAR_AMUSEMENT:
         this->ident = true;
-        generate_amusement(this->player_ptr, randint1(2) + 1, false);
+        generate_amusement(*this->player_ptr, randint1(2) + 1, false);
         break;
     case SV_SCROLL_HUGE_EARTHQUAKE: {
         ident = true;

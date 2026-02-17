@@ -334,7 +334,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return activate_dispel_curse(*player_ptr, name);
     case RandomArtActType::BRAND_FIRE_BOLTS:
         msg_format(_("%sが深紅に輝いた...", "Your %s glows deep red..."), name.data());
-        brand_bolts(player_ptr);
+        brand_bolts(*player_ptr);
         return true;
     case RandomArtActType::RECHARGE_XTRA:
         return activate_recharge_extra(*player_ptr, name);
