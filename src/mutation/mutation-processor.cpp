@@ -431,10 +431,10 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     if (player_ptr->muta.has(PlayerMutationType::WEIRD_MIND) && !player_ptr->anti_magic && one_in_(3000)) {
         if (player_ptr->tim_esp > 0) {
             msg_print(_("精神にもやがかかった！", "Your mind feels cloudy!"));
-            set_tim_esp(player_ptr, 0, true);
+            set_tim_esp(*player_ptr, 0, true);
         } else {
             msg_print(_("精神が広がった！", "Your mind expands!"));
-            set_tim_esp(player_ptr, player_ptr->level, false);
+            set_tim_esp(*player_ptr, player_ptr->level, false);
         }
     }
 

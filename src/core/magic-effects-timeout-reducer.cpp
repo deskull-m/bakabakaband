@@ -40,7 +40,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_invis) {
-        (void)set_tim_invis(player_ptr, player_ptr->tim_invis - 1, true);
+        (void)set_tim_invis(*player_ptr, player_ptr->tim_invis - 1, true);
     }
 
     if (player_ptr->suppress_multi_reward) {
@@ -48,7 +48,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_esp) {
-        (void)set_tim_esp(player_ptr, player_ptr->tim_esp - 1, true);
+        (void)set_tim_esp(*player_ptr, player_ptr->tim_esp - 1, true);
     }
 
     if (player_ptr->ele_attack) {
@@ -66,7 +66,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_infra) {
-        (void)set_tim_infra(player_ptr, player_ptr->tim_infra - 1, true);
+        (void)set_tim_infra(*player_ptr, player_ptr->tim_infra - 1, true);
     }
 
     if (player_ptr->tim_stealth) {

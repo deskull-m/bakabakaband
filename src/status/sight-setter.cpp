@@ -9,7 +9,7 @@
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
-static bool update_sight(PlayerType *player_ptr, const bool notice)
+static bool update_sight(CreatureEntity &creature, const bool notice)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
@@ -18,7 +18,7 @@ static bool update_sight(PlayerType *player_ptr, const bool notice)
     }
 
     if (disturb_state) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     static constexpr auto flags = {
@@ -26,7 +26,7 @@ static bool update_sight(PlayerType *player_ptr, const bool notice)
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
     rfu.set_flags(flags);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -36,34 +36,35 @@ static bool update_sight(PlayerType *player_ptr, const bool notice)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_esp(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_esp(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_esp && !do_dec) {
-            if (player_ptr->tim_esp > v) {
+        if (player.tim_esp && !do_dec) {
+            if (player.tim_esp > v) {
                 return false;
             }
-        } else if (!is_time_limit_esp(*player_ptr)) {
+        } else if (!is_time_limit_esp(player)) {
             msg_print(_("意識が広がった気がする！", "You feel your consciousness expand!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_esp && !music_singing(*player_ptr, MUSIC_MIND)) {
+        if (player.tim_esp && !music_singing(player, MUSIC_MIND)) {
             msg_print(_("意識は元に戻った。", "Your consciousness contracts again."));
             notice = true;
         }
     }
 
-    player_ptr->tim_esp = v;
-    return update_sight(player_ptr, notice);
+    player.tim_esp = v;
+    return update_sight(creature, notice);
 }
 
 /*!
@@ -72,34 +73,35 @@ bool set_tim_esp(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_invis(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_invis(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_invis && !do_dec) {
-            if (player_ptr->tim_invis > v) {
+        if (player.tim_invis && !do_dec) {
+            if (player.tim_invis > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_invis) {
+        } else if (!player.tim_invis) {
             msg_print(_("目が非常に敏感になった気がする！", "Your eyes feel very sensitive!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_invis) {
+        if (player.tim_invis) {
             msg_print(_("目の敏感さがなくなったようだ。", "Your eyes feel less sensitive."));
             notice = true;
         }
     }
 
-    player_ptr->tim_invis = v;
-    return update_sight(player_ptr, notice);
+    player.tim_invis = v;
+    return update_sight(creature, notice);
 }
 
 /*!
@@ -108,32 +110,33 @@ bool set_tim_invis(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_infra(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_infra(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_infra && !do_dec) {
-            if (player_ptr->tim_infra > v) {
+        if (player.tim_infra && !do_dec) {
+            if (player.tim_infra > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_infra) {
+        } else if (!player.tim_infra) {
             msg_print(_("目がランランと輝き始めた！", "Your eyes begin to tingle!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_infra) {
+        if (player.tim_infra) {
             msg_print(_("目の輝きがなくなった。", "Your eyes stop tingling."));
             notice = true;
         }
     }
 
-    player_ptr->tim_infra = v;
-    return update_sight(player_ptr, notice);
+    player.tim_infra = v;
+    return update_sight(creature, notice);
 }

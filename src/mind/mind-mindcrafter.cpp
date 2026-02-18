@@ -169,7 +169,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         }
 
         if ((plev > 24) && (plev < 40)) {
-            set_tim_esp(player_ptr, (TIME_EFFECT)plev, false);
+            set_tim_esp(*player_ptr, (TIME_EFFECT)plev, false);
         }
 
         if (!b) {

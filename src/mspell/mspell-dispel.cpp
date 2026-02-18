@@ -58,9 +58,9 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_multishadow(*player_ptr, 0, true);
     (void)set_dustrobe(*player_ptr, 0, true);
 
-    (void)set_tim_invis(player_ptr, 0, true);
-    (void)set_tim_infra(player_ptr, 0, true);
-    (void)set_tim_esp(player_ptr, 0, true);
+    (void)set_tim_invis(*player_ptr, 0, true);
+    (void)set_tim_infra(*player_ptr, 0, true);
+    (void)set_tim_esp(*player_ptr, 0, true);
     (void)set_tim_regen(*player_ptr, 0, true);
     (void)set_tim_stealth(*player_ptr, 0, true);
     (void)set_tim_levitation(player_ptr, 0, true);
