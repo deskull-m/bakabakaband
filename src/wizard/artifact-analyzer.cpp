@@ -8,6 +8,7 @@
 #include "object/object-info.h"
 #include "system/artifact-type-definition.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/enum-range.h"
@@ -17,11 +18,13 @@
 
 /*!
  * @brief アイテムの特定記述内容表記を生成する
+ * @param creature クリーチャーへの参照
  * @param item 記述を得たいアイテムへの参照
  * @return 特定記述内容
  */
-static std::string analyze_general(PlayerType *player_ptr, const ItemEntity &item)
+static std::string analyze_general(CreatureEntity &creature, const ItemEntity &item)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     return describe_flavor(player_ptr, item, OD_NAME_AND_ENCHANT | OD_STORE | OD_DEBUG);
 }
 
@@ -204,14 +207,14 @@ static std::string analyze_misc(const ItemEntity &item)
 
 /*!
  * @brief 固定アーティファクト情報1件を解析する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item アーティファクトアイテムへの参照
  * @return アーティファクト情報
  */
-ArtifactsDumpInfo object_analyze(PlayerType *player_ptr, const ItemEntity &item)
+ArtifactsDumpInfo object_analyze(CreatureEntity &creature, const ItemEntity &item)
 {
     ArtifactsDumpInfo info{};
-    info.description = analyze_general(player_ptr, item);
+    info.description = analyze_general(creature, item);
     info.pval_info.analyze(item);
     info.brands = analyze_brand(item);
     info.slays = analyze_slay(item);
@@ -228,14 +231,14 @@ ArtifactsDumpInfo object_analyze(PlayerType *player_ptr, const ItemEntity &item)
 
 /*!
  * @brief ランダムアーティファクト1件を解析する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item アーティファクトアイテムへの参照
  * @return 解析結果
  */
-ArtifactsDumpInfo random_artifact_analyze(PlayerType *player_ptr, const ItemEntity &item)
+ArtifactsDumpInfo random_artifact_analyze(CreatureEntity &creature, const ItemEntity &item)
 {
     ArtifactsDumpInfo info{};
-    info.description = analyze_general(player_ptr, item);
+    info.description = analyze_general(creature, item);
     info.pval_info.analyze(item);
     info.brands = analyze_brand(item);
     info.slays = analyze_slay(item);
