@@ -419,7 +419,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 29: {
         if (cast) {
-            if (!alchemy(player_ptr)) {
+            if (!alchemy(*player_ptr)) {
                 return tl::nullopt;
             }
         }

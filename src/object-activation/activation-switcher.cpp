@@ -314,7 +314,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         return activate_recharge(*player_ptr);
     case RandomArtActType::ALCHEMY:
         msg_print(_("明るい黄色に輝いている...", "It glows bright yellow..."));
-        (void)alchemy(player_ptr);
+        (void)alchemy(*player_ptr);
         return true;
     case RandomArtActType::DIM_DOOR:
         return activate_dimension_door(*player_ptr);
