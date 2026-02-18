@@ -44,7 +44,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_infra(player_ptr, base + dice.roll(), false);
+            set_tim_infra(*player_ptr, base + dice.roll(), false);
         }
     } break;
 
@@ -141,7 +141,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_invis(player_ptr, dice.roll() + base, false);
+            set_tim_invis(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -226,7 +226,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_esp(player_ptr, dice.roll() + base, false);
+            set_tim_esp(*player_ptr, dice.roll() + base, false);
         }
     } break;
 

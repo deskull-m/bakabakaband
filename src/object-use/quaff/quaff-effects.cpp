@@ -115,9 +115,9 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_DEATH:
         return this->death();
     case SV_POTION_INFRAVISION:
-        return set_tim_infra(this->player_ptr, this->player_ptr->tim_infra + 100 + randint1(100), false);
+        return set_tim_infra(*this->player_ptr, this->player_ptr->tim_infra + 100 + randint1(100), false);
     case SV_POTION_DETECT_INVIS:
-        return set_tim_invis(this->player_ptr, this->player_ptr->tim_invis + 12 + randint1(12), false);
+        return set_tim_invis(*this->player_ptr, this->player_ptr->tim_invis + 12 + randint1(12), false);
     case SV_POTION_SLOW_POISON:
         return BadStatusSetter(*this->player_ptr).set_poison(this->player_ptr->effects()->poison().current() / 2);
     case SV_POTION_CURE_POISON:

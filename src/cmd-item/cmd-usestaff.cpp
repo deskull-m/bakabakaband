@@ -181,7 +181,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_DETECT_INVIS: {
-        if (set_tim_invis(player_ptr, player_ptr->tim_invis + 12 + randint1(12), false)) {
+        if (set_tim_invis(*player_ptr, player_ptr->tim_invis + 12 + randint1(12), false)) {
             ident = true;
         }
         break;

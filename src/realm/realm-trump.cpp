@@ -109,7 +109,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            set_tim_esp(player_ptr, dice.roll() + base, false);
+            set_tim_esp(*player_ptr, dice.roll() + base, false);
         }
     } break;
 

@@ -375,7 +375,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
             detect_monsters_invis(creature, DETECT_RAD_DEFAULT);
         }
         if (plev + tmp > 28) {
-            set_tim_esp(&player, (TIME_EFFECT)plev, false);
+            set_tim_esp(player, (TIME_EFFECT)plev, false);
         }
         if (plev + tmp > 38) {
             map_area(creature, DETECT_RAD_MAP);

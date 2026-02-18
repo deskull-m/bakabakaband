@@ -339,7 +339,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_tim_invis(player_ptr, dice.roll() + base, false);
+            set_tim_invis(*player_ptr, dice.roll() + base, false);
         }
     } break;
 
@@ -445,7 +445,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             wiz_lite(player_ptr, false);
 
             if (!player_ptr->telepathy) {
-                set_tim_esp(player_ptr, dice.roll() + base, false);
+                set_tim_esp(*player_ptr, dice.roll() + base, false);
             }
         }
     } break;

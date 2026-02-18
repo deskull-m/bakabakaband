@@ -231,7 +231,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         restore_mana(*player_ptr, true);
         return true;
     case RandomArtActType::ESP:
-        (void)set_tim_esp(player_ptr, randint1(30) + 25, false);
+        (void)set_tim_esp(*player_ptr, randint1(30) + 25, false);
         return true;
     case RandomArtActType::BERSERK:
         (void)berserk(*player_ptr, randint1(25) + 25);
