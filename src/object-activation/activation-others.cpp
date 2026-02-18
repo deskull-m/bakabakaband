@@ -218,7 +218,7 @@ bool activate_call_chaos(CreatureEntity &creature)
 {
     msg_print(_("様々な色の火花を発している...", "It glows in scintillating colours..."));
     auto &player = static_cast<PlayerType &>(creature);
-    call_chaos(&player);
+    call_chaos(player);
     return true;
 }
 

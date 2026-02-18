@@ -116,7 +116,7 @@ void process_player(PlayerType *player_ptr)
     if (player_ptr->invoking_midnight_curse) {
         int count = 0;
         mark_monsters_present(player_ptr);
-        activate_ty_curse(player_ptr, false, &count);
+        activate_ty_curse(*player_ptr, false, &count);
         player_ptr->invoking_midnight_curse = false;
     }
 

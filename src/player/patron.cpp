@@ -265,7 +265,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_TY_CURSE:
             msg_format(_("%sの声が轟き渡った:", "The voice of %s thunders:"), this->name.data());
             msg_print(_("「下僕よ、汝傲慢なり。」", "'Thou art growing arrogant, mortal.'"));
-            (void)activate_ty_curse(this->player_ptr, false, &count);
+            (void)activate_ty_curse(*this->player_ptr, false, &count);
             reward = _("禍々しい呪いをかけられた。", "cursing");
             break;
         case REW_SUMMON_M:
@@ -287,7 +287,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_DO_HAVOC:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「死と破壊こそ我が喜びなり！」", "'Death and destruction! This pleaseth me!'"));
-            call_chaos(this->player_ptr);
+            call_chaos(*this->player_ptr);
             reward = _("カオスの力が渦巻いた。", "calling chaos");
             break;
         case REW_GAIN_ABL:
@@ -389,7 +389,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             msg_print(_("「我を怒りしめた罪を償うべし。」", "'Now thou shalt pay for annoying me.'"));
             switch (randint1(4)) {
             case 1:
-                (void)activate_ty_curse(this->player_ptr, false, &count);
+                (void)activate_ty_curse(*this->player_ptr, false, &count);
                 reward = _("禍々しい呪いをかけられた。", "cursing");
                 break;
             case 2:
@@ -442,7 +442,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
             }
 
             activate_hi_summon(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, false);
-            (void)activate_ty_curse(this->player_ptr, false, &count);
+            (void)activate_ty_curse(*this->player_ptr, false, &count);
             if (one_in_(2)) {
                 inventory_slot_type slot = INVEN_NONE;
                 if (has_melee_weapon(*this->player_ptr, INVEN_MAIN_HAND)) {

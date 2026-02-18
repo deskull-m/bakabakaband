@@ -183,7 +183,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            cast_wonder(player_ptr, dir);
+            cast_wonder(*player_ptr, dir);
         }
     } break;
 
@@ -451,7 +451,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            call_chaos(player_ptr);
+            call_chaos(*player_ptr);
         }
     } break;
 

@@ -1093,7 +1093,7 @@ bool do_cmd_cast(PlayerType *player_ptr)
 
         if ((tval == ItemKindType::CHAOS_BOOK) && (randint1(100) < spell_id)) {
             msg_print(_("カオス的な効果を発生した！", "You produce a chaotic effect!"));
-            wild_magic(player_ptr, spell_id);
+            wild_magic(*player_ptr, spell_id);
         } else if ((tval == ItemKindType::DEATH_BOOK) && (randint1(100) < spell_id)) {
             if ((sval == 3) && one_in_(2)) {
                 sanity_blast(player_ptr, tl::nullopt, true);

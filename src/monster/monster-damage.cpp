@@ -275,7 +275,7 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
     msg_format(_("%s^は恐ろしい血の呪いをあなたにかけた！", "%s^ puts a terrible blood curse on you!"), m_name.data());
     curse_equipment(this->player_ptr, 100, 50);
     do {
-        stop_ty = activate_ty_curse(this->player_ptr, stop_ty, &count);
+        stop_ty = activate_ty_curse(*this->player_ptr, stop_ty, &count);
     } while (--curses);
 }
 
