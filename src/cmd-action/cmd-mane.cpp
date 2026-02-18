@@ -732,7 +732,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
     }
     case MonsterAbilityType::INVULNER:
         msg_print(_("無傷の球の呪文を唱えた。", "You cast a Globe of Invulnerability."));
-        (void)set_invuln(player_ptr, randint1(7) + 7, false);
+        (void)set_invuln(*player_ptr, randint1(7) + 7, false);
         break;
     case MonsterAbilityType::BLINK:
         teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);

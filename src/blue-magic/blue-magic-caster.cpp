@@ -307,7 +307,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     }
     case MonsterAbilityType::INVULNER:
         msg_print(_("無傷の球の呪文を唱えた。", "You cast a Globe of Invulnerability."));
-        (void)set_invuln(player_ptr, randint1(4) + 4, false);
+        (void)set_invuln(*player_ptr, randint1(4) + 4, false);
         return true;
     case MonsterAbilityType::BLINK:
         teleport_player(creature, 10, TELEPORT_SPONTANEOUS);

@@ -666,7 +666,7 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     (void)bss.mod_blindness(t);
     (void)bss.set_fear(0);
     (void)set_tim_esp(player_ptr, player_ptr->tim_esp + t, false);
-    (void)set_tim_regen(player_ptr, player_ptr->tim_regen + t, false);
+    (void)set_tim_regen(*player_ptr, player_ptr->tim_regen + t, false);
     (void)set_hero(*player_ptr, player_ptr->hero + t, false);
     (void)set_blessed(*player_ptr, player_ptr->blessed + t, false);
     (void)mod_acceleration(*player_ptr, t, false);

@@ -98,7 +98,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_regen) {
-        (void)set_tim_regen(player_ptr, player_ptr->tim_regen - 1, true);
+        (void)set_tim_regen(*player_ptr, player_ptr->tim_regen - 1, true);
     }
 
     if (player_ptr->tim_res_nether) {
@@ -122,7 +122,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_reflect) {
-        (void)set_tim_reflect(player_ptr, player_ptr->tim_reflect - 1, true);
+        (void)set_tim_reflect(*player_ptr, player_ptr->tim_reflect - 1, true);
     }
 
     if (player_ptr->multishadow) {
@@ -134,7 +134,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_pass_wall) {
-        (void)set_pass_wall(player_ptr, player_ptr->tim_pass_wall - 1, true);
+        (void)set_pass_wall(*player_ptr, player_ptr->tim_pass_wall - 1, true);
     }
 
     if (effects->paralysis().is_paralyzed()) {
@@ -162,7 +162,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->invuln) {
-        (void)set_invuln(player_ptr, player_ptr->invuln - 1, true);
+        (void)set_invuln(*player_ptr, player_ptr->invuln - 1, true);
     }
 
     if (player_ptr->wraith_form) {
@@ -218,11 +218,11 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_emission) {
-        (void)set_tim_emission(player_ptr, player_ptr->tim_emission - 1, true);
+        (void)set_tim_emission(*player_ptr, player_ptr->tim_emission - 1, true);
     }
 
     if (player_ptr->tim_exorcism) {
-        (void)set_tim_exorcism(player_ptr, player_ptr->tim_exorcism - 1, true);
+        (void)set_tim_exorcism(*player_ptr, player_ptr->tim_exorcism - 1, true);
     }
 
     if (player_ptr->tim_imm_dark) {
