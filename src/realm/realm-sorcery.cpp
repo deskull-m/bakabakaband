@@ -446,7 +446,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            set_invuln(player_ptr, dice.roll() + base, false);
+            set_invuln(*player_ptr, dice.roll() + base, false);
         }
     } break;
     }

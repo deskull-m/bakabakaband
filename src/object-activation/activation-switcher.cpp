@@ -258,7 +258,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         set_wraith_form(*player_ptr, randint1(player_ptr->level / 2) + (player_ptr->level / 2), false);
         return true;
     case RandomArtActType::INVULN:
-        (void)set_invuln(player_ptr, randint1(8) + 8, false);
+        (void)set_invuln(*player_ptr, randint1(8) + 8, false);
         return true;
     case RandomArtActType::HERO:
         (void)heroism(*player_ptr, 25);

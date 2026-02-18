@@ -83,13 +83,14 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
+bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
@@ -99,33 +100,33 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
         SubWindowRedrawingFlag::DUNGEON,
     };
     if (v) {
-        if (player_ptr->invuln && !do_dec) {
-            if (player_ptr->invuln > v) {
+        if (player.invuln && !do_dec) {
+            if (player.invuln > v) {
                 return false;
             }
-        } else if (!is_invuln(*player_ptr)) {
+        } else if (!is_invuln(creature)) {
             msg_print(_("無敵だ！", "Invulnerability!"));
             notice = true;
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -2);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -3);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VALOUR, -5);
+            chg_virtue(creature, Virtue::UNLIFE, -2);
+            chg_virtue(creature, Virtue::HONOUR, -2);
+            chg_virtue(creature, Virtue::SACRIFICE, -3);
+            chg_virtue(creature, Virtue::VALOUR, -5);
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
             rfu.set_flags(flags_swrf);
         }
     } else {
-        if (player_ptr->invuln && !music_singing(*player_ptr, MUSIC_INVULN)) {
+        if (player.invuln && !music_singing(player, MUSIC_INVULN)) {
             msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
             notice = true;
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
             rfu.set_flags(flags_swrf);
-            player_ptr->energy_need += ENERGY_NEED();
+            player.energy_need += ENERGY_NEED();
         }
     }
 
-    player_ptr->invuln = v;
+    player.invuln = v;
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 
     if (!notice) {
@@ -133,11 +134,11 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -147,33 +148,34 @@ bool set_invuln(PlayerType *player_ptr, short v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_regen(PlayerType *player_ptr, short v, bool do_dec)
+bool set_tim_regen(CreatureEntity &creature, short v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_regen && !do_dec) {
-            if (player_ptr->tim_regen > v) {
+        if (player.tim_regen && !do_dec) {
+            if (player.tim_regen > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_regen) {
+        } else if (!player.tim_regen) {
             msg_print(_("回復力が上がった！", "You feel yourself regenerating quickly!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_regen) {
+        if (player.tim_regen) {
             msg_print(_("素早く回復する感じがなくなった。", "You feel you are no longer regenerating quickly."));
             notice = true;
         }
     }
 
-    player_ptr->tim_regen = v;
+    player.tim_regen = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -181,11 +183,11 @@ bool set_tim_regen(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -195,33 +197,34 @@ bool set_tim_regen(PlayerType *player_ptr, short v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_reflect(PlayerType *player_ptr, short v, bool do_dec)
+bool set_tim_reflect(CreatureEntity &creature, short v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_reflect && !do_dec) {
-            if (player_ptr->tim_reflect > v) {
+        if (player.tim_reflect && !do_dec) {
+            if (player.tim_reflect > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_reflect) {
+        } else if (!player.tim_reflect) {
             msg_print(_("体の表面が滑かになった気がする。", "Your body becames smooth."));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_reflect) {
+        if (player.tim_reflect) {
             msg_print(_("体の表面が滑かでなくなった。", "Your body is no longer smooth."));
             notice = true;
         }
     }
 
-    player_ptr->tim_reflect = v;
+    player.tim_reflect = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -229,11 +232,11 @@ bool set_tim_reflect(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -243,33 +246,34 @@ bool set_tim_reflect(PlayerType *player_ptr, short v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_pass_wall(PlayerType *player_ptr, short v, bool do_dec)
+bool set_pass_wall(CreatureEntity &creature, short v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_pass_wall && !do_dec) {
-            if (player_ptr->tim_pass_wall > v) {
+        if (player.tim_pass_wall && !do_dec) {
+            if (player.tim_pass_wall > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_pass_wall) {
+        } else if (!player.tim_pass_wall) {
             msg_print(_("体が半物質の状態になった。", "You became ethereal."));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_pass_wall) {
+        if (player.tim_pass_wall) {
             msg_print(_("体が物質化した。", "You are no longer ethereal."));
             notice = true;
         }
     }
 
-    player_ptr->tim_pass_wall = v;
+    player.tim_pass_wall = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -277,11 +281,11 @@ bool set_pass_wall(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -291,33 +295,34 @@ bool set_pass_wall(PlayerType *player_ptr, short v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_emission(PlayerType *player_ptr, short v, bool do_dec)
+bool set_tim_emission(CreatureEntity &creature, short v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_emission && !do_dec) {
-            if (player_ptr->tim_emission > v) {
+        if (player.tim_emission && !do_dec) {
+            if (player.tim_emission > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_emission) {
+        } else if (!player.tim_emission) {
             msg_print(_("体が発光した。", "Your body emit light."));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_emission) {
+        if (player.tim_emission) {
             msg_print(_("体の光が消え去った。", "Your body stopped emitting light."));
             notice = true;
         }
     }
 
-    player_ptr->tim_emission = v;
+    player.tim_emission = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -325,12 +330,12 @@ bool set_tim_emission(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(StatusRecalculatingFlag::TORCH);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 /*!
@@ -339,33 +344,34 @@ bool set_tim_emission(PlayerType *player_ptr, short v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_exorcism(PlayerType *player_ptr, short v, bool do_dec)
+bool set_tim_exorcism(CreatureEntity &creature, short v, bool do_dec)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     auto notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (player.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_exorcism && !do_dec) {
-            if (player_ptr->tim_exorcism > v) {
+        if (player.tim_exorcism && !do_dec) {
+            if (player.tim_exorcism > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_exorcism) {
+        } else if (!player.tim_exorcism) {
             msg_print(_("浄化の力を得た気がする。", "You feel you become an exorcist."));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_exorcism) {
+        if (player.tim_exorcism) {
             msg_print(_("浄化の力を失った。", "You are no longer exorcist."));
             notice = true;
         }
     }
 
-    player_ptr->tim_exorcism = v;
+    player.tim_exorcism = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -373,10 +379,10 @@ bool set_tim_exorcism(PlayerType *player_ptr, short v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }

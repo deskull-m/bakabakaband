@@ -464,7 +464,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         t = 20 + randint1(20);
         set_shield(player, t, false);
         if (plev > 31) {
-            set_tim_reflect(&player, t, false);
+            set_tim_reflect(player, t, false);
         }
 
         if (plev > 39) {
@@ -512,7 +512,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
 
         break;
     case MindMirrorMasterType::RUFFNOR_MIRROR:
-        (void)set_invuln(&player, randint1(4) + 4, false);
+        (void)set_invuln(player, randint1(4) + 4, false);
         break;
     default:
         msg_print(_("なに？", "Zap?"));
