@@ -76,7 +76,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            cast_shuffle(player_ptr);
+            cast_shuffle(creature);
         }
     } break;
 
@@ -350,7 +350,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 22:
         if (cast) {
-            become_living_trump(player_ptr);
+            become_living_trump(creature);
         }
         break;
 
