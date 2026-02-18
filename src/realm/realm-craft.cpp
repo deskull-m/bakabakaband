@@ -361,7 +361,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 30:
         if (cast) {
-            become_living_trump(player_ptr);
+            become_living_trump(*player_ptr);
         }
         break;
 
