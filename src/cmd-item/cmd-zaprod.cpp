@@ -262,7 +262,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_HAVOC: {
-        call_chaos(player_ptr);
+        call_chaos(*player_ptr);
         ident = true;
         break;
     }

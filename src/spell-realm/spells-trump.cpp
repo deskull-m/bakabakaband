@@ -85,7 +85,7 @@ void cast_shuffle(PlayerType *player_ptr)
     if (die < 18) {
         int count = 0;
         msg_print(_("なんてこった！《吊られた男》だ！", "Oh no! It's the Hanged Man."));
-        activate_ty_curse(player_ptr, false, &count);
+        activate_ty_curse(*player_ptr, false, &count);
         return;
     }
 
@@ -117,7 +117,7 @@ void cast_shuffle(PlayerType *player_ptr)
 
     if (die < 38) {
         msg_print(_("《運命の輪》だ。", "It's the Wheel of Fortune."));
-        wild_magic(player_ptr, randint0(32));
+        wild_magic(*player_ptr, randint0(32));
         return;
     }
 
