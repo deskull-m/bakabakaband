@@ -48,7 +48,7 @@ void building_recharge(PlayerType *player_ptr)
         msg_erase();
         if ((player_ptr->au >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
             player_ptr->au -= 50;
-            identify_item(player_ptr, o_ptr);
+            identify_item(*player_ptr, o_ptr);
             const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
             msg_format(_("%s です。", "You have: %s."), item_name.data());
             autopick_alter_item(player_ptr, i_idx, false);
@@ -236,7 +236,7 @@ void building_recharge_all(PlayerType *player_ptr)
         }
 
         if (!o_ptr->is_known()) {
-            identify_item(player_ptr, o_ptr);
+            identify_item(*player_ptr, o_ptr);
             autopick_alter_item(player_ptr, i, false);
         }
 

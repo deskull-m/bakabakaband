@@ -246,7 +246,7 @@ void process_player_pickup_item(PlayerType *player_ptr, OBJECT_IDX o_idx)
 
     auto &picked_slot_item = *player_ptr->inventory[slot];
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
-        const auto old_known = identify_item(player_ptr, &picked_slot_item);
+        const auto old_known = identify_item(*player_ptr, &picked_slot_item);
         autopick_alter_item(player_ptr, slot, destroy_identify && !old_known);
         if (picked_slot_item.marked.has(OmType::AUTODESTROY)) {
             return;

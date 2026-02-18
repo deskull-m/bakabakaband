@@ -147,7 +147,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
             store_prt_gold(player_ptr->au);
             const auto dummy = selling_item.calc_price() * selling_item.number;
 
-            identify_item(player_ptr, o_ptr);
+            identify_item(*player_ptr, o_ptr);
             auto sold_item = o_ptr->clone();
             sold_item.number = amt;
             sold_item.ident |= IDENT_STORE;
@@ -198,7 +198,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
             return;
         }
 
-        identify_item(player_ptr, &selling_item);
+        identify_item(*player_ptr, &selling_item);
         selling_item.ident |= IDENT_FULL_KNOWN;
 
         distribute_charges(o_ptr, &selling_item, amt);

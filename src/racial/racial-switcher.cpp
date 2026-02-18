@@ -181,7 +181,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return true;
         }
 
-        return (command != -4) || identify_fully(player_ptr, false);
+        return (command != -4) || identify_fully(*player_ptr, false);
     case PlayerClassType::IMITATOR:
         handle_stuff(*player_ptr);
         return do_cmd_mane(*player_ptr, true);
@@ -264,10 +264,10 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return recall_player(creature, randint0(21) + 15);
     case PlayerClassType::SMITH:
         if (player_ptr->level <= 29) {
-            return ident_spell(player_ptr, true);
+            return ident_spell(*player_ptr, true);
         }
 
-        return identify_fully(player_ptr, true);
+        return identify_fully(*player_ptr, true);
     case PlayerClassType::MIRROR_MASTER: {
         SpellsMirrorMaster smm(player_ptr);
         if (command == -3) {

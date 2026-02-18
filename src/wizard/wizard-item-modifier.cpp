@@ -198,10 +198,10 @@ void wizard_item_modifier(CreatureEntity &creature)
         wiz_item_drop(creature, command_arg, { ItemMagicAppliance::GOOD, ItemMagicAppliance::GREAT, ItemMagicAppliance::SPECIAL });
         break;
     case 'f':
-        identify_fully(player_ptr, false);
+        identify_fully(*player_ptr, false);
         break;
     case 'i':
-        (void)ident_spell(player_ptr, false);
+        (void)ident_spell(*player_ptr, false);
         break;
     case 'I':
         wiz_identify_full_inventory(creature);

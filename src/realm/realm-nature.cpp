@@ -346,7 +346,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
 
     case 21: {
         if (cast) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(*player_ptr, false)) {
                 return tl::nullopt;
             }
         }

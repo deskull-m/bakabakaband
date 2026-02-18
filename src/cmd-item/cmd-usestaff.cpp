@@ -109,11 +109,11 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
 
     case SV_STAFF_IDENTIFY: {
         if (powerful) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(*player_ptr, false)) {
                 *use_charge = false;
             }
         } else {
-            if (!ident_spell(player_ptr, false)) {
+            if (!ident_spell(*player_ptr, false)) {
                 *use_charge = false;
             }
         }

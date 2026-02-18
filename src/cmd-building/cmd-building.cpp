@@ -113,7 +113,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         /* Do nothing */
         return false;
     case BACT_RESEARCH_ITEM:
-        if (identify_fully(player_ptr, false)) {
+        if (identify_fully(*player_ptr, false)) {
             player_ptr->au -= building_cost;
         }
 
@@ -178,12 +178,12 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
             return false;
         }
 
-        identify_pack(player_ptr);
+        identify_pack(*player_ptr);
         msg_print(_(" 持ち物全てが鑑定されました。", "Your possessions have been identified."));
         player_ptr->au -= building_cost;
         return false;
     case BACT_IDENT_ONE:
-        if (ident_spell(player_ptr, false)) {
+        if (ident_spell(*player_ptr, false)) {
             player_ptr->au -= building_cost;
         }
 

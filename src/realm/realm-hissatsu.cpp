@@ -291,11 +291,11 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
     case 11:
         if (cast) {
             if (plev > 44) {
-                if (!identify_fully(player_ptr, true)) {
+                if (!identify_fully(*player_ptr, true)) {
                     return tl::nullopt;
                 }
             } else {
-                if (!ident_spell(player_ptr, true)) {
+                if (!ident_spell(*player_ptr, true)) {
                     return tl::nullopt;
                 }
             }

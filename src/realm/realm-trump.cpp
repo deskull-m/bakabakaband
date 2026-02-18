@@ -379,7 +379,7 @@ tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 25: {
         if (cast) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(*player_ptr, false)) {
                 return tl::nullopt;
             }
         }

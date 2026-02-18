@@ -331,7 +331,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 26: {
         if (cast) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(*player_ptr, false)) {
                 return tl::nullopt;
             }
         }
