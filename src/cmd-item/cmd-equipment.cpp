@@ -278,7 +278,7 @@ void do_cmd_wield(PlayerType *player_ptr)
 
     check_find_art_quest_completion(player_ptr, o_ptr);
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
-        identify_item(player_ptr, o_ptr);
+        identify_item(*player_ptr, o_ptr);
         autopick_alter_item(player_ptr, i_idx, false);
     }
 

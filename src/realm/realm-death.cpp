@@ -474,11 +474,11 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 26: {
         if (cast) {
             if (randint1(50) > plev) {
-                if (!ident_spell(player_ptr, false)) {
+                if (!ident_spell(*player_ptr, false)) {
                     return tl::nullopt;
                 }
             } else {
-                if (!identify_fully(player_ptr, false)) {
+                if (!identify_fully(*player_ptr, false)) {
                     return tl::nullopt;
                 }
             }

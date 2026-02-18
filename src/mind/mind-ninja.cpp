@@ -417,7 +417,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         break;
     }
     case MindNinjaType::ANCIENT_KNOWLEDGE:
-        return ident_spell(player_ptr, false);
+        return ident_spell(*player_ptr, false);
     case MindNinjaType::FLOATING:
         set_tim_levitation(player_ptr, randint1(20) + 20, false);
         break;

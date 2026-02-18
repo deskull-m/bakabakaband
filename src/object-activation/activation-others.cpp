@@ -257,7 +257,7 @@ bool activate_extra_detection(CreatureEntity &creature)
     auto &player = static_cast<PlayerType &>(creature);
     detect_all(creature, DETECT_RAD_DEFAULT);
     probing(creature);
-    identify_fully(&player, false);
+    identify_fully(player, false);
     return true;
 }
 
@@ -265,7 +265,7 @@ bool activate_fully_identification(CreatureEntity &creature)
 {
     msg_print(_("黄色く輝いている...", "It glows yellow..."));
     auto &player = static_cast<PlayerType &>(creature);
-    identify_fully(&player, false);
+    identify_fully(player, false);
     return true;
 }
 
@@ -283,7 +283,7 @@ bool activate_huge_stinking_storm(CreatureEntity &creature)
 bool activate_identification(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    return ident_spell(&player, false);
+    return ident_spell(player, false);
 }
 
 bool activate_pesticide(CreatureEntity &creature)

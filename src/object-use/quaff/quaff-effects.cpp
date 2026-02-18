@@ -499,7 +499,7 @@ bool QuaffEffects::star_enlightenment()
     (void)detect_treasure(*this->player_ptr, DETECT_RAD_DEFAULT);
     (void)detect_objects_gold(*this->player_ptr, DETECT_RAD_DEFAULT);
     (void)detect_objects_normal(*this->player_ptr, DETECT_RAD_DEFAULT);
-    identify_pack(this->player_ptr);
+    identify_pack(*this->player_ptr);
     self_knowledge(*this->player_ptr);
     return true;
 }

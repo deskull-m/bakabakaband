@@ -241,7 +241,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         if (plev < 25) {
             return psychometry(player_ptr);
         } else {
-            return ident_spell(player_ptr, false);
+            return ident_spell(*player_ptr, false);
         }
     case MindMindcrafterType::MIND_WAVE:
         msg_print(_("精神を捻じ曲げる波動を発生させた！", "Mind-warping forces emanate from your brain!"));

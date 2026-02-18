@@ -282,7 +282,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 20: {
         if (cast) {
-            if (!ident_spell(player_ptr, false)) {
+            if (!ident_spell(*player_ptr, false)) {
                 return tl::nullopt;
             }
         }

@@ -159,14 +159,14 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_IDENTIFY:
-        if (!ident_spell(this->player_ptr, false)) {
+        if (!ident_spell(*this->player_ptr, false)) {
             used_up = false;
         }
 
         this->ident = true;
         break;
     case SV_SCROLL_STAR_IDENTIFY:
-        if (!identify_fully(this->player_ptr, false)) {
+        if (!identify_fully(*this->player_ptr, false)) {
             used_up = false;
         }
 

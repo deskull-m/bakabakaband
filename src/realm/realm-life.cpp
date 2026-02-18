@@ -219,7 +219,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
 
     case 17: {
         if (cast) {
-            if (!ident_spell(player_ptr, false)) {
+            if (!ident_spell(*player_ptr, false)) {
                 return tl::nullopt;
             }
         }
@@ -361,7 +361,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
 
     case 30: {
         if (cast) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(*player_ptr, false)) {
                 return tl::nullopt;
             }
         }
