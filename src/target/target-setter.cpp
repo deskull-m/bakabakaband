@@ -76,7 +76,7 @@ static bool set_travel_goal(PlayerType *player_ptr, const Pos2D &pos)
         return false;
     }
 
-    Travel::get_instance().set_goal(player_ptr, pos);
+    Travel::get_instance().set_goal(*player_ptr, pos);
     return true;
 }
 

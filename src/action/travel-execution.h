@@ -16,7 +16,7 @@ enum class TravelState {
 };
 
 class FloorType;
-class PlayerType;
+class CreatureEntity;
 
 /*  A structure type for travel command  */
 class Travel {
@@ -30,17 +30,17 @@ public:
     static bool can_travel_to(const FloorType &floor, const Pos2D &pos);
 
     const tl::optional<Pos2D> &get_goal() const;
-    void set_goal(PlayerType *player_ptr, const Pos2D &pos);
+    void set_goal(CreatureEntity &creature, const Pos2D &pos);
     void reset_goal();
     bool is_ongoing() const;
     void stop();
-    void step(PlayerType *player_ptr);
+    void step(CreatureEntity &creature);
     int get_cost(const Pos2D &pos) const;
 
 private:
     Travel() = default;
 
-    void update_flow(PlayerType *player_ptr);
+    void update_flow(CreatureEntity &creature);
     void forget_flow();
 
     tl::optional<Pos2D> pos_goal; /* Target position */
