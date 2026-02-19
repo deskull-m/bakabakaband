@@ -107,7 +107,7 @@ bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
 {
     melee_spell_type tmp_ms(player_ptr, m_idx);
     melee_spell_type *ms_ptr = &tmp_ms;
-    if (!check_melee_spell_set(player_ptr, ms_ptr)) {
+    if (!check_melee_spell_set(*player_ptr, ms_ptr)) {
         return false;
     }
 
