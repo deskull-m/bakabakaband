@@ -42,5 +42,5 @@ void do_cmd_travel(PlayerType *player_ptr)
         return;
     }
 
-    Travel::get_instance().set_goal(player_ptr, *pos);
+    Travel::get_instance().set_goal(*player_ptr, *pos);
 }
