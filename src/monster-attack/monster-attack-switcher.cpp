@@ -466,25 +466,25 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         calc_blow_paralysis(player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_STR:
-        calc_blow_lose_strength(player_ptr, monap_ptr);
+        calc_blow_lose_strength(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_INT:
-        calc_blow_lose_intelligence(player_ptr, monap_ptr);
+        calc_blow_lose_intelligence(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_WIS:
-        calc_blow_lose_wisdom(player_ptr, monap_ptr);
+        calc_blow_lose_wisdom(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_DEX:
-        calc_blow_lose_dexterity(player_ptr, monap_ptr);
+        calc_blow_lose_dexterity(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_CON:
-        calc_blow_lose_constitution(player_ptr, monap_ptr);
+        calc_blow_lose_constitution(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_CHR:
-        calc_blow_lose_charisma(player_ptr, monap_ptr);
+        calc_blow_lose_charisma(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_ALL:
-        calc_blow_lose_all(player_ptr, monap_ptr);
+        calc_blow_lose_all(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::SHATTER: { /* AC軽減あり / Player armor reduces total damage */
         monap_ptr->obvious = true;
@@ -509,7 +509,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         calc_blow_drain_exp(player_ptr, monap_ptr, 80, 50);
         break;
     case RaceBlowEffectType::DISEASE:
-        calc_blow_disease(player_ptr, monap_ptr);
+        calc_blow_disease(*player_ptr, monap_ptr);
         break;
     case RaceBlowEffectType::TIME:
         calc_blow_time(player_ptr, monap_ptr);
