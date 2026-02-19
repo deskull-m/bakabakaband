@@ -170,13 +170,12 @@ void wiz_create_item(CreatureEntity &creature)
 
     const auto &baseitem = BaseitemList::get_instance().get_baseitem(*bi_id);
     if (baseitem.gen_flags.has(ItemGenerationTraitType::INSTA_ART)) {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
         for (const auto &[fa_id, artifact] : ArtifactList::get_instance()) {
             if (artifact.bi_key != baseitem.bi_key) {
                 continue;
             }
 
-            (void)create_named_art(player_ptr, fa_id, creature.y, creature.x);
+            (void)create_named_art(creature, fa_id, creature.y, creature.x);
             msg_print("Allocated(INSTA_ART).");
             return;
         }
@@ -244,7 +243,6 @@ static std::vector<FixedArtifactId> wiz_collect_group_fa_ids(const grouper &grou
  */
 void wiz_create_named_art(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     screen_save();
     for (auto i = 0U; i < group_artifact_list.size(); ++i) {
         const auto &[tval_lit, name] = group_artifact_list[i];
@@ -279,7 +277,7 @@ void wiz_create_named_art(CreatureEntity &creature)
         return;
     }
 
-    (void)create_named_art(player_ptr, *created_fa_id, creature.y, creature.x);
+    (void)create_named_art(creature, *created_fa_id, creature.y, creature.x);
     msg_print("Allocated.");
 }
 

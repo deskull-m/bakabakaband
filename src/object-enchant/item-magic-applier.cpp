@@ -195,7 +195,7 @@ bool ItemMagicApplier::set_fixed_artifact_generation_info()
         return false;
     }
 
-    apply_artifact(&static_cast<PlayerType &>(this->creature), this->o_ptr);
+    apply_artifact(this->creature, this->o_ptr);
     this->o_ptr->get_fixed_artifact().is_generated = true;
     return true;
 }
