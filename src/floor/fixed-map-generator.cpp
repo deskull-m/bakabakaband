@@ -72,7 +72,7 @@ static void generate_artifact(PlayerType *player_ptr, qtwg_type *qtwg_ptr, const
     }
 
     const auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
-    if (!artifact.is_generated && create_named_art(player_ptr, a_idx, *qtwg_ptr->y, *qtwg_ptr->x)) {
+    if (!artifact.is_generated && create_named_art(*player_ptr, a_idx, *qtwg_ptr->y, *qtwg_ptr->x)) {
         return;
     }
 

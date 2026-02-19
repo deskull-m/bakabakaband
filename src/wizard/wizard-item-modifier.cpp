@@ -1088,7 +1088,7 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
         const auto wishing_fa_id = *wishing_fa_ids.begin();
         const auto &artifact = artifacts.get_artifact(wishing_fa_id);
         if (must || (ok_art && !artifact.is_generated)) {
-            (void)create_named_art(player_ptr, wishing_fa_id, player_ptr->y, player_ptr->x);
+            (void)create_named_art(creature, wishing_fa_id, creature.y, creature.x);
         } else {
             wishing_puff_of_smoke();
         }
@@ -1119,7 +1119,7 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
         if (a_idx != FixedArtifactId::NONE) {
             const auto &artifact = artifacts.get_artifact(a_idx);
             if (must || (ok_art && !artifact.is_generated)) {
-                (void)create_named_art(player_ptr, a_idx, player_ptr->y, player_ptr->x);
+                (void)create_named_art(creature, a_idx, creature.y, creature.x);
             } else {
                 wishing_puff_of_smoke();
             }

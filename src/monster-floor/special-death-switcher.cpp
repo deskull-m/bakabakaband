@@ -374,7 +374,7 @@ static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_pt
     }
 
     const auto a_idx = rand_choice(candidates);
-    create_named_art(player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x);
+    create_named_art(*player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x);
 }
 
 static void on_dead_serpent(CreatureEntity &killer, MonsterDeath *md_ptr)
