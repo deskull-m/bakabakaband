@@ -270,7 +270,6 @@ static bool let_player_select_patron(CreatureEntity &creature)
 
 static bool let_player_build_character(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!get_player_sex(creature)) {
         return false;
     }
@@ -283,7 +282,7 @@ static bool let_player_build_character(CreatureEntity &creature)
         return false;
     }
 
-    if (!get_player_realms(player_ptr)) {
+    if (!get_player_realms(creature)) {
         return false;
     }
 
