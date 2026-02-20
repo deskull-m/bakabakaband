@@ -464,7 +464,7 @@ bool activate_dispel_magic(CreatureEntity &creature)
         return true;
     }
 
-    dispel_monster_status(&player, m_idx);
+    dispel_monster_status(player, m_idx);
     return true;
 }
 

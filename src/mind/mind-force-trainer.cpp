@@ -348,7 +348,7 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
             break;
         }
 
-        dispel_monster_status(player_ptr, m_idx);
+        dispel_monster_status(creature, m_idx);
         break;
     }
     case MindForceTrainerType::SUMMON_GHOST: {

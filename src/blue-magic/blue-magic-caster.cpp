@@ -56,8 +56,7 @@ bool cast_blue_dispel(CreatureEntity &creature)
         return true;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    dispel_monster_status(player_ptr, m_idx);
+    dispel_monster_status(creature, m_idx);
     return true;
 }
 

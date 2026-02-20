@@ -413,7 +413,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
             break;
         }
 
-        dispel_monster_status(player_ptr, m_idx);
+        dispel_monster_status(*player_ptr, m_idx);
         break;
     }
 

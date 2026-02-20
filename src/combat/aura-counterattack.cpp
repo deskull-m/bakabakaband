@@ -45,7 +45,7 @@ static void aura_fire_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
     }
 
     int dam = Dice::roll(2, 6);
-    dam = mon_damage_mod(player_ptr, *monap_ptr->m_ptr, dam, false);
+    dam = mon_damage_mod(*player_ptr, *monap_ptr->m_ptr, dam, false);
     msg_format(_("%s^は突然熱くなった！", "%s^ is suddenly very hot!"), monap_ptr->m_name);
     MonsterDamageProcessor mdp(player_ptr, monap_ptr->m_idx, dam, &monap_ptr->fear, AttributeType::FIRE);
     if (mdp.mon_take_hit(_("は灰の山になった。", " turns into a pile of ash."))) {
@@ -70,7 +70,7 @@ static void aura_elec_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
     }
 
     int dam = Dice::roll(2, 6);
-    dam = mon_damage_mod(player_ptr, *monap_ptr->m_ptr, dam, false);
+    dam = mon_damage_mod(*player_ptr, *monap_ptr->m_ptr, dam, false);
     msg_format(_("%s^は電撃をくらった！", "%s^ gets zapped!"), monap_ptr->m_name);
     MonsterDamageProcessor mdp(player_ptr, monap_ptr->m_idx, dam, &monap_ptr->fear, AttributeType::ELEC);
     if (mdp.mon_take_hit(_("は燃え殻の山になった。", " turns into a pile of cinders."))) {
@@ -95,7 +95,7 @@ static void aura_cold_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
     }
 
     int dam = Dice::roll(2, 6);
-    dam = mon_damage_mod(player_ptr, *monap_ptr->m_ptr, dam, false);
+    dam = mon_damage_mod(*player_ptr, *monap_ptr->m_ptr, dam, false);
     msg_format(_("%s^は冷気をくらった！", "%s^ is very cold!"), monap_ptr->m_name);
     MonsterDamageProcessor mdp(player_ptr, monap_ptr->m_idx, dam, &monap_ptr->fear, AttributeType::COLD);
     if (mdp.mon_take_hit(_("は凍りついた。", " was frozen."))) {
@@ -117,7 +117,7 @@ static void aura_shards_by_monster_attack(PlayerType *player_ptr, MonsterAttackP
         }
     } else {
         int dam = Dice::roll(2, 6);
-        dam = mon_damage_mod(player_ptr, *monap_ptr->m_ptr, dam, false);
+        dam = mon_damage_mod(*player_ptr, *monap_ptr->m_ptr, dam, false);
         msg_format(_("%s^は鏡の破片をくらった！", "%s^ gets sliced!"), monap_ptr->m_name);
         MonsterDamageProcessor mdp(player_ptr, monap_ptr->m_idx, dam, &monap_ptr->fear, AttributeType::SHARDS);
         if (mdp.mon_take_hit(_("はズタズタになった。", " is torn to pieces."))) {
@@ -151,7 +151,7 @@ static void aura_holy_by_monster_attack(PlayerType *player_ptr, MonsterAttackPla
     }
 
     int dam = Dice::roll(2, 6);
-    dam = mon_damage_mod(player_ptr, *monap_ptr->m_ptr, dam, false);
+    dam = mon_damage_mod(*player_ptr, *monap_ptr->m_ptr, dam, false);
     msg_format(_("%s^は聖なるオーラで傷ついた！", "%s^ is injured by holy power!"), monap_ptr->m_name);
     MonsterDamageProcessor mdp(player_ptr, monap_ptr->m_idx, dam, &monap_ptr->fear, AttributeType::HOLY_FIRE);
     if (mdp.mon_take_hit(_("は倒れた。", " is destroyed."))) {
@@ -179,7 +179,7 @@ static void aura_force_by_monster_attack(PlayerType *player_ptr, MonsterAttackPl
     }
 
     int dam = Dice::roll(2, 6);
-    dam = mon_damage_mod(player_ptr, *monap_ptr->m_ptr, dam, false);
+    dam = mon_damage_mod(*player_ptr, *monap_ptr->m_ptr, dam, false);
     msg_format(_("%s^が鋭い闘気のオーラで傷ついた！", "%s^ is injured by the Force"), monap_ptr->m_name);
     MonsterDamageProcessor mdp(player_ptr, monap_ptr->m_idx, dam, &monap_ptr->fear, AttributeType::MANA);
     if (mdp.mon_take_hit(_("は倒れた。", " is destroyed."))) {
@@ -218,7 +218,7 @@ static void aura_shadow_by_monster_attack(PlayerType *player_ptr, MonsterAttackP
         dam *= 2;
     }
 
-    dam = mon_damage_mod(player_ptr, *monap_ptr->m_ptr, dam, false);
+    dam = mon_damage_mod(*player_ptr, *monap_ptr->m_ptr, dam, false);
     msg_format(_("影のオーラが%s^に反撃した！", "Enveloping shadows attack %s^."), monap_ptr->m_name);
     MonsterDamageProcessor mdp(player_ptr, monap_ptr->m_idx, dam, &monap_ptr->fear, AttributeType::DARK);
     if (mdp.mon_take_hit(_("は倒れた。", " is destroyed."))) {

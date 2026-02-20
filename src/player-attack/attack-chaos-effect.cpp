@@ -127,7 +127,6 @@ static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, b
  */
 static void attack_dispel(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (pa_ptr->r_ptr->ability_flags.has_none_of(RF_ABILITY_ATTACK_MASK) && pa_ptr->r_ptr->ability_flags.has_none_of(RF_ABILITY_INDIRECT_MASK)) {
         return;
     }
@@ -144,7 +143,7 @@ static void attack_dispel(CreatureEntity &creature, player_attack_type *pa_ptr)
     }
 
     msg_print(_("武器が敵の魔力を吸い取った！", "The weapon drains mana from your enemy!"));
-    dispel_monster_status(player_ptr, pa_ptr->m_idx);
+    dispel_monster_status(creature, pa_ptr->m_idx);
 
     auto sp = Dice::roll(dd, 8);
     creature.csp = std::min(creature.msp, creature.csp + sp);

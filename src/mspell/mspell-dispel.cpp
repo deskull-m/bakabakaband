@@ -147,7 +147,7 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, PlayerType *player_ptr, M
     if (target_type == MONSTER_TO_PLAYER) {
         dispel_player(player_ptr);
         if (player_ptr->riding) {
-            dispel_monster_status(player_ptr, player_ptr->riding);
+            dispel_monster_status(*player_ptr, player_ptr->riding);
         }
 
         if (is_echizen(*player_ptr)) {
@@ -171,7 +171,7 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, PlayerType *player_ptr, M
             dispel_player(player_ptr);
         }
 
-        dispel_monster_status(player_ptr, t_idx);
+        dispel_monster_status(*player_ptr, t_idx);
     }
 
     return res;
