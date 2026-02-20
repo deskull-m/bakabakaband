@@ -11,7 +11,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -163,10 +162,10 @@ static std::string replace_monster_name_undefined(std::string_view name)
 }
 #endif
 
-static tl::optional<std::string> get_fake_monster_name(const PlayerType &player, const MonsterEntity &monster, const std::string &name, const BIT_FLAGS mode)
+static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &creature, const MonsterEntity &monster, const std::string &name, const BIT_FLAGS mode)
 {
     const auto &monrace = monster.get_appearance_monrace();
-    const auto is_hallucinated = player.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) || (is_hallucinated && none_bits(mode, MD_IGNORE_HALLU))) {
         return tl::nullopt;
     }
@@ -182,9 +181,9 @@ static tl::optional<std::string> get_fake_monster_name(const PlayerType &player,
     return name;
 }
 
-static std::string describe_non_pet(const PlayerType &player, const MonsterEntity &monster, const std::string &name, const BIT_FLAGS mode)
+static std::string describe_non_pet(const CreatureEntity &creature, const MonsterEntity &monster, const std::string &name, const BIT_FLAGS mode)
 {
-    const auto fake_name = get_fake_monster_name(player, monster, name, mode);
+    const auto fake_name = get_fake_monster_name(creature, monster, name, mode);
     if (fake_name) {
         return *fake_name;
     }
@@ -235,7 +234,6 @@ static std::string add_cameleon_name(const MonsterEntity &monster, const BIT_FLA
  */
 std::string monster_desc(CreatureEntity &subject, const MonsterEntity &monster, BIT_FLAGS mode)
 {
-    auto &player = dynamic_cast<PlayerType &>(subject);
     const auto pronoun = decide_monster_personal_pronoun(monster, mode);
     const auto &monrace = monster.get_monrace();
     if (pronoun) {
@@ -247,15 +245,15 @@ std::string monster_desc(CreatureEntity &subject, const MonsterEntity &monster, 
         return *pronoun_self;
     }
 
-    const auto is_hallucinated = player.effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = subject.effects()->hallucination().is_hallucinated();
     const auto name = get_describing_monster_name(monster, is_hallucinated, mode);
     std::stringstream ss;
 
     if (monster.parent_m_idx > 0) {
-        const auto parent_monster = player.current_floor_ptr->m_list[monster.parent_m_idx];
+        const auto parent_monster = subject.current_floor_ptr->m_list[monster.parent_m_idx];
         // 親ID＝自身のIDでは主を失った状態なのでスキップ
         if (parent_monster.r_idx != monster.r_idx) {
-            auto parent_name = player.current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
+            auto parent_name = subject.current_floor_ptr->m_list[monster.parent_m_idx].get_monrace().name;
             if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
                 ss << parent_name << _("が産んだ", "-born ");
             } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
@@ -330,7 +328,7 @@ std::string monster_desc(CreatureEntity &subject, const MonsterEntity &monster, 
     if (monster.is_pet() && !monster.is_original_ap()) {
         ss << _(replace_monster_name_undefined(name), format("%s?", name.data()));
     } else {
-        ss << describe_non_pet(static_cast<PlayerType &>(subject), monster, name, mode);
+        ss << describe_non_pet(subject, monster, name, mode);
     }
 
     if (monster.is_named()) {
