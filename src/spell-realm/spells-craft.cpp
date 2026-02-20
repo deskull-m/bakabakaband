@@ -33,7 +33,6 @@
  */
 bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT v)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
@@ -92,7 +91,7 @@ bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT 
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -112,7 +111,6 @@ bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT 
  */
 bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT v)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
@@ -170,7 +168,7 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

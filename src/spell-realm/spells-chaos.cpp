@@ -131,8 +131,7 @@ static void erase_all_walls(FloorType &floor)
  */
 bool vanish_dungeon(CreatureEntity &creature)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
-    auto &floor = *player_ptr.current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto is_special_floor = floor.is_in_quest() && QuestType::is_fixed(floor.quest_number);
     is_special_floor |= !floor.is_underground();
     if (is_special_floor) {
@@ -147,7 +146,7 @@ bool vanish_dungeon(CreatureEntity &creature)
         if (grid.has_monster() && monster.is_asleep()) {
             (void)set_monster_csleep(floor, grid.m_idx, 0);
             if (monster.ml) {
-                const auto m_name = monster_desc(player_ptr, monster, 0);
+                const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
         }
@@ -188,18 +187,17 @@ bool vanish_dungeon(CreatureEntity &creature)
  */
 void cast_meteor(CreatureEntity &creature, int dam, POSITION rad)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     const auto b = 10 + randint1(10);
-    const auto p_pos = player_ptr.get_position();
-    const auto &floor = *player_ptr.current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    const auto &floor = *creature.current_floor_ptr;
     for (auto i = 0; i < b; i++) {
         Pos2D pos(0, 0);
         int count;
         for (count = 0; count <= 20; count++) {
             const Pos2DVec vec(randint0(17) - 8, randint0(17) - 8);
             pos = p_pos + vec;
-            const auto dx = std::abs(player_ptr.x - pos.x);
-            const auto dy = std::abs(player_ptr.y - pos.y);
+            const auto dx = std::abs(creature.x - pos.x);
+            const auto dy = std::abs(creature.y - pos.y);
             const auto d = (dy > dx) ? (dy + (dx >> 1)) : (dx + (dy >> 1));
 
             if (d >= 9) {
@@ -222,6 +220,6 @@ void cast_meteor(CreatureEntity &creature, int dam, POSITION rad)
             continue;
         }
 
-        project(player_ptr, 0, rad, pos.y, pos.x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
+        project(creature, 0, rad, pos.y, pos.x, dam, AttributeType::METEOR, PROJECT_KILL | PROJECT_JUMP | PROJECT_ITEM);
     }
 }

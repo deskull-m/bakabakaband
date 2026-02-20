@@ -97,9 +97,8 @@ std::string build_killer_on_earthquake(CreatureEntity &creature, int m_idx)
         return _("地震", "an earthquake");
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(player, monster, MD_WRONGDOER_NAME);
+    const auto m_name = monster_desc(creature, monster, MD_WRONGDOER_NAME);
     return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
 }
 
@@ -182,16 +181,15 @@ tl::optional<Pos2D> decide_monster_dodge_position(const FloorType &floor, const 
 
 void move_monster_to(CreatureEntity &creature, MonsterEntity &monster, const Pos2D &pos_to)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     const auto pos_from = monster.get_position();
     auto &grid_from = floor.get_grid(pos_from);
     auto &grid_to = floor.get_grid(pos_to);
     grid_to.m_idx = std::exchange(grid_from.m_idx, {});
     monster.set_position(pos_to);
-    update_monster(player, grid_to.m_idx, true);
-    lite_spot(player, pos_from);
-    lite_spot(player, pos_to);
+    update_monster(creature, grid_to.m_idx, true);
+    lite_spot(creature, pos_from);
+    lite_spot(creature, pos_to);
 }
 
 bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool has_dodged)

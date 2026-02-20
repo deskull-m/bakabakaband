@@ -297,7 +297,6 @@ static bool is_object_magically(const ItemKindType tval)
  */
 bool detect_objects_magic(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -318,7 +317,7 @@ bool detect_objects_magic(CreatureEntity &creature, POSITION range)
         has_bonus |= item_ptr->to_h + item_ptr->to_d > 0;
         if (item_ptr->is_fixed_or_random_artifact() || item_ptr->is_ego() || is_object_magically(item_ptr->bi_key.tval()) || item_ptr->is_spell_book() || has_bonus) {
             item_ptr->marked.set(OmType::FOUND);
-            lite_spot(player, i_pos);
+            lite_spot(creature, i_pos);
             detect = true;
         }
     }
@@ -437,7 +436,6 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -469,7 +467,7 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player, i, false);
+            update_monster(creature, i, false);
             flag = true;
         }
     }
@@ -489,7 +487,6 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -516,7 +513,7 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player, i, false);
+            update_monster(creature, i, false);
             flag = true;
         }
     }
@@ -536,7 +533,6 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
  */
 bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
@@ -565,7 +561,7 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
             }
 
             monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-            update_monster(player, i, false);
+            update_monster(creature, i, false);
             flag = true;
         }
     }
