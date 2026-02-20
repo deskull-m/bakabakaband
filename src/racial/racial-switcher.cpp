@@ -168,7 +168,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return true;
     case PlayerClassType::MINDCRAFTER:
     case PlayerClassType::FORCETRAINER:
-        return clear_mind(player_ptr);
+        return clear_mind(*player_ptr);
     case PlayerClassType::TOURIST:
         if (command == -3) {
             const auto dir = get_aim_dir(player_ptr);
@@ -285,7 +285,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return hayagake(*player_ptr);
     case PlayerClassType::ELEMENTALIST:
         if (command == -3) {
-            return clear_mind(player_ptr);
+            return clear_mind(*player_ptr);
         }
         if (command == -4) {
             return switch_element_execution(*player_ptr);

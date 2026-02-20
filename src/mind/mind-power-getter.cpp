@@ -331,7 +331,7 @@ void MindPowerGetter::calculate_ki_chance(bool has_weapon_main, bool has_weapon_
     }
 
     if (this->index == 5) {
-        for (auto j = 0; j < get_current_ki(this->player_ptr) / 50; j++) {
+        for (auto j = 0; j < get_current_ki(*this->player_ptr) / 50; j++) {
             this->mana_cost += (j + 1) * 3 / 2;
         }
     }
