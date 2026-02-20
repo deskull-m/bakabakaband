@@ -828,7 +828,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
 
                         /* Modify the damage */
                         base_dam = tdam;
-                        tdam = mon_damage_mod(player_ptr, monster, tdam, false);
+                        tdam = mon_damage_mod(*player_ptr, monster, tdam, false);
                     }
 
                     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), tdam,

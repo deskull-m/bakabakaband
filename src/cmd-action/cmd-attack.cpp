@@ -128,7 +128,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
         k = 0;
     }
 
-    k = mon_damage_mod(player_ptr, monster, k, false);
+    k = mon_damage_mod(*player_ptr, monster, k, false);
     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
     if (k > 0) {
@@ -218,7 +218,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         k = 0;
     }
 
-    k = mon_damage_mod(player_ptr, monster, k, false);
+    k = mon_damage_mod(*player_ptr, monster, k, false);
     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
@@ -313,7 +313,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         k = 0;
     }
 
-    k = mon_damage_mod(player_ptr, monster, k, false);
+    k = mon_damage_mod(*player_ptr, monster, k, false);
     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
@@ -717,7 +717,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
         (void)drop_near(creature, item, creature.get_position());
     }
 
-    k = mon_damage_mod(player_ptr, monster, k, false);
+    k = mon_damage_mod(*player_ptr, monster, k, false);
     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 

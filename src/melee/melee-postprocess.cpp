@@ -193,7 +193,7 @@ static bool check_monster_hp(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
 
     *(mam_pp_ptr->dead) = true;
     print_monster_dead_by_monster(player_ptr, mam_pp_ptr);
-    monster_gain_exp(player_ptr, mam_pp_ptr->src_idx, mam_pp_ptr->m_ptr->r_idx);
+    monster_gain_exp(*player_ptr, mam_pp_ptr->src_idx, mam_pp_ptr->m_ptr->r_idx);
     monster_death(player_ptr, mam_pp_ptr->m_idx, false, AttributeType::NONE);
     delete_monster_idx(player_ptr, mam_pp_ptr->m_idx);
     *(mam_pp_ptr->fear) = false;

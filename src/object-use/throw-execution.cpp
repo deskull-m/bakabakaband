@@ -520,7 +520,7 @@ void ObjectThrowEntity::calc_racial_power_damage()
         this->tdam = 0;
     }
 
-    this->tdam = mon_damage_mod(this->player_ptr, *this->hit_monster->m_ptr, this->tdam, false);
+    this->tdam = mon_damage_mod(*this->player_ptr, *this->hit_monster->m_ptr, this->tdam, false);
 }
 
 void ObjectThrowEntity::process_boomerang_throw()

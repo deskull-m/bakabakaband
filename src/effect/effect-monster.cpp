@@ -192,7 +192,7 @@ static void effect_damage_killed_pet(PlayerType *player_ptr, EffectMonster *em_p
     }
 
     if (em_ptr->is_monster()) {
-        monster_gain_exp(player_ptr, em_ptr->src_idx, em_ptr->m_ptr->r_idx);
+        monster_gain_exp(*player_ptr, em_ptr->src_idx, em_ptr->m_ptr->r_idx);
     }
 
     monster_death(player_ptr, em_ptr->g_ptr->m_idx, false, em_ptr->attribute);
@@ -575,7 +575,7 @@ static void effect_damage_makes_teleport(PlayerType *player_ptr, EffectMonster *
 static void effect_damage_gives_bad_status(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
     int tmp_damage = em_ptr->dam;
-    em_ptr->dam = mon_damage_mod(player_ptr, *em_ptr->m_ptr, em_ptr->dam, (bool)(em_ptr->attribute == AttributeType::PSY_SPEAR));
+    em_ptr->dam = mon_damage_mod(*player_ptr, *em_ptr->m_ptr, em_ptr->dam, (bool)(em_ptr->attribute == AttributeType::PSY_SPEAR));
     if ((tmp_damage > 0) && (em_ptr->dam == 0) && em_ptr->seen) {
         em_ptr->note = _("はダメージを受けていない。", " is unharmed.");
     }
