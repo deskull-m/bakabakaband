@@ -672,7 +672,7 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     (void)mod_acceleration(*player_ptr, t, false);
     (void)set_berserk(*player_ptr, player_ptr->berserk + t, false);
     if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER)) {
-        set_current_ki(player_ptr, true, player_ptr->level * 5 + 190);
+        set_current_ki(*player_ptr, true, player_ptr->level * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }
 

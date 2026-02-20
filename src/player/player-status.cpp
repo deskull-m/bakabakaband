@@ -2105,7 +2105,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
     } else if (pc.equals(PlayerClassType::FORCETRAINER)) {
         // 練気術師は格闘ダメージに (気)/5 の修正を得る。
         if (is_martial_arts_mode(creature) && calc_hand == PLAYER_HAND_MAIN) {
-            damage += get_current_ki(player_ptr) / 5;
+            damage += get_current_ki(*player_ptr) / 5;
         }
     }
 

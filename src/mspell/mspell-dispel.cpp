@@ -38,7 +38,7 @@
 static void dispel_player(PlayerType *player_ptr)
 {
     (void)set_acceleration(*player_ptr, 0, true);
-    set_lightspeed(player_ptr, 0, true);
+    set_lightspeed(*player_ptr, 0, true);
     (void)BadStatusSetter(*player_ptr).set_deceleration(0, true);
     (void)set_shield(*player_ptr, 0, true);
     (void)set_blessed(*player_ptr, 0, true);
@@ -64,7 +64,7 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_tim_regen(*player_ptr, 0, true);
     (void)set_tim_stealth(*player_ptr, 0, true);
     (void)set_tim_levitation(player_ptr, 0, true);
-    (void)set_tim_sh_force(player_ptr, 0, true);
+    (void)set_tim_sh_force(*player_ptr, 0, true);
     (void)set_tim_sh_fire(*player_ptr, 0, true);
     (void)set_tim_sh_holy(*player_ptr, 0, true);
     (void)set_tim_eyeeye(*player_ptr, 0, true);

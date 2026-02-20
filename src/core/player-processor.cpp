@@ -219,15 +219,15 @@ void process_player(PlayerType *player_ptr)
 
     load = false;
     if (player_ptr->lightspeed) {
-        set_lightspeed(player_ptr, player_ptr->lightspeed - 1, true);
+        set_lightspeed(*player_ptr, player_ptr->lightspeed - 1, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER) && get_current_ki(player_ptr)) {
-        if (get_current_ki(player_ptr) < 40) {
-            set_current_ki(player_ptr, true, 0);
+    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER) && get_current_ki(*player_ptr)) {
+        if (get_current_ki(*player_ptr) < 40) {
+            set_current_ki(*player_ptr, true, 0);
         } else {
-            set_current_ki(player_ptr, false, -40);
+            set_current_ki(*player_ptr, false, -40);
         }
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
     }

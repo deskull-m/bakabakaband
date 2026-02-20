@@ -142,7 +142,7 @@ static void decide_mind_ki_chance(CreatureEntity &creature, cm_type *cm_ptr)
     }
 
     if (cm_ptr->n == 5) {
-        for (int j = 0; j < get_current_ki(&player) / 50; j++) {
+        for (int j = 0; j < get_current_ki(player) / 50; j++) {
             cm_ptr->mana_cost += (j + 1) * 3 / 2;
         }
     }
@@ -281,9 +281,9 @@ static void check_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
     }
 
     auto &player = static_cast<PlayerType &>(creature);
-    if ((cm_ptr->use_mind == MindKindType::KI) && (cm_ptr->n != 5) && get_current_ki(&player)) {
+    if ((cm_ptr->use_mind == MindKindType::KI) && (cm_ptr->n != 5) && get_current_ki(player)) {
         msg_print(_("気が散ってしまった．．．", "Your improved Force has gone away..."));
-        set_current_ki(&player, true, 0);
+        set_current_ki(player, true, 0);
     }
 
     if (randint1(100) >= (cm_ptr->chance / 2)) {
@@ -303,7 +303,7 @@ static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->cast = cast_mindcrafter_spell(&player, i2enum<MindMindcrafterType>(cm_ptr->n));
         return true;
     case MindKindType::KI:
-        cm_ptr->cast = cast_force_spell(&player, i2enum<MindForceTrainerType>(cm_ptr->n));
+        cm_ptr->cast = cast_force_spell(player, i2enum<MindForceTrainerType>(cm_ptr->n));
         return true;
     case MindKindType::BERSERKER:
         cm_ptr->cast = cast_berserk_spell(&player, i2enum<MindBerserkerType>(cm_ptr->n));

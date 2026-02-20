@@ -180,8 +180,8 @@ WEIGHT calc_monk_attack_weight(PlayerType *player_ptr)
         weight = 4;
     }
 
-    if (pc.equals(PlayerClassType::FORCETRAINER) && (get_current_ki(player_ptr) != 0)) {
-        weight += (get_current_ki(player_ptr) / 30);
+    if (pc.equals(PlayerClassType::FORCETRAINER) && (get_current_ki(*player_ptr) != 0)) {
+        weight += (get_current_ki(*player_ptr) / 30);
         if (weight > 20) {
             weight = 20;
         }

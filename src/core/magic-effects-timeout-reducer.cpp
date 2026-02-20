@@ -78,7 +78,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_sh_touki) {
-        (void)set_tim_sh_force(player_ptr, player_ptr->tim_sh_touki - 1, true);
+        (void)set_tim_sh_force(*player_ptr, player_ptr->tim_sh_touki - 1, true);
     }
 
     if (player_ptr->tim_sh_fire) {
