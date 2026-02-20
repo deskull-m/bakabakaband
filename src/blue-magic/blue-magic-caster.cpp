@@ -62,8 +62,7 @@ bool cast_blue_dispel(CreatureEntity &creature)
 
 static bool cast_blue_rocket(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
@@ -76,8 +75,7 @@ static bool cast_blue_rocket(CreatureEntity &creature, bmc_type *bmc_ptr)
 
 static bool cast_blue_shoot(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
@@ -90,8 +88,7 @@ static bool cast_blue_shoot(CreatureEntity &creature, bmc_type *bmc_ptr)
 
 static bool cast_blue_hand_doom(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
@@ -159,8 +156,7 @@ static bool cast_blue_teleport_back(CreatureEntity &creature)
 
 static bool cast_blue_teleport_away(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
@@ -171,8 +167,7 @@ static bool cast_blue_teleport_away(CreatureEntity &creature)
 
 static bool cast_blue_psy_spear(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }

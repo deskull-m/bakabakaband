@@ -208,8 +208,6 @@ static std::string mane_info(CreatureEntity &creature, MonsterAbilityType power,
  */
 static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
     int i = 0;
     int num = 0;
     TERM_LEN y = 1;
@@ -276,27 +274,27 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
                     }
 
                     /* Reduce failure rate by INT/WIS adjustment */
-                    chance -= 3 * (adj_mag_stat[player_ptr->stat_index[spell.use_stat]] + adj_mag_stat[player_ptr->stat_index[A_DEX]] - 2) / 2;
+                    chance -= 3 * (adj_mag_stat[creature.stat_index[spell.use_stat]] + adj_mag_stat[creature.stat_index[A_DEX]] - 2) / 2;
 
                     if (spell.manedam) {
                         chance = chance * (baigaesi ? mane.damage * 2 : mane.damage) / spell.manedam;
                     }
 
-                    chance += player_ptr->to_m_chance;
+                    chance += creature.to_m_chance;
 
-                    if (player_ptr->is_wielding(FixedArtifactId::GOGO_PENDANT)) {
+                    if (creature.is_wielding(FixedArtifactId::GOGO_PENDANT)) {
                         chance -= 10;
                     }
 
                     /* Extract the minimum failure rate */
-                    minfail = adj_mag_fail[player_ptr->stat_index[spell.use_stat]];
+                    minfail = adj_mag_fail[creature.stat_index[spell.use_stat]];
 
                     /* Minimum failure rate */
                     if (chance < minfail) {
                         chance = minfail;
                     }
 
-                    chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+                    chance += creature.effects()->stun().get_magic_chance_penalty();
                     if (chance > 95) {
                         chance = 95;
                     }
@@ -343,7 +341,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 
     /* Abort if needed */
     if (!flag) {
@@ -380,7 +378,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 
     auto dir = Direction::none();
     if (AIMING_SPELLS.contains(spell)) {
-        dir = get_aim_dir(player_ptr);
+        dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
@@ -413,7 +411,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
             break;
         }
 
-        dispel_monster_status(*player_ptr, m_idx);
+        dispel_monster_status(creature, m_idx);
         break;
     }
 
@@ -763,17 +761,17 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 
         const auto &monster = floor.m_list[grid_target.m_idx];
         auto &monrace = monster.get_monrace();
-        const auto m_name = monster_desc(*player_ptr, monster, 0);
+        const auto m_name = monster_desc(creature, monster, 0);
         if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
             if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-                if (is_original_ap_and_seen(*player_ptr, monster)) {
+                if (is_original_ap_and_seen(creature, monster)) {
                     monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
                 }
                 msg_format(_("%sには効果がなかった！", "%s is unaffected!"), m_name.data());
 
                 break;
             } else if (monrace.level > randint1(100)) {
-                if (is_original_ap_and_seen(*player_ptr, monster)) {
+                if (is_original_ap_and_seen(creature, monster)) {
                     monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
                 }
                 msg_format(_("%sには耐性がある！", "%s resists!"), m_name.data());
@@ -783,7 +781,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         }
         msg_format(_("%sを引き戻した。", "You command %s to return."), m_name.data());
 
-        teleport_monster_to(*player_ptr, grid_target.m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(creature, grid_target.m_idx, creature.y, creature.x, 100, TELEPORT_PASSIVE);
         break;
     }
     case MonsterAbilityType::TELE_AWAY:
@@ -791,7 +789,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         break;
 
     case MonsterAbilityType::TELE_LEVEL:
-        return teleport_level_other(*player_ptr);
+        return teleport_level_other(creature);
         break;
 
     case MonsterAbilityType::PSY_SPEAR:
@@ -818,7 +816,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::RAISE_DEAD:
         msg_print(_("死者復活の呪文を唱えた。", "You animate the dead."));
-        (void)animate_dead(creature, 0, player_ptr->y, player_ptr->x);
+        (void)animate_dead(creature, 0, creature.y, creature.x);
         break;
     case MonsterAbilityType::S_KIN: {
         const auto pos = target_set(creature, TARGET_KILL).get_position();
@@ -833,7 +831,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         break;
     }
     case MonsterAbilityType::S_CYBER: {
-        int max_cyber = (player_ptr->current_floor_ptr->dun_level / 50) + randint1(3);
+        int max_cyber = (creature.current_floor_ptr->dun_level / 50) + randint1(3);
         const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
@@ -1195,8 +1193,7 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
  */
 bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int n = 0;
     PERCENTAGE chance;
     PERCENTAGE minfail = 0;
@@ -1230,23 +1227,23 @@ bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
     }
 
     /* Reduce failure rate by 1 stat and DEX adjustment */
-    chance -= 3 * (adj_mag_stat[player_ptr->stat_index[spell.use_stat]] + adj_mag_stat[player_ptr->stat_index[A_DEX]] - 2) / 2;
+    chance -= 3 * (adj_mag_stat[creature.stat_index[spell.use_stat]] + adj_mag_stat[creature.stat_index[A_DEX]] - 2) / 2;
 
     if (spell.manedam) {
         chance = chance * damage / spell.manedam;
     }
 
-    chance += player_ptr->to_m_chance;
+    chance += creature.to_m_chance;
 
     /* Extract the minimum failure rate */
-    minfail = adj_mag_fail[player_ptr->stat_index[spell.use_stat]];
+    minfail = adj_mag_fail[creature.stat_index[spell.use_stat]];
 
     /* Minimum failure rate */
     if (chance < minfail) {
         chance = minfail;
     }
 
-    chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+    chance += creature.effects()->stun().get_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }

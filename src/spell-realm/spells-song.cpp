@@ -93,32 +93,31 @@ void check_music(CreatureEntity &creature)
  */
 bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player.is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player.tim_stealth && !do_dec) {
-            if (player.tim_stealth > v) {
+        if (creature.tim_stealth && !do_dec) {
+            if (creature.tim_stealth > v) {
                 return false;
             }
-        } else if (!is_time_limit_stealth(player)) {
+        } else if (!is_time_limit_stealth(creature)) {
             msg_print(_("足音が小さくなった！", "You begin to walk silently!"));
             notice = true;
         }
     } else {
-        if (player.tim_stealth && !music_singing(creature, MUSIC_STEALTH)) {
+        if (creature.tim_stealth && !music_singing(creature, MUSIC_STEALTH)) {
             msg_print(_("足音が大きくなった。", "You no longer walk silently."));
             notice = true;
         }
     }
 
-    player.tim_stealth = v;
+    creature.tim_stealth = v;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -130,7 +129,7 @@ bool set_tim_stealth(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player);
+    handle_stuff(creature);
     return true;
 }
 
@@ -167,22 +166,19 @@ void stop_singing(CreatureEntity &creature)
 
 bool music_singing(CreatureEntity &creature, int music_songs)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     return bird_data && (bird_data->singing_song == music_songs);
 }
 
 bool music_singing_any(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     return bird_data && (bird_data->singing_song != MUSIC_NONE);
 }
 
 int32_t get_singing_song_effect(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -192,8 +188,7 @@ int32_t get_singing_song_effect(CreatureEntity &creature)
 
 void set_singing_song_effect(CreatureEntity &creature, const int32_t magic_num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }
@@ -203,8 +198,7 @@ void set_singing_song_effect(CreatureEntity &creature, const int32_t magic_num)
 
 int32_t get_interrupting_song_effect(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -214,8 +208,7 @@ int32_t get_interrupting_song_effect(CreatureEntity &creature)
 
 void set_interrupting_song_effect(CreatureEntity &creature, const int32_t magic_num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }
@@ -225,8 +218,7 @@ void set_interrupting_song_effect(CreatureEntity &creature, const int32_t magic_
 
 int32_t get_singing_count(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -236,8 +228,7 @@ int32_t get_singing_count(CreatureEntity &creature)
 
 void set_singing_count(CreatureEntity &creature, const int32_t magic_num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }
@@ -247,8 +238,7 @@ void set_singing_count(CreatureEntity &creature, const int32_t magic_num)
 
 byte get_singing_song_id(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return 0;
     }
@@ -258,8 +248,7 @@ byte get_singing_song_id(CreatureEntity &creature)
 
 void set_singing_song_id(CreatureEntity &creature, const byte magic_num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto bird_data = CreatureClass(player).get_specific_data<bard_data_type>();
+    auto bird_data = CreatureClass(creature).get_specific_data<bard_data_type>();
     if (!bird_data) {
         return;
     }

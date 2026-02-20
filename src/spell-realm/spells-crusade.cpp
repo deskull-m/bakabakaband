@@ -35,7 +35,6 @@
  */
 bool set_tim_sh_holy(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -69,7 +68,7 @@ bool set_tim_sh_holy(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
@@ -87,7 +86,6 @@ bool set_tim_sh_holy(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
  */
 bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -121,7 +119,7 @@ bool set_tim_eyeeye(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);

@@ -210,18 +210,17 @@ static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
 
 static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if (cm_ptr->use_mind != MindKindType::MINDCRAFTER) {
         return;
     }
 
     if (cm_ptr->b < 5) {
         msg_print(_("なんてこった！頭の中が真っ白になった！", "Oh, no! Your mind has gone blank!"));
-        lose_all_info(player);
+        lose_all_info(creature);
         return;
     }
 
-    BadStatusSetter bss(player);
+    BadStatusSetter bss(creature);
     if (cm_ptr->b < 15) {
         msg_print(_("奇妙な光景が目の前で踊っている...", "Weird visions seem to dance before your eyes..."));
         (void)bss.mod_hallucination(5 + randint1(10));
@@ -247,7 +246,6 @@ static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
 
 static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if (cm_ptr->use_mind != MindKindType::MIRROR_MASTER) {
         return;
     }
@@ -264,7 +262,7 @@ static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
 
     if (cm_ptr->b < 96) {
         msg_print(_("まわりのものがキラキラ輝いている！", "Your brain is addled!"));
-        (void)BadStatusSetter(player).mod_hallucination(5 + randint1(10));
+        (void)BadStatusSetter(creature).mod_hallucination(5 + randint1(10));
         return;
     }
 
@@ -280,10 +278,9 @@ static void check_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
-    if ((cm_ptr->use_mind == MindKindType::KI) && (cm_ptr->n != 5) && get_current_ki(player)) {
+    if ((cm_ptr->use_mind == MindKindType::KI) && (cm_ptr->n != 5) && get_current_ki(creature)) {
         msg_print(_("気が散ってしまった．．．", "Your improved Force has gone away..."));
-        set_current_ki(player, true, 0);
+        set_current_ki(creature, true, 0);
     }
 
     if (randint1(100) >= (cm_ptr->chance / 2)) {
@@ -357,7 +354,6 @@ static bool judge_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
 
 static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     int oops = cm_ptr->mana_cost - cm_ptr->old_csp;
     if ((creature.csp - cm_ptr->mana_cost) < 0) {
         creature.csp_frac = 0;
@@ -365,21 +361,20 @@ static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
 
     creature.csp = std::max(0, creature.csp - cm_ptr->mana_cost);
     msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
-    (void)BadStatusSetter(player).mod_paralysis(randnum1<short>(5 * oops + 1));
+    (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
     if (one_in_(2)) {
         return;
     }
 
     const auto perm = one_in_(4);
     msg_print(_("自分の精神を攻撃してしまった！", "You have damaged your mind!"));
-    (void)dec_stat(player, A_WIS, 15 + randint1(10), perm);
+    (void)dec_stat(creature, A_WIS, 15 + randint1(10), perm);
 }
 
 static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
-        take_hit(player, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
+        take_hit(creature, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HP);
         return;
     }
