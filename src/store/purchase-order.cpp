@@ -104,11 +104,11 @@ static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, I
     const auto combined_or_reordered = combine_and_reorder_home(player_ptr, StoreSaleType::HOME);
     if (stock_num == st_ptr->stock_num) {
         if (combined_or_reordered) {
-            display_store_inventory(player_ptr, StoreSaleType::HOME);
+            display_store_inventory(*player_ptr, StoreSaleType::HOME);
             return;
         }
 
-        display_entry(player_ptr, i_idx, StoreSaleType::HOME);
+        display_entry(*player_ptr, i_idx, StoreSaleType::HOME);
         return;
     }
 
@@ -118,7 +118,7 @@ static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, I
         store_top -= store_bottom;
     }
 
-    display_store_inventory(player_ptr, StoreSaleType::HOME);
+    display_store_inventory(*player_ptr, StoreSaleType::HOME);
     chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
 }
 
@@ -129,7 +129,7 @@ static void switch_store_stock(PlayerType *player_ptr, const int i, const COMMAN
         store_maintenance(player_ptr, player_ptr->town_num, store_num, 10);
 
         store_top = 0;
-        display_store_inventory(player_ptr, store_num);
+        display_store_inventory(*player_ptr, store_num);
         return;
     }
 
@@ -138,11 +138,11 @@ static void switch_store_stock(PlayerType *player_ptr, const int i, const COMMAN
             store_top -= store_bottom;
         }
 
-        display_store_inventory(player_ptr, store_num);
+        display_store_inventory(*player_ptr, store_num);
         return;
     }
 
-    display_entry(player_ptr, item, store_num);
+    display_entry(*player_ptr, item, store_num);
 }
 
 /*!

@@ -129,7 +129,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     player_ptr->plus_incident_tree("STORE/ENTER/" + store_tag, 1);
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
-    display_store(player_ptr, store_num);
+    display_store(*player_ptr, store_num);
     leave_store = false;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     while (!leave_store) {
@@ -193,13 +193,13 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
                 const auto item_pos = home_carry(player_ptr, &item, store_num);
                 if (item_pos >= 0) {
                     store_top = (item_pos / store_bottom) * store_bottom;
-                    display_store_inventory(player_ptr, store_num);
+                    display_store_inventory(*player_ptr, store_num);
                 }
             }
         }
 
         if (should_redraw_store_inventory) {
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(*player_ptr, store_num);
         }
 
         if (st_ptr->store_open >= world.game_turn) {

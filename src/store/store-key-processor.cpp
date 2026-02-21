@@ -81,7 +81,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
                 }
             }
 
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(*player_ptr, store_num);
         }
 
         break;
@@ -101,14 +101,14 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
                 store_top = 0;
             }
 
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(*player_ptr, store_num);
         }
 
         break;
     }
     case KTRL('R'): {
         do_cmd_redraw(player_ptr);
-        display_store(player_ptr, store_num);
+        display_store(*player_ptr, store_num);
         break;
     }
     case 'g': {
@@ -192,7 +192,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         player_ptr->town_num = old_town_num;
         do_cmd_player_status(player_ptr);
         player_ptr->town_num = inner_town_num;
-        display_store(player_ptr, store_num);
+        display_store(*player_ptr, store_num);
         break;
     }
     case '!':
@@ -226,7 +226,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         do_cmd_options(player_ptr);
         (void)combine_and_reorder_home(player_ptr, StoreSaleType::HOME);
         do_cmd_redraw(player_ptr);
-        display_store(player_ptr, store_num);
+        display_store(*player_ptr, store_num);
         break;
     }
     case ':': {
