@@ -203,7 +203,7 @@ void process_command(PlayerType *player_ptr)
     }
     case KTRL('A'): {
         if (enter_debug_mode(floor)) {
-            do_cmd_debug(player_ptr);
+            do_cmd_debug(*player_ptr);
         }
 
         break;

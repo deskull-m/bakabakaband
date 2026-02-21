@@ -22,6 +22,7 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell/spells-status.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -134,11 +135,11 @@ void display_debug_menu(int page, int max_page, int page_size, int max_line)
 
 /*!
  * @brief デバッグコマンド選択処理への分岐
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cmd コマンドキー
  * @return コマンド終了ならTRUE、ページ送りならFALSE
  */
-bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
+bool exe_cmd_debug(CreatureEntity &creature, char cmd)
 {
     switch (cmd) {
     case ' ':
@@ -151,111 +152,111 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
     case '\r':
         return true;
     case 'a':
-        wiz_cure_all(*player_ptr);
+        wiz_cure_all(creature);
         return true;
     case 'b':
-        wiz_teleport_back(*player_ptr);
+        wiz_teleport_back(creature);
         return true;
     case 'c':
-        wiz_create_item(*player_ptr);
+        wiz_create_item(creature);
         return true;
     case 'C':
-        wiz_create_named_art(*player_ptr);
+        wiz_create_named_art(creature);
         return true;
     case 'd':
-        detect_all(*player_ptr, DETECT_RAD_ALL * 3);
+        detect_all(creature, DETECT_RAD_ALL * 3);
         return true;
     case 'D':
-        wiz_dimension_door(*player_ptr);
+        wiz_dimension_door(creature);
         return true;
     case 'e':
-        wiz_change_status(*player_ptr);
+        wiz_change_status(creature);
         return true;
     case 'E':
-        switch (player_ptr->pclass) {
+        switch (creature.pclass) {
         case PlayerClassType::BLUE_MAGE:
-            wiz_learn_blue_magic_all(*player_ptr);
+            wiz_learn_blue_magic_all(creature);
             return true;
         case PlayerClassType::SMITH:
-            wiz_fillup_all_smith_essences(*player_ptr);
+            wiz_fillup_all_smith_essences(creature);
             return true;
         default:
             return false;
         }
     case 'f':
-        identify_fully(*player_ptr, false);
+        identify_fully(creature, false);
         return true;
     case 'F':
-        wiz_create_feature(*player_ptr);
+        wiz_create_feature(creature);
         return true;
     case 'G':
-        wizard_game_modifier(*player_ptr);
+        wizard_game_modifier(creature);
         return true;
     case 'H':
-        wiz_summon_horde(*player_ptr);
+        wiz_summon_horde(creature);
         return true;
     case 'i':
-        (void)ident_spell(*player_ptr, false);
+        (void)ident_spell(creature, false);
         return true;
     case 'I':
-        wizard_item_modifier(*player_ptr);
+        wizard_item_modifier(creature);
         return true;
     case 'j':
-        wiz_jump_to_dungeon(*player_ptr);
+        wiz_jump_to_dungeon(creature);
         return true;
     case 'k':
-        wiz_kill_target(*player_ptr, 0, (AttributeType)command_arg, true);
+        wiz_kill_target(creature, 0, (AttributeType)command_arg, true);
         return true;
     case 'm':
-        map_area(*player_ptr, DETECT_RAD_ALL * 3);
+        map_area(creature, DETECT_RAD_ALL * 3);
         return true;
     case 'M':
-        wiz_mutation_menu(player_ptr);
+        wiz_mutation_menu(static_cast<PlayerType *>(&creature));
         return true;
     case 'R':
-        wiz_generate_room(*player_ptr, command_arg);
+        wiz_generate_room(creature, command_arg);
         return true;
     case 'r':
-        patron_list[player_ptr->patron].gain_level_reward(player_ptr, command_arg);
+        patron_list[creature.patron].gain_level_reward(static_cast<PlayerType *>(&creature), command_arg);
         return true;
     case 'n':
-        wiz_summon_specific_monster(*player_ptr, i2enum<MonraceId>(command_arg));
+        wiz_summon_specific_monster(creature, i2enum<MonraceId>(command_arg));
         return true;
     case 'N':
-        wiz_summon_pet(*player_ptr, i2enum<MonraceId>(command_arg));
+        wiz_summon_pet(creature, i2enum<MonraceId>(command_arg));
         return true;
     case KTRL('N'):
-        wiz_summon_clone(*player_ptr, i2enum<MonraceId>(command_arg));
+        wiz_summon_clone(creature, i2enum<MonraceId>(command_arg));
         return true;
     case 'o':
-        wiz_modify_item(*player_ptr);
+        wiz_modify_item(creature);
         return true;
     case 'O':
         wiz_dump_options();
         return true;
     case 'p':
-        teleport_player(*player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         return true;
     case 'P':
-        wizard_player_modifier(player_ptr);
+        wizard_player_modifier(static_cast<PlayerType *>(&creature));
         return true;
     case 's':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_generate_random_monster(*player_ptr, command_arg);
+        wiz_generate_random_monster(creature, command_arg);
         return true;
     case 'S':
         command_arg = std::clamp<short>(command_arg, 1, 999);
-        wiz_summon_random_monster(*player_ptr, command_arg);
+        wiz_summon_random_monster(creature, command_arg);
         return true;
     case 't':
-        teleport_player(*player_ptr, 100, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 100, TELEPORT_SPONTANEOUS);
         return true;
     case 'u': {
-        auto &floor = *player_ptr->current_floor_ptr;
+        auto &floor = *creature.current_floor_ptr;
         for (const auto &pos : floor.get_area()) {
             floor.get_grid(pos).info |= CAVE_GLOW | CAVE_MARK;
         }
-        wiz_lite(player_ptr, false);
+        wiz_lite(static_cast<PlayerType *>(&creature), false);
         return true;
     }
     case 'v': {
@@ -268,42 +269,42 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
         }
     }
     case 'w':
-        wiz_lite(player_ptr, CreatureClass(*player_ptr).equals(PlayerClassType::NINJA));
+        wiz_lite(static_cast<PlayerType *>(&creature), CreatureClass(creature).equals(PlayerClassType::NINJA));
         return true;
     case 'x':
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), command_arg ? command_arg : (player_ptr->exp + 1));
+        gain_exp(creature, command_arg ? command_arg : (creature.exp + 1));
         return true;
     case 'X':
         for (INVENTORY_IDX i = INVEN_TOTAL - 1; i >= 0; i--) {
-            if (player_ptr->inventory[i]->is_valid()) {
-                drop_from_inventory(player_ptr, i, 999);
+            if (creature.inventory[i]->is_valid()) {
+                drop_from_inventory(static_cast<PlayerType *>(&creature), i, 999);
             }
         }
-        player_outfit(player_ptr);
+        player_outfit(static_cast<PlayerType *>(&creature));
         return true;
     case 'y':
-        wiz_kill_target(*player_ptr);
+        wiz_kill_target(creature);
         return true;
     case 'Y':
-        wiz_kill_target(*player_ptr, 0, (AttributeType)command_arg);
+        wiz_kill_target(creature, 0, (AttributeType)command_arg);
         return true;
     case 'z':
-        wiz_zap_surrounding_monsters(*player_ptr);
+        wiz_zap_surrounding_monsters(creature);
         return true;
     case 'Z':
-        wiz_zap_floor_monsters(*player_ptr);
+        wiz_zap_floor_monsters(creature);
         return true;
     case '_':
-        probing(*player_ptr);
+        probing(creature);
         return true;
     case '@':
-        wiz_debug_spell(*player_ptr);
+        wiz_debug_spell(creature);
         return true;
     case '"':
         exe_output_spoilers();
         return true;
     case '?':
-        do_cmd_help(player_ptr);
+        do_cmd_help(static_cast<PlayerType *>(&creature));
         return true;
     default:
         msg_print("That is not a valid debug command.");
@@ -315,11 +316,11 @@ bool exe_cmd_debug(PlayerType *player_ptr, char cmd)
  * @brief デバッグコマンドを選択する処理のメインルーチン /
  * Ask for and parse a "debug command"
  * The "command_arg" may have been set.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * 番号を指定するには、それをN及びデバッグコマンドをXとしてとして「0N^aX」とする
  */
-void do_cmd_debug(PlayerType *player_ptr)
+void do_cmd_debug(CreatureEntity &creature)
 {
     const auto &[wid, hgt] = term_get_size();
     const auto max_line = debug_menu_table.size();
@@ -331,7 +332,7 @@ void do_cmd_debug(PlayerType *player_ptr)
         display_debug_menu(page, max_page, page_size, max_line);
         const auto command = input_command("Debug Command: ");
         screen_load();
-        if (exe_cmd_debug(player_ptr, command.value_or(ESCAPE))) {
+        if (exe_cmd_debug(creature, command.value_or(ESCAPE))) {
             return;
         }
 
