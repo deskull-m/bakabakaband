@@ -1,6 +1,6 @@
 #pragma once
 
-class PlayerType;
-void check_random_quest_auto_failure(PlayerType *player_ptr);
-void execute_recall(PlayerType *player_ptr);
-void execute_floor_reset(PlayerType *player_ptr);
+class CreatureEntity;
+void check_random_quest_auto_failure(CreatureEntity &creature);
+void execute_recall(CreatureEntity &creature);
+void execute_floor_reset(CreatureEntity &creature);

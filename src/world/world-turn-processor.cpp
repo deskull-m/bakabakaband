@@ -103,8 +103,8 @@ void WorldTurnProcessor::process_world()
     recharge_magic_items(this->player_ptr);
     sense_inventory1(this->player_ptr);
     sense_inventory2(this->player_ptr);
-    execute_recall(this->player_ptr);
-    execute_floor_reset(this->player_ptr);
+    execute_recall(*this->player_ptr);
+    execute_floor_reset(*this->player_ptr);
     wc_ptr->plus_timed_world_collapsion(&world, this->player_ptr, 10);
 }
 

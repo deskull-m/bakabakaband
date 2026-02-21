@@ -92,7 +92,7 @@ void pattern_teleport(PlayerType *player_ptr)
      */
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
 
-    check_random_quest_auto_failure(player_ptr);
+    check_random_quest_auto_failure(*player_ptr);
 
     player_ptr->leaving = true;
 }
