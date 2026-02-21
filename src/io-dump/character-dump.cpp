@@ -124,9 +124,9 @@ static void dump_aux_quest(PlayerType *player_ptr, FILE *fff)
     const auto &quests = QuestList::get_instance();
     const auto quest_ids = quests.get_sorted_quest_ids();
     fmt::print(fff, "\n");
-    do_cmd_knowledge_quests_completed(player_ptr, fff, quest_ids);
+    do_cmd_knowledge_quests_completed(*player_ptr, fff, quest_ids);
     fmt::print(fff, "\n");
-    do_cmd_knowledge_quests_failed(player_ptr, fff, quest_ids);
+    do_cmd_knowledge_quests_failed(*player_ptr, fff, quest_ids);
     fmt::print(fff, "\n");
 }
 

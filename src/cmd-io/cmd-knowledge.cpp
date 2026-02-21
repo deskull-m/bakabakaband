@@ -141,7 +141,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_dungeon(player_ptr);
             break;
         case 'i': /* Quests */
-            do_cmd_knowledge_quests(player_ptr);
+            do_cmd_knowledge_quests(*player_ptr);
             break;
         case 'k': /* Autopick */
             do_cmd_knowledge_autopick(player_ptr);
@@ -156,7 +156,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_alliance(player_ptr, false);
             break;
         case 'o': /* Death history */
-            do_cmd_knowledge_death_history(player_ptr);
+            do_cmd_knowledge_death_history(*player_ptr);
             break;
         default: /* Unknown option */
             bell();
