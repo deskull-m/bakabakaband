@@ -183,7 +183,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
                 store_top = (*item_pos / store_bottom) * store_bottom;
-                display_store_inventory(player_ptr, store_num);
+                display_store_inventory(*player_ptr, store_num);
             }
         }
     } else if (store_num == StoreSaleType::MUSEUM) {
@@ -210,7 +210,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
         int item_pos = home_carry(player_ptr, &selling_item, store_num);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(*player_ptr, store_num);
         }
     } else {
         distribute_charges(o_ptr, &selling_item, amt);
@@ -221,7 +221,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
         int item_pos = home_carry(player_ptr, &selling_item, store_num);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(*player_ptr, store_num);
         }
     }
 

@@ -8,6 +8,7 @@
 #include "store/pricing.h"
 #include "store/store-owners.h"
 #include "store/store.h" //!< @todo 相互依存している、こっちは残す？.
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -32,7 +33,7 @@ void store_prt_gold(int num_golds)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param pos 表示行
  */
-void display_entry(PlayerType *player_ptr, int pos, StoreSaleType store_num)
+void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
 {
     const auto &item = *st_ptr->stock[pos];
     int i = (pos % store_bottom);
@@ -59,6 +60,7 @@ void display_entry(PlayerType *player_ptr, int pos, StoreSaleType store_num)
             maxwid -= 10;
         }
 
+        auto *player_ptr = static_cast<PlayerType *>(&creature);
         const auto item_name = describe_flavor(player_ptr, item, 0, maxwid);
         c_put_str(tval_to_attr[enum2i(item.bi_key.tval())], item_name, i + 6, cur_col);
 
@@ -75,6 +77,7 @@ void display_entry(PlayerType *player_ptr, int pos, StoreSaleType store_num)
         maxwid -= 7;
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto item_name = describe_flavor(player_ptr, item, 0, maxwid);
     c_put_str(tval_to_attr[enum2i(item.bi_key.tval())], item_name, i + 6, cur_col);
 
@@ -94,7 +97,7 @@ void display_entry(PlayerType *player_ptr, int pos, StoreSaleType store_num)
  * @details
  * All prices are listed as "per individual object".  -BEN-
  */
-void display_store_inventory(PlayerType *player_ptr, StoreSaleType store_num)
+void display_store_inventory(CreatureEntity &creature, StoreSaleType store_num)
 {
     int k;
     for (k = 0; k < store_bottom; k++) {
@@ -102,7 +105,7 @@ void display_store_inventory(PlayerType *player_ptr, StoreSaleType store_num)
             break;
         }
 
-        display_entry(player_ptr, store_top + k, store_num);
+        display_entry(creature, store_top + k, store_num);
     }
 
     for (int i = k; i < store_bottom + 1; i++) {
@@ -131,7 +134,7 @@ void display_store_inventory(PlayerType *player_ptr, StoreSaleType store_num)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @details
  */
-void display_store(PlayerType *player_ptr, StoreSaleType store_num)
+void display_store(CreatureEntity &creature, StoreSaleType store_num)
 {
     term_clear();
     if (store_num == StoreSaleType::HOME) {
@@ -141,8 +144,8 @@ void display_store(PlayerType *player_ptr, StoreSaleType store_num)
             put_str(_("  重さ", "Weight"), 5, 70);
         }
 
-        store_prt_gold(player_ptr->au);
-        display_store_inventory(player_ptr, store_num);
+        store_prt_gold(creature.au);
+        display_store_inventory(creature, store_num);
         return;
     }
 
@@ -153,8 +156,8 @@ void display_store(PlayerType *player_ptr, StoreSaleType store_num)
             put_str(_("  重さ", "Weight"), 5, 70);
         }
 
-        store_prt_gold(player_ptr->au);
-        display_store_inventory(player_ptr, store_num);
+        store_prt_gold(creature.au);
+        display_store_inventory(creature, store_num);
         return;
     }
 
@@ -171,6 +174,6 @@ void display_store(PlayerType *player_ptr, StoreSaleType store_num)
     }
 
     put_str(_(" 価格", "Price"), 5, 72);
-    store_prt_gold(player_ptr->au);
-    display_store_inventory(player_ptr, store_num);
+    store_prt_gold(creature.au);
+    display_store_inventory(creature, store_num);
 }

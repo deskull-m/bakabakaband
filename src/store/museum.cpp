@@ -4,7 +4,9 @@
 #include "store/home.h"
 #include "store/store-util.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
 
@@ -49,5 +51,5 @@ void museum_remove_object(PlayerType *player_ptr)
         store_top -= store_bottom;
     }
 
-    display_store_inventory(player_ptr, StoreSaleType::MUSEUM);
+    display_store_inventory(*player_ptr, StoreSaleType::MUSEUM);
 }
