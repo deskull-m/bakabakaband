@@ -5,10 +5,10 @@
 #include <stdint.h>
 #include <vector>
 
-class PlayerType;
+class CreatureEntity;
 enum class QuestId : short;
-void do_cmd_checkquest(PlayerType *player_ptr);
-void do_cmd_knowledge_quests_completed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_ids);
-void do_cmd_knowledge_quests_failed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_ids);
-void do_cmd_knowledge_quests(PlayerType *player_ptr);
-void do_cmd_knowledge_death_history(PlayerType *player_ptr);
+void do_cmd_checkquest(CreatureEntity &creature);
+void do_cmd_knowledge_quests_completed(CreatureEntity &creature, FILE *fff, const std::vector<QuestId> &quest_ids);
+void do_cmd_knowledge_quests_failed(CreatureEntity &creature, FILE *fff, const std::vector<QuestId> &quest_ids);
+void do_cmd_knowledge_quests(CreatureEntity &creature);
+void do_cmd_knowledge_death_history(CreatureEntity &creature);

@@ -646,7 +646,7 @@ void process_command(PlayerType *player_ptr)
         break;
     }
     case KTRL('Q'): {
-        do_cmd_checkquest(player_ptr);
+        do_cmd_checkquest(*player_ptr);
         break;
     }
     case KTRL('R'): {
