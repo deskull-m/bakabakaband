@@ -210,7 +210,7 @@ void process_command(PlayerType *player_ptr)
     }
     case KTRL('Y'): {
         if (enter_debug_mode(floor)) {
-            wiz_mutation_menu(player_ptr);
+            wiz_mutation_menu(*player_ptr);
         }
 
         break;

@@ -211,7 +211,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         map_area(creature, DETECT_RAD_ALL * 3);
         return true;
     case 'M':
-        wiz_mutation_menu(static_cast<PlayerType *>(&creature));
+        wiz_mutation_menu(creature);
         return true;
     case 'R':
         wiz_generate_room(creature, command_arg);
