@@ -369,7 +369,7 @@ static void calc_attack_damage(CreatureEntity &creature, player_attack_type *pa_
     auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     pa_ptr->attack_damage = 1;
     if (pa_ptr->monk_attack) {
-        process_monk_attack(&player, pa_ptr);
+        process_monk_attack(creature, pa_ptr);
         return;
     }
 

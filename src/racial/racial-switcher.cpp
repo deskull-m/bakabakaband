@@ -162,7 +162,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         }
 
         if (command == -4) {
-            return double_attack(player_ptr);
+            return double_attack(creature);
         }
 
         return true;

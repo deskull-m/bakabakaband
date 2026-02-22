@@ -69,15 +69,16 @@ static int calc_stun_resistance(player_attack_type *pa_ptr)
 
 /*!
  * @brief 技のランダム選択回数を決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 技のランダム選択回数
  * @details ランダム選択は一番強い技が最終的に選択されるので、回数が多いほど有利
  */
-static int calc_max_blow_selection_times(PlayerType *player_ptr)
+static int calc_max_blow_selection_times(CreatureEntity &creature)
 {
-    CreatureClass pc(*player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    CreatureClass pc(player);
     if (pc.monk_stance_is(MonkStanceType::BYAKKO)) {
-        return player_ptr->level < 3 ? 1 : player_ptr->level / 3;
+        return creature.level < 3 ? 1 : creature.level / 3;
     }
 
     if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
@@ -88,31 +89,32 @@ static int calc_max_blow_selection_times(PlayerType *player_ptr)
         return 1;
     }
 
-    return player_ptr->level < 7 ? 1 : player_ptr->level / 7;
+    return creature.level < 7 ? 1 : creature.level / 7;
 }
 
 /*!
  * @brief プレイヤーのレベルと技の難度を加味しつつ、確率で一番強い技を選ぶ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 技のランダム選択回数
  * @return 技の行使に必要な最低レベル
  */
-static int select_blow(PlayerType *player_ptr, player_attack_type *pa_ptr, int max_blow_selection_times)
+static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int max_blow_selection_times)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     int min_level = 1;
     const martial_arts *old_ptr = &ma_blows[0];
     const auto is_wizard = AngbandWorld::get_instance().wizard;
     for (int times = 0; times < max_blow_selection_times; times++) {
         do {
             pa_ptr->ma_ptr = &rand_choice(ma_blows);
-            if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER) && (pa_ptr->ma_ptr->min_level > 1)) {
+            if (CreatureClass(player).equals(PlayerClassType::FORCETRAINER) && (pa_ptr->ma_ptr->min_level > 1)) {
                 min_level = pa_ptr->ma_ptr->min_level + 3;
             } else {
                 min_level = pa_ptr->ma_ptr->min_level;
             }
-        } while ((min_level > player_ptr->level) || (randint1(player_ptr->level) < pa_ptr->ma_ptr->chance));
+        } while ((min_level > creature.level) || (randint1(creature.level) < pa_ptr->ma_ptr->chance));
 
-        const auto effects = player_ptr->effects();
+        const auto effects = player.effects();
         const auto is_stunned = effects->stun().is_stunned();
         const auto is_confused = effects->confusion().is_confused();
         if ((pa_ptr->ma_ptr->min_level <= old_ptr->min_level) || is_stunned || is_confused) {
@@ -126,7 +128,7 @@ static int select_blow(PlayerType *player_ptr, player_attack_type *pa_ptr, int m
         }
     }
 
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::FORCETRAINER)) {
+    if (CreatureClass(player).equals(PlayerClassType::FORCETRAINER)) {
         min_level = std::max(1, pa_ptr->ma_ptr->min_level - 3);
     } else {
         min_level = pa_ptr->ma_ptr->min_level;
@@ -169,19 +171,20 @@ static int process_monk_additional_effect(player_attack_type *pa_ptr, int *stun_
 
 /*!
  * @brief 攻撃の重さ (修行僧と練気術師における武器重量)を決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 重さ
  */
-WEIGHT calc_monk_attack_weight(PlayerType *player_ptr)
+WEIGHT calc_monk_attack_weight(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     WEIGHT weight = 8;
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(player);
     if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
         weight = 4;
     }
 
-    if (pc.equals(PlayerClassType::FORCETRAINER) && (get_current_ki(*player_ptr) != 0)) {
-        weight += (get_current_ki(*player_ptr) / 30);
+    if (pc.equals(PlayerClassType::FORCETRAINER) && (get_current_ki(player) != 0)) {
+        weight += (get_current_ki(player) / 30);
         if (weight > 20) {
             weight = 20;
         }
@@ -241,42 +244,44 @@ static void print_stun_effect(PlayerType *player_ptr, player_attack_type *pa_ptr
 
 /*!
  * @brief 強力な素手攻撃ができる職業 (修行僧、狂戦士、練気術師)の素手攻撃処理メインルーチン
- * @param player_ptr プレイヤーの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param grid グリッドへの参照
  */
-void process_monk_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     int resist_stun = calc_stun_resistance(pa_ptr);
-    int max_blow_selection_times = calc_max_blow_selection_times(player_ptr);
-    int min_level = select_blow(player_ptr, pa_ptr, max_blow_selection_times);
+    int max_blow_selection_times = calc_max_blow_selection_times(creature);
+    int min_level = select_blow(creature, pa_ptr, max_blow_selection_times);
 
-    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
-    const auto num = pa_ptr->ma_ptr->damage_dice.num + player_ptr->damage_dice_bonus[pa_ptr->hand].num;
-    const auto sides = pa_ptr->ma_ptr->damage_dice.sides + player_ptr->damage_dice_bonus[pa_ptr->hand].sides;
-    pa_ptr->attack_damage = calc_attack_damage_with_slay(player_ptr, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
+    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    const auto num = pa_ptr->ma_ptr->damage_dice.num + player.damage_dice_bonus[pa_ptr->hand].num;
+    const auto sides = pa_ptr->ma_ptr->damage_dice.sides + player.damage_dice_bonus[pa_ptr->hand].sides;
+    pa_ptr->attack_damage = calc_attack_damage_with_slay(&player, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
 
-    if (player_ptr->special_attack & ATTACK_SUIKEN) {
+    if (player.special_attack & ATTACK_SUIKEN) {
         pa_ptr->attack_damage *= 2;
     }
 
     int stun_effect = 0;
     int special_effect = process_monk_additional_effect(pa_ptr, &stun_effect);
-    WEIGHT weight = calc_monk_attack_weight(player_ptr);
-    pa_ptr->attack_damage = critical_norm(player_ptr, player_ptr->level * weight, min_level, pa_ptr->attack_damage, player_ptr->to_h[0], HISSATSU_NONE);
-    process_attack_vital_spot(player_ptr, pa_ptr, &stun_effect, &resist_stun, special_effect);
-    print_stun_effect(player_ptr, pa_ptr, stun_effect, resist_stun);
+    WEIGHT weight = calc_monk_attack_weight(creature);
+    pa_ptr->attack_damage = critical_norm(&player, creature.level * weight, min_level, pa_ptr->attack_damage, player.to_h[0], HISSATSU_NONE);
+    process_attack_vital_spot(&player, pa_ptr, &stun_effect, &resist_stun, special_effect);
+    print_stun_effect(&player, pa_ptr, stun_effect, resist_stun);
 }
 
-bool double_attack(PlayerType *player_ptr)
+bool double_attack(CreatureEntity &creature)
 {
-    const auto dir = get_rep_dir(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto dir = get_rep_dir(&player);
     if (!dir) {
         return false;
     }
 
-    const auto pos = player_ptr->get_neighbor(dir);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto pos = creature.get_neighbor(dir);
+    const auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto has_monster = grid.has_monster();
     if (!has_monster) {
         msg_print(_("その方向にはモンスターはいません。", "You don't see any monster in this direction"));
@@ -292,12 +297,12 @@ bool double_attack(PlayerType *player_ptr)
         msg_print(_("オラオラオラオラオラオラオラオラオラオラオラオラ！！！", "Oraoraoraoraoraoraoraoraoraoraoraoraoraoraoraoraora!!!!"));
     }
 
-    do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
+    do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
     if (has_monster) {
-        handle_stuff(*player_ptr);
-        do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        handle_stuff(player);
+        do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
     }
 
-    static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());
+    creature.set_energy_need(creature.get_energy_need() + ENERGY_NEED());
     return true;
 }
