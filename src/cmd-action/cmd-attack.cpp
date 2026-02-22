@@ -145,7 +145,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     case PlayerMutationType::TRUNK:
     case PlayerMutationType::TENTACLES:
     default: {
-        MonsterDamageProcessor mdp(player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+        MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
         *mdeath = mdp.mon_take_hit("");
         break;
     }
@@ -227,7 +227,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     // 頭突きによるダメージ処理
-    MonsterDamageProcessor mdp(player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+    MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
     *mdeath = mdp.mon_take_hit(_("は頭突きで倒れた。", " falls from your headbutt."));
 
     // 頭突き後の反動処理
@@ -328,7 +328,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     // 体当たりによるダメージ処理
-    MonsterDamageProcessor mdp(player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+    MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
     *mdeath = mdp.mon_take_hit(_("は体当たりで倒れた。", " falls from your body slam."));
 
     // 体当たり後の自己ダメージ（反動）
@@ -726,7 +726,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
     }
 
     // 浣腸によるダメージ処理
-    MonsterDamageProcessor mdp(player_ptr, m_idx, k, fear, AttributeType::ATTACK);
+    MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
     *mdeath = mdp.mon_take_hit(_("は浣腸で逝った。", " falls from your enema."));
 
     touch_zap_player(monster, player_ptr);

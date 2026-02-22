@@ -930,7 +930,7 @@ void sweep_monster_process(CreatureEntity &creature)
             if (monster.death_count == 0) {
                 bool fear;
                 monster.max_maxhp = monster.maxhp = monster.hp = -1;
-                MonsterDamageProcessor mdp(&player, m_idx, 0, &fear, AttributeType::ATTACK);
+                MonsterDamageProcessor mdp(player, m_idx, 0, &fear, AttributeType::ATTACK);
                 mdp.mon_take_hit(_("は爆発した。", " explodes."));
             }
         }
@@ -966,7 +966,7 @@ void sweep_monster_process(CreatureEntity &creature)
                     case 3: {
                         bool fear = false;
                         msg_format(_("%s「イグゥ！」", "%s 'Igur!'"), m_name.data());
-                        MonsterDamageProcessor mdp(&player, m_idx, Dice::roll(1, 4), &fear, AttributeType::ATTACK);
+                        MonsterDamageProcessor mdp(player, m_idx, Dice::roll(1, 4), &fear, AttributeType::ATTACK);
 
                         if (fear) {
                             msg_format(_("%s「イッジャイましゅうう！」", "%s'I’m commingrrr!'"), m_name.data());

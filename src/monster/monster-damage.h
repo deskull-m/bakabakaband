@@ -10,16 +10,16 @@
 enum class MonraceId : short;
 class MonraceDefinition;
 class MonsterEntity;
-class PlayerType;
+class CreatureEntity;
 class MonsterDamageProcessor {
 public:
-    MonsterDamageProcessor(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *fear, AttributeType type);
-    MonsterDamageProcessor(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *fear, AttributeFlags attribute_flags);
+    MonsterDamageProcessor(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *fear, AttributeType type);
+    MonsterDamageProcessor(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *fear, AttributeFlags attribute_flags);
     virtual ~MonsterDamageProcessor() = default;
     bool mon_take_hit(std::string_view note);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     MONSTER_IDX m_idx;
     int dam;
     bool *fear;
