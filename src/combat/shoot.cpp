@@ -851,7 +851,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                     }
 
                     /* Hit the monster, check for death */
-                    MonsterDamageProcessor mdp(player_ptr, c_mon_ptr->m_idx, tdam, &fear, attribute_flags);
+                    MonsterDamageProcessor mdp(*player_ptr, c_mon_ptr->m_idx, tdam, &fear, attribute_flags);
                     if (mdp.mon_take_hit(monster.get_died_message())) {
                         /* Dead monster */
                     }
