@@ -109,7 +109,7 @@ static bool calc_weapon_damage_limit(CreatureEntity &creature, int hand, int *da
         *basedam = monk_ave_damage[level][0];
     }
     bool impact = creature.impact != 0;
-    WEIGHT weight = creature.level * calc_monk_attack_weight(&static_cast<PlayerType &>(creature));
+    WEIGHT weight = creature.level * calc_monk_attack_weight(creature);
     int to_h = creature.level * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
 
     *basedam = calc_expect_crit(&static_cast<PlayerType &>(creature), weight, to_h, *basedam, creature.to_h[0], false, impact, 100);
