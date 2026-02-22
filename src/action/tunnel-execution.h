@@ -6,5 +6,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x);
+class CreatureEntity;
+bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x);
