@@ -234,7 +234,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         floor.num_repro += MAX_REPRODUCTION;
         return true;
     case PlayerMutationType::HIT_AND_AWAY:
-        return hit_and_away(player_ptr);
+        return hit_and_away(*player_ptr);
     case PlayerMutationType::DAZZLE:
         stun_monsters(*player_ptr, lvl * 4);
         confuse_monsters(*player_ptr, lvl * 4);

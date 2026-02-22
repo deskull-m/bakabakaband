@@ -402,7 +402,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         teleport_player(*player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MindNinjaType::HIT_AND_AWAY:
-        if (!hit_and_away(player_ptr)) {
+        if (!hit_and_away(creature)) {
             return false;
         }
 
