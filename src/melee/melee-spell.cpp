@@ -30,23 +30,24 @@
 #define RF5_SPELL_SIZE 32
 #define RF6_SPELL_SIZE 32
 
-static bool try_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr)
+static bool try_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
     if (spell_is_inate(ms_ptr->thrown_spell) || (!ms_ptr->in_no_magic_dungeon && (!ms_ptr->m_ptr->get_remaining_stun() || one_in_(2)))) {
         return false;
     }
 
-    disturb(*player_ptr, true, true);
+    disturb(creature, true, true);
     if (ms_ptr->see_m) {
-        msg_format(_("%s^は呪文を唱えようとしたが失敗した。", "%s^ tries to cast a spell, but fails."), ms_ptr->m_name.data());
+        msg_format(_(" %s^は呢文を唱えようとしたが失敗した。", "%s^ tries to cast a spell, but fails."), ms_ptr->m_name.data());
     }
 
     return true;
 }
 
-static bool disturb_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr)
+static bool disturb_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    if (spell_is_inate(ms_ptr->thrown_spell) || !SpellHex(*player_ptr).check_hex_barrier(ms_ptr->m_idx, HEX_ANTI_MAGIC)) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (spell_is_inate(ms_ptr->thrown_spell) || !SpellHex(player).check_hex_barrier(ms_ptr->m_idx, HEX_ANTI_MAGIC)) {
         return false;
     }
 
@@ -57,13 +58,14 @@ static bool disturb_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr
     return true;
 }
 
-static void process_special_melee_spell(PlayerType *player_ptr, melee_spell_type *ms_ptr)
+static void process_special_melee_spell(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
-    CreatureClass pc(*player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    CreatureClass pc(player);
     bool is_special_magic = ms_ptr->m_ptr->ml;
     is_special_magic &= ms_ptr->maneable;
     is_special_magic &= AngbandWorld::get_instance().timewalk_m_idx == 0;
-    is_special_magic &= !player_ptr->effects()->blindness().is_blind();
+    is_special_magic &= !player.effects()->blindness().is_blind();
     is_special_magic &= pc.equals(PlayerClassType::IMITATOR);
     is_special_magic &= ms_ptr->thrown_spell != MonsterAbilityType::SPECIAL;
     if (!is_special_magic) {
@@ -97,40 +99,41 @@ static void process_rememberance(melee_spell_type *ms_ptr)
 /*!
  * @brief モンスターが敵モンスターに特殊能力を使う処理のメインルーチン /
  * Monster tries to 'cast a spell' (or breath, etc) at another monster.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 術者のモンスターID
  * @return 実際に特殊能力を使った場合TRUEを返す
  * @details
  * The player is only disturbed if able to be affected by the spell.
  */
-bool monst_spell_monst(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool monst_spell_monst(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    melee_spell_type tmp_ms(player_ptr, m_idx);
+    melee_spell_type tmp_ms(creature, m_idx);
     melee_spell_type *ms_ptr = &tmp_ms;
-    if (!check_melee_spell_set(*player_ptr, ms_ptr)) {
+    if (!check_melee_spell_set(creature, ms_ptr)) {
         return false;
     }
 
-    ms_ptr->m_name = monster_desc(*player_ptr, *ms_ptr->m_ptr, 0x00);
+    ms_ptr->m_name = monster_desc(creature, *ms_ptr->m_ptr, 0x00);
     ms_ptr->thrown_spell = rand_choice(ms_ptr->spells);
     if (ms_ptr->m_ptr->is_riding()) {
-        disturb(*player_ptr, true, true);
+        disturb(creature, true, true);
     }
 
-    if (try_melee_spell(player_ptr, ms_ptr) || disturb_melee_spell(player_ptr, ms_ptr)) {
+    if (try_melee_spell(creature, ms_ptr) || disturb_melee_spell(creature, ms_ptr)) {
         return true;
     }
 
-    ms_ptr->can_remember = is_original_ap_and_seen(*player_ptr, *ms_ptr->m_ptr);
-    const auto res = monspell_to_monster(player_ptr, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
+    auto &player = static_cast<PlayerType &>(creature);
+    ms_ptr->can_remember = is_original_ap_and_seen(player, *ms_ptr->m_ptr);
+    const auto res = monspell_to_monster(&player, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
     if (!res.valid) {
         return false;
     }
 
     ms_ptr->dam = res.dam;
-    process_special_melee_spell(player_ptr, ms_ptr);
+    process_special_melee_spell(creature, ms_ptr);
     process_rememberance(ms_ptr);
-    if (player_ptr->is_dead() && (ms_ptr->r_ptr->r_deaths < MAX_SHORT) && !player_ptr->current_floor_ptr->inside_arena) {
+    if (player.is_dead() && (ms_ptr->r_ptr->r_deaths < MAX_SHORT) && !creature.current_floor_ptr->inside_arena) {
         ms_ptr->r_ptr->r_deaths++;
     }
 

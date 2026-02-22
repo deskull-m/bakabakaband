@@ -7,11 +7,11 @@
 #include <string>
 #include <vector>
 
+class CreatureEntity;
 class MonraceDefinition;
 class MonsterEntity;
-class PlayerType;
 struct melee_spell_type {
-    melee_spell_type(PlayerType *player_ptr, MONSTER_IDX m_idx);
+    melee_spell_type(CreatureEntity &creature, MONSTER_IDX m_idx);
 
     POSITION y = 0;
     POSITION x = 0;

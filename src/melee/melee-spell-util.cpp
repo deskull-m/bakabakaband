@@ -9,15 +9,16 @@
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
 
-melee_spell_type::melee_spell_type(PlayerType *player_ptr, MONSTER_IDX m_idx)
+melee_spell_type::melee_spell_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     : m_idx(m_idx)
     , thrown_spell(MonsterAbilityType::MAX)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     this->m_ptr = &floor.m_list[m_idx];
     this->t_ptr = nullptr;
     this->r_ptr = &this->m_ptr->get_monrace();
-    this->see_m = is_seen(player_ptr, *this->m_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    this->see_m = is_seen(&player, *this->m_ptr);
     this->maneable = floor.has_los_at(this->m_ptr->get_position());
     this->pet = this->m_ptr->is_pet();
     const auto &dungeon = floor.get_dungeon_definition();
