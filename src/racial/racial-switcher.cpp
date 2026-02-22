@@ -114,7 +114,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return true;
         }
 
-        return bless_weapon(player_ptr);
+        return bless_weapon(creature);
     case PlayerClassType::ROGUE:
         return hit_and_away(creature);
     case PlayerClassType::RANGER:
