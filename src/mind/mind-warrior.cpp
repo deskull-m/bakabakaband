@@ -10,23 +10,24 @@
 
 /*!
  * 戦士と盗賊における、ヒット＆アウェイのレイシャルパワー/突然変異
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return コマンドの入力先にモンスターがいたらTRUE
  */
-bool hit_and_away(PlayerType *player_ptr)
+bool hit_and_away(CreatureEntity &creature)
 {
-    const auto dir = get_direction(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto dir = get_direction(&player);
     if (!dir) {
         return false;
     }
 
-    const auto pos = player_ptr->get_neighbor(dir);
-    if (player_ptr->current_floor_ptr->get_grid(pos).has_monster()) {
-        do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
-        if (randint0(player_ptr->skill_dis) < 7) {
+    const auto pos = creature.get_neighbor(dir);
+    if (creature.current_floor_ptr->get_grid(pos).has_monster()) {
+        do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
+        if (randint0(player.skill_dis) < 7) {
             msg_print(_("うまく逃げられなかった。", "You failed to run away."));
         } else {
-            teleport_player(*player_ptr, 30, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, 30, TELEPORT_SPONTANEOUS);
         }
         return true;
     }
@@ -38,17 +39,17 @@ bool hit_and_away(PlayerType *player_ptr)
 
 /*!
  * 剣の舞い
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 常にTRUE
  */
-bool sword_dancing(PlayerType *player_ptr)
+bool sword_dancing(CreatureEntity &creature)
 {
     for (auto i = 0; i < 6; i++) {
         const auto d = rand_choice(Direction::directions_8());
-        const auto pos = player_ptr->get_neighbor(d);
-        const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+        const auto pos = creature.get_neighbor(d);
+        const auto &grid = creature.current_floor_ptr->get_grid(pos);
         if (grid.has_monster()) {
-            do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         } else {
             msg_print(_("攻撃が空をきった。", "You attack the empty air."));
         }

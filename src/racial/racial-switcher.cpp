@@ -91,7 +91,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (player_ptr->pclass) {
     case PlayerClassType::WARRIOR:
-        return sword_dancing(player_ptr);
+        return sword_dancing(creature);
     case PlayerClassType::HIGH_MAGE:
         if (PlayerRealm(player_ptr).is_realm_hex()) {
             const auto retval = SpellHex(*player_ptr).stop_spells_with_selection();
@@ -116,7 +116,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
 
         return bless_weapon(player_ptr);
     case PlayerClassType::ROGUE:
-        return hit_and_away(player_ptr);
+        return hit_and_away(creature);
     case PlayerClassType::RANGER:
     case PlayerClassType::SNIPER:
         msg_print(_("敵を調査した...", "You examine your foes..."));
