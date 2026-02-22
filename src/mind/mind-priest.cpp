@@ -20,21 +20,23 @@
 /*!
  * @brief 武器の祝福処理 /
  * Bless a weapon
+ * @param creature クリーチャーへの参照
  * @return ターン消費を要する処理を行ったならばTRUEを返す
  */
-bool bless_weapon(PlayerType *player_ptr)
+bool bless_weapon(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     constexpr auto q = _("どのアイテムを祝福しますか？", "Bless which weapon? ");
     constexpr auto s = _("祝福できる武器がありません。", "You have no weapon to bless.");
 
     short i_idx;
     constexpr BIT_FLAGS options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
+    auto *o_ptr = choose_object(&player, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
     if (!o_ptr) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(&player, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = o_ptr->get_flags();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (o_ptr->is_cursed()) {
@@ -148,6 +150,6 @@ bool bless_weapon(PlayerType *player_ptr)
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };
     rfu.set_flags(flags_swrf);
-    calc_android_exp(player_ptr);
+    calc_android_exp(&player);
     return true;
 }
