@@ -1,5 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
-void auto_destroy_item(PlayerType *player_ptr, ItemEntity *o_ptr, int autopick_idx);
+void auto_destroy_item(CreatureEntity &creature, ItemEntity *o_ptr, int autopick_idx);

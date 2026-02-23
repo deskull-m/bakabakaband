@@ -92,7 +92,7 @@ void autopick_alter_item(PlayerType *player_ptr, INVENTORY_IDX i_idx, bool destr
     int idx = find_autopick_list(*player_ptr, o_ptr);
     auto_inscribe_item(o_ptr, idx);
     if (destroy && i_idx <= INVEN_PACK) {
-        auto_destroy_item(player_ptr, o_ptr, idx);
+        auto_destroy_item(*player_ptr, o_ptr, idx);
     }
 }
 
@@ -107,7 +107,7 @@ void autopick_pickup_items(PlayerType *player_ptr, const Grid &grid)
         int idx = find_autopick_list(*player_ptr, &item);
         auto_inscribe_item(&item, idx);
         if ((idx < 0) || (autopick_list[idx].action & (DO_AUTOPICK | DO_QUERY_AUTOPICK)) == 0) {
-            auto_destroy_item(player_ptr, &item, idx);
+            auto_destroy_item(*player_ptr, &item, idx);
             continue;
         }
 
