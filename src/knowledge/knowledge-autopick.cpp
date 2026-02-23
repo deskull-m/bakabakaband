@@ -25,7 +25,7 @@ void do_cmd_reload_autopick(PlayerType *player_ptr)
         return;
     }
 
-    autopick_load_pref(player_ptr, true);
+    autopick_load_pref(*player_ptr, true);
 }
 
 /*

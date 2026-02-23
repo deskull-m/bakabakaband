@@ -98,7 +98,7 @@ void change_race(PlayerType *player_ptr, PlayerRaceType new_race, concptr effect
     handle_stuff(*player_ptr);
 
     if (old_race != player_ptr->prace) {
-        autopick_load_pref(player_ptr, false);
+        autopick_load_pref(*player_ptr, false);
     }
 
     lite_spot(*player_ptr, player_ptr->get_position());

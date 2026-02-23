@@ -2964,7 +2964,7 @@ void check_experience(CreatureEntity &creature)
     }
 
     if (old_lev != creature.level) {
-        autopick_load_pref(player_ptr, false);
+        autopick_load_pref(*player_ptr, false);
     }
 }
 
