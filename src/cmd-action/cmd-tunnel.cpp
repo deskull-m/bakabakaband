@@ -61,7 +61,7 @@ void do_cmd_tunnel(PlayerType *player_ptr)
         msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
         do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
     } else {
-        more = exe_tunnel(player_ptr, pos.y, pos.x);
+        more = exe_tunnel(*player_ptr, pos.y, pos.x);
     }
 
     if (!more) {

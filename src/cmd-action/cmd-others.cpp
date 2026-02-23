@@ -86,7 +86,7 @@ static bool exe_alter(PlayerType *player_ptr)
     }
 
     if (terrain.flags.has(TerrainCharacteristics::TUNNEL)) {
-        return exe_tunnel(player_ptr, pos.y, pos.x);
+        return exe_tunnel(*player_ptr, pos.y, pos.x);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::CLOSE)) {
