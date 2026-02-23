@@ -267,7 +267,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    const auto mmdl = decide_monster_movement_direction(&player, m_idx, turn_flags_ptr->aware);
+    const auto mmdl = decide_monster_movement_direction(creature, m_idx, turn_flags_ptr->aware);
     if (!mmdl) {
         return;
     }

@@ -27,12 +27,13 @@
  * @param plus モンスターIDの増減 (1/2 の確率で+1、1/2の確率で-1)
  * @return ペットがモンスターに近づくならばTRUE
  */
-static bool decide_pet_approch_direction(PlayerType *player_ptr, const MonsterEntity &monster_from, const MonsterEntity &monster_to)
+static bool decide_pet_approch_direction(CreatureEntity &creature, const MonsterEntity &monster_from, const MonsterEntity &monster_to)
 {
     if (!monster_from.is_pet()) {
         return false;
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (player_ptr->pet_follow_distance < 0) {
         if (monster_to.cdis <= (0 - player_ptr->pet_follow_distance)) {
             return true;
@@ -54,9 +55,9 @@ static bool decide_pet_approch_direction(PlayerType *player_ptr, const MonsterEn
  * @param y モンスターの移動方向Y
  * @param x モンスターの移動方向X
  */
-static void decide_enemy_approch_direction(PlayerType *player_ptr, MONSTER_IDX m_idx, int start, int plus, POSITION *y, POSITION *x)
+static void decide_enemy_approch_direction(CreatureEntity &creature, MONSTER_IDX m_idx, int start, int plus, POSITION *y, POSITION *x)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster_from = floor.m_list[m_idx];
     const auto &monrace = monster_from.get_monrace();
     for (int i = start; ((i < start + floor.m_max) && (i > start - floor.m_max)); i += plus) {
@@ -73,14 +74,14 @@ static void decide_enemy_approch_direction(PlayerType *player_ptr, MONSTER_IDX m
         if (!monster_to.is_valid()) {
             continue;
         }
-        if (decide_pet_approch_direction(player_ptr, monster_from, monster_to)) {
+        if (decide_pet_approch_direction(creature, monster_from, monster_to)) {
             continue;
         }
         if (!monster_from.is_hostile_to_melee(monster_to)) {
             continue;
         }
 
-        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster_from.is_riding() || has_pass_wall(*player_ptr));
+        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster_from.is_riding() || has_pass_wall(creature));
         const auto can_kill_wall = monrace.feature_flags.has(MonsterFeatureType::KILL_WALL) && !monster_from.is_riding();
         const auto m_pos_from = monster_from.get_position();
         const auto m_pos_to = monster_to.get_position();
@@ -107,13 +108,14 @@ static void decide_enemy_approch_direction(PlayerType *player_ptr, MONSTER_IDX m
  * @param m_idx モンスターの参照ID
  * @return 方向が確定した場合移動方向のリスト、接近する敵がそもそもいない場合tl::nullopt
  */
-static tl::optional<MonsterMovementDirectionList> get_enemy_dir(PlayerType *player_ptr, MONSTER_IDX m_idx)
+static tl::optional<MonsterMovementDirectionList> get_enemy_dir(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     POSITION x = 0, y = 0;
-    if (player_ptr->riding_t_m_idx && player_ptr->is_located_at({ monster.y, monster.x })) {
+    if (player_ptr->riding_t_m_idx && creature.is_located_at({ monster.y, monster.x })) {
         y = floor.m_list[player_ptr->riding_t_m_idx].y;
         x = floor.m_list[player_ptr->riding_t_m_idx].x;
     } else if (monster.is_pet() && player_ptr->pet_t_m_idx) {
@@ -131,7 +133,7 @@ static tl::optional<MonsterMovementDirectionList> get_enemy_dir(PlayerType *play
             start = floor.m_max + 1;
         }
 
-        decide_enemy_approch_direction(player_ptr, m_idx, start, plus, &y, &x);
+        decide_enemy_approch_direction(creature, m_idx, start, plus, &y, &x);
 
         if ((x == 0) && (y == 0)) {
             return tl::nullopt;
@@ -150,11 +152,11 @@ static tl::optional<MonsterMovementDirectionList> get_enemy_dir(PlayerType *play
  * @param mosnter モンスターへの参照
  * @return 不規則な方向へ移動するならtrue
  */
-static bool random_walk(PlayerType *player_ptr, const MonsterEntity &monster)
+static bool random_walk(CreatureEntity &creature, const MonsterEntity &monster)
 {
     auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has_all_of({ MonsterBehaviorType::RAND_MOVE_50, MonsterBehaviorType::RAND_MOVE_25 }) && evaluate_percent(75)) {
-        if (is_original_ap_and_seen(*player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_behavior_flags.set({ MonsterBehaviorType::RAND_MOVE_50, MonsterBehaviorType::RAND_MOVE_25 });
         }
 
@@ -162,7 +164,7 @@ static bool random_walk(PlayerType *player_ptr, const MonsterEntity &monster)
     }
 
     if (monrace.behavior_flags.has(MonsterBehaviorType::RAND_MOVE_50) && one_in_(2)) {
-        if (is_original_ap_and_seen(*player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::RAND_MOVE_50);
         }
 
@@ -170,7 +172,7 @@ static bool random_walk(PlayerType *player_ptr, const MonsterEntity &monster)
     }
 
     if (monrace.behavior_flags.has(MonsterBehaviorType::RAND_MOVE_25) && one_in_(4)) {
-        if (is_original_ap_and_seen(*player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::RAND_MOVE_25);
         }
 
@@ -186,17 +188,18 @@ static bool random_walk(PlayerType *player_ptr, const MonsterEntity &monster)
  * @param m_idx モンスターID
  * @return ペットであれば移動方向のリスト、そうでなければtl::nullopt
  */
-static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(PlayerType *player_ptr, MONSTER_IDX m_idx)
+static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     if (!monster.is_pet()) {
         return tl::nullopt;
     }
 
-    if (const auto mmdl = get_enemy_dir(player_ptr, m_idx)) {
+    if (const auto mmdl = get_enemy_dir(creature, m_idx)) {
         return mmdl;
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &pet_follow_distance = player_ptr->pet_follow_distance;
     const auto avoid = ((pet_follow_distance < 0) && (monster.cdis <= (0 - pet_follow_distance)));
     const auto lonely = (!avoid && (monster.cdis > pet_follow_distance));
@@ -223,16 +226,16 @@ static tl::optional<MonsterMovementDirectionList> decide_pet_movement_direction(
  * @param aware モンスターがプレイヤーに気付いているならばTRUE、超隠密状態ならばFALSE
  * @return 移動方向のリスト。移動しない場合はtl::nullopt
  */
-tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware)
+tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
 
     if (monster.is_confused() || !aware) {
         return MonsterMovementDirectionList::random_move(m_idx);
     }
 
-    if (random_walk(player_ptr, monster)) {
+    if (random_walk(creature, monster)) {
         return MonsterMovementDirectionList::random_move(m_idx);
     }
 
@@ -240,15 +243,16 @@ tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(Pla
         return MonsterMovementDirectionList::random_move(m_idx);
     }
 
-    if (const auto mmdl = decide_pet_movement_direction(player_ptr, m_idx)) {
+    if (const auto mmdl = decide_pet_movement_direction(creature, m_idx)) {
         return mmdl;
     }
 
     if (!monster.is_hostile()) {
-        const auto mmdl = get_enemy_dir(player_ptr, m_idx);
+        const auto mmdl = get_enemy_dir(creature, m_idx);
         return mmdl ? mmdl : MonsterMovementDirectionList::random_move(m_idx);
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     MonsterSweepGrid msd(player_ptr, m_idx);
     return msd.get_movable_grid();
 }
