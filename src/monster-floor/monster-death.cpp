@@ -56,17 +56,17 @@
 #include "world/world.h"
 #include <algorithm>
 
-static void write_pet_death(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void write_pet_death(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     md_ptr->md_y = md_ptr->m_ptr->y;
     md_ptr->md_x = md_ptr->m_ptr->x;
     if (record_named_pet && md_ptr->m_ptr->is_named_pet()) {
-        const auto m_name = monster_desc(*player_ptr, *md_ptr->m_ptr, MD_INDEF_VISIBLE);
-        exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::NAMED_PET, 3, m_name);
+        const auto m_name = monster_desc(creature, *md_ptr->m_ptr, MD_INDEF_VISIBLE);
+        exe_write_diary(*creature.current_floor_ptr, DiaryKind::NAMED_PET, 3, m_name);
     }
 }
 
-static void on_dead_explosion(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_dead_explosion(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     for (const auto &blow : md_ptr->r_ptr->blows) {
         if (blow.method != RaceBlowMethodType::EXPLODE) {
@@ -76,14 +76,14 @@ static void on_dead_explosion(PlayerType *player_ptr, MonsterDeath *md_ptr)
         BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
         AttributeType typ = mbe_info[enum2i(blow.effect)].explode_type;
         const auto damage = blow.damage_dice.roll();
-        (void)project(*player_ptr, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, damage, typ, flg);
+        (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, damage, typ, flg);
         break;
     }
 }
 
-static void on_defeat_arena_monster(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void on_defeat_arena_monster(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (!floor.inside_arena || md_ptr->m_ptr->is_pet()) {
         return;
     }
@@ -100,8 +100,8 @@ static void on_defeat_arena_monster(PlayerType *player_ptr, MonsterDeath *md_ptr
     const auto &bi_key = entries.get_bi_key();
     if (bi_key.is_valid()) {
         ItemEntity item(bi_key);
-        ItemMagicApplier(*player_ptr, &item, floor.object_level, AM_NO_FIXED_ART).execute();
-        (void)drop_near(*player_ptr, item, md_ptr->get_position());
+        ItemMagicApplier(creature, &item, floor.object_level, AM_NO_FIXED_ART).execute();
+        (void)drop_near(creature, item, md_ptr->get_position());
     }
 
     if (is_true_victor) {
@@ -113,13 +113,13 @@ static void on_defeat_arena_monster(PlayerType *player_ptr, MonsterDeath *md_ptr
         return;
     }
 
-    const auto m_name = monster_desc(*player_ptr, *md_ptr->m_ptr, MD_WRONGDOER_NAME);
+    const auto m_name = monster_desc(creature, *md_ptr->m_ptr, MD_WRONGDOER_NAME);
     exe_write_diary(floor, DiaryKind::ARENA, 0, m_name);
 }
 
-static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto is_drop_corpse = one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
     is_drop_corpse &= md_ptr->r_ptr->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON, MonsterDropType::DROP_JUNK });
     is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->r_idx == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
@@ -145,15 +145,15 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
     }
 
     ItemEntity item({ ItemKindType::MONSTER_REMAINS, (corpse ? SV_CORPSE : SV_SKELETON) });
-    ItemMagicApplier(*player_ptr, &item, floor.object_level, AM_NO_FIXED_ART).execute();
+    ItemMagicApplier(creature, &item, floor.object_level, AM_NO_FIXED_ART).execute();
     item.pval = enum2i(md_ptr->m_ptr->r_idx);
-    (void)drop_near(*player_ptr, item, md_ptr->get_position());
+    (void)drop_near(creature, item, md_ptr->get_position());
 
     try {
         if (one_in_(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4)) {
             item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::MONSTER_REMAINS, SV_SOUL }));
             item.pval = enum2i(md_ptr->m_ptr->r_idx);
-            (void)drop_near(*player_ptr, item, md_ptr->get_position());
+            (void)drop_near(creature, item, md_ptr->get_position());
         }
     } catch (const std::exception &e) {
         msg_format(_("エラー:ソウルドロップの処理に失敗", "Error: Failed to drop a soul."), e.what());
@@ -165,7 +165,7 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
     if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_JUNK)) {
         ItemEntity item_junk({ ItemKindType::MONSTER_REMAINS, SV_JUNK });
         item_junk.pval = enum2i(md_ptr->m_ptr->r_idx);
-        (void)drop_near(*player_ptr, item_junk, md_ptr->get_position());
+        (void)drop_near(creature, item_junk, md_ptr->get_position());
     }
 }
 
@@ -175,7 +175,7 @@ static void drop_corpse(PlayerType *player_ptr, MonsterDeath *md_ptr)
  * @param md_ptr モンスター死亡構造体への参照ポインタ
  * @return 何かドロップするならドロップしたアーティファクトのID、何もドロップしないなら0
  */
-static void drop_artifact_from_unique(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void drop_artifact_from_unique(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     const auto is_wizard = AngbandWorld::get_instance().wizard;
     for (const auto &[a_idx, chance] : md_ptr->r_ptr->drop_artifacts) {
@@ -183,7 +183,7 @@ static void drop_artifact_from_unique(PlayerType *player_ptr, MonsterDeath *md_p
             continue;
         }
 
-        if (drop_single_artifact(player_ptr, md_ptr, a_idx)) {
+        if (drop_single_artifact(creature, md_ptr, a_idx)) {
             return;
         }
     }
@@ -196,19 +196,19 @@ static void drop_artifact_from_unique(PlayerType *player_ptr, MonsterDeath *md_p
  * @param a_ix ドロップを試みるアーティファクトID
  * @return ドロップするならtrue
  */
-bool drop_single_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr, FixedArtifactId a_idx)
+bool drop_single_artifact(CreatureEntity &creature, MonsterDeath *md_ptr, FixedArtifactId a_idx)
 {
     auto &artifact = ArtifactList::get_instance().get_artifact(a_idx);
     if (artifact.is_generated) {
         return false;
     }
 
-    return create_named_art(*player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x);
+    return create_named_art(creature, a_idx, md_ptr->md_y, md_ptr->md_x);
 }
 
-static tl::optional<short> drop_dungeon_final_artifact(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static tl::optional<short> drop_dungeon_final_artifact(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
-    const auto &dungeon = player_ptr->current_floor_ptr->get_dungeon_definition();
+    const auto &dungeon = creature.current_floor_ptr->get_dungeon_definition();
     const auto has_reward = dungeon.final_object > 0;
     const auto bi_id = has_reward ? dungeon.final_object : BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SCROLL, SV_SCROLL_ACQUIREMENT });
     if (dungeon.final_artifact == FixedArtifactId::NONE) {
@@ -221,28 +221,28 @@ static tl::optional<short> drop_dungeon_final_artifact(PlayerType *player_ptr, M
         return bi_id;
     }
 
-    create_named_art(*player_ptr, a_idx, md_ptr->md_y, md_ptr->md_x);
+    create_named_art(creature, a_idx, md_ptr->md_y, md_ptr->md_x);
     return dungeon.final_object ? tl::make_optional<short>(bi_id) : tl::nullopt;
 }
 
-static void drop_artifacts(PlayerType *player_ptr, MonsterDeath *md_ptr)
+static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     if (!md_ptr->drop_chosen_item) {
         return;
     }
 
-    drop_artifact_from_unique(player_ptr, md_ptr);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    drop_artifact_from_unique(creature, md_ptr);
+    const auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (md_ptr->r_ptr->misc_flags.has_not(MonsterMiscType::GUARDIAN) || (dungeon.final_guardian != md_ptr->m_ptr->r_idx)) {
         return;
     }
 
-    const auto bi_id = drop_dungeon_final_artifact(player_ptr, md_ptr);
+    const auto bi_id = drop_dungeon_final_artifact(creature, md_ptr);
     if (bi_id) {
         ItemEntity item(*bi_id);
-        ItemMagicApplier(*player_ptr, &item, floor.object_level, AM_NO_FIXED_ART | AM_GOOD).execute();
-        (void)drop_near(*player_ptr, item, md_ptr->get_position());
+        ItemMagicApplier(creature, &item, floor.object_level, AM_NO_FIXED_ART | AM_GOOD).execute();
+        (void)drop_near(creature, item, md_ptr->get_position());
     }
 
     msg_format(_("あなたは%sを制覇した！", "You have conquered %s!"), dungeon.name.data());
@@ -264,7 +264,7 @@ static void decide_drop_quality(MonsterDeath *md_ptr)
     }
 }
 
-static int decide_drop_numbers(PlayerType player, MonsterDeath *md_ptr, const bool drop_item, const bool inside_arena)
+static int decide_drop_numbers(CreatureEntity &creature, MonsterDeath *md_ptr, const bool drop_item, const bool inside_arena)
 {
     int drop_numbers = 0;
     if (md_ptr->r_ptr->drop_flags.has(MonsterDropType::DROP_60) && evaluate_percent(60)) {
@@ -296,7 +296,7 @@ static int decide_drop_numbers(PlayerType player, MonsterDeath *md_ptr, const bo
     }
 
     // クローンは、クローン地獄内のユニークモンスター以外はドロップしない
-    if (md_ptr->cloned && !(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && (player.current_floor_ptr->quest_number == QuestId::CLONE))) {
+    if (md_ptr->cloned && !(md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && (creature.current_floor_ptr->quest_number == QuestId::CLONE))) {
         drop_numbers = 0;
     }
 
@@ -315,28 +315,29 @@ static int decide_drop_numbers(PlayerType player, MonsterDeath *md_ptr, const bo
     return drop_numbers;
 }
 
-static void drop_items_golds(PlayerType *player_ptr, MonsterDeath *md_ptr, int drop_numbers)
+static void drop_items_golds(CreatureEntity &creature, MonsterDeath *md_ptr, int drop_numbers)
 {
     auto dump_item = 0;
     auto dump_gold = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &monraces = MonraceList::get_instance();
     for (auto i = 0; i < drop_numbers; i++) {
         if (md_ptr->do_gold && (!md_ptr->do_item || one_in_(2))) {
             const auto &monrace = monraces.get_monrace(md_ptr->m_ptr->r_idx);
             const auto bi_key = BaseitemMonraceService::lookup_fixed_gold_drop(monrace.drop_flags);
             auto item = floor.make_gold(bi_key);
-            (void)drop_near(*player_ptr, item, md_ptr->get_position());
+            (void)drop_near(creature, item, md_ptr->get_position());
             dump_gold++;
         } else {
-            if (auto item = make_object(*player_ptr, md_ptr->mo_mode)) {
-                (void)drop_near(*player_ptr, *item, md_ptr->get_position());
+            if (auto item = make_object(creature, md_ptr->mo_mode)) {
+                (void)drop_near(creature, *item, md_ptr->get_position());
                 dump_item++;
             }
         }
     }
 
     floor.object_level = floor.base_level;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto visible = md_ptr->m_ptr->ml && !player_ptr->effects()->hallucination().is_hallucinated();
     visible |= (md_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE));
     if (visible && (dump_item || dump_gold)) {
@@ -348,14 +349,15 @@ static void drop_items_golds(PlayerType *player_ptr, MonsterDeath *md_ptr, int d
  * @brief 最終ボス(混沌のサーペント)を倒したときの処理
  * @param player_ptr プレイヤー情報への参照ポインタ
  */
-static void on_defeat_last_boss(PlayerType *player_ptr)
+static void on_defeat_last_boss(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     world.total_winner = true;
     world.add_winner_class(player_ptr->pclass);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TITLE);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_FINAL_QUEST_CLEAR);
-    exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));
+    exe_write_diary(*creature.current_floor_ptr, DiaryKind::DESCRIPTION, 0, _("見事に馬鹿馬鹿蛮怒の勝利者となった！", "finally became *WINNER* of Bakabakaband!"));
     patron_list[player_ptr->patron].admire(player_ptr);
     msg_print(_("*** おめでとう ***", "*** CONGRATULATIONS ***"));
     msg_print(_("あなたはゲームをコンプリートしました。", "You have won the game!"));
@@ -369,12 +371,12 @@ static void on_defeat_last_boss(PlayerType *player_ptr)
  * @param drop_item TRUEならばモンスターのドロップ処理を行う
  * @param type ラストアタックの属性 (単一属性)
  */
-void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, AttributeType type)
+void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, AttributeType type)
 {
     AttributeFlags flags;
     flags.clear();
     flags.set(type);
-    monster_death(player_ptr, m_idx, drop_item, flags);
+    monster_death(creature, m_idx, drop_item, flags);
 }
 
 /*!
@@ -394,9 +396,9 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
  * it drops all of its objects, which may disappear in crowded rooms.
  * </pre>
  */
-void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, AttributeFlags attribute_flags)
+void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, AttributeFlags attribute_flags)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
 
     MonsterDeath md(floor, m_idx, drop_item);
     auto &world = AngbandWorld::get_instance();
@@ -408,20 +410,21 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
     if (md.r_ptr->kind_flags.has(MonsterKindType::UNIQUE) && md.m_ptr->mflag2.has_not(MonsterConstantFlagType::CLONED)) {
         world.play_time.update();
         md.r_ptr->defeat_time = world.play_time.elapsed_sec();
-        md.r_ptr->defeat_level = player_ptr->level;
+        md.r_ptr->defeat_level = creature.level;
     }
 
     if (md.r_ptr->brightness_flags.has_any_of(ld_mask)) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
-    write_pet_death(player_ptr, &md);
-    on_dead_explosion(player_ptr, &md);
+    write_pet_death(creature, &md);
+    on_dead_explosion(creature, &md);
     if (md.m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         md.m_ptr->reset_chameleon_polymorph();
         md.r_ptr = &md.m_ptr->get_monrace();
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // ジョークオプション：モンスターの墓石を立てる
     if (monster_tombstones) {
         screen_save();
@@ -432,7 +435,7 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
     }
 
     QuestCompletionChecker(player_ptr, *md.m_ptr).complete();
-    on_defeat_arena_monster(player_ptr, &md);
+    on_defeat_arena_monster(creature, &md);
     if (md.m_ptr->is_riding() && process_fall_off_horse(player_ptr, -1, false)) {
         msg_print(_("地面に落とされた。", "You have fallen from the pet you were riding."));
     }
@@ -449,17 +452,17 @@ void monster_death(PlayerType *player_ptr, MONSTER_IDX m_idx, bool drop_item, At
         }
     }
 
-    drop_corpse(player_ptr, &md);
+    drop_corpse(creature, &md);
     monster_drop_carried_objects(player_ptr, *md.m_ptr);
     decide_drop_quality(&md);
     switch_special_death(player_ptr, &md, attribute_flags);
-    drop_artifacts(player_ptr, &md);
-    const auto drop_numbers = decide_drop_numbers(*player_ptr, &md, drop_item, floor.inside_arena);
+    drop_artifacts(creature, &md);
+    const auto drop_numbers = decide_drop_numbers(creature, &md, drop_item, floor.inside_arena);
     floor.object_level = (floor.dun_level + md.r_ptr->level) / 2;
-    drop_items_golds(player_ptr, &md, drop_numbers);
+    drop_items_golds(creature, &md, drop_numbers);
     if ((md.r_ptr->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->r_idx != MonraceId::MELKO) || md.cloned) {
         return;
     }
 
-    on_defeat_last_boss(player_ptr);
+    on_defeat_last_boss(creature);
 }

@@ -562,12 +562,11 @@ static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
 
 static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
-    if (!player_ptr || attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
+    if (attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
         return;
     }
 
-    drop_single_artifact(player_ptr, md_ptr, FixedArtifactId::FROZEN_SWORDFISH);
+    drop_single_artifact(killer, md_ptr, FixedArtifactId::FROZEN_SWORDFISH);
 }
 
 void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
