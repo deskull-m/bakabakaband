@@ -281,7 +281,7 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
     item.feeling = FEEL_NONE;
     item.ident &= ~(IDENT_STORE);
 
-    const auto idx = find_autopick_list(player_ptr, &item);
+    const auto idx = find_autopick_list(*player_ptr, &item);
     auto_inscribe_item(&item, idx);
 
     item_new = store_item_to_inventory(player_ptr, &item);

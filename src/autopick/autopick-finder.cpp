@@ -16,6 +16,7 @@
 #include "io/input-key-acceptor.h"
 #include "main/sound-of-music.h"
 #include "object/item-use-flags.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
@@ -25,19 +26,20 @@
 
 /*!
  * @brief 与えられたアイテムが自動拾いのリストに登録されているかどうかを検索する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @o_ptr アイテムへの参照ポインタ
  * @return 自動拾いのリストに登録されていたらその登録番号、なかったら-1
  * @details
  * A function for Auto-picker/destroyer
  * Examine whether the object matches to the list of keywords or not.
  */
-int find_autopick_list(PlayerType *player_ptr, const ItemEntity *o_ptr)
+int find_autopick_list(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     if (o_ptr->bi_key.tval() == ItemKindType::GOLD) {
         return -1;
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto item_name = str_tolower(describe_flavor(player_ptr, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL)));
     for (auto i = 0U; i < autopick_list.size(); i++) {
         const auto &entry = autopick_list[i];
@@ -52,12 +54,12 @@ int find_autopick_list(PlayerType *player_ptr, const ItemEntity *o_ptr)
 /*!
  * @brief Choose an item for search
  */
-bool get_object_for_search(PlayerType *player_ptr, AutopickSearch &as)
+bool get_object_for_search(CreatureEntity &creature, AutopickSearch &as)
 {
     constexpr auto q = _("どのアイテムを検索しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
-    ItemEntity *o_ptr;
-    o_ptr = choose_object(player_ptr, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *o_ptr = choose_object(player_ptr, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!o_ptr) {
         return false;
     }
@@ -71,12 +73,13 @@ bool get_object_for_search(PlayerType *player_ptr, AutopickSearch &as)
 /*!
  * @brief Prepare for search by destroyed object
  */
-bool get_destroyed_object_for_search(PlayerType *player_ptr, AutopickSearch &as)
+bool get_destroyed_object_for_search(CreatureEntity &creature, AutopickSearch &as)
 {
     if (!autopick_last_destroyed_object.is_valid()) {
         return false;
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     as.item_ptr = &autopick_last_destroyed_object;
     const auto item_name = describe_flavor(player_ptr, *as.item_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
     as.search_str = format("<%s>", item_name.data());
@@ -90,11 +93,11 @@ bool get_destroyed_object_for_search(PlayerType *player_ptr, AutopickSearch &as)
  * TERM_YELLOW : Overwrite mode
  * TERM_WHITE : Insert mode
  */
-AutopickSearch get_string_for_search(PlayerType *player_ptr, const AutopickSearch &as_initial)
+AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSearch &as_initial)
 {
     AutopickSearch as = as_initial;
     std::string buf = as.search_str;
-    constexpr auto max_len = 80;
+    constexpr auto max_search_length = 80;
     uint8_t color = TERM_YELLOW;
     if (as.item_ptr != nullptr) {
         color = TERM_L_GREEN;
@@ -152,10 +155,10 @@ AutopickSearch get_string_for_search(PlayerType *player_ptr, const AutopickSearc
             return as;
         }
         case KTRL('i'):
-            as.result = get_object_for_search(player_ptr, as) ? AutopickSearchResult::FORWARD : AutopickSearchResult::CANCEL;
+            as.result = get_object_for_search(creature, as) ? AutopickSearchResult::FORWARD : AutopickSearchResult::CANCEL;
             return as;
         case KTRL('l'):
-            if (get_destroyed_object_for_search(player_ptr, as)) {
+            if (get_destroyed_object_for_search(creature, as)) {
                 as.result = AutopickSearchResult::FORWARD;
                 return as;
             }
@@ -207,7 +210,7 @@ AutopickSearch get_string_for_search(PlayerType *player_ptr, const AutopickSearc
             if (iskanji(c)) {
                 inkey_base = true;
                 const auto next = inkey();
-                if (std::cmp_less(buf.length(), max_len - 1)) {
+                if (std::cmp_less(buf.length(), max_search_length - 1)) {
                     buf.insert(pos++, 1, c);
                     buf.insert(pos++, 1, next);
                     break;
@@ -216,7 +219,7 @@ AutopickSearch get_string_for_search(PlayerType *player_ptr, const AutopickSearc
 #else
             if (isprint(c)) {
 #endif
-                if (std::cmp_less(buf.length(), max_len)) {
+                if (std::cmp_less(buf.length(), max_search_length)) {
                     buf.insert(pos++, 1, c);
                     break;
                 }
@@ -241,15 +244,15 @@ AutopickSearch get_string_for_search(PlayerType *player_ptr, const AutopickSearc
 /*!
  * @brief Search next line matches for o_ptr
  */
-void search_for_object(PlayerType *player_ptr, text_body_type *tb, const ItemEntity *o_ptr, bool forward)
+void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemEntity *o_ptr, bool forward)
 {
-    autopick_type an_entry, *entry = &an_entry;
+    autopick_type an_entry;
     int bypassed_cy = -1;
     int i = tb->cy;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto item_name = str_tolower(describe_flavor(player_ptr, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL)));
 
     while (true) {
-        bool match;
         if (forward) {
             if (!tb->lines_list[++i]) {
                 break;
@@ -260,11 +263,11 @@ void search_for_object(PlayerType *player_ptr, text_body_type *tb, const ItemEnt
             }
         }
 
-        if (!autopick_new_entry(entry, *tb->lines_list[i], false)) {
+        if (!autopick_new_entry(&an_entry, *tb->lines_list[i], false)) {
             continue;
         }
 
-        match = is_autopick_match(player_ptr, o_ptr, *entry, item_name);
+        const bool match = is_autopick_match(player_ptr, o_ptr, an_entry, item_name);
         if (!match) {
             continue;
         }

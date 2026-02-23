@@ -228,7 +228,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
         }
 
         if (display_autopick) {
-            match_autopick = find_autopick_list(player_ptr, &item);
+            match_autopick = find_autopick_list(*player_ptr, &item);
             if (match_autopick == -1) {
                 continue;
             }
