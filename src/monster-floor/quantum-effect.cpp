@@ -30,7 +30,7 @@ static void vanish_nonunique(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see
         msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
     }
 
-    monster_death(player_ptr, m_idx, false, AttributeType::QUANTUM_VANISH);
+    monster_death(*player_ptr, m_idx, false, AttributeType::QUANTUM_VANISH);
     delete_monster_idx(player_ptr, m_idx);
     if (monster.is_pet() && !(monster.ml)) {
         msg_print(_("少しの間悲しい気分になった。", "You feel sad for a moment."));
