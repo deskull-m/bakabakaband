@@ -206,7 +206,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    if (process_quantum_effect(&player, m_idx, turn_flags_ptr->see_m)) {
+    if (process_quantum_effect(creature, m_idx, turn_flags_ptr->see_m)) {
         return;
     }
 
