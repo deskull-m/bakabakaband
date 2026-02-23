@@ -698,7 +698,7 @@ static void change_realm2(PlayerType *player_ptr, PlayerRealm &pr, RealmType nex
     handle_stuff(*player_ptr);
 
     /* Load an autopick preference file */
-    autopick_load_pref(player_ptr, false);
+    autopick_load_pref(*player_ptr, false);
 }
 
 /*!

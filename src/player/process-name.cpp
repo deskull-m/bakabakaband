@@ -113,7 +113,7 @@ void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
     }
 
     if (world.character_generated && old_player_base != player_ptr->base_name) {
-        autopick_load_pref(player_ptr, false);
+        autopick_load_pref(*player_ptr, false);
     }
 }
 

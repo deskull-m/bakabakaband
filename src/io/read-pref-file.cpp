@@ -295,7 +295,7 @@ void load_all_pref_files(CreatureEntity &creature)
         process_pref_file(creature, format(fmt, pr.realm2().get_name().data()));
     }
 
-    autopick_load_pref(player_ptr, false);
+    autopick_load_pref(*player_ptr, false);
 }
 
 /*!
