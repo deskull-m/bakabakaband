@@ -494,7 +494,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
     }
     case EC_INSERT_OBJECT: {
         autopick_type an_entry, *entry = &an_entry;
-        if (!entry_from_choosed_object(player_ptr, entry)) {
+        if (!entry_from_choosed_object(*player_ptr, entry)) {
             tb->dirty_flags |= DIRTY_SCREEN;
             break;
         }

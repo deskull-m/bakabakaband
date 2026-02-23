@@ -183,7 +183,7 @@ bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr)
         player_ptr->autopick_autoregister = true;
     }
 
-    autopick_entry_from_object(player_ptr, entry, o_ptr);
+    autopick_entry_from_object(*player_ptr, entry, o_ptr);
     entry->action = DO_AUTODESTROY;
     autopick_list.push_back(*entry);
 

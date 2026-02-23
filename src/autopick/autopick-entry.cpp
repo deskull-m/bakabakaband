@@ -17,6 +17,7 @@
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
@@ -341,7 +342,7 @@ bool autopick_new_entry(autopick_type *entry, std::string_view str_view, bool al
 /*!
  * @brief Get auto-picker entry from o_ptr.
  */
-void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, const ItemEntity *o_ptr)
+void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, const ItemEntity *o_ptr)
 {
     /* Assume that object name is to be added */
     bool name = true;
@@ -353,27 +354,27 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, co
 
     // エゴ銘が邪魔かもしれないので、デフォルトで「^」は付けない.
     // We can always use the ^ mark in English.
-    bool is_hat_added = _(false, true);
+    bool should_add_hat_mark = _(false, true);
     if (!o_ptr->is_aware()) {
         entry->add(FLG_UNAWARE);
-        is_hat_added = true;
+        should_add_hat_mark = true;
     } else if (!o_ptr->is_known()) {
         if (!(o_ptr->ident & IDENT_SENSE)) {
             entry->add(FLG_UNIDENTIFIED);
-            is_hat_added = true;
+            should_add_hat_mark = true;
         } else {
             switch (o_ptr->feeling) {
             case FEEL_AVERAGE:
             case FEEL_GOOD:
                 entry->add(FLG_NAMELESS);
-                is_hat_added = true;
+                should_add_hat_mark = true;
                 break;
 
             case FEEL_BROKEN:
             case FEEL_CURSED:
                 entry->add(FLG_NAMELESS);
                 entry->add(FLG_WORTHLESS);
-                is_hat_added = true;
+                should_add_hat_mark = true;
                 break;
 
             case FEEL_TERRIBLE:
@@ -418,7 +419,7 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, co
                 entry->add(FLG_NAMELESS);
             }
 
-            is_hat_added = true;
+            should_add_hat_mark = true;
         }
     }
 
@@ -436,18 +437,20 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, co
 
     const auto &bi_key = o_ptr->bi_key;
     const auto tval = bi_key.tval();
-    if ((tval == ItemKindType::MONSTER_REMAINS) || (tval == ItemKindType::STATUE)) {
-        if (o_ptr->get_monrace().kind_flags.has(MonsterKindType::UNIQUE)) {
+    const auto is_monster_remains = tval == ItemKindType::MONSTER_REMAINS;
+    const auto is_statue = tval == ItemKindType::STATUE;
+
+    if (is_monster_remains || is_statue) {
+        const auto &monrace = o_ptr->get_monrace();
+        if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
             entry->add(FLG_UNIQUE);
         }
-    }
-
-    if (tval == ItemKindType::MONSTER_REMAINS) {
-        if (o_ptr->get_monrace().is_human()) {
+        if (is_monster_remains && monrace.is_human()) {
             entry->add(FLG_HUMAN);
         }
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (o_ptr->is_spell_book() && !check_book_realm(player_ptr, bi_key)) {
         entry->add(FLG_UNREADABLE);
         if (tval != ItemKindType::ARCANE_BOOK) {
@@ -455,32 +458,31 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, co
         }
     }
 
-    CreatureClass pc(*player_ptr);
-    auto realm_except_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
+    CreatureClass pc(creature);
+    const auto is_realm_independent_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
     PlayerRealm pr(player_ptr);
-    if ((pr.realm1().get_book() == tval) && !realm_except_class) {
+    if (pr.realm1().get_book() == tval && !is_realm_independent_class) {
         entry->add(FLG_REALM1);
         name = false;
     }
 
-    if ((pr.realm2().get_book() == tval) && !realm_except_class) {
+    if (pr.realm2().get_book() == tval && !is_realm_independent_class) {
         entry->add(FLG_REALM2);
         name = false;
     }
 
-    const auto sval = bi_key.sval();
-    if (o_ptr->is_spell_book() && (sval == 0)) {
-        entry->add(FLG_FIRST);
-    }
-    if (o_ptr->is_spell_book() && (sval == 1)) {
-        entry->add(FLG_SECOND);
-    }
-    if (o_ptr->is_spell_book() && (sval == 2)) {
-        entry->add(FLG_THIRD);
-    }
-    if (o_ptr->is_spell_book() && (sval == 3)) {
-        entry->add(FLG_FOURTH);
+    if (o_ptr->is_spell_book()) {
+        const auto sval = bi_key.sval();
+        if (sval == 0) {
+            entry->add(FLG_FIRST);
+        } else if (sval == 1) {
+            entry->add(FLG_SECOND);
+        } else if (sval == 2) {
+            entry->add(FLG_THIRD);
+        } else if (sval == 3) {
+            entry->add(FLG_FOURTH);
+        }
     }
 
     if (o_ptr->is_ammo()) {
@@ -528,7 +530,7 @@ void autopick_entry_from_object(PlayerType *player_ptr, autopick_type *entry, co
      * If necessary, add a '^' which indicates the
      * beginning of line.
      */
-    entry->name = str_tolower(std::string(is_hat_added ? "^" : "").append(item_name));
+    entry->name = str_tolower(std::string(should_add_hat_mark ? "^" : "").append(item_name));
 }
 
 static std::string shape_autopick_key(const std::string &key)
@@ -734,15 +736,16 @@ std::string autopick_line_from_entry(const autopick_type &entry)
 /*!
  * @brief Choose an item and get auto-picker entry from it.
  */
-bool entry_from_choosed_object(PlayerType *player_ptr, autopick_type *entry)
+bool entry_from_choosed_object(CreatureEntity &creature, autopick_type *entry)
 {
     constexpr auto q = _("どのアイテムを登録しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto *o_ptr = choose_object(player_ptr, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!o_ptr) {
         return false;
     }
 
-    autopick_entry_from_object(player_ptr, entry, o_ptr);
+    autopick_entry_from_object(creature, entry, o_ptr);
     return true;
 }
