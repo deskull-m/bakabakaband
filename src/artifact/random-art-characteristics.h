@@ -6,8 +6,9 @@
 
 #include <string>
 
+class CreatureEntity;
 class ItemEntity;
 class PlayerType;
-void curse_artifact(PlayerType *player_ptr, ItemEntity *o_ptr);
+void curse_artifact(CreatureEntity &creature, ItemEntity *o_ptr);
 std::string get_random_name(const ItemEntity &item, bool armour, int power);
-bool has_extreme_damage_rate(PlayerType *player_ptr, ItemEntity *o_ptr);
+bool has_extreme_damage_rate(CreatureEntity &creature, ItemEntity *o_ptr);
