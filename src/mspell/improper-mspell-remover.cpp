@@ -16,7 +16,7 @@ static void add_cheat_remove_flags(PlayerType *player_ptr, msr_type *msr_ptr)
     }
 
     add_cheat_remove_flags_element(player_ptr, msr_ptr);
-    add_cheat_remove_flags_others(player_ptr, msr_ptr);
+    add_cheat_remove_flags_others(*player_ptr, msr_ptr);
 }
 
 /*!
@@ -55,6 +55,6 @@ void remove_bad_spells(MONSTER_IDX m_idx, PlayerType *player_ptr, EnumClassFlagG
     }
 
     check_element_resistance(msr_ptr);
-    check_high_resistances(player_ptr, msr_ptr);
+    check_high_resistances(*player_ptr, msr_ptr);
     ability_flags = msr_ptr->ability_flags;
 }

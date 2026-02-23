@@ -125,7 +125,7 @@ bool monst_spell_monst(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     auto &player = static_cast<PlayerType &>(creature);
     ms_ptr->can_remember = is_original_ap_and_seen(player, *ms_ptr->m_ptr);
-    const auto res = monspell_to_monster(&player, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
+    const auto res = monspell_to_monster(creature, ms_ptr->thrown_spell, ms_ptr->y, ms_ptr->x, m_idx, ms_ptr->target_idx, false);
     if (!res.valid) {
         return false;
     }
