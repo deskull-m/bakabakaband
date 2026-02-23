@@ -461,7 +461,7 @@ bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_sc
 
     int32_t total_flags = flag_cost(o_ptr, o_ptr->pval);
     if (a_cursed) {
-        curse_artifact(player_ptr, o_ptr);
+        curse_artifact(*player_ptr, o_ptr);
     }
 
     constexpr auto activation_chance = 3;
@@ -478,7 +478,7 @@ bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_sc
     reset_flags_poison_needle(o_ptr);
     int power_level = decide_random_art_power_level(o_ptr, a_cursed, total_flags);
     constexpr auto chance_avoid_weakening = 6;
-    while (has_extreme_damage_rate(player_ptr, o_ptr) && !one_in_(chance_avoid_weakening)) {
+    while (has_extreme_damage_rate(*player_ptr, o_ptr) && !one_in_(chance_avoid_weakening)) {
         weakening_artifact(o_ptr);
     }
 
