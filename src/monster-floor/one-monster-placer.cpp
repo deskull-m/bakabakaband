@@ -47,14 +47,14 @@
 #include <time.h>
 
 /*!
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @brief モンスターの表層IDを設定する / Set initial racial appearance of a monster
  * @param r_idx モンスター種族ID
  * @return モンスター種族の表層ID
  */
-static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, BIT_FLAGS generate_mode)
+static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx, BIT_FLAGS generate_mode)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (is_chargeman(*player_ptr) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
         return MonraceId::ALIEN_JURAL;
     }
@@ -65,10 +65,10 @@ static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, B
 
     get_mon_num_prep_enum(player_ptr, MonraceHook::TANUKI);
     auto attempts = 1000;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
-        auto ap_r_idx = get_mon_num(player_ptr, 0, floor_ptr->base_level + 10, PM_NONE);
+        auto ap_r_idx = get_mon_num(player_ptr, 0, floor.base_level + 10, PM_NONE);
         if (MonraceList::get_instance().get_monrace(ap_r_idx).level >= min) {
             return ap_r_idx;
         }
@@ -149,15 +149,15 @@ static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
 
 /*!
  * @brief 守りのルーン上にモンスターの配置を試みる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param r_idx 生成モンスター種族
  * @param y 生成位置y座標
  * @param x 生成位置x座標
  * @return 生成が可能ならTRUE、不可能ならFALSE
  */
-static bool check_procection_rune(PlayerType *player_ptr, MonraceId monrace_id, const Pos2D &pos)
+static bool check_procection_rune(CreatureEntity &creature, MonraceId monrace_id, const Pos2D &pos)
 {
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    auto &grid = creature.current_floor_ptr->get_grid(pos);
     if (!grid.is_rune_protection()) {
         return true;
     }
@@ -174,12 +174,13 @@ static bool check_procection_rune(PlayerType *player_ptr, MonraceId monrace_id, 
     reset_bits(grid.info, CAVE_MARK);
     reset_bits(grid.info, CAVE_OBJECT);
     grid.mimic = 0;
-    note_spot(*player_ptr, pos);
+    note_spot(creature, pos);
     return true;
 }
 
-static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
+static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!player_ptr->warning || !AngbandWorld::get_instance().character_dungeon) {
         return;
     }
@@ -190,15 +191,15 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
     }
 
     std::string color;
-    if (monrace.level > player_ptr->level + 30) {
+    if (monrace.level > creature.level + 30) {
         color = _("黒く", "black");
-    } else if (monrace.level > player_ptr->level + 15) {
+    } else if (monrace.level > creature.level + 15) {
         color = _("紫色に", "purple");
-    } else if (monrace.level > player_ptr->level + 5) {
+    } else if (monrace.level > creature.level + 5) {
         color = _("ルビー色に", "deep red");
-    } else if (monrace.level > player_ptr->level - 5) {
+    } else if (monrace.level > creature.level - 5) {
         color = _("赤く", "red");
-    } else if (monrace.level > player_ptr->level - 15) {
+    } else if (monrace.level > creature.level - 15) {
         color = _("ピンク色に", "pink");
     } else {
         color = _("白く", "white");
@@ -223,9 +224,8 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
  * @return 生成に成功したらモンスターID、失敗したらtl::nullopt
  */
-tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
+tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto *player_ptr = const_cast<PlayerType *>(dynamic_cast<const PlayerType *>(&player));
     auto &floor = *player.current_floor_ptr;
     auto pos = Pos2D(y, x);
     auto *g_ptr = &floor.grid_array[y][x];
@@ -235,11 +235,12 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
         return tl::nullopt;
     }
 
+    auto *player_ptr = static_cast<PlayerType *>(const_cast<CreatureEntity *>(&player));
     if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0))) {
         return tl::nullopt;
     }
 
-    if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(player_ptr, r_idx, pos)) {
+    if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(const_cast<CreatureEntity &>(player), r_idx, pos)) {
         return tl::nullopt;
     }
 
@@ -281,7 +282,7 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
             m_ptr->ap_r_idx = MonraceId::KAGE;
             m_ptr->mflag2.set(MonsterConstantFlagType::KAGE);
         } else {
-            m_ptr->ap_r_idx = initial_r_appearance(player_ptr, r_idx, mode);
+            m_ptr->ap_r_idx = initial_r_appearance(const_cast<CreatureEntity &>(player), r_idx, mode);
         }
     }
 
@@ -409,11 +410,6 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
         m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
     }
 
-    // 変身情報のコピー
-    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
-    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
-    m_ptr->has_transformed = false;
-
     // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
     m_ptr->initialize_equivalent_player_races();
     m_ptr->initialize_equivalent_player_classes();
@@ -432,7 +428,7 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
         should_be_friendly |= is_summoned && summoner.is_friendly();
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
         auto force_hostile = monster_has_hostile_to_player(player_ptr, 0, -1, new_monrace);
-        force_hostile |= player_ptr->current_floor_ptr->inside_arena;
+        force_hostile |= floor.inside_arena;
         if (m_ptr->alliance_idx != AllianceType::NONE) {
             should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player_ptr);
         }
@@ -558,13 +554,13 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
-    update_monster(*player_ptr, g_ptr->m_idx, true);
+    update_monster(const_cast<CreatureEntity &>(player), g_ptr->m_idx, true);
     m_ptr->get_real_monrace().increment_current_numbers();
 
     if (any_bits(mode, PM_AMBUSH)) {
-        auto m_name = monster_desc(*player_ptr, *m_ptr, 0);
+        auto m_name = monster_desc(player, *m_ptr, 0);
         msg_format(_("突如%sがあなたに襲い掛かってきた！", "Suddenly %s has ambushed you!"), m_name.data());
-        disturb(*player_ptr, false, true);
+        disturb(player, false, true);
         MonsterAttackPlayer(player_ptr, g_ptr->m_idx).make_attack_normal();
     }
 
@@ -580,7 +576,7 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
         floor.num_repro++;
     }
 
-    warn_unique_generation(player_ptr, r_idx);
-    activate_explosive_rune(*player_ptr, pos, new_monrace);
+    warn_unique_generation(const_cast<CreatureEntity &>(player), r_idx);
+    activate_explosive_rune(player, pos, new_monrace);
     return m_ptr->is_valid() ? tl::make_optional(g_ptr->m_idx) : tl::nullopt;
 }
