@@ -109,7 +109,7 @@ static bool clear_auto_register(std::string_view player_base_name)
 bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr)
 {
     autopick_type an_entry, *entry = &an_entry;
-    int autopick_registered = find_autopick_list(player_ptr, o_ptr);
+    int autopick_registered = find_autopick_list(*player_ptr, o_ptr);
     if (autopick_registered != -1) {
         concptr what;
         byte act = autopick_list[autopick_registered].action;

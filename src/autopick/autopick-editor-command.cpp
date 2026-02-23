@@ -431,7 +431,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
     }
     case EC_SEARCH_STR: {
         tb->dirty_flags |= DIRTY_SCREEN;
-        const auto as_result = get_string_for_search(player_ptr, { tb->search_o_ptr, tb->search_str });
+        const auto as_result = get_string_for_search(*player_ptr, { tb->search_o_ptr, tb->search_str });
         tb->search_o_ptr = as_result.item_ptr;
         tb->search_str = as_result.search_str;
         if (as_result.result == AutopickSearchResult::CANCEL) {
@@ -444,7 +444,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
     }
     case EC_SEARCH_FORW:
         if (tb->search_o_ptr) {
-            search_for_object(player_ptr, tb, tb->search_o_ptr, true);
+            search_for_object(*player_ptr, tb, tb->search_o_ptr, true);
             break;
         }
 
@@ -458,7 +458,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
 
     case EC_SEARCH_BACK: {
         if (tb->search_o_ptr) {
-            search_for_object(player_ptr, tb, tb->search_o_ptr, false);
+            search_for_object(*player_ptr, tb, tb->search_o_ptr, false);
             break;
         }
 
@@ -473,7 +473,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
     case EC_SEARCH_OBJ: {
         tb->dirty_flags |= DIRTY_SCREEN;
         AutopickSearch as(tb->search_o_ptr, tb->search_str);
-        if (!get_object_for_search(player_ptr, as)) {
+        if (!get_object_for_search(*player_ptr, as)) {
             break;
         }
 
@@ -483,7 +483,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
     }
     case EC_SEARCH_DESTROYED: {
         AutopickSearch as(tb->search_o_ptr, tb->search_str);
-        if (!get_destroyed_object_for_search(player_ptr, as)) {
+        if (!get_destroyed_object_for_search(*player_ptr, as)) {
             tb->dirty_flags |= DIRTY_NO_SEARCH;
             break;
         }
