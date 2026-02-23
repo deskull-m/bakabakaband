@@ -168,8 +168,9 @@ bool is_msg_window_flowed(void)
 /*
  * Hack -- flush
  */
-static void msg_flush(PlayerType *player_ptr, int x)
+static void msg_flush(CreatureEntity &creature, int x)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     byte a = TERM_L_BLUE;
     bool show_more = (num_more >= 0);
 
@@ -294,7 +295,7 @@ void msg_print(std::string_view msg)
     const auto split_width = wid - 8;
 
     if ((msg_head_pos > 0) && ((msg_head_pos + std::ssize(msg)) > split_width)) {
-        msg_flush(p_ptr, msg_head_pos);
+        msg_flush(*p_ptr, msg_head_pos);
         msg_flag = false;
         msg_head_pos = 0;
     }
@@ -310,7 +311,7 @@ void msg_print(std::string_view msg)
     while (std::ssize(msg) > split_width) {
         auto split = split_length(msg, split_width);
         term_putstr(0, 0, split, TERM_WHITE, msg.data());
-        msg_flush(p_ptr, split + 1);
+        msg_flush(*p_ptr, split + 1);
         msg.remove_prefix(split);
     }
 
@@ -338,7 +339,7 @@ void msg_erase()
     }
 
     if (msg_head_pos > 0) {
-        msg_flush(p_ptr, msg_head_pos);
+        msg_flush(*p_ptr, msg_head_pos);
         msg_flag = false;
         msg_head_pos = 0;
     }
