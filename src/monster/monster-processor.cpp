@@ -250,8 +250,8 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     process_monster_spawn_zanki(creature, m_idx);
     process_monster_change_feat(creature, m_idx);
     process_special(creature, m_idx);
-    process_sound(&player, m_idx);
-    process_speak(&player, m_idx, oy, ox, turn_flags_ptr->aware);
+    process_sound(creature, m_idx);
+    process_speak(creature, m_idx, oy, ox, turn_flags_ptr->aware);
 
     // 狂乱状態のモンスターは魔法を使わず、プレイヤーに隣接していれば攻撃のみを行う
     if (monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
@@ -273,7 +273,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     int count = 0;
-    if (!process_monster_movement(&player, turn_flags_ptr, *mmdl, { oy, ox }, &count)) {
+    if (!process_monster_movement(creature, turn_flags_ptr, *mmdl, { oy, ox }, &count)) {
         return;
     }
 

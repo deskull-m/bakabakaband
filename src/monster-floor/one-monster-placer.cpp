@@ -581,6 +581,6 @@ tl::optional<MONSTER_IDX> place_monster_one(const CreatureEntity &player, POSITI
     }
 
     warn_unique_generation(player_ptr, r_idx);
-    activate_explosive_rune(player_ptr, pos, new_monrace);
+    activate_explosive_rune(*player_ptr, pos, new_monrace);
     return m_ptr->is_valid() ? tl::make_optional(g_ptr->m_idx) : tl::nullopt;
 }
