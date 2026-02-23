@@ -43,7 +43,7 @@ int find_autopick_list(CreatureEntity &creature, const ItemEntity *o_ptr)
     const auto item_name = str_tolower(describe_flavor(player_ptr, *o_ptr, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL)));
     for (auto i = 0U; i < autopick_list.size(); i++) {
         const auto &entry = autopick_list[i];
-        if (is_autopick_match(player_ptr, o_ptr, entry, item_name)) {
+        if (is_autopick_match(creature, o_ptr, entry, item_name)) {
             return i;
         }
     }
@@ -267,7 +267,7 @@ void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemE
             continue;
         }
 
-        const bool match = is_autopick_match(player_ptr, o_ptr, an_entry, item_name);
+        const bool match = is_autopick_match(creature, o_ptr, an_entry, item_name);
         if (!match) {
             continue;
         }
