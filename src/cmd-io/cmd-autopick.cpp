@@ -150,7 +150,7 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
 
     init_autopick();
     if (autopick_last_destroyed_object.is_valid()) {
-        autopick_entry_from_object(player_ptr, entry, &autopick_last_destroyed_object);
+        autopick_entry_from_object(*player_ptr, entry, &autopick_last_destroyed_object);
         tb->last_destroyed = autopick_line_from_entry(*entry);
     }
 
