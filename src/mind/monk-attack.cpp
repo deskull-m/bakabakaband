@@ -75,8 +75,7 @@ static int calc_stun_resistance(player_attack_type *pa_ptr)
  */
 static int calc_max_blow_selection_times(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    CreatureClass pc(player);
+    CreatureClass pc(creature);
     if (pc.monk_stance_is(MonkStanceType::BYAKKO)) {
         return creature.level < 3 ? 1 : creature.level / 3;
     }
@@ -107,7 +106,7 @@ static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int
     for (int times = 0; times < max_blow_selection_times; times++) {
         do {
             pa_ptr->ma_ptr = &rand_choice(ma_blows);
-            if (CreatureClass(player).equals(PlayerClassType::FORCETRAINER) && (pa_ptr->ma_ptr->min_level > 1)) {
+            if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER) && (pa_ptr->ma_ptr->min_level > 1)) {
                 min_level = pa_ptr->ma_ptr->min_level + 3;
             } else {
                 min_level = pa_ptr->ma_ptr->min_level;
@@ -128,7 +127,7 @@ static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int
         }
     }
 
-    if (CreatureClass(player).equals(PlayerClassType::FORCETRAINER)) {
+    if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER)) {
         min_level = std::max(1, pa_ptr->ma_ptr->min_level - 3);
     } else {
         min_level = pa_ptr->ma_ptr->min_level;
@@ -176,15 +175,14 @@ static int process_monk_additional_effect(player_attack_type *pa_ptr, int *stun_
  */
 WEIGHT calc_monk_attack_weight(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     WEIGHT weight = 8;
-    CreatureClass pc(player);
+    CreatureClass pc(creature);
     if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
         weight = 4;
     }
 
-    if (pc.equals(PlayerClassType::FORCETRAINER) && (get_current_ki(player) != 0)) {
-        weight += (get_current_ki(player) / 30);
+    if (pc.equals(PlayerClassType::FORCETRAINER) && (get_current_ki(creature) != 0)) {
+        weight += (get_current_ki(creature) / 30);
         if (weight > 20) {
             weight = 20;
         }
