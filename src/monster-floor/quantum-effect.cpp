@@ -68,8 +68,7 @@ static void produce_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, 
 
     bool target = one_in_(2);
     if (target) {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        (void)monspell_to_monster(player_ptr, MonsterAbilityType::BLINK, monster.y, monster.x, m_idx, m_idx, true);
+        (void)monspell_to_monster(creature, MonsterAbilityType::BLINK, monster.y, monster.x, m_idx, m_idx, true);
     } else {
         teleport_player_away(m_idx, creature, 10, true);
     }

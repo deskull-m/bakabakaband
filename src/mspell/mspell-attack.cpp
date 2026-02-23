@@ -347,7 +347,7 @@ bool make_attack_spell(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     // 特技を使う。
-    const auto monspell_res = monspell_to_player(player_ptr, msa_ptr->thrown_spell, msa_ptr->y, msa_ptr->x, m_idx);
+    const auto monspell_res = monspell_to_player(*player_ptr, msa_ptr->thrown_spell, msa_ptr->y, msa_ptr->x, m_idx);
     if (!monspell_res.valid) {
         return false;
     }
