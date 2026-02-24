@@ -168,10 +168,10 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         enchant_item(player_ptr, building_cost, 0, 0, 1, FuncItemTester(&ItemEntity::is_protector));
         return false;
     case BACT_RECHARGE:
-        building_recharge(player_ptr);
+        building_recharge(*player_ptr);
         return false;
     case BACT_RECHARGE_ALL:
-        building_recharge_all(player_ptr);
+        building_recharge_all(*player_ptr);
         return false;
     case BACT_IDENTS:
         if (!input_check(_("持ち物を全て鑑定してよろしいですか？", "Do you pay to identify all your possession? "))) {
