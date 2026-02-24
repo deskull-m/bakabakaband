@@ -54,12 +54,13 @@
 
 /*!
  * @brief プレイヤーのペット情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_pet(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_pet(CreatureEntity &creature, FILE *fff)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     auto pet = false;
     auto pet_settings = false;
     for (auto i = floor.m_max - 1; i >= 1; i--) {
@@ -82,7 +83,7 @@ static void dump_aux_pet(PlayerType *player_ptr, FILE *fff)
             pet = true;
         }
 
-        const auto pet_name = monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
         fmt::println(fff, "{}", pet_name);
     }
 
@@ -93,51 +94,52 @@ static void dump_aux_pet(PlayerType *player_ptr, FILE *fff)
     fmt::println(fff, _("\n\n  [ペットへの命令]", "\n\n  [Command for Pets]"));
 
     fmt::print(fff, _("\n ドアを開ける:                       {}", "\n Pets open doors:                    {}"),
-        (player_ptr->pet_extra_flags & PF_OPEN_DOORS) ? "ON" : "OFF");
+        (player.pet_extra_flags & PF_OPEN_DOORS) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n アイテムを拾う:                     {}", "\n Pets pick up items:                 {}"),
-        (player_ptr->pet_extra_flags & PF_PICKUP_ITEMS) ? "ON" : "OFF");
+        (player.pet_extra_flags & PF_PICKUP_ITEMS) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n テレポート系魔法を使う:             {}", "\n Allow teleport:                     {}"),
-        (player_ptr->pet_extra_flags & PF_TELEPORT) ? "ON" : "OFF");
+        (player.pet_extra_flags & PF_TELEPORT) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n 攻撃魔法を使う:                     {}", "\n Allow cast attack spell:            {}"),
-        (player_ptr->pet_extra_flags & PF_ATTACK_SPELL) ? "ON" : "OFF");
+        (player.pet_extra_flags & PF_ATTACK_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n 召喚魔法を使う:                     {}", "\n Allow cast summon spell:            {}"),
-        (player_ptr->pet_extra_flags & PF_SUMMON_SPELL) ? "ON" : "OFF");
+        (player.pet_extra_flags & PF_SUMMON_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, _("\n プレイヤーを巻き込む範囲魔法を使う: {}", "\n Allow involve player in area spell: {}"),
-        (player_ptr->pet_extra_flags & PF_BALL_SPELL) ? "ON" : "OFF");
+        (player.pet_extra_flags & PF_BALL_SPELL) ? "ON" : "OFF");
 
     fmt::print(fff, "\n");
 }
 
 /*!
  * @brief クエスト情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_quest(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_quest(CreatureEntity &creature, FILE *fff)
 {
     fmt::println(fff, _("\n\n  [クエスト情報]", "\n\n  [Quest Information]"));
     const auto &quests = QuestList::get_instance();
     const auto quest_ids = quests.get_sorted_quest_ids();
     fmt::print(fff, "\n");
-    do_cmd_knowledge_quests_completed(*player_ptr, fff, quest_ids);
+    do_cmd_knowledge_quests_completed(creature, fff, quest_ids);
     fmt::print(fff, "\n");
-    do_cmd_knowledge_quests_failed(*player_ptr, fff, quest_ids);
+    do_cmd_knowledge_quests_failed(creature, fff, quest_ids);
     fmt::print(fff, "\n");
 }
 
 /*!
  * @brief 死の直前メッセージ並びに遺言をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_last_message(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_last_message(CreatureEntity &creature, FILE *fff)
 {
-    if (!player_ptr->is_dead()) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (!creature.is_dead()) {
         return;
     }
 
@@ -163,12 +165,12 @@ static void dump_aux_last_message(PlayerType *player_ptr, FILE *fff)
         return;
     }
 
-    if (player_ptr->last_message.empty()) {
+    if (player.last_message.empty()) {
         return;
     }
 
     fmt::println(fff, _("\n  [*勝利*メッセージ]\n", "\n  [*Winning* Message]\n"));
-    fmt::println(fff, "  {}\n", player_ptr->last_message);
+    fmt::println(fff, "  {}\n", player.last_message);
 }
 
 /*!
@@ -367,12 +369,13 @@ static void dump_aux_monsters(FILE *fff)
 
 /*!
  * @brief 元種族情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_race_history(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_race_history(CreatureEntity &creature, FILE *fff)
 {
-    if (!player_ptr->old_race1 && !player_ptr->old_race2) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (!player.old_race1 && !player.old_race2) {
         return;
     }
 
@@ -383,11 +386,11 @@ static void dump_aux_race_history(PlayerType *player_ptr, FILE *fff)
             continue;
         }
         if (i < 32) {
-            if (!(player_ptr->old_race1 & 1UL << i)) {
+            if (!(player.old_race1 & 1UL << i)) {
                 continue;
             }
         } else {
-            if (!(player_ptr->old_race2 & 1UL << (i - 32))) {
+            if (!(player.old_race2 & 1UL << (i - 32))) {
                 continue;
             }
         }
@@ -400,18 +403,19 @@ static void dump_aux_race_history(PlayerType *player_ptr, FILE *fff)
 
 /*!
  * @brief 元魔法領域情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_realm_history(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_realm_history(CreatureEntity &creature, FILE *fff)
 {
-    if (player_ptr->old_realm == 0) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.old_realm == 0) {
         return;
     }
 
     fmt::print(fff, "\n");
     for (auto realm : MAGIC_REALM_RANGE) {
-        if (!(player_ptr->old_realm & (1UL << (enum2i(realm) - 1)))) {
+        if (!(player.old_realm & (1UL << (enum2i(realm) - 1)))) {
             continue;
         }
         fmt::print(fff, _("\n あなたはかつて{}魔法を使えた。", "\n You were able to use {} magic before."), PlayerRealm::get_name(realm));
@@ -422,69 +426,72 @@ static void dump_aux_realm_history(PlayerType *player_ptr, FILE *fff)
 
 /*!
  * @brief 徳の情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_virtues(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     fmt::println(fff, _("\n\n  [自分に関する情報]\n", "\n\n  [HP-rate & Max stat & Virtues]\n"));
 
 #ifdef JP
-    if (player_ptr->knowledge & KNOW_HPRATE) {
-        fmt::println(fff, "現在の体力ランク : {}/100\n", player_ptr->calc_life_rating());
+    if (player.knowledge & KNOW_HPRATE) {
+        fmt::println(fff, "現在の体力ランク : {}/100\n", player.calc_life_rating());
     } else {
         fmt::println(fff, "現在の体力ランク : ???\n");
     }
     fmt::println(fff, "能力の最大値");
 #else
-    if (player_ptr->knowledge & KNOW_HPRATE) {
-        fmt::println(fff, "Your current Life Rating is {}/100.\n", player_ptr->calc_life_rating());
+    if (player.knowledge & KNOW_HPRATE) {
+        fmt::println(fff, "Your current Life Rating is {}/100.\n", player.calc_life_rating());
     } else {
         fmt::println(fff, "Your current Life Rating is ???.\n");
     }
     fmt::println(fff, "Limits of maximum stats");
 #endif
     for (auto v_nr = 0; v_nr < A_MAX; v_nr++) {
-        if ((player_ptr->knowledge & KNOW_STAT) || player_ptr->stat_max[v_nr] == player_ptr->stat_max_max[v_nr]) {
-            fmt::println(fff, "{} 18/{}", stat_names[v_nr], player_ptr->stat_max_max[v_nr] - 18);
+        if ((player.knowledge & KNOW_STAT) || player.stat_max[v_nr] == player.stat_max_max[v_nr]) {
+            fmt::println(fff, "{} 18/{}", stat_names[v_nr], player.stat_max_max[v_nr] - 18);
         } else {
             fmt::println(fff, "{} ???", stat_names[v_nr]);
         }
     }
 
-    std::string alg = PlayerAlignment(player_ptr).get_alignment_description();
+    std::string alg = PlayerAlignment(&player).get_alignment_description();
     fmt::println(fff, _("\n属性 : {}", "\nYour alignment : {}"), alg);
     fmt::print(fff, "\n");
-    dump_virtues(static_cast<CreatureEntity &>(*player_ptr), fff);
+    dump_virtues(creature, fff);
 }
 
 /*!
  * @brief 突然変異の情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_mutations(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
 {
-    if (player_ptr->muta.any()) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.muta.any()) {
         fmt::println(fff, _("\n\n  [突然変異]\n", "\n\n  [Mutations]\n"));
-        dump_mutations(*player_ptr, fff);
+        dump_mutations(creature, fff);
     }
 }
 
 /*!
  * @brief 所持品の情報をファイルにダンプする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_equipment_inventory(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
 {
-    if (player_ptr->equip_cnt) {
+    auto &player = static_cast<PlayerType &>(creature);
+    if (player.equip_cnt) {
         fmt::println(fff, _("  [キャラクタの装備]\n", "  [Character Equipment]\n"));
         for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            auto item_name = describe_flavor(player_ptr, *player_ptr->inventory[i], 0);
-            auto is_two_handed = ((i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(*player_ptr));
-            is_two_handed |= ((i == INVEN_SUB_HAND) && can_attack_with_main_hand(*player_ptr));
-            if (is_two_handed && has_two_handed_weapons(*player_ptr)) {
+            auto item_name = describe_flavor(&player, *player.inventory[i], 0);
+            auto is_two_handed = ((i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature));
+            is_two_handed |= ((i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature));
+            if (is_two_handed && has_two_handed_weapons(creature)) {
                 item_name = _("(武器を両手持ち)", "(wielding with two-hands)");
             }
 
@@ -496,11 +503,11 @@ static void dump_aux_equipment_inventory(PlayerType *player_ptr, FILE *fff)
 
     fmt::println(fff, _("  [キャラクタの持ち物]\n", "  [Character Inventory]\n"));
     for (auto i = 0; i < INVEN_PACK; i++) {
-        if (!player_ptr->inventory[i]->is_valid()) {
+        if (!player.inventory[i]->is_valid()) {
             break;
         }
 
-        const auto item_name = describe_flavor(player_ptr, *player_ptr->inventory[i], 0);
+        const auto item_name = describe_flavor(&player, *player.inventory[i], 0);
         fmt::println(fff, "{}) {}", index_to_label(i), item_name);
     }
 
@@ -509,10 +516,12 @@ static void dump_aux_equipment_inventory(PlayerType *player_ptr, FILE *fff)
 
 /*!
  * @brief 我が家と博物館のオブジェクト情報をファイルにダンプする
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-static void dump_aux_home_museum(PlayerType *player_ptr, FILE *fff)
+static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &home = towns_info[1].get_store(StoreSaleType::HOME);
     if (home.stock_num) {
         fmt::println(fff, _("  [我が家のアイテム]", "  [Home Inventory]"));
@@ -522,7 +531,7 @@ static void dump_aux_home_museum(PlayerType *player_ptr, FILE *fff)
                 fmt::println(fff, _("\n ( {} ページ )", "\n ( page {} )"), page++);
             }
 
-            const auto item_name = describe_flavor(player_ptr, *home.stock[i], 0);
+            const auto item_name = describe_flavor(&player, *home.stock[i], 0);
             fmt::println(fff, "{}) {}", I2A(i % 12), item_name);
         }
 
@@ -541,7 +550,7 @@ static void dump_aux_home_museum(PlayerType *player_ptr, FILE *fff)
             fmt::println(fff, _("\n ( {} ページ )", "\n ( page {} )"), page++);
         }
 
-        const auto item_name = describe_flavor(player_ptr, *museum.stock[i], 0);
+        const auto item_name = describe_flavor(&player, *museum.stock[i], 0);
         fmt::println(fff, "{}) {}", I2A(i % 12), item_name);
     }
 
@@ -589,21 +598,21 @@ void make_character_dump(PlayerType *player_ptr, FILE *fff)
     fmt::println(fff, fmt, AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL));
 
     dump_aux_player_status(player_ptr, fff);
-    dump_aux_last_message(player_ptr, fff);
+    dump_aux_last_message(*player_ptr, fff);
     dump_aux_options(fff);
     dump_aux_recall(fff);
-    dump_aux_quest(player_ptr, fff);
+    dump_aux_quest(*player_ptr, fff);
     dump_aux_arena(fff);
     dump_aux_monsters(fff);
-    dump_aux_virtues(player_ptr, fff);
-    dump_aux_race_history(player_ptr, fff);
-    dump_aux_realm_history(player_ptr, fff);
+    dump_aux_virtues(*player_ptr, fff);
+    dump_aux_race_history(*player_ptr, fff);
+    dump_aux_realm_history(*player_ptr, fff);
     dump_aux_class_special(player_ptr, fff);
-    dump_aux_mutations(player_ptr, fff);
-    dump_aux_pet(player_ptr, fff);
+    dump_aux_mutations(*player_ptr, fff);
+    dump_aux_pet(*player_ptr, fff);
     fputs("\n\n", fff);
-    dump_aux_equipment_inventory(player_ptr, fff);
-    dump_aux_home_museum(player_ptr, fff);
+    dump_aux_equipment_inventory(*player_ptr, fff);
+    dump_aux_home_museum(*player_ptr, fff);
 
     // ダンプの幅をはみ出さないように48文字目以降を切り捨てる
     const std::string checksum = get_check_sum().erase(48);
