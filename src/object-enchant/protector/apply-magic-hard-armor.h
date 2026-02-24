@@ -3,11 +3,11 @@
 #include "object-enchant/protector/apply-magic-armor.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class HardArmorEnchanter : public ArmorEnchanter {
 public:
-    HardArmorEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power);
+    HardArmorEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
     void apply_magic() override;
 
 protected:

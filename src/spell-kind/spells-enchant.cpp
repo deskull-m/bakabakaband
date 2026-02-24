@@ -78,7 +78,7 @@ bool artifact_scroll(PlayerType *player_ptr)
             }
         }
 
-        okay = become_random_artifact(player_ptr, o_ptr, true);
+        okay = become_random_artifact(*player_ptr, o_ptr, true);
     }
 
     if (!okay) {

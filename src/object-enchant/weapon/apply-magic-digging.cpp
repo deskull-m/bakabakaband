@@ -36,7 +36,7 @@ void DiggingEnchanter::apply_magic()
     this->give_killing_bonus();
     if (this->power > 1) {
         if ((this->power > 2) || one_in_(30)) {
-            become_random_artifact(this->player_ptr, this->o_ptr, false);
+            become_random_artifact(*this->player_ptr, this->o_ptr, false);
         } else {
             this->o_ptr->ego_idx = EgoType::DIGGING;
         }
