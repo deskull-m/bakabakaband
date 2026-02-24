@@ -232,6 +232,6 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
 
     if (placed && (i_idx >= INVEN_MAIN_HAND)) {
         calc_android_exp(player_ptr);
-        verify_equip_slot(player_ptr, i_idx);
+        verify_equip_slot(*player_ptr, i_idx);
     }
 }

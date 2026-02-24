@@ -312,7 +312,7 @@ void ObjectThrowEntity::process_boomerang_back()
     }
 
     if (this->equiped_item) {
-        verify_equip_slot(this->player_ptr, this->i_idx);
+        verify_equip_slot(*this->player_ptr, this->i_idx);
         calc_android_exp(this->player_ptr);
     }
 }
