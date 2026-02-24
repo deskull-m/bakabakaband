@@ -467,7 +467,7 @@ static void dump_aux_mutations(PlayerType *player_ptr, FILE *fff)
 {
     if (player_ptr->muta.any()) {
         fmt::println(fff, _("\n\n  [突然変異]\n", "\n\n  [Mutations]\n"));
-        dump_mutations(player_ptr, fff);
+        dump_mutations(*player_ptr, fff);
     }
 }
 
