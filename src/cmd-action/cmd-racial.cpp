@@ -63,7 +63,6 @@ static void racial_power_erase_cursor(rc_type *rc_ptr)
  */
 static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     TERM_LEN x = 11;
     char dummy[256];
     strcpy(dummy, "");
@@ -92,7 +91,7 @@ static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
 
         auto &rpi = rc_ptr->power_desc[ctr];
         strcat(dummy,
-            format("%-30.30s %2d %4d %3d%% %s", rpi.racial_name.data(), rpi.min_level, rpi.cost, 100 - racial_chance(player_ptr, &rc_ptr->power_desc[ctr]),
+            format("%-30.30s %2d %4d %3d%% %s", rpi.racial_name.data(), rpi.min_level, rpi.cost, 100 - racial_chance(creature, &rc_ptr->power_desc[ctr]),
                 rpi.info.data())
                 .data());
 
@@ -414,10 +413,10 @@ static void racial_power_cast_power(CreatureEntity &creature, rc_type *rc_ptr)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto *rpi_ptr = &rc_ptr->power_desc[rc_ptr->command_code];
 
-    switch (check_racial_level(player_ptr, rpi_ptr)) {
+    switch (check_racial_level(creature, rpi_ptr)) {
     case RACIAL_SUCCESS:
         if (rpi_ptr->number < 0) {
-            rc_ptr->cast = exe_racial_power(player_ptr, rpi_ptr->number);
+            rc_ptr->cast = exe_racial_power(creature, rpi_ptr->number);
         } else {
             rc_ptr->cast = exe_mutation_power(player_ptr, i2enum<PlayerMutationType>(rpi_ptr->number));
         }
