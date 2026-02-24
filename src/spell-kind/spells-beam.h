@@ -1,8 +1,8 @@
 #pragma once
 
+class CreatureEntity;
 class Direction;
-class PlayerType;
-bool wall_to_mud(PlayerType *player_ptr, const Direction &dir, int dam);
-bool wizard_lock(PlayerType *player_ptr, const Direction &dir);
-bool destroy_door(PlayerType *player_ptr, const Direction &dir);
-bool disarm_trap(PlayerType *player_ptr, const Direction &dir);
+bool wall_to_mud(CreatureEntity &creature, const Direction &dir, int dam);
+bool wizard_lock(CreatureEntity &creature, const Direction &dir);
+bool destroy_door(CreatureEntity &creature, const Direction &dir);
+bool disarm_trap(CreatureEntity &creature, const Direction &dir);

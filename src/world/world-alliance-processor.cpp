@@ -1,15 +1,15 @@
 #include "world/world-alliance-processor.h"
 #include "alliance/alliance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
 /*!
  * @brief 全アライアンスの自然回復処理を実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 10ゲームターンごとに呼び出され、各アライアンスのbase_powerをnatural_recovery分回復させる
  */
-void process_alliance_recovery(PlayerType *player_ptr)
+void process_alliance_recovery(CreatureEntity &creature)
 {
-    (void)player_ptr; // 現在は未使用だが、将来的に使用する可能性があるため引数として保持
+    (void)creature; // 現在は未使用だが、将来的に使用する可能性があるため引数として保持
 
     // 全アライアンスの自然回復を処理
     for (const auto &[alliance_type, alliance_ptr] : alliance_list) {
