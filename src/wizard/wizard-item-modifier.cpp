@@ -592,7 +592,7 @@ static tl::optional<ItemEntity> wiz_apply_magic_to_item(CreatureEntity &creature
         ItemEntity item(bi_id);
         ItemMagicApplier(*player_ptr, &item, floor.dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
         if (!item.is_fixed_or_random_artifact()) {
-            become_random_artifact(player_ptr, &item, false);
+            become_random_artifact(*player_ptr, &item, false);
         }
 
         return item;

@@ -3,11 +3,11 @@
 #include "object-enchant/weapon/melee-weapon-enchanter.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class PolearmEnchanter : public MeleeWeaponEnchanter {
 public:
-    PolearmEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power);
+    PolearmEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
 
     void apply_magic() override;
 

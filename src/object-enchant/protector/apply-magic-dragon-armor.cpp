@@ -29,6 +29,6 @@ DragonArmorEnchanter::DragonArmorEnchanter(PlayerType *player_ptr, ItemEntity *o
 void DragonArmorEnchanter::apply_magic()
 {
     if ((this->power > 2) || one_in_(50)) {
-        become_random_artifact(this->player_ptr, this->o_ptr, false);
+        become_random_artifact(*this->player_ptr, this->o_ptr, false);
     }
 }

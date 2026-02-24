@@ -192,7 +192,7 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
             case 3:
                 ItemMagicApplier(killer, &item, killer.current_floor_ptr->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
                 if (!item.is_fixed_artifact()) {
-                    become_random_artifact(&dynamic_cast<PlayerType &>(killer), &item, false);
+                    become_random_artifact(killer, &item, false);
                 }
                 break;
             default:
@@ -253,7 +253,7 @@ static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
                 if (!item.is_fixed_artifact()) {
                     auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
                     if (player_ptr) {
-                        become_random_artifact(player_ptr, &item, false);
+                        become_random_artifact(*player_ptr, &item, false);
                     }
                 }
                 break;
@@ -471,7 +471,7 @@ static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr
         }
 
         if (player_ptr) {
-            (void)become_random_artifact(player_ptr, &*item, false);
+            (void)become_random_artifact(*player_ptr, &*item, false);
         }
         auto is_good_random_art = !item->is_cursed();
         is_good_random_art &= item->to_h > 0;

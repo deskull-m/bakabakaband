@@ -14,13 +14,13 @@
 
 /*!
  * @brief 剣強化クラスのコンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたいオブジェクトの構造体参照ポインタ
  * @param level 生成基準階
  * @param power 生成ランク
  */
-SwordEnchanter::SwordEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power)
-    : MeleeWeaponEnchanter(player_ptr, o_ptr, level, power)
+SwordEnchanter::SwordEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)
+    : MeleeWeaponEnchanter(creature, o_ptr, level, power)
 {
 }
 

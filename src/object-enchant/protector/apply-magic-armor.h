@@ -3,16 +3,16 @@
 #include "object-enchant/protector/abstract-protector-enchanter.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class ArmorEnchanter : public AbstractProtectorEnchanter {
 public:
     virtual ~ArmorEnchanter() = default;
 
 protected:
-    ArmorEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power);
+    ArmorEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
 
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 
     void give_ego_index() override;
     void give_cursed() override;
