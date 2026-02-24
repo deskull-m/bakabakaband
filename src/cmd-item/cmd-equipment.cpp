@@ -410,7 +410,7 @@ void do_cmd_takeoff(PlayerType *player_ptr)
     sound(SoundKind::TAKE_OFF);
     energy.set_player_turn_energy(50);
     (void)inven_takeoff(player_ptr, i_idx, 255);
-    verify_equip_slot(player_ptr, i_idx);
+    verify_equip_slot(*player_ptr, i_idx);
     calc_android_exp(player_ptr);
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
