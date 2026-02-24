@@ -22,7 +22,7 @@ void do_cmd_knowledge_mutations(PlayerType *player_ptr)
         return;
     }
 
-    dump_mutations(player_ptr, fff);
+    dump_mutations(*player_ptr, fff);
     angband_fclose(fff);
 
     FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("突然変異", "Mutations"));
