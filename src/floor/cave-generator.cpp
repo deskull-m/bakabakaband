@@ -218,7 +218,7 @@ static void make_walls(CreatureEntity &creature, DungeonData *dd_ptr, const Dung
         grid.mimic = 0;
         place_grid(creature, grid, GB_FLOOR);
         if (evaluate_percent(dt_ptr->dun_tun_pen) && dungeon.flags.has_not(DungeonFeatureType::NO_DOORS)) {
-            place_random_door(&player, dd_ptr->tunnel_pos, true);
+            place_random_door(player, dd_ptr->tunnel_pos, true);
         }
     }
 }
@@ -247,7 +247,7 @@ static void make_doors(CreatureEntity &creature, DungeonData *dd_ptr, dt_type *d
     for (size_t i = 0; i < dd_ptr->door_n; i++) {
         dd_ptr->tunnel_pos = dd_ptr->doors[i];
         for (const auto &d : Direction::directions_4()) {
-            try_door(&player, dt_ptr, dd_ptr->tunnel_pos + d.vec());
+            try_door(player, dt_ptr, dd_ptr->tunnel_pos + d.vec());
         }
     }
 }
@@ -611,7 +611,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     }
 
     check_arena_floor(creature, &dd);
-    gen_caverns_and_lakes(&player, dungeon, &dd);
+    gen_caverns_and_lakes(player, dungeon, &dd);
     if (!switch_making_floor(creature, &dd, dungeon)) {
         // 乱数状態を復元
         if (seed_was_fixed) {

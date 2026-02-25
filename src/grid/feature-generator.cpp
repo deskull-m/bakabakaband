@@ -7,6 +7,7 @@
 #include "grid/door.h"
 #include "room/lake-types.h"
 #include "room/rooms-builder.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-characteristics.h"
@@ -30,13 +31,14 @@ static bool decide_cavern(const FloorType &floor, const DungeonDefinition &dunge
 /*!
  * @brief フロアに破壊地形、洞窟、湖、溶岩、森林等を配置する.
  */
-void gen_caverns_and_lakes(PlayerType *player_ptr, const DungeonDefinition &dungeon, DungeonData *dd_ptr)
+void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &dungeon, DungeonData *dd_ptr)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     constexpr auto chance_destroyed = 18;
     if ((floor.dun_level > 30) && one_in_(chance_destroyed * 2) && small_levels && dungeon.flags.has(DungeonFeatureType::DESTROY)) {
         dd_ptr->destroyed = true;
-        build_lake(*player_ptr, one_in_(2) ? LAKE_T_CAVE : LAKE_T_EARTH_VAULT);
+        build_lake(creature, one_in_(2) ? LAKE_T_CAVE : LAKE_T_EARTH_VAULT);
     }
 
     constexpr auto chance_water = 24;
@@ -86,16 +88,16 @@ void gen_caverns_and_lakes(PlayerType *player_ptr, const DungeonDefinition &dung
         }
 
         if (dd_ptr->laketype) {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("湖を生成します。", "Lake on the level."));
-            build_lake(*player_ptr, dd_ptr->laketype);
+            msg_print_wizard(&player, CHEAT_DUNGEON, _("湖を生成します。", "Lake on the level."));
+            build_lake(creature, dd_ptr->laketype);
         }
     }
 
     const auto should_build_cavern = decide_cavern(floor, dungeon, *dd_ptr);
     if (should_build_cavern) {
         dd_ptr->cavern = true;
-        msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("洞窟を生成。", "Cavern on level."));
-        build_cavern(*player_ptr);
+        msg_print_wizard(&player, CHEAT_DUNGEON, _("洞窟を生成。", "Cavern on level."));
+        build_cavern(creature);
     }
 
     if (inside_quest(floor.get_quest_id())) {
@@ -160,9 +162,9 @@ static bool possible_doorway(const FloorType &floor, POSITION y, POSITION x)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param pos 設置を行いたいマスの座標
  */
-void try_door(PlayerType *player_ptr, dt_type *dt_ptr, const Pos2D &pos)
+void try_door(CreatureEntity &creature, dt_type *dt_ptr, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || floor.has_terrain_characteristics(pos, TerrainCharacteristics::WALL) || floor.get_grid(pos).is_room()) {
         return;
     }
@@ -171,6 +173,6 @@ void try_door(PlayerType *player_ptr, dt_type *dt_ptr, const Pos2D &pos)
     can_place_door &= possible_doorway(floor, pos.y, pos.x);
     can_place_door &= floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::NO_DOORS);
     if (can_place_door) {
-        place_random_door(player_ptr, pos, false);
+        place_random_door(creature, pos, false);
     }
 }

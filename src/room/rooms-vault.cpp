@@ -160,7 +160,7 @@ static void build_bubble_vault(CreatureEntity &creature, const Pos2D &pos0, cons
     for (auto i = 0; i < 500; i++) {
         const auto y = randint1(vec.y - 3) - vec_half.y + pos0.y + 1;
         const auto x = randint1(vec.x - 3) - vec_half.x + pos0.x + 1;
-        add_door(&player, { y, x }); //!<@ details 乱数引数の評価順を固定する.
+        add_door(player, { y, x }); //!<@ details 乱数引数の評価順を固定する.
     }
 
     /* Fill with monsters and treasure, low difficulty */
@@ -200,7 +200,7 @@ static void build_room_vault(CreatureEntity &creature, const Pos2D &center, cons
     for (auto i = 0; i < 500; i++) {
         const auto y = randint1(vec.y - 3) - vec_half.y + center.y + 1;
         const auto x = randint1(vec.x - 3) - vec_half.x + center.x + 1;
-        add_door(&player, { y, x }); //!<@ details 乱数引数の評価順を固定する.
+        add_door(player, { y, x }); //!<@ details 乱数引数の評価順を固定する.
     }
 
     /* Fill with monsters and treasure, high difficulty */
@@ -389,16 +389,16 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
                 grid.set_terrain_id(TerrainTag::TREE);
                 break;
             case '+':
-                place_secret_door(&player, pos);
+                place_secret_door(player, pos);
                 break;
             case '-':
-                place_secret_door(&player, pos, DoorKind::GLASS_DOOR);
+                place_secret_door(player, pos, DoorKind::GLASS_DOOR);
                 if (floor.has_closed_door_at(pos)) {
                     grid.set_terrain_id(TerrainTag::GLASS_WALL, TerrainKind::MIMIC);
                 }
                 break;
             case '\'':
-                place_secret_door(&player, pos, DoorKind::CURTAIN);
+                place_secret_door(player, pos, DoorKind::CURTAIN);
                 break;
             case '^':
                 floor.place_trap_at(pos);
@@ -640,14 +640,14 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
     /* get two distances so can place doors relative to centre */
     const auto x = (rad - 2) / 4 + 1;
     const auto y = rad / 2 + x;
-    add_door(&player, { center.y, center.x + x });
-    add_door(&player, { center.y, center.x + y });
-    add_door(&player, { center.y, center.x - x });
-    add_door(&player, { center.y, center.x - y });
-    add_door(&player, { center.y + x, center.x });
-    add_door(&player, { center.y + y, center.x });
-    add_door(&player, { center.y - x, center.x });
-    add_door(&player, { center.y - y, center.x });
+    add_door(player, { center.y, center.x + x });
+    add_door(player, { center.y, center.x + y });
+    add_door(player, { center.y, center.x - x });
+    add_door(player, { center.y, center.x - y });
+    add_door(player, { center.y + x, center.x });
+    add_door(player, { center.y + y, center.x });
+    add_door(player, { center.y - x, center.x });
+    add_door(player, { center.y - y, center.x });
 
     /* Fill with stuff - medium difficulty */
     const Pos2DVec vec_radius(rad, rad);
