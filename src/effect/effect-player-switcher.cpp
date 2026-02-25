@@ -106,7 +106,7 @@ void switch_effects_player(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         effect_player_old_speed(player_ptr, ep_ptr);
         return;
     case AttributeType::OLD_SLOW:
-        effect_player_old_slow(player_ptr);
+        effect_player_old_slow(*player_ptr);
         return;
     case AttributeType::OLD_SLEEP:
         effect_player_old_sleep(player_ptr, ep_ptr);

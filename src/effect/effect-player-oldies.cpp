@@ -30,13 +30,13 @@ void effect_player_old_speed(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
     ep_ptr->dam = 0;
 }
 
-void effect_player_old_slow(PlayerType *player_ptr)
+void effect_player_old_slow(CreatureEntity &creature)
 {
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.effects()->blindness().is_blind()) {
         msg_print(_("何か遅いもので攻撃された！", "You are hit by something slow!"));
     }
 
-    (void)BadStatusSetter(*player_ptr).mod_deceleration(randint0(4) + 4, false);
+    (void)BadStatusSetter(creature).mod_deceleration(randint0(4) + 4, false);
 }
 
 void effect_player_old_sleep(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
