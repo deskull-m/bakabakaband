@@ -382,8 +382,7 @@ bool activate_exploding_rune(CreatureEntity &creature)
 bool activate_protection_rune(CreatureEntity &creature)
 {
     msg_print(_("ブルーに明るく輝いている...", "It glows light blue..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    create_rune_protection_one(&player);
+    create_rune_protection_one(creature);
     return true;
 }
 
@@ -392,7 +391,7 @@ bool activate_protection_elbereth(CreatureEntity &creature)
     auto &player = static_cast<PlayerType &>(creature);
     BadStatusSetter bss(player);
     msg_print(_("エルベレスよ、我を護り給え！", "A Elbereth gilthoniel!"));
-    create_rune_protection_one(&player);
+    create_rune_protection_one(creature);
     (void)bss.set_fear(0);
     (void)bss.set_blindness(0);
     (void)bss.hallucination(0);

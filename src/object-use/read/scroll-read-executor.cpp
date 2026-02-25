@@ -329,7 +329,7 @@ bool ScrollReadExecutor::read()
         break;
     }
     case SV_SCROLL_RUNE_OF_PROTECTION:
-        create_rune_protection_one(this->player_ptr);
+        create_rune_protection_one(*this->player_ptr);
         this->ident = true;
         break;
     case SV_SCROLL_TRAP_DOOR_DESTRUCTION:

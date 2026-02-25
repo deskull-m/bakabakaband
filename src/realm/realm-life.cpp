@@ -207,7 +207,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
 
     case 15: {
         if (cast) {
-            create_rune_protection_one(player_ptr);
+            create_rune_protection_one(*player_ptr);
         }
     } break;
 
@@ -301,7 +301,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            create_rune_protection_one(player_ptr);
+            create_rune_protection_one(*player_ptr);
             create_rune_protection_area(*player_ptr, player_ptr->y, player_ptr->x);
         }
     } break;
