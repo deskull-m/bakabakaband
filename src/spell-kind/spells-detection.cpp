@@ -65,7 +65,7 @@ static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCh
         }
 
         if (grid.has(flag)) {
-            disclose_grid(&player, pos);
+            disclose_grid(player, pos);
             grid.info |= (CAVE_MARK);
             lite_spot(player, pos);
             detect = true;

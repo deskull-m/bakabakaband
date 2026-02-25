@@ -122,19 +122,19 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param pos 秘匿したいマスの座標
  */
-void disclose_grid(PlayerType *player_ptr, const Pos2D &pos)
+void disclose_grid(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    auto &grid = creature.current_floor_ptr->get_grid(pos);
 
     if (grid.has(TerrainCharacteristics::SECRET)) {
         /* No longer hidden */
-        cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::SECRET);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::SECRET);
     } else if (grid.mimic) {
         /* No longer hidden */
         grid.mimic = 0;
 
-        note_spot(*player_ptr, pos);
-        lite_spot(*player_ptr, pos);
+        note_spot(creature, pos);
+        lite_spot(creature, pos);
     }
 }
 
