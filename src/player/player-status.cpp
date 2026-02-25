@@ -2704,7 +2704,7 @@ void update_creature(CreatureEntity &creature)
 
     if (rfu.has(StatusRecalculatingFlag::VIEW)) {
         rfu.reset_flag(StatusRecalculatingFlag::VIEW);
-        update_view(player_ptr);
+        update_view(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::LITE)) {
