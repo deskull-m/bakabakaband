@@ -479,7 +479,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
         break;
     }
     case MindNinjaType::EXPLOSIVE_RUNE:
-        create_rune_explosion(player_ptr, creature.y, creature.x);
+        create_rune_explosion(*player_ptr, creature.y, creature.x);
         break;
     case MindNinjaType::HIDE_MUD:
         (void)set_pass_wall(*player_ptr, randint1(plev / 2) + plev / 2, false);

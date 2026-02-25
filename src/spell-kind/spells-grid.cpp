@@ -45,10 +45,10 @@ bool create_rune_protection_one(CreatureEntity &creature)
  * @param x 設置場所
  * @return 実際に設置が行われた場合TRUEを返す
  */
-bool create_rune_explosion(PlayerType *player_ptr, POSITION y, POSITION x)
+bool create_rune_explosion(CreatureEntity &creature, POSITION y, POSITION x)
 {
     const Pos2D pos(y, x);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(pos);
     if (!grid.is_clean()) {
         msg_print(_("床上のアイテムが呪文を跳ね返した。", "The object resists the spell."));
@@ -57,8 +57,8 @@ bool create_rune_explosion(PlayerType *player_ptr, POSITION y, POSITION x)
 
     grid.info |= CAVE_OBJECT;
     grid.set_terrain_id(TerrainTag::RUNE_EXPLOSION, TerrainKind::MIMIC);
-    note_spot(*player_ptr, pos);
-    lite_spot(*player_ptr, pos);
+    note_spot(creature, pos);
+    lite_spot(creature, pos);
     return true;
 }
 
@@ -66,27 +66,28 @@ bool create_rune_explosion(PlayerType *player_ptr, POSITION y, POSITION x)
  * @brief プレイヤーの手による能動的な階段生成処理 /
  * Create stairs at or move previously created stairs into the player location.
  */
-void stair_creation(PlayerType *player_ptr)
+void stair_creation(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     auto up = !ironman_downward;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto down = !inside_quest(floor.get_quest_id()) && (floor.dun_level < floor.get_dungeon_definition().maxdepth);
     if (!floor.is_underground() || (!up && !down) || (floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || floor.inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         msg_print(_("効果がありません！", "There is no effect!"));
         return;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (!floor.is_grid_changeable(p_pos)) {
         msg_print(_("床上のアイテムが呪文を跳ね返した。", "The object resists the spell."));
         return;
     }
 
-    delete_all_items_from_floor(player_ptr, player_ptr->get_position());
-    auto *sf_ptr = get_sf_ptr(player_ptr->floor_id);
+    delete_all_items_from_floor(&player, creature.get_position());
+    auto *sf_ptr = get_sf_ptr(creature.floor_id);
     if (!sf_ptr) {
-        player_ptr->floor_id = get_unused_floor_id(player_ptr);
-        sf_ptr = get_sf_ptr(player_ptr->floor_id);
+        creature.floor_id = get_unused_floor_id(&player);
+        sf_ptr = get_sf_ptr(creature.floor_id);
     }
 
     if (up && down) {
@@ -126,10 +127,10 @@ void stair_creation(PlayerType *player_ptr)
 
             /* Remove old stairs */
             grid.special = 0;
-            set_terrain_id_to_grid(*player_ptr, pos, dungeon.select_floor_terrain_id());
+            set_terrain_id_to_grid(creature, pos, dungeon.select_floor_terrain_id());
         }
     } else {
-        dest_floor_id = get_unused_floor_id(player_ptr);
+        dest_floor_id = get_unused_floor_id(&player);
         if (up) {
             sf_ptr->upper_floor_id = dest_floor_id;
         } else {
@@ -145,15 +146,15 @@ void stair_creation(PlayerType *player_ptr)
         const auto should_convert = (dest_sf_ptr->last_visit > 0) && is_shallow;
         const auto converted_terrain_id = dungeon.convert_terrain_id(terrain_up_stair, TerrainCharacteristics::SHAFT);
         const auto terrain_id = should_convert ? converted_terrain_id : terrain_up_stair;
-        set_terrain_id_to_grid(*player_ptr, player_ptr->get_position(), terrain_id);
+        set_terrain_id_to_grid(creature, creature.get_position(), terrain_id);
     } else {
         const auto is_deep = dest_sf_ptr->dun_level >= floor.dun_level + 2;
         const auto terrain_down_stair = terrains.get_terrain_id(TerrainTag::DOWN_STAIR);
         const auto should_convert = (dest_sf_ptr->last_visit > 0) && is_deep;
         const auto converted_terrain_id = dungeon.convert_terrain_id(terrain_down_stair, TerrainCharacteristics::SHAFT);
         const auto terrain_id = should_convert ? converted_terrain_id : terrain_down_stair;
-        set_terrain_id_to_grid(*player_ptr, player_ptr->get_position(), terrain_id);
+        set_terrain_id_to_grid(creature, creature.get_position(), terrain_id);
     }
 
-    floor.get_grid(player_ptr->get_position()).special = dest_floor_id;
+    floor.get_grid(creature.get_position()).special = dest_floor_id;
 }

@@ -294,7 +294,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
 
     case 16: {
         if (cast) {
-            stair_creation(player_ptr);
+            stair_creation(*player_ptr);
         }
     } break;
 
