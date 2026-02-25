@@ -60,7 +60,7 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::TRAP_PIT:
         return build_type13(*player_ptr, dd_ptr);
     case RoomType::TRAP:
-        return build_type14(player_ptr, dd_ptr);
+        return build_type14(*player_ptr, dd_ptr);
     case RoomType::GLASS:
         return build_type15(*player_ptr, dd_ptr);
     case RoomType::ARCADE:
