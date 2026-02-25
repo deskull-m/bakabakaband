@@ -364,7 +364,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            create_rune_explosion(player_ptr, player_ptr->y, player_ptr->x);
+            create_rune_explosion(*player_ptr, player_ptr->y, player_ptr->x);
         }
     } break;
 

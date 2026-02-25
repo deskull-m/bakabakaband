@@ -375,7 +375,7 @@ bool activate_exploding_rune(CreatureEntity &creature)
 {
     msg_print(_("明るい赤色に輝いている...", "It glows bright red..."));
     auto &player = static_cast<PlayerType &>(creature);
-    create_rune_explosion(&player, creature.y, creature.x);
+    create_rune_explosion(player, creature.y, creature.x);
     return true;
 }
 

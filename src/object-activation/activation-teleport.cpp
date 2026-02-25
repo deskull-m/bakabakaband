@@ -43,7 +43,7 @@ bool activate_escape(CreatureEntity &creature)
         return true;
     case 11:
     case 12:
-        (void)stair_creation(&player);
+        (void)stair_creation(creature);
         return true;
     default:
         if (!input_check(_("この階を去りますか？", "Leave this level? "))) {

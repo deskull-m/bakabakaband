@@ -369,7 +369,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     case PlayerRaceType::HALF_OGRE:
         msg_print(_("爆発のルーンを慎重に仕掛けた...", "You carefully set an explosive rune..."));
-        (void)create_rune_explosion(player_ptr, player_ptr->y, player_ptr->x);
+        (void)create_rune_explosion(*player_ptr, player_ptr->y, player_ptr->x);
         return true;
     case PlayerRaceType::HALF_GIANT: {
         const auto dir = get_aim_dir(player_ptr);
