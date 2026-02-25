@@ -279,7 +279,7 @@ void show_bounty(void)
 void determine_daily_bounty(PlayerType *player_ptr)
 {
     const auto max_dungeon_level = std::max(DungeonService::find_max_level(), 3);
-    get_mon_num_prep_bounty(player_ptr);
+    get_mon_num_prep_bounty(*player_ptr);
     auto &world = AngbandWorld::get_instance();
     while (true) {
         world.today_mon = get_mon_num(player_ptr, std::min(max_dungeon_level / 2, 40), max_dungeon_level, PM_ARENA);
@@ -319,7 +319,7 @@ void determine_daily_bounty(PlayerType *player_ptr)
  */
 void determine_bounty_uniques(PlayerType *player_ptr)
 {
-    get_mon_num_prep_bounty(player_ptr);
+    get_mon_num_prep_bounty(*player_ptr);
     const auto &monraces = MonraceList::get_instance();
     auto is_suitable_for_bounty = [&monraces](auto monrace_id) {
         const auto &monrace = monraces.get_monrace(monrace_id);

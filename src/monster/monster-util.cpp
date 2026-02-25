@@ -683,12 +683,12 @@ void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransform
 
 /*!
  * @brief モンスター生成テーブルの重み修正(賞金首選定用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details get_mon_num() を呼ぶ前に get_mon_num_prep 系関数のいずれかを呼ぶこと。
  */
-void get_mon_num_prep_bounty(PlayerType *player_ptr)
+void get_mon_num_prep_bounty(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
