@@ -215,7 +215,7 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
 
     const auto &nest = nest_types.at(*nest_type);
     nest.prepare_filter(player_ptr);
-    get_mon_num_prep_enum(player_ptr, nest.monrace_hook);
+    get_mon_num_prep_enum(*player_ptr, nest.monrace_hook);
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;
 

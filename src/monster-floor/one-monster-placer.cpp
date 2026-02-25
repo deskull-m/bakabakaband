@@ -63,7 +63,7 @@ static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx,
         return r_idx;
     }
 
-    get_mon_num_prep_enum(player_ptr, MonraceHook::TANUKI);
+    get_mon_num_prep_enum(*player_ptr, MonraceHook::TANUKI);
     auto attempts = 1000;
     const auto &floor = *creature.current_floor_ptr;
     auto min = std::min(floor.base_level - 5, 50);

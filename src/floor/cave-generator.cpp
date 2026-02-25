@@ -577,7 +577,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
 
     auto &floor = *creature.current_floor_ptr;
     floor.reset_lite_area();
-    get_mon_num_prep_enum(&player, floor.get_monrace_hook());
+    get_mon_num_prep_enum(player, floor.get_monrace_hook());
 
     // 鉄獄（ANGBAND）では一定確率で他のダンジョンの生成処理を使用
     constexpr auto chance_random_dungeon = 10; // 10%の確率
