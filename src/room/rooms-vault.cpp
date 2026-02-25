@@ -166,7 +166,7 @@ static void build_bubble_vault(CreatureEntity &creature, const Pos2D &pos0, cons
     /* Fill with monsters and treasure, low difficulty */
     const auto pos = pos0 + vec_half.inverted();
     const auto area = Rect2D(pos, pos + Pos2DVec(vec.y - 1, vec.x - 1)).resized(-1);
-    fill_treasure(&player, area, randint1(5));
+    fill_treasure(player, area, randint1(5));
 }
 
 /* Create a random vault that looks like a collection of overlapping rooms */
@@ -206,7 +206,7 @@ static void build_room_vault(CreatureEntity &creature, const Pos2D &center, cons
     /* Fill with monsters and treasure, high difficulty */
     const auto pos = center + vec_half.inverted();
     const Rect2D area(pos, pos + Pos2DVec(vec.y - 1, vec.x - 1));
-    fill_treasure(&player, area.resized(-1), randint1(5) + 5);
+    fill_treasure(player, area.resized(-1), randint1(5) + 5);
 }
 
 /* Create a random vault out of a fractal grid */
@@ -249,7 +249,7 @@ static void build_cave_vault(CreatureEntity &creature, const Pos2D &center, cons
     }
 
     /* Fill with monsters and treasure, low difficulty */
-    fill_treasure(&player, area.resized(-1), randint1(5));
+    fill_treasure(player, area.resized(-1), randint1(5));
 }
 
 /*!
@@ -652,7 +652,7 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
     /* Fill with stuff - medium difficulty */
     const Pos2DVec vec_radius(rad, rad);
     const Rect2D area(center, vec_radius);
-    fill_treasure(&player, area, randint1(3) + 3);
+    fill_treasure(player, area, randint1(3) + 3);
 }
 
 /*
@@ -725,7 +725,7 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
     }
 
     /* Fill with monsters and treasure, low difficulty */
-    fill_treasure(&player, area.resized(-1), randint1(5));
+    fill_treasure(player, area.resized(-1), randint1(5));
 }
 
 /* Build a "mini" checkerboard vault
@@ -836,7 +836,7 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
     }
 
     /* Fill with monsters and treasure, highest difficulty */
-    fill_treasure(&player, { y1, x1, y2, x2 }, 10);
+    fill_treasure(player, { y1, x1, y2, x2 }, 10);
 }
 
 /* Build a castle */
@@ -865,7 +865,7 @@ static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, co
     build_recursive_room(creature, area.top_left.x, area.top_left.y, area.bottom_right.x, area.bottom_right.y, randint1(5));
 
     /* Fill with monsters and treasure, low difficulty */
-    fill_treasure(&player, area, randint1(3));
+    fill_treasure(player, area, randint1(3));
 }
 
 /*!

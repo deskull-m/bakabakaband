@@ -137,6 +137,6 @@ void build_maze_vault(CreatureEntity &creature, const Pos2D &center, const Pos2D
     std::vector<int> visited(num_vertices);
     r_visit(creature, y1, x1, y2, x2, randint0(num_vertices), 0, visited.data());
     if (is_vault) {
-        fill_treasure(&player, { y1, x1, y2, x2 }, randint1(5));
+        fill_treasure(player, { y1, x1, y2, x2 }, randint1(5));
     }
 }
