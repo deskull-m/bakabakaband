@@ -809,7 +809,7 @@ static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, co
     std::vector<int> visited(num_vertices);
 
     /* traverse the graph to create a spannng tree, pick a random root */
-    r_visit(&player, y1, x1, y2, x2, randint0(num_vertices), 0, visited.data());
+    r_visit(player, y1, x1, y2, x2, randint0(num_vertices), 0, visited.data());
 
     /* Make it look like a checker board vault */
     for (auto x = x1; x <= x2; x++) {
@@ -903,7 +903,7 @@ bool build_type10(CreatureEntity &creature, DungeonData *dd_ptr)
         break;
     case 4:
     case 12:
-        build_maze_vault(&player, *center, vec, true);
+        build_maze_vault(player, *center, vec, true);
         break;
     case 5:
     case 13:

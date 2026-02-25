@@ -920,6 +920,6 @@ bool build_nonvault_maze(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    build_maze_vault(player_ptr, *center, { height, width }, false);
+    build_maze_vault(*player_ptr, *center, { height, width }, false);
     return true;
 }

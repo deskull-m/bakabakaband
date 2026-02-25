@@ -50,7 +50,7 @@ static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ
     case RoomType::GREATER_VAULT:
         return build_fixed_room(*player_ptr, dd_ptr, 8, true, -1);
     case RoomType::FRACAVE:
-        return build_type9(player_ptr, dd_ptr);
+        return build_type9(*player_ptr, dd_ptr);
     case RoomType::RANDOM_VAULT:
         return build_type10(*player_ptr, dd_ptr);
     case RoomType::OVAL:
