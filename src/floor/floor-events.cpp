@@ -104,7 +104,7 @@ void night_falls(PlayerType *player_ptr)
         }
     }
 
-    glow_deep_lava_and_bldg(player_ptr);
+    glow_deep_lava_and_bldg(*player_ptr);
 
     update_sun_light(player_ptr);
 }
@@ -320,9 +320,9 @@ void update_dungeon_feeling(PlayerType *player_ptr)
 /*
  * Glow deep lava and building entrances in the floor
  */
-void glow_deep_lava_and_bldg(PlayerType *player_ptr)
+void glow_deep_lava_and_bldg(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         return;
     }
