@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void update_view(PlayerType *player_ptr);
+class CreatureEntity;
+void update_view(CreatureEntity &creature);
