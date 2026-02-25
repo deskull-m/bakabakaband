@@ -63,7 +63,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto height = rand_range(9, 13);
 
     auto &floor = *creature.current_floor_ptr;
-    const auto center = find_space(player_ptr, dd_ptr, height + 2, width + 2);
+    const auto center = find_space(*player_ptr, dd_ptr, height + 2, width + 2);
     if (!center) {
         return false;
     }

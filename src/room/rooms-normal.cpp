@@ -31,14 +31,14 @@ bool build_type1(CreatureEntity &creature, DungeonData *dd_ptr)
     auto height = randint1(11) + randint1(11) + 1;
     auto width = randint1(11) + randint1(11) + 1;
 
-    auto center = find_space(player_ptr, dd_ptr, height + 2, width + 2);
+    auto center = find_space(*player_ptr, dd_ptr, height + 2, width + 2);
     if (!center) {
         /* Limit to the minimum room size, and retry */
         width = 3;
         height = 3;
 
         /* Find and reserve some space in the dungeon.  Get center of room. */
-        center = find_space(player_ptr, dd_ptr, height + 2, width + 2);
+        center = find_space(*player_ptr, dd_ptr, height + 2, width + 2);
         if (!center) {
             return false;
         }
@@ -177,7 +177,7 @@ bool build_type2(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
-    const auto center = find_space(player_ptr, dd_ptr, 25, 25);
+    const auto center = find_space(*player_ptr, dd_ptr, 25, 25);
     if (!center) {
         return false;
     }
@@ -275,7 +275,7 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
-    const auto center = find_space(player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }
@@ -485,7 +485,7 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
     /* Find and reserve some space in the dungeon.  Get center of room. */
     auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
-    const auto center = find_space(player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }
@@ -800,7 +800,7 @@ bool build_type11(CreatureEntity &creature, DungeonData *dd_ptr)
     auto &floor = *creature.current_floor_ptr;
     const auto should_brighten = (randint1(floor.dun_level) <= 15) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS);
     const auto rad = randint0(9);
-    const auto center = find_space(player_ptr, dd_ptr, rad * 2 + 1, rad * 2 + 1);
+    const auto center = find_space(*player_ptr, dd_ptr, rad * 2 + 1, rad * 2 + 1);
     if (!center) {
         return false;
     }
@@ -846,7 +846,7 @@ bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto should_brighten = (randint1(floor.dun_level) <= 5) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS);
     const auto rad = randint1(9);
 
-    const auto center = find_space(player_ptr, dd_ptr, rad * 2 + 3, rad * 2 + 3);
+    const auto center = find_space(*player_ptr, dd_ptr, rad * 2 + 3, rad * 2 + 3);
     if (!center) {
         return false;
     }
@@ -915,7 +915,7 @@ bool build_nonvault_maze(CreatureEntity &creature, DungeonData *dd_ptr)
     auto height = randint1(20) + randint1(20) + 1;
     auto width = randint1(20) + randint1(20) + 1;
 
-    auto center = find_space(player_ptr, dd_ptr, height + 2, width + 2);
+    auto center = find_space(*player_ptr, dd_ptr, height + 2, width + 2);
     if (!center) {
         return false;
     }
