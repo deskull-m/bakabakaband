@@ -14,8 +14,9 @@
 extern int wild_regen;
 
 class PlayerType;
+class CreatureEntity;
 void regenhp(PlayerType *player_ptr, int percent);
 void regenmana(PlayerType *player_ptr, MANA_POINT upkeep_factor, MANA_POINT regen_amount);
 void regenmagic(PlayerType *player_ptr, int regen_amount);
-void regenerate_monsters(PlayerType *player_ptr);
+void regenerate_monsters(CreatureEntity &creature);
 void regenerate_captured_monsters(PlayerType *player_ptr);

@@ -168,15 +168,15 @@ void regenmagic(PlayerType *player_ptr, int regen_amount)
 
 /*!
  * @brief 100ゲームターン毎のモンスターのHP自然回復処理 / Regenerate the monsters (once per 100 game turns)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @note Should probably be done during monster turns.
  */
-void regenerate_monsters(PlayerType *player_ptr)
+void regenerate_monsters(CreatureEntity &creature)
 {
     auto &tracker = HealthBarTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    for (short i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        auto &monster = player_ptr->current_floor_ptr->m_list[i];
+    for (short i = 1; i < creature.current_floor_ptr->m_max; i++) {
+        auto &monster = creature.current_floor_ptr->m_list[i];
         const auto &monrace = monster.get_monrace();
         if (!monster.is_valid()) {
             continue;
@@ -195,7 +195,7 @@ void regenerate_monsters(PlayerType *player_ptr)
             }
 
             // Apply hygiene-based regeneration modifier
-            const auto &grid = player_ptr->current_floor_ptr->get_grid(monster.get_position());
+            const auto &grid = creature.current_floor_ptr->get_grid(monster.get_position());
             const auto &terrain = grid.get_terrain();
             if (terrain.hygiene != 0) {
                 const int hygiene_modifier = 100 + terrain.hygiene;
