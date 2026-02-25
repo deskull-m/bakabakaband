@@ -39,7 +39,7 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 
-static void update_sun_light(PlayerType *player_ptr)
+static void update_sun_light(CreatureEntity &creature)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -53,20 +53,20 @@ static void update_sun_light(PlayerType *player_ptr)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-    if ((player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) != 0) {
-        set_superstealth(*player_ptr, false);
+    if ((creature.current_floor_ptr->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
+        set_superstealth(creature, false);
     }
 }
 
-void day_break(PlayerType *player_ptr)
+void day_break(CreatureEntity &creature)
 {
     msg_print(_("夜が明けた。", "The sun has risen."));
     if (AngbandWorld::get_instance().is_wild_mode()) {
-        update_sun_light(player_ptr);
+        update_sun_light(creature);
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (const auto &pos : floor.get_area()) {
         auto &grid = floor.get_grid(pos);
         grid.add_info(CAVE_GLOW);
@@ -74,21 +74,21 @@ void day_break(PlayerType *player_ptr)
             grid.add_info(CAVE_MARK);
         }
 
-        note_spot(*player_ptr, pos);
+        note_spot(creature, pos);
     }
 
-    update_sun_light(player_ptr);
+    update_sun_light(creature);
 }
 
-void night_falls(PlayerType *player_ptr)
+void night_falls(CreatureEntity &creature)
 {
     msg_print(_("日が沈んだ。", "The sun has fallen."));
     if (AngbandWorld::get_instance().is_wild_mode()) {
-        update_sun_light(player_ptr);
+        update_sun_light(creature);
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (const auto &pos : floor.get_area()) {
         auto &grid = floor.get_grid(pos);
         const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
@@ -100,13 +100,13 @@ void night_falls(PlayerType *player_ptr)
         grid.info &= ~(CAVE_GLOW);
         if (terrain.flags.has_not(Tc::REMEMBER)) {
             grid.info &= ~(CAVE_MARK);
-            note_spot(*player_ptr, pos);
+            note_spot(creature, pos);
         }
     }
 
-    glow_deep_lava_and_bldg(*player_ptr);
+    glow_deep_lava_and_bldg(creature);
 
-    update_sun_light(player_ptr);
+    update_sun_light(creature);
 }
 
 /*!
@@ -271,9 +271,9 @@ static int get_dungeon_feeling(const auto &floor)
  * @brief ダンジョンの雰囲気を更新し、変化があった場合メッセージを表示する
  * / Update dungeon feeling, and announce it if changed
  */
-void update_dungeon_feeling(PlayerType *player_ptr)
+void update_dungeon_feeling(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (!floor.is_underground()) {
         return;
     }
@@ -282,7 +282,7 @@ void update_dungeon_feeling(PlayerType *player_ptr)
         return;
     }
 
-    const auto delay = std::max(10, 150 - player_ptr->skill_fos) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
+    const auto delay = std::max(10, 150 - creature.skill_fos) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
     const auto &world = AngbandWorld::get_instance();
     auto &df = DungeonFeeling::get_instance();
     if (world.game_turn < df.get_turns() + delay && !cheat_xtra) {
@@ -309,11 +309,12 @@ void update_dungeon_feeling(PlayerType *player_ptr)
     }
 
     df.set_feeling(new_feeling);
-    do_cmd_feeling(player_ptr);
-    select_floor_music(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    do_cmd_feeling(&player);
+    select_floor_music(&player);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
     if (disturb_minor) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
     }
 }
 
