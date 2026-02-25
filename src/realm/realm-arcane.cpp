@@ -66,7 +66,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            wizard_lock(player_ptr, dir);
+            wizard_lock(*player_ptr, dir);
         }
     } break;
 
@@ -126,7 +126,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            destroy_door(player_ptr, dir);
+            destroy_door(*player_ptr, dir);
         }
     } break;
 
@@ -302,7 +302,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
                 return tl::nullopt;
             }
 
-            wall_to_mud(player_ptr, dir, base + dice.roll());
+            wall_to_mud(*player_ptr, dir, base + dice.roll());
         }
     } break;
 

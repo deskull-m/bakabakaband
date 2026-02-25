@@ -82,7 +82,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            destroy_door(player_ptr, dir);
+            destroy_door(*player_ptr, dir);
         }
     } break;
 

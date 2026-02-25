@@ -193,7 +193,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            wall_to_mud(player_ptr, dir, base + dice.roll());
+            wall_to_mud(creature, dir, base + dice.roll());
         }
     } break;
 

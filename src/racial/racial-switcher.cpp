@@ -377,7 +377,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
             return false;
         }
 
-        (void)wall_to_mud(player_ptr, dir, 20 + randint1(30));
+        (void)wall_to_mud(*player_ptr, dir, 20 + randint1(30));
         return true;
     }
     case PlayerRaceType::HALF_TITAN:

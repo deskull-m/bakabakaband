@@ -168,7 +168,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_DISARMING: {
-        if (disarm_trap(player_ptr, dir)) {
+        if (disarm_trap(*player_ptr, dir)) {
             ident = true;
         }
         if (powerful && disarm_traps_touch(*player_ptr)) {
@@ -269,7 +269,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
 
     case SV_ROD_STONE_TO_MUD: {
         int dam = powerful ? 40 + randint1(60) : 20 + randint1(30);
-        if (wall_to_mud(player_ptr, dir, dam)) {
+        if (wall_to_mud(*player_ptr, dir, dam)) {
             ident = true;
         }
         break;

@@ -1509,7 +1509,7 @@ bool switch_element_execution(CreatureEntity &creature)
             return false;
         }
 
-        (void)wall_to_mud(&player, dir, plev * 3 / 2);
+        (void)wall_to_mud(player, dir, plev * 3 / 2);
         return true;
     }
     case ElementRealmType::DARKNESS:

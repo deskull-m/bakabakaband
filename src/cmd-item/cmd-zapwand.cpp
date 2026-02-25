@@ -122,7 +122,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_DISARMING: {
-        if (disarm_trap(player_ptr, dir)) {
+        if (disarm_trap(*player_ptr, dir)) {
             ident = true;
         }
         if (powerful && disarm_traps_touch(*player_ptr)) {
@@ -132,7 +132,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
     }
 
     case SV_WAND_TRAP_DOOR_DEST: {
-        if (destroy_door(player_ptr, dir)) {
+        if (destroy_door(*player_ptr, dir)) {
             ident = true;
         }
         if (powerful && destroy_doors_touch(*player_ptr)) {
@@ -143,7 +143,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
 
     case SV_WAND_STONE_TO_MUD: {
         int dam = powerful ? 40 + randint1(60) : 20 + randint1(30);
-        if (wall_to_mud(player_ptr, dir, dam)) {
+        if (wall_to_mud(*player_ptr, dir, dam)) {
             ident = true;
         }
         break;

@@ -127,7 +127,7 @@ bool activate_stone_mud(CreatureEntity &creature)
     }
 
     auto &player = static_cast<PlayerType &>(creature);
-    wall_to_mud(&player, dir, 20 + randint1(30));
+    wall_to_mud(player, dir, 20 + randint1(30));
     return true;
 }
 
