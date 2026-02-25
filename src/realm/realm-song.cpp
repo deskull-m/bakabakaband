@@ -725,7 +725,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
         if (cast) {
             msg_print(_("歌が神聖な場を作り出した．．．", "The holy power of the Music is creating sacred field..."));
-            create_rune_protection_one(player_ptr);
+            create_rune_protection_one(creature);
         }
     } break;
 

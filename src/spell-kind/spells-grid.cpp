@@ -5,6 +5,7 @@
 #include "floor/floor-save.h"
 #include "game-option/birth-options.h"
 #include "grid/grid.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -19,10 +20,10 @@
  * Leave a "rune of protection" which prevents monster movement
  * @return 実際に設置が行われた場合TRUEを返す
  */
-bool create_rune_protection_one(PlayerType *player_ptr)
+bool create_rune_protection_one(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     auto &grid = floor.get_grid(p_pos);
     if (!grid.is_clean()) {
         msg_print(_("床上のアイテムが呪文を跳ね返した。", "The object resists the spell."));
@@ -31,8 +32,8 @@ bool create_rune_protection_one(PlayerType *player_ptr)
 
     grid.info |= CAVE_OBJECT;
     grid.set_terrain_id(TerrainTag::RUNE_PROTECTION, TerrainKind::MIMIC);
-    note_spot(*player_ptr, p_pos);
-    lite_spot(*player_ptr, p_pos);
+    note_spot(creature, p_pos);
+    lite_spot(creature, p_pos);
     return true;
 }
 
