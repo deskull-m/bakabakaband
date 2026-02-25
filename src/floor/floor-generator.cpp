@@ -616,7 +616,7 @@ void generate_floor(PlayerType *player_ptr)
         wipe_monsters_list(player_ptr);
     }
 
-    glow_deep_lava_and_bldg(player_ptr);
+    glow_deep_lava_and_bldg(*player_ptr);
     floor.enter_dungeon(false);
     wipe_generate_random_floor_flags(floor);
 }
