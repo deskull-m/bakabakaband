@@ -720,11 +720,11 @@ void get_mon_num_prep_bounty(PlayerType *player_ptr)
 
 /*!
  * @brief モンスターにPRESENT_AT_TURN_STARTを設定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void mark_monsters_present(PlayerType *player_ptr)
+void mark_monsters_present(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
 
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
         auto &monster = floor.m_list[m_idx];

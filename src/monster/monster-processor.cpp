@@ -195,7 +195,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     auto &monrace = monster.get_monrace();
 
-    mark_monsters_present(&player);
+    mark_monsters_present(player);
 
     turn_flags_ptr->aware = process_stealth(creature, m_idx);
     if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.mflag2.has(MonsterConstantFlagType::FRIENDLY)) {
