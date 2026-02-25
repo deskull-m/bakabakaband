@@ -878,7 +878,7 @@ bool build_type10(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto &floor = *creature.current_floor_ptr;
     const auto xsize = randint1(22) + 22;
     const auto ysize = randint1(11) + 11;
-    const auto center = find_space(&player, dd_ptr, ysize + 1, xsize + 1);
+    const auto center = find_space(player, dd_ptr, ysize + 1, xsize + 1);
     if (!center) {
         return false;
     }
@@ -980,7 +980,7 @@ bool build_fixed_room(CreatureEntity &creature, DungeonData *dd_ptr, int typ, bo
      */
     const auto xsize = more_space ? std::abs(x) + 2 : std::abs(x);
     const auto ysize = more_space ? std::abs(y) + 2 : std::abs(y);
-    const auto center = find_space(&player, dd_ptr, ysize, xsize);
+    const auto center = find_space(player, dd_ptr, ysize, xsize);
     if (!center) {
         return false;
     }

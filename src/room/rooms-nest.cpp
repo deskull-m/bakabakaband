@@ -224,7 +224,7 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    const auto center = find_space(player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }

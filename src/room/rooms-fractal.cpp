@@ -20,12 +20,12 @@ bool build_type9(PlayerType *player_ptr, DungeonData *dd_ptr)
     auto height = randint1(15) * 2 + 6;
 
     auto &floor = *player_ptr->current_floor_ptr;
-    auto center = find_space(player_ptr, dd_ptr, height + 1, width + 1);
+    auto center = find_space(*player_ptr, dd_ptr, height + 1, width + 1);
     if (!center) {
         /* Limit to the minimum room size, and retry */
         width = 8;
         height = 8;
-        center = find_space(player_ptr, dd_ptr, height + 1, width + 1);
+        center = find_space(*player_ptr, dd_ptr, height + 1, width + 1);
         if (!center) {
             /*
              * Still no space?!

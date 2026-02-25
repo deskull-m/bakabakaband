@@ -222,7 +222,7 @@ bool build_type16(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto center = find_space(player_ptr, dd_ptr, town_hgt + 10, town_wid + 10);
+    const auto center = find_space(*player_ptr, dd_ptr, town_hgt + 10, town_wid + 10);
     if (!center) {
         return false;
     }

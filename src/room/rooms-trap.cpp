@@ -31,7 +31,7 @@ bool build_type14(PlayerType *player_ptr, DungeonData *dd_ptr)
     const auto xsize = room_seed_x1 + room_seed_x2 + 1;
     const auto ysize = room_seed_y1 + room_seed_y2 + 1;
 
-    const auto center = find_space(player_ptr, dd_ptr, ysize + 2, xsize + 2);
+    const auto center = find_space(*player_ptr, dd_ptr, ysize + 2, xsize + 2);
     if (!center) {
         return false;
     }

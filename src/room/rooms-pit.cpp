@@ -229,7 +229,7 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    const auto center = find_space(player_ptr, dd_ptr, 11, 25);
+    const auto center = find_space(*player_ptr, dd_ptr, 11, 25);
     if (!center) {
         return false;
     }
@@ -370,7 +370,7 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
         return false;
     }
 
-    const auto center = find_space(player_ptr, dd_ptr, 13, 25);
+    const auto center = find_space(*player_ptr, dd_ptr, 13, 25);
     if (!center) {
         return false;
     }

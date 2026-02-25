@@ -1,5 +1,6 @@
 #include "room/space-finder.h"
 #include "grid/grid.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
@@ -29,9 +30,9 @@ static bool get_is_floor(const FloorType &floor, const Pos2D &pos)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param pos 地形を変えたいマスの座標
  */
-static void set_floor(PlayerType *player_ptr, const Pos2D &pos)
+static void set_floor(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
@@ -42,7 +43,7 @@ static void set_floor(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     if (grid.is_extra()) {
-        place_bold(*player_ptr, pos.y, pos.x, GB_FLOOR);
+        place_bold(creature, pos.y, pos.x, GB_FLOOR);
     }
 }
 
@@ -52,9 +53,9 @@ static void set_floor(PlayerType *player_ptr, const Pos2D &pos)
  * @param pos1 範囲の左上端
  * @param pos2 範囲の右下端
  */
-static void check_room_boundary(PlayerType *player_ptr, const Pos2D &pos1, const Pos2D &pos2)
+static void check_room_boundary(CreatureEntity &creature, const Pos2D &pos1, const Pos2D &pos2)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto count = 0;
     auto old_is_floor = get_is_floor(floor, { pos1.y, pos1.x - 1 });
     bool new_is_floor;
@@ -100,7 +101,7 @@ static void check_room_boundary(PlayerType *player_ptr, const Pos2D &pos1, const
 
     for (auto y = pos1.y; y <= pos2.y; y++) {
         for (auto x = pos1.x; x <= pos2.x; x++) {
-            set_floor(player_ptr, { y, x });
+            set_floor(creature, { y, x });
         }
     }
 }
@@ -180,7 +181,7 @@ static bool find_space_aux(DungeonData *dd_ptr, const Pos2D &max_block_size, con
  * Return TRUE and values for the center of the room if all went well.\n
  * Otherwise, return false.\n
  */
-tl::optional<Pos2D> find_space(PlayerType *player_ptr, DungeonData *dd_ptr, int height, int width)
+tl::optional<Pos2D> find_space(CreatureEntity &creature, DungeonData *dd_ptr, int height, int width)
 {
     const auto blocks_high = 1 + ((height - 1) / BLOCK_HGT);
     const auto blocks_wide = 1 + ((width - 1) / BLOCK_WID);
@@ -204,7 +205,7 @@ tl::optional<Pos2D> find_space(PlayerType *player_ptr, DungeonData *dd_ptr, int 
 
     auto block_y = 0;
     auto block_x = 0;
-    const auto &dungeon = player_ptr->current_floor_ptr->get_dungeon_definition();
+    const auto &dungeon = creature.current_floor_ptr->get_dungeon_definition();
     const auto has_cave = dungeon.flags.has_not(DungeonFeatureType::NO_CAVE);
     auto pick = has_cave ? randint1(candidates) : candidates / 2 + 1;
     for (block_y = dd_ptr->row_rooms - blocks_high; block_y >= 0; block_y--) {
@@ -244,6 +245,6 @@ tl::optional<Pos2D> find_space(PlayerType *player_ptr, DungeonData *dd_ptr, int 
 
     const Pos2D pos1(pos.y - height / 2 - 1, pos.x - width / 2 - 1);
     const Pos2D pos2(pos.y + (height - 1) / 2 + 1, pos.x + (width - 1) / 2 + 1);
-    check_room_boundary(player_ptr, pos1, pos2);
+    check_room_boundary(creature, pos1, pos2);
     return pos;
 }
