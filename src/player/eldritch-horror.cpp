@@ -119,12 +119,12 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
             break;
         }
     } else if (!necro) {
-        get_mon_num_prep_enum(player_ptr, MonraceHook::NIGHTMARE);
+        get_mon_num_prep_enum(*player_ptr, MonraceHook::NIGHTMARE);
         const auto monrace_id = get_mon_num(player_ptr, 0, MAX_DEPTH, PM_NONE);
         auto &monrace = monraces.get_monrace(monrace_id);
         power = monrace.level + 10;
         const auto &desc = monrace.name;
-        get_mon_num_prep_enum(player_ptr);
+        get_mon_num_prep_enum(*player_ptr);
         std::string m_name;
 #ifdef JP
 #else

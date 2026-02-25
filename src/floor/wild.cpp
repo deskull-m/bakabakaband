@@ -443,7 +443,7 @@ void wilderness_gen(PlayerType *player_ptr)
     parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
 
     const auto &pos_wilderness = wilderness.get_player_position();
-    get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook());
+    get_mon_num_prep_enum(*player_ptr, floor.get_monrace_hook());
 
     generate_area(player_ptr, pos_wilderness + Direction(8).vec(), true, false);
     for (auto i = 1; i < MAX_WID - 1; i++) {

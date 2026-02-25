@@ -8,10 +8,9 @@
 
 enum summon_type : int;
 enum class MonraceId : short;
-class PlayerType;
 class CreatureEntity;
-void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1 = MonraceHook::NONE, MonraceHookTerrain hook2 = MonraceHookTerrain::NONE);
-void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook2);
+void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1 = MonraceHook::NONE, MonraceHookTerrain hook2 = MonraceHookTerrain::NONE);
+void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook2);
 
 class SummonCondition {
 public:
@@ -29,7 +28,7 @@ public:
     MonraceHookTerrain hook;
 };
 
-void get_mon_num_prep_summon(PlayerType *player_ptr, const SummonCondition &condition);
+void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &condition);
 
 class ChameleonTransformation {
 public:
@@ -53,7 +52,7 @@ public:
     bool is_unique;
     tl::optional<short> summoner_m_idx;
 };
-void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransformation &ct);
+void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransformation &ct);
 void get_mon_num_prep_bounty(CreatureEntity &creature);
 void mark_monsters_present(CreatureEntity &creature);
 bool is_player(MONSTER_IDX m_idx);

@@ -267,9 +267,10 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
  *
  * get_mon_num() を呼ぶ前に get_mon_num_prep() 系関数のいずれかを呼ぶこと。
  */
-void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHookTerrain hook2)
+void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceHookTerrain hook2)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -282,7 +283,7 @@ void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHoo
             continue;
         }
 
-        if (!do_hook(player_ptr, hook1, monrace_id)) {
+        if (!do_hook(&player, hook1, monrace_id)) {
             continue;
         }
 
@@ -314,8 +315,8 @@ void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHoo
         mfdi.update(entry.prob2, entry.level);
 
         // フロアの現在所属アライアンスに応じた生成率修正
-        if (player_ptr->current_floor_ptr->allianceID != AllianceType::NONE) {
-            if (entry.is_same_alliance(player_ptr->current_floor_ptr->allianceID)) {
+        if (creature.current_floor_ptr->allianceID != AllianceType::NONE) {
+            if (entry.is_same_alliance(creature.current_floor_ptr->allianceID)) {
                 entry.prob2 *= ALLIANCE_GENERATE_RATE;
             } else {
                 entry.prob2 /= ALLIANCE_GENERATE_RATE;
@@ -392,9 +393,10 @@ static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_i
  * @param m_idx 護衛されるモンスターのフロア内インデックス
  * @param hook 生成の地形条件
  */
-void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook)
+void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -407,7 +409,7 @@ void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_
             continue;
         }
 
-        if (!place_monster_can_escort(player_ptr, monrace_id, escorted_monrace_id, m_idx)) {
+        if (!place_monster_can_escort(&player, monrace_id, escorted_monrace_id, m_idx)) {
             continue;
         }
 
@@ -497,9 +499,10 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param SummonCondition 生成制約
  */
-void get_mon_num_prep_summon(PlayerType *player_ptr, const SummonCondition &condition)
+void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &condition)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -512,7 +515,7 @@ void get_mon_num_prep_summon(PlayerType *player_ptr, const SummonCondition &cond
             continue;
         }
 
-        if (!summon_specific_okay(player_ptr, monrace_id, condition)) {
+        if (!summon_specific_okay(&player, monrace_id, condition)) {
             continue;
         }
 
@@ -646,9 +649,10 @@ static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransf
  * @param ct カメレオンの変身情報
  * @details get_mon_num() を呼ぶ前に get_mon_num_prep 系関数のいずれかを呼ぶこと。
  */
-void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransformation &ct)
+void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransformation &ct)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -662,7 +666,7 @@ void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransform
             continue;
         }
 
-        if (!hook_func(player_ptr, ct, monrace_id)) {
+        if (!hook_func(&player, ct, monrace_id)) {
             continue;
         }
 

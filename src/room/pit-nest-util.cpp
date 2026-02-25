@@ -19,16 +19,16 @@ void nest_pit_type::prepare_filter(PlayerType *player_ptr) const
     case PitNestHook::NONE:
         break;
     case PitNestHook::CLONE: {
-        get_mon_num_prep_enum(player_ptr, MonraceHook::VAULT);
+        get_mon_num_prep_enum(*player_ptr, MonraceHook::VAULT);
         const auto monrace_id = get_mon_num(player_ptr, 0, player_ptr->current_floor_ptr->dun_level + 10, PM_NONE);
         filter.set_monrace_id(monrace_id);
-        get_mon_num_prep_enum(player_ptr);
+        get_mon_num_prep_enum(*player_ptr);
         break;
     }
     case PitNestHook::SYMBOL: {
-        get_mon_num_prep_enum(player_ptr, MonraceHook::VAULT);
+        get_mon_num_prep_enum(*player_ptr, MonraceHook::VAULT);
         const auto monrace_id = get_mon_num(player_ptr, 0, player_ptr->current_floor_ptr->dun_level + 10, PM_NONE);
-        get_mon_num_prep_enum(player_ptr);
+        get_mon_num_prep_enum(*player_ptr);
         const auto symbol = MonraceList::get_instance().get_monrace(monrace_id).symbol_definition.character;
         filter.set_monrace_symbol(symbol);
         break;

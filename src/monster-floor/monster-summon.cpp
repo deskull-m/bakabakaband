@@ -57,7 +57,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
 
     const auto hook = floor.get_monrace_hook_terrain_at(*pos);
     SummonCondition condition(type, mode, summoner_m_idx, hook);
-    get_mon_num_prep_summon(&player, condition);
+    get_mon_num_prep_summon(player, condition);
 
     auto dlev = MAX_DEPTH;
     if (!(mode & PM_IGNORE_LEVEL)) {

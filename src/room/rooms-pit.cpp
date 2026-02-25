@@ -220,7 +220,7 @@ bool build_type6(CreatureEntity &creature, DungeonData *dd_ptr)
 
     const auto &pit = pit_types.at(*pit_type);
     pit.prepare_filter(player_ptr);
-    get_mon_num_prep_enum(player_ptr, pit.monrace_hook);
+    get_mon_num_prep_enum(*player_ptr, pit.monrace_hook);
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;
 
@@ -362,7 +362,7 @@ bool build_type13(CreatureEntity &creature, DungeonData *dd_ptr)
 
     const auto &pit = pit_types.at(*pit_type);
     pit.prepare_filter(player_ptr);
-    get_mon_num_prep_enum(player_ptr, pit.monrace_hook, MonraceHookTerrain::TRAPPED_PIT);
+    get_mon_num_prep_enum(*player_ptr, pit.monrace_hook, MonraceHookTerrain::TRAPPED_PIT);
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;
     auto whats = pick_pit_monraces(creature, align);
