@@ -65,7 +65,8 @@ enum class TrapType {
 
 extern const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps;
 
+class CreatureEntity;
 class FloorType;
 class PlayerType;
-void disclose_grid(PlayerType *player_ptr, const Pos2D &pos);
+void disclose_grid(CreatureEntity &creature, const Pos2D &pos);
 void hit_trap(PlayerType *player_ptr, bool break_trap);

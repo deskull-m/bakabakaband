@@ -8,6 +8,7 @@
 #include "grid/trap.h"
 #include "object/tval-types.h"
 #include "perception/object-perception.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
