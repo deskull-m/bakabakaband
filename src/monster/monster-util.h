@@ -54,7 +54,7 @@ public:
     tl::optional<short> summoner_m_idx;
 };
 void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransformation &ct);
-void get_mon_num_prep_bounty(PlayerType *player_ptr);
+void get_mon_num_prep_bounty(CreatureEntity &creature);
 void mark_monsters_present(CreatureEntity &creature);
 bool is_player(MONSTER_IDX m_idx);
 bool is_monster(MONSTER_IDX m_idx);
