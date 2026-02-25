@@ -9,6 +9,7 @@
 enum summon_type : int;
 enum class MonraceId : short;
 class PlayerType;
+class CreatureEntity;
 void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1 = MonraceHook::NONE, MonraceHookTerrain hook2 = MonraceHookTerrain::NONE);
 void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook2);
 
@@ -54,6 +55,6 @@ public:
 };
 void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransformation &ct);
 void get_mon_num_prep_bounty(PlayerType *player_ptr);
-void mark_monsters_present(PlayerType *player_ptr);
+void mark_monsters_present(CreatureEntity &creature);
 bool is_player(MONSTER_IDX m_idx);
 bool is_monster(MONSTER_IDX m_idx);
