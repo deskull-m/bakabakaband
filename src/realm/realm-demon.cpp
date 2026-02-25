@@ -417,7 +417,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 26: {
         if (cast) {
-            discharge_minion(player_ptr);
+            discharge_minion(*player_ptr);
         }
     } break;
 
