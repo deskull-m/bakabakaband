@@ -68,7 +68,7 @@ void WorldTurnProcessor::process_world()
     const int prev_turn_in_today = ((world.game_turn - TURNS_PER_TICK) % a_day + a_day / 4) % a_day;
     const int prev_min = (1440 * prev_turn_in_today / a_day) % 60;
     std::tie(std::ignore, this->hour, this->min) = world.extract_date_time(InnerGameData::get_instance().get_start_race());
-    update_dungeon_feeling(this->player_ptr);
+    update_dungeon_feeling(*this->player_ptr);
     process_downward();
     process_monster_arena();
     if (world.game_turn % TURNS_PER_TICK) {
@@ -264,9 +264,9 @@ void WorldTurnProcessor::process_change_daytime_night()
         if (!(world.game_turn % ((TURNS_PER_TICK * TOWN_DAWN) / 2))) {
             auto dawn = world.game_turn % (TURNS_PER_TICK * TOWN_DAWN) == 0;
             if (dawn) {
-                day_break(this->player_ptr);
+                day_break(*this->player_ptr);
             } else {
-                night_falls(this->player_ptr);
+                night_falls(*this->player_ptr);
             }
         }
 
