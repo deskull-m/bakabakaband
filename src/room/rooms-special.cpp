@@ -134,7 +134,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Place a potion */
-        place_object(player_ptr, *center, AM_NO_FIXED_ART, kind_is_potion);
+        place_object(*player_ptr, *center, AM_NO_FIXED_ART, kind_is_potion);
         floor.get_grid(*center).info |= CAVE_ICKY;
     } break;
 
@@ -169,7 +169,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Place an object */
-        place_object(player_ptr, *center, AM_NO_FIXED_ART);
+        place_object(*player_ptr, *center, AM_NO_FIXED_ART);
         floor.get_grid(*center).info |= CAVE_ICKY;
     } break;
 
@@ -203,11 +203,11 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
 
         /* Place two potions */
         if (one_in_(2)) {
-            place_object(player_ptr, *center + Direction(4).vec(), AM_NO_FIXED_ART, kind_is_potion);
-            place_object(player_ptr, *center + Direction(6).vec(), AM_NO_FIXED_ART, kind_is_potion);
+            place_object(*player_ptr, *center + Direction(4).vec(), AM_NO_FIXED_ART, kind_is_potion);
+            place_object(*player_ptr, *center + Direction(6).vec(), AM_NO_FIXED_ART, kind_is_potion);
         } else {
-            place_object(player_ptr, *center + Direction(8).vec(), AM_NO_FIXED_ART, kind_is_potion);
-            place_object(player_ptr, *center + Direction(2).vec(), AM_NO_FIXED_ART, kind_is_potion);
+            place_object(*player_ptr, *center + Direction(8).vec(), AM_NO_FIXED_ART, kind_is_potion);
+            place_object(*player_ptr, *center + Direction(2).vec(), AM_NO_FIXED_ART, kind_is_potion);
         }
 
         for (auto y = center->y - 2; y <= center->y + 2; y++) {

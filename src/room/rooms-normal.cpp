@@ -399,7 +399,7 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Place a treasure in the vault */
-        place_object(player_ptr, *center, 0);
+        place_object(*player_ptr, *center, 0);
 
         /* Let's guard the treasure well */
         vault_monsters(*player_ptr, *center, randint0(2) + 3);
@@ -611,7 +611,7 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         vault_monsters(*player_ptr, *center, randint1(3) + 2);
 
         if (evaluate_percent(80)) {
-            place_object(player_ptr, *center, 0);
+            place_object(*player_ptr, *center, 0);
         } else {
             floor.place_random_stairs(*center);
         }
@@ -687,10 +687,10 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
 
             /* Objects */
             if (one_in_(3)) {
-                place_object(player_ptr, *center + Pos2DVec(0, -2), 0);
+                place_object(*player_ptr, *center + Pos2DVec(0, -2), 0);
             }
             if (one_in_(3)) {
-                place_object(player_ptr, *center + Pos2DVec(0, 2), 0);
+                place_object(*player_ptr, *center + Pos2DVec(0, 2), 0);
             }
         }
 
@@ -897,7 +897,7 @@ bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
         build_small_room(creature, center->x, center->y);
 
         /* Place a treasure in the vault */
-        place_object(player_ptr, *center, 0);
+        place_object(*player_ptr, *center, 0);
 
         /* Let's guard the treasure well */
         vault_monsters(*player_ptr, *center, randint0(2) + 3);

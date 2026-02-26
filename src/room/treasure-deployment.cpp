@@ -42,7 +42,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
         place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
         floor.monster_level = floor.base_level;
         floor.object_level = floor.base_level + 20;
-        place_object(&player, pos, AM_GOOD);
+        place_object(player, pos, AM_GOOD);
         floor.object_level = floor.base_level;
         return;
     }
@@ -52,7 +52,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
         place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
         floor.monster_level = floor.base_level;
         floor.object_level = floor.base_level + 10;
-        place_object(&player, pos, AM_GOOD);
+        place_object(player, pos, AM_GOOD);
         floor.object_level = floor.base_level;
         return;
     }
@@ -71,7 +71,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
 
     if (value < 23) {
         if (one_in_(4)) {
-            place_object(&player, pos, 0);
+            place_object(player, pos, 0);
             return;
         }
         floor.place_trap_at(pos);
@@ -94,7 +94,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
         }
         if (one_in_(2)) {
             floor.object_level = floor.base_level + 7;
-            place_object(&player, pos, 0);
+            place_object(player, pos, 0);
             floor.object_level = floor.base_level;
         }
         return;
@@ -116,7 +116,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
     }
 
     if (one_in_(2)) {
-        place_object(&player, pos, 0);
+        place_object(player, pos, 0);
     }
 }
 }

@@ -179,13 +179,13 @@ void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_typ
             floor.get_grid(pos).info &= ~(CAVE_FLOOR);
             break;
         case ALLOC_TYP_GOLD:
-            place_gold(player_ptr, pos);
+            place_gold(*player_ptr, pos);
             break;
         case ALLOC_TYP_OBJECT:
-            place_object(player_ptr, pos, 0);
+            place_object(*player_ptr, pos, 0);
             break;
         case ALLOC_TYP_SUSHI:
-            place_object(player_ptr, pos, AM_IGNORE_LEVEL, kind_is_sushi);
+            place_object(*player_ptr, pos, AM_IGNORE_LEVEL, kind_is_sushi);
             break;
         case ALLOC_TYP_SPECIFIC_ITEMS:
             // This case is handled by alloc_specific_floor_items function

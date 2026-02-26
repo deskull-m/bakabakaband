@@ -95,9 +95,9 @@ void vault_objects(CreatureEntity &creature, const Pos2D &pos_center, int num)
             }
 
             if (evaluate_percent(75)) {
-                place_object(&player, pos, 0);
+                place_object(player, pos, 0);
             } else {
-                place_gold(&player, pos);
+                place_gold(player, pos);
             }
 
             break;
