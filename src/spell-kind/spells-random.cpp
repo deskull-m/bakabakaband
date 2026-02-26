@@ -490,7 +490,7 @@ void cast_wonder(CreatureEntity &creature, const Direction &dir)
     }
 
     if (die < 106) {
-        (void)destroy_area(&player, creature.y, creature.x, 13 + randint0(5), false);
+        (void)destroy_area(creature, creature.y, creature.x, 13 + randint0(5), false);
         return;
     }
 

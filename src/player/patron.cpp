@@ -467,7 +467,7 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_DESTRUCT:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「死と破壊こそ我が喜びなり！」", "'Death and destruction! This pleaseth me!'"));
-            (void)destroy_area(this->player_ptr, this->player_ptr->y, this->player_ptr->x, 25, false);
+            (void)destroy_area(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, 25, false);
             reward = _("ダンジョンが*破壊*された。", "*destruct*ing dungeon");
             break;
         case REW_GENOCIDE:

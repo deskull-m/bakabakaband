@@ -561,7 +561,7 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
     } else if (die < 104) {
         earthquake(creature, creature.get_position(), 12);
     } else if (die < 106) {
-        (void)destroy_area(&player, creature.y, creature.x, 13 + randint0(5), false);
+        (void)destroy_area(creature, creature.y, creature.x, 13 + randint0(5), false);
     } else if (die < 108) {
         symbol_genocide(&player, plev + 50, true);
     } else if (die < 110) {

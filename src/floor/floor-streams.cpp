@@ -430,6 +430,6 @@ void destroy_level(CreatureEntity &creature)
         x1 = rand_range(5, floor.width - 1 - 5);
         y1 = rand_range(5, floor.height - 1 - 5);
 
-        (void)destroy_area(&player, y1, x1, 15, true);
+        (void)destroy_area(player, y1, x1, 15, true);
     }
 }
