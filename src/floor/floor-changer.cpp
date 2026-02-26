@@ -296,7 +296,7 @@ static void new_floor_allocation(PlayerType *player_ptr, saved_floor_type *sf_pt
             delete_i_idx_list.push_back(static_cast<OBJECT_IDX>(i_idx));
         }
     }
-    delete_items(player_ptr, std::move(delete_i_idx_list));
+    delete_items(*player_ptr, std::move(delete_i_idx_list));
 
     (void)place_quest_monsters(player_ptr);
     GAME_TURN alloc_times = absence_ticks / alloc_chance;

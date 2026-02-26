@@ -318,7 +318,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
                     }
                 }
 
-                delete_all_items_from_floor(&player, pos);
+                delete_all_items_from_floor(player, pos);
             }
 
             /* Clear previous contents, add proper vein type */

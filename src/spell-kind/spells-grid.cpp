@@ -83,7 +83,7 @@ void stair_creation(CreatureEntity &creature)
         return;
     }
 
-    delete_all_items_from_floor(&player, creature.get_position());
+    delete_all_items_from_floor(player, creature.get_position());
     auto *sf_ptr = get_sf_ptr(creature.floor_id);
     if (!sf_ptr) {
         creature.floor_id = get_unused_floor_id(&player);

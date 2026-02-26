@@ -95,6 +95,6 @@ void compact_objects(PlayerType *player_ptr, int size)
         }
 
         deleted_num += delete_i_idx_list.size();
-        delete_items(player_ptr, std::move(delete_i_idx_list));
+        delete_items(*player_ptr, std::move(delete_i_idx_list));
     }
 }
