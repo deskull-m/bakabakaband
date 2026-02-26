@@ -51,7 +51,7 @@ tl::optional<std::array<NestMonsterInfo, NUM_NEST_MON_TYPE>> pick_nest_monraces(
     std::array<NestMonsterInfo, NUM_NEST_MON_TYPE> nest_mon_info_list{};
     const auto &monraces = MonraceList::get_instance();
     for (auto &nest_mon_info : nest_mon_info_list) {
-        const auto monrace_id = select_pit_nest_monrace_id(player_ptr, align, 11);
+        const auto monrace_id = select_pit_nest_monrace_id(*player_ptr, align, 11);
         if (!monrace_id) {
             return tl::nullopt;
         }
@@ -214,7 +214,7 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     const auto &nest = nest_types.at(*nest_type);
-    nest.prepare_filter(player_ptr);
+    nest.prepare_filter(*player_ptr);
     get_mon_num_prep_enum(*player_ptr, nest.monrace_hook);
     MonsterEntity align;
     align.sub_align = SUB_ALIGN_NEUTRAL;

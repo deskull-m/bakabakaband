@@ -4,6 +4,7 @@
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
@@ -12,23 +13,24 @@
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
 
-void nest_pit_type::prepare_filter(PlayerType *player_ptr) const
+void nest_pit_type::prepare_filter(CreatureEntity &creature) const
 {
+    auto &player = static_cast<PlayerType &>(creature);
     auto &filter = PitNestFilter::get_instance();
     switch (this->pn_hook) {
     case PitNestHook::NONE:
         break;
     case PitNestHook::CLONE: {
-        get_mon_num_prep_enum(*player_ptr, MonraceHook::VAULT);
-        const auto monrace_id = get_mon_num(player_ptr, 0, player_ptr->current_floor_ptr->dun_level + 10, PM_NONE);
+        get_mon_num_prep_enum(creature, MonraceHook::VAULT);
+        const auto monrace_id = get_mon_num(&player, 0, creature.current_floor_ptr->dun_level + 10, PM_NONE);
         filter.set_monrace_id(monrace_id);
-        get_mon_num_prep_enum(*player_ptr);
+        get_mon_num_prep_enum(creature);
         break;
     }
     case PitNestHook::SYMBOL: {
-        get_mon_num_prep_enum(*player_ptr, MonraceHook::VAULT);
-        const auto monrace_id = get_mon_num(player_ptr, 0, player_ptr->current_floor_ptr->dun_level + 10, PM_NONE);
-        get_mon_num_prep_enum(*player_ptr);
+        get_mon_num_prep_enum(creature, MonraceHook::VAULT);
+        const auto monrace_id = get_mon_num(&player, 0, creature.current_floor_ptr->dun_level + 10, PM_NONE);
+        get_mon_num_prep_enum(creature);
         const auto symbol = MonraceList::get_instance().get_monrace(monrace_id).symbol_definition.character;
         filter.set_monrace_symbol(symbol);
         break;
@@ -105,12 +107,13 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
  * @return モンスター種族ID (見つからなかったらnullopt)
  * @details Nestにはそのフロアの通常レベルより11高いモンスターを中心に選ぶ
  */
-tl::optional<MonraceId> select_pit_nest_monrace_id(PlayerType *player_ptr, MonsterEntity &align, int boost)
+tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, MonsterEntity &align, int boost)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monraces = MonraceList::get_instance();
     for (auto attempts = 100; attempts > 0; attempts--) {
-        const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level + boost, PM_NONE);
+        const auto monrace_id = get_mon_num(&player, 0, floor.dun_level + boost, PM_NONE);
         const auto &monrace = monraces.get_monrace(monrace_id);
         if (monster_has_hostile_to_other_monster(align, monrace)) {
             continue;

@@ -44,7 +44,7 @@ enum class PitNestHook {
 /*! pit/nest型情報の構造体定義 */
 enum class MonraceHook;
 enum class MonraceId : short;
-class PlayerType;
+class CreatureEntity;
 struct nest_pit_type {
     std::string name; //<! 部屋名
     MonraceHook monrace_hook; //<! モンスター種別フィルタ
@@ -52,7 +52,7 @@ struct nest_pit_type {
     int level; //<! 相当階
     int chance; //!< 生成確率
 
-    void prepare_filter(PlayerType *player_ptr) const;
+    void prepare_filter(CreatureEntity &creature) const;
 };
 
 /*! デバッグ時にnestのモンスター情報を確認するための構造体 / A struct for nest monster information with cheat_hear */
@@ -70,4 +70,4 @@ class FloorType;
 class MonsterEntity;
 tl::optional<NestKind> pick_nest_type(const FloorType &floor, const std::map<NestKind, nest_pit_type> &np_types);
 tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKind, nest_pit_type> &np_types);
-tl::optional<MonraceId> select_pit_nest_monrace_id(PlayerType *player_ptr, MonsterEntity &align, int boost);
+tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, MonsterEntity &align, int boost);
