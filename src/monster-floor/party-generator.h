@@ -2,6 +2,6 @@
 
 #include "util/point-2d.h"
 
-class PlayerType;
+class CreatureEntity;
 
-bool alloc_creature_party(PlayerType *player_ptr, const Pos2D &pos_center);
+bool alloc_creature_party(CreatureEntity &creature, const Pos2D &pos_center);

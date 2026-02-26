@@ -474,7 +474,7 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
         if (one_in_(30)) {
             // ランダムな位置を決定
             Pos2D pos(randint0(floor.height), randint0(floor.width));
-            if (alloc_creature_party(&player, pos)) {
+            if (alloc_creature_party(player, pos)) {
                 // パーティ生成に成功した場合、このイテレーションをスキップ
                 continue;
             }
