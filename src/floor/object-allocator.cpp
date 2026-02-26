@@ -45,9 +45,9 @@ static int next_to_walls(const FloorType &floor, const Pos2D &pos)
  * @param walls 最低減隣接させたい外壁の数
  * @return 階段を生成して問題がないならばTRUEを返す。
  */
-static bool alloc_stairs_aux(PlayerType *player_ptr, const Pos2D &pos, int walls)
+static bool alloc_stairs_aux(const CreatureEntity &creature, const Pos2D &pos, int walls)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
     if (!grid.is_floor() || grid.has(TerrainCharacteristics::PATTERN) || !grid.o_idx_list.empty() || grid.has_monster() || next_to_walls(floor, pos) < walls) {
         return false;
@@ -64,11 +64,11 @@ static bool alloc_stairs_aux(PlayerType *player_ptr, const Pos2D &pos, int walls
  * @param walls 最低減隣接させたい外壁の数
  * @return 規定数通りに生成に成功したらTRUEを返す。
  */
-bool alloc_stairs(PlayerType *player_ptr, FEAT_IDX feat, int num, int walls)
+bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls)
 {
     int shaft_num = 0;
     const auto &terrain = TerrainList::get_instance().get_terrain(feat);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (terrain.flags.has(TerrainCharacteristics::LESS)) {
         if (ironman_downward || !floor.is_underground()) {
@@ -101,7 +101,7 @@ bool alloc_stairs(PlayerType *player_ptr, FEAT_IDX feat, int num, int walls)
 
     for (auto i = 0; i < num; i++) {
         while (true) {
-            const auto can_alloc_stair = [&](const Pos2D &pos) { return alloc_stairs_aux(player_ptr, pos, walls); };
+            const auto can_alloc_stair = [&](const Pos2D &pos) { return alloc_stairs_aux(creature, pos, walls); };
             const auto pos_candidates =
                 floor.get_area(FloorBoundary::OUTER_WALL_INCLUSIVE) |
                 ranges::views::filter(can_alloc_stair) |
@@ -135,10 +135,11 @@ bool alloc_stairs(PlayerType *player_ptr, FEAT_IDX feat, int num, int walls)
  * @param num 配置したい数
  * @return 規定数通りに生成に成功したらTRUEを返す。
  */
-void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type typ, int num)
+void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_type typ, int num)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto dummy = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     num = num * floor.height * floor.width / (MAX_HGT * MAX_WID) + 1;
     for (auto k = 0; k < num; k++) {
         Pos2D pos(0, 0);
@@ -151,7 +152,7 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
                 continue;
             }
 
-            if (player_ptr->is_located_at(pos)) {
+            if (creature.is_located_at(pos)) {
                 continue;
             }
 
@@ -199,9 +200,10 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
  * @brief 特定階層でのダイスベースアイテム生成 / Generate items on specific floors using dice rules
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void alloc_specific_floor_items(PlayerType *player_ptr)
+void alloc_specific_floor_items(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_generated_dungeon_definition();
 
     // 現在の階層に特定のアイテム生成ルールがあるかチェック
@@ -239,12 +241,12 @@ void alloc_specific_floor_items(PlayerType *player_ptr)
                 continue;
             }
 
-            if (player_ptr->is_located_at(pos)) {
+            if (creature.is_located_at(pos)) {
                 continue;
             }
 
             // アイテムを床に配置
-            drop_near(*player_ptr, item, pos, false);
+            drop_near(creature, item, pos, false);
             break;
         }
 

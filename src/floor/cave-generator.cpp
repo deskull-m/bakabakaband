@@ -305,12 +305,12 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
 
     make_doors(creature, dd_ptr, dt_ptr);
     const auto &terrains = TerrainList::get_instance();
-    if (!alloc_stairs(&player, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3)) {
+    if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3)) {
         dd_ptr->why = _("下り階段生成に失敗", "Failed to generate down stairs.");
         return false;
     }
 
-    if (!alloc_stairs(&player, terrains.get_terrain_id(TerrainTag::UP_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3)) {
+    if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::UP_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3)) {
         dd_ptr->why = _("上り階段生成に失敗", "Failed to generate up stairs.");
         return false;
     }
@@ -318,7 +318,7 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
     // ポータル配置処理（1/3の確率で1～2個配置）
     if (one_in_(3)) {
         const auto portal_num = randint1(2);
-        if (!alloc_stairs(&player, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
+        if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
             // ポータル配置失敗は警告のみで処理継続
             msg_print_wizard(&player, CHEAT_DUNGEON, _("ポータル生成に失敗", "Failed to generate portals."));
         }
@@ -334,12 +334,12 @@ static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, c
         const auto &floor = *creature.current_floor_ptr;
         build_maze_vault(player, { floor.height / 2 - 1, floor.width / 2 - 1 }, { floor.height - 4, floor.width - 4 }, false);
         const auto &terrains = TerrainList::get_instance();
-        if (!alloc_stairs(&player, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), rand_range(2, 3), 3)) {
+        if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), rand_range(2, 3), 3)) {
             dd_ptr->why = _("迷宮ダンジョンの下り階段生成に失敗", "Failed to alloc up stairs in maze dungeon.");
             return false;
         }
 
-        if (!alloc_stairs(&player, terrains.get_terrain_id(TerrainTag::UP_STAIR), 1, 3)) {
+        if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::UP_STAIR), 1, 3)) {
             dd_ptr->why = _("迷宮ダンジョンの上り階段生成に失敗", "Failed to alloc down stairs in maze dungeon.");
             return false;
         }
@@ -347,7 +347,7 @@ static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, c
         // 迷宮ダンジョンでもポータル配置処理（1/3の確率で1～2個配置）
         if (one_in_(3)) {
             const auto portal_num = randint1(2);
-            if (!alloc_stairs(&player, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
+            if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
                 // ポータル配置失敗は警告のみで処理継続
                 msg_print_wizard(&player, CHEAT_DUNGEON, _("迷宮ダンジョンのポータル生成に失敗", "Failed to generate portals in maze dungeon."));
             }
@@ -484,9 +484,9 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
         (void)alloc_monster(&player, 0, PM_ALLOW_SLEEP, summon_specific);
     }
 
-    alloc_object(&player, ALLOC_SET_BOTH, ALLOC_TYP_TRAP, randint1(dd_ptr->alloc_object_num * dungeon.trap_rate / 100));
+    alloc_object(creature, ALLOC_SET_BOTH, ALLOC_TYP_TRAP, randint1(dd_ptr->alloc_object_num * dungeon.trap_rate / 100));
     if (dungeon.flags.has_not(DungeonFeatureType::NO_CAVE)) {
-        alloc_object(&player, ALLOC_SET_CORR, ALLOC_TYP_RUBBLE, randint1(dd_ptr->alloc_object_num));
+        alloc_object(creature, ALLOC_SET_CORR, ALLOC_TYP_RUBBLE, randint1(dd_ptr->alloc_object_num));
     }
 
     if (floor.is_entering_dungeon() && floor.dun_level > 1) {
@@ -494,14 +494,14 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
     }
 
     constexpr auto alloc_room = 45;
-    alloc_object(&player, ALLOC_SET_ROOM, ALLOC_TYP_OBJECT, randnor(alloc_room, 3));
+    alloc_object(creature, ALLOC_SET_ROOM, ALLOC_TYP_OBJECT, randnor(alloc_room, 3));
     constexpr auto alloc_item = 15;
-    alloc_object(&player, ALLOC_SET_BOTH, ALLOC_TYP_OBJECT, randnor(alloc_item, 3));
+    alloc_object(creature, ALLOC_SET_BOTH, ALLOC_TYP_OBJECT, randnor(alloc_item, 3));
     constexpr auto alloc_gold = 15;
-    alloc_object(&player, ALLOC_SET_BOTH, ALLOC_TYP_GOLD, randnor(alloc_gold, 3));
+    alloc_object(creature, ALLOC_SET_BOTH, ALLOC_TYP_GOLD, randnor(alloc_gold, 3));
 
     // 特定階層でのダイスベースアイテム生成
-    alloc_specific_floor_items(&player);
+    alloc_specific_floor_items(creature);
 
     floor.object_level = floor.base_level;
     if (alloc_guardian(&player, true)) {
