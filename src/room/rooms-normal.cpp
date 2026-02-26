@@ -402,7 +402,7 @@ bool build_type3(CreatureEntity &creature, DungeonData *dd_ptr)
         place_object(player_ptr, *center, 0);
 
         /* Let's guard the treasure well */
-        vault_monsters(player_ptr, *center, randint0(2) + 3);
+        vault_monsters(*player_ptr, *center, randint0(2) + 3);
 
         /* Traps naturally */
         vault_traps(floor, *center, { 4, 4 }, randint0(3) + 2);
@@ -557,7 +557,7 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Place a monster in the room */
-        vault_monsters(player_ptr, *center, 1);
+        vault_monsters(*player_ptr, *center, 1);
 
         break;
     }
@@ -608,7 +608,7 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Monsters to guard the "treasure" */
-        vault_monsters(player_ptr, *center, randint1(3) + 2);
+        vault_monsters(*player_ptr, *center, randint1(3) + 2);
 
         if (evaluate_percent(80)) {
             place_object(player_ptr, *center, 0);
@@ -682,8 +682,8 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
             place_secret_door(*player_ptr, { center->y - 3 + (randint1(2) * 2), center->x + 3 }, door_type);
 
             /* Monsters */
-            vault_monsters(player_ptr, *center + Pos2DVec(0, -2), randint1(2));
-            vault_monsters(player_ptr, *center + Pos2DVec(0, 2), randint1(2));
+            vault_monsters(*player_ptr, *center + Pos2DVec(0, -2), randint1(2));
+            vault_monsters(*player_ptr, *center + Pos2DVec(0, 2), randint1(2));
 
             /* Objects */
             if (one_in_(3)) {
@@ -725,15 +725,15 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Monsters just love mazes. */
-        vault_monsters(player_ptr, *center + Pos2DVec(0, -5), randint1(3));
-        vault_monsters(player_ptr, *center + Pos2DVec(0, 5), randint1(3));
+        vault_monsters(*player_ptr, *center + Pos2DVec(0, -5), randint1(3));
+        vault_monsters(*player_ptr, *center + Pos2DVec(0, 5), randint1(3));
 
         /* Traps make them entertaining. */
         vault_traps(floor, *center + Pos2DVec(0, -3), { 2, 8 }, randint1(3));
         vault_traps(floor, *center + Pos2DVec(0, 3), { 2, 8 }, randint1(3));
 
         /* Mazes should have some treasure too. */
-        vault_objects(player_ptr, *center, 3);
+        vault_objects(*player_ptr, *center, 3);
 
         break;
     }
@@ -769,13 +769,13 @@ bool build_type4(CreatureEntity &creature, DungeonData *dd_ptr)
         }
 
         /* Treasure, centered at the center of the cross */
-        vault_objects(player_ptr, *center, 2 + randint1(2));
+        vault_objects(*player_ptr, *center, 2 + randint1(2));
 
         /* Gotta have some monsters. */
-        vault_monsters(player_ptr, *center + Pos2DVec(1, -4), randint1(4));
-        vault_monsters(player_ptr, *center + Pos2DVec(1, 4), randint1(4));
-        vault_monsters(player_ptr, *center + Pos2DVec(-1, -4), randint1(4));
-        vault_monsters(player_ptr, *center + Pos2DVec(-1, 4), randint1(4));
+        vault_monsters(*player_ptr, *center + Pos2DVec(1, -4), randint1(4));
+        vault_monsters(*player_ptr, *center + Pos2DVec(1, 4), randint1(4));
+        vault_monsters(*player_ptr, *center + Pos2DVec(-1, -4), randint1(4));
+        vault_monsters(*player_ptr, *center + Pos2DVec(-1, 4), randint1(4));
 
         break;
     }
@@ -900,7 +900,7 @@ bool build_type12(CreatureEntity &creature, DungeonData *dd_ptr)
         place_object(player_ptr, *center, 0);
 
         /* Let's guard the treasure well */
-        vault_monsters(player_ptr, *center, randint0(2) + 3);
+        vault_monsters(*player_ptr, *center, randint0(2) + 3);
 
         /* Traps naturally */
         vault_traps(floor, *center, { 4, 4 }, randint0(3) + 2);

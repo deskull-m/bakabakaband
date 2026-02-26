@@ -5,6 +5,7 @@
 #include "grid/object-placer.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/place-monster-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -14,19 +15,19 @@
 /*
  * Grid based version of "creature_bold()"
  */
-static bool player_grid(PlayerType *player_ptr, const Grid &grid)
+static bool player_grid(const CreatureEntity &creature, const Grid &grid)
 {
-    return &grid == &player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x];
+    return &grid == &creature.current_floor_ptr->grid_array[creature.y][creature.x];
 }
 
 /*
  * Grid based version of "cave_empty_bold()"
  */
-static bool is_cave_empty_grid(PlayerType *player_ptr, const Grid &grid)
+static bool is_cave_empty_grid(const CreatureEntity &creature, const Grid &grid)
 {
     bool is_empty_grid = grid.has(TerrainCharacteristics::PLACE);
     is_empty_grid &= !grid.has_monster();
-    is_empty_grid &= !player_grid(player_ptr, grid);
+    is_empty_grid &= !player_grid(creature, grid);
     return is_empty_grid;
 }
 
@@ -36,20 +37,21 @@ static bool is_cave_empty_grid(PlayerType *player_ptr, const Grid &grid)
  * @param pos_center 配置したい中心座標
  * @param num 配置したいモンスターの数
  */
-void vault_monsters(PlayerType *player_ptr, const Pos2D &pos_center, int num)
+void vault_monsters(CreatureEntity &creature, const Pos2D &pos_center, int num)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     for (auto k = 0; k < num; k++) {
         for (auto i = 0; i < 9; i++) {
             const auto d = 1;
             const auto pos = scatter(floor, pos_center, d, 0);
             auto &grid = floor.get_grid(pos);
-            if (!is_cave_empty_grid(player_ptr, grid)) {
+            if (!is_cave_empty_grid(creature, grid)) {
                 continue;
             }
 
             floor.monster_level = floor.base_level + 2;
-            const auto has_placed = place_random_monster(player_ptr, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+            const auto has_placed = place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
             floor.monster_level = floor.base_level;
             if (has_placed) {
                 break;
@@ -64,9 +66,10 @@ void vault_monsters(PlayerType *player_ptr, const Pos2D &pos_center, int num)
  * @param pos_center 配置したい中心座標
  * @param num 配置したい数
  */
-void vault_objects(PlayerType *player_ptr, const Pos2D &pos_center, int num)
+void vault_objects(CreatureEntity &creature, const Pos2D &pos_center, int num)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &player = static_cast<PlayerType &>(creature);
+    auto &floor = *creature.current_floor_ptr;
     for (; num > 0; --num) {
         Pos2D pos = pos_center;
         int dummy = 0;
@@ -92,9 +95,9 @@ void vault_objects(PlayerType *player_ptr, const Pos2D &pos_center, int num)
             }
 
             if (evaluate_percent(75)) {
-                place_object(player_ptr, pos, 0);
+                place_object(&player, pos, 0);
             } else {
-                place_gold(player_ptr, pos);
+                place_gold(&player, pos);
             }
 
             break;
