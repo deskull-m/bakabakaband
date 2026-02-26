@@ -26,6 +26,7 @@
 #include "room/lake-types.h"
 #include "spell-kind/spells-floor.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
@@ -236,14 +237,15 @@ void add_river(FloorType &floor, DungeonData *dd_ptr)
  * hidden gold types are currently unused.
  * </pre>
  */
-void build_streamer(PlayerType *player_ptr, FEAT_IDX feat, int chance)
+void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &streamer = TerrainList::get_instance().get_terrain(feat);
     bool streamer_is_wall = streamer.flags.has(TerrainCharacteristics::WALL) && streamer.flags.has_not(TerrainCharacteristics::PERMANENT);
     bool streamer_may_have_gold = streamer.flags.has(TerrainCharacteristics::MAY_HAVE_GOLD);
 
     /* Hack -- Choose starting point */
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto y = rand_spread(floor.height / 2, floor.height / 6);
     auto x = rand_spread(floor.width / 2, floor.width / 6);
 
@@ -293,9 +295,9 @@ void build_streamer(PlayerType *player_ptr, FEAT_IDX feat, int chance)
             }
 
             const auto &monrace = floor.m_list[grid.m_idx].get_monrace();
-            if (grid.has_monster() && !(streamer.flags.has(TerrainCharacteristics::PLACE) && monster_can_cross_terrain(player_ptr, feat, monrace, 0))) {
+            if (grid.has_monster() && !(streamer.flags.has(TerrainCharacteristics::PLACE) && monster_can_cross_terrain(&creature, feat, monrace, 0))) {
                 /* Delete the monster (if any) */
-                delete_monster(player_ptr, pos);
+                delete_monster(&player, pos);
             }
 
             if (!grid.o_idx_list.empty() && streamer.flags.has_not(TerrainCharacteristics::DROP)) {
@@ -308,7 +310,7 @@ void build_streamer(PlayerType *player_ptr, FEAT_IDX feat, int chance)
                     if (item.is_fixed_artifact()) {
                         item.get_fixed_artifact().is_generated = false;
                         if (cheat_peek) {
-                            const auto item_name = describe_flavor(player_ptr, item, (OD_NAME_ONLY | OD_STORE));
+                            const auto item_name = describe_flavor(&player, item, (OD_NAME_ONLY | OD_STORE));
                             msg_format(_("伝説のアイテム (%s) はストリーマーにより削除された。", "Artifact (%s) was deleted by streamer."), item_name.data());
                         }
                     } else if (cheat_peek && item.is_random_artifact()) {
@@ -316,7 +318,7 @@ void build_streamer(PlayerType *player_ptr, FEAT_IDX feat, int chance)
                     }
                 }
 
-                delete_all_items_from_floor(player_ptr, pos);
+                delete_all_items_from_floor(&player, pos);
             }
 
             /* Clear previous contents, add proper vein type */
@@ -328,19 +330,19 @@ void build_streamer(PlayerType *player_ptr, FEAT_IDX feat, int chance)
             if (streamer_may_have_gold) {
                 /* Hack -- Add some known treasure */
                 if (one_in_(chance)) {
-                    cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
+                    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
                 }
 
                 /* Hack -- Add some hidden treasure */
                 else if (one_in_(chance / 4)) {
-                    cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
-                    cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::ENSECRET);
+                    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::MAY_HAVE_GOLD);
+                    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::ENSECRET);
                 }
             }
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("地形のストリーマー処理に失敗しました。", "Failed to place streamer."));
+            msg_print_wizard(&player, CHEAT_DUNGEON, _("地形のストリーマー処理に失敗しました。", "Failed to place streamer."));
             return;
         }
 
@@ -368,10 +370,10 @@ void build_streamer(PlayerType *player_ptr, FEAT_IDX feat, int chance)
  * This happens in real world lava tubes.
  * </pre>
  */
-void place_trees(PlayerType *player_ptr, const Pos2D &pos)
+void place_trees(CreatureEntity &creature, const Pos2D &pos)
 {
     /* place trees/ rubble in ovalish distribution */
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (auto x = pos.x - 3; x < pos.x + 4; x++) {
         for (auto y = pos.y - 3; y < pos.y + 4; y++) {
             const Pos2D pos_neighbor(y, x);
@@ -415,18 +417,19 @@ void place_trees(PlayerType *player_ptr, const Pos2D &pos)
  * @brief ダンジョンに＊破壊＊済み地形ランダムに施す /
  * Build a destroyed level
  */
-void destroy_level(PlayerType *player_ptr)
+void destroy_level(CreatureEntity &creature)
 {
-    msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("階に*破壊*の痕跡を生成しました。", "Destroyed Level."));
+    auto &player = static_cast<PlayerType &>(creature);
+    msg_print_wizard(&player, CHEAT_DUNGEON, _("階に*破壊*の痕跡を生成しました。", "Destroyed Level."));
 
     /* Drop a few epi-centers (usually about two) */
     POSITION y1, x1;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     for (int n = 0; n < randint1(5); n++) {
         /* Pick an epi-center */
         x1 = rand_range(5, floor.width - 1 - 5);
         y1 = rand_range(5, floor.height - 1 - 5);
 
-        (void)destroy_area(player_ptr, y1, x1, 15, true);
+        (void)destroy_area(&player, y1, x1, 15, true);
     }
 }
