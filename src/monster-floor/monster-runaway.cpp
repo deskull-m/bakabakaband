@@ -120,6 +120,6 @@ bool runaway_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER
 
     escape_monster(*player_ptr, turn_flags_ptr, monster, m_name.data());
     QuestCompletionChecker(player_ptr, monster).complete();
-    delete_monster_idx(player_ptr, m_idx);
+    delete_monster_idx(*player_ptr, m_idx);
     return true;
 }

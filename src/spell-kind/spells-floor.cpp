@@ -313,7 +313,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                 if (in_generate) /* In generation */
                 {
                     /* Delete the monster (if any) */
-                    delete_monster(player_ptr, pos);
+                    delete_monster(*player_ptr, pos);
                 } else if (monrace.misc_flags.has(MonsterMiscType::QUESTOR)) {
                     /* Heal the monster */
                     monster.hp = monster.maxhp;
@@ -329,7 +329,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                     }
 
                     /* Delete the monster (if any) */
-                    delete_monster(player_ptr, pos);
+                    delete_monster(*player_ptr, pos);
                 }
             }
 

@@ -53,7 +53,7 @@ static void check_riding_preservation(PlayerType *player_ptr)
         player_ptr->riding_ryoute = player_ptr->old_riding_ryoute = false;
     } else {
         party_mon[0] = monster.clone();
-        delete_monster_idx(player_ptr, player_ptr->riding);
+        delete_monster_idx(*player_ptr, player_ptr->riding);
     }
 }
 
@@ -97,7 +97,7 @@ static void sweep_preserving_pet(PlayerType *player_ptr)
 
         party_mon[party_monster_num] = player_ptr->current_floor_ptr->m_list[i].clone();
         party_monster_num++;
-        delete_monster_idx(player_ptr, i);
+        delete_monster_idx(*player_ptr, i);
     }
 }
 
@@ -143,7 +143,7 @@ static void preserve_pet(PlayerType *player_ptr)
             msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
         }
 
-        delete_monster_idx(player_ptr, i);
+        delete_monster_idx(*player_ptr, i);
     }
 }
 
@@ -285,7 +285,7 @@ static void preserve_info(PlayerType *player_ptr)
             continue;
         }
 
-        delete_monster_idx(player_ptr, i);
+        delete_monster_idx(*player_ptr, i);
     }
 
     for (short i = 0; i < INVEN_PACK; i++) {

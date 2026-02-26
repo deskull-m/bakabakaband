@@ -1070,7 +1070,7 @@ void place_grid(CreatureEntity &creature, Grid &grid, grid_bold_type gb_type)
     }
 
     if (grid.has_monster()) {
-        delete_monster_idx(&player, grid.m_idx);
+        delete_monster_idx(player, grid.m_idx);
     }
 }
 

@@ -451,7 +451,7 @@ static void effect_monster_captured(PlayerType *player_ptr, EffectMonster *em_pt
         msg_print(_("地面に落とされた。", format("You have fallen from %s.", em_ptr->m_name)));
     }
 
-    delete_monster_idx(player_ptr, em_ptr->g_ptr->m_idx);
+    delete_monster_idx(*player_ptr, em_ptr->g_ptr->m_idx);
     calculate_upkeep(player_ptr);
 }
 

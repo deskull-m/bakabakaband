@@ -20,9 +20,10 @@
  * @param m_idx 消去するモンスターのフロア内インデックス
  * @details モンスターを削除するとそのモンスターが拾っていたアイテムも同時に削除される.
  */
-void delete_monster_idx(PlayerType *player_ptr, short m_idx)
+void delete_monster_idx(CreatureEntity &creature, short m_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     auto &monrace = monster.get_monrace();
     const auto m_pos = monster.get_position();
@@ -86,7 +87,7 @@ void delete_monster_idx(PlayerType *player_ptr, short m_idx)
 
     monster = {};
     floor.m_cnt--;
-    lite_spot(*player_ptr, m_pos);
+    lite_spot(creature, m_pos);
     if (monrace.brightness_flags.has_any_of(ld_mask)) {
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
@@ -97,10 +98,11 @@ void delete_monster_idx(PlayerType *player_ptr, short m_idx)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @details 視覚効果なしでdelete_monster() をフロア全体に対して呼び出す.
  */
-void wipe_monsters_list(PlayerType *player_ptr)
+void wipe_monsters_list(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &monraces = MonraceList::get_instance();
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (auto i = floor.m_max - 1; i >= 1; i--) {
         auto &monster = floor.m_list[i];
         if (!monster.is_valid()) {
@@ -127,15 +129,15 @@ void wipe_monsters_list(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param pos 削除するモンスターの座標
  */
-void delete_monster(PlayerType *player_ptr, const Pos2D &pos)
+void delete_monster(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
 
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
-        delete_monster_idx(player_ptr, grid.m_idx);
+        delete_monster_idx(creature, grid.m_idx);
     }
 }

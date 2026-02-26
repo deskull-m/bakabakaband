@@ -213,7 +213,7 @@ bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_EARTHQUAKE, m2_name);
     }
 
-    delete_monster_idx(player_ptr, grid.m_idx);
+    delete_monster_idx(*player_ptr, grid.m_idx);
     return true;
 }
 

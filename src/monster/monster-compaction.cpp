@@ -142,7 +142,7 @@ void compact_monsters(PlayerType *player_ptr, int size)
                 exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_COMPACT, m_name);
             }
 
-            delete_monster_idx(player_ptr, i);
+            delete_monster_idx(*player_ptr, i);
             num++;
         }
     }

@@ -218,7 +218,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_TELE_LEVEL, m2_name);
     }
 
-    delete_monster_idx(player_ptr, m_idx);
+    delete_monster_idx(*player_ptr, m_idx);
     if (see_m) {
         sound(SoundKind::TPLEVEL);
     }

@@ -559,7 +559,7 @@ void wilderness_gen(PlayerType *player_ptr)
             }
 
             if (grid.has_monster()) {
-                delete_monster_idx(player_ptr, grid.m_idx);
+                delete_monster_idx(*player_ptr, grid.m_idx);
             }
 
             player_ptr->oldpy = pos.y;
@@ -575,7 +575,7 @@ void wilderness_gen(PlayerType *player_ptr)
             }
 
             if (grid.has_monster()) {
-                delete_monster_idx(player_ptr, grid.m_idx);
+                delete_monster_idx(*player_ptr, grid.m_idx);
             }
 
             player_ptr->oldpy = pos.y;

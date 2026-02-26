@@ -196,7 +196,7 @@ static void effect_damage_killed_pet(PlayerType *player_ptr, EffectMonster *em_p
     }
 
     monster_death(*player_ptr, em_ptr->g_ptr->m_idx, false, em_ptr->attribute);
-    delete_monster_idx(player_ptr, em_ptr->g_ptr->m_idx);
+    delete_monster_idx(*player_ptr, em_ptr->g_ptr->m_idx);
     if (sad) {
         msg_print(_("少し悲しい気分がした。", "You feel sad for a moment."));
     }
@@ -277,7 +277,7 @@ static bool heal_leaper(PlayerType *player_ptr, EffectMonster *em_ptr)
         exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::NAMED_PET, RECORD_NAMED_PET_HEAL_LEPER, m2_name);
     }
 
-    delete_monster_idx(player_ptr, em_ptr->g_ptr->m_idx);
+    delete_monster_idx(*player_ptr, em_ptr->g_ptr->m_idx);
     return true;
 }
 

@@ -111,7 +111,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     monster.hold_o_idx_list.clear();
-    delete_monster_idx(player_ptr, grid.m_idx);
+    delete_monster_idx(*player_ptr, grid.m_idx);
     bool polymorphed = false;
     auto m_idx = place_specific_monster(player_ptr, y, x, new_r_idx, mode);
     if (m_idx) {
