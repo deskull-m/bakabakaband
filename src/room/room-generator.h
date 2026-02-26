@@ -1,5 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class DungeonData;
-class PlayerType;
-bool generate_rooms(PlayerType *player_ptr, DungeonData *dun_data);
+bool generate_rooms(CreatureEntity &creature, DungeonData *dun_data);
