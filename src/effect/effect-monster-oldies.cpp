@@ -58,7 +58,7 @@ ProcessResult effect_monster_old_clone(PlayerType *player_ptr, EffectMonster *em
     }
 
     em_ptr->m_ptr->hp = em_ptr->m_ptr->maxhp;
-    if (multiply_monster(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->r_idx, true, 0L)) {
+    if (multiply_monster(*player_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->r_idx, true, 0L)) {
         em_ptr->note = _("が分裂した！", " spawns!");
     }
 

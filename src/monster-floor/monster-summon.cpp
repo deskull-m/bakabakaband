@@ -73,7 +73,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
         mode |= PM_NO_KAGE;
     }
 
-    auto summoned_m_idx = place_specific_monster(&player, pos->y, pos->x, r_idx, mode, summoner_m_idx);
+    auto summoned_m_idx = place_specific_monster(player, pos->y, pos->x, r_idx, mode, summoner_m_idx);
     if (!summoned_m_idx) {
         return tl::nullopt;
     }
@@ -125,5 +125,5 @@ tl::optional<MONSTER_IDX> summon_named_creature(PlayerType *player_ptr, MONSTER_
     }
 
     const auto summon_who = is_monster(src_idx) ? tl::make_optional(src_idx) : tl::nullopt;
-    return place_specific_monster(player_ptr, pos->y, pos->x, r_idx, (mode | PM_NO_KAGE), summon_who);
+    return place_specific_monster(*player_ptr, pos->y, pos->x, r_idx, (mode | PM_NO_KAGE), summon_who);
 }

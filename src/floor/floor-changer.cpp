@@ -305,7 +305,7 @@ static void new_floor_allocation(PlayerType *player_ptr, saved_floor_type *sf_pt
     }
 
     for (MONSTER_IDX i = 0; i < alloc_times; i++) {
-        (void)alloc_monster(player_ptr, 0, 0, summon_specific);
+        (void)alloc_monster(*player_ptr, 0, 0, summon_specific);
     }
 }
 

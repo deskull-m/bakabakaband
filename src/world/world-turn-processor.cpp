@@ -316,7 +316,7 @@ void WorldTurnProcessor::decide_alloc_monster()
     should_alloc &= !floor.is_in_quest();
     should_alloc &= !AngbandSystem::get_instance().is_phase_out();
     if (should_alloc) {
-        (void)alloc_monster(this->player_ptr, MAX_PLAYER_SIGHT + 5, 0, summon_specific);
+        (void)alloc_monster(*this->player_ptr, MAX_PLAYER_SIGHT + 5, 0, summon_specific);
     }
 }
 

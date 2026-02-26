@@ -421,7 +421,7 @@ static void generate_wild_monsters(PlayerType *player_ptr)
             mode |= PM_ALLOW_SLEEP;
         }
 
-        (void)alloc_monster(player_ptr, generate_encounter ? 0 : 3, mode, summon_specific);
+        (void)alloc_monster(*player_ptr, generate_encounter ? 0 : 3, mode, summon_specific);
     }
 }
 

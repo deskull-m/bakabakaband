@@ -244,7 +244,7 @@ void wiz_summon_horde(CreatureEntity &creature)
         }
     }
 
-    (void)alloc_horde(player_ptr, pos.y, pos.x, summon_specific);
+    (void)alloc_horde(*player_ptr, pos.y, pos.x, summon_specific);
 }
 
 /*!
@@ -310,7 +310,7 @@ void wiz_generate_random_monster(CreatureEntity &creature, int num)
 
     constexpr auto flags = PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_QUEST;
     for (auto i = 0; i < num; i++) {
-        if (!alloc_monster(player_ptr, 0, flags, summon_specific, 5)) {
+        if (!alloc_monster(*player_ptr, 0, flags, summon_specific, 5)) {
             msg_print_wizard(player_ptr, 1, "Monster isn't generated correctly...");
             return;
         }

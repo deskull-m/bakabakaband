@@ -163,7 +163,7 @@ static void generate_challenge_arena(PlayerType *player_ptr)
 
     auto &entries = ArenaEntryList::get_instance();
     const auto &monrace = entries.get_monrace();
-    if (place_specific_monster(player_ptr, player_ptr->y + 5, player_ptr->x, monrace.idx, PM_NO_KAGE | PM_NO_PET)) {
+    if (place_specific_monster(*player_ptr, player_ptr->y + 5, player_ptr->x, monrace.idx, PM_NO_KAGE | PM_NO_PET)) {
         return;
     }
 
@@ -268,7 +268,7 @@ static void generate_gambling_arena(PlayerType *player_ptr)
         const auto &gladiator = melee_arena.get_gladiator(i);
         const Pos2D m_pos(player_ptr->y + 8 + (i / 2) * 4, player_ptr->x - 2 + (i % 2) * 4);
         constexpr auto mode = PM_NO_KAGE | PM_NO_PET;
-        const auto m_idx = place_specific_monster(player_ptr, m_pos.y, m_pos.x, gladiator.monrace_id, mode);
+        const auto m_idx = place_specific_monster(*player_ptr, m_pos.y, m_pos.x, gladiator.monrace_id, mode);
         if (m_idx > 0) {
             floor.m_list[*m_idx].set_friendly();
         }

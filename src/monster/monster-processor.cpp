@@ -605,7 +605,7 @@ bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, 
 
     constexpr auto chance_reproduction = 8;
     if ((k < 4) && (!k || !randint0(k * chance_reproduction))) {
-        if (auto multiplied_m_idx = multiply_monster(&player, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
+        if (auto multiplied_m_idx = multiply_monster(player, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
             if (creature.current_floor_ptr->m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
@@ -725,7 +725,7 @@ bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, 
         auto deno = std::get<1>(spawn_info);
         auto idx = std::get<2>(spawn_info);
         if (randint1(deno) <= num) {
-            if (multiply_monster(&player, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
+            if (multiply_monster(player, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
                 auto &monster = creature.current_floor_ptr->m_list[m_idx];
                 if (monster.ml && is_original_ap_and_seen(creature, *m_ptr)) {
                     r_ptr->misc_flags.set(MonsterMiscType::MULTIPLY);

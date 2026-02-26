@@ -110,7 +110,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
             const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level, 0);
             const auto pos = *center + d_diag.vec() * 2;
             if (MonraceList::is_valid(monrace_id)) {
-                place_specific_monster(player_ptr, pos.y, pos.x, monrace_id, PM_ALLOW_SLEEP);
+                place_specific_monster(*player_ptr, pos.y, pos.x, monrace_id, PM_ALLOW_SLEEP);
             }
 
             /* Walls around the breather */
@@ -149,7 +149,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
 
         const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level, 0);
         if (MonraceList::is_valid(monrace_id)) {
-            place_specific_monster(player_ptr, center->y, center->x, monrace_id, 0L);
+            place_specific_monster(*player_ptr, center->y, center->x, monrace_id, 0L);
         }
 
         /* Walls around the breather */
@@ -197,7 +197,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
             const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level, 0);
             const auto pos = *center + d_diag.vec();
             if (MonraceList::is_valid(monrace_id)) {
-                place_specific_monster(player_ptr, pos.y, pos.x, monrace_id, 0L);
+                place_specific_monster(*player_ptr, pos.y, pos.x, monrace_id, 0L);
             }
         }
 
