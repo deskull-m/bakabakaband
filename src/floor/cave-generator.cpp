@@ -269,7 +269,7 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
     if (dungeon.flags.has(DungeonFeatureType::NO_ROOM)) {
         make_only_tunnel_points(floor, dd_ptr);
     } else {
-        if (!generate_rooms(&player, dd_ptr)) {
+        if (!generate_rooms(player, dd_ptr)) {
             dd_ptr->why = _("部屋群の生成に失敗", "Failed to generate rooms");
             return false;
         }
