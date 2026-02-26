@@ -65,7 +65,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
             return MonsterSpellResult::make_invalid();
         }
 
-        delete_monster_idx(player_ptr, floor.grid_array[monster.y][monster.x].m_idx);
+        delete_monster_idx(*player_ptr, floor.grid_array[monster.y][monster.x].m_idx);
         for (const auto separate : it_unified->second) {
             auto summoned_m_idx = summon_named_creature(player_ptr, 0, dummy_y, dummy_x, separate, MD_NONE);
             if (!summoned_m_idx) {
@@ -105,7 +105,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
                 dummy_x = monster_separate.x;
             }
 
-            delete_monster_idx(player_ptr, k);
+            delete_monster_idx(*player_ptr, k);
         }
 
         if (auto summoned_m_idx = summon_named_creature(player_ptr, 0, dummy_y, dummy_x, unified_unique, MD_NONE)) {

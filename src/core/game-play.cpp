@@ -403,7 +403,7 @@ static void process_game_turn(PlayerType *player_ptr)
 
         wipe_o_list(floor);
         if (!player_ptr->is_dead()) {
-            wipe_monsters_list(player_ptr);
+            wipe_monsters_list(*player_ptr);
         }
 
         msg_erase();

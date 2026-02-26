@@ -175,7 +175,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     this->show_kill_message(note, m_name);
     this->show_bounty_message(m_name);
     monster_death(creature, this->m_idx, true, this->attribute_flags);
-    delete_monster_idx(&player, this->m_idx);
+    delete_monster_idx(player, this->m_idx);
     this->get_exp_from_mon(exp_mon, exp_mon.max_maxhp * 2);
     *this->fear = false;
     return true;

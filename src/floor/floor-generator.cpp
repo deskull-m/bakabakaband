@@ -613,7 +613,7 @@ void generate_floor(PlayerType *player_ptr)
 
         msg_format(_("生成やり直し(%s)", "Generation restarted (%s)"), why->data());
         wipe_o_list(floor);
-        wipe_monsters_list(player_ptr);
+        wipe_monsters_list(*player_ptr);
     }
 
     glow_deep_lava_and_bldg(*player_ptr);

@@ -279,7 +279,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
                 exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_GENOCIDE, m_name);
             }
 
-            delete_monster_idx(player_ptr, grid.m_idx);
+            delete_monster_idx(*player_ptr, grid.m_idx);
             msg_print(_("その邪悪なモンスターは硫黄臭い煙とともに消え去った！", "The evil creature vanishes in a puff of sulfurous smoke!"));
             return true;
         }

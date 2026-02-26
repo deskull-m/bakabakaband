@@ -367,7 +367,7 @@ static bool parse_qtw_P(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char **zz)
         POSITION px = atoi(zz[1]);
         player_ptr->y = py;
         player_ptr->x = px;
-        delete_monster(player_ptr, player_ptr->get_position());
+        delete_monster(*player_ptr, player_ptr->get_position());
         return true;
     }
 

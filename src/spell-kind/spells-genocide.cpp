@@ -69,7 +69,7 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
         }
 
         wc_ptr->plus_collapsion(10 + monrace.level * 5);
-        delete_monster_idx(player_ptr, m_idx);
+        delete_monster_idx(*player_ptr, m_idx);
     }
 
     if (resist && player_cast) {

@@ -266,7 +266,7 @@ static void reset_unique_by_floor_change(PlayerType *player_ptr)
         }
 
         if (monrace.floor_id != new_floor_id) {
-            delete_monster_idx(player_ptr, i);
+            delete_monster_idx(*player_ptr, i);
         }
     }
 }

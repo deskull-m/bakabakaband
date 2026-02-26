@@ -408,7 +408,7 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOSE_PARENT, m_name);
     }
 
-    delete_monster_idx(&player, m_idx);
+    delete_monster_idx(player, m_idx);
     return true;
 }
 
@@ -542,7 +542,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
             PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 
         // モンスターを削除
-        delete_monster_idx(&player, m_idx);
+        delete_monster_idx(player, m_idx);
         return;
     }
 

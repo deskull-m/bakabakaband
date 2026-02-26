@@ -50,7 +50,7 @@ void discharge_minion(CreatureEntity &creature)
         if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
             const auto m_name = monster_desc(creature, monster, 0x00);
             msg_format(_("%sは爆破されるのを嫌がり、勝手に自分の世界へと帰った。", "%s^ resists being blasted and runs away."), m_name.data());
-            delete_monster_idx(&player, i);
+            delete_monster_idx(player, i);
             continue;
         }
 
@@ -71,6 +71,6 @@ void discharge_minion(CreatureEntity &creature)
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_BLAST, m_name);
         }
 
-        delete_monster_idx(&player, i);
+        delete_monster_idx(player, i);
     }
 }

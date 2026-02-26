@@ -74,7 +74,7 @@ void place_secret_door(CreatureEntity &creature, const Pos2D &pos, tl::optional<
     }
 
     grid.info &= ~(CAVE_FLOOR);
-    delete_monster(&player, pos);
+    delete_monster(player, pos);
 }
 
 /*!
@@ -95,7 +95,7 @@ void place_locked_door(CreatureEntity &creature, const Pos2D &pos)
     const auto door_kind = dungeon.flags.has(DungeonFeatureType::GLASS_DOOR) ? DoorKind::GLASS_DOOR : DoorKind::DOOR;
     floor.set_terrain_id_at(pos, Doors::get_instance().select_locked_tag(door_kind));
     floor.get_grid(pos).info &= ~(CAVE_FLOOR);
-    delete_monster(&player, pos);
+    delete_monster(player, pos);
 }
 
 /*!
@@ -138,7 +138,7 @@ void place_random_door(CreatureEntity &creature, const Pos2D &pos, bool is_room_
     }
 
     if (tmp >= 400) {
-        delete_monster(&player, pos);
+        delete_monster(player, pos);
         return;
     }
 
@@ -148,7 +148,7 @@ void place_random_door(CreatureEntity &creature, const Pos2D &pos, bool is_room_
         floor.set_terrain_id_at(pos, tag);
     }
 
-    delete_monster(&player, pos);
+    delete_monster(player, pos);
 }
 
 /*!

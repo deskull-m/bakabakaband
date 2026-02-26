@@ -747,7 +747,7 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
-        delete_monster_idx(player_ptr, i);
+        delete_monster_idx(*player_ptr, i);
     }
 }
 
@@ -770,7 +770,7 @@ void wiz_zap_floor_monsters(CreatureEntity &creature)
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
-        delete_monster_idx(player_ptr, i);
+        delete_monster_idx(*player_ptr, i);
     }
 }
 
