@@ -103,7 +103,7 @@ static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Di
         return false;
     }
 
-    const auto m_idx = place_specific_monster(player_ptr, pos.y, pos.x, monrace.idx, PM_FORCE_PET | PM_NO_KAGE);
+    const auto m_idx = place_specific_monster(*player_ptr, pos.y, pos.x, monrace.idx, PM_FORCE_PET | PM_NO_KAGE);
     if (!m_idx) {
         return false;
     }

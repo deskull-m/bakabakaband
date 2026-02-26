@@ -125,7 +125,7 @@ void place_monsters_in_nest(CreatureEntity &creature, const Pos2D &center, std::
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (const auto &pos : Rect2D(center, Pos2DVec(2, 9))) {
         auto &nest_mon_info = rand_choice(nest_mon_info_list);
-        (void)place_specific_monster(player_ptr, pos.y, pos.x, nest_mon_info.monrace_id, 0L);
+        (void)place_specific_monster(*player_ptr, pos.y, pos.x, nest_mon_info.monrace_id, 0L);
         nest_mon_info.used = true;
     }
 }

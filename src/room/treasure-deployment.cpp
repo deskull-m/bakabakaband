@@ -39,7 +39,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
 
     if (value < 0) {
         floor.monster_level = floor.base_level + 40;
-        place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+        place_random_monster(player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
         floor.monster_level = floor.base_level;
         floor.object_level = floor.base_level + 20;
         place_object(player, pos, AM_GOOD);
@@ -49,7 +49,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
 
     if (value < 5) {
         floor.monster_level = floor.base_level + 20;
-        place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+        place_random_monster(player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
         floor.monster_level = floor.base_level;
         floor.object_level = floor.base_level + 10;
         place_object(player, pos, AM_GOOD);
@@ -59,7 +59,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
 
     if (value < 10) {
         floor.monster_level = floor.base_level + 9;
-        place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+        place_random_monster(player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
         floor.monster_level = floor.base_level;
         return;
     }
@@ -80,7 +80,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
 
     if (value < 30) {
         floor.monster_level = floor.base_level + 5;
-        place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+        place_random_monster(player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
         floor.monster_level = floor.base_level;
         floor.place_trap_at(pos);
         return;
@@ -89,7 +89,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
     if (value < 40) {
         if (one_in_(2)) {
             floor.monster_level = floor.base_level + 3;
-            place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+            place_random_monster(player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
             floor.monster_level = floor.base_level;
         }
         if (one_in_(2)) {
@@ -106,7 +106,7 @@ static void deploy_treasure(CreatureEntity &creature, FloorType &floor, const Po
     }
 
     if (one_in_(5)) {
-        place_random_monster(&player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
+        place_random_monster(player, pos.y, pos.x, PM_ALLOW_SLEEP | PM_ALLOW_GROUP);
         return;
     }
 

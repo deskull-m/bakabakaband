@@ -75,7 +75,7 @@ bool alloc_creature_party(PlayerType *player_ptr, const Pos2D &pos_center)
             }
 
             // モンスターを配置
-            const auto m_idx = place_specific_monster(player_ptr, pos_scatter->y, pos_scatter->x,
+            const auto m_idx = place_specific_monster(*player_ptr, pos_scatter->y, pos_scatter->x,
                 member.monrace_id, PM_ALLOW_SLEEP);
             if (m_idx) {
                 generated_count++;

@@ -481,7 +481,7 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
         }
 
         // 通常のモンスター生成
-        (void)alloc_monster(&player, 0, PM_ALLOW_SLEEP, summon_specific);
+        (void)alloc_monster(player, 0, PM_ALLOW_SLEEP, summon_specific);
     }
 
     alloc_object(creature, ALLOC_SET_BOTH, ALLOC_TYP_TRAP, randint1(dd_ptr->alloc_object_num * dungeon.trap_rate / 100));
@@ -504,7 +504,7 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
     alloc_specific_floor_items(creature);
 
     floor.object_level = floor.base_level;
-    if (alloc_guardian(&player, true)) {
+    if (alloc_guardian(player, true)) {
         return true;
     }
 

@@ -104,7 +104,7 @@ static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
         grid.info = letter[idx].cave_info;
         if (random & RANDOM_MONSTER) {
             floor.monster_level = floor.base_level + monster_index;
-            place_random_monster(player_ptr, *qtwg_ptr->y, *qtwg_ptr->x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_NO_QUEST));
+            place_random_monster(*player_ptr, *qtwg_ptr->y, *qtwg_ptr->x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_NO_QUEST));
             floor.monster_level = floor.base_level;
         } else if (monster_index) {
             auto clone = false;
@@ -129,7 +129,7 @@ static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
                 monrace.max_num = monrace.mob_num;
             }
 
-            const auto m_idx = place_specific_monster(player_ptr, *qtwg_ptr->y, *qtwg_ptr->x, monrace_id, (PM_ALLOW_SLEEP | PM_NO_KAGE));
+            const auto m_idx = place_specific_monster(*player_ptr, *qtwg_ptr->y, *qtwg_ptr->x, monrace_id, (PM_ALLOW_SLEEP | PM_NO_KAGE));
             if (clone && m_idx) {
                 floor.m_list[*m_idx].mflag2.set(MonsterConstantFlagType::CLONED);
                 monrace.cur_num = old_cur_num;

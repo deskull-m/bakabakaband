@@ -350,7 +350,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
                 }
                 if (vault.place_monster_list.find(*t) != vault.place_monster_list.end()) {
                     const auto monrace_id = vault.place_monster_list.find(*t)->second;
-                    place_specific_monster(&player, y, x, monrace_id, PM_NO_KAGE);
+                    place_specific_monster(player, y, x, monrace_id, PM_NO_KAGE);
                 }
                 continue;
             }
@@ -506,7 +506,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
             switch (*t) {
             case '&': {
                 floor.monster_level = floor.base_level + 5;
-                place_random_monster(&player, y, x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP));
+                place_random_monster(player, y, x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP));
                 floor.monster_level = floor.base_level;
                 break;
             }
@@ -514,7 +514,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
             /* Meaner monster */
             case '@': {
                 floor.monster_level = floor.base_level + 11;
-                place_random_monster(&player, y, x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP));
+                place_random_monster(player, y, x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP));
                 floor.monster_level = floor.base_level;
                 break;
             }
@@ -522,7 +522,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
             /* Meaner monster, plus treasure */
             case '9': {
                 floor.monster_level = floor.base_level + 9;
-                place_random_monster(&player, y, x, PM_ALLOW_SLEEP);
+                place_random_monster(player, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 7;
                 place_object(player, { y, x }, AM_GOOD);
@@ -533,7 +533,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
             /* Nasty monster and treasure */
             case '8': {
                 floor.monster_level = floor.base_level + 40;
-                place_random_monster(&player, y, x, PM_ALLOW_SLEEP);
+                place_random_monster(player, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 20;
                 place_object(player, { y, x }, AM_GOOD | AM_GREAT);
@@ -545,7 +545,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
             case ',': {
                 if (one_in_(2)) {
                     floor.monster_level = floor.base_level + 3;
-                    place_random_monster(&player, y, x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP));
+                    place_random_monster(player, y, x, (PM_ALLOW_SLEEP | PM_ALLOW_GROUP));
                     floor.monster_level = floor.base_level;
                 }
                 if (one_in_(2)) {

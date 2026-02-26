@@ -80,7 +80,7 @@ static void process_summoning_circle(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     // 召喚陣の位置にモンスターを生成（階層レベル準拠）
-    auto m_idx = place_random_monster(player_ptr, pos.y, pos.x, 0);
+    auto m_idx = place_random_monster(*player_ptr, pos.y, pos.x, 0);
 
     if (m_idx) {
         // 生成に成功した場合、プレイヤーの視界内であればメッセージ表示
