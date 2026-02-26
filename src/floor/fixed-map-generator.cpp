@@ -147,7 +147,7 @@ static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
              */
             const Pos2D pos(*qtwg_ptr->y, *qtwg_ptr->x);
             if (evaluate_percent(75)) {
-                place_object(player_ptr, pos, 0);
+                place_object(*player_ptr, pos, 0);
             } else {
                 floor.place_trap_at(pos);
             }
@@ -157,11 +157,11 @@ static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
             floor.object_level = floor.base_level + item_index;
             const Pos2D pos(*qtwg_ptr->y, *qtwg_ptr->x);
             if (evaluate_percent(75)) {
-                place_object(player_ptr, pos, 0);
+                place_object(*player_ptr, pos, 0);
             } else if (evaluate_percent(80)) {
-                place_object(player_ptr, pos, AM_GOOD);
+                place_object(*player_ptr, pos, AM_GOOD);
             } else {
-                place_object(player_ptr, pos, AM_GOOD | AM_GREAT);
+                place_object(*player_ptr, pos, AM_GOOD | AM_GREAT);
             }
 
             floor.object_level = floor.base_level;

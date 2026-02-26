@@ -376,14 +376,14 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
                 break;
             case '*':
                 if (evaluate_percent(75)) {
-                    place_object(&player, pos, 0);
+                    place_object(player, pos, 0);
                 } else {
                     floor.place_trap_at(pos);
                 }
 
                 break;
             case '[':
-                place_object(&player, pos, 0);
+                place_object(player, pos, 0);
                 break;
             case ':':
                 grid.set_terrain_id(TerrainTag::TREE);
@@ -430,7 +430,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
                 break;
             case 'A':
                 floor.object_level = floor.base_level + 12;
-                place_object(&player, pos, AM_GOOD | AM_GREAT);
+                place_object(player, pos, AM_GOOD | AM_GREAT);
                 floor.object_level = floor.base_level;
                 break;
             case '~':
@@ -525,7 +525,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
                 place_random_monster(&player, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 7;
-                place_object(&player, { y, x }, AM_GOOD);
+                place_object(player, { y, x }, AM_GOOD);
                 floor.object_level = floor.base_level;
                 break;
             }
@@ -536,7 +536,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
                 place_random_monster(&player, y, x, PM_ALLOW_SLEEP);
                 floor.monster_level = floor.base_level;
                 floor.object_level = floor.base_level + 20;
-                place_object(&player, { y, x }, AM_GOOD | AM_GREAT);
+                place_object(player, { y, x }, AM_GOOD | AM_GREAT);
                 floor.object_level = floor.base_level;
                 break;
             }
@@ -550,7 +550,7 @@ void build_vault(vault_type &vault, CreatureEntity &creature, POSITION yval, POS
                 }
                 if (one_in_(2)) {
                     floor.object_level = floor.base_level + 7;
-                    place_object(&player, { y, x }, 0);
+                    place_object(player, { y, x }, 0);
                     floor.object_level = floor.base_level;
                 }
                 break;
