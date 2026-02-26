@@ -357,7 +357,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         const auto base = 12;
         const Dice dice(1, 4);
         if (cast) {
-            destroy_area(player_ptr, player_ptr->y, player_ptr->x, base + dice.roll(), false);
+            destroy_area(*player_ptr, player_ptr->y, player_ptr->x, base + dice.roll(), false);
         }
     } break;
 

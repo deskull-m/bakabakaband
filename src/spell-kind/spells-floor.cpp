@@ -239,12 +239,13 @@ void map_area(CreatureEntity &creature, POSITION range)
  * "earthquake" by using the "full" to select "destruction".
  * </pre>
  */
-bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, POSITION r, bool in_generate)
+bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1, POSITION r, bool in_generate)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const Pos2D pos1(y1, x1);
 
     /* Prevent destruction of quest levels and town */
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if ((floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) || !floor.is_underground()) {
         if (!in_generate) {
             msg_print(_("破壊の力はかき消された…", "The power of destruction has been drowned out ..."));
@@ -292,7 +293,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                 grid.info &= ~(CAVE_UNSAFE);
 
                 /* Hack -- Notice player affect */
-                if (player_ptr->is_located_at(pos)) {
+                if (creature.is_located_at(pos)) {
                     /* Hurt the player later */
                     flag = true;
 
@@ -313,23 +314,23 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                 if (in_generate) /* In generation */
                 {
                     /* Delete the monster (if any) */
-                    delete_monster(*player_ptr, pos);
+                    delete_monster(creature, pos);
                 } else if (monrace.misc_flags.has(MonsterMiscType::QUESTOR)) {
                     /* Heal the monster */
                     monster.hp = monster.maxhp;
 
                     /* Try to teleport away quest monsters */
-                    if (!teleport_away(*player_ptr, grid.m_idx, (r * 2) + 1, TELEPORT_DEC_VALOUR)) {
+                    if (!teleport_away(creature, grid.m_idx, (r * 2) + 1, TELEPORT_DEC_VALOUR)) {
                         continue;
                     }
                 } else {
                     if (record_named_pet && monster.is_named_pet()) {
-                        const auto m_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
+                        const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
                         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_DESTROY, m_name);
                     }
 
                     /* Delete the monster (if any) */
-                    delete_monster(*player_ptr, pos);
+                    delete_monster(creature, pos);
                 }
             }
 
@@ -352,7 +353,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                 }
             }
 
-            delete_all_items_from_floor(*player_ptr, pos);
+            delete_all_items_from_floor(creature, pos);
 
             /* Destroy "non-permanent" grids */
             if (grid.has(TerrainCharacteristics::PERMANENT)) {
@@ -366,16 +367,16 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
             {
                 if (t < 20) {
                     /* Create granite wall */
-                    set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::GRANITE_WALL);
+                    set_terrain_id_to_grid(creature, pos, TerrainTag::GRANITE_WALL);
                 } else if (t < 70) {
                     /* Create quartz vein */
-                    set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::QUARTZ_VEIN);
+                    set_terrain_id_to_grid(creature, pos, TerrainTag::QUARTZ_VEIN);
                 } else if (t < 100) {
                     /* Create magma vein */
-                    set_terrain_id_to_grid(*player_ptr, pos, TerrainTag::MAGMA_VEIN);
+                    set_terrain_id_to_grid(creature, pos, TerrainTag::MAGMA_VEIN);
                 } else {
                     /* Create floor */
-                    set_terrain_id_to_grid(*player_ptr, pos, dungeon.select_floor_terrain_id());
+                    set_terrain_id_to_grid(creature, pos, dungeon.select_floor_terrain_id());
                 }
 
                 continue;
@@ -383,7 +384,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
 
             if (t < 20) {
                 /* Create granite wall */
-                place_grid(*player_ptr, grid, GB_EXTRA);
+                place_grid(creature, grid, GB_EXTRA);
             } else if (t < 70) {
                 /* Create quartz vein */
                 grid.set_terrain_id(TerrainTag::QUARTZ_VEIN);
@@ -392,7 +393,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
                 grid.set_terrain_id(TerrainTag::MAGMA_VEIN);
             } else {
                 /* Create floor */
-                place_grid(*player_ptr, grid, GB_FLOOR);
+                place_grid(creature, grid, GB_FLOOR);
             }
 
             /* Clear garbage of hidden trap or door */
@@ -468,7 +469,7 @@ bool destroy_area(PlayerType *player_ptr, const POSITION y1, const POSITION x1, 
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags_swrf);
-    if (floor.grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) {
+    if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
         set_superstealth(*player_ptr, false);
     }
 

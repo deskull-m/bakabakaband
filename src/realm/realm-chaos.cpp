@@ -275,7 +275,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         const Dice dice(1, 4);
 
         if (cast) {
-            destroy_area(player_ptr, player_ptr->y, player_ptr->x, base + dice.roll(), false);
+            destroy_area(*player_ptr, player_ptr->y, player_ptr->x, base + dice.roll(), false);
         }
     } break;
 

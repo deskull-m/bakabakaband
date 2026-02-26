@@ -540,7 +540,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
 
     case TrapType::DESTRUCTION: {
         msg_print(_("罠が発動した！周囲が崩壊していく！", "The trap triggers! The dungeon collapses around you!"));
-        destroy_area(player_ptr, p_pos.y, p_pos.x, 15, false);
+        destroy_area(*player_ptr, p_pos.y, p_pos.x, 15, false);
         break;
     }
     default:

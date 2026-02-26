@@ -282,7 +282,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_DESTRUCTION: {
-        ident = destroy_area(player_ptr, player_ptr->y, player_ptr->x, (powerful ? 18 : 13) + randint0(5), false);
+        ident = destroy_area(*player_ptr, player_ptr->y, player_ptr->x, (powerful ? 18 : 13) + randint0(5), false);
         break;
     }
 

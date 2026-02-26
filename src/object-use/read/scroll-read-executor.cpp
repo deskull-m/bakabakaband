@@ -339,7 +339,7 @@ bool ScrollReadExecutor::read()
 
         break;
     case SV_SCROLL_STAR_DESTRUCTION:
-        if (destroy_area(this->player_ptr, this->player_ptr->y, this->player_ptr->x, 13 + randint0(5), false)) {
+        if (destroy_area(*this->player_ptr, this->player_ptr->y, this->player_ptr->x, 13 + randint0(5), false)) {
             this->ident = true;
         } else {
             msg_print(_("ダンジョンが揺れた...", "The dungeon trembles..."));
