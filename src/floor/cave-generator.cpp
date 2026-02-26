@@ -181,8 +181,8 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
         return true;
     }
     if (randint1(creature.current_floor_ptr->dun_level) > dungeon.tunnel_percent) {
-        (void)build_tunnel2(&player, dd_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos, 2, 2);
-    } else if (!build_tunnel(&player, dd_ptr, dt_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos)) {
+        (void)build_tunnel2(creature, dd_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos, 2, 2);
+    } else if (!build_tunnel(creature, dd_ptr, dt_ptr, dd_ptr->centers[i], dd_ptr->tunnel_pos)) {
         dd_ptr->tunnel_fail_count++;
     }
     if (dd_ptr->tunnel_fail_count >= 200) {
