@@ -136,7 +136,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
             o_ptr->held_m_idx = *m_idx;
         }
     } else {
-        delete_items(player_ptr, back_m.hold_o_idx_list);
+        delete_items(*player_ptr, back_m.hold_o_idx_list);
     }
 
     if (targeted) {

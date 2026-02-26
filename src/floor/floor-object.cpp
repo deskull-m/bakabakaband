@@ -181,17 +181,17 @@ tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, Ba
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param pos 削除したフロアマスの座標
  */
-void delete_all_items_from_floor(PlayerType *player_ptr, const Pos2D &pos)
+void delete_all_items_from_floor(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
 
     auto &grid = floor.get_grid(pos);
-    delete_items(player_ptr, grid.o_idx_list);
+    delete_items(creature, grid.o_idx_list);
 
-    lite_spot(*player_ptr, pos);
+    lite_spot(creature, pos);
 }
 
 /*!
@@ -201,9 +201,9 @@ void delete_all_items_from_floor(PlayerType *player_ptr, const Pos2D &pos)
  * @param i_idx 増やしたいアイテムの所持スロット
  * @param num 増やしたいアイテムの数
  */
-void floor_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBER num)
+void floor_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
 
     auto *o_ptr = floor.o_list[i_idx].get();
     num += o_ptr->number;
@@ -228,9 +228,9 @@ void floor_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param i_idx 消去したいアイテムの所持スロット
  */
-void floor_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
+void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto *o_ptr = player_ptr->current_floor_ptr->o_list[i_idx].get();
+    auto *o_ptr = creature.current_floor_ptr->o_list[i_idx].get();
     if (!o_ptr->is_valid()) {
         return;
     }
@@ -238,7 +238,7 @@ void floor_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         return;
     }
 
-    delete_object_idx(player_ptr, i_idx);
+    delete_object_idx(creature, i_idx);
     static constexpr auto flags = {
         SubWindowRedrawingFlag::FLOOR_ITEMS,
         SubWindowRedrawingFlag::FOUND_ITEMS,
@@ -254,13 +254,13 @@ void floor_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
  * @details
  * Handle "stacks" of objects correctly.
  */
-void delete_object_idx(PlayerType *player_ptr, OBJECT_IDX o_idx)
+void delete_object_idx(CreatureEntity &creature, OBJECT_IDX o_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     excise_object_idx(floor, o_idx);
     auto &item_ptr = floor.o_list[o_idx];
     if (!item_ptr->is_held_by_monster()) {
-        lite_spot(*player_ptr, item_ptr->get_position());
+        lite_spot(creature, item_ptr->get_position());
     }
 
     // 最後尾のアイテムを削除対象の要素に移動することで配列を詰める
@@ -295,12 +295,12 @@ void excise_object_idx(FloorType &floor, OBJECT_IDX o_idx)
  * @details 処理中に削除対象のインデックスが変わらないようにするため、削除対象のインデックスは降順にソートして処理される
  * @param delete_i_idx_list 削除するアイテムの参照IDのリスト
  */
-void delete_items(PlayerType *player_ptr, std::vector<OBJECT_IDX> delete_i_idx_list)
+void delete_items(CreatureEntity &creature, std::vector<OBJECT_IDX> delete_i_idx_list)
 {
     ranges::sort(delete_i_idx_list, ranges::greater{});
 
     for (const auto delete_i_idx : delete_i_idx_list) {
-        delete_object_idx(player_ptr, delete_i_idx);
+        delete_object_idx(creature, delete_i_idx);
     }
 }
 
@@ -309,10 +309,10 @@ void delete_items(PlayerType *player_ptr, std::vector<OBJECT_IDX> delete_i_idx_l
  * @param o_idx_list 管理しているアイテムをすべて削除するObjectIndexListオブジェクト
  * @details 結果としてo_idx_listは空になるので、あえて引数は非const参照としている
  */
-void delete_items(PlayerType *player_ptr, ObjectIndexList &o_idx_list)
+void delete_items(CreatureEntity &creature, ObjectIndexList &o_idx_list)
 {
     auto delete_i_idx_list = o_idx_list | ranges::to_vector;
-    delete_items(player_ptr, std::move(delete_i_idx_list));
+    delete_items(creature, std::move(delete_i_idx_list));
 }
 
 /*!

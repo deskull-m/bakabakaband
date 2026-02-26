@@ -50,7 +50,7 @@ static void autopick_delayed_alter_aux(PlayerType *player_ptr, INVENTORY_IDX i_i
         inven_item_increase(player_ptr, i_idx, -(o_ptr->number));
         inven_item_optimize(player_ptr, i_idx);
     } else {
-        delete_object_idx(player_ptr, 0 - i_idx);
+        delete_object_idx(*player_ptr, 0 - i_idx);
     }
 
     msg_format(_("%sを自動破壊します。", "Auto-destroying %s."), item_name.data());

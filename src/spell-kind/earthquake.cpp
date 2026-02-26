@@ -270,7 +270,7 @@ void destruct_earthquake_area(CreatureEntity &creature, std::span<const Pos2D> p
     pt.entry_item(TerrainTag::MAGMA_VEIN, 30);
 
     for (const auto &pos : pos_collapses | ranges::views::filter(is_changeable)) {
-        delete_all_items_from_floor(&player, pos);
+        delete_all_items_from_floor(player, pos);
 
         if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION)) {
             set_terrain_id_to_grid(creature, pos, pt.pick_one_at_random());

@@ -93,7 +93,7 @@ static void py_pickup_all_golds_on_floor(PlayerType *player_ptr, const Grid &gri
         msg_print(_(" ${} の価値がある{}を見つけた。", "You have found {} gold pieces worth of {}."), value, item_name);
         sound(SoundKind::SELL);
 
-        delete_object_idx(player_ptr, i_idx);
+        delete_object_idx(*player_ptr, i_idx);
 
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
@@ -242,7 +242,7 @@ void process_player_pickup_item(PlayerType *player_ptr, OBJECT_IDX o_idx)
     const std::shared_ptr<ItemEntity> picked_item_ptr = player_ptr->current_floor_ptr->o_list[o_idx];
 
     const auto slot = store_item_to_inventory(player_ptr, picked_item_ptr.get());
-    delete_object_idx(player_ptr, o_idx);
+    delete_object_idx(*player_ptr, o_idx);
 
     auto &picked_slot_item = *player_ptr->inventory[slot];
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {

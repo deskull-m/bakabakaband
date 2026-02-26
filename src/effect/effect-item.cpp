@@ -284,7 +284,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
         lite_spot(*player_ptr, pos);
     }
 
-    delete_items(player_ptr, std::move(delete_i_idx_list));
+    delete_items(*player_ptr, std::move(delete_i_idx_list));
     for (const auto bi_id : affected_potions) {
         (void)potion_smash_effect(player_ptr, src_idx, y, x, bi_id);
     }
