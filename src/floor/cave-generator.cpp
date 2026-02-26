@@ -103,19 +103,18 @@ static void check_arena_floor(CreatureEntity &creature, DungeonData *dd_ptr)
 
 static void place_cave_contents(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     if (floor.dun_level == 1) {
         constexpr auto density_moss = 2;
         while (one_in_(density_moss)) {
             const auto tmp_y = randint1(floor.height - 2);
             const auto tmp_x = randint1(floor.width - 2);
-            place_trees(&player, { tmp_y, tmp_x }); //!< @details 乱数引数の評価順を固定する.
+            place_trees(creature, { tmp_y, tmp_x }); //!< @details 乱数引数の評価順を固定する.
         }
     }
 
     if (dd_ptr->destroyed) {
-        destroy_level(&player);
+        destroy_level(creature);
     }
 
     const auto always_river = dungeon.flags.has(DungeonFeatureType::ALWAYS_RIVER);
@@ -366,7 +365,6 @@ static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, c
 
 static void make_aqua_streams(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if (dd_ptr->laketype != 0) {
         return;
     }
@@ -375,7 +373,7 @@ static void make_aqua_streams(CreatureEntity &creature, DungeonData *dd_ptr, con
         constexpr auto num_quartz = 4;
         constexpr auto chance_quartz = 15;
         for (auto i = 0; i < num_quartz; i++) {
-            build_streamer(&player, dungeon.stream2, chance_quartz);
+            build_streamer(creature, dungeon.stream2, chance_quartz);
         }
     }
 
@@ -383,7 +381,7 @@ static void make_aqua_streams(CreatureEntity &creature, DungeonData *dd_ptr, con
         constexpr auto num_magma = 6;
         constexpr auto chance_magma = 30;
         for (auto i = 0; i < num_magma; i++) {
-            build_streamer(&player, dungeon.stream1, chance_magma);
+            build_streamer(creature, dungeon.stream1, chance_magma);
         }
     }
 }
