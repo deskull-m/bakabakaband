@@ -73,9 +73,10 @@ static MonraceId select_polymorph_monrace_id(PlayerType *player_ptr, MonraceId m
  * @param x 指定のX座標
  * @return 実際に変身したらTRUEを返す
  */
-bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
+bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.grid_array[y][x];
     auto &monster = floor.m_list[grid.m_idx];
     MonraceId new_r_idx;
@@ -111,9 +112,9 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     monster.hold_o_idx_list.clear();
-    delete_monster_idx(*player_ptr, grid.m_idx);
+    delete_monster_idx(creature, grid.m_idx);
     bool polymorphed = false;
-    auto m_idx = place_specific_monster(*player_ptr, y, x, new_r_idx, mode);
+    auto m_idx = place_specific_monster(creature, y, x, new_r_idx, mode);
     if (m_idx) {
         auto &monster_polymorphed = floor.m_list[*m_idx];
         monster_polymorphed.name = back_m.name;
@@ -121,7 +122,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
         monster_polymorphed.hold_o_idx_list = back_m.hold_o_idx_list;
         polymorphed = true;
     } else {
-        m_idx = place_specific_monster(*player_ptr, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
+        m_idx = place_specific_monster(creature, y, x, old_r_idx, (mode | PM_NO_KAGE | PM_IGNORE_TERRAIN));
         if (m_idx) {
             floor.m_list[*m_idx] = back_m.clone();
             floor.reset_mproc();
@@ -136,7 +137,7 @@ bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x)
             o_ptr->held_m_idx = *m_idx;
         }
     } else {
-        delete_items(*player_ptr, back_m.hold_o_idx_list);
+        delete_items(creature, back_m.hold_o_idx_list);
     }
 
     if (targeted) {

@@ -520,7 +520,7 @@ static void effect_damage_makes_polymorph(PlayerType *player_ptr, EffectMonster 
         return;
     }
 
-    if (polymorph_monster(player_ptr, em_ptr->y, em_ptr->x)) {
+    if (polymorph_monster(*player_ptr, em_ptr->y, em_ptr->x)) {
         if (em_ptr->seen) {
             em_ptr->obvious = true;
         }
