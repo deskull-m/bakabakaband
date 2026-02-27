@@ -145,7 +145,7 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
         return player_ptr->current_floor_ptr->m_list[index];
     };
     auto monster =
-        summon_named_creature(player_ptr, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
+        summon_named_creature(*player_ptr, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
             .transform(index_to_monster);
     if (!monster) {
         msg_print_wizard(player_ptr, 1, "Monster isn't summoned correctly...");

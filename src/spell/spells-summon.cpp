@@ -222,13 +222,12 @@ bool cast_summon_elemental(CreatureEntity &creature, int power)
 
 bool cast_summon_octopus(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     BIT_FLAGS mode = PM_ALLOW_GROUP;
     bool pet = !one_in_(5);
     if (pet) {
         mode |= PM_FORCE_PET;
     }
-    if (summon_named_creature(&player, 0, creature.y, creature.x, MonraceId::JIZOTAKO, mode)) {
+    if (summon_named_creature(creature, 0, creature.y, creature.x, MonraceId::JIZOTAKO, mode)) {
         if (pet) {
             msg_print(_("蛸があなたの下僕として出現した。", "A group of octopuses appear as your servants."));
         } else {
@@ -320,16 +319,15 @@ int summon_cyber(CreatureEntity &creature, POSITION y, POSITION x, tl::optional<
 
 void mitokohmon(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     int count = 0;
     concptr sukekakusan = "";
-    if (summon_named_creature(&player, 0, creature.y, creature.x, MonraceId::SUKE, PM_FORCE_PET)) {
+    if (summon_named_creature(creature, 0, creature.y, creature.x, MonraceId::SUKE, PM_FORCE_PET)) {
         msg_print(_("『助さん』が現れた。", "Suke-san apperars."));
         sukekakusan = "Suke-san";
         count++;
     }
 
-    if (summon_named_creature(&player, 0, creature.y, creature.x, MonraceId::KAKU, PM_FORCE_PET)) {
+    if (summon_named_creature(creature, 0, creature.y, creature.x, MonraceId::KAKU, PM_FORCE_PET)) {
         msg_print(_("『格さん』が現れた。", "Kaku-san appears."));
         sukekakusan = "Kaku-san";
         count++;

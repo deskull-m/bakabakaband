@@ -239,7 +239,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
                     }
 
                     continue;
-                } else if (summon_named_creature(player_ptr, src_idx, y, x, monrace.idx, mode)) {
+                } else if (summon_named_creature(*player_ptr, src_idx, y, x, monrace.idx, mode)) {
                     note_kill = _("生き返った。", " revived.");
                 } else if (!note_kill) {
                     note_kill = _("灰になった。", (plural ? " become dust." : " becomes dust."));

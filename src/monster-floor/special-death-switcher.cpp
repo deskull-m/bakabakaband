@@ -103,7 +103,7 @@ static tl::optional<bool> final_summon(PlayerType *player_ptr, MonsterDeath *md_
 
         BIT_FLAGS mode = dead_mode(md_ptr);
         const auto summon_src = md_ptr->m_ptr->is_pet() ? -1 : md_ptr->m_idx;
-        if (summon_named_creature(player_ptr, summon_src, m_pos.y, m_pos.x, summon_data.id, mode) && player_can_see_bold(player_ptr, m_pos.y, m_pos.x)) {
+        if (summon_named_creature(*player_ptr, summon_src, m_pos.y, m_pos.x, summon_data.id, mode) && player_can_see_bold(player_ptr, m_pos.y, m_pos.x)) {
             notice = true;
         }
     }
@@ -133,7 +133,7 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
         bool pet = md_ptr->m_ptr->is_pet();
         BIT_FLAGS mode = pet ? PM_FORCE_PET : PM_NONE;
         for (int i = 0; i < spawn_nums; i++) {
-            if (summon_named_creature(player_ptr, 0, wy, wx, r_idx, mode) && player_can_see_bold(player_ptr, wy, wx)) {
+            if (summon_named_creature(*player_ptr, 0, wy, wx, r_idx, mode) && player_can_see_bold(player_ptr, wy, wx)) {
                 notice = true;
             }
         }

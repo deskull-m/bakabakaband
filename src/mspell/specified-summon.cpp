@@ -53,11 +53,10 @@ MONSTER_NUMBER summon_EAGLE(CreatureEntity &creature, POSITION y, POSITION x, in
  */
 MONSTER_NUMBER summon_EDGE(CreatureEntity &creature, POSITION y, POSITION x, int rlev, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     int count = 0;
     int num = 2 + randint1(1 + rlev / 20);
     for (int k = 0; k < num; k++) {
-        count += summon_named_creature(&player_ptr, m_idx, y, x, MonraceId::EDGE, PM_NONE) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, y, x, MonraceId::EDGE, PM_NONE) ? 1 : 0;
     }
 
     return count;
@@ -112,11 +111,10 @@ MONSTER_NUMBER summon_guardian(CreatureEntity &creature, POSITION y, POSITION x,
  */
 MONSTER_NUMBER summon_LOCKE_CLONE(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     int count = 0;
     int num = randint1(3);
     for (int k = 0; k < num; k++) {
-        count += summon_named_creature(&player_ptr, m_idx, y, x, MonraceId::LOCKE_CLONE, PM_NONE) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, y, x, MonraceId::LOCKE_CLONE, PM_NONE) ? 1 : 0;
     }
 
     return count;
@@ -155,7 +153,6 @@ MONSTER_NUMBER summon_MOAI(CreatureEntity &creature, POSITION y, POSITION x, int
 
 MONSTER_NUMBER summon_DEMON_SLAYER(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     auto *r_ptr = &MonraceList::get_instance().get_monrace(MonraceId::DESLAYER_MEMBER);
     if (r_ptr->mob_num == 0) {
         msg_print(_("しかし、隊士は全滅していた…。", "However, all demon slayer members were murdered..."));
@@ -164,7 +161,7 @@ MONSTER_NUMBER summon_DEMON_SLAYER(CreatureEntity &creature, POSITION y, POSITIO
 
     auto count = 0;
     for (auto k = 0; k < MAX_NAZGUL_NUM; k++) {
-        count += summon_named_creature(&player_ptr, m_idx, y, x, MonraceId::DESLAYER_MEMBER, PM_NONE) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, y, x, MonraceId::DESLAYER_MEMBER, PM_NONE) ? 1 : 0;
     }
 
     if (count == 0) {
@@ -220,7 +217,7 @@ MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, M
             continue;
         }
 
-        if (!summon_named_creature(&player_ptr, m_idx, pos_scat.y, pos_scat.x, MonraceId::NAZGUL, mode)) {
+        if (!summon_named_creature(creature, m_idx, pos_scat.y, pos_scat.x, MonraceId::NAZGUL, mode)) {
             continue;
         }
 
@@ -276,11 +273,10 @@ MONSTER_NUMBER summon_PYRAMID(CreatureEntity &creature, POSITION y, POSITION x, 
 
 MONSTER_NUMBER summon_EYE_PHORN(CreatureEntity &creature, POSITION y, POSITION x, int rlev, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     int count = 0;
     int num = 2 + randint1(1 + rlev / 20);
     for (int k = 0; k < num; k++) {
-        count += summon_named_creature(&player_ptr, m_idx, y, x, MonraceId::EYE_PHORN, PM_NONE) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, y, x, MonraceId::EYE_PHORN, PM_NONE) ? 1 : 0;
     }
 
     return count;
@@ -318,14 +314,13 @@ MONSTER_NUMBER summon_THUNDERS(CreatureEntity &creature, POSITION y, POSITION x,
  */
 MONSTER_NUMBER summon_YENDER_WIZARD(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     auto *r_ptr = &MonraceList::get_instance().get_monrace(MonraceId::YENDOR_WIZARD_2);
     if (r_ptr->mob_num == 0) {
         msg_print(_("しかし、誰も来なかった…。", "However, no kin was appeared..."));
         return 0;
     }
 
-    auto count = summon_named_creature(&player_ptr, m_idx, y, x, MonraceId::YENDOR_WIZARD_2, PM_NONE) ? 1 : 0;
+    auto count = summon_named_creature(creature, m_idx, y, x, MonraceId::YENDOR_WIZARD_2, PM_NONE) ? 1 : 0;
     if (count == 0) {
         msg_print(_("どこからか声が聞こえる…「三重苦は負わぬ。。。」", "Heard a voice from somewhere... 'I will deny the triple suffering...'"));
         return 0;
@@ -337,11 +332,10 @@ MONSTER_NUMBER summon_YENDER_WIZARD(CreatureEntity &creature, POSITION y, POSITI
 
 MONSTER_NUMBER summon_PLASMA(CreatureEntity &creature, POSITION y, POSITION x, int rlev, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     auto count = 0;
     auto num = 2 + randint1(1 + rlev / 20);
     for (auto k = 0; k < num; k++) {
-        count += summon_named_creature(&player_ptr, m_idx, y, x, MonraceId::PLASMA_VORTEX, PM_NONE) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, y, x, MonraceId::PLASMA_VORTEX, PM_NONE) ? 1 : 0;
     }
 
     msg_print(_("プーラーズーマーッ！！", "P--la--s--ma--!!"));
@@ -387,18 +381,17 @@ MONSTER_NUMBER summon_LAFFEY_II(CreatureEntity &creature, const Pos2D &position,
         }
     }
     for (auto k = 0; k < real_num; k++) {
-        count += summon_named_creature(&player_ptr, m_idx, position.y, position.x, MonraceId::BUNBUN_STRIKERS, PM_NONE) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, position.y, position.x, MonraceId::BUNBUN_STRIKERS, PM_NONE) ? 1 : 0;
     }
     return count;
 }
 
 MONSTER_NUMBER summon_POLYGON(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto &player_ptr = static_cast<PlayerType &>(creature);
     auto count = 0;
     auto num = 2 + randint1(3);
     for (auto k = 0; k < num; k++) {
-        count += summon_named_creature(&player_ptr, m_idx, y, x, MonraceId::POLYGON_SPIN, PM_NONE) ? 1 : 0;
+        count += summon_named_creature(creature, m_idx, y, x, MonraceId::POLYGON_SPIN, PM_NONE) ? 1 : 0;
     }
 
     return count;

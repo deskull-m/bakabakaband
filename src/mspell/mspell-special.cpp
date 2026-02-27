@@ -67,7 +67,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
 
         delete_monster_idx(*player_ptr, floor.grid_array[monster.y][monster.x].m_idx);
         for (const auto separate : it_unified->second) {
-            auto summoned_m_idx = summon_named_creature(player_ptr, 0, dummy_y, dummy_x, separate, MD_NONE);
+            auto summoned_m_idx = summon_named_creature(*player_ptr, 0, dummy_y, dummy_x, separate, MD_NONE);
             if (!summoned_m_idx) {
                 continue;
             }
@@ -108,7 +108,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
             delete_monster_idx(*player_ptr, k);
         }
 
-        if (auto summoned_m_idx = summon_named_creature(player_ptr, 0, dummy_y, dummy_x, unified_unique, MD_NONE)) {
+        if (auto summoned_m_idx = summon_named_creature(*player_ptr, 0, dummy_y, dummy_x, unified_unique, MD_NONE)) {
             floor.m_list[*summoned_m_idx].hp = unified_hp;
             floor.m_list[*summoned_m_idx].maxhp = unified_maxhp;
         }
@@ -157,7 +157,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(PlayerType *player_ptr, POSI
     }
 
     for (k = 0; k < num; k++) {
-        count += summon_named_creature(player_ptr, m_idx, y, x, MonraceId::GRENADE, mode) ? 1 : 0;
+        count += summon_named_creature(*player_ptr, m_idx, y, x, MonraceId::GRENADE, mode) ? 1 : 0;
     }
     if (player_ptr->effects()->blindness().is_blind() && count) {
         msg_print(_("多くのものが間近にばらまかれる音がする。", "You hear many things scattered nearby."));
