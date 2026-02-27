@@ -128,7 +128,7 @@ public:
 
         // 周囲の安全な地点を見つけ、そこに近づくように逃げる
         // 逃げる先が見つからない場合は単に反対側に逃げる
-        const auto pos_safety = find_safety(player_ptr, m_idx);
+        const auto pos_safety = find_safety(*player_ptr, m_idx);
         if (!pos_safety) {
             return pos_run_away_simple;
         }
@@ -230,7 +230,7 @@ public:
             return tl::nullopt;
         }
 
-        return find_hiding(this->player_ptr, this->m_idx);
+        return find_hiding(*this->player_ptr, this->m_idx);
     }
 
 private:
