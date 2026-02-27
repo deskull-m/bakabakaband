@@ -214,7 +214,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    if (runaway_monster(&player, turn_flags_ptr, m_idx)) {
+    if (runaway_monster(creature, turn_flags_ptr, m_idx)) {
         return;
     }
 
