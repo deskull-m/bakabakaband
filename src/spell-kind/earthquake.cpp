@@ -192,9 +192,10 @@ void move_monster_to(CreatureEntity &creature, MonsterEntity &monster, const Pos
     lite_spot(creature, pos_to);
 }
 
-bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool has_dodged)
+bool process_monster_damage(CreatureEntity &creature, MonsterEntity &monster, bool has_dodged)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(monster.get_position());
     const auto damage = (has_dodged ? Dice::roll(4, 8) : (monster.hp + 1));
     (void)set_monster_csleep(floor, grid.m_idx, 0);
@@ -204,16 +205,16 @@ bool process_monster_damage(PlayerType *player_ptr, MonsterEntity &monster, bool
     }
 
     if (!ignore_unview || is_seen(player_ptr, monster)) {
-        const auto m_name = monster_desc(*player_ptr, monster, 0);
+        const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%s^は岩石に埋もれてしまった！", "%s^ is embedded in the rock!"), m_name.data());
     }
 
     if (record_named_pet && monster.is_named_pet()) {
-        const auto m2_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
+        const auto m2_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_EARTHQUAKE, m2_name);
     }
 
-    delete_monster_idx(*player_ptr, grid.m_idx);
+    delete_monster_idx(creature, grid.m_idx);
     return true;
 }
 
@@ -227,7 +228,7 @@ void process_hit_to_monster(CreatureEntity &creature, MonsterEntity &monster, st
         msg_format(_("% s^は苦痛で泣きわめいた！", "%s^ wails out in pain!"), m_name.data());
     }
 
-    if (process_monster_damage(&player, monster, pos_dodge.has_value())) {
+    if (process_monster_damage(creature, monster, pos_dodge.has_value())) {
         return;
     }
 

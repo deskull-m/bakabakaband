@@ -237,7 +237,7 @@ static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_pt
         return;
     }
 
-    if (polymorph_monster(player_ptr, y, x)) {
+    if (polymorph_monster(*player_ptr, y, x)) {
         msg_format(_("%s^は変化した！", "%s^ changes!"), pa_ptr->m_name);
         *(pa_ptr->fear) = false;
         pa_ptr->weak = false;
