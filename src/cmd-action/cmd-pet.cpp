@@ -748,7 +748,7 @@ void do_cmd_pet(PlayerType *player_ptr)
             for (pet_ctr = player_ptr->current_floor_ptr->m_max - 1; pet_ctr >= 1; pet_ctr--) {
                 auto &monster = player_ptr->current_floor_ptr->m_list[pet_ctr];
                 if (monster.is_pet()) {
-                    monster_drop_carried_objects(player_ptr, monster);
+                    monster_drop_carried_objects(*player_ptr, monster);
                 }
             }
         } else {

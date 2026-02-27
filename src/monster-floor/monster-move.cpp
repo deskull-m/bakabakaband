@@ -504,7 +504,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
             continue;
         }
 
-        update_object_by_monster_movement(player_ptr, turn_flags_ptr, m_idx, pos_neighbor.y, pos_neighbor.x);
+        update_object_by_monster_movement(creature, turn_flags_ptr, m_idx, pos_neighbor.y, pos_neighbor.x);
         if (turn_flags_ptr->do_turn) {
             break;
         }

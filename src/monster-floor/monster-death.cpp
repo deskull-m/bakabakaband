@@ -453,7 +453,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     }
 
     drop_corpse(creature, &md);
-    monster_drop_carried_objects(player_ptr, *md.m_ptr);
+    monster_drop_carried_objects(creature, *md.m_ptr);
     decide_drop_quality(&md);
     switch_special_death(player_ptr, &md, attribute_flags);
     drop_artifacts(creature, &md);
