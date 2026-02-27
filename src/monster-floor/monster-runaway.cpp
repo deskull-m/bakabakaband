@@ -14,6 +14,7 @@
 #include "monster/monster-processor-util.h"
 #include "pet/pet-fall-off.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
@@ -87,9 +88,10 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
  * @param see_m モンスターが視界内にいたらTRUE
  * @return モンスターがフロアから消えたらTRUE
  */
-bool runaway_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx)
+bool runaway_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     bool can_runaway = monster.is_pet() || monster.is_friendly();
     can_runaway &= (monrace.kind_flags.has(MonsterKindType::UNIQUE)) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));
@@ -109,17 +111,17 @@ bool runaway_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER
         return false;
     }
 
-    const auto m_name = monster_desc(*player_ptr, monster, 0);
+    const auto m_name = monster_desc(creature, monster, 0);
     if (turn_flags_ptr->is_riding_mon && riding_pinch < 2) {
         msg_format(
             _("%sは傷の痛さの余りあなたの束縛から逃れようとしている。", "%s^ seems to be in so much pain and tries to escape from your restriction."), m_name.data());
         riding_pinch++;
-        disturb(*player_ptr, true, true);
+        disturb(creature, true, true);
         return false;
     }
 
-    escape_monster(*player_ptr, turn_flags_ptr, monster, m_name.data());
+    escape_monster(creature, turn_flags_ptr, monster, m_name.data());
     QuestCompletionChecker(player_ptr, monster).complete();
-    delete_monster_idx(*player_ptr, m_idx);
+    delete_monster_idx(creature, m_idx);
     return true;
 }
