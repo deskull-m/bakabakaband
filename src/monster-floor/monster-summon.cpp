@@ -109,21 +109,21 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
  * @param mode 生成オプション
  * @return 召喚に成功したらモンスターID、失敗したらtl::nullopt
  */
-tl::optional<MONSTER_IDX> summon_named_creature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION oy, POSITION ox, MonraceId r_idx, BIT_FLAGS mode)
+tl::optional<MONSTER_IDX> summon_named_creature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION oy, POSITION ox, MonraceId r_idx, BIT_FLAGS mode)
 {
     if (!MonraceList::is_valid(r_idx) || (r_idx >= static_cast<MonraceId>(MonraceList::get_instance().size()))) {
         return false;
     }
 
-    if (player_ptr->current_floor_ptr->inside_arena) {
+    if (creature.current_floor_ptr->inside_arena) {
         return false;
     }
 
-    const auto pos = mon_scatter(*player_ptr, r_idx, { oy, ox }, 2);
+    const auto pos = mon_scatter(creature, r_idx, { oy, ox }, 2);
     if (!pos) {
         return false;
     }
 
     const auto summon_who = is_monster(src_idx) ? tl::make_optional(src_idx) : tl::nullopt;
-    return place_specific_monster(*player_ptr, pos->y, pos->x, r_idx, (mode | PM_NO_KAGE), summon_who);
+    return place_specific_monster(creature, pos->y, pos->x, r_idx, (mode | PM_NO_KAGE), summon_who);
 }
