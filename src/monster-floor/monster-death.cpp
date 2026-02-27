@@ -455,7 +455,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     drop_corpse(creature, &md);
     monster_drop_carried_objects(creature, *md.m_ptr);
     decide_drop_quality(&md);
-    switch_special_death(player_ptr, &md, attribute_flags);
+    switch_special_death(creature, &md, attribute_flags);
     drop_artifacts(creature, &md);
     const auto drop_numbers = decide_drop_numbers(creature, &md, drop_item, floor.inside_arena);
     floor.object_level = (floor.dun_level + md.r_ptr->level) / 2;
