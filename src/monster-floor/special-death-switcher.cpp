@@ -34,6 +34,7 @@
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
@@ -69,9 +70,10 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
  * @param summon_data 召喚情報
  * @return プレイヤーが死亡時召喚を視認していればtrue, 視認しなければfalse, 召喚失敗時はtl::nullopt
  */
-static tl::optional<bool> final_summon(PlayerType *player_ptr, MonsterDeath *md_ptr, const MonsterSummon &summon_data)
+static tl::optional<bool> final_summon(CreatureEntity &creature, MonsterDeath *md_ptr, const MonsterSummon &summon_data)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    const auto &floor = *creature.current_floor_ptr;
     if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || !evaluate_percent(summon_data.probability)) {
         return tl::nullopt;
     }
@@ -87,7 +89,7 @@ static tl::optional<bool> final_summon(PlayerType *player_ptr, MonsterDeath *md_
     }
     bool notice = false;
     const auto summon_num = rand_range(summon_data.min_num, summon_data.max_num);
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     for (int i = 0; i < summon_num; i++) {
         auto m_pos = md_ptr->get_position();
         auto attempts = 0;
@@ -103,7 +105,7 @@ static tl::optional<bool> final_summon(PlayerType *player_ptr, MonsterDeath *md_
 
         BIT_FLAGS mode = dead_mode(md_ptr);
         const auto summon_src = md_ptr->m_ptr->is_pet() ? -1 : md_ptr->m_idx;
-        if (summon_named_creature(*player_ptr, summon_src, m_pos.y, m_pos.x, summon_data.id, mode) && player_can_see_bold(player_ptr, m_pos.y, m_pos.x)) {
+        if (summon_named_creature(creature, summon_src, m_pos.y, m_pos.x, summon_data.id, mode) && player_can_see_bold(player_ptr, m_pos.y, m_pos.x)) {
             notice = true;
         }
     }
@@ -569,14 +571,14 @@ static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, Attr
     drop_single_artifact(killer, md_ptr, FixedArtifactId::FROZEN_SWORDFISH);
 }
 
-void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
+void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
     auto &monrace = MonraceList::get_instance().get_monrace(md_ptr->ap_r_ptr->idx);
     const auto &summon_list = monrace.get_final_summons();
     if (!summon_list.empty()) {
         auto do_message = false;
         for (auto &summon_data : summon_list) {
-            if (auto notice = final_summon(player_ptr, md_ptr, summon_data)) {
+            if (auto notice = final_summon(creature, md_ptr, summon_data)) {
                 do_message |= *notice;
             }
         }
@@ -590,91 +592,91 @@ void switch_special_death(PlayerType *player_ptr, MonsterDeath *md_ptr, Attribut
         return;
     }
 
-    on_dead_drop_kind_item(*player_ptr, md_ptr);
-    on_dead_drop_tval_item(*player_ptr, md_ptr);
-    on_dead_spawn_monsters(*player_ptr, md_ptr);
+    on_dead_drop_kind_item(creature, md_ptr);
+    on_dead_drop_tval_item(creature, md_ptr);
+    on_dead_spawn_monsters(creature, md_ptr);
 
     if (md_ptr->r_ptr->kind_flags.has(MonsterKindType::NINJA)) {
-        on_dead_ninja(*player_ptr, md_ptr);
+        on_dead_ninja(creature, md_ptr);
         return;
     }
 
-    if (is_sushi_eater(*player_ptr)) {
-        drop_sushi(*player_ptr, md_ptr);
+    if (is_sushi_eater(creature)) {
+        drop_sushi(creature, md_ptr);
     }
 
     switch (md_ptr->ap_r_ptr->idx) {
     case MonraceId::EARTH_DESTROYER:
-        on_dead_earth_destroyer(*player_ptr, md_ptr);
+        on_dead_earth_destroyer(creature, md_ptr);
         return;
     case MonraceId::BOTTLE_GNOME:
-        on_dead_bottle_gnome(*player_ptr, md_ptr);
+        on_dead_bottle_gnome(creature, md_ptr);
         return;
     case MonraceId::BLOODLETTER:
-        on_dead_bloodletter(*player_ptr, md_ptr);
+        on_dead_bloodletter(creature, md_ptr);
         return;
     case MonraceId::RAAL:
-        on_dead_raal(*player_ptr, md_ptr);
+        on_dead_raal(creature, md_ptr);
         return;
     case MonraceId::UNMAKER:
-        (void)project(*player_ptr, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 100, AttributeType::CHAOS, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+        (void)project(creature, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 100, AttributeType::CHAOS, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
         break;
     case MonraceId::UNICORN_ORD:
     case MonraceId::MORGOTH:
     case MonraceId::ONE_RING:
-        on_dead_sacred_treasures(*player_ptr, md_ptr);
+        on_dead_sacred_treasures(creature, md_ptr);
         return;
     case MonraceId::SERPENT:
-        on_dead_serpent(*player_ptr, md_ptr);
+        on_dead_serpent(creature, md_ptr);
         return;
     case MonraceId::B_DEATH_SWORD:
-        on_dead_death_sword(*player_ptr, md_ptr);
+        on_dead_death_sword(creature, md_ptr);
         return;
     case MonraceId::A_GOLD:
     case MonraceId::A_SILVER:
-        on_dead_can_angel(*player_ptr, md_ptr);
+        on_dead_can_angel(creature, md_ptr);
         return;
     case MonraceId::ROLENTO:
-        (void)project(*player_ptr, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+        (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
         return;
     case MonraceId::CAIT_SITH:
-        if (player_ptr->current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
+        if (creature.current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
             return;
         }
-        drop_specific_item_on_dead(*player_ptr, md_ptr, kind_is_boots);
+        drop_specific_item_on_dead(creature, md_ptr, kind_is_boots);
         return;
     case MonraceId::YENDOR_WIZARD_1:
         if (md_ptr->is_chameleon) {
             return;
         }
-        on_dead_random_artifact(*player_ptr, md_ptr, kind_is_amulet);
+        on_dead_random_artifact(creature, md_ptr, kind_is_amulet);
         return;
     case MonraceId::YENDOR_WIZARD_2:
-        if (player_ptr->current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
+        if (creature.current_floor_ptr->dun_level <= 0 || md_ptr->is_chameleon) {
             return;
         }
-        drop_specific_item_on_dead(*player_ptr, md_ptr, kind_is_amulet);
+        drop_specific_item_on_dead(creature, md_ptr, kind_is_amulet);
         return;
     case MonraceId::MANIMANI:
-        on_dead_manimani(*player_ptr, md_ptr);
+        on_dead_manimani(creature, md_ptr);
         return;
     case MonraceId::LOSTRINGIL:
         if (md_ptr->is_chameleon) {
             return;
         }
-        on_dead_random_artifact(*player_ptr, md_ptr, kind_is_sword);
+        on_dead_random_artifact(creature, md_ptr, kind_is_sword);
         return;
     case MonraceId::INARIMAN_2:
-        on_dead_inariman1_2(*player_ptr, md_ptr);
+        on_dead_inariman1_2(creature, md_ptr);
         return;
     case MonraceId::INARIMAN_3:
-        on_dead_inariman3(*player_ptr, md_ptr);
+        on_dead_inariman3(creature, md_ptr);
         return;
     case MonraceId::SWORDFISH:
-        on_dead_swordfish(*player_ptr, md_ptr, attribute_flags);
+        on_dead_swordfish(creature, md_ptr, attribute_flags);
         break;
     default:
-        on_dead_mimics(*player_ptr, md_ptr);
+        on_dead_mimics(creature, md_ptr);
         return;
     }
 }
