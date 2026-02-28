@@ -282,7 +282,7 @@ void process_player(PlayerType *player_ptr)
         if (system.is_phase_out()) {
             move_cursor_relative(player_ptr->y, player_ptr->x);
             command_cmd = SPECIAL_KEY_BUILDING;
-            process_command(player_ptr);
+            process_command(*player_ptr);
         } else if ((is_paralyzed || is_knocked_out) && !cheat_immortal) {
             energy.set_player_turn_energy(100);
         } else if (player_ptr->action == ACTION_REST) {
@@ -309,7 +309,7 @@ void process_player(PlayerType *player_ptr)
             msg_flag = false;
             prt("", 0, 0);
             mark_monsters_present(*player_ptr);
-            process_command(player_ptr);
+            process_command(*player_ptr);
         } else {
             move_cursor_relative(player_ptr->y, player_ptr->x);
 
@@ -321,10 +321,10 @@ void process_player(PlayerType *player_ptr)
             window_stuff(player_ptr);
 
             can_save = true;
-            InputKeyRequestor(player_ptr, false).request_command();
+            InputKeyRequestor(*player_ptr, false).request_command();
             can_save = false;
             mark_monsters_present(*player_ptr);
-            process_command(player_ptr);
+            process_command(*player_ptr);
         }
 
         pack_overflow(player_ptr);

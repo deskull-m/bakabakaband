@@ -17,6 +17,7 @@
 #include "io/input-key-acceptor.h"
 #include "io/uid-checker.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
@@ -56,8 +57,9 @@ std::filesystem::path savefile_base;
  * Allow the "full" flag to dump additional info,
  * and trigger its usage from various places in the code.
  */
-void file_character(PlayerType *player_ptr, std::string_view filename)
+void file_character(CreatureEntity &creature, std::string_view filename)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto path = path_build(ANGBAND_DIR_USER, filename);
     auto fd = fd_open(path, O_RDONLY);
     if (fd >= 0) {
@@ -277,8 +279,9 @@ static errr counts_seek(PlayerType *player_ptr, int fd, uint32_t where, bool fla
  * @return エラーコード
  * @details
  */
-uint32_t counts_read(PlayerType *player_ptr, int where)
+uint32_t counts_read(CreatureEntity &creature, int where)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
     auto fd = fd_open(path, O_RDONLY);
     uint32_t count = 0;
@@ -298,8 +301,9 @@ uint32_t counts_read(PlayerType *player_ptr, int where)
  * @return エラーコード
  * @details
  */
-errr counts_write(PlayerType *player_ptr, int where, uint32_t count)
+errr counts_write(CreatureEntity &creature, int where, uint32_t count)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
     safe_setuid_grab();
     auto fd = fd_open(path, O_RDWR);

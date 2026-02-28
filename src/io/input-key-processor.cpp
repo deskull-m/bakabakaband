@@ -86,6 +86,7 @@
 #include "store/cmd-store.h"
 #include "store/home.h"
 #include "store/store-util.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
@@ -166,8 +167,9 @@ static bool enter_debug_mode(const FloorType &floor)
  * / Parse and execute the current command Give "Warning" on illegal commands.
  * @todo Make some "blocks"
  */
-void process_command(PlayerType *player_ptr)
+void process_command(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     COMMAND_CODE old_now_message = now_message;
     repeat_check();
     now_message = 0;
@@ -688,7 +690,7 @@ void process_command(PlayerType *player_ptr)
         break;
     }
     case ']': {
-        prepare_movie_hooks(player_ptr);
+        prepare_movie_hooks(*player_ptr);
         break;
     }
     case KTRL('V'): {

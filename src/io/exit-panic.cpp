@@ -12,6 +12,7 @@
 #include "player/player-move.h"
 #include "save/save.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
@@ -25,8 +26,9 @@
  * This routine is called only in very rare situations, and only
  * by certain visual systems, when they experience fatal errors.
  */
-void exit_game_panic(PlayerType *player_ptr)
+void exit_game_panic(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     if (!world.character_generated || world.character_saved) {
         quit(_("緊急事態", "panic"));
@@ -34,7 +36,7 @@ void exit_game_panic(PlayerType *player_ptr)
     msg_flag = false;
 
     prt("", 0, 0);
-    disturb(*player_ptr, true, true);
+    disturb(creature, true, true);
     if (player_ptr->hp < 0) {
         player_ptr->is_dead_ = false;
     }

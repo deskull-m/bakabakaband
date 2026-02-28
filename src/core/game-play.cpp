@@ -198,7 +198,7 @@ static void init_world_floor_info(PlayerType *player_ptr, std::optional<QuestId>
     system.set_seed_flavor(randint0(0x10000000));
     system.set_seed_town(randint0(0x10000000));
     player_birth(player_ptr, initial_quest_id);
-    counts_write(player_ptr, 2, 0);
+    counts_write(*player_ptr, 2, 0);
     player_ptr->count = 0;
     load = false;
     determine_bounty_uniques(player_ptr);

@@ -16,6 +16,7 @@
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
 #include "save/save.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
@@ -40,8 +41,8 @@ int16_t command_new; /* Command chaining from inven/equip view */
 
 static char request_command_buffer[256]{}; /*!< Special buffer to hold the action of the current keymap */
 
-InputKeyRequestor::InputKeyRequestor(PlayerType *player_ptr, bool shopping)
-    : player_ptr(player_ptr)
+InputKeyRequestor::InputKeyRequestor(CreatureEntity &creature, bool shopping)
+    : player_ptr(static_cast<PlayerType *>(&creature))
     , shopping(shopping)
     , mode(rogue_like_commands ? KeymapMode::ROGUE : KeymapMode::ORIGINAL)
     , base_y(player_ptr->y - panel_row_min > 10 ? 2 : 13)

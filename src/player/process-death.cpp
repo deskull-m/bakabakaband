@@ -404,7 +404,7 @@ static void export_player_info(CreatureEntity &creature)
         }
 
         screen_save();
-        file_character(static_cast<PlayerType *>(&creature), *ask_result);
+        file_character(creature, *ask_result);
         screen_load();
     }
 }
@@ -421,7 +421,7 @@ static void file_character_auto(CreatureEntity &creature)
     strftime(datetime, sizeof(datetime), "%Y-%m-%d_%H%M%S", now_tm);
     screen_save();
     const auto filename = format("%s_Autodump_%s.txt", creature.name.data(), datetime);
-    file_character(static_cast<PlayerType *>(&creature), filename);
+    file_character(creature, filename);
     screen_load();
 }
 

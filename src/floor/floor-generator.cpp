@@ -302,7 +302,7 @@ static void generate_fixed_floor(PlayerType *player_ptr)
     floor.object_level = floor.base_level;
     floor.monster_level = floor.base_level;
     if (record_stair) {
-        exe_write_diary_quest(player_ptr, DiaryKind::TO_QUEST, floor.quest_number);
+        exe_write_diary_quest(*player_ptr, DiaryKind::TO_QUEST, floor.quest_number);
     }
 
     get_mon_num_prep_enum(*player_ptr, floor.get_monrace_hook());

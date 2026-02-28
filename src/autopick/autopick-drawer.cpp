@@ -43,7 +43,7 @@ static void process_dirty_expression(PlayerType *player_ptr, text_body_type *tb)
         std::string s_keep(s);
         auto ss = s_keep.data();
         char f;
-        auto v = process_pref_file_expr(player_ptr, &ss, &f);
+        auto v = process_pref_file_expr(*player_ptr, &ss, &f);
         if (v == "0") {
             state |= LSTAT_BYPASS;
         } else {

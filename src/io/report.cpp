@@ -20,6 +20,7 @@
 #include "player/player-realm.h"
 #include "player/player-status.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -109,8 +110,9 @@ static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
  * @brief スクリーンダンプを作成する/ Make screen dump to buffer
  * @return 作成したスクリーンダンプの参照ポインタ
  */
-std::string make_screen_dump(PlayerType *player_ptr)
+std::string make_screen_dump(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto html_head =
         "<html>\n<body text=\"#ffffff\" bgcolor=\"#000000\">\n"
         "<pre>\n";
@@ -138,7 +140,7 @@ std::string make_screen_dump(PlayerType *player_ptr)
             MainWindowRedrawingFlag::EQUIPPY,
         };
         rfu.set_flags(flags);
-        handle_stuff(*player_ptr);
+        handle_stuff(creature);
     }
 
     screen_ss << html_head;
@@ -225,7 +227,7 @@ std::string make_screen_dump(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     rfu.set_flags(flags);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return ret;
 }
 
@@ -234,8 +236,9 @@ std::string make_screen_dump(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 正常にスコアを送信できたらtrue、失敗時に送信を中止したらfalse
  */
-bool report_score(PlayerType *player_ptr)
+bool report_score(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     std::stringstream score_ss;
     std::string personality_desc = (*player_ptr->personality).title.string();
     personality_desc.append(_((*player_ptr->personality).no ? "の" : "", " "));

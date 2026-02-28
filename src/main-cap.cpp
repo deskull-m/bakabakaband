@@ -732,7 +732,7 @@ static errr game_term_xtra_cap_event(int v)
 
         /* Hack -- Handle "errors" */
         if ((i <= 0) && (errno != EINTR)) {
-            exit_game_panic(p_ptr);
+            exit_game_panic(*p_ptr);
         }
     }
 

@@ -290,7 +290,7 @@ static bool save_player_aux(PlayerType *player_ptr, const std::filesystem::path 
     }
 
     auto &world = AngbandWorld::get_instance();
-    counts_write(player_ptr, 0, world.play_time.elapsed_sec());
+    counts_write(*player_ptr, 0, world.play_time.elapsed_sec());
     world.character_saved = true;
     return true;
 }

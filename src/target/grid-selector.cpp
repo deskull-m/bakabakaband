@@ -187,7 +187,7 @@ void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
         const auto dy = 2 * (this->pos.y - cy) / this->height;
         const auto dx = 2 * (this->pos.x - cx) / this->width;
         if ((dy != 0) || (dx != 0)) {
-            change_panel(player_ptr, dy, dx);
+            change_panel(*player_ptr, dy, dx);
         }
     }
 }
@@ -294,7 +294,7 @@ tl::optional<Pos2D> point_target(PlayerType *player_ptr)
             }
 
             if ((info.pos.y >= panel_row_min + info.height) || (info.pos.y < panel_row_min) || (info.pos.x >= panel_col_min + info.width) || (info.pos.x < panel_col_min)) {
-                change_panel(player_ptr, dy, dx);
+                change_panel(*player_ptr, dy, dx);
             }
 
             const auto &floor = *player_ptr->current_floor_ptr;

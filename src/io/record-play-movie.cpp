@@ -11,6 +11,7 @@
 #include "io/files-util.h"
 #include "io/signal-handlers.h"
 #include "locale/japanese.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/z-form.h"
@@ -328,8 +329,9 @@ void prepare_chuukei_hooks(void)
 /*
  * Prepare z-term hooks to call send_*_to_chuukei_server()'s
  */
-void prepare_movie_hooks(PlayerType *player_ptr)
+void prepare_movie_hooks(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     TermCenteredOffsetSetter tcos(tl::nullopt, tl::nullopt);
 
     if (movie_mode) {

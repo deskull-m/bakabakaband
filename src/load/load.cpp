@@ -428,16 +428,16 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
     }
 
     world.character_loaded = true;
-    auto tmp = counts_read(player_ptr, 2);
+    auto tmp = counts_read(*player_ptr, 2);
     if (tmp > player_ptr->count) {
         player_ptr->count = tmp;
     }
 
     const auto play_time = world.play_time.elapsed_sec();
-    if (counts_read(player_ptr, 0) > play_time || counts_read(player_ptr, 1) == play_time) {
-        counts_write(player_ptr, 2, ++player_ptr->count);
+    if (counts_read(*player_ptr, 0) > play_time || counts_read(*player_ptr, 1) == play_time) {
+        counts_write(*player_ptr, 2, ++player_ptr->count);
     }
 
-    counts_write(player_ptr, 1, play_time);
+    counts_write(*player_ptr, 1, play_time);
     return true;
 }

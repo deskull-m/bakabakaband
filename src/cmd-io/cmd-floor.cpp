@@ -88,7 +88,7 @@ void do_cmd_locate(PlayerType *player_ptr)
         }
 
         const auto vec = dir.vec();
-        if (change_panel(player_ptr, vec.y, vec.x)) {
+        if (change_panel(*player_ptr, vec.y, vec.x)) {
             y2 = panel_row_min;
             x2 = panel_col_min;
         }

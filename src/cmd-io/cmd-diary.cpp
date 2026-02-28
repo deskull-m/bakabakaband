@@ -139,7 +139,7 @@ void do_cmd_diary(PlayerType *player_ptr)
         case 'r':
         case 'R':
             screen_load();
-            prepare_movie_hooks(player_ptr);
+            prepare_movie_hooks(*player_ptr);
             return;
         default:
             bell();
