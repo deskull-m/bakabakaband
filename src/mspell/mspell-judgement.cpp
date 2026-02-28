@@ -27,6 +27,7 @@
 #include "spell-realm/spells-song.h"
 #include "spell/range-calc.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
@@ -43,11 +44,11 @@
  * @param pos_target 目標座標
  * @return ビームが到達可能ならばTRUEを返す
  */
-bool direct_beam(PlayerType *player_ptr, const MonsterEntity &monster, const Pos2D &pos_target)
+bool direct_beam(CreatureEntity &creature, const MonsterEntity &monster, const Pos2D &pos_target)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto pos_source = monster.get_position();
-    ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), player_ptr->get_position(), pos_source, pos_target, PROJECT_THRU);
+    ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), creature.get_position(), pos_source, pos_target, PROJECT_THRU);
     if (grid_g.path_num()) {
         return false;
     }
@@ -62,7 +63,7 @@ bool direct_beam(PlayerType *player_ptr, const MonsterEntity &monster, const Pos
             return false;
         }
 
-        if (is_friend && player_ptr->is_located_at(pos)) {
+        if (is_friend && creature.is_located_at(pos)) {
             return false;
         }
     }
@@ -79,8 +80,9 @@ bool direct_beam(PlayerType *player_ptr, const MonsterEntity &monster, const Pos
  * @param is_friend TRUEならば、プレイヤーを巻き込む時にブレスの判定をFALSEにする。
  * @return ブレスを直接当てられるならばTRUEを返す
  */
-bool breath_direct(PlayerType *player_ptr, const Pos2D &pos_source, const Pos2D &pos_target, int rad, AttributeType typ, bool is_friend)
+bool breath_direct(CreatureEntity &creature, const Pos2D &pos_source, const Pos2D &pos_target, int rad, AttributeType typ, bool is_friend)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     BIT_FLAGS flg;
     switch (typ) {
     case AttributeType::LITE:
@@ -95,8 +97,8 @@ bool breath_direct(PlayerType *player_ptr, const Pos2D &pos_source, const Pos2D 
         break;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
-    ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), player_ptr->get_position(), pos_source, pos_target, flg);
+    auto &floor = *creature.current_floor_ptr;
+    ProjectionPath grid_g(floor, AngbandSystem::get_instance().get_max_range(), creature.get_position(), pos_source, pos_target, flg);
     auto path_n = 0;
     Pos2D pos_breath = pos_source;
     for (const auto &pos : grid_g) {
@@ -120,7 +122,7 @@ bool breath_direct(PlayerType *player_ptr, const Pos2D &pos_source, const Pos2D 
 
     auto hit2 = false;
     auto hityou = false;
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (path_n == 0) {
         if (flg & PROJECT_DISI) {
             if (in_disintegration_range(floor, pos_source, pos_target) && (Grid::calc_distance(pos_source, pos_target) <= rad)) {
@@ -189,9 +191,10 @@ Pos2D get_project_point(const FloorType &floor, const Pos2D &p_pos, const Pos2D 
  * @param t_idx 目標のモンスターID
  * @return 魔力消去を使うべきならばTRUEを変えす。
  */
-bool dispel_check_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
+bool dispel_check_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx)
 {
-    const auto &t_ref = player_ptr->current_floor_ptr->m_list[t_idx];
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    const auto &t_ref = creature.current_floor_ptr->m_list[t_idx];
     if (t_ref.is_invulnerable()) {
         return true;
     }
@@ -200,7 +203,7 @@ bool dispel_check_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
         return true;
     }
 
-    if ((t_idx == player_ptr->riding) && dispel_check(player_ptr, m_idx)) {
+    if ((t_idx == player_ptr->riding) && dispel_check(creature, m_idx)) {
         return true;
     }
 
@@ -213,8 +216,9 @@ bool dispel_check_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
  * @param m_idx モンスターの構造体配列ID
  * @return 魔力消去をかけるべきならTRUEを返す。
  */
-bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool dispel_check(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (is_invuln(*player_ptr)) {
         return true;
     }
@@ -335,7 +339,7 @@ bool dispel_check(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    if ((static_cast<CreatureEntity &>(*player_ptr).get_speed() < 145) && is_fast(*player_ptr)) {
+    if ((creature.get_speed() < 145) && is_fast(*player_ptr)) {
         return true;
     }
 

@@ -73,7 +73,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     switch (ms_type) {
     case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF4_SHRIEK */
     case MonsterAbilityType::XXX1: break;   /* RF4_XXX1 */
-    case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, player_ptr, 0, MONSTER_TO_PLAYER); /* RF4_DISPEL */
+    case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF4_DISPEL */
     case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF4_ROCKET */
     case MonsterAbilityType::XXX2: break;   /* RF4_XXX2 */
     case MonsterAbilityType::XXX3: break;   /* RF4_XXX3 */
@@ -170,7 +170,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(creature, m_idx, MONSTER_TO_PLAYER, false); /* RF6_BLINK */
     case MonsterAbilityType::TPORT: return spell_RF6_TPORT(creature, m_idx, MONSTER_TO_PLAYER); /* RF6_TPORT */
     case MonsterAbilityType::WORLD: return spell_RF6_WORLD(creature, m_idx); /* RF6_WORLD */
-    case MonsterAbilityType::SPECIAL: return spell_RF6_SPECIAL(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);   /* RF6_SPECIAL */
+    case MonsterAbilityType::SPECIAL: return spell_RF6_SPECIAL(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER);   /* RF6_SPECIAL */
     case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_TO */
     case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_AWAY */
     case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_LEVEL */
@@ -258,7 +258,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     switch (ms_type) {
     case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF4_SHRIEK */
     case MonsterAbilityType::XXX1: break;   /* RF4_XXX1 */
-    case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, player_ptr, t_idx, MONSTER_TO_MONSTER); /* RF4_DISPEL */
+    case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF4_DISPEL */
     case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF4_ROCKET */
     case MonsterAbilityType::XXX2: break;   /* RF4_XXX2 */
     case MonsterAbilityType::XXX3: break;   /* RF4_XXX3 */
@@ -355,7 +355,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(creature, m_idx, MONSTER_TO_MONSTER, is_special_spell); /* RF6_BLINK */
     case MonsterAbilityType::TPORT: return spell_RF6_TPORT(creature, m_idx, MONSTER_TO_MONSTER); /* RF6_TPORT */
     case MonsterAbilityType::WORLD: break; /* RF6_WORLD */
-    case MonsterAbilityType::SPECIAL: return spell_RF6_SPECIAL(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER);   /* RF6_SPECIAL */
+    case MonsterAbilityType::SPECIAL: return spell_RF6_SPECIAL(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER);   /* RF6_SPECIAL */
     case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_TO */
     case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_AWAY */
     case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_LEVEL */
@@ -411,7 +411,7 @@ MonsterSpellResult monspell_to_player(CreatureEntity &creature, MonsterAbilityTy
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 特技使用前の時点でプレイヤーがモンスターを視認できているかチェック(ラーニングの必要条件)。
-    const bool player_could_see_monster = spell_learnable(player_ptr, m_idx);
+    const bool player_could_see_monster = spell_learnable(creature, m_idx);
 
     auto res = monspell_to_player_impl(creature, ms_type, y, x, m_idx);
     if (!player_could_see_monster) {
@@ -441,7 +441,7 @@ MonsterSpellResult monspell_to_monster(
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 特技使用前の時点でプレイヤーがモンスターを視認できているかチェック(ラーニングの必要条件)。
-    const bool player_could_see_monster = spell_learnable(player_ptr, m_idx);
+    const bool player_could_see_monster = spell_learnable(creature, m_idx);
 
     auto res = monspell_to_monster_impl(creature, ms_type, y, x, m_idx, t_idx, is_special_spell);
     if (!player_could_see_monster) {

@@ -26,6 +26,7 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-crusade.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -45,9 +46,10 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx 呪文を唱えるモンスターID
  */
-static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, MONSTER_IDX m_idx)
+static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     auto dummy_y = monster.y;
     auto dummy_x = monster.x;
@@ -61,7 +63,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
         const int separates_size = it_unified->second.size();
         const auto separated_hp = (monster.hp + 1) / separates_size;
         const auto separated_maxhp = monster.maxhp / separates_size;
-        if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || !summon_possible(player_ptr, monster.y, monster.x)) {
+        if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || !summon_possible(creature, monster.y, monster.x)) {
             return MonsterSpellResult::make_invalid();
         }
 
@@ -137,12 +139,13 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(PlayerType *player_ptr, 
  * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
  * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
  */
-static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int count = 0, k;
     int num = 1 + randint1(3);
     BIT_FLAGS mode = 0L;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     bool see_either = see_monster(*player_ptr, m_idx) || see_monster(*player_ptr, t_idx);
     bool mon_to_mon = target_type == MONSTER_TO_MONSTER;
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
@@ -175,16 +178,17 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(PlayerType *player_ptr, POSI
  * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
  * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
  */
-static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     mspell_cast_msg_simple msg{};
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     const auto &monster_target = floor.m_list[t_idx];
     const auto &monrace_target = monster_target.get_monrace();
     bool monster_to_player = (target_type == MONSTER_TO_PLAYER);
     bool monster_to_monster = (target_type == MONSTER_TO_MONSTER);
-    bool direct = player_ptr->is_located_at({ y, x });
+    bool direct = creature.is_located_at({ y, x });
     const auto m_name = monster_name(*player_ptr, m_idx);
 
     disturb(*player_ptr, true, true);
@@ -261,24 +265,24 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
  *
  * ラーニング不可。
  */
-MonsterSpellResult spell_RF6_SPECIAL(PlayerType *player_ptr, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+MonsterSpellResult spell_RF6_SPECIAL(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     const auto r_idx = monster.r_idx;
     if (MonraceList::get_instance().can_unify_separate(r_idx)) {
-        return spell_RF6_SPECIAL_UNIFICATION(player_ptr, m_idx);
+        return spell_RF6_SPECIAL_UNIFICATION(creature, m_idx);
     }
 
     switch (r_idx) {
     case MonraceId::OHMU:
         return MonsterSpellResult::make_invalid();
     case MonraceId::ROLENTO:
-        return spell_RF6_SPECIAL_ROLENTO(player_ptr, y, x, m_idx, t_idx, target_type);
+        return spell_RF6_SPECIAL_ROLENTO(creature, y, x, m_idx, t_idx, target_type);
     default:
         if (monrace.symbol_char_is_any_of("B")) {
-            return spell_RF6_SPECIAL_B(player_ptr, y, x, m_idx, t_idx, target_type);
+            return spell_RF6_SPECIAL_B(creature, y, x, m_idx, t_idx, target_type);
         }
 
         return MonsterSpellResult::make_invalid();

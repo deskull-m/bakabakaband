@@ -4,10 +4,10 @@
 #include "monster/monster-util.h"
 #include "player-base/player-race.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 
@@ -17,7 +17,7 @@
  * @return 召喚条件が一致するならtrue
  * @details
  */
-bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, MonraceId r_idx, summon_type type)
+bool check_summon_specific(CreatureEntity &creature, MonraceId summoner_idx, MonraceId r_idx, summon_type type)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     const auto &smonrace = MonraceList::get_instance().get_monrace(summoner_idx);
@@ -83,7 +83,7 @@ bool check_summon_specific(PlayerType *player_ptr, MonraceId summoner_idx, Monra
     case SUMMON_CYBER:
         return monrace.symbol_char_is_any_of("U") && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
     case SUMMON_KIN: {
-        const auto summon_kin_type = MonraceList::is_valid(summoner_idx) ? MonraceList::get_instance().get_monrace(summoner_idx).symbol_definition.character : CreatureRace(player_ptr).get_summon_symbol();
+        const auto summon_kin_type = MonraceList::is_valid(summoner_idx) ? MonraceList::get_instance().get_monrace(summoner_idx).symbol_definition.character : CreatureRace(&creature).get_summon_symbol();
         return (monrace.symbol_definition.character == summon_kin_type) && (r_idx != MonraceId::HAGURE);
     }
     case SUMMON_DAWN:

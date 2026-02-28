@@ -216,7 +216,7 @@ static void check_melee_spell_rocket(CreatureEntity &creature, melee_spell_type 
 static void check_melee_spell_beam(CreatureEntity &creature, melee_spell_type *ms_ptr)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (ms_ptr->ability_flags.has_none_of(RF_ABILITY_BEAM_MASK) || direct_beam(player_ptr, *ms_ptr->m_ptr, ms_ptr->t_ptr->get_position())) {
+    if (ms_ptr->ability_flags.has_none_of(RF_ABILITY_BEAM_MASK) || direct_beam(*player_ptr, *ms_ptr->m_ptr, ms_ptr->t_ptr->get_position())) {
         return;
     }
 
@@ -231,18 +231,18 @@ static void check_melee_spell_breath(CreatureEntity &creature, melee_spell_type 
 
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     POSITION rad = ms_ptr->r_ptr->misc_flags.has(MonsterMiscType::POWERFUL) ? 3 : 2;
-    if (!breath_direct(player_ptr, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position(), rad, AttributeType::NONE, true)) {
+    if (!breath_direct(*player_ptr, ms_ptr->m_ptr->get_position(), ms_ptr->t_ptr->get_position(), rad, AttributeType::NONE, true)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_BREATH_MASK);
         return;
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_LITE) && !breath_direct(player_ptr, ms_ptr->m_ptr->get_position(),
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_LITE) && !breath_direct(*player_ptr, ms_ptr->m_ptr->get_position(),
                                                                       ms_ptr->t_ptr->get_position(), rad, AttributeType::LITE, true)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::BR_LITE);
         return;
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && !breath_direct(player_ptr, ms_ptr->m_ptr->get_position(),
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && !breath_direct(*player_ptr, ms_ptr->m_ptr->get_position(),
                                                                       ms_ptr->t_ptr->get_position(), rad, AttributeType::DISINTEGRATE, true)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::BR_DISI);
     }
@@ -320,23 +320,23 @@ static void check_non_stupid(CreatureEntity &creature, melee_spell_type *ms_ptr)
     }
 
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_BOLT_MASK) && !clean_shot(player_ptr, ms_ptr->m_ptr->y, ms_ptr->m_ptr->x, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x, ms_ptr->pet)) {
+    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_BOLT_MASK) && !clean_shot(*player_ptr, ms_ptr->m_ptr->y, ms_ptr->m_ptr->x, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x, ms_ptr->pet)) {
         ms_ptr->ability_flags.reset(RF_ABILITY_BOLT_MASK);
     }
 
-    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_SUMMON_MASK) && !(summon_possible(player_ptr, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x))) {
+    if (ms_ptr->ability_flags.has_any_of(RF_ABILITY_SUMMON_MASK) && !(summon_possible(*player_ptr, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x))) {
         ms_ptr->ability_flags.reset(RF_ABILITY_SUMMON_MASK);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::DISPEL) && !dispel_check_monster(player_ptr, ms_ptr->m_idx, ms_ptr->target_idx)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::DISPEL) && !dispel_check_monster(*player_ptr, ms_ptr->m_idx, ms_ptr->target_idx)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::DISPEL);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::RAISE_DEAD) && !raise_possible(player_ptr, *ms_ptr->m_ptr)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::RAISE_DEAD) && !raise_possible(*player_ptr, *ms_ptr->m_ptr)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::RAISE_DEAD);
     }
 
-    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) && !summon_possible(player_ptr, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x)) {
+    if (ms_ptr->ability_flags.has(MonsterAbilityType::SPECIAL) && (ms_ptr->m_ptr->r_idx == MonraceId::ROLENTO) && !summon_possible(*player_ptr, ms_ptr->t_ptr->y, ms_ptr->t_ptr->x)) {
         ms_ptr->ability_flags.reset(MonsterAbilityType::SPECIAL);
     }
 }

@@ -82,7 +82,7 @@ MonsterSpellResult spell_RF5_CAUSE(PlayerType *player_ptr, MonsterAbilityType ms
 
     const auto dam = monspell_damage(*player_ptr, ms_type, m_idx, DAM_ROLL);
 
-    pointed(player_ptr, y, x, m_idx, curse_list.at(ms_type).type, dam, target_type);
+    pointed(*player_ptr, y, x, m_idx, curse_list.at(ms_type).type, dam, target_type);
 
     auto res = MonsterSpellResult::make_valid(dam);
     res.learnable = target_type == MONSTER_TO_PLAYER;

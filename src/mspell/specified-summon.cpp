@@ -199,7 +199,7 @@ MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, M
     const auto p_pos = player_ptr.get_position();
     auto count = 0;
     for (auto k = 0; k < 30; k++) {
-        if (!summon_possible(&player_ptr, pos_scat.y, pos_scat.x) || !floor.is_empty_at(pos_scat) || (pos_scat == p_pos)) {
+        if (!summon_possible(player_ptr, pos_scat.y, pos_scat.x) || !floor.is_empty_at(pos_scat) || (pos_scat == p_pos)) {
             int j;
             for (j = 100; j > 0; j--) {
                 pos_scat = scatter(floor, pos, 2, PROJECT_NONE);

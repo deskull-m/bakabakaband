@@ -15,11 +15,11 @@ enum mspell_lite_type {
 };
 
 // Monster Spell Attack.
+class CreatureEntity;
 class MonsterEntity;
 class MonraceDefinition;
-class PlayerType;
 struct msa_type {
-    msa_type(PlayerType *player_ptr, MONSTER_IDX m_idx);
+    msa_type(CreatureEntity &creature, MONSTER_IDX m_idx);
 
     POSITION x_br_lite = 0;
     POSITION y_br_lite = 0;
