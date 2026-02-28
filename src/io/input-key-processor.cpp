@@ -219,14 +219,14 @@ void process_command(CreatureEntity &creature)
     }
     case 'w': {
         if (!is_wild_mode) {
-            do_cmd_wield(player_ptr);
+            do_cmd_wield(*player_ptr);
         }
 
         break;
     }
     case 't': {
         if (!is_wild_mode) {
-            do_cmd_takeoff(player_ptr);
+            do_cmd_takeoff(*player_ptr);
         }
 
         break;
@@ -243,7 +243,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'e': {
-        do_cmd_equip(player_ptr);
+        do_cmd_equip(*player_ptr);
         break;
     }
     case 'i': {

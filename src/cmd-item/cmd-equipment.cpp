@@ -42,6 +42,7 @@
 #include "spell-kind/spells-perception.h"
 #include "status/action-setter.h"
 #include "status/shape-changer.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -56,8 +57,9 @@
 /*!
  * @brief 装備時にアイテムを呪う処理
  */
-static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, PlayerType *player_ptr)
+static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (set_anubis_and_chariot(*player_ptr) && ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND))) {
 
@@ -92,8 +94,9 @@ static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, PlayerType *pla
 /*!
  * @brief 装備一覧を表示するコマンドのメインルーチン / Display equipment
  */
-void do_cmd_equip(PlayerType *player_ptr)
+void do_cmd_equip(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     command_wrk = true;
     if (easy_floor) {
         command_wrk = USE_EQUIP;
@@ -101,8 +104,8 @@ void do_cmd_equip(PlayerType *player_ptr)
 
     screen_save();
     (void)show_equipment(player_ptr, 0, USE_FULL, AllMatchItemTester());
-    auto weight = calc_inventory_weight(*player_ptr);
-    auto weight_lim = calc_weight_limit(*player_ptr);
+    auto weight = calc_inventory_weight(creature);
+    auto weight_lim = calc_weight_limit(creature);
     const auto mes = _("装備： 合計 %3d.%1d kg (限界の%d%%) コマンド: ", "Equipment: carrying %d.%d pounds (%d%% of capacity). Command: ");
 #ifdef JP
     const auto out_val = format(mes, lb_to_kg_integer(weight), lb_to_kg_fraction(weight), weight * 100 / weight_lim);
@@ -128,11 +131,12 @@ void do_cmd_equip(PlayerType *player_ptr)
  * @brief 装備するコマンドのメインルーチン / Wield or wear a single item from the pack or floor
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_wield(PlayerType *player_ptr)
+void do_cmd_wield(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     concptr act;
     OBJECT_IDX need_switch_wielding = 0;
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     constexpr auto selection_q = _("どれを装備しますか? ", "Wear/Wield which item? ");
     constexpr auto selection_s = _("装備可能なアイテムがない。", "You have nothing you can wear or wield.");
@@ -142,7 +146,7 @@ void do_cmd_wield(PlayerType *player_ptr)
         return;
     }
 
-    auto slot = wield_slot(*player_ptr, o_ptr);
+    auto slot = wield_slot(creature, o_ptr);
 
     // 肛門破壊チェック
     if (slot == INVEN_ASSHOLE && player_ptr->muta.has(PlayerMutationType::DESTROYED_ASSHOLE)) {
@@ -162,7 +166,7 @@ void do_cmd_wield(PlayerType *player_ptr)
     case ItemKindType::CAPTURE:
     case ItemKindType::SHIELD:
     case ItemKindType::CARD:
-        if (has_melee_weapon(*player_ptr, INVEN_MAIN_HAND) && has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
+        if (has_melee_weapon(creature, INVEN_MAIN_HAND) && has_melee_weapon(creature, INVEN_SUB_HAND)) {
             constexpr auto q = _("どちらの武器と取り替えますか?", "Replace which weapon? ");
             constexpr auto s = _("おっと。", "Oops.");
             if (!choose_object(player_ptr, &slot, q, s, (USE_EQUIP | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_melee_weapon))) {
@@ -172,7 +176,7 @@ void do_cmd_wield(PlayerType *player_ptr)
             if (slot == INVEN_MAIN_HAND) {
                 need_switch_wielding = INVEN_SUB_HAND;
             }
-        } else if (has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
+        } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
             slot = INVEN_MAIN_HAND;
         } else if (o_ptr_mh->is_valid() && o_ptr_sh->is_valid() &&
                    ((tval == ItemKindType::CAPTURE) || (!o_ptr_mh->is_melee_weapon() && !o_ptr_sh->is_melee_weapon()))) {
@@ -192,7 +196,7 @@ void do_cmd_wield(PlayerType *player_ptr)
             if (!input_check(_("二刀流で戦いますか？", "Dual wielding? "))) {
                 slot = INVEN_MAIN_HAND;
             }
-        } else if (!o_ptr_mh->is_valid() && has_melee_weapon(*player_ptr, INVEN_SUB_HAND)) {
+        } else if (!o_ptr_mh->is_valid() && has_melee_weapon(creature, INVEN_SUB_HAND)) {
             if (!input_check(_("二刀流で戦いますか？", "Dual wielding? "))) {
                 slot = INVEN_SUB_HAND;
             }
@@ -203,7 +207,7 @@ void do_cmd_wield(PlayerType *player_ptr)
                 return;
             }
 
-            if ((slot == INVEN_SUB_HAND) && !has_melee_weapon(*player_ptr, INVEN_MAIN_HAND)) {
+            if ((slot == INVEN_SUB_HAND) && !has_melee_weapon(creature, INVEN_MAIN_HAND)) {
                 need_switch_wielding = INVEN_MAIN_HAND;
             }
         }
@@ -251,7 +255,7 @@ void do_cmd_wield(PlayerType *player_ptr)
         }
     }
 
-    CreatureRace pr(player_ptr);
+    CreatureRace pr(&creature);
     auto should_change_vampire = o_ptr->is_specific_artifact(FixedArtifactId::STONEMASK);
     should_change_vampire &= o_ptr->is_known();
     should_change_vampire &= !pr.equals(PlayerRaceType::VAMPIRE);
@@ -278,7 +282,7 @@ void do_cmd_wield(PlayerType *player_ptr)
 
     check_find_art_quest_completion(player_ptr, o_ptr);
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
-        identify_item(*player_ptr, o_ptr);
+        identify_item(creature, o_ptr);
         autopick_alter_item(player_ptr, i_idx, false);
     }
 
@@ -289,8 +293,8 @@ void do_cmd_wield(PlayerType *player_ptr)
         inven_item_increase(player_ptr, i_idx, -1);
         inven_item_optimize(player_ptr, i_idx);
     } else {
-        floor_item_increase(*player_ptr, 0 - i_idx, -1);
-        floor_item_optimize(*player_ptr, 0 - i_idx);
+        floor_item_increase(creature, 0 - i_idx, -1);
+        floor_item_optimize(creature, 0 - i_idx);
     }
 
     auto &wield_slot_item = *player_ptr->inventory[slot];
@@ -308,7 +312,7 @@ void do_cmd_wield(PlayerType *player_ptr)
 
     switch (slot) {
     case INVEN_MAIN_HAND:
-        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(*player_ptr, false) == EMPTY_HAND_SUB) && can_two_hands_wielding(*player_ptr)) {
+        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(creature, false) == EMPTY_HAND_SUB) && can_two_hands_wielding(creature)) {
             act = STR_WIELD_HANDS_TWO;
         } else {
             act = (left_hander ? STR_WIELD_HAND_LEFT : STR_WIELD_HAND_RIGHT);
@@ -316,7 +320,7 @@ void do_cmd_wield(PlayerType *player_ptr)
 
         break;
     case INVEN_SUB_HAND:
-        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(*player_ptr, false) == EMPTY_HAND_MAIN) && can_two_hands_wielding(*player_ptr)) {
+        if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(creature, false) == EMPTY_HAND_MAIN) && can_two_hands_wielding(creature)) {
             act = STR_WIELD_HANDS_TWO;
         } else {
             act = (left_hander ? STR_WIELD_HAND_RIGHT : STR_WIELD_HAND_LEFT);
@@ -338,11 +342,11 @@ void do_cmd_wield(PlayerType *player_ptr)
     msg_format(act, item_name.data(), index_to_label(slot));
     if (wield_slot_item.is_cursed()) {
         msg_print(_("うわ！ すさまじく冷たい！", "Oops! It feels deathly cold!"));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, -1);
+        chg_virtue(creature, Virtue::HARMONY, -1);
         wield_slot_item.ident |= (IDENT_SENSE);
     }
 
-    do_curse_on_equip(slot, wield_slot_item, player_ptr);
+    do_curse_on_equip(slot, wield_slot_item, creature);
     if (wield_slot_item.is_specific_artifact(FixedArtifactId::STONEMASK)) {
         auto is_specific_race = pr.equals(PlayerRaceType::VAMPIRE);
         is_specific_race |= pr.equals(PlayerRaceType::ANDROID);
@@ -371,9 +375,10 @@ void do_cmd_wield(PlayerType *player_ptr)
 /*!
  * @brief 装備を外すコマンドのメインルーチン / Take off an item
  */
-void do_cmd_takeoff(PlayerType *player_ptr)
+void do_cmd_takeoff(CreatureEntity &creature)
 {
-    CreatureClass pc(*player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    CreatureClass pc(creature);
     pc.break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     constexpr auto q = _("どれを装備からはずしますか? ", "Take off which item? ");
@@ -410,7 +415,7 @@ void do_cmd_takeoff(PlayerType *player_ptr)
     sound(SoundKind::TAKE_OFF);
     energy.set_player_turn_energy(50);
     (void)inven_takeoff(player_ptr, i_idx, 255);
-    verify_equip_slot(*player_ptr, i_idx);
+    verify_equip_slot(creature, i_idx);
     calc_android_exp(player_ptr);
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,

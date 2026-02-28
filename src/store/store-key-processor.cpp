@@ -127,11 +127,11 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case 'w': {
-        do_cmd_wield(player_ptr);
+        do_cmd_wield(*player_ptr);
         break;
     }
     case 't': {
-        do_cmd_takeoff(player_ptr);
+        do_cmd_takeoff(*player_ptr);
         break;
     }
     case 'k': {
@@ -139,7 +139,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case 'e': {
-        do_cmd_equip(player_ptr);
+        do_cmd_equip(*player_ptr);
         break;
     }
     case 'i': {
