@@ -872,7 +872,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
 
                         /* Anger the monster */
                         if (tdam > 0) {
-                            anger_monster(player_ptr, monster);
+                            anger_monster(*player_ptr, monster);
                         }
 
                         if (fear && monster.ml) {

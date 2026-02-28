@@ -591,7 +591,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
 
         /* Anger the monster */
         if (pa_ptr->attack_damage > 0) {
-            anger_monster(&player, *pa_ptr->m_ptr);
+            anger_monster(player, *pa_ptr->m_ptr);
         }
 
         touch_zap_player(*pa_ptr->m_ptr, &player);

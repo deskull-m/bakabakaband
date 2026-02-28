@@ -502,7 +502,7 @@ void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr)
     }
 
     pa_ptr->attack_damage = 0;
-    anger_monster(&player, *pa_ptr->m_ptr);
+    anger_monster(player, *pa_ptr->m_ptr);
 
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {

@@ -462,7 +462,7 @@ void ObjectThrowEntity::attack_racial_power()
     }
 
     if ((this->tdam > 0) && !this->q_ptr->is_potion()) {
-        anger_monster(this->player_ptr, monster);
+        anger_monster(*this->player_ptr, monster);
     }
 
     if (fear && monster.ml) {
