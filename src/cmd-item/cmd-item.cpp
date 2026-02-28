@@ -275,7 +275,7 @@ void do_cmd_use(CreatureEntity &creature)
         do_cmd_spike(creature);
         break;
     case ItemKindType::FOOD:
-        exe_eat_food(player_ptr, i_idx);
+        exe_eat_food(creature, i_idx);
         break;
     case ItemKindType::WAND:
         ObjectZapWandEntity(player_ptr).execute(i_idx);

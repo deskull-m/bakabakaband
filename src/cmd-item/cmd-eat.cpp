@@ -49,6 +49,7 @@
 #include "sv-definition/sv-food-types.h"
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-other-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -65,8 +66,9 @@
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
-static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
+static bool exe_eat_junk_type_object(CreatureEntity &creature, ItemEntity *o_ptr)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (o_ptr->bi_key.tval() != ItemKindType::JUNK) {
         return false;
     }
@@ -100,8 +102,9 @@ static bool exe_eat_junk_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
-static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
+static bool exe_eat_soul(CreatureEntity &creature, ItemEntity *o_ptr)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (!(o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_SOUL)) {
         return false;
     }
@@ -113,12 +116,12 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
     const auto &monrace = MonraceList::get_instance().get_monrace(i2enum<MonraceId, int>(o_ptr->pval));
     EXP max_exp = monrace.level * monrace.level * 5;
 
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
+    chg_virtue(creature, Virtue::ENLIGHTEN, 1);
     if (player_ptr->exp < PY_MAX_EXP) {
         EXP ee = (player_ptr->exp / 2) + 10;
         ee = std::min(ee, max_exp);
         msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), ee);
+        gain_exp(creature, ee);
     }
     return true;
 }
@@ -129,8 +132,9 @@ static bool exe_eat_soul(PlayerType *player_ptr, ItemEntity *o_ptr)
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
-static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr)
+static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_ptr)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (!(o_ptr->bi_key.tval() == ItemKindType::MONSTER_REMAINS && o_ptr->bi_key.sval() == SV_CORPSE)) {
         return false;
     }
@@ -268,8 +272,9 @@ static bool exe_eat_corpse_type_object(PlayerType *player_ptr, ItemEntity *o_ptr
  * @param o_ptr 食べるオブジェクト
  * @return 鑑定されるならTRUE、されないならFALSE
  */
-static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &bi_key)
+static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey &bi_key)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (bi_key.tval() != ItemKindType::FOOD) {
         return false;
     }
@@ -421,7 +426,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         (void)do_inc_stat(*player_ptr, randint0(6));
         return true;
     case SV_FOOD_ABESHI:
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 50);
+        gain_exp(creature, player_ptr->level * 50);
         (void)set_hero(*player_ptr, randint1(10) + 10, false);
         if (one_in_(300)) {
             (void)do_inc_stat(*player_ptr, A_STR);
@@ -434,7 +439,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         return true;
     case SV_FOOD_HIDEBU:
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 100);
+        gain_exp(creature, player_ptr->level * 100);
         (void)set_hero(*player_ptr, randint1(25) + 25, false);
         if (one_in_(100)) {
             (void)do_inc_stat(*player_ptr, A_STR);
@@ -447,7 +452,7 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
         }
         return true;
     case SV_FOOD_BASILISK_TIME:
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->level * 100);
+        gain_exp(creature, player_ptr->level * 100);
         msg_print("あなたは突如狂ったように踊り始めた！");
         msg_print("「みずのよーうにのようにやさしく！はなのよーうにはげしく！ふーるえ……」");
         (void)BadStatusSetter(*player_ptr).mod_stun(25 + randint1(25));
@@ -476,9 +481,10 @@ static bool exe_eat_food_type_object(PlayerType *player_ptr, const BaseitemKey &
  * @param i_idx オブジェクトのインベントリ番号
  * @return 食べようとしたらTRUE、しなかったらFALSE
  */
-static bool exe_eat_charge_of_magic_device(PlayerType *player_ptr, ItemEntity *o_ptr, short i_idx)
+static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity *o_ptr, short i_idx)
 {
-    if (!o_ptr->is_wand_staff() || (CreatureRace(player_ptr).food() != PlayerRaceFoodType::MANA)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (!o_ptr->is_wand_staff() || (CreatureRace(&creature).food() != PlayerRaceFoodType::MANA)) {
         return false;
     }
 
@@ -538,13 +544,14 @@ static bool exe_eat_charge_of_magic_device(PlayerType *player_ptr, ItemEntity *o
  * @brief 食料を食べるコマンドのサブルーチン
  * @param i_idx 食べるオブジェクトの所持品ID
  */
-void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
+void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (music_singing_any(*player_ptr)) {
         stop_singing(*player_ptr);
     }
 
-    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+    SpellHex spell_hex(creature);
     if (spell_hex.is_spelling_any()) {
         (void)spell_hex.stop_all_spells();
     }
@@ -559,19 +566,19 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     /* 基本食い物でないものを喰う判定 */
     bool ate = false;
 
-    ate = exe_eat_soul(player_ptr, o_ptr);
+    ate = exe_eat_soul(creature, o_ptr);
 
     if (!ate) {
-        ate = exe_eat_corpse_type_object(player_ptr, o_ptr);
+        ate = exe_eat_corpse_type_object(creature, o_ptr);
     }
 
     if (!ate) {
-        ate = exe_eat_junk_type_object(player_ptr, o_ptr);
+        ate = exe_eat_junk_type_object(creature, o_ptr);
     }
 
     /* Identity not known yet */
     const auto &bi_key = o_ptr->bi_key;
-    const auto ident = exe_eat_food_type_object(player_ptr, bi_key);
+    const auto ident = exe_eat_food_type_object(creature, bi_key);
 
     /*
      * Store what may have to be updated for the inventory (including
@@ -589,9 +596,9 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     rfu.reset_flags(flags_srf);
     if (!(o_ptr->is_aware())) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
+        chg_virtue(creature, Virtue::KNOWLEDGE, -1);
+        chg_virtue(creature, Virtue::PATIENCE, -1);
+        chg_virtue(creature, Virtue::CHANCE, 1);
     }
 
     /* We have tried it */
@@ -603,7 +610,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     /* The player is now aware of the object */
     if (ident && !o_ptr->is_aware()) {
         object_aware(player_ptr, *o_ptr);
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), (level + (player_ptr->level >> 1)) / player_ptr->level);
+        gain_exp(creature, (level + (player_ptr->level >> 1)) / player_ptr->level);
     }
 
     static constexpr auto flags_swrf = {
@@ -614,12 +621,12 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     rfu.set_flags(flags_swrf);
 
     /* Undeads drain recharge of magic device */
-    if (exe_eat_charge_of_magic_device(player_ptr, o_ptr, i_idx)) {
+    if (exe_eat_charge_of_magic_device(creature, o_ptr, i_idx)) {
         rfu.set_flags(flags_srf);
         return;
     }
 
-    auto food_type = CreatureRace(player_ptr).food();
+    auto food_type = CreatureRace(&creature).food();
 
     /* Balrogs change humanoid corpses to energy */
     if (food_type == PlayerRaceFoodType::CORPSE) {
@@ -634,7 +641,7 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         }
     }
 
-    if (CreatureRace(player_ptr).equals(PlayerRaceType::SKELETON)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::SKELETON)) {
         const auto sval = bi_key.sval();
         if ((sval != SV_FOOD_WAYBREAD) && (sval >= SV_FOOD_BISCUIT)) {
             ItemEntity item(bi_key);
@@ -702,9 +709,10 @@ void exe_eat_food(PlayerType *player_ptr, INVENTORY_IDX i_idx)
  * @brief 食料を食べるコマンドのメインルーチン /
  * Eat some food (from the pack or floor)
  */
-void do_cmd_eat_food(PlayerType *player_ptr)
+void do_cmd_eat_food(CreatureEntity &creature)
 {
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どれを食べますか? ", "Eat which item? ");
     constexpr auto s = _("食べ物がない。", "You have nothing to eat.");
     short i_idx;
@@ -712,5 +720,5 @@ void do_cmd_eat_food(PlayerType *player_ptr)
         return;
     }
 
-    exe_eat_food(player_ptr, i_idx);
+    exe_eat_food(creature, i_idx);
 }
