@@ -1,4 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class PlayerType;
-bool get_player_personality(PlayerType *player_ptr);
+bool get_player_personality(CreatureEntity &creature);

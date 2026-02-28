@@ -11,6 +11,7 @@
 #include "player/player-personality.h"
 #include "player/player-sex.h"
 #include "player/player-status-table.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -203,8 +204,10 @@ static void display_autoroller_chance(int *cval)
  * @brief オートローラで得たい能力値の基準を決める。
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-bool get_stat_limits(PlayerType *player_ptr)
+bool get_stat_limits(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     clear_from(10);
     put_str(_("能力値を抽選します。最低限得たい能力値を設定して下さい。", "Set minimum stats for picking up your charactor."), 10, 10);
     put_str(_("2/8で項目選択、4/6で値の増減、Enterで次へ", "2/8 for Select, 4/6 for Change value, Enter for Goto next"), 11, 10);
@@ -317,7 +320,7 @@ bool get_stat_limits(PlayerType *player_ptr)
 
             break;
         case '?':
-            show_help(player_ptr, _("jbirth.txt#AutoRoller", "birth.txt#AutoRoller"));
+            show_help(*player_ptr, _("jbirth.txt#AutoRoller", "birth.txt#AutoRoller"));
             break;
         case '=':
             screen_save();
@@ -356,8 +359,10 @@ void initialize_chara_limit(chara_limit_type *chara_limit_ptr)
 /*!
  * @brief オートローラで得たい年齢、身長、体重、社会的地位の基準を決める。
  */
-bool get_chara_limits(PlayerType *player_ptr, chara_limit_type *chara_limit_ptr)
+bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     static const std::vector<std::string> item_names = { _("年齢", "age"), _("身長(cm)", "height"), _("体重(kg)", "weight"), _("威信", "prestige") };
     clear_from(10);
     put_str(_("2/4/6/8で項目選択、+/-で値の増減、Enterで次へ", "2/4/6/8 for Select, +/- for Change value, Enter for Goto next"), 11, 10);
@@ -584,9 +589,9 @@ bool get_chara_limits(PlayerType *player_ptr, chara_limit_type *chara_limit_ptr)
             break;
         case '?':
 #ifdef JP
-            show_help(player_ptr, "jbirth.txt#AutoRoller");
+            show_help(*player_ptr, "jbirth.txt#AutoRoller");
 #else
-            show_help(player_ptr, "birth.txt#AutoRoller");
+            show_help(*player_ptr, "birth.txt#AutoRoller");
 #endif
             break;
         case '=':

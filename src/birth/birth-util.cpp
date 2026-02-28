@@ -3,6 +3,7 @@
 #include "core/show-file.h"
 #include "game-option/game-option-page.h"
 #include "main/sound-of-music.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include <string>
@@ -20,15 +21,19 @@ void birth_quit(void)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param helpfile ファイル名
  */
-void show_help(PlayerType *player_ptr, std::string_view helpfile)
+void show_help(CreatureEntity &creature, std::string_view helpfile)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     screen_save();
     FileDisplayer(player_ptr->name).display(true, helpfile, 0, 0);
     screen_load();
 }
 
-void birth_help_option(PlayerType *player_ptr, char c, BirthKind bk)
+void birth_help_option(CreatureEntity &creature, char c, BirthKind bk)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     std::string help_file;
     switch (bk) {
     case BirthKind::RACE:
@@ -55,7 +60,7 @@ void birth_help_option(PlayerType *player_ptr, char c, BirthKind bk)
     }
 
     if (c == '?') {
-        show_help(player_ptr, help_file);
+        show_help(*player_ptr, help_file);
     } else if (c == '=') {
         screen_save();
         do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));

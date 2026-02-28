@@ -2,6 +2,7 @@
 #include "birth/birth-util.h"
 #include "io/input-key-acceptor.h"
 #include "player/player-personality.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -224,7 +225,7 @@ static bool select_personality(PlayerType *player_ptr, int *k, concptr sym)
             *k = -1;
         }
 
-        birth_help_option(player_ptr, c, BirthKind::PERSONALITY);
+        birth_help_option(*player_ptr, c, BirthKind::PERSONALITY);
     }
 
     return true;
@@ -233,8 +234,10 @@ static bool select_personality(PlayerType *player_ptr, int *k, concptr sym)
 /*!
  * @brief プレイヤーの性格選択を行う / Select player's personality
  */
-bool get_player_personality(PlayerType *player_ptr)
+bool get_player_personality(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     clear_from(10);
     put_str(_("注意：《性格》によってキャラクターの能力やボーナスが変化します。", "Note: Your personality determines various intrinsic abilities and bonuses."),
         23, 5);

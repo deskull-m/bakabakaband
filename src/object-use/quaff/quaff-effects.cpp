@@ -551,7 +551,7 @@ bool QuaffEffects::resistance()
 bool QuaffEffects::new_life()
 {
     roll_hitdice(*this->player_ptr, SPOP_NONE);
-    get_max_stats(this->player_ptr);
+    get_max_stats(*this->player_ptr);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     lose_all_mutations(*this->player_ptr);
     return true;

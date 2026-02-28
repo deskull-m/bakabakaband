@@ -280,7 +280,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
                 drop_from_inventory(static_cast<PlayerType *>(&creature), i, 999);
             }
         }
-        player_outfit(static_cast<PlayerType *>(&creature));
+        player_outfit(creature);
         return true;
     case 'y':
         wiz_kill_target(creature);

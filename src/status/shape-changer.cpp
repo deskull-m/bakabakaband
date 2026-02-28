@@ -186,7 +186,7 @@ void do_poly_self(PlayerType *player_ptr)
     if ((power > randint0(20)) && one_in_(4)) {
         power -= 10;
 
-        get_max_stats(player_ptr);
+        get_max_stats(*player_ptr);
         roll_hitdice(*player_ptr, SPOP_NONE);
     }
 

@@ -17,6 +17,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -39,8 +40,10 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @details 少し長いが、これ1つで処理が完結しているので分割は見送る
  */
-void player_wipe_without_name(PlayerType *player_ptr)
+void player_wipe_without_name(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     const std::string backup_name = player_ptr->name;
     auto &world = AngbandWorld::get_instance();
     *player_ptr = {};
@@ -147,8 +150,10 @@ void player_wipe_without_name(PlayerType *player_ptr)
  * @brief ダンジョン内部のクエストを初期化する / Initialize random quests and final quests
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void init_dungeon_quests(PlayerType *player_ptr)
+void init_dungeon_quests(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     init_flags = INIT_ASSIGN;
     auto &floor = *player_ptr->current_floor_ptr;
     auto &quests = QuestList::get_instance();
@@ -178,8 +183,10 @@ void init_dungeon_quests(PlayerType *player_ptr)
  * @details アンデッド系種族は開始時刻を夜からにする / Undead start just sunset
  * @details
  */
-void init_turn(PlayerType *player_ptr)
+void init_turn(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     auto &world = AngbandWorld::get_instance();
     if (CreatureRace(player_ptr).life() == PlayerRaceLifeType::UNDEAD) {
         world.game_turn = (TURNS_PER_TICK * 3 * TOWN_DAWN) / 4 + 1;

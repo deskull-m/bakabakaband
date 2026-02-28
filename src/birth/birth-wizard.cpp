@@ -223,7 +223,7 @@ static bool let_player_select_personality(CreatureEntity &creature)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     creature.ppersonality = PERSONALITY_ORDINARY;
     while (true) {
-        if (!get_player_personality(player_ptr)) {
+        if (!get_player_personality(*player_ptr)) {
             return false;
         }
 
@@ -251,7 +251,7 @@ static bool let_player_select_patron(CreatureEntity &creature)
 
     creature.patron = 0; // 初期値
     while (true) {
-        if (!get_player_patron(player_ptr)) {
+        if (!get_player_patron(*player_ptr)) {
             return false;
         }
 
@@ -302,7 +302,7 @@ static bool let_player_build_character(CreatureEntity &creature)
 static void display_initial_options(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto expfact_mod = static_cast<int>(get_expfact(player_ptr)) - 100;
+    const auto expfact_mod = static_cast<int>(get_expfact(*player_ptr)) - 100;
     int16_t adj[A_MAX]{};
     for (int i = 0; i < A_MAX; i++) {
         adj[i] = creature.race->r_adj[i] + (*creature.pclass_ref).c_adj[i] + (*creature.personality).a_adj[i];
@@ -524,7 +524,7 @@ static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char
         }
 
         if (prev && (*c == 'p')) {
-            load_prev_data(player_ptr, true);
+            load_prev_data(*player_ptr, true);
             continue;
         }
 
@@ -533,7 +533,7 @@ static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char
             continue;
         }
 
-        birth_help_option(player_ptr, *c, BirthKind::AUTO_ROLLER);
+        birth_help_option(*player_ptr, *c, BirthKind::AUTO_ROLLER);
         bell();
     }
 
@@ -571,7 +571,7 @@ static bool display_auto_roller(CreatureEntity &creature, chara_limit_type chara
 
         flush();
 
-        get_extra(player_ptr, true);
+        get_extra(*player_ptr, true);
         get_money(creature);
 
         char c;
@@ -583,7 +583,7 @@ static bool display_auto_roller(CreatureEntity &creature, chara_limit_type chara
             break;
         }
 
-        save_prev_data(player_ptr, &previous_char);
+        save_prev_data(*player_ptr, &previous_char);
         previous_char.quick_ok = false;
         prev = true;
     }
@@ -602,8 +602,8 @@ static void set_name_history(CreatureEntity &creature)
     clear_from(23);
     get_name(player_ptr);
     process_player_name(player_ptr, AngbandWorld::get_instance().creating_savefile);
-    edit_history(player_ptr);
-    get_max_stats(player_ptr);
+    edit_history(*player_ptr);
+    get_max_stats(*player_ptr);
     initialize_virtues(creature);
     prt(_("[ 'Q' 中断, 'S' 初めから, Enter ゲーム開始 ]", "['Q'uit, 'S'tart over, or Enter to continue]"), 23, _(14, 10));
 }
@@ -615,9 +615,9 @@ static void set_name_history(CreatureEntity &creature)
  * from continuously rolling up characters, which can be VERY
  * expensive CPU wise.  And it cuts down on player stupidity.
  */
-bool player_birth_wizard(PlayerType *player_ptr)
+bool player_birth_wizard(CreatureEntity &creature)
 {
-    CreatureEntity &creature = *player_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     display_initial_birth_message(creature);
     for (int n = 0; n < MAX_SEXES; n++) {
         put_str(birth_sex_label(n), 12 + (n / 5), 2 + 15 * (n % 5));
@@ -635,7 +635,7 @@ bool player_birth_wizard(PlayerType *player_ptr)
     }
 
     if (autoroller) {
-        if (!get_stat_limits(player_ptr)) {
+        if (!get_stat_limits(*player_ptr)) {
             return false;
         }
     }
@@ -643,13 +643,13 @@ bool player_birth_wizard(PlayerType *player_ptr)
     chara_limit_type chara_limit;
     initialize_chara_limit(&chara_limit);
     if (autochara) {
-        if (!get_chara_limits(player_ptr, &chara_limit)) {
+        if (!get_chara_limits(*player_ptr, &chara_limit)) {
             return false;
         }
     }
 
     clear_from(10);
-    init_turn(player_ptr);
+    init_turn(*player_ptr);
     if (!display_auto_roller(creature, chara_limit)) {
         return false;
     }
@@ -664,8 +664,8 @@ bool player_birth_wizard(PlayerType *player_ptr)
         return false;
     }
 
-    init_dungeon_quests(player_ptr);
-    save_prev_data(player_ptr, &previous_char);
+    init_dungeon_quests(*player_ptr);
+    save_prev_data(*player_ptr, &previous_char);
     previous_char.quick_ok = true;
     return true;
 }

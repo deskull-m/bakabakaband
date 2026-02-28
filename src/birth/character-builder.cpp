@@ -36,6 +36,7 @@
 #include "player/race-info-table.h"
 #include "store/store-owners.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
@@ -102,21 +103,23 @@ static void write_birth_diary(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param initial_quest_id ゲーム開始時に突入するクエストID（オプション）
  */
-void player_birth(PlayerType *player_ptr, std::optional<QuestId> initial_quest_id)
+void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
     AngbandWorld::get_instance().play_time.reset();
     wipe_monsters_list(*player_ptr);
-    player_wipe_without_name(player_ptr);
-    if (!ask_quick_start(player_ptr)) {
+    player_wipe_without_name(*player_ptr);
+    if (!ask_quick_start(*player_ptr)) {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_NEW_GAME);
         while (true) {
-            if (player_birth_wizard(player_ptr)) {
+            if (player_birth_wizard(*player_ptr)) {
                 break;
             }
 
-            player_wipe_without_name(player_ptr);
+            player_wipe_without_name(*player_ptr);
         }
     }
 

@@ -122,8 +122,10 @@ void get_money_for_creature(CreatureEntity *creature_ptr)
 /*!
  * @brief 経験値修正の合計値を計算
  */
-uint16_t get_expfact(PlayerType *player_ptr)
+uint16_t get_expfact(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     uint16_t expfact = player_ptr->race->r_exp;
 
     CreatureRace pr(player_ptr);
@@ -143,9 +145,11 @@ uint16_t get_expfact(PlayerType *player_ptr)
 /*!
  * @brief その他「オートローラ中は算出の対象にしない」副次ステータスを処理する / Roll for some info that the auto-roller ignores
  */
-void get_extra(PlayerType *player_ptr, bool roll_hitdie)
+void get_extra(CreatureEntity &creature, bool roll_hitdie)
 {
-    player_ptr->expfact = get_expfact(player_ptr);
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
+    player_ptr->expfact = get_expfact(*player_ptr);
 
     /* Reset record of race/realm changes */
     InnerGameData::get_instance().set_start_race(player_ptr->prace);
@@ -195,8 +199,10 @@ void get_extra(PlayerType *player_ptr, bool roll_hitdie)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @details 新生の薬やステータスシャッフルでもこの関数が呼ばれる
  */
-void get_max_stats(PlayerType *player_ptr)
+void get_max_stats(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     int dice[6]{};
     while (true) {
         auto j = 0;
