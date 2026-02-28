@@ -12,6 +12,7 @@
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
@@ -63,8 +64,9 @@ static MartialArtsStyleType select_martial_arts_style_menu(MartialArtsStyleType 
  * @brief 武術スタイル切り替えコマンドのメイン処理
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_martial_arts_style(PlayerType *player_ptr)
+void do_cmd_martial_arts_style(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 修行僧、狂戦士、練気術師のみ使用可能
     CreatureClass pc(*player_ptr);
     if (!pc.equals(PlayerClassType::MONK) &&

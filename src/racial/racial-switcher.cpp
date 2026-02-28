@@ -223,14 +223,14 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         }
 
         handle_stuff(*player_ptr);
-        if (!do_cmd_cast(player_ptr)) {
+        if (!do_cmd_cast(*player_ptr)) {
             return false;
         }
 
         if (!player_ptr->effects()->paralysis().is_paralyzed() && !cmd_limit_cast(player_ptr)) {
             handle_stuff(*player_ptr);
             command_dir = Direction::none();
-            (void)do_cmd_cast(player_ptr);
+            (void)do_cmd_cast(*player_ptr);
         }
         return true;
     case PlayerClassType::SAMURAI:

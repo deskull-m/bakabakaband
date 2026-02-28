@@ -30,6 +30,7 @@
 #include "player/player-move.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
@@ -45,8 +46,9 @@
 /*!
  * @brief 探索コマンドのメインルーチン / Simple command to "search" for one turn
  */
-void do_cmd_search(PlayerType *player_ptr)
+void do_cmd_search(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (command_arg) {
         command_rep = command_arg - 1;
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
@@ -105,8 +107,9 @@ static bool exe_alter(PlayerType *player_ptr)
  * @brief 特定のマスに影響を及ぼすための汎用的コマンド / Manipulate an adjacent grid in some way
  * @details
  */
-void do_cmd_alter(PlayerType *player_ptr)
+void do_cmd_alter(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (command_arg) {
@@ -168,8 +171,9 @@ static void accept_winner_message(PlayerType *player_ptr)
  * commit suicide
  * @details
  */
-void do_cmd_suicide(PlayerType *player_ptr)
+void do_cmd_suicide(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     flush();
     auto &world = AngbandWorld::get_instance();
     if (world.total_winner) {
@@ -207,8 +211,9 @@ void do_cmd_suicide(PlayerType *player_ptr)
 /*!
  * @brief 地形に説明を書き込むコマンド / Inscribe description on terrain
  */
-void do_cmd_inscribe_terrain(PlayerType *player_ptr)
+void do_cmd_inscribe_terrain(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *player_ptr->current_floor_ptr;
     auto &grid = floor.get_grid(player_ptr->get_position());
 

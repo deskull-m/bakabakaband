@@ -265,7 +265,7 @@ void do_cmd_use(PlayerType *player_ptr)
 
     switch (o_ptr->bi_key.tval()) {
     case ItemKindType::SPIKE:
-        do_cmd_spike(player_ptr);
+        do_cmd_spike(*player_ptr);
         break;
     case ItemKindType::FOOD:
         exe_eat_food(player_ptr, i_idx);

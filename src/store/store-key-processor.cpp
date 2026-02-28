@@ -167,7 +167,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         } else if (pc.equals(PlayerClassType::SNIPER)) {
             do_cmd_snipe_browse(*player_ptr);
         } else {
-            do_cmd_browse(player_ptr);
+            do_cmd_browse(*player_ptr);
         }
 
         break;

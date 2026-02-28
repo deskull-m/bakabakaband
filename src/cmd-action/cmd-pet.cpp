@@ -43,6 +43,7 @@
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -68,8 +69,9 @@
 /*!
  * @brief ペットを開放するコマンドのメインルーチン
  */
-void do_cmd_pet_dismiss(PlayerType *player_ptr)
+void do_cmd_pet_dismiss(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto cu = game_term->scr->cu;
     auto cv = game_term->scr->cv;
     game_term->scr->cu = false;
@@ -366,8 +368,9 @@ static void do_name_pet(PlayerType *player_ptr)
  * @brief ペットに関するコマンドリストのメインルーチン /
  * Issue a pet command
  */
-void do_cmd_pet(PlayerType *player_ptr)
+void do_cmd_pet(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int powers[36]{};
     std::string power_desc[36];
     bool flag, redraw;
@@ -683,7 +686,7 @@ void do_cmd_pet(PlayerType *player_ptr)
             msg_print(_("ペットがいない！", "You have no pets!"));
             break;
         }
-        do_cmd_pet_dismiss(player_ptr);
+        do_cmd_pet_dismiss(*player_ptr);
         (void)calculate_upkeep(player_ptr);
         break;
     }

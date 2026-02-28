@@ -4,6 +4,7 @@
 #include "floor/geometry.h"
 #include "grid/grid.h"
 #include "player/player-move.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
@@ -25,8 +26,9 @@ static tl::optional<Pos2D> decide_travel_goal(PlayerType *player_ptr)
 /*!
  * @brief トラベル処理のメインルーチン
  */
-void do_cmd_travel(PlayerType *player_ptr)
+void do_cmd_travel(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto pos = decide_travel_goal(player_ptr);
     if (!pos) {
         return;

@@ -19,6 +19,7 @@
 #include "specific-object/chest.h"
 #include "status/action-setter.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/enums/grid-count-kind.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -96,8 +97,9 @@ static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX 
  * @details
  * Unlocking a locked door/chest is worth one experience point.
  */
-void do_cmd_open(PlayerType *player_ptr)
+void do_cmd_open(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto more = false;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
@@ -150,8 +152,9 @@ void do_cmd_open(PlayerType *player_ptr)
  * @details
  * Unlocking a locked door/chest is worth one experience point.
  */
-void do_cmd_close(PlayerType *player_ptr)
+void do_cmd_close(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -195,8 +198,9 @@ void do_cmd_close(PlayerType *player_ptr)
  * @brief 箱、床のトラップ解除処理双方の統合メインルーチン /
  * Disarms a trap, or chest
  */
-void do_cmd_disarm(PlayerType *player_ptr)
+void do_cmd_disarm(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -259,8 +263,9 @@ void do_cmd_disarm(PlayerType *player_ptr)
  * Creatures can also open or bash doors, see elsewhere.
  * </pre>
  */
-void do_cmd_bash(PlayerType *player_ptr)
+void do_cmd_bash(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -328,8 +333,9 @@ static bool get_spike(PlayerType *player_ptr, INVENTORY_IDX *ip)
  * This command may NOT be repeated
  * </pre>
  */
-void do_cmd_spike(PlayerType *player_ptr)
+void do_cmd_spike(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }

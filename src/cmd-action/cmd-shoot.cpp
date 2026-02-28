@@ -14,6 +14,7 @@
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
 #include "sv-definition/sv-bow-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
@@ -25,8 +26,9 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param snipe_type スナイパーの射撃術の種類
  */
-void do_cmd_fire(PlayerType *player_ptr, SPELL_IDX snipe_type)
+void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
