@@ -107,7 +107,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
 
         /* Place fixed lite berathers */
         for (const auto &d_diag : Direction::directions_diag4()) {
-            const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level, 0);
+            const auto monrace_id = get_mon_num(*player_ptr, 0, floor.dun_level, 0);
             const auto pos = *center + d_diag.vec() * 2;
             if (MonraceList::is_valid(monrace_id)) {
                 place_specific_monster(*player_ptr, pos.y, pos.x, monrace_id, PM_ALLOW_SLEEP);
@@ -147,7 +147,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
         place_inner_glass(creature, floor.get_grid({ bottom - 1, right - 1 }));
         get_mon_num_prep_enum(*player_ptr, MonraceHook::GLASS);
 
-        const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level, 0);
+        const auto monrace_id = get_mon_num(*player_ptr, 0, floor.dun_level, 0);
         if (MonraceList::is_valid(monrace_id)) {
             place_specific_monster(*player_ptr, center->y, center->x, monrace_id, 0L);
         }
@@ -194,7 +194,7 @@ bool build_type15(CreatureEntity &creature, DungeonData *dd_ptr)
 
         /* Place shard berathers */
         for (const auto &d_diag : Direction::directions_diag4()) {
-            const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level, 0);
+            const auto monrace_id = get_mon_num(*player_ptr, 0, floor.dun_level, 0);
             const auto pos = *center + d_diag.vec();
             if (MonraceList::is_valid(monrace_id)) {
                 place_specific_monster(*player_ptr, pos.y, pos.x, monrace_id, 0L);

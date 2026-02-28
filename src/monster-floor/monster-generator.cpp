@@ -274,7 +274,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
         }
 
         get_mon_num_prep_escort(creature, r_idx, *m_idx, creature.current_floor_ptr->get_monrace_hook_terrain_at(pos_neighbor));
-        const auto monrace_id = get_mon_num(player_ptr, 0, monrace.level, 0);
+        const auto monrace_id = get_mon_num(*player_ptr, 0, monrace.level, 0);
         if (!MonraceList::is_valid(monrace_id)) {
             break;
         }
@@ -304,7 +304,7 @@ tl::optional<MONSTER_IDX> place_random_monster(CreatureEntity &creature, POSITIO
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     do {
-        monrace_id = get_mon_num(player_ptr, 0, floor.monster_level, PM_NONE);
+        monrace_id = get_mon_num(*player_ptr, 0, floor.monster_level, PM_NONE);
     } while ((mode & PM_NO_QUEST) && MonraceList::get_instance().get_monrace(monrace_id).misc_flags.has(MonsterMiscType::NO_QUEST));
     if (!MonraceList::is_valid(monrace_id)) {
         return tl::nullopt;
@@ -327,7 +327,7 @@ static tl::optional<MonraceId> select_horde_leader_r_idx(CreatureEntity &creatur
     const auto *floor_ptr = creature.current_floor_ptr;
 
     for (auto attempts = 1000; attempts > 0; --attempts) {
-        const auto monrace_id = get_mon_num(player_ptr, 0, floor_ptr->monster_level, PM_NONE);
+        const auto monrace_id = get_mon_num(*player_ptr, 0, floor_ptr->monster_level, PM_NONE);
         if (!MonraceList::is_valid(monrace_id)) {
             return tl::nullopt;
         }

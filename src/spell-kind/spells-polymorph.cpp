@@ -45,7 +45,7 @@ static MonraceId select_polymorph_monrace_id(PlayerType *player_ptr, MonraceId m
     const auto lev1 = monrace.level - ((randint1(20) / randint1(9)) + 1);
     const auto lev2 = monrace.level + ((randint1(20) / randint1(9)) + 1);
     for (auto i = 0; i < 1000; i++) {
-        const auto new_monrace_id = get_mon_num(player_ptr, 0, (player_ptr->current_floor_ptr->dun_level + monrace.level) / 2 + 5, PM_NONE);
+        const auto new_monrace_id = get_mon_num(*player_ptr, 0, (player_ptr->current_floor_ptr->dun_level + monrace.level) / 2 + 5, PM_NONE);
         if (!MonraceList::is_valid(new_monrace_id)) {
             break;
         }

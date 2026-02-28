@@ -145,7 +145,7 @@ void castle_quest(PlayerType *player_ptr)
     MonraceDefinition *r_ptr;
     r_ptr = &MonraceList::get_instance().get_monrace(quest.r_idx);
     while (r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || (r_ptr->rarity != 1)) {
-        quest.r_idx = get_mon_num(player_ptr, 0, quest.level + 4 + randint1(6), 0);
+        quest.r_idx = get_mon_num(*player_ptr, 0, quest.level + 4 + randint1(6), 0);
         r_ptr = &MonraceList::get_instance().get_monrace(quest.r_idx);
     }
 

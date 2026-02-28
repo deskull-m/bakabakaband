@@ -68,7 +68,7 @@ static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx,
     const auto &floor = *creature.current_floor_ptr;
     auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
-        auto ap_r_idx = get_mon_num(player_ptr, 0, floor.base_level + 10, PM_NONE);
+        auto ap_r_idx = get_mon_num(*player_ptr, 0, floor.base_level + 10, PM_NONE);
         if (MonraceList::get_instance().get_monrace(ap_r_idx).level >= min) {
             return ap_r_idx;
         }
@@ -270,7 +270,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
         m_ptr->r_idx = r_idx;
-        choose_chameleon_polymorph(player_ptr, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
+        choose_chameleon_polymorph(*player_ptr, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
         m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
     } else if (any_bits(mode, PM_CHAMELEON_FINAL_SUMMON)) {
         m_ptr->r_idx = r_idx;

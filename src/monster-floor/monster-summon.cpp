@@ -64,7 +64,7 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
         dlev = floor.is_underground() ? floor.get_level() : WildernessGrids::get_instance().get_player_grid().get_level();
     }
 
-    const auto r_idx = get_mon_num(&player, 0, (dlev + lev) / 2 + 5, mode);
+    const auto r_idx = get_mon_num(player, 0, (dlev + lev) / 2 + 5, mode);
     if (!MonraceList::is_valid(r_idx)) {
         return tl::nullopt;
     }

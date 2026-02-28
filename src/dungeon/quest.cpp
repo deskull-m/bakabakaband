@@ -157,7 +157,7 @@ void determine_random_questor(PlayerType *player_ptr, QuestType &quest)
     const auto &monraces = MonraceList::get_instance();
     MonraceId r_idx;
     while (true) {
-        r_idx = get_mon_num(player_ptr, 0, quest.level + 5 + randint1(quest.level / 10), PM_ARENA);
+        r_idx = get_mon_num(*player_ptr, 0, quest.level + 5 + randint1(quest.level / 10), PM_ARENA);
         if (monraces.can_unify_separate(r_idx)) {
             continue;
         }

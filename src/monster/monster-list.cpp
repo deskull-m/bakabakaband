@@ -14,6 +14,7 @@
 #include "game-option/cheat-options.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -41,9 +42,9 @@
  * @return 選択されたモンスター生成種族
  * @details nasty生成 (ゲーム内経過日数に応じて、現在フロアより深いフロアのモンスターを出現させる仕様)は
  */
-MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint32_t mode, AllianceType alliance_type)
+MonraceId get_mon_num(CreatureEntity &creature, int min_level, int max_level, uint32_t mode, AllianceType alliance_type)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (max_level > MAX_DEPTH - 1) {
         max_level = MAX_DEPTH - 1;
     }
@@ -150,13 +151,13 @@ MonraceId get_mon_num(PlayerType *player_ptr, int min_level, int max_level, uint
     return *it;
 }
 
-static tl::optional<MonraceId> polymorph_of_chameleon(PlayerType *player_ptr, short m_idx, short terrain_id, tl::optional<short> summoner_m_idx)
+static tl::optional<MonraceId> polymorph_of_chameleon(CreatureEntity &creature, short m_idx, short terrain_id, tl::optional<short> summoner_m_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     const auto old_unique = monster.get_monrace().kind_flags.has(MonsterKindType::UNIQUE);
     ChameleonTransformation ct(m_idx, terrain_id, old_unique, std::move(summoner_m_idx));
-    get_mon_num_prep_chameleon(*player_ptr, ct);
+    get_mon_num_prep_chameleon(creature, ct);
 
     int level;
     if (old_unique) {
@@ -171,7 +172,7 @@ static tl::optional<MonraceId> polymorph_of_chameleon(PlayerType *player_ptr, sh
         level += 2 + randint1(3);
     }
 
-    const auto new_monrace_id = get_mon_num(player_ptr, 0, level, PM_CHAMELEON);
+    const auto new_monrace_id = get_mon_num(creature, 0, level, PM_CHAMELEON);
     if (!MonraceList::is_valid(new_monrace_id)) {
         return tl::nullopt;
     }
@@ -186,11 +187,11 @@ static tl::optional<MonraceId> polymorph_of_chameleon(PlayerType *player_ptr, sh
  * @param grid カメレオンの足元の地形
  * @param summoner_m_idx モンスターの召喚による場合、召喚者のモンスターID
  */
-void choose_chameleon_polymorph(PlayerType *player_ptr, short m_idx, short terrain_id, tl::optional<short> summoner_m_idx)
+void choose_chameleon_polymorph(CreatureEntity &creature, short m_idx, short terrain_id, tl::optional<short> summoner_m_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
-    auto new_monrace_id = polymorph_of_chameleon(player_ptr, m_idx, terrain_id, summoner_m_idx);
+    auto new_monrace_id = polymorph_of_chameleon(creature, m_idx, terrain_id, summoner_m_idx);
     if (!new_monrace_id) {
         return;
     }
