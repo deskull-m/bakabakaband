@@ -104,7 +104,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
     }
 
     sound(SoundKind::ZAP);
-    auto ident = wand_effect(this->player_ptr, *sval, dir, false, false);
+    auto ident = wand_effect(*this->player_ptr, *sval, dir, false, false);
     using Srf = StatusRecalculatingFlag;
     EnumClassFlagGroup<Srf> flags_srf = { Srf::COMBINATION, Srf::REORDER };
     if (rfu.has(Srf::AUTO_DESTRUCTION)) {
