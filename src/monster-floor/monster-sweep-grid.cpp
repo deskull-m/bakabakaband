@@ -14,6 +14,7 @@
 #include "monster/monster-processor-util.h"
 #include "monster/monster-status.h"
 #include "player/player-status-flags.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
@@ -32,16 +33,16 @@ namespace {
  * @param m_idx モンスターの参照ID
  * @return 逃走しようとするならtrue、そうでなければfalse
  */
-bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool mon_will_run(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has(MonsterBehaviorType::TIMID)) {
         return true;
     }
 
     if (monster.is_pet()) {
-        return (player_ptr->pet_follow_distance < 0) && (monster.cdis <= (0 - player_ptr->pet_follow_distance));
+        return (creature.pet_follow_distance < 0) && (monster.cdis <= (0 - creature.pet_follow_distance));
     }
 
     if (monster.cdis > MAX_PLAYER_SIGHT + 5) {
@@ -56,7 +57,7 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return false;
     }
 
-    const auto p_lev = player_ptr->level;
+    const auto p_lev = creature.level;
     const auto m_lev = monrace.level + (m_idx & 0x08) + 25;
     if (m_lev > p_lev + 4) {
         return false;
@@ -66,8 +67,8 @@ bool mon_will_run(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto p_chp = player_ptr->hp;
-    const auto p_mhp = player_ptr->maxhp;
+    const auto p_chp = creature.hp;
+    const auto p_mhp = creature.maxhp;
     const auto m_chp = monster.hp;
     const auto m_mhp = monster.maxhp;
     const uint32_t p_val = (p_lev * p_mhp) + (p_chp << 2);
@@ -112,9 +113,9 @@ public:
      * @param pos_move 逃亡しない場合の移動先
      * @return 逃亡先の座標
      */
-    static Pos2D run_away(PlayerType *player_ptr, MONSTER_IDX m_idx, const Pos2D &pos_move)
+    static Pos2D run_away(CreatureEntity &creature, MONSTER_IDX m_idx, const Pos2D &pos_move)
     {
-        const auto &floor = *player_ptr->current_floor_ptr;
+        const auto &floor = *creature.current_floor_ptr;
         const auto &monster = floor.m_list[m_idx];
         const auto &monrace = monster.get_monrace();
         const auto m_pos = monster.get_position();
@@ -128,7 +129,7 @@ public:
 
         // 周囲の安全な地点を見つけ、そこに近づくように逃げる
         // 逃げる先が見つからない場合は単に反対側に逃げる
-        const auto pos_safety = find_safety(*player_ptr, m_idx);
+        const auto pos_safety = find_safety(creature, m_idx);
         if (!pos_safety) {
             return pos_run_away_simple;
         }
@@ -156,15 +157,15 @@ public:
  */
 class SpecificTargetMoveGridDecider : public MonsterMoveGridDecider {
 public:
-    SpecificTargetMoveGridDecider(PlayerType *player_ptr, MONSTER_IDX m_idx)
-        : player_ptr(player_ptr)
+    SpecificTargetMoveGridDecider(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+        : creature_ptr(creature_ptr)
         , m_idx(m_idx)
     {
     }
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->current_floor_ptr;
         const auto &monster = floor.m_list[this->m_idx];
         const auto pos_target = monster.get_target_position();
         const auto t_m_idx = floor.get_grid(pos_target).m_idx;
@@ -184,7 +185,7 @@ public:
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     MONSTER_IDX m_idx;
 };
 
@@ -193,17 +194,17 @@ private:
  */
 class HidingMoveGridDecider : public MonsterMoveGridDecider {
 public:
-    HidingMoveGridDecider(PlayerType *player_ptr, MONSTER_IDX m_idx)
-        : player_ptr(player_ptr)
+    HidingMoveGridDecider(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+        : creature_ptr(creature_ptr)
         , m_idx(m_idx)
     {
     }
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->current_floor_ptr;
         const auto &monrace = floor.m_list[this->m_idx].get_monrace();
-        const auto p_pos = this->player_ptr->get_position();
+        const auto p_pos = this->creature_ptr->get_position();
 
         auto room = 0;
         for (const auto &d : Direction::directions_8()) {
@@ -213,7 +214,7 @@ public:
             }
 
             const auto &grid = floor.get_grid(p_pos_neighbor);
-            if (monster_can_cross_terrain(this->player_ptr, grid.feat, monrace, 0)) {
+            if (monster_can_cross_terrain(this->creature_ptr, grid.feat, monrace, 0)) {
                 room++;
             }
         }
@@ -226,15 +227,15 @@ public:
             room -= 2;
         }
 
-        if (room >= (8 * (this->player_ptr->hp + this->player_ptr->csp)) / (this->player_ptr->maxhp + this->player_ptr->msp)) {
+        if (room >= (8 * (this->creature_ptr->hp + this->creature_ptr->csp)) / (this->creature_ptr->maxhp + this->creature_ptr->msp)) {
             return tl::nullopt;
         }
 
-        return find_hiding(*this->player_ptr, this->m_idx);
+        return find_hiding(*this->creature_ptr, this->m_idx);
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     MONSTER_IDX m_idx;
 };
 
@@ -243,18 +244,18 @@ private:
  */
 class SurroundingMoveGridDecider : public MonsterMoveGridDecider {
 public:
-    SurroundingMoveGridDecider(PlayerType *player_ptr, MONSTER_IDX m_idx)
-        : player_ptr(player_ptr)
+    SurroundingMoveGridDecider(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+        : creature_ptr(creature_ptr)
         , m_idx(m_idx)
     {
     }
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->current_floor_ptr;
         const auto &monster = floor.m_list[this->m_idx];
         const auto &monrace = monster.get_monrace();
-        const auto p_pos = this->player_ptr->get_position();
+        const auto p_pos = this->creature_ptr->get_position();
         const auto m_pos = monster.get_position();
 
         for (auto i = 0; i < 8; i++) {
@@ -265,7 +266,7 @@ public:
                 return p_pos;
             }
 
-            if (!floor.contains(pos_move, FloorBoundary::OUTER_WALL_INCLUSIVE) || !monster_can_enter(this->player_ptr, pos_move.y, pos_move.x, monrace, 0)) {
+            if (!floor.contains(pos_move, FloorBoundary::OUTER_WALL_INCLUSIVE) || !monster_can_enter(this->creature_ptr, pos_move.y, pos_move.x, monrace, 0)) {
                 continue;
             }
 
@@ -277,7 +278,7 @@ public:
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     MONSTER_IDX m_idx;
 };
 
@@ -286,18 +287,18 @@ private:
  */
 class RangedAttackMoveGridDecider : public MonsterMoveGridDecider {
 public:
-    RangedAttackMoveGridDecider(PlayerType *player_ptr, MONSTER_IDX m_idx)
-        : player_ptr(player_ptr)
+    RangedAttackMoveGridDecider(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+        : creature_ptr(creature_ptr)
         , m_idx(m_idx)
     {
     }
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->current_floor_ptr;
         const auto &monster = floor.m_list[this->m_idx];
         const auto &monrace = monster.get_monrace();
-        const auto p_pos = this->player_ptr->get_position();
+        const auto p_pos = this->creature_ptr->get_position();
         const auto m_pos = monster.get_position();
         if (projectable(floor, m_pos, p_pos)) {
             return tl::nullopt;
@@ -310,7 +311,7 @@ public:
         }
 
         const auto can_open_door = monrace.behavior_flags.has_any_of({ MonsterBehaviorType::BASH_DOOR, MonsterBehaviorType::OPEN_DOOR });
-        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || has_pass_wall(*player_ptr));
+        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || has_pass_wall(*creature_ptr));
         const auto can_kill_wall = monrace.feature_flags.has(MonsterFeatureType::KILL_WALL) && !monster.is_riding();
 
         auto best = 999;
@@ -360,7 +361,7 @@ public:
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     MONSTER_IDX m_idx;
 };
 
@@ -369,18 +370,18 @@ private:
  */
 class NoiseTrackingMoveGridDecider : public MonsterMoveGridDecider {
 public:
-    NoiseTrackingMoveGridDecider(PlayerType *player_ptr, MONSTER_IDX m_idx)
-        : player_ptr(player_ptr)
+    NoiseTrackingMoveGridDecider(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+        : creature_ptr(creature_ptr)
         , m_idx(m_idx)
     {
     }
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->current_floor_ptr;
         const auto &monster = floor.m_list[this->m_idx];
         const auto &monrace = monster.get_monrace();
-        const auto p_pos = this->player_ptr->get_position();
+        const auto p_pos = this->creature_ptr->get_position();
         const auto m_pos = monster.get_position();
 
         auto best = 999;
@@ -406,7 +407,7 @@ public:
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     MONSTER_IDX m_idx;
 };
 
@@ -415,17 +416,17 @@ private:
  */
 class ScentTrackingMoveGridDecider : public MonsterMoveGridDecider {
 public:
-    ScentTrackingMoveGridDecider(PlayerType *player_ptr, MONSTER_IDX m_idx)
-        : player_ptr(player_ptr)
+    ScentTrackingMoveGridDecider(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+        : creature_ptr(creature_ptr)
         , m_idx(m_idx)
     {
     }
 
     tl::optional<Pos2D> decide_move_grid() const override
     {
-        const auto &floor = *this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->current_floor_ptr;
         const auto &monster = floor.m_list[this->m_idx];
-        const auto p_pos = this->player_ptr->get_position();
+        const auto p_pos = this->creature_ptr->get_position();
         const auto m_pos = monster.get_position();
 
         auto best = 0;
@@ -450,26 +451,26 @@ public:
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     MONSTER_IDX m_idx;
 };
 
 class MonsterMoveGridDecidersFactory {
 public:
-    static std::vector<std::unique_ptr<const MonsterMoveGridDecider>> create_deciders(PlayerType *player_ptr, MONSTER_IDX m_idx)
+    static std::vector<std::unique_ptr<const MonsterMoveGridDecider>> create_deciders(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
     {
-        const auto &floor = *player_ptr->current_floor_ptr;
+        const auto &floor = *creature_ptr->current_floor_ptr;
         const auto &monster = floor.m_list[m_idx];
         const auto &monrace = monster.get_monrace();
-        const auto will_run = mon_will_run(player_ptr, m_idx);
-        const auto p_pos = player_ptr->get_position();
+        const auto will_run = mon_will_run(*creature_ptr, m_idx);
+        const auto p_pos = creature_ptr->get_position();
         const auto m_pos = monster.get_position();
         const auto &m_grid = floor.get_grid(m_pos);
         const auto gf = monrace.get_grid_flow_type();
         const auto dist_to_player = m_grid.get_distance(gf); // 経由グリッド数換算(Grid::dists)による距離
         const auto distance_to_player = Grid::calc_distance(m_pos, p_pos); // Grid::calc_distance()による直線距離
         const auto no_flow = monster.mflag2.has(MonsterConstantFlagType::NOFLOW) && (m_grid.get_cost(gf) > 2);
-        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || has_pass_wall(*player_ptr));
+        const auto can_pass_wall = monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!monster.is_riding() || has_pass_wall(*creature_ptr));
         const auto can_kill_wall = monrace.feature_flags.has(MonsterFeatureType::KILL_WALL) && !monster.is_riding();
         const auto is_visible_from_player = m_grid.has_los() && projectable(floor, p_pos, m_pos);
         const auto can_see_player = los(floor, m_pos, p_pos) && projectable(floor, m_pos, p_pos);
@@ -477,30 +478,30 @@ public:
         std::vector<std::unique_ptr<const MonsterMoveGridDecider>> deciders;
 
         if (!will_run && monster.target_y) {
-            deciders.push_back(std::make_unique<SpecificTargetMoveGridDecider>(player_ptr, m_idx));
+            deciders.push_back(std::make_unique<SpecificTargetMoveGridDecider>(creature_ptr, m_idx));
         }
 
         if (!will_run && monster.is_hostile() && monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS) &&
             (can_see_player || (dist_to_player < MAX_PLAYER_SIGHT / 2))) {
             if (monrace.kind_flags.has(MonsterKindType::ANIMAL) && !can_pass_wall && monrace.feature_flags.has_not(MonsterFeatureType::KILL_WALL)) {
-                deciders.push_back(std::make_unique<HidingMoveGridDecider>(player_ptr, m_idx));
+                deciders.push_back(std::make_unique<HidingMoveGridDecider>(creature_ptr, m_idx));
             }
             if (dist_to_player < 3) {
-                deciders.push_back(std::make_unique<SurroundingMoveGridDecider>(player_ptr, m_idx));
+                deciders.push_back(std::make_unique<SurroundingMoveGridDecider>(creature_ptr, m_idx));
             }
         }
 
         if (!will_run && distance_to_player <= AngbandSystem::get_instance().get_max_range() + 1 && monrace.ability_flags.has_any_of(RF_ABILITY_ATTACK_MASK)) {
-            deciders.push_back(std::make_unique<RangedAttackMoveGridDecider>(player_ptr, m_idx));
+            deciders.push_back(std::make_unique<RangedAttackMoveGridDecider>(creature_ptr, m_idx));
         }
 
         const auto should_go_straight = no_flow || can_pass_wall || can_kill_wall;
         const auto try_circumventing = (distance_to_player > 1) && (monrace.freq_spell == 0) && (m_grid.get_cost(gf) <= 5);
         if (!should_go_straight && (!is_visible_from_player || try_circumventing)) {
             if (m_grid.get_cost(gf) > 0) {
-                deciders.push_back(std::make_unique<NoiseTrackingMoveGridDecider>(player_ptr, m_idx));
+                deciders.push_back(std::make_unique<NoiseTrackingMoveGridDecider>(creature_ptr, m_idx));
             } else if (m_grid.when > 0) {
-                deciders.push_back(std::make_unique<ScentTrackingMoveGridDecider>(player_ptr, m_idx));
+                deciders.push_back(std::make_unique<ScentTrackingMoveGridDecider>(creature_ptr, m_idx));
             }
         }
 
@@ -513,8 +514,8 @@ public:
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx 移動するモンスターの参照ID
  */
-MonsterSweepGrid::MonsterSweepGrid(PlayerType *player_ptr, MONSTER_IDX m_idx)
-    : player_ptr(player_ptr)
+MonsterSweepGrid::MonsterSweepGrid(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+    : creature_ptr(creature_ptr)
     , m_idx(m_idx)
 {
 }
@@ -526,13 +527,13 @@ MonsterSweepGrid::MonsterSweepGrid(PlayerType *player_ptr, MONSTER_IDX m_idx)
  */
 tl::optional<MonsterMovementDirectionList> MonsterSweepGrid::get_movable_grid()
 {
-    const auto deciders = MonsterMoveGridDecidersFactory::create_deciders(this->player_ptr, this->m_idx);
-    auto pos_move = MonsterMoveGridDecider::evalute_deciders(deciders, this->player_ptr->get_position());
-    if (mon_will_run(this->player_ptr, this->m_idx)) {
-        pos_move = MonsterMoveGridDecider::run_away(this->player_ptr, this->m_idx, pos_move);
+    const auto deciders = MonsterMoveGridDecidersFactory::create_deciders(this->creature_ptr, this->m_idx);
+    auto pos_move = MonsterMoveGridDecider::evalute_deciders(deciders, this->creature_ptr->get_position());
+    if (mon_will_run(*this->creature_ptr, this->m_idx)) {
+        pos_move = MonsterMoveGridDecider::run_away(*this->creature_ptr, this->m_idx, pos_move);
     }
 
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->current_floor_ptr;
     const auto &monster = floor.m_list[this->m_idx];
     const auto vec = monster.get_position() - pos_move;
 
