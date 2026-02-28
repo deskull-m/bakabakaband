@@ -103,7 +103,7 @@ static void decide_initial_items(PlayerType *player_ptr)
         get_mon_num_prep_enum(*player_ptr, MonraceHook::HUMAN);
         for (int i = rand_range(3, 4); i > 0; i--) {
             ItemEntity item({ ItemKindType::MONSTER_REMAINS, SV_CORPSE });
-            item.pval = enum2i(get_mon_num(player_ptr, 0, 2, PM_NONE));
+            item.pval = enum2i(get_mon_num(*player_ptr, 0, 2, PM_NONE));
             if (item.pval) {
                 item.number = 1;
                 add_outfit(player_ptr, item);

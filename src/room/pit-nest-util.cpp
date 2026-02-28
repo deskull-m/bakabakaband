@@ -22,14 +22,14 @@ void nest_pit_type::prepare_filter(CreatureEntity &creature) const
         break;
     case PitNestHook::CLONE: {
         get_mon_num_prep_enum(creature, MonraceHook::VAULT);
-        const auto monrace_id = get_mon_num(&player, 0, creature.current_floor_ptr->dun_level + 10, PM_NONE);
+        const auto monrace_id = get_mon_num(player, 0, creature.current_floor_ptr->dun_level + 10, PM_NONE);
         filter.set_monrace_id(monrace_id);
         get_mon_num_prep_enum(creature);
         break;
     }
     case PitNestHook::SYMBOL: {
         get_mon_num_prep_enum(creature, MonraceHook::VAULT);
-        const auto monrace_id = get_mon_num(&player, 0, creature.current_floor_ptr->dun_level + 10, PM_NONE);
+        const auto monrace_id = get_mon_num(player, 0, creature.current_floor_ptr->dun_level + 10, PM_NONE);
         get_mon_num_prep_enum(creature);
         const auto symbol = MonraceList::get_instance().get_monrace(monrace_id).symbol_definition.character;
         filter.set_monrace_symbol(symbol);
@@ -113,7 +113,7 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, Mon
     const auto &floor = *creature.current_floor_ptr;
     const auto &monraces = MonraceList::get_instance();
     for (auto attempts = 100; attempts > 0; attempts--) {
-        const auto monrace_id = get_mon_num(&player, 0, floor.dun_level + boost, PM_NONE);
+        const auto monrace_id = get_mon_num(player, 0, floor.dun_level + boost, PM_NONE);
         const auto &monrace = monraces.get_monrace(monrace_id);
         if (monster_has_hostile_to_other_monster(align, monrace)) {
             continue;

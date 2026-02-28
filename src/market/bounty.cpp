@@ -282,7 +282,7 @@ void determine_daily_bounty(PlayerType *player_ptr)
     get_mon_num_prep_bounty(*player_ptr);
     auto &world = AngbandWorld::get_instance();
     while (true) {
-        world.today_mon = get_mon_num(player_ptr, std::min(max_dungeon_level / 2, 40), max_dungeon_level, PM_ARENA);
+        world.today_mon = get_mon_num(*player_ptr, std::min(max_dungeon_level / 2, 40), max_dungeon_level, PM_ARENA);
         const auto &monrace = world.get_today_bounty();
         if (cheat_hear) {
             msg_format(_("日替わり候補: %s ", "Today's candidate: %s "), monrace.name.data());
@@ -334,7 +334,7 @@ void determine_bounty_uniques(PlayerType *player_ptr)
     std::vector<MonraceId> bounty_monrace_ids;
     auto &world = AngbandWorld::get_instance();
     while (bounty_monrace_ids.size() < std::size(world.bounties)) {
-        const auto monrace_id = get_mon_num(player_ptr, 0, MAX_DEPTH - 1, PM_ARENA);
+        const auto monrace_id = get_mon_num(*player_ptr, 0, MAX_DEPTH - 1, PM_ARENA);
         if (!is_suitable_for_bounty(monrace_id)) {
             continue;
         }

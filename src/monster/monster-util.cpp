@@ -13,6 +13,7 @@
 #include "spell/summon-types.h"
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/wilderness-terrain.h"
@@ -164,11 +165,12 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
     return true;
 }
 
-static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_id)
+static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrace_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace = monraces.get_monrace(monrace_id);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto is_suitable_for_dungeon = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, monrace_id);
     switch (hook) {
     case MonraceHook::NONE:
@@ -195,7 +197,7 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
     case MonraceHook::ARENA:
         return monrace.can_entry_arena();
     case MonraceHook::NIGHTMARE:
-        return monrace.is_suitable_for_nightmare(player_ptr->level);
+        return monrace.is_suitable_for_nightmare(creature.level);
     case MonraceHook::HUMAN:
         return monrace.is_eatable_human();
     case MonraceHook::GLASS:
@@ -208,7 +210,7 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
         }
 
         const auto hook_tanuki = floor.get_monrace_hook();
-        return do_hook(player_ptr, hook_tanuki, monrace_id);
+        return do_hook(creature, hook_tanuki, monrace_id);
     }
     case MonraceHook::FISHING:
         return monrace.is_catchable_for_fishing();
@@ -269,7 +271,6 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
  */
 void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceHookTerrain hook2)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
@@ -283,7 +284,7 @@ void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceH
             continue;
         }
 
-        if (!do_hook(&player, hook1, monrace_id)) {
+        if (!do_hook(creature, hook1, monrace_id)) {
             continue;
         }
 
@@ -339,9 +340,9 @@ void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceH
  * @param escorted_m_idx 護衛されるモンスターのフロア内インデックス
  * @return 護衛にできるならばtrue
  */
-static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_id, MonraceId escorted_monrace_id, short escorted_m_idx)
+static bool place_monster_can_escort(CreatureEntity &creature, MonraceId monrace_id, MonraceId escorted_monrace_id, short escorted_m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_id = floor.dungeon_id;
     const auto &escorted_monster = floor.m_list[escorted_m_idx];
     const auto &monraces = MonraceList::get_instance();
@@ -374,7 +375,7 @@ static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_i
     }
 
     if (escorted_monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY)) {
-        if (monster_has_hostile_to_player(*player_ptr, 1, -1, monrace)) {
+        if (monster_has_hostile_to_player(creature, 1, -1, monrace)) {
             return false;
         }
     }
@@ -395,7 +396,6 @@ static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_i
  */
 void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
@@ -409,7 +409,7 @@ void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrac
             continue;
         }
 
-        if (!place_monster_can_escort(&player, monrace_id, escorted_monrace_id, m_idx)) {
+        if (!place_monster_can_escort(creature, monrace_id, escorted_monrace_id, m_idx)) {
             continue;
         }
 
@@ -450,9 +450,10 @@ void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrac
  * @param summoner_m_idx モンスターの召喚による場合、召喚者のモンスターID
  * @return 召喚対象にできるならばTRUE
  */
-static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, const SummonCondition &condition)
+static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id, const SummonCondition &condition)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     if (floor.is_underground() && !DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, monrace_id)) {
         return false;
     }
@@ -464,7 +465,7 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
             return false;
         }
     } else if (any_bits(condition.mode, PM_FORCE_PET)) {
-        if (monster_has_hostile_to_player(*player_ptr, 10, -10, monrace) && !one_in_(std::abs(player_ptr->alignment) / 2 + 1)) {
+        if (monster_has_hostile_to_player(creature, 10, -10, monrace) && !one_in_(std::abs(creature.alignment) / 2 + 1)) {
             return false;
         }
     }
@@ -478,7 +479,7 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
     }
 
     const auto is_like_unique = monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));
-    if (any_bits(condition.mode, PM_FORCE_PET) && is_like_unique && monster_has_hostile_to_player(*player_ptr, 10, -10, monrace)) {
+    if (any_bits(condition.mode, PM_FORCE_PET) && is_like_unique && monster_has_hostile_to_player(creature, 10, -10, monrace)) {
         return false;
     }
 
@@ -501,7 +502,6 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
  */
 void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &condition)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
@@ -515,7 +515,7 @@ void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &co
             continue;
         }
 
-        if (!summon_specific_okay(&player, monrace_id, condition)) {
+        if (!summon_specific_okay(creature, monrace_id, condition)) {
             continue;
         }
 
@@ -555,7 +555,7 @@ void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &co
  * @param monrace_id 変身後のモンスター種族ID
  * @return 対象にできるならtrueを返す
  */
-static bool monster_hook_chameleon_lord(PlayerType *player_ptr, const ChameleonTransformation &ct, MonraceId monrace_id)
+static bool monster_hook_chameleon_lord(CreatureEntity &creature, const ChameleonTransformation &ct, MonraceId monrace_id)
 {
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace = monraces.get_monrace(monrace_id);
@@ -575,11 +575,11 @@ static bool monster_hook_chameleon_lord(PlayerType *player_ptr, const ChameleonT
         return false;
     }
 
-    if (!monster_can_cross_terrain(player_ptr, ct.terrain_id, monrace, 0)) {
+    if (!monster_can_cross_terrain(&creature, ct.terrain_id, monrace, 0)) {
         return false;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[ct.m_idx];
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
@@ -597,7 +597,7 @@ static bool monster_hook_chameleon_lord(PlayerType *player_ptr, const ChameleonT
  * @return 対象にできるならtrueを返す
  * @todo グローバル変数対策の上 monster_hook.cへ移す。
  */
-static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransformation &ct, MonraceId monrace_id)
+static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTransformation &ct, MonraceId monrace_id)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
@@ -616,11 +616,11 @@ static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransf
         return false;
     }
 
-    if (!monster_can_cross_terrain(player_ptr, ct.terrain_id, monrace, 0)) {
+    if (!monster_can_cross_terrain(&creature, ct.terrain_id, monrace, 0)) {
         return false;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[ct.m_idx];
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
@@ -640,7 +640,7 @@ static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransf
     }
 
     const auto hook = floor.get_monrace_hook();
-    return do_hook(player_ptr, hook, monrace_id);
+    return do_hook(creature, hook, monrace_id);
 }
 
 /*!
@@ -651,7 +651,6 @@ static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransf
  */
 void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransformation &ct)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
@@ -666,7 +665,7 @@ void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransfo
             continue;
         }
 
-        if (!hook_func(&player, ct, monrace_id)) {
+        if (!hook_func(creature, ct, monrace_id)) {
             continue;
         }
 

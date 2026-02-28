@@ -152,7 +152,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         const auto &monrace = monster.get_monrace();
         const auto m_pos = monster.get_position();
         const auto &grid = floor.get_grid(m_pos);
-        choose_chameleon_polymorph(&player, m_idx, grid.get_terrain_id());
+        choose_chameleon_polymorph(player, m_idx, grid.get_terrain_id());
         update_monster(creature, m_idx, false);
         lite_spot(creature, m_pos);
         const auto &new_monrace = monster.get_monrace();
