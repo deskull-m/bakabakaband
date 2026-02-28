@@ -76,7 +76,7 @@ bool ThrowCommand::do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken)
         torch_lost_fuel(ote.q_ptr);
     }
 
-    ote.corruption_possibility = ote.has_hit_monster() ? breakage_chance(this->player_ptr, ote.q_ptr, pc.equals(PlayerClassType::ARCHER), 0) : 0;
+    ote.corruption_possibility = ote.has_hit_monster() ? breakage_chance(*this->player_ptr, ote.q_ptr, pc.equals(PlayerClassType::ARCHER), 0) : 0;
     ote.display_figurine_throw();
     ote.display_potion_throw();
     ote.check_boomerang_throw();

@@ -248,7 +248,7 @@ void ObjectThrowEntity::display_potion_throw()
 
     msg_format(_("%sは砕け散った！", "The %s shatters!"), this->o_name.data());
     this->do_drop = false;
-    if (!potion_smash_effect(this->player_ptr, 0, this->y, this->x, this->q_ptr->bi_id)) {
+    if (!potion_smash_effect(*this->player_ptr, 0, this->y, this->x, this->q_ptr->bi_id)) {
         return;
     }
 

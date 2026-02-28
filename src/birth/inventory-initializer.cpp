@@ -49,7 +49,7 @@ void wield_all(PlayerType *player_ptr)
             continue;
         }
 
-        int slot = wield_slot(player_ptr, o_ptr);
+        int slot = wield_slot(*player_ptr, o_ptr);
         if (slot < INVEN_MAIN_HAND) {
             continue;
         }

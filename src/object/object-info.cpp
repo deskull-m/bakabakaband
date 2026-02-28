@@ -19,6 +19,7 @@
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
@@ -91,8 +92,9 @@ char index_to_label(int i)
  * @param o_ptr 名称を取得する元のオブジェクト構造体参照ポインタ
  * @return 対応する装備部位ID
  */
-int16_t wield_slot(PlayerType *player_ptr, const ItemEntity *o_ptr)
+int16_t wield_slot(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (o_ptr->bi_key.tval()) {
     case ItemKindType::DIGGING:
     case ItemKindType::HAFTED:
@@ -158,8 +160,9 @@ int16_t wield_slot(PlayerType *player_ptr, const ItemEntity *o_ptr)
  * @param bi_key ベースアイテム特定キー
  * @return 使用可能な魔法書ならばTRUEを返す。
  */
-bool check_book_realm(PlayerType *player_ptr, const BaseitemKey &bi_key)
+bool check_book_realm(CreatureEntity &creature, const BaseitemKey &bi_key)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!bi_key.is_spell_book()) {
         return false;
     }

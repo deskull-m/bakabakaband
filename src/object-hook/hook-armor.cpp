@@ -20,7 +20,7 @@ bool item_tester_hook_wear(PlayerType *player_ptr, const ItemEntity *o_ptr)
     }
 
     /* Check for a usable slot */
-    if (wield_slot(player_ptr, o_ptr) >= INVEN_MAIN_HAND) {
+    if (wield_slot(*player_ptr, o_ptr) >= INVEN_MAIN_HAND) {
         return true;
     }
 

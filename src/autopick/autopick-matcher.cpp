@@ -295,7 +295,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
 
     if (entry.has(FLG_UNREADABLE)) {
         auto *player_ptr = static_cast<PlayerType *>(&creature);
-        const auto unreadable_book = bi_key.is_spell_book() && !check_book_realm(player_ptr, bi_key);
+        const auto unreadable_book = bi_key.is_spell_book() && !check_book_realm(*player_ptr, bi_key);
         if (!unreadable_book) {
             return false;
         }

@@ -9,6 +9,7 @@
 #include "player-base/player-race.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-resist.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
@@ -28,8 +29,9 @@
  * Calculate spell damages
  * @return 警告を行う
  */
-ItemEntity *choose_warning_item(PlayerType *player_ptr)
+ItemEntity *choose_warning_item(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Paranoia -- Player has no warning ability */
     if (!player_ptr->warning) {
         return nullptr;
@@ -332,8 +334,9 @@ static int blow_damcalc(const MonsterEntity &monster, PlayerType *player_ptr, co
  * @param yy 危険性を調査するマスのY座標
  * @return 警告を無視して進むことを選択するかか問題が無ければTRUE、警告に従ったならFALSEを返す。
  */
-bool process_warning(PlayerType *player_ptr, POSITION xx, POSITION yy)
+bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const Pos2D pos(yy, xx);
     constexpr auto warning_aware_range = 12;
     int dam_max = 0;
@@ -513,7 +516,7 @@ bool process_warning(PlayerType *player_ptr, POSITION xx, POSITION yy)
         old_damage = dam_max * 3 / 2;
 
         if (dam_max > player_ptr->hp / 2) {
-            auto *o_ptr = choose_warning_item(player_ptr);
+            auto *o_ptr = choose_warning_item(*player_ptr);
             std::string item_name;
             if (o_ptr != nullptr) {
                 item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
@@ -536,7 +539,7 @@ bool process_warning(PlayerType *player_ptr, POSITION xx, POSITION yy)
         return true;
     }
 
-    auto *o_ptr = choose_warning_item(player_ptr);
+    auto *o_ptr = choose_warning_item(*player_ptr);
     std::string item_name;
     if (o_ptr != nullptr) {
         item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));

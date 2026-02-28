@@ -880,7 +880,7 @@ static int is_slot_able_to_be_ego(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     auto &player = static_cast<PlayerType &>(creature);
     auto *player_ptr = &player;
-    int slot = wield_slot(player_ptr, o_ptr);
+    int slot = wield_slot(*player_ptr, o_ptr);
     if (slot > -1) {
         return slot;
     }
@@ -1201,11 +1201,11 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
             res = WishResultType::NORMAL;
         }
 
-        if (blessed && wield_slot(player_ptr, &item) != -1) {
+        if (blessed && wield_slot(*player_ptr, &item) != -1) {
             item.art_flags.set(TR_BLESSED);
         }
 
-        if (fixed && wield_slot(player_ptr, &item) != -1) {
+        if (fixed && wield_slot(*player_ptr, &item) != -1) {
             item.art_flags.set(TR_IGNORE_ACID);
             item.art_flags.set(TR_IGNORE_FIRE);
         }
