@@ -31,6 +31,7 @@
 #include "status/action-setter.h"
 #include "status/experience.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -43,8 +44,9 @@
 /// 破壊するアイテムの選択結果: アイテム、インベントリもしくは床上アイテムのインデックス、個数
 using SelectionResult = std::tuple<ItemEntity *, short, int>;
 
-static bool check_destory_item(PlayerType *player_ptr, const ItemEntity &destroying_item, short i_idx)
+static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destroying_item, short i_idx)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (!confirm_destroy && (destroying_item.calc_price() <= 0)) {
         return true;
     }
@@ -80,8 +82,9 @@ static bool check_destory_item(PlayerType *player_ptr, const ItemEntity &destroy
     }
 }
 
-static tl::optional<SelectionResult> select_destroying_item(PlayerType *player_ptr, bool force_destroy)
+static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &creature, bool force_destroy)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     short i_idx;
     constexpr auto q = _("どのアイテムを壊しますか? ", "Destroy which item? ");
     constexpr auto s = _("壊せるアイテムを持っていない。", "You have nothing to destroy.");
@@ -90,7 +93,7 @@ static tl::optional<SelectionResult> select_destroying_item(PlayerType *player_p
         return tl::nullopt;
     }
 
-    if (!force_destroy && !check_destory_item(player_ptr, *o_ptr, i_idx)) {
+    if (!force_destroy && !check_destory_item(creature, *o_ptr, i_idx)) {
         return tl::nullopt;
     }
 
@@ -112,13 +115,14 @@ static tl::optional<SelectionResult> select_destroying_item(PlayerType *player_p
  * @param destoryed_item 破壊したアイテム
  * return 魔法書の破壊によって経験値が入るならばTRUE
  */
-static bool decide_magic_book_exp(PlayerType *player_ptr, const ItemEntity &destroyed_item)
+static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
 
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     const auto tval = destroyed_item.bi_key.tval();
     if (pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER)) {
         return tval != ItemKindType::HISSATSU_BOOK;
@@ -136,9 +140,10 @@ static bool decide_magic_book_exp(PlayerType *player_ptr, const ItemEntity &dest
     }
 }
 
-static void gain_exp_by_destroying_magic_book(PlayerType *player_ptr, const ItemEntity &destroyed_item)
+static void gain_exp_by_destroying_magic_book(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    const auto gain_expr = decide_magic_book_exp(player_ptr, destroyed_item);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    const auto gain_expr = decide_magic_book_exp(creature, destroyed_item);
     if (!gain_expr || (player_ptr->exp >= PY_MAX_EXP)) {
         return;
     }
@@ -157,10 +162,10 @@ static void gain_exp_by_destroying_magic_book(PlayerType *player_ptr, const Item
     }
 
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(static_cast<CreatureEntity &>(*player_ptr), tester_exp * destroyed_item.number);
+    gain_exp(creature, tester_exp * destroyed_item.number);
 }
 
-static void process_destroy_magic_book(PlayerType *player_ptr, const ItemEntity &destroyed_item)
+static void process_destroy_magic_book(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
     const BaseitemKey &bi_key = destroyed_item.bi_key;
     if (!bi_key.is_high_level_book()) {
@@ -168,28 +173,29 @@ static void process_destroy_magic_book(PlayerType *player_ptr, const ItemEntity 
     }
 
     const auto tval = bi_key.tval();
-    gain_exp_by_destroying_magic_book(player_ptr, destroyed_item);
+    gain_exp_by_destroying_magic_book(creature, destroyed_item);
     if (tval == ItemKindType::LIFE_BOOK) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
+        chg_virtue(creature, Virtue::UNLIFE, 1);
+        chg_virtue(creature, Virtue::VITALITY, -1);
     } else if (tval == ItemKindType::DEATH_BOOK) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
+        chg_virtue(creature, Virtue::UNLIFE, -1);
+        chg_virtue(creature, Virtue::VITALITY, 1);
     }
 
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_h != 0) || (destroyed_item.to_d != 0)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -1);
+        chg_virtue(creature, Virtue::ENCHANT, -1);
     }
 
     if (object_value_real(&destroyed_item) > 30000) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 2);
+        chg_virtue(creature, Virtue::SACRIFICE, 2);
     } else if (object_value_real(&destroyed_item) > 10000) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+        chg_virtue(creature, Virtue::SACRIFICE, 1);
     }
 }
 
-static void exe_destroy_item(PlayerType *player_ptr, ItemEntity &destroying_item, short i_idx, int amount)
+static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_item, short i_idx, int amount)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto destroyed_item = destroying_item.clone();
     destroyed_item.number = amount;
     const auto item_name = describe_flavor(player_ptr, destroyed_item, 0);
@@ -197,9 +203,9 @@ static void exe_destroy_item(PlayerType *player_ptr, ItemEntity &destroying_item
     sound(SoundKind::DESTITEM);
     reduce_charges(&destroying_item, amount);
     vary_item(player_ptr, i_idx, -amount);
-    process_destroy_magic_book(player_ptr, destroyed_item);
+    process_destroy_magic_book(creature, destroyed_item);
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_d != 0) || (destroyed_item.to_h != 0)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
+        chg_virtue(creature, Virtue::HARMONY, 1);
     }
 
     if (i_idx >= INVEN_MAIN_HAND) {
@@ -211,11 +217,12 @@ static void exe_destroy_item(PlayerType *player_ptr, ItemEntity &destroying_item
  * @brief アイテムを破壊するコマンドのメインルーチン / Destroy an item
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_destroy(PlayerType *player_ptr)
+void do_cmd_destroy(CreatureEntity &creature)
 {
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    const auto selection_result = select_destroying_item(player_ptr, (command_arg > 0));
+    const auto selection_result = select_destroying_item(creature, (command_arg > 0));
     if (!selection_result) {
         return;
     }
@@ -230,5 +237,5 @@ void do_cmd_destroy(PlayerType *player_ptr)
         return;
     }
 
-    exe_destroy_item(player_ptr, *o_ptr, i_idx, amt);
+    exe_destroy_item(creature, *o_ptr, i_idx, amt);
 }

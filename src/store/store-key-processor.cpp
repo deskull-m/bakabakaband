@@ -135,7 +135,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case 'k': {
-        do_cmd_destroy(player_ptr);
+        do_cmd_destroy(*player_ptr);
         break;
     }
     case 'e': {
