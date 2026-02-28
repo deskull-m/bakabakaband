@@ -239,7 +239,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'k': {
-        do_cmd_destroy(player_ptr);
+        do_cmd_destroy(*player_ptr);
         break;
     }
     case 'e': {
