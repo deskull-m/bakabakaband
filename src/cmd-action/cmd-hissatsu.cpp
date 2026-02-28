@@ -36,6 +36,7 @@
 #include "spell/spells-execution.h"
 #include "spell/technic-info-table.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -301,8 +302,9 @@ static int get_hissatsu_power(PlayerType *player_ptr, SPELL_IDX *sn)
 /*!
  * @brief 剣術コマンドのメインルーチン
  */
-void do_cmd_hissatsu(PlayerType *player_ptr)
+void do_cmd_hissatsu(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     SPELL_IDX n = 0;
 
     if (cmd_limit_confused(*player_ptr)) {
@@ -364,8 +366,9 @@ void do_cmd_hissatsu(PlayerType *player_ptr)
 /*!
  * @brief 剣術コマンドの学習
  */
-void do_cmd_gain_hissatsu(PlayerType *player_ptr)
+void do_cmd_gain_hissatsu(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
         return;

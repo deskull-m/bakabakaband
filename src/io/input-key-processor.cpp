@@ -261,14 +261,14 @@ void process_command(CreatureEntity &creature)
     }
     case '+': {
         if (!is_wild_mode) {
-            do_cmd_alter(player_ptr);
+            do_cmd_alter(*player_ptr);
         }
 
         break;
     }
     case 'T': {
         if (!is_wild_mode) {
-            do_cmd_tunnel(player_ptr);
+            do_cmd_tunnel(*player_ptr);
         }
 
         break;
@@ -301,7 +301,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 's': {
-        do_cmd_search(player_ptr);
+        do_cmd_search(*player_ptr);
         break;
     }
     case 'S': {
@@ -358,23 +358,23 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'o': {
-        do_cmd_open(player_ptr);
+        do_cmd_open(*player_ptr);
         break;
     }
     case 'c': {
-        do_cmd_close(player_ptr);
+        do_cmd_close(*player_ptr);
         break;
     }
     case 'j': {
-        do_cmd_spike(player_ptr);
+        do_cmd_spike(*player_ptr);
         break;
     }
     case 'B': {
-        do_cmd_bash(player_ptr);
+        do_cmd_bash(*player_ptr);
         break;
     }
     case 'D': {
-        do_cmd_disarm(player_ptr);
+        do_cmd_disarm(*player_ptr);
         break;
     }
     case 'G': {
@@ -382,17 +382,17 @@ void process_command(CreatureEntity &creature)
         if (pc.is_every_magic() || pc.equals(PlayerClassType::ELEMENTALIST)) {
             msg_print(_("呪文を学習する必要はない！", "You don't have to learn spells!"));
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
-            do_cmd_gain_hissatsu(player_ptr);
+            do_cmd_gain_hissatsu(*player_ptr);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
             import_magic_device(player_ptr);
         } else {
-            do_cmd_study(player_ptr);
+            do_cmd_study(*player_ptr);
         }
 
         break;
     }
     case 'X': {
-        do_cmd_martial_arts_style(player_ptr);
+        do_cmd_martial_arts_style(*player_ptr);
         break;
     }
     case 'b': {
@@ -408,7 +408,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::SNIPER)) {
             do_cmd_snipe_browse(*player_ptr);
         } else {
-            do_cmd_browse(player_ptr);
+            do_cmd_browse(*player_ptr);
         }
 
         break;
@@ -481,7 +481,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
             do_cmd_magic_eater(player_ptr, false, false);
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
-            do_cmd_hissatsu(player_ptr);
+            do_cmd_hissatsu(*player_ptr);
         } else if (pc.equals(PlayerClassType::BLUE_MAGE)) {
             do_cmd_cast_learned(player_ptr);
         } else if (pc.equals(PlayerClassType::SMITH)) {
@@ -489,13 +489,13 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::SNIPER)) {
             do_cmd_snipe(*player_ptr);
         } else {
-            (void)do_cmd_cast(player_ptr);
+            (void)do_cmd_cast(*player_ptr);
         }
 
         break;
     }
     case 'p': {
-        do_cmd_pet(player_ptr);
+        do_cmd_pet(*player_ptr);
         break;
     }
     case '{': {
@@ -519,7 +519,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'f': {
-        do_cmd_fire(player_ptr, SP_NONE);
+        do_cmd_fire(*player_ptr, SP_NONE);
         break;
     }
     case 'v': {
@@ -670,7 +670,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'Q': {
-        do_cmd_suicide(player_ptr);
+        do_cmd_suicide(*player_ptr);
         break;
     }
     case '|': {
@@ -698,7 +698,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('C'): {
-        do_cmd_inscribe_terrain(player_ptr);
+        do_cmd_inscribe_terrain(*player_ptr);
         break;
     }
     case KTRL('E'): {
@@ -707,7 +707,7 @@ void process_command(CreatureEntity &creature)
     }
     case '`': {
         if (!is_wild_mode) {
-            do_cmd_travel(player_ptr);
+            do_cmd_travel(*player_ptr);
         }
         CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 

@@ -11,6 +11,7 @@
 #include "player/attack-defense-types.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/player-type-definition.h"
@@ -32,8 +33,9 @@
  * accomplished by strong players using heavy weapons.
  * </pre>
  */
-void do_cmd_tunnel(PlayerType *player_ptr)
+void do_cmd_tunnel(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     if (command_arg) {

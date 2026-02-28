@@ -444,7 +444,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
         while (upkeep_factor > 100) {
             msg_print(_("こんなに多くのペットを制御できない！", "Too many pets to control at once!"));
             msg_erase();
-            do_cmd_pet_dismiss(player_ptr);
+            do_cmd_pet_dismiss(*player_ptr);
 
             upkeep_factor = calculate_upkeep(player_ptr);
 

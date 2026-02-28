@@ -189,7 +189,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
 
         return false;
     case BACT_LEARN:
-        do_cmd_study(player_ptr);
+        do_cmd_study(*player_ptr);
         return false;
     case BACT_HEALING:
         if (cure_critical_wounds(*player_ptr, 200)) {

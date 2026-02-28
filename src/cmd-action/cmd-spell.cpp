@@ -57,6 +57,7 @@
 #include "status/base-status.h"
 #include "status/experience.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
@@ -575,8 +576,9 @@ static FuncItemTester get_learnable_spellbook_tester(PlayerType *player_ptr)
  * and in the dark, primarily to allow browsing in stores.
  * </pre>
  */
-void do_cmd_browse(PlayerType *player_ptr)
+void do_cmd_browse(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     SPELL_IDX spell = -1;
 
     /* Warriors are illiterate */
@@ -705,8 +707,9 @@ static void change_realm2(PlayerType *player_ptr, PlayerRealm &pr, RealmType nex
  * @brief 魔法を学習するコマンドのメインルーチン /
  * Study a book to gain a new spell/prayer
  */
-void do_cmd_study(PlayerType *player_ptr)
+void do_cmd_study(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto increment = 0;
 
     /* Spells of realm2 will have an increment of +32 */
@@ -898,8 +901,9 @@ void do_cmd_study(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 詠唱したらtrue
  */
-bool do_cmd_cast(PlayerType *player_ptr)
+bool do_cmd_cast(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int chance;
     auto increment = 0;
     MANA_POINT need_mana;

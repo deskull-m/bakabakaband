@@ -84,12 +84,12 @@ static std::vector<TextCommand> get_text_commands()
     return {
         { { "search", "探す", "探索" },
             [](PlayerType *player_ptr) {
-                do_cmd_search(player_ptr);
+                do_cmd_search(*player_ptr);
             },
             _("周囲を探索する", "Search") },
         { { "suicide", "死ぬ", "自殺" },
             [](PlayerType *player_ptr) {
-                do_cmd_suicide(player_ptr);
+                do_cmd_suicide(*player_ptr);
             },
             _("自殺する", "suicide") },
         { { "defecate", "脱糞", "うんち", "うんこ" },
