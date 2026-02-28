@@ -48,7 +48,7 @@ static void effect_monster_charm_resist(PlayerType *player_ptr, EffectMonster *e
         }
     } else {
         em_ptr->note = _("は突然友好的になったようだ！", " suddenly seems friendly!");
-        set_pet(player_ptr, *em_ptr->m_ptr);
+        set_pet(*player_ptr, *em_ptr->m_ptr);
 
         chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, -1);
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
@@ -112,7 +112,7 @@ ProcessResult effect_monster_control_undead(PlayerType *player_ptr, EffectMonste
         }
     } else {
         em_ptr->note = _("は既にあなたの奴隷だ！", " is in your thrall!");
-        set_pet(player_ptr, *em_ptr->m_ptr);
+        set_pet(*player_ptr, *em_ptr->m_ptr);
     }
 
     em_ptr->dam = 0;
@@ -153,7 +153,7 @@ ProcessResult effect_monster_control_demon(PlayerType *player_ptr, EffectMonster
         }
     } else {
         em_ptr->note = _("は既にあなたの奴隷だ！", " is in your thrall!");
-        set_pet(player_ptr, *em_ptr->m_ptr);
+        set_pet(*player_ptr, *em_ptr->m_ptr);
     }
 
     em_ptr->dam = 0;
@@ -194,7 +194,7 @@ ProcessResult effect_monster_control_animal(PlayerType *player_ptr, EffectMonste
         }
     } else {
         em_ptr->note = _("はなついた。", " is tamed!");
-        set_pet(player_ptr, *em_ptr->m_ptr);
+        set_pet(*player_ptr, *em_ptr->m_ptr);
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
         }
@@ -240,7 +240,7 @@ ProcessResult effect_monster_charm_living(PlayerType *player_ptr, EffectMonster 
         }
     } else {
         em_ptr->note = _("を支配した。", " is tamed!");
-        set_pet(player_ptr, *em_ptr->m_ptr);
+        set_pet(*player_ptr, *em_ptr->m_ptr);
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
             chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
         }
@@ -333,7 +333,7 @@ ProcessResult effect_monster_domination(PlayerType *player_ptr, EffectMonster *e
 
     if (!common_saving_throw_charm(player_ptr, em_ptr->dam, *em_ptr->m_ptr)) {
         em_ptr->note = _("があなたに隷属した。", " is in your thrall!");
-        set_pet(player_ptr, *em_ptr->m_ptr);
+        set_pet(*player_ptr, *em_ptr->m_ptr);
         em_ptr->dam = 0;
         return ProcessResult::PROCESS_CONTINUE;
     }
@@ -378,7 +378,7 @@ static bool effect_monster_crusade_domination(PlayerType *player_ptr, EffectMons
     }
 
     em_ptr->note = _("を支配した。", " is tamed!");
-    set_pet(player_ptr, *em_ptr->m_ptr);
+    set_pet(*player_ptr, *em_ptr->m_ptr);
     (void)set_monster_fast(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100);
     if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::GOOD);

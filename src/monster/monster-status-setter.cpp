@@ -31,8 +31,9 @@
  * @param PlayerType プレイヤーへの参照ポインタ
  * @param m_ptr モンスター情報構造体の参照ポインタ
  */
-void set_pet(PlayerType *player_ptr, MonsterEntity &monster)
+void set_pet(CreatureEntity &creature, MonsterEntity &monster)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     QuestCompletionChecker(player_ptr, monster).complete();
     monster.mflag2.set(MonsterConstantFlagType::PET);
     monster.alliance_idx = AllianceType::NONE;
@@ -46,19 +47,19 @@ void set_pet(PlayerType *player_ptr, MonsterEntity &monster)
  * Anger the monster
  * @param m_ptr モンスター情報構造体の参照ポインタ
  */
-void anger_monster(PlayerType *player_ptr, MonsterEntity &monster)
+void anger_monster(CreatureEntity &creature, MonsterEntity &monster)
 {
     if (AngbandSystem::get_instance().is_phase_out() || !monster.is_friendly()) {
         return;
     }
 
-    const auto m_name = monster_desc(*player_ptr, monster, 0);
-    msg_format(_("%s^は怒った！", "%s^ gets angry!"), m_name.data());
+    const auto m_name = monster_desc(creature, monster, 0);
+    msg_format(_("%s^\u306f\u6012\u3063\u305f\uff01", "%s^ gets angry!"), m_name.data());
     monster.set_hostile();
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
+    chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
+    chg_virtue(creature, Virtue::HONOUR, -1);
+    chg_virtue(creature, Virtue::JUSTICE, -1);
+    chg_virtue(creature, Virtue::COMPASSION, -1);
 }
 
 /*!
@@ -338,9 +339,10 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
  * @return 時間停止が行われている状態ならばTRUEを返す
  * @details monster_desc() は視認外のモンスターについて「何か」と返してくるので、この関数ではLOSや透明視等を判定する必要はない
  */
-bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bool vs_player)
+bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, bool vs_player)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     auto &world = AngbandWorld::get_instance();
     const auto &monrace = monster.get_real_monrace();
@@ -349,7 +351,7 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
     }
 
     if (vs_player) {
-        const auto m_name = monster_desc(*player_ptr, monster, 0);
+        const auto m_name = monster_desc(creature, monster, 0);
         const auto time_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_TIMESTOP);
         if (time_message) {
             msg_print(*time_message);
@@ -357,7 +359,7 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
         msg_erase();
     }
 
-    if (has_resist_time(*player_ptr)) {
+    if (has_resist_time(creature)) {
         msg_print(_("しかし、あなたは時を止める力を打ち消した！", "But, you have countered power of time stop!"));
         return false;
     }
@@ -372,9 +374,9 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
             break;
         }
 
-        process_monster(*player_ptr, world.timewalk_m_idx);
+        process_monster(creature, world.timewalk_m_idx);
         monster.reset_target();
-        handle_stuff(*player_ptr);
+        handle_stuff(creature);
         if (vs_player) {
             term_xtra(TERM_XTRA_DELAY, 500);
         }
@@ -389,12 +391,12 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
     };
     rfu.set_flags(flags);
     world.timewalk_m_idx = 0;
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     auto should_output_message = floor.has_los_at(m_pos);
     should_output_message &= projectable(floor, p_pos, m_pos);
     if (vs_player || should_output_message) {
-        const auto m_name = monster_desc(*player_ptr, monster, 0);
+        const auto m_name = monster_desc(creature, monster, 0);
         const auto time_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_TIMESTART);
         if (time_message) {
             msg_print(*time_message);
@@ -402,6 +404,6 @@ bool set_monster_timewalk(PlayerType *player_ptr, MONSTER_IDX m_idx, int num, bo
         msg_erase();
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }

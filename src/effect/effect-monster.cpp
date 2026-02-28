@@ -298,7 +298,7 @@ static bool deal_effect_damage_from_player(PlayerType *player_ptr, EffectMonster
     }
 
     if (em_ptr->do_sleep) {
-        anger_monster(player_ptr, *em_ptr->m_ptr);
+        anger_monster(*player_ptr, *em_ptr->m_ptr);
     }
 
     if (!em_ptr->note.empty() && em_ptr->seen) {
@@ -312,7 +312,7 @@ static bool deal_effect_damage_from_player(PlayerType *player_ptr, EffectMonster
     }
 
     if (((em_ptr->dam > 0) || em_ptr->get_angry) && !em_ptr->do_sleep) {
-        anger_monster(player_ptr, *em_ptr->m_ptr);
+        anger_monster(*player_ptr, *em_ptr->m_ptr);
     }
 
     if ((fear || em_ptr->do_fear) && em_ptr->seen) {

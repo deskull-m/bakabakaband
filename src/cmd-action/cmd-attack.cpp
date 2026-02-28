@@ -132,7 +132,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
     if (k > 0) {
-        anger_monster(player_ptr, monster);
+        anger_monster(*player_ptr, monster);
     }
 
     switch (attack) {
@@ -223,7 +223,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
-        anger_monster(player_ptr, monster);
+        anger_monster(*player_ptr, monster);
     }
 
     // 頭突きによるダメージ処理
@@ -318,7 +318,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
-        anger_monster(player_ptr, monster);
+        anger_monster(*player_ptr, monster);
     }
 
     // 体当たりによる特殊効果（ノックバック可能性）
@@ -722,7 +722,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
-        anger_monster(player_ptr, monster);
+        anger_monster(*player_ptr, monster);
     }
 
     // 浣腸によるダメージ処理

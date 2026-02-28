@@ -86,7 +86,7 @@ MonsterSpellResult spell_RF6_WORLD(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     auto &player_ptr = static_cast<PlayerType &>(creature);
     disturb(player_ptr, true, true);
-    (void)set_monster_timewalk(&player_ptr, m_idx, randint1(2) + 2, true);
+    (void)set_monster_timewalk(player_ptr, m_idx, randint1(2) + 2, true);
 
     return MonsterSpellResult::make_valid();
 }
