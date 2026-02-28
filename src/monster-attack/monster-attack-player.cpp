@@ -46,6 +46,7 @@
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -64,13 +65,13 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param m_idx 打撃を行うモンスターのID
  */
-MonsterAttackPlayer::MonsterAttackPlayer(PlayerType *player_ptr, short m_idx)
+MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
     : m_idx(m_idx)
-    , m_ptr(&player_ptr->current_floor_ptr->m_list[m_idx])
+    , m_ptr(&creature.current_floor_ptr->m_list[m_idx])
     , method(RaceBlowMethodType::NONE)
     , effect(RaceBlowEffectType::NONE)
-    , do_silly_attack(one_in_(2) && player_ptr->effects()->hallucination().is_hallucinated())
-    , player_ptr(player_ptr)
+    , do_silly_attack(one_in_(2) && static_cast<PlayerType *>(&creature)->effects()->hallucination().is_hallucinated())
+    , player_ptr(static_cast<PlayerType *>(&creature))
 {
 }
 
@@ -260,7 +261,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         this->damage = 0;
     }
 
-    switch_monster_blow_to_player(this->player_ptr, this);
+    switch_monster_blow_to_player(*this->player_ptr, this);
     this->select_cut_stun();
     this->calc_player_cut();
     this->process_player_stun();

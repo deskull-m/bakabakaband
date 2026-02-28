@@ -213,6 +213,5 @@ void calc_blow_lose_all(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
         return;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    process_lose_all_attack(player_ptr, monap_ptr);
+    process_lose_all_attack(creature, monap_ptr);
 }

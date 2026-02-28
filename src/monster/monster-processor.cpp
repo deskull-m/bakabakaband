@@ -258,7 +258,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         const auto dy = std::abs(monster.y - creature.y);
         const auto dx = std::abs(monster.x - creature.x);
         if (dy <= 1 && dx <= 1 && turn_flags_ptr->aware) {
-            MonsterAttackPlayer(&player, m_idx).make_attack_normal();
+            MonsterAttackPlayer(player, m_idx).make_attack_normal();
         }
         return;
     }

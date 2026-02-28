@@ -12,6 +12,7 @@
 #include "monster/monster-processor-util.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -29,12 +30,13 @@
  * @details
  * 反攻撃の洞窟など、直接攻撃ができない場所では処理をスキップする
  */
-void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Pos2D &pos)
+void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     auto &monrace = monster.get_monrace();
-    if (!turn_flags_ptr->do_move || !player_ptr->is_located_at(pos)) {
+    if (!turn_flags_ptr->do_move || !creature.is_located_at(pos)) {
         return;
     }
 
@@ -59,7 +61,7 @@ void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags
     }
 
     if (!player_ptr->riding || one_in_(2)) {
-        MonsterAttackPlayer(player_ptr, m_idx).make_attack_normal();
+        MonsterAttackPlayer(creature, m_idx).make_attack_normal();
         turn_flags_ptr->do_move = false;
         turn_flags_ptr->do_turn = true;
     }
@@ -71,12 +73,13 @@ void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags
  * @param m_idx モンスターID
  * @param grid グリッドへの参照
  */
-static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, const Grid &grid)
+static bool exe_monster_attack_to_monster(CreatureEntity &creature, MONSTER_IDX m_idx, const Grid &grid)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     auto &monrace = monster.get_monrace();
-    const auto &monster_target = player_ptr->current_floor_ptr->m_list[grid.m_idx];
+    const auto &monster_target = creature.current_floor_ptr->m_list[grid.m_idx];
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
         return false;
     }
@@ -117,16 +120,16 @@ static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_
  * @param can_cross モンスターが地形を踏破できるならばTRUE
  * @return ターン消費が発生したらTRUE
  */
-bool process_monster_attack_to_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Grid &grid, bool can_cross)
+bool process_monster_attack_to_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Grid &grid, bool can_cross)
 {
     if (!turn_flags_ptr->do_move || !grid.has_monster()) {
         return false;
     }
 
     turn_flags_ptr->do_move = false;
-    const auto &monster_from = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster_from = creature.current_floor_ptr->m_list[m_idx];
     const auto &monrace_from = monster_from.get_monrace();
-    const auto &monster_to = player_ptr->current_floor_ptr->m_list[grid.m_idx];
+    const auto &monster_to = creature.current_floor_ptr->m_list[grid.m_idx];
     const auto &monrace_to = monster_to.get_monrace();
     auto do_kill_body = monrace_from.behavior_flags.has(MonsterBehaviorType::KILL_BODY) && monrace_from.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW);
     do_kill_body &= (monrace_from.mexp * monrace_from.level > monrace_to.mexp * monrace_to.level);
@@ -136,18 +139,18 @@ bool process_monster_attack_to_monster(PlayerType *player_ptr, turn_flags *turn_
     const bool is_same_summon_parent = (monster_from.parent_m_idx == monster_to.parent_m_idx && monrace_from.behavior_flags.has_not(MonsterBehaviorType::STUPID)) || (monster_from.mflag2.has(MonsterConstantFlagType::PET) != monster_to.mflag2.has(MonsterConstantFlagType::PET));
     do_kill_body &= !is_same_summon_parent;
     if (do_kill_body || monster_from.is_hostile_to_melee(monster_to) || monster_from.is_confused()) {
-        return exe_monster_attack_to_monster(player_ptr, m_idx, grid);
+        return exe_monster_attack_to_monster(creature, m_idx, grid);
     }
 
     auto do_move_body = monrace_from.behavior_flags.has(MonsterBehaviorType::MOVE_BODY) && monrace_from.behavior_flags.has_not(MonsterBehaviorType::NEVER_MOVE);
     do_move_body &= (monrace_from.mexp > monrace_to.mexp);
     do_move_body &= can_cross;
     do_move_body &= !monster_to.is_riding();
-    do_move_body &= monster_can_cross_terrain(player_ptr, player_ptr->current_floor_ptr->grid_array[monster_from.y][monster_from.x].feat, monrace_to, 0);
+    do_move_body &= monster_can_cross_terrain(&creature, creature.current_floor_ptr->grid_array[monster_from.y][monster_from.x].feat, monrace_to, 0);
     if (do_move_body) {
         turn_flags_ptr->do_move = true;
         turn_flags_ptr->did_move_body = true;
-        (void)set_monster_csleep(*player_ptr->current_floor_ptr, grid.m_idx, 0);
+        (void)set_monster_csleep(*creature.current_floor_ptr, grid.m_idx, 0);
     }
 
     return false;

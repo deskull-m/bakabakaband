@@ -561,7 +561,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         auto m_name = monster_desc(player, *m_ptr, 0);
         msg_format(_("突如%sがあなたに襲い掛かってきた！", "Suddenly %s has ambushed you!"), m_name.data());
         disturb(player, false, true);
-        MonsterAttackPlayer(player_ptr, g_ptr->m_idx).make_attack_normal();
+        MonsterAttackPlayer(*player_ptr, g_ptr->m_idx).make_attack_normal();
     }
 
     /*

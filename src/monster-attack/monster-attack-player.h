@@ -5,13 +5,14 @@
 
 enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
+class CreatureEntity;
 class PlayerType;
 class SpellHex;
 class MonsterEntity;
 class ItemEntity;
 class MonsterAttackPlayer {
 public:
-    MonsterAttackPlayer(PlayerType *player_ptr, short m_idx);
+    MonsterAttackPlayer(CreatureEntity &creature, short m_idx);
 #ifdef JP
     int abbreviate = 0; // 2回目以降の省略表現フラグ.
 #endif
