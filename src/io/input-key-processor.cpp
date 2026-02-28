@@ -548,7 +548,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'r': {
-        do_cmd_read_scroll(player_ptr);
+        do_cmd_read_scroll(*player_ptr);
         break;
     }
     case 'u': {
