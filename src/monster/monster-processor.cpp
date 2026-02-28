@@ -287,7 +287,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     if (!turn_flags_ptr->do_turn && !turn_flags_ptr->do_move && !monster.is_fearful() && !turn_flags_ptr->is_riding_mon && turn_flags_ptr->aware) {
         if (monrace.freq_spell && randint1(100) <= monrace.freq_spell) {
-            if (make_attack_spell(&player, m_idx)) {
+            if (make_attack_spell(player, m_idx)) {
                 return;
             }
         }
@@ -774,11 +774,11 @@ bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
     }
 
     if (counter_attack) {
-        if (monst_spell_monst(player, m_idx) || (aware && make_attack_spell(&player, m_idx))) {
+        if (monst_spell_monst(player, m_idx) || (aware && make_attack_spell(player, m_idx))) {
             return true;
         }
     } else {
-        if ((aware && make_attack_spell(&player, m_idx)) || monst_spell_monst(player, m_idx)) {
+        if ((aware && make_attack_spell(player, m_idx)) || monst_spell_monst(player, m_idx)) {
             return true;
         }
     }

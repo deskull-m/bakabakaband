@@ -451,7 +451,6 @@ void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrac
  */
 static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id, const SummonCondition &condition)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     if (floor.is_underground() && !DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, monrace_id)) {
         return false;
@@ -487,11 +486,11 @@ static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id,
     }
 
     if (!condition.summoner_m_idx) {
-        return check_summon_specific(player_ptr, MonraceId::PLAYER, monrace_id, condition.type);
+        return check_summon_specific(creature, MonraceId::PLAYER, monrace_id, condition.type);
     }
 
     const auto &monster = floor.m_list[*condition.summoner_m_idx];
-    return check_summon_specific(player_ptr, monster.r_idx, monrace_id, condition.type);
+    return check_summon_specific(creature, monster.r_idx, monrace_id, condition.type);
 }
 
 /*!

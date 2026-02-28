@@ -1,8 +1,8 @@
 #include "mspell/mspell-learn-checker.h"
 #include "grid/grid.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "world/world.h"
 
@@ -14,11 +14,11 @@
  *
  * モンスターが特技を使う前にプレイヤーがモンスターを視認できているかどうかの判定用。
  */
-bool spell_learnable(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool spell_learnable(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
-    const auto seen = (!player_ptr->effects()->blindness().is_blind() && monster.ml);
+    const auto seen = (!creature.effects()->blindness().is_blind() && monster.ml);
     const auto maneable = floor.has_los_at({ monster.y, monster.x });
     return seen && maneable && (AngbandWorld::get_instance().timewalk_m_idx == 0);
 }

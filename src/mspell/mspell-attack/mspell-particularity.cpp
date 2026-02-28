@@ -48,7 +48,7 @@ MonsterSpellResult spell_RF4_ROCKET(PlayerType *player_ptr, POSITION y, POSITION
                                      _("%s^が%sにロケットを発射した。", "%s^ fires a rocket at %s.") },
         AttributeType::ROCKET, DRS_SHARD);
     return MSpellAttackOther(player_ptr, m_idx, t_idx, MonsterAbilityType::ROCKET, data, target_type,
-        [=](auto y, auto x, int dam, auto attribute) { return rocket(player_ptr, y, x, m_idx, attribute, dam, 2, target_type); })
+        [=](auto y, auto x, int dam, auto attribute) { return rocket(*player_ptr, y, x, m_idx, attribute, dam, 2, target_type); })
         .shoot(y, x);
 }
 
@@ -68,10 +68,10 @@ static auto project_hand_doom(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITIO
     auto attribute = AttributeType::HAND_DOOM;
     if (target_type == MONSTER_TO_PLAYER) {
         const auto dam = monspell_damage(*player_ptr, MonsterAbilityType::HAND_DOOM, m_idx, DAM_ROLL);
-        proj_res = pointed(player_ptr, y, x, m_idx, attribute, dam, MONSTER_TO_PLAYER);
+        proj_res = pointed(*player_ptr, y, x, m_idx, attribute, dam, MONSTER_TO_PLAYER);
     } else if (target_type == MONSTER_TO_MONSTER) {
         const auto dam = 20; /* Dummy power */
-        proj_res = pointed(player_ptr, y, x, m_idx, attribute, dam, MONSTER_TO_MONSTER);
+        proj_res = pointed(*player_ptr, y, x, m_idx, attribute, dam, MONSTER_TO_MONSTER);
     }
     return proj_res;
 }
@@ -111,6 +111,6 @@ MonsterSpellResult spell_RF6_PSY_SPEAR(PlayerType *player_ptr, POSITION y, POSIT
         AttributeType::PSY_SPEAR);
 
     return MSpellAttackOther(player_ptr, m_idx, t_idx, MonsterAbilityType::PSY_SPEAR, data, target_type,
-        [=](auto y, auto x, int dam, auto attribute) { return beam(player_ptr, m_idx, y, x, attribute, dam, target_type); })
+        [=](auto y, auto x, int dam, auto attribute) { return beam(*player_ptr, m_idx, y, x, attribute, dam, target_type); })
         .shoot(y, x);
 }

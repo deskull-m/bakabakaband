@@ -12,13 +12,13 @@
 #include "mspell/mspell-judgement.h"
 #include "player/player-status.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
 
@@ -309,7 +309,7 @@ static bool decide_select_special(MonraceId r_idx)
  * This function may well be an efficiency bottleneck.\n
  * @todo 長過ぎる。切り分けが必要
  */
-MonsterAbilityType choose_attack_spell(PlayerType *player_ptr, msa_type *msa_ptr)
+MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_ptr)
 {
     std::vector<MonsterAbilityType> escape;
     std::vector<MonsterAbilityType> attack;
@@ -325,7 +325,7 @@ MonsterAbilityType choose_attack_spell(PlayerType *player_ptr, msa_type *msa_ptr
     std::vector<MonsterAbilityType> heal;
     std::vector<MonsterAbilityType> dispel;
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[msa_ptr->m_idx];
+    const auto &monster = creature.current_floor_ptr->m_list[msa_ptr->m_idx];
     const auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
         return rand_choice(msa_ptr->mspells);
@@ -416,7 +416,7 @@ MonsterAbilityType choose_attack_spell(PlayerType *player_ptr, msa_type *msa_ptr
         }
     }
 
-    auto should_select_tactic = Grid::calc_distance(player_ptr->get_position(), monster.get_position()) < 4;
+    auto should_select_tactic = Grid::calc_distance(creature.get_position(), monster.get_position()) < 4;
     should_select_tactic &= !attack.empty() || monrace.ability_flags.has(MonsterAbilityType::TRAPS);
     should_select_tactic &= evaluate_percent(75);
     should_select_tactic &= world.timewalk_m_idx == 0;
@@ -430,7 +430,7 @@ MonsterAbilityType choose_attack_spell(PlayerType *player_ptr, msa_type *msa_ptr
     }
 
     if (!dispel.empty() && one_in_(2)) {
-        if (dispel_check(player_ptr, msa_ptr->m_idx)) {
+        if (dispel_check(creature, msa_ptr->m_idx)) {
             return rand_choice(dispel);
         }
     }
@@ -439,7 +439,7 @@ MonsterAbilityType choose_attack_spell(PlayerType *player_ptr, msa_type *msa_ptr
         return rand_choice(raise);
     }
 
-    if (is_invuln(*player_ptr)) {
+    if (is_invuln(creature)) {
         if (!psy_spe.empty() && one_in_(2)) {
             return rand_choice(psy_spe);
         } else if (!attack.empty() && evaluate_percent(40)) {

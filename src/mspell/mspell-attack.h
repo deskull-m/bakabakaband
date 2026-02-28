@@ -2,5 +2,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-bool make_attack_spell(PlayerType *player_ptr, MONSTER_IDX m_idx);
+class CreatureEntity;
+bool make_attack_spell(CreatureEntity &creature, MONSTER_IDX m_idx);

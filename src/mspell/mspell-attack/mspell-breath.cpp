@@ -160,7 +160,7 @@ MonsterSpellResult spell_RF4_BREATH(PlayerType *player_ptr, MonsterAbilityType m
 
     data->msg.output(player_ptr, m_idx, t_idx, target_type);
 
-    const auto proj_res = breath(player_ptr, y, x, m_idx, data->type, dam, 0, target_type);
+    const auto proj_res = breath(*player_ptr, y, x, m_idx, data->type, dam, 0, target_type);
 
     if (mon_to_player) {
         data->drs.execute(player_ptr, m_idx);

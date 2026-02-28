@@ -26,6 +26,7 @@
 #include "status/shape-changer.h"
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
@@ -134,8 +135,9 @@ static void dispel_player(PlayerType *player_ptr)
  *
  * プレイヤーが対象ならラーニング可。
  */
-MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, PlayerType *player_ptr, MONSTER_IDX t_idx, int target_type)
+MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
 

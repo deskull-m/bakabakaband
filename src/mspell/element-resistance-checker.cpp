@@ -5,64 +5,64 @@
 #include "mspell/smart-mspell-util.h"
 #include "player/player-status-flags.h"
 #include "status/element-resistance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
-void add_cheat_remove_flags_element(PlayerType *player_ptr, msr_type *msr_ptr)
+void add_cheat_remove_flags_element(CreatureEntity &creature, msr_type *msr_ptr)
 {
-    if (has_resist_acid(*player_ptr)) {
+    if (has_resist_acid(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_ACID);
     }
 
-    if (is_oppose_acid(*player_ptr)) {
+    if (is_oppose_acid(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_ACID);
     }
 
-    if (has_immune_acid(*player_ptr)) {
+    if (has_immune_acid(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_ACID);
     }
 
-    if (has_resist_elec(*player_ptr)) {
+    if (has_resist_elec(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_ELEC);
     }
 
-    if (is_oppose_elec(*player_ptr)) {
+    if (is_oppose_elec(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_ELEC);
     }
 
-    if (has_immune_elec(*player_ptr)) {
+    if (has_immune_elec(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_ELEC);
     }
 
-    if (has_resist_fire(*player_ptr)) {
+    if (has_resist_fire(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_FIRE);
     }
 
-    if (is_oppose_fire(*player_ptr)) {
+    if (is_oppose_fire(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_FIRE);
     }
 
-    if (has_immune_fire(*player_ptr)) {
+    if (has_immune_fire(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_FIRE);
     }
 
-    if (has_resist_cold(*player_ptr)) {
+    if (has_resist_cold(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_COLD);
     }
 
-    if (is_oppose_cold(*player_ptr)) {
+    if (is_oppose_cold(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_COLD);
     }
 
-    if (has_immune_cold(*player_ptr)) {
+    if (has_immune_cold(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::IMM_COLD);
     }
 
-    if (has_resist_pois(*player_ptr)) {
+    if (has_resist_pois(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::RES_POIS);
     }
 
-    if (is_oppose_pois(*player_ptr)) {
+    if (is_oppose_pois(creature)) {
         msr_ptr->smart_flags.set(MonsterSmartLearnType::OPP_POIS);
     }
 }

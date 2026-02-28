@@ -1,14 +1,14 @@
 #include "mspell/mspell-attack-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 
-msa_type::msa_type(PlayerType *player_ptr, MONSTER_IDX m_idx)
+msa_type::msa_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     : m_idx(m_idx)
-    , m_ptr(&player_ptr->current_floor_ptr->m_list[m_idx])
-    , x(player_ptr->x)
-    , y(player_ptr->y)
+    , m_ptr(&creature.current_floor_ptr->m_list[m_idx])
+    , x(creature.x)
+    , y(creature.y)
     , do_spell(DO_SPELL_NONE)
     , thrown_spell(MonsterAbilityType::MAX)
 {
