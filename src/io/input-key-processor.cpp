@@ -511,7 +511,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'E': {
-        do_cmd_eat_food(player_ptr);
+        do_cmd_eat_food(*player_ptr);
         break;
     }
     case 'F': {
