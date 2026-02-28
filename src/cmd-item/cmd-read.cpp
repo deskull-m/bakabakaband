@@ -18,6 +18,7 @@
 #include "player/attack-defense-types.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "world/world.h"
@@ -26,15 +27,16 @@
  * @brief 読むコマンドのメインルーチン /
  * Eat some food (from the pack or floor)
  */
-void do_cmd_read_scroll(PlayerType *player_ptr)
+void do_cmd_read_scroll(CreatureEntity &creature)
 {
-    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(*player_ptr)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
 
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
-    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(creature)) {
         return;
     }
 
