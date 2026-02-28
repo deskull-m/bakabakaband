@@ -16,6 +16,7 @@
 #include "io/tokenizer.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
@@ -514,8 +515,9 @@ static bool interpret_t_token(char *buf)
  * used for the "nothing" attr/char.
  * </pre>
  */
-int interpret_pref_file(PlayerType *player_ptr, char *buf)
+int interpret_pref_file(CreatureEntity &creature, char *buf)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (buf[1] != ':') {
         return 1;
     }

@@ -418,7 +418,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
 
 #ifdef WORLD_SCORE
-        screen_dump = make_screen_dump(&player);
+        screen_dump = make_screen_dump(player);
 #endif
         if (is_seppuku) {
             player.died_from = hit_from;
@@ -500,11 +500,11 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
                 record_quest_final_status(&quest, player.level, QuestStatusType::FAILED);
                 if (quest.type == QuestKindType::RANDOM) {
                     if (record_rand_quest) {
-                        exe_write_diary_quest(&player, DiaryKind::RAND_QUEST_F, q_idx);
+                        exe_write_diary_quest(player, DiaryKind::RAND_QUEST_F, q_idx);
                     }
                 } else {
                     if (record_fix_quest) {
-                        exe_write_diary_quest(&player, DiaryKind::FIX_QUEST_F, q_idx);
+                        exe_write_diary_quest(player, DiaryKind::FIX_QUEST_F, q_idx);
                     }
                 }
             }
@@ -610,7 +610,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         term_putstr(w - 1, h - 1, 1, TERM_WHITE, " ");
         flush();
 #ifdef WORLD_SCORE
-        screen_dump = make_screen_dump(&player);
+        screen_dump = make_screen_dump(player);
 #endif
         (void)inkey();
         return damage;

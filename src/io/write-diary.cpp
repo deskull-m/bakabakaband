@@ -10,6 +10,7 @@
 #include "io/files-util.h"
 #include "market/arena-entry.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/floor/floor-info.h"
@@ -150,8 +151,9 @@ static void write_diary_pet(FILE *fff, int num, std::string_view note)
  * @param num 日記内容のIDに応じた番号
  * @return エラーコード
  */
-int exe_write_diary_quest(PlayerType *player_ptr, DiaryKind dk, QuestId quest_id)
+int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     static auto disable_diary = false;
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     if (disable_diary) {

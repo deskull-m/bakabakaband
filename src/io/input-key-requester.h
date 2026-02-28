@@ -18,11 +18,12 @@ extern int16_t command_wrk;
 extern int16_t command_new;
 
 enum class KeymapMode;
+class CreatureEntity;
 class PlayerType;
 class SpecialMenuContent;
 class InputKeyRequestor {
 public:
-    InputKeyRequestor(PlayerType *player_ptr, bool shopping);
+    InputKeyRequestor(CreatureEntity &creature, bool shopping);
     void request_command();
 
 private:

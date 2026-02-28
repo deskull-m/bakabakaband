@@ -161,7 +161,7 @@ bool send_world_score(PlayerType *player_ptr, bool do_send)
     prt(_("送信中．．", "Sending..."), 0, 0);
     term_fresh();
     screen_save();
-    auto successful_send = report_score(player_ptr);
+    auto successful_send = report_score(*player_ptr);
     screen_load();
     if (!successful_send) {
         return false;

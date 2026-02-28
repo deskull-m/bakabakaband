@@ -86,7 +86,7 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
         if (line_str->starts_with("?:")) {
             char f;
             char *s = line_str->data() + 2;
-            auto v = process_pref_file_expr(player_ptr, &s, &f);
+            auto v = process_pref_file_expr(*player_ptr, &s, &f);
             bypass = v == "0";
             continue;
         }
@@ -121,7 +121,7 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
             continue;
         }
 
-        err = interpret_pref_file(player_ptr, line_str->data());
+        err = interpret_pref_file(*player_ptr, line_str->data());
         if (err != 0) {
             if (preftype != PREF_TYPE_AUTOPICK) {
                 break;

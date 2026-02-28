@@ -125,7 +125,7 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
         const auto &filename = str_ltrim(input_filename.value());
         if (!filename.empty()) {
             AngbandWorld::get_instance().play_time.update();
-            file_character(player_ptr, filename);
+            file_character(*player_ptr, filename);
         }
 
         return page;

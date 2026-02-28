@@ -3,6 +3,7 @@
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/player-realm.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "term/z-form.h"
@@ -25,8 +26,9 @@
  *   result
  * </pre>
  */
-std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
+std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     char *s = (*sp);
     while (iswspace(*s)) {
         s++;
@@ -46,13 +48,13 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         s++;
 
         /* First */
-        t = process_pref_file_expr(player_ptr, &s, &f);
+        t = process_pref_file_expr(creature, &s, &f);
 
         if (t.empty()) {
         } else if (t == "IOR") {
             v = "0";
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
                 if (!t.empty() && t != "0") {
                     v = "1";
                 }
@@ -60,7 +62,7 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "AND") {
             v = "1";
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
                 if (!t.empty() && t == "0") {
                     v = "0";
                 }
@@ -68,7 +70,7 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "NOT") {
             v = "1";
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
                 if (!t.empty() && t == "1") {
                     v = "0";
                 }
@@ -76,10 +78,10 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "EQU") {
             v = "0";
             if (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
             while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(player_ptr, &s, &f);
+                auto p = process_pref_file_expr(creature, &s, &f);
                 if (t == p) {
                     v = "1";
                 }
@@ -87,10 +89,10 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "LEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
             while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(player_ptr, &s, &f);
+                auto p = process_pref_file_expr(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
                     v = "0";
                 }
@@ -98,17 +100,17 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "GEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
             while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(player_ptr, &s, &f);
+                auto p = process_pref_file_expr(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
                     v = "0";
                 }
             }
         } else {
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
         }
 

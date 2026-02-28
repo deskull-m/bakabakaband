@@ -343,7 +343,7 @@ void MonsterDamageProcessor::dying_scream(std::string_view m_name)
 
 #ifdef WORLD_SCORE
     if (monster.r_idx == MonraceId::SERPENT) {
-        screen_dump = make_screen_dump(&player);
+        screen_dump = make_screen_dump(player);
     }
 #endif
 }

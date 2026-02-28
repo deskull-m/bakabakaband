@@ -7,6 +7,7 @@
 #include "io/screen-util.h"
 #include "player/player-status.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monster-entity.h"
@@ -34,20 +35,21 @@ void move_cursor_relative(int row, int col)
  * @param y 目標地点のY座標
  * @param x 目標地点のX座標
  */
-void print_path(PlayerType *player_ptr, POSITION y, POSITION x)
+void print_path(CreatureEntity &creature, POSITION y, POSITION x)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     uint8_t default_color = TERM_SLATE;
     const Pos2D pos(y, x);
     if (!display_path || (project_length == -1)) {
         return;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *creature.current_floor_ptr;
+    const auto p_pos = creature.get_position();
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
     ProjectionPath path_g(floor, range, p_pos, p_pos, pos, PROJECT_PATH | PROJECT_THRU);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     for (const auto &pos_path : path_g) {
         const auto &grid = floor.get_grid(pos_path);
         if (panel_contains(pos_path)) {
@@ -89,13 +91,13 @@ void print_path(PlayerType *player_ptr, POSITION y, POSITION x)
  * Also used in do_cmd_locate
  * @return 実際に再描画が必要だった場合TRUEを返す
  */
-bool change_panel(PlayerType *player_ptr, POSITION dy, POSITION dx)
+bool change_panel(CreatureEntity &creature, POSITION dy, POSITION dx)
 {
     const auto &[wid, hgt] = get_screen_size();
     POSITION y = panel_row_min + dy * hgt / 2;
     POSITION x = panel_col_min + dx * wid / 2;
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (y > floor.height - hgt) {
         y = floor.height - hgt;
     }
@@ -120,7 +122,7 @@ bool change_panel(PlayerType *player_ptr, POSITION dy, POSITION dx)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }
 

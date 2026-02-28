@@ -115,7 +115,7 @@ static bool change_panel_xy(PlayerType *player_ptr, const Pos2D &pos)
         return false;
     }
 
-    return change_panel(player_ptr, dy, dx);
+    return change_panel(*player_ptr, dy, dx);
 }
 
 /*!
@@ -186,7 +186,7 @@ std::string TargetSetter::describe_projectablity() const
 {
     change_panel_xy(this->player_ptr, this->pos_target);
     if ((this->mode & TARGET_LOOK) == 0) {
-        print_path(this->player_ptr, this->pos_target.y, this->pos_target.x);
+        print_path(*this->player_ptr, this->pos_target.y, this->pos_target.x);
     }
 
     const auto &floor = *this->player_ptr->current_floor_ptr;
@@ -340,7 +340,7 @@ tl::optional<int> TargetSetter::check_panel_changed(const Direction &dir)
 tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_row_min_initial, int panel_col_min_initial)
 {
     auto [dy, dx] = dir.vec();
-    while (change_panel(this->player_ptr, dy, dx)) {
+    while (change_panel(*this->player_ptr, dy, dx)) {
         // カーソル移動に伴い、必要なだけ描画範囲を更新。
         // "interesting" 座標リストおよび現在のターゲットも更新。
         const auto target_index = this->check_panel_changed(dir);
@@ -374,7 +374,7 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
     }
 
     if ((y >= panel_row_min + hgt) || (y < panel_row_min) || (x >= panel_col_min + wid) || (x < panel_col_min)) {
-        if (change_panel(this->player_ptr, dy, dx)) {
+        if (change_panel(*this->player_ptr, dy, dx)) {
             this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
         }
     }
@@ -518,7 +518,7 @@ void TargetSetter::decide_change_panel(const Direction &dir, bool move_fast)
     should_change_panel |= y < panel_row_min;
     should_change_panel |= x >= panel_col_min + wid;
     should_change_panel |= x < panel_col_min;
-    if (should_change_panel && change_panel(this->player_ptr, dy, dx)) {
+    if (should_change_panel && change_panel(*this->player_ptr, dy, dx)) {
         this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
     }
 
@@ -535,7 +535,7 @@ void TargetSetter::sweep_target_grids()
         }
 
         if ((this->mode & TARGET_LOOK) == 0) {
-            print_path(this->player_ptr, this->pos_target.y, this->pos_target.x);
+            print_path(*this->player_ptr, this->pos_target.y, this->pos_target.x);
         }
 
         fix_floor_item_list(*this->player_ptr, this->pos_target);
