@@ -143,11 +143,11 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case 'i': {
-        do_cmd_inven(player_ptr);
+        do_cmd_inven(*player_ptr);
         break;
     }
     case 'I': {
-        do_cmd_observe(player_ptr);
+        do_cmd_observe(*player_ptr);
         break;
     }
     case KTRL('I'): {
@@ -173,11 +173,11 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case '{': {
-        do_cmd_inscribe(player_ptr);
+        do_cmd_inscribe(*player_ptr);
         break;
     }
     case '}': {
-        do_cmd_uninscribe(player_ptr);
+        do_cmd_uninscribe(*player_ptr);
         break;
     }
     case '?': {

@@ -58,6 +58,7 @@
 #include "realm/realm-hex-numbers.h"
 #include "realm/realm-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -72,8 +73,9 @@
 /*!
  * @brief 持ち物一覧を表示するコマンドのメインルーチン / Display inventory
  */
-void do_cmd_inven(PlayerType *player_ptr)
+void do_cmd_inven(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     command_wrk = false;
     if (easy_floor) {
         command_wrk = USE_INVEN;
@@ -81,8 +83,8 @@ void do_cmd_inven(PlayerType *player_ptr)
 
     screen_save();
     (void)show_inventory(player_ptr, 0, USE_FULL, AllMatchItemTester());
-    const auto weight = calc_inventory_weight(*player_ptr);
-    const auto weight_lim = calc_weight_limit(*player_ptr);
+    const auto weight = calc_inventory_weight(creature);
+    const auto weight_lim = calc_weight_limit(creature);
     const auto percentage = weight * 100 / weight_lim;
 #ifdef JP
     const auto mes = format("持ち物： 合計 %3d.%1d kg (限界の%d%%) コマンド: ", lb_to_kg_integer(weight), lb_to_kg_fraction(weight), percentage);
@@ -106,10 +108,11 @@ void do_cmd_inven(PlayerType *player_ptr)
 /*!
  * @brief アイテムを落とすコマンドのメインルーチン / Drop an item
  */
-void do_cmd_drop(PlayerType *player_ptr)
+void do_cmd_drop(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int amt = 1;
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     constexpr auto q = _("どのアイテムを落としますか? ", "Drop which item? ");
     constexpr auto s = _("落とせるアイテムを持っていない。", "You have nothing to drop.");
@@ -134,7 +137,7 @@ void do_cmd_drop(PlayerType *player_ptr)
     PlayerEnergy(player_ptr).set_player_turn_energy(50);
     drop_from_inventory(player_ptr, i_idx, amt);
     if (i_idx >= INVEN_MAIN_HAND) {
-        verify_equip_slot(*player_ptr, i_idx);
+        verify_equip_slot(creature, i_idx);
         calc_android_exp(player_ptr);
     }
 
@@ -144,8 +147,9 @@ void do_cmd_drop(PlayerType *player_ptr)
 /*!
  * @brief アイテムを調査するコマンドのメインルーチン / Observe an item which has been *identify*-ed
  */
-void do_cmd_observe(PlayerType *player_ptr)
+void do_cmd_observe(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr auto q = _("どのアイテムを調べますか? ", "Examine which item? ");
     constexpr auto s = _("調べられるアイテムがない。", "You have nothing to examine.");
     short i_idx;
@@ -170,8 +174,9 @@ void do_cmd_observe(PlayerType *player_ptr)
  * @brief アイテムの銘を消すコマンドのメインルーチン
  * Remove the inscription from an object XXX Mention item (when done)?
  */
-void do_cmd_uninscribe(PlayerType *player_ptr)
+void do_cmd_uninscribe(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr auto q = _("どのアイテムの銘を消しますか? ", "Un-inscribe which item? ");
     constexpr auto s = _("銘を消せるアイテムがない。", "You have nothing to un-inscribe.");
     short i_idx;
@@ -206,8 +211,9 @@ void do_cmd_uninscribe(PlayerType *player_ptr)
  * @brief アイテムの銘を刻むコマンドのメインルーチン
  * Inscribe an object with a comment
  */
-void do_cmd_inscribe(PlayerType *player_ptr)
+void do_cmd_inscribe(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr auto q = _("どのアイテムに銘を刻みますか? ", "Inscribe which item? ");
     constexpr auto s = _("銘を刻めるアイテムがない。", "You have nothing to inscribe.");
     short i_idx;
@@ -247,13 +253,14 @@ void do_cmd_inscribe(PlayerType *player_ptr)
  * @details
  * XXX - Add actions for other item types
  */
-void do_cmd_use(PlayerType *player_ptr)
+void do_cmd_use(CreatureEntity &creature)
 {
-    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(*player_ptr)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どれを使いますか？", "Use which item? ");
     constexpr auto s = _("使えるものがありません。", "You have nothing to use.");
     const auto options = USE_INVEN | USE_EQUIP | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
@@ -265,7 +272,7 @@ void do_cmd_use(PlayerType *player_ptr)
 
     switch (o_ptr->bi_key.tval()) {
     case ItemKindType::SPIKE:
-        do_cmd_spike(*player_ptr);
+        do_cmd_spike(creature);
         break;
     case ItemKindType::FOOD:
         exe_eat_food(player_ptr, i_idx);
@@ -295,7 +302,7 @@ void do_cmd_use(PlayerType *player_ptr)
         exe_fire(player_ptr, i_idx, player_ptr->inventory[INVEN_BOW].get(), SP_NONE);
         break;
     default:
-        exe_activate(*player_ptr, i_idx);
+        exe_activate(creature, i_idx);
         break;
     }
 }
@@ -304,13 +311,14 @@ void do_cmd_use(PlayerType *player_ptr)
  * @brief 装備を発動するコマンドのメインルーチン /
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_activate(PlayerType *player_ptr)
+void do_cmd_activate(CreatureEntity &creature)
 {
-    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(*player_ptr)) {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どのアイテムを始動させますか? ", "Activate which item? ");
     constexpr auto s = _("始動できるアイテムを装備していない。", "You have nothing to activate.");
     short i_idx;
@@ -318,5 +326,5 @@ void do_cmd_activate(PlayerType *player_ptr)
         return;
     }
 
-    exe_activate(*player_ptr, i_idx);
+    exe_activate(creature, i_idx);
 }
