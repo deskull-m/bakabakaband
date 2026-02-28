@@ -19,6 +19,7 @@
 #include "spell-realm/spells-hex.h"
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "timed-effect/player-confusion.h"
 #include "timed-effect/timed-effects.h"
@@ -30,17 +31,18 @@
  * @brief 薬を飲むコマンドのメインルーチン /
  * Quaff some potion (from the pack or floor)
  */
-void do_cmd_quaff_potion(PlayerType *player_ptr)
+void do_cmd_quaff_potion(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    if (!SpellHex(*player_ptr).is_spelling_specific(HEX_INHALE) && cmd_limit_arena(*player_ptr)) {
+    if (!SpellHex(creature).is_spelling_specific(HEX_INHALE) && cmd_limit_arena(creature)) {
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの薬を飲みますか? ", "Quaff which potion? ");
     constexpr auto s = _("飲める薬がない。", "You have no potions to quaff.");
@@ -57,13 +59,14 @@ void do_cmd_quaff_potion(PlayerType *player_ptr)
  * @brief 薬を直腸吸収するコマンドのメインルーチン /
  * Absorb some potion through rectal route (from the pack or floor)
  */
-void do_cmd_rectal_absorption(PlayerType *player_ptr)
+void do_cmd_rectal_absorption(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの薬を直腸吸収しますか? ", "Which potion do you want to absorb rectally? ");
     constexpr auto s = _("直腸吸収できる薬がない。", "You have no potions for rectal absorption.");
