@@ -2724,7 +2724,7 @@ void update_creature(CreatureEntity &creature)
 
     if (rfu.has(StatusRecalculatingFlag::MONSTER_LITE)) {
         rfu.reset_flag(StatusRecalculatingFlag::MONSTER_LITE);
-        update_mon_lite(player_ptr);
+        update_mon_lite(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::DELAY_VISIBILITY)) {
