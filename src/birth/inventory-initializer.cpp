@@ -31,6 +31,7 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/enum-converter.h"
@@ -39,8 +40,10 @@
 /*!
  * @brief 所持状態にあるアイテムの中から一部枠の装備可能なものを装備させる。
  */
-void wield_all(PlayerType *player_ptr)
+void wield_all(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     ItemEntity ObjectType_body;
     for (INVENTORY_IDX i_idx = INVEN_PACK - 1; i_idx >= 0; i_idx--) {
         ItemEntity *o_ptr;
@@ -88,7 +91,7 @@ static void add_outfit(PlayerType *player_ptr, ItemEntity &item)
     item.mark_as_known();
     const auto slot = store_item_to_inventory(player_ptr, &item);
     autopick_alter_item(player_ptr, slot, false);
-    wield_all(player_ptr);
+    wield_all(*player_ptr);
 }
 
 static void decide_initial_items(PlayerType *player_ptr)
@@ -150,8 +153,10 @@ static void decide_initial_items(PlayerType *player_ptr)
  * @brief 種族/職業/性格などに基づき初期所持アイテムを設定するメインセット関数。 / Init players with some belongings
  * @details Having an item makes the player "aware" of its purpose.
  */
-void player_outfit(PlayerType *player_ptr)
+void player_outfit(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     const auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
     decide_initial_items(player_ptr);

@@ -34,7 +34,7 @@ bool do_cmd_cast_learned(PlayerType *player_ptr)
         return false;
     }
 
-    auto selected_spell = get_learned_power(player_ptr);
+    auto selected_spell = get_learned_power(*player_ptr);
     if (!selected_spell.has_value()) {
         return false;
     }
@@ -52,7 +52,7 @@ bool do_cmd_cast_learned(PlayerType *player_ptr)
         }
     }
 
-    const auto chance = calculate_blue_magic_failure_probability(player_ptr, spell, need_mana);
+    const auto chance = calculate_blue_magic_failure_probability(*player_ptr, spell, need_mana);
 
     if (evaluate_percent(chance)) {
         if (flush_failure) {

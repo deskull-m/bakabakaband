@@ -5,13 +5,15 @@
 
 #include "blue-magic/blue-magic-util.h"
 #include "monster-floor/place-monster-types.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 
 bmc_type *initialize_blue_magic_type(
-    PlayerType *player_ptr, bmc_type *bmc_ptr, MonsterAbilityType spell, const bool success, get_pseudo_monstetr_level_pf get_pseudo_monstetr_level)
+    CreatureEntity &creature, bmc_type *bmc_ptr, MonsterAbilityType spell, const bool success, get_pseudo_monstetr_level_pf get_pseudo_monstetr_level)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     bmc_ptr->spell = spell;
-    bmc_ptr->plev = (*get_pseudo_monstetr_level)(player_ptr);
+    bmc_ptr->plev = (*get_pseudo_monstetr_level)(creature);
     bmc_ptr->summon_lev = player_ptr->level * 2 / 3 + randint1(player_ptr->level / 2);
     bmc_ptr->pet = success; // read-only.
     bmc_ptr->no_trump = false;

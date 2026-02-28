@@ -179,7 +179,7 @@ static bool select_race(CreatureEntity &creature, char *sym, int *k)
             *k = -1;
         }
 
-        birth_help_option(&player, c, BirthKind::RACE);
+        birth_help_option(player, c, BirthKind::RACE);
     }
 
     return true;

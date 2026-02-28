@@ -2,6 +2,7 @@
 #include "birth/birth-util.h"
 #include "io/input-key-acceptor.h"
 #include "player/patron.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -143,7 +144,7 @@ static bool select_patron(PlayerType *player_ptr, int *k, concptr sym)
             *k = -1;
         }
 
-        birth_help_option(player_ptr, c, BirthKind::PATRON);
+        birth_help_option(*player_ptr, c, BirthKind::PATRON);
     }
 
     return true;
@@ -152,8 +153,10 @@ static bool select_patron(PlayerType *player_ptr, int *k, concptr sym)
 /*!
  * @brief プレイヤーのパトロン選択を行う / Select player's patron
  */
-bool get_player_patron(PlayerType *player_ptr)
+bool get_player_patron(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     clear_from(10);
     put_str(_("注意：《パトロン》によってキャラクターが得る加護が変化します。", "Note: Your patron determines the divine protection you receive."),
         23, 5);

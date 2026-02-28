@@ -20,6 +20,7 @@
 #include "player/attack-defense-types.h"
 #include "status/experience.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/timed-effects.h"
@@ -29,8 +30,9 @@
  * @brief 青魔法のラーニング判定と成功した場合のラーニング処理
  * @param monspell ラーニングを試みるモンスター攻撃のID
  */
-void learn_spell(PlayerType *player_ptr, MonsterAbilityType monspell)
+void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (player_ptr->action != ACTION_LEARN) {
         return;
     }

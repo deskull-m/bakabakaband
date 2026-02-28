@@ -9,6 +9,6 @@
 
 enum class MonsterAbilityType;
 
-class PlayerType;
-PLAYER_LEVEL get_pseudo_monstetr_level(PlayerType *player_ptr);
-std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power);
+class CreatureEntity;
+PLAYER_LEVEL get_pseudo_monstetr_level(CreatureEntity &creature);
+std::string learnt_info(CreatureEntity &creature, MonsterAbilityType power);

@@ -2,6 +2,7 @@
 #include "io/input-key-acceptor.h"
 #include "io/read-pref-file.h"
 #include "locale/japanese.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -13,8 +14,10 @@
  * @brief 生い立ちメッセージを編集する。/Character background edit-mode
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void edit_history(PlayerType *player_ptr)
+void edit_history(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     char old_history[4][60];
     for (int i = 0; i < 4; i++) {
         sprintf(old_history[i], "%s", player_ptr->history[i]);

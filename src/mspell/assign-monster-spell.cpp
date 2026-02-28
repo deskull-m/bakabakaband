@@ -420,7 +420,7 @@ MonsterSpellResult monspell_to_player(CreatureEntity &creature, MonsterAbilityTy
 
     // 条件を満たしていればラーニングを試みる。
     if (res.valid && res.learnable) {
-        learn_spell(player_ptr, ms_type);
+        learn_spell(*player_ptr, ms_type);
     }
 
     return res;
@@ -450,7 +450,7 @@ MonsterSpellResult monspell_to_monster(
 
     // 条件を満たしていればラーニングを試みる。
     if (res.valid && res.learnable) {
-        learn_spell(player_ptr, ms_type);
+        learn_spell(*player_ptr, ms_type);
     }
 
     return res;

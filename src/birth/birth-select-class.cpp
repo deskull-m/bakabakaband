@@ -190,8 +190,7 @@ static bool select_class(CreatureEntity &creature, concptr sym, int *k)
             *k = -1;
         }
 
-        auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-        birth_help_option(player_ptr, c, BirthKind::CLASS);
+        birth_help_option(creature, c, BirthKind::CLASS);
     }
 
     return true;

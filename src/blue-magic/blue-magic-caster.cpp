@@ -235,7 +235,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     case MonsterAbilityType::BR_ABYSS:
     case MonsterAbilityType::BR_FECES:
     case MonsterAbilityType::BR_SPIDER_STRING:
-        return cast_blue_magic_breath(player_ptr, bmc_ptr);
+        return cast_blue_magic_breath(creature, bmc_ptr);
     case MonsterAbilityType::BA_ACID:
     case MonsterAbilityType::BA_ELEC:
     case MonsterAbilityType::BA_FIRE:
@@ -252,7 +252,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     case MonsterAbilityType::BA_ABYSS:
     case MonsterAbilityType::BA_METEOR:
     case MonsterAbilityType::BA_GRAVITY:
-        return cast_blue_magic_ball(player_ptr, bmc_ptr);
+        return cast_blue_magic_ball(creature, bmc_ptr);
     case MonsterAbilityType::DRAIN_MANA:
     case MonsterAbilityType::MIND_BLAST:
     case MonsterAbilityType::BRAIN_SMASH:
@@ -260,7 +260,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     case MonsterAbilityType::CAUSE_2:
     case MonsterAbilityType::CAUSE_3:
     case MonsterAbilityType::CAUSE_4:
-        return cast_blue_magic_spirit_curse(player_ptr, bmc_ptr);
+        return cast_blue_magic_spirit_curse(creature, bmc_ptr);
     case MonsterAbilityType::BO_ACID:
     case MonsterAbilityType::BO_ELEC:
     case MonsterAbilityType::BO_FIRE:
@@ -275,7 +275,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     case MonsterAbilityType::BO_METEOR:
     case MonsterAbilityType::BO_LITE:
     case MonsterAbilityType::MISSILE:
-        return cast_blue_magic_bolt(player_ptr, bmc_ptr);
+        return cast_blue_magic_bolt(creature, bmc_ptr);
     case MonsterAbilityType::SCARE:
         return cast_blue_scare(creature, bmc_ptr);
     case MonsterAbilityType::BLIND:
@@ -301,7 +301,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     }
     case MonsterAbilityType::INVULNER:
         msg_print(_("無傷の球の呪文を唱えた。", "You cast a Globe of Invulnerability."));
-        (void)set_invuln(*player_ptr, randint1(4) + 4, false);
+        (void)set_invuln(creature, randint1(4) + 4, false);
         return true;
     case MonsterAbilityType::BLINK:
         teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
@@ -310,7 +310,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         teleport_player(creature, bmc_ptr->plev * 5, TELEPORT_SPONTANEOUS);
         return true;
     case MonsterAbilityType::WORLD:
-        (void)time_walk(*player_ptr);
+        (void)time_walk(creature);
         return true;
     case MonsterAbilityType::SPECIAL:
         return true;
@@ -324,7 +324,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         return cast_blue_psy_spear(creature, bmc_ptr);
     case MonsterAbilityType::DARKNESS:
         msg_print(_("暗闇の中で手を振った。", "You gesture in shadow."));
-        (void)unlite_area(*player_ptr, 10, 3);
+        (void)unlite_area(creature, 10, 3);
         return true;
     case MonsterAbilityType::TRAPS:
         return cast_blue_make_trap(creature);
@@ -410,9 +410,8 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
  */
 bool cast_learned_spell(CreatureEntity &creature, MonsterAbilityType spell, const bool success)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     bmc_type tmp_bm;
-    bmc_type *bmc_ptr = initialize_blue_magic_type(player_ptr, &tmp_bm, spell, success, get_pseudo_monstetr_level);
+    bmc_type *bmc_ptr = initialize_blue_magic_type(creature, &tmp_bm, spell, success, get_pseudo_monstetr_level);
     if (!switch_cast_blue_magic(creature, bmc_ptr)) {
         return false;
     }

@@ -197,7 +197,7 @@ static void init_world_floor_info(PlayerType *player_ptr, std::optional<QuestId>
     auto &system = AngbandSystem::get_instance();
     system.set_seed_flavor(randint0(0x10000000));
     system.set_seed_town(randint0(0x10000000));
-    player_birth(player_ptr, initial_quest_id);
+    player_birth(*player_ptr, initial_quest_id);
     counts_write(*player_ptr, 2, 0);
     player_ptr->count = 0;
     load = false;
@@ -466,7 +466,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
     reset_visuals(player_ptr);
     load_all_pref_files(*player_ptr);
     if (new_game) {
-        player_outfit(player_ptr);
+        player_outfit(*player_ptr);
     }
 
     init_io(player_ptr);

@@ -22,6 +22,7 @@
 #include "player/player-status-table.h"
 #include "realm/realm-types.h"
 #include "spell/spell-info.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -249,8 +250,9 @@ static bool switch_blue_magic_choice(const char key, int &menu_line, const bluem
  * @param need_mana 青魔法を使うのに必要なMP
  * @return int 失敗率(%)を返す
  */
-int calculate_blue_magic_failure_probability(PlayerType *player_ptr, const monster_power &mp, int need_mana)
+int calculate_blue_magic_failure_probability(CreatureEntity &creature, const monster_power &mp, int need_mana)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto chance = mp.fail;
     if (player_ptr->level > mp.level) {
         chance -= 3 * (player_ptr->level - mp.level);
@@ -310,8 +312,9 @@ static void close_blue_magic_name(char *buf, size_t buf_size, int index, int men
  * @param bluemage_data 青魔道士の固有データへの参照
  * @param blue_magics 青魔法のリスト(覚えていないものも含まれているが、覚えていないものは表示をスキップする)
  */
-static void describe_blue_magic_name(PlayerType *player_ptr, int menu_line, const bluemage_data_type &bluemage_data, const std::vector<MonsterAbilityType> &blue_magics)
+static void describe_blue_magic_name(CreatureEntity &creature, int menu_line, const bluemage_data_type &bluemage_data, const std::vector<MonsterAbilityType> &blue_magics)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr TERM_LEN y_base = 1;
     constexpr TERM_LEN x_base = 18;
     prt("", y_base, x_base);
@@ -326,10 +329,10 @@ static void describe_blue_magic_name(PlayerType *player_ptr, int menu_line, cons
 
         const auto &mp = monster_powers.at(spell);
         auto need_mana = mod_need_mana(player_ptr, mp.smana, 0, RealmType::NONE);
-        auto chance = calculate_blue_magic_failure_probability(player_ptr, mp, need_mana);
+        auto chance = calculate_blue_magic_failure_probability(creature, mp, need_mana);
         char header[80];
         close_blue_magic_name(header, sizeof(header), i, menu_line);
-        const auto info = learnt_info(player_ptr, spell);
+        const auto info = learnt_info(creature, spell);
         const auto psi_desc = format("%s %-26s %3d %3d%%%s", header, mp.name, need_mana, chance, info.data());
         prt(psi_desc, y_base + i + 1, x_base);
     }
@@ -356,7 +359,7 @@ static bool confirm_cast_blue_magic(MonsterAbilityType spell)
  * @param blue_magics 青魔法のリスト(覚えていないものも含まれているが、覚えていない物は候補に出ず選択できない)
  * @return 選択した青魔法。選択をキャンセルした場合は tl::nullopt
  */
-static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(PlayerType *player_ptr, const bluemage_data_type &bluemage_data, std::vector<MonsterAbilityType> spells)
+static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(CreatureEntity &creature, const bluemage_data_type &bluemage_data, std::vector<MonsterAbilityType> spells)
 {
     constexpr auto fmt = _("(%c-%c, '*'で一覧, ESC) どの%sを唱えますか？", "(%c-%c, *=List, ESC=exit) Use which %s? ");
     const auto prompt = format(fmt, I2A(0), I2A(spells.size() - 1), _("魔法", "magic"));
@@ -382,7 +385,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(PlayerTyp
             show_list = !show_list;
             if (show_list) {
                 screen_save();
-                describe_blue_magic_name(player_ptr, 0, bluemage_data, spells);
+                describe_blue_magic_name(creature, 0, bluemage_data, spells);
             } else {
                 screen_load();
             }
@@ -418,7 +421,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(PlayerTyp
  * @param blue_magics 青魔法のリスト(覚えていないものも含まれているが、覚えていない物は候補に出ず選択できない)
  * @return 選択した青魔法。選択をキャンセルした場合は tl::nullopt
  */
-static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(PlayerType *player_ptr, const bluemage_data_type &bluemage_data, std::vector<MonsterAbilityType> spells)
+static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEntity &creature, const bluemage_data_type &bluemage_data, std::vector<MonsterAbilityType> spells)
 {
     constexpr auto prompt = _("(ESC=中断) どの魔法を唱えますか？", "(ESC=exit) Use which magic? ");
 
@@ -430,7 +433,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(PlayerType 
     screen_save();
 
     while (!selected_spell.has_value()) {
-        describe_blue_magic_name(player_ptr, menu_line, bluemage_data, spells);
+        describe_blue_magic_name(creature, menu_line, bluemage_data, spells);
 
         const auto choice = input_command(prompt);
         if (!choice) {
@@ -477,8 +480,9 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(PlayerType 
  * when you run it. It's probably easy to fix but I haven't tried,\n
  * sorry.\n
  */
-tl::optional<MonsterAbilityType> get_learned_power(PlayerType *player_ptr)
+tl::optional<MonsterAbilityType> get_learned_power(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto bluemage_data = CreatureClass(*player_ptr).get_specific_data<bluemage_data_type>();
     if (!bluemage_data) {
         return tl::nullopt;
@@ -502,11 +506,11 @@ tl::optional<MonsterAbilityType> get_learned_power(PlayerType *player_ptr)
     }
 
     auto selected_spell = (use_menu)
-                              ? select_learnt_spells_by_menu(player_ptr, *bluemage_data, spells.value())
-                              : select_learnt_spells_by_symbol(player_ptr, *bluemage_data, spells.value());
+                              ? select_learnt_spells_by_menu(creature, *bluemage_data, spells.value())
+                              : select_learnt_spells_by_symbol(creature, *bluemage_data, spells.value());
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 
     if (!selected_spell) {
         return tl::nullopt;

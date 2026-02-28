@@ -13,6 +13,7 @@
 #include "player/player-status.h"
 #include "player/process-name.h"
 #include "player/race-info-table.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
@@ -27,8 +28,10 @@ birther previous_char;
 /*!
  * @brief クイックスタート処理の問い合わせと実行を行う。/Ask whether the player use Quick Start or not.
  */
-bool ask_quick_start(PlayerType *player_ptr)
+bool ask_quick_start(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     if (!previous_char.quick_ok) {
         return false;
     }
@@ -46,7 +49,7 @@ bool ask_quick_start(PlayerType *player_ptr)
         } else if (c == 'S') {
             return false;
         } else if (c == '?') {
-            show_help(player_ptr, _("jbirth.txt#QuickStart", "birth.txt#QuickStart"));
+            show_help(*player_ptr, _("jbirth.txt#QuickStart", "birth.txt#QuickStart"));
         } else if ((c == 'y') || (c == 'Y')) {
             break;
         } else {
@@ -54,9 +57,9 @@ bool ask_quick_start(PlayerType *player_ptr)
         }
     }
 
-    load_prev_data(player_ptr, false);
-    init_turn(player_ptr);
-    init_dungeon_quests(player_ptr);
+    load_prev_data(*player_ptr, false);
+    init_turn(*player_ptr);
+    init_dungeon_quests(*player_ptr);
 
     sp_ptr = &sex_info[player_ptr->psex];
     player_ptr->race = &race_info[enum2i(player_ptr->prace)];
@@ -66,7 +69,7 @@ bool ask_quick_start(PlayerType *player_ptr)
     mp_ptr = &class_magics_info[short_pclass];
     player_ptr->personality = &personality_info[player_ptr->ppersonality];
 
-    get_extra(player_ptr, false);
+    get_extra(*player_ptr, false);
     static constexpr auto flags = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,
@@ -83,8 +86,10 @@ bool ask_quick_start(PlayerType *player_ptr)
  * @param birther_ptr クイックスタート構造体の参照ポインタ
  * @return なし。
  */
-void save_prev_data(PlayerType *player_ptr, birther *birther_ptr)
+void save_prev_data(CreatureEntity &creature, birther *birther_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     birther_ptr->psex = player_ptr->psex;
     birther_ptr->prace = player_ptr->prace;
     birther_ptr->pclass = player_ptr->pclass;
@@ -127,11 +132,13 @@ void save_prev_data(PlayerType *player_ptr, birther *birther_ptr)
  * @param swap TRUEならば現在のプレイヤー構造体上との内容をスワップする形で読み込む。
  * @return なし。
  */
-void load_prev_data(PlayerType *player_ptr, bool swap)
+void load_prev_data(CreatureEntity &creature, bool swap)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     birther temp;
     if (swap) {
-        save_prev_data(player_ptr, &temp);
+        save_prev_data(*player_ptr, &temp);
     }
 
     player_ptr->psex = previous_char.psex;

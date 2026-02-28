@@ -133,7 +133,6 @@ static void interpret_realm_select_key(birth_realm_type *birth_realm_ptr, char c
 
 static bool get_a_realm(CreatureEntity &creature, birth_realm_type *birth_realm_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     birth_realm_ptr->os = birth_realm_ptr->n;
     while (true) {
         move_birth_realm_cursor(birth_realm_ptr);
@@ -180,7 +179,7 @@ static bool get_a_realm(CreatureEntity &creature, birth_realm_type *birth_realm_
             birth_realm_ptr->k = -1;
         }
 
-        birth_help_option(player_ptr, c, BirthKind::REALM);
+        birth_help_option(creature, c, BirthKind::REALM);
     }
 
     return false;
