@@ -233,7 +233,7 @@ void process_command(CreatureEntity &creature)
     }
     case 'd': {
         if (!is_wild_mode) {
-            do_cmd_drop(player_ptr);
+            do_cmd_drop(*player_ptr);
         }
 
         break;
@@ -247,11 +247,11 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'i': {
-        do_cmd_inven(player_ptr);
+        do_cmd_inven(*player_ptr);
         break;
     }
     case 'I': {
-        do_cmd_observe(player_ptr);
+        do_cmd_observe(*player_ptr);
         break;
     }
 
@@ -499,15 +499,15 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case '{': {
-        do_cmd_inscribe(player_ptr);
+        do_cmd_inscribe(*player_ptr);
         break;
     }
     case '}': {
-        do_cmd_uninscribe(player_ptr);
+        do_cmd_uninscribe(*player_ptr);
         break;
     }
     case 'A': {
-        do_cmd_activate(player_ptr);
+        do_cmd_activate(*player_ptr);
         break;
     }
     case 'E': {
@@ -532,7 +532,7 @@ void process_command(CreatureEntity &creature)
     }
     case 'z': {
         if (use_command && rogue_like_commands) {
-            do_cmd_use(player_ptr);
+            do_cmd_use(*player_ptr);
         } else {
             do_cmd_zap_rod(player_ptr);
         }
@@ -553,7 +553,7 @@ void process_command(CreatureEntity &creature)
     }
     case 'u': {
         if (use_command && !rogue_like_commands) {
-            do_cmd_use(player_ptr);
+            do_cmd_use(*player_ptr);
         } else {
             do_cmd_use_staff(player_ptr);
         }
