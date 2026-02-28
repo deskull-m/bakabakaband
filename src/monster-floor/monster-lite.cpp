@@ -7,6 +7,7 @@
 #include "player-info/ninja-data-type.h"
 #include "player/special-defense-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
@@ -144,18 +145,19 @@ static void update_monster_dark(
  * changes are drawn via lite_spot().
  * @todo player-status からのみ呼ばれている。しかしあちらは行数が酷いので要調整
  */
-void update_mon_lite(PlayerType *player_ptr)
+void update_mon_lite(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 座標たちを記録する配列。
     std::vector<Pos2D> points;
 
     void (*add_mon_lite)(FloorType &, std::vector<Pos2D> &, const Pos2D &p_pos, const Pos2D &pos, const monster_lite_type &);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !player_ptr->see_nocto) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
     floor.reset_mon_lite();
     const auto &world = AngbandWorld::get_instance();
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (!world.timewalk_m_idx) {
         for (auto i = 1; i < floor.m_max; i++) {
             const auto &monster = floor.m_list[i];
