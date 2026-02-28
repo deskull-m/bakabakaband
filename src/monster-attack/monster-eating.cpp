@@ -18,6 +18,7 @@
 #include "player/player-status-flags.h"
 #include "player/player-status-table.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
@@ -27,8 +28,9 @@
 #include "tracking/health-bar-tracker.h"
 #include "view/display-messages.h"
 
-void process_eat_gold(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto is_paralyzed = player_ptr->effects()->paralysis().is_paralyzed();
     if (!is_paralyzed && evaluate_percent((adj_dex_safe[player_ptr->stat_index[A_DEX]] + player_ptr->level))) {
         msg_print(_("しかし素早く財布を守った！", "You quickly protect your money pouch!"));
@@ -58,11 +60,11 @@ void process_eat_gold(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     } else if (player_ptr->au > 0) {
         msg_print(_("財布が軽くなった気がする。", "Your purse feels lighter."));
         msg_print(_("${} のお金が盗まれた！", "{} coins were stolen!"), gold);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+        chg_virtue(creature, Virtue::SACRIFICE, 1);
     } else {
         msg_print(_("財布が軽くなった気がする。", "Your purse feels lighter."));
         msg_print(_("お金が全部盗まれた！", "All of your coins were stolen!"));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 2);
+        chg_virtue(creature, Virtue::SACRIFICE, 2);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -77,8 +79,9 @@ void process_eat_gold(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  * @return 盗まれたらTRUE、何も盗まれなかったらFALSE
  */
-bool check_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+bool check_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->m_ptr->is_confused()) {
         return false;
     }
@@ -103,8 +106,9 @@ bool check_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  */
-static void move_item_to_monster(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr, const OBJECT_IDX o_idx)
+static void move_item_to_monster(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr, const OBJECT_IDX o_idx)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (o_idx == 0) {
         return;
     }
@@ -128,8 +132,9 @@ static void move_item_to_monster(PlayerType *player_ptr, MonsterAttackPlayer *mo
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  * @details eatとあるがお金や食べ物と違ってなくならない、盗んだモンスターを倒せば取り戻せる
  */
-void process_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (int i = 0; i < 10; i++) {
         auto i_idx = randnum0<short>(INVEN_PACK);
         monap_ptr->o_ptr = player_ptr->inventory[i_idx].get();
@@ -147,9 +152,9 @@ void process_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
 #else
         msg_format("%sour %s (%c) was stolen!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name.data(), index_to_label(i_idx));
 #endif
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+        chg_virtue(creature, Virtue::SACRIFICE, 1);
         const auto item_idx = player_ptr->current_floor_ptr->pop_empty_index_item();
-        move_item_to_monster(player_ptr, monap_ptr, item_idx);
+        move_item_to_monster(creature, monap_ptr, item_idx);
         inven_item_increase(player_ptr, i_idx, -1);
         inven_item_optimize(player_ptr, i_idx);
         monap_ptr->obvious = true;
@@ -158,8 +163,9 @@ void process_eat_item(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     }
 }
 
-void process_eat_food(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_eat_food(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (int i = 0; i < 10; i++) {
         auto i_idx = randnum0<short>(INVEN_PACK);
         monap_ptr->o_ptr = player_ptr->inventory[i_idx].get();
@@ -185,8 +191,9 @@ void process_eat_food(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     }
 }
 
-void process_eat_lite(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_eat_lite(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if ((monap_ptr->o_ptr->fuel <= 0) || monap_ptr->o_ptr->is_fixed_artifact()) {
         return;
     }
@@ -212,8 +219,9 @@ void process_eat_lite(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
  * @details 魔道具使用能力向上フラグがあれば、吸収量は全部ではない
  * 詳細はOSDN #40911の議論を参照のこと
  */
-bool process_un_power(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+bool process_un_power(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!monap_ptr->o_ptr->is_wand_staff() || (monap_ptr->o_ptr->pval == 0)) {
         return false;
     }
@@ -258,8 +266,9 @@ bool process_un_power(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     return true;
 }
 
-bool check_drain_hp(PlayerType *player_ptr, const int32_t d)
+bool check_drain_hp(CreatureEntity &creature, const int32_t d)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool resist_drain = !drain_exp(player_ptr, d, d / 10, 50);
     if (player_ptr->mimic_form != MimicKindType::NONE) {
         return CreatureRace(player_ptr).is_mimic_nonliving() ? true : resist_drain;
@@ -301,8 +310,9 @@ void process_drain_life(MonsterAttackPlayer *monap_ptr, const bool resist_drain)
     }
 }
 
-void process_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (check_multishadow(*player_ptr)) {
         msg_print(_("攻撃は幻影に命中し、あなたには届かなかった。", "The attack hits Shadow, but you are unharmed!"));
         return;
@@ -324,8 +334,9 @@ void process_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
  * @monap_ptr モンスターからモンスターへの直接攻撃構造体への参照ポインタ
  * @details 空腹、衰弱の一歩手前で止める優しさは残す。
  */
-void process_monster_attack_hungry(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_monster_attack_hungry(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     msg_format(_("あなたは腹が減った！", "You feel hungry!"));
     auto subtracted_food = static_cast<int16_t>(player_ptr->food - monap_ptr->damage);
     if ((player_ptr->food >= PY_FOOD_ALERT) && (PY_FOOD_ALERT > subtracted_food)) {

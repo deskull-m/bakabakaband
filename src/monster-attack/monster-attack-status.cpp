@@ -13,6 +13,7 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
@@ -20,8 +21,9 @@
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
-void process_blind_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_blind_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (has_resist_blind(*player_ptr) || check_multishadow(*player_ptr)) {
         return;
     }
@@ -45,8 +47,9 @@ void process_blind_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr
     monap_ptr->obvious = true;
 }
 
-void process_terrify_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_terrify_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (check_multishadow(*player_ptr)) {
         return;
     }
@@ -69,8 +72,9 @@ void process_terrify_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
     }
 }
 
-void process_paralyze_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_paralyze_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (check_multishadow(*player_ptr)) {
         return;
     }
@@ -94,8 +98,9 @@ void process_paralyze_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_
     }
 }
 
-void process_lose_all_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_lose_all_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (do_dec_stat(*player_ptr, A_STR)) {
         monap_ptr->obvious = true;
     }
@@ -121,8 +126,9 @@ void process_lose_all_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_
     }
 }
 
-void process_stun_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_stun_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (has_resist_sound(*player_ptr) || check_multishadow(*player_ptr)) {
         return;
     }
@@ -133,8 +139,9 @@ void process_stun_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
     }
 }
 
-void process_groin_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void process_groin_attack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (check_multishadow(*player_ptr)) {
         return;
     }
@@ -159,8 +166,9 @@ void process_groin_attack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr
     monap_ptr->obvious = true;
 }
 
-void process_monster_attack_time(PlayerType *player_ptr)
+void process_monster_attack_time(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (has_resist_time(*player_ptr) || check_multishadow(*player_ptr)) {
         return;
     }
@@ -176,7 +184,7 @@ void process_monster_attack_time(PlayerType *player_ptr)
         }
 
         msg_print(_("人生が逆戻りした気がする。", "You feel like a chunk of the past has been ripped away."));
-        lose_exp(static_cast<CreatureEntity &>(*player_ptr), 100 + (player_ptr->exp / 100) * MON_DRAIN_LIFE);
+        lose_exp(creature, 100 + (player_ptr->exp / 100) * MON_DRAIN_LIFE);
         break;
     case 6:
     case 7:

@@ -31,6 +31,7 @@
 #include "status/base-status.h"
 #include "status/element-resistance.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
@@ -44,8 +45,9 @@
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  * @details 減衰の計算式がpoisではなくnukeなのは仕様 (1/3では減衰が強すぎると判断したため)
  */
-static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_poison(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
@@ -64,8 +66,9 @@ static void calc_blow_poison(PlayerType *player_ptr, MonsterAttackPlayer *monap_
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_disenchant(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_disenchant(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
@@ -89,8 +92,9 @@ static void calc_blow_disenchant(PlayerType *player_ptr, MonsterAttackPlayer *mo
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  * @detals 魔道具使用能力向上フラグがあれば、吸収対象のアイテムをスキャンされる回数が半分で済む
  */
-static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_un_power(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int damage_ratio = 1000;
     if (has_dec_mana(*player_ptr)) {
         damage_ratio -= 75;
@@ -119,7 +123,7 @@ static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *mona
             continue;
         }
 
-        if (process_un_power(player_ptr, monap_ptr)) {
+        if (process_un_power(creature, monap_ptr)) {
             break;
         }
     }
@@ -130,8 +134,9 @@ static void calc_blow_un_power(PlayerType *player_ptr, MonsterAttackPlayer *mona
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_blind(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_blind(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (has_resist_blind(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
@@ -141,7 +146,7 @@ static void calc_blow_blind(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
         return;
     }
 
-    process_blind_attack(player_ptr, monap_ptr);
+    process_blind_attack(creature, monap_ptr);
     update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_BLIND);
 }
 
@@ -150,8 +155,9 @@ static void calc_blow_blind(PlayerType *player_ptr, MonsterAttackPlayer *monap_p
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_confusion(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
@@ -177,8 +183,9 @@ static void calc_blow_confusion(PlayerType *player_ptr, MonsterAttackPlayer *mon
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_fear(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_fear(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (has_resist_fear(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
@@ -188,7 +195,7 @@ static void calc_blow_fear(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
         return;
     }
 
-    process_terrify_attack(player_ptr, monap_ptr);
+    process_terrify_attack(creature, monap_ptr);
     update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FEAR);
 }
 
@@ -197,8 +204,9 @@ static void calc_blow_fear(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_paralysis(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_paralysis(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (has_free_act(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 3) / 8;
     }
@@ -208,7 +216,7 @@ static void calc_blow_paralysis(PlayerType *player_ptr, MonsterAttackPlayer *mon
         return;
     }
 
-    process_paralyze_attack(player_ptr, monap_ptr);
+    process_paralyze_attack(creature, monap_ptr);
     update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_FREE);
 }
 
@@ -217,8 +225,9 @@ static void calc_blow_paralysis(PlayerType *player_ptr, MonsterAttackPlayer *mon
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_drain_exp(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr, const int drain_value, const int hold_exp_prob)
+static void calc_blow_drain_exp(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr, const int drain_value, const int hold_exp_prob)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int32_t d = Dice::roll(drain_value, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     int damage_ratio = 1000;
@@ -244,13 +253,14 @@ static void calc_blow_drain_exp(PlayerType *player_ptr, MonsterAttackPlayer *mon
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_time(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_time(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (monap_ptr->explode) {
         return;
     }
 
-    process_monster_attack_time(player_ptr);
+    process_monster_attack_time(creature);
     if (has_resist_time(*player_ptr)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
@@ -263,8 +273,9 @@ static void calc_blow_time(PlayerType *player_ptr, MonsterAttackPlayer *monap_pt
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_drain_life(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_drain_life(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int32_t d = Dice::roll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
     monap_ptr->obvious = true;
     if (player_ptr->hold_exp) {
@@ -276,7 +287,7 @@ static void calc_blow_drain_life(PlayerType *player_ptr, MonsterAttackPlayer *mo
         return;
     }
 
-    bool resist_drain = check_drain_hp(player_ptr, d);
+    bool resist_drain = check_drain_hp(creature, d);
     process_drain_life(monap_ptr, resist_drain);
 }
 
@@ -285,8 +296,9 @@ static void calc_blow_drain_life(PlayerType *player_ptr, MonsterAttackPlayer *mo
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
-static void calc_blow_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     monap_ptr->obvious = true;
     int damage_ratio = 100;
     if (has_dec_mana(*player_ptr)) {
@@ -302,12 +314,13 @@ static void calc_blow_drain_mana(PlayerType *player_ptr, MonsterAttackPlayer *mo
     }
 
     monap_ptr->damage = monap_ptr->damage * damage_ratio / 100;
-    process_drain_mana(player_ptr, monap_ptr);
+    process_drain_mana(creature, monap_ptr);
     update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_MANA);
 }
 
-static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_inertia(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (player_ptr->effects()->acceleration().is_fast() || (static_cast<CreatureEntity &>(*player_ptr).get_speed() >= 130)) {
         monap_ptr->damage = monap_ptr->damage * (randint1(4) + 4) / 9;
     }
@@ -325,8 +338,9 @@ static void calc_blow_inertia(PlayerType *player_ptr, MonsterAttackPlayer *monap
 /*!
  * @brief 空腹進行度を計算する (急速回復があれば+100%、遅消化があれば-50%)
  */
-static void calc_blow_hungry(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+static void calc_blow_hungry(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (player_ptr->regenerate) {
         monap_ptr->damage = monap_ptr->damage * 2;
     }
@@ -334,11 +348,12 @@ static void calc_blow_hungry(PlayerType *player_ptr, MonsterAttackPlayer *monap_
         monap_ptr->damage = monap_ptr->damage / 2;
     }
 
-    process_monster_attack_hungry(player_ptr, monap_ptr);
+    process_monster_attack_hungry(creature, monap_ptr);
 }
 
-void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr)
+void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (monap_ptr->effect) {
     case RaceBlowEffectType::NONE:
         // ここには来ないはずだが、何らかのバグで来た場合はプレイヤーの不利益に
@@ -362,13 +377,13 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     }
     case RaceBlowEffectType::POISON:
-        calc_blow_poison(player_ptr, monap_ptr);
+        calc_blow_poison(creature, monap_ptr);
         break;
     case RaceBlowEffectType::UN_BONUS:
-        calc_blow_disenchant(player_ptr, monap_ptr);
+        calc_blow_disenchant(creature, monap_ptr);
         break;
     case RaceBlowEffectType::UN_POWER:
-        calc_blow_un_power(player_ptr, monap_ptr);
+        calc_blow_un_power(creature, monap_ptr);
         break;
     case RaceBlowEffectType::EAT_GOLD:
         monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
@@ -377,15 +392,15 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         }
 
         monap_ptr->obvious = true;
-        process_eat_gold(player_ptr, monap_ptr);
+        process_eat_gold(creature, monap_ptr);
         break;
     case RaceBlowEffectType::EAT_ITEM: {
         monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (!check_eat_item(player_ptr, monap_ptr)) {
+        if (!check_eat_item(creature, monap_ptr)) {
             break;
         }
 
-        process_eat_item(player_ptr, monap_ptr);
+        process_eat_item(creature, monap_ptr);
         break;
     }
 
@@ -395,7 +410,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             break;
         }
 
-        process_eat_food(player_ptr, monap_ptr);
+        process_eat_food(creature, monap_ptr);
         break;
     }
     case RaceBlowEffectType::EAT_LITE: {
@@ -405,7 +420,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
             break;
         }
 
-        process_eat_lite(player_ptr, monap_ptr);
+        process_eat_lite(creature, monap_ptr);
         break;
     }
     case RaceBlowEffectType::ACID: {
@@ -454,37 +469,37 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     }
     case RaceBlowEffectType::BLIND:
-        calc_blow_blind(player_ptr, monap_ptr);
+        calc_blow_blind(creature, monap_ptr);
         break;
     case RaceBlowEffectType::CONFUSE:
-        calc_blow_confusion(player_ptr, monap_ptr);
+        calc_blow_confusion(creature, monap_ptr);
         break;
     case RaceBlowEffectType::TERRIFY:
-        calc_blow_fear(player_ptr, monap_ptr);
+        calc_blow_fear(creature, monap_ptr);
         break;
     case RaceBlowEffectType::PARALYZE:
-        calc_blow_paralysis(player_ptr, monap_ptr);
+        calc_blow_paralysis(creature, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_STR:
-        calc_blow_lose_strength(*player_ptr, monap_ptr);
+        calc_blow_lose_strength(creature, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_INT:
-        calc_blow_lose_intelligence(*player_ptr, monap_ptr);
+        calc_blow_lose_intelligence(creature, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_WIS:
-        calc_blow_lose_wisdom(*player_ptr, monap_ptr);
+        calc_blow_lose_wisdom(creature, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_DEX:
-        calc_blow_lose_dexterity(*player_ptr, monap_ptr);
+        calc_blow_lose_dexterity(creature, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_CON:
-        calc_blow_lose_constitution(*player_ptr, monap_ptr);
+        calc_blow_lose_constitution(creature, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_CHR:
-        calc_blow_lose_charisma(*player_ptr, monap_ptr);
+        calc_blow_lose_charisma(creature, monap_ptr);
         break;
     case RaceBlowEffectType::LOSE_ALL:
-        calc_blow_lose_all(*player_ptr, monap_ptr);
+        calc_blow_lose_all(creature, monap_ptr);
         break;
     case RaceBlowEffectType::SHATTER: { /* AC軽減あり / Player armor reduces total damage */
         monap_ptr->obvious = true;
@@ -497,38 +512,38 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         break;
     }
     case RaceBlowEffectType::EXP_10:
-        calc_blow_drain_exp(player_ptr, monap_ptr, 10, 95);
+        calc_blow_drain_exp(creature, monap_ptr, 10, 95);
         break;
     case RaceBlowEffectType::EXP_20:
-        calc_blow_drain_exp(player_ptr, monap_ptr, 20, 90);
+        calc_blow_drain_exp(creature, monap_ptr, 20, 90);
         break;
     case RaceBlowEffectType::EXP_40:
-        calc_blow_drain_exp(player_ptr, monap_ptr, 40, 75);
+        calc_blow_drain_exp(creature, monap_ptr, 40, 75);
         break;
     case RaceBlowEffectType::EXP_80:
-        calc_blow_drain_exp(player_ptr, monap_ptr, 80, 50);
+        calc_blow_drain_exp(creature, monap_ptr, 80, 50);
         break;
     case RaceBlowEffectType::DISEASE:
-        calc_blow_disease(*player_ptr, monap_ptr);
+        calc_blow_disease(creature, monap_ptr);
         break;
     case RaceBlowEffectType::TIME:
-        calc_blow_time(player_ptr, monap_ptr);
+        calc_blow_time(creature, monap_ptr);
         break;
     case RaceBlowEffectType::DR_LIFE:
-        calc_blow_drain_life(player_ptr, monap_ptr);
+        calc_blow_drain_life(creature, monap_ptr);
         break;
     case RaceBlowEffectType::DR_MANA:
-        calc_blow_drain_mana(player_ptr, monap_ptr);
+        calc_blow_drain_mana(creature, monap_ptr);
         break;
     case RaceBlowEffectType::INERTIA:
-        calc_blow_inertia(player_ptr, monap_ptr);
+        calc_blow_inertia(creature, monap_ptr);
         break;
     case RaceBlowEffectType::STUN:
         monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
         if (player_ptr->is_dead()) {
             break;
         }
-        process_stun_attack(player_ptr, monap_ptr);
+        process_stun_attack(creature, monap_ptr);
         break;
     case RaceBlowEffectType::FLAVOR:
         // フレーバー打撃は自明かつダメージ 0。
@@ -536,7 +551,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->damage = 0;
         break;
     case RaceBlowEffectType::HUNGRY:
-        calc_blow_hungry(player_ptr, monap_ptr);
+        calc_blow_hungry(creature, monap_ptr);
         break;
     case RaceBlowEffectType::CHAOS: {
         update_smart_learn(*player_ptr, monap_ptr->m_idx, DRS_CHAOS);
@@ -557,7 +572,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
 
                 int32_t d = Dice::roll(60, 6) + (player_ptr->exp / 100) * MON_DRAIN_LIFE;
 
-                bool resist_drain = check_drain_hp(player_ptr, d);
+                bool resist_drain = check_drain_hp(creature, d);
                 process_drain_life(monap_ptr, resist_drain);
             }
             break;
@@ -610,7 +625,7 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         monap_ptr->obvious = true;
         monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
         monap_ptr->get_damage += take_hit(*player_ptr, DAMAGE_ATTACK, monap_ptr->damage, monap_ptr->ddesc, monap_ptr->m_ptr->r_idx);
-        if (monap_ptr->damage * 2 > randint1(p_ptr->hp)) {
+        if (monap_ptr->damage * 2 > randint1(player_ptr->hp)) {
             player_defecate(player_ptr);
         }
         break;
@@ -631,14 +646,14 @@ void switch_monster_blow_to_player(PlayerType *player_ptr, MonsterAttackPlayer *
         if (player_ptr->is_dead()) {
             break;
         }
-        process_groin_attack(player_ptr, monap_ptr);
+        process_groin_attack(creature, monap_ptr);
         break;
     }
 
     case RaceBlowEffectType::LOCKUP: { /* AC軽減あり / Player armor reduces total damage */
         if (player_ptr->anti_tele == 0) {
             teleport_player(*player_ptr, 50, TELEPORT_PASSIVE);
-            wall_creation(*player_ptr, player_ptr->y, player_ptr->x);
+            wall_creation(creature, player_ptr->y, player_ptr->x);
         }
         break;
     }
