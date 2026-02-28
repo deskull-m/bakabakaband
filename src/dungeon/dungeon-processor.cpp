@@ -216,11 +216,11 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
 
     while (true) {
         if ((floor.m_cnt + 32 > MAX_FLOOR_MONSTERS) && !is_watching) {
-            compact_monsters(player_ptr, 64);
+            compact_monsters(*player_ptr, 64);
         }
 
         if ((floor.m_cnt + 32 < floor.m_max) && !is_watching) {
-            compact_monsters(player_ptr, 0);
+            compact_monsters(*player_ptr, 0);
         }
 
         if (floor.o_list.size() + 32 > MAX_FLOOR_ITEMS) {

@@ -185,7 +185,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(PlayerType *player_ptr, POSITION y
     bool monster_to_player = (target_type == MONSTER_TO_PLAYER);
     bool monster_to_monster = (target_type == MONSTER_TO_MONSTER);
     bool direct = player_ptr->is_located_at({ y, x });
-    const auto m_name = monster_name(player_ptr, m_idx);
+    const auto m_name = monster_name(*player_ptr, m_idx);
 
     disturb(*player_ptr, true, true);
     if (one_in_(3) || !direct) {

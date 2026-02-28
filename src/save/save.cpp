@@ -54,7 +54,7 @@
  */
 static bool wr_savefile_new(PlayerType *player_ptr)
 {
-    compact_monsters(player_ptr, 0);
+    compact_monsters(*player_ptr, 0);
 
     uint32_t now = (uint32_t)time((time_t *)0);
     auto &world = AngbandWorld::get_instance();

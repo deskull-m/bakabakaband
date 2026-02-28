@@ -23,13 +23,13 @@
  * @param i1 配列移動元添字
  * @param i2 配列移動先添字
  */
-static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER_IDX i2)
+static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONSTER_IDX i2)
 {
     if (i1 == i2) {
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[i1];
 
     const auto y = monster.y;
@@ -45,22 +45,23 @@ static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER
 
     const auto target_m_idx = Target::get_last_target().get_m_idx();
     if (target_m_idx == i1) {
+        auto *player_ptr = static_cast<PlayerType *>(&creature);
         Target::set_last_target(Target::create_monster_target(player_ptr, i2));
     }
 
-    if (player_ptr->pet_t_m_idx == i1) {
-        player_ptr->pet_t_m_idx = i2;
+    if (creature.pet_t_m_idx == i1) {
+        creature.pet_t_m_idx = i2;
     }
-    if (player_ptr->riding_t_m_idx == i1) {
-        player_ptr->riding_t_m_idx = i2;
+    if (creature.riding_t_m_idx == i1) {
+        creature.riding_t_m_idx = i2;
     }
 
-    if (monster.is_riding()) { // player_ptr->riding == i1 のままの方がいい？
-        player_ptr->riding = i2;
+    if (monster.is_riding()) { // creature.riding == i1 のままの方がいい？
+        creature.riding = i2;
     }
 
     if (HealthBarTracker::get_instance().is_tracking(i1)) {
-        health_track(*player_ptr, i2);
+        health_track(creature, i2);
     }
 
     if (monster.is_pet()) {
@@ -97,14 +98,14 @@ static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER
  * After "compacting" (if needed), we "reorder" the monsters into a more
  * compact order, and we reset the allocation info, and the "live" array.
  */
-void compact_monsters(PlayerType *player_ptr, int size)
+void compact_monsters(CreatureEntity &creature, int size)
 {
     if (size) {
         msg_print(_("モンスター情報を圧縮しています...", "Compacting monsters..."));
     }
 
     /* Compact at least 'size' objects */
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (int num = 0, cnt = 1; num < size; cnt++) {
         int cur_lev = 5 * cnt;
         int cur_dis = 5 * (20 - cnt);
@@ -138,11 +139,11 @@ void compact_monsters(PlayerType *player_ptr, int size)
             }
 
             if (record_named_pet && monster.is_named_pet()) {
-                const auto m_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
+                const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
                 exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_COMPACT, m_name);
             }
 
-            delete_monster_idx(*player_ptr, i);
+            delete_monster_idx(creature, i);
             num++;
         }
     }
@@ -154,7 +155,7 @@ void compact_monsters(PlayerType *player_ptr, int size)
             continue;
         }
 
-        compact_monsters_aux(player_ptr, floor.m_max - 1, i);
+        compact_monsters_aux(creature, floor.m_max - 1, i);
         floor.m_max--;
     }
 }

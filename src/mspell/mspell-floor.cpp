@@ -104,7 +104,7 @@ MonsterSpellResult spell_RF6_BLINK(CreatureEntity &creature, MONSTER_IDX m_idx, 
 {
     auto &player_ptr = static_cast<PlayerType &>(creature);
     const auto res = MonsterSpellResult::make_valid();
-    const auto m_name = monster_name(&player_ptr, m_idx);
+    const auto m_name = monster_name(player_ptr, m_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(player_ptr, true, true);
@@ -142,7 +142,7 @@ MonsterSpellResult spell_RF6_TPORT(CreatureEntity &creature, MONSTER_IDX m_idx, 
 {
     auto &player_ptr = static_cast<PlayerType &>(creature);
     const auto res = MonsterSpellResult::make_valid();
-    const auto m_name = monster_name(&player_ptr, m_idx);
+    const auto m_name = monster_name(player_ptr, m_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(player_ptr, true, true);
@@ -198,7 +198,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     }
 
     bool resists_tele = false;
-    const auto t_name = monster_name(&player_ptr, t_idx);
+    const auto t_name = monster_name(player_ptr, t_idx);
 
     if (monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
         if (monrace_target.kind_flags.has(MonsterKindType::UNIQUE) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
@@ -281,7 +281,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     }
 
     bool resists_tele = false;
-    const auto t_name = monster_name(&player_ptr, t_idx);
+    const auto t_name = monster_name(player_ptr, t_idx);
 
     if (monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
         if (monrace_target.kind_flags.has(MonsterKindType::UNIQUE) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
@@ -398,7 +398,7 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
     bool can_use_lite_area = false;
     bool monster_to_monster = target_type == MONSTER_TO_MONSTER;
     bool monster_to_player = target_type == MONSTER_TO_PLAYER;
-    const auto t_name = monster_name(&player_ptr, t_idx);
+    const auto t_name = monster_name(player_ptr, t_idx);
 
     const auto is_ninja = CreatureClass(player_ptr).equals(PlayerClassType::NINJA);
     const auto is_living_monster = monrace.kind_flags.has_not(MonsterKindType::UNDEAD);
@@ -466,7 +466,7 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
 MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
     auto &player_ptr = static_cast<PlayerType &>(creature);
-    const auto m_name = monster_name(&player_ptr, m_idx);
+    const auto m_name = monster_name(player_ptr, m_idx);
     disturb(player_ptr, true, true);
 
     if (player_ptr.effects()->blindness().is_blind()) {

@@ -67,8 +67,8 @@ bool monspell_message_base(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    const auto m_name = monster_name(&player, m_idx);
-    const auto t_name = monster_name(&player, t_idx);
+    const auto m_name = monster_name(player, m_idx);
+    const auto t_name = monster_name(player, t_idx);
 
     if (mon_to_player || (mon_to_mon && known && see_either)) {
         disturb(player, true, true);

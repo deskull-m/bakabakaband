@@ -55,8 +55,8 @@ static void message_breath(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_ID
     auto known = monster_near_player(floor, m_idx, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    const auto m_name = monster_name(player_ptr, m_idx);
-    const auto t_name = monster_name(player_ptr, t_idx);
+    const auto m_name = monster_name(*player_ptr, m_idx);
+    const auto t_name = monster_name(*player_ptr, t_idx);
 
     if (!spell_RF4_BREATH_special_message(monster.r_idx, GF_TYPE, m_name.data())) {
         if (player_ptr->effects()->blindness().is_blind()) {

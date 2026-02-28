@@ -462,7 +462,7 @@ void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
     auto gets_angry = monster.is_friendly() && has_aggravate(creature);
     const auto should_aggravate = monster.is_pet();
     auto has_hostile = monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));
-    has_hostile &= monster_has_hostile_to_player(&player, 10, -10, monrace);
+    has_hostile &= monster_has_hostile_to_player(player, 10, -10, monrace);
     const auto has_resist_all = monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL);
     if (should_aggravate && (has_hostile || has_resist_all)) {
         gets_angry = true;
@@ -1049,7 +1049,7 @@ bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
-    const auto m_name = monster_name(&player, m_idx);
+    const auto m_name = monster_name(player, m_idx);
 
     // 呪術魔法によりテレポートが阻害されているならば寄ってこない
     if (SpellHex(creature).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
