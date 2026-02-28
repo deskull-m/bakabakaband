@@ -190,13 +190,13 @@ static uint8_t get_recial_sub_align(const MonraceDefinition &monrace)
  * @param monrace モンスター種族情報の参照
  * @return プレイヤーに敵意を持つならばtrueを返す
  */
-bool monster_has_hostile_to_player(PlayerType *player_ptr, int pa_good, int pa_evil, const MonraceDefinition &monrace)
+bool monster_has_hostile_to_player(CreatureEntity &creature, int pa_good, int pa_evil, const MonraceDefinition &monrace)
 {
     byte sub_align1 = SUB_ALIGN_NEUTRAL;
-    if (player_ptr->alignment >= pa_good) {
+    if (creature.alignment >= pa_good) {
         sub_align1 |= SUB_ALIGN_GOOD;
     }
-    if (player_ptr->alignment <= pa_evil) {
+    if (creature.alignment <= pa_evil) {
         sub_align1 |= SUB_ALIGN_EVIL;
     }
 
@@ -240,8 +240,8 @@ bool is_original_ap_and_seen(CreatureEntity &subject, const MonsterEntity &monst
  * @param m_idx モンスターID
  * @return std::string モンスター名
  */
-std::string monster_name(PlayerType *player_ptr, MONSTER_IDX m_idx)
+std::string monster_name(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    return monster_desc(*player_ptr, monster, 0x00);
+    const auto &monster = creature.current_floor_ptr->m_list[m_idx];
+    return monster_desc(creature, monster, 0x00);
 }

@@ -186,7 +186,7 @@ MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, M
     Pos2D pos_initial(y, x);
     auto pos = pos_initial;
     auto pos_scat = pos_initial;
-    const auto m_name = monster_name(&player_ptr, m_idx);
+    const auto m_name = monster_name(player_ptr, m_idx);
 
     if (player_ptr.effects()->blindness().is_blind()) {
         msg_format(_("%s^が何かをつぶやいた。", "%s^ mumbles."), m_name.data());

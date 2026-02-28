@@ -374,7 +374,7 @@ static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_i
     }
 
     if (escorted_monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY)) {
-        if (monster_has_hostile_to_player(player_ptr, 1, -1, monrace)) {
+        if (monster_has_hostile_to_player(*player_ptr, 1, -1, monrace)) {
             return false;
         }
     }
@@ -464,7 +464,7 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
             return false;
         }
     } else if (any_bits(condition.mode, PM_FORCE_PET)) {
-        if (monster_has_hostile_to_player(player_ptr, 10, -10, monrace) && !one_in_(std::abs(player_ptr->alignment) / 2 + 1)) {
+        if (monster_has_hostile_to_player(*player_ptr, 10, -10, monrace) && !one_in_(std::abs(player_ptr->alignment) / 2 + 1)) {
             return false;
         }
     }
@@ -478,7 +478,7 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
     }
 
     const auto is_like_unique = monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));
-    if (any_bits(condition.mode, PM_FORCE_PET) && is_like_unique && monster_has_hostile_to_player(player_ptr, 10, -10, monrace)) {
+    if (any_bits(condition.mode, PM_FORCE_PET) && is_like_unique && monster_has_hostile_to_player(*player_ptr, 10, -10, monrace)) {
         return false;
     }
 

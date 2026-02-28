@@ -15,8 +15,8 @@
 
 static bool message_curse(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, std::string_view msg1, std::string_view msg2, std::string_view msg3, int target_type)
 {
-    const auto m_name = monster_name(player_ptr, m_idx);
-    const auto t_name = monster_name(player_ptr, t_idx);
+    const auto m_name = monster_name(*player_ptr, m_idx);
+    const auto t_name = monster_name(*player_ptr, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(*player_ptr, true, true);

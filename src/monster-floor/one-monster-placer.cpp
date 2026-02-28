@@ -427,7 +427,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         auto should_be_friendly = !is_summoned && new_monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY);
         should_be_friendly |= is_summoned && summoner.is_friendly();
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
-        auto force_hostile = monster_has_hostile_to_player(player_ptr, 0, -1, new_monrace);
+        auto force_hostile = monster_has_hostile_to_player(*player_ptr, 0, -1, new_monrace);
         force_hostile |= floor.inside_arena;
         if (m_ptr->alliance_idx != AllianceType::NONE) {
             should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player_ptr);

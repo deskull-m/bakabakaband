@@ -67,7 +67,7 @@ ObjectThrowHitMonster::ObjectThrowHitMonster(PlayerType *player_ptr, POSITION y,
 
     this->m_idx = grid.m_idx;
     this->m_ptr = &floor.m_list[grid.m_idx];
-    this->m_name = monster_name(player_ptr, grid.m_idx);
+    this->m_name = monster_name(*player_ptr, grid.m_idx);
 }
 
 ObjectThrowEntity::ObjectThrowEntity(PlayerType *player_ptr, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken)
