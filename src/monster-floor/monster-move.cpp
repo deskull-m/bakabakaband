@@ -56,11 +56,11 @@ static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const M
  * @param can_cross モンスターが地形を踏破できるならばTRUE
  * @return 透過も破壊もしなかった場合はFALSE、それ以外はTRUE
  */
-static bool process_wall(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos, bool can_cross)
+static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos, bool can_cross)
 {
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto &terrain = grid.get_terrain();
-    if (player_ptr->is_located_at(pos)) {
+    if (creature.is_located_at(pos)) {
         turn_flags_ptr->do_move = true;
         return true;
     }
@@ -93,7 +93,7 @@ static bool process_wall(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
     }
 
     turn_flags_ptr->do_move = true;
-    if ((monrace.feature_flags.has(Mft::PASS_WALL)) && (!turn_flags_ptr->is_riding_mon || has_pass_wall(*player_ptr)) && terrain.flags.has(Tc::CAN_PASS)) {
+    if ((monrace.feature_flags.has(Mft::PASS_WALL)) && (!turn_flags_ptr->is_riding_mon || has_pass_wall(creature)) && terrain.flags.has(Tc::CAN_PASS)) {
         turn_flags_ptr->did_pass_wall = true;
     }
 
@@ -404,7 +404,7 @@ bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_p
         auto &monrace = monster.get_monrace();
         auto *player_ptr = static_cast<PlayerType *>(&creature);
         auto can_cross = monster_can_cross_terrain(player_ptr, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
-        if (!process_wall(player_ptr, turn_flags_ptr, monster, pos_neighbor, can_cross)) {
+        if (!process_wall(creature, turn_flags_ptr, monster, pos_neighbor, can_cross)) {
             if (!process_door(creature, turn_flags_ptr, monster, pos_neighbor)) {
                 return false;
             }
