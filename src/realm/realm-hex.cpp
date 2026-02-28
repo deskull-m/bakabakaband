@@ -273,7 +273,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
         if (cast) {
             spell_hex.set_casting_flag(HEX_INHALE);
-            do_cmd_quaff_potion(player_ptr);
+            do_cmd_quaff_potion(*player_ptr);
             spell_hex.reset_casting_flag(HEX_INHALE);
             should_continue = false;
         }

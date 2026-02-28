@@ -540,11 +540,11 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'q': {
-        do_cmd_quaff_potion(player_ptr);
+        do_cmd_quaff_potion(*player_ptr);
         break;
     }
     case KTRL('Z'): {
-        do_cmd_rectal_absorption(player_ptr);
+        do_cmd_rectal_absorption(*player_ptr);
         break;
     }
     case 'r': {
