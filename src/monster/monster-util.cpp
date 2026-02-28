@@ -167,7 +167,6 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
 
 static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrace_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace = monraces.get_monrace(monrace_id);
     const auto &floor = *creature.current_floor_ptr;
@@ -245,7 +244,7 @@ static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrac
     case MonraceHook::GIANT:
         return is_suitable_for_dungeon && monrace.is_suitable_for_giant_pit();
     case MonraceHook::DRAGON:
-        return vault_aux_dragon(player_ptr, monrace_id);
+        return vault_aux_dragon(creature, monrace_id);
     case MonraceHook::DEMON:
         return is_suitable_for_dungeon && monrace.is_suitable_for_demon_pit();
     case MonraceHook::DARK_ELF:

@@ -10,6 +10,7 @@
 #include "monster/monster-util.h"
 #include "player/player-status.h"
 #include "room/pit-nest-util.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
@@ -145,10 +146,10 @@ void PitNestFilter::set_dragon_breaths()
  * @param r_idx 確認したいモンスター種族ID
  * @return 生成必要条件を満たしているならTRUEを返す。
  */
-bool vault_aux_dragon(PlayerType *player_ptr, MonraceId r_idx)
+bool vault_aux_dragon(CreatureEntity &creature, MonraceId r_idx)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
     is_valid &= monrace.is_suitable_for_special_room();
     if (!is_valid) {
@@ -178,7 +179,7 @@ bool vault_aux_dragon(PlayerType *player_ptr, MonraceId r_idx)
  * @param r_idx 確認したいモンスター種族ID
  * @return 生成必要条件を満たしているならTRUEを返す。
  */
-bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
+bool vault_aux_gay(CreatureEntity &creature, MonraceId r_idx)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     if (!monrace.is_suitable_for_figurine()) {
@@ -193,7 +194,7 @@ bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
         return false;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
     is_valid &= monrace.is_suitable_for_special_room();
     if (!is_valid) {
@@ -208,7 +209,7 @@ bool vault_aux_gay(PlayerType *player_ptr, MonraceId r_idx)
  * @param r_idx 確認したいモンスター種族ID
  * @return 生成必要条件を満たしているならTRUEを返す。
  */
-bool vault_aux_les(PlayerType *player_ptr, MonraceId r_idx)
+bool vault_aux_les(CreatureEntity &creature, MonraceId r_idx)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     if (!monrace.is_suitable_for_figurine()) {
@@ -223,7 +224,7 @@ bool vault_aux_les(PlayerType *player_ptr, MonraceId r_idx)
         return false;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     auto is_valid = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, r_idx);
     is_valid &= monrace.is_suitable_for_special_room();
     if (!is_valid) {
