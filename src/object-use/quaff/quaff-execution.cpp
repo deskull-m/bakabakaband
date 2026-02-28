@@ -58,7 +58,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
     auto ident = QuaffEffects(this->player_ptr).influence(item, is_rectal);
     if (CreatureRace(this->player_ptr).equals(PlayerRaceType::SKELETON)) {
         msg_print(_("液体の一部はあなたのアゴを素通りして落ちた！", "Some of the fluid falls through your jaws!"));
-        (void)potion_smash_effect(this->player_ptr, 0, this->player_ptr->y, this->player_ptr->x, item.bi_id);
+        (void)potion_smash_effect(*this->player_ptr, 0, this->player_ptr->y, this->player_ptr->x, item.bi_id);
     }
 
     static constexpr auto flags_srf = {

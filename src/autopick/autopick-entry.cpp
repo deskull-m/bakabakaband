@@ -451,7 +451,7 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
     }
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (o_ptr->is_spell_book() && !check_book_realm(player_ptr, bi_key)) {
+    if (o_ptr->is_spell_book() && !check_book_realm(*player_ptr, bi_key)) {
         entry->add(FLG_UNREADABLE);
         if (tval != ItemKindType::ARCANE_BOOK) {
             name = false;

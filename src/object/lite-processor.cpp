@@ -6,6 +6,7 @@
 #include "object-enchant/object-ego.h"
 #include "object/tval-types.h"
 #include "sv-definition/sv-lite-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -17,8 +18,9 @@
  * @brief 10ゲームターンが進行する毎に光源の寿命を減らす処理
  * / Handle burning fuel every 10 game turns
  */
-void reduce_lite_life(PlayerType *player_ptr)
+void reduce_lite_life(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
     if (o_ptr->bi_key.tval() != ItemKindType::LITE) {
         return;
@@ -36,7 +38,7 @@ void reduce_lite_life(PlayerType *player_ptr)
         o_ptr->fuel--;
     }
 
-    notice_lite_change(player_ptr, o_ptr);
+    notice_lite_change(*player_ptr, o_ptr);
 }
 
 /*!
@@ -44,8 +46,9 @@ void reduce_lite_life(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_ptr 現在光源として使っているオブジェクトの構造体参照ポインタ
  */
-void notice_lite_change(PlayerType *player_ptr, ItemEntity *o_ptr)
+void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if ((o_ptr->fuel < 100) || (!(o_ptr->fuel % 100))) {
         rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);

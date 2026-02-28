@@ -2747,7 +2747,7 @@ bool player_has_no_spellbooks(CreatureEntity &creature)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (int i = 0; i < INVEN_PACK; i++) {
         const auto *o_ptr = creature.inventory[i].get();
-        if (o_ptr->is_valid() && check_book_realm(player_ptr, o_ptr->bi_key)) {
+        if (o_ptr->is_valid() && check_book_realm(*player_ptr, o_ptr->bi_key)) {
             return false;
         }
     }
@@ -2755,7 +2755,7 @@ bool player_has_no_spellbooks(CreatureEntity &creature)
     const auto &floor = *creature.current_floor_ptr;
     for (const auto this_o_idx : floor.grid_array[creature.y][creature.x].o_idx_list) {
         const auto *o_ptr = floor.o_list[this_o_idx].get();
-        if (o_ptr->is_valid() && o_ptr->marked.has(OmType::FOUND) && check_book_realm(player_ptr, o_ptr->bi_key)) {
+        if (o_ptr->is_valid() && o_ptr->marked.has(OmType::FOUND) && check_book_realm(*player_ptr, o_ptr->bi_key)) {
             return false;
         }
     }

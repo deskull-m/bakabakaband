@@ -13,6 +13,7 @@
 #include "sv-definition/sv-potion-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -202,8 +203,9 @@ bool ObjectBreaker::can_destroy(ItemEntity *o_ptr) const
  *    o_ptr --- pointer to the potion object.
  * </pre>
  */
-bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y, POSITION x, short bi_id)
+bool potion_smash_effect(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION y, POSITION x, short bi_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto radius = 2;
     auto dt = AttributeType::NONE;
     auto dam = 0;
@@ -348,8 +350,9 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
  * @details
  * Note that artifacts never break, see the "drop_ammo_near()" function.
  */
-PERCENTAGE breakage_chance(PlayerType *player_ptr, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type)
+PERCENTAGE breakage_chance(CreatureEntity &creature, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Examine the snipe type */
     if (snipe_type) {
         if (snipe_type == SP_KILL_WALL) {

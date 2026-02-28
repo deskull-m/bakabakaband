@@ -88,7 +88,7 @@ void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int 
 
         /* Potions smash open */
         if (item.is_potion()) {
-            (void)potion_smash_effect(player_ptr, 0, player_ptr->y, player_ptr->x, item.bi_id);
+            (void)potion_smash_effect(*player_ptr, 0, player_ptr->y, player_ptr->x, item.bi_id);
         }
 
         /* Reduce the charges of rods/wands */

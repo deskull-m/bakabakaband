@@ -205,7 +205,7 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
         color = _("白く", "white");
     }
 
-    auto *o_ptr = choose_warning_item(player_ptr);
+    auto *o_ptr = choose_warning_item(*player_ptr);
     if (o_ptr != nullptr) {
         const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         msg_format(_("%sは%s光った。", "%s glows %s."), item_name.data(), color.data());

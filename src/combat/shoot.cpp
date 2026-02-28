@@ -947,7 +947,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
         }
 
         /* Chance of breakage (during attacks) */
-        auto j = (hit_body ? breakage_chance(player_ptr, &fire_item, CreatureClass(*player_ptr).equals(PlayerClassType::ARCHER), snipe_type) : 0);
+        auto j = (hit_body ? breakage_chance(*player_ptr, &fire_item, CreatureClass(*player_ptr).equals(PlayerClassType::ARCHER), snipe_type) : 0);
         const Pos2D pos_impact(y, x);
         if (stick_to) {
             const auto m_idx = floor.get_grid(pos_impact).m_idx;

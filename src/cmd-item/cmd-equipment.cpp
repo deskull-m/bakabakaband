@@ -142,7 +142,7 @@ void do_cmd_wield(PlayerType *player_ptr)
         return;
     }
 
-    auto slot = wield_slot(player_ptr, o_ptr);
+    auto slot = wield_slot(*player_ptr, o_ptr);
 
     // 肛門破壊チェック
     if (slot == INVEN_ASSHOLE && player_ptr->muta.has(PlayerMutationType::DESTROYED_ASSHOLE)) {
