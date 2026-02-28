@@ -14,6 +14,7 @@
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
 #include "sv-definition/sv-lite-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -24,8 +25,9 @@
  * @brief ランタンに燃料を加えるコマンドのメインルーチン
  * Refill the players lamp (from the pack or floor)
  */
-static void do_cmd_refill_lamp(PlayerType *player_ptr)
+static void do_cmd_refill_lamp(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr auto q = _("どの油つぼから注ぎますか? ", "Refill with which flask? ");
     constexpr auto s = _("油つぼがない。", "You have no flasks of oil.");
     short i_idx;
@@ -60,8 +62,9 @@ static void do_cmd_refill_lamp(PlayerType *player_ptr)
  * @brief 松明を束ねるコマンドのメインルーチン
  * Refuel the players torch (from the pack or floor)
  */
-static void do_cmd_refill_torch(PlayerType *player_ptr)
+static void do_cmd_refill_torch(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr auto q = _("どの松明で明かりを強めますか? ", "Refuel with which torch? ");
     constexpr auto s = _("他に松明がない。", "You have no extra torches.");
     short i_idx;
@@ -98,17 +101,18 @@ static void do_cmd_refill_torch(PlayerType *player_ptr)
  * @brief 燃料を補充するコマンドのメインルーチン
  * Refill the players lamp, or restock his torches
  */
-void do_cmd_refill(PlayerType *player_ptr)
+void do_cmd_refill(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
     const auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
     const auto &bi_key = o_ptr->bi_key;
     if (bi_key.tval() != ItemKindType::LITE) {
         msg_print(_("光源を装備していない。", "You are not wielding a light."));
     } else if (bi_key.sval() == SV_LITE_LANTERN) {
-        do_cmd_refill_lamp(player_ptr);
+        do_cmd_refill_lamp(creature);
     } else if (bi_key.sval() == SV_LITE_TORCH) {
-        do_cmd_refill_torch(player_ptr);
+        do_cmd_refill_torch(creature);
     } else {
         msg_print(_("この光源は寿命を延ばせない。", "Your light cannot be refilled."));
     }

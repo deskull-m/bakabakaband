@@ -515,7 +515,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'F': {
-        do_cmd_refill(player_ptr);
+        do_cmd_refill(*player_ptr);
         break;
     }
     case 'f': {
