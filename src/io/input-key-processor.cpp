@@ -527,7 +527,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'a': {
-        do_cmd_aim_wand(player_ptr);
+        do_cmd_aim_wand(*player_ptr);
         break;
     }
     case 'z': {

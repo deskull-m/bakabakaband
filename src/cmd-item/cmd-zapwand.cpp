@@ -33,6 +33,7 @@
 #include "status/experience.h"
 #include "sv-definition/sv-wand-types.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
@@ -51,8 +52,9 @@
  * @param magic 魔道具術上の処理ならばTRUE
  * @return 発動により効果内容が確定したならばTRUEを返す
  */
-bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool powerful, bool magic)
+bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool powerful, bool magic)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     bool ident = false;
     PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
     POSITION rad = powerful ? 3 : 2;
@@ -61,7 +63,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
 
     /* XXX Hack -- Wand of wonder can do anything before it */
     if (sval == SV_WAND_WONDER) {
-        int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
+        int vir = virtue_number(creature, Virtue::CHANCE);
         sval = randint0(SV_WAND_WONDER);
 
         if (vir) {
@@ -85,7 +87,7 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
             }
         }
         if (sval < SV_WAND_TELEPORT_AWAY) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
+            chg_virtue(creature, Virtue::CHANCE, 1);
         }
     }
 
@@ -329,15 +331,16 @@ bool wand_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool po
 /*!
  * @brief 魔法棒を使うコマンドのメインルーチン /
  */
-void do_cmd_aim_wand(PlayerType *player_ptr)
+void do_cmd_aim_wand(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
-    if (cmd_limit_arena(*player_ptr)) {
+    if (cmd_limit_arena(creature)) {
         return;
     }
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの魔法棒で狙いますか? ", "Aim which wand? ");
     constexpr auto s = _("使える魔法棒がない。", "You have no wand to aim.");

@@ -567,7 +567,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
                 return false;
             }
 
-            (void)wand_effect(player_ptr, sval.value(), dir, powerful, true);
+            (void)wand_effect(*player_ptr, sval.value(), dir, powerful, true);
             break;
         }
         default:
