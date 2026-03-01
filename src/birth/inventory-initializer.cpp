@@ -42,7 +42,7 @@
  */
 void wield_all(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
 
     ItemEntity ObjectType_body;
     for (INVENTORY_IDX i_idx = INVEN_PACK - 1; i_idx >= 0; i_idx--) {
@@ -52,7 +52,7 @@ void wield_all(CreatureEntity &creature)
             continue;
         }
 
-        int slot = wield_slot(*player_ptr, o_ptr);
+        int slot = wield_slot(creature, o_ptr);
         if (slot < INVEN_MAIN_HAND) {
             continue;
         }
@@ -72,8 +72,8 @@ void wield_all(CreatureEntity &creature)
             inven_item_increase(player_ptr, i_idx, -1);
             inven_item_optimize(player_ptr, i_idx);
         } else {
-            floor_item_increase(*player_ptr, 0 - i_idx, -1);
-            floor_item_optimize(*player_ptr, 0 - i_idx);
+            floor_item_increase(creature, 0 - i_idx, -1);
+            floor_item_optimize(creature, 0 - i_idx);
         }
 
         player_ptr->equip_cnt++;
@@ -85,17 +85,19 @@ void wield_all(CreatureEntity &creature)
  * @details アイテムを既知のものとした上でwield_all()関数により装備させる。
  * @param item 処理したいアイテムへの参照
  */
-static void add_outfit(PlayerType *player_ptr, ItemEntity &item)
+static void add_outfit(CreatureEntity &creature, ItemEntity &item)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     object_aware(player_ptr, item);
     item.mark_as_known();
     const auto slot = store_item_to_inventory(player_ptr, &item);
     autopick_alter_item(player_ptr, slot, false);
-    wield_all(*player_ptr);
+    wield_all(creature);
 }
 
-static void decide_initial_items(PlayerType *player_ptr)
+static void decide_initial_items(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     switch (player_ptr->prace) {
     case PlayerRaceType::VAMPIRE:
         /* Nothing! */
@@ -103,13 +105,13 @@ static void decide_initial_items(PlayerType *player_ptr)
         return;
     case PlayerRaceType::BALROG:
         /* Demon can drain vitality from humanoid corpse */
-        get_mon_num_prep_enum(*player_ptr, MonraceHook::HUMAN);
+        get_mon_num_prep_enum(creature, MonraceHook::HUMAN);
         for (int i = rand_range(3, 4); i > 0; i--) {
             ItemEntity item({ ItemKindType::MONSTER_REMAINS, SV_CORPSE });
-            item.pval = enum2i(get_mon_num(*player_ptr, 0, 2, PM_NONE));
+            item.pval = enum2i(get_mon_num(creature, 0, 2, PM_NONE));
             if (item.pval) {
                 item.number = 1;
-                add_outfit(player_ptr, item);
+                add_outfit(creature, item);
             }
         }
 
@@ -121,29 +123,29 @@ static void decide_initial_items(PlayerType *player_ptr)
         /* Staff (of Nothing) */
         ItemEntity item({ ItemKindType::STAFF, SV_STAFF_NOTHING });
         item.number = 1;
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
         return;
     }
     case PlayerRaceType::ENT: {
         /* Potions of Water */
         ItemEntity item({ ItemKindType::POTION, SV_POTION_WATER });
         item.number = rand_range(15, 23);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
         return;
     }
     case PlayerRaceType::ANDROID: {
         /* Flasks of oil */
         ItemEntity item(ItemKindType::FLASK);
-        ItemMagicApplier(*player_ptr, &item, 1, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &item, 1, AM_NO_FIXED_ART).execute();
         item.number = rand_range(7, 12);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
         return;
     }
     default: {
         /* Food rations */
         ItemEntity item({ ItemKindType::FOOD, SV_FOOD_RATION });
         item.number = rand_range(3, 7);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
         return;
     }
     }
@@ -155,99 +157,99 @@ static void decide_initial_items(PlayerType *player_ptr)
  */
 void player_outfit(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
 
     const auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
-    decide_initial_items(player_ptr);
+    decide_initial_items(creature);
 
     // アンナタールの羊皮紙
     item.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 0 }));
     item.number = 1;
-    add_outfit(player_ptr, item);
+    add_outfit(creature, item);
 
     // メルコールの羊皮紙
     item.generate(baseitems.lookup_baseitem_id({ ItemKindType::READING_MATTER, 3 }));
     item.number = 1;
-    add_outfit(player_ptr, item);
+    add_outfit(creature, item);
 
-    CreatureClass pc(*player_ptr);
-    CreatureRace pr(player_ptr);
+    CreatureClass pc(creature);
+    CreatureRace pr(&creature);
     if (pr.equals(PlayerRaceType::VAMPIRE) && !pc.equals(PlayerClassType::NINJA)) {
         ItemEntity item({ ItemKindType::SCROLL, SV_SCROLL_DARKNESS });
         item.number = rand_range(2, 5);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     } else if (!pc.equals(PlayerClassType::NINJA)) {
         ItemEntity item({ ItemKindType::LITE, SV_LITE_TORCH });
         item.number = rand_range(3, 7);
         item.fuel = rand_range(3, 7) * 500;
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     }
 
     if (pr.equals(PlayerRaceType::MERFOLK)) {
         ItemEntity item({ ItemKindType::RING, SV_RING_LEVITATION_FALL });
         item.number = 1;
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     }
 
     if (pc.equals(PlayerClassType::RANGER) || pc.equals(PlayerClassType::CAVALRY)) {
         ItemEntity item({ ItemKindType::ARROW, SV_AMMO_NORMAL });
         item.number = rand_range(15, 20);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     }
 
     if (pc.equals(PlayerClassType::RANGER)) {
         ItemEntity item({ ItemKindType::BOW, SV_SHORT_BOW });
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     } else if (pc.equals(PlayerClassType::ARCHER)) {
         ItemEntity item({ ItemKindType::ARROW, SV_AMMO_NORMAL });
         item.number = rand_range(15, 20);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     } else if (pc.equals(PlayerClassType::HIGH_MAGE) || pc.equals(PlayerClassType::ELEMENTALIST)) {
         ItemEntity item({ ItemKindType::WAND, SV_WAND_MAGIC_MISSILE });
         item.number = 1;
         item.pval = static_cast<short>(rand_range(25, 30));
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     } else if (pc.equals(PlayerClassType::SORCERER)) {
         for (auto book_tval = enum2i(ItemKindType::LIFE_BOOK); book_tval <= enum2i(ItemKindType::LIFE_BOOK) + MAX_MAGIC - 1; book_tval++) {
             ItemEntity item({ i2enum<ItemKindType>(book_tval), 0 });
             item.number = 1;
-            add_outfit(player_ptr, item);
+            add_outfit(creature, item);
         }
     } else if (pc.equals(PlayerClassType::TOURIST)) {
         if (player_ptr->ppersonality != PERSONALITY_SEXY) {
             ItemEntity item({ ItemKindType::SHOT, SV_AMMO_LIGHT });
             item.number = rand_range(15, 20);
-            add_outfit(player_ptr, item);
+            add_outfit(creature, item);
         }
 
         ItemEntity item_biscuit({ ItemKindType::FOOD, SV_FOOD_BISCUIT });
         item_biscuit.number = rand_range(2, 4);
-        add_outfit(player_ptr, item_biscuit);
+        add_outfit(creature, item_biscuit);
 
         ItemEntity item_waybread({ ItemKindType::FOOD, SV_FOOD_WAYBREAD });
         item_waybread.number = rand_range(2, 4);
-        add_outfit(player_ptr, item_waybread);
+        add_outfit(creature, item_waybread);
 
         ItemEntity item_jerky({ ItemKindType::FOOD, SV_FOOD_JERKY });
         item_jerky.number = rand_range(1, 3);
-        add_outfit(player_ptr, item_jerky);
+        add_outfit(creature, item_jerky);
 
         ItemEntity item_ale({ ItemKindType::FOOD, SV_FOOD_PINT_OF_ALE });
         item_ale.number = rand_range(2, 4);
-        add_outfit(player_ptr, item_ale);
+        add_outfit(creature, item_ale);
 
         ItemEntity item_wine({ ItemKindType::FOOD, SV_FOOD_PINT_OF_WINE });
         item_wine.number = rand_range(2, 4);
-        add_outfit(player_ptr, item_wine);
+        add_outfit(creature, item_wine);
     } else if (pc.equals(PlayerClassType::NINJA)) {
         ItemEntity item({ ItemKindType::SPIKE, 0 });
         item.number = rand_range(15, 20);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     } else if (pc.equals(PlayerClassType::SNIPER)) {
         ItemEntity item({ ItemKindType::BOLT, SV_AMMO_NORMAL });
         item.number = rand_range(15, 20);
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     }
 
     // @todo 本来read-onlyであるべきプリセットテーブルを書き換えている. 良くないパターン.
@@ -285,7 +287,7 @@ void player_outfit(CreatureEntity &creature)
             item.ego_idx = EgoType::BRAND_POIS;
         }
 
-        add_outfit(player_ptr, item);
+        add_outfit(creature, item);
     }
 
     BaseitemList::get_instance().mark_common_items_as_aware();
