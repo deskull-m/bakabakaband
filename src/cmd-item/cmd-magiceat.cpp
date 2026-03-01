@@ -576,7 +576,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
                 return false;
             }
 
-            (void)staff_effect(player_ptr, sval.value(), &use_charge, powerful, true, true);
+            (void)staff_effect(*player_ptr, sval.value(), &use_charge, powerful, true, true);
             if (!use_charge) {
                 return false;
             }

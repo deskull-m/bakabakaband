@@ -36,6 +36,7 @@
 #include "status/shape-changer.h"
 #include "status/sight-setter.h"
 #include "sv-definition/sv-staff-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "util/dice.h"
@@ -52,8 +53,9 @@
  * @param known 判明済ならばTRUE
  * @return 発動により効果内容が確定したならばTRUEを返す
  */
-int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerful, bool magic, bool known)
+int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powerful, bool magic, bool known)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int k;
     bool ident = false;
     PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
@@ -93,7 +95,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     case SV_STAFF_SUMMONING: {
         const int times = randint1(powerful ? 8 : 4);
         for (k = 0; k < times; k++) {
-            if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, player_ptr->current_floor_ptr->dun_level, SUMMON_NONE,
+            if (summon_specific(creature, creature.y, creature.x, player_ptr->current_floor_ptr->dun_level, SUMMON_NONE,
                     (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET))) {
                 ident = true;
             }
@@ -102,7 +104,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_TELEPORTATION: {
-        teleport_player(*player_ptr, (powerful ? 150 : 100), 0L);
+        teleport_player(creature, (powerful ? 150 : 100), 0L);
         ident = true;
         break;
     }
@@ -272,7 +274,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_EARTHQUAKES: {
-        if (earthquake(*player_ptr, player_ptr->get_position(), (powerful ? 15 : 10))) {
+        if (earthquake(creature, creature.get_position(), (powerful ? 15 : 10))) {
             ident = true;
         } else {
             msg_print(_("ダンジョンが揺れた。", "The dungeon trembles."));
@@ -282,12 +284,12 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
     }
 
     case SV_STAFF_DESTRUCTION: {
-        ident = destroy_area(*player_ptr, player_ptr->y, player_ptr->x, (powerful ? 18 : 13) + randint0(5), false);
+        ident = destroy_area(creature, creature.y, creature.x, (powerful ? 18 : 13) + randint0(5), false);
         break;
     }
 
     case SV_STAFF_ANIMATE_DEAD: {
-        ident = animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
+        ident = animate_dead(creature, 0, creature.y, creature.x);
         break;
     }
 
@@ -298,7 +300,7 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
 
     case SV_STAFF_NOTHING: {
         msg_print(_("何も起らなかった。", "Nothing happens."));
-        if (CreatureRace(player_ptr).food() == PlayerRaceFoodType::MANA) {
+        if (CreatureRace(&creature).food() == PlayerRaceFoodType::MANA) {
             msg_print(_("もったいない事をしたような気がする。食べ物は大切にしなくては。", "What a waste.  It's your food!"));
         }
         break;
@@ -310,17 +312,18 @@ int staff_effect(PlayerType *player_ptr, int sval, bool *use_charge, bool powerf
 /*!
  * @brief 杖を使うコマンドのメインルーチン /
  */
-void do_cmd_use_staff(PlayerType *player_ptr)
+void do_cmd_use_staff(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    if (cmd_limit_arena(*player_ptr)) {
+    if (cmd_limit_arena(creature)) {
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
     constexpr auto q = _("どの杖を使いますか? ", "Use which staff? ");
     constexpr auto s = _("使える杖がない。", "You have no staff to use.");
     short i_idx;
