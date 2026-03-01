@@ -163,7 +163,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         } else if (pc.equals(PlayerClassType::SMITH)) {
             do_cmd_kaji(*player_ptr, true);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-            do_cmd_magic_eater(player_ptr, true, false);
+            do_cmd_magic_eater(*player_ptr, true, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
             do_cmd_snipe_browse(*player_ptr);
         } else {
