@@ -118,8 +118,9 @@ static int32_t get_autoroller_prob(int *minval)
  * 純メイジ系は耐と魔法の能力が17で腕器16。
  * デュアルかどうかは最大攻撃回数で決定。(4回以上)
  */
-static void decide_initial_stat(PlayerType *player_ptr, int *cval)
+static void decide_initial_stat(CreatureEntity &creature, int *cval)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto &player_class = class_info.at(player_ptr->pclass);
     auto &class_magic = class_magics_info[enum2i(player_ptr->pclass)];
     auto is_magic_user = class_magic.spell_stat == A_INT || class_magic.spell_stat == A_WIS || class_magic.spell_stat == A_CHR;
@@ -170,8 +171,9 @@ static void decide_initial_stat(PlayerType *player_ptr, int *cval)
  * @param cs カーソル位置(能力値番号)
  * @return カーソル文字列
  */
-static std::string cursor_of_adjusted_stat(PlayerType *player_ptr, const int *cval, int cs)
+static std::string cursor_of_adjusted_stat(CreatureEntity &creature, const int *cval, int cs)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto j = player_ptr->race->r_adj[cs] + (*player_ptr->pclass_ref).c_adj[cs] + (*player_ptr->personality).a_adj[cs];
     auto m = adjust_stat(170, j); // 17.0 の新形式
     auto maxv = format("%4.1f", m / 10.0);
@@ -206,18 +208,18 @@ static void display_autoroller_chance(int *cval)
  */
 bool get_stat_limits(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
 
     clear_from(10);
     put_str(_("能力値を抽選します。最低限得たい能力値を設定して下さい。", "Set minimum stats for picking up your charactor."), 10, 10);
-    put_str(_("2/8で項目選択、4/6で値の増減、Enterで次へ", "2/8 for Select, 4/6 for Change value, Enter for Goto next"), 11, 10);
+    put_str(_("２/８で項目選択、４/６で値の増減、Enterで次へ", "2/8 for Select, 4/6 for Change value, Enter for Goto next"), 11, 10);
     put_str(_("         基本値  種族 職業 性格     合計値  最大値", "           Base   Rac  Cla  Per      Total  Maximum"), 13, 10);
 
     int cval[A_MAX]{};
-    decide_initial_stat(player_ptr, cval);
+    decide_initial_stat(creature, cval);
 
     for (int i = 0; i < A_MAX; i++) {
-        put_str(cursor_of_adjusted_stat(player_ptr, cval, i), 14 + i, 10);
+        put_str(cursor_of_adjusted_stat(creature, cval, i), 14 + i, 10);
     }
 
     display_autoroller_chance(cval);
@@ -238,7 +240,7 @@ bool get_stat_limits(CreatureEntity &creature)
             if (cs == A_MAX) {
                 c_put_str(TERM_YELLOW, _("決定する", "Accept"), 21, 35);
             } else {
-                cur = cursor_of_adjusted_stat(player_ptr, cval, cs);
+                cur = cursor_of_adjusted_stat(creature, cval, cs);
                 c_put_str(TERM_YELLOW, cur, 14 + cs, 10);
             }
 
@@ -320,7 +322,7 @@ bool get_stat_limits(CreatureEntity &creature)
 
             break;
         case '?':
-            show_help(*player_ptr, _("jbirth.txt#AutoRoller", "birth.txt#AutoRoller"));
+            show_help(creature, _("jbirth.txt#AutoRoller", "birth.txt#AutoRoller"));
             break;
         case '=':
             screen_save();
@@ -361,7 +363,7 @@ void initialize_chara_limit(chara_limit_type *chara_limit_ptr)
  */
 bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
 
     static const std::vector<std::string> item_names = { _("年齢", "age"), _("身長(cm)", "height"), _("体重(kg)", "weight"), _("威信", "prestige") };
     clear_from(10);
@@ -589,9 +591,9 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
             break;
         case '?':
 #ifdef JP
-            show_help(*player_ptr, "jbirth.txt#AutoRoller");
+            show_help(creature, "jbirth.txt#AutoRoller");
 #else
-            show_help(*player_ptr, "birth.txt#AutoRoller");
+            show_help(creature, "birth.txt#AutoRoller");
 #endif
             break;
         case '=':
