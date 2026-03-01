@@ -549,7 +549,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
                 }
             }
 
-            (void)rod_effect(player_ptr, sval.value(), dir, &use_charge, powerful);
+            (void)rod_effect(*player_ptr, sval.value(), dir, &use_charge, powerful);
             if (!use_charge) {
                 return false;
             }

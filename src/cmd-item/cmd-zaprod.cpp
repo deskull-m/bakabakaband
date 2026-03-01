@@ -30,6 +30,7 @@
 #include "status/experience.h"
 #include "status/shape-changer.h"
 #include "sv-definition/sv-rod-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
@@ -44,8 +45,9 @@
  * @param powerful 強力発動上の処理ならばTRUE
  * @return 発動により効果内容が確定したならばTRUEを返す
  */
-int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use_charge, bool powerful)
+int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *use_charge, bool powerful)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int ident = false;
     PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
@@ -136,7 +138,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_RESTORATION: {
-        if (restore_level(static_cast<CreatureEntity &>(*player_ptr))) {
+        if (restore_level(creature)) {
             ident = true;
         }
         if (restore_all_status(*player_ptr)) {
@@ -288,17 +290,18 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
  * @brief ロッドを使うコマンドのメインルーチン /
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_zap_rod(PlayerType *player_ptr)
+void do_cmd_zap_rod(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    if (cmd_limit_arena(*player_ptr)) {
+    if (cmd_limit_arena(creature)) {
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どのロッドを振りますか? ", "Zap which rod? ");
     constexpr auto s = _("使えるロッドがない。", "You have no rod to zap.");

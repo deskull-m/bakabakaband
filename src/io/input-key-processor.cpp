@@ -534,7 +534,7 @@ void process_command(CreatureEntity &creature)
         if (use_command && rogue_like_commands) {
             do_cmd_use(*player_ptr);
         } else {
-            do_cmd_zap_rod(player_ptr);
+            do_cmd_zap_rod(*player_ptr);
         }
 
         break;
