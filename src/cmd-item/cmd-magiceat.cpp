@@ -73,6 +73,7 @@
 #include "spell/spell-info.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
@@ -90,13 +91,14 @@
  * @param only_browse 閲覧するだけならばTRUE
  * @return 選択したアイテムのベースアイテムキー、キャンセルならばnullopt
  */
-static tl::optional<BaseitemKey> select_magic_eater(PlayerType *player_ptr, bool only_browse)
+static tl::optional<BaseitemKey> select_magic_eater(CreatureEntity &creature, bool only_browse)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     bool flag, request_list;
     auto tval = ItemKindType::NONE;
     int menu_line = (use_menu ? 1 : 0);
 
-    const auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
+    const auto magic_eater_data = CreatureClass(creature).get_specific_data<MagicEaterDataList>();
     if (const auto result = magic_eater_data->check_magic_eater_spell_repeat();
         result) {
         return result;
@@ -487,15 +489,16 @@ static tl::optional<BaseitemKey> select_magic_eater(PlayerType *player_ptr, bool
  * @param powerful 強力発動中の処理ならばTRUE
  * @return 実際にコマンドを実行したならばTRUEを返す。
  */
-bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
+bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerful)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     bool use_charge = true;
 
-    if (cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_confused(creature)) {
         return false;
     }
 
-    const auto bi_key = select_magic_eater(player_ptr, only_browse);
+    const auto bi_key = select_magic_eater(creature, only_browse);
     PlayerEnergy energy(player_ptr);
     if (!bi_key) {
         energy.reset_player_turn();
@@ -528,7 +531,7 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
         msg_print(_("呪文をうまく唱えられなかった！", "You failed to get the magic off!"));
         sound(SoundKind::FAIL);
         if (randint1(100) >= chance) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
+            chg_virtue(creature, Virtue::CHANCE, -1);
         }
         energy.set_player_turn_energy(100);
 
@@ -585,11 +588,11 @@ bool do_cmd_magic_eater(PlayerType *player_ptr, bool only_browse, bool powerful)
         }
 
         if (randint1(100) < chance) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
+            chg_virtue(creature, Virtue::CHANCE, 1);
         }
     }
 
-    auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
+    auto magic_eater_data = CreatureClass(creature).get_specific_data<MagicEaterDataList>();
     const auto sval = bi_key->sval();
     if (!sval) {
         return false;

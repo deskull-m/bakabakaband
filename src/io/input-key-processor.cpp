@@ -404,7 +404,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::SMITH)) {
             do_cmd_kaji(*player_ptr, true);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-            do_cmd_magic_eater(player_ptr, true, false);
+            do_cmd_magic_eater(*player_ptr, true, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
             do_cmd_snipe_browse(*player_ptr);
         } else {
@@ -479,7 +479,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::IMITATOR)) {
             do_cmd_mane(*player_ptr, false);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-            do_cmd_magic_eater(player_ptr, false, false);
+            do_cmd_magic_eater(*player_ptr, false, false);
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
             do_cmd_hissatsu(*player_ptr);
         } else if (pc.equals(PlayerClassType::BLUE_MAGE)) {
