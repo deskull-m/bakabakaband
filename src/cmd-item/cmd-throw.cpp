@@ -19,8 +19,8 @@
 #include "system/redrawing-flags-updater.h"
 #include "world/world.h"
 
-ThrowCommand::ThrowCommand(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+ThrowCommand::ThrowCommand(CreatureEntity &creature)
+    : player_ptr(dynamic_cast<PlayerType *>(&creature))
 {
 }
 

@@ -523,7 +523,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'v': {
-        (void)ThrowCommand(player_ptr).do_cmd_throw(1, false, -1);
+        (void)ThrowCommand(*player_ptr).do_cmd_throw(1, false, -1);
         break;
     }
     case 'a': {

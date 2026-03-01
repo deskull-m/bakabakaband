@@ -107,7 +107,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 2:
         if (cast) {
-            if (!ThrowCommand(player_ptr).do_cmd_throw(1, true, -1)) {
+            if (!ThrowCommand(*player_ptr).do_cmd_throw(1, true, -1)) {
                 return tl::nullopt;
             }
         }

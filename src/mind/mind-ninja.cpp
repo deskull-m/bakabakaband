@@ -448,7 +448,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
                 return false;
             }
 
-            (void)ThrowCommand(player_ptr).do_cmd_throw(1, false, slot);
+            (void)ThrowCommand(*player_ptr).do_cmd_throw(1, false, slot);
             PlayerEnergy(player_ptr).set_player_turn_energy(100);
         }
 
