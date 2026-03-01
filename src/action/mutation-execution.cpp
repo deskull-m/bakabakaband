@@ -308,7 +308,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     }
     case PlayerMutationType::LAUNCHER:
-        return ThrowCommand(player_ptr).do_cmd_throw(2 + lvl / 40, false, -1);
+        return ThrowCommand(*player_ptr).do_cmd_throw(2 + lvl / 40, false, -1);
     default:
         PlayerEnergy(player_ptr).reset_player_turn();
         msg_format(_("能力 %s は実装されていません。", "Power %s not implemented. Oops."), power);

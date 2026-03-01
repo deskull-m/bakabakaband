@@ -2,10 +2,11 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class PlayerType;
 class ThrowCommand {
 public:
-    ThrowCommand(PlayerType *player_ptr);
+    ThrowCommand(CreatureEntity &creature);
     virtual ~ThrowCommand() = default;
     bool do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken);
 
