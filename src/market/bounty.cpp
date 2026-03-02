@@ -37,11 +37,12 @@
 
 /*!
  * @brief 賞金首の引き換え処理 / Get prize
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 各種賞金首のいずれかでも換金が行われたか否か。
  */
-bool exchange_cash(PlayerType *player_ptr)
+bool exchange_cash(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto change = false;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     constexpr auto fmt_convert = _("%s を換金しますか？", "Convert %s into money? ");
@@ -178,7 +179,7 @@ bool exchange_cash(PlayerType *player_ptr)
             }
 
             vary_item(player_ptr, i, -item.number);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, 5);
+            chg_virtue(creature, Virtue::JUSTICE, 5);
             is_achieved = true;
 
             const auto num = static_cast<int>(std::count_if(std::begin(world.bounties), std::end(world.bounties),
@@ -201,7 +202,7 @@ bool exchange_cash(PlayerType *player_ptr)
             msg_format(_("%s(%c)を貰った。", "You get %s (%c). "), got_item_name.data(), index_to_label(inventory_new));
 
             autopick_alter_item(player_ptr, inventory_new, false);
-            handle_stuff(*player_ptr);
+            handle_stuff(creature);
             change = true;
         }
     }
@@ -274,15 +275,15 @@ void show_bounty(void)
 
 /*!
  * @brief 今日の賞金首を確定する
- * @param PlayerType プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void determine_daily_bounty(PlayerType *player_ptr)
+void determine_daily_bounty(CreatureEntity &creature)
 {
     const auto max_dungeon_level = std::max(DungeonService::find_max_level(), 3);
-    get_mon_num_prep_bounty(*player_ptr);
+    get_mon_num_prep_bounty(creature);
     auto &world = AngbandWorld::get_instance();
     while (true) {
-        world.today_mon = get_mon_num(*player_ptr, std::min(max_dungeon_level / 2, 40), max_dungeon_level, PM_ARENA);
+        world.today_mon = get_mon_num(creature, std::min(max_dungeon_level / 2, 40), max_dungeon_level, PM_ARENA);
         const auto &monrace = world.get_today_bounty();
         if (cheat_hear) {
             msg_format(_("日替わり候補: %s ", "Today's candidate: %s "), monrace.name.data());
@@ -315,11 +316,11 @@ void determine_daily_bounty(PlayerType *player_ptr)
 
 /*!
  * @brief 賞金首となるユニークを確定する / Determine bounty uniques
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void determine_bounty_uniques(PlayerType *player_ptr)
+void determine_bounty_uniques(CreatureEntity &creature)
 {
-    get_mon_num_prep_bounty(*player_ptr);
+    get_mon_num_prep_bounty(creature);
     const auto &monraces = MonraceList::get_instance();
     auto is_suitable_for_bounty = [&monraces](auto monrace_id) {
         const auto &monrace = monraces.get_monrace(monrace_id);
@@ -334,7 +335,7 @@ void determine_bounty_uniques(PlayerType *player_ptr)
     std::vector<MonraceId> bounty_monrace_ids;
     auto &world = AngbandWorld::get_instance();
     while (bounty_monrace_ids.size() < std::size(world.bounties)) {
-        const auto monrace_id = get_mon_num(*player_ptr, 0, MAX_DEPTH - 1, PM_ARENA);
+        const auto monrace_id = get_mon_num(creature, 0, MAX_DEPTH - 1, PM_ARENA);
         if (!is_suitable_for_bounty(monrace_id)) {
             continue;
         }

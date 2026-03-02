@@ -255,7 +255,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         today_target();
         return false;
     case BACT_KANKIN:
-        exchange_cash(player_ptr);
+        exchange_cash(*player_ptr);
         return false;
     case BACT_HEIKOUKA:
         msg_print(_("平衡化の儀式を行なった。", "You received an equalization ritual."));
