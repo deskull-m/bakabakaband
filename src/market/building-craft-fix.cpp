@@ -85,8 +85,9 @@ static void give_one_ability_of_object(ItemEntity *to_ptr, ItemEntity *from_ptr)
     }
 }
 
-static std::pair<short, ItemEntity *> select_repairing_broken_weapon(PlayerType *player_ptr, const int row)
+static std::pair<short, ItemEntity *> select_repairing_broken_weapon(CreatureEntity &creature, const int row)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     prt(_("修復には材料となるもう1つの武器が必要です。", "Hand one material weapon to repair a broken weapon."), row, 2);
     prt(_("材料に使用した武器はなくなります！", "The material weapon will disappear after repairing!!"), row + 1, 2);
     constexpr auto q = _("どの折れた武器を修復しますか？", "Repair which broken weapon? ");
@@ -110,14 +111,16 @@ static std::pair<short, ItemEntity *> select_repairing_broken_weapon(PlayerType 
     return { i_idx, o_ptr };
 }
 
-static void display_reparing_weapon(PlayerType *player_ptr, const ItemEntity &item, const int row)
+static void display_reparing_weapon(CreatureEntity &creature, const ItemEntity &item, const int row)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
     prt(format(_("修復する武器　： %s", "Repairing: %s"), item_name.data()), row + 3, 2);
 }
 
-static void display_repair_success_message(PlayerType *player_ptr, const ItemEntity &item, const int cost)
+static void display_repair_success_message(CreatureEntity &creature, const ItemEntity &item, const int cost)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
 #ifdef JP
     msg_format("＄%dで%sに修復しました。", cost, item_name.data());
@@ -133,16 +136,17 @@ static void display_repair_success_message(PlayerType *player_ptr, const ItemEnt
  * @param bcost 基本修復費用
  * @return 実際にかかった費用
  */
-static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
+static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     clear_bldg(0, 22);
     auto row = 7;
-    const auto &[i_idx, o_ptr] = select_repairing_broken_weapon(player_ptr, row);
+    const auto &[i_idx, o_ptr] = select_repairing_broken_weapon(creature, row);
     if (o_ptr == nullptr) {
         return 0;
     }
 
-    display_reparing_weapon(player_ptr, *o_ptr, row);
+    display_reparing_weapon(creature, *o_ptr, row);
     constexpr auto q = _("材料となる武器は？", "Which weapon for material? ");
     constexpr auto s = _("材料となる武器がありません。", "You have no material for the repair.");
     short mater;
@@ -291,7 +295,7 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
         msg_print(_("これはかなりの業物だったようだ。", "This blade seems to be exceptional."));
     }
 
-    display_repair_success_message(player_ptr, *o_ptr, cost);
+    display_repair_success_message(creature, *o_ptr, cost);
     o_ptr->ident &= ~(IDENT_BROKEN);
     o_ptr->discount = 99;
 
@@ -300,21 +304,21 @@ static PRICE repair_broken_weapon_aux(PlayerType *player_ptr, PRICE bcost)
     inven_item_optimize(player_ptr, mater);
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return cost;
 }
 
 /*!
  * @brief アイテム修復処理の過渡ルーチン / Repair broken weapon
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param bcost 基本鑑定費用
  * @return 実際にかかった費用
  */
-int repair_broken_weapon(PlayerType *player_ptr, PRICE bcost)
+int repair_broken_weapon(CreatureEntity &creature, PRICE bcost)
 {
     PRICE cost;
     screen_save();
-    cost = repair_broken_weapon_aux(player_ptr, bcost);
+    cost = repair_broken_weapon_aux(creature, bcost);
     screen_load();
     return cost;
 }
