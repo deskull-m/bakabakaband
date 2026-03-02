@@ -24,8 +24,9 @@ static std::string birth_personality_label(int cs, concptr sym)
     return ss.str();
 }
 
-static void enumerate_personality_list(PlayerType *player_ptr, char *sym)
+static void enumerate_personality_list(CreatureEntity &creature, char *sym)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     for (int n = 0; n < MAX_PERSONALITIES; n++) {
         if (personality_info[n].sex && (personality_info[n].sex != (player_ptr->psex + 1))) {
             continue;
@@ -82,8 +83,9 @@ static bool check_selected_sex(int pp_idx, player_sex psex)
     return (ppersonality.sex != 0) && (ppersonality.sex != (psex + 1));
 }
 
-static int interpret_personality_select_key_move(PlayerType *player_ptr, char key, int initial_personality)
+static int interpret_personality_select_key_move(CreatureEntity &creature, char key, int initial_personality)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto pp_idx = initial_personality;
     switch (key) {
     case '8':
@@ -155,8 +157,9 @@ static int interpret_personality_select_key_move(PlayerType *player_ptr, char ke
     }
 }
 
-static bool select_personality(PlayerType *player_ptr, int *k, concptr sym)
+static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int cs = player_ptr->ppersonality;
     int os = MAX_PERSONALITIES;
     std::string cur = birth_personality_label(os, sym);
@@ -191,7 +194,7 @@ static bool select_personality(PlayerType *player_ptr, int *k, concptr sym)
             }
         }
 
-        cs = interpret_personality_select_key_move(player_ptr, c, cs);
+        cs = interpret_personality_select_key_move(creature, c, cs);
         if (c == '*') {
             player_personality ppersonality{};
             do {
@@ -225,7 +228,7 @@ static bool select_personality(PlayerType *player_ptr, int *k, concptr sym)
             *k = -1;
         }
 
-        birth_help_option(*player_ptr, c, BirthKind::PERSONALITY);
+        birth_help_option(creature, c, BirthKind::PERSONALITY);
     }
 
     return true;
@@ -236,7 +239,7 @@ static bool select_personality(PlayerType *player_ptr, int *k, concptr sym)
  */
 bool get_player_personality(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
 
     clear_from(10);
     put_str(_("注意：《性格》によってキャラクターの能力やボーナスが変化します。", "Note: Your personality determines various intrinsic abilities and bonuses."),
@@ -244,14 +247,14 @@ bool get_player_personality(CreatureEntity &creature)
     put_str("                                   ", 6, 40);
 
     char sym[MAX_PERSONALITIES];
-    enumerate_personality_list(player_ptr, sym);
+    enumerate_personality_list(creature, sym);
     int k = -1;
-    if (!select_personality(player_ptr, &k, sym)) {
+    if (!select_personality(creature, &k, sym)) {
         return false;
     }
 
     player_ptr->ppersonality = (player_personality_type)k;
     player_ptr->personality = &personality_info[player_ptr->ppersonality];
-    display_player_name(*player_ptr);
+    display_player_name(creature);
     return true;
 }
