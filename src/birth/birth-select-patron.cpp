@@ -90,8 +90,9 @@ static int interpret_patron_select_key_move(char key, int initial_patron)
     }
 }
 
-static bool select_patron(PlayerType *player_ptr, int *k, concptr sym)
+static bool select_patron(CreatureEntity &creature, int *k, concptr sym)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int cs = player_ptr->patron;
     int os = MAX_PATRON;
     std::string cur = birth_patron_label(os, sym);
@@ -144,7 +145,7 @@ static bool select_patron(PlayerType *player_ptr, int *k, concptr sym)
             *k = -1;
         }
 
-        birth_help_option(*player_ptr, c, BirthKind::PATRON);
+        birth_help_option(creature, c, BirthKind::PATRON);
     }
 
     return true;
@@ -155,7 +156,7 @@ static bool select_patron(PlayerType *player_ptr, int *k, concptr sym)
  */
 bool get_player_patron(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
 
     clear_from(10);
     put_str(_("注意：《パトロン》によってキャラクターが得る加護が変化します。", "Note: Your patron determines the divine protection you receive."),
@@ -165,11 +166,11 @@ bool get_player_patron(CreatureEntity &creature)
     char sym[MAX_PATRON];
     enumerate_patron_list(sym);
     int k = -1;
-    if (!select_patron(player_ptr, &k, sym)) {
+    if (!select_patron(creature, &k, sym)) {
         return false;
     }
 
     player_ptr->patron = k;
-    display_player_name(*player_ptr);
+    display_player_name(creature);
     return true;
 }
