@@ -187,7 +187,7 @@ static bool stay_inn(CreatureEntity &creature)
     wc_ptr->plus_timed_world_collapsion(&world, player_ptr, 25000);
     prevent_turn_overflow(player_ptr);
     if ((prev_hour >= 18) && (prev_hour <= 23)) {
-        determine_daily_bounty(player_ptr);
+        determine_daily_bounty(creature);
         exe_write_diary(*creature.current_floor_ptr, DiaryKind::DIALY, 0);
     }
 

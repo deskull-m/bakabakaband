@@ -201,8 +201,8 @@ static void init_world_floor_info(PlayerType *player_ptr, std::optional<QuestId>
     counts_write(*player_ptr, 2, 0);
     player_ptr->count = 0;
     load = false;
-    determine_bounty_uniques(player_ptr);
-    determine_daily_bounty(player_ptr);
+    determine_bounty_uniques(*player_ptr);
+    determine_daily_bounty(*player_ptr);
     wipe_o_list(floor);
 }
 
