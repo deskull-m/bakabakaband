@@ -295,8 +295,9 @@ static void list_weapon(PlayerType *player_ptr, const ItemEntity &item, TERM_LEN
  * @param bcost 基本鑑定費用
  * @return 最終的にかかった費用
  */
-PRICE compare_weapons(PlayerType *player_ptr, PRICE bcost)
+PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     ItemEntity *o_ptr[2]{};
     TERM_LEN row = 2;
     TERM_LEN wid = 38, mgn = 2;

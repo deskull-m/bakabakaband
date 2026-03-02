@@ -159,7 +159,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
 
         return false;
     case BACT_COMPARE_WEAPONS:
-        player_ptr->au -= compare_weapons(player_ptr, building_cost);
+        player_ptr->au -= compare_weapons(*player_ptr, building_cost);
         return false;
     case BACT_ENCHANT_WEAPON:
         enchant_item(player_ptr, building_cost, 1, 1, 0, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
@@ -294,7 +294,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
 
         return false;
     case BACT_BROKEN_WEAPON:
-        player_ptr->au -= repair_broken_weapon(player_ptr, building_cost);
+        player_ptr->au -= repair_broken_weapon(*player_ptr, building_cost);
         return false;
 
     case BACT_TRANS_SEX:
