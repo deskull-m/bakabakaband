@@ -97,10 +97,10 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
     if (slot >= INVEN_MAIN_HAND) {
 #ifdef JP
         constexpr auto mes = "%s%s(%c)は%sという感じがする...";
-        msg_format(mes, describe_use(player_ptr, slot), item_name.data(), index_to_label(slot), game_inscriptions[feel]);
+        msg_format(mes, describe_use(*player_ptr, slot), item_name.data(), index_to_label(slot), game_inscriptions[feel]);
 #else
         constexpr auto mes = "You feel the %s (%c) you are %s %s %s...";
-        msg_format(mes, item_name.data(), index_to_label(slot), describe_use(player_ptr, slot),
+        msg_format(mes, item_name.data(), index_to_label(slot), describe_use(*player_ptr, slot),
             ((item.number == 1) ? "is" : "are"), game_inscriptions[feel]);
 #endif
 

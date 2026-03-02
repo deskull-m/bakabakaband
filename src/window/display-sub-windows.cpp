@@ -366,7 +366,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
 
         if (show_labels) {
             term_putstr(wid - 20, cur_row, -1, TERM_WHITE, " <-- ");
-            prt(mention_use(player_ptr, i), cur_row, wid - 15);
+            prt(mention_use(*player_ptr, i), cur_row, wid - 15);
         }
     }
 

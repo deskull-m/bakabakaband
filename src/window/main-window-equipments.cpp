@@ -117,7 +117,7 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
         }
 
         if (show_labels) {
-            const auto label = format(_("%-7s: ", "%-14s: "), mention_use(player_ptr, i));
+            const auto label = format(_("%-7s: ", "%-14s: "), mention_use(*player_ptr, i));
             put_str(label, j + 1, cur_col);
             c_put_str(out_color[j], out_desc[j], j + 1, _(cur_col + 9, cur_col + 16));
         } else {
