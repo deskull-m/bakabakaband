@@ -56,8 +56,9 @@
  * @brief プレイヤーキャラの作成結果を日記に書く
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void write_birth_diary(PlayerType *player_ptr)
+static void write_birth_diary(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     concptr indent = "                            ";
 
     message_add(" ");
@@ -88,7 +89,7 @@ static void write_birth_diary(PlayerType *player_ptr)
 
     const auto mes_personality = format(_("%s性格に%sを選択した。", "%schose %s personality."), indent, personality_info[player_ptr->ppersonality].title.data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_personality);
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::CHAOS_WARRIOR)) {
+    if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR)) {
         const auto fmt_patron = _("%s守護神%sと契約を交わした。", "%smade a contract with patron %s.");
         const auto mes_patron = format(fmt_patron, indent, patron_list[player_ptr->patron].name.data());
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_patron);
@@ -105,25 +106,25 @@ static void write_birth_diary(PlayerType *player_ptr)
  */
 void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
 
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
     AngbandWorld::get_instance().play_time.reset();
-    wipe_monsters_list(*player_ptr);
-    player_wipe_without_name(*player_ptr);
-    if (!ask_quick_start(*player_ptr)) {
+    wipe_monsters_list(creature);
+    player_wipe_without_name(creature);
+    if (!ask_quick_start(creature)) {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_NEW_GAME);
         while (true) {
-            if (player_birth_wizard(*player_ptr)) {
+            if (player_birth_wizard(creature)) {
                 break;
             }
 
-            player_wipe_without_name(*player_ptr);
+            player_wipe_without_name(creature);
         }
     }
 
-    write_birth_diary(player_ptr);
+    write_birth_diary(creature);
     for (size_t i = 1; i < towns_info.size(); i++) {
         for (auto sst : STORE_SALE_TYPE_LIST) {
             store_init(i, sst);
@@ -131,7 +132,7 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
     }
 
     WildernessGrids::get_instance().initialize_seeds();
-    if (CreatureRace(player_ptr).equals(PlayerRaceType::BEASTMAN)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::BEASTMAN)) {
         player_ptr->hack_mutation = true;
     } else {
         player_ptr->hack_mutation = false;
