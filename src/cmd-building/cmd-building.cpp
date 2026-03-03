@@ -142,7 +142,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
     case BACT_DICE_SLOTS:
     case BACT_GAMBLE_RULES:
     case BACT_POKER:
-        gamble_comm(player_ptr, building_action);
+        gamble_comm(*player_ptr, building_action);
         return false;
     case BACT_REST:
     case BACT_RUMORS:
