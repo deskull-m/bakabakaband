@@ -20,12 +20,13 @@
 
 /*!
  * @brief 施設でモンスターの情報を知るメインルーチン / research_mon -KMW-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 常にTRUEを返す。
  * @todo 返り値が意味不明なので直した方が良いかもしれない。
  */
-bool research_mon(PlayerType *player_ptr)
+bool research_mon(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     bool recall = false;
     bool all = false;
     bool uniq = false;
@@ -155,7 +156,7 @@ bool research_mon(PlayerType *player_ptr)
                 }
 
                 tracker.set_trackee(monrace_id);
-                handle_stuff(static_cast<CreatureEntity &>(*player_ptr));
+                handle_stuff(creature);
                 screen_roff(*player_ptr, monrace_id, MONSTER_LORE_RESEARCH);
                 notpicked = false;
                 old_sym = *sym;
