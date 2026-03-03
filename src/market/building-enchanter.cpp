@@ -15,15 +15,16 @@
 
 /*!
  * @brief アイテムの強化を行う。 / Enchant item
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @param cost 1回毎の費用
  * @param to_hit 命中をアップさせる量
  * @param to_dam ダメージをアップさせる量
  * @param to_ac ＡＣをアップさせる量
  * @return 実際に行ったらTRUE
  */
-bool enchant_item(PlayerType *player_ptr, PRICE cost, HIT_PROB to_hit, int to_dam, ARMOUR_CLASS to_ac, const ItemTester &item_tester)
+bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_dam, ARMOUR_CLASS to_ac, const ItemTester &item_tester)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     clear_bldg(4, 18);
     int maxenchant = (player_ptr->level / 5);
     prt(format(_("現在のあなたの技量だと、+%d まで改良できます。", "  Based on your skill, we can improve up to +%d."), maxenchant), 5, 0);
