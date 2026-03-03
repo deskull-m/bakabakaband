@@ -148,7 +148,7 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
         summon_named_creature(*player_ptr, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
             .transform(index_to_monster);
     if (!monster) {
-        msg_print_wizard(player_ptr, 1, "Monster isn't summoned correctly...");
+        msg_print_wizard(*player_ptr, 1, "Monster isn't summoned correctly...");
         return;
     }
 
@@ -311,7 +311,7 @@ void wiz_generate_random_monster(CreatureEntity &creature, int num)
     constexpr auto flags = PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_QUEST;
     for (auto i = 0; i < num; i++) {
         if (!alloc_monster(*player_ptr, 0, flags, summon_specific, 5)) {
-            msg_print_wizard(player_ptr, 1, "Monster isn't generated correctly...");
+            msg_print_wizard(*player_ptr, 1, "Monster isn't generated correctly...");
             return;
         }
     }
@@ -333,7 +333,7 @@ void wiz_summon_random_monster(CreatureEntity &creature, int num)
     const auto p_pos = creature.get_position();
     for (auto i = 0; i < num; i++) {
         if (!summon_specific(creature, p_pos.y, p_pos.x, level, SUMMON_NONE, flags)) {
-            msg_print_wizard(player_ptr, 1, "Monster isn't summoned correctly...");
+            msg_print_wizard(*player_ptr, 1, "Monster isn't summoned correctly...");
             return;
         }
     }

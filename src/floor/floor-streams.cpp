@@ -342,7 +342,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(&player, CHEAT_DUNGEON, _("地形のストリーマー処理に失敗しました。", "Failed to place streamer."));
+            msg_print_wizard(player, CHEAT_DUNGEON, _("地形のストリーマー処理に失敗しました。", "Failed to place streamer."));
             return;
         }
 
@@ -420,7 +420,7 @@ void place_trees(CreatureEntity &creature, const Pos2D &pos)
 void destroy_level(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("階に*破壊*の痕跡を生成しました。", "Destroyed Level."));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("階に*破壊*の痕跡を生成しました。", "Destroyed Level."));
 
     /* Drop a few epi-centers (usually about two) */
     POSITION y1, x1;

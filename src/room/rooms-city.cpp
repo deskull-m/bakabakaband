@@ -234,6 +234,6 @@ bool build_type16(CreatureEntity &creature, DungeonData *dd_ptr)
     const auto bottom_right = pos + vec_bottom_right;
     generate_room_floor(creature, { top_left, bottom_right }, false);
     build_stores(creature, pos, *underground_buildings);
-    msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("地下街を生成しました", "Underground arcade was generated."));
+    msg_print_wizard(*player_ptr, CHEAT_DUNGEON, _("地下街を生成しました", "Underground arcade was generated."));
     return true;
 }

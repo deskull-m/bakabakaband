@@ -102,7 +102,7 @@ void set_boundaries(CreatureEntity &creature, const Pos2D &pos)
 static void build_bubble_vault(CreatureEntity &creature, const Pos2D &pos0, const Pos2DVec &vec)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("泡型ランダムVaultを生成しました。", "Bubble-shaped Vault."));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("泡型ランダムVaultを生成しました。", "Bubble-shaped Vault."));
     auto center_points = create_bubbles_center(vec);
 
     const Pos2DVec vec_half(vec.y / 2, vec.x / 2);
@@ -174,7 +174,7 @@ static void build_room_vault(CreatureEntity &creature, const Pos2D &center, cons
 {
     auto &player = static_cast<PlayerType &>(creature);
     const Pos2DVec vec_half(vec.y / 2, vec.x / 2);
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("部屋型ランダムVaultを生成しました。", "Room Vault."));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("部屋型ランダムVaultを生成しました。", "Room Vault."));
 
     /* fill area so don't get problems with on_defeat_arena_monster levels */
     auto &floor = *creature.current_floor_ptr;
@@ -218,7 +218,7 @@ static void build_cave_vault(CreatureEntity &creature, const Pos2D &center, cons
     const auto xsize = vec_half.x * 2;
     const auto ysize = vec_half.y * 2;
 
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("洞穴ランダムVaultを生成しました。", "Cave Vault."));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("洞穴ランダムVaultを生成しました。", "Cave Vault."));
 
     auto light = false;
     auto done = false;
@@ -574,7 +574,7 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
     const auto h3 = randint1(32);
     const auto h4 = randint1(32) - 16;
 
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("対称形ランダムVaultを生成しました。", "Target Vault"));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("対称形ランダムVaultを生成しました。", "Target Vault"));
 
     const auto rad = vec.x > vec.y ? vec.y / 2 : vec.x / 2;
 
@@ -665,7 +665,7 @@ static void build_target_vault(CreatureEntity &creature, const Pos2D &center, co
 static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("精霊界ランダムVaultを生成しました。", "Elemental Vault"));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("精霊界ランダムVaultを生成しました。", "Elemental Vault"));
 
     /* round to make sizes even */
     const Pos2DVec vec_half(vec.y / 2, vec.x / 2);
@@ -738,7 +738,7 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
 static void build_mini_c_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("小型チェッカーランダムVaultを生成しました。", "Mini Checker Board Vault."));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("小型チェッカーランダムVaultを生成しました。", "Mini Checker Board Vault."));
 
     /* Pick a random room size */
     const auto dy = vec.y / 2 - 1;
@@ -851,7 +851,7 @@ static void build_castle_vault(CreatureEntity &creature, const Pos2D &center, co
     /* Pick a random room size */
     const Pos2DVec vec_half(vec.y / 2 - 1, vec.x / 2 - 1);
     const Rect2D area(center, vec_half);
-    msg_print_wizard(&player, CHEAT_DUNGEON, _("城型ランダムVaultを生成しました。", "Castle Vault"));
+    msg_print_wizard(player, CHEAT_DUNGEON, _("城型ランダムVaultを生成しました。", "Castle Vault"));
 
     /* generate the room */
     auto &floor = *creature.current_floor_ptr;
@@ -985,7 +985,7 @@ bool build_fixed_room(CreatureEntity &creature, DungeonData *dd_ptr, int typ, bo
         return false;
     }
 
-    msg_format_wizard(&player, CHEAT_DUNGEON, _("固定部屋(%s)を生成しました。", "Fixed room (%s)."), vault.name.data());
+    msg_format_wizard(player, CHEAT_DUNGEON, _("固定部屋(%s)を生成しました。", "Fixed room (%s)."), vault.name.data());
     build_vault(vault, creature, center->y, center->x, vault.hgt, vault.wid, vault.text.data(), x_offset, y_offset, num_transformation);
 
     return true;

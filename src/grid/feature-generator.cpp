@@ -88,7 +88,7 @@ void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &du
         }
 
         if (dd_ptr->laketype) {
-            msg_print_wizard(&player, CHEAT_DUNGEON, _("湖を生成します。", "Lake on the level."));
+            msg_print_wizard(player, CHEAT_DUNGEON, _("湖を生成します。", "Lake on the level."));
             build_lake(creature, dd_ptr->laketype);
         }
     }
@@ -96,7 +96,7 @@ void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &du
     const auto should_build_cavern = decide_cavern(floor, dungeon, *dd_ptr);
     if (should_build_cavern) {
         dd_ptr->cavern = true;
-        msg_print_wizard(&player, CHEAT_DUNGEON, _("洞窟を生成。", "Cavern on level."));
+        msg_print_wizard(player, CHEAT_DUNGEON, _("洞窟を生成。", "Cavern on level."));
         build_cavern(creature);
     }
 

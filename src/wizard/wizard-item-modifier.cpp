@@ -136,7 +136,7 @@ static void wiz_item_drop(CreatureEntity &creature, const int num_items, const E
         }
 
         if (!drop_near(creature, *item, creature.get_position())) {
-            msg_print_wizard(player_ptr, 0, "No item dropping space!");
+            msg_print_wizard(*player_ptr, 0, "No item dropping space!");
             return;
         }
     }
