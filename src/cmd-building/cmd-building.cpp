@@ -95,9 +95,9 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
     auto &world = AngbandWorld::get_instance();
     msg_flag = false;
     msg_erase();
-    const auto can_be_owner = is_owner(player_ptr, bldg);
+    const auto can_be_owner = is_owner(*player_ptr, bldg);
     const auto building_cost = can_be_owner ? bldg.member_costs[i] : bldg.other_costs[i];
-    if (((bldg.action_restr[i] == 1) && !is_member(player_ptr, bldg)) || ((bldg.action_restr[i] == 2) && !can_be_owner)) {
+    if (((bldg.action_restr[i] == 1) && !is_member(*player_ptr, bldg)) || ((bldg.action_restr[i] == 2) && !can_be_owner)) {
         msg_print(_("それを選択する権利はありません！", "You have no right to choose that!"));
         return false;
     }
@@ -425,7 +425,7 @@ void do_cmd_building(PlayerType *player_ptr)
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
     while (true) {
-        display_building_service(player_ptr, bldg);
+        display_building_service(*player_ptr, bldg);
         prt("", 1, 0);
         building_prt_gold(player_ptr->au);
         const auto command = inkey();
