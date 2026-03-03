@@ -125,7 +125,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         race_legends(player_ptr);
         return false;
     case BACT_QUEST:
-        castle_quest(player_ptr);
+        castle_quest(*player_ptr);
         return false;
     case BACT_KING_LEGENDS:
     case BACT_ARENA_LEGENDS:
