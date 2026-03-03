@@ -148,7 +148,7 @@ tl::optional<std::string> do_sorcery_spell(CreatureEntity &creature, SPELL_IDX s
         }
 
         if (cast) {
-            if (!recharge(player_ptr, power)) {
+            if (!recharge(creature, power)) {
                 return tl::nullopt;
             }
         }

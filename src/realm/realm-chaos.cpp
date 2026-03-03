@@ -336,7 +336,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
             return info_power(power);
         }
         if (cast) {
-            if (!recharge(player_ptr, power)) {
+            if (!recharge(creature, power)) {
                 return tl::nullopt;
             }
         }

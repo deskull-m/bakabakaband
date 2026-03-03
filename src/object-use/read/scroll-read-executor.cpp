@@ -220,7 +220,7 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_RECHARGING:
-        if (!recharge(this->player_ptr, 130)) {
+        if (!recharge(*this->player_ptr, 130)) {
             used_up = false;
         }
 

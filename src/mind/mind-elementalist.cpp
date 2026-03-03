@@ -1501,7 +1501,7 @@ bool switch_element_execution(CreatureEntity &creature)
         (void)project_all_los(creature, AttributeType::OLD_SLEEP, 20 + plev * 3 / 2);
         return true;
     case ElementRealmType::SKY:
-        (void)recharge(&player, 120);
+        (void)recharge(creature, 120);
         return true;
     case ElementRealmType::SEA: {
         const auto dir = get_aim_dir(creature);

@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool recharge(PlayerType *player_ptr, int power);
+class CreatureEntity;
+bool recharge(CreatureEntity &creature, int power);
