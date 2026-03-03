@@ -162,10 +162,10 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         player_ptr->au -= compare_weapons(*player_ptr, building_cost);
         return false;
     case BACT_ENCHANT_WEAPON:
-        enchant_item(player_ptr, building_cost, 1, 1, 0, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
+        enchant_item(*player_ptr, building_cost, 1, 1, 0, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
         return false;
     case BACT_ENCHANT_ARMOR:
-        enchant_item(player_ptr, building_cost, 0, 0, 1, FuncItemTester(&ItemEntity::is_protector));
+        enchant_item(*player_ptr, building_cost, 0, 0, 1, FuncItemTester(&ItemEntity::is_protector));
         return false;
     case BACT_RECHARGE:
         building_recharge(*player_ptr);
@@ -204,10 +204,10 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
 
         return false;
     case BACT_ENCHANT_ARROWS:
-        enchant_item(player_ptr, building_cost, 1, 1, 0, FuncItemTester(&ItemEntity::is_ammo));
+        enchant_item(*player_ptr, building_cost, 1, 1, 0, FuncItemTester(&ItemEntity::is_ammo));
         return false;
     case BACT_ENCHANT_BOW:
-        enchant_item(player_ptr, building_cost, 1, 1, 0, TvalItemTester(ItemKindType::BOW));
+        enchant_item(*player_ptr, building_cost, 1, 1, 0, TvalItemTester(ItemKindType::BOW));
         return false;
     case BACT_RECALL:
         if (recall_player(*player_ptr, 1)) {
