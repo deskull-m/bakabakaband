@@ -55,6 +55,7 @@ static void show_weapon_dmg(int r, int c, int mindice, int maxdice, int blows, i
 
 /*!
  * @brief 武器一つ毎のダメージ情報を表示する。
+ * @param creature プレイヤーへの参照
  * @param o_ptr オブジェクトの構造体の参照ポインタ。
  * @param col 表示する行の上端
  * @param r 表示する列の左端
@@ -64,8 +65,9 @@ static void show_weapon_dmg(int r, int c, int mindice, int maxdice, int blows, i
  * Only accurate for the current weapon, because it includes\n
  * the current number of blows for the player.\n
  */
-static void compare_weapon_aux(PlayerType *player_ptr, ItemEntity *o_ptr, int col, int r)
+static void compare_weapon_aux(CreatureEntity &creature, ItemEntity *o_ptr, int col, int r)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int blow = player_ptr->num_blow[0];
     bool force = false;
     bool dokubari = false;
@@ -246,7 +248,7 @@ static void compare_weapon_aux(PlayerType *player_ptr, ItemEntity *o_ptr, int co
 
 /*!
  * @brief 武器匠における武器一つ毎の完全情報を表示する。
- * @param PlayerType プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @param item アイテムへの参照
  * @param row 表示する列の左端
  * @param col 表示する行の上端
@@ -256,8 +258,9 @@ static void compare_weapon_aux(PlayerType *player_ptr, ItemEntity *o_ptr, int co
  * Only accurate for the current weapon, because it includes
  * various info about the player's +to_dam and number of blows.
  */
-static void list_weapon(PlayerType *player_ptr, const ItemEntity &item, TERM_LEN row, TERM_LEN col)
+static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_LEN row, TERM_LEN col)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto eff_dd = item.damage_dice.num + player_ptr->damage_dice_bonus[0].num;
     const auto eff_ds = item.damage_dice.sides + player_ptr->damage_dice_bonus[0].sides;
     const auto hit_reliability = player_ptr->skill_thn + (player_ptr->to_h[0] + item.to_h) * BTH_PLUS_ADJ;
@@ -291,7 +294,7 @@ static void list_weapon(PlayerType *player_ptr, const ItemEntity &item, TERM_LEN
  * @details
  * Copies the weapons to compare into the weapon-slot and\n
  * compares the values for both weapons.\n
- * 武器1つだけで比較をしないなら費用は半額になる。
+ * 武器1つだけでcreature プレイヤーへの参照
  * @param bcost 基本鑑定費用
  * @return 最終的にかかった費用
  */
@@ -338,8 +341,8 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
             handle_stuff(*player_ptr);
 
-            list_weapon(player_ptr, *o_ptr[i], row, col);
-            compare_weapon_aux(player_ptr, o_ptr[i], col, row + 8);
+            list_weapon(creature, *o_ptr[i], row, col);
+            compare_weapon_aux(creature, o_ptr[i], col, row + 8);
             *i_ptr = orig_weapon.clone();
         }
 
