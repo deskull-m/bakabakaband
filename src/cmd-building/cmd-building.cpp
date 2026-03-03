@@ -135,7 +135,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
     case BACT_POSTER:
     case BACT_ARENA_RULES:
     case BACT_ARENA:
-        return arena_comm(player_ptr, building_action);
+        return arena_comm(*player_ptr, building_action);
     case BACT_IN_BETWEEN:
     case BACT_CRAPS:
     case BACT_SPIN_WHEEL:
