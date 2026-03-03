@@ -14,11 +14,12 @@
 
 /*!
  * @brief カジノ1プレイごとのメインルーチン / gamble_comm
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @param cmd プレイするゲームID
  */
-void gamble_comm(PlayerType *player_ptr, int cmd)
+void gamble_comm(CreatureEntity &creature, int cmd)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     screen_save();
     if (cmd == BACT_GAMBLE_RULES) {
         FileDisplayer(player_ptr->name).display(true, _("jgambling.txt", "gambling.txt"), 0, 0);
