@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool research_mon(PlayerType *player_ptr);
+class CreatureEntity;
+bool research_mon(CreatureEntity &creature);

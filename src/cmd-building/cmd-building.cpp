@@ -153,7 +153,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
 
         return false;
     case BACT_RESEARCH_MONSTER:
-        if (research_mon(player_ptr)) {
+        if (research_mon(*player_ptr)) {
             player_ptr->au -= building_cost;
         }
 
