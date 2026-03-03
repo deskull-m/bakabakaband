@@ -39,11 +39,12 @@ void display_gladiators()
 
 /*!
  * @brief モンスター闘技場のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @return 賭けを開始したか否か
  */
-bool melee_arena_comm(PlayerType *player_ptr)
+bool melee_arena_comm(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     if ((world.game_turn - world.arena_start_turn) > TURNS_PER_TICK * 250) {
         auto &melee_arena = MeleeArena::get_instance();
