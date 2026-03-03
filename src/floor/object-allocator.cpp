@@ -165,7 +165,7 @@ void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_typ
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("アイテムの配置に失敗しました。", "Failed to place object."));
+            msg_print_wizard(*player_ptr, CHEAT_DUNGEON, _("アイテムの配置に失敗しました。", "Failed to place object."));
             return;
         }
 
@@ -251,7 +251,7 @@ void alloc_specific_floor_items(CreatureEntity &creature)
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+            msg_print_wizard(*player_ptr, CHEAT_DUNGEON,
                 _("特定階層アイテムの配置に失敗しました。", "Failed to place specific floor item."));
         }
     }

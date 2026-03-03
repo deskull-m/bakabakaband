@@ -328,7 +328,7 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<
         original_state = rng.get_state(); // 現在の乱数状態を保存
         rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(player_ptr, CHEAT_DUNGEON,
+        msg_format_wizard(*player_ptr, CHEAT_DUNGEON,
             _("乱数種を固定してフロア生成: 0x%08X", "Generating floor with fixed seed: 0x%08X"),
             *seed);
     }

@@ -3,6 +3,6 @@
 #include "system/angband.h"
 #include <string_view>
 
-class PlayerType;
-void msg_print_wizard(PlayerType *player_ptr, int cheat_type, std::string_view msg);
-void msg_format_wizard(PlayerType *player_ptr, int cheat_type, const char *fmt, ...);
+class CreatureEntity;
+void msg_print_wizard(CreatureEntity &creature, int cheat_type, std::string_view msg);
+void msg_format_wizard(CreatureEntity &creature, int cheat_type, const char *fmt, ...);

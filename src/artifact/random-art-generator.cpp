@@ -399,7 +399,7 @@ static void generate_unnatural_random_artifact(
 {
     o_ptr->randart_name = name_unnatural_random_artifact(creature, o_ptr, a_scroll, power_level);
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    msg_format_wizard(player_ptr, CHEAT_OBJECT,
+    msg_format_wizard(*player_ptr, CHEAT_OBJECT,
         _("パワー %d で 価値 %d のランダムアーティファクト生成 バイアスは「%s」", "Random artifact generated - Power:%d Value:%d Bias:%s."), max_powers,
         total_flags, ARTIFACT_BIAS_NAMES.at(o_ptr->artifact_bias).data());
     static constexpr auto flags = {

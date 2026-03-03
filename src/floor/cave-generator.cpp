@@ -189,7 +189,7 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
         dd_ptr->why = _("トンネル接続に失敗", "Failed to generate tunnels");
         return false;
     } else {
-        msg_format_wizard(&player, CHEAT_DUNGEON, _("トンネル失敗回数:%d ", "Failure Tunnels:%d "), dd_ptr->tunnel_fail_count);
+        msg_format_wizard(player, CHEAT_DUNGEON, _("トンネル失敗回数:%d ", "Failure Tunnels:%d "), dd_ptr->tunnel_fail_count);
     }
 
     return true;
@@ -320,7 +320,7 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
         const auto portal_num = randint1(2);
         if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
             // ポータル配置失敗は警告のみで処理継続
-            msg_print_wizard(&player, CHEAT_DUNGEON, _("ポータル生成に失敗", "Failed to generate portals."));
+            msg_print_wizard(player, CHEAT_DUNGEON, _("ポータル生成に失敗", "Failed to generate portals."));
         }
     }
 
@@ -349,7 +349,7 @@ static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, c
             const auto portal_num = randint1(2);
             if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
                 // ポータル配置失敗は警告のみで処理継続
-                msg_print_wizard(&player, CHEAT_DUNGEON, _("迷宮ダンジョンのポータル生成に失敗", "Failed to generate portals in maze dungeon."));
+                msg_print_wizard(player, CHEAT_DUNGEON, _("迷宮ダンジョンのポータル生成に失敗", "Failed to generate portals in maze dungeon."));
             }
         }
 
@@ -459,7 +459,7 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
     if (dd_ptr->alloc_monster_num > small_tester) {
         dd_ptr->alloc_monster_num = small_tester;
     } else {
-        msg_format_wizard(&player, CHEAT_DUNGEON, _("モンスター数基本値を %d から %d に減らします", "Reduced monsters base from %d to %d"), small_tester,
+        msg_format_wizard(player, CHEAT_DUNGEON, _("モンスター数基本値を %d から %d に減らします", "Reduced monsters base from %d to %d"), small_tester,
             dd_ptr->alloc_monster_num);
     }
 }
@@ -568,7 +568,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
         original_state = rng.get_state(); // 現在の乱数状態を保存
         rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(&player, CHEAT_DUNGEON,
+        msg_format_wizard(player, CHEAT_DUNGEON,
             _("乱数種を固定してダンジョンを生成: 0x%08X", "Generating dungeon with fixed seed: 0x%08X"),
             *seed);
     }
@@ -582,7 +582,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     if (floor.dungeon_id == DungeonId::ANGBAND && one_in_(chance_random_dungeon)) {
         if (auto random_dungeon_id = select_random_non_beginner_dungeon()) {
             floor.dungeon_generated_id = *random_dungeon_id;
-            msg_print_wizard(&player, CHEAT_DUNGEON,
+            msg_print_wizard(player, CHEAT_DUNGEON,
                 format(_("鉄獄で他ダンジョンの生成処理を使用: %s", "Using random dungeon generation in Angband: %s"),
                     floor.get_generated_dungeon_definition().name.data()));
         } else {
@@ -599,13 +599,13 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     constexpr auto chance_empty_floor = 24;
     if (ironman_empty_levels || (dungeon.flags.has(DungeonFeatureType::ARENA) && (empty_levels && one_in_(chance_empty_floor)))) {
         dd.empty_level = true;
-        msg_print_wizard(&player, CHEAT_DUNGEON, _("アリーナレベルを生成。", "Arena level."));
+        msg_print_wizard(player, CHEAT_DUNGEON, _("アリーナレベルを生成。", "Arena level."));
     }
 
     // ALWAY_ARENAフラグがある場合は常にアリーナ地形にする
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_ARENA)) {
         dd.empty_level = true;
-        msg_print_wizard(&player, CHEAT_DUNGEON, _("常時アリーナレベルを生成。", "Always arena level."));
+        msg_print_wizard(player, CHEAT_DUNGEON, _("常時アリーナレベルを生成。", "Always arena level."));
     }
 
     check_arena_floor(creature, &dd);
@@ -625,14 +625,14 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     constexpr int waterway_chance = 8;
     if (dungeon.flags.has(DungeonFeatureType::WATERWAY) && one_in_(waterway_chance) && !dd.empty_level) {
         generate_circular_waterway(creature);
-        msg_print_wizard(&player, CHEAT_DUNGEON, _("環状水路を生成。", "Circular waterway generated."));
+        msg_print_wizard(player, CHEAT_DUNGEON, _("環状水路を生成。", "Circular waterway generated."));
     }
 
     // 地形生成完了後、モンスター・アイテム配置前に左右対称化
     constexpr int symmetric_chance = 25;
     if (one_in_(symmetric_chance)) {
         make_symmetric_floor(floor);
-        msg_print_wizard(&player, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
+        msg_print_wizard(player, CHEAT_DUNGEON, _("シンメトリックなフロアを生成。", "Symmetric floor generated."));
     }
 
     if (!check_place_necessary_objects(creature, &dd)) {
@@ -654,7 +654,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
     // ★地形生成完了：ここで乱数状態を復元し、以降のモンスター/アイテム配置は元の乱数で実行★
     if (seed_was_fixed) {
         AngbandSystem::get_instance().get_rng().set_state(original_state);
-        msg_print_wizard(&player, CHEAT_DUNGEON,
+        msg_print_wizard(player, CHEAT_DUNGEON,
             _("地形生成完了、乱数状態を復元してモンスター/アイテム配置へ",
                 "Terrain generation complete, restoring RNG for monster/item placement"));
     }
@@ -713,7 +713,7 @@ void apply_vestige_terrain_replacement(CreatureEntity &creature)
         }
     }
 
-    msg_print_wizard(&player, CHEAT_DUNGEON,
+    msg_print_wizard(player, CHEAT_DUNGEON,
         format(_("VESTIGE効果: %d箇所の地形を差し替えました", "VESTIGE effect: Replaced %d terrain features"),
             replacement_count));
 }
@@ -777,7 +777,7 @@ void apply_void_terrain_placement(CreatureEntity &creature)
         }
     }
 
-    msg_print_wizard(&player, CHEAT_DUNGEON,
+    msg_print_wizard(player, CHEAT_DUNGEON,
         format(_("時空崩壊効果: %d箇所を虚空地形に置き換えました（崩壊度: %d.%06d%%、配置率: %d%%）",
                    "World collapse effect: Replaced %d terrain features with void (collapse: %d.%06d%%, rate: %d%%)"),
             placement_count,

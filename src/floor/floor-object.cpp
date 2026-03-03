@@ -54,7 +54,7 @@ static void object_mention(PlayerType *player_ptr, ItemEntity &item)
     item.mark_as_known();
     item.ident |= (IDENT_FULL_KNOWN);
     const auto item_name = describe_flavor(player_ptr, item, 0);
-    msg_format_wizard(player_ptr, CHEAT_OBJECT, _("%sを生成しました。", "%s was generated."), item_name.data());
+    msg_format_wizard(*player_ptr, CHEAT_OBJECT, _("%sを生成しました。", "%s was generated."), item_name.data());
 }
 
 static int get_base_floor(const FloorType &floor, BIT_FLAGS mode, tl::optional<int> rq_mon_level)
