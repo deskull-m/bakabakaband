@@ -49,8 +49,9 @@ static tl::optional<int> process_ostensible_arena_victory()
     return 1000000;
 }
 
-static bool check_battle_metal_babble(PlayerType *player_ptr)
+static bool check_battle_metal_babble(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     msg_print(_("最強の挑戦者が君に決闘を申し込んできた。", "The strongest challenger throws down the gauntlet to your feet."));
     msg_erase();
     if (!input_check(_("受けて立つかね？", "Do you take up the gauntlet? "))) {
@@ -71,11 +72,12 @@ static bool check_battle_metal_babble(PlayerType *player_ptr)
 
 /*!
  * @brief アリーナへの入場処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @return アリーナへ入場するか否か
  */
-static bool go_to_arena(PlayerType *player_ptr)
+static bool go_to_arena(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto prize_money = process_ostensible_arena_victory();
     if (prize_money) {
         player_ptr->au += *prize_money;
@@ -89,7 +91,7 @@ static bool go_to_arena(PlayerType *player_ptr)
         return false;
     }
 
-    if ((arena_record == ArenaRecord::POWER_WYRM) && !check_battle_metal_babble(player_ptr)) {
+    if ((arena_record == ArenaRecord::POWER_WYRM) && !check_battle_metal_babble(creature)) {
         return false;
     }
 
@@ -109,14 +111,15 @@ static bool go_to_arena(PlayerType *player_ptr)
 
 /*!
  * @brief アリーナ受付のコマンド処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  * @param cmd アリーナ処理のID
  */
-bool arena_comm(PlayerType *player_ptr, int cmd)
+bool arena_comm(CreatureEntity &creature, int cmd)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     switch (cmd) {
     case BACT_ARENA:
-        return go_to_arena(player_ptr);
+        return go_to_arena(creature);
     case BACT_POSTER: {
         const auto &entries = ArenaEntryList::get_instance();
         msg_print(entries.get_poster_message());
