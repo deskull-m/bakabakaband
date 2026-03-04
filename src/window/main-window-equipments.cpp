@@ -86,7 +86,7 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     }
 
     col = (len > wid - _(6, 4)) ? 0 : (wid - len - 1);
-    const auto equip_label = prepare_label_string(player_ptr, USE_EQUIP, item_tester);
+    const auto equip_label = prepare_label_string(*player_ptr, USE_EQUIP, item_tester);
     for (j = 0; j < k; j++) {
         i = out_index[j];
         const auto &item = *player_ptr->inventory[i];

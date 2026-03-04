@@ -89,13 +89,13 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag_aux(const Floor
 static std::pair<tl::optional<short>, char> get_floor_item_tag_inventory(PlayerType *player_ptr, FloorItemSelection &fis, short i_idx, char prev_tag, const ItemTester &item_tester)
 {
     const auto use_flag = (i_idx >= INVEN_MAIN_HAND) ? USE_EQUIP : USE_INVEN;
-    const auto i_idx_opt = get_tag(player_ptr, prev_tag, use_flag, item_tester);
+    const auto i_idx_opt = get_tag(*player_ptr, prev_tag, use_flag, item_tester);
     if (!i_idx_opt) {
         return { tl::nullopt, '\0' };
     }
 
     fis.k = *i_idx_opt;
-    if (!get_item_okay(player_ptr, fis.k, item_tester) ||
+    if (!get_item_okay(*player_ptr, fis.k, item_tester) ||
         (fis.k < INVEN_MAIN_HAND && !fis.inven) ||
         (fis.k >= INVEN_MAIN_HAND && !fis.equip)) {
         return { tl::nullopt, '\0' };
@@ -122,7 +122,7 @@ static std::pair<tl::optional<short>, char> check_floor_item_tag_inventory(Playe
         return get_floor_item_tag_inventory(player_ptr, fis, i_idx, prev_tag, item_tester);
     }
 
-    if (get_item_okay(player_ptr, i_idx, item_tester)) {
+    if (get_item_okay(*player_ptr, i_idx, item_tester)) {
         command_cmd = 0;
         return { i_idx, prev_tag };
     }
@@ -232,11 +232,11 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
     fis.item = false;
     fis.i1 = 0;
     fis.i2 = INVEN_PACK - 1;
-    while ((fis.i1 <= fis.i2) && (!get_item_okay(player_ptr, fis.i1, item_tester))) {
+    while ((fis.i1 <= fis.i2) && (!get_item_okay(*player_ptr, fis.i1, item_tester))) {
         fis.i1++;
     }
 
-    while ((fis.i1 <= fis.i2) && (!get_item_okay(player_ptr, fis.i2, item_tester))) {
+    while ((fis.i1 <= fis.i2) && (!get_item_okay(*player_ptr, fis.i2, item_tester))) {
         fis.i2--;
     }
 
@@ -247,11 +247,11 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
         fis.max_equip++;
     }
 
-    while ((fis.e1 <= fis.e2) && (!get_item_okay(player_ptr, fis.e1, item_tester))) {
+    while ((fis.e1 <= fis.e2) && (!get_item_okay(*player_ptr, fis.e1, item_tester))) {
         fis.e1++;
     }
 
-    while ((fis.e1 <= fis.e2) && (!get_item_okay(player_ptr, fis.e2, item_tester))) {
+    while ((fis.e1 <= fis.e2) && (!get_item_okay(*player_ptr, fis.e2, item_tester))) {
         fis.e2--;
     }
 
@@ -603,12 +603,12 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
                 if (command_wrk == USE_FLOOR) {
                     fis.cp = -get_item_label;
                 } else {
-                    if (!get_item_okay(player_ptr, get_item_label, item_tester)) {
+                    if (!get_item_okay(*player_ptr, get_item_label, item_tester)) {
                         bell();
                         break;
                     }
 
-                    if (!get_item_allow(player_ptr, get_item_label)) {
+                    if (!get_item_allow(*player_ptr, get_item_label)) {
                         fis.done = true;
                         break;
                     }
@@ -723,7 +723,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
             if (fis.floor_item_index.size() == 1) {
                 if ((command_wrk == (USE_FLOOR)) || (!carry_query_flag)) {
                     fis.k = -fis.floor_item_index[0];
-                    if (!get_item_allow(player_ptr, fis.k)) {
+                    if (!get_item_allow(*player_ptr, fis.k)) {
                         fis.done = true;
                         break;
                     }
@@ -754,7 +754,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
         case '8':
         case '9': {
             if (command_wrk != USE_FLOOR) {
-                const auto i_idx = get_tag(player_ptr, fis.which, command_wrk, item_tester);
+                const auto i_idx = get_tag(*player_ptr, fis.which, command_wrk, item_tester);
                 if (!i_idx) {
                     bell();
                     break;
@@ -766,7 +766,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
                     break;
                 }
 
-                if (!get_item_okay(player_ptr, fis.k, item_tester)) {
+                if (!get_item_okay(*player_ptr, fis.k, item_tester)) {
                     bell();
                     break;
                 }
@@ -780,7 +780,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
                 }
             }
 
-            if (!get_item_allow(player_ptr, fis.k)) {
+            if (!get_item_allow(*player_ptr, fis.k)) {
                 fis.done = true;
                 break;
             }
@@ -804,7 +804,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
             bool tag_not_found = false;
 
             if (command_wrk != USE_FLOOR) {
-                const auto i_idx = get_tag(player_ptr, fis.which, command_wrk, item_tester);
+                const auto i_idx = get_tag(*player_ptr, fis.which, command_wrk, item_tester);
                 if (!i_idx) {
                     tag_not_found = true;
                 } else {
@@ -836,7 +836,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
                     } else if (which == ')') {
                         fis.k = fis.i2;
                     } else {
-                        fis.k = label_to_inventory(player_ptr, which);
+                        fis.k = label_to_inventory(*player_ptr, which);
                     }
                 } else if (command_wrk == (USE_EQUIP)) {
                     if (which == '(') {
@@ -844,7 +844,7 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
                     } else if (which == ')') {
                         fis.k = fis.e2;
                     } else {
-                        fis.k = label_to_equipment(player_ptr, which);
+                        fis.k = label_to_equipment(*player_ptr, which);
                     }
                 } else if (command_wrk == USE_FLOOR) {
                     if (which == '(') {
@@ -863,18 +863,18 @@ tl::optional<short> get_item_floor(PlayerType *player_ptr, std::string_view pmt,
                 }
             }
 
-            if ((command_wrk != USE_FLOOR) && !get_item_okay(player_ptr, fis.k, item_tester)) {
+            if ((command_wrk != USE_FLOOR) && !get_item_okay(*player_ptr, fis.k, item_tester)) {
                 bell();
                 break;
             }
 
             auto ver = tag_not_found && isupper(fis.which);
-            if (ver && !verify(player_ptr, _("本当に", "Try"), fis.k)) {
+            if (ver && !verify(*player_ptr, _("本当に", "Try"), fis.k)) {
                 fis.done = true;
                 break;
             }
 
-            if (!get_item_allow(player_ptr, fis.k)) {
+            if (!get_item_allow(*player_ptr, fis.k)) {
                 fis.done = true;
                 break;
             }
