@@ -238,7 +238,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         return true;
     case 'P':
-        wizard_player_modifier(static_cast<PlayerType *>(&creature));
+        wizard_player_modifier(creature);
         return true;
     case 's':
         command_arg = std::clamp<short>(command_arg, 1, 999);
