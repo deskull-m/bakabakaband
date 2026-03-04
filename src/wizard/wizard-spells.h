@@ -14,7 +14,7 @@ typedef union spell_functions {
     } spell1;
 
     struct debug_spell_type2 {
-        bool (*spell_function)(PlayerType *);
+        bool (*spell_function)(CreatureEntity &);
     } spell2;
 
     struct debug_spell_type3 {
@@ -22,7 +22,7 @@ typedef union spell_functions {
     } spell3;
 
     struct debug_spell_type4 { // 実質 ty curse
-        bool (*spell_function)(PlayerType *, bool, int *);
+        bool (*spell_function)(CreatureEntity &, bool, int *);
     } spell4;
 
     struct debug_spell_type5 {

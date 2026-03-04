@@ -55,23 +55,13 @@
 #include <vector>
 
 namespace {
-bool alchemy_wrapper(PlayerType *player_ptr)
-{
-    return alchemy(*player_ptr);
-}
-
-bool activate_ty_curse_wrapper(PlayerType *player_ptr, bool stop_ty, int *count)
-{
-    return activate_ty_curse(*player_ptr, stop_ty, count);
-}
-
 const std::vector<debug_spell_command> debug_spell_commands_list = {
     // { 2, "vanish dungeon", { .spell2 = { vanish_dungeon } } },
     // { 2, "unique detection", { .spell2 = { activate_unique_detection } } },
     // { 3, "true healing", { .spell3 = { true_healing } } },
     // TODO:    { 2, "drop weapons", { .spell2 = { drop_weapons } } },
-    { 2, "alchemy", { .spell2 = { alchemy_wrapper } } },
-    { 4, "ty curse", { .spell4 = { activate_ty_curse_wrapper } } },
+    { 2, "alchemy", { .spell2 = { alchemy } } },
+    { 4, "ty curse", { .spell4 = { activate_ty_curse } } },
     { 5, "pattern teleport", { .spell5 = { pattern_teleport } } },
 };
 
@@ -181,7 +171,7 @@ void wiz_debug_spell(CreatureEntity &creature)
 
         switch (d.type) {
         case 2:
-            (d.command_function.spell2.spell_function)(player_ptr);
+            (d.command_function.spell2.spell_function)(creature);
             return;
         case 3: {
             const auto power = input_integer("POWER", -MAX_INT, MAX_INT);
@@ -194,7 +184,7 @@ void wiz_debug_spell(CreatureEntity &creature)
         }
         case 4: {
             auto count = 0;
-            (d.command_function.spell4.spell_function)(player_ptr, true, &count);
+            (d.command_function.spell4.spell_function)(creature, true, &count);
             return;
         }
         case 5:
