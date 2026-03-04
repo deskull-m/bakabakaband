@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void wizard_player_modifier(PlayerType *player_ptr);
+class CreatureEntity;
+void wizard_player_modifier(CreatureEntity &creature);
