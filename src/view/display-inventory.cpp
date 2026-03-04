@@ -46,7 +46,7 @@ COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS m
         z = i + 1;
     }
 
-    const auto inven_label = prepare_label_string(player_ptr, USE_INVEN, item_tester);
+    const auto inven_label = prepare_label_string(*player_ptr, USE_INVEN, item_tester);
     for (k = 0, i = 0; i < z; i++) {
         auto &item = *player_ptr->inventory[i];
         if (!item_tester.okay(&item) && !(mode & USE_FULL)) {
