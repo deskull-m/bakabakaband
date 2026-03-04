@@ -52,7 +52,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
     }
 
     auto item = this->copy_object(i_idx);
-    vary_item(this->player_ptr, i_idx, -1);
+    vary_item(*this->player_ptr, i_idx, -1);
     sound(SoundKind::QUAFF);
     player_ptr->plus_incident_tree("QUAFF", 1);
     auto ident = QuaffEffects(this->player_ptr).influence(item, is_rectal);

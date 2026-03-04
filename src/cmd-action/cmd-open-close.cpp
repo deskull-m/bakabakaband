@@ -362,6 +362,6 @@ void do_cmd_spike(CreatureEntity &creature)
         PlayerEnergy(player_ptr).set_player_turn_energy(100);
         msg_format(_("%sにくさびを打ち込んだ。", "You jam the %s with a spike."), terrain_mimic.name.data());
         cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::SPIKE);
-        vary_item(player_ptr, i_idx, -1);
+        vary_item(*player_ptr, i_idx, -1);
     }
 }

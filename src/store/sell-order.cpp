@@ -172,13 +172,13 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
 
             distribute_charges(o_ptr, &sold_item, amt);
             sold_item.timeout = 0;
-            inven_item_increase(player_ptr, i_idx, -amt);
+            inven_item_increase(*player_ptr, i_idx, -amt);
             inven_item_describe(player_ptr, i_idx);
             if (o_ptr->number > 0) {
                 autopick_alter_item(player_ptr, i_idx, false);
             }
 
-            inven_item_optimize(player_ptr, i_idx);
+            inven_item_optimize(*player_ptr, i_idx);
             auto &store = towns_info[player_ptr->town_num].get_store(store_num);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
@@ -205,7 +205,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), museum_item_name.data(), index_to_label(i_idx));
         placed = true;
 
-        vary_item(player_ptr, i_idx, -amt);
+        vary_item(*player_ptr, i_idx, -amt);
 
         int item_pos = home_carry(player_ptr, &selling_item, store_num);
         if (item_pos >= 0) {
@@ -217,7 +217,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
         const auto item_name = describe_flavor(player_ptr, selling_item, 0);
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
         placed = true;
-        vary_item(player_ptr, i_idx, -amt);
+        vary_item(*player_ptr, i_idx, -amt);
         int item_pos = home_carry(player_ptr, &selling_item, store_num);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;

@@ -72,7 +72,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
                     eat_item.number = 1;
                     o_ptr->pval++;
                     o_ptr->number--;
-                    i_idx = store_item_to_inventory(player_ptr, &eat_item);
+                    i_idx = store_item_to_inventory(*player_ptr, &eat_item);
 
                     msg_print(_("杖をまとめなおした。", "You unstack your staff."));
                 }
@@ -180,7 +180,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(player_ptr, i_idx, -1);
+        vary_item(*player_ptr, i_idx, -1);
     }
 
     if (fail_type == 3) {
@@ -190,7 +190,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(player_ptr, i_idx, -999);
+        vary_item(*player_ptr, i_idx, -999);
     }
 
     return redraw_player(*player_ptr);

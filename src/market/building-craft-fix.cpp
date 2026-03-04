@@ -300,8 +300,8 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     o_ptr->discount = 99;
 
     calc_android_exp(player_ptr);
-    inven_item_increase(player_ptr, mater, -1);
-    inven_item_optimize(player_ptr, mater);
+    inven_item_increase(*player_ptr, mater, -1);
+    inven_item_optimize(*player_ptr, mater);
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);

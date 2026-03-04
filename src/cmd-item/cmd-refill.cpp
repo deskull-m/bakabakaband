@@ -54,7 +54,7 @@ static void do_cmd_refill_lamp(CreatureEntity &creature)
         msg_print(_("ランプの油は一杯だ。", "Your lamp is full."));
     }
 
-    vary_item(player_ptr, i_idx, -1);
+    vary_item(*player_ptr, i_idx, -1);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::TORCH);
 }
 
@@ -93,7 +93,7 @@ static void do_cmd_refill_torch(CreatureEntity &creature)
         msg_print(_("松明はいっそう明るく輝いた。", "Your torch glows more brightly."));
     }
 
-    vary_item(player_ptr, i_idx, -1);
+    vary_item(*player_ptr, i_idx, -1);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::TORCH);
 }
 

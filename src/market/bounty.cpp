@@ -67,7 +67,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         player_ptr->au += reward_money;
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        vary_item(player_ptr, i, -item.number);
+        vary_item(*player_ptr, i, -item.number);
     }
 
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
@@ -90,7 +90,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         player_ptr->au += reward_money;
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        vary_item(player_ptr, i, -item.number);
+        vary_item(*player_ptr, i, -item.number);
     }
 
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
@@ -113,7 +113,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         player_ptr->au += reward_money;
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        vary_item(player_ptr, i, -item.number);
+        vary_item(*player_ptr, i, -item.number);
     }
 
     auto &world = AngbandWorld::get_instance();
@@ -134,7 +134,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         player_ptr->au += reward_money;
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        vary_item(player_ptr, i, -item.number);
+        vary_item(*player_ptr, i, -item.number);
     }
 
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
@@ -154,7 +154,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         player_ptr->au += reward_money;
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        vary_item(player_ptr, i, -item.number);
+        vary_item(*player_ptr, i, -item.number);
     }
 
     for (auto &[monrace_id, is_achieved] : world.bounties) {
@@ -178,7 +178,7 @@ bool exchange_cash(CreatureEntity &creature)
                 continue;
             }
 
-            vary_item(player_ptr, i, -item.number);
+            vary_item(*player_ptr, i, -item.number);
             chg_virtue(creature, Virtue::JUSTICE, 5);
             is_achieved = true;
 
@@ -197,7 +197,7 @@ bool exchange_cash(CreatureEntity &creature)
              * Since a corpse is handed at first,
              * there is at least one empty slot.
              */
-            inventory_new = store_item_to_inventory(player_ptr, &prize_item);
+            inventory_new = store_item_to_inventory(*player_ptr, &prize_item);
             const auto got_item_name = describe_flavor(player_ptr, prize_item, 0);
             msg_format(_("%s(%c)を貰った。", "You get %s (%c). "), got_item_name.data(), index_to_label(inventory_new));
 

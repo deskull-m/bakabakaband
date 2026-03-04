@@ -155,8 +155,8 @@ void process_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         chg_virtue(creature, Virtue::SACRIFICE, 1);
         const auto item_idx = player_ptr->current_floor_ptr->pop_empty_index_item();
         move_item_to_monster(creature, monap_ptr, item_idx);
-        inven_item_increase(player_ptr, i_idx, -1);
-        inven_item_optimize(player_ptr, i_idx);
+        inven_item_increase(*player_ptr, i_idx, -1);
+        inven_item_optimize(*player_ptr, i_idx);
         monap_ptr->obvious = true;
         monap_ptr->blinked = true;
         break;
@@ -184,8 +184,8 @@ void process_eat_food(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 #else
         msg_format("%sour %s (%c) was eaten!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name.data(), index_to_label(i_idx));
 #endif
-        inven_item_increase(player_ptr, i_idx, -1);
-        inven_item_optimize(player_ptr, i_idx);
+        inven_item_increase(*player_ptr, i_idx, -1);
+        inven_item_optimize(*player_ptr, i_idx);
         monap_ptr->obvious = true;
         break;
     }

@@ -84,7 +84,7 @@ void ObjectReadEntity::execute(bool known)
 
     sound(SoundKind::SCROLL);
     this->player_ptr->plus_incident_tree("READ_SCROLL", 1);
-    vary_item(this->player_ptr, this->i_idx, -1);
+    vary_item(*this->player_ptr, this->i_idx, -1);
 }
 
 bool ObjectReadEntity::can_read() const

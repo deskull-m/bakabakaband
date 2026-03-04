@@ -135,7 +135,7 @@ void do_cmd_drop(CreatureEntity &creature)
     }
 
     PlayerEnergy(player_ptr).set_player_turn_energy(50);
-    drop_from_inventory(player_ptr, i_idx, amt);
+    drop_from_inventory(*player_ptr, i_idx, amt);
     if (i_idx >= INVEN_MAIN_HAND) {
         verify_equip_slot(creature, i_idx);
         calc_android_exp(player_ptr);

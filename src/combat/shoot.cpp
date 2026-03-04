@@ -629,7 +629,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
         /* Single object */
         fire_item.number = 1;
 
-        vary_item(player_ptr, i_idx, -1);
+        vary_item(*player_ptr, i_idx, -1);
 
         sound(SoundKind::SHOOT);
         handle_stuff(*player_ptr);

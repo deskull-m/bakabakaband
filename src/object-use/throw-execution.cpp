@@ -159,12 +159,12 @@ void ObjectThrowEntity::reflect_inventory_by_throw()
         return;
     }
 
-    inven_item_increase(this->player_ptr, this->i_idx, -1);
+    inven_item_increase(*this->player_ptr, this->i_idx, -1);
     if (!this->return_when_thrown) {
         inven_item_describe(this->player_ptr, this->i_idx);
     }
 
-    inven_item_optimize(this->player_ptr, this->i_idx);
+    inven_item_optimize(*this->player_ptr, this->i_idx);
 }
 
 void ObjectThrowEntity::set_class_specific_throw_params()
@@ -291,7 +291,7 @@ void ObjectThrowEntity::process_boomerang_back()
 {
     if (this->come_back) {
         if ((this->i_idx != INVEN_MAIN_HAND) && (this->i_idx != INVEN_SUB_HAND)) {
-            store_item_to_inventory(this->player_ptr, this->q_ptr);
+            store_item_to_inventory(*this->player_ptr, this->q_ptr);
             this->do_drop = false;
             return;
         }

@@ -67,7 +67,7 @@ bool alchemy(CreatureEntity &creature)
     auto price = object_value_real(o_ptr);
     if (price <= 0) {
         msg_format(_("%sをニセの金に変えた。", "You turn %s to fool's gold."), item_name.data());
-        vary_item(&player, i_idx, -amt);
+        vary_item(player, i_idx, -amt);
         return true;
     }
 
@@ -86,6 +86,6 @@ bool alchemy(CreatureEntity &creature)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::GOLD);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    vary_item(&player, i_idx, -amt);
+    vary_item(player, i_idx, -amt);
     return true;
 }

@@ -290,8 +290,8 @@ void do_cmd_wield(CreatureEntity &creature)
     auto item = o_ptr->clone();
     item.number = 1;
     if (i_idx >= 0) {
-        inven_item_increase(player_ptr, i_idx, -1);
-        inven_item_optimize(player_ptr, i_idx);
+        inven_item_increase(*player_ptr, i_idx, -1);
+        inven_item_optimize(*player_ptr, i_idx);
     } else {
         floor_item_increase(creature, 0 - i_idx, -1);
         floor_item_optimize(creature, 0 - i_idx);
@@ -299,7 +299,7 @@ void do_cmd_wield(CreatureEntity &creature)
 
     auto &wield_slot_item = *player_ptr->inventory[slot];
     if (wield_slot_item.is_valid()) {
-        (void)inven_takeoff(player_ptr, slot, 255);
+        (void)inven_takeoff(*player_ptr, slot, 255);
     }
 
     wield_slot_item = std::move(item);
@@ -414,7 +414,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
 
     sound(SoundKind::TAKE_OFF);
     energy.set_player_turn_energy(50);
-    (void)inven_takeoff(player_ptr, i_idx, 255);
+    (void)inven_takeoff(*player_ptr, i_idx, 255);
     verify_equip_slot(creature, i_idx);
     calc_android_exp(player_ptr);
     static constexpr auto flags_srf = {

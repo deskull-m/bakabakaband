@@ -188,7 +188,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
                 auto item = item_inventory.clone();
                 const auto item_name = describe_flavor(player_ptr, item, 0);
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
-                vary_item(player_ptr, i_idx, -255);
+                vary_item(*player_ptr, i_idx, -255);
                 handle_stuff(*player_ptr);
                 const auto item_pos = home_carry(player_ptr, &item, store_num);
                 if (item_pos >= 0) {

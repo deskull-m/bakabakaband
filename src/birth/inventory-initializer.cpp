@@ -69,8 +69,8 @@ void wield_all(CreatureEntity &creature)
         wield_slot_item.number = 1;
 
         if (i_idx >= 0) {
-            inven_item_increase(player_ptr, i_idx, -1);
-            inven_item_optimize(player_ptr, i_idx);
+            inven_item_increase(*player_ptr, i_idx, -1);
+            inven_item_optimize(*player_ptr, i_idx);
         } else {
             floor_item_increase(creature, 0 - i_idx, -1);
             floor_item_optimize(creature, 0 - i_idx);
@@ -90,7 +90,7 @@ static void add_outfit(CreatureEntity &creature, ItemEntity &item)
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     object_aware(player_ptr, item);
     item.mark_as_known();
-    const auto slot = store_item_to_inventory(player_ptr, &item);
+    const auto slot = store_item_to_inventory(*player_ptr, &item);
     autopick_alter_item(player_ptr, slot, false);
     wield_all(creature);
 }

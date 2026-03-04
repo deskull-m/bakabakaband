@@ -562,6 +562,6 @@ bool drop_weapons(CreatureEntity &creature)
     }
 
     msg_print(_("武器を落としてしまった！", "You drop your weapon!"));
-    drop_from_inventory(&player, slot, 1);
+    drop_from_inventory(player, slot, 1);
     return true;
 }

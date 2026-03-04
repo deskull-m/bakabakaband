@@ -47,8 +47,8 @@ static void autopick_delayed_alter_aux(PlayerType *player_ptr, INVENTORY_IDX i_i
 
     const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
     if (i_idx >= 0) {
-        inven_item_increase(player_ptr, i_idx, -(o_ptr->number));
-        inven_item_optimize(player_ptr, i_idx);
+        inven_item_increase(*player_ptr, i_idx, -(o_ptr->number));
+        inven_item_optimize(*player_ptr, i_idx);
     } else {
         delete_object_idx(*player_ptr, 0 - i_idx);
     }
@@ -120,7 +120,7 @@ void autopick_pickup_items(PlayerType *player_ptr, const Grid &grid)
             continue;
         }
 
-        if (!check_store_item_to_inventory(player_ptr, &item)) {
+        if (!check_store_item_to_inventory(*player_ptr, &item)) {
             msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
             item.marked.set(OmType::SUPRESS_MESSAGE);
             continue;
