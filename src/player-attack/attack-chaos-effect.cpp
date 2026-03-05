@@ -269,7 +269,7 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
     item.marked.clear().set(OmType::TOUCHED);
     monster.hold_o_idx_list.pop_front();
     msg_format(_("%sを奪った。", "You snatched %s."), item_name.data());
-    store_item_to_inventory(player_ptr, &item);
+    store_item_to_inventory(*player_ptr, &item);
 }
 
 /*!

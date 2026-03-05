@@ -92,7 +92,7 @@ static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, I
     const auto amt = item_inventory.number;
     distribute_charges(&item_home, &item_inventory, amt);
 
-    const auto item_new = store_item_to_inventory(player_ptr, &item_inventory);
+    const auto item_new = store_item_to_inventory(*player_ptr, &item_inventory);
     const auto item_name = describe_flavor(player_ptr, *player_ptr->inventory[item_new], 0);
     handle_stuff(*player_ptr);
     msg_format(_("%s(%c)を取った。", "You have %s (%c)."), item_name.data(), index_to_label(item_new));
@@ -187,7 +187,7 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
      */
     reduce_charges(&item, item_store.number - amt);
     item.number = amt;
-    if (!check_store_item_to_inventory(player_ptr, &item)) {
+    if (!check_store_item_to_inventory(*player_ptr, &item)) {
         msg_print(_("そんなにアイテムを持てない。", "You cannot carry that many different items."));
         return;
     }
@@ -218,7 +218,7 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
         return;
     }
 
-    if (!check_store_item_to_inventory(player_ptr, &item)) {
+    if (!check_store_item_to_inventory(*player_ptr, &item)) {
         msg_print(_("ザックにそのアイテムを入れる隙間がない。", "You cannot carry that many items."));
         return;
     }
@@ -284,7 +284,7 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
     const auto idx = find_autopick_list(*player_ptr, &item);
     auto_inscribe_item(&item, idx);
 
-    item_new = store_item_to_inventory(player_ptr, &item);
+    item_new = store_item_to_inventory(*player_ptr, &item);
     handle_stuff(*player_ptr);
 
     const auto got_item_name = describe_flavor(player_ptr, *player_ptr->inventory[item_new], 0);

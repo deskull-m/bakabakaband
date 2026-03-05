@@ -2650,12 +2650,12 @@ void update_creature(CreatureEntity &creature)
 
     if (rfu.has(StatusRecalculatingFlag::COMBINATION)) {
         rfu.reset_flag(StatusRecalculatingFlag::COMBINATION);
-        combine_pack(player_ptr);
+        combine_pack(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::REORDER)) {
         rfu.reset_flag(StatusRecalculatingFlag::REORDER);
-        reorder_pack(player_ptr);
+        reorder_pack(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::BONUS)) {

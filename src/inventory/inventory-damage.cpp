@@ -95,7 +95,7 @@ void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int 
         reduce_charges(&item, amt);
 
         /* Destroy "amt" items */
-        inven_item_increase(player_ptr, i, -amt);
-        inven_item_optimize(player_ptr, i);
+        inven_item_increase(*player_ptr, i, -amt);
+        inven_item_optimize(*player_ptr, i);
     }
 }

@@ -202,7 +202,7 @@ static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_it
     msg_format(_("%sを壊した。", "You destroy %s."), item_name.data());
     sound(SoundKind::DESTITEM);
     reduce_charges(&destroying_item, amount);
-    vary_item(player_ptr, i_idx, -amount);
+    vary_item(*player_ptr, i_idx, -amount);
     process_destroy_magic_book(creature, destroyed_item);
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_d != 0) || (destroyed_item.to_h != 0)) {
         chg_virtue(creature, Virtue::HARMONY, 1);

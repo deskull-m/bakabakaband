@@ -140,7 +140,7 @@ void ObjectUseEntity::execute()
         used_item.number = 1;
         o_ptr->pval++;
         o_ptr->number--;
-        this->i_idx = store_item_to_inventory(this->player_ptr, &used_item);
+        this->i_idx = store_item_to_inventory(*this->player_ptr, &used_item);
         msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
 

@@ -210,7 +210,7 @@ bool recharge(PlayerType *player_ptr, int power)
             o_ptr->pval = 0;
         }
 
-        vary_item(player_ptr, i_idx, -1);
+        vary_item(*player_ptr, i_idx, -1);
         break;
     case 3:
         if (o_ptr->number > 1) {
@@ -219,7 +219,7 @@ bool recharge(PlayerType *player_ptr, int power)
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(player_ptr, i_idx, -999);
+        vary_item(*player_ptr, i_idx, -999);
         break;
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid fail type!");

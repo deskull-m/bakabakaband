@@ -277,7 +277,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
     case 'X':
         for (INVENTORY_IDX i = INVEN_TOTAL - 1; i >= 0; i--) {
             if (creature.inventory[i]->is_valid()) {
-                drop_from_inventory(static_cast<PlayerType *>(&creature), i, 999);
+                drop_from_inventory(creature, i, 999);
             }
         }
         player_outfit(creature);

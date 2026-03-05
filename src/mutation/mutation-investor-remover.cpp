@@ -255,7 +255,7 @@ bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
         auto &asshole_item = *player.inventory[INVEN_ASSHOLE];
         if (asshole_item.is_valid()) {
             msg_print(_("肛門が破壊されたため、尻の穴の装備が外れた！", "Your asshole equipment has been removed due to destruction!"));
-            (void)inven_takeoff(&player, INVEN_ASSHOLE, 255);
+            (void)inven_takeoff(player, INVEN_ASSHOLE, 255);
         }
     }
 

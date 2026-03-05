@@ -649,8 +649,8 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     }
 
     auto item = o_ptr->clone();
-    inven_item_increase(player_ptr, slot, (0 - o_ptr->number));
-    inven_item_optimize(player_ptr, slot);
+    inven_item_increase(*player_ptr, slot, (0 - o_ptr->number));
+    inven_item_optimize(*player_ptr, slot);
 
     const auto old_o_idx = drop_near(*player_ptr, item, creature.get_position());
     *o_ptr_ptr = creature.current_floor_ptr->o_list[old_o_idx].get();

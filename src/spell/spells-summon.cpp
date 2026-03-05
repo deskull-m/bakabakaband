@@ -258,7 +258,7 @@ bool cast_summon_greater_demon(CreatureEntity &creature)
     if (summon_specific(creature, creature.y, creature.x, summon_lev, SUMMON_HI_DEMON, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
         msg_print(_("硫黄の悪臭が充満した。", "The area fills with a stench of sulphur and brimstone."));
         msg_print(_("「ご用でございますか、ご主人様」", "'What is thy bidding... Master?'"));
-        vary_item(&player, i_idx, -1);
+        vary_item(player, i_idx, -1);
     } else {
         msg_print(_("悪魔は現れなかった。", "No Greater Demon arrives."));
     }

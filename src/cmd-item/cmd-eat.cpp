@@ -522,7 +522,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 
         /* Unstack the used item */
         o_ptr->number--;
-        i_idx = store_item_to_inventory(player_ptr, &item);
+        i_idx = store_item_to_inventory(*player_ptr, &item);
         msg_format(_("杖をまとめなおした。", "You unstack your staff."));
     }
 
@@ -636,7 +636,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
             (void)set_food(*player_ptr, PY_FOOD_MAX - 1);
 
             rfu.set_flags(flags_srf);
-            vary_item(player_ptr, i_idx, -1);
+            vary_item(*player_ptr, i_idx, -1);
             return;
         }
     }
@@ -702,7 +702,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     rfu.set_flags(flags_srf);
-    vary_item(player_ptr, i_idx, -1);
+    vary_item(*player_ptr, i_idx, -1);
 }
 
 /*!
