@@ -165,7 +165,7 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 
     int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_acid(*player_ptr))) {
-        inventory_damage(player_ptr, BreakerAcid(), inv);
+        inventory_damage(*player_ptr, BreakerAcid(), inv);
     }
 
     return get_damage;
@@ -201,7 +201,7 @@ int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 
     int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_elec(*player_ptr))) {
-        inventory_damage(player_ptr, BreakerElec(), inv);
+        inventory_damage(*player_ptr, BreakerElec(), inv);
     }
 
     return get_damage;
@@ -237,7 +237,7 @@ int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 
     int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_fire(*player_ptr))) {
-        inventory_damage(player_ptr, BreakerFire(), inv);
+        inventory_damage(*player_ptr, BreakerFire(), inv);
     }
 
     return get_damage;
@@ -271,7 +271,7 @@ int cold_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
 
     int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && has_resist_cold(*player_ptr))) {
-        inventory_damage(player_ptr, BreakerCold(), inv);
+        inventory_damage(*player_ptr, BreakerCold(), inv);
     }
 
     return get_damage;

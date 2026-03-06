@@ -9,6 +9,7 @@
 #include "object/object-info.h"
 #include "object/object-stack.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
@@ -25,10 +26,11 @@
  * Destruction taken from "melee.c" code for "stealing".
  * New-style wands and rods handled correctly. -LM-
  */
-void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int perc)
+void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, int perc)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int j, amt;
-    if (check_multishadow(*player_ptr) || player_ptr->current_floor_ptr->inside_arena) {
+    if (check_multishadow(creature) || creature.current_floor_ptr->inside_arena) {
         return;
     }
 
@@ -88,14 +90,15 @@ void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int 
 
         /* Potions smash open */
         if (item.is_potion()) {
-            (void)potion_smash_effect(*player_ptr, 0, player_ptr->y, player_ptr->x, item.bi_id);
+            (void)potion_smash_effect(*player_ptr, 0, creature.y, creature.x, item.bi_id);
         }
 
         /* Reduce the charges of rods/wands */
         reduce_charges(&item, amt);
 
         /* Destroy "amt" items */
-        inven_item_increase(*player_ptr, i, -amt);
-        inven_item_optimize(*player_ptr, i);
+
+        inven_item_increase(creature, i, -amt);
+        inven_item_optimize(creature, i);
     }
 }
