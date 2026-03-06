@@ -93,7 +93,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     if (one_in_(6)) {
-        inventory_damage(player_ptr, BreakerAcid(), 2);
+        inventory_damage(*player_ptr, BreakerAcid(), 2);
     }
 }
 
@@ -166,7 +166,7 @@ void effect_player_plasma(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!(has_resist_fire(creature) || is_oppose_fire(creature) || has_immune_fire(creature))) {
-        inventory_damage(player_ptr, BreakerAcid(), 3);
+        inventory_damage(*player_ptr, BreakerAcid(), 3);
     }
 }
 
@@ -237,7 +237,7 @@ void effect_player_water(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         }
 
         if (one_in_(5) && !has_res_water) {
-            inventory_damage(player_ptr, BreakerCold(), 3);
+            inventory_damage(*player_ptr, BreakerCold(), 3);
         }
     }
 
@@ -274,8 +274,8 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     }
 
     if (!has_resist_chaos(creature) || one_in_(9)) {
-        inventory_damage(player_ptr, BreakerElec(), 2);
-        inventory_damage(player_ptr, BreakerFire(), 2);
+        inventory_damage(*player_ptr, BreakerElec(), 2);
+        inventory_damage(*player_ptr, BreakerFire(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -295,7 +295,7 @@ void effect_player_shards(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) || one_in_(13)) {
-        inventory_damage(player_ptr, BreakerCold(), 2);
+        inventory_damage(*player_ptr, BreakerCold(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -316,7 +316,7 @@ void effect_player_sound(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_sound(creature) || one_in_(13)) {
-        inventory_damage(player_ptr, BreakerCold(), 2);
+        inventory_damage(*player_ptr, BreakerCold(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -399,7 +399,7 @@ void effect_player_rocket(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) || one_in_(12)) {
-        inventory_damage(player_ptr, BreakerCold(), 3);
+        inventory_damage(*player_ptr, BreakerCold(), 3);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -562,7 +562,7 @@ void effect_player_gravity(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_gravity_damage_rate(creature, CALC_RAND) / 100;
     if (!player_ptr->levitation || one_in_(13)) {
-        inventory_damage(player_ptr, BreakerCold(), 2);
+        inventory_damage(*player_ptr, BreakerCold(), 2);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -615,9 +615,9 @@ void effect_player_meteor(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_shard(creature) || one_in_(13)) {
         if (!has_immune_fire(creature)) {
-            inventory_damage(player_ptr, BreakerFire(), 2);
+            inventory_damage(*player_ptr, BreakerFire(), 2);
         }
-        inventory_damage(player_ptr, BreakerCold(), 2);
+        inventory_damage(*player_ptr, BreakerCold(), 2);
     }
 }
 
@@ -644,7 +644,7 @@ void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     if ((!(has_resist_cold(creature) || is_oppose_cold(creature))) || one_in_(12)) {
         if (!has_immune_cold(creature)) {
-            inventory_damage(player_ptr, BreakerCold(), 3);
+            inventory_damage(*player_ptr, BreakerCold(), 3);
         }
     }
 }
@@ -680,7 +680,7 @@ void effect_player_void(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->dam = ep_ptr->dam * calc_void_damage_rate(creature, CALC_RAND) / 100;
     if (!player_ptr->levitation || one_in_(13)) {
-        inventory_damage(player_ptr, BreakerCold(), 2);
+        inventory_damage(*player_ptr, BreakerCold(), 2);
     }
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
@@ -754,7 +754,7 @@ void effect_player_spider_string(CreatureEntity &creature, EffectPlayerType *ep_
 
     // 装備品に影響（糸で汚れる）
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    inventory_damage(player_ptr, BreakerAcid(), 5);
+    inventory_damage(*player_ptr, BreakerAcid(), 5);
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
