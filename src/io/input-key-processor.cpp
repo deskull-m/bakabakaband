@@ -600,7 +600,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case '$': {
-        do_cmd_reload_autopick(player_ptr);
+        do_cmd_reload_autopick(*player_ptr);
         break;
     }
     case '_': {

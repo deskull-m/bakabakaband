@@ -144,7 +144,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_quests(*player_ptr);
             break;
         case 'k': /* Autopick */
-            do_cmd_knowledge_autopick(player_ptr);
+            do_cmd_knowledge_autopick(*player_ptr);
             break;
         case 'l': /* Incident */
             do_cmd_knowledge_incident(player_ptr);
