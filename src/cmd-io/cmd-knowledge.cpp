@@ -150,10 +150,10 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_incident(player_ptr);
             break;
         case 'm': /* Alliance */
-            do_cmd_knowledge_alliance(player_ptr, true);
+            do_cmd_knowledge_alliance(*player_ptr, true);
             break;
         case 'n': /* Alliance */
-            do_cmd_knowledge_alliance(player_ptr, false);
+            do_cmd_knowledge_alliance(*player_ptr, false);
             break;
         case 'o': /* Death history */
             do_cmd_knowledge_death_history(*player_ptr);
