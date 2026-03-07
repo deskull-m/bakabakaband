@@ -20,6 +20,7 @@
 #include "sv-definition/sv-armor-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"
@@ -243,8 +244,9 @@ static int show_home_equipment_resistances(PlayerType *player_ptr, ItemKindType 
  * @brief Display *ID* ed weapons/armors's resistances
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_knowledge_inventory(PlayerType *player_ptr)
+void do_cmd_knowledge_inventory(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -261,6 +263,6 @@ void do_cmd_knowledge_inventory(PlayerType *player_ptr)
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("*鑑定*済み武器/防具の耐性リスト", "Resistances of *identified* equipment"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("*id鑑定*済み武器/防具の耐性リスト", "Resistances of *identified* equipment"));
     fd_kill(file_name);
 }
