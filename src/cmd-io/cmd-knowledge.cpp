@@ -110,7 +110,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_home(player_ptr);
             break;
         case '0': /* Resist list */
-            do_cmd_knowledge_inventory(player_ptr);
+            do_cmd_knowledge_inventory(*player_ptr);
             break;
         /* Next page */
         case 'a': /* Feature list */
