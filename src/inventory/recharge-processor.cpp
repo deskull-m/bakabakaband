@@ -6,6 +6,7 @@
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
 #include "object/tval-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
@@ -19,8 +20,9 @@
  * If player has inscribed the object with "!!", let him know when it's recharged. -LM-
  * @param o_ptr 対象オブジェクトの構造体参照ポインタ
  */
-static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
+static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (!item.is_inscribed()) {
         return;
     }
@@ -38,7 +40,7 @@ static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
                 msg_format("Your %s is recharged.", item_name.data());
             }
 #endif
-            disturb(*player_ptr, false, false);
+            disturb(creature, false, false);
             return;
         }
 
@@ -50,8 +52,9 @@ static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
  * @brief 10ゲームターンが進行するごとに魔道具の自然充填を行う処理
  * / Handle recharging objects once every 10 game turns
  */
-void recharge_magic_items(PlayerType *player_ptr)
+void recharge_magic_items(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     int i;
     bool changed;
 
@@ -64,7 +67,7 @@ void recharge_magic_items(PlayerType *player_ptr)
         if (item.timeout > 0) {
             item.timeout--;
             if (!item.timeout) {
-                recharged_notice(player_ptr, item);
+                recharged_notice(creature, item);
                 changed = true;
             }
         }
@@ -103,7 +106,7 @@ void recharge_magic_items(PlayerType *player_ptr)
         }
 
         if (!(item.timeout)) {
-            recharged_notice(player_ptr, item);
+            recharged_notice(creature, item);
             changed = true;
         } else if (item.timeout % base_pval) {
             changed = true;

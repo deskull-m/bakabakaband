@@ -100,7 +100,7 @@ void WorldTurnProcessor::process_world()
     process_world_aux_sudden_attack(this->player_ptr);
     process_alliance_recovery(*this->player_ptr);
     execute_cursed_items_effect(*this->player_ptr);
-    recharge_magic_items(this->player_ptr);
+    recharge_magic_items(*this->player_ptr);
     sense_inventory1(this->player_ptr);
     sense_inventory2(this->player_ptr);
     execute_recall(*this->player_ptr);
