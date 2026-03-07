@@ -203,15 +203,12 @@ void wiz_debug_spell(CreatureEntity &creature)
  */
 void wiz_dimension_door(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
-    const auto pos = point_target(player_ptr);
+    const auto pos = point_target(creature);
     if (!pos) {
         return;
     }
 
-    teleport_player_to(*player_ptr, pos->y, pos->x, TELEPORT_NONMAGICAL);
+    teleport_player_to(creature, pos->y, pos->x, TELEPORT_NONMAGICAL);
 }
 
 /*!

@@ -599,8 +599,7 @@ bool exe_dimension_door(CreatureEntity &creature, const Pos2D &pos)
  */
 bool dimension_door(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    const auto pos = point_target(&player);
+    const auto pos = point_target(creature);
     if (!pos) {
         return false;
     }

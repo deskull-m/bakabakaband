@@ -650,7 +650,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 27:
         if (cast) {
-            const auto pos = point_target(player_ptr);
+            const auto pos = point_target(*player_ptr);
             if (!pos) {
                 return tl::nullopt;
             }

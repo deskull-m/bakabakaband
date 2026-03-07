@@ -408,7 +408,7 @@ void wiz_change_status(CreatureEntity &creature)
 void wiz_create_feature(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto pos = point_target(player_ptr);
+    const auto pos = point_target(*player_ptr);
     if (!pos) {
         return;
     }
