@@ -130,14 +130,13 @@ static void update_object_flags(const TrFlags &flags, EnumClassFlagGroup<Monster
 static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MONSTER_IDX m_idx, ItemEntity *o_ptr, const bool is_unpickable_object,
     const POSITION ny, const POSITION nx, std::string_view m_name, std::string_view o_name, const OBJECT_IDX this_o_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     const auto &monrace = monster.get_monrace();
     if (is_unpickable_object) {
         if (turn_flags_ptr->do_take && monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
             turn_flags_ptr->did_take_item = true;
-            if (monster.ml && player_can_see_bold(player_ptr, ny, nx)) {
+            if (monster.ml && player_can_see_bold(creature, ny, nx)) {
                 msg_format(_("%s^は%sを拾おうとしたが、だめだった。", "%s^ tries to pick up %s, but fails."), m_name.data(), o_name.data());
             }
         }
@@ -147,7 +146,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
 
     if (turn_flags_ptr->do_take) {
         turn_flags_ptr->did_take_item = true;
-        if (player_can_see_bold(player_ptr, ny, nx)) {
+        if (player_can_see_bold(creature, ny, nx)) {
             msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
         }
 

@@ -85,9 +85,9 @@ tl::optional<MONSTER_IDX> summon_specific(CreatureEntity &subject, POSITION y1, 
         const auto &monster = player.current_floor_ptr->m_list[*summoner_m_idx];
         if (monster.is_pet()) {
             notice = true;
-        } else if (is_seen(&player, monster)) {
+        } else if (is_seen(subject, monster)) {
             notice = true;
-        } else if (player_can_see_bold(&player, pos->y, pos->x)) {
+        } else if (player_can_see_bold(subject, pos->y, pos->x)) {
             notice = true;
         }
     }

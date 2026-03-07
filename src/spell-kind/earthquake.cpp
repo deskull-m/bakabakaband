@@ -194,7 +194,6 @@ void move_monster_to(CreatureEntity &creature, MonsterEntity &monster, const Pos
 
 bool process_monster_damage(CreatureEntity &creature, MonsterEntity &monster, bool has_dodged)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(monster.get_position());
     const auto damage = (has_dodged ? Dice::roll(4, 8) : (monster.hp + 1));
@@ -204,7 +203,7 @@ bool process_monster_damage(CreatureEntity &creature, MonsterEntity &monster, bo
         return false;
     }
 
-    if (!ignore_unview || is_seen(player_ptr, monster)) {
+    if (!ignore_unview || is_seen(creature, monster)) {
         const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%s^は岩石に埋もれてしまった！", "%s^ is embedded in the rock!"), m_name.data());
     }
@@ -220,11 +219,10 @@ bool process_monster_damage(CreatureEntity &creature, MonsterEntity &monster, bo
 
 void process_hit_to_monster(CreatureEntity &creature, MonsterEntity &monster, std::span<const Pos2D> pos_collapses)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto pos_dodge = decide_monster_dodge_position(floor, creature.get_position(), monster, pos_collapses);
-    const auto m_name = monster_desc(player, monster, 0);
-    if (!ignore_unview || is_seen(&player, monster)) {
+    const auto m_name = monster_desc(creature, monster, 0);
+    if (!ignore_unview || is_seen(creature, monster)) {
         msg_format(_("% s^は苦痛で泣きわめいた！", "%s^ wails out in pain!"), m_name.data());
     }
 

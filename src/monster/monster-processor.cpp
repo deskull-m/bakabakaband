@@ -143,7 +143,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     auto &monster = creature.current_floor_ptr->m_list[m_idx];
     turn_flags tmp_flags;
     turn_flags *turn_flags_ptr = init_turn_flags(monster.is_riding(), &tmp_flags);
-    turn_flags_ptr->see_m = is_seen(&player, monster);
+    turn_flags_ptr->see_m = is_seen(player, monster);
 
     decide_drop_from_monster(creature, m_idx, turn_flags_ptr->is_riding_mon);
     if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON) && one_in_(13) && !monster.is_asleep()) {

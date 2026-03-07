@@ -304,7 +304,7 @@ void update_local_illumination(CreatureEntity &creature, const Pos2D &pos)
 bool no_lite(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    return !player_can_see_bold(&player, player.y, player.x);
+    return !player_can_see_bold(player, player.y, player.x);
 }
 
 /*
@@ -822,7 +822,7 @@ void cave_alter_feat(CreatureEntity &creature, POSITION y, POSITION x, TerrainCh
             found = true;
         }
 
-        if (found && world.character_dungeon && player_can_see_bold(&player, pos.y, pos.x)) {
+        if (found && world.character_dungeon && player_can_see_bold(player, pos.y, pos.x)) {
             msg_print(_("何かを発見した！", "You have found something!"));
         }
     }

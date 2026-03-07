@@ -358,7 +358,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
         lite_spot(*player_ptr, pos);
         update_local_illumination(*player_ptr, pos);
 
-        if (player_can_see_bold(player_ptr, y, x)) {
+        if (player_can_see_bold(*player_ptr, y, x)) {
             obvious = true;
         }
         if (grid.has_monster()) {
@@ -411,7 +411,7 @@ bool affect_feature(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POS
 
         update_local_illumination(*player_ptr, pos);
 
-        if (player_can_see_bold(player_ptr, y, x)) {
+        if (player_can_see_bold(*player_ptr, y, x)) {
             obvious = true;
         }
         if (grid.has_monster()) {

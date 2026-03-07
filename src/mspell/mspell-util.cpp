@@ -31,7 +31,7 @@ mspell_cast_msg_simple::mspell_cast_msg_simple(concptr to_player, concptr to_mon
 bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     const auto &monster = creature.current_floor_ptr->m_list[m_idx];
-    return is_seen(&static_cast<PlayerType &>(creature), monster);
+    return is_seen(creature, monster);
 }
 
 /*!

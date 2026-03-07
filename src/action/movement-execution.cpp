@@ -256,7 +256,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
         const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
         const auto &name = terrain_mimic.name;
         can_move = false;
-        if (!grid.is_mark() && !player_can_see_bold(player_ptr, pos.y, pos.x)) {
+        if (!grid.is_mark() && !player_can_see_bold(*player_ptr, pos.y, pos.x)) {
             if (boundary_floor(grid, terrain, terrain_mimic)) {
                 msg_print(_("それ以上先には進めないようだ。", "You feel you cannot go any more."));
             } else {

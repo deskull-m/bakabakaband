@@ -171,7 +171,7 @@ static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2
         return false;
     }
 
-    if (player_can_see_bold(player_ptr, pos.y, pos.x)) {
+    if (player_can_see_bold(*player_ptr, pos.y, pos.x)) {
         return false;
     }
 

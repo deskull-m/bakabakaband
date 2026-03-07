@@ -411,7 +411,7 @@ MULTIPLY calc_snipe_damage_with_slay(CreatureEntity &creature, MULTIPLY mult, co
 {
     auto &monrace = monster.get_monrace();
     auto &player = static_cast<PlayerType &>(creature);
-    bool seen = is_seen(&player, monster);
+    bool seen = is_seen(player, monster);
 
     auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     const auto sniper_concent = sniper_data ? sniper_data->concent : 0;

@@ -91,8 +91,7 @@ int mon_damage_mod(CreatureEntity &creature, const MonsterEntity &monster, int d
     }
 
     if (is_psy_spear) {
-        auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-        if (!creature.effects()->blindness().is_blind() && is_seen(player_ptr, monster)) {
+        if (!creature.effects()->blindness().is_blind() && is_seen(creature, monster)) {
             msg_print(_("バリアを切り裂いた！", "The barrier is penetrated!"));
         }
 
@@ -110,7 +109,6 @@ int mon_damage_mod(CreatureEntity &creature, const MonsterEntity &monster, int d
  */
 static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_idx, MonsterTimedEffect mte)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &monster = floor.m_list[m_idx];
     switch (mte) {
@@ -188,7 +186,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
     case MonsterTimedEffect::FAST:
         /* Reduce by one, note if expires */
         if (set_monster_fast(floor, m_idx, monster.get_remaining_acceleration() - 1)) {
-            if (is_seen(player_ptr, monster)) {
+            if (is_seen(creature, monster)) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^はもう加速されていない。", "%s^ is no longer fast."), m_name.data());
             }
@@ -198,7 +196,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
     case MonsterTimedEffect::SLOW:
         /* Reduce by one, note if expires */
         if (set_monster_slow(floor, m_idx, monster.get_remaining_deceleration() - 1)) {
-            if (is_seen(player_ptr, monster)) {
+            if (is_seen(creature, monster)) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^はもう減速されていない。", "%s^ is no longer slow."), m_name.data());
             }
@@ -211,7 +209,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
         /* Recover from stun */
         if (set_monster_stunned(floor, m_idx, (randint0(10000) <= rlev * rlev) ? 0 : (monster.get_remaining_stun() - 1))) {
             /* Message if visible */
-            if (is_seen(player_ptr, monster)) {
+            if (is_seen(creature, monster)) {
                 const auto m_name = monster_desc(creature, monster, 0);
                 msg_format(_("%s^は朦朧状態から立ち直った。", "%s^ is no longer stunned."), m_name.data());
             }
@@ -226,7 +224,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
         }
 
         /* Message if visible */
-        if (is_seen(player_ptr, monster)) {
+        if (is_seen(creature, monster)) {
             const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("%s^は混乱から立ち直った。", "%s^ is no longer confused."), m_name.data());
         }
@@ -240,7 +238,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
         }
 
         /* Visual note */
-        if (is_seen(player_ptr, monster)) {
+        if (is_seen(creature, monster)) {
             const auto m_name = monster_desc(creature, monster, 0);
 #ifdef JP
 #else
@@ -262,7 +260,7 @@ static void process_monsters_mtimed_aux(CreatureEntity &creature, MONSTER_IDX m_
             break;
         }
 
-        if (is_seen(player_ptr, monster)) {
+        if (is_seen(creature, monster)) {
             const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("%s^はもう無敵でない。", "%s^ is no longer invulnerable."), m_name.data());
         }
@@ -424,7 +422,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     monster.exp = 0;
     if (monster.is_pet() || monster.ml) {
         const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
-        if (!ignore_unview || player_can_see_bold(dynamic_cast<PlayerType *>(&creature), monster.y, monster.x)) {
+        if (!ignore_unview || player_can_see_bold(creature, monster.y, monster.x)) {
             if (is_hallucinated) {
                 const auto ids = monraces.search([](const auto &monrace) { return monrace.kind_flags.has_not(MonsterKindType::UNIQUE); });
                 const auto &monrace_hallucinated = monraces.get_monrace(rand_choice(ids));
