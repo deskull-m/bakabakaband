@@ -107,7 +107,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_pets(*player_ptr);
             break;
         case '9': /* Home */
-            do_cmd_knowledge_home(player_ptr);
+            do_cmd_knowledge_home(*player_ptr);
             break;
         case '0': /* Resist list */
             do_cmd_knowledge_inventory(*player_ptr);
@@ -120,7 +120,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             break;
         }
         case 'b': /* Max stat */
-            do_cmd_knowledge_stat(player_ptr);
+            do_cmd_knowledge_stat(*player_ptr);
             break;
         case 'c': /* Mutations */
             do_cmd_knowledge_mutations(*player_ptr);
@@ -135,7 +135,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_skill_exp(*player_ptr);
             break;
         case 'g': /* Virtues */
-            do_cmd_knowledge_virtues(player_ptr);
+            do_cmd_knowledge_virtues(*player_ptr);
             break;
         case 'h': /* Dungeon */
             do_cmd_knowledge_dungeon(*player_ptr);
