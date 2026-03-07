@@ -126,13 +126,13 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_mutations(*player_ptr);
             break;
         case 'd': /* weapon-exp */
-            do_cmd_knowledge_weapon_exp(player_ptr);
+            do_cmd_knowledge_weapon_exp(*player_ptr);
             break;
         case 'e': /* spell-exp */
-            do_cmd_knowledge_spell_exp(player_ptr);
+            do_cmd_knowledge_spell_exp(*player_ptr);
             break;
         case 'f': /* skill-exp */
-            do_cmd_knowledge_skill_exp(player_ptr);
+            do_cmd_knowledge_skill_exp(*player_ptr);
             break;
         case 'g': /* Virtues */
             do_cmd_knowledge_virtues(player_ptr);
