@@ -21,6 +21,7 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -89,8 +90,9 @@ auto collect_known_fixed_artifacts(PlayerType *player_ptr)
  * @brief Check the status of "artifacts"
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_knowledge_artifacts(PlayerType *player_ptr)
+void do_cmd_knowledge_artifacts(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -110,7 +112,7 @@ void do_cmd_knowledge_artifacts(PlayerType *player_ptr)
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("既知の伝説のアイテム", "Artifacts Seen"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("既知の伝説のアイテム", "Artifacts Seen"));
     fd_kill(file_name);
 }
 
@@ -237,8 +239,9 @@ static void desc_obj_fake(PlayerType *player_ptr, short bi_id)
 /**
  * @brief Display known objects
  */
-void do_cmd_knowledge_objects(PlayerType *player_ptr, bool *need_redraw, bool visual_only, short direct_k_idx)
+void do_cmd_knowledge_objects(CreatureEntity &creature, bool *need_redraw, bool visual_only, short direct_k_idx)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
     short object_old, object_top;
@@ -384,7 +387,7 @@ void do_cmd_knowledge_objects(PlayerType *player_ptr, bool *need_redraw, bool vi
             }
 
             if (object_old != object_idx[object_cur]) {
-                handle_stuff(*player_ptr);
+                handle_stuff(creature);
                 object_old = object_idx[object_cur];
             }
         }

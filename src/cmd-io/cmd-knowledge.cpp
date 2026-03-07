@@ -81,10 +81,10 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             p = (p >= 2) ? 0 : p + 1;
             break;
         case '1': /* Artifacts */
-            do_cmd_knowledge_artifacts(player_ptr);
+            do_cmd_knowledge_artifacts(*player_ptr);
             break;
         case '2': /* Objects */
-            do_cmd_knowledge_objects(player_ptr, &need_redraw, false, -1);
+            do_cmd_knowledge_objects(*player_ptr, &need_redraw, false, -1);
             break;
         case '3': /* Uniques */
             do_cmd_knowledge_uniques(*player_ptr, true);
