@@ -276,12 +276,12 @@ void fix_monster_list(CreatureEntity &creature)
     display_sub_windows(SubWindowRedrawingFlag::SIGHT_MONSTERS,
         [player_ptr, &creature, &once] {
             const auto &[wid, hgt] = term_get_size();
-            std::call_once(once, target_sensing_monsters_prepare, player_ptr, monster_list);
+            std::call_once(once, target_sensing_monsters_prepare, std::ref(*player_ptr), std::ref(monster_list));
             print_monster_list(*creature.current_floor_ptr, monster_list, 0, 0, hgt);
         });
 
     if (use_music && has_monster_music) {
-        std::call_once(once, target_sensing_monsters_prepare, player_ptr, monster_list);
+        std::call_once(once, target_sensing_monsters_prepare, std::ref(*player_ptr), std::ref(monster_list));
         select_monster_music(player_ptr, monster_list);
     }
 }
@@ -295,7 +295,7 @@ void fix_pet_list(CreatureEntity &creature)
     display_sub_windows(SubWindowRedrawingFlag::PETS,
         [player_ptr, &creature] {
             const auto &[wid, hgt] = term_get_size();
-            const auto pets = target_pets_prepare(player_ptr);
+            const auto pets = target_pets_prepare(*player_ptr);
             print_pet_list(creature, pets, 0, 0, wid, hgt);
         });
 }
