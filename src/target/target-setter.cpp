@@ -33,7 +33,7 @@
 
 class TargetSetter {
 public:
-    TargetSetter(PlayerType *player_ptr, target_type mode);
+    TargetSetter(CreatureEntity &creature, target_type mode);
     void sweep_target_grids();
     const Target &get_target() const
     {
@@ -62,21 +62,21 @@ private:
     Target target = Target::none();
 };
 
-TargetSetter::TargetSetter(PlayerType *player_ptr, target_type mode)
-    : player_ptr(player_ptr)
+TargetSetter::TargetSetter(CreatureEntity &creature, target_type mode)
+    : player_ptr(static_cast<PlayerType *>(&creature))
     , mode(mode)
-    , pos_target(player_ptr->get_position())
-    , pos_interests(target_set_prepare(*player_ptr, mode))
+    , pos_target(creature.get_position())
+    , pos_interests(target_set_prepare(creature, mode))
 {
 }
 
-static bool set_travel_goal(PlayerType *player_ptr, const Pos2D &pos)
+static bool set_travel_goal(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (player_ptr->is_located_at(pos) || !Travel::can_travel_to(*player_ptr->current_floor_ptr, pos)) {
+    if (creature.is_located_at(pos) || !Travel::can_travel_to(*creature.current_floor_ptr, pos)) {
         return false;
     }
 
-    Travel::get_instance().set_goal(*player_ptr, pos);
+    Travel::get_instance().set_goal(creature, pos);
     return true;
 }
 
@@ -90,7 +90,7 @@ static bool set_travel_goal(PlayerType *player_ptr, const Pos2D &pos)
  * Also used in do_cmd_locate
  * @return 実際に再描画が必要だった場合TRUEを返す
  */
-static bool change_panel_xy(PlayerType *player_ptr, const Pos2D &pos)
+static bool change_panel_xy(CreatureEntity &creature, const Pos2D &pos)
 {
     auto dy = 0;
     auto dx = 0;
@@ -115,7 +115,7 @@ static bool change_panel_xy(PlayerType *player_ptr, const Pos2D &pos)
         return false;
     }
 
-    return change_panel(*player_ptr, dy, dx);
+    return change_panel(creature, dy, dx);
 }
 
 /*!
@@ -184,7 +184,7 @@ tl::optional<int> TargetSetter::pick_nearest_interest_target(const Pos2D &pos, c
 
 std::string TargetSetter::describe_projectablity() const
 {
-    change_panel_xy(this->player_ptr, this->pos_target);
+    change_panel_xy(*this->player_ptr, this->pos_target);
     if ((this->mode & TARGET_LOOK) == 0) {
         print_path(*this->player_ptr, this->pos_target.y, this->pos_target.x);
     }
@@ -294,7 +294,7 @@ Direction TargetSetter::switch_target_input()
     case 'm':
         return Direction::none();
     case 'g':
-        this->done = set_travel_goal(this->player_ptr, this->pos_target);
+        this->done = set_travel_goal(*this->player_ptr, this->pos_target);
         return Direction::none();
     default: {
         const char queried_command = rogue_like_commands ? 'x' : 'l';
@@ -483,7 +483,7 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
         return tl::nullopt;
     }
     case 'g':
-        this->done = set_travel_goal(this->player_ptr, this->pos_target);
+        this->done = set_travel_goal(*this->player_ptr, this->pos_target);
         return tl::nullopt;
     default:
         const auto dir = get_keymap_dir(query);
@@ -552,11 +552,10 @@ void TargetSetter::sweep_target_grids()
  */
 Target target_set(CreatureEntity &creature, target_type mode)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    TargetSetter ts(&player, mode);
+    TargetSetter ts(creature, mode);
     ts.sweep_target_grids();
     prt("", 0, 0);
-    verify_panel(player);
+    verify_panel(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -565,7 +564,7 @@ Target target_set(CreatureEntity &creature, target_type mode)
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
     rfu.set_flags(flags);
-    handle_stuff(player);
+    handle_stuff(creature);
     Target::set_last_target(ts.get_target());
     return ts.get_target();
 }
