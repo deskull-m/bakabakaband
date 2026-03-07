@@ -238,9 +238,9 @@ void do_cmd_wield(CreatureEntity &creature)
     if (player_ptr->inventory[slot]->is_cursed()) {
         const auto item_name = describe_flavor(player_ptr, *player_ptr->inventory[slot], OD_OMIT_PREFIX | OD_NAME_ONLY);
 #ifdef JP
-        msg_format("%s%sは呪われているようだ。", describe_use(player_ptr, slot), item_name.data());
+        msg_format("%s%sは呪われているようだ。", describe_use(*player_ptr, slot), item_name.data());
 #else
-        msg_format("The %s you are %s appears to be cursed.", item_name.data(), describe_use(player_ptr, slot));
+        msg_format("The %s you are %s appears to be cursed.", item_name.data(), describe_use(*player_ptr, slot));
 #endif
         return;
     }

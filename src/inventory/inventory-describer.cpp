@@ -3,6 +3,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-table.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 
@@ -13,8 +14,9 @@
  * @param i 部位表現を求めるプレイヤーの所持/装備オブジェクトID
  * @return 部位表現の文字列ポインタ
  */
-concptr mention_use(PlayerType *player_ptr, int i)
+concptr mention_use(CreatureEntity &creature, int i)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     concptr p;
 
     /* Examine the location */
@@ -92,8 +94,9 @@ concptr mention_use(PlayerType *player_ptr, int i)
  * @details
  * Currently, only used for items in the equipment, inventory.
  */
-concptr describe_use(PlayerType *player_ptr, int i)
+concptr describe_use(CreatureEntity &creature, int i)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     concptr p;
     switch (i) {
 #ifdef JP
