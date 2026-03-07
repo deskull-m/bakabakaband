@@ -18,6 +18,7 @@
 #include "player/player-status-table.h"
 #include "player/race-info-table.h"
 #include "store/store-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
@@ -34,8 +35,9 @@
 /*
  * List virtues & status
  */
-void do_cmd_knowledge_virtues(PlayerType *player_ptr)
+void do_cmd_knowledge_virtues(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -44,9 +46,9 @@ void do_cmd_knowledge_virtues(PlayerType *player_ptr)
 
     std::string alg = PlayerAlignment(player_ptr).get_alignment_description();
     fprintf(fff, _("現在の属性 : %s\n\n", "Your alignment : %s\n\n"), alg.data());
-    dump_virtues(static_cast<CreatureEntity &>(*player_ptr), fff);
+    dump_virtues(creature, fff);
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("八つの徳", "Virtues"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("八つの徳", "Virtues"));
     fd_kill(file_name);
 }
 
@@ -144,8 +146,9 @@ static void dump_winner_classes(FILE *fff)
  * List virtues & status
  *
  */
-void do_cmd_knowledge_stat(PlayerType *player_ptr)
+void do_cmd_knowledge_stat(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -179,7 +182,7 @@ void do_cmd_knowledge_stat(PlayerType *player_ptr)
     dump_winner_classes(fff);
     angband_fclose(fff);
 
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("自分に関する情報", "HP-rate & Max stat"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("自分に関する情報", "HP-rate & Max stat"));
     fd_kill(file_name);
 }
 
@@ -187,8 +190,9 @@ void do_cmd_knowledge_stat(PlayerType *player_ptr)
  * List my home
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_knowledge_home(PlayerType *player_ptr)
+void do_cmd_knowledge_home(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &area = WildernessGrids::get_instance().get_area();
     parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
 
@@ -202,7 +206,7 @@ void do_cmd_knowledge_home(PlayerType *player_ptr)
     const auto &store = towns_info[1].get_store(StoreSaleType::HOME);
     if (store.stock_num == 0) {
         angband_fclose(fff);
-        FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, home_inventory);
+        FileDisplayer(creature.name).display(true, file_name, 0, 0, home_inventory);
         fd_kill(file_name);
         return;
     }
@@ -238,6 +242,6 @@ void do_cmd_knowledge_home(PlayerType *player_ptr)
 
     fprintf(fff, "\n\n");
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, home_inventory);
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, home_inventory);
     fd_kill(file_name);
 }
