@@ -1454,7 +1454,7 @@ static bool door_to_darkness(CreatureEntity &creature, int distance)
     auto p_pos = tl::make_optional(creature.get_position());
     const auto &floor = *creature.current_floor_ptr;
     for (auto i = 0; i < 3; i++) {
-        p_pos = point_target(&player);
+        p_pos = point_target(creature);
         if (!p_pos) {
             return false;
         }
