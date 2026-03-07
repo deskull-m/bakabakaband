@@ -241,7 +241,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
     }
 
     if (!(mpe_mode & MPE_DONT_PICKUP)) {
-        carry(&player, any_bits(mpe_mode, MPE_DO_PICKUP));
+        carry(player, any_bits(mpe_mode, MPE_DO_PICKUP));
     }
 
     // 自動拾い/自動破壊により床上のアイテムリストが変化した可能性があるので表示を更新

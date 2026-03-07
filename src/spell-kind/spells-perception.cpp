@@ -119,7 +119,7 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
     std::unique_ptr<ItemTester> item_tester = std::make_unique<FuncItemTester>(only_equip ? object_is_not_identified_weapon_armor : object_is_not_identified);
 
     concptr q;
-    if (can_get_item(&player, *item_tester)) {
+    if (can_get_item(player, *item_tester)) {
         q = _("どのアイテムを鑑定しますか? ", "Identify which item? ");
     } else {
         if (only_equip) {
@@ -167,7 +167,7 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
     std::unique_ptr<ItemTester> item_tester = std::make_unique<FuncItemTester>(only_equip ? object_is_not_fully_identified_weapon_armour : object_is_not_fully_identified);
 
     concptr q;
-    if (can_get_item(&player, *item_tester)) {
+    if (can_get_item(player, *item_tester)) {
         q = _("どのアイテムを*鑑定*しますか? ", "*Identify* which item? ");
     } else {
         if (only_equip) {
