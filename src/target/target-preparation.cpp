@@ -62,18 +62,18 @@ bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
 /*
  * Determine if a given location is "interesting"
  */
-static bool target_set_accept(PlayerType *player_ptr, const Pos2D &pos)
+static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return false;
     }
 
-    if (player_ptr->is_located_at(pos)) {
+    if (creature.is_located_at(pos)) {
         return true;
     }
 
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.effects()->hallucination().is_hallucinated()) {
         return false;
     }
 
@@ -108,17 +108,18 @@ static bool target_set_accept(PlayerType *player_ptr, const Pos2D &pos)
  * @param mode ターゲット選択モード
  * @return "interesting" な座標の一覧
  */
-std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
+std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     POSITION min_hgt, max_hgt, min_wid, max_wid;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto is_killable = any_bits(mode, TARGET_KILL);
     if (is_killable) {
         const auto max_range = AngbandSystem::get_instance().get_max_range();
-        min_hgt = std::max((player_ptr->y - max_range), 0);
-        max_hgt = std::min((player_ptr->y + max_range), floor.height - 1);
-        min_wid = std::max((player_ptr->x - max_range), 0);
-        max_wid = std::min((player_ptr->x + max_range), floor.width - 1);
+        min_hgt = std::max((creature.y - max_range), 0);
+        max_hgt = std::min((creature.y + max_range), floor.height - 1);
+        min_wid = std::max((creature.x - max_range), 0);
+        max_wid = std::min((creature.x + max_range), floor.width - 1);
     } else {
         min_hgt = panel_row_min;
         max_hgt = panel_row_max;
@@ -130,12 +131,12 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
     for (auto y = min_hgt; y <= max_hgt; y++) {
         for (auto x = min_wid; x <= max_wid; x++) {
             const Pos2D pos(y, x);
-            if (!target_set_accept(player_ptr, pos)) {
+            if (!target_set_accept(creature, pos)) {
                 continue;
             }
 
             const auto &grid = floor.get_grid(pos);
-            if (is_killable && !target_able(*player_ptr, grid.m_idx)) {
+            if (is_killable && !target_able(creature, grid.m_idx)) {
                 continue;
             }
 
@@ -148,7 +149,7 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
         }
     }
 
-    TargetSorter sorter(player_ptr->get_position());
+    TargetSorter sorter(creature.get_position());
     if (is_killable) {
         std::stable_sort(pos_list.begin(), pos_list.end(), [&sorter](const auto &a, const auto &b) {
             return sorter.compare_distance(a, b);
@@ -169,17 +170,17 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
     return pos_list;
 }
 
-void target_sensing_monsters_prepare(PlayerType *player_ptr, std::vector<MONSTER_IDX> &monster_list)
+void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONSTER_IDX> &monster_list)
 {
     monster_list.clear();
 
     // 幻覚時は正常に感知できない
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.effects()->hallucination().is_hallucinated()) {
         return;
     }
 
-    for (MONSTER_IDX i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
+    for (MONSTER_IDX i = 1; i < creature.current_floor_ptr->m_max; i++) {
+        const auto &monster = creature.current_floor_ptr->m_list[i];
         if (!monster.is_valid() || !monster.ml || monster.is_pet()) {
             continue;
         }
@@ -192,7 +193,7 @@ void target_sensing_monsters_prepare(PlayerType *player_ptr, std::vector<MONSTER
         monster_list.push_back(i);
     }
 
-    auto comp_importance = [&floor = *player_ptr->current_floor_ptr](MONSTER_IDX idx1, MONSTER_IDX idx2) {
+    auto comp_importance = [&floor = *creature.current_floor_ptr](MONSTER_IDX idx1, MONSTER_IDX idx2) {
         const auto &monster1 = floor.m_list[idx1];
         const auto &monster2 = floor.m_list[idx2];
         const auto &monrace1 = monster1.get_appearance_monrace();
@@ -239,10 +240,10 @@ void target_sensing_monsters_prepare(PlayerType *player_ptr, std::vector<MONSTER
  *
  * @return ペットのモンスターIDのリスト
  */
-std::vector<MONSTER_IDX> target_pets_prepare(PlayerType *player_ptr)
+std::vector<MONSTER_IDX> target_pets_prepare(CreatureEntity &creature)
 {
     std::vector<MONSTER_IDX> pets;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
 
     for (short i = 1; i < floor.m_max; ++i) {
         const auto &monster = floor.m_list[i];

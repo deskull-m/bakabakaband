@@ -66,7 +66,7 @@ TargetSetter::TargetSetter(PlayerType *player_ptr, target_type mode)
     : player_ptr(player_ptr)
     , mode(mode)
     , pos_target(player_ptr->get_position())
-    , pos_interests(target_set_prepare(player_ptr, mode))
+    , pos_interests(target_set_prepare(*player_ptr, mode))
 {
 }
 
@@ -284,7 +284,7 @@ Direction TargetSetter::switch_target_input()
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
         handle_stuff(*this->player_ptr);
-        this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+        this->pos_interests = target_set_prepare(*this->player_ptr, this->mode);
         this->pos_target = this->player_ptr->get_position();
     }
         [[fallthrough]];
@@ -326,7 +326,7 @@ tl::optional<int> TargetSetter::check_panel_changed(const Direction &dir)
     const auto pos = is_point_interest ? this->pos_interests[*this->interest_index] : this->pos_target;
 
     // 新たな描画範囲を用いて "interesting" 座標リストを更新。
-    this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+    this->pos_interests = target_set_prepare(*this->player_ptr, this->mode);
 
     // 新たな "interesting" 座標一覧からターゲットを探す。
     return pick_nearest_interest_target(pos, dir);
@@ -359,7 +359,7 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(*this->player_ptr);
 
-    this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+    this->pos_interests = target_set_prepare(*this->player_ptr, this->mode);
 
     auto &[y, x] = this->pos_target;
     x += dx;
@@ -375,7 +375,7 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
 
     if ((y >= panel_row_min + hgt) || (y < panel_row_min) || (x >= panel_col_min + wid) || (x < panel_col_min)) {
         if (change_panel(*this->player_ptr, dy, dx)) {
-            this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+            this->pos_interests = target_set_prepare(*this->player_ptr, this->mode);
         }
     }
 
@@ -456,7 +456,7 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
         handle_stuff(*this->player_ptr);
-        this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+        this->pos_interests = target_set_prepare(*this->player_ptr, this->mode);
         this->pos_target = this->player_ptr->get_position();
         return tl::nullopt;
     }
@@ -519,7 +519,7 @@ void TargetSetter::decide_change_panel(const Direction &dir, bool move_fast)
     should_change_panel |= x >= panel_col_min + wid;
     should_change_panel |= x < panel_col_min;
     if (should_change_panel && change_panel(*this->player_ptr, dy, dx)) {
-        this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+        this->pos_interests = target_set_prepare(*this->player_ptr, this->mode);
     }
 
     const auto &floor = *this->player_ptr->current_floor_ptr;
