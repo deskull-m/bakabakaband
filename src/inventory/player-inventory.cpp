@@ -24,6 +24,7 @@
 #include "object/object-mark-types.h"
 #include "player/player-move.h"
 #include "spell-kind/spells-perception.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -47,8 +48,9 @@
  * @return アイテムを拾えるならばTRUEを返す。
  * @details assuming mode = (USE_EQUIP | USE_INVEN | USE_FLOOR).
  */
-bool can_get_item(PlayerType *player_ptr, const ItemTester &item_tester)
+bool can_get_item(CreatureEntity &creature, const ItemTester &item_tester)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     for (int j = 0; j < INVEN_TOTAL; j++) {
         if (item_tester.okay(player_ptr->inventory[j].get())) {
             return true;
@@ -77,8 +79,9 @@ static bool query_pickup(std::string_view item_name)
     return input_check(prompt);
 }
 
-static void py_pickup_all_golds_on_floor(PlayerType *player_ptr, const Grid &grid)
+static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &grid)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         const auto i_idx = *it++;
         auto &item = *player_ptr->current_floor_ptr->o_list[i_idx];
@@ -93,7 +96,7 @@ static void py_pickup_all_golds_on_floor(PlayerType *player_ptr, const Grid &gri
         msg_print(_(" ${} の価値がある{}を見つけた。", "You have found {} gold pieces worth of {}."), value, item_name);
         sound(SoundKind::SELL);
 
-        delete_object_idx(*player_ptr, i_idx);
+        delete_object_idx(creature, i_idx);
 
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
@@ -101,8 +104,9 @@ static void py_pickup_all_golds_on_floor(PlayerType *player_ptr, const Grid &gri
     }
 }
 
-static void py_pickup_single_item(PlayerType *player_ptr, short i_idx, bool pickup)
+static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pickup)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto &item = *player_ptr->current_floor_ptr->o_list[i_idx];
     const auto item_name = describe_flavor(player_ptr, item, 0);
 
@@ -116,18 +120,19 @@ static void py_pickup_single_item(PlayerType *player_ptr, short i_idx, bool pick
         return;
     }
 
-    if (!check_store_item_to_inventory(*player_ptr, &item)) {
+    if (!check_store_item_to_inventory(creature, &item)) {
         msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
         return;
     }
 
     if (query_pickup(item_name)) {
-        process_player_pickup_item(player_ptr, i_idx);
+        process_player_pickup_item(creature, i_idx);
     }
 }
 
-static void py_pickup_multiple_items(PlayerType *player_ptr, bool pickup)
+static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.get_grid(player_ptr->get_position());
 
@@ -137,7 +142,7 @@ static void py_pickup_multiple_items(PlayerType *player_ptr, bool pickup)
         return;
     }
 
-    const auto tester = FuncItemTester([](PlayerType *p, const ItemEntity *o) { return check_store_item_to_inventory(*p, o); }, player_ptr);
+    const auto tester = FuncItemTester([&creature](const ItemEntity *o) { return check_store_item_to_inventory(creature, o); });
     const auto can_pickup = [&](auto i_idx) { return tester.okay(floor.o_list.at(i_idx).get()); };
     const auto count_of_pickable_items = ranges::count_if(grid.o_idx_list, can_pickup);
     if (count_of_pickable_items == 0) {
@@ -152,7 +157,7 @@ static void py_pickup_multiple_items(PlayerType *player_ptr, bool pickup)
         if (!choose_object(player_ptr, &i_idx, q, s, (USE_FLOOR), tester)) {
             break;
         }
-        process_player_pickup_item(player_ptr, -i_idx);
+        process_player_pickup_item(creature, -i_idx);
     }
 }
 
@@ -162,8 +167,9 @@ static void py_pickup_multiple_items(PlayerType *player_ptr, bool pickup)
  * @details
  * This is called by py_pickup() when easy_floor is TRUE.
  */
-static void py_pickup_floor(PlayerType *player_ptr, bool pickup)
+static void py_pickup_floor(CreatureEntity &creature, bool pickup)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &o_list = player_ptr->current_floor_ptr->o_list;
     const auto exclude_marked_as_skip = ranges::views::remove_if([&](auto i_idx) { return o_list.at(i_idx)->marked.has(OmType::SUPRESS_MESSAGE); });
     const auto &grid = player_ptr->current_floor_ptr->get_grid(player_ptr->get_position());
@@ -179,10 +185,10 @@ static void py_pickup_floor(PlayerType *player_ptr, bool pickup)
     case 0:
         return;
     case 1:
-        py_pickup_single_item(player_ptr, i_idx_list.front(), pickup);
+        py_pickup_single_item(creature, i_idx_list.front(), pickup);
         return;
     default:
-        py_pickup_multiple_items(player_ptr, pickup);
+        py_pickup_multiple_items(creature, pickup);
         return;
     }
 }
@@ -201,8 +207,9 @@ static void py_pickup_floor(PlayerType *player_ptr, bool pickup)
  * @param picked_slot_item 拾ったアイテムを格納したスロットの参照
  * @param slot 拾ったアイテムを格納したスロットのID
  */
-static void print_pickup_message(PlayerType *player_ptr, [[maybe_unused]] const ItemEntity &picked_item, const ItemEntity &picked_slot_item, short slot)
+static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] const ItemEntity &picked_item, const ItemEntity &picked_slot_item, short slot)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto item_name = describe_flavor(player_ptr, picked_slot_item, 0);
     const auto item_name_with_label = fmt::format(_("{}({})", "{} ({})"), item_name, index_to_label(slot));
 
@@ -236,24 +243,25 @@ static void print_pickup_message(PlayerType *player_ptr, [[maybe_unused]] const 
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_idx 取得したオブジェクトの参照ID
  */
-void process_player_pickup_item(PlayerType *player_ptr, OBJECT_IDX o_idx)
+void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     // delete_object_idx()で配列から削除した後にも使用するためshared_ptrをコピーする
     const std::shared_ptr<ItemEntity> picked_item_ptr = player_ptr->current_floor_ptr->o_list[o_idx];
 
-    const auto slot = store_item_to_inventory(*player_ptr, picked_item_ptr.get());
-    delete_object_idx(*player_ptr, o_idx);
+    const auto slot = store_item_to_inventory(creature, picked_item_ptr.get());
+    delete_object_idx(creature, o_idx);
 
     auto &picked_slot_item = *player_ptr->inventory[slot];
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
-        const auto old_known = identify_item(*player_ptr, &picked_slot_item);
+        const auto old_known = identify_item(creature, &picked_slot_item);
         autopick_alter_item(player_ptr, slot, destroy_identify && !old_known);
         if (picked_slot_item.marked.has(OmType::AUTODESTROY)) {
             return;
         }
     }
 
-    print_pickup_message(player_ptr, *picked_item_ptr, picked_slot_item, slot);
+    print_pickup_message(creature, *picked_item_ptr, picked_slot_item, slot);
 
     record_item_name = describe_flavor(player_ptr, *picked_item_ptr, OD_NAME_ONLY);
     record_turn = AngbandWorld::get_instance().game_turn;
@@ -265,25 +273,26 @@ void process_player_pickup_item(PlayerType *player_ptr, OBJECT_IDX o_idx)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param pickup 自動拾い処理を行うならばTRUEとする
  */
-void carry(PlayerType *player_ptr, bool pickup)
+void carry(CreatureEntity &creature, bool pickup)
 {
-    verify_panel(*player_ptr);
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    verify_panel(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     const auto &grid = player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x];
     autopick_pickup_items(player_ptr, grid);
 
     if (!grid.o_idx_list.empty()) {
-        disturb(*player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
-    py_pickup_all_golds_on_floor(player_ptr, grid);
+    py_pickup_all_golds_on_floor(creature, grid);
 
     if (easy_floor) {
-        py_pickup_floor(player_ptr, pickup);
+        py_pickup_floor(creature, pickup);
         return;
     }
 
@@ -307,11 +316,11 @@ void carry(PlayerType *player_ptr, bool pickup)
             continue;
         }
 
-        if (!check_store_item_to_inventory(*player_ptr, &item)) {
+        if (!check_store_item_to_inventory(creature, &item)) {
             msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
             continue;
         }
 
-        py_pickup_single_item(player_ptr, this_o_idx, pickup);
+        py_pickup_single_item(creature, this_o_idx, pickup);
     }
 }
