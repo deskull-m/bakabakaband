@@ -147,7 +147,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_autopick(*player_ptr);
             break;
         case 'l': /* Incident */
-            do_cmd_knowledge_incident(player_ptr);
+            do_cmd_knowledge_incident(*player_ptr);
             break;
         case 'm': /* Alliance */
             do_cmd_knowledge_alliance(*player_ptr, true);
