@@ -123,7 +123,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_stat(player_ptr);
             break;
         case 'c': /* Mutations */
-            do_cmd_knowledge_mutations(player_ptr);
+            do_cmd_knowledge_mutations(*player_ptr);
             break;
         case 'd': /* weapon-exp */
             do_cmd_knowledge_weapon_exp(player_ptr);
