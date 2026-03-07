@@ -190,7 +190,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         return false;
     }
 
-    const auto dir = get_direction(player_ptr);
+    const auto dir = get_direction(*player_ptr);
     if (!dir) {
         return false;
     }

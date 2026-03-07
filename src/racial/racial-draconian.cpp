@@ -96,7 +96,7 @@ bool draconian_breath(PlayerType *player_ptr)
 {
     auto breath_type = one_in_(3) ? AttributeType::COLD : AttributeType::FIRE;
     std::string breath_type_description((breath_type == AttributeType::COLD) ? _("冷気", "cold") : _("炎", "fire"));
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }

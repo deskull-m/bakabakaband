@@ -124,7 +124,7 @@ void do_cmd_open(CreatureEntity &creature)
         command_arg = 0;
     }
 
-    if (const auto dir = get_rep_dir(player_ptr, true)) {
+    if (const auto dir = get_rep_dir(*player_ptr, true)) {
         const auto pos = player_ptr->get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         const auto o_idx = chest_check(floor, pos, false);
@@ -175,7 +175,7 @@ void do_cmd_close(CreatureEntity &creature)
     }
 
     auto more = false;
-    if (const auto dir = get_rep_dir(player_ptr)) {
+    if (const auto dir = get_rep_dir(*player_ptr)) {
         const auto pos = player_ptr->get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::CLOSE)) {
@@ -225,7 +225,7 @@ void do_cmd_disarm(CreatureEntity &creature)
     }
 
     auto more = false;
-    if (const auto dir = get_rep_dir(player_ptr, true)) {
+    if (const auto dir = get_rep_dir(*player_ptr, true)) {
         const auto pos = player_ptr->get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         const auto o_idx = chest_check(floor, pos, true);
@@ -278,7 +278,7 @@ void do_cmd_bash(CreatureEntity &creature)
     }
 
     auto more = false;
-    if (const auto dir = get_rep_dir(player_ptr)) {
+    if (const auto dir = get_rep_dir(*player_ptr)) {
         const auto pos = player_ptr->get_neighbor(dir);
         const Grid &grid = player_ptr->current_floor_ptr->get_grid(pos);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::BASH)) {
@@ -341,7 +341,7 @@ void do_cmd_spike(CreatureEntity &creature)
     }
 
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    const auto dir = get_rep_dir(player_ptr);
+    const auto dir = get_rep_dir(*player_ptr);
     if (!dir) {
         return;
     }

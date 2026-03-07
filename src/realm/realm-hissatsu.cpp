@@ -83,7 +83,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 1:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -115,7 +115,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 3:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -138,7 +138,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 5:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -171,7 +171,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 return tl::nullopt;
             }
 
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -200,7 +200,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 8:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -218,7 +218,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 9:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -236,7 +236,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 10:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -304,7 +304,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 12:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -327,7 +327,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 13:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -345,7 +345,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 14:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -363,7 +363,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 15:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -381,7 +381,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 16:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -400,7 +400,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 17:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -452,7 +452,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
         break;
     case 20:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -517,7 +517,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 23:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -588,7 +588,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 24:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -673,7 +673,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 28:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -695,7 +695,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 29:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }
@@ -742,7 +742,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 30:
         if (cast) {
-            const auto dir = get_direction(player_ptr);
+            const auto dir = get_direction(*player_ptr);
             if (!dir.has_direction()) {
                 return tl::nullopt;
             }

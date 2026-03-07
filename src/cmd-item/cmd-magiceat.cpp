@@ -546,7 +546,7 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
 
             auto dir = Direction::none();
             if (bi_key->is_aiming_rod()) {
-                dir = get_aim_dir(player_ptr);
+                dir = get_aim_dir(*player_ptr);
                 if (!dir) {
                     return false;
                 }
@@ -565,7 +565,7 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
                 return false;
             }
 
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return false;
             }

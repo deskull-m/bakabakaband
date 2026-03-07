@@ -66,7 +66,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     auto &floor = *player_ptr->current_floor_ptr;
     switch (power) {
     case PlayerMutationType::SPIT_ACID: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -77,7 +77,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     }
     case PlayerMutationType::BR_FIRE: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -88,7 +88,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     }
     case PlayerMutationType::HYPN_GAZE: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -98,7 +98,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     }
     case PlayerMutationType::TELEKINES: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -112,7 +112,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         teleport_player(*player_ptr, 10 + 4 * lvl, TELEPORT_SPONTANEOUS);
         return true;
     case PlayerMutationType::MIND_BLST: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -143,7 +143,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return eat_rock(player_ptr);
     case PlayerMutationType::SWAP_POS: {
         project_length = -1;
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             project_length = 0;
             return false;
@@ -241,7 +241,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         turn_monsters(*player_ptr, lvl * 4);
         return true;
     case PlayerMutationType::LASER_EYE: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -252,7 +252,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
     case PlayerMutationType::RECALL:
         return recall_player(*player_ptr, randint0(21) + 15);
     case PlayerMutationType::BANISH: {
-        const auto dir = get_direction(player_ptr);
+        const auto dir = get_direction(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -292,7 +292,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         return true;
     }
     case PlayerMutationType::COLD_TOUCH: {
-        const auto dir = get_direction(player_ptr);
+        const auto dir = get_direction(*player_ptr);
         if (!dir) {
             return false;
         }

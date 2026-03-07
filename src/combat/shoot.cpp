@@ -570,7 +570,7 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
     project_length = tdis + 1;
 
     /* Get a direction (or cancel) */
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         PlayerEnergy(player_ptr).reset_player_turn();
 

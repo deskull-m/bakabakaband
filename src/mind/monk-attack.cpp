@@ -273,7 +273,7 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
 bool double_attack(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto dir = get_rep_dir(&player);
+    const auto dir = get_rep_dir(player);
     if (!dir) {
         return false;
     }

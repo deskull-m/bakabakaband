@@ -178,7 +178,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
 
         break;
     case MindMindcrafterType::NEURAL_BLAST: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -198,7 +198,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         break;
     case MindMindcrafterType::DOMINATION:
         if (plev < 30) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return false;
             }
@@ -210,7 +210,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
 
         break;
     case MindMindcrafterType::PLUVERISE: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -266,7 +266,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         break;
     }
     case MindMindcrafterType::TELEKINESIS: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -275,7 +275,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         break;
     }
     case MindMindcrafterType::PSYCHIC_DRAIN: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -288,7 +288,7 @@ bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell)
         break;
     }
     case MindMindcrafterType::PSYCHO_SPEAR: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }

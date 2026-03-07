@@ -213,7 +213,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
 
         flush();
         msg_erase();
-        const auto dir = get_aim_dir(player_ptr, false);
+        const auto dir = get_aim_dir(*player_ptr, false);
         fire_ball(*player_ptr, AttributeType::MANA, dir ? dir : Direction::self(), player_ptr->level * 2, 3);
     }
 
