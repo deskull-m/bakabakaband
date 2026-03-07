@@ -47,7 +47,7 @@
  */
 bool get_item(PlayerType *player_ptr, OBJECT_IDX *cp, concptr pmt, concptr str, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    const auto floor_item_indice = get_item_floor(player_ptr, pmt, str, mode, item_tester);
+    const auto floor_item_indice = get_item_floor(*player_ptr, pmt, str, mode, item_tester);
     if (floor_item_indice) {
         *cp = *floor_item_indice;
         return true;
