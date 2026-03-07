@@ -7,9 +7,9 @@
 #include "knowledge/knowledge-uniques.h"
 #include "core/show-file.h"
 #include "io-dump/dump-util.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 
@@ -118,7 +118,7 @@ static void display_uniques(UniqueList *unique_list_ptr, FILE *fff)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param is_alive 生きているユニークのリストならばTRUE、撃破したユニークのリストならばFALSE
  */
-void do_cmd_knowledge_uniques(PlayerType *player_ptr, bool is_alive)
+void do_cmd_knowledge_uniques(CreatureEntity &creature, bool is_alive)
 {
     UniqueList unique_list(is_alive);
     FILE *fff = nullptr;
@@ -133,6 +133,6 @@ void do_cmd_knowledge_uniques(PlayerType *player_ptr, bool is_alive)
     display_uniques(&unique_list, fff);
     angband_fclose(fff);
     concptr title_desc = unique_list.is_alive ? _("まだ生きているユニーク・モンスター", "Alive Uniques") : _("もう撃破したユニーク・モンスター", "Dead Uniques");
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, title_desc);
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, title_desc);
     fd_kill(file_name);
 }
