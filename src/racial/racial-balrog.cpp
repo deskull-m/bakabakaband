@@ -9,7 +9,7 @@
 bool demonic_breath(PlayerType *player_ptr)
 {
     AttributeType type = (one_in_(2) ? AttributeType::NETHER : AttributeType::FIRE);
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(*player_ptr);
     if (!dir) {
         return false;
     }

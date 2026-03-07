@@ -717,7 +717,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                     auto dir = Direction::none();
                     do {
                         msg_print(_("復讐の時だ！", "Time for revenge!"));
-                        dir = get_aim_dir(player_ptr);
+                        dir = get_aim_dir(*player_ptr);
                     } while (!dir);
 
                     fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, power, 1);

@@ -57,7 +57,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dice);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -77,7 +77,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 2: {
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -104,7 +104,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dice);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -154,7 +154,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_power(power);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -176,7 +176,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dice, base);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -218,7 +218,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dam);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -289,7 +289,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = 4;
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -304,7 +304,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = 4;
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -390,7 +390,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = 7;
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, dam, rad);
         }
     } break;
@@ -402,7 +402,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = plev / 5;
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }

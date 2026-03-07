@@ -506,7 +506,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 bool do_cmd_headbutt(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dir = get_direction(player_ptr);
+    const auto dir = get_direction(*player_ptr);
     if (!dir) {
         return false;
     }
@@ -596,7 +596,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
 void do_cmd_body_slam(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dir = get_direction(player_ptr);
+    const auto dir = get_direction(*player_ptr);
     if (!dir) {
         return;
     }
@@ -739,7 +739,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
 void do_cmd_enema(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto dir = get_direction(player_ptr);
+    const auto dir = get_direction(*player_ptr);
     if (!dir) {
         return;
     }

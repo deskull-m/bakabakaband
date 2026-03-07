@@ -399,7 +399,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
 
     auto more = false;
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
-    if (const auto dir = get_rep_dir(&player)) {
+    if (const auto dir = get_rep_dir(player)) {
         PlayerEnergy energy(&player);
         energy.set_player_turn_energy(100);
         if (dir.has_direction()) {
@@ -458,7 +458,7 @@ void do_cmd_run(CreatureEntity &creature)
 
     CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (const auto dir = get_rep_dir(&player)) {
+    if (const auto dir = get_rep_dir(player)) {
         creature.running = (command_arg ? command_arg : 1000);
         run_step(&player, dir);
     }

@@ -16,7 +16,7 @@
 bool hit_and_away(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto dir = get_direction(&player);
+    const auto dir = get_direction(player);
     if (!dir) {
         return false;
     }

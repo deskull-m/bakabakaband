@@ -103,7 +103,7 @@ bool create_ammo(PlayerType *player_ptr)
 
     switch (ext) {
     case AMMO_SHOT: {
-        const auto dir = get_rep_dir(player_ptr);
+        const auto dir = get_rep_dir(*player_ptr);
         if (!dir) {
             return false;
         }

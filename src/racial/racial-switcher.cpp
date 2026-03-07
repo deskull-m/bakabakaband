@@ -123,7 +123,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         probing(creature);
         return true;
     case PlayerClassType::PALADIN: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -171,7 +171,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return clear_mind(*player_ptr);
     case PlayerClassType::TOURIST:
         if (command == -3) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return false;
             }
@@ -187,7 +187,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return do_cmd_mane(*player_ptr, true);
     case PlayerClassType::BEASTMASTER:
         if (command == -3) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return false;
             }
@@ -317,7 +317,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 性格ベースのレイシャル能力をチェック
     if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -372,7 +372,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)create_rune_explosion(*player_ptr, player_ptr->y, player_ptr->x);
         return true;
     case PlayerRaceType::HALF_GIANT: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -385,7 +385,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)probing(creature);
         return true;
     case PlayerRaceType::CYCLOPS: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -395,7 +395,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::YEEK: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -406,7 +406,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::KLACKON: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -422,7 +422,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::KOBOLD: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -438,7 +438,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::DARK_ELF: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -450,7 +450,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
     case PlayerRaceType::DRACONIAN:
         return draconian_breath(player_ptr);
     case PlayerRaceType::MIND_FLAYER: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -460,7 +460,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::IMP: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }
@@ -487,7 +487,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)vampirism(player_ptr);
         return true;
     case PlayerRaceType::SPECTRE: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {
             return false;
         }

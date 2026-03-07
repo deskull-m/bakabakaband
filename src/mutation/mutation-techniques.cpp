@@ -28,7 +28,7 @@
  */
 bool eat_rock(PlayerType *player_ptr)
 {
-    const auto dir = get_direction(player_ptr);
+    const auto dir = get_direction(*player_ptr);
     if (!dir) {
         return false;
     }

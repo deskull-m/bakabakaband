@@ -191,7 +191,7 @@ void cast_shuffle(CreatureEntity &creature)
     if (die < 96) {
         msg_print(_("《恋人》だ。", "It's the Lovers."));
 
-        if (const auto dir = get_aim_dir(&player)) {
+        if (const auto dir = get_aim_dir(player)) {
             charm_monster(&player, dir, std::min<short>(player.level, 20));
         }
 

@@ -101,7 +101,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -130,7 +130,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -181,7 +181,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -210,7 +210,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -274,7 +274,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -376,7 +376,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(*player_ptr);
             if (!dir) {
                 return tl::nullopt;
             }

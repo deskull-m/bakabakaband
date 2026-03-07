@@ -74,7 +74,7 @@ void call_chaos(CreatureEntity &creature)
         return;
     }
 
-    const auto dir = get_aim_dir(&player);
+    const auto dir = get_aim_dir(player);
     if (!dir) {
         return;
     }

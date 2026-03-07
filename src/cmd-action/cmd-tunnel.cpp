@@ -44,7 +44,7 @@ void do_cmd_tunnel(CreatureEntity &creature)
         command_arg = 0;
     }
 
-    const auto dir = get_rep_dir(player_ptr);
+    const auto dir = get_rep_dir(*player_ptr);
     if (!dir) {
         disturb(*player_ptr, false, false);
         return;

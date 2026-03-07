@@ -33,7 +33,7 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
             return false;
         }
 
-        const auto dir = get_direction(player_ptr);
+        const auto dir = get_direction(*player_ptr);
         if (!dir.has_direction()) {
             return false;
         }
@@ -61,7 +61,7 @@ bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell)
         return true;
     }
     case MindBerserkerType::SMASH_TRAP: {
-        const auto dir = get_direction(player_ptr);
+        const auto dir = get_direction(*player_ptr);
         if (!dir) {
             return false;
         }
