@@ -441,7 +441,7 @@ static bool check_cold_blood(CreatureEntity &creature, um_type *um_ptr, const PO
 static bool check_invisible(CreatureEntity &creature, um_type *um_ptr)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    if (!player_can_see_bold(&player, um_ptr->fy, um_ptr->fx)) {
+    if (!player_can_see_bold(player, um_ptr->fy, um_ptr->fx)) {
         return false;
     }
 

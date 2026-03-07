@@ -242,8 +242,8 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
     const auto p_pos = player.get_position();
     if (flag & PROJECT_KILL) {
-        see_s_msg = is_monster(src_idx) ? is_seen(&player, floor.m_list[src_idx])
-                                        : (is_player(src_idx) ? true : (player_can_see_bold(&player, pos_source.y, pos_source.x) && projectable(floor, p_pos, pos_source)));
+        see_s_msg = is_monster(src_idx) ? is_seen(player, floor.m_list[src_idx])
+                                        : (is_player(src_idx) ? true : (player_can_see_bold(player, pos_source.y, pos_source.x) && projectable(floor, p_pos, pos_source)));
     }
 
     if (flag & (PROJECT_GRID)) {
@@ -290,7 +290,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                         pos_reflection = pos_source;
                     }
 
-                    if (is_seen(&player, monster)) {
+                    if (is_seen(player, monster)) {
                         const auto m_name = monster.ml ? monster_desc(static_cast<PlayerType &>(player), monster, 0) : std::string(_("それ", "It"));
                         sound(SoundKind::REFLECT);
                         const auto reflect_message = monrace.get_message(m_name, MonsterMessageType::MESSAGE_REFLECT);

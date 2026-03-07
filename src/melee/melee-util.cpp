@@ -18,8 +18,8 @@ mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONST
     mam_ptr->m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     mam_ptr->t_ptr = &creature.current_floor_ptr->m_list[t_idx];
     mam_ptr->damage = 0;
-    mam_ptr->see_m = player_ptr ? is_seen(player_ptr, *mam_ptr->m_ptr) : false;
-    mam_ptr->see_t = player_ptr ? is_seen(player_ptr, *mam_ptr->t_ptr) : false;
+    mam_ptr->see_m = player_ptr ? is_seen(*player_ptr, *mam_ptr->m_ptr) : false;
+    mam_ptr->see_t = player_ptr ? is_seen(*player_ptr, *mam_ptr->t_ptr) : false;
     mam_ptr->see_either = mam_ptr->see_m || mam_ptr->see_t;
     mam_ptr->y_saver = mam_ptr->t_ptr->y;
     mam_ptr->x_saver = mam_ptr->t_ptr->x;

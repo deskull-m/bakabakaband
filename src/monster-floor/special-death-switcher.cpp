@@ -72,7 +72,6 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
  */
 static tl::optional<bool> final_summon(CreatureEntity &creature, MonsterDeath *md_ptr, const MonsterSummon &summon_data)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &floor = *creature.current_floor_ptr;
     if (floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || !evaluate_percent(summon_data.probability)) {
         return tl::nullopt;
@@ -105,7 +104,7 @@ static tl::optional<bool> final_summon(CreatureEntity &creature, MonsterDeath *m
 
         BIT_FLAGS mode = dead_mode(md_ptr);
         const auto summon_src = md_ptr->m_ptr->is_pet() ? -1 : md_ptr->m_idx;
-        if (summon_named_creature(creature, summon_src, m_pos.y, m_pos.x, summon_data.id, mode) && player_can_see_bold(player_ptr, m_pos.y, m_pos.x)) {
+        if (summon_named_creature(creature, summon_src, m_pos.y, m_pos.x, summon_data.id, mode) && player_can_see_bold(creature, m_pos.y, m_pos.x)) {
             notice = true;
         }
     }
@@ -135,7 +134,7 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
         bool pet = md_ptr->m_ptr->is_pet();
         BIT_FLAGS mode = pet ? PM_FORCE_PET : PM_NONE;
         for (int i = 0; i < spawn_nums; i++) {
-            if (summon_named_creature(*player_ptr, 0, wy, wx, r_idx, mode) && player_can_see_bold(player_ptr, wy, wx)) {
+            if (summon_named_creature(killer, 0, wy, wx, r_idx, mode) && player_can_see_bold(killer, wy, wx)) {
                 notice = true;
             }
         }
@@ -328,17 +327,13 @@ static void drop_sushi(CreatureEntity &killer, MonsterDeath *md_ptr)
 
 static void on_dead_ninja(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
-    if (!player_ptr) {
-        return;
-    }
-    if (is_seen(player_ptr, *md_ptr->m_ptr)) {
+    if (is_seen(killer, *md_ptr->m_ptr)) {
         msg_print(_("「サヨナラ！」", "Sayonara!"));
-        auto m_name = monster_desc(*player_ptr, *md_ptr->m_ptr, MD_NONE);
+        auto m_name = monster_desc(killer, *md_ptr->m_ptr, MD_NONE);
         msg_format(_("%sは哀れ爆発四散した！ショッギョ・ムッジョ！", "%s explodes pitifully! Shogyomujo!"), m_name.data());
     }
 
-    (void)project(*player_ptr, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 20, AttributeType::MISSILE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+    (void)project(killer, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 20, AttributeType::MISSILE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 }
 
 static void on_dead_earth_destroyer(CreatureEntity &killer, MonsterDeath *md_ptr)
@@ -493,8 +488,7 @@ static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr
  */
 static void on_dead_manimani(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&killer);
-    if (!player_ptr || !is_seen(player_ptr, *md_ptr->m_ptr)) {
+    if (!is_seen(killer, *md_ptr->m_ptr)) {
         return;
     }
 

@@ -69,8 +69,8 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (m_idx <= 0) {
         m_name = _("あなた", "you");
     } else {
-        m_name = monster_desc(*player_ptr, monster, 0);
-        see_m = is_seen(player_ptr, monster);
+        m_name = monster_desc(creature, monster, 0);
+        see_m = is_seen(creature, monster);
     }
 
     if (floor.can_teleport_level(m_idx <= 0)) {
