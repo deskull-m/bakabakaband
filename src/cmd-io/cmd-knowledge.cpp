@@ -138,7 +138,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_virtues(player_ptr);
             break;
         case 'h': /* Dungeon */
-            do_cmd_knowledge_dungeon(player_ptr);
+            do_cmd_knowledge_dungeon(*player_ptr);
             break;
         case 'i': /* Quests */
             do_cmd_knowledge_quests(*player_ptr);
