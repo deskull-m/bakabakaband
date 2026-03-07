@@ -571,7 +571,7 @@ ItemEntity *choose_object(PlayerType *player_ptr, short *initial_i_idx, concptr 
 
     FixItemTesterSetter setter(item_tester);
     short i_idx;
-    if (!get_item(player_ptr, &i_idx, q, s, option, item_tester)) {
+    if (!get_item(*player_ptr, &i_idx, q, s, option, item_tester)) {
         return nullptr;
     }
 

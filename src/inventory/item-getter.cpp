@@ -17,6 +17,7 @@
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "player/player-status-flags.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -45,9 +46,9 @@
  * @return プレイヤーによりアイテムが選択されたならTRUEを返す
  * Return TRUE only if an acceptable item was chosen by the user
  */
-bool get_item(PlayerType *player_ptr, OBJECT_IDX *cp, concptr pmt, concptr str, BIT_FLAGS mode, const ItemTester &item_tester)
+bool get_item(CreatureEntity &creature, OBJECT_IDX *cp, concptr pmt, concptr str, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    const auto floor_item_indice = get_item_floor(*player_ptr, pmt, str, mode, item_tester);
+    const auto floor_item_indice = get_item_floor(creature, pmt, str, mode, item_tester);
     if (floor_item_indice) {
         *cp = *floor_item_indice;
         return true;
