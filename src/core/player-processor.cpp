@@ -270,7 +270,7 @@ void process_player(PlayerType *player_ptr)
             term_fresh_force();
         }
 
-        pack_overflow(player_ptr);
+        pack_overflow(*player_ptr);
         if (!command_new) {
             command_see = false;
         }
@@ -327,7 +327,7 @@ void process_player(PlayerType *player_ptr)
             process_command(*player_ptr);
         }
 
-        pack_overflow(player_ptr);
+        pack_overflow(*player_ptr);
         if (player_ptr->energy_use) {
             if (player_ptr->timewalk || player_ptr->energy_use > 400) {
                 player_ptr->energy_need += player_ptr->energy_use * TURNS_PER_TICK / 10;
