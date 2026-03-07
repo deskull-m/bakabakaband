@@ -181,7 +181,7 @@ static void display_player_stats(CreatureEntity &creature)
  */
 static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto *player_ptr = static_cast<PlayerType *>(&creature); // parse_fixed_map用
     const auto &floor = *creature.current_floor_ptr;
     if (!creature.is_dead()) {
         return tl::nullopt;
@@ -195,9 +195,9 @@ static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
     if (!floor.is_underground()) {
         constexpr auto killed_monster = _("…あなたは%sで%sに殺されて飽きた。", "...You were killed by %s in %s and got tired..");
 #ifdef JP
-        return format(killed_monster, map_name(player_ptr).data(), creature.died_from.data());
+        return format(killed_monster, map_name(creature).data(), creature.died_from.data());
 #else
-        return format(killed_monster, creature.died_from.data(), map_name(player_ptr).data());
+        return format(killed_monster, creature.died_from.data(), map_name(creature).data());
 #endif
     }
 
@@ -220,9 +220,9 @@ static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
 
     constexpr auto killed_floor = _("…あなたは、%sの%d階で%sに殺されて飽きた。", "...You were killed by %s on level %d of %s and got tired..");
 #ifdef JP
-    return format(killed_floor, map_name(player_ptr).data(), floor.dun_level, creature.died_from.data());
+    return format(killed_floor, map_name(creature).data(), floor.dun_level, creature.died_from.data());
 #else
-    return format(killed_floor, creature.died_from.data(), floor.dun_level, map_name(player_ptr).data());
+    return format(killed_floor, creature.died_from.data(), floor.dun_level, map_name(creature).data());
 #endif
 }
 
@@ -255,7 +255,6 @@ static tl::optional<std::string> decide_death_in_quest(CreatureEntity &creature)
  */
 static std::string decide_current_floor(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (const auto death_cause = search_death_cause(creature);
         death_cause || !AngbandWorld::get_instance().character_dungeon) {
         return death_cause.value_or("");
@@ -263,7 +262,7 @@ static std::string decide_current_floor(CreatureEntity &creature)
 
     const auto &floor = *creature.current_floor_ptr;
     if (!floor.is_underground()) {
-        return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(player_ptr).data());
+        return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(creature).data());
     }
 
     if (auto decision = decide_death_in_quest(creature); decision.has_value()) {
@@ -272,9 +271,9 @@ static std::string decide_current_floor(CreatureEntity &creature)
 
     constexpr auto mes = _("…あなたは現在、 %s の %d 階で探索している。", "...Now, you are exploring level %d of %s.");
 #ifdef JP
-    return format(mes, map_name(player_ptr).data(), floor.dun_level);
+    return format(mes, map_name(creature).data(), floor.dun_level);
 #else
-    return format(mes, floor.dun_level, map_name(player_ptr).data());
+    return format(mes, floor.dun_level, map_name(creature).data());
 #endif
 }
 

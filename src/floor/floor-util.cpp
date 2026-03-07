@@ -10,6 +10,7 @@
 #include "floor/line-of-sight.h"
 #include "game-option/birth-options.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
@@ -17,7 +18,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "world/world.h"
@@ -176,9 +176,9 @@ Pos2D scatter(const FloorType &floor, const Pos2D &pos, int d, uint32_t mode)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return マップ名の文字列参照ポインタ
  */
-std::string map_name(PlayerType *player_ptr)
+std::string map_name(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &quests = QuestList::get_instance();
     auto is_fixed_quest = floor.is_in_quest();
     is_fixed_quest &= QuestType::is_fixed(floor.quest_number);
@@ -191,8 +191,8 @@ std::string map_name(PlayerType *player_ptr)
         return _("アリーナ", "Arena");
     } else if (AngbandSystem::get_instance().is_phase_out()) {
         return _("闘技場", "Monster Arena");
-    } else if (!floor.is_underground() && player_ptr->town_num) {
-        return towns_info[player_ptr->town_num].name;
+    } else if (!floor.is_underground() && creature.town_num) {
+        return towns_info[creature.town_num].name;
     } else {
         return floor.get_dungeon_definition().name;
     }

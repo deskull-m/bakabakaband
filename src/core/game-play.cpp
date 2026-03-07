@@ -297,7 +297,7 @@ static void generate_world(PlayerType *player_ptr, bool new_game)
         return;
     }
 
-    const auto mes = format(_("%sに降り立った。", "arrived in %s."), map_name(player_ptr).data());
+    const auto mes = format(_("%%sに降り立った。", "arrived in %%s."), map_name(*player_ptr).data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, mes);
 }
 
