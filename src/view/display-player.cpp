@@ -76,7 +76,7 @@ static bool display_player_info(CreatureEntity &creature, int mode)
 
     if (mode == 5) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
-        do_cmd_knowledge_mutations(player_ptr);
+        do_cmd_knowledge_mutations(*player_ptr);
         return true;
     }
 
