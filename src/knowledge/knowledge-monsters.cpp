@@ -18,6 +18,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "pet/pet-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -152,8 +153,9 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
  * Display current pets
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_knowledge_pets(PlayerType *player_ptr)
+void do_cmd_knowledge_pets(CreatureEntity &creature)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -161,14 +163,14 @@ void do_cmd_knowledge_pets(PlayerType *player_ptr)
     }
 
     int t_friends = 0;
-    for (int i = player_ptr->current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
+    for (int i = creature.current_floor_ptr->m_max - 1; i >= 1; i--) {
+        const auto &monster = creature.current_floor_ptr->m_list[i];
         if (!monster.is_valid() || !monster.is_pet()) {
             continue;
         }
 
         t_friends++;
-        const auto pet_name = monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
         fprintf(fff, "%s (%s)\n", pet_name.data(), monster.build_looking_description(false).data());
     }
 
@@ -183,7 +185,7 @@ void do_cmd_knowledge_pets(PlayerType *player_ptr)
     fprintf(fff, _(" 維持コスト: %d%% MP\n", "   Upkeep: %d%% mana.\n"), show_upkeep);
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("現在のペット", "Current Pets"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("現在のペット", "Current Pets"));
     fd_kill(file_name);
 }
 
@@ -193,7 +195,7 @@ void do_cmd_knowledge_pets(PlayerType *player_ptr)
  * Total kill count
  * @note the player ghosts are ignored.
  */
-void do_cmd_knowledge_kill_count(PlayerType *player_ptr)
+void do_cmd_knowledge_kill_count(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -261,7 +263,7 @@ void do_cmd_knowledge_kill_count(PlayerType *player_ptr)
 #endif
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("倒した敵の数", "Kill Count"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("怕した敵の数", "Kill Count"));
     fd_kill(file_name);
 }
 
@@ -315,7 +317,7 @@ static void display_monster_list(int col, int row, int per_page, const std::vect
  * @param direct_r_idx モンスターID
  * @todo 引数の詳細について加筆求む
  */
-void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool visual_only, tl::optional<MonraceId> direct_r_idx)
+void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool visual_only, tl::optional<MonraceId> direct_r_idx)
 {
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
@@ -434,7 +436,7 @@ void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool v
             symbol_ptr = &monrace.symbol_config;
             if (!visual_only) {
                 tracker.set_trackee(monrace_ids[mon_cur]);
-                handle_stuff(*player_ptr);
+                handle_stuff(creature);
             }
 
             if (visual_list) {
@@ -471,7 +473,7 @@ void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool v
         case 'R':
         case 'r': {
             if (!visual_list && !visual_only && MonraceList::is_valid(monrace_ids[mon_cur])) {
-                screen_roff(*player_ptr, monrace_ids[mon_cur], MONSTER_LORE_NORMAL);
+                screen_roff(creature, monrace_ids[mon_cur], MONSTER_LORE_NORMAL);
                 (void)inkey();
                 redraw = true;
             }

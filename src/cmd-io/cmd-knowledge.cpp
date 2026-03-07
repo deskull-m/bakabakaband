@@ -93,10 +93,10 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             do_cmd_knowledge_uniques(*player_ptr, false);
             break;
         case '5': /* Monsters */
-            do_cmd_knowledge_monsters(player_ptr, &need_redraw, false);
+            do_cmd_knowledge_monsters(*player_ptr, &need_redraw, false);
             break;
         case '6': /* Kill count  */
-            do_cmd_knowledge_kill_count(player_ptr);
+            do_cmd_knowledge_kill_count(*player_ptr);
             break;
         case '7': /* wanted */
             if (!vanilla_town) {
@@ -104,7 +104,7 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             }
             break;
         case '8': /* Pets */
-            do_cmd_knowledge_pets(player_ptr);
+            do_cmd_knowledge_pets(*player_ptr);
             break;
         case '9': /* Home */
             do_cmd_knowledge_home(player_ptr);
