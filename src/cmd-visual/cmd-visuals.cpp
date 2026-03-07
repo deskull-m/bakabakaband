@@ -274,7 +274,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                     break;
                 }
                 case 'v':
-                    do_cmd_knowledge_monsters(player_ptr, &need_redraw, true, monrace_id);
+                    do_cmd_knowledge_monsters(*player_ptr, &need_redraw, true, monrace_id);
                     term_clear();
                     print_visuals_menu(choice_msg);
                     break;
@@ -469,7 +469,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
             break;
         }
         case '7':
-            do_cmd_knowledge_monsters(player_ptr, &need_redraw, true);
+            do_cmd_knowledge_monsters(*player_ptr, &need_redraw, true);
             break;
         case '8':
             do_cmd_knowledge_objects(*player_ptr, &need_redraw, true, -1);
