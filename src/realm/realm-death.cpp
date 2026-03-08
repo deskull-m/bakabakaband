@@ -36,8 +36,9 @@
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
@@ -52,7 +53,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            detect_monsters_nonliving(*player_ptr, rad);
+            detect_monsters_nonliving(creature, rad);
         }
     } break;
 
@@ -65,7 +66,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -78,20 +79,20 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
              * travel to the monster.
              */
 
-            fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, dice.roll(), rad);
+            fire_ball(creature, AttributeType::HELL_FIRE, dir, dice.roll(), rad);
 
             if (one_in_(5)) {
                 /* Special effect first */
                 int effect = randint1(1000);
 
                 if (effect == 666) {
-                    fire_ball_hide(*player_ptr, AttributeType::DEATH_RAY, dir, plev * 200, 0);
+                    fire_ball_hide(creature, AttributeType::DEATH_RAY, dir, plev * 200, 0);
                 } else if (effect < 500) {
-                    fire_ball_hide(*player_ptr, AttributeType::TURN_ALL, dir, plev, 0);
+                    fire_ball_hide(creature, AttributeType::TURN_ALL, dir, plev, 0);
                 } else if (effect < 800) {
-                    fire_ball_hide(*player_ptr, AttributeType::OLD_CONF, dir, plev, 0);
+                    fire_ball_hide(creature, AttributeType::OLD_CONF, dir, plev, 0);
                 } else {
-                    fire_ball_hide(*player_ptr, AttributeType::STUN, dir, plev, 0);
+                    fire_ball_hide(creature, AttributeType::STUN, dir, plev, 0);
                 }
             }
         }
@@ -105,7 +106,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            detect_monsters_evil(*player_ptr, rad);
+            detect_monsters_evil(creature, rad);
         }
     } break;
 
@@ -118,12 +119,12 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::POIS, dir, dam, rad);
+            fire_ball(creature, AttributeType::POIS, dir, dam, rad);
         }
     } break;
 
@@ -135,12 +136,12 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            sleep_monster(*player_ptr, dir, plev);
+            sleep_monster(creature, dir, plev);
         }
     } break;
 
@@ -153,7 +154,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_pois(*player_ptr, dice.roll() + base, false);
+            set_oppose_pois(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -165,13 +166,13 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fear_monster(*player_ptr, dir, plev);
-            stun_monster(*player_ptr, dir, plev);
+            fear_monster(creature, dir, plev);
+            stun_monster(creature, dir, plev);
         }
     } break;
 
@@ -183,7 +184,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -197,7 +198,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         POSITION rad = (plev < 30) ? 2 : 3;
         int base;
 
-        if (CreatureClass(*player_ptr).is_wizard()) {
+        if (CreatureClass(creature).is_wizard()) {
             base = plev + plev / 2;
         } else {
             base = plev + plev / 4;
@@ -208,12 +209,12 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::HYPODYNAMIA, dir, dice.roll() + base, rad);
+            fire_ball(creature, AttributeType::HYPODYNAMIA, dir, dice.roll() + base, rad);
         }
     } break;
 
@@ -225,12 +226,12 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::NETHER, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::NETHER, dir, dice.roll());
         }
     } break;
 
@@ -243,7 +244,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM);
+            project(creature, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::POIS, PROJECT_KILL | PROJECT_ITEM);
         }
     } break;
 
@@ -255,18 +256,18 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball_hide(*player_ptr, AttributeType::GENOCIDE, dir, power, 0);
+            fire_ball_hide(creature, AttributeType::GENOCIDE, dir, power, 0);
         }
     } break;
 
     case 12: {
         if (cast) {
-            brand_weapon(*player_ptr, 3);
+            brand_weapon(creature, 3);
         }
     } break;
 
@@ -281,14 +282,14 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast) {
             int dam = base + dice.roll();
 
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            if (hypodynamic_bolt(*player_ptr, dir, dam)) {
-                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
-                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
+            if (hypodynamic_bolt(creature, dir, dam)) {
+                chg_virtue(creature, Virtue::SACRIFICE, -1);
+                chg_virtue(creature, Virtue::VITALITY, -1);
 
                 hp_player(player_ptr, dam);
 
@@ -307,7 +308,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
                 /* Not gorged already */
                 if (player_ptr->food < PY_FOOD_MAX) {
-                    set_food(*player_ptr, dam >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dam);
+                    set_food(creature, dam >= PY_FOOD_MAX ? PY_FOOD_MAX - 1 : dam);
                 }
             }
         }
@@ -315,7 +316,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 14: {
         if (cast) {
-            animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
+            animate_dead(creature, 0, player_ptr->y, player_ptr->x);
         }
     } break;
 
@@ -340,7 +341,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)berserk(*player_ptr, base + dice.roll());
+            (void)berserk(creature, base + dice.roll());
         }
     } break;
 
@@ -350,12 +351,12 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            cast_invoke_spirits(*player_ptr, dir);
+            cast_invoke_spirits(creature, dir);
         }
     } break;
 
@@ -367,12 +368,12 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::DARK, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::DARK, dir, dice.roll());
         }
     } break;
 
@@ -387,14 +388,14 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)berserk(*player_ptr, b_base + b_dice.roll());
-            set_acceleration(*player_ptr, sp_dice.roll() + sp_base, false);
+            (void)berserk(creature, b_base + b_dice.roll());
+            set_acceleration(creature, sp_dice.roll() + sp_base, false);
         }
     } break;
 
     case 20: {
         if (cast) {
-            brand_weapon(*player_ptr, 4);
+            brand_weapon(creature, 4);
         }
     } break;
 
@@ -408,16 +409,16 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast) {
             int i;
 
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
+            chg_virtue(creature, Virtue::SACRIFICE, -1);
+            chg_virtue(creature, Virtue::VITALITY, -1);
 
             for (i = 0; i < 3; i++) {
-                if (hypodynamic_bolt(*player_ptr, dir, dam)) {
+                if (hypodynamic_bolt(creature, dir, dam)) {
                     hp_player(player_ptr, dam);
                 }
             }
@@ -432,7 +433,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            dispel_living(*player_ptr, dice.roll());
+            dispel_living(creature, dice.roll());
         }
     } break;
 
@@ -445,40 +446,40 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::DARK, dir, dam, rad);
+            fire_ball(creature, AttributeType::DARK, dir, dam, rad);
         }
     } break;
 
     case 24: {
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            death_ray(*player_ptr, dir, plev);
+            death_ray(creature, dir, plev);
         }
     } break;
 
     case 25:
         if (cast) {
-            cast_summon_undead(*player_ptr, (plev * 3) / 2);
+            cast_summon_undead(creature, (plev * 3) / 2);
         }
         break;
 
     case 26: {
         if (cast) {
             if (randint1(50) > plev) {
-                if (!ident_spell(*player_ptr, false)) {
+                if (!ident_spell(creature, false)) {
                     return tl::nullopt;
                 }
             } else {
-                if (!identify_fully(*player_ptr, false)) {
+                if (!identify_fully(creature, false)) {
                     return tl::nullopt;
                 }
             }
@@ -494,13 +495,13 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_mimic(*player_ptr, base + dice.roll(), MimicKindType::VAMPIRE, false);
+            set_mimic(creature, base + dice.roll(), MimicKindType::VAMPIRE, false);
         }
     } break;
 
     case 28: {
         if (cast) {
-            restore_level(static_cast<CreatureEntity &>(*player_ptr));
+            restore_level(creature);
         }
     } break;
 
@@ -525,13 +526,13 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, dam, rad);
-            take_hit(*player_ptr, DAMAGE_USELIFE, 20 + randint1(30), _("地獄の劫火の呪文を唱えた疲労", "the strain of casting Hellfire"));
+            fire_ball(creature, AttributeType::HELL_FIRE, dir, dam, rad);
+            take_hit(creature, DAMAGE_USELIFE, 20 + randint1(30), _("地獄の劫火の呪文を唱えた疲労", "the strain of casting Hellfire"));
         }
     } break;
 
@@ -544,7 +545,7 @@ tl::optional<std::string> do_death_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_wraith_form(*player_ptr, dice.roll() + base, false);
+            set_wraith_form(creature, dice.roll() + base, false);
         }
     } break;
     }
