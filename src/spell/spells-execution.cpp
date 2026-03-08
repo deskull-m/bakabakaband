@@ -32,7 +32,7 @@ tl::optional<std::string> exe_spell(PlayerType *player_ptr, RealmType realm, SPE
     case RealmType::NATURE:
         return do_nature_spell(*player_ptr, spell, mode);
     case RealmType::CHAOS:
-        return do_chaos_spell(player_ptr, spell, mode);
+        return do_chaos_spell(*player_ptr, spell, mode);
     case RealmType::DEATH:
         return do_death_spell(player_ptr, spell, mode);
     case RealmType::TRUMP:
