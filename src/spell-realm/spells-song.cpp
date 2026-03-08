@@ -82,7 +82,7 @@ void check_music(CreatureEntity &creature)
     }
 
     PlayerSkill(&player).gain_continuous_spell_skill_exp(RealmType::MUSIC, spell_id);
-    exe_spell(&player, RealmType::MUSIC, spell_id, SpellProcessType::CONTNUATION);
+    exe_spell(creature, RealmType::MUSIC, spell_id, SpellProcessType::CONTNUATION);
 }
 
 /*!
@@ -156,7 +156,7 @@ void stop_singing(CreatureEntity &creature)
         set_action(&player, ACTION_NONE);
     }
 
-    (void)exe_spell(&player, RealmType::MUSIC, get_singing_song_id(creature), SpellProcessType::STOP);
+    (void)exe_spell(creature, RealmType::MUSIC, get_singing_song_id(creature), SpellProcessType::STOP);
     set_singing_song_effect(creature, MUSIC_NONE);
     set_singing_song_id(creature, 0);
     auto &rfu = RedrawingFlagsUpdater::get_instance();

@@ -6,5 +6,5 @@
 #include <tl/optional.hpp>
 
 enum class RealmType;
-class PlayerType;
-tl::optional<std::string> exe_spell(PlayerType *player_ptr, RealmType realm, SPELL_IDX spell, SpellProcessType mode);
+class CreatureEntity;
+tl::optional<std::string> exe_spell(CreatureEntity &creature, RealmType realm, SPELL_IDX spell, SpellProcessType mode);

@@ -1093,7 +1093,7 @@ bool do_cmd_cast(CreatureEntity &creature)
         }
 
         /* Failure casting may activate some side effect */
-        exe_spell(player_ptr, use_realm, spell_id, SpellProcessType::FAIL);
+        exe_spell(creature, use_realm, spell_id, SpellProcessType::FAIL);
 
         if ((tval == ItemKindType::CHAOS_BOOK) && (randint1(100) < spell_id)) {
             msg_print(_("カオス的な効果を発生した！", "You produce a chaotic effect!"));
@@ -1121,7 +1121,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     /* Process spell */
     else {
         /* Canceled spells cost neither a turn nor mana */
-        if (!exe_spell(player_ptr, use_realm, spell_id, SpellProcessType::CAST)) {
+        if (!exe_spell(creature, use_realm, spell_id, SpellProcessType::CAST)) {
             return false;
         }
 

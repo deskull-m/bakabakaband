@@ -301,7 +301,7 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell_id, const SPELL
             continue;
         }
 
-        const auto info = exe_spell(player_ptr, use_realm, spell_id, SpellProcessType::INFO);
+        const auto info = exe_spell(*player_ptr, use_realm, spell_id, SpellProcessType::INFO);
         concptr comment = info->data();
         byte line_attr = TERM_WHITE;
         PlayerSpellStatus pss(player_ptr);

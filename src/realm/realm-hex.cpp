@@ -472,7 +472,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             auto *o_ptr = player_ptr->inventory[INVEN_OUTER].get();
 
             if ((!o_ptr->is_valid()) || (!o_ptr->is_cursed())) {
-                exe_spell(player_ptr, RealmType::HEX, spell, SpellProcessType::STOP);
+                exe_spell(creature, RealmType::HEX, spell, SpellProcessType::STOP);
                 SpellHex spell_hex(creature);
                 spell_hex.reset_casting_flag(spell);
                 if (!spell_hex.is_spelling_any()) {

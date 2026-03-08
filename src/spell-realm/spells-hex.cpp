@@ -53,7 +53,7 @@ void SpellHex::stop_all_spells()
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
     for (auto spell : this->casting_spells) {
-        exe_spell(player_ptr, RealmType::HEX, spell, SpellProcessType::STOP);
+        exe_spell(this->player, RealmType::HEX, spell, SpellProcessType::STOP);
     }
 
     this->spell_hex_data->casting_spells.clear();
@@ -104,9 +104,8 @@ bool SpellHex::stop_spells_with_selection()
 
     screen_load();
     if (choice) {
-        auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
         auto n = this->casting_spells[A2I(*choice)];
-        exe_spell(player_ptr, RealmType::HEX, n, SpellProcessType::STOP);
+        exe_spell(this->player, RealmType::HEX, n, SpellProcessType::STOP);
         this->reset_casting_flag(i2enum<spell_hex_type>(n));
     }
 
@@ -202,9 +201,8 @@ void SpellHex::decrease_mana()
     }
 
     this->gain_exp();
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
     for (auto spell : this->casting_spells) {
-        exe_spell(player_ptr, RealmType::HEX, spell, SpellProcessType::CONTNUATION);
+        exe_spell(this->player, RealmType::HEX, spell, SpellProcessType::CONTNUATION);
     }
 }
 
@@ -312,13 +310,12 @@ void SpellHex::continue_revenge()
         return;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
     switch (this->get_revenge_type()) {
     case SpellHexRevengeType::PATIENCE:
-        exe_spell(player_ptr, RealmType::HEX, HEX_PATIENCE, SpellProcessType::CONTNUATION);
+        exe_spell(this->player, RealmType::HEX, HEX_PATIENCE, SpellProcessType::CONTNUATION);
         return;
     case SpellHexRevengeType::REVENGE:
-        exe_spell(player_ptr, RealmType::HEX, HEX_REVENGE, SpellProcessType::CONTNUATION);
+        exe_spell(this->player, RealmType::HEX, HEX_REVENGE, SpellProcessType::CONTNUATION);
         return;
     default:
         return;
