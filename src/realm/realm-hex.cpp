@@ -61,8 +61,9 @@
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST / SPELL_CONT / SpellProcessType::STOP)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST / SPELL_CONT / SpellProcessType::STOP 時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type spell, SpellProcessType mode)
+tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type spell, SpellProcessType mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto info = mode == SpellProcessType::INFO;
     auto cast = mode == SpellProcessType::CAST;
     auto continuation = mode == SpellProcessType::CONTNUATION;
@@ -94,7 +95,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("気分が良くなってくる。", "You feel a little better."));
         }
         if (cast || continuation) {
-            (void)cure_light_wounds(*player_ptr, dice.roll());
+            (void)cure_light_wounds(creature, dice.roll());
         }
         break;
     }
@@ -113,7 +114,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_damage(dice);
         }
         if (cast || continuation) {
-            project_all_los(*player_ptr, AttributeType::POIS, dice.roll());
+            project_all_los(creature, AttributeType::POIS, dice.roll());
         }
         break;
     }
@@ -203,14 +204,14 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_PATIENCE: {
-        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+        SpellHex spell_hex(creature);
         power = std::min(200, spell_hex.get_revenge_power() * 2);
         if (info) {
             return info_damage(power);
         }
 
         if (cast) {
-            int a = 3 - (static_cast<CreatureEntity &>(*player_ptr).get_speed() - 100) / 10;
+            int a = 3 - (creature.get_speed() - 100) / 10;
             byte r = 3 + randint1(3) + std::max(0, std::min(3, a));
 
             if (spell_hex.get_revenge_turn() > 0) {
@@ -231,7 +232,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             if ((spell_hex.get_revenge_turn() == 0) || (power >= 200)) {
                 msg_print(_("我慢が解かれた！", "My patience is at an end!"));
                 if (power) {
-                    project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, power, AttributeType::HELL_FIRE, (PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL));
+                    project(creature, 0, rad, creature.y, creature.x, power, AttributeType::HELL_FIRE, (PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL));
                 }
 
                 if (AngbandWorld::get_instance().wizard) {
@@ -265,15 +266,15 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("気分が良くなってくる。", "You feel better."));
         }
         if (cast || continuation) {
-            (void)cure_serious_wounds(*player_ptr, dice.roll());
+            (void)cure_serious_wounds(creature, dice.roll());
         }
         break;
     }
     case HEX_INHALE: {
-        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+        SpellHex spell_hex(creature);
         if (cast) {
             spell_hex.set_casting_flag(HEX_INHALE);
-            do_cmd_quaff_potion(*player_ptr);
+            do_cmd_quaff_potion(creature);
             spell_hex.reset_casting_flag(HEX_INHALE);
             should_continue = false;
         }
@@ -286,7 +287,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_damage(dice);
         }
         if (cast || continuation) {
-            project_all_los(*player_ptr, AttributeType::HYPODYNAMIA, dice.roll());
+            project_all_los(creature, AttributeType::HYPODYNAMIA, dice.roll());
         }
         break;
     }
@@ -295,7 +296,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("あなたの武器が黒く輝いた。");
 #else
-            if (!empty_hands(*player_ptr, false)) {
+            if (!empty_hands(creature, false)) {
                 msg_print("Your weapons glow bright black.");
             } else {
                 msg_print("Your weapon glows bright black.");
@@ -306,7 +307,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("武器の輝きが消え去った。");
 #else
-            msg_format("Your weapon%s.", (empty_hands(*player_ptr, false)) ? " no longer glows" : "s no longer glow");
+            msg_format("Your weapon%s.", (empty_hands(creature, false)) ? " no longer glows" : "s no longer glow");
 #endif
         }
         break;
@@ -355,7 +356,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("気分が良くなってくる。", "You feel much better."));
         }
         if (cast || continuation) {
-            (void)cure_critical_wounds(*player_ptr, dice.roll());
+            (void)cure_critical_wounds(creature, dice.roll());
         }
         break;
     }
@@ -377,7 +378,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             msg_print(_("死者への呼びかけを始めた。", "You start to call the dead.!"));
         }
         if (cast || continuation) {
-            animate_dead(*player_ptr, 0, player_ptr->y, player_ptr->x);
+            animate_dead(creature, 0, player_ptr->y, player_ptr->x);
         }
         break;
     }
@@ -472,7 +473,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 
             if ((!o_ptr->is_valid()) || (!o_ptr->is_cursed())) {
                 exe_spell(player_ptr, RealmType::HEX, spell, SpellProcessType::STOP);
-                SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+                SpellHex spell_hex(creature);
                 spell_hex.reset_casting_flag(spell);
                 if (!spell_hex.is_spelling_any()) {
                     set_action(player_ptr, ACTION_NONE);
@@ -490,7 +491,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_damage(dice);
         }
         if (cast || continuation) {
-            project_all_los(*player_ptr, AttributeType::PSI_DRAIN, dice.roll());
+            project_all_los(creature, AttributeType::PSI_DRAIN, dice.roll());
         }
         break;
     }
@@ -525,7 +526,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                 }
 
                 /* Check the experience */
-                check_experience(static_cast<CreatureEntity &>(*player_ptr));
+                check_experience(creature);
 
                 flag = true;
             }
@@ -551,7 +552,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             if (!flag) {
                 const auto &spell_name = PlayerRealm::get_spell_name(RealmType::HEX, HEX_RESTORE);
                 msg_format(_("%sの呪文の詠唱をやめた。", "Finish casting '%s^'."), spell_name.data());
-                SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+                SpellHex spell_hex(creature);
                 spell_hex.reset_casting_flag(HEX_RESTORE);
                 if (!spell_hex.is_spelling_any()) {
                     set_action(player_ptr, ACTION_NONE);
@@ -609,7 +610,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("あなたの武器が血を欲している。");
 #else
-            if (!empty_hands(*player_ptr, false)) {
+            if (!empty_hands(creature, false)) {
                 msg_print("Your weapons want more blood now.");
             } else {
                 msg_print("Your weapon wants more blood now.");
@@ -620,7 +621,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 #ifdef JP
             msg_print("武器の渇望が消え去った。");
 #else
-            msg_format("Your weapon%s less thirsty now.", (empty_hands(*player_ptr, false)) ? " is" : "s are");
+            msg_format("Your weapon%s less thirsty now.", (empty_hands(creature, false)) ? " is" : "s are");
 #endif
         }
         break;
@@ -631,7 +632,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             return info_power(power);
         }
         if (cast || continuation) {
-            stun_monsters(*player_ptr, power);
+            stun_monsters(creature, power);
         }
         break;
     }
@@ -640,7 +641,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             tl::optional<Pos2D> pos_target;
             bool flag;
             for (auto i = 0; i < 3; i++) {
-                pos_target = point_target(*player_ptr);
+                pos_target = point_target(creature);
                 if (!pos_target) {
                     return "";
                 }
@@ -665,10 +666,10 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
             }
 
             if (flag && randint0(player_ptr->level * player_ptr->level / 2)) {
-                teleport_player_to(*player_ptr, pos_target->y, pos_target->x, TELEPORT_SPONTANEOUS);
+                teleport_player_to(creature, pos_target->y, pos_target->x, TELEPORT_SPONTANEOUS);
             } else {
                 msg_print(_("おっと！", "Oops!"));
-                teleport_player(*player_ptr, 30, TELEPORT_SPONTANEOUS);
+                teleport_player(creature, 30, TELEPORT_SPONTANEOUS);
             }
 
             should_continue = false;
@@ -686,7 +687,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
         break;
     }
     case HEX_REVENGE: {
-        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+        SpellHex spell_hex(creature);
         power = spell_hex.get_revenge_power();
         if (info) {
             return info_damage(power);
@@ -694,7 +695,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
 
         if (cast) {
             byte r;
-            int a = 3 - (static_cast<CreatureEntity &>(*player_ptr).get_speed() - 100) / 10;
+            int a = 3 - (creature.get_speed() - 100) / 10;
             r = 1 + randint1(2) + std::max(0, std::min(3, a));
 
             if (spell_hex.get_revenge_turn() > 0) {
@@ -717,10 +718,10 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
                     auto dir = Direction::none();
                     do {
                         msg_print(_("復讐の時だ！", "Time for revenge!"));
-                        dir = get_aim_dir(*player_ptr);
+                        dir = get_aim_dir(creature);
                     } while (!dir);
 
-                    fire_ball(*player_ptr, AttributeType::HELL_FIRE, dir, power, 1);
+                    fire_ball(creature, AttributeType::HELL_FIRE, dir, power, 1);
 
                     if (AngbandWorld::get_instance().wizard) {
                         msg_format(_("%d点のダメージを返した。", "You return %d damage."), power);
@@ -740,7 +741,7 @@ tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type sp
     }
 
     if (cast && should_continue) {
-        SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+        SpellHex spell_hex(creature);
         spell_hex.set_casting_flag(spell);
         if (player_ptr->action != ACTION_SPELL) {
             set_action(player_ptr, ACTION_SPELL);
