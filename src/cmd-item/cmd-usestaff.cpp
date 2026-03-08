@@ -264,7 +264,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_HOLINESS: {
-        ident = cleansing_nova(player_ptr, magic, powerful);
+        ident = cleansing_nova(creature, magic, powerful);
         break;
     }
 
@@ -294,7 +294,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_MSTORM: {
-        ident = unleash_mana_storm(player_ptr, powerful);
+        ident = unleash_mana_storm(creature, powerful);
         break;
     }
 
