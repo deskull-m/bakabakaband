@@ -57,7 +57,7 @@ tl::optional<std::string> do_arcane_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(creature, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::ELEC, dir, dice.roll());
         }
     } break;
 

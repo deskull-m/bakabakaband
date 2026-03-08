@@ -29,7 +29,7 @@
 
 static void effect_monster_charm_resist(PlayerType *player_ptr, EffectMonster *em_ptr)
 {
-    if (common_saving_throw_charm(player_ptr, em_ptr->dam, *em_ptr->m_ptr)) {
+    if (common_saving_throw_charm(*player_ptr, em_ptr->dam, *em_ptr->m_ptr)) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
 
@@ -94,7 +94,7 @@ ProcessResult effect_monster_control_undead(PlayerType *player_ptr, EffectMonste
         em_ptr->dam -= it->second / 20;
     }
 
-    if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || !em_ptr->m_ptr->has_undead_flag()) {
+    if (common_saving_throw_control(*player_ptr, em_ptr->dam, *em_ptr->m_ptr) || !em_ptr->m_ptr->has_undead_flag()) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
@@ -135,7 +135,7 @@ ProcessResult effect_monster_control_demon(PlayerType *player_ptr, EffectMonster
         em_ptr->dam -= it->second / 20;
     }
 
-    if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::DEMON)) {
+    if (common_saving_throw_control(*player_ptr, em_ptr->dam, *em_ptr->m_ptr) || em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::DEMON)) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
@@ -176,7 +176,7 @@ ProcessResult effect_monster_control_animal(PlayerType *player_ptr, EffectMonste
         em_ptr->dam -= it->second / 20;
     }
 
-    if (common_saving_throw_control(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::ANIMAL)) {
+    if (common_saving_throw_control(*player_ptr, em_ptr->dam, *em_ptr->m_ptr) || em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::ANIMAL)) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
@@ -222,7 +222,7 @@ ProcessResult effect_monster_charm_living(PlayerType *player_ptr, EffectMonster 
 
     msg_format(_("%sを見つめた。", "You stare at %s."), em_ptr->m_name);
 
-    if (common_saving_throw_charm(player_ptr, em_ptr->dam, *em_ptr->m_ptr) || !em_ptr->m_ptr->has_living_flag()) {
+    if (common_saving_throw_charm(*player_ptr, em_ptr->dam, *em_ptr->m_ptr) || !em_ptr->m_ptr->has_living_flag()) {
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->obvious = false;
         if (one_in_(4)) {
@@ -331,7 +331,7 @@ ProcessResult effect_monster_domination(PlayerType *player_ptr, EffectMonster *e
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (!common_saving_throw_charm(player_ptr, em_ptr->dam, *em_ptr->m_ptr)) {
+    if (!common_saving_throw_charm(*player_ptr, em_ptr->dam, *em_ptr->m_ptr)) {
         em_ptr->note = _("があなたに隷属した。", " is in your thrall!");
         set_pet(*player_ptr, *em_ptr->m_ptr);
         em_ptr->dam = 0;

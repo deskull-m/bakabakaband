@@ -7,6 +7,7 @@
 #include "player-info/class-info.h"
 #include "player/player-status-table.h"
 #include "room/rooms-builder.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
@@ -18,24 +19,24 @@
  * @param m_ptr 対象モンスター
  * @return 魅了に抵抗したらTRUE
  */
-bool common_saving_throw_charm(PlayerType *player_ptr, int pow, const MonsterEntity &monster)
+bool common_saving_throw_charm(CreatureEntity &creature, int pow, const MonsterEntity &monster)
 {
     auto &monrace = monster.get_monrace();
 
-    if (player_ptr->current_floor_ptr->inside_arena) {
+    if (creature.current_floor_ptr->inside_arena) {
         return true;
     }
 
     /* Memorize a flag */
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(*player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return true;
     }
 
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-        if (is_original_ap_and_seen(*player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         return true;
@@ -45,7 +46,7 @@ bool common_saving_throw_charm(PlayerType *player_ptr, int pow, const MonsterEnt
         return true;
     }
 
-    pow += (adj_chr_chm[player_ptr->stat_index[A_CHR]] - 1);
+    pow += (adj_chr_chm[creature.stat_index[A_CHR]] - 1);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
         pow = pow * 2 / 3;
     }
@@ -58,17 +59,17 @@ bool common_saving_throw_charm(PlayerType *player_ptr, int pow, const MonsterEnt
  * @param m_ptr 対象モンスター
  * @return 服従に抵抗したらTRUE
  */
-bool common_saving_throw_control(PlayerType *player_ptr, int pow, const MonsterEntity &monster)
+bool common_saving_throw_control(CreatureEntity &creature, int pow, const MonsterEntity &monster)
 {
     auto &monrace = monster.get_monrace();
 
-    if (player_ptr->current_floor_ptr->inside_arena) {
+    if (creature.current_floor_ptr->inside_arena) {
         return true;
     }
 
     /* Memorize a flag */
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(*player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return true;
@@ -78,7 +79,7 @@ bool common_saving_throw_control(PlayerType *player_ptr, int pow, const MonsterE
         return true;
     }
 
-    pow += adj_chr_chm[player_ptr->stat_index[A_CHR]] - 1;
+    pow += adj_chr_chm[creature.stat_index[A_CHR]] - 1;
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
         pow = pow * 2 / 3;
     }
@@ -92,15 +93,15 @@ bool common_saving_throw_control(PlayerType *player_ptr, int pow, const MonsterE
  * ハードコーティングによる実装が行われている。
  * メイジは(レベル)%、ハイメイジ、スペルマスターは(レベル)%、それ以外の職業は(レベル/2)%
  */
-PERCENTAGE beam_chance(PlayerType *player_ptr)
+PERCENTAGE beam_chance(CreatureEntity &creature)
 {
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::MAGE)) {
-        return (PERCENTAGE)(player_ptr->level);
+        return (PERCENTAGE)(creature.level);
     }
     if (pc.equals(PlayerClassType::HIGH_MAGE) || pc.equals(PlayerClassType::SORCERER)) {
-        return (PERCENTAGE)(player_ptr->level + 10);
+        return (PERCENTAGE)(creature.level + 10);
     }
 
-    return (PERCENTAGE)(player_ptr->level / 2);
+    return (PERCENTAGE)(creature.level / 2);
 }
