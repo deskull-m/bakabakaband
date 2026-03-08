@@ -34,8 +34,9 @@
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_sorcery_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
@@ -50,7 +51,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            detect_monsters_normal(*player_ptr, rad);
+            detect_monsters_normal(creature, rad);
         }
     } break;
 
@@ -62,7 +63,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -74,9 +75,9 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            detect_traps(*player_ptr, rad, true);
-            detect_doors(*player_ptr, rad);
-            detect_stairs(*player_ptr, rad);
+            detect_traps(creature, rad, true);
+            detect_doors(creature, rad);
+            detect_stairs(creature, rad);
         }
     } break;
 
@@ -89,7 +90,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            lite_area(*player_ptr, dice.roll(), rad);
+            lite_area(creature, dice.roll(), rad);
         }
     } break;
 
@@ -101,12 +102,12 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            confuse_monster(*player_ptr, dir, power);
+            confuse_monster(creature, dir, power);
         }
     } break;
 
@@ -118,7 +119,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -130,12 +131,12 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            sleep_monster(*player_ptr, dir, plev);
+            sleep_monster(creature, dir, plev);
         }
     } break;
 
@@ -161,13 +162,13 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            map_area(*player_ptr, rad);
+            map_area(creature, rad);
         }
     } break;
 
     case 9: {
         if (cast) {
-            if (!ident_spell(*player_ptr, false)) {
+            if (!ident_spell(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -181,12 +182,12 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            slow_monster(*player_ptr, dir, plev);
+            slow_monster(creature, dir, plev);
         }
     } break;
 
@@ -198,7 +199,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            sleep_monsters(*player_ptr, plev);
+            sleep_monsters(creature, plev);
         }
     } break;
 
@@ -210,12 +211,12 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(creature, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 
@@ -228,7 +229,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            set_acceleration(*player_ptr, dice.roll() + base, false);
+            set_acceleration(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -240,13 +241,13 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            detect_all(*player_ptr, rad);
+            detect_all(creature, rad);
         }
     } break;
 
     case 15: {
         if (cast) {
-            if (!identify_fully(*player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -260,9 +261,9 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            detect_objects_normal(*player_ptr, rad);
-            detect_treasure(*player_ptr, rad);
-            detect_objects_gold(*player_ptr, rad);
+            detect_objects_normal(creature, rad);
+            detect_treasure(creature, rad);
+            detect_objects_gold(creature, rad);
         }
     } break;
 
@@ -274,7 +275,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -292,13 +293,13 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            set_tim_esp(*player_ptr, dice.roll() + base, false);
+            set_tim_esp(creature, dice.roll() + base, false);
         }
     } break;
 
     case 19: {
         if (cast) {
-            if (!tele_town(*player_ptr)) {
+            if (!tele_town(creature)) {
                 return tl::nullopt;
             }
         }
@@ -306,7 +307,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 20: {
         if (cast) {
-            self_knowledge(*player_ptr);
+            self_knowledge(creature);
         }
     } break;
 
@@ -315,7 +316,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
             if (!input_check(_("本当に他の階にテレポートしますか？", "Are you sure? (Teleport Level)"))) {
                 return tl::nullopt;
             }
-            teleport_level(*player_ptr, 0);
+            teleport_level(creature, 0);
         }
     } break;
 
@@ -328,7 +329,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            if (!recall_player(*player_ptr, dice.roll() + base)) {
+            if (!recall_player(creature, dice.roll() + base)) {
                 return tl::nullopt;
             }
         }
@@ -343,7 +344,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
 
         if (cast) {
             msg_print(_("次元の扉が開いた。目的地を選んで下さい。", "You open a dimensional gate. Choose a destination."));
-            if (!dimension_door(*player_ptr)) {
+            if (!dimension_door(creature)) {
                 return tl::nullopt;
             }
         }
@@ -351,7 +352,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 24: {
         if (cast) {
-            probing(*player_ptr);
+            probing(creature);
         }
     } break;
 
@@ -364,7 +365,8 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            create_rune_explosion(*player_ptr, player_ptr->y, player_ptr->x);
+            const auto p_pos = player_ptr->get_position();
+            create_rune_explosion(creature, p_pos.y, p_pos.x);
         }
     } break;
 
@@ -376,12 +378,12 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fetch_item(*player_ptr, dir, weight, false);
+            fetch_item(creature, dir, weight, false);
         }
     } break;
 
@@ -394,13 +396,13 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
+            chg_virtue(creature, Virtue::KNOWLEDGE, 1);
+            chg_virtue(creature, Virtue::ENLIGHTEN, 1);
 
             wiz_lite(player_ptr, false);
 
             if (!player_ptr->telepathy) {
-                set_tim_esp(*player_ptr, dice.roll() + base, false);
+                set_tim_esp(creature, dice.roll() + base, false);
             }
         }
     } break;
@@ -413,13 +415,13 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            charm_monsters(*player_ptr, power);
+            charm_monsters(creature, power);
         }
     } break;
 
     case 29: {
         if (cast) {
-            if (!alchemy(*player_ptr)) {
+            if (!alchemy(creature)) {
                 return tl::nullopt;
             }
         }
@@ -433,7 +435,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            banish_monsters(*player_ptr, power);
+            banish_monsters(creature, power);
         }
     } break;
 
@@ -446,7 +448,7 @@ tl::optional<std::string> do_sorcery_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
 
         if (cast) {
-            set_invuln(*player_ptr, dice.roll() + base, false);
+            set_invuln(creature, dice.roll() + base, false);
         }
     } break;
     }
