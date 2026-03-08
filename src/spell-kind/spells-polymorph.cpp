@@ -142,7 +142,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
 
     if (targeted) {
         if (m_idx) {
-            Target::set_last_target(Target::create_monster_target(player_ptr, *m_idx));
+            Target::set_last_target(Target::create_monster_target(*player_ptr, *m_idx));
         } else {
             Target::clear_last_target();
         }

@@ -265,7 +265,7 @@ Direction TargetSetter::switch_target_input()
         }
 
         health_track(*this->player_ptr, grid.m_idx);
-        this->target = Target::create_monster_target(this->player_ptr, grid.m_idx);
+        this->target = Target::create_monster_target(*this->player_ptr, grid.m_idx);
         this->done = true;
         return Direction::none();
     }
@@ -446,7 +446,7 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
     case '.':
     case '5':
     case '0':
-        this->target = Target::create_grid_target(this->player_ptr, this->pos_target);
+        this->target = Target::create_grid_target(*this->player_ptr, this->pos_target);
         this->done = true;
         return tl::nullopt;
     case 'p': {
