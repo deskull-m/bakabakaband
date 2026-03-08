@@ -38,7 +38,7 @@ tl::optional<std::string> exe_spell(PlayerType *player_ptr, RealmType realm, SPE
     case RealmType::TRUMP:
         return do_trump_spell(*player_ptr, spell, mode);
     case RealmType::ARCANE:
-        return do_arcane_spell(player_ptr, spell, mode);
+        return do_arcane_spell(*player_ptr, spell, mode);
     case RealmType::CRAFT:
         return do_craft_spell(*player_ptr, spell, mode);
     case RealmType::DAEMON:

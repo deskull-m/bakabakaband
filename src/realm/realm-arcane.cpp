@@ -22,6 +22,7 @@
 #include "status/bad-status-setter.h"
 #include "status/element-resistance.h"
 #include "status/sight-setter.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
@@ -34,12 +35,13 @@
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_arcane_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
+    auto player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.level;
 
     switch (spell) {
     case 0: {
@@ -50,23 +52,23 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, dice.roll());
         }
     } break;
 
     case 1: {
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            wizard_lock(*player_ptr, dir);
+            wizard_lock(creature, dir);
         }
     } break;
 
@@ -78,7 +80,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_invis(*player_ptr, rad);
+            detect_monsters_invis(creature, rad);
         }
     } break;
 
@@ -90,7 +92,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_normal(*player_ptr, rad);
+            detect_monsters_normal(creature, rad);
         }
     } break;
 
@@ -102,7 +104,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -115,18 +117,18 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            lite_area(*player_ptr, dice.roll(), rad);
+            lite_area(creature, dice.roll(), rad);
         }
     } break;
 
     case 6: {
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            destroy_door(*player_ptr, dir);
+            destroy_door(creature, dir);
         }
     } break;
 
@@ -137,7 +139,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_heal(dice);
         }
         if (cast) {
-            (void)cure_light_wounds(*player_ptr, dice.roll());
+            (void)cure_light_wounds(creature, dice.roll());
         }
     } break;
 
@@ -149,15 +151,15 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_traps(*player_ptr, rad, true);
-            detect_doors(*player_ptr, rad);
-            detect_stairs(*player_ptr, rad);
+            detect_traps(creature, rad, true);
+            detect_doors(creature, rad);
+            detect_stairs(creature, rad);
         }
     } break;
 
     case 9: {
         if (cast) {
-            phlogiston(*player_ptr);
+            phlogiston(creature);
         }
     } break;
 
@@ -169,8 +171,8 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_treasure(*player_ptr, rad);
-            detect_objects_gold(*player_ptr, rad);
+            detect_treasure(creature, rad);
+            detect_objects_gold(creature, rad);
         }
     } break;
 
@@ -182,7 +184,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_objects_magic(*player_ptr, rad);
+            detect_objects_magic(creature, rad);
         }
     } break;
 
@@ -194,13 +196,13 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_objects_normal(*player_ptr, rad);
+            detect_objects_normal(creature, rad);
         }
     } break;
 
     case 13:
         if (cast) {
-            (void)BadStatusSetter(*player_ptr).set_poison(0);
+            (void)BadStatusSetter(creature).set_poison(0);
         }
 
         break;
@@ -214,7 +216,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_cold(*player_ptr, dice.roll() + base, false);
+            set_oppose_cold(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -227,7 +229,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_fire(*player_ptr, dice.roll() + base, false);
+            set_oppose_fire(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -240,7 +242,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_elec(*player_ptr, dice.roll() + base, false);
+            set_oppose_elec(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -253,7 +255,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_acid(*player_ptr, dice.roll() + base, false);
+            set_oppose_acid(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -264,7 +266,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_heal(dice);
         }
         if (cast) {
-            (void)cure_serious_wounds(*player_ptr, dice.roll());
+            (void)cure_serious_wounds(creature, dice.roll());
         }
     } break;
 
@@ -276,13 +278,13 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
     case 20: {
         if (cast) {
-            if (!ident_spell(*player_ptr, false)) {
+            if (!ident_spell(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -297,12 +299,12 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            wall_to_mud(*player_ptr, dir, base + dice.roll());
+            wall_to_mud(creature, dir, base + dice.roll());
         }
     } break;
 
@@ -314,19 +316,19 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
             msg_print(_("光線が放たれた。", "A line of light appears."));
-            lite_line(*player_ptr, dir, dice.roll());
+            lite_line(creature, dir, dice.roll());
         }
     } break;
 
     case 23: {
         if (cast) {
-            set_food(*player_ptr, PY_FOOD_MAX - 1);
+            set_food(creature, PY_FOOD_MAX - 1);
         }
     } break;
 
@@ -339,13 +341,13 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_tim_invis(*player_ptr, dice.roll() + base, false);
+            set_tim_invis(creature, dice.roll() + base, false);
         }
     } break;
 
     case 25: {
         if (cast) {
-            if (!summon_specific(*player_ptr, player_ptr->y, player_ptr->x, plev, SUMMON_ELEMENTAL, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
+            if (!summon_specific(creature, creature.y, creature.x, plev, SUMMON_ELEMENTAL, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
                 msg_print(_("エレメンタルは現れなかった。", "No elementals arrive."));
             }
         }
@@ -356,7 +358,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             if (!input_check(_("本当に他の階にテレポートしますか？", "Are you sure? (Teleport Level)"))) {
                 return tl::nullopt;
             }
-            teleport_level(*player_ptr, 0);
+            teleport_level(creature, 0);
         }
     } break;
 
@@ -368,12 +370,12 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(creature, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 
@@ -386,7 +388,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
@@ -399,7 +401,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
             };
 
             const auto type = rand_choice(element_types);
-            fire_ball(*player_ptr, type, dir, dam, rad);
+            fire_ball(creature, type, dir, dam, rad);
         }
     } break;
 
@@ -411,7 +413,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_all(*player_ptr, rad);
+            detect_all(creature, rad);
         }
     } break;
 
@@ -424,7 +426,7 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            if (!recall_player(*player_ptr, dice.roll() + base)) {
+            if (!recall_player(creature, dice.roll() + base)) {
                 return tl::nullopt;
             }
         }
@@ -439,13 +441,13 @@ tl::optional<std::string> do_arcane_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
+            chg_virtue(creature, Virtue::KNOWLEDGE, 1);
+            chg_virtue(creature, Virtue::ENLIGHTEN, 1);
 
             wiz_lite(player_ptr, false);
 
             if (!player_ptr->telepathy) {
-                set_tim_esp(*player_ptr, dice.roll() + base, false);
+                set_tim_esp(creature, dice.roll() + base, false);
             }
         }
     } break;
