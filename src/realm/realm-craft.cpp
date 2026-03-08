@@ -18,6 +18,7 @@
 #include "status/buff-setter.h"
 #include "status/element-resistance.h"
 #include "status/sight-setter.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
@@ -27,8 +28,9 @@
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_craft_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
@@ -44,7 +46,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_infra(*player_ptr, base + dice.roll(), false);
+            set_tim_infra(creature, base + dice.roll(), false);
         }
     } break;
 
@@ -57,13 +59,13 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_regen(*player_ptr, base + dice.roll(), false);
+            set_tim_regen(creature, base + dice.roll(), false);
         }
     } break;
 
     case 2: {
         if (cast) {
-            set_food(*player_ptr, PY_FOOD_MAX - 1);
+            set_food(creature, PY_FOOD_MAX - 1);
         }
     } break;
 
@@ -76,7 +78,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_cold(*player_ptr, dice.roll() + base, false);
+            set_oppose_cold(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -89,7 +91,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_fire(*player_ptr, dice.roll() + base, false);
+            set_oppose_fire(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -102,7 +104,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)heroism(*player_ptr, dice.roll() + base);
+            (void)heroism(creature, dice.roll() + base);
         }
     } break;
 
@@ -115,7 +117,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_elec(*player_ptr, dice.roll() + base, false);
+            set_oppose_elec(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -128,7 +130,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_acid(*player_ptr, dice.roll() + base, false);
+            set_oppose_acid(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -141,7 +143,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_invis(*player_ptr, dice.roll() + base, false);
+            set_tim_invis(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -160,7 +162,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_pois(*player_ptr, dice.roll() + base, false);
+            set_oppose_pois(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -173,13 +175,13 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            (void)berserk(*player_ptr, base + dice.roll());
+            (void)berserk(creature, base + dice.roll());
         }
     } break;
 
     case 12: {
         if (cast) {
-            self_knowledge(*player_ptr);
+            self_knowledge(creature);
         }
     } break;
 
@@ -192,13 +194,13 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            BodyImprovement(*player_ptr).set_protection(dice.roll() + base);
+            BodyImprovement(creature).set_protection(dice.roll() + base);
         }
     } break;
 
     case 14: {
         if (cast) {
-            (void)true_healing(*player_ptr, 0);
+            (void)true_healing(creature, 0);
         }
     } break;
 
@@ -211,7 +213,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            if (!choose_ele_attack(*player_ptr, base + dice.roll())) {
+            if (!choose_ele_attack(creature, base + dice.roll())) {
                 return tl::nullopt;
             }
         }
@@ -226,7 +228,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_esp(*player_ptr, dice.roll() + base, false);
+            set_tim_esp(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -239,7 +241,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_shield(*player_ptr, dice.roll() + base, false);
+            set_shield(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -252,11 +254,11 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_oppose_acid(*player_ptr, dice.roll() + base, false);
-            set_oppose_elec(*player_ptr, dice.roll() + base, false);
-            set_oppose_fire(*player_ptr, dice.roll() + base, false);
-            set_oppose_cold(*player_ptr, dice.roll() + base, false);
-            set_oppose_pois(*player_ptr, dice.roll() + base, false);
+            set_oppose_acid(creature, dice.roll() + base, false);
+            set_oppose_elec(creature, dice.roll() + base, false);
+            set_oppose_fire(creature, dice.roll() + base, false);
+            set_oppose_cold(creature, dice.roll() + base, false);
+            set_oppose_pois(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -269,7 +271,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_acceleration(*player_ptr, dice.roll() + base, false);
+            set_acceleration(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -282,19 +284,19 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_pass_wall(*player_ptr, dice.roll() + base, false);
+            set_pass_wall(creature, dice.roll() + base, false);
         }
     } break;
 
     case 21: {
         if (cast) {
-            pulish_shield(*player_ptr);
+            pulish_shield(creature);
         }
     } break;
 
     case 22: {
         if (cast) {
-            if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, plev, SUMMON_GOLEM, PM_FORCE_PET)) {
+            if (summon_specific(creature, creature.y, creature.x, plev, SUMMON_GOLEM, PM_FORCE_PET)) {
                 msg_print(_("ゴーレムを作った。", "You make a golem."));
             } else {
                 msg_print(_("うまくゴーレムを作れなかった。", "You couldn't make a golem."));
@@ -311,7 +313,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_magicdef(*player_ptr, dice.roll() + base, false);
+            set_magicdef(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -331,7 +333,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 26: {
         if (cast) {
-            if (!identify_fully(*player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -339,7 +341,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 27: {
         if (cast) {
-            if (!enchant_spell(*player_ptr, randint0(4) + 1, randint0(4) + 1, 0)) {
+            if (!enchant_spell(creature, randint0(4) + 1, randint0(4) + 1, 0)) {
                 return tl::nullopt;
             }
         }
@@ -347,7 +349,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 28: {
         if (cast) {
-            if (!enchant_spell(*player_ptr, 0, 0, randint0(3) + 2)) {
+            if (!enchant_spell(creature, 0, 0, randint0(3) + 2)) {
                 return tl::nullopt;
             }
         }
@@ -355,13 +357,13 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 29: {
         if (cast) {
-            brand_weapon(*player_ptr, randint0(18));
+            brand_weapon(creature, randint0(18));
         }
     } break;
 
     case 30:
         if (cast) {
-            become_living_trump(*player_ptr);
+            become_living_trump(creature);
         }
         break;
 
@@ -374,7 +376,7 @@ tl::optional<std::string> do_craft_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            if (!choose_ele_immune(*player_ptr, base + dice.roll())) {
+            if (!choose_ele_immune(creature, base + dice.roll())) {
                 return tl::nullopt;
             }
         }
