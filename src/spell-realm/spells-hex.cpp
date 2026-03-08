@@ -267,11 +267,10 @@ bool SpellHex::check_restart()
 
 int SpellHex::calc_need_mana()
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
     auto need_mana = 0;
     for (auto spell_id : this->casting_spells) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::HEX, spell_id);
-        need_mana += mod_need_mana(player_ptr, spell.smana, spell_id, RealmType::HEX);
+        need_mana += mod_need_mana(this->player, spell.smana, spell_id, RealmType::HEX);
     }
 
     return need_mana;

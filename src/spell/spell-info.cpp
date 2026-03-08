@@ -9,6 +9,7 @@
 #include "player/player-status.h"
 #include "realm/realm-types.h"
 #include "spell/spells-execution.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
@@ -31,8 +32,9 @@
  * @param realm 魔法領域
  * @return 消費MP
  */
-MANA_POINT mod_need_mana(PlayerType *player_ptr, MANA_POINT need_mana, SPELL_IDX spell_id, RealmType realm)
+MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_IDX spell_id, RealmType realm)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
 #define MANA_CONST 2400
 #define MANA_DIV 4
 #define DEC_MANA_DIV 3
@@ -65,19 +67,19 @@ MANA_POINT mod_need_mana(PlayerType *player_ptr, MANA_POINT need_mana, SPELL_IDX
  * @return 失敗率(%)
  * @todo 統合を検討
  */
-PERCENTAGE mod_spell_chance_1(PlayerType *player_ptr, PERCENTAGE chance)
+PERCENTAGE mod_spell_chance_1(CreatureEntity &creature, PERCENTAGE chance)
 {
-    chance += player_ptr->to_m_chance;
+    chance += creature.to_m_chance;
 
-    if (player_ptr->hard_spell) {
+    if (creature.hard_spell) {
         chance += 20;
     }
 
-    if (player_ptr->dec_mana && player_ptr->easy_spell) {
+    if (creature.dec_mana && creature.easy_spell) {
         chance -= 4;
-    } else if (player_ptr->easy_spell) {
+    } else if (creature.easy_spell) {
         chance -= 3;
-    } else if (player_ptr->dec_mana) {
+    } else if (creature.dec_mana) {
         chance -= 2;
     }
 
@@ -96,12 +98,12 @@ PERCENTAGE mod_spell_chance_1(PlayerType *player_ptr, PERCENTAGE chance)
  * Note: variable "chance" cannot be negative.
  * @todo 統合を検討
  */
-PERCENTAGE mod_spell_chance_2(PlayerType *player_ptr, PERCENTAGE chance)
+PERCENTAGE mod_spell_chance_2(CreatureEntity &creature, PERCENTAGE chance)
 {
-    if (player_ptr->dec_mana) {
+    if (creature.dec_mana) {
         chance--;
     }
-    if (player_ptr->hard_spell) {
+    if (creature.hard_spell) {
         chance += 5;
     }
     return std::max(chance, 0);
@@ -115,8 +117,9 @@ PERCENTAGE mod_spell_chance_2(PlayerType *player_ptr, PERCENTAGE chance)
  * @param use_realm 魔法領域ID
  * @return 失敗率(%)
  */
-PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell_id, RealmType use_realm)
+PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType use_realm)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (mp_ptr->spell_book == ItemKindType::NONE) {
         return 100;
     }
@@ -134,7 +137,7 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell_id, RealmType us
         chance += (std::max(riding_monrace.level - player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
     }
 
-    MANA_POINT need_mana = mod_need_mana(player_ptr, spell.smana, spell_id, use_realm);
+    MANA_POINT need_mana = mod_need_mana(*player_ptr, spell.smana, spell_id, use_realm);
     if (need_mana > player_ptr->csp) {
         chance += 5 * (need_mana - player_ptr->csp);
     }
@@ -162,7 +165,7 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell_id, RealmType us
         }
     }
 
-    chance = mod_spell_chance_1(player_ptr, chance);
+    chance = mod_spell_chance_1(creature, chance);
     PERCENTAGE penalty = (mp_ptr->spell_stat == A_WIS) ? 10 : 4;
     switch (use_realm) {
     case RealmType::NATURE:
@@ -206,7 +209,7 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell_id, RealmType us
         }
     }
 
-    return mod_spell_chance_2(player_ptr, chance);
+    return mod_spell_chance_2(creature, chance);
 }
 
 /*!
@@ -220,8 +223,9 @@ PERCENTAGE spell_chance(PlayerType *player_ptr, SPELL_IDX spell_id, RealmType us
  * @param x 表示メッセージ左上X座標
  * @param use_realm 魔法領域ID
  */
-void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell_id, const SPELL_IDX *spell_ids, int num, TERM_LEN y, TERM_LEN x, RealmType use_realm)
+void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPELL_IDX *spell_ids, int num, TERM_LEN y, TERM_LEN x, RealmType use_realm)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if ((!PlayerRealm::is_magic(use_realm) && !PlayerRealm::is_technic(use_realm)) && AngbandWorld::get_instance().wizard) {
         msg_print(_("警告！ print_spell が領域なしに呼ばれた", "Warning! print_spells called with null realm"));
     }
@@ -260,7 +264,7 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell_id, const SPELL
             need_mana = spell.smana;
         } else {
             auto exp = PlayerSkill(player_ptr).exp_of_spell(use_realm, spell_id);
-            need_mana = mod_need_mana(player_ptr, spell.smana, spell_id, use_realm);
+            need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
             PlayerSkillRank skill_rank;
             if ((increment == 64) || (spell.slevel >= 99)) {
                 skill_rank = PlayerSkillRank::UNSKILLED;
@@ -301,7 +305,7 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell_id, const SPELL
             continue;
         }
 
-        const auto info = exe_spell(*player_ptr, use_realm, spell_id, SpellProcessType::INFO);
+        const auto info = exe_spell(creature, use_realm, spell_id, SpellProcessType::INFO);
         concptr comment = info->data();
         byte line_attr = TERM_WHITE;
         PlayerSpellStatus pss(player_ptr);
@@ -333,7 +337,7 @@ void print_spells(PlayerType *player_ptr, SPELL_IDX target_spell_id, const SPELL
             out_val.append(format("%-25s %2d %4d", spell_name.data(), spell.slevel, need_mana));
         } else {
             out_val.append(format("%-25s%c%-4s %2d %4d %3d%% %s", spell_name.data(), (max ? '!' : ' '), ryakuji, spell.slevel,
-                need_mana, spell_chance(player_ptr, spell_id, use_realm), comment));
+                need_mana, spell_chance(creature, spell_id, use_realm), comment));
         }
 
         c_prt(line_attr, out_val, y + i + 1, x);
