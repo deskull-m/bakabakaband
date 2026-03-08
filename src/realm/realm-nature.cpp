@@ -209,7 +209,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(creature, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::COLD, dir, dice.roll());
         }
     } break;
 
@@ -242,7 +242,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(creature, beam_chance(player_ptr) - 10, AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 

@@ -231,7 +231,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::NETHER, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::NETHER, dir, dice.roll());
         }
     } break;
 
@@ -373,7 +373,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::DARK, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::DARK, dir, dice.roll());
         }
     } break;
 

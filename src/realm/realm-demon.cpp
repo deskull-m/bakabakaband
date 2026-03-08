@@ -59,7 +59,7 @@ tl::optional<std::string> do_daemon_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(creature, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::MISSILE, dir, dice.roll());
         }
     } break;
 
@@ -114,7 +114,7 @@ tl::optional<std::string> do_daemon_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 
@@ -200,7 +200,7 @@ tl::optional<std::string> do_daemon_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::PLASMA, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::PLASMA, dir, dice.roll());
         }
     } break;
 
