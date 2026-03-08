@@ -5,5 +5,5 @@
 #include <string>
 #include <tl/optional.hpp>
 
-class PlayerType;
-tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode);
+class CreatureEntity;
+tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode);

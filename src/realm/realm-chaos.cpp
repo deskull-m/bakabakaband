@@ -29,13 +29,14 @@
 
 /*!
  * @brief カオス領域魔法の各処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 魔法ID
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
@@ -50,12 +51,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
         }
     } break;
 
@@ -67,7 +68,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            destroy_doors_touch(*player_ptr);
+            destroy_doors_touch(creature);
         }
     } break;
 
@@ -80,7 +81,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            lite_area(*player_ptr, dice.roll(), rad);
+            lite_area(creature, dice.roll(), rad);
         }
     } break;
 
@@ -110,12 +111,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::MISSILE, dir, dice.roll() + base, rad);
+            fire_ball(creature, AttributeType::MISSILE, dir, dice.roll() + base, rad);
 
             /*
              * Shouldn't actually use MANA, as
@@ -133,12 +134,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 
@@ -150,12 +151,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, dice.roll(), 0);
+            fire_ball(creature, AttributeType::DISINTEGRATE, dir, dice.roll(), 0);
         }
     } break;
 
@@ -167,7 +168,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            teleport_player(*player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -178,12 +179,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
 
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            cast_wonder(*player_ptr, dir);
+            cast_wonder(creature, dir);
         }
     } break;
 
@@ -195,12 +196,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(*player_ptr, beam_chance(player_ptr), AttributeType::CHAOS, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(player_ptr), AttributeType::CHAOS, dir, dice.roll());
         }
     } break;
 
@@ -214,7 +215,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             msg_print(_("ドーン！部屋が揺れた！", "BOOM! Shake the room!"));
-            project(*player_ptr, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::SOUND, PROJECT_KILL | PROJECT_ITEM);
+            project(creature, 0, rad, player_ptr->y, player_ptr->x, dam, AttributeType::SOUND, PROJECT_KILL | PROJECT_ITEM);
         }
     } break;
 
@@ -226,12 +227,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_beam(*player_ptr, AttributeType::MANA, dir, dice.roll());
+            fire_beam(creature, AttributeType::MANA, dir, dice.roll());
         }
     } break;
 
@@ -244,12 +245,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(creature, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -261,12 +262,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_beam(*player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(creature, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 
@@ -275,7 +276,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         const Dice dice(1, 4);
 
         if (cast) {
-            destroy_area(*player_ptr, player_ptr->y, player_ptr->x, base + dice.roll(), false);
+            destroy_area(creature, player_ptr->y, player_ptr->x, base + dice.roll(), false);
         }
     } break;
 
@@ -288,12 +289,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::CHAOS, dir, dam, rad);
+            fire_ball(creature, AttributeType::CHAOS, dir, dam, rad);
         }
     } break;
 
@@ -305,12 +306,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            poly_monster(*player_ptr, dir, plev);
+            poly_monster(creature, dir, plev);
         }
     } break;
 
@@ -323,7 +324,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             for (const auto &dir : Direction::directions_8()) {
-                fire_beam(*player_ptr, AttributeType::ELEC, dir, dice.roll());
+                fire_beam(creature, AttributeType::ELEC, dir, dice.roll());
             }
         }
     } break;
@@ -350,12 +351,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::DISINTEGRATE, dir, dam, rad);
+            fire_ball(creature, AttributeType::DISINTEGRATE, dir, dam, rad);
         }
     } break;
 
@@ -368,7 +369,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            reserve_alter_reality(*player_ptr, dice.roll() + base);
+            reserve_alter_reality(creature, dice.roll() + base);
         }
     } break;
 
@@ -381,25 +382,25 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
             msg_print(_("ロケット発射！", "You launch a rocket!"));
-            fire_rocket(*player_ptr, AttributeType::ROCKET, dir, dam, rad);
+            fire_rocket(creature, AttributeType::ROCKET, dir, dam, rad);
         }
     } break;
 
     case 22: {
         if (cast) {
-            brand_weapon(*player_ptr, 2);
+            brand_weapon(creature, 2);
         }
     } break;
 
     case 23: {
         if (cast) {
-            cast_summon_demon(*player_ptr, (plev * 3) / 2);
+            cast_summon_demon(creature, (plev * 3) / 2);
         }
     } break;
 
@@ -411,11 +412,11 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_beam(*player_ptr, AttributeType::GRAVITY, dir, dice.roll());
+            fire_beam(creature, AttributeType::GRAVITY, dir, dice.roll());
         }
     } break;
 
@@ -428,7 +429,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            cast_meteor(*player_ptr, dam, rad);
+            cast_meteor(creature, dam, rad);
         }
     } break;
 
@@ -441,7 +442,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            fire_ball(*player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
+            fire_ball(creature, AttributeType::FIRE, Direction::self(), dam, rad);
         }
     } break;
 
@@ -451,7 +452,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            call_chaos(*player_ptr);
+            call_chaos(creature);
         }
     } break;
 
@@ -473,11 +474,11 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(*player_ptr, AttributeType::MANA, dir, dam, rad);
+            fire_ball(creature, AttributeType::MANA, dir, dam, rad);
         }
     } break;
 
@@ -490,12 +491,12 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(*player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(*player_ptr, AttributeType::CHAOS, dir, dam, rad);
+            fire_ball(creature, AttributeType::CHAOS, dir, dam, rad);
         }
     } break;
 
@@ -505,7 +506,7 @@ tl::optional<std::string> do_chaos_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            call_the_void(*player_ptr);
+            call_the_void(creature);
         }
     } break;
     }
