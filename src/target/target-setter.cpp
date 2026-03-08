@@ -218,7 +218,7 @@ char TargetSetter::examine_target_grid(std::string_view info, tl::optional<targe
 {
     const auto target_mode = append_mode ? i2enum<target_type>(this->mode | *append_mode) : this->mode;
     while (true) {
-        const auto query = examine_grid(this->player_ptr, this->pos_target.y, this->pos_target.x, target_mode, info.data());
+        const auto query = examine_grid(*this->player_ptr, this->pos_target.y, this->pos_target.x, target_mode, info.data());
         if (query != '\0') {
             return (use_menu && (query == '\r')) ? 't' : query;
         }

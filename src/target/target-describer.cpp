@@ -105,8 +105,9 @@ bool show_gold_on_floor = false;
 /*
  * Evaluate number of kill needed to gain level
  */
-static std::string evaluate_monster_exp(PlayerType *player_ptr, const MonsterEntity &monster)
+static std::string evaluate_monster_exp(CreatureEntity &creature, const MonsterEntity &monster)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &monrace = monster.get_appearance_monrace();
     if ((player_ptr->level >= PY_MAX_LEVEL) || CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
         return "**";
@@ -149,9 +150,9 @@ static void describe_scan_result(const FloorType &floor, GridExamination *ge_ptr
     }
 }
 
-static void describe_target(PlayerType *player_ptr, GridExamination *ge_ptr)
+static void describe_target(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!player_ptr->is_located_at({ ge_ptr->y, ge_ptr->x })) {
+    if (!creature.is_located_at({ ge_ptr->y, ge_ptr->x })) {
         ge_ptr->s1 = _("ターゲット:", "Target:");
         return;
     }
@@ -166,9 +167,9 @@ static void describe_target(PlayerType *player_ptr, GridExamination *ge_ptr)
 #endif
 }
 
-static ProcessResult describe_hallucinated_target(PlayerType *player_ptr, GridExamination *ge_ptr)
+static ProcessResult describe_hallucinated_target(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (!creature.effects()->hallucination().is_hallucinated()) {
         return ProcessResult::PROCESS_CONTINUE;
     }
 
@@ -188,23 +189,23 @@ static ProcessResult describe_hallucinated_target(PlayerType *player_ptr, GridEx
     return ProcessResult::PROCESS_FALSE;
 }
 
-static bool describe_grid_lore(PlayerType *player_ptr, GridExamination *ge_ptr)
+static bool describe_grid_lore(CreatureEntity &creature, GridExamination *ge_ptr)
 {
     screen_save();
-    screen_roff(*player_ptr, ge_ptr->m_ptr->ap_r_idx, MONSTER_LORE_NORMAL);
+    screen_roff(creature, ge_ptr->m_ptr->ap_r_idx, MONSTER_LORE_NORMAL);
     term_addstr(-1, TERM_WHITE, format(_("  [r思 %s%s]", "  [r,%s%s]"), ge_ptr->x_info, ge_ptr->info));
     ge_ptr->query = inkey();
     screen_load();
     return ge_ptr->query != 'r';
 }
 
-static void describe_grid_monster(PlayerType *player_ptr, GridExamination *ge_ptr)
+static void describe_grid_monster(CreatureEntity &creature, GridExamination *ge_ptr)
 {
     bool recall = false;
-    const auto m_name = monster_desc(*player_ptr, *ge_ptr->m_ptr, MD_INDEF_VISIBLE);
+    const auto m_name = monster_desc(creature, *ge_ptr->m_ptr, MD_INDEF_VISIBLE);
     while (true) {
         if (recall) {
-            if (describe_grid_lore(player_ptr, ge_ptr)) {
+            if (describe_grid_lore(creature, ge_ptr)) {
                 return;
             }
 
@@ -212,7 +213,7 @@ static void describe_grid_monster(PlayerType *player_ptr, GridExamination *ge_pt
             continue;
         }
 
-        std::string acount = evaluate_monster_exp(player_ptr, *ge_ptr->m_ptr);
+        std::string acount = evaluate_monster_exp(creature, *ge_ptr->m_ptr);
         const auto mon_desc = ge_ptr->m_ptr->build_looking_description(true);
 #ifdef JP
         const auto out_val = format("[%s]%s%s(%s)%s%s [r思 %s%s]", acount.data(), ge_ptr->s1, m_name.data(), mon_desc.data(), ge_ptr->s2, ge_ptr->s3,
@@ -253,10 +254,11 @@ static void describe_monster_person(GridExamination *ge_ptr)
 #endif
 }
 
-static short describe_monster_item(PlayerType *player_ptr, GridExamination *ge_ptr)
+static short describe_monster_item(CreatureEntity &creature, GridExamination *ge_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (const auto this_o_idx : ge_ptr->m_ptr->hold_o_idx_list) {
-        const auto &item = *player_ptr->current_floor_ptr->o_list[this_o_idx];
+        const auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
         const auto item_name = describe_flavor(player_ptr, item, 0);
 #ifdef JP
         const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
@@ -285,17 +287,17 @@ static bool within_char_util(const short input)
     return (input > -127) && (input < 128);
 }
 
-static short describe_grid(PlayerType *player_ptr, GridExamination *ge_ptr)
+static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    if (!ge_ptr->g_ptr->has_monster() || !player_ptr->current_floor_ptr->m_list[ge_ptr->g_ptr->m_idx].ml) {
+    if (!ge_ptr->g_ptr->has_monster() || !creature.current_floor_ptr->m_list[ge_ptr->g_ptr->m_idx].ml) {
         return CONTINUOUS_DESCRIPTION;
     }
 
     ge_ptr->boring = false;
     LoreTracker::get_instance().set_trackee(ge_ptr->m_ptr->ap_r_idx);
-    health_track(*player_ptr, ge_ptr->g_ptr->m_idx);
-    handle_stuff(*player_ptr);
-    describe_grid_monster(player_ptr, ge_ptr);
+    health_track(creature, ge_ptr->g_ptr->m_idx);
+    handle_stuff(creature);
+    describe_grid_monster(creature, ge_ptr);
     if ((ge_ptr->query != '\r') && (ge_ptr->query != '\n') && (ge_ptr->query != ' ') && (ge_ptr->query != 'x')) {
         return ge_ptr->query;
     }
@@ -305,7 +307,7 @@ static short describe_grid(PlayerType *player_ptr, GridExamination *ge_ptr)
     }
 
     describe_monster_person(ge_ptr);
-    const auto monster_item_description = describe_monster_item(player_ptr, ge_ptr);
+    const auto monster_item_description = describe_monster_item(creature, ge_ptr);
     if (within_char_util(monster_item_description)) {
         return (char)monster_item_description;
     }
@@ -319,13 +321,14 @@ static short describe_grid(PlayerType *player_ptr, GridExamination *ge_ptr)
     return CONTINUOUS_DESCRIPTION;
 }
 
-static short describe_footing(PlayerType *player_ptr, GridExamination *ge_ptr)
+static short describe_footing(CreatureEntity &creature, GridExamination *ge_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (ge_ptr->floor_item_index.size() != 1) {
         return CONTINUOUS_DESCRIPTION;
     }
 
-    const auto &item = *player_ptr->current_floor_ptr->o_list[ge_ptr->floor_item_index[0]];
+    const auto &item = *creature.current_floor_ptr->o_list[ge_ptr->floor_item_index[0]];
     const auto item_name = describe_flavor(player_ptr, item, 0);
 #ifdef JP
     const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
@@ -359,12 +362,12 @@ static short describe_footing_items(GridExamination *ge_ptr)
     return CONTINUOUS_DESCRIPTION;
 }
 
-static char describe_footing_many_items(PlayerType *player_ptr, GridExamination *ge_ptr, int *min_width)
+static char describe_footing_many_items(CreatureEntity &creature, GridExamination *ge_ptr, int *min_width)
 {
     while (true) {
         screen_save();
         show_gold_on_floor = true;
-        (void)show_floor_items(player_ptr, 0, ge_ptr->y, ge_ptr->x, min_width, AllMatchItemTester());
+        (void)show_floor_items(static_cast<PlayerType *>(&creature), 0, ge_ptr->y, ge_ptr->x, min_width, AllMatchItemTester());
         show_gold_on_floor = false;
 #ifdef JP
         const auto out_val = fmt::format("{} {}個のアイテム{}{} [Enterで次へ, {}]", ge_ptr->s1, ge_ptr->floor_item_index.size(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
@@ -382,14 +385,14 @@ static char describe_footing_many_items(PlayerType *player_ptr, GridExamination 
             continue;
         }
 
-        ge_ptr->g_ptr->o_idx_list.rotate(*player_ptr->current_floor_ptr);
+        ge_ptr->g_ptr->o_idx_list.rotate(*creature.current_floor_ptr);
 
         // ターゲットしている床の座標を渡す必要があるので、window_stuff経由ではなく直接呼び出す
-        fix_floor_item_list(*player_ptr, { ge_ptr->y, ge_ptr->x });
+        fix_floor_item_list(creature, { ge_ptr->y, ge_ptr->x });
     }
 }
 
-static short loop_describing_grid(PlayerType *player_ptr, GridExamination *ge_ptr)
+static short loop_describing_grid(CreatureEntity &creature, GridExamination *ge_ptr)
 {
     if (ge_ptr->floor_item_index.empty()) {
         return CONTINUOUS_DESCRIPTION;
@@ -397,7 +400,7 @@ static short loop_describing_grid(PlayerType *player_ptr, GridExamination *ge_pt
 
     auto min_width = 0;
     while (true) {
-        const auto footing_description = describe_footing(player_ptr, ge_ptr);
+        const auto footing_description = describe_footing(creature, ge_ptr);
         if (within_char_util(footing_description)) {
             return (char)footing_description;
         }
@@ -407,12 +410,13 @@ static short loop_describing_grid(PlayerType *player_ptr, GridExamination *ge_pt
             return (char)footing_descriptions;
         }
 
-        return describe_footing_many_items(player_ptr, ge_ptr, &min_width);
+        return describe_footing_many_items(creature, ge_ptr, &min_width);
     }
 }
 
-static short describe_footing_sight(PlayerType *player_ptr, GridExamination *ge_ptr, const ItemEntity &item)
+static short describe_footing_sight(CreatureEntity &creature, GridExamination *ge_ptr, const ItemEntity &item)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (item.marked.has_not(OmType::FOUND)) {
         return CONTINUOUS_DESCRIPTION;
     }
@@ -445,11 +449,11 @@ static short describe_footing_sight(PlayerType *player_ptr, GridExamination *ge_
     return CONTINUOUS_DESCRIPTION;
 }
 
-static int16_t sweep_footing_items(PlayerType *player_ptr, GridExamination *ge_ptr)
+static int16_t sweep_footing_items(CreatureEntity &creature, GridExamination *ge_ptr)
 {
     for (const auto this_o_idx : ge_ptr->g_ptr->o_idx_list) {
-        const auto &item = *player_ptr->current_floor_ptr->o_list[this_o_idx];
-        const auto ret = describe_footing_sight(player_ptr, ge_ptr, item);
+        const auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
+        const auto ret = describe_footing_sight(creature, ge_ptr, item);
         if (within_char_util(ret)) {
             return (char)ret;
         }
@@ -458,9 +462,10 @@ static int16_t sweep_footing_items(PlayerType *player_ptr, GridExamination *ge_p
     return CONTINUOUS_DESCRIPTION;
 }
 
-static std::string decide_target_floor(PlayerType *player_ptr, GridExamination *ge_ptr)
+static std::string decide_target_floor(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto &floor = *creature.current_floor_ptr;
     if (ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::QUEST_ENTER)) {
         const auto old_quest = floor.quest_number;
         const auto &quests = QuestList::get_instance();
@@ -535,14 +540,14 @@ static std::string describe_grid_monster_all(GridExamination *ge_ptr)
  * @return 入力キー
  * @todo xとlで処理を分ける？
  */
-char examine_grid(PlayerType *player_ptr, const POSITION y, const POSITION x, target_type mode, concptr info)
+char examine_grid(CreatureEntity &creature, const POSITION y, const POSITION x, target_type mode, concptr info)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     GridExamination tmp_eg(floor, y, x, mode, info);
     GridExamination *ge_ptr = &tmp_eg;
     describe_scan_result(floor, ge_ptr);
-    describe_target(player_ptr, ge_ptr);
-    ProcessResult next_target = describe_hallucinated_target(player_ptr, ge_ptr);
+    describe_target(creature, ge_ptr);
+    ProcessResult next_target = describe_hallucinated_target(creature, ge_ptr);
     switch (next_target) {
     case ProcessResult::PROCESS_FALSE:
         return '\0';
@@ -552,23 +557,23 @@ char examine_grid(PlayerType *player_ptr, const POSITION y, const POSITION x, ta
         break;
     }
 
-    const auto description_grid = describe_grid(player_ptr, ge_ptr);
+    const auto description_grid = describe_grid(creature, ge_ptr);
     if (within_char_util(description_grid)) {
         return (char)description_grid;
     }
 
-    const auto loop_description = loop_describing_grid(player_ptr, ge_ptr);
+    const auto loop_description = loop_describing_grid(creature, ge_ptr);
     if (within_char_util(loop_description)) {
         return (char)loop_description;
     }
 
-    const auto footing_items_description = sweep_footing_items(player_ptr, ge_ptr);
+    const auto footing_items_description = sweep_footing_items(creature, ge_ptr);
     if (within_char_util(footing_items_description)) {
         return (char)footing_items_description;
     }
 
     ge_ptr->feat = ge_ptr->g_ptr->get_terrain_id(TerrainKind::MIMIC);
-    if (!ge_ptr->g_ptr->is_mark() && !player_can_see_bold(*player_ptr, y, x)) {
+    if (!ge_ptr->g_ptr->is_mark() && !player_can_see_bold(creature, y, x)) {
         ge_ptr->set_terrain_id(TerrainTag::NONE);
     }
 
@@ -581,7 +586,7 @@ char examine_grid(PlayerType *player_ptr, const POSITION y, const POSITION x, ta
      * グローバル変数への代入をここで行っているので動かしたくない
      * 安全を確保できたら構造体から外すことも検討する
      */
-    ge_ptr->name = decide_target_floor(player_ptr, ge_ptr);
+    ge_ptr->name = decide_target_floor(creature, ge_ptr);
     auto is_in = ge_ptr->terrain_ptr->flags.has_none_of({ TerrainCharacteristics::MOVE, TerrainCharacteristics::CAN_FLY });
     is_in |= ge_ptr->terrain_ptr->flags.has_none_of({ TerrainCharacteristics::LOS, TerrainCharacteristics::TREE });
     is_in |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::TOWN);
@@ -591,7 +596,7 @@ char examine_grid(PlayerType *player_ptr, const POSITION y, const POSITION x, ta
 
     auto is_entrance = ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::STORE);
     is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::QUEST_ENTER);
-    is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::BLDG) && !player_ptr->current_floor_ptr->inside_arena;
+    is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::BLDG) && !creature.current_floor_ptr->inside_arena;
     is_entrance |= ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::ENTRANCE);
     if (is_entrance) {
         ge_ptr->s2 = _("の入口", "");
