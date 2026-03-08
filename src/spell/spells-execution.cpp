@@ -26,7 +26,7 @@ tl::optional<std::string> exe_spell(PlayerType *player_ptr, RealmType realm, SPE
 {
     switch (realm) {
     case RealmType::LIFE:
-        return do_life_spell(player_ptr, spell, mode);
+        return do_life_spell(*player_ptr, spell, mode);
     case RealmType::SORCERY:
         return do_sorcery_spell(player_ptr, spell, mode);
     case RealmType::NATURE:
