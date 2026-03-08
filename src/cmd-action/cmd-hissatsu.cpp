@@ -343,7 +343,7 @@ void do_cmd_hissatsu(CreatureEntity &creature)
 
     sound(SoundKind::ZAP);
 
-    if (!exe_spell(player_ptr, RealmType::HISSATSU, n, SpellProcessType::CAST)) {
+    if (!exe_spell(creature, RealmType::HISSATSU, n, SpellProcessType::CAST)) {
         return;
     }
 
