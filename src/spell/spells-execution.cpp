@@ -50,7 +50,7 @@ tl::optional<std::string> exe_spell(PlayerType *player_ptr, RealmType realm, SPE
     case RealmType::HISSATSU:
         return do_hissatsu_spell(*player_ptr, spell, mode);
     case RealmType::HEX:
-        return do_hex_spell(player_ptr, i2enum<spell_hex_type>(spell), mode);
+        return do_hex_spell(*player_ptr, i2enum<spell_hex_type>(spell), mode);
     default:
         return tl::nullopt;
     }

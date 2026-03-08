@@ -6,5 +6,5 @@
 #include <string>
 #include <tl/optional.hpp>
 
-class PlayerType;
-tl::optional<std::string> do_hex_spell(PlayerType *player_ptr, spell_hex_type spell, SpellProcessType mode);
+class CreatureEntity;
+tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type spell, SpellProcessType mode);
