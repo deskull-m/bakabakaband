@@ -261,7 +261,7 @@ int calculate_blue_magic_failure_probability(CreatureEntity &creature, const mon
     }
 
     chance -= 3 * (adj_mag_stat[player_ptr->stat_index[A_INT]] - 1);
-    chance = mod_spell_chance_1(player_ptr, chance);
+    chance = mod_spell_chance_1(creature, chance);
     if (need_mana > player_ptr->csp) {
         chance += 5 * (need_mana - player_ptr->csp);
     }
@@ -276,7 +276,7 @@ int calculate_blue_magic_failure_probability(CreatureEntity &creature, const mon
         chance = 95;
     }
 
-    chance = mod_spell_chance_2(player_ptr, chance);
+    chance = mod_spell_chance_2(creature, chance);
 
     return chance;
 }
@@ -314,7 +314,6 @@ static void close_blue_magic_name(char *buf, size_t buf_size, int index, int men
  */
 static void describe_blue_magic_name(CreatureEntity &creature, int menu_line, const bluemage_data_type &bluemage_data, const std::vector<MonsterAbilityType> &blue_magics)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr TERM_LEN y_base = 1;
     constexpr TERM_LEN x_base = 18;
     prt("", y_base, x_base);
@@ -328,7 +327,7 @@ static void describe_blue_magic_name(CreatureEntity &creature, int menu_line, co
         }
 
         const auto &mp = monster_powers.at(spell);
-        auto need_mana = mod_need_mana(player_ptr, mp.smana, 0, RealmType::NONE);
+        auto need_mana = mod_need_mana(creature, mp.smana, 0, RealmType::NONE);
         auto chance = calculate_blue_magic_failure_probability(creature, mp, need_mana);
         char header[80];
         close_blue_magic_name(header, sizeof(header), i, menu_line);

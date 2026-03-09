@@ -439,7 +439,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
                 menu_line -= num;
             }
             /* Display a list of spells */
-            print_spells(player_ptr, menu_line, spells, num, 1, 15, use_realm);
+            print_spells(*player_ptr, menu_line, spells, num, 1, 15, use_realm);
             if (should_redraw_cursor) {
                 continue;
             }
@@ -452,7 +452,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
                     screen_save();
 
                     /* Display a list of spells */
-                    print_spells(player_ptr, menu_line, spells, num, 1, 15, use_realm);
+                    print_spells(*player_ptr, menu_line, spells, num, 1, 15, use_realm);
                 }
 
                 /* Hide the list */
@@ -645,7 +645,7 @@ void do_cmd_browse(CreatureEntity &creature)
             }
 
             /* Display a list of spells */
-            print_spells(player_ptr, 0, spells.data(), spells.size(), 1, 15, use_realm);
+            print_spells(creature, 0, spells.data(), spells.size(), 1, 15, use_realm);
 
             /* Notify that there's nothing to see, and wait. */
             if (use_realm == RealmType::HISSATSU) {
@@ -1014,7 +1014,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
     /* Extract mana consumption rate */
-    need_mana = mod_need_mana(player_ptr, spell.smana, spell_id, use_realm);
+    need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
 
     /* Verify "dangerous" spells */
     if (need_mana > player_ptr->csp) {
@@ -1043,7 +1043,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     }
 
     /* Spell failure chance */
-    chance = spell_chance(player_ptr, spell_id, use_realm);
+    chance = spell_chance(creature, spell_id, use_realm);
 
     /* Failed spell */
     if (evaluate_percent(chance)) {

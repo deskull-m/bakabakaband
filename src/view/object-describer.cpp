@@ -108,5 +108,5 @@ void display_koff(PlayerType *player_ptr)
         }
     }
 
-    print_spells(player_ptr, 0, spells, num, 2, 0, use_realm);
+    print_spells(*player_ptr, 0, spells, num, 2, 0, use_realm);
 }

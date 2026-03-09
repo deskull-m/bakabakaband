@@ -45,7 +45,7 @@ void check_music(CreatureEntity &creature)
     const auto spell_id = get_singing_song_id(creature);
     const auto &spell = PlayerRealm::get_spell_info(RealmType::MUSIC, spell_id);
 
-    MANA_POINT need_mana = mod_need_mana(&player, spell.smana, spell_id, RealmType::MUSIC);
+    MANA_POINT need_mana = mod_need_mana(creature, spell.smana, spell_id, RealmType::MUSIC);
     uint32_t need_mana_frac = 0;
 
     s64b_rshift(&need_mana, &need_mana_frac, 1);
