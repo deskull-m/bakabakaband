@@ -145,7 +145,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
                 return tl::nullopt;
             }
 
-            charm_animal(player_ptr, dir, plev);
+            charm_animal(creature, dir, plev);
         }
     } break;
 

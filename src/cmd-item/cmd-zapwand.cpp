@@ -220,7 +220,7 @@ bool wand_effect(CreatureEntity &creature, int sval, const Direction &dir, bool 
     }
 
     case SV_WAND_CHARM_MONSTER: {
-        if (charm_monster(player_ptr, dir, std::max<short>(20, lev))) {
+        if (charm_monster(creature, dir, std::max<short>(20, lev))) {
             ident = true;
         }
         break;
