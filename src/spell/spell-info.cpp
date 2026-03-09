@@ -137,7 +137,7 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
         chance += (std::max(riding_monrace.level - player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 100 - 10, 0));
     }
 
-    MANA_POINT need_mana = mod_need_mana(*player_ptr, spell.smana, spell_id, use_realm);
+    MANA_POINT need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
     if (need_mana > player_ptr->csp) {
         chance += 5 * (need_mana - player_ptr->csp);
     }

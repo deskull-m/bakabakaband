@@ -82,7 +82,6 @@ bool direct_beam(CreatureEntity &creature, const MonsterEntity &monster, const P
  */
 bool breath_direct(CreatureEntity &creature, const Pos2D &pos_source, const Pos2D &pos_target, int rad, AttributeType typ, bool is_friend)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     BIT_FLAGS flg;
     switch (typ) {
     case AttributeType::LITE:
@@ -147,7 +146,7 @@ bool breath_direct(CreatureEntity &creature, const Pos2D &pos_source, const Pos2
             }
         }
     } else {
-        const auto positions = breath_shape(player_ptr, grid_g, path_n, rad, pos_source, pos_breath, typ);
+        const auto positions = breath_shape(creature, grid_g, path_n, rad, pos_source, pos_breath, typ);
         hit2 |= std::any_of(positions.begin(), positions.end(), [&pos_target](const auto &pair) { return pair.second == pos_target; });
         hityou |= std::any_of(positions.begin(), positions.end(), [&p_pos](const auto &pair) { return pair.second == p_pos; });
     }
