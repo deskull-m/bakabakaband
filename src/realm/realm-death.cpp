@@ -189,7 +189,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
                 return tl::nullopt;
             }
 
-            control_one_undead(player_ptr, dir, plev);
+            control_one_undead(creature, dir, plev);
         }
     } break;
 

@@ -280,7 +280,7 @@ tl::optional<std::string> do_sorcery_spell(CreatureEntity &creature, SPELL_IDX s
                 return tl::nullopt;
             }
 
-            charm_monster(player_ptr, dir, plev);
+            charm_monster(creature, dir, plev);
         }
     } break;
 

@@ -2,7 +2,6 @@
 #include "spell-kind/spells-charm.h"
 #include "spell-kind/spells-sight.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 
 namespace {
@@ -14,8 +13,7 @@ bool activate_charm_directional(CreatureEntity &creature, SpellFunc spell, int p
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)spell(&player, dir, power);
+    (void)spell(creature, dir, power);
     return true;
 }
 }

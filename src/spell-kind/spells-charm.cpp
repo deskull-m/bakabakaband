@@ -2,7 +2,7 @@
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "spell-kind/spells-launcher.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
 /*!
  * @brief チャーム・モンスター(1体)
@@ -11,10 +11,10 @@
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool charm_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
+bool charm_monster(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(*player_ptr, AttributeType::CHARM, dir, plev, flg);
+    return project_hook(creature, AttributeType::CHARM, dir, plev, flg);
 }
 
 /*!
@@ -24,10 +24,10 @@ bool charm_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL pl
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool control_one_undead(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
+bool control_one_undead(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(*player_ptr, AttributeType::CONTROL_UNDEAD, dir, plev, flg);
+    return project_hook(creature, AttributeType::CONTROL_UNDEAD, dir, plev, flg);
 }
 
 /*!
@@ -37,10 +37,10 @@ bool control_one_undead(PlayerType *player_ptr, const Direction &dir, PLAYER_LEV
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool control_one_demon(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
+bool control_one_demon(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(*player_ptr, AttributeType::CONTROL_DEMON, dir, plev, flg);
+    return project_hook(creature, AttributeType::CONTROL_DEMON, dir, plev, flg);
 }
 
 /*!
@@ -50,8 +50,8 @@ bool control_one_demon(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVE
  * @param plev パワー
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool charm_animal(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
+bool charm_animal(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL;
-    return project_hook(*player_ptr, AttributeType::CONTROL_ANIMAL, dir, plev, flg);
+    return project_hook(creature, AttributeType::CONTROL_ANIMAL, dir, plev, flg);
 }

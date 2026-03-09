@@ -94,7 +94,7 @@ bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power)
         }
 
         msg_print(_("あなたの目は幻惑的になった...", "Your eyes look mesmerizing..."));
-        (void)charm_monster(player_ptr, dir, lvl);
+        (void)charm_monster(*player_ptr, dir, lvl);
         return true;
     }
     case PlayerMutationType::TELEKINES: {
