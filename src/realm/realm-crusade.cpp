@@ -134,7 +134,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
 
     case 7: {
         if (cast) {
-            (void)remove_curse(player_ptr);
+            (void)remove_curse(creature);
         }
     } break;
 
@@ -209,7 +209,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
 
     case 13: {
         if (cast) {
-            (void)remove_all_curse(player_ptr);
+            (void)remove_all_curse(creature);
         }
     } break;
 

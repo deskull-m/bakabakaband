@@ -173,13 +173,13 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_REMOVE_CURSE:
-        if (remove_curse(this->player_ptr)) {
+        if (remove_curse(*this->player_ptr)) {
             this->ident = true;
         }
 
         break;
     case SV_SCROLL_STAR_REMOVE_CURSE:
-        if (remove_all_curse(this->player_ptr)) {
+        if (remove_all_curse(*this->player_ptr)) {
             this->ident = true;
         }
 
