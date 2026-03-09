@@ -190,10 +190,10 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
 
         if (breath) {
             flag &= ~(PROJECT_HIDE);
-            auto breath_positions = breath_shape(&player, path_g, path_n, rad, pos_source, pos_impact, typ);
+            auto breath_positions = breath_shape(creature, path_g, path_n, rad, pos_source, pos_impact, typ);
             positions.insert(positions.end(), std::make_move_iterator(breath_positions.begin()), std::make_move_iterator(breath_positions.end()));
         } else {
-            auto ball_positions = ball_shape(&player, pos_impact, rad, typ);
+            auto ball_positions = ball_shape(creature, pos_impact, rad, typ);
             positions.insert(positions.end(), std::make_move_iterator(ball_positions.begin()), std::make_move_iterator(ball_positions.end()));
         }
     }
