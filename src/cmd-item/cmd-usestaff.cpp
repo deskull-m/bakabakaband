@@ -124,7 +124,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_REMOVE_CURSE: {
-        bool result = (powerful ? remove_all_curse(player_ptr) : remove_curse(player_ptr)) != 0;
+        bool result = (powerful ? remove_all_curse(creature) : remove_curse(creature)) != 0;
         if (result) {
             ident = true;
         }

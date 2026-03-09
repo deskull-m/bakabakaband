@@ -149,7 +149,7 @@ tl::optional<std::string> do_craft_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 9: {
         if (cast) {
-            (void)remove_curse(player_ptr);
+            (void)remove_curse(creature);
         }
     } break;
 
@@ -327,7 +327,7 @@ tl::optional<std::string> do_craft_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 25: {
         if (cast) {
-            (void)remove_all_curse(player_ptr);
+            (void)remove_all_curse(creature);
         }
     } break;
 

@@ -134,7 +134,7 @@ tl::optional<std::string> do_life_spell(CreatureEntity &creature, SPELL_IDX spel
 
     case 8: {
         if (cast) {
-            (void)remove_curse(player_ptr);
+            (void)remove_curse(creature);
         }
     } break;
 
@@ -215,7 +215,7 @@ tl::optional<std::string> do_life_spell(CreatureEntity &creature, SPELL_IDX spel
 
     case 16: {
         if (cast) {
-            (void)remove_all_curse(player_ptr);
+            (void)remove_all_curse(creature);
         }
     } break;
 

@@ -192,8 +192,7 @@ bool activate_unique_detection(CreatureEntity &creature)
 bool activate_dispel_curse(CreatureEntity &creature, std::string_view name)
 {
     msg_format(_("%sが真実を照らし出す...", "The %s exhibits the truth..."), name.data());
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)remove_all_curse(&player);
+    (void)remove_all_curse(creature);
     (void)probing(creature);
     return true;
 }
