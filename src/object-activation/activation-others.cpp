@@ -335,16 +335,14 @@ bool activate_earthquake(CreatureEntity &creature)
 
 bool activate_recharge(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    recharge(&player, 130);
+    recharge(creature, 130);
     return true;
 }
 
 bool activate_recharge_extra(CreatureEntity &creature, std::string_view name)
 {
     msg_format(_("%sが白く輝いた．．．", "The %s gleams with blinding light..."), name.data());
-    auto &player = static_cast<PlayerType &>(creature);
-    return recharge(&player, 1000);
+    return recharge(creature, 1000);
 }
 
 bool activate_shikofumi(CreatureEntity &creature)

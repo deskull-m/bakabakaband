@@ -366,7 +366,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             return info_power(power);
         }
         if (cast) {
-            if (!recharge(player_ptr, power)) {
+            if (!recharge(creature, power)) {
                 return tl::nullopt;
             }
             should_continue = false;

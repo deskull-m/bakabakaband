@@ -22,6 +22,7 @@
 #include "object/item-use-flags.h"
 #include "player-base/player-class.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "view/display-messages.h"
@@ -47,8 +48,9 @@
  *
  * Beware of "sliding index errors".
  */
-bool recharge(PlayerType *player_ptr, int power)
+bool recharge(CreatureEntity &creature, int power)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto q = _("どのアイテムに魔力を充填しますか? ", "Recharge which item? ");
     constexpr auto s = _("魔力を充填すべきアイテムがない。", "You have nothing to recharge.");
 
@@ -131,7 +133,7 @@ bool recharge(PlayerType *player_ptr, int power)
 
     const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto fail_type = 1;
-    if (CreatureClass(*player_ptr).is_wizard()) {
+    if (CreatureClass(creature).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */
         if (tval == ItemKindType::ROD) {
             if (one_in_(10)) {
@@ -210,7 +212,7 @@ bool recharge(PlayerType *player_ptr, int power)
             o_ptr->pval = 0;
         }
 
-        vary_item(*player_ptr, i_idx, -1);
+        vary_item(creature, i_idx, -1);
         break;
     case 3:
         if (o_ptr->number > 1) {
@@ -219,7 +221,7 @@ bool recharge(PlayerType *player_ptr, int power)
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(*player_ptr, i_idx, -999);
+        vary_item(creature, i_idx, -999);
         break;
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid fail type!");
