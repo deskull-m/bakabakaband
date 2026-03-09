@@ -2,5 +2,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx);
+class CreatureEntity;
+void blood_curse_to_enemy(CreatureEntity &creature, MONSTER_IDX m_idx);
