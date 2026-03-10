@@ -623,7 +623,7 @@ void process_command(CreatureEntity &creature)
     }
     case '=': {
         do_cmd_options(player_ptr);
-        (void)combine_and_reorder_home(player_ptr, StoreSaleType::HOME);
+        (void)combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
         do_cmd_redraw(player_ptr);
         break;
     }

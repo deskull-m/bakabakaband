@@ -479,8 +479,8 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
     }
 
     init_riding_pet(player_ptr, new_game);
-    (void)combine_and_reorder_home(player_ptr, StoreSaleType::HOME);
-    (void)combine_and_reorder_home(player_ptr, StoreSaleType::MUSEUM);
+    (void)combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
+    (void)combine_and_reorder_home(*player_ptr, StoreSaleType::MUSEUM);
     select_floor_music(player_ptr);
     process_game_turn(player_ptr);
     close_game(player_ptr);
