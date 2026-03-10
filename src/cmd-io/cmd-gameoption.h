@@ -3,7 +3,7 @@
 #include <string_view>
 
 enum class GameOptionPage : int;
-class PlayerType;
+class CreatureEntity;
 void extract_option_vars();
-void do_cmd_options_aux(PlayerType *player_ptr, GameOptionPage page, std::string_view info);
-void do_cmd_options(PlayerType *player_ptr);
+void do_cmd_options_aux(CreatureEntity &creature, GameOptionPage page, std::string_view info);
+void do_cmd_options(CreatureEntity &creature);

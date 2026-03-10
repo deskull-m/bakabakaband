@@ -326,7 +326,7 @@ bool get_stat_limits(CreatureEntity &creature)
             break;
         case '=':
             screen_save();
-            do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+            do_cmd_options_aux(*player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
             screen_load();
             break;
         default:
@@ -598,7 +598,7 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
             break;
         case '=':
             screen_save();
-            do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+            do_cmd_options_aux(*player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
             screen_load();
             break;
         default:
