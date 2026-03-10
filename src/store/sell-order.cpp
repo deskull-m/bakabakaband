@@ -131,7 +131,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
         placed = res.has_value();
         if (placed) {
             const auto price = res.value();
-            store_owner_says_comment(player_ptr, store_num);
+            store_owner_says_comment(*player_ptr, store_num);
 
             sound(SoundKind::SELL);
             if (store_num == StoreSaleType::BLACK) {
@@ -167,7 +167,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
             player_ptr->plus_incident_tree("STORE_SELL", 1);
 
             if (!((tval == ItemKindType::FIGURINE) && (value > 0))) {
-                purchase_analyze(player_ptr, price, value, dummy);
+                purchase_analyze(*player_ptr, price, value, dummy);
             }
 
             distribute_charges(o_ptr, &sold_item, amt);
