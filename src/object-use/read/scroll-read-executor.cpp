@@ -404,7 +404,7 @@ bool ScrollReadExecutor::read()
     case SV_SCROLL_RUMOR:
         msg_print(_("巻物にはメッセージが書かれている:", "There is message on the scroll. It says:"));
         msg_erase();
-        display_rumor(this->player_ptr, true);
+        display_rumor(*this->player_ptr, true);
         msg_erase();
         msg_print(_("巻物は煙を立てて消え去った！", "The scroll disappears in a puff of smoke!"));
         this->ident = true;
