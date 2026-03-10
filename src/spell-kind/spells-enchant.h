@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
-bool artifact_scroll(PlayerType *player_ptr);
-bool mundane_spell(PlayerType *player_ptr, bool only_equip);
+class CreatureEntity;
+bool artifact_scroll(CreatureEntity &creature);
+bool mundane_spell(CreatureEntity &creature, bool only_equip);
