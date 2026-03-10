@@ -346,13 +346,14 @@ static bool do_cmd_save_screen_text(int wid, int hgt)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 記念撮影直前のグラフィックオプション
  */
-static bool update_use_graphics(PlayerType *player_ptr)
+static bool update_use_graphics(CreatureEntity &creature)
 {
     if (!use_graphics) {
         return true;
     }
 
     use_graphics = false;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     reset_visuals(player_ptr);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
@@ -362,7 +363,7 @@ static bool update_use_graphics(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return false;
 }
 
@@ -370,8 +371,9 @@ static bool update_use_graphics(PlayerType *player_ptr)
  * Save a screen dump to a file
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_save_screen(PlayerType *player_ptr)
+void do_cmd_save_screen(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     prt(_("記念撮影しますか？ [(y)es/(h)tml/(n)o] ", "Save screen dump? [(y)es/(h)tml/(n)o] "), 0, 0);
     bool html_dump;
     if (!ask_html_dump(&html_dump)) {
@@ -379,7 +381,7 @@ void do_cmd_save_screen(PlayerType *player_ptr)
     }
 
     const auto &[wid, hgt] = term_get_size();
-    const auto old_use_graphics = update_use_graphics(player_ptr);
+    const auto old_use_graphics = update_use_graphics(creature);
 
     if (html_dump) {
         exe_cmd_save_screen_html_with_naming();
@@ -402,7 +404,7 @@ void do_cmd_save_screen(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 }
 
 /*!
