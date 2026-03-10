@@ -345,9 +345,8 @@ void effect_player_disenchant(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
     ep_ptr->dam = ep_ptr->dam * calc_disenchant_damage_rate(creature, CALC_RAND) / 100;
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_disen(creature) && !check_multishadow(creature)) {
-        (void)apply_disenchant(player_ptr, 0);
+        (void)apply_disenchant(creature, 0);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
