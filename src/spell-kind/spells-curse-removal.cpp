@@ -6,6 +6,7 @@
 #include "object-enchant/trc-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
