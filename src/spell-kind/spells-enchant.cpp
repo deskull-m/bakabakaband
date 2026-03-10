@@ -13,6 +13,7 @@
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "racial/racial-android.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
@@ -24,8 +25,9 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 生成が実際に試みられたらTRUEを返す
  */
-bool artifact_scroll(PlayerType *player_ptr)
+bool artifact_scroll(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto q = _("どのアイテムを強化しますか? ", "Enchant which item? ");
     constexpr auto s = _("強化できるアイテムがない。", "You have nothing to enchant.");
     short i_idx;
@@ -72,13 +74,13 @@ bool artifact_scroll(PlayerType *player_ptr)
 #endif
 
             if (i_idx >= 0) {
-                inven_item_increase(*player_ptr, i_idx, 1 - (o_ptr->number));
+                inven_item_increase(creature, i_idx, 1 - (o_ptr->number));
             } else {
-                floor_item_increase(*player_ptr, 0 - i_idx, 1 - (o_ptr->number));
+                floor_item_increase(creature, 0 - i_idx, 1 - (o_ptr->number));
             }
         }
 
-        okay = become_random_artifact(*player_ptr, o_ptr, true);
+        okay = become_random_artifact(creature, o_ptr, true);
     }
 
     if (!okay) {
@@ -88,7 +90,7 @@ bool artifact_scroll(PlayerType *player_ptr)
 
         msg_print(_("強化に失敗した。", "The enchantment failed."));
         if (one_in_(3)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -1);
+            chg_virtue(creature, Virtue::ENCHANT, -1);
         }
 
         calc_android_exp(player_ptr);
@@ -97,10 +99,10 @@ bool artifact_scroll(PlayerType *player_ptr)
 
     if (record_rand_art) {
         const auto diary_item_name = describe_flavor(player_ptr, *o_ptr, OD_NAME_ONLY);
-        exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::ART_SCROLL, 0, diary_item_name);
+        exe_write_diary(*creature.current_floor_ptr, DiaryKind::ART_SCROLL, 0, diary_item_name);
     }
 
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, 1);
+    chg_virtue(creature, Virtue::ENCHANT, 1);
     calc_android_exp(player_ptr);
     return true;
 }
@@ -118,14 +120,15 @@ bool artifact_scroll(PlayerType *player_ptr)
  * Returns TRUE if something was mundanified, else FALSE.
  * </pre>
  */
-bool mundane_spell(PlayerType *player_ptr, bool only_equip)
+bool mundane_spell(CreatureEntity &creature, bool only_equip)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     std::unique_ptr<ItemTester> item_tester =
         only_equip ? std::make_unique<FuncItemTester>(&ItemEntity::is_weapon_armour_ammo)
                    : std::make_unique<FuncItemTester>([](const ItemEntity *o_ptr) { return !o_ptr->bi_key.is_monster(); });
 
-    constexpr auto q = _("どのアイテムを凡庸化しますか？", "Mundanify which item? ");
-    constexpr auto s = _("凡庸化できるアイテムがない。", "You have nothing to mundanify.");
+    constexpr auto q = _("どのアイテムを凡幸化しますか？", "Mundanify which item? ");
+    constexpr auto s = _("凡幸化できるアイテムがない。", "You have nothing to mundanify.");
     short i_idx;
     auto *item_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (!item_ptr) {

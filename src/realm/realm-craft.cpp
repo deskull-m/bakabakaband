@@ -319,7 +319,7 @@ tl::optional<std::string> do_craft_spell(CreatureEntity &creature, SPELL_IDX spe
 
     case 24: {
         if (cast) {
-            if (!mundane_spell(player_ptr, true)) {
+            if (!mundane_spell(creature, true)) {
                 return tl::nullopt;
             }
         }

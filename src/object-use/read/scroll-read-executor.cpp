@@ -228,7 +228,7 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_MUNDANITY:
         this->ident = true;
-        if (!mundane_spell(this->player_ptr, false)) {
+        if (!mundane_spell(*this->player_ptr, false)) {
             used_up = false;
         }
 
@@ -411,7 +411,7 @@ bool ScrollReadExecutor::read()
         break;
     case SV_SCROLL_ARTIFACT:
         this->ident = true;
-        if (!artifact_scroll(this->player_ptr)) {
+        if (!artifact_scroll(*this->player_ptr)) {
             used_up = false;
         }
 
