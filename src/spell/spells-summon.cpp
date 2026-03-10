@@ -561,7 +561,7 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
     } else if (die < 106) {
         (void)destroy_area(creature, creature.y, creature.x, 13 + randint0(5), false);
     } else if (die < 108) {
-        symbol_genocide(&player, plev + 50, true);
+        symbol_genocide(player, plev + 50, true);
     } else if (die < 110) {
         dispel_monsters(creature, 120);
     } else {

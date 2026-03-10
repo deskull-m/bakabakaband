@@ -362,11 +362,11 @@ bool ScrollReadExecutor::read()
         this->ident = true;
         break;
     case SV_SCROLL_GENOCIDE:
-        (void)symbol_genocide(this->player_ptr, 300, true);
+        (void)symbol_genocide(*this->player_ptr, 300, true);
         this->ident = true;
         break;
     case SV_SCROLL_MASS_GENOCIDE:
-        (void)mass_genocide(this->player_ptr, 300, true);
+        (void)mass_genocide(*this->player_ptr, 300, true);
         this->ident = true;
         break;
     case SV_SCROLL_ACQUIREMENT:

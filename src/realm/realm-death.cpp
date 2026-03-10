@@ -328,7 +328,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            symbol_genocide(player_ptr, power, true);
+            symbol_genocide(*player_ptr, power, true);
         }
     } break;
 
@@ -513,7 +513,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         if (cast) {
-            mass_genocide(player_ptr, power, true);
+            mass_genocide(*player_ptr, power, true);
         }
     } break;
 

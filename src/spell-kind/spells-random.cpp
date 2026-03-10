@@ -495,7 +495,7 @@ void cast_wonder(CreatureEntity &creature, const Direction &dir)
     }
 
     if (die < 108) {
-        symbol_genocide(&player, plev + 50, true);
+        symbol_genocide(player, plev + 50, true);
         return;
     }
 
