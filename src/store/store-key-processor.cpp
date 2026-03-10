@@ -267,7 +267,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
     }
     default: {
         if ((store_num == StoreSaleType::MUSEUM) && (command_cmd == 'r')) {
-            museum_remove_object(player_ptr);
+            museum_remove_object(*player_ptr);
         } else {
             msg_print(_("そのコマンドは店の中では使えません。", "That command does not work in stores."));
         }
