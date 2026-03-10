@@ -31,8 +31,9 @@
  * "greed" value is always something (?).
  * </pre>
  */
-int price_item(PlayerType *player_ptr, const ItemEntity *o_ptr, int greed, bool flip, StoreSaleType store_num)
+int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, int greed, bool flip, StoreSaleType store_num)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto price = o_ptr->calc_price();
     if (price <= 0) {
         return 0L;
