@@ -229,7 +229,7 @@ bool inn_comm(CreatureEntity &creature, int cmd)
         return stay_inn(creature);
     case BACT_RUMORS: {
         auto *player_ptr = static_cast<PlayerType *>(&creature);
-        display_rumor(player_ptr, true);
+        display_rumor(*player_ptr, true);
         return true;
     }
     default:

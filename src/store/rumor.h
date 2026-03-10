@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void display_rumor(PlayerType *player_ptr, bool ex);
+class CreatureEntity;
+void display_rumor(CreatureEntity &creature, bool ex);

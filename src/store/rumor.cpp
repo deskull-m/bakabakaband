@@ -148,8 +148,8 @@ public:
 
 class ProcessRumor {
 public:
-    ProcessRumor(PlayerType *player_ptr, std::span<const std::string> tokens)
-        : player_ptr(player_ptr)
+    ProcessRumor(CreatureEntity *creature_ptr, std::span<const std::string> tokens)
+        : player_ptr(static_cast<PlayerType *>(creature_ptr))
         , tokens(tokens)
     {
     }
@@ -213,7 +213,7 @@ private:
     std::span<const std::string> tokens;
 };
 
-void display_rumor(PlayerType *player_ptr, bool ex)
+void display_rumor(CreatureEntity &creature, bool ex)
 {
     const auto section = (ex && (randint0(3) == 0)) ? 1 : 0;
 #ifdef JP
@@ -233,5 +233,5 @@ void display_rumor(PlayerType *player_ptr, bool ex)
         return;
     }
 
-    std::visit(ProcessRumor(player_ptr, *tokens), RumorFactory::create_rumor(*tokens));
+    std::visit(ProcessRumor(&creature, *tokens), RumorFactory::create_rumor(*tokens));
 }
