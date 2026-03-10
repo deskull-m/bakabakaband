@@ -224,7 +224,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
     }
     case '=': {
         do_cmd_options(player_ptr);
-        (void)combine_and_reorder_home(player_ptr, StoreSaleType::HOME);
+        (void)combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
         do_cmd_redraw(player_ptr);
         display_store(*player_ptr, store_num);
         break;

@@ -101,7 +101,7 @@ static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, I
     st_ptr->increase_item(i_idx, -amt);
     st_ptr->optimize_item(i_idx);
 
-    const auto combined_or_reordered = combine_and_reorder_home(player_ptr, StoreSaleType::HOME);
+    const auto combined_or_reordered = combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
     if (stock_num == st_ptr->stock_num) {
         if (combined_or_reordered) {
             display_store_inventory(*player_ptr, StoreSaleType::HOME);

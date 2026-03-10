@@ -190,7 +190,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
                 vary_item(*player_ptr, i_idx, -255);
                 handle_stuff(*player_ptr);
-                const auto item_pos = home_carry(player_ptr, &item, store_num);
+                const auto item_pos = home_carry(*player_ptr, &item, store_num);
                 if (item_pos >= 0) {
                     store_top = (item_pos / store_bottom) * store_bottom;
                     display_store_inventory(*player_ptr, store_num);

@@ -207,7 +207,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
 
         vary_item(*player_ptr, i_idx, -amt);
 
-        int item_pos = home_carry(player_ptr, &selling_item, store_num);
+        int item_pos = home_carry(*player_ptr, &selling_item, store_num);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
             display_store_inventory(*player_ptr, store_num);
@@ -218,7 +218,7 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
         placed = true;
         vary_item(*player_ptr, i_idx, -amt);
-        int item_pos = home_carry(player_ptr, &selling_item, store_num);
+        int item_pos = home_carry(*player_ptr, &selling_item, store_num);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
             display_store_inventory(*player_ptr, store_num);
