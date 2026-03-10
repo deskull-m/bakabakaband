@@ -334,7 +334,7 @@ tl::optional<std::string> do_life_spell(CreatureEntity &creature, SPELL_IDX spel
         }
 
         if (cast) {
-            mass_genocide_undead(player_ptr, power, true);
+            mass_genocide_undead(*player_ptr, power, true);
         }
     } break;
 

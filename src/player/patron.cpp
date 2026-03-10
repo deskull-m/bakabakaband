@@ -473,13 +473,13 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
         case REW_GENOCIDE:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「我、汝の敵を抹殺せん！」", "'Let me relieve thee of thine oppressors!'"));
-            (void)symbol_genocide(this->player_ptr, 0, false);
+            (void)symbol_genocide(*this->player_ptr, 0, false);
             reward = _("モンスターが抹殺された。", "genociding monsters");
             break;
         case REW_MASS_GEN:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「我、汝の敵を抹殺せん！」", "'Let me relieve thee of thine oppressors!'"));
-            (void)mass_genocide(this->player_ptr, 0, false);
+            (void)mass_genocide(*this->player_ptr, 0, false);
             reward = _("モンスターが抹殺された。", "genociding nearby monsters");
             break;
         case REW_DISPEL_C:

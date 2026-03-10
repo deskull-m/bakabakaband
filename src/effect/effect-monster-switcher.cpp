@@ -264,7 +264,7 @@ ProcessResult effect_monster_genocide(PlayerType *player_ptr, EffectMonster *em_
     }
 
     std::string_view spell_name(_("モンスター消滅", "Genocide One"));
-    if (genocide_aux(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+    if (genocide_aux(*player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sは消滅した！", "%s^ disappeared!"), em_ptr->m_name);
         }
@@ -288,7 +288,7 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
     if (monrace.kind_flags.has(MonsterKindType::PERVERT)) {
         auto dam = em_ptr->dam * 8;
         std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
-        if (genocide_aux(player_ptr, em_ptr->g_ptr->m_idx, dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+        if (genocide_aux(*player_ptr, em_ptr->g_ptr->m_idx, dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
             if (em_ptr->seen_msg) {
                 msg_format(_("%sは変質者として社会から完全に抹殺された！", "%s^ has been completely eliminated from society as a pervert!"), em_ptr->m_name);
             }
@@ -304,7 +304,7 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
     }
 
     std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
-    if (genocide_aux(player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+    if (genocide_aux(*player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sは社会から抹殺された！", "%s^ has been socially eliminated!"), em_ptr->m_name);
         }

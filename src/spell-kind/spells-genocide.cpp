@@ -39,9 +39,9 @@
  * @details 抹殺したモンスターのレベルに応じて時空崩壊度が進行。
  * @return 効力があった場合TRUEを返す
  */
-bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool player_cast, int dam_side, concptr spell_name)
+bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool player_cast, int dam_side, concptr spell_name)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     auto &monrace = monster.get_monrace();
     if (monster.is_pet() && !player_cast) {
@@ -64,23 +64,23 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
         resist = true;
     } else {
         if (record_named_pet && monster.is_named_pet()) {
-            const auto m_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
+            const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_GENOCIDE, m_name);
         }
 
         wc_ptr->plus_collapsion(10 + monrace.level * 5);
-        delete_monster_idx(*player_ptr, m_idx);
+        delete_monster_idx(creature, m_idx);
     }
 
     if (resist && player_cast) {
-        const auto see_m = is_seen(*player_ptr, monster);
-        const auto m_name = monster_desc(*player_ptr, monster, 0);
+        const auto see_m = is_seen(creature, monster);
+        const auto m_name = monster_desc(creature, monster, 0);
         if (see_m) {
             msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), m_name.data());
         }
 
         if (monster.is_asleep()) {
-            (void)set_monster_csleep(*player_ptr->current_floor_ptr, m_idx, 0);
+            (void)set_monster_csleep(*creature.current_floor_ptr, m_idx, 0);
             if (monster.ml) {
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
@@ -100,14 +100,14 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
     }
 
     if (player_cast) {
-        take_hit(*player_ptr, DAMAGE_GENO, randint1(dam_side), format(_("%s^の呪文を唱えた疲労", "the strain of casting %s^"), spell_name));
+        take_hit(creature, DAMAGE_GENO, randint1(dam_side), format(_("%s^の呪文を唱えた疲労", "the strain of casting %s^"), spell_name));
     }
 
-    move_cursor_relative(player_ptr->y, player_ptr->x);
+    move_cursor_relative(creature.y, creature.x);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     term_fresh();
     term_xtra(TERM_XTRA_DELAY, delay_factor);
     return !resist;
@@ -119,9 +119,9 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
  * @param player_cast プレイヤーの魔法によるものならば TRUE
  * @return 効力があった場合TRUEを返す
  */
-bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
+bool symbol_genocide(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -148,15 +148,15 @@ bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
             continue;
         }
 
-        result |= genocide_aux(player_ptr, i, power, player_cast, 4, _("抹殺", "Genocide"));
+        result |= genocide_aux(creature, i, power, player_cast, 4, _("抹殺", "Genocide"));
     }
 
     if (!result) {
         return false;
     }
 
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -2);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
+    chg_virtue(creature, Virtue::VITALITY, -2);
+    chg_virtue(creature, Virtue::CHANCE, -1);
     return true;
 }
 
@@ -166,9 +166,9 @@ bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
  * @param player_cast プレイヤーの魔法によるものならば TRUE
  * @return 効力があった場合TRUEを返す
  */
-bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
+bool mass_genocide(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -186,12 +186,12 @@ bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
             continue;
         }
 
-        result |= genocide_aux(player_ptr, i, power, player_cast, 3, _("周辺抹殺", "Mass Genocide"));
+        result |= genocide_aux(creature, i, power, player_cast, 3, _("周辺抹殺", "Mass Genocide"));
     }
 
     if (result) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -2);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
+        chg_virtue(creature, Virtue::VITALITY, -2);
+        chg_virtue(creature, Virtue::CHANCE, -1);
     }
 
     return result;
@@ -203,9 +203,9 @@ bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
  * @param player_cast プレイヤーの魔法によるものならば TRUE
  * @return 効力があった場合TRUEを返す
  */
-bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
+bool mass_genocide_undead(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -226,12 +226,12 @@ bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
             continue;
         }
 
-        result |= genocide_aux(player_ptr, i, power, player_cast, 3, _("アンデッド消滅", "Annihilate Undead"));
+        result |= genocide_aux(creature, i, power, player_cast, 3, _("アンデッド消滅", "Annihilate Undead"));
     }
 
     if (result) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
+        chg_virtue(creature, Virtue::UNLIFE, -2);
+        chg_virtue(creature, Virtue::CHANCE, -1);
     }
 
     return result;

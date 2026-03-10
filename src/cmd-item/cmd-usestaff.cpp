@@ -269,7 +269,7 @@ int staff_effect(CreatureEntity &creature, int sval, bool *use_charge, bool powe
     }
 
     case SV_STAFF_GENOCIDE: {
-        ident = symbol_genocide(player_ptr, (magic ? lev + 50 : 200), true);
+        ident = symbol_genocide(*player_ptr, (magic ? lev + 50 : 200), true);
         break;
     }
 
