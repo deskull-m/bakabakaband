@@ -320,7 +320,7 @@ void wild_magic(CreatureEntity &creature, int spell)
         break;
     case 29:
     case 30:
-        apply_disenchant(&player, 1);
+        apply_disenchant(creature, 1);
         break;
     case 31:
         lose_all_info(creature);

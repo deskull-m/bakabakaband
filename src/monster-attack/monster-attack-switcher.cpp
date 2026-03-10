@@ -73,7 +73,7 @@ static void calc_blow_disenchant(CreatureEntity &creature, MonsterAttackPlayer *
         return;
     }
 
-    if (!has_resist_disen(*player_ptr) && !check_multishadow(*player_ptr) && apply_disenchant(player_ptr, 0)) {
+    if (!has_resist_disen(*player_ptr) && !check_multishadow(*player_ptr) && apply_disenchant(creature, 0)) {
         update_creature(*player_ptr);
         monap_ptr->obvious = true;
     }

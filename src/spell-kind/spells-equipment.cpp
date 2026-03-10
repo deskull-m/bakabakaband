@@ -7,6 +7,7 @@
 #include "object-hook/hook-weapon.h"
 #include "object/object-info.h"
 #include "racial/racial-android.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -20,8 +21,9 @@
  * @return 劣化処理に関するメッセージが発せられた場合はTRUEを返す /
  * Return "TRUE" if the player notices anything
  */
-bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
+bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr static auto candidates = {
         INVEN_MAIN_HAND,
         INVEN_SUB_HAND,
@@ -34,7 +36,7 @@ bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
     };
 
     const auto t = rand_choice(candidates);
-    auto &item = *player_ptr->inventory[t];
+    auto &item = *creature.inventory[t];
     if (!item.is_valid()) {
         return false;
     }
@@ -100,8 +102,8 @@ bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
 #else
     msg_format("Your %s (%c) %s disenchanted!", item_name.data(), index_to_label(t), (item.number != 1) ? "were" : "was");
 #endif
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -2);
+    chg_virtue(creature, Virtue::HARMONY, 1);
+    chg_virtue(creature, Virtue::ENCHANT, -2);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     static constexpr auto flags = {

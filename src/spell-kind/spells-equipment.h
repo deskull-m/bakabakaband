@@ -2,5 +2,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode);
+class CreatureEntity;
+bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode);

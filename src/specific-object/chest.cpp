@@ -263,7 +263,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
             }
 
             if (one_in_(3)) {
-                apply_disenchant(this->player_ptr, 0);
+                apply_disenchant(*this->player_ptr, 0);
                 continue;
             }
 
