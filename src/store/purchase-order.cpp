@@ -44,9 +44,10 @@
  * @return プレイヤーの価格に対して店主が不服ならばTRUEを返す /
  * Return TRUE if purchase is NOT successful
  */
-static tl::optional<PRICE> prompt_to_buy(PlayerType *player_ptr, ItemEntity *o_ptr, StoreSaleType store_num)
+static tl::optional<PRICE> prompt_to_buy(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
 {
-    auto price_ask = price_item(*player_ptr, o_ptr, ot_ptr->inflate, false, store_num);
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto price_ask = price_item(creature, o_ptr, ot_ptr->inflate, false, store_num);
 
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("買値 ${} で買いますか？", "Do you buy for ${}? "), price_ask);
@@ -87,28 +88,29 @@ static tl::optional<short> show_store_select_item(const int i, StoreSaleType sto
  * @param item_inventory 取得先オブジェクト(指定数量分)
  * @param i_idx 取得先インベントリ番号
  */
-static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, ItemEntity &item_inventory, short i_idx)
+static void take_item_from_home(CreatureEntity &creature, ItemEntity &item_home, ItemEntity &item_inventory, short i_idx)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto amt = item_inventory.number;
     distribute_charges(&item_home, &item_inventory, amt);
 
-    const auto item_new = store_item_to_inventory(*player_ptr, &item_inventory);
+    const auto item_new = store_item_to_inventory(creature, &item_inventory);
     const auto item_name = describe_flavor(player_ptr, *player_ptr->inventory[item_new], 0);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     msg_format(_("%s(%c)を取った。", "You have %s (%c)."), item_name.data(), index_to_label(item_new));
 
     const auto stock_num = st_ptr->stock_num;
     st_ptr->increase_item(i_idx, -amt);
     st_ptr->optimize_item(i_idx);
 
-    const auto combined_or_reordered = combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
+    const auto combined_or_reordered = combine_and_reorder_home(creature, StoreSaleType::HOME);
     if (stock_num == st_ptr->stock_num) {
         if (combined_or_reordered) {
-            display_store_inventory(*player_ptr, StoreSaleType::HOME);
+            display_store_inventory(creature, StoreSaleType::HOME);
             return;
         }
 
-        display_entry(*player_ptr, i_idx, StoreSaleType::HOME);
+        display_entry(creature, i_idx, StoreSaleType::HOME);
         return;
     }
 
@@ -118,18 +120,19 @@ static void take_item_from_home(PlayerType *player_ptr, ItemEntity &item_home, I
         store_top -= store_bottom;
     }
 
-    display_store_inventory(*player_ptr, StoreSaleType::HOME);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+    display_store_inventory(creature, StoreSaleType::HOME);
+    chg_virtue(creature, Virtue::SACRIFICE, 1);
 }
 
-static void switch_store_stock(PlayerType *player_ptr, const int i, const COMMAND_CODE item, StoreSaleType store_num)
+static void switch_store_stock(CreatureEntity &creature, const int i, const COMMAND_CODE item, StoreSaleType store_num)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (st_ptr->stock_num == 0) {
         msg_print(_("店主は新たな在庫を取り出した。", "The shopkeeper brings out some new stock."));
         store_maintenance(player_ptr, player_ptr->town_num, store_num, 10);
 
         store_top = 0;
-        display_store_inventory(*player_ptr, store_num);
+        display_store_inventory(creature, store_num);
         return;
     }
 
@@ -138,11 +141,11 @@ static void switch_store_stock(PlayerType *player_ptr, const int i, const COMMAN
             store_top -= store_bottom;
         }
 
-        display_store_inventory(*player_ptr, store_num);
+        display_store_inventory(creature, store_num);
         return;
     }
 
-    display_entry(*player_ptr, item, store_num);
+    display_entry(creature, item, store_num);
 }
 
 /*!
@@ -150,8 +153,9 @@ static void switch_store_stock(PlayerType *player_ptr, const int i, const COMMAN
  * Buy an item from a store 			-RAK-
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
+void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (store_num == StoreSaleType::MUSEUM) {
         msg_print(_("博物館から取り出すことはできません。", "Items cannot be taken out of the Museum."));
         return;
@@ -187,12 +191,12 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
      */
     reduce_charges(&item, item_store.number - amt);
     item.number = amt;
-    if (!check_store_item_to_inventory(*player_ptr, &item)) {
+    if (!check_store_item_to_inventory(creature, &item)) {
         msg_print(_("そんなにアイテムを持てない。", "You cannot carry that many different items."));
         return;
     }
 
-    const auto best = price_item(*player_ptr, &item, ot_ptr->inflate, false, store_num);
+    const auto best = price_item(creature, &item, ot_ptr->inflate, false, store_num);
     if (item_store.number > 1) {
         if (store_num != StoreSaleType::HOME) {
             msg_format(_("一つにつき $%dです。", "That costs %d gold per item."), best);
@@ -218,13 +222,13 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
         return;
     }
 
-    if (!check_store_item_to_inventory(*player_ptr, &item)) {
+    if (!check_store_item_to_inventory(creature, &item)) {
         msg_print(_("ザックにそのアイテムを入れる隙間がない。", "You cannot carry that many items."));
         return;
     }
 
     if (store_num == StoreSaleType::HOME) {
-        take_item_from_home(player_ptr, item_store, item, item_num);
+        take_item_from_home(creature, item_store, item, item_num);
         return;
     }
 
@@ -237,7 +241,7 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
     msg_erase();
 
     const auto &world = AngbandWorld::get_instance();
-    auto res = prompt_to_buy(player_ptr, &item, store_num);
+    auto res = prompt_to_buy(creature, &item, store_num);
     if (st_ptr->store_open >= world.game_turn) {
         return;
     }
@@ -250,12 +254,12 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
         return;
     }
 
-    store_owner_says_comment(*player_ptr, store_num);
+    store_owner_says_comment(creature, store_num);
     if (store_num == StoreSaleType::BLACK) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+        chg_virtue(creature, Virtue::JUSTICE, -1);
     }
     if ((item_store.bi_key.tval() == ItemKindType::BOTTLE) && (store_num != StoreSaleType::HOME)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, -1);
+        chg_virtue(creature, Virtue::NATURE, -1);
     }
 
     sound(SoundKind::BUY);
@@ -281,11 +285,11 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
     item.feeling = FEEL_NONE;
     item.ident &= ~(IDENT_STORE);
 
-    const auto idx = find_autopick_list(*player_ptr, &item);
+    const auto idx = find_autopick_list(creature, &item);
     auto_inscribe_item(&item, idx);
 
-    item_new = store_item_to_inventory(*player_ptr, &item);
-    handle_stuff(*player_ptr);
+    item_new = store_item_to_inventory(creature, &item);
+    handle_stuff(creature);
 
     const auto got_item_name = describe_flavor(player_ptr, *player_ptr->inventory[item_new], 0);
     msg_format(_("%s(%c)を手に入れた。", "You have %s (%c)."), got_item_name.data(), index_to_label(item_new));
@@ -297,5 +301,5 @@ void store_purchase(PlayerType *player_ptr, StoreSaleType store_num)
     i = st_ptr->stock_num;
     st_ptr->increase_item(item_num, -amt);
     st_ptr->optimize_item(item_num);
-    switch_store_stock(player_ptr, i, item_num, store_num);
+    switch_store_stock(creature, i, item_num, store_num);
 }
