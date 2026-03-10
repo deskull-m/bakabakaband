@@ -34,7 +34,7 @@
  * @param monrace_id 基準となるモンスター種族ID
  * @return 変更先のモンスター種族ID
  */
-static MonraceId select_polymorph_monrace_id(PlayerType *player_ptr, MonraceId monrace_id)
+static MonraceId select_polymorph_monrace_id(CreatureEntity &creature, MonraceId monrace_id)
 {
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace = monraces.get_monrace(monrace_id);
@@ -45,7 +45,7 @@ static MonraceId select_polymorph_monrace_id(PlayerType *player_ptr, MonraceId m
     const auto lev1 = monrace.level - ((randint1(20) / randint1(9)) + 1);
     const auto lev2 = monrace.level + ((randint1(20) / randint1(9)) + 1);
     for (auto i = 0; i < 1000; i++) {
-        const auto new_monrace_id = get_mon_num(*player_ptr, 0, (player_ptr->current_floor_ptr->dun_level + monrace.level) / 2 + 5, PM_NONE);
+        const auto new_monrace_id = get_mon_num(creature, 0, (creature.current_floor_ptr->dun_level + monrace.level) / 2 + 5, PM_NONE);
         if (!MonraceList::is_valid(new_monrace_id)) {
             break;
         }
@@ -93,7 +93,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
     }
 
     auto back_m = monster.clone();
-    new_r_idx = select_polymorph_monrace_id(player_ptr, old_r_idx);
+    new_r_idx = select_polymorph_monrace_id(creature, old_r_idx);
     if (new_r_idx == old_r_idx) {
         return false;
     }
@@ -158,7 +158,7 @@ bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x)
  * @param player_ptr プレーヤーへの参照ポインタ
  * @return テレポート処理を決定したか否か
  */
-bool trans_sex(PlayerType *player_ptr)
+bool trans_sex(CreatureEntity &creature)
 {
     screen_save();
     clear_bldg(4, 10);
@@ -167,7 +167,7 @@ bool trans_sex(PlayerType *player_ptr)
     for (i = 0; i < MAX_SEXES; i++) {
         char buf[80];
 
-        if (i == player_ptr->psex) {
+        if (i == creature.psex) {
             continue;
         }
 
@@ -187,13 +187,13 @@ bool trans_sex(PlayerType *player_ptr)
         else if ((i < 'a') || (i > ('a' + MAX_SEXES - 1))) {
             continue;
 
-        } else if (i - 'a' == player_ptr->psex) {
+        } else if (i - 'a' == creature.psex) {
             continue;
         }
         break;
     }
 
-    player_ptr->psex = static_cast<player_sex>(i - 'a');
+    creature.psex = static_cast<player_sex>(i - 'a');
 
     screen_load();
     const auto flags = { StatusRecalculatingFlag::BONUS, StatusRecalculatingFlag::HP, StatusRecalculatingFlag::MP, StatusRecalculatingFlag::SPELLS };
@@ -208,7 +208,7 @@ bool trans_sex(PlayerType *player_ptr)
     const auto flags3 = { SubWindowRedrawingFlag::PLAYER };
     RedrawingFlagsUpdater::get_instance().set_flags(flags3);
 
-    sp_ptr = &sex_info[player_ptr->psex];
-    handle_stuff(*player_ptr);
+    sp_ptr = &sex_info[creature.psex];
+    handle_stuff(creature);
     return true;
 }
