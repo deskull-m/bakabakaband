@@ -164,7 +164,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
 
         prt(_("コマンド:", "You may: "), 20 + xtra_stock, 0);
         InputKeyRequestor(*player_ptr, true).request_command();
-        store_process_command(player_ptr, store_num);
+        store_process_command(*player_ptr, store_num);
 
         const auto should_redraw_store_inventory = rfu.has(StatusRecalculatingFlag::BONUS);
         world.character_icky_depth = 1;
