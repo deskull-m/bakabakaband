@@ -638,16 +638,16 @@ void process_monster_lore(PlayerType *player_ptr, MonraceId r_idx, monster_lore_
     }
 
     display_monster_sometimes(lore_ptr);
-    set_breath_types(player_ptr, lore_ptr);
+    set_breath_types(*player_ptr, lore_ptr);
     display_monster_breath(lore_ptr);
 
     lore_ptr->lore_msgs.clear();
-    set_ball_types(player_ptr, lore_ptr);
-    set_particular_types(player_ptr, lore_ptr);
-    set_bolt_types(player_ptr, lore_ptr);
+    set_ball_types(*player_ptr, lore_ptr);
+    set_particular_types(*player_ptr, lore_ptr);
+    set_bolt_types(*player_ptr, lore_ptr);
     set_status_types(lore_ptr);
     set_teleport_types(lore_ptr);
-    set_floor_types(player_ptr, lore_ptr);
+    set_floor_types(*player_ptr, lore_ptr);
     set_summon_types(lore_ptr);
     display_monster_magic_types(lore_ptr);
     display_mosnter_magic_possibility(lore_ptr);
