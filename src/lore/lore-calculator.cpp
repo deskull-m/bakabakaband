@@ -3,8 +3,8 @@
 #include "lore/lore-util.h"
 #include "monster-race/race-ability-flags.h"
 #include "mspell/mspell-damage-calculator.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/string-processor.h"
 #include <sstream>
 
@@ -52,7 +52,7 @@ std::string dice_to_string(int base_damage, int dice_num, int dice_side, int dic
  * @param msg スキルを表す文字列
  * @param color 表示する文字色
  */
-void add_lore_of_damage_skill(PlayerType *player_ptr, lore_type *lore_ptr, MonsterAbilityType ms_type, concptr msg, byte color)
+void add_lore_of_damage_skill(CreatureEntity &creature, lore_type *lore_ptr, MonsterAbilityType ms_type, concptr msg, byte color)
 {
     if (!lore_ptr->is_details_known() && !lore_ptr->know_everything) {
         // ダメージ量の情報なし
@@ -61,11 +61,11 @@ void add_lore_of_damage_skill(PlayerType *player_ptr, lore_type *lore_ptr, Monst
     }
 
     const auto monrace_id = lore_ptr->monrace_id;
-    const auto base_damage = monspell_race_damage(*player_ptr, ms_type, monrace_id, BASE_DAM);
-    const auto dice_num = monspell_race_damage(*player_ptr, ms_type, monrace_id, DICE_NUM);
-    const auto dice_side = monspell_race_damage(*player_ptr, ms_type, monrace_id, DICE_SIDE);
-    const auto dice_mult = monspell_race_damage(*player_ptr, ms_type, monrace_id, DICE_MULT);
-    const auto dice_div = monspell_race_damage(*player_ptr, ms_type, monrace_id, DICE_DIV);
+    const auto base_damage = monspell_race_damage(creature, ms_type, monrace_id, BASE_DAM);
+    const auto dice_num = monspell_race_damage(creature, ms_type, monrace_id, DICE_NUM);
+    const auto dice_side = monspell_race_damage(creature, ms_type, monrace_id, DICE_SIDE);
+    const auto dice_mult = monspell_race_damage(creature, ms_type, monrace_id, DICE_MULT);
+    const auto dice_div = monspell_race_damage(creature, ms_type, monrace_id, DICE_DIV);
     std::stringstream dam_info;
     dam_info << '(' << dice_to_string(base_damage, dice_num, dice_side, dice_mult, dice_div) << ')';
     lore_ptr->lore_msgs.emplace_back(format(msg, dam_info.str().data()), color);
