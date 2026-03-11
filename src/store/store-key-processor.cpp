@@ -116,7 +116,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case 'd': {
-        store_sell(player_ptr, store_num);
+        store_sell(*player_ptr, store_num);
         break;
     }
     case 'x': {
