@@ -49,8 +49,9 @@
  * (cast magic) into "g" (get), and "s" (search) into "d" (drop).
  * </pre>
  */
-void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified_store)
+void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specified_store)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -107,7 +108,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     }
 
     if (maintain_num > 0) {
-        store_maintenance(*player_ptr, player_ptr->town_num, store_num, maintain_num);
+        store_maintenance(creature, player_ptr->town_num, store_num, maintain_num);
         store.last_visit = world.game_turn;
     }
 
@@ -129,7 +130,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     player_ptr->plus_incident_tree("STORE/ENTER/" + store_tag, 1);
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
-    display_store(*player_ptr, store_num);
+    display_store(creature, store_num);
     leave_store = false;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     while (!leave_store) {
@@ -164,11 +165,11 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
 
         prt(_("コマンド:", "You may: "), 20 + xtra_stock, 0);
         InputKeyRequestor(*player_ptr, true).request_command();
-        store_process_command(*player_ptr, store_num);
+        store_process_command(creature, store_num);
 
         const auto should_redraw_store_inventory = rfu.has(StatusRecalculatingFlag::BONUS);
         world.character_icky_depth = 1;
-        handle_stuff(*player_ptr);
+        handle_stuff(creature);
         if (player_ptr->inventory[INVEN_PACK]->bi_id) {
             INVENTORY_IDX i_idx = INVEN_PACK;
             const auto &item_inventory = *player_ptr->inventory[i_idx];
@@ -188,18 +189,18 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
                 auto item = item_inventory.clone();
                 const auto item_name = describe_flavor(player_ptr, item, 0);
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
-                vary_item(*player_ptr, i_idx, -255);
-                handle_stuff(*player_ptr);
-                const auto item_pos = home_carry(*player_ptr, &item, store_num);
+                vary_item(creature, i_idx, -255);
+                handle_stuff(creature);
+                const auto item_pos = home_carry(creature, &item, store_num);
                 if (item_pos >= 0) {
                     store_top = (item_pos / store_bottom) * store_bottom;
-                    display_store_inventory(*player_ptr, store_num);
+                    display_store_inventory(creature, store_num);
                 }
             }
         }
 
         if (should_redraw_store_inventory) {
-            display_store_inventory(*player_ptr, store_num);
+            display_store_inventory(creature, store_num);
         }
 
         if (st_ptr->store_open >= world.game_turn) {

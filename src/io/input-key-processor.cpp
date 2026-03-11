@@ -314,7 +314,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case SPECIAL_KEY_STORE: {
-        do_cmd_store(player_ptr);
+        do_cmd_store(*player_ptr);
         break;
     }
     case SPECIAL_KEY_BUILDING: {
