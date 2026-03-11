@@ -1207,9 +1207,8 @@ void display_monster_collective(lore_type *lore_ptr)
  */
 void display_monster_launching(CreatureEntity &creature, lore_type *lore_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (lore_ptr->ability_flags.has(MonsterAbilityType::ROCKET)) {
-        add_lore_of_damage_skill(player_ptr, lore_ptr, MonsterAbilityType::ROCKET, _("ロケット%sを発射する", "shoot a rocket%s"), TERM_UMBER);
+        add_lore_of_damage_skill(creature, lore_ptr, MonsterAbilityType::ROCKET, _("ロケット%sを発射する", "shoot a rocket%s"), TERM_UMBER);
         lore_ptr->rocket = true;
     }
 
