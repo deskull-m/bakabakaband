@@ -15,7 +15,6 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "view/display-lore-attacks.h"
 #include "view/display-lore-drops.h"
@@ -581,7 +580,7 @@ static void set_race_flags(lore_type *lore_ptr)
  * left edge of the screen, on a cleared line, in which the recall is
  * to take place.  One extra blank line is left after the recall.
  */
-void process_monster_lore(PlayerType *player_ptr, MonraceId r_idx, monster_lore_mode mode)
+void process_monster_lore(CreatureEntity &creature, MonraceId r_idx, monster_lore_mode mode)
 {
     lore_type tmp_lore(r_idx, mode);
     lore_type *lore_ptr = &tmp_lore;
@@ -616,7 +615,7 @@ void process_monster_lore(PlayerType *player_ptr, MonraceId r_idx, monster_lore_
         lore_ptr->old = false;
     }
 
-    display_lore_this(*player_ptr, lore_ptr);
+    display_lore_this(creature, lore_ptr);
     if (lore_ptr->special_flags.has(MonsterSpecialType::DIMINISH_MAX_DAMAGE)) {
         hooked_roff(format(_("%s^は", "%s^ "), Who::who(lore_ptr->msex).data()));
         hook_c_roff(TERM_RED, _("致命的な威力の攻撃に対して大きな耐性を持っている。", "has the strong resistance for a critical damage.  "));
@@ -632,22 +631,22 @@ void process_monster_lore(PlayerType *player_ptr, MonraceId r_idx, monster_lore_
         lore_ptr->lore_msgs.emplace_back(_("悲鳴で助けを求める", "shriek for help"), TERM_L_WHITE);
     }
 
-    display_monster_launching(*player_ptr, lore_ptr);
+    display_monster_launching(creature, lore_ptr);
     if (lore_ptr->ability_flags.has(MonsterAbilityType::SPECIAL)) {
         lore_ptr->lore_msgs.emplace_back(_("特別な行動をする", "do something"), TERM_VIOLET);
     }
 
     display_monster_sometimes(lore_ptr);
-    set_breath_types(*player_ptr, lore_ptr);
+    set_breath_types(creature, lore_ptr);
     display_monster_breath(lore_ptr);
 
     lore_ptr->lore_msgs.clear();
-    set_ball_types(*player_ptr, lore_ptr);
-    set_particular_types(*player_ptr, lore_ptr);
-    set_bolt_types(*player_ptr, lore_ptr);
+    set_ball_types(creature, lore_ptr);
+    set_particular_types(creature, lore_ptr);
+    set_bolt_types(creature, lore_ptr);
     set_status_types(lore_ptr);
     set_teleport_types(lore_ptr);
-    set_floor_types(*player_ptr, lore_ptr);
+    set_floor_types(creature, lore_ptr);
     set_summon_types(lore_ptr);
     display_monster_magic_types(lore_ptr);
     display_mosnter_magic_possibility(lore_ptr);

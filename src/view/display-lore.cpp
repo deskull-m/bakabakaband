@@ -80,8 +80,7 @@ void screen_roff(CreatureEntity &creature, MonraceId r_idx, monster_lore_mode mo
     msg_erase();
     term_erase(0, 1);
     hook_c_roff = c_roff;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    process_monster_lore(player_ptr, r_idx, mode);
+    process_monster_lore(creature, r_idx, mode);
     roff_top(r_idx);
 }
 
@@ -104,8 +103,7 @@ void display_roff(CreatureEntity &creature)
     }
 
     const auto monrace_id = tracker.get_trackee();
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    process_monster_lore(player_ptr, monrace_id, MONSTER_LORE_NORMAL);
+    process_monster_lore(creature, monrace_id, MONSTER_LORE_NORMAL);
     roff_top(monrace_id);
 }
 
@@ -123,7 +121,7 @@ void output_monster_spoiler(MonraceId r_idx, hook_c_roff_pf roff_func)
 
     dummy.level = 1;
     dummy.max_plv = 1;
-    process_monster_lore(&dummy, r_idx, MONSTER_LORE_DEBUG);
+    process_monster_lore(dummy, r_idx, MONSTER_LORE_DEBUG);
 }
 
 static void display_killed(lore_type *lore_ptr)
