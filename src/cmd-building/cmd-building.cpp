@@ -304,51 +304,51 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         return false;
 
     case BACT_SHOP_GENERAL:
-        do_cmd_store(player_ptr, StoreSaleType::GENERAL);
+        do_cmd_store(*player_ptr, StoreSaleType::GENERAL);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_ARMOURY:
-        do_cmd_store(player_ptr, StoreSaleType::ARMOURY);
+        do_cmd_store(*player_ptr, StoreSaleType::ARMOURY);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_WEAPON:
-        do_cmd_store(player_ptr, StoreSaleType::WEAPON);
+        do_cmd_store(*player_ptr, StoreSaleType::WEAPON);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_TEMPLE:
-        do_cmd_store(player_ptr, StoreSaleType::TEMPLE);
+        do_cmd_store(*player_ptr, StoreSaleType::TEMPLE);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_ALCHEMIST:
-        do_cmd_store(player_ptr, StoreSaleType::ALCHEMIST);
+        do_cmd_store(*player_ptr, StoreSaleType::ALCHEMIST);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_MAGIC:
-        do_cmd_store(player_ptr, StoreSaleType::MAGIC);
+        do_cmd_store(*player_ptr, StoreSaleType::MAGIC);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_BLACK:
-        do_cmd_store(player_ptr, StoreSaleType::BLACK);
+        do_cmd_store(*player_ptr, StoreSaleType::BLACK);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_HOME:
-        do_cmd_store(player_ptr, StoreSaleType::HOME);
+        do_cmd_store(*player_ptr, StoreSaleType::HOME);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_BOOK:
-        do_cmd_store(player_ptr, StoreSaleType::BOOK);
+        do_cmd_store(*player_ptr, StoreSaleType::BOOK);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_MUSEUM:
-        do_cmd_store(player_ptr, StoreSaleType::MUSEUM);
+        do_cmd_store(*player_ptr, StoreSaleType::MUSEUM);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_MELINLAITO_POTION:
-        do_cmd_store(player_ptr, StoreSaleType::MELINLAITO);
+        do_cmd_store(*player_ptr, StoreSaleType::MELINLAITO);
         world.character_icky_depth = 1;
         return false;
     case BACT_SHOP_HUNAHYANDA_WEAPON:
-        do_cmd_store(player_ptr, StoreSaleType::HUNAHYANDA);
+        do_cmd_store(*player_ptr, StoreSaleType::HUNAHYANDA);
         world.character_icky_depth = 1;
         return false;
     default:
