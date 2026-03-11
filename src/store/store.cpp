@@ -221,8 +221,9 @@ tl::optional<short> input_stock(std::string_view fmt, int min, int max, [[maybe_
  * @brief 店のアイテムを調べるコマンドのメインルーチン /
  * Examine an item in a store			   -JDL-
  */
-void store_examine(PlayerType *player_ptr, StoreSaleType store_num)
+void store_examine(CreatureEntity &creature, StoreSaleType store_num)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (st_ptr->stock_num <= 0) {
         if (store_num == StoreSaleType::HOME) {
             msg_print(_("我が家には何も置いてありません。", "Your home is empty."));
@@ -273,8 +274,9 @@ void store_examine(PlayerType *player_ptr, StoreSaleType store_num)
  * Should we check for "permission" to have the given item?
  * </pre>
  */
-static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType store_num)
+static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleType store_num)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (st_ptr->stock_num >= st_ptr->stock_size) {
         return;
     }
@@ -356,8 +358,9 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
  * @param store_num 店舗種類のID
  * @param chance 更新商品数
  */
-void store_maintenance(PlayerType *player_ptr, int town_num, StoreSaleType store_num, int chance)
+void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType store_num, int chance)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
         return;
     }
@@ -422,14 +425,14 @@ void store_maintenance(PlayerType *player_ptr, int town_num, StoreSaleType store
     }
 
     for (size_t k = 0; k < st_ptr->regular.size(); k++) {
-        store_create(player_ptr, st_ptr->regular[k], store_num);
+        store_create(creature, st_ptr->regular[k], store_num);
         if (st_ptr->stock_num >= store_max_keep) {
             break;
         }
     }
 
     while (st_ptr->stock_num < j) {
-        store_create(player_ptr, 0, store_num);
+        store_create(creature, 0, store_num);
     }
 }
 

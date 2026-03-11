@@ -107,7 +107,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     }
 
     if (maintain_num > 0) {
-        store_maintenance(player_ptr, player_ptr->town_num, store_num, maintain_num);
+        store_maintenance(*player_ptr, player_ptr->town_num, store_num, maintain_num);
         store.last_visit = world.game_turn;
     }
 
