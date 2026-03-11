@@ -121,7 +121,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case 'x': {
-        store_examine(player_ptr, store_num);
+        store_examine(creature, store_num);
         break;
     }
     case '\r': {
