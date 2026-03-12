@@ -33,8 +33,8 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monster-entity.h"
-#include "system/terrain/terrain-definition.h"
 #include "system/player-type-definition.h"
+#include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "view/display-messages.h"
 
