@@ -1896,7 +1896,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
 
         init_music();
         if (game_in_progress) {
-            select_floor_music(player_ptr);
+            select_floor_music(*player_ptr);
         }
 
         break;

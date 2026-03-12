@@ -211,7 +211,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     // 現在地の偽装を解除。
     player_ptr->town_num = old_town_num;
 
-    select_floor_music(player_ptr);
+    select_floor_music(*player_ptr);
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
     world.character_icky_depth = 0;
     command_new = 0;
