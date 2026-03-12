@@ -150,7 +150,7 @@ void do_cmd_go_up(CreatureEntity &creature)
     PlayerEnergy(&player).set_player_turn_energy(100);
 
     if (autosave_l) {
-        do_cmd_save_game(&player, true);
+        do_cmd_save_game(player, true);
     }
 
     const auto quest_number = floor.quest_number;
@@ -314,7 +314,7 @@ void do_cmd_go_down(CreatureEntity &creature)
 
     PlayerEnergy(&player).set_player_turn_energy(100);
     if (autosave_l) {
-        do_cmd_save_game(&player, true);
+        do_cmd_save_game(player, true);
     }
 
     auto down_num = 0;
@@ -625,7 +625,7 @@ void do_cmd_go_portal(CreatureEntity &creature)
 
     // オートセーブ
     if (autosave_l) {
-        do_cmd_save_game(&player, true);
+        do_cmd_save_game(player, true);
     }
 
     // 階層移動処理

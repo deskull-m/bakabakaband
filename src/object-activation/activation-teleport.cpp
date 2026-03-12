@@ -51,7 +51,7 @@ bool activate_escape(CreatureEntity &creature)
         }
 
         if (autosave_l) {
-            do_cmd_save_game(&player, true);
+            do_cmd_save_game(player, true);
         }
 
         player.leaving = true;

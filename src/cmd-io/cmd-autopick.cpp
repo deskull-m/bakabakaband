@@ -144,7 +144,7 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
     }
 
     if (world.game_turn > old_autosave_turn + 100L) {
-        do_cmd_save_game(player_ptr, true);
+        do_cmd_save_game(*player_ptr, true);
         old_autosave_turn = world.game_turn;
     }
 

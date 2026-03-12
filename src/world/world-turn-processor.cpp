@@ -252,7 +252,7 @@ void WorldTurnProcessor::decide_auto_save()
     should_save &= !AngbandSystem::get_instance().is_phase_out();
     should_save &= AngbandWorld::get_instance().game_turn % ((int32_t)autosave_freq * TURNS_PER_TICK) == 0;
     if (should_save) {
-        do_cmd_save_game(this->player_ptr, true);
+        do_cmd_save_game(*this->player_ptr, true);
     }
 }
 

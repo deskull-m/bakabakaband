@@ -330,7 +330,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
 
         /* Still alive and autosave enabled */
         if (autosave_l && (player_ptr->hp >= 0)) {
-            do_cmd_save_game(player_ptr, true);
+            do_cmd_save_game(*player_ptr, true);
         }
 
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("落とし戸に落ちた", "fell through a trap door!"));
