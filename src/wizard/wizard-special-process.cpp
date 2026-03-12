@@ -499,7 +499,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
 
     msg_format("You jump to dungeon level %d.", *level);
     if (autosave_l) {
-        do_cmd_save_game(player_ptr, true);
+        do_cmd_save_game(*player_ptr, true);
     }
 
     jump_floor(player_ptr, *dungeon_id, *level);

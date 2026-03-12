@@ -657,7 +657,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('S'): {
-        do_cmd_save_game(player_ptr, false);
+        do_cmd_save_game(*player_ptr, false);
         break;
     }
     case KTRL('T'): {
@@ -666,7 +666,7 @@ void process_command(CreatureEntity &creature)
     }
     case KTRL('X'):
     case SPECIAL_KEY_QUIT: {
-        do_cmd_save_and_exit(player_ptr);
+        do_cmd_save_and_exit(*player_ptr);
         break;
     }
     case 'Q': {

@@ -124,7 +124,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             if (autosave_l) {
-                do_cmd_save_game(player_ptr, true);
+                do_cmd_save_game(*player_ptr, true);
             }
 
             fcms->set(FloorChangeMode::RANDOM_PLACE);
@@ -152,7 +152,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             if (autosave_l) {
-                do_cmd_save_game(player_ptr, true);
+                do_cmd_save_game(*player_ptr, true);
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
@@ -177,7 +177,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             if (autosave_l) {
-                do_cmd_save_game(player_ptr, true);
+                do_cmd_save_game(*player_ptr, true);
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
@@ -199,7 +199,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
                 exe_write_diary(floor, DiaryKind::TELEPORT_LEVEL, 1);
             }
             if (autosave_l) {
-                do_cmd_save_game(player_ptr, true);
+                do_cmd_save_game(*player_ptr, true);
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });

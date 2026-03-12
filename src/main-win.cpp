@@ -1629,7 +1629,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
             }
 
             msg_flag = false;
-            do_cmd_save_game(player_ptr, false);
+            do_cmd_save_game(*player_ptr, false);
         } else {
             plog(_("今、セーブすることは出来ません。", "You may not do that right now."));
         }

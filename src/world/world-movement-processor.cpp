@@ -70,7 +70,7 @@ void execute_recall(CreatureEntity &creature)
     }
 
     if (autosave_l && (player.word_recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(&player, true);
+        do_cmd_save_game(player, true);
     }
 
     player.word_recall--;
@@ -155,7 +155,7 @@ void execute_floor_reset(CreatureEntity &creature)
     }
 
     if (autosave_l && (player.alter_reality == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(&player, true);
+        do_cmd_save_game(player, true);
     }
 
     player.alter_reality--;
