@@ -251,7 +251,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case '|': {
-        do_cmd_diary(player_ptr);
+        do_cmd_diary(*player_ptr);
         break;
     }
     case '~': {
