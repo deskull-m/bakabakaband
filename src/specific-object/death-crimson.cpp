@@ -5,8 +5,8 @@
 #include "effect/effect-processor.h"
 #include "floor/geometry.h"
 #include "player-base/player-class.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
@@ -19,44 +19,44 @@
  * Need to analyze size of the window.
  * Need more color coding.
  */
-static bool fire_crimson(PlayerType *player_ptr)
+static bool fire_crimson(CreatureEntity &creature)
 {
-    const auto dir = get_aim_dir(*player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
-    const auto [ty, tx] = dir.get_target_position(player_ptr->get_position(), 99);
+    const auto [ty, tx] = dir.get_target_position(creature.get_position(), 99);
 
     int num = 1;
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::ARCHER)) {
-        if (player_ptr->level >= 10) {
+    if (CreatureClass(creature).equals(PlayerClassType::ARCHER)) {
+        if (creature.level >= 10) {
             num++;
         }
 
-        if (player_ptr->level >= 30) {
+        if (creature.level >= 30) {
             num++;
         }
 
-        if (player_ptr->level >= 45) {
+        if (creature.level >= 45) {
             num++;
         }
     }
 
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
     for (int i = 0; i < num; i++) {
-        (void)project(*player_ptr, 0, player_ptr->level / 20 + 1, ty, tx, player_ptr->level * player_ptr->level * 6 / 50, AttributeType::ROCKET, flg);
+        (void)project(creature, 0, creature.level / 20 + 1, ty, tx, creature.level * creature.level * 6 / 50, AttributeType::ROCKET, flg);
     }
 
     return true;
 }
 
-bool activate_crimson(PlayerType *player_ptr, ItemEntity *o_ptr)
+bool activate_crimson(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     if (!o_ptr->is_specific_artifact(FixedArtifactId::CRIMSON)) {
         return false;
     }
 
     msg_print(_("せっかくだから『クリムゾン』をぶっぱなすぜ！", "I'll fire CRIMSON! SEKKAKUDAKARA!"));
-    return fire_crimson(player_ptr);
+    return fire_crimson(creature);
 }

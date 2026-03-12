@@ -376,7 +376,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BLOODY_MOON:
         return activate_bloody_moon(*player_ptr, o_ptr);
     case RandomArtActType::CRIMSON:
-        return activate_crimson(player_ptr, o_ptr);
+        return activate_crimson(*player_ptr, o_ptr);
     case RandomArtActType::HERO_BLESS:
         (void)set_hero(*player_ptr, randint1(25) + 25, false);
         (void)set_blessed(*player_ptr, randint1(25) + 25, true);
