@@ -182,7 +182,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case '?': {
-        do_cmd_help(player_ptr);
+        do_cmd_help(*player_ptr);
         break;
     }
     case '/': {

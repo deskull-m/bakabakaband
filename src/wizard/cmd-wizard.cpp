@@ -304,7 +304,7 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         exe_output_spoilers();
         return true;
     case '?':
-        do_cmd_help(static_cast<PlayerType *>(&creature));
+        do_cmd_help(creature);
         return true;
     default:
         msg_print("That is not a valid debug command.");
