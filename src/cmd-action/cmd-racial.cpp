@@ -480,7 +480,7 @@ void do_cmd_racial_power(CreatureEntity &creature)
     auto tmp_r = rc_type(creature);
     auto *rc_ptr = &tmp_r;
 
-    switch_class_racial(player_ptr, rc_ptr);
+    switch_class_racial(creature, rc_ptr);
 
     if (creature.mimic_form != MimicKindType::NONE) {
         set_mimic_racial_command(creature, rc_ptr);
