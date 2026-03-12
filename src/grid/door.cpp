@@ -8,13 +8,12 @@
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 
 /*!
  * @brief ドアを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 配置先座標
  * @details ドアの配置は、座標が外壁であることを前提としている
  *
@@ -51,13 +50,12 @@ void add_door(CreatureEntity &creature, const Pos2D &pos)
 
 /*!
  * @brief 隠しドアを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 配置先座標
  * @param door_kind ドア種別
  */
 void place_secret_door(CreatureEntity &creature, const Pos2D &pos, tl::optional<DoorKind> door_kind_initial)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (dungeon.flags.has(DungeonFeatureType::NO_DOORS)) {
@@ -74,17 +72,13 @@ void place_secret_door(CreatureEntity &creature, const Pos2D &pos, tl::optional<
     }
 
     grid.info &= ~(CAVE_FLOOR);
-    delete_monster(player, pos);
+    delete_monster(creature, pos);
 }
-
-/*!
- * @brief 鍵のかかったドアを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 配置先座標
  */
 void place_locked_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     if (dungeon.flags.has(DungeonFeatureType::NO_DOORS)) {
@@ -95,18 +89,14 @@ void place_locked_door(CreatureEntity &creature, const Pos2D &pos)
     const auto door_kind = dungeon.flags.has(DungeonFeatureType::GLASS_DOOR) ? DoorKind::GLASS_DOOR : DoorKind::DOOR;
     floor.set_terrain_id_at(pos, Doors::get_instance().select_locked_tag(door_kind));
     floor.get_grid(pos).info &= ~(CAVE_FLOOR);
-    delete_monster(player, pos);
+    delete_monster(creature, pos);
 }
-
-/*!
- * @brief 所定の位置にさまざまな状態や種類のドアを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 配置先座標
  * @param room 部屋に接している場合向けのドア生成か否か
  */
 void place_random_door(CreatureEntity &creature, const Pos2D &pos, bool is_room_door)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     auto &floor = *creature.current_floor_ptr;
     auto &grid = floor.get_grid(pos);
     grid.set_terrain_id(TerrainTag::NONE, TerrainKind::MIMIC);
@@ -138,7 +128,7 @@ void place_random_door(CreatureEntity &creature, const Pos2D &pos, bool is_room_
     }
 
     if (tmp >= 400) {
-        delete_monster(player, pos);
+        delete_monster(creature, pos);
         return;
     }
 
@@ -148,12 +138,12 @@ void place_random_door(CreatureEntity &creature, const Pos2D &pos, bool is_room_
         floor.set_terrain_id_at(pos, tag);
     }
 
-    delete_monster(player, pos);
+    delete_monster(creature, pos);
 }
 
 /*!
  * @brief 所定の位置に各種の閉じたドアを配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 配置先座標
  * @param door_kind ドア種別
  */
