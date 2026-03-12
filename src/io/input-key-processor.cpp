@@ -674,7 +674,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case '|': {
-        do_cmd_diary(player_ptr);
+        do_cmd_diary(*player_ptr);
         break;
     }
     case '~': {
