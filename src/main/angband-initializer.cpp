@@ -124,11 +124,11 @@ static void put_title()
 
 /*!
  * @brief 全ゲームデータ読み込みのメインルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param no_term TRUEならゲーム画面無しの状態で初期化を行う。
  *                コマンドラインからスポイラーの出力のみを行う時の使用を想定する。
  */
-void init_angband(PlayerType *player_ptr, bool no_term)
+void init_angband(CreatureEntity &creature, bool no_term)
 {
     const auto path_news = path_build(ANGBAND_DIR_FILE, _("news_j.txt", "news.txt"));
     auto fd = fd_open(path_news, O_RDONLY);
@@ -240,7 +240,7 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     init_vaults_info();
 
     init_note(_("[データの初期化中... (その他)]", "[Initializing arrays... (other)]"));
-    init_other(*player_ptr);
+    init_other(creature);
 
     init_note(_("[データの初期化中... (モンスターアロケーション)]", "[Initializing arrays... (monsters alloc)]"));
     init_monsters_alloc();
@@ -249,8 +249,8 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     init_items_alloc();
 
     init_note(_("[ユーザー設定ファイルを初期化しています...]", "[Initializing user pref files...]"));
-    process_pref_file(*player_ptr, "pref.prf");
-    process_pref_file(*player_ptr, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
+    process_pref_file(creature, "pref.prf");
+    process_pref_file(creature, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
 
     init_note(_("[初期化終了]", "[Initialization complete]"));
 
