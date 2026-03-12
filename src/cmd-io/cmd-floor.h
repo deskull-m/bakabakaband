@@ -1,6 +1,6 @@
 #pragma once
 
-class PlayerType;
-void do_cmd_target(PlayerType *player_ptr);
-void do_cmd_look(PlayerType *player_ptr);
-void do_cmd_locate(PlayerType *player_ptr);
+class CreatureEntity;
+void do_cmd_target(CreatureEntity &creature);
+void do_cmd_look(CreatureEntity &creature);
+void do_cmd_locate(CreatureEntity &creature);
