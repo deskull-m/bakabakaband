@@ -186,7 +186,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case '/': {
-        do_cmd_query_symbol(player_ptr);
+        do_cmd_query_symbol(*player_ptr);
         break;
     }
     case 'C': {
