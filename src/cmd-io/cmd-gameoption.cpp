@@ -554,8 +554,7 @@ void do_cmd_options(CreatureEntity &creature)
         }
         case 'P':
         case 'p': {
-            auto *player_ptr = static_cast<PlayerType *>(&creature);
-            do_cmd_edit_autopick(player_ptr);
+            do_cmd_edit_autopick(creature);
             break;
         }
         case 'D':
