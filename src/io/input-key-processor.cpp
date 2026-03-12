@@ -569,15 +569,15 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'L': {
-        do_cmd_locate(player_ptr);
+        do_cmd_locate(*player_ptr);
         break;
     }
     case 'l': {
-        do_cmd_look(player_ptr);
+        do_cmd_look(*player_ptr);
         break;
     }
     case '*': {
-        do_cmd_target(player_ptr);
+        do_cmd_target(*player_ptr);
         break;
     }
     case '?': {
