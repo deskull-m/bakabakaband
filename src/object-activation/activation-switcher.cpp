@@ -372,7 +372,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         mitokohmon(*player_ptr);
         return true;
     case RandomArtActType::MURAMASA:
-        return activate_muramasa(player_ptr, o_ptr);
+        return activate_muramasa(*player_ptr, o_ptr);
     case RandomArtActType::BLOODY_MOON:
         return activate_bloody_moon(*player_ptr, o_ptr);
     case RandomArtActType::CRIMSON:

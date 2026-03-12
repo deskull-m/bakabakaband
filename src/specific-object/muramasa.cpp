@@ -3,11 +3,11 @@
 #include "core/asking-player.h"
 #include "spell/spells-object.h"
 #include "status/base-status.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
-bool activate_muramasa(PlayerType *player_ptr, ItemEntity *o_ptr)
+bool activate_muramasa(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     if (!o_ptr->is_specific_artifact(FixedArtifactId::MURAMASA)) {
         return false;
@@ -18,7 +18,7 @@ bool activate_muramasa(PlayerType *player_ptr, ItemEntity *o_ptr)
     }
 
     msg_print(_("村正が震えた．．．", "The Muramasa pulsates..."));
-    do_inc_stat(*player_ptr, A_STR);
+    do_inc_stat(creature, A_STR);
 
     return true;
 }
