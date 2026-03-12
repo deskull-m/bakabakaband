@@ -71,7 +71,7 @@ static void display_help_on_sex_select(CreatureEntity &creature, char c)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (c == '?') {
-        do_cmd_help(player_ptr);
+        do_cmd_help(*player_ptr);
     } else if (c == '=') {
         screen_save();
         do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
