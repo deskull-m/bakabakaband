@@ -74,6 +74,9 @@ void place_secret_door(CreatureEntity &creature, const Pos2D &pos, tl::optional<
     grid.info &= ~(CAVE_FLOOR);
     delete_monster(creature, pos);
 }
+
+/*!
+ * @brief 鍵のかかったドアを配置する
  * @param creature クリーチャーへの参照
  * @param pos 配置先座標
  */
@@ -91,6 +94,9 @@ void place_locked_door(CreatureEntity &creature, const Pos2D &pos)
     floor.get_grid(pos).info &= ~(CAVE_FLOOR);
     delete_monster(creature, pos);
 }
+
+/*!
+ * @brief 所定の位置にさまざまな状態や種類のドアを配置する
  * @param creature クリーチャーへの参照
  * @param pos 配置先座標
  * @param room 部屋に接している場合向けのドア生成か否か
