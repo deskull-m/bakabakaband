@@ -608,7 +608,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case '@': {
-        do_cmd_macros(player_ptr);
+        do_cmd_macros(*player_ptr);
         break;
     }
     case '%': {

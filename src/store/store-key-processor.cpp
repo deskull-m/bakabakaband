@@ -207,7 +207,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
     }
     case '@': {
         player_ptr->town_num = old_town_num;
-        do_cmd_macros(player_ptr);
+        do_cmd_macros(*player_ptr);
         player_ptr->town_num = inner_town_num;
         break;
     }
