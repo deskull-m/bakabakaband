@@ -515,7 +515,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         death_save(&player);
         flush();
         if (input_check_strict(&player, _("画面を保存しますか？", "Dump the screen? "), UserCheck::NO_HISTORY)) {
-            do_cmd_save_screen(&player);
+            do_cmd_save_screen(player);
         }
 
         flush();

@@ -686,7 +686,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case ')': {
-        do_cmd_save_screen(player_ptr);
+        do_cmd_save_screen(*player_ptr);
         break;
     }
     case ']': {
