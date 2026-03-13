@@ -159,7 +159,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     auto no_feeling_quest = (quest_id == QuestId::MELKO);
     no_feeling_quest |= none_bits(quests.get_quest(quest_id).flags, QUEST_FLAG_PRESET);
     if (inside_quest(quest_id) && QuestType::is_fixed(quest_id) && !no_feeling_quest) {
-        do_cmd_feeling(player_ptr);
+        do_cmd_feeling(*player_ptr);
     }
 
     const auto is_watching = AngbandSystem::get_instance().is_phase_out();

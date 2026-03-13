@@ -201,7 +201,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     case '"': {
         player_ptr->town_num = old_town_num;
-        do_cmd_pref(player_ptr);
+        do_cmd_pref(*player_ptr);
         player_ptr->town_num = inner_town_num;
         break;
     }
@@ -219,7 +219,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
     }
     case '&': {
         player_ptr->town_num = old_town_num;
-        do_cmd_colors(player_ptr);
+        do_cmd_colors(*player_ptr);
         player_ptr->town_num = inner_town_num;
         break;
     }
@@ -239,7 +239,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case KTRL('F'): {
-        do_cmd_feeling(player_ptr);
+        do_cmd_feeling(*player_ptr);
         break;
     }
     case KTRL('O'): {
