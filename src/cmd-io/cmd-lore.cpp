@@ -5,9 +5,9 @@
 #include "game-option/game-play-options.h"
 #include "io/input-key-acceptor.h"
 #include "lore/lore-util.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -88,7 +88,7 @@ std::pair<std::string, std::vector<MonraceId>> collect_monraces(char symbol)
  * Note that the player ghosts are ignored.
  * </pre>
  */
-void do_cmd_query_symbol(PlayerType *player_ptr)
+void do_cmd_query_symbol(CreatureEntity &creature)
 {
     constexpr auto prompt = _("知りたい文字を入力して下さい(記号 or ^A全,^Uユ,^N非ユ,^R乗馬,^M名前): ",
         "Enter character to be identified(^A:All,^U:Uniqs,^N:Non uniqs,^M:Name): ");
@@ -126,11 +126,11 @@ void do_cmd_query_symbol(PlayerType *player_ptr)
     while (true) {
         const auto monrace_id = monrace_ids[i];
         tracker.set_trackee(monrace_id);
-        handle_stuff(*player_ptr);
+        handle_stuff(creature);
         while (true) {
             if (recall) {
                 screen_save();
-                screen_roff(*player_ptr, monrace_ids[i], MONSTER_LORE_NORMAL);
+                screen_roff(creature, monrace_ids[i], MONSTER_LORE_NORMAL);
             }
 
             roff_top(monrace_id);

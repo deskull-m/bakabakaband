@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void do_cmd_query_symbol(PlayerType *player_ptr);
+class CreatureEntity;
+void do_cmd_query_symbol(CreatureEntity &creature);
