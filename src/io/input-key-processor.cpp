@@ -596,7 +596,7 @@ void process_command(CreatureEntity &creature)
         term_user();
         break;
     case '"': {
-        do_cmd_pref(player_ptr);
+        do_cmd_pref(*player_ptr);
         break;
     }
     case '$': {
@@ -617,7 +617,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case '&': {
-        do_cmd_colors(player_ptr);
+        do_cmd_colors(*player_ptr);
         do_cmd_redraw(player_ptr);
         break;
     }
@@ -636,7 +636,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('F'): {
-        do_cmd_feeling(player_ptr);
+        do_cmd_feeling(*player_ptr);
         break;
     }
     case KTRL('O'): {
@@ -661,7 +661,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('T'): {
-        do_cmd_time(player_ptr);
+        do_cmd_time(*player_ptr);
         break;
     }
     case KTRL('X'):
