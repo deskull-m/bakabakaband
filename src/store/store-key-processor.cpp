@@ -224,7 +224,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case '=': {
-        do_cmd_options(player_ptr);
+        do_cmd_options(*player_ptr);
         (void)combine_and_reorder_home(creature, StoreSaleType::HOME);
         do_cmd_redraw(player_ptr);
         display_store(creature, store_num);
