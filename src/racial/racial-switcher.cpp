@@ -298,11 +298,10 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
 
 bool switch_mimic_racial_execution(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    switch (player_ptr->mimic_form) {
+    switch (creature.mimic_form) {
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD: {
-        return demonic_breath(player_ptr);
+        return demonic_breath(creature);
     }
     case MimicKindType::VAMPIRE:
         vampirism(creature);
@@ -507,7 +506,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
 
         return true;
     case PlayerRaceType::BALROG:
-        return demonic_breath(player_ptr);
+        return demonic_breath(creature);
     case PlayerRaceType::KUTAR:
         (void)set_leveling(player_ptr, randint1(20) + 30, false);
         return true;
