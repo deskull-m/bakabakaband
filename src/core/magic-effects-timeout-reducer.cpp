@@ -186,7 +186,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tsubureru) {
-        (void)set_leveling(player_ptr, player_ptr->tsubureru - 1, true);
+        (void)set_leveling(*player_ptr, player_ptr->tsubureru - 1, true);
     }
 
     if (player_ptr->magicdef) {
