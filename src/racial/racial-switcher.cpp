@@ -447,7 +447,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         return true;
     }
     case PlayerRaceType::DRACONIAN:
-        return draconian_breath(player_ptr);
+        return draconian_breath(creature);
     case PlayerRaceType::MIND_FLAYER: {
         const auto dir = get_aim_dir(*player_ptr);
         if (!dir) {

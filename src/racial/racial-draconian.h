@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool draconian_breath(PlayerType *player_ptr);
+class CreatureEntity;
+bool draconian_breath(CreatureEntity &creature);
