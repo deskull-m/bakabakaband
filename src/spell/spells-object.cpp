@@ -521,7 +521,7 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
         chg_virtue(creature, Virtue::ENCHANT, 1);
     }
 
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return true;
 }
 
@@ -555,7 +555,7 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
 
         msg_print(_("属性付加に失敗した。", "The branding failed."));
         chg_virtue(creature, Virtue::ENCHANT, -2);
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
         return;
     }
 
@@ -652,5 +652,5 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
     enchant_equipment(o_ptr, randint0(3) + 4, ENCH_TOHIT | ENCH_TODAM);
     o_ptr->discount = 99;
     chg_virtue(creature, Virtue::ENCHANT, 2);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
 }

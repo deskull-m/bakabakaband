@@ -511,7 +511,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)set_leveling(creature, randint1(20) + 30, false);
         return true;
     case PlayerRaceType::ANDROID:
-        return android_inside_weapon(player_ptr);
+        return android_inside_weapon(creature);
     case PlayerRaceType::MERFOLK: {
         msg_print(_("あなたは水流を呼び寄せた！", "You have summoned a stream of water!"));
         fire_ball_hide(creature, AttributeType::WATER_FLOW, Direction::self(), 3, 5);

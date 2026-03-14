@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
-bool android_inside_weapon(PlayerType *player_ptr);
-void calc_android_exp(PlayerType *player_ptr);
+class CreatureEntity;
+bool android_inside_weapon(CreatureEntity &creature);
+void calc_android_exp(CreatureEntity &creature);

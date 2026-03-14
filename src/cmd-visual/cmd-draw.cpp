@@ -91,7 +91,7 @@ void do_cmd_redraw(PlayerType *player_ptr)
     AngbandWorld::get_instance().play_time.update();
     handle_stuff(*player_ptr);
     if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        calc_android_exp(player_ptr);
+        calc_android_exp(*player_ptr);
     }
 
     term_type *old = game_term;

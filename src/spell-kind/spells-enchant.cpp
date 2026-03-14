@@ -93,7 +93,7 @@ bool artifact_scroll(CreatureEntity &creature)
             chg_virtue(creature, Virtue::ENCHANT, -1);
         }
 
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
         return true;
     }
 
@@ -103,7 +103,7 @@ bool artifact_scroll(CreatureEntity &creature)
     }
 
     chg_virtue(creature, Virtue::ENCHANT, 1);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return true;
 }
 
@@ -145,6 +145,6 @@ bool mundane_spell(CreatureEntity &creature, bool only_equip)
     item_ptr->ix = ix;
     item_ptr->marked = marked;
     item_ptr->inscription = std::move(inscription);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return true;
 }

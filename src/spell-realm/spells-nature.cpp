@@ -46,6 +46,6 @@ bool rustproof(CreatureEntity &creature)
 #else
     msg_format("%s %s %s now protected against corrosion.", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((o_ptr->number > 1) ? "are" : "is"));
 #endif
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return true;
 }

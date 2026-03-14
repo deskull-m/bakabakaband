@@ -111,6 +111,6 @@ bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
         SubWindowRedrawingFlag::PLAYER,
     };
     rfu.set_flags(flags);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return true;
 }

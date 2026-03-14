@@ -299,7 +299,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     o_ptr->ident &= ~(IDENT_BROKEN);
     o_ptr->discount = 99;
 
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     inven_item_increase(*player_ptr, mater, -1);
     inven_item_optimize(*player_ptr, mater);
 

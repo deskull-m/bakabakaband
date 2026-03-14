@@ -93,7 +93,7 @@ bool activate_bloody_moon(PlayerType *player_ptr, ItemEntity *o_ptr)
     msg_print(_("鎌が明るく輝いた...", "Your scythe glows brightly!"));
     get_bloody_moon_flags(o_ptr);
     if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        calc_android_exp(player_ptr);
+        calc_android_exp(*player_ptr);
     }
 
     static constexpr auto flags = {

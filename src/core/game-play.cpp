@@ -475,7 +475,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
     }
 
     if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        calc_android_exp(player_ptr);
+        calc_android_exp(*player_ptr);
     }
 
     init_riding_pet(player_ptr, new_game);

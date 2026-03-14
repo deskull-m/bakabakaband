@@ -209,7 +209,7 @@ static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_it
     }
 
     if (i_idx >= INVEN_MAIN_HAND) {
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
     }
 }
 
