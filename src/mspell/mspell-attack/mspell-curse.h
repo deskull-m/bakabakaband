@@ -6,7 +6,7 @@
 #include "monster-race/race-ability-flags.h"
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-util.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include <type_traits>
 
 struct MonsterSpellResult;
@@ -18,9 +18,9 @@ public:
     CurseData(FUNC msg_func, AttributeType typ)
         : MSpellData(msg_func, typ)
     {
-        static_assert(std::is_invocable<decltype(msg_func), PlayerType *, MONSTER_IDX, MONSTER_IDX, int>::value);
+        static_assert(std::is_invocable<decltype(msg_func), CreatureEntity &, MONSTER_IDX, MONSTER_IDX, int>::value);
     }
 };
 
-class PlayerType;
-MonsterSpellResult spell_RF5_CAUSE(PlayerType *player_ptr, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
+class CreatureEntity;
+MonsterSpellResult spell_RF5_CAUSE(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);

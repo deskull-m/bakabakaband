@@ -139,7 +139,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::CAUSE_2:
     case MonsterAbilityType::CAUSE_3:
     case MonsterAbilityType::CAUSE_4: 
-        return spell_RF5_CAUSE(player_ptr, ms_type, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF5_CAUSE_* */
+        return spell_RF5_CAUSE(creature, ms_type, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF5_CAUSE_* */
 
     case MonsterAbilityType::SHOOT:
     case MonsterAbilityType::BO_ACID:
@@ -324,7 +324,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::CAUSE_2:
     case MonsterAbilityType::CAUSE_3:
     case MonsterAbilityType::CAUSE_4:
-        return spell_RF5_CAUSE(player_ptr, ms_type, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_CAUSE_* */
+        return spell_RF5_CAUSE(creature, ms_type, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_CAUSE_* */
 
     case MonsterAbilityType::SHOOT:
     case MonsterAbilityType::BO_ACID:
