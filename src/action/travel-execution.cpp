@@ -27,30 +27,30 @@ constexpr auto TRAVEL_UNABLE = 9999;
 
 /*!
  * @brief トラベル処理中に地形に応じた移動コスト基準を返す
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param pos 該当地点の座標
  * @return コスト値
  */
-int travel_flow_cost(PlayerType *player_ptr, const Pos2D &pos)
+int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
 {
     int cost = 1;
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.current_floor_ptr->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has(TerrainCharacteristics::AVOID_RUN)) {
         cost += 1;
     }
 
-    if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && !player_ptr->levitation) {
+    if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && !creature.levitation) {
         cost += 5;
     }
 
     if (terrain.flags.has(TerrainCharacteristics::LAVA)) {
         int lava = 2;
-        if (!has_resist_fire(*player_ptr)) {
+        if (!has_resist_fire(creature)) {
             lava *= 2;
         }
 
-        if (!player_ptr->levitation) {
+        if (!creature.levitation) {
             lava *= 2;
         }
 
@@ -76,15 +76,15 @@ int travel_flow_cost(PlayerType *player_ptr, const Pos2D &pos)
 
 /*!
  * @brief 隣接するマスのコストを計算する
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param pos 隣接するマスの座標
  * @param current_cost 現在のマスのコスト
  * @param wall プレイヤーが壁の中にいるならばTRUE
  * @return 隣接するマスのコスト。移動不可ならばtl::nullopt
  */
-tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int current_cost, bool wall)
+tl::optional<int> travel_flow_aux(CreatureEntity &creature, const Pos2D pos, int current_cost, bool wall)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
@@ -100,7 +100,7 @@ tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int c
     is_wall |= terrain.flags.has(TerrainCharacteristics::DOOR) && (grid.mimic > 0);
     auto can_move = terrain.flags.has_not(TerrainCharacteristics::MOVE);
     can_move &= terrain.flags.has(TerrainCharacteristics::CAN_FLY);
-    can_move &= !player_ptr->levitation;
+    can_move &= !creature.levitation;
 
     auto add_cost = 1;
     if (is_wall || can_move) {
@@ -110,7 +110,7 @@ tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int c
 
         add_cost += TRAVEL_UNABLE;
     } else {
-        add_cost = travel_flow_cost(player_ptr, pos);
+        add_cost = travel_flow_cost(creature, pos);
     }
 
     const auto base_cost = (current_cost % TRAVEL_UNABLE);
@@ -274,14 +274,13 @@ void Travel::step(CreatureEntity &creature)
             this->reset_goal();
         }
 
-        auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
         return;
     }
 
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    exe_movement(*player_ptr, this->dir, always_pickup, false);
+    exe_movement(creature, this->dir, always_pickup, false);
 
     if (creature.get_position() == this->get_goal()) {
         this->reset_goal();
@@ -323,7 +322,7 @@ void Travel::update_flow(CreatureEntity &creature)
         for (const auto &d : Direction::directions_8()) {
             const auto pos_neighbor = pos + d.vec();
             auto &cost_neighbor = this->costs[pos_neighbor.y][pos_neighbor.x];
-            const auto new_cost = travel_flow_aux(static_cast<PlayerType *>(&creature), pos_neighbor, cost, wall);
+            const auto new_cost = travel_flow_aux(creature, pos_neighbor, cost, wall);
             if (new_cost && *new_cost < cost_neighbor) {
                 cost_neighbor = *new_cost;
                 pq.emplace(cost_neighbor, pos_neighbor);
@@ -334,7 +333,6 @@ void Travel::update_flow(CreatureEntity &creature)
 
 /*!
  * @brief トラベル処理の記憶配列を初期化する Hack: forget the "flow" information
- * @param player_ptr	プレイヤーへの参照ポインタ
  */
 void Travel::forget_flow()
 {
