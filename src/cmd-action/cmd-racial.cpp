@@ -410,7 +410,6 @@ static bool racial_power_select_power(CreatureEntity &creature, rc_type *rc_ptr)
  */
 static void racial_power_cast_power(CreatureEntity &creature, rc_type *rc_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto *rpi_ptr = &rc_ptr->power_desc[rc_ptr->command_code];
 
     switch (check_racial_level(creature, rpi_ptr)) {
@@ -418,7 +417,7 @@ static void racial_power_cast_power(CreatureEntity &creature, rc_type *rc_ptr)
         if (rpi_ptr->number < 0) {
             rc_ptr->cast = exe_racial_power(creature, rpi_ptr->number);
         } else {
-            rc_ptr->cast = exe_mutation_power(player_ptr, i2enum<PlayerMutationType>(rpi_ptr->number));
+            rc_ptr->cast = exe_mutation_power(creature, i2enum<PlayerMutationType>(rpi_ptr->number));
         }
         break;
     case RACIAL_FAILURE:
