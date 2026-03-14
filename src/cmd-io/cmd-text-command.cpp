@@ -42,7 +42,7 @@
 // コマンドマッピング用の構造体
 struct TextCommand {
     std::vector<std::string> keywords;
-    std::function<void(PlayerType *)> action;
+    std::function<void(CreatureEntity &)> action;
     std::string description;
 };
 
@@ -83,17 +83,18 @@ static std::vector<TextCommand> get_text_commands()
 {
     return {
         { { "search", "探す", "探索" },
-            [](PlayerType *player_ptr) {
-                do_cmd_search(*player_ptr);
+            [](CreatureEntity &creature) {
+                do_cmd_search(creature);
             },
             _("周囲を探索する", "Search") },
         { { "suicide", "死ぬ", "自殺" },
-            [](PlayerType *player_ptr) {
-                do_cmd_suicide(*player_ptr);
+            [](CreatureEntity &creature) {
+                do_cmd_suicide(creature);
             },
             _("自殺する", "suicide") },
         { { "defecate", "脱糞", "うんち", "うんこ" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
+                auto *player_ptr = static_cast<PlayerType *>(&creature);
                 // 脱糞アクション
                 msg_print(_("あなたは脱糞した！", "You defecated!"));
 
@@ -163,7 +164,8 @@ static std::vector<TextCommand> get_text_commands()
             },
             _("脱糞する", "Defecate") },
         { { "dance", "踊る", "ダンス", "おどる" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
+                auto *player_ptr = static_cast<PlayerType *>(&creature);
                 // 踊るアクション
                 msg_print(_("あなたは楽しそうに踊り始めた！", "You start dancing joyfully!"));
 
@@ -218,25 +220,26 @@ static std::vector<TextCommand> get_text_commands()
             },
             _("踊る", "Dance") },
         { { "headbutt", "頭突き", "ずつき", "あたまづき" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 実際の頭突き攻撃処理を実行
-                do_cmd_headbutt(*player_ptr);
+                do_cmd_headbutt(creature);
             },
             _("頭突き", "Headbutt") },
         { { "bodyslam", "体当たり", "たいあたり", "ぼでぃすらむ", "tackle", "タックル" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 実際の体当たり攻撃処理を実行
-                do_cmd_body_slam(*player_ptr);
+                do_cmd_body_slam(creature);
             },
             _("体当たり", "Body Slam") },
         { { "浣腸", "かんちょう", "enema", "カンチョー" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 実際の浣腸攻撃処理を実行
-                do_cmd_enema(*player_ptr);
+                do_cmd_enema(creature);
             },
             _("浣腸", "Enema") },
         { { "ひでぶ", "hidebu", "ヒデブ", "HIDEBU" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
+                auto *player_ptr = static_cast<PlayerType *>(&creature);
                 // ひでぶコマンド - プレイヤーに重症の傷を与える
                 msg_print(_("ひでぶ！", "Hidebu!"));
                 msg_print(_("あなたは謎の力によって重傷を負った！", "You are seriously wounded by a mysterious force!"));
@@ -277,7 +280,8 @@ static std::vector<TextCommand> get_text_commands()
             },
             _("ひでぶ", "Hidebu") },
         { { "しゃぶれよ", "shabureyо", "しゃぶれ", "shabare" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
+                auto *player_ptr = static_cast<PlayerType *>(&creature);
                 // しゃぶれよコマンド - 敵対的ホモを召喚
                 msg_print(_("何がしゃぶれだあ、お前がしゃぶれよ", "What do you mean 'suck it', you suck it yourself!"));
 
@@ -311,9 +315,9 @@ static std::vector<TextCommand> get_text_commands()
 
 /*!
  * @brief 文章コマンド入力処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature プレイヤーへの参照
  */
-void do_cmd_text_command(PlayerType *player_ptr)
+void do_cmd_text_command(CreatureEntity &creature)
 {
     screen_save();
 
@@ -340,7 +344,7 @@ void do_cmd_text_command(PlayerType *player_ptr)
 
     for (const auto &cmd : commands) {
         if (matches_keywords(buf.value(), cmd.keywords)) {
-            cmd.action(player_ptr);
+            cmd.action(creature);
             found = true;
             break;
         }
