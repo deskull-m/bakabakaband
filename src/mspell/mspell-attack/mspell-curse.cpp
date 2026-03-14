@@ -36,8 +36,8 @@ static bool message_curse(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
 }
 
 CurseData::CurseData(const std::string_view &msg1, const std::string_view &msg2, const std::string_view &msg3, const AttributeType &typ)
-    : MSpellData([=](auto *player_ptr, auto m_idx, auto t_idx, int target_type) {
-        return message_curse(player_ptr, m_idx, t_idx, msg1, msg2, msg3, target_type);
+    : MSpellData([=](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
+        return message_curse(static_cast<PlayerType *>(&creature), m_idx, t_idx, msg1, msg2, msg3, target_type);
     },
           typ)
 {
@@ -78,7 +78,7 @@ MonsterSpellResult spell_RF5_CAUSE(PlayerType *player_ptr, MonsterAbilityType ms
         return MonsterSpellResult::make_invalid();
     }
 
-    curse_list.at(ms_type).msg.output(player_ptr, m_idx, t_idx, target_type);
+    curse_list.at(ms_type).msg.output(*player_ptr, m_idx, t_idx, target_type);
 
     const auto dam = monspell_damage(*player_ptr, ms_type, m_idx, DAM_ROLL);
 
