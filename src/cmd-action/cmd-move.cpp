@@ -460,7 +460,7 @@ void do_cmd_run(CreatureEntity &creature)
 
     if (const auto dir = get_rep_dir(player)) {
         creature.running = (command_arg ? command_arg : 1000);
-        run_step(&player, dir);
+        run_step(player, dir);
     }
 }
 
