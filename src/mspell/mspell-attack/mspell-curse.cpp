@@ -13,23 +13,23 @@
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
-static bool message_curse(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, std::string_view msg1, std::string_view msg2, std::string_view msg3, int target_type)
+static bool message_curse(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, std::string_view msg1, std::string_view msg2, std::string_view msg3, int target_type)
 {
-    const auto m_name = monster_name(*player_ptr, m_idx);
-    const auto t_name = monster_name(*player_ptr, t_idx);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        disturb(*player_ptr, true, true);
-        if (player_ptr->effects()->blindness().is_blind()) {
+        disturb(creature, true, true);
+        if (creature.effects()->blindness().is_blind()) {
             msg_format(msg1.data(), m_name.data());
         } else {
             msg_format(msg2.data(), m_name.data());
         }
     } else if (target_type == MONSTER_TO_MONSTER) {
-        if (see_monster(*player_ptr, m_idx)) {
+        if (see_monster(creature, m_idx)) {
             msg_format(msg3.data(), m_name.data(), t_name.data());
         } else {
-            player_ptr->current_floor_ptr->monster_noise = true;
+            creature.current_floor_ptr->monster_noise = true;
         }
     }
     return false;
@@ -37,7 +37,7 @@ static bool message_curse(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX
 
 CurseData::CurseData(const std::string_view &msg1, const std::string_view &msg2, const std::string_view &msg3, const AttributeType &typ)
     : MSpellData([=](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
-        return message_curse(static_cast<PlayerType *>(&creature), m_idx, t_idx, msg1, msg2, msg3, target_type);
+        return message_curse(creature, m_idx, t_idx, msg1, msg2, msg3, target_type);
     },
           typ)
 {
@@ -72,17 +72,17 @@ const std::unordered_map<MonsterAbilityType, CurseData> curse_list = {
  * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
  * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
  */
-MonsterSpellResult spell_RF5_CAUSE(PlayerType *player_ptr, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+MonsterSpellResult spell_RF5_CAUSE(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     if (curse_list.find(ms_type) == curse_list.end()) {
         return MonsterSpellResult::make_invalid();
     }
 
-    curse_list.at(ms_type).msg.output(*player_ptr, m_idx, t_idx, target_type);
+    curse_list.at(ms_type).msg.output(creature, m_idx, t_idx, target_type);
 
-    const auto dam = monspell_damage(*player_ptr, ms_type, m_idx, DAM_ROLL);
+    const auto dam = monspell_damage(creature, ms_type, m_idx, DAM_ROLL);
 
-    pointed(*player_ptr, y, x, m_idx, curse_list.at(ms_type).type, dam, target_type);
+    pointed(creature, y, x, m_idx, curse_list.at(ms_type).type, dam, target_type);
 
     auto res = MonsterSpellResult::make_valid(dam);
     res.learnable = target_type == MONSTER_TO_PLAYER;
