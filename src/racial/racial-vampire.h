@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool vampirism(PlayerType *player_ptr);
+class CreatureEntity;
+bool vampirism(CreatureEntity &creature);
