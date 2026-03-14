@@ -9,6 +9,6 @@
 #include <utility>
 
 class FloorType;
-class PlayerType;
+class CreatureEntity;
 short chest_check(const FloorType &floor, const Pos2D &pos, bool trapped);
-std::pair<int, Direction> count_chests(PlayerType *player_ptr, bool trapped);
+std::pair<int, Direction> count_chests(CreatureEntity &creature, bool trapped);
