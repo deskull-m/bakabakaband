@@ -508,7 +508,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
     case PlayerRaceType::BALROG:
         return demonic_breath(creature);
     case PlayerRaceType::KUTAR:
-        (void)set_leveling(player_ptr, randint1(20) + 30, false);
+        (void)set_leveling(creature, randint1(20) + 30, false);
         return true;
     case PlayerRaceType::ANDROID:
         return android_inside_weapon(player_ptr);
