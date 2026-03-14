@@ -15,13 +15,13 @@
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 
-static bool message_shoot(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+static bool message_shoot(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     mspell_cast_msg_blind msg(_("%s^が奇妙な音を発した。", "%s^ makes a strange noise."),
         _("%s^が矢を放った。", "%s^ fires an arrow."),
         _("%s^が%sに矢を放った。", "%s^ fires an arrow at %s."));
 
-    auto notice = monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    auto notice = monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (notice) {
         sound(SoundKind::SHOOT);
@@ -90,7 +90,7 @@ const std::unordered_map<MonsterAbilityType, MSpellData> bolt_list = {
 };
 
 MSpellBolt::MSpellBolt(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbilityType ability, int target_type)
-    : AbstractMSpellAttack(player_ptr, m_idx, ability, get_mspell_data(bolt_list, ability), target_type,
+    : AbstractMSpellAttack(*player_ptr, m_idx, ability, get_mspell_data(bolt_list, ability), target_type,
           [=](auto y, auto x, int dam, auto attribute) {
               return bolt(*player_ptr, m_idx, y, x, attribute, dam, target_type);
           })
@@ -98,7 +98,7 @@ MSpellBolt::MSpellBolt(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbility
 }
 
 MSpellBolt::MSpellBolt(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, int target_type)
-    : AbstractMSpellAttack(player_ptr, m_idx, t_idx, ability, get_mspell_data(bolt_list, ability), target_type,
+    : AbstractMSpellAttack(*player_ptr, m_idx, t_idx, ability, get_mspell_data(bolt_list, ability), target_type,
           [=](auto y, auto x, int dam, auto attribute) {
               return bolt(*player_ptr, m_idx, y, x, attribute, dam, target_type);
           })

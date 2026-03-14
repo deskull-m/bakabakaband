@@ -8,7 +8,7 @@
 
 enum class AttributeType;
 struct mspell_cast_msg_blind;
-class PlayerType;
+class CreatureEntity;
 
 class MSpellMessageData {
 public:
@@ -17,11 +17,11 @@ public:
     MSpellMessageData(const FUNC &output)
         : output(output)
     {
-        static_assert(std::is_invocable_r<bool, decltype(output), PlayerType *, MONSTER_IDX, MONSTER_IDX, int>::value);
+        static_assert(std::is_invocable_r<bool, decltype(output), CreatureEntity &, MONSTER_IDX, MONSTER_IDX, int>::value);
     }
     MSpellMessageData(const mspell_cast_msg_blind &msg_string);
     MSpellMessageData(const std::string_view &blind, const std::string_view &to_player, const std::string_view &to_monster);
-    std::function<bool(PlayerType *, MONSTER_IDX, MONSTER_IDX, int)> output;
+    std::function<bool(CreatureEntity &, MONSTER_IDX, MONSTER_IDX, int)> output;
 };
 
 class MSpellDrsData {
@@ -29,7 +29,7 @@ public:
     MSpellDrsData();
     MSpellDrsData(std::initializer_list<drs_type> drs);
     MSpellDrsData(const drs_type &drs);
-    std::function<void(PlayerType *, MONSTER_IDX)> execute;
+    std::function<void(CreatureEntity &, MONSTER_IDX)> execute;
 };
 
 class MSpellData {

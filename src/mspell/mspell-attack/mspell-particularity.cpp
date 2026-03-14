@@ -21,12 +21,12 @@
 #include "system/player-type-definition.h"
 
 MSpellAttackOther::MSpellAttackOther(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbilityType ability, MSpellData data, int target_type, std::function<ProjectResult(POSITION, POSITION, int, AttributeType)> fire)
-    : AbstractMSpellAttack(player_ptr, m_idx, ability, data, target_type, fire)
+    : AbstractMSpellAttack(*player_ptr, m_idx, ability, data, target_type, fire)
 {
 }
 
 MSpellAttackOther::MSpellAttackOther(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, MSpellData data, int target_type, std::function<ProjectResult(POSITION, POSITION, int, AttributeType)> fire)
-    : AbstractMSpellAttack(player_ptr, m_idx, t_idx, ability, data, target_type, fire)
+    : AbstractMSpellAttack(*player_ptr, m_idx, t_idx, ability, data, target_type, fire)
 {
 }
 
@@ -52,12 +52,12 @@ MonsterSpellResult spell_RF4_ROCKET(PlayerType *player_ptr, POSITION y, POSITION
         .shoot(y, x);
 }
 
-static bool message_hand_doom(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+static bool message_hand_doom(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     mspell_cast_msg_simple msg(_("%s^が<破滅の手>を放った！", "%s^ invokes the Hand of Doom!"),
         _("%s^が%sに<破滅の手>を放った！", "%s^ invokes the Hand of Doom upon %s!"));
 
-    simple_monspell_message(*player_ptr, m_idx, t_idx, msg, target_type);
+    simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     return true;
 }

@@ -6,6 +6,7 @@
 
 struct MonsterSpellResult;
 
+class PlayerType;
 class MSpellData;
 class MSpellBall : public AbstractMSpellAttack {
 public:
@@ -17,5 +18,3 @@ public:
     void operator=(const MSpellBall &) = delete;
     MSpellBall &operator=(MSpellBall &&) = default;
 };
-
-class PlayerType;

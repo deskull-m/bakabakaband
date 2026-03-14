@@ -83,8 +83,8 @@ static void message_breath(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_ID
 
 static std::pair<MonsterAbilityType, MSpellData> make_breath_elemental(MonsterAbilityType ms_type, AttributeType GF_TYPE, std::string_view type_s)
 {
-    return { ms_type, { [type_s, GF_TYPE](auto *player_ptr, auto m_idx, auto t_idx, int target_type) {
-                           message_breath(player_ptr, m_idx, t_idx, target_type, type_s, GF_TYPE);
+    return { ms_type, { [type_s, GF_TYPE](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
+                           message_breath(static_cast<PlayerType *>(&creature), m_idx, t_idx, target_type, type_s, GF_TYPE);
                            return false;
                        },
                           GF_TYPE } };
@@ -92,8 +92,8 @@ static std::pair<MonsterAbilityType, MSpellData> make_breath_elemental(MonsterAb
 
 static std::pair<MonsterAbilityType, MSpellData> make_breath_elemental(MonsterAbilityType ms_type, AttributeType GF_TYPE, std::string_view type_s, MSpellDrsData drs)
 {
-    return { ms_type, { [type_s, GF_TYPE](auto *player_ptr, auto m_idx, auto t_idx, int target_type) {
-                           message_breath(player_ptr, m_idx, t_idx, target_type, type_s, GF_TYPE);
+    return { ms_type, { [type_s, GF_TYPE](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
+                           message_breath(static_cast<PlayerType *>(&creature), m_idx, t_idx, target_type, type_s, GF_TYPE);
                            return false;
                        },
                           GF_TYPE, drs } };
@@ -151,19 +151,19 @@ MonsterSpellResult spell_RF4_BREATH(PlayerType *player_ptr, MonsterAbilityType m
         data = std::make_unique<MSpellData>(breath_list.at(ms_type));
     } else {
         dam = 0;
-        data = std::make_unique<MSpellData>([](auto *player_ptr, auto m_idx, auto t_idx, int target_type) {
-            message_breath(player_ptr, m_idx, t_idx, target_type, _("不明", "Unknown"), AttributeType::NONE);
+        data = std::make_unique<MSpellData>([](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
+            message_breath(static_cast<PlayerType *>(&creature), m_idx, t_idx, target_type, _("不明", "Unknown"), AttributeType::NONE);
             return false;
         },
             AttributeType::NONE);
     }
 
-    data->msg.output(player_ptr, m_idx, t_idx, target_type);
+    data->msg.output(*player_ptr, m_idx, t_idx, target_type);
 
     const auto proj_res = breath(*player_ptr, y, x, m_idx, data->type, dam, 0, target_type);
 
     if (mon_to_player) {
-        data->drs.execute(player_ptr, m_idx);
+        data->drs.execute(*player_ptr, m_idx);
     }
 
     auto res = MonsterSpellResult::make_valid(dam);

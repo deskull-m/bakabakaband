@@ -5,6 +5,7 @@
 #include "mspell/mspell-attack/abstract-mspell.h"
 
 struct MonsterSpellResult;
+class PlayerType;
 
 class MSpellBolt : public AbstractMSpellAttack {
 public:
@@ -16,5 +17,3 @@ public:
     void operator=(const MSpellBolt &) = delete;
     MSpellBolt &operator=(MSpellBolt &&) = default;
 };
-
-class PlayerType;
