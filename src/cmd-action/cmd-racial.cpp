@@ -477,7 +477,7 @@ void do_cmd_racial_power(CreatureEntity &creature)
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
-    auto tmp_r = rc_type(player_ptr);
+    auto tmp_r = rc_type(creature);
     auto *rc_ptr = &tmp_r;
 
     switch_class_racial(player_ptr, rc_ptr);
