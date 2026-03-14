@@ -26,13 +26,11 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
 static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     MonsterEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
@@ -74,7 +72,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF4_SHRIEK */
     case MonsterAbilityType::XXX1: break;   /* RF4_XXX1 */
     case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF4_DISPEL */
-    case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF4_ROCKET */
+    case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF4_ROCKET */
     case MonsterAbilityType::XXX2: break;   /* RF4_XXX2 */
     case MonsterAbilityType::XXX3: break;   /* RF4_XXX3 */
     case MonsterAbilityType::XXX4: break;   /* RF4_XXX4 */
@@ -164,7 +162,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::SLOW: return spell_RF5_SLOW(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF5_SLOW */
     case MonsterAbilityType::HOLD: return spell_RF5_HOLD(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF5_HOLD */
     case MonsterAbilityType::HASTE: return spell_RF6_HASTE(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HASTE */
-    case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HAND_DOOM */
+    case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HAND_DOOM */
     case MonsterAbilityType::HEAL: return spell_RF6_HEAL(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HEAL */
     case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_INVULNER */
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(creature, m_idx, MONSTER_TO_PLAYER, false); /* RF6_BLINK */
@@ -174,7 +172,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_TO */
     case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_AWAY */
     case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_TELE_LEVEL */
-    case MonsterAbilityType::PSY_SPEAR: return spell_RF6_PSY_SPEAR(player_ptr, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_PSY_SPEAR */
+    case MonsterAbilityType::PSY_SPEAR: return spell_RF6_PSY_SPEAR(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_PSY_SPEAR */
     case MonsterAbilityType::DARKNESS: return spell_RF6_DARKNESS(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_DARKNESS */
     case MonsterAbilityType::TRAPS: return spell_RF6_TRAPS(creature, y, x, m_idx); /* RF6_TRAPS */
     case MonsterAbilityType::FORGET: return spell_RF6_FORGET(creature, m_idx); /* RF6_FORGET */
@@ -217,7 +215,6 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
 static MonsterSpellResult monspell_to_monster_impl(
     CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, bool is_special_spell)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     MonsterEntity *m_ptr = &creature.current_floor_ptr->m_list[m_idx];
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
 
@@ -259,7 +256,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::SHRIEK: return spell_RF4_SHRIEK(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF4_SHRIEK */
     case MonsterAbilityType::XXX1: break;   /* RF4_XXX1 */
     case MonsterAbilityType::DISPEL: return spell_RF4_DISPEL(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF4_DISPEL */
-    case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF4_ROCKET */
+    case MonsterAbilityType::ROCKET: return spell_RF4_ROCKET(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF4_ROCKET */
     case MonsterAbilityType::XXX2: break;   /* RF4_XXX2 */
     case MonsterAbilityType::XXX3: break;   /* RF4_XXX3 */
     case MonsterAbilityType::XXX4: break;   /* RF4_XXX4 */
@@ -349,7 +346,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::SLOW: return spell_RF5_SLOW(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF5_SLOW */
     case MonsterAbilityType::HOLD: return spell_RF5_HOLD(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF5_HOLD */
     case MonsterAbilityType::HASTE: return spell_RF6_HASTE(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HASTE */
-    case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HAND_DOOM */
+    case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HAND_DOOM */
     case MonsterAbilityType::HEAL: return spell_RF6_HEAL(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HEAL */
     case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_INVULNER */
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(creature, m_idx, MONSTER_TO_MONSTER, is_special_spell); /* RF6_BLINK */
@@ -359,7 +356,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::TELE_TO: return spell_RF6_TELE_TO(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_TO */
     case MonsterAbilityType::TELE_AWAY: return spell_RF6_TELE_AWAY(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_AWAY */
     case MonsterAbilityType::TELE_LEVEL: return spell_RF6_TELE_LEVEL(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_TELE_LEVEL */
-    case MonsterAbilityType::PSY_SPEAR: return spell_RF6_PSY_SPEAR(player_ptr, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_PSY_SPEAR */
+    case MonsterAbilityType::PSY_SPEAR: return spell_RF6_PSY_SPEAR(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_PSY_SPEAR */
     case MonsterAbilityType::DARKNESS: return spell_RF6_DARKNESS(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_DARKNESS */
     case MonsterAbilityType::TRAPS: break; /* RF6_TRAPS */
     case MonsterAbilityType::FORGET: break; /* RF6_FORGET */
@@ -409,7 +406,6 @@ static MonsterSpellResult monspell_to_monster_impl(
  */
 MonsterSpellResult monspell_to_player(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 特技使用前の時点でプレイヤーがモンスターを視認できているかチェック(ラーニングの必要条件)。
     const bool player_could_see_monster = spell_learnable(creature, m_idx);
 
@@ -420,7 +416,7 @@ MonsterSpellResult monspell_to_player(CreatureEntity &creature, MonsterAbilityTy
 
     // 条件を満たしていればラーニングを試みる。
     if (res.valid && res.learnable) {
-        learn_spell(*player_ptr, ms_type);
+        learn_spell(creature, ms_type);
     }
 
     return res;
@@ -439,7 +435,6 @@ MonsterSpellResult monspell_to_player(CreatureEntity &creature, MonsterAbilityTy
 MonsterSpellResult monspell_to_monster(
     CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, bool is_special_spell)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     // 特技使用前の時点でプレイヤーがモンスターを視認できているかチェック(ラーニングの必要条件)。
     const bool player_could_see_monster = spell_learnable(creature, m_idx);
 
@@ -450,7 +445,7 @@ MonsterSpellResult monspell_to_monster(
 
     // 条件を満たしていればラーニングを試みる。
     if (res.valid && res.learnable) {
-        learn_spell(*player_ptr, ms_type);
+        learn_spell(creature, ms_type);
     }
 
     return res;
