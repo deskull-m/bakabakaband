@@ -112,13 +112,13 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::BA_COLD:
          {
          auto rad = monster_is_powerful(*creature.current_floor_ptr, m_idx) ? 4 : 2;
-         return MSpellBall(player_ptr, m_idx, ms_type, rad, MONSTER_TO_PLAYER).shoot(y, x);
+         return MSpellBall(creature, m_idx, ms_type, rad, MONSTER_TO_PLAYER).shoot(y, x);
          }
 
     case MonsterAbilityType::BA_POIS:
     case MonsterAbilityType::BA_NETH:
     case MonsterAbilityType::BA_NUKE:
-         return MSpellBall(player_ptr, m_idx, ms_type, 2, MONSTER_TO_PLAYER).shoot(y, x);
+         return MSpellBall(creature, m_idx, ms_type, 2, MONSTER_TO_PLAYER).shoot(y, x);
 
     case MonsterAbilityType::BA_CHAO:
     case MonsterAbilityType::BA_WATE:
@@ -129,7 +129,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::BA_ABYSS:
     case MonsterAbilityType::BA_METEOR:
     case MonsterAbilityType::BA_GRAVITY:
-         return MSpellBall(player_ptr, m_idx, ms_type, 4, MONSTER_TO_PLAYER).shoot(y, x);
+         return MSpellBall(creature, m_idx, ms_type, 4, MONSTER_TO_PLAYER).shoot(y, x);
 
     case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF5_DRAIN_MANA */
     case MonsterAbilityType::MIND_BLAST: return spell_RF5_MIND_BLAST(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER);  /* RF5_MIND_BLAST */
@@ -297,13 +297,13 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BA_COLD:
          {
          auto rad = monster_is_powerful(*creature.current_floor_ptr, m_idx) ? 4 : 2;
-         return MSpellBall(player_ptr, m_idx, t_idx, ms_type, rad, MONSTER_TO_MONSTER).shoot(y, x);
+         return MSpellBall(creature, m_idx, t_idx, ms_type, rad, MONSTER_TO_MONSTER).shoot(y, x);
          }
 
     case MonsterAbilityType::BA_POIS:
     case MonsterAbilityType::BA_NETH:
     case MonsterAbilityType::BA_NUKE:
-         return MSpellBall(player_ptr, m_idx, t_idx, ms_type, 2, MONSTER_TO_MONSTER).shoot(y, x);
+         return MSpellBall(creature, m_idx, t_idx, ms_type, 2, MONSTER_TO_MONSTER).shoot(y, x);
 
     case MonsterAbilityType::BA_CHAO:
     case MonsterAbilityType::BA_WATE:
@@ -314,7 +314,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BA_ABYSS:
     case MonsterAbilityType::BA_METEOR:
     case MonsterAbilityType::BA_GRAVITY:
-         return MSpellBall(player_ptr, m_idx, t_idx, ms_type, 4, MONSTER_TO_MONSTER).shoot(y, x);
+         return MSpellBall(creature, m_idx, t_idx, ms_type, 4, MONSTER_TO_MONSTER).shoot(y, x);
 
     case MonsterAbilityType::DRAIN_MANA: return spell_RF5_DRAIN_MANA(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_DRAIN_MANA */
     case MonsterAbilityType::MIND_BLAST: return spell_RF5_MIND_BLAST(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF5_MIND_BLAST */
