@@ -12,8 +12,8 @@
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 
 static bool message_shoot(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
@@ -89,18 +89,18 @@ const std::unordered_map<MonsterAbilityType, MSpellData> bolt_list = {
                                        AttributeType::MISSILE, DRS_REFLECT } },
 };
 
-MSpellBolt::MSpellBolt(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbilityType ability, int target_type)
-    : AbstractMSpellAttack(*player_ptr, m_idx, ability, get_mspell_data(bolt_list, ability), target_type,
-          [=](auto y, auto x, int dam, auto attribute) {
-              return bolt(*player_ptr, m_idx, y, x, attribute, dam, target_type);
+MSpellBolt::MSpellBolt(CreatureEntity &creature, MONSTER_IDX m_idx, MonsterAbilityType ability, int target_type)
+    : AbstractMSpellAttack(creature, m_idx, ability, get_mspell_data(bolt_list, ability), target_type,
+          [creature_ptr = &creature, m_idx, target_type](auto y, auto x, int dam, auto attribute) {
+              return bolt(*creature_ptr, m_idx, y, x, attribute, dam, target_type);
           })
 {
 }
 
-MSpellBolt::MSpellBolt(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, int target_type)
-    : AbstractMSpellAttack(*player_ptr, m_idx, t_idx, ability, get_mspell_data(bolt_list, ability), target_type,
-          [=](auto y, auto x, int dam, auto attribute) {
-              return bolt(*player_ptr, m_idx, y, x, attribute, dam, target_type);
+MSpellBolt::MSpellBolt(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, int target_type)
+    : AbstractMSpellAttack(creature, m_idx, t_idx, ability, get_mspell_data(bolt_list, ability), target_type,
+          [creature_ptr = &creature, m_idx, target_type](auto y, auto x, int dam, auto attribute) {
+              return bolt(*creature_ptr, m_idx, y, x, attribute, dam, target_type);
           })
 {
 }

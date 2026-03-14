@@ -156,7 +156,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::BO_METEOR:
     case MonsterAbilityType::BO_LITE:
     case MonsterAbilityType::MISSILE: 
-        return MSpellBolt(player_ptr, m_idx, ms_type, MONSTER_TO_PLAYER).shoot(y,x);
+        return MSpellBolt(creature, m_idx, ms_type, MONSTER_TO_PLAYER).shoot(y,x);
 
     case MonsterAbilityType::SCARE: return spell_RF5_SCARE(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF5_SCARE */
     case MonsterAbilityType::BLIND: return spell_RF5_BLIND(m_idx, creature, 0, MONSTER_TO_PLAYER); /* RF5_BLIND */
@@ -341,7 +341,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::BO_METEOR:
     case MonsterAbilityType::BO_LITE:
     case MonsterAbilityType::MISSILE:
-         return MSpellBolt(player_ptr, m_idx, t_idx, ms_type, MONSTER_TO_MONSTER).shoot(y, x);
+         return MSpellBolt(creature, m_idx, t_idx, ms_type, MONSTER_TO_MONSTER).shoot(y, x);
 
     case MonsterAbilityType::SCARE: return spell_RF5_SCARE(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF5_SCARE */
     case MonsterAbilityType::BLIND: return spell_RF5_BLIND(m_idx, creature, t_idx, MONSTER_TO_MONSTER); /* RF5_BLIND */
