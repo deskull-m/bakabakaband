@@ -127,7 +127,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         fire_ball(creature, AttributeType::NUKE, Direction::self(), (lvl * 2), 3 + (lvl / 20));
         return true;
     case PlayerMutationType::VAMPIRISM:
-        vampirism(player_ptr);
+        vampirism(creature);
         return true;
     case PlayerMutationType::SMELL_MET:
         stop_mouth(creature);

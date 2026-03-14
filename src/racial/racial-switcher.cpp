@@ -305,7 +305,7 @@ bool switch_mimic_racial_execution(CreatureEntity &creature)
         return demonic_breath(player_ptr);
     }
     case MimicKindType::VAMPIRE:
-        vampirism(player_ptr);
+        vampirism(creature);
         return true;
     default:
         return true;
@@ -484,7 +484,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)restore_level(creature);
         return true;
     case PlayerRaceType::VAMPIRE:
-        (void)vampirism(player_ptr);
+        (void)vampirism(creature);
         return true;
     case PlayerRaceType::SPECTRE: {
         const auto dir = get_aim_dir(*player_ptr);
