@@ -38,14 +38,13 @@ static bool find_breakleft;
 /*!
  * @brief ダッシュ移動処理中、移動先のマスが既知の壁かどうかを判定する /
  * Hack -- Check for a "known wall" (see below)
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 想定する移動方向
  * @param pos_orig 移動元の座標
  * @return 移動先が既知の壁ならばTRUE
  */
 static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D &pos_orig)
 {
-    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto pos = pos_orig + dir.vec();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
@@ -59,7 +58,7 @@ static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D
 
     const auto terrain_id = grid.get_terrain_id(TerrainKind::MIMIC);
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
-    if (!player_can_enter(*player_ptr, terrain_id, 0)) {
+    if (!player_can_enter(creature, terrain_id, 0)) {
         return terrain.flags.has_not(TerrainCharacteristics::DOOR);
     }
 
@@ -77,7 +76,7 @@ static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D
 /*!
  * @brief ダッシュ処理の導入 /
  * Initialize the running algorithm for a new direction.
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 導入の移動先
  * @details
  * Diagonal Corridor -- allow diaginal entry into corridors.\n
@@ -93,7 +92,6 @@ static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D
  */
 static void run_init(CreatureEntity &creature, const Direction &dir)
 {
-    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     find_current = dir;
     find_prevdir = dir;
     find_openarea = true;
@@ -101,8 +99,8 @@ static void run_init(CreatureEntity &creature, const Direction &dir)
     const auto pos = creature.get_position();
     creature.run_py = pos.y;
     creature.run_px = pos.x;
-    const auto pos_neighbor = player_ptr->get_neighbor(dir);
-    ignore_avoid_run = player_ptr->current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
+    const auto pos_neighbor = creature.get_neighbor(dir);
+    ignore_avoid_run = creature.current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
     const auto dir_left45 = dir.rotated_45degree(1);
     const auto dir_right45 = dir.rotated_45degree(-1);
     auto deepleft = false;
@@ -154,15 +152,15 @@ static void run_init(CreatureEntity &creature, const Direction &dir)
 /*!
  * @brief ダッシュ移動処理中、移動先のマスか未知の地形かどうかを判定する /
  * Hack -- Check for an "unknown corner" (see below)
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 想定する移動方向
  * @param pos_orig 移動元の座標
  * @return 移動先が未知の地形ならばTRUE
  */
-static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2D &pos_orig)
+static bool see_nothing(CreatureEntity &creature, const Direction &dir, const Pos2D &pos_orig)
 {
     const auto pos = pos_orig + dir.vec();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return true;
     }
@@ -171,7 +169,7 @@ static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2
         return false;
     }
 
-    if (player_can_see_bold(*player_ptr, pos.y, pos.x)) {
+    if (player_can_see_bold(creature, pos.y, pos.x)) {
         return false;
     }
 
@@ -181,7 +179,7 @@ static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2
 /*!
  * @brief ダッシュ移動が継続できるかどうかの判定 /
  * Update the current "run" path
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @return 立ち止まるべき条件が満たされたらTRUE
  * ダッシュ移動が継続できるならばTRUEを返す。
  * Return TRUE if the running should be stopped
@@ -213,7 +211,7 @@ static bool run_test(CreatureEntity &creature)
     const auto max = prev_dir.is_diagonal() ? 2 : 1;
     for (auto i = -max; i <= max; i++) {
         const auto new_dir = prev_dir.rotated_45degree(i);
-        const auto pos = player_ptr->get_neighbor(new_dir);
+        const auto pos = creature.get_neighbor(new_dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
             const auto &monster = floor.m_list[grid.m_idx];
@@ -238,11 +236,11 @@ static bool run_test(CreatureEntity &creature)
                     notice = false;
                 } else if (find_ignore_stairs && terrain.flags.has(TerrainCharacteristics::STAIRS)) {
                     notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(*player_ptr) || is_invuln(*player_ptr))) {
+                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(creature) || is_invuln(creature))) {
                     notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::VOID) && is_invuln(*player_ptr)) {
+                } else if (terrain.flags.has(TerrainCharacteristics::VOID) && is_invuln(creature)) {
                     notice = false;
-                } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (player_ptr->levitation || player_ptr->can_swim || (calc_inventory_weight(*player_ptr) <= calc_weight_limit(*player_ptr)))) {
+                } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (creature.levitation || creature.can_swim || (calc_inventory_weight(creature) <= calc_weight_limit(creature)))) {
                     notice = false;
                 }
             }
@@ -336,9 +334,9 @@ static bool run_test(CreatureEntity &creature)
         return see_wall(creature, find_current, p_pos);
     }
 
-    const auto pos = player_ptr->get_neighbor(option);
+    const auto pos = creature.get_neighbor(option);
     if (!see_wall(creature, option, pos) || !see_wall(creature, check_dir, pos)) {
-        if (see_nothing(player_ptr, option, pos) && see_nothing(player_ptr, option2, pos)) {
+        if (see_nothing(creature, option, pos) && see_nothing(creature, option2, pos)) {
             find_current = option;
             find_prevdir = option2;
             return see_wall(creature, find_current, p_pos);
@@ -361,37 +359,38 @@ static bool run_test(CreatureEntity &creature)
 /*!
  * @brief 継続的なダッシュ処理 /
  * Take one step along the current "run" path
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 移動を試みる方向
  */
-void run_step(PlayerType *player_ptr, const Direction &dir)
+void run_step(CreatureEntity &creature, const Direction &dir)
 {
+    auto *player_ptr = &dynamic_cast<PlayerType &>(creature);
     if (dir) {
         ignore_avoid_run = true;
-        if (see_wall(*player_ptr, dir, player_ptr->get_position())) {
+        if (see_wall(creature, dir, creature.get_position())) {
             sound(SoundKind::HITWALL);
             msg_print(_("その方向には走れません。", "You cannot run in that direction."));
-            disturb(*player_ptr, false, false);
+            disturb(creature, false, false);
             return;
         }
 
-        run_init(*player_ptr, dir);
+        run_init(creature, dir);
     } else {
-        if (run_test(*player_ptr)) {
-            disturb(*player_ptr, false, false);
+        if (run_test(creature)) {
+            disturb(creature, false, false);
             return;
         }
     }
 
-    if (--player_ptr->running <= 0) {
+    if (--creature.running <= 0) {
         return;
     }
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    exe_movement(*player_ptr, find_current, false, false);
+    exe_movement(creature, find_current, false, false);
     if (player_ptr->is_located_at_running_destination()) {
-        player_ptr->run_py = 0;
-        player_ptr->run_px = 0;
-        disturb(*player_ptr, false, false);
+        creature.run_py = 0;
+        creature.run_px = 0;
+        disturb(creature, false, false);
     }
 }

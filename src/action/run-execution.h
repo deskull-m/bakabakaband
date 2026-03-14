@@ -8,6 +8,6 @@
 
 extern bool ignore_avoid_run;
 
-class PlayerType;
+class CreatureEntity;
 class Direction;
-void run_step(PlayerType *player_ptr, const Direction &dir);
+void run_step(CreatureEntity &creature, const Direction &dir);
