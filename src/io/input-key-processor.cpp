@@ -604,7 +604,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case '_': {
-        do_cmd_edit_autopick(player_ptr);
+        do_cmd_edit_autopick(*player_ptr);
         break;
     }
     case '@': {

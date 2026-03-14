@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void do_cmd_edit_autopick(PlayerType *player_ptr);
+class CreatureEntity;
+void do_cmd_edit_autopick(CreatureEntity &creature);

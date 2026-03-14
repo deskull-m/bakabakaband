@@ -120,8 +120,9 @@ void text_body_type::update_cursor_column_record(int com_id)
  * In-game editor of Object Auto-picker/Destoryer
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_edit_autopick(PlayerType *player_ptr)
+void do_cmd_edit_autopick(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     static int cx_save = 0;
     static int cy_save = 0;
     autopick_type an_entry, *entry = &an_entry;
@@ -144,17 +145,17 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
     }
 
     if (world.game_turn > old_autosave_turn + 100L) {
-        do_cmd_save_game(*player_ptr, true);
+        do_cmd_save_game(creature, true);
         old_autosave_turn = world.game_turn;
     }
 
     init_autopick();
     if (autopick_last_destroyed_object.is_valid()) {
-        autopick_entry_from_object(*player_ptr, entry, &autopick_last_destroyed_object);
+        autopick_entry_from_object(creature, entry, &autopick_last_destroyed_object);
         tb->last_destroyed = autopick_line_from_entry(*entry);
     }
 
-    tb->lines_list = read_pickpref_text_lines(player_ptr->base_name, &tb->filename_mode);
+    tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
     for (i = 0; i < tb->cy; i++) {
         if (!tb->lines_list[i]) {
             tb->cy = tb->cx = 0;
@@ -213,13 +214,13 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
     }
 
     screen_load();
-    const auto filename = pickpref_filename(player_ptr->base_name, tb->filename_mode);
+    const auto filename = pickpref_filename(creature.base_name, tb->filename_mode);
 
     if (quit == APE_QUIT_AND_SAVE) {
         write_text_lines(filename, tb->lines_list);
     }
 
-    process_autopick_file(*player_ptr, filename);
+    process_autopick_file(creature, filename);
     cx_save = tb->cx;
     cy_save = tb->cy;
 }
