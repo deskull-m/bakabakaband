@@ -702,7 +702,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('E'): {
-        do_cmd_text_command(player_ptr);
+        do_cmd_text_command(*player_ptr);
         break;
     }
     case '`': {
