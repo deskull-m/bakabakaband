@@ -85,7 +85,7 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
 
     player_ptr->au -= total_cost;
     if (i_idx >= INVEN_MAIN_HAND) {
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
     }
     return true;
 }

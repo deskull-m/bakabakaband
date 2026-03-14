@@ -150,6 +150,6 @@ bool bless_weapon(CreatureEntity &creature)
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };
     rfu.set_flags(flags_swrf);
-    calc_android_exp(&player);
+    calc_android_exp(player);
     return true;
 }

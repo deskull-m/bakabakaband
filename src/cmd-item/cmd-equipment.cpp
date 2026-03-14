@@ -355,7 +355,7 @@ void do_cmd_wield(CreatureEntity &creature)
         }
     }
 
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::TORCH,
@@ -416,7 +416,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
     energy.set_player_turn_energy(50);
     (void)inven_takeoff(*player_ptr, i_idx, 255);
     verify_equip_slot(creature, i_idx);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::TORCH,

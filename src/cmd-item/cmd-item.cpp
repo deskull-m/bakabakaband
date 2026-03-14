@@ -138,7 +138,7 @@ void do_cmd_drop(CreatureEntity &creature)
     drop_from_inventory(*player_ptr, i_idx, amt);
     if (i_idx >= INVEN_MAIN_HAND) {
         verify_equip_slot(creature, i_idx);
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EQUIPPY);

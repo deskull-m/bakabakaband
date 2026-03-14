@@ -233,7 +233,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
     handle_stuff(creature);
 
     if (placed && (i_idx >= INVEN_MAIN_HAND)) {
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
         verify_equip_slot(creature, i_idx);
     }
 }

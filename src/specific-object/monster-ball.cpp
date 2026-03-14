@@ -143,7 +143,7 @@ bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
             return true;
         }
 
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
         return true;
     }
 
@@ -157,6 +157,6 @@ bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
     }
 
     calculate_upkeep(player_ptr);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return true;
 }

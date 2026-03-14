@@ -128,7 +128,7 @@ static bool acid_minus_ac(PlayerType *player_ptr)
         SubWindowRedrawingFlag::PLAYER,
     };
     rfu.set_flags(flags_swrf);
-    calc_android_exp(player_ptr);
+    calc_android_exp(*player_ptr);
     return true;
 }
 

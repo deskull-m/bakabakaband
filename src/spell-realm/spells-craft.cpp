@@ -326,6 +326,6 @@ bool pulish_shield(CreatureEntity &creature)
 
     msg_print(_("失敗した。", "Failed."));
     chg_virtue(creature, Virtue::ENCHANT, -2);
-    calc_android_exp(&player_ptr);
+    calc_android_exp(player_ptr);
     return false;
 }
