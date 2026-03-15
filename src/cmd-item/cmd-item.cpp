@@ -75,14 +75,13 @@
  */
 void do_cmd_inven(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     command_wrk = false;
     if (easy_floor) {
         command_wrk = USE_INVEN;
     }
 
     screen_save();
-    (void)show_inventory(player_ptr, 0, USE_FULL, AllMatchItemTester());
+    (void)show_inventory(creature, 0, USE_FULL, AllMatchItemTester());
     const auto weight = calc_inventory_weight(creature);
     const auto weight_lim = calc_weight_limit(creature);
     const auto percentage = weight * 100 / weight_lim;

@@ -351,7 +351,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             fis.n1 = I2A(fis.i1);
             fis.n2 = I2A(fis.i2);
             if (command_see) {
-                get_item_label = show_inventory(player_ptr, fis.menu_line, fis.mode, item_tester);
+                get_item_label = show_inventory(creature, fis.menu_line, fis.mode, item_tester);
             }
         } else if (command_wrk == USE_EQUIP) {
             fis.n1 = I2A(fis.e1 - INVEN_MAIN_HAND);
