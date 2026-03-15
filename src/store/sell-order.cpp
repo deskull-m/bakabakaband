@@ -175,7 +175,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             distribute_charges(o_ptr, &sold_item, amt);
             sold_item.timeout = 0;
             inven_item_increase(creature, i_idx, -amt);
-            inven_item_describe(player_ptr, i_idx);
+            inven_item_describe(creature, i_idx);
             if (o_ptr->number > 0) {
                 autopick_alter_item(player_ptr, i_idx, false);
             }
