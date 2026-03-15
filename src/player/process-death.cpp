@@ -347,7 +347,7 @@ static bool show_dead_player_items(CreatureEntity &creature)
 
     if (creature.inven_cnt) {
         term_clear();
-        (void)show_inventory(static_cast<PlayerType *>(&creature), 0, USE_FULL, AllMatchItemTester());
+        (void)show_inventory(creature, 0, USE_FULL, AllMatchItemTester());
         prt(_("持っていたアイテム: -続く-", "You are carrying: -more-"), 0, 0);
 
         if (inkey() == ESCAPE) {

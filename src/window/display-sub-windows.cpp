@@ -105,10 +105,9 @@ static void display_sub_windows(SubWindowRedrawingFlag pw_flag, std::invocable a
  */
 void fix_inventory(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     display_sub_windows(SubWindowRedrawingFlag::INVENTORY,
-        [player_ptr] {
-            display_inventory(player_ptr, *fix_item_tester);
+        [&creature] {
+            display_inventory(creature, *fix_item_tester);
         });
 }
 

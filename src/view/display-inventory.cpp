@@ -10,6 +10,7 @@
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
@@ -26,8 +27,9 @@
  * @details
  * Hack -- do not display "trailing" empty slots
  */
-COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
+COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     COMMAND_CODE i;
     int k, l, z = 0;
     COMMAND_CODE out_index[23]{};
@@ -46,7 +48,7 @@ COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS m
         z = i + 1;
     }
 
-    const auto inven_label = prepare_label_string(*player_ptr, USE_INVEN, item_tester);
+    const auto inven_label = prepare_label_string(creature, USE_INVEN, item_tester);
     for (k = 0, i = 0; i < z; i++) {
         auto &item = *player_ptr->inventory[i];
         if (!item_tester.okay(&item) && !(mode & USE_FULL)) {
@@ -131,11 +133,12 @@ COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS m
  * @brief 所持アイテム一覧を表示する /
  * Choice window "shadow" of the "show_inven()" function
  */
-void display_inventory(PlayerType *player_ptr, const ItemTester &item_tester)
+void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int i, z = 0;
     TERM_COLOR attr = TERM_WHITE;
-    if (!player_ptr || player_ptr->inventory.empty()) {
+    if (creature.inventory.empty()) {
         return;
     }
 
