@@ -488,7 +488,7 @@ void do_cmd_racial_power(CreatureEntity &creature)
         set_race_racial_command(player_ptr, rc_ptr);
     }
 
-    select_mutation_racial(player_ptr, rc_ptr);
+    select_mutation_racial(creature, rc_ptr);
 
     if (rc_ptr->power_count() == 0) {
         msg_print(_("特殊能力はありません。", "You have no special powers."));
