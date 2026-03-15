@@ -1074,7 +1074,6 @@ void place_grid(CreatureEntity &creature, Grid &grid, grid_bold_type gb_type)
 
 void place_bold(CreatureEntity &creature, POSITION y, POSITION x, grid_bold_type gb_type)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto &grid = player.current_floor_ptr->grid_array[y][x];
+    auto &grid = creature.current_floor_ptr->grid_array[y][x];
     place_grid(creature, grid, gb_type);
 }

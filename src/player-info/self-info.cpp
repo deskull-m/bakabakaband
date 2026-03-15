@@ -252,7 +252,7 @@ void self_knowledge(CreatureEntity &subject)
     if (player.mimic_form != MimicKindType::NONE) {
         display_mimic_race_ability(subject, self_ptr);
     } else {
-        set_race_ability_info(&player, self_ptr);
+        set_race_ability_info(subject, self_ptr);
     }
 
     set_class_ability_info(subject, self_ptr);
