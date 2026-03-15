@@ -132,7 +132,6 @@ static void display_magic_realms(CreatureEntity &creature)
  */
 static void display_phisique(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
 #ifdef JP
     display_player_one_line(ENTRY_AGE, format("%d才", (int)creature.age), TERM_L_BLUE);
     display_player_one_line(ENTRY_HEIGHT, format("%dcm", inch_to_cm(creature.ht)), TERM_L_BLUE);
@@ -144,7 +143,7 @@ static void display_phisique(CreatureEntity &creature)
     display_player_one_line(ENTRY_WEIGHT, format("%d", (int)creature.wt), TERM_L_BLUE);
     display_player_one_line(ENTRY_SOCIAL, format("%d", (int)creature.prestige), TERM_L_BLUE);
 #endif
-    std::string alg = PlayerAlignment(player_ptr).get_alignment_description();
+    std::string alg = PlayerAlignment(creature).get_alignment_description();
     display_player_one_line(ENTRY_ALIGN, format("%s", alg.data()), TERM_L_BLUE);
     display_player_one_line(ENTRY_DEATH_COUNT, format("%d  ", (int)creature.death_count), TERM_L_BLUE);
 }

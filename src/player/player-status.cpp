@@ -2660,7 +2660,7 @@ void update_creature(CreatureEntity &creature)
 
     if (rfu.has(StatusRecalculatingFlag::BONUS)) {
         rfu.reset_flag(StatusRecalculatingFlag::BONUS);
-        PlayerAlignment(player_ptr).update_alignment();
+        PlayerAlignment(creature).update_alignment();
         PlayerSkill ps(player_ptr);
         ps.apply_special_weapon_skill_max_values();
         ps.limit_weapon_skills_by_max_value();
