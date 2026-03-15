@@ -312,10 +312,9 @@ bool no_lite(CreatureEntity &creature)
  */
 void print_rel(CreatureEntity &creature, const DisplaySymbol &symbol, const Pos2D &pos)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     /* Only do "legal" locations */
     if (panel_contains(pos)) {
-        const auto color = get_monochrome_display_color(&player).value_or(symbol.color);
+        const auto color = get_monochrome_display_color(creature).value_or(symbol.color);
         term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, { { color, symbol.character }, {} });
     }
 }
@@ -448,10 +447,9 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
  */
 void lite_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &player = dynamic_cast<PlayerType &>(creature);
-    if (panel_contains(pos) && player.current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
-        auto symbol_pair = map_info(&player, pos);
-        symbol_pair.symbol_foreground.color = get_monochrome_display_color(&player).value_or(symbol_pair.symbol_foreground.color);
+    if (panel_contains(pos) && creature.current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        auto symbol_pair = map_info(creature, pos);
+        symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
 
         term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, symbol_pair);
         static constexpr auto flags = {

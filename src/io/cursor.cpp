@@ -37,7 +37,6 @@ void move_cursor_relative(int row, int col)
  */
 void print_path(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     uint8_t default_color = TERM_SLATE;
     const Pos2D pos(y, x);
     if (!display_path || (project_length == -1)) {
@@ -55,7 +54,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
         if (panel_contains(pos_path)) {
             DisplaySymbolPair symbol_pair({ default_color, '\0' }, { default_color, '*' });
             if (grid.has_monster() && floor.m_list[grid.m_idx].ml) {
-                symbol_pair = map_info(player_ptr, pos_path);
+                symbol_pair = map_info(creature, pos_path);
                 auto &symbol_foreground = symbol_pair.symbol_foreground;
                 if (!symbol_foreground.is_ascii_graphics()) {
                     symbol_foreground.color = default_color;
@@ -66,7 +65,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
                 }
             }
 
-            symbol_pair.symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_pair.symbol_foreground.color);
+            symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
             symbol_pair.symbol_foreground.character = '*';
             term_queue_bigchar(panel_col_of(pos_path.x), pos_path.y - panel_row_prt, symbol_pair);
         }

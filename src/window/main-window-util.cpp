@@ -93,8 +93,8 @@ void print_map(PlayerType *player_ptr)
 
     for (auto y = ymin; y <= ymax; y++) {
         for (auto x = xmin; x <= xmax; x++) {
-            auto symbol_pair = map_info(player_ptr, { y, x });
-            symbol_pair.symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_pair.symbol_foreground.color);
+            auto symbol_pair = map_info(*player_ptr, { y, x });
+            symbol_pair.symbol_foreground.color = get_monochrome_display_color(*player_ptr).value_or(symbol_pair.symbol_foreground.color);
 
             term_queue_bigchar(panel_col_of(x), y - panel_row_prt, symbol_pair);
         }
@@ -193,7 +193,7 @@ void display_map(PlayerType *player_ptr, int *cy, int *cx)
             match_autopick = -1;
             autopick_obj = nullptr;
             feat_priority = -1;
-            const auto symbol_pair = map_info(player_ptr, { j, i });
+            const auto symbol_pair = map_info(*player_ptr, { j, i });
             tp = (byte)feat_priority;
             if (match_autopick != -1 && (match_autopick_yx[y][x] == -1 || match_autopick_yx[y][x] > match_autopick)) {
                 match_autopick_yx[y][x] = match_autopick;
@@ -252,7 +252,7 @@ void display_map(PlayerType *player_ptr, int *cy, int *cx)
         term_gotoxy(COL_MAP, y);
         for (x = 0; x < wid + 2; ++x) {
             DisplaySymbol symbol_foreground(ma[y][x], mc[y][x]);
-            symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_foreground.color);
+            symbol_foreground.color = get_monochrome_display_color(*player_ptr).value_or(symbol_foreground.color);
 
             term_add_bigch(symbol_foreground);
         }

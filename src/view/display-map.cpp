@@ -5,6 +5,7 @@
 #include "game-option/map-screen-options.h"
 #include "game-option/special-options.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -131,15 +132,16 @@ static bool is_revealed_wall(const FloorType &floor, const Pos2D &pos)
  * @return シンボル表記
  * @todo 強力発動コピペの嵐…ポインタ引数の嵐……Fuuu^h^hck!!
  */
-DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
+DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &grid = floor.get_grid(pos);
     const auto &terrains = TerrainList::get_instance();
     const auto &world = AngbandWorld::get_instance();
     const auto is_wild_mode = world.is_wild_mode();
-    const auto is_blind = player_ptr->effects()->blindness().is_blind();
-    const auto has_nocto = player_ptr->see_nocto != 0;
+    const auto is_blind = creature.effects()->blindness().is_blind();
+    const auto has_nocto = creature.see_nocto != 0;
     const auto is_darkened = !has_nocto && grid.is_darkened();
     const auto tag_unsafe = (view_unsafe_grids && (grid.info & CAVE_UNSAFE)) ? TerrainTag::UNDETECTED : TerrainTag::NONE;
     const auto *terrain_mimic_ptr = &grid.get_terrain(TerrainKind::MIMIC);
@@ -200,7 +202,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
                         symbol_config = terrain_mimic_ptr->symbol_configs.at(F_LIT_DARK);
                     } else if ((grid.info & (CAVE_GLOW | CAVE_MNDK)) != CAVE_GLOW) {
                         symbol_config = terrain_mimic_ptr->symbol_configs.at(F_LIT_DARK);
-                    } else if (terrain_mimic_ptr->flags.has_not(TerrainCharacteristics::LOS) && !floor.is_illuminated_at(player_ptr->get_position(), pos)) {
+                    } else if (terrain_mimic_ptr->flags.has_not(TerrainCharacteristics::LOS) && !floor.is_illuminated_at(creature.get_position(), pos)) {
                         symbol_config = terrain_mimic_ptr->symbol_configs.at(F_LIT_DARK);
                     }
                 }
@@ -216,7 +218,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     DisplaySymbolPair symbol_pair(symbol_config, symbol_config);
-    const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.effects()->hallucination().is_hallucinated();
     if (is_hallucinated && one_in_(256)) {
         symbol_pair.symbol_foreground = image_random();
     }
@@ -228,7 +230,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
         }
 
         if (display_autopick) {
-            match_autopick = find_autopick_list(*player_ptr, &item);
+            match_autopick = find_autopick_list(creature, &item);
             if (match_autopick == -1) {
                 continue;
             }
@@ -342,7 +344,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
  *
  * @return 単色表示色。単色表示を行わない場合はtl::nullopt
  */
-tl::optional<uint8_t> get_monochrome_display_color(PlayerType *player_ptr)
+tl::optional<uint8_t> get_monochrome_display_color(CreatureEntity &creature)
 {
     if (use_graphics) {
         return tl::nullopt;
@@ -351,10 +353,10 @@ tl::optional<uint8_t> get_monochrome_display_color(PlayerType *player_ptr)
     if (AngbandWorld::get_instance().timewalk_m_idx) {
         return TERM_DARK;
     }
-    if (is_invuln(*player_ptr) || player_ptr->timewalk) {
+    if (is_invuln(creature) || creature.timewalk) {
         return TERM_WHITE;
     }
-    if (player_ptr->wraith_form) {
+    if (creature.wraith_form) {
         return TERM_L_DARK;
     }
 
