@@ -428,7 +428,6 @@ static bool decide_body_spec(CreatureEntity &creature, chara_limit_type chara_li
 
 static bool display_auto_roller_count(CreatureEntity &creature, const int col)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /*!
      * @details ここで指定された回数だけロールする度にその時の結果を画面に表示する
      * @todo この定数を定義した時代に比べて、CPUパワーが相当に上がっている.
@@ -439,7 +438,7 @@ static bool display_auto_roller_count(CreatureEntity &creature, const int col)
         return false;
     }
 
-    birth_put_stats(player_ptr);
+    birth_put_stats(creature);
     if (auto_upper_round) {
         put_str(format("%ld%09ld", auto_upper_round, auto_round), 10, col + 20);
     } else {
