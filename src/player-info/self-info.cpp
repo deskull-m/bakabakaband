@@ -255,7 +255,7 @@ void self_knowledge(CreatureEntity &subject)
         set_race_ability_info(&player, self_ptr);
     }
 
-    set_class_ability_info(&player, self_ptr);
+    set_class_ability_info(subject, self_ptr);
     set_mutation_info(player, self_ptr);
     set_bad_status_info(*player.effects(), self_ptr);
     set_curse_info(subject, self_ptr);
