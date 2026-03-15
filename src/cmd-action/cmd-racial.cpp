@@ -483,9 +483,9 @@ void do_cmd_racial_power(CreatureEntity &creature)
     switch_class_racial(player_ptr, rc_ptr);
 
     if (creature.mimic_form != MimicKindType::NONE) {
-        set_mimic_racial_command(player_ptr, rc_ptr);
+        set_mimic_racial_command(creature, rc_ptr);
     } else {
-        set_race_racial_command(player_ptr, rc_ptr);
+        set_race_racial_command(creature, rc_ptr);
     }
 
     select_mutation_racial(creature, rc_ptr);
