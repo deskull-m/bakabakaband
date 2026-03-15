@@ -9,6 +9,6 @@
 
 class PlayerType;
 class CreatureEntity;
-void display_player_flag_info_1(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16));
-void display_player_flag_info_2(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16));
-void display_player_flag_info_3(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16));
+void display_player_flag_info_1(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16));
+void display_player_flag_info_2(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16));
+void display_player_flag_info_3(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16));
