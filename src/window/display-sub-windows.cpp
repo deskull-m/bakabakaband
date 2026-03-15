@@ -520,10 +520,9 @@ void fix_monster(CreatureEntity &creature)
  */
 void fix_object(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     display_sub_windows(SubWindowRedrawingFlag::ITEM_KNOWLEDGE,
-        [player_ptr] {
-            display_koff(player_ptr);
+        [&creature] {
+            display_koff(creature);
         });
 }
 

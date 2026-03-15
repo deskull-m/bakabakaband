@@ -21,16 +21,15 @@
 
 void vary_item(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (i_idx >= 0) {
         inven_item_increase(creature, i_idx, num);
-        inven_item_describe(player_ptr, i_idx);
+        inven_item_describe(creature, i_idx);
         inven_item_optimize(creature, i_idx);
         return;
     }
 
     floor_item_increase(creature, 0 - i_idx, num);
-    floor_item_describe(player_ptr, 0 - i_idx);
+    floor_item_describe(static_cast<PlayerType *>(&creature), 0 - i_idx);
     floor_item_optimize(creature, 0 - i_idx);
 }
 

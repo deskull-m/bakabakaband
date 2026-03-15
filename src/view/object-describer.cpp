@@ -8,6 +8,7 @@
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "spell/spell-info.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "term/term-color-types.h"
@@ -45,9 +46,10 @@ void inven_item_charges(const ItemEntity &item)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param item 残量を表示したいプレイヤーのアイテム所持スロット
  */
-void inven_item_describe(PlayerType *player_ptr, short i_idx)
+void inven_item_describe(CreatureEntity &creature, short i_idx)
 {
-    const auto &item = *player_ptr->inventory[i_idx];
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    const auto &item = *creature.inventory[i_idx];
     const auto item_name = describe_flavor(player_ptr, item, 0);
 #ifdef JP
     if (item.number <= 0) {
@@ -65,8 +67,9 @@ void inven_item_describe(PlayerType *player_ptr, short i_idx)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @details Include list of usable spells for readible books
  */
-void display_koff(PlayerType *player_ptr)
+void display_koff(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &tracker = BaseitemTracker::get_instance();
     if (!tracker.is_tracking()) {
         return;
@@ -88,7 +91,7 @@ void display_koff(PlayerType *player_ptr)
             return;
         }
     } else {
-        CreatureClass pc(*player_ptr);
+        CreatureClass pc(creature);
         if (!pc.is_every_magic()) {
             return;
         }
@@ -108,5 +111,5 @@ void display_koff(PlayerType *player_ptr)
         }
     }
 
-    print_spells(*player_ptr, 0, spells, num, 2, 0, use_realm);
+    print_spells(creature, 0, spells, num, 2, 0, use_realm);
 }

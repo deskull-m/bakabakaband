@@ -161,7 +161,7 @@ void ObjectThrowEntity::reflect_inventory_by_throw()
 
     inven_item_increase(*this->player_ptr, this->i_idx, -1);
     if (!this->return_when_thrown) {
-        inven_item_describe(this->player_ptr, this->i_idx);
+        inven_item_describe(*this->player_ptr, this->i_idx);
     }
 
     inven_item_optimize(*this->player_ptr, this->i_idx);
