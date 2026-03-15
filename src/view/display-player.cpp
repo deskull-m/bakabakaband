@@ -366,11 +366,11 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
  * @param mode オプション
  * @todo y = 6、x = 0、mode = 0で固定。何とかする
  */
-void display_player_equippy(PlayerType *player_ptr, TERM_LEN y, TERM_LEN x, BIT_FLAGS16 mode)
+void display_player_equippy(CreatureEntity &creature, TERM_LEN y, TERM_LEN x, BIT_FLAGS16 mode)
 {
     const auto max_i = (mode & DP_WP) ? INVEN_BOW + 1 : INVEN_TOTAL;
     for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *creature.inventory[i];
         auto symbol = item.get_symbol();
         if (!equippy_chars || !item.is_valid()) {
             symbol.color = TERM_DARK;

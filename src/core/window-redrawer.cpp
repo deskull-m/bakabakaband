@@ -116,7 +116,7 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::EQUIPPY)) {
         rfu.reset_flag(MainWindowRedrawingFlag::EQUIPPY);
-        display_player_equippy(player_ptr, ROW_EQUIPPY, COL_EQUIPPY, 0);
+        display_player_equippy(*player_ptr, ROW_EQUIPPY, COL_EQUIPPY, 0);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::TITLE)) {

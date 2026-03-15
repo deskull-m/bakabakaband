@@ -335,12 +335,11 @@ static void process_one_characteristic(CreatureEntity &creature, TERM_LEN row, T
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_basic_resistance_info(
-    CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 12;
     TERM_LEN col = 1;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 8, 0);
+    (*display_player_equippy)(creature, row - 2, col + 8, 0);
     c_put_str(TERM_WHITE, "abcdefghijkl@", row - 1, col + 8);
 
     process_one_characteristic(creature, row++, col, _("耐酸  :", "Acid  :"), TR_RES_ACID, f, 0);
@@ -362,12 +361,11 @@ static void display_basic_resistance_info(
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_advanced_resistance_info(
-    CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 12;
     TERM_LEN col = 26;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 8, 0);
+    (*display_player_equippy)(creature, row - 2, col + 8, 0);
     c_put_str(TERM_WHITE, "abcdefghijkl@", row - 1, col + 8);
 
     process_one_characteristic(creature, row++, col, _("耐轟音:", "Sound :"), TR_RES_SOUND, f, 0);
@@ -388,12 +386,11 @@ static void display_advanced_resistance_info(
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_other_resistance_info(
-    CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 12;
     TERM_LEN col = 51;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 12, 0);
+    (*display_player_equippy)(creature, row - 2, col + 12, 0);
     c_put_str(TERM_WHITE, "abcdefghijkl@", row - 1, col + 12);
 
     process_one_characteristic(creature, row++, col, _("加速      :", "Speed     :"), TR_SPEED, f, 0);
@@ -433,7 +430,7 @@ all_player_flags get_player_state_flags(CreatureEntity &creature)
  * @param display_player_equippy 表示へのコールバック
  * Special display, part 1
  */
-void display_player_flag_info_1(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16))
+void display_player_flag_info_1(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16))
 {
     all_player_flags f = get_player_state_flags(creature);
 
@@ -448,12 +445,11 @@ void display_player_flag_info_1(CreatureEntity &creature, void (*display_player_
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_slay_info(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_slay_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 1;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 14, DP_WP);
+    (*display_player_equippy)(creature, row - 2, col + 14, DP_WP);
     c_put_str(TERM_WHITE, "abc@", row - 1, col + 14);
 
     process_one_characteristic(creature, row++, col, _("邪悪    倍打:", "Slay Evil   :"), TR_SLAY_EVIL, f, DP_WP);
@@ -476,12 +472,11 @@ static void display_slay_info(CreatureEntity &creature, void (*display_player_eq
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_brand_info(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_brand_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 1;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 14, DP_WP);
+    (*display_player_equippy)(creature, row - 2, col + 14, DP_WP);
     c_put_str(TERM_WHITE, "abc@", row - 1, col + 14);
     process_one_characteristic(creature, row++, col, _("溶解        :", "Acid Brand  :"), TR_BRAND_ACID, f, DP_WP);
     process_one_characteristic(creature, row++, col, _("電撃        :", "Elec Brand  :"), TR_BRAND_ELEC, f, DP_WP);
@@ -506,12 +501,11 @@ static void display_brand_info(CreatureEntity &creature, void (*display_player_e
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_tval_misc_info(
-    CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 49;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 14, 0);
+    (*display_player_equippy)(creature, row - 2, col + 14, 0);
     c_put_str(TERM_WHITE, "abcdefghijkl@", row - 1, col + 14);
 
     process_one_characteristic(creature, row++, col, _("追加攻撃    :", "Add Blows   :"), TR_BLOWS, f, 0);
@@ -537,12 +531,11 @@ static void display_tval_misc_info(
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_esc_info(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_esc_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 21;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 13, 0);
+    (*display_player_equippy)(creature, row - 2, col + 13, 0);
     c_put_str(TERM_WHITE, "abcdefghijkl@", row - 1, col + 13);
     process_one_characteristic(creature, row++, col, _("テレパシー :", "Telepathy  :"), TR_TELEPATHY, f, 0);
     process_one_characteristic(creature, row++, col, _("邪悪    ESP:", "ESP Evil   :"), TR_ESP_EVIL, f, 0);
@@ -566,12 +559,11 @@ static void display_esc_info(CreatureEntity &creature, void (*display_player_equ
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_stustain_aura_info(
-    CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 21;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 12, 0);
+    (*display_player_equippy)(creature, row - 2, col + 12, 0);
     c_put_str(TERM_WHITE, "abcdefghijkl@", row - 1, col + 12);
 
     process_one_characteristic(creature, row++, col, _("腕力  維持:", "Sust Str  :"), TR_SUST_STR, f, 0);
@@ -598,12 +590,11 @@ static void display_stustain_aura_info(
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_curse_info(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_curse_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 49;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (*display_player_equippy)(player_ptr, row - 2, col + 14, 0);
+    (*display_player_equippy)(creature, row - 2, col + 14, 0);
     c_put_str(TERM_WHITE, "abcdefghijkl@", row - 1, col + 14);
 
     process_one_characteristic(creature, row++, col, _("太古の怨念  :", "TY Curse    :"), TR_TY_CURSE, f, 0);
@@ -631,7 +622,7 @@ static void display_curse_info(CreatureEntity &creature, void (*display_player_e
  * @param creature クリーチャーへの参照
  * Special display, part 2
  */
-void display_player_flag_info_2(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16))
+void display_player_flag_info_2(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16))
 {
     /* Extract flags and store */
     all_player_flags f = get_player_state_flags(creature);
@@ -646,7 +637,7 @@ void display_player_flag_info_2(CreatureEntity &creature, void (*display_player_
  * @param creature クリーチャーへの参照
  * Special display, part 3
  */
-void display_player_flag_info_3(CreatureEntity &creature, void (*display_player_equippy)(PlayerType *, TERM_LEN, TERM_LEN, BIT_FLAGS16))
+void display_player_flag_info_3(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16))
 {
     /* Extract flags and store */
     all_player_flags f = get_player_state_flags(creature);
