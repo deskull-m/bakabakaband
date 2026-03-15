@@ -464,7 +464,6 @@ void fix_overhead(CreatureEntity &creature)
  */
 static void display_dungeon(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &floor = *creature.current_floor_ptr;
     const auto p_pos = creature.get_position();
     for (auto x = p_pos.x - game_term->wid / 2 + 1; x <= p_pos.x + game_term->wid / 2; x++) {
@@ -478,8 +477,8 @@ static void display_dungeon(CreatureEntity &creature)
                 continue;
             }
 
-            auto symbol_pair = map_info(player_ptr, pos);
-            symbol_pair.symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_pair.symbol_foreground.color);
+            auto symbol_pair = map_info(creature, pos);
+            symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
             term_queue_char(pos_drawing.x, pos_drawing.y, symbol_pair);
         }
     }
