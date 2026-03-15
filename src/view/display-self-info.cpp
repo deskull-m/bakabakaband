@@ -34,12 +34,11 @@ void display_max_base_status(CreatureEntity &creature, self_info_type *self_ptr)
 
 void display_virtue(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     self_ptr->info_list.emplace_back("");
-    const std::string alg = PlayerAlignment(player_ptr).get_alignment_description(true);
+    const std::string alg = PlayerAlignment(creature).get_alignment_description(true);
     self_ptr->info_list.push_back(format(_("現在の属性 : %s", "Your alignment : %s"), alg.data()));
 
-    for (const auto &[virtue_type, tester] : player_ptr->virtues) {
+    for (const auto &[virtue_type, tester] : creature.virtues) {
         const auto vir_name = virtue_names.at(virtue_type).data();
         std::string vir_desc;
         if (tester < -100) {

@@ -457,7 +457,7 @@ static void dump_aux_virtues(CreatureEntity &creature, FILE *fff)
         }
     }
 
-    std::string alg = PlayerAlignment(&player).get_alignment_description();
+    std::string alg = PlayerAlignment(player).get_alignment_description();
     fmt::println(fff, _("\n属性 : {}", "\nYour alignment : {}"), alg);
     fmt::print(fff, "\n");
     dump_virtues(creature, fff);

@@ -37,14 +37,13 @@
  */
 void do_cmd_knowledge_virtues(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
         return;
     }
 
-    std::string alg = PlayerAlignment(player_ptr).get_alignment_description();
+    std::string alg = PlayerAlignment(creature).get_alignment_description();
     fprintf(fff, _("現在の属性 : %s\n\n", "Your alignment : %s\n\n"), alg.data());
     dump_virtues(creature, fff);
     angband_fclose(fff);
