@@ -83,7 +83,7 @@ static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX 
     }
 
     if (flag) {
-        Chest chest(player_ptr);
+        Chest chest(*player_ptr);
         chest.fire_trap(pos, o_idx);
         chest.open(false, pos, o_idx);
     }
