@@ -3,10 +3,11 @@
 #include "object-enchant/object-boost.h"
 #include "object-enchant/tr-types.h"
 #include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "racial/racial-android.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -84,7 +85,7 @@ void get_bloody_moon_flags(ItemEntity *o_ptr)
  * @param o_ptr ブラッディ・ムーンへの参照ポインタ
  * @return オブジェクト情報に異常がない限りTRUE
  */
-bool activate_bloody_moon(PlayerType *player_ptr, ItemEntity *o_ptr)
+bool activate_bloody_moon(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     if (!o_ptr->is_specific_artifact(FixedArtifactId::BLOOD)) {
         return false;
@@ -92,8 +93,8 @@ bool activate_bloody_moon(PlayerType *player_ptr, ItemEntity *o_ptr)
 
     msg_print(_("鎌が明るく輝いた...", "Your scythe glows brightly!"));
     get_bloody_moon_flags(o_ptr);
-    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        calc_android_exp(*player_ptr);
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
+        calc_android_exp(creature);
     }
 
     static constexpr auto flags = {
