@@ -1,5 +1,5 @@
 #pragma once
 
 class ItemEntity;
-class PlayerType;
-bool activate_muramasa(PlayerType *player_ptr, ItemEntity *o_ptr);
+class CreatureEntity;
+bool activate_muramasa(CreatureEntity &creature, ItemEntity *o_ptr);
