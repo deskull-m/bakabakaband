@@ -356,7 +356,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
         (void)cosmic_cast_off(*player_ptr, o_ptr_ptr);
         return true;
     case RandomArtActType::FALLING_STAR:
-        return activate_toragoroshi(player_ptr);
+        return activate_toragoroshi(*player_ptr);
     case RandomArtActType::GRAND_CROSS:
         return activate_grand_cross(*player_ptr);
     case RandomArtActType::TELEPORT_LEVEL:
