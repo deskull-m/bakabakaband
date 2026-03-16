@@ -1,14 +1,14 @@
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 class StoneOfLore {
 public:
-    StoneOfLore(PlayerType *player_ptr);
+    StoneOfLore(CreatureEntity &creature);
     virtual ~StoneOfLore() = default;
     bool perilous_secrets();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 
     void consume_mp();
 };
