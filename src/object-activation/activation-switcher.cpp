@@ -118,7 +118,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BLINDING_LIGHT:
         return activate_blinding_light(*player_ptr, name);
     case RandomArtActType::BIZARRE:
-        return activate_ring_of_power(player_ptr, name);
+        return activate_ring_of_power(*player_ptr, name);
     case RandomArtActType::CAST_BA_STAR:
         return activate_ball_lite(*player_ptr, name);
     case RandomArtActType::BLADETURNER:
