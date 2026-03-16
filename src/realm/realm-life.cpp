@@ -385,7 +385,7 @@ tl::optional<std::string> do_life_spell(CreatureEntity &creature, SPELL_IDX spel
             set_oppose_fire(creature, v, false);
             set_oppose_cold(creature, v, false);
             set_oppose_pois(creature, v, false);
-            set_ultimate_res(player_ptr, v, false);
+            set_ultimate_res(creature, v, false);
         }
     } break;
     }
