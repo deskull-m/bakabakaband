@@ -122,7 +122,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::CAST_BA_STAR:
         return activate_ball_lite(*player_ptr, name);
     case RandomArtActType::BLADETURNER:
-        return activate_bladeturner(player_ptr);
+        return activate_bladeturner(*player_ptr);
     case RandomArtActType::BR_FIRE:
         return activate_breath_fire(player_ptr, o_ptr);
     case RandomArtActType::BR_COLD:
