@@ -340,7 +340,7 @@ static DisplaySymbol change_display_by_mutation(CreatureEntity &creature, int st
 static void display_mutation_compensation(CreatureEntity &creature, int row, int col)
 {
     TrFlags flags;
-    player_flags(static_cast<PlayerType *>(&creature), flags);
+    player_flags(creature, flags);
 
     for (int stat = 0; stat < A_MAX; stat++) {
         auto symbol = change_display_by_mutation(creature, stat, { TERM_SLATE, '.' });
