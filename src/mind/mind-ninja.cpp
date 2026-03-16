@@ -419,7 +419,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
     case MindNinjaType::ANCIENT_KNOWLEDGE:
         return ident_spell(*player_ptr, false);
     case MindNinjaType::FLOATING:
-        set_tim_levitation(player_ptr, randint1(20) + 20, false);
+        set_tim_levitation(creature, randint1(20) + 20, false);
         break;
     case MindNinjaType::HIDE_FLAMES:
         fire_ball(creature, AttributeType::FIRE, Direction::self(), 50 + plev, plev / 10 + 2);

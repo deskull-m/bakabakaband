@@ -74,7 +74,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_levitation) {
-        (void)set_tim_levitation(player_ptr, player_ptr->tim_levitation - 1, true);
+        (void)set_tim_levitation(*player_ptr, player_ptr->tim_levitation - 1, true);
     }
 
     if (player_ptr->tim_sh_touki) {
@@ -226,11 +226,11 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->tim_imm_dark) {
-        (void)set_tim_imm_dark(player_ptr, player_ptr->tim_imm_dark - 1, true);
+        (void)set_tim_imm_dark(*player_ptr, player_ptr->tim_imm_dark - 1, true);
     }
 
     if (player_ptr->ult_res) {
-        (void)set_ultimate_res(player_ptr, player_ptr->ult_res - 1, true);
+        (void)set_ultimate_res(*player_ptr, player_ptr->ult_res - 1, true);
     }
 
     if (effects->poison().is_poisoned()) {

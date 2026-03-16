@@ -380,7 +380,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_imm_dark(player_ptr, dice.roll() + base, false);
+            set_tim_imm_dark(creature, dice.roll() + base, false);
         }
     } break;
 

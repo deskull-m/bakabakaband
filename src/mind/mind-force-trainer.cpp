@@ -289,7 +289,7 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
         (void)lite_area(creature, Dice::roll(2, (plev / 2)), (plev / 10) + 1);
         break;
     case MindForceTrainerType::FLYING_TECHNIQUE:
-        set_tim_levitation(player_ptr, randint1(30) + 30 + boost / 5, false);
+        set_tim_levitation(creature, randint1(30) + 30 + boost / 5, false);
         break;
     case MindForceTrainerType::KAMEHAMEHA: {
         project_length = plev / 8 + 3;

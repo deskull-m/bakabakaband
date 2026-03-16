@@ -207,6 +207,6 @@ bool activate_ultimate_resistance(CreatureEntity &creature)
     (void)set_oppose_fire(creature, v, false);
     (void)set_oppose_cold(creature, v, false);
     (void)set_oppose_pois(creature, v, false);
-    (void)set_ultimate_res(player_ptr, v, false);
+    (void)set_ultimate_res(creature, v, false);
     return true;
 }
