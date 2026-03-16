@@ -240,7 +240,6 @@ static void set_esp_info(CreatureEntity &subject, self_info_type *self_ptr)
  */
 void self_knowledge(CreatureEntity &subject)
 {
-    auto &player = static_cast<PlayerType &>(subject);
     self_info_type tmp_si;
     self_info_type *self_ptr = &tmp_si;
     display_life_rating(subject, self_ptr);
@@ -249,19 +248,19 @@ void self_knowledge(CreatureEntity &subject)
     display_max_base_status(subject, self_ptr);
     display_virtue(subject, self_ptr);
     self_ptr->info_list.emplace_back("");
-    if (player.mimic_form != MimicKindType::NONE) {
+    if (subject.mimic_form != MimicKindType::NONE) {
         display_mimic_race_ability(subject, self_ptr);
     } else {
         set_race_ability_info(subject, self_ptr);
     }
 
     set_class_ability_info(subject, self_ptr);
-    set_mutation_info(player, self_ptr);
-    set_bad_status_info(*player.effects(), self_ptr);
+    set_mutation_info(subject, self_ptr);
+    set_bad_status_info(*subject.effects(), self_ptr);
     set_curse_info(subject, self_ptr);
     set_body_improvement_info_1(subject, self_ptr);
     set_special_attack_info(subject, self_ptr);
-    switch (player.action) {
+    switch (subject.action) {
     case ACTION_SEARCH:
         self_ptr->info_list.emplace_back(_("あなたはひじょうに注意深く周囲を見渡している。", "You are looking around very carefully."));
         break;
@@ -275,7 +274,7 @@ void self_knowledge(CreatureEntity &subject)
     set_body_improvement_info_4(subject, self_ptr);
     set_status_sustain_info(subject, self_ptr);
     set_equipment_influence(subject, self_ptr);
-    set_weapon_effect_info(&player, self_ptr);
+    set_weapon_effect_info(subject, self_ptr);
     set_body_improvement_info_5(subject, self_ptr);
     display_self_info(self_ptr);
 }

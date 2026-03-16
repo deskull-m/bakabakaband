@@ -2,7 +2,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "object-enchant/tr-types.h"
 #include "player-info/self-info-util.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
 static void set_weapon_bless_info(self_info_type *self_ptr)
@@ -122,9 +122,9 @@ static void set_slay_info(self_info_type *self_ptr)
     }
 }
 
-void set_weapon_effect_info(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_weapon_effect_info(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND].get();
+    auto *o_ptr = creature.inventory[INVEN_MAIN_HAND].get();
     if (!o_ptr->is_valid()) {
         return;
     }
