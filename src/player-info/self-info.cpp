@@ -270,8 +270,8 @@ void self_knowledge(CreatureEntity &subject)
     set_body_improvement_info_2(subject, self_ptr);
     set_esp_info(subject, self_ptr);
     set_body_improvement_info_3(subject, self_ptr);
-    set_element_resistance_info(&player, self_ptr);
-    set_high_resistance_info(&player, self_ptr);
+    set_element_resistance_info(subject, self_ptr);
+    set_high_resistance_info(subject, self_ptr);
     set_body_improvement_info_4(subject, self_ptr);
     set_status_sustain_info(subject, self_ptr);
     set_equipment_influence(subject, self_ptr);
