@@ -339,7 +339,7 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::RECHARGE_XTRA:
         return activate_recharge_extra(*player_ptr, name);
     case RandomArtActType::LORE:
-        return StoneOfLore(player_ptr).perilous_secrets();
+        return StoneOfLore(*player_ptr).perilous_secrets();
     case RandomArtActType::SHIKOFUMI:
         return activate_shikofumi(*player_ptr);
     case RandomArtActType::PHASE_DOOR:
