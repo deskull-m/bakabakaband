@@ -599,8 +599,8 @@ static void set_name_history(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     clear_from(23);
-    get_name(player_ptr);
-    process_player_name(player_ptr, AngbandWorld::get_instance().creating_savefile);
+    get_name(*player_ptr);
+    process_player_name(*player_ptr, AngbandWorld::get_instance().creating_savefile);
     edit_history(*player_ptr);
     get_max_stats(*player_ptr);
     initialize_virtues(creature);

@@ -112,8 +112,8 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
     auto c = inkey();
     switch (c) {
     case 'c':
-        get_name(player_ptr);
-        process_player_name(player_ptr);
+        get_name(*player_ptr);
+        process_player_name(*player_ptr);
         return page;
     case 'f': {
         const auto initial_filename = format("%s.txt", player_ptr->base_name.data());

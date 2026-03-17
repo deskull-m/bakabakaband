@@ -395,7 +395,7 @@ int main(int argc, char *argv[])
         argv[1] = nullptr;
     }
 
-    process_player_name(p_ptr, true);
+    process_player_name(*p_ptr, true);
     quit_aux = quit_hook;
 
 #ifdef USE_X11
