@@ -11,5 +11,5 @@
 
 class PlayerType;
 class CreatureEntity;
-void starve_player(PlayerType *player_ptr);
+void starve_player(CreatureEntity &creature);
 bool set_food(CreatureEntity &creature, TIME_EFFECT v);
