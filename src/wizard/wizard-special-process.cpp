@@ -294,7 +294,7 @@ static void wiz_change_status_max(CreatureEntity &creature)
             exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
         }
     }
-    PlayerSkill(player_ptr).limit_weapon_skills_by_max_value();
+    PlayerSkill(*player_ptr).limit_weapon_skills_by_max_value();
 
     for (auto &[type, exp] : creature.skill_exp) {
         exp = class_skills_info[enum2i(creature.pclass)].s_max[type];
@@ -362,7 +362,7 @@ void wiz_change_status(CreatureEntity &creature)
         }
     }
 
-    PlayerSkill(player_ptr).limit_weapon_skills_by_max_value();
+    PlayerSkill(*player_ptr).limit_weapon_skills_by_max_value();
     for (auto j : PLAYER_SKILL_KIND_TYPE_RANGE) {
         creature.skill_exp[j] = *proficiency;
         auto short_pclass = enum2i(creature.pclass);

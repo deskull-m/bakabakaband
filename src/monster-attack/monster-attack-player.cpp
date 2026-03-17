@@ -504,7 +504,7 @@ void MonsterAttackPlayer::gain_evasion_exp()
         return;
     }
 
-    PlayerSkill(this->player_ptr).gain_evasion_skill_exp();
+    PlayerSkill(*this->player_ptr).gain_evasion_skill_exp();
 }
 
 /*!

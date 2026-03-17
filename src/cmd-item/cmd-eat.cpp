@@ -80,7 +80,7 @@ static bool exe_eat_junk_type_object(CreatureEntity &creature, ItemEntity *o_ptr
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
-        PlayerSkill(player_ptr).gain_riding_skill_exp_on_gross_eating();
+        PlayerSkill(*player_ptr).gain_riding_skill_exp_on_gross_eating();
         return true;
     }
     if (o_ptr->bi_key.sval() == SV_JUNK_VOMITTING) {
@@ -90,7 +90,7 @@ static bool exe_eat_junk_type_object(CreatureEntity &creature, ItemEntity *o_ptr
             (void)BadStatusSetter(*player_ptr).mod_poison(10 + randint1(10));
         }
         player_ptr->plus_incident_tree("EAT_FECES", 1);
-        PlayerSkill(player_ptr).gain_riding_skill_exp_on_gross_eating();
+        PlayerSkill(*player_ptr).gain_riding_skill_exp_on_gross_eating();
         return true;
     }
     return false;

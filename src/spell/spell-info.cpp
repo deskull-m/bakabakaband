@@ -39,7 +39,7 @@ MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_I
 #define MANA_DIV 4
 #define DEC_MANA_DIV 3
     if (PlayerRealm::is_magic(realm) || PlayerRealm::is_technic(realm)) {
-        need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(player_ptr).exp_of_spell(realm, spell_id)) + (MANA_CONST - 1);
+        need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(*player_ptr).exp_of_spell(realm, spell_id)) + (MANA_CONST - 1);
         need_mana *= player_ptr->dec_mana ? DEC_MANA_DIV : MANA_DIV;
         need_mana /= MANA_CONST * MANA_DIV;
         if (need_mana < 1) {
@@ -200,7 +200,7 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     }
 
     if (pr.realm1().equals(use_realm) || pr.realm2().equals(use_realm) || pc.is_every_magic()) {
-        auto exp = PlayerSkill(player_ptr).exp_of_spell(use_realm, spell_id);
+        auto exp = PlayerSkill(*player_ptr).exp_of_spell(use_realm, spell_id);
         if (exp >= PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT)) {
             chance--;
         }
@@ -263,7 +263,7 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
         if (use_realm == RealmType::HISSATSU) {
             need_mana = spell.smana;
         } else {
-            auto exp = PlayerSkill(player_ptr).exp_of_spell(use_realm, spell_id);
+            auto exp = PlayerSkill(*player_ptr).exp_of_spell(use_realm, spell_id);
             need_mana = mod_need_mana(creature, spell.smana, spell_id, use_realm);
             PlayerSkillRank skill_rank;
             if ((increment == 64) || (spell.slevel >= 99)) {

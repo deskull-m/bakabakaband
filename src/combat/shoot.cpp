@@ -758,11 +758,11 @@ void exe_fire(PlayerType *player_ptr, INVENTORY_IDX i_idx, ItemEntity *j_ptr, SP
                 }
 
                 if ((monrace.level + 10) > player_ptr->level) {
-                    PlayerSkill(player_ptr).gain_range_weapon_exp(j_ptr);
+                    PlayerSkill(*player_ptr).gain_range_weapon_exp(j_ptr);
                 }
 
                 if (player_ptr->riding) {
-                    PlayerSkill(player_ptr).gain_riding_skill_exp_on_range_attack();
+                    PlayerSkill(*player_ptr).gain_riding_skill_exp_on_range_attack();
                 }
 
                 /* Did we hit it (penalize range) */

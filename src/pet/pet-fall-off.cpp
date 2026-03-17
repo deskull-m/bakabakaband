@@ -67,7 +67,7 @@ static bool calc_fall_off_possibility(PlayerType *player_ptr, const int dam, con
         fall_off_level += 20;
     }
 
-    PlayerSkill(player_ptr).gain_riding_skill_exp_on_fall_off_check(dam);
+    PlayerSkill(*player_ptr).gain_riding_skill_exp_on_fall_off_check(dam);
 
     if (randint0(dam / 2 + fall_off_level * 2) >= cur / 30 + 10) {
         return true;

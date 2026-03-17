@@ -81,7 +81,7 @@ void check_music(CreatureEntity &creature)
         rfu.set_flags(flags_swrf);
     }
 
-    PlayerSkill(&player).gain_continuous_spell_skill_exp(RealmType::MUSIC, spell_id);
+    PlayerSkill(player).gain_continuous_spell_skill_exp(RealmType::MUSIC, spell_id);
     exe_spell(creature, RealmType::MUSIC, spell_id, SpellProcessType::CONTNUATION);
 }
 
