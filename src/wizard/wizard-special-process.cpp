@@ -650,7 +650,7 @@ void wiz_reset_class(CreatureEntity &creature)
         pr.set(realm1, realm2);
     }
     player_ptr->element_realm = element_realm;
-    PlayerSpellStatus pss(player_ptr);
+    PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
     player_ptr->learned_spells = 0;
@@ -677,7 +677,7 @@ void wiz_reset_realms(CreatureEntity &creature)
         pr.set(realm1, realm2);
     }
     player_ptr->element_realm = element_realm;
-    PlayerSpellStatus pss(player_ptr);
+    PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
     player_ptr->learned_spells = 0;

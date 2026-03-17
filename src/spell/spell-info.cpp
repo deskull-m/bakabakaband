@@ -308,13 +308,13 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
         const auto info = exe_spell(creature, use_realm, spell_id, SpellProcessType::INFO);
         concptr comment = info->data();
         byte line_attr = TERM_WHITE;
-        PlayerSpellStatus pss(player_ptr);
+        PlayerSpellStatus pss(creature);
         const auto realm_status = pr.realm1().equals(use_realm) ? pss.realm1() : pss.realm2();
         if (pc.is_every_magic()) {
-            if (spell.slevel > player_ptr->max_plv) {
+            if (spell.slevel > creature.max_plv) {
                 comment = _("未知", "unknown");
                 line_attr = TERM_L_BLUE;
-            } else if (spell.slevel > player_ptr->level) {
+            } else if (spell.slevel > creature.level) {
                 comment = _("忘却", "forgotten");
                 line_attr = TERM_YELLOW;
             }

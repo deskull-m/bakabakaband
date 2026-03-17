@@ -831,7 +831,7 @@ static void display_spell_list(CreatureEntity &creature)
         x = 27 * (j % 3);
         int n = 0;
 
-        PlayerSpellStatus pss(player_ptr);
+        PlayerSpellStatus pss(creature);
         const auto realm_status = (j < 1) ? pss.realm1() : pss.realm2();
 
         for (auto spell_id = 0; spell_id < 32; spell_id++) {
