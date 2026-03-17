@@ -56,6 +56,7 @@ enum patron_reward {
 };
 
 class PlayerType;
+class CreatureEntity;
 enum player_ability_type : int;
 
 /*!
@@ -68,8 +69,8 @@ public:
     Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat, MonraceId monrace_id);
 
     // @note C4458 クラスメンバーの隠蔽 への対応として末尾に「_」を付ける.
-    void gain_level_reward(PlayerType *player_ptr_, int chosen_reward);
-    void admire(PlayerType *player_ptr_);
+    void gain_level_reward(CreatureEntity &creature, int chosen_reward);
+    void admire(CreatureEntity &creature);
 
 private:
     PlayerType *player_ptr = nullptr; //!< プレイヤー参照ポインタ

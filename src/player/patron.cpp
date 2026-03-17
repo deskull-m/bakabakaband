@@ -147,9 +147,9 @@ Patron::Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, 
 {
 }
 
-void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
+void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 {
-    this->player_ptr = player_ptr_;
+    this->player_ptr = static_cast<PlayerType *>(&creature);
     int nasty_chance = 6;
     int type;
     patron_reward effect;
@@ -534,9 +534,9 @@ void Patron::gain_level_reward(PlayerType *player_ptr_, int chosen_reward)
     }
 }
 
-void Patron::admire(PlayerType *player_ptr_)
+void Patron::admire(CreatureEntity &creature)
 {
-    this->player_ptr = player_ptr_;
+    this->player_ptr = static_cast<PlayerType *>(&creature);
     if (CreatureClass(*this->player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || this->player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT)) {
         msg_format(_("%sからの声が響いた。", "The voice of %s booms out:"), this->name.data());
         msg_print(_("『よくやった、定命の者よ！』", "'Thou art donst well, mortal!'"));
