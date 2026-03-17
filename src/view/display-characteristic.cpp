@@ -414,7 +414,7 @@ all_player_flags get_player_state_flags(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     all_player_flags f;
-    player_flags(player_ptr, f.player_flags);
+    player_flags(creature, f.player_flags);
     tim_player_flags(player_ptr, f.tim_player_flags);
     player_immunity(creature, f.player_imm);
     tim_player_immunity(creature, f.tim_player_imm);

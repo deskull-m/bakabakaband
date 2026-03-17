@@ -16,12 +16,13 @@
 
 /*!
  * @brief 突然変異による耐性フラグを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param flags 耐性フラグの配列
  * @todo 最終的にplayer-status系列と統合する
  */
-static void add_mutation_flags(PlayerType *player_ptr, TrFlags &flags)
+static void add_mutation_flags(CreatureEntity &creature, TrFlags &flags)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (player_ptr->muta.none()) {
         return;
     }
@@ -59,12 +60,13 @@ static void add_mutation_flags(PlayerType *player_ptr, TrFlags &flags)
 
 /*!
  * @brief 性格による耐性フラグを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param flags 耐性フラグの配列
  * @todo 最終的にplayer-status系列と統合する
  */
-static void add_personality_flags(PlayerType *player_ptr, TrFlags &flags)
+static void add_personality_flags(CreatureEntity &creature, TrFlags &flags)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (player_ptr->ppersonality == PERSONALITY_SEXY) {
         flags.set(TR_AGGRAVATE);
     }
@@ -80,7 +82,7 @@ static void add_personality_flags(PlayerType *player_ptr, TrFlags &flags)
     flags.set(TR_RES_BLIND);
     flags.set(TR_RES_CONF);
     flags.set(TR_HOLD_EXP);
-    if (!CreatureClass(*player_ptr).equals(PlayerClassType::NINJA)) {
+    if (!CreatureClass(creature).equals(PlayerClassType::NINJA)) {
         flags.set(TR_LITE_1);
     }
     if (player_ptr->level > 9) {
@@ -91,21 +93,21 @@ static void add_personality_flags(PlayerType *player_ptr, TrFlags &flags)
 /*!
  * @brief プレイヤーの職業、種族に応じた耐性フラグを返す
  * Prints ratings on certain abilities
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param flags フラグを保管する配列
  * @details
  * Obtain the "flags" for the player as if he was an item
  * @todo 最終的にplayer-status系列と統合する
  */
-void player_flags(PlayerType *player_ptr, TrFlags &flags)
+void player_flags(CreatureEntity &creature, TrFlags &flags)
 {
     flags.clear();
 
-    flags.set(CreatureClass(*player_ptr).tr_flags());
-    flags.set(CreatureRace(player_ptr).tr_flags());
+    flags.set(CreatureClass(creature).tr_flags());
+    flags.set(CreatureRace(&creature).tr_flags());
 
-    add_mutation_flags(player_ptr, flags);
-    add_personality_flags(player_ptr, flags);
+    add_mutation_flags(creature, flags);
+    add_personality_flags(creature, flags);
 }
 
 void riding_flags(CreatureEntity &creature, TrFlags &flags, TrFlags &negative_flags)
