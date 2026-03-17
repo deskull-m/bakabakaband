@@ -20,14 +20,15 @@
 /*!
  * @brief プレイヤーの名前をチェックして修正する
  * Process the player name.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf セーブファイル名に合わせた修正を行うならばTRUE
  * @details
  * Extract a clean "base name".
  * Build the savefile name if needed.
  */
-void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
+void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &world = AngbandWorld::get_instance();
     const std::string old_player_base = world.character_generated ? player_ptr->base_name : "";
 
@@ -113,21 +114,22 @@ void process_player_name(PlayerType *player_ptr, bool is_new_savefile)
     }
 
     if (world.character_generated && old_player_base != player_ptr->base_name) {
-        autopick_load_pref(*player_ptr, false);
+        autopick_load_pref(creature, false);
     }
 }
 
 /*!
  * @brief プレイヤーの名前を変更する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details PlayerType::name は32バイトで定義されているが、
  * スコアファイル（lib/apex/scores.raw）に保存されているプレイヤー名が最大16バイト (ヌル文字含)となっている
  * このため最大値を16バイトに制限する
  */
-void get_name(PlayerType *player_ptr)
+void get_name(CreatureEntity &creature)
 {
-    const auto finalizer = util::make_finalizer([player_ptr]() {
-        display_player_misc_info(*player_ptr);
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    const auto finalizer = util::make_finalizer([&creature]() {
+        display_player_misc_info(creature);
     });
 
     std::string initial_name = player_ptr->name;

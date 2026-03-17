@@ -78,7 +78,7 @@ bool ask_quick_start(CreatureEntity &creature)
     update_creature(*player_ptr);
     player_ptr->hp = player_ptr->maxhp;
     player_ptr->csp = player_ptr->msp;
-    process_player_name(player_ptr);
+    process_player_name(*player_ptr);
     return true;
 }
 /*!

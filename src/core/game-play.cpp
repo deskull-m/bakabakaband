@@ -175,7 +175,7 @@ static void init_random_seed(PlayerType *player_ptr, bool new_game)
     }
 
     if (!new_game) {
-        process_player_name(player_ptr);
+        process_player_name(*player_ptr);
     }
 
     if (init_random_seed) {
