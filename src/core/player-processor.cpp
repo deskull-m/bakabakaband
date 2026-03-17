@@ -359,7 +359,7 @@ void process_player(PlayerType *player_ptr)
 
                 if (monster.mflag.has(MonsterTemporaryFlagType::SANITY_BLAST)) {
                     monster.mflag.reset(MonsterTemporaryFlagType::SANITY_BLAST);
-                    sanity_blast(player_ptr, m_idx);
+                    sanity_blast(*player_ptr, m_idx);
                 }
 
                 // 感知中のモンスターのフラグを落とす処理

@@ -310,7 +310,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
             break;
         case 3:
             // 一時的な混乱
-            sanity_blast(&player, m_idx);
+            sanity_blast(player, m_idx);
             break;
         case 4:
             // 突然変異のチャンス

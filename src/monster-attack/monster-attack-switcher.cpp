@@ -636,7 +636,7 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         if (player_ptr->is_dead()) {
             break;
         }
-        sanity_blast(player_ptr);
+        sanity_blast(*player_ptr);
         break;
     }
 

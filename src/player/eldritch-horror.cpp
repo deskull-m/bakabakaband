@@ -35,8 +35,9 @@
 #include <string>
 #include <string_view>
 
-static bool process_mod_hallucination(PlayerType *player_ptr, std::string_view m_name, const MonraceDefinition &monrace)
+static bool process_mod_hallucination(CreatureEntity &creature, std::string_view m_name, const MonraceDefinition &monrace)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!player_ptr->effects()->hallucination().is_hallucinated()) {
         return false;
     }
@@ -44,7 +45,7 @@ static bool process_mod_hallucination(PlayerType *player_ptr, std::string_view m
     msg_format(_("%s%sの顔を見てしまった！", "You behold the %s visage of %s!"), rand_choice(funny_desc).data(), m_name.data());
     if (one_in_(3)) {
         msg_print(rand_choice(funny_comments));
-        BadStatusSetter(*player_ptr).mod_hallucination(randnum1<short>(monrace.level));
+        BadStatusSetter(creature).mod_hallucination(randnum1<short>(monrace.level));
     }
 
     return true;
@@ -55,8 +56,9 @@ static bool process_mod_hallucination(PlayerType *player_ptr, std::string_view m
  * @param m_idx ELDRITCH_HORRORを引き起こしたモンスターの参照ID。薬・罠・魔法の影響ならtl::nullopt。(デフォルト: tl::nullopt)
  * @param necro 暗黒領域魔法の詠唱失敗によるものならばtrueを指定する (デフォルト: false)
  */
-void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
+void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necro)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &world = AngbandWorld::get_instance();
     if (AngbandSystem::get_instance().is_phase_out() || !world.character_dungeon) {
         return;
@@ -67,7 +69,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     if (!necro && m_idx) {
         auto &monster = player_ptr->current_floor_ptr->m_list[*m_idx];
         auto &monrace = monster.get_appearance_monrace();
-        const auto m_name = monster_desc(*player_ptr, monster, 0);
+        const auto m_name = monster_desc(creature, monster, 0);
         power = monrace.level / 2;
         if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
             if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS)) {
@@ -101,13 +103,13 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
             return;
         }
 
-        if (process_mod_hallucination(player_ptr, m_name, monrace)) {
+        if (process_mod_hallucination(creature, m_name, monrace)) {
             return;
         }
 
         msg_print(monrace.build_eldritch_horror_message(m_name));
         monrace.r_misc_flags.set(MonsterMiscType::ELDRITCH_HORROR);
-        switch (CreatureRace(player_ptr).life()) {
+        switch (CreatureRace(&creature).life()) {
         case PlayerRaceLifeType::DEMON:
             return;
         case PlayerRaceLifeType::UNDEAD:
@@ -119,12 +121,12 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
             break;
         }
     } else if (!necro) {
-        get_mon_num_prep_enum(*player_ptr, MonraceHook::NIGHTMARE);
-        const auto monrace_id = get_mon_num(*player_ptr, 0, MAX_DEPTH, PM_NONE);
+        get_mon_num_prep_enum(creature, MonraceHook::NIGHTMARE);
+        const auto monrace_id = get_mon_num(creature, 0, MAX_DEPTH, PM_NONE);
         auto &monrace = monraces.get_monrace(monrace_id);
         power = monrace.level + 10;
         const auto &desc = monrace.name;
-        get_mon_num_prep_enum(*player_ptr);
+        get_mon_num_prep_enum(creature);
         std::string m_name;
 #ifdef JP
 #else
@@ -148,13 +150,13 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
             return;
         }
 
-        if (process_mod_hallucination(player_ptr, m_name, monrace)) {
+        if (process_mod_hallucination(creature, m_name, monrace)) {
             return;
         }
 
         msg_print(monrace.build_eldritch_horror_message(desc));
         monrace.r_misc_flags.set(MonsterMiscType::ELDRITCH_HORROR);
-        switch (CreatureRace(player_ptr).life()) {
+        switch (CreatureRace(&creature).life()) {
         case PlayerRaceLifeType::DEMON:
             if (evaluate_percent(20 + player_ptr->level)) {
                 return;
@@ -202,7 +204,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         break;
     }
     case 2: {
-        if (player_ptr->muta.has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(*player_ptr)) {
+        if (player_ptr->muta.has_not(PlayerMutationType::COWARDICE) && !has_resist_fear(creature)) {
             msg_print(_("あなたはパラノイアになった！", "You become paranoid!"));
             if (player_ptr->muta.has(PlayerMutationType::FEARLESS)) {
                 msg_print(_("あなたはもう恐れ知らずではなくなった。", "You are no longer fearless."));
@@ -215,7 +217,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         break;
     }
     case 3: {
-        if (player_ptr->muta.has_not(PlayerMutationType::HALLU) && !has_resist_chaos(*player_ptr)) {
+        if (player_ptr->muta.has_not(PlayerMutationType::HALLU) && !has_resist_chaos(creature)) {
             msg_print(_("幻覚をひき起こす精神錯乱に陥った！", "You are afflicted by a hallucinatory insanity!"));
             player_ptr->muta.set(PlayerMutationType::HALLU);
         }
@@ -223,7 +225,7 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
         break;
     }
     case 4: {
-        if (player_ptr->muta.has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(*player_ptr)) {
+        if (player_ptr->muta.has_not(PlayerMutationType::BERS_RAGE) && !has_resist_conf(creature)) {
             msg_print(_("激烈な感情の発作におそわれるようになった！", "You become subject to fits of berserk rage!"));
             player_ptr->muta.set(PlayerMutationType::BERS_RAGE);
         }
@@ -238,12 +240,12 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 10:
     case 11:
     case 12: {
-        BadStatusSetter bss(*player_ptr);
-        if (!has_resist_conf(*player_ptr)) {
+        BadStatusSetter bss(creature);
+        if (!has_resist_conf(creature)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
 
-        if (!has_resist_chaos(*player_ptr) && one_in_(3)) {
+        if (!has_resist_chaos(creature) && one_in_(3)) {
             (void)bss.mod_hallucination(randint0(250) + 150);
         }
 
@@ -254,30 +256,30 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 13:
     case 14:
     case 15: {
-        BadStatusSetter bss(*player_ptr);
-        if (!has_resist_conf(*player_ptr)) {
+        BadStatusSetter bss(creature);
+        if (!has_resist_conf(creature)) {
             (void)bss.mod_confusion(randint0(4) + 4);
         }
         if (!player_ptr->free_act) {
             (void)bss.mod_paralysis(randint0(4) + 4);
         }
-        if (!has_resist_chaos(*player_ptr)) {
+        if (!has_resist_chaos(creature)) {
             (void)bss.mod_hallucination(randint0(250) + 150);
         }
 
         do {
-            (void)do_dec_stat(*player_ptr, A_INT);
+            (void)do_dec_stat(creature, A_INT);
         } while (!player_ptr->try_resist_eldritch_horror());
 
         do {
-            (void)do_dec_stat(*player_ptr, A_WIS);
+            (void)do_dec_stat(creature, A_WIS);
         } while (!player_ptr->try_resist_eldritch_horror());
 
         break;
     }
     case 16:
     case 17: {
-        if (lose_all_info(*player_ptr)) {
+        if (lose_all_info(creature)) {
             msg_print(_("あまりの恐怖に全てのことを忘れてしまった！", "You forget everything in your utmost terror!"));
         }
         break;
@@ -287,8 +289,8 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     case 20:
     case 21:
     case 22: {
-        do_dec_stat(*player_ptr, A_INT);
-        do_dec_stat(*player_ptr, A_WIS);
+        do_dec_stat(creature, A_INT);
+        do_dec_stat(creature, A_WIS);
         break;
     }
     default:
@@ -296,5 +298,5 @@ void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx, bool necro)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 }

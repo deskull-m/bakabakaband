@@ -195,7 +195,7 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::INSANITY)) {
-        sanity_blast(player_ptr, tl::nullopt, false);
+        sanity_blast(*player_ptr, tl::nullopt, false);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::DRAIN_EXP)) {
