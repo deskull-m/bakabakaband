@@ -448,12 +448,12 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     if (can_attack_with_main_hand(creature) && can_attack_with_sub_hand(creature)) {
         if (((creature.skill_exp[PlayerSkillKindType::TWO_WEAPON] - 1000) / 200) < monrace.level) {
-            PlayerSkill(player_ptr).gain_two_weapon_skill_exp();
+            PlayerSkill(*player_ptr).gain_two_weapon_skill_exp();
         }
     }
 
     if (creature.riding) {
-        PlayerSkill(player_ptr).gain_riding_skill_exp_on_melee_attack(monrace);
+        PlayerSkill(*player_ptr).gain_riding_skill_exp_on_melee_attack(monrace);
     }
 
     creature.plus_incident_tree("ATTACK_ACT_COUNT", 1);

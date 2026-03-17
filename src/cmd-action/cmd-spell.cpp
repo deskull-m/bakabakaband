@@ -844,7 +844,7 @@ void do_cmd_study(CreatureEntity &creature)
                 return;
         }
 
-        auto new_rank = PlayerSkill(player_ptr).gain_spell_skill_exp_over_learning(spell);
+        auto new_rank = PlayerSkill(*player_ptr).gain_spell_skill_exp_over_learning(spell);
         auto new_rank_str = PlayerSkill::skill_rank_str(new_rank);
         msg_format(_("%sの熟練度が%sに上がった。", "Your proficiency of %s is now %s rank."), spell_name.data(), new_rank_str);
     } else {
@@ -1265,7 +1265,7 @@ bool do_cmd_cast(CreatureEntity &creature)
             break;
         }
         if (mp_ptr->is_spell_trainable) {
-            PlayerSkill(player_ptr).gain_spell_skill_exp(use_realm, spell_id);
+            PlayerSkill(*player_ptr).gain_spell_skill_exp(use_realm, spell_id);
         }
     }
 

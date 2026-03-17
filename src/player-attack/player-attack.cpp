@@ -113,13 +113,12 @@ static void attack_classify(CreatureEntity &creature, player_attack_type *pa_ptr
  */
 static void get_bare_knuckle_exp(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if ((monrace.level + 10) <= creature.level) {
         return;
     }
 
-    PlayerSkill(&player).gain_martial_arts_skill_exp();
+    PlayerSkill(creature).gain_martial_arts_skill_exp();
 }
 
 /*!
@@ -129,10 +128,9 @@ static void get_bare_knuckle_exp(CreatureEntity &creature, player_attack_type *p
  */
 static void get_weapon_exp(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
 
-    PlayerSkill(&player).gain_melee_weapon_exp(o_ptr);
+    PlayerSkill(creature).gain_melee_weapon_exp(o_ptr);
 }
 
 /*!

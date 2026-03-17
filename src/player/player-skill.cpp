@@ -42,8 +42,9 @@ namespace {
 
 using GainAmountList = std::array<int, enum2i(PlayerSkillRank::MASTER)>;
 
-void gain_attack_skill_exp(PlayerType *player_ptr, short &exp, const GainAmountList &gain_amount_list)
+void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto gain_amount = 0;
     auto calc_gain_amount = [&gain_amount_list, exp](PlayerSkillRank rank, int next_rank_exp) {
         return std::min(gain_amount_list[enum2i(rank)], next_rank_exp - exp);
@@ -63,8 +64,9 @@ void gain_attack_skill_exp(PlayerType *player_ptr, short &exp, const GainAmountL
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
-void gain_spell_skill_exp_aux(PlayerType *player_ptr, short &exp, const GainAmountList &gain_amount_list, int spell_level)
+void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list, int spell_level)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto dlev = player_ptr->current_floor_ptr->dun_level;
     const auto plev = player_ptr->level;
 
@@ -95,9 +97,9 @@ void gain_spell_skill_exp_aux(PlayerType *player_ptr, short &exp, const GainAmou
 
 }
 
-PlayerSkill::PlayerSkill(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+PlayerSkill::PlayerSkill(CreatureEntity &creature)
 {
+    this->player_ptr = static_cast<PlayerType *>(&creature);
 }
 
 SUB_EXP PlayerSkill::weapon_exp_at(PlayerSkillRank rank)
@@ -254,7 +256,7 @@ void PlayerSkill::gain_melee_weapon_exp(const ItemEntity *o_ptr)
     for (auto sval = 0U; sval < this->player_ptr->weapon_exp[tval].size(); ++sval) {
         auto &now_exp = this->player_ptr->weapon_exp[tval][sval];
         if (now_exp < this->player_ptr->weapon_exp_max[tval][sval]) {
-            gain_attack_skill_exp(this->player_ptr, now_exp,
+            gain_attack_skill_exp(*this->player_ptr, now_exp,
                 (static_cast<int>(sval) == o_ptr->bi_key.sval()) ? gain_amount_list : others_gain_amount_list);
         }
     }
@@ -268,7 +270,7 @@ void PlayerSkill::gain_range_weapon_exp(const ItemEntity *o_ptr)
     for (auto sval = 0U; sval < this->player_ptr->weapon_exp[tval].size(); ++sval) {
         auto &now_exp = this->player_ptr->weapon_exp[tval][sval];
         if (now_exp < this->player_ptr->weapon_exp_max[tval][sval]) {
-            gain_attack_skill_exp(this->player_ptr, now_exp,
+            gain_attack_skill_exp(*this->player_ptr, now_exp,
                 (static_cast<int>(sval) == o_ptr->bi_key.sval()) ? gain_amount_list : others_gain_amount_list);
         }
     }
@@ -278,7 +280,7 @@ void PlayerSkill::gain_martial_arts_skill_exp()
 {
     if (this->player_ptr->skill_exp[PlayerSkillKindType::MARTIAL_ARTS] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::MARTIAL_ARTS]) {
         const GainAmountList gain_amount_list{ 40, 5, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::MARTIAL_ARTS], gain_amount_list);
+        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::MARTIAL_ARTS], gain_amount_list);
     }
 }
 
@@ -286,7 +288,7 @@ void PlayerSkill::gain_two_weapon_skill_exp()
 {
     if (this->player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::TWO_WEAPON]) {
         const GainAmountList gain_amount_list{ 80, 4, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON], gain_amount_list);
+        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::TWO_WEAPON], gain_amount_list);
     }
 }
 
@@ -294,7 +296,7 @@ void PlayerSkill::gain_riding_skill_exp_on_gross_eating()
 {
     if (this->player_ptr->skill_exp[PlayerSkillKindType::GROSS_EATING] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::GROSS_EATING]) {
         const GainAmountList gain_amount_list{ 40, 5, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::GROSS_EATING], gain_amount_list);
+        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::GROSS_EATING], gain_amount_list);
     }
 }
 
@@ -302,7 +304,7 @@ void PlayerSkill::gain_scatology_skill_exp()
 {
     if (this->player_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::SCATOLOGY]) {
         const GainAmountList gain_amount_list{ 30, 3, 1, (one_in_(4) ? 1 : 0) };
-        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY], gain_amount_list);
+        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::SCATOLOGY], gain_amount_list);
     }
 }
 
@@ -310,7 +312,7 @@ void PlayerSkill::gain_armor_skill_exp()
 {
     if (this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::ARMOR]) {
         const GainAmountList gain_amount_list{ 50, 5, 1, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR], gain_amount_list);
+        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ARMOR], gain_amount_list);
     }
 }
 
@@ -318,7 +320,7 @@ void PlayerSkill::gain_evasion_skill_exp()
 {
     if (this->player_ptr->skill_exp[PlayerSkillKindType::EVASION] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::EVASION]) {
         const GainAmountList gain_amount_list{ 40, 4, 1, (one_in_(4) ? 1 : 0) };
-        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::EVASION], gain_amount_list);
+        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::EVASION], gain_amount_list);
     }
 }
 
@@ -326,7 +328,7 @@ void PlayerSkill::gain_asshole_skill_exp()
 {
     if (this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE] < class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::ASSHOLE]) {
         const GainAmountList gain_amount_list{ 50, 5, 2, (one_in_(3) ? 1 : 0) };
-        gain_attack_skill_exp(this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE], gain_amount_list);
+        gain_attack_skill_exp(*this->player_ptr, this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE], gain_amount_list);
     }
 }
 
@@ -417,7 +419,7 @@ void PlayerSkill::gain_spell_skill_exp(RealmType realm, int spell_idx)
     const auto is_first_realm = pr.realm1().equals(realm);
     const auto &spell = PlayerRealm::get_spell_info(realm, spell_idx);
 
-    gain_spell_skill_exp_aux(this->player_ptr, this->player_ptr->spell_exp[spell_idx + (is_first_realm ? 0 : 32)],
+    gain_spell_skill_exp_aux(*this->player_ptr, this->player_ptr->spell_exp[spell_idx + (is_first_realm ? 0 : 32)],
         (is_first_realm ? gain_amount_list_first : gain_amount_list_second), spell.slevel);
 }
 
@@ -432,7 +434,7 @@ void PlayerSkill::gain_continuous_spell_skill_exp(RealmType realm, int spell_idx
 
     const GainAmountList gain_amount_list{ 5, (one_in_(2) ? 1 : 0), (one_in_(5) ? 1 : 0), (one_in_(5) ? 1 : 0) };
 
-    gain_spell_skill_exp_aux(this->player_ptr, this->player_ptr->spell_exp[spell_idx], gain_amount_list, spell.slevel);
+    gain_spell_skill_exp_aux(*this->player_ptr, this->player_ptr->spell_exp[spell_idx], gain_amount_list, spell.slevel);
 }
 
 PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)

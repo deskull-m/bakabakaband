@@ -278,8 +278,7 @@ int SpellHex::calc_need_mana()
 
 void SpellHex::gain_exp()
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
-    PlayerSkill ps(player_ptr);
+    PlayerSkill ps(this->player);
     for (auto spell : this->casting_spells) {
         if (!this->is_spelling_specific(spell)) {
             continue;
