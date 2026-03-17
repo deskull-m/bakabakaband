@@ -1,14 +1,15 @@
 #pragma once
 
 class PlayerType;
+class CreatureEntity;
 
 class PlayerSpellStatus {
 public:
-    PlayerSpellStatus(PlayerType *player_ptr);
+    PlayerSpellStatus(CreatureEntity &creature);
 
     class Realm {
     public:
-        Realm(PlayerType *player_ptr, bool is_realm1);
+        Realm(CreatureEntity &creature, bool is_realm1);
 
         void initialize();
         bool is_nothing_learned() const;

@@ -105,7 +105,7 @@ static int get_hissatsu_power(PlayerType *player_ptr, SPELL_IDX *sn)
     }
     choice = always_show_list ? ESCAPE : 1;
 
-    const auto realm_status = PlayerSpellStatus(player_ptr).realm1();
+    const auto realm_status = PlayerSpellStatus(*player_ptr).realm1();
     while (!flag) {
         if (choice == ESCAPE) {
             choice = ' ';
@@ -317,7 +317,7 @@ void do_cmd_hissatsu(CreatureEntity &creature)
         msg_print(_("武器を持たないと必殺技は使えない！", "You need to wield a weapon!"));
         return;
     }
-    if (PlayerSpellStatus(player_ptr).realm1().is_nothing_learned()) {
+    if (PlayerSpellStatus(*player_ptr).realm1().is_nothing_learned()) {
         msg_print(_("何も技を知らない。", "You don't know any special attacks."));
         return;
     }
@@ -396,7 +396,7 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
 
     const auto sval = o_ptr->bi_key.sval().value();
     auto gain = false;
-    auto realm_status = PlayerSpellStatus(player_ptr).realm1();
+    auto realm_status = PlayerSpellStatus(*player_ptr).realm1();
     for (auto i = sval * 8; i < sval * 8 + 8; i++) {
         if (realm_status.is_learned(i)) {
             continue;

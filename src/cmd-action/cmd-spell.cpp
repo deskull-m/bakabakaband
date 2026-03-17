@@ -276,7 +276,7 @@ static bool spell_okay(PlayerType *player_ptr, int spell_id, bool learned, bool 
 
     /* Spell is forgotten */
     PlayerRealm pr(player_ptr);
-    PlayerSpellStatus pss(player_ptr);
+    PlayerSpellStatus pss(*player_ptr);
     const auto realm_status = pr.realm2().equals(use_realm) ? pss.realm2() : pss.realm1();
     if (realm_status.is_forgotten(spell_id)) {
         /* Never okay */
@@ -680,7 +680,7 @@ void do_cmd_browse(CreatureEntity &creature)
  */
 static void change_realm2(PlayerType *player_ptr, PlayerRealm &pr, RealmType next_realm)
 {
-    PlayerSpellStatus(player_ptr).realm2().initialize();
+    PlayerSpellStatus(*player_ptr).realm2().initialize();
 
     for (auto i = 32; i < 64; i++) {
         player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED);
@@ -823,7 +823,7 @@ void do_cmd_study(CreatureEntity &creature)
     }
 
     /* Learn the spell */
-    PlayerSpellStatus pss(player_ptr);
+    PlayerSpellStatus pss(creature);
     auto realm_status = increment ? pss.realm2() : pss.realm1();
 
     if (realm_status.is_learned(spell % 32)) {
@@ -1131,7 +1131,7 @@ bool do_cmd_cast(CreatureEntity &creature)
         }
 
         /* A spell was cast */
-        PlayerSpellStatus pss(player_ptr);
+        PlayerSpellStatus pss(creature);
         auto realm_status = increment ? pss.realm2() : pss.realm1();
         if (!realm_status.is_worked(spell_id) && !is_every_magic) {
             int e = spell.sexp;

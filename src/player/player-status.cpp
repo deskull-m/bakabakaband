@@ -534,7 +534,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         }
     }
 
-    PlayerSpellStatus pss(player_ptr);
+    PlayerSpellStatus pss(creature);
 
     auto num_forgotten = 0;
     for (const auto &realm_status : { pss.realm1(), pss.realm2() }) {

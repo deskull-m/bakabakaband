@@ -92,7 +92,7 @@ void player_wipe_without_name(CreatureEntity &creature)
 
     player_ptr->food = PY_FOOD_FULL - 1;
 
-    PlayerSpellStatus pss(player_ptr);
+    PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
 
