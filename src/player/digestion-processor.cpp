@@ -24,22 +24,23 @@
 
 /*!
  * @brief 10ゲームターンが進行するごとにプレイヤーの腹を減らす
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void starve_player(PlayerType *player_ptr)
+void starve_player(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
     if (player_ptr->food >= PY_FOOD_MAX) {
-        (void)set_food(*player_ptr, player_ptr->food - 100);
+        (void)set_food(creature, player_ptr->food - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
-        int digestion = speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
+        int digestion = speed_to_energy(creature.get_speed());
         if (player_ptr->regenerate) {
             digestion += 20;
         }
-        CreatureClass pc(*player_ptr);
+        CreatureClass pc(creature);
         if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
             digestion += 20;
         }
@@ -58,27 +59,27 @@ void starve_player(PlayerType *player_ptr)
             digestion = 100;
         }
 
-        if (is_sushi_eater(*player_ptr)) {
+        if (is_sushi_eater(creature)) {
             digestion *= 100;
         }
 
-        (void)set_food(*player_ptr, player_ptr->food - digestion);
+        (void)set_food(creature, player_ptr->food - digestion);
     }
 
     if ((player_ptr->food >= PY_FOOD_FAINT)) {
         return;
     }
 
-    if (!is_sushi_eater(*player_ptr) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!is_sushi_eater(creature) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
-        disturb(*player_ptr, true, true);
-        (void)BadStatusSetter(*player_ptr).mod_paralysis(1 + randint0(5));
+        disturb(creature, true, true);
+        (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
     }
 
     if (player_ptr->food < PY_FOOD_STARVE) {
         int dam = (PY_FOOD_STARVE - player_ptr->food) / 10;
-        if (!is_invuln(*player_ptr)) {
-            take_hit(*player_ptr, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
+        if (!is_invuln(creature)) {
+            take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
     }
 }
@@ -189,7 +190,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         switch (new_aux) {
         case 0:
             sound(SoundKind::FAINT);
-            if (is_sushi_eater(*player_ptr)) {
+            if (is_sushi_eater(creature)) {
                 msg_print(_("そろそろ寿司を食べないと死ぬぜ！", "'I'm gonna die if I don't eat sushi soon!'"));
             } else {
                 msg_print(_("あまりにも空腹で気を失ってしまった！", "You are getting faint from hunger!"));
