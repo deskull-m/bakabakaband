@@ -129,7 +129,7 @@ void QuestCompletionChecker::complete_kill_number()
 {
     this->q_ptr->cur_num++;
     if (this->q_ptr->cur_num >= this->q_ptr->num_mon) {
-        complete_quest(this->player_ptr, this->quest_idx);
+        complete_quest(*this->player_ptr, this->quest_idx);
         this->q_ptr->cur_num = 0;
     }
 }
@@ -143,7 +143,7 @@ void QuestCompletionChecker::complete_kill_all()
     if (any_bits(this->q_ptr->flags, QUEST_FLAG_SILENT)) {
         this->q_ptr->status = QuestStatusType::FINISHED;
     } else {
-        complete_quest(this->player_ptr, this->quest_idx);
+        complete_quest(*this->player_ptr, this->quest_idx);
     }
 }
 
@@ -158,7 +158,7 @@ std::tuple<bool, bool> QuestCompletionChecker::complete_random()
         return std::make_tuple(false, false);
     }
 
-    complete_quest(this->player_ptr, this->quest_idx);
+    complete_quest(*this->player_ptr, this->quest_idx);
     auto create_stairs = false;
     if (none_bits(this->q_ptr->flags, QUEST_FLAG_PRESET)) {
         create_stairs = true;
@@ -182,7 +182,7 @@ void QuestCompletionChecker::complete_kill_any_level()
 {
     this->q_ptr->cur_num++;
     if (this->q_ptr->cur_num >= this->q_ptr->max_num) {
-        complete_quest(this->player_ptr, this->quest_idx);
+        complete_quest(*this->player_ptr, this->quest_idx);
         this->q_ptr->cur_num = 0;
     }
 }
@@ -203,7 +203,7 @@ void QuestCompletionChecker::complete_tower()
     is_tower_completed &= quests.get_quest(QuestId::TOWER2).status == QuestStatusType::STAGE_COMPLETED;
     is_tower_completed &= quests.get_quest(QuestId::TOWER3).status == QuestStatusType::STAGE_COMPLETED;
     if (is_tower_completed) {
-        complete_quest(this->player_ptr, QuestId::TOWER1);
+        complete_quest(*this->player_ptr, QuestId::TOWER1);
     }
 }
 

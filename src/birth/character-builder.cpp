@@ -159,7 +159,7 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
 
         // クエストに突入
         if (quest.dungeon == DungeonId::WILDERNESS) {
-            exe_enter_quest(player_ptr, *initial_quest_id);
+            exe_enter_quest(*player_ptr, *initial_quest_id);
         }
     }
 }

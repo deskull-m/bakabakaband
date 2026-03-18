@@ -121,7 +121,7 @@ void wiz_enter_quest(CreatureEntity &creature)
     auto &quest = quests.get_quest(*quest_id);
     quest.status = QuestStatusType::TAKEN;
     if (quest.dungeon == DungeonId::WILDERNESS) {
-        exe_enter_quest(player_ptr, *quest_id);
+        exe_enter_quest(*player_ptr, *quest_id);
     }
 }
 
@@ -141,7 +141,7 @@ void wiz_complete_quest(CreatureEntity &creature)
 
     const auto &quests = QuestList::get_instance();
     if (quests.get_quest(floor.quest_number).status == QuestStatusType::TAKEN) {
-        complete_quest(player_ptr, floor.quest_number);
+        complete_quest(*player_ptr, floor.quest_number);
     }
 }
 

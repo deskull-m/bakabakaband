@@ -265,7 +265,7 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 
     record_item_name = describe_flavor(player_ptr, *picked_item_ptr, OD_NAME_ONLY);
     record_turn = AngbandWorld::get_instance().game_turn;
-    check_find_art_quest_completion(player_ptr, &picked_slot_item);
+    check_find_art_quest_completion(*player_ptr, &picked_slot_item);
 }
 
 /*!

@@ -111,7 +111,7 @@ void do_cmd_go_up(CreatureEntity &creature)
 
         sound(SoundKind::STAIRWAY);
 
-        leave_quest_check(&player);
+        leave_quest_check(player);
         floor.quest_number = i2enum<QuestId>(grid.special);
         const auto quest_id = floor.quest_number;
         auto &quest = quests.get_quest(quest_id);
@@ -157,13 +157,13 @@ void do_cmd_go_up(CreatureEntity &creature)
     auto &quest = quests.get_quest(quest_number);
 
     if (inside_quest(quest_number) && quest.type == QuestKindType::RANDOM) {
-        leave_quest_check(&player);
+        leave_quest_check(player);
         floor.quest_number = QuestId::NONE;
     }
 
     auto up_num = 0;
     if (inside_quest(quest_number) && quest.type != QuestKindType::RANDOM) {
-        leave_quest_check(&player);
+        leave_quest_check(player);
         floor.quest_number = i2enum<QuestId>(grid.special);
         floor.dun_level = 0;
         up_num = 0;
@@ -239,7 +239,7 @@ void do_cmd_go_down(CreatureEntity &creature)
 
     const auto is_fall_trap = terrain.flags.has(TerrainCharacteristics::TRAP);
     if (terrain.flags.has(TerrainCharacteristics::QUEST_ENTER)) {
-        do_cmd_quest(&player);
+        do_cmd_quest(player);
         return;
     }
 
@@ -256,8 +256,8 @@ void do_cmd_go_down(CreatureEntity &creature)
 
         sound(SoundKind::STAIRWAY);
 
-        leave_quest_check(&player);
-        leave_tower_check(&player);
+        leave_quest_check(player);
+        leave_tower_check(player);
         floor.quest_number = i2enum<QuestId>(grid.special);
 
         auto &quests = QuestList::get_instance();

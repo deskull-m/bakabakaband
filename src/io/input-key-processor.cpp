@@ -322,7 +322,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case SPECIAL_KEY_QUEST: {
-        do_cmd_quest(player_ptr);
+        do_cmd_quest(*player_ptr);
         break;
     }
     case '<': {

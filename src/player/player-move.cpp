@@ -270,9 +270,9 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
     } else if (terrain_new.flags.has(TerrainCharacteristics::QUEST_EXIT)) {
         const auto &quests = QuestList::get_instance();
         if (quests.get_quest(floor.quest_number).type == QuestKindType::FIND_EXIT) {
-            complete_quest(&player, floor.quest_number);
+            complete_quest(player, floor.quest_number);
         }
-        leave_quest_check(&player);
+        leave_quest_check(player);
         floor.quest_number = i2enum<QuestId>(grid_new.special);
         floor.dun_level = 0;
         if (!floor.is_in_quest()) {

@@ -78,7 +78,7 @@ void pattern_teleport(PlayerType *player_ptr)
     }
 
     floor.dun_level = command_arg;
-    leave_quest_check(player_ptr);
+    leave_quest_check(*player_ptr);
     if (record_stair) {
         exe_write_diary(floor, DiaryKind::PAT_TELE, 0);
     }

@@ -483,7 +483,7 @@ void jump_floor(PlayerType *player_ptr, DungeonId dun_idx, DEPTH depth)
     }
 
     floor.inside_arena = false;
-    leave_quest_check(player_ptr);
+    leave_quest_check(*player_ptr);
     auto to = !floor.is_underground()
                   ? _("地上", "the surface")
                   : format(_("%d階(%s)", "level %d of %s"), floor.dun_level, floor.get_dungeon_definition().name.data());

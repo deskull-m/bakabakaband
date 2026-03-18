@@ -163,7 +163,7 @@ void init_dungeon_quests(CreatureEntity &creature)
     for (auto quest_id : RANDOM_QUEST_ID_RANGE) {
         auto &quest = quests.get_quest(quest_id);
         quest.status = QuestStatusType::TAKEN;
-        determine_random_questor(player_ptr, quest);
+        determine_random_questor(*player_ptr, quest);
         auto &monrace = quest.get_bounty();
         monrace.misc_flags.set(MonsterMiscType::QUESTOR);
         quest.max_num = 1;
