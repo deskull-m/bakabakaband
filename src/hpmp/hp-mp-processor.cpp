@@ -435,9 +435,9 @@ void process_player_hp_mp(PlayerType *player_ptr)
         upkeep_factor += 100;
     }
 
-    regenmana(player_ptr, upkeep_factor, regen_amount);
+    regenmana(*player_ptr, upkeep_factor, regen_amount);
     if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-        regenmagic(player_ptr, regen_amount);
+        regenmagic(*player_ptr, regen_amount);
     }
 
     if ((player_ptr->csp == 0) && (player_ptr->csp_frac == 0)) {
@@ -474,7 +474,7 @@ void process_player_hp_mp(PlayerType *player_ptr)
 
     regen_amount = (regen_amount * player_ptr->mutant_regenerate_mod) / 100;
     if ((player_ptr->hp < player_ptr->maxhp) && !cave_no_regen) {
-        regenhp(player_ptr, regen_amount);
+        regenhp(*player_ptr, regen_amount);
     }
 }
 

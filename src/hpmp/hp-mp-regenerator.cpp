@@ -26,8 +26,9 @@ int wild_regen = 20;
  * @brief プレイヤーのHP自然回復処理 / Regenerate hit points -RAK-
  * @param percent 回復比率
  */
-void regenhp(PlayerType *player_ptr, int percent)
+void regenhp(CreatureEntity &creature, int percent)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         return;
     }
@@ -64,8 +65,9 @@ void regenhp(PlayerType *player_ptr, int percent)
  * @param upkeep_factor ペット維持によるMPコスト量
  * @param regen_amount 回復量
  */
-void regenmana(PlayerType *player_ptr, MANA_POINT upkeep_factor, MANA_POINT regen_amount)
+void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT regen_amount)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     MANA_POINT old_csp = player_ptr->csp;
     int32_t regen_rate = regen_amount * 100 - upkeep_factor * PY_REGEN_NORMAL;
 
@@ -124,8 +126,9 @@ void regenmana(PlayerType *player_ptr, MANA_POINT upkeep_factor, MANA_POINT rege
  * @brief 取り込んだ魔道具の自然回復処理 / Regenerate magic regen_amount: PY_REGEN_NORMAL * 2 (if resting) * 2 (if having regenarate)
  * @param regen_amount 回復量
  */
-void regenmagic(PlayerType *player_ptr, int regen_amount)
+void regenmagic(CreatureEntity &creature, int regen_amount)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto magic_eater_data = CreatureClass(*player_ptr).get_specific_data<MagicEaterDataList>();
     if (!magic_eater_data) {
         return;
@@ -223,8 +226,9 @@ void regenerate_monsters(CreatureEntity &creature)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @note Should probably be done during monster turns.
  */
-void regenerate_captured_monsters(PlayerType *player_ptr)
+void regenerate_captured_monsters(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool heal = false;
     for (int i = 0; i < INVEN_TOTAL; i++) {
         auto *o_ptr = player_ptr->inventory[i].get();
