@@ -592,7 +592,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
             anger_monster(player, *pa_ptr->m_ptr);
         }
 
-        touch_zap_player(*pa_ptr->m_ptr, &player);
+        touch_zap_player(*pa_ptr->m_ptr, player);
         process_drain(&player, pa_ptr, is_human, &drain_msg);
         pa_ptr->can_drain = false;
         pa_ptr->drain_result = 0;

@@ -77,7 +77,7 @@
 #include <sstream>
 #include <string>
 
-using dam_func = int (*)(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura);
+using dam_func = int (*)(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
 
 /*!
  * @brief 酸攻撃による装備のAC劣化処理 /
@@ -89,8 +89,9 @@ using dam_func = int (*)(PlayerType *player_ptr, int dam, std::string_view kb_st
  * Note that the "base armor" of an object never changes.
  * If any armor is damaged (or resists), the player takes less damage.
  */
-static bool acid_minus_ac(PlayerType *player_ptr)
+static bool acid_minus_ac(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr static auto candidates = {
         INVEN_MAIN_HAND,
         INVEN_SUB_HAND,
@@ -128,7 +129,7 @@ static bool acid_minus_ac(PlayerType *player_ptr)
         SubWindowRedrawingFlag::PLAYER,
     };
     rfu.set_flags(flags_swrf);
-    calc_android_exp(*player_ptr);
+    calc_android_exp(creature);
     return true;
 }
 
@@ -143,29 +144,29 @@ static bool acid_minus_ac(PlayerType *player_ptr)
  * @return 修正HPダメージ量
  * @details 酸オーラは存在しないが関数ポインタのために引数だけは用意している
  */
-int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura)
+int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura)
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_acid(*player_ptr);
-    dam = dam * calc_acid_damage_rate(*player_ptr) / 100;
+    bool double_resist = is_oppose_acid(creature);
+    dam = dam * calc_acid_damage_rate(creature) / 100;
     if (dam <= 0) {
         return 0;
     }
 
-    if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_acid(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
-            (void)do_dec_stat(*player_ptr, A_CHR);
+    if (aura || !check_multishadow(creature)) {
+        if ((!(double_resist || has_resist_acid(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+            (void)do_dec_stat(creature, A_CHR);
         }
 
-        if (acid_minus_ac(player_ptr)) {
+        if (acid_minus_ac(creature)) {
             dam = (dam + 1) / 2;
         }
     }
 
-    int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_acid(*player_ptr))) {
-        inventory_damage(*player_ptr, BreakerAcid(), inv);
+    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    if (!aura && !(double_resist && has_resist_acid(creature))) {
+        inventory_damage(creature, BreakerAcid(), inv);
     }
 
     return get_damage;
@@ -181,27 +182,27 @@ int acid_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
  * @param aura オーラよるダメージが原因ならばTRUE
  * @return 修正HPダメージ量
  */
-int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura)
+int elec_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura)
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_elec(*player_ptr);
+    bool double_resist = is_oppose_elec(creature);
 
-    dam = dam * calc_elec_damage_rate(*player_ptr) / 100;
+    dam = dam * calc_elec_damage_rate(creature) / 100;
 
     if (dam <= 0) {
         return 0;
     }
 
-    if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_elec(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
-            (void)do_dec_stat(*player_ptr, A_DEX);
+    if (aura || !check_multishadow(creature)) {
+        if ((!(double_resist || has_resist_elec(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+            (void)do_dec_stat(creature, A_DEX);
         }
     }
 
-    int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_elec(*player_ptr))) {
-        inventory_damage(*player_ptr, BreakerElec(), inv);
+    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    if (!aura && !(double_resist && has_resist_elec(creature))) {
+        inventory_damage(creature, BreakerElec(), inv);
     }
 
     return get_damage;
@@ -217,27 +218,27 @@ int elec_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
  * @param aura オーラよるダメージが原因ならばTRUE
  * @return 修正HPダメージ量
  */
-int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura)
+int fire_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura)
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_fire(*player_ptr);
+    bool double_resist = is_oppose_fire(creature);
 
     /* Totally immune */
-    if (has_immune_fire(*player_ptr) || (dam <= 0)) {
+    if (has_immune_fire(creature) || (dam <= 0)) {
         return 0;
     }
 
-    dam = dam * calc_fire_damage_rate(*player_ptr) / 100;
-    if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_fire(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
-            (void)do_dec_stat(*player_ptr, A_STR);
+    dam = dam * calc_fire_damage_rate(creature) / 100;
+    if (aura || !check_multishadow(creature)) {
+        if ((!(double_resist || has_resist_fire(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+            (void)do_dec_stat(creature, A_STR);
         }
     }
 
-    int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_fire(*player_ptr))) {
-        inventory_damage(*player_ptr, BreakerFire(), inv);
+    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    if (!aura && !(double_resist && has_resist_fire(creature))) {
+        inventory_damage(creature, BreakerFire(), inv);
     }
 
     return get_damage;
@@ -253,25 +254,25 @@ int fire_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura
  * @param aura オーラよるダメージが原因ならばTRUE
  * @return 修正HPダメージ量
  */
-int cold_dam(PlayerType *player_ptr, int dam, std::string_view kb_str, bool aura)
+int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura)
 {
     int inv = (dam < 30) ? 1 : (dam < 60) ? 2
                                           : 3;
-    bool double_resist = is_oppose_cold(*player_ptr);
-    if (has_immune_cold(*player_ptr) || (dam <= 0)) {
+    bool double_resist = is_oppose_cold(creature);
+    if (has_immune_cold(creature) || (dam <= 0)) {
         return 0;
     }
 
-    dam = dam * calc_cold_damage_rate(*player_ptr) / 100;
-    if (aura || !check_multishadow(*player_ptr)) {
-        if ((!(double_resist || has_resist_cold(*player_ptr))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
-            (void)do_dec_stat(*player_ptr, A_STR);
+    dam = dam * calc_cold_damage_rate(creature) / 100;
+    if (aura || !check_multishadow(creature)) {
+        if ((!(double_resist || has_resist_cold(creature))) && one_in_(CHANCE_ABILITY_SCORE_DECREASE)) {
+            (void)do_dec_stat(creature, A_STR);
         }
     }
 
-    int get_damage = take_hit(*player_ptr, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
-    if (!aura && !(double_resist && has_resist_cold(*player_ptr))) {
-        inventory_damage(*player_ptr, BreakerCold(), inv);
+    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    if (!aura && !(double_resist && has_resist_cold(creature))) {
+        inventory_damage(creature, BreakerCold(), inv);
     }
 
     return get_damage;
@@ -665,7 +666,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
  * @param dam_func ダメージ処理を行う関数の参照ポインタ
  * @param message オーラダメージを受けた際のメッセージ
  */
-static void process_aura_damage(const MonsterEntity &monster, PlayerType *player_ptr, bool immune, MonsterAuraType aura_flag, dam_func dam_func, concptr message)
+static void process_aura_damage(const MonsterEntity &monster, CreatureEntity &creature, bool immune, MonsterAuraType aura_flag, dam_func dam_func, concptr message)
 {
     auto &monrace = monster.get_monrace();
     if (monrace.aura_flags.has_not(aura_flag) || immune) {
@@ -674,12 +675,12 @@ static void process_aura_damage(const MonsterEntity &monster, PlayerType *player
 
     int aura_damage = Dice::roll(1 + (monrace.level / 26), 1 + (monrace.level / 17));
     msg_print(message);
-    (*dam_func)(player_ptr, aura_damage, monster_desc(*player_ptr, monster, MD_WRONGDOER_NAME).data(), true);
-    if (is_original_ap_and_seen(*player_ptr, monster)) {
+    (*dam_func)(creature, aura_damage, monster_desc(creature, monster, MD_WRONGDOER_NAME).data(), true);
+    if (is_original_ap_and_seen(creature, monster)) {
         monrace.r_aura_flags.set(aura_flag);
     }
 
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 }
 
 /*!
@@ -687,29 +688,30 @@ static void process_aura_damage(const MonsterEntity &monster, PlayerType *player
  * @param m_ptr オーラを持つモンスターの構造体参照ポインタ
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void touch_zap_player(const MonsterEntity &monster, PlayerType *player_ptr)
+void touch_zap_player(const MonsterEntity &monster, CreatureEntity &creature)
 {
     constexpr auto fire_mes = _("突然とても熱くなった！", "You are suddenly very hot!");
     constexpr auto cold_mes = _("突然とても寒くなった！", "You are suddenly very cold!");
     constexpr auto elec_mes = _("電撃をくらった！", "You get zapped!");
-    process_aura_damage(monster, player_ptr, has_immune_fire(*player_ptr) != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
-    process_aura_damage(monster, player_ptr, has_immune_cold(*player_ptr) != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
-    process_aura_damage(monster, player_ptr, has_immune_elec(*player_ptr) != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
+    process_aura_damage(monster, creature, has_immune_fire(creature) != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
+    process_aura_damage(monster, creature, has_immune_cold(creature) != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
+    process_aura_damage(monster, creature, has_immune_elec(creature) != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
 }
 
 /*!
  * @brief プレイヤーの脱糞処理
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void player_defecate(PlayerType *player_ptr)
+void player_defecate(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &baseitems = BaseitemList::get_instance();
     ItemEntity item;
-    disturb(*player_ptr, false, true);
+    disturb(creature, false, true);
     msg_print(_("ブッチッパ！", "BRUUUUP! Oops."));
     msg_erase();
     item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-    (void)drop_near(*player_ptr, item, player_ptr->get_position());
+    (void)drop_near(creature, item, player_ptr->get_position());
 
     // 脱糞した数をインシデントに記録
     player_ptr->plus_incident_tree("DEFECATE", 1);

@@ -4,9 +4,7 @@
 
 class CreatureEntity;
 class EffectPlayerType;
-class PlayerType;
-void effect_player_elements(
-    CreatureEntity &creature, EffectPlayerType *ep_ptr, std::string_view attack_message, int (*damage_func)(PlayerType *, int, std::string_view, bool));
+void effect_player_elements(CreatureEntity &creature, EffectPlayerType *ep_ptr, std::string_view attack_message, int (*damage_func)(CreatureEntity &, int, std::string_view, bool));
 void effect_player_poison(CreatureEntity &creature, EffectPlayerType *ep_ptr);
 void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr);
 void effect_player_missile(CreatureEntity &creature, EffectPlayerType *ep_ptr);

@@ -151,7 +151,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     }
     }
 
-    touch_zap_player(monster, player_ptr);
+    touch_zap_player(monster, *player_ptr);
 }
 
 /*!
@@ -236,7 +236,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         take_hit(creature, DAMAGE_NOESCAPE, randint1(3), _("頭突きの反動", "headbutt recoil"));
     }
 
-    touch_zap_player(monster, player_ptr);
+    touch_zap_player(monster, *player_ptr);
 }
 
 /*!
@@ -338,7 +338,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
         take_hit(creature, DAMAGE_NOESCAPE, self_damage, _("体当たりの反動", "body slam recoil"));
     }
 
-    touch_zap_player(monster, player_ptr);
+    touch_zap_player(monster, *player_ptr);
 }
 
 /*!
@@ -729,7 +729,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
     MonsterDamageProcessor mdp(*player_ptr, m_idx, k, fear, AttributeType::ATTACK);
     *mdeath = mdp.mon_take_hit(_("は浣腸で逝った。", " falls from your enema."));
 
-    touch_zap_player(monster, player_ptr);
+    touch_zap_player(monster, *player_ptr);
 }
 
 /*!
