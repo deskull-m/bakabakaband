@@ -220,7 +220,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
 
     case SV_POTION_ICHIZIKU_ENEMA:
         if (is_rectal) {
-            player_defecate(player_ptr);
+            player_defecate(*player_ptr);
             return true;
         } else {
             msg_print(_("うぇ！思わず吐いてしまった。", "The potion makes you vomit!"));

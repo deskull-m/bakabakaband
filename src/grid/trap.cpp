@@ -368,13 +368,13 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     case TrapType::FIRE: {
         msg_print(_("炎に包まれた！", "You are enveloped in flames!"));
         const auto dam = Dice::roll(4, 6);
-        (void)fire_dam(player_ptr, dam, _("炎のトラップ", "a fire trap"), false);
+        (void)fire_dam(*player_ptr, dam, _("炎のトラップ", "a fire trap"), false);
         break;
     }
     case TrapType::ACID: {
         msg_print(_("酸が吹きかけられた！", "You are splashed with acid!"));
         const auto dam = Dice::roll(4, 6);
-        (void)acid_dam(player_ptr, dam, _("酸のトラップ", "an acid trap"), false);
+        (void)acid_dam(*player_ptr, dam, _("酸のトラップ", "an acid trap"), false);
         break;
     }
     case TrapType::SLOW:

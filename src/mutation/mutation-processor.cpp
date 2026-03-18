@@ -189,7 +189,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
     }
 
     if (player_ptr->muta.has(PlayerMutationType::DEFECATION) && (randint1(1500) == 13)) {
-        player_defecate(player_ptr);
+        player_defecate(*player_ptr);
     }
 
     if (player_ptr->muta.has(PlayerMutationType::ZEERO_VIRUS) && (randint1(721) == 1)) {

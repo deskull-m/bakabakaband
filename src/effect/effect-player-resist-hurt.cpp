@@ -37,14 +37,13 @@
 
 // 毒を除く4元素.
 void effect_player_elements(
-    CreatureEntity &creature, EffectPlayerType *ep_ptr, std::string_view attack_message, int (*damage_func)(PlayerType *, int, std::string_view, bool))
+    CreatureEntity &creature, EffectPlayerType *ep_ptr, std::string_view attack_message, int (*damage_func)(CreatureEntity &, int, std::string_view, bool))
 {
     if (creature.effects()->blindness().is_blind()) {
         msg_print(attack_message);
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    ep_ptr->get_damage = (*damage_func)(player_ptr, ep_ptr->dam, ep_ptr->killer, false);
+    ep_ptr->get_damage = (*damage_func)(creature, ep_ptr->dam, ep_ptr->killer, false);
 }
 
 void effect_player_poison(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -626,8 +625,7 @@ void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("何か鋭く冷たいもので攻撃された！", "You are hit by something sharp and cold!"));
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    ep_ptr->get_damage = cold_dam(player_ptr, ep_ptr->dam, ep_ptr->killer, false);
+    ep_ptr->get_damage = cold_dam(creature, ep_ptr->dam, ep_ptr->killer, false);
     if (check_multishadow(creature)) {
         return;
     }
@@ -643,7 +641,7 @@ void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     if ((!(has_resist_cold(creature) || is_oppose_cold(creature))) || one_in_(12)) {
         if (!has_immune_cold(creature)) {
-            inventory_damage(*player_ptr, BreakerCold(), 3);
+            inventory_damage(creature, BreakerCold(), 3);
         }
     }
 }
