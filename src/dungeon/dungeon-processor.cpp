@@ -44,7 +44,7 @@
 #include "world/world-turn-processor.h"
 #include "world/world.h"
 
-static void redraw_character_xtra(PlayerType *player_ptr)
+static void redraw_character_xtra(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     world.character_xtra = true;
@@ -81,7 +81,7 @@ static void redraw_character_xtra(PlayerType *player_ptr)
         StatusRecalculatingFlag::FLOW,
     };
     rfu.set_flags(flags_srf);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     world.character_xtra = false;
 }
 
@@ -99,8 +99,9 @@ static void redraw_character_xtra(PlayerType *player_ptr)
  * the user dies, or the game is terminated.\n
  * </p>
  */
-void process_dungeon(PlayerType *player_ptr, bool load_game)
+void process_dungeon(CreatureEntity &creature, bool load_game)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *player_ptr->current_floor_ptr;
     auto &world = AngbandWorld::get_instance();
     floor.base_level = floor.dun_level;
@@ -143,7 +144,7 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     verify_panel(*player_ptr);
     msg_erase();
 
-    redraw_character_xtra(player_ptr);
+    redraw_character_xtra(*player_ptr);
     auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,

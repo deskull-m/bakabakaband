@@ -388,7 +388,7 @@ static void process_game_turn(PlayerType *player_ptr)
     auto &world = AngbandWorld::get_instance();
     world.play_time.unpause();
     while (true) {
-        process_dungeon(player_ptr, load_game);
+        process_dungeon(*player_ptr, load_game);
         world.character_xtra = true;
         handle_stuff(*player_ptr);
         world.character_xtra = false;
