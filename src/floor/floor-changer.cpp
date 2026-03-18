@@ -298,7 +298,7 @@ static void new_floor_allocation(PlayerType *player_ptr, saved_floor_type *sf_pt
     }
     delete_items(*player_ptr, std::move(delete_i_idx_list));
 
-    (void)place_quest_monsters(player_ptr);
+    (void)place_quest_monsters(*player_ptr);
     GAME_TURN alloc_times = absence_ticks / alloc_chance;
     if (randint0(alloc_chance) < (absence_ticks % alloc_chance)) {
         alloc_times++;
