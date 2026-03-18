@@ -425,7 +425,7 @@ static bool check_place_necessary_objects(CreatureEntity &creature, DungeonData 
     }
 
     player.set_position(*p_pos);
-    if (!place_quest_monsters(&player)) {
+    if (!place_quest_monsters(player)) {
         dd_ptr->why = _("クエストモンスター配置に失敗", "Failed to place a quest monster");
         return false;
     }

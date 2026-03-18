@@ -4,10 +4,10 @@
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster/monster-info.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 
@@ -16,9 +16,9 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 成功したならばTRUEを返す
  */
-bool place_quest_monsters(PlayerType *player_ptr)
+bool place_quest_monsters(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &quests = QuestList::get_instance();
     for (const auto &[quest_id, quest] : quests) {
         auto no_quest_monsters = quest.status != QuestStatusType::TAKEN;
@@ -54,11 +54,11 @@ bool place_quest_monsters(PlayerType *player_ptr)
                         continue;
                     }
 
-                    if (!monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0)) {
+                    if (!monster_can_enter(&creature, pos.y, pos.x, monrace, 0)) {
                         continue;
                     }
 
-                    if (Grid::calc_distance(pos, player_ptr->get_position()) < 10) {
+                    if (Grid::calc_distance(pos, creature.get_position()) < 10) {
                         continue;
                     }
 
@@ -73,7 +73,7 @@ bool place_quest_monsters(PlayerType *player_ptr)
                     return false;
                 }
 
-                if (place_specific_monster(*player_ptr, pos.y, pos.x, quest.r_idx, mode)) {
+                if (place_specific_monster(creature, pos.y, pos.x, quest.r_idx, mode)) {
                     break;
                 }
 
