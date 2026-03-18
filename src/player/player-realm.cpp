@@ -76,11 +76,11 @@ const std::map<PlayerClassType, RealmChoices> realm2_choices = {
 };
 }
 
-PlayerRealm::PlayerRealm(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
-    , realm1_(player_ptr->realm1)
-    , realm2_(player_ptr->realm2)
+PlayerRealm::PlayerRealm(CreatureEntity &creature)
+    : realm1_(static_cast<PlayerType *>(&creature)->realm1)
+    , realm2_(static_cast<PlayerType *>(&creature)->realm2)
 {
+    this->player_ptr = static_cast<PlayerType *>(&creature);
 }
 
 const LocalizedString &PlayerRealm::get_name(RealmType realm)

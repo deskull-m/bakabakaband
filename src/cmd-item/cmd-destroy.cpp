@@ -133,7 +133,7 @@ static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &de
     }
 
     auto is_good_magic_realm = (tval == ItemKindType::LIFE_BOOK) || (tval == ItemKindType::CRUSADE_BOOK);
-    if (PlayerRealm(player_ptr).realm1().is_good_attribute()) {
+    if (PlayerRealm(*player_ptr).realm1().is_good_attribute()) {
         return !is_good_magic_realm;
     } else {
         return is_good_magic_realm;

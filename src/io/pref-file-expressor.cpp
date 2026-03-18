@@ -186,9 +186,9 @@ std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp
         *tpn = '\0';
         v = tmp_player_name;
     } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(player_ptr).realm1().get_name().en_string();
+        v = PlayerRealm(*player_ptr).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(player_ptr).realm2().get_name().en_string();
+        v = PlayerRealm(*player_ptr).realm2().get_name().en_string();
     } else if (streq(b + 1, "LEVEL")) {
         v = format("%02d", player_ptr->level);
     } else if (streq(b + 1, "AUTOREGISTER")) {

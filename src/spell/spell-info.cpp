@@ -143,7 +143,7 @@ PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType 
     }
 
     CreatureClass pc(*player_ptr);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (!pr.realm1().equals(use_realm) && (pc.equals(PlayerClassType::MAGE) || pc.equals(PlayerClassType::PRIEST))) {
         chance += 5;
     }
@@ -243,7 +243,7 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
 
     int increment = 64;
     CreatureClass pc(*player_ptr);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (pc.is_every_magic()) {
         increment = 0;
     } else if (pr.realm1().equals(use_realm)) {

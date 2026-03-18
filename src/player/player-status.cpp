@@ -516,7 +516,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         bonus = 4;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (pc.equals(PlayerClassType::SAMURAI)) {
         num_allowed = 32;
     } else if (!pr.realm2().is_available()) {
@@ -1801,7 +1801,7 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
         }
     }
 
-    if (PlayerRealm(player_ptr).is_realm_hex()) {
+    if (PlayerRealm(*player_ptr).is_realm_hex()) {
         if (SpellHex(*player_ptr).is_spelling_specific(HEX_ICE_ARMOR)) {
             ac += 30;
         }
@@ -2109,7 +2109,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
         }
     }
 
-    if (PlayerRealm(player_ptr).is_realm_hex() && o_ptr->is_cursed()) {
+    if (PlayerRealm(*player_ptr).is_realm_hex() && o_ptr->is_cursed()) {
         if (SpellHex(*player_ptr).is_spelling_specific(HEX_RUNESWORD)) {
             if (o_ptr->curse_flags.has(CurseTraitType::CURSED)) {
                 damage += 5;
@@ -2347,7 +2347,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
         }
 
         /* Hex realm bonuses */
-        if (PlayerRealm(player_ptr).is_realm_hex() && o_ptr->is_cursed()) {
+        if (PlayerRealm(*player_ptr).is_realm_hex() && o_ptr->is_cursed()) {
             if (o_ptr->curse_flags.has(CurseTraitType::CURSED)) {
                 hit += 5;
             }

@@ -820,7 +820,7 @@ static void display_spell_list(CreatureEntity &creature)
         return;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (!pr.realm1().is_available()) {
         return;
     }

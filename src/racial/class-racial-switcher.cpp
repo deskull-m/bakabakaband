@@ -20,7 +20,7 @@ void switch_class_racial(CreatureEntity &creature, rc_type *rc_ptr)
         rc_ptr->add_power(rpi, RC_IDX_CLASS_0);
         break;
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(static_cast<PlayerType *>(&creature)).is_realm_hex()) {
+        if (PlayerRealm(creature).is_realm_hex()) {
             rpi = rpi_type(_("詠唱をやめる", "Stop spell casting"));
             rpi.text = _("呪術の詠唱を全てやめる。", "Stops all casting hex spells.");
             rpi.min_level = 1;
@@ -43,7 +43,7 @@ void switch_class_racial(CreatureEntity &creature, rc_type *rc_ptr)
         rc_ptr->add_power(rpi, RC_IDX_CLASS_0);
         break;
     case PlayerClassType::PRIEST:
-        if (PlayerRealm(static_cast<PlayerType *>(&creature)).realm1().is_good_attribute()) {
+        if (PlayerRealm(creature).realm1().is_good_attribute()) {
             rpi = rpi_type(_("武器祝福", "Bless Weapon"));
             rpi.text = _("武器を祝福する。抵抗されることがある。", "Blesses a weapon. Some weapons can resist it.");
             rpi.min_level = 35;
@@ -84,7 +84,7 @@ void switch_class_racial(CreatureEntity &creature, rc_type *rc_ptr)
         rc_ptr->add_power(rpi, RC_IDX_CLASS_0);
         break;
     case PlayerClassType::PALADIN:
-        if (PlayerRealm(static_cast<PlayerType *>(&creature)).realm1().is_good_attribute()) {
+        if (PlayerRealm(creature).realm1().is_good_attribute()) {
             rpi = rpi_type(_("ホーリー・ランス", "Holy Lance"));
             rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 3);
             rpi.text = _("聖なる炎のビームを放つ。", "Fires a beam of holy fire.");

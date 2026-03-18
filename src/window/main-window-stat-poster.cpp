@@ -356,7 +356,7 @@ void print_imitation(CreatureEntity &creature)
 static void add_hex_status_flags(CreatureEntity &creature, BIT_FLAGS *bar_flags)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (!PlayerRealm(player_ptr).is_realm_hex()) {
+    if (!PlayerRealm(*player_ptr).is_realm_hex()) {
         return;
     }
 

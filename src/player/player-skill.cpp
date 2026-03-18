@@ -403,7 +403,7 @@ void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
 
 void PlayerSkill::gain_spell_skill_exp(RealmType realm, int spell_idx)
 {
-    PlayerRealm pr(this->player_ptr);
+    PlayerRealm pr(*this->player_ptr);
     auto is_valid_realm = PlayerRealm::is_magic(realm) ||
                           (realm == RealmType::MUSIC) || (realm == RealmType::HEX);
     is_valid_realm &= pr.realm1().equals(realm) || pr.realm2().equals(realm);
@@ -473,7 +473,7 @@ PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)
 EXP PlayerSkill::exp_of_spell(RealmType realm, int spell_idx) const
 {
     CreatureClass pc(*this->player_ptr);
-    PlayerRealm pr(this->player_ptr);
+    PlayerRealm pr(*this->player_ptr);
     if (pc.equals(PlayerClassType::SORCERER)) {
         return SPELL_EXP_MASTER;
     } else if (pc.equals(PlayerClassType::RED_MAGE)) {

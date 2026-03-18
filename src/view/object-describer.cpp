@@ -85,7 +85,7 @@ void display_koff(CreatureEntity &creature)
     const auto sval = *item.bi_key.sval();
     const auto use_realm = PlayerRealm::get_realm_of_book(item.bi_key.tval());
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (pr.realm1().is_available() || pr.realm2().is_available()) {
         if (!pr.realm1().equals(use_realm) && !pr.realm2().equals(use_realm)) {
             return;

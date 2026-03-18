@@ -275,7 +275,7 @@ static bool spell_okay(PlayerType *player_ptr, int spell_id, bool learned, bool 
     }
 
     /* Spell is forgotten */
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     PlayerSpellStatus pss(*player_ptr);
     const auto realm_status = pr.realm2().equals(use_realm) ? pss.realm2() : pss.realm1();
     if (realm_status.is_forgotten(spell_id)) {
@@ -361,7 +361,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
     }
 
     CreatureClass pc(*player_ptr);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     auto is_every_magic = pc.is_every_magic();
     if (!pr.realm1().equals(use_realm) && !pr.realm2().equals(use_realm) && !is_every_magic) {
         return false;
@@ -558,7 +558,7 @@ static FuncItemTester get_castable_spellbook_tester(PlayerType *player_ptr)
 
 static FuncItemTester get_learnable_spellbook_tester(PlayerType *player_ptr)
 {
-    if (!PlayerRealm(player_ptr).realm2().is_available()) {
+    if (!PlayerRealm(*player_ptr).realm2().is_available()) {
         return get_castable_spellbook_tester(player_ptr);
     } else {
         return FuncItemTester(item_tester_learn_spell, player_ptr);
@@ -583,7 +583,7 @@ void do_cmd_browse(CreatureEntity &creature)
 
     /* Warriors are illiterate */
     CreatureClass pc(*player_ptr);
-    if (!PlayerRealm(player_ptr).realm1().is_available() && !pc.is_every_magic()) {
+    if (!PlayerRealm(*player_ptr).realm1().is_available() && !pc.is_every_magic()) {
         msg_print(_("本を読むことができない！", "You cannot read books!"));
         return;
     }
@@ -715,7 +715,7 @@ void do_cmd_study(CreatureEntity &creature)
     /* Spells of realm2 will have an increment of +32 */
     SPELL_IDX spell = -1;
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (!pr.realm1().is_available()) {
         msg_print(_("本を読むことができない！", "You cannot read books!"));
         return;
@@ -913,7 +913,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     /* Require spell ability */
     CreatureClass pc(*player_ptr);
     auto is_every_magic = pc.is_every_magic();
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (!pr.realm1().is_available() && !is_every_magic) {
         msg_print(_("呪文を唱えられない！", "You cannot cast spells!"));
         return false;
@@ -975,7 +975,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     const auto tval = o_ptr->bi_key.tval();
     const auto sval = *o_ptr->bi_key.sval();
     const auto use_realm = PlayerRealm::get_realm_of_book(tval);
-    if (!is_every_magic && PlayerRealm(player_ptr).realm2().equals(use_realm)) {
+    if (!is_every_magic && PlayerRealm(*player_ptr).realm2().equals(use_realm)) {
         increment = 32;
     }
 

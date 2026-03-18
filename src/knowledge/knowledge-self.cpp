@@ -84,7 +84,7 @@ static void dump_yourself(PlayerType *player_ptr, FILE *fff)
     dump_explanation(personality_explanations[player_ptr->ppersonality], fff);
 
     fprintf(fff, "\n");
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (pr.realm1().is_available()) {
         fprintf(fff, _("魔法: %s\n", "Realm: %s\n"), pr.realm1().get_name().data());
         dump_explanation(pr.realm1().get_explanation(), fff);

@@ -93,7 +93,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
     case PlayerClassType::WARRIOR:
         return sword_dancing(creature);
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(player_ptr).is_realm_hex()) {
+        if (PlayerRealm(*player_ptr).is_realm_hex()) {
             const auto retval = SpellHex(*player_ptr).stop_spells_with_selection();
             if (retval) {
                 PlayerEnergy(player_ptr).set_player_turn_energy(10);
@@ -107,7 +107,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
     case PlayerClassType::SORCERER:
         return eat_magic(player_ptr, player_ptr->level * 2);
     case PlayerClassType::PRIEST:
-        if (!PlayerRealm(player_ptr).realm1().is_good_attribute()) {
+        if (!PlayerRealm(*player_ptr).realm1().is_good_attribute()) {
             (void)dispel_monsters(creature, creature.level * 4);
             turn_monsters(creature, creature.level * 4);
             banish_monsters(creature, creature.level * 4);
@@ -128,7 +128,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return false;
         }
 
-        fire_beam(creature, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.level * 3);
+        fire_beam(creature, PlayerRealm(*player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.level * 3);
         return true;
     }
     case PlayerClassType::WARRIOR_MAGE:
