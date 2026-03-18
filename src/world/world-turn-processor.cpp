@@ -294,7 +294,7 @@ void WorldTurnProcessor::process_world_monsters()
     }
 
     if (!(world.game_turn % (TURNS_PER_TICK * 3))) {
-        regenerate_captured_monsters(this->player_ptr);
+        regenerate_captured_monsters(*this->player_ptr);
     }
 
     if (this->player_ptr->leaving) {
