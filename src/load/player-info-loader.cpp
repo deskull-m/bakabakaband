@@ -40,7 +40,7 @@
 static void rd_realms(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    PlayerRealm pr(&player);
+    PlayerRealm pr(player);
     pr.reset();
 
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {

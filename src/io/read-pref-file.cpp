@@ -286,7 +286,7 @@ void load_all_pref_files(CreatureEntity &creature)
     process_pref_file(creature, format(fmt, player_ptr->race->title.data()));
     process_pref_file(creature, format(fmt, (*player_ptr->pclass_ref).title.data()));
     process_pref_file(creature, format(fmt, player_ptr->base_name.data()));
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (pr.realm1().is_available()) {
         process_pref_file(creature, format(fmt, pr.realm1().get_name().data()));
     }

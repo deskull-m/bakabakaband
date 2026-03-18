@@ -643,7 +643,7 @@ void wiz_reset_class(CreatureEntity &creature)
     creature.pclass_ref = &class_info.at(creature.pclass);
     mp_ptr = &class_magics_info[enum2i(creature.pclass)];
     CreatureClass(creature).init_specific_data();
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     pr.reset();
     const auto &[realm1, realm2, element_realm] = *chosen_realms;
     if (realm1 != RealmType::NONE) {
@@ -670,7 +670,7 @@ void wiz_reset_realms(CreatureEntity &creature)
         return;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     pr.reset();
     const auto &[realm1, realm2, element_realm] = *chosen_realms;
     if (realm1 != RealmType::NONE) {

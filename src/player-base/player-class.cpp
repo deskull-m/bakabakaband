@@ -541,7 +541,7 @@ void CreatureClass::init_specific_data()
         player_ptr->class_specific_data = std::make_shared<ninja_data_type>();
         break;
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(player_ptr).is_realm_hex()) {
+        if (PlayerRealm(*player_ptr).is_realm_hex()) {
             player_ptr->class_specific_data = std::make_shared<spell_hex_data_type>();
         } else {
             player_ptr->class_specific_data = no_class_specific_data();

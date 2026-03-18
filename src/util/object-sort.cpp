@@ -45,7 +45,7 @@ bool object_sort_comp(PlayerType *player_ptr, const ItemEntity &item1, const Ite
 
     const auto item1_tval = item1.bi_key.tval();
     const auto item2_tval = item2.bi_key.tval();
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     const auto realm1_book = pr.realm1().get_book();
     const auto realm2_book = pr.realm2().get_book();
     if ((item1_tval == realm1_book) && (item2_tval != realm1_book)) {

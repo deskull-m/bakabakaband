@@ -561,7 +561,7 @@ BIT_FLAGS has_esp_evil(CreatureEntity &creature)
 {
     BIT_FLAGS result = common_cause_flags(creature, TR_ESP_EVIL);
     auto &player = static_cast<PlayerType &>(creature);
-    if (PlayerRealm(&player).is_realm_hex()) {
+    if (PlayerRealm(player).is_realm_hex()) {
         if (SpellHex(player).is_spelling_specific(HEX_DETECT_EVIL)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
@@ -763,7 +763,7 @@ void check_no_flowed(CreatureEntity &creature)
         return;
     }
 
-    PlayerRealm pr(&player);
+    PlayerRealm pr(player);
     if (!pr.realm1().is_available()) {
         player.no_flowed = false;
         return;

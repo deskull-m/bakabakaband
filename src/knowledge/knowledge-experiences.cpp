@@ -86,7 +86,7 @@ void do_cmd_knowledge_spell_exp(CreatureEntity &creature)
         return;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
 
     if (pr.realm1().is_available()) {
         fprintf(fff, _("%sの魔法書\n", "%s Spellbook\n"), pr.realm1().get_name().data());

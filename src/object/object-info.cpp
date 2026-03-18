@@ -179,7 +179,7 @@ bool check_book_realm(CreatureEntity &creature, const BaseitemKey &bi_key)
         return ((book_realm == RealmType::ARCANE) || (bi_key.sval() < 2));
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     return pr.realm1().equals(book_realm) || pr.realm2().equals(book_realm);
 }
 

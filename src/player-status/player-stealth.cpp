@@ -117,7 +117,7 @@ int16_t PlayerStealth::time_effect_bonus()
 {
     auto player_ptr = static_cast<PlayerType *>(&this->creature);
     int16_t bonus = 0;
-    if (PlayerRealm(dynamic_cast<PlayerType *>(&this->creature)).is_realm_hex()) {
+    if (PlayerRealm(this->creature).is_realm_hex()) {
         SpellHex spell_hex(this->creature);
         if (spell_hex.is_spelling_any()) {
             bonus -= spell_hex.get_casting_num() + 1;

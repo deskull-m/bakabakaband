@@ -304,8 +304,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
     CreatureClass pc(creature);
     auto realm_except_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     if (entry.has(FLG_REALM1) && ((pr.realm1().get_book() != tval) || realm_except_class)) {
         return false;
     }
@@ -354,7 +353,7 @@ bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const 
          * into an inventory slot.
          * But an item can not be absorbed into itself!
          */
-        if ((player_ptr->inventory[j].get() != o_ptr) && player_ptr->inventory[j]->is_similar(*o_ptr)) {
+        if ((creature.inventory[j].get() != o_ptr) && creature.inventory[j]->is_similar(*o_ptr)) {
             return true;
         }
     }

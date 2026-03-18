@@ -461,7 +461,7 @@ void autopick_entry_from_object(CreatureEntity &creature, autopick_type *entry, 
     CreatureClass pc(creature);
     const auto is_realm_independent_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (pr.realm1().get_book() == tval && !is_realm_independent_class) {
         entry->add(FLG_REALM1);
         name = false;

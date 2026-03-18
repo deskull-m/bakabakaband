@@ -38,8 +38,7 @@ birth_realm_type::birth_realm_type()
 
 static void impose_first_realm(CreatureEntity &creature, RealmChoices &choices)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     if (!pr.realm1().is_available()) {
         return;
     }
@@ -57,8 +56,7 @@ static void impose_first_realm(CreatureEntity &creature, RealmChoices &choices)
 
 static void analyze_realms(CreatureEntity &creature, RealmType selecting_realm, const RealmChoices &choices, birth_realm_type *birth_realm_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     for (auto realm : EnumRange(RealmType::LIFE, RealmType::MAX)) {
         if (choices.has_not(realm) || pr.realm1().equals(realm)) {
             continue;
@@ -266,7 +264,7 @@ static void print_choosed_realms(CreatureEntity &creature)
     put_str(_("魔法        :", "Magic       :"), 6, 1);
 
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     std::string choosed_realms;
     if (pr.realm2().is_available()) {
         choosed_realms = format("%s, %s", pr.realm1().get_name().data(), pr.realm2().get_name().data());
@@ -290,7 +288,7 @@ bool get_player_realms(CreatureEntity &creature)
     put_str("                                   ", 6, 40);
 
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     pr.reset();
 
     if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {

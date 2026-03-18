@@ -75,7 +75,7 @@ static void write_birth_diary(CreatureEntity &creature)
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_race);
     const auto mes_class = format(_("%s職業に%sを選択した。", "%schose %s class."), indent, class_info.at(player_ptr->pclass).title.data());
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_class);
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(*player_ptr);
     if (pr.realm1().is_available()) {
         const auto mes_realm2 = pr.realm2().is_available() ? format(_("と%s", " and %s realms"), pr.realm2().get_name().data()) : _("", " realm");
         const auto mes_realm = format(_("%s魔法の領域に%s%sを選択した。", "%schose %s%s."), indent, pr.realm1().get_name().data(), mes_realm2.data());

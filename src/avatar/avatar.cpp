@@ -371,7 +371,7 @@ void initialize_virtues(CreatureEntity &creature)
     }
 
     /* Get virtues for realms */
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {
         auto tmp_vir = get_realm_virtues(creature, pr.realm1().to_enum());
         add_virtue(tmp_vir);

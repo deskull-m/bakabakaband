@@ -269,7 +269,7 @@ void player_outfit(CreatureEntity &creature)
             continue;
         }
 
-        PlayerRealm prealm(player_ptr);
+        PlayerRealm prealm(*player_ptr);
         if (tval == ItemKindType::SORCERY_BOOK) {
             tval = prealm.realm1().get_book();
         } else if (tval == ItemKindType::DEATH_BOOK) {
