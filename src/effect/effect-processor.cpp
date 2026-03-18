@@ -265,7 +265,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         }
     }
 
-    FallOffHorseEffect fall_off_horse_effect(&player);
+    FallOffHorseEffect fall_off_horse_effect(creature);
     if (flag & (PROJECT_KILL)) {
         project_m_n = 0;
         project_m_x = 0;

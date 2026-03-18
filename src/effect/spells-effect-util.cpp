@@ -1,6 +1,7 @@
 #include "effect/spells-effect-util.h"
 #include "monster/monster-describer.h"
 #include "pet/pet-fall-off.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
@@ -24,8 +25,8 @@ CapturedMonsterType::CapturedMonsterType()
     mflag2.clear();
 }
 
-FallOffHorseEffect::FallOffHorseEffect(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+FallOffHorseEffect::FallOffHorseEffect(CreatureEntity &creature)
+    : creature_ptr(&creature)
 {
 }
 
@@ -41,7 +42,8 @@ void FallOffHorseEffect::set_fall_off(int damage)
 
 void FallOffHorseEffect::apply() const
 {
-    if (!this->player_ptr->riding) {
+    auto *player_ptr = static_cast<PlayerType *>(this->creature_ptr);
+    if (!this->creature_ptr->riding) {
         return;
     }
 
@@ -49,18 +51,18 @@ void FallOffHorseEffect::apply() const
         return;
     }
 
-    const auto &floor = *this->player_ptr->current_floor_ptr;
-    const auto m_name = monster_desc(*this->player_ptr, floor.m_list[player_ptr->riding], 0);
+    const auto &floor = *this->creature_ptr->current_floor_ptr;
+    const auto m_name = monster_desc(*this->creature_ptr, floor.m_list[creature_ptr->riding], 0);
 
     if (this->shake_off_damage > 0) {
-        if (process_fall_off_horse(this->player_ptr, this->shake_off_damage, false)) {
+        if (process_fall_off_horse(player_ptr, this->shake_off_damage, false)) {
             msg_format(_("%s^に振り落とされた！", "%s^ has thrown you off!"), m_name.data());
             return;
         }
     }
 
     if (this->fall_off_damage > 0) {
-        if (process_fall_off_horse(this->player_ptr, this->fall_off_damage, false)) {
+        if (process_fall_off_horse(player_ptr, this->fall_off_damage, false)) {
             msg_format(_("%s^から落ちてしまった！", "You have fallen from %s."), m_name.data());
         }
     }
