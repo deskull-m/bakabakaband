@@ -166,16 +166,16 @@ extern QuestId leaving_quest;
 
 constexpr auto QUEST_TEST_LINES_MAX = 10;
 
+class CreatureEntity;
 class FloorType;
 class ItemEntity;
-class PlayerType;
-void determine_random_questor(PlayerType *player_ptr, QuestType &quest);
+void determine_random_questor(CreatureEntity &creature, QuestType &quest);
 void record_quest_final_status(QuestType *q_ptr, PLAYER_LEVEL lev, QuestStatusType stat);
-void complete_quest(PlayerType *player_ptr, QuestId quest_num);
-void check_find_art_quest_completion(PlayerType *player_ptr, ItemEntity *o_ptr);
+void complete_quest(CreatureEntity &creature, QuestId quest_num);
+void check_find_art_quest_completion(CreatureEntity &creature, ItemEntity *o_ptr);
 void quest_discovery(QuestId quest_id);
-void leave_quest_check(PlayerType *player_ptr);
-void leave_tower_check(PlayerType *player_ptr);
-void exe_enter_quest(PlayerType *player_ptr, QuestId quest_id);
-void do_cmd_quest(PlayerType *player_ptr);
+void leave_quest_check(CreatureEntity &creature);
+void leave_tower_check(CreatureEntity &creature);
+void exe_enter_quest(CreatureEntity &creature, QuestId quest_id);
+void do_cmd_quest(CreatureEntity &creature);
 bool inside_quest(QuestId quest_id);

@@ -92,8 +92,8 @@ void execute_recall(CreatureEntity &creature)
 
         floor.dun_level = 0;
         floor.reset_dungeon_index();
-        leave_quest_check(&player);
-        leave_tower_check(&player);
+        leave_quest_check(player);
+        leave_tower_check(player);
         floor.quest_number = QuestId::NONE;
         player.leaving = true;
         sound(SoundKind::TPLEVEL);

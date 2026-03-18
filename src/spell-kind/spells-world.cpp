@@ -156,7 +156,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             }
 
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-            leave_quest_check(player_ptr);
+            leave_quest_check(*player_ptr);
             floor.quest_number = QuestId::NONE;
             player_ptr->leaving = true;
         }

@@ -23,6 +23,7 @@
 #include "player/player-personality-types.h"
 #include "player/player-status.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h" // @todo 相互参照、将来的に削除する.
 #include "system/grid-type-definition.h"
@@ -151,8 +152,9 @@ bool QuestList::order_completed(QuestId id1, QuestId id2) const
  * @brief ランダムクエストの討伐ユニークを決める / Determine the random quest uniques
  * @param quest クエスト構造体への参照
  */
-void determine_random_questor(PlayerType *player_ptr, QuestType &quest)
+void determine_random_questor(CreatureEntity &creature, QuestType &quest)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     get_mon_num_prep_enum(*player_ptr, MonraceHook::QUEST);
     const auto &monraces = MonraceList::get_instance();
     MonraceId r_idx;
@@ -191,8 +193,9 @@ void record_quest_final_status(QuestType *q_ptr, PLAYER_LEVEL lev, QuestStatusTy
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param quest_id 達成状態にしたいクエストのID
  */
-void complete_quest(PlayerType *player_ptr, QuestId quest_id)
+void complete_quest(CreatureEntity &creature, QuestId quest_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &quests = QuestList::get_instance();
     auto &quest = quests.get_quest(quest_id);
     switch (quest.type) {
@@ -227,8 +230,9 @@ void complete_quest(PlayerType *player_ptr, QuestId quest_id)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_ptr 入手したオブジェクトの構造体参照ポインタ
  */
-void check_find_art_quest_completion(PlayerType *player_ptr, ItemEntity *o_ptr)
+void check_find_art_quest_completion(CreatureEntity &creature, ItemEntity *o_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &quests = QuestList::get_instance();
     /* Check if completed a quest */
     for (const auto &[quest_id, quest] : quests) {
@@ -236,7 +240,7 @@ void check_find_art_quest_completion(PlayerType *player_ptr, ItemEntity *o_ptr)
         found_artifact &= (quest.status == QuestStatusType::TAKEN);
         found_artifact &= (o_ptr->is_specific_artifact(quest.reward_fa_id));
         if (found_artifact) {
-            complete_quest(player_ptr, quest_id);
+            complete_quest(*player_ptr, quest_id);
         }
     }
 }
@@ -281,8 +285,9 @@ void quest_discovery(QuestId quest_id)
  * @brief クエスト階層から離脱する際の処理
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void leave_quest_check(PlayerType *player_ptr)
+void leave_quest_check(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     leaving_quest = player_ptr->current_floor_ptr->quest_number;
     if (!inside_quest(leaving_quest)) {
         return;
@@ -330,8 +335,9 @@ void leave_quest_check(PlayerType *player_ptr)
 /*!
  * @brief 「塔」クエストの各階層から離脱する際の処理
  */
-void leave_tower_check(PlayerType *player_ptr)
+void leave_tower_check(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &quests = QuestList::get_instance();
     leaving_quest = player_ptr->current_floor_ptr->quest_number;
 
@@ -355,8 +361,9 @@ void leave_tower_check(PlayerType *player_ptr)
 /*!
  * @brief Player enters a new quest
  */
-void exe_enter_quest(PlayerType *player_ptr, QuestId quest_id)
+void exe_enter_quest(CreatureEntity &creature, QuestId quest_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &quests = QuestList::get_instance();
     if (quests.get_quest(quest_id).type != QuestKindType::RANDOM) {
         player_ptr->current_floor_ptr->dun_level = 1;
@@ -369,8 +376,9 @@ void exe_enter_quest(PlayerType *player_ptr, QuestId quest_id)
  * @brief クエスト入り口にプレイヤーが乗った際の処理 / Do building commands
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void do_cmd_quest(PlayerType *player_ptr)
+void do_cmd_quest(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -394,9 +402,9 @@ void do_cmd_quest(PlayerType *player_ptr)
 
     player_ptr->oldpy = 0;
     player_ptr->oldpx = 0;
-    leave_quest_check(player_ptr);
+    leave_quest_check(*player_ptr);
 
-    exe_enter_quest(player_ptr, i2enum<QuestId>(floor.get_grid(player_ptr->get_position()).special));
+    exe_enter_quest(*player_ptr, i2enum<QuestId>(floor.get_grid(player_ptr->get_position()).special));
 }
 
 bool inside_quest(QuestId id)
