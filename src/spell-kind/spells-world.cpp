@@ -212,7 +212,7 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
         return;
     }
 
-    QuestCompletionChecker(player_ptr, monster).complete();
+    QuestCompletionChecker(*player_ptr, monster).complete();
     if (record_named_pet && monster.is_named_pet()) {
         const auto m2_name = monster_desc(*player_ptr, monster, MD_INDEF_VISIBLE);
         exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_TELE_LEVEL, m2_name);

@@ -34,7 +34,7 @@
 void set_pet(CreatureEntity &creature, MonsterEntity &monster)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    QuestCompletionChecker(player_ptr, monster).complete();
+    QuestCompletionChecker(*player_ptr, monster).complete();
     monster.mflag2.set(MonsterConstantFlagType::PET);
     monster.alliance_idx = AllianceType::NONE;
     if (monster.get_monrace().kind_flags.has_none_of(alignment_mask)) {

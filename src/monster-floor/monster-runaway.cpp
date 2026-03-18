@@ -121,7 +121,7 @@ bool runaway_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONST
     }
 
     escape_monster(creature, turn_flags_ptr, monster, m_name.data());
-    QuestCompletionChecker(player_ptr, monster).complete();
+    QuestCompletionChecker(*player_ptr, monster).complete();
     delete_monster_idx(creature, m_idx);
     return true;
 }
