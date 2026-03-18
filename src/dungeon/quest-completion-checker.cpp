@@ -17,8 +17,8 @@
 #include <algorithm>
 #include <range/v3/algorithm.hpp>
 
-QuestCompletionChecker::QuestCompletionChecker(PlayerType *player_ptr, const MonsterEntity &monster)
-    : player_ptr(player_ptr)
+QuestCompletionChecker::QuestCompletionChecker(CreatureEntity &creature, const MonsterEntity &monster)
+    : player_ptr(static_cast<PlayerType *>(&creature))
     , m_ptr(&monster)
     , quest_idx(QuestId::NONE)
 {
@@ -51,8 +51,9 @@ void QuestCompletionChecker::complete()
     this->make_reward(pos);
 }
 
-static bool check_quest_completion(PlayerType *player_ptr, const QuestType &quest, const MonsterEntity &monster)
+static bool check_quest_completion(CreatureEntity &creature, const QuestType &quest, const MonsterEntity &monster)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &floor = *player_ptr->current_floor_ptr;
     if (quest.status != QuestStatusType::TAKEN) {
         return false;
@@ -93,7 +94,7 @@ void QuestCompletionChecker::set_quest_idx()
     if (inside_quest(this->quest_idx)) {
         return;
     }
-    auto q = std::find_if(quests.rbegin(), quests.rend(), [this](auto q) { return check_quest_completion(this->player_ptr, q.second, *this->m_ptr); });
+    auto q = std::find_if(quests.rbegin(), quests.rend(), [this](auto q) { return check_quest_completion(*this->player_ptr, q.second, *this->m_ptr); });
 
     if (q != quests.rend()) {
         this->quest_idx = q->first;
