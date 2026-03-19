@@ -45,8 +45,9 @@
  * @details
  * Assume there is no monster blocking the destination
  */
-static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX o_idx)
+static bool exe_open_chest(CreatureEntity &creature, const Pos2D &pos, OBJECT_IDX o_idx)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto flag = true;
     auto more = false;
     auto *o_ptr = player_ptr->current_floor_ptr->o_list[o_idx].get();
@@ -135,7 +136,7 @@ void do_cmd_open(CreatureEntity &creature)
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
             do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
         } else if (o_idx) {
-            more = exe_open_chest(player_ptr, pos, o_idx);
+            more = exe_open_chest(creature, pos, o_idx);
         } else {
             more = exe_open(*player_ptr, pos.y, pos.x);
         }
@@ -307,8 +308,9 @@ void do_cmd_bash(CreatureEntity &creature)
  * Let user choose a pile of spikes, perhaps?
  * </pre>
  */
-static bool get_spike(PlayerType *player_ptr, INVENTORY_IDX *ip)
+static bool get_spike(CreatureEntity &creature, INVENTORY_IDX *ip)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
         auto *o_ptr = player_ptr->inventory[i].get();
         if (!o_ptr->is_valid()) {
@@ -352,7 +354,7 @@ void do_cmd_spike(CreatureEntity &creature)
     INVENTORY_IDX i_idx;
     if (terrain_mimic.flags.has_not(TerrainCharacteristics::SPIKE)) {
         msg_print(_("そこにはくさびを打てるものが見当たらない。", "You see nothing there to spike."));
-    } else if (!get_spike(player_ptr, &i_idx)) {
+    } else if (!get_spike(creature, &i_idx)) {
         msg_print(_("くさびを持っていない！", "You have no spikes!"));
     } else if (grid.has_monster()) {
         PlayerEnergy(player_ptr).set_player_turn_energy(100);
