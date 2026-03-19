@@ -387,7 +387,7 @@ static bool exe_eat_food_type_object(CreatureEntity &creature, const BaseitemKey
     case SV_FOOD_WAYBREAD:
         msg_print(_("これはひじょうに美味だ。", "That tastes very good."));
         (void)bss.set_poison(0);
-        (void)hp_player(player_ptr, Dice::roll(4, 8));
+        (void)hp_player(*player_ptr, Dice::roll(4, 8));
         return true;
     case SV_FOOD_PINT_OF_ALE:
     case SV_FOOD_PINT_OF_WINE:

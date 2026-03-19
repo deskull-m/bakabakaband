@@ -467,7 +467,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
     case ElementSpells::PERCEPT:
         return psychometry(&player);
     case ElementSpells::CURE:
-        (void)hp_player(&player, Dice::roll(2, 8));
+        (void)hp_player(player, Dice::roll(2, 8));
         (void)BadStatusSetter(creature).mod_cut(-10);
         return true;
     case ElementSpells::BOLT_2ND: {
@@ -480,7 +480,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_bolt_or_beam(creature, plev, typ, dir, dam)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(&player, dam / 2);
+                (void)hp_player(player, dam / 2);
             }
         }
 
@@ -523,7 +523,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_breath(creature, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(&player, dam / 2);
+                (void)hp_player(player, dam / 2);
             }
         }
 
@@ -565,7 +565,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_ball(creature, typ, dir, dam, 3)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(&player, dam / 2);
+                (void)hp_player(player, dam / 2);
             }
         }
 
@@ -605,7 +605,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         const auto typ = get_element_spells_type(creature, power.elem);
         if (fire_ball(creature, typ, dir, dam, 4)) {
             if (typ == AttributeType::HYPODYNAMIA) {
-                (void)hp_player(&player, dam / 2);
+                (void)hp_player(player, dam / 2);
             }
         }
 

@@ -38,7 +38,7 @@ void do_poly_wounds(PlayerType *player_ptr)
     }
 
     msg_print(_("傷がより軽いものに変化した。", "Your wounds are polymorphed into less serious ones."));
-    hp_player(player_ptr, change);
+    hp_player(*player_ptr, change);
     BadStatusSetter bss(*player_ptr);
     if (!nasty_effect) {
         (void)bss.mod_cut(change / 2);

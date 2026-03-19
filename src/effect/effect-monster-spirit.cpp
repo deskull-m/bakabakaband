@@ -35,7 +35,7 @@ ProcessResult effect_monster_drain_mana(PlayerType *player_ptr, EffectMonster *e
 
     if (!em_ptr->is_monster()) {
         msg_format(_("%sから精神エネルギーを吸いとった。", "You draw psychic energy from %s."), em_ptr->m_name);
-        (void)hp_player(player_ptr, em_ptr->dam);
+        (void)hp_player(*player_ptr, em_ptr->dam);
         em_ptr->dam = 0;
         return ProcessResult::PROCESS_CONTINUE;
     }

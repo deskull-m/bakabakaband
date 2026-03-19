@@ -92,7 +92,7 @@ void WorldTurnProcessor::process_world()
 
     ring_nightmare_bell(prev_min);
     starve_player(*this->player_ptr);
-    process_player_hp_mp(this->player_ptr);
+    process_player_hp_mp(*this->player_ptr);
     reduce_magic_effects_timeout(this->player_ptr);
     reduce_lite_life(*this->player_ptr);
     process_terrain_effects(this->player_ptr);

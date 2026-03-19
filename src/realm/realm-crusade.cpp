@@ -236,7 +236,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
         if (cast) {
             BadStatusSetter bss(creature);
             dispel_evil(creature, randint1(dam_sides));
-            hp_player(player_ptr, heal);
+            hp_player(*player_ptr, heal);
             (void)bss.set_fear(0);
             (void)bss.set_poison(0);
             (void)bss.set_stun(0);
@@ -427,7 +427,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
             confuse_monsters(creature, power);
             turn_monsters(creature, power);
             stasis_monsters(creature, power);
-            hp_player(player_ptr, heal);
+            hp_player(*player_ptr, heal);
         }
     } break;
 

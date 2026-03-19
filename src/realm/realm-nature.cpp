@@ -173,7 +173,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
 
         if (cast) {
             BadStatusSetter bss(creature);
-            hp_player(player_ptr, dice.roll());
+            hp_player(*player_ptr, dice.roll());
             (void)bss.set_cut(0);
             (void)bss.set_poison(0);
         }

@@ -44,7 +44,7 @@ bool cleansing_nova(CreatureEntity &creature, bool magic, bool powerful)
         ident = true;
     }
 
-    if (hp_player(static_cast<PlayerType *>(&creature), 50)) {
+    if (hp_player(creature, 50)) {
         ident = true;
     }
 

@@ -16,7 +16,7 @@ void effect_player_old_heal(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         msg_print(_("何らかの攻撃によって気分がよくなった。", "You are hit by something invigorating!"));
     }
 
-    (void)hp_player(player_ptr, ep_ptr->dam);
+    (void)hp_player(*player_ptr, ep_ptr->dam);
     ep_ptr->dam = 0;
 }
 
