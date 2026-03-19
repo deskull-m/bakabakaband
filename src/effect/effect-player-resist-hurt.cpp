@@ -188,7 +188,7 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (CreatureRace(&creature).equals(PlayerRaceType::SPECTRE)) {
         if (!evaded) {
-            hp_player(player_ptr, ep_ptr->dam / 4);
+            hp_player(*player_ptr, ep_ptr->dam / 4);
         }
         ep_ptr->get_damage = 0;
         return;

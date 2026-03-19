@@ -42,7 +42,7 @@ bool vampirism(CreatureEntity &creature)
     }
 
     if (creature.food < PY_FOOD_FULL) {
-        (void)hp_player(static_cast<PlayerType *>(&creature), dummy);
+        (void)hp_player(creature, dummy);
     } else {
         msg_print(_("あなたは空腹ではありません。", "You were not hungry."));
     }

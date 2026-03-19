@@ -291,7 +291,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
                 chg_virtue(creature, Virtue::SACRIFICE, -1);
                 chg_virtue(creature, Virtue::VITALITY, -1);
 
-                hp_player(player_ptr, dam);
+                hp_player(*player_ptr, dam);
 
                 /*
                  * Gain nutritional sustenance:
@@ -419,7 +419,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
 
             for (i = 0; i < 3; i++) {
                 if (hypodynamic_bolt(creature, dir, dam)) {
-                    hp_player(player_ptr, dam);
+                    hp_player(*player_ptr, dam);
                 }
             }
         }

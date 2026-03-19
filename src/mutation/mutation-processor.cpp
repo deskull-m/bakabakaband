@@ -299,13 +299,13 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         msg_erase();
 
         if ((player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
-            hp_player(player_ptr, 10);
+            hp_player(*player_ptr, 10);
         }
 
         auto &item = *player_ptr->inventory[INVEN_LITE];
         if (item.bi_key.tval() == ItemKindType::LITE) {
             if (!item.is_fixed_artifact() && (item.fuel > 0)) {
-                hp_player(player_ptr, item.fuel / 20);
+                hp_player(*player_ptr, item.fuel / 20);
                 item.fuel /= 2;
                 msg_print(_("光源からエネルギーを吸収した！", "You absorb energy from your light!"));
                 notice_lite_change(*player_ptr, &item);
@@ -313,7 +313,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
         }
 
         if (player_ptr->tim_emission > 0) {
-            hp_player(player_ptr, player_ptr->tim_emission);
+            hp_player(*player_ptr, player_ptr->tim_emission);
             set_tim_emission(*player_ptr, 0, true);
             msg_print(_("あなたは自身の光をエネルギーとして吸収した！", "You absorb energy from your own light!"));
         }
@@ -505,7 +505,7 @@ void process_world_aux_mutation(PlayerType *player_ptr)
                 healing = wounds;
             }
 
-            hp_player(player_ptr, healing);
+            hp_player(*player_ptr, healing);
             player_ptr->csp -= healing;
             RedrawingFlagsUpdater::get_instance().set_flags(flags);
         }

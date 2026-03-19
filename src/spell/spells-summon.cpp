@@ -568,7 +568,7 @@ void cast_invoke_spirits(CreatureEntity &creature, const Direction &dir)
         dispel_monsters(creature, 150);
         slow_monsters(creature, plev);
         sleep_monsters(creature, plev);
-        hp_player(&player, 300);
+        hp_player(player, 300);
     }
 
     if (die < 31) {

@@ -23,7 +23,7 @@ bool activate_bladeturner(CreatureEntity &creature)
     (void)BadStatusSetter(creature).set_fear(0);
     (void)set_hero(creature, randint1(50) + 50, false);
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (void)hp_player(player_ptr, 10);
+    (void)hp_player(*player_ptr, 10);
     (void)set_blessed(creature, randint1(50) + 50, false);
     (void)set_oppose_acid(creature, randint1(50) + 50, false);
     (void)set_oppose_elec(creature, randint1(50) + 50, false);

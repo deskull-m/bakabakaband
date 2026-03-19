@@ -201,7 +201,7 @@ bool activate_cure_lw(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
     (void)BadStatusSetter(player).set_fear(0);
-    (void)hp_player(&player, 30);
+    (void)hp_player(player, 30);
     return true;
 }
 

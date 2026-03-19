@@ -36,7 +36,7 @@ bool comvert_mp_to_hp(CreatureEntity &creature)
     auto &player = static_cast<PlayerType &>(creature);
     if (player.csp >= player.level / 5) {
         player.csp -= player.level / 5;
-        hp_player(&player, player.level);
+        hp_player(player, player.level);
     } else {
         msg_print(_("変換に失敗した。", "You failed to convert."));
     }

@@ -200,7 +200,7 @@ bool activate_ultimate_resistance(CreatureEntity &creature)
     TIME_EFFECT v = randint1(25) + 25;
     (void)BadStatusSetter(creature).set_fear(0);
     (void)set_hero(creature, v, false);
-    (void)hp_player(player_ptr, 10);
+    (void)hp_player(*player_ptr, 10);
     (void)set_blessed(creature, v, false);
     (void)set_oppose_acid(creature, v, false);
     (void)set_oppose_elec(creature, v, false);

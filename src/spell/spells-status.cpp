@@ -316,7 +316,7 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
     (void)restore_all_status(creature);
     (void)set_berserk(*player_ptr, 0, true);
     handle_stuff(*player_ptr);
-    hp_player(player_ptr, 5000);
+    hp_player(*player_ptr, 5000);
 
     return true;
 }
@@ -337,7 +337,7 @@ bool heroism(CreatureEntity &creature, int base)
         ident = true;
     }
 
-    if (hp_player(player_ptr, 10)) {
+    if (hp_player(*player_ptr, 10)) {
         ident = true;
     }
 
@@ -360,7 +360,7 @@ bool berserk(CreatureEntity &creature, int base)
         ident = true;
     }
 
-    if (hp_player(player_ptr, 30)) {
+    if (hp_player(*player_ptr, 30)) {
         ident = true;
     }
 
@@ -375,7 +375,7 @@ bool cure_light_wounds(CreatureEntity &creature, int pow)
     }
 
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(*player_ptr, pow)) {
         ident = true;
     }
 
@@ -403,7 +403,7 @@ bool cure_serious_wounds(CreatureEntity &creature, int pow)
     }
 
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(*player_ptr, pow)) {
         ident = true;
     }
 
@@ -435,7 +435,7 @@ bool cure_critical_wounds(CreatureEntity &creature, int pow)
     }
 
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(*player_ptr, pow)) {
         ident = true;
     }
 
@@ -475,7 +475,7 @@ bool true_healing(CreatureEntity &creature, int pow)
     }
 
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(*player_ptr, pow)) {
         ident = true;
     }
 

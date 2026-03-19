@@ -160,7 +160,7 @@ static void drain_result(PlayerType *player_ptr, player_attack_type *pa_ptr, boo
     }
 
     drain_heal = (drain_heal * player_ptr->mutant_regenerate_mod) / 100;
-    hp_player(player_ptr, drain_heal);
+    hp_player(*player_ptr, drain_heal);
 }
 
 /*!
