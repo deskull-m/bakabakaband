@@ -63,8 +63,9 @@ void do_cmd_search(CreatureEntity &creature)
     }
 }
 
-static bool exe_alter(PlayerType *player_ptr)
+static bool exe_alter(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto dir = get_rep_dir(*player_ptr, true);
     if (!dir) {
         return false;
@@ -118,7 +119,7 @@ void do_cmd_alter(CreatureEntity &creature)
         command_arg = 0;
     }
 
-    if (!exe_alter(player_ptr)) {
+    if (!exe_alter(creature)) {
         disturb(*player_ptr, false, false);
     }
 }
@@ -141,8 +142,9 @@ static bool decide_suicide()
     return i == '@';
 }
 
-static void accept_winner_message(PlayerType *player_ptr)
+static void accept_winner_message(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!AngbandWorld::get_instance().total_winner || !last_words) {
         return;
     }
@@ -195,7 +197,7 @@ void do_cmd_suicide(CreatureEntity &creature)
     player_ptr->is_dead_ = true;
     player_ptr->leaving = true;
     if (world.total_winner) {
-        accept_winner_message(player_ptr);
+        accept_winner_message(creature);
         world.add_retired_class(player_ptr->pclass);
     } else {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
