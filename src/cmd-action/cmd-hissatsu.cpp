@@ -61,8 +61,9 @@
  * when you run it. It's probably easy to fix but I haven't tried,\n
  * sorry.\n
  */
-static int get_hissatsu_power(PlayerType *player_ptr, SPELL_IDX *sn)
+static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int j = 0;
     int num = 0;
     POSITION y = 1;
@@ -324,7 +325,7 @@ void do_cmd_hissatsu(CreatureEntity &creature)
 
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::IAI, SamuraiStanceType::FUUJIN, SamuraiStanceType::KOUKIJIN });
 
-    if (!get_hissatsu_power(player_ptr, &n)) {
+    if (!get_hissatsu_power(creature, &n)) {
         return;
     }
 
