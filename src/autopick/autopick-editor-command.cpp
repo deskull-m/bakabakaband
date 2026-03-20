@@ -541,7 +541,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         break;
     }
     case EC_INSERT_MACRO: {
-        draw_text_editor(player_ptr, tb);
+        draw_text_editor(*player_ptr, tb);
         term_erase(0, tb->cy - tb->upper + 1, tb->wid);
         term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, _("P:<トリガーキー>: ", "P:<Trigger key>: "));
         if (!insert_macro_line(tb)) {
@@ -554,7 +554,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         break;
     }
     case EC_INSERT_KEYMAP: {
-        draw_text_editor(player_ptr, tb);
+        draw_text_editor(*player_ptr, tb);
         term_erase(0, tb->cy - tb->upper + 1, tb->wid);
         const auto mode = rogue_like_commands ? KeymapMode::ROGUE : KeymapMode::ORIGINAL;
         const auto mes = fmt::format("C:{}:<{}>: ", enum2i(mode), _("コマンドキー", "Keypress"));

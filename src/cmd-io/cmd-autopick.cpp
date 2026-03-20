@@ -169,7 +169,7 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
     while (quit == APE_QUIT) {
         int com_id = 0;
         tb->adjust_cursor_column();
-        draw_text_editor(player_ptr, tb);
+        draw_text_editor(creature, tb);
         prt(_("(^Q:終了 ^W:セーブして終了, ESC:メニュー, その他:入力)",
                 "(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)"),
             0, 0);
