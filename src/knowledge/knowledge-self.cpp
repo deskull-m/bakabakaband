@@ -64,8 +64,9 @@ static void dump_explanation(std::string_view explanation, FILE *fff)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param fff ファイルポインタ
  */
-static void dump_yourself(PlayerType *player_ptr, FILE *fff)
+static void dump_yourself(CreatureEntity &creature, FILE *fff)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!fff) {
         return;
     }
@@ -177,7 +178,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
         }
     }
 
-    dump_yourself(player_ptr, fff);
+    dump_yourself(creature, fff);
     dump_winner_classes(fff);
     angband_fclose(fff);
 

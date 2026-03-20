@@ -39,8 +39,9 @@
 #include <vector>
 
 namespace {
-auto collect_known_fixed_artifacts(PlayerType *player_ptr)
+auto collect_known_fixed_artifacts(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &artifacts = ArtifactList::get_instance();
     const auto comparer = [&artifacts](auto id1, auto id2) { return artifacts.order(id1, id2); };
     std::set<FixedArtifactId, decltype(comparer)> fa_ids(comparer);
@@ -52,7 +53,7 @@ auto collect_known_fixed_artifacts(PlayerType *player_ptr)
         fa_ids.insert(fa_id);
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     for (const auto &pos : floor.get_area()) {
         const auto &grid = floor.get_grid(pos);
         for (const auto this_o_idx : grid.o_idx_list) {
@@ -100,7 +101,7 @@ void do_cmd_knowledge_artifacts(CreatureEntity &creature)
     }
 
     const auto &artifacts = ArtifactList::get_instance();
-    const auto fa_ids = collect_known_fixed_artifacts(player_ptr);
+    const auto fa_ids = collect_known_fixed_artifacts(creature);
     for (const auto fa_id : fa_ids) {
         const auto &artifact = artifacts.get_artifact(fa_id);
         constexpr auto template_basename = _("     %s\n", "     The %s\n");
@@ -217,8 +218,9 @@ static void display_object_list(int col, int row, int per_page, const std::vecto
 /*
  * Describe fake object
  */
-static void desc_obj_fake(PlayerType *player_ptr, short bi_id)
+static void desc_obj_fake(CreatureEntity &creature, short bi_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     ItemEntity *o_ptr;
     ItemEntity ObjectType_body;
     o_ptr = &ObjectType_body;
@@ -226,7 +228,7 @@ static void desc_obj_fake(PlayerType *player_ptr, short bi_id)
     o_ptr->generate(bi_id);
 
     o_ptr->ident |= IDENT_KNOWN;
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
 
     if (screen_object(player_ptr, *o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {
         return;
@@ -241,7 +243,6 @@ static void desc_obj_fake(PlayerType *player_ptr, short bi_id)
  */
 void do_cmd_knowledge_objects(CreatureEntity &creature, bool *need_redraw, bool visual_only, short direct_k_idx)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
     short object_old, object_top;
@@ -426,7 +427,7 @@ void do_cmd_knowledge_objects(CreatureEntity &creature, bool *need_redraw, bool 
         case 'R':
         case 'r': {
             if (!visual_list && !visual_only && (grp_idx.size() > 0)) {
-                desc_obj_fake(player_ptr, object_idx[object_cur]);
+                desc_obj_fake(creature, object_idx[object_cur]);
                 redraw = true;
             }
 
