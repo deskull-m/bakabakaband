@@ -68,7 +68,7 @@ static errr load_town_quest(PlayerType *player_ptr)
     }
 
     auto [max_quests_load, max_rquests_load] = load_quest_info();
-    analyze_quests(player_ptr, max_quests_load, max_rquests_load);
+    analyze_quests(*player_ptr, max_quests_load, max_rquests_load);
 
     load_wilderness_info(player_ptr);
     return analyze_wilderness();
