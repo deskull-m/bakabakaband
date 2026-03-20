@@ -15,7 +15,6 @@
 #include "io/input-key-acceptor.h"
 #include "io/read-pref-file.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/finalizer.h"
@@ -122,7 +121,6 @@ void text_body_type::update_cursor_column_record(int com_id)
  */
 void do_cmd_edit_autopick(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     static int cx_save = 0;
     static int cy_save = 0;
     autopick_type an_entry, *entry = &an_entry;
@@ -207,7 +205,7 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
         }
 
         if (com_id) {
-            quit = do_editor_command(player_ptr, tb, com_id);
+            quit = do_editor_command(creature, tb, com_id);
         }
 
         tb->update_cursor_column_record(com_id);
