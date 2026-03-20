@@ -510,7 +510,7 @@ bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     bool fear, dead;
-    mon_take_hit_mon(&player, m_idx, 1, &dead, &fear, _("は爆発して粉々になった。", " explodes into tiny shreds."), m_idx);
+    mon_take_hit_mon(player, m_idx, 1, &dead, &fear, _("は爆発して粉々になった。", " explodes into tiny shreds."), m_idx);
     return dead;
 }
 
