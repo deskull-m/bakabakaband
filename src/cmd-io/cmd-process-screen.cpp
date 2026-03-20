@@ -354,7 +354,7 @@ static bool update_use_graphics(CreatureEntity &creature)
 
     use_graphics = false;
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    reset_visuals(player_ptr);
+    reset_visuals(*player_ptr);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,
@@ -395,7 +395,7 @@ void do_cmd_save_screen(CreatureEntity &creature)
     }
 
     use_graphics = true;
-    reset_visuals(player_ptr);
+    reset_visuals(*player_ptr);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,

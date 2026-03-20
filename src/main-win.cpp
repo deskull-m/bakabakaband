@@ -833,7 +833,7 @@ static errr term_xtra_win_react(PlayerType *player_ptr)
     const byte current_mode = static_cast<byte>(graphic.get_mode());
     if (current_mode != arg_graphics) {
         change_graphics_mode(static_cast<graphics_mode>(arg_graphics));
-        reset_visuals(player_ptr);
+        reset_visuals(*player_ptr);
     }
 
     for (int i = 0; i < MAX_TERM_DATA; i++) {
