@@ -228,7 +228,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
         player_ptr->add_spells = 0;
     }
 
-    auto load_inventory_result = load_inventory(player_ptr);
+    auto load_inventory_result = load_inventory(*player_ptr);
     if (load_inventory_result != 0) {
         return load_inventory_result;
     }
