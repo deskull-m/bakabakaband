@@ -187,7 +187,7 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
 
     auto old_known = identify_item(creature, o_ptr);
     o_ptr->ident |= (IDENT_FULL_KNOWN);
-    window_stuff(&player);
+    window_stuff(player);
     const auto item_name = describe_flavor(player, *o_ptr, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
         msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(player, i_idx), item_name.data(), index_to_label(i_idx));

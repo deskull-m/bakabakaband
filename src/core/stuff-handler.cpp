@@ -20,11 +20,11 @@ void handle_stuff(CreatureEntity &creature)
     }
 
     if (rfu.any_main()) {
-        redraw_stuff(player_ptr);
+        redraw_stuff(creature);
     }
 
     if (rfu.any_sub()) {
-        window_stuff(player_ptr);
+        window_stuff(creature);
     }
 }
 

@@ -318,7 +318,7 @@ void process_player(PlayerType *player_ptr)
                 SubWindowRedrawingFlag::PETS,
             };
             rfu.set_flags(flags);
-            window_stuff(player_ptr);
+            window_stuff(creature);
 
             can_save = true;
             InputKeyRequestor(*player_ptr, false).request_command();

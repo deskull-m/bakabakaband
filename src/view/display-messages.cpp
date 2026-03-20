@@ -317,7 +317,7 @@ void msg_print(std::string_view msg)
 
     term_putstr(msg_head_pos, 0, msg.size(), TERM_WHITE, msg.data());
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
-    window_stuff(p_ptr);
+    window_stuff(*p_ptr);
 
     msg_flag = true;
     msg_head_pos += msg.size() + _(0, 1);

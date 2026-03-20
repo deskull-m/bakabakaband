@@ -57,7 +57,7 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
     msg_erase();
     message_add(msg);
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
-    window_stuff(player_ptr);
+    window_stuff(*player_ptr);
     while (true) {
         prt(msg, 0, 0);
         char i = inkey();
