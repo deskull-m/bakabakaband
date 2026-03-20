@@ -2,14 +2,14 @@
 
 #include <string>
 
-class PlayerType;
+class CreatureEntity;
 
 /*!
  * @brief スコアをワールドスコアサーバーに送信する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功した場合true、失敗した場合false
  */
-bool send_world_score(PlayerType *player_ptr);
+bool send_world_score(CreatureEntity &creature);
 
 /*!
  * @brief スコアサーバーのURLを取得
