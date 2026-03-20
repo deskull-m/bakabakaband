@@ -233,7 +233,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
         return load_inventory_result;
     }
 
-    load_store(player_ptr);
+    load_store(*player_ptr);
     player_ptr->pet_follow_distance = rd_s16b();
     player_ptr->pet_extra_flags = rd_u16b();
 
