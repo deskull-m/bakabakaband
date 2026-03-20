@@ -60,7 +60,7 @@
  * @return エラーコード
  * @details 旧海底都市クエスト (クエストNo.18)は廃止済
  */
-static errr load_town_quest(PlayerType *player_ptr)
+static errr load_town_quest(CreatureEntity &creature)
 {
     auto load_town_result = load_town();
     if (load_town_result != 0) {
@@ -68,9 +68,9 @@ static errr load_town_quest(PlayerType *player_ptr)
     }
 
     auto [max_quests_load, max_rquests_load] = load_quest_info();
-    analyze_quests(*player_ptr, max_quests_load, max_rquests_load);
+    analyze_quests(creature, max_quests_load, max_rquests_load);
 
-    load_wilderness_info(player_ptr);
+    load_wilderness_info(creature);
     return analyze_wilderness();
 }
 
@@ -112,19 +112,20 @@ static void rd_winner_class()
     rd_FlagGroup(AngbandWorld::get_instance().sf_retired, rd_byte);
 }
 
-static void load_player_world(PlayerType *player_ptr)
+static void load_player_world(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     rd_total_play_time();
     rd_world_info();
     rd_winner_class();
     rd_alliance_base_power();
-    rd_base_info(*player_ptr);
-    rd_player_info(*player_ptr);
+    rd_base_info(creature);
+    rd_player_info(creature);
     preserve_mode = rd_bool();
     AngbandSystem::get_instance().set_awaiting_report_score(rd_bool());
     rd_dummy2();
-    rd_global_configurations(player_ptr);
-    rd_extra(*player_ptr);
+    rd_global_configurations(creature);
+    rd_extra(creature);
 
     if (player_ptr->energy_need < -999) {
         player_ptr->timewalk = true;
@@ -133,8 +134,9 @@ static void load_player_world(PlayerType *player_ptr)
     load_note(_("特別情報をロードしました", "Loaded extra information"));
 }
 
-static errr load_hp(PlayerType *player_ptr)
+static errr load_hp(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto tmp16u = rd_u16b();
     if (tmp16u > PY_MAX_LEVEL) {
         load_note(format(_("ヒットポイント配列が大きすぎる(%u)！", "Too many (%u) hitpoint entries!"), tmp16u));
@@ -148,8 +150,9 @@ static errr load_hp(PlayerType *player_ptr)
     return 0;
 }
 
-static void load_spells(PlayerType *player_ptr)
+static void load_spells(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     player_ptr->spell_learned1 = rd_u32b();
     player_ptr->spell_learned2 = rd_u32b();
     player_ptr->spell_worked1 = rd_u32b();
@@ -188,8 +191,9 @@ static errr verify_encoded_checksum()
  * @brief セーブファイル読み込み処理の実体 / Actually read the savefile
  * @return エラーコード
  */
-static errr exe_reading_savefile(PlayerType *player_ptr)
+static errr exe_reading_savefile(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     rd_version_info();
     if (!loading_savefile_version_is_older_than(SAVEFILE_VERSION + 1)) {
         load_note(_("セーブデータのバージョンが新しすぎる", "Savefile version is too new"));
@@ -201,15 +205,15 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
     load_lore();
     auto item_loader = ItemLoaderFactory::create_loader();
     item_loader->load_item();
-    auto load_town_quest_result = load_town_quest(player_ptr);
+    auto load_town_quest_result = load_town_quest(creature);
     if (load_town_quest_result != 0) {
         return load_town_quest_result;
     }
 
     load_note(_("クエスト情報をロードしました", "Loaded Quests"));
     item_loader->load_artifact();
-    load_player_world(player_ptr);
-    auto load_hp_result = load_hp(player_ptr);
+    load_player_world(creature);
+    auto load_hp_result = load_hp(creature);
     if (load_hp_result != 0) {
         return load_hp_result;
     }
@@ -223,21 +227,21 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
     auto short_pclass = enum2i(player_ptr->pclass);
     mp_ptr = &class_magics_info[short_pclass];
 
-    load_spells(player_ptr);
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::MINDCRAFTER)) {
+    load_spells(creature);
+    if (CreatureClass(creature).equals(PlayerClassType::MINDCRAFTER)) {
         player_ptr->add_spells = 0;
     }
 
-    auto load_inventory_result = load_inventory(*player_ptr);
+    auto load_inventory_result = load_inventory(creature);
     if (load_inventory_result != 0) {
         return load_inventory_result;
     }
 
-    load_store(player_ptr);
+    load_store(creature);
     player_ptr->pet_follow_distance = rd_s16b();
     player_ptr->pet_extra_flags = rd_u16b();
 
-    auto restore_dungeon_result = restore_dungeon(*player_ptr);
+    auto restore_dungeon_result = restore_dungeon(creature);
     if (restore_dungeon_result != 0) {
         return restore_dungeon_result;
     }
@@ -255,7 +259,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return エラーコード
  */
-static errr rd_savefile(PlayerType *player_ptr)
+static errr rd_savefile(CreatureEntity &creature)
 {
     safe_setuid_grab();
     loading_savefile = angband_fopen(savefile, FileOpenMode::READ, true);
@@ -265,7 +269,7 @@ static errr rd_savefile(PlayerType *player_ptr)
     }
 
     try {
-        auto err = exe_reading_savefile(player_ptr);
+        auto err = exe_reading_savefile(creature);
         if (ferror(loading_savefile)) {
             err = -1;
         }
@@ -285,15 +289,16 @@ static errr rd_savefile(PlayerType *player_ptr)
  * @param new_game 新しくゲームを始めさせるフラグ
  * @return 常にtrue (前後の処理上都合が良いため)
  */
-static bool reset_save_data(PlayerType *player_ptr, bool *new_game)
+static bool reset_save_data(CreatureEntity &creature, bool *new_game)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     *new_game = true;
     player_ptr->is_dead_ = false;
     AngbandWorld::get_instance().sf_lives++;
     return true;
 }
 
-static bool on_read_save_data_not_supported(PlayerType *player_ptr, bool *new_game)
+static bool on_read_save_data_not_supported(CreatureEntity &creature, bool *new_game)
 {
     auto mes_not_play = _("このセーブデータの続きをプレイすることはできません。", "You can't play the rest of the game from this save data.");
     auto mes_check_restart = _("最初からプレイを始めますか？(モンスターの思い出は引き継がれます)", "Play from the beginning? (Monster recalls will be inherited.) ");
@@ -306,7 +311,7 @@ static bool on_read_save_data_not_supported(PlayerType *player_ptr, bool *new_ga
     }
 
     AngbandSystem::get_instance().set_awaiting_report_score(false);
-    return reset_save_data(player_ptr, new_game);
+    return reset_save_data(creature, new_game);
 }
 
 /**
@@ -315,8 +320,9 @@ static bool on_read_save_data_not_supported(PlayerType *player_ptr, bool *new_ga
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return 引き継ぎ可能ならtrue、そうでなければfalseを返す
  */
-static bool can_takeover_savefile(PlayerType *player_ptr)
+static bool can_takeover_savefile(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (loading_savefile_version_is_older_than(8) && CreatureClass(*player_ptr).equals(PlayerClassType::SMITH)) {
         return false;
     }
@@ -331,8 +337,9 @@ static bool can_takeover_savefile(PlayerType *player_ptr)
  * @param new_game セーブデータの新規作成が必要か否か
  * @return セーブデータが読み込めればtrue
  */
-bool load_savedata(PlayerType *player_ptr, bool *new_game)
+bool load_savedata(CreatureEntity &creature, bool *new_game)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto what = "generic";
     AngbandWorld::get_instance().game_turn = 0;
     player_ptr->is_dead_ = false;
@@ -388,7 +395,7 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
 
     if (!err) {
         term_clear();
-        auto ret_rd_savefile = rd_savefile(player_ptr);
+        auto ret_rd_savefile = rd_savefile(creature);
         if (ret_rd_savefile != 0 && ret_rd_savefile != 11) {
             err = true;
         }
@@ -396,7 +403,7 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
         if (ret_rd_savefile < 0) {
             what = _("セーブファイルを解析出来ません。", "Cannot parse savefile");
         } else if (ret_rd_savefile > 0 && ret_rd_savefile != 11) {
-            return on_read_save_data_not_supported(player_ptr, new_game);
+            return on_read_save_data_not_supported(creature, new_game);
         }
     }
 
@@ -419,25 +426,25 @@ bool load_savedata(PlayerType *player_ptr, bool *new_game)
         return false;
     }
 
-    if (!can_takeover_savefile(player_ptr)) {
-        return on_read_save_data_not_supported(player_ptr, new_game);
+    if (!can_takeover_savefile(creature)) {
+        return on_read_save_data_not_supported(creature, new_game);
     }
 
     if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
-        return reset_save_data(player_ptr, new_game);
+        return reset_save_data(creature, new_game);
     }
 
     world.character_loaded = true;
-    auto tmp = counts_read(*player_ptr, 2);
+    auto tmp = counts_read(creature, 2);
     if (tmp > player_ptr->count) {
         player_ptr->count = tmp;
     }
 
     const auto play_time = world.play_time.elapsed_sec();
-    if (counts_read(*player_ptr, 0) > play_time || counts_read(*player_ptr, 1) == play_time) {
-        counts_write(*player_ptr, 2, ++player_ptr->count);
+    if (counts_read(creature, 0) > play_time || counts_read(creature, 1) == play_time) {
+        counts_write(creature, 2, ++player_ptr->count);
     }
 
-    counts_write(*player_ptr, 1, play_time);
+    counts_write(creature, 1, play_time);
     return true;
 }

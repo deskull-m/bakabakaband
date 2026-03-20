@@ -28,8 +28,9 @@
  * Also note that it may not correctly "adapt" to "knowledge" bacoming
  * known, the player may have to pick stuff up and drop it again.
  */
-static void home_carry_load(PlayerType *player_ptr, Store *store_ptr, ItemEntity *o_ptr)
+static void home_carry_load(CreatureEntity &creature, Store *store_ptr, ItemEntity *o_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (auto i = 0; i < store_ptr->stock_num; i++) {
         auto &item = *store_ptr->stock[i];
         if (!item.is_similar(*o_ptr)) {
@@ -63,7 +64,7 @@ static void home_carry_load(PlayerType *player_ptr, Store *store_ptr, ItemEntity
  * @param town_number_initial 街ID (v0.3.3以降)
  * @param store_number 店舗ID
  */
-static void rd_store(PlayerType *player_ptr, int town_number_initial, StoreSaleType store_number)
+static void rd_store(CreatureEntity &creature, int town_number_initial, StoreSaleType store_number)
 {
     const auto town_number = town_number_initial;
     auto &store = towns_info[town_number].get_store(store_number);
@@ -93,7 +94,7 @@ static void rd_store(PlayerType *player_ptr, int town_number_initial, StoreSaleT
         }
 
         if (sort) {
-            home_carry_load(player_ptr, &store, &item);
+            home_carry_load(creature, &store, &item);
         } else {
             int k = store.stock_num++;
             *store.stock[k] = std::move(item);
@@ -105,13 +106,13 @@ static void rd_store(PlayerType *player_ptr, int town_number_initial, StoreSaleT
  * @brief 店舗情報を読み込む
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void load_store(PlayerType *player_ptr)
+void load_store(CreatureEntity &creature)
 {
     const int town_count = rd_u16b();
     const int store_count = rd_u16b();
     for (auto town_idx = 1; town_idx < town_count; town_idx++) {
         for (auto store_idx = 0; store_idx < store_count; store_idx++) {
-            rd_store(player_ptr, town_idx, i2enum<StoreSaleType>(store_idx));
+            rd_store(creature, town_idx, i2enum<StoreSaleType>(store_idx));
         }
     }
 }
