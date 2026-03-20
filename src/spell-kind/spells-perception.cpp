@@ -46,7 +46,7 @@ void identify_pack(CreatureEntity &creature)
         }
 
         identify_item(creature, o_ptr);
-        autopick_alter_item(&player, i, false);
+        autopick_alter_item(player, i, false);
     }
 }
 
@@ -147,7 +147,7 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
         msg_format(_("床上: %s。", "On the ground: %s."), item_name.data());
     }
 
-    autopick_alter_item(&player, i_idx, (bool)(destroy_identify && !old_known));
+    autopick_alter_item(player, i_idx, (bool)(destroy_identify && !old_known));
     return true;
 }
 
@@ -198,6 +198,6 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
     }
 
     (void)screen_object(&player, *o_ptr, 0L);
-    autopick_alter_item(&player, i_idx, (bool)(destroy_identify && !old_known));
+    autopick_alter_item(player, i_idx, (bool)(destroy_identify && !old_known));
     return true;
 }

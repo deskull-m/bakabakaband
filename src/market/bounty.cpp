@@ -201,7 +201,7 @@ bool exchange_cash(CreatureEntity &creature)
             const auto got_item_name = describe_flavor(*player_ptr, prize_item, 0);
             msg_format(_("%s(%c)を貰った。", "You get %s (%c). "), got_item_name.data(), index_to_label(inventory_new));
 
-            autopick_alter_item(player_ptr, inventory_new, false);
+            autopick_alter_item(*player_ptr, inventory_new, false);
             handle_stuff(creature);
             change = true;
         }

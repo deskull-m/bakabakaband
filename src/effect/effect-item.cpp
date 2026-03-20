@@ -194,7 +194,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
         }
         case AttributeType::IDENTIFY: {
             identify_item(*player_ptr, &item);
-            autopick_alter_item(player_ptr, (-this_o_idx), false);
+            autopick_alter_item(*player_ptr, (-this_o_idx), false);
             break;
         }
         case AttributeType::KILL_TRAP:

@@ -156,7 +156,7 @@ static void drain_essence(CreatureEntity &creature)
     }
 
     /* Apply autodestroy/inscription to the drained item */
-    autopick_alter_item(&player, i_idx, true);
+    autopick_alter_item(player, i_idx, true);
     set_smith_redrawing_flags();
 }
 

@@ -52,7 +52,7 @@ void building_recharge(CreatureEntity &creature)
             identify_item(creature, o_ptr);
             const auto item_name = describe_flavor(player, *o_ptr, 0);
             msg_format(_("%s です。", "You have: %s."), item_name.data());
-            autopick_alter_item(&player, i_idx, false);
+            autopick_alter_item(player, i_idx, false);
             building_prt_gold(player.au);
         }
 
@@ -239,7 +239,7 @@ void building_recharge_all(CreatureEntity &creature)
 
         if (!o_ptr->is_known()) {
             identify_item(creature, o_ptr);
-            autopick_alter_item(&player, i, false);
+            autopick_alter_item(player, i, false);
         }
 
         const auto base_pval = o_ptr->get_baseitem_pval();

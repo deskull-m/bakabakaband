@@ -117,7 +117,7 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
     item.ident |= (IDENT_SENSE);
     item.feeling = feel;
 
-    autopick_alter_item(player_ptr, slot, destroy_feeling);
+    autopick_alter_item(*player_ptr, slot, destroy_feeling);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::COMBINATION,

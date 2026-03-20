@@ -16,8 +16,8 @@
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/special-object-flags.h"
 #include "perception/object-perception.h"
-#include "system/item-entity.h"
 #include "system/creature-entity.h"
+#include "system/item-entity.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 

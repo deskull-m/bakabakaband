@@ -283,7 +283,7 @@ void do_cmd_wield(CreatureEntity &creature)
     check_find_art_quest_completion(*player_ptr, o_ptr);
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
         identify_item(creature, o_ptr);
-        autopick_alter_item(player_ptr, i_idx, false);
+        autopick_alter_item(*player_ptr, i_idx, false);
     }
 
     PlayerEnergy(player_ptr).set_player_turn_energy(100);

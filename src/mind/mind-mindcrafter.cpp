@@ -129,7 +129,7 @@ bool psychometry(PlayerType *player_ptr)
         break;
     }
 
-    autopick_alter_item(player_ptr, i_idx, (bool)(okay && destroy_feeling));
+    autopick_alter_item(*player_ptr, i_idx, (bool)(okay && destroy_feeling));
     return true;
 }
 
