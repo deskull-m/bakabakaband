@@ -375,7 +375,7 @@ void prepare_movie_hooks(CreatureEntity &creature)
 
     movie_mode = 1;
     prepare_chuukei_hooks();
-    do_cmd_redraw(player_ptr);
+    do_cmd_redraw(creature);
 }
 
 static int handle_movie_timestamp_data(int timestamp)

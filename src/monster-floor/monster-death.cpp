@@ -431,7 +431,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
         print_monster_tomb(*player_ptr, *md.m_ptr);
         msg_print(_("-続けるには何かキーを押してください-", "-Press any key to continue-"));
         screen_load();
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     }
 
     QuestCompletionChecker(*player_ptr, *md.m_ptr).complete();

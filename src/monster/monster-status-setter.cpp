@@ -33,8 +33,7 @@
  */
 void set_pet(CreatureEntity &creature, MonsterEntity &monster)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    QuestCompletionChecker(*player_ptr, monster).complete();
+    QuestCompletionChecker(creature, monster).complete();
     monster.mflag2.set(MonsterConstantFlagType::PET);
     monster.alliance_idx = AllianceType::NONE;
     if (monster.get_monrace().kind_flags.has_none_of(alignment_mask)) {
@@ -341,7 +340,6 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
  */
 bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, bool vs_player)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     auto &monster = floor.m_list[m_idx];
     auto &world = AngbandWorld::get_instance();
@@ -366,7 +364,7 @@ bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, 
 
     world.timewalk_m_idx = m_idx;
     if (vs_player) {
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     }
 
     while (num--) {

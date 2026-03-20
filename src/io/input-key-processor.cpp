@@ -565,7 +565,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case 'M': {
-        do_cmd_view_map(player_ptr);
+        do_cmd_view_map(*player_ptr);
         break;
     }
     case 'L': {
@@ -612,19 +612,19 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case '%': {
-        do_cmd_visuals(player_ptr);
-        do_cmd_redraw(player_ptr);
+        do_cmd_visuals(*player_ptr);
+        do_cmd_redraw(creature);
         break;
     }
     case '&': {
         do_cmd_colors(*player_ptr);
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
         break;
     }
     case '=': {
         do_cmd_options(*player_ptr);
         (void)combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
         break;
     }
     case ':': {
@@ -653,7 +653,7 @@ void process_command(CreatureEntity &creature)
     }
     case KTRL('R'): {
         now_message = old_now_message;
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
         break;
     }
     case KTRL('S'): {

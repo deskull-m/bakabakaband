@@ -1845,7 +1845,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_NONE)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_NONE);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(*player_ptr);
             }
         }
         break;
@@ -1854,7 +1854,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_ORIGINAL)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_ORIGINAL);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(*player_ptr);
             }
         }
 
@@ -1864,7 +1864,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_ADAM_BOLT)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_ADAM_BOLT);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(*player_ptr);
             }
         }
 
@@ -1874,7 +1874,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_HENGBAND)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_HENGBAND);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(*player_ptr);
             }
         }
 

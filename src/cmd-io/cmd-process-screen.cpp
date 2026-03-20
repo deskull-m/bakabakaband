@@ -385,7 +385,7 @@ void do_cmd_save_screen(CreatureEntity &creature)
 
     if (html_dump) {
         exe_cmd_save_screen_html_with_naming();
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     } else if (!do_cmd_save_screen_text(wid, hgt)) {
         return;
     }
