@@ -461,7 +461,7 @@ static void rd_player_status(CreatureEntity &creature)
     rd_hp(creature);
     rd_mana(creature);
     player.max_plv = rd_s16b();
-    rd_dungeons(&player);
+    rd_dungeons(creature);
     strip_bytes(8);
     creature.prestige = rd_s16b();
     if (loading_savefile_version_is_older_than(11)) {
@@ -524,6 +524,6 @@ void rd_player_info(CreatureEntity &creature)
     rd_special_action(creature);
     rd_special_defense(creature);
     player.knowledge = rd_byte();
-    rd_autopick(&player);
+    rd_autopick(creature);
     rd_action(creature);
 }

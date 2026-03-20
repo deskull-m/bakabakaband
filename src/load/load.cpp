@@ -70,7 +70,7 @@ static errr load_town_quest(PlayerType *player_ptr)
     auto [max_quests_load, max_rquests_load] = load_quest_info();
     analyze_quests(*player_ptr, max_quests_load, max_rquests_load);
 
-    load_wilderness_info(player_ptr);
+    load_wilderness_info(*player_ptr);
     return analyze_wilderness();
 }
 
@@ -123,7 +123,7 @@ static void load_player_world(PlayerType *player_ptr)
     preserve_mode = rd_bool();
     AngbandSystem::get_instance().set_awaiting_report_score(rd_bool());
     rd_dummy2();
-    rd_global_configurations(player_ptr);
+    rd_global_configurations(*player_ptr);
     rd_extra(*player_ptr);
 
     if (player_ptr->energy_need < -999) {
