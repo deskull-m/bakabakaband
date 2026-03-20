@@ -34,7 +34,7 @@ static errr rd_dungeon(CreatureEntity &creature)
     floor.set_dungeon_index(i2enum<DungeonId>(rd_byte())); // @todo セーブデータの方を16ビットにするかdungeon_idxの定義を8ビットにした方が良い.
     auto num = rd_byte();
     if (num == 0) {
-        err = rd_saved_floor(player_ptr, nullptr);
+        err = rd_saved_floor(creature, nullptr);
     } else {
         for (int i = 0; i < num; i++) {
             saved_floor_type *sf_ptr = &saved_floors[i];
@@ -59,7 +59,7 @@ static errr rd_dungeon(CreatureEntity &creature)
                 continue;
             }
 
-            err = rd_saved_floor(player_ptr, sf_ptr);
+            err = rd_saved_floor(creature, sf_ptr);
             if (err) {
                 break;
             }
@@ -74,7 +74,7 @@ static errr rd_dungeon(CreatureEntity &creature)
         }
 
         if (err == 0) {
-            if (!load_floor(player_ptr, get_sf_ptr(player_ptr->floor_id), SLF_SECOND)) {
+            if (!load_floor(creature, get_sf_ptr(player_ptr->floor_id), SLF_SECOND)) {
                 err = 183;
             }
         }
