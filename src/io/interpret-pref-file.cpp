@@ -329,15 +329,16 @@ static bool interpret_v_token(char *buf)
 
 /*!
  * @brief X/Yトークンの解釈
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param buf バッファ
  * @details
  * Process "X:<str>" -- turn option off
  * Process "Y:<str>" -- turn option on
  * オプションの名前が正しくない時も、パース自体は続行する (V2以前からの仕様)
  */
-static void interpret_xy_token(PlayerType *player_ptr, char *buf)
+static void interpret_xy_token(CreatureEntity &creature, char *buf)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     const auto &world = AngbandWorld::get_instance();
     for (auto &option : option_info) {
         if (option.text != buf + 2) {
@@ -346,7 +347,7 @@ static void interpret_xy_token(PlayerType *player_ptr, char *buf)
 
         int os = option.flag_position;
         int ob = option.offset;
-        if ((player_ptr->playing || world.character_xtra) && (GameOptionPage::BIRTH == option.page) && !world.wizard) {
+        if ((player.playing || world.character_xtra) && (GameOptionPage::BIRTH == option.page) && !world.wizard) {
             msg_format(_("初期オプションは変更できません! '%s'", "Birth options can not be changed! '%s'"), buf);
             msg_erase();
             return;
@@ -517,7 +518,6 @@ static bool interpret_t_token(char *buf)
  */
 int interpret_pref_file(CreatureEntity &creature, char *buf)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (buf[1] != ':') {
         return 1;
     }
@@ -551,7 +551,7 @@ int interpret_pref_file(CreatureEntity &creature, char *buf)
         return interpret_v_token(buf) ? 0 : 1;
     case 'X':
     case 'Y':
-        interpret_xy_token(player_ptr, buf);
+        interpret_xy_token(creature, buf);
         return 0;
     case 'Z':
         return interpret_z_token(buf) ? 0 : 1;
