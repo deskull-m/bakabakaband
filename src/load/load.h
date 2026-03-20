@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool load_savedata(PlayerType *player_ptr, bool *new_game);
+class CreatureEntity;
+bool load_savedata(CreatureEntity &creature, bool *new_game);

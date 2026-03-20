@@ -435,7 +435,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
     }
 
     restore_windows(player_ptr);
-    if (!load_savedata(player_ptr, &new_game)) {
+    if (!load_savedata(*player_ptr, &new_game)) {
         quit(_("セーブファイルが壊れています", "broken savefile"));
     }
 
