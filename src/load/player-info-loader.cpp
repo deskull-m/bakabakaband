@@ -520,10 +520,10 @@ void rd_player_info(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
     rd_player_status(creature);
-    rd_special_attack(&player);
-    rd_special_action(&player);
-    rd_special_defense(&player);
+    rd_special_attack(creature);
+    rd_special_action(creature);
+    rd_special_defense(creature);
     player.knowledge = rd_byte();
     rd_autopick(&player);
-    rd_action(&player);
+    rd_action(creature);
 }
