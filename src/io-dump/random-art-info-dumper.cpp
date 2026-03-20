@@ -68,10 +68,11 @@ static void spoil_random_artifact_aux(CreatureEntity &creature, const ItemEntity
 
 /*!
  * @brief ランダムアーティファクト内容をスポイラー出力するメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void spoil_random_artifact(PlayerType *player_ptr)
+void spoil_random_artifact(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     const auto path = path_build(ANGBAND_DIR_USER, "randifact.txt");
     std::ofstream ofs(path);
     if (!ofs) {
@@ -83,25 +84,25 @@ void spoil_random_artifact(PlayerType *player_ptr)
     for (const auto &[tval_list, name] : group_artifact_list) {
         for (auto tval : tval_list) {
             for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-                auto &item = *player_ptr->inventory[i];
-                spoil_random_artifact_aux(*player_ptr, item, tval, ofs);
+                auto &item = *player.inventory[i];
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
             for (int i = 0; i < INVEN_PACK; i++) {
-                auto &item = *player_ptr->inventory[i];
-                spoil_random_artifact_aux(*player_ptr, item, tval, ofs);
+                auto &item = *player.inventory[i];
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
             const auto &home = towns_info[1].get_store(StoreSaleType::HOME);
             for (int i = 0; i < home.stock_num; i++) {
                 auto &item = *home.stock[i];
-                spoil_random_artifact_aux(*player_ptr, item, tval, ofs);
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
             const auto &museum = towns_info[1].get_store(StoreSaleType::MUSEUM);
             for (int i = 0; i < museum.stock_num; i++) {
                 auto &item = *museum.stock[i];
-                spoil_random_artifact_aux(*player_ptr, item, tval, ofs);
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
         }
     }

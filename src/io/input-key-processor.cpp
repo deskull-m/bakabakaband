@@ -694,7 +694,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case KTRL('V'): {
-        spoil_random_artifact(player_ptr);
+        spoil_random_artifact(*player_ptr);
         break;
     }
     case KTRL('C'): {
