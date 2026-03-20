@@ -7,13 +7,15 @@
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 
-void set_exp_frac_old(PlayerType *player_ptr)
+void set_exp_frac_old(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     player_ptr->exp_frac = rd_u16b();
 }
 
-void remove_water_cave(PlayerType *player_ptr)
+void remove_water_cave(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *player_ptr->current_floor_ptr;
     if (floor.quest_number != i2enum<QuestId>(OLD_QUEST_WATER_CAVE)) {
         return;
