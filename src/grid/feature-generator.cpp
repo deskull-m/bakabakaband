@@ -13,7 +13,6 @@
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "wizard/wizard-messages.h"
 
 static bool decide_cavern(const FloorType &floor, const DungeonDefinition &dungeon, const DungeonData &dd)
@@ -33,7 +32,6 @@ static bool decide_cavern(const FloorType &floor, const DungeonDefinition &dunge
  */
 void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &dungeon, DungeonData *dd_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     constexpr auto chance_destroyed = 18;
     if ((floor.dun_level > 30) && one_in_(chance_destroyed * 2) && small_levels && dungeon.flags.has(DungeonFeatureType::DESTROY)) {
@@ -88,7 +86,7 @@ void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &du
         }
 
         if (dd_ptr->laketype) {
-            msg_print_wizard(player, CHEAT_DUNGEON, _("湖を生成します。", "Lake on the level."));
+            msg_print_wizard(creature, CHEAT_DUNGEON, _("湖を生成します。", "Lake on the level."));
             build_lake(creature, dd_ptr->laketype);
         }
     }
@@ -96,7 +94,7 @@ void gen_caverns_and_lakes(CreatureEntity &creature, const DungeonDefinition &du
     const auto should_build_cavern = decide_cavern(floor, dungeon, *dd_ptr);
     if (should_build_cavern) {
         dd_ptr->cavern = true;
-        msg_print_wizard(player, CHEAT_DUNGEON, _("洞窟を生成。", "Cavern on level."));
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("洞窟を生成。", "Cavern on level."));
         build_cavern(creature);
     }
 
@@ -159,7 +157,7 @@ static bool possible_doorway(const FloorType &floor, POSITION y, POSITION x)
 
 /*!
  * @brief ドアの設置を試みる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 設置を行いたいマスの座標
  */
 void try_door(CreatureEntity &creature, dt_type *dt_ptr, const Pos2D &pos)

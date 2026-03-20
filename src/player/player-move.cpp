@@ -288,7 +288,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             disclose_grid(creature, creature.get_position());
         }
 
-        hit_trap(&player, any_bits(mpe_mode, MPE_BREAK_TRAP));
+        hit_trap(player, any_bits(mpe_mode, MPE_BREAK_TRAP));
         if (!creature.is_located_at(pos) || creature.is_dead() || player.leaving) {
             return false;
         }
