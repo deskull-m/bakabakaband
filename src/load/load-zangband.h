@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void set_zangband_action(PlayerType *player_ptr);
+class CreatureEntity;
+void set_zangband_action(CreatureEntity &creature);

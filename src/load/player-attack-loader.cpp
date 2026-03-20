@@ -40,5 +40,5 @@ void rd_action(CreatureEntity &creature)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     strip_bytes(1);
     player_ptr->action = rd_byte();
-    set_zangband_action(player_ptr);
+    set_zangband_action(creature);
 }
