@@ -43,13 +43,13 @@ static int auto_dump_line_num;
 /*!
  * @brief process_pref_fileのサブルーチン /
  * Open the "user pref file" and parse it.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param name 読み込むファイル名
  * @param preftype prefファイルのタイプ
  * @return エラーコード
  * @todo 関数名を変更する
  */
-static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem::path &name, int preftype)
+static errr process_pref_file_aux(CreatureEntity &creature, const std::filesystem::path &name, int preftype)
 {
     auto *fp = angband_fopen(name, FileOpenMode::READ);
     if (!fp) {
@@ -86,7 +86,7 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
         if (line_str->starts_with("?:")) {
             char f;
             char *s = line_str->data() + 2;
-            auto v = process_pref_file_expr(*player_ptr, &s, &f);
+            auto v = process_pref_file_expr(creature, &s, &f);
             bypass = v == "0";
             continue;
         }
@@ -107,13 +107,13 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
             file.remove_prefix(2);
             switch (preftype) {
             case PREF_TYPE_AUTOPICK:
-                (void)process_autopick_file(*player_ptr, file);
+                (void)process_autopick_file(creature, file);
                 break;
             case PREF_TYPE_HISTPREF:
-                (void)process_histpref_file(*player_ptr, file);
+                (void)process_histpref_file(creature, file);
                 break;
             default:
-                (void)process_pref_file(*player_ptr, file);
+                (void)process_pref_file(creature, file);
                 break;
             }
 
@@ -121,7 +121,7 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
             continue;
         }
 
-        err = interpret_pref_file(*player_ptr, line_str->data());
+        err = interpret_pref_file(creature, line_str->data());
         if (err != 0) {
             if (preftype != PREF_TYPE_AUTOPICK) {
                 break;
@@ -161,18 +161,17 @@ static errr process_pref_file_aux(PlayerType *player_ptr, const std::filesystem:
  */
 errr process_pref_file(CreatureEntity &creature, std::string_view name, bool only_user_dir)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     errr err1 = 0;
     if (!only_user_dir) {
         const auto path = path_build(ANGBAND_DIR_PREF, name);
-        err1 = process_pref_file_aux(player_ptr, path, PREF_TYPE_NORMAL);
+        err1 = process_pref_file_aux(creature, path, PREF_TYPE_NORMAL);
         if (err1 > 0) {
             return err1;
         }
     }
 
     const auto path = path_build(ANGBAND_DIR_USER, name);
-    errr err2 = process_pref_file_aux(player_ptr, path, PREF_TYPE_NORMAL);
+    errr err2 = process_pref_file_aux(creature, path, PREF_TYPE_NORMAL);
     if (err2 < 0 && !err1) {
         return -2;
     }
@@ -189,7 +188,7 @@ errr process_pref_file(CreatureEntity &creature, std::string_view name, bool onl
 errr process_autopick_file(CreatureEntity &creature, std::string_view name)
 {
     const auto path = path_build(ANGBAND_DIR_USER, name);
-    return process_pref_file_aux(dynamic_cast<PlayerType *>(&creature), path, PREF_TYPE_AUTOPICK);
+    return process_pref_file_aux(creature, path, PREF_TYPE_AUTOPICK);
 }
 
 /*!
@@ -206,7 +205,7 @@ errr process_histpref_file(CreatureEntity &creature, std::string_view name)
     const auto old_character_xtra = world.character_xtra;
     const auto path = path_build(ANGBAND_DIR_USER, name);
     world.character_xtra = true;
-    errr err = process_pref_file_aux(dynamic_cast<PlayerType *>(&creature), path, PREF_TYPE_HISTPREF);
+    errr err = process_pref_file_aux(creature, path, PREF_TYPE_HISTPREF);
     world.character_xtra = old_character_xtra;
     return err;
 }
@@ -278,15 +277,15 @@ void close_auto_dump(FILE **fpp, std::string_view mark)
  */
 void load_all_pref_files(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
 
     process_pref_file(creature, "user.prf");
     process_pref_file(creature, format("user-%s.prf", ANGBAND_SYS));
     constexpr auto fmt = "%s.prf";
-    process_pref_file(creature, format(fmt, player_ptr->race->title.data()));
-    process_pref_file(creature, format(fmt, (*player_ptr->pclass_ref).title.data()));
-    process_pref_file(creature, format(fmt, player_ptr->base_name.data()));
-    PlayerRealm pr(*player_ptr);
+    process_pref_file(creature, format(fmt, player.race->title.data()));
+    process_pref_file(creature, format(fmt, (*player.pclass_ref).title.data()));
+    process_pref_file(creature, format(fmt, player.base_name.data()));
+    PlayerRealm pr(player);
     if (pr.realm1().is_available()) {
         process_pref_file(creature, format(fmt, pr.realm1().get_name().data()));
     }
@@ -295,7 +294,7 @@ void load_all_pref_files(CreatureEntity &creature)
         process_pref_file(creature, format(fmt, pr.realm2().get_name().data()));
     }
 
-    autopick_load_pref(*player_ptr, false);
+    autopick_load_pref(creature, false);
 }
 
 /*!
@@ -307,11 +306,11 @@ bool read_histpref(CreatureEntity &creature)
         return false;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
+    auto &player = static_cast<PlayerType &>(creature);
 
     histpref_buf = "";
     std::stringstream ss;
-    ss << _("histedit-", "histpref-") << player_ptr->base_name << ".prf";
+    ss << _("histedit-", "histpref-") << player.base_name << ".prf";
     auto err = process_histpref_file(creature, ss.str());
     if (0 > err) {
         err = process_histpref_file(creature, _("histedit.prf", "histpref.prf"));
@@ -331,28 +330,28 @@ bool read_histpref(CreatureEntity &creature)
     }
 
     for (auto i = 0; i < 4; i++) {
-        player_ptr->history[i][0] = '\0';
+        player.history[i][0] = '\0';
     }
 
     histpref_buf = str_trim(*histpref_buf);
-    constexpr auto max_line_len = sizeof(player_ptr->history[0]);
+    constexpr auto max_line_len = sizeof(player.history[0]);
     const auto history_lines = shape_buffer(*histpref_buf, max_line_len);
     const auto max_lines = std::min<int>(4, history_lines.size());
     for (auto l = 0; l < max_lines; ++l) {
-        angband_strcpy(player_ptr->history[l], history_lines[l], max_line_len);
+        angband_strcpy(player.history[l], history_lines[l], max_line_len);
     }
 
     for (auto i = 0; i < 4; i++) {
         /* loop */
         int j;
-        for (j = 0; player_ptr->history[i][j]; j++) {
+        for (j = 0; player.history[i][j]; j++) {
             ;
         }
 
         for (; j < 59; j++) {
-            player_ptr->history[i][j] = ' ';
+            player.history[i][j] = ' ';
         }
-        player_ptr->history[i][59] = '\0';
+        player.history[i][59] = '\0';
     }
 
     return true;
