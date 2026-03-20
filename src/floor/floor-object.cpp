@@ -53,7 +53,7 @@ static void object_mention(PlayerType *player_ptr, ItemEntity &item)
     object_aware(player_ptr, item);
     item.mark_as_known();
     item.ident |= (IDENT_FULL_KNOWN);
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
     msg_format_wizard(*player_ptr, CHEAT_OBJECT, _("%sを生成しました。", "%s was generated."), item_name.data());
 }
 
@@ -99,7 +99,7 @@ static void set_ammo_quantity(ItemEntity *j_ptr)
  */
 static void handle_item_disappearance(PlayerType *player_ptr, ItemEntity &disappearing_item, std::string_view reason)
 {
-    const auto item_name = describe_flavor(player_ptr, disappearing_item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, disappearing_item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
     msg_print("{}は消えた。", item_name);
 #else
@@ -343,7 +343,7 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&subject);
     const auto &world = AngbandWorld::get_instance();
-    const auto item_name = player_ptr ? describe_flavor(player_ptr, drop_item, (OD_OMIT_PREFIX | OD_NAME_ONLY)) : std::string("item");
+    const auto item_name = player_ptr ? describe_flavor(*player_ptr, drop_item, (OD_OMIT_PREFIX | OD_NAME_ONLY)) : std::string("item");
 
     Pos2D pos_drop = pos; //!< @details 実際に落ちる座標.
     auto bs = -1;
@@ -545,7 +545,7 @@ void floor_item_charges(const FloorType &floor, INVENTORY_IDX i_idx)
 void floor_item_describe(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 {
     const auto &item = *player_ptr->current_floor_ptr->o_list[i_idx];
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
 #ifdef JP
     if (item.number <= 0) {
         msg_format("床上には、もう%sはない。", item_name.data());

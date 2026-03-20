@@ -242,7 +242,7 @@ void do_cmd_knowledge_incident(CreatureEntity &creature)
                     item.pval = pval;
                     item.mark_as_known();
 
-                    auto item_name = describe_flavor(player_ptr, item, 0);
+                    auto item_name = describe_flavor(*player_ptr, item, 0);
                     fprintf(fff, _("        %s を %d 回\n", "        %s %d times\n"),
                         item_name.data(), entry.second);
                 }

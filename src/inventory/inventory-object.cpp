@@ -157,7 +157,7 @@ void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
     distribute_charges(o_ptr, &item, amt);
 
     item.number = amt;
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
     msg_format(_("%s(%c)を落とした。", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
     (void)drop_near(creature, item, creature.get_position(), false);
     vary_item(creature, i_idx, -amt);
@@ -392,7 +392,7 @@ INVENTORY_IDX inven_takeoff(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_
 
     auto item = item_inventory.clone();
     item.number = amt;
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
     std::string act;
     if (((i_idx == INVEN_MAIN_HAND) || (i_idx == INVEN_SUB_HAND)) && item_inventory.is_melee_weapon()) {
         act = _("を装備からはずした", "You were wielding");

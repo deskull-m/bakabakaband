@@ -245,7 +245,7 @@ bool verify(CreatureEntity &creature, concptr prompt, INVENTORY_IDX i_idx)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &item = i_idx >= 0 ? *player_ptr->inventory[i_idx] : *creature.current_floor_ptr->o_list[0 - i_idx];
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
     std::stringstream ss;
     ss << prompt;
 #ifndef JP

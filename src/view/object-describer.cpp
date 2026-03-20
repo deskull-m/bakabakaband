@@ -50,7 +50,7 @@ void inven_item_describe(CreatureEntity &creature, short i_idx)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &item = *creature.inventory[i_idx];
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
 #ifdef JP
     if (item.number <= 0) {
         msg_format("もう%sを持っていない。", item_name.data());
@@ -80,7 +80,7 @@ void display_koff(CreatureEntity &creature)
     }
 
     const auto item = tracker.get_trackee();
-    const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
+    const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
     term_putstr(0, 0, -1, TERM_WHITE, item_name);
     const auto sval = *item.bi_key.sval();
     const auto use_realm = PlayerRealm::get_realm_of_book(item.bi_key.tval());

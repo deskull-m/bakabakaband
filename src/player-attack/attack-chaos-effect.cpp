@@ -264,7 +264,7 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
     }
 
     auto &item = *floor.o_list[monster.hold_o_idx_list.front()];
-    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
     item.held_m_idx = 0;
     item.marked.clear().set(OmType::TOUCHED);
     monster.hold_o_idx_list.pop_front();

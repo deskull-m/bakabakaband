@@ -367,7 +367,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
                 }
             }
 
-            const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
+            const auto item_name = describe_flavor(*this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
             (void)curse_weapon_object(*this->player_ptr, false, this->player_ptr->inventory[slot].get());
             reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
             break;
@@ -379,7 +379,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝、防具に頼ることなかれ。」", "'Thou reliest too much on thine equipment.'"));
-            const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
+            const auto item_name = describe_flavor(*this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
             (void)curse_armor(*this->player_ptr);
             reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
             break;
@@ -410,7 +410,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
                         }
                     }
 
-                    const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
+                    const auto item_name = describe_flavor(*this->player_ptr, *this->player_ptr->inventory[slot], OD_NAME_ONLY);
                     (void)curse_weapon_object(*this->player_ptr, false, this->player_ptr->inventory[slot].get());
                     reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
                 } else {
@@ -418,7 +418,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
                         break;
                     }
 
-                    const auto item_name = describe_flavor(this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
+                    const auto item_name = describe_flavor(*this->player_ptr, *this->player_ptr->inventory[INVEN_BODY], OD_NAME_ONLY);
                     (void)curse_armor(*this->player_ptr);
                     reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
                 }

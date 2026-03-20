@@ -208,7 +208,7 @@ bool curse_armor(CreatureEntity &creature)
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, item, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(*player_ptr, item, OD_OMIT_PREFIX);
 
     if (item.is_fixed_or_random_artifact() && one_in_(2)) {
 #ifdef JP
@@ -262,7 +262,7 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity *o_ptr
     }
 
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, OD_OMIT_PREFIX);
     if (o_ptr->is_fixed_or_random_artifact() && one_in_(2) && !force) {
 #ifdef JP
         msg_format("%sが%sを包み込もうとしたが、%sはそれを跳ね返した！", "恐怖の暗黒オーラ", "武器", item_name.data());
@@ -489,7 +489,7 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
     msg_format("%s は明るく輝いた！", item_name.data());
 #else
@@ -559,7 +559,7 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     concptr act = nullptr;
     switch (brand_type) {
     case 17:

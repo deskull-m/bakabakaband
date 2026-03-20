@@ -90,7 +90,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
         }
 
         const auto value = item.pval;
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         player_ptr->au += value;
 
         msg_print(_(" ${} の価値がある{}を見つけた。", "You have found {} gold pieces worth of {}."), value, item_name);
@@ -108,7 +108,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto &item = *player_ptr->current_floor_ptr->o_list[i_idx];
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
 
     if (!pickup) {
         msg_print(_("{}がある。", "You see {}."), item_name);
@@ -210,7 +210,7 @@ static void py_pickup_floor(CreatureEntity &creature, bool pickup)
 static void print_pickup_message(CreatureEntity &creature, [[maybe_unused]] const ItemEntity &picked_item, const ItemEntity &picked_slot_item, short slot)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto item_name = describe_flavor(player_ptr, picked_slot_item, 0);
+    const auto item_name = describe_flavor(*player_ptr, picked_slot_item, 0);
     const auto item_name_with_label = fmt::format(_("{}({})", "{} ({})"), item_name, index_to_label(slot));
 
 #ifdef JP
@@ -263,7 +263,7 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 
     print_pickup_message(creature, *picked_item_ptr, picked_slot_item, slot);
 
-    record_item_name = describe_flavor(player_ptr, *picked_item_ptr, OD_NAME_ONLY);
+    record_item_name = describe_flavor(*player_ptr, *picked_item_ptr, OD_NAME_ONLY);
     record_turn = AngbandWorld::get_instance().game_turn;
     check_find_art_quest_completion(*player_ptr, &picked_slot_item);
 }
@@ -299,7 +299,7 @@ void carry(CreatureEntity &creature, bool pickup)
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         const auto this_o_idx = *it++;
         auto &item = *player_ptr->current_floor_ptr->o_list[this_o_idx];
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
 
         if (item.marked.has(OmType::SUPRESS_MESSAGE)) {
             item.marked.reset(OmType::SUPRESS_MESSAGE);

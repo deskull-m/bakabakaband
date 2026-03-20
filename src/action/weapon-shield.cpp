@@ -44,7 +44,7 @@ static void move_to_main_hand(CreatureEntity &creature)
 
     const auto &item_sub_hand = *creature.inventory[INVEN_SUB_HAND];
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto item_name = describe_flavor(player_ptr, item_sub_hand, 0);
+    const auto item_name = describe_flavor(*player_ptr, item_sub_hand, 0);
 
     if (item_sub_hand.is_cursed()) {
         const auto is_two_handed = item_sub_hand.allow_two_hands_wielding() && can_two_hands_wielding(creature);
@@ -71,7 +71,7 @@ static void move_to_sub_hand(CreatureEntity &creature)
 {
     const auto &item_main_hand = *creature.inventory[INVEN_MAIN_HAND];
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto item_name = item_main_hand.is_valid() ? describe_flavor(player_ptr, item_main_hand, 0) : "";
+    const auto item_name = item_main_hand.is_valid() ? describe_flavor(*player_ptr, item_main_hand, 0) : "";
 
     if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         const auto is_two_handed = item_main_hand.allow_two_hands_wielding() && can_two_hands_wielding(creature);

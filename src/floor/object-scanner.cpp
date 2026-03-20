@@ -100,7 +100,7 @@ COMMAND_CODE show_floor_items(PlayerType *player_ptr, int target_item, POSITION 
     auto k = 0;
     for (size_t i = 0; (i < floor_item_index.size()) && (i < max_items); i++) {
         const auto &item = *floor.o_list[floor_item_index[i]];
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         out_index[k] = i;
         const auto tval = item.bi_key.tval();
         out_color[k] = tval_to_attr[enum2i(tval) & 0x7F];

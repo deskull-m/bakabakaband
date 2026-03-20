@@ -259,7 +259,7 @@ static short describe_monster_item(CreatureEntity &creature, GridExamination *ge
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (const auto this_o_idx : ge_ptr->m_ptr->hold_o_idx_list) {
         const auto &item = *creature.current_floor_ptr->o_list[this_o_idx];
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
 #ifdef JP
         const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
 #else
@@ -329,7 +329,7 @@ static short describe_footing(CreatureEntity &creature, GridExamination *ge_ptr)
     }
 
     const auto &item = *creature.current_floor_ptr->o_list[ge_ptr->floor_item_index[0]];
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
 #ifdef JP
     const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
 #else
@@ -422,7 +422,7 @@ static short describe_footing_sight(CreatureEntity &creature, GridExamination *g
     }
 
     ge_ptr->boring = false;
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
 #ifdef JP
     const auto out_val = format("%s%s%s%s[%s]", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);
 #else

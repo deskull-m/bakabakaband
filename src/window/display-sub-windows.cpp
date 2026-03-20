@@ -338,7 +338,7 @@ static void display_equipment(CreatureEntity &creature, const ItemTester &item_t
             item_name = _("(武器を両手持ち)", "(wielding with two-hands)");
             attr = TERM_WHITE;
         } else {
-            item_name = describe_flavor(player_ptr, item, 0);
+            item_name = describe_flavor(*player_ptr, item, 0);
             attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
         }
 
@@ -612,7 +612,7 @@ static void display_floor_item_list(CreatureEntity &creature, const Pos2D &pos)
         if (is_hallucinated) {
             term_addstr(-1, TERM_WHITE, _("何か奇妙な物", "something strange"));
         } else {
-            const auto item_name = describe_flavor(player_ptr, item, 0);
+            const auto item_name = describe_flavor(*player_ptr, item, 0);
             TERM_COLOR attr = tval_to_attr[enum2i(tval) % 128];
             term_addstr(-1, attr, item_name);
         }
@@ -689,7 +689,7 @@ static void display_found_item_list(CreatureEntity &creature)
         const auto symbol_str = format(" %c ", symbol.character);
         term_addstr(-1, symbol.color, symbol_str);
 
-        const auto item_name = describe_flavor(player_ptr, *item_ptr, 0);
+        const auto item_name = describe_flavor(*player_ptr, *item_ptr, 0);
         const auto color_code_for_item = tval_to_attr[enum2i(item_ptr->bi_key.tval()) % 128];
         term_addstr(-1, color_code_for_item, item_name);
 

@@ -36,7 +36,7 @@ bool bless_weapon(CreatureEntity &creature)
         return false;
     }
 
-    const auto item_name = describe_flavor(&player, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = o_ptr->get_flags();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (o_ptr->is_cursed()) {

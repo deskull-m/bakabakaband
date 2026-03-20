@@ -375,7 +375,7 @@ static void show_dead_home_items(CreatureEntity &creature)
             for (int j = 0; (j < 12) && (i < store.stock_num); j++, i++) {
                 const auto &item = *store.stock[i];
                 prt(format("%c) ", I2A(j)), j + 2, 4);
-                const auto item_name = describe_flavor(static_cast<PlayerType *>(&creature), item, 0);
+                const auto item_name = describe_flavor(creature, item, 0);
                 c_put_str(tval_to_attr[enum2i(item.bi_key.tval())], item_name, j + 2, 7);
             }
 

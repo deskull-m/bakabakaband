@@ -112,7 +112,7 @@ void print_map(PlayerType *player_ptr)
  */
 static void display_shortened_item_name(PlayerType *player_ptr, const ItemEntity &item, int y)
 {
-    auto item_name = describe_flavor(player_ptr, item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NAME_ONLY));
+    auto item_name = describe_flavor(*player_ptr, item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
     if (player_ptr->effects()->hallucination().is_hallucinated()) {
         attr = TERM_WHITE;

@@ -108,7 +108,7 @@ static bool acid_minus_ac(CreatureEntity &creature)
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    const auto item_name = describe_flavor(*player_ptr, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = item.get_flags();
     if (item.ac + item.to_a <= 0) {
         msg_format(_("%sは既にボロボロだ！", "Your %s is already fully corroded!"), item_name.data());

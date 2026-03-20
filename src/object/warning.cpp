@@ -519,7 +519,7 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
             auto *o_ptr = choose_warning_item(*player_ptr);
             std::string item_name;
             if (o_ptr != nullptr) {
-                item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+                item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             } else {
                 item_name = _("体", "body");
             }
@@ -542,7 +542,7 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
     auto *o_ptr = choose_warning_item(*player_ptr);
     std::string item_name;
     if (o_ptr != nullptr) {
-        item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+        item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     } else {
         item_name = _("体", "body");
     }

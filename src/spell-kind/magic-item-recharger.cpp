@@ -121,7 +121,7 @@ bool recharge(CreatureEntity &creature, int power)
     }
 
     if (o_ptr->is_fixed_artifact()) {
-        const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_NAME_ONLY);
+        const auto item_name = describe_flavor(*player_ptr, *o_ptr, OD_NAME_ONLY);
         msg_format(_("魔力が逆流した！%sは完全に魔力を失った。", "The recharging backfires - %s is completely drained!"), item_name.data());
         if ((tval == ItemKindType::ROD) && (o_ptr->timeout < 10000)) {
             o_ptr->timeout = (o_ptr->timeout + 100) * 2;
@@ -131,7 +131,7 @@ bool recharge(CreatureEntity &creature, int power)
         return update_player();
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto fail_type = 1;
     if (CreatureClass(creature).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */

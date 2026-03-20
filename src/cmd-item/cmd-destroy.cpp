@@ -51,7 +51,7 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
         return true;
     }
 
-    const auto item_name = describe_flavor(player_ptr, destroying_item, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(*player_ptr, destroying_item, OD_OMIT_PREFIX);
     constexpr auto fmt = _("本当に%sを壊しますか? [y/n/Auto]", "Really destroy %s? [y/n/Auto]");
     const auto msg = format(fmt, item_name.data());
     msg_erase();
@@ -198,7 +198,7 @@ static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_it
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto destroyed_item = destroying_item.clone();
     destroyed_item.number = amount;
-    const auto item_name = describe_flavor(player_ptr, destroyed_item, 0);
+    const auto item_name = describe_flavor(*player_ptr, destroyed_item, 0);
     msg_format(_("%sを壊した。", "You destroy %s."), item_name.data());
     sound(SoundKind::DESTITEM);
     reduce_charges(&destroying_item, amount);
@@ -232,7 +232,7 @@ void do_cmd_destroy(CreatureEntity &creature)
     energy.set_player_turn_energy(100);
     if (!can_player_destroy_object(o_ptr)) {
         energy.reset_player_turn();
-        const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
+        const auto item_name = describe_flavor(*player_ptr, *o_ptr, 0);
         msg_format(_("%sは破壊不可能だ。", "You cannot destroy %s."), item_name.data());
         return;
     }

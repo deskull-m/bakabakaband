@@ -161,7 +161,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                     item_name = baseitem.stripped_name();
                 } else {
                     ItemEntity dummy(baseitem.idx);
-                    item_name = describe_flavor(player_ptr, dummy, OD_FORCE_FLAVOR);
+                    item_name = describe_flavor(*player_ptr, dummy, OD_FORCE_FLAVOR);
                 }
 
                 auto_dump_printf(auto_dump_stream, "# %s\n", item_name.data());

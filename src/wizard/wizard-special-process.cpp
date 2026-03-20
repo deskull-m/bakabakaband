@@ -200,7 +200,7 @@ static std::string wiz_make_named_artifact_desc(CreatureEntity &creature, FixedA
     const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
     ItemEntity item(artifact.bi_key);
     item.fa_id = fa_id;
-    return describe_flavor(player_ptr, item, OD_NAME_ONLY | OD_STORE);
+    return describe_flavor(*player_ptr, item, OD_NAME_ONLY | OD_STORE);
 }
 
 /**
