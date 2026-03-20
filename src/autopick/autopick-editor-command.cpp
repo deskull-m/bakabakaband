@@ -25,6 +25,7 @@
 #include "locale/language-switcher.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -42,7 +43,7 @@
  * @return
  * @details Execute a single editor command
  */
-ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int com_id)
+ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, int com_id)
 {
     switch (com_id) {
     case EC_QUIT: {
@@ -61,7 +62,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
             break;
         }
 
-        tb->lines_list = read_pickpref_text_lines(player_ptr->base_name, &tb->filename_mode);
+        tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
         tb->dirty_flags |= DIRTY_ALL | DIRTY_MODE | DIRTY_EXPRESSION;
         tb->cx = tb->cy = 0;
         tb->mark = 0;
@@ -69,7 +70,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         break;
     }
     case EC_HELP: {
-        FileDisplayer(player_ptr->name).display(true, _("jeditor.txt", "editor.txt"), 0, 0);
+        FileDisplayer(creature.name).display(true, _("jeditor.txt", "editor.txt"), 0, 0);
         tb->dirty_flags |= DIRTY_SCREEN;
         break;
     }
@@ -357,7 +358,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         }
 
         tb->yank_eol = true;
-        do_editor_command(player_ptr, tb, EC_DELETE_CHAR);
+        do_editor_command(creature, tb, EC_DELETE_CHAR);
         break;
     }
     case EC_DELETE_CHAR: {
@@ -374,7 +375,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         tb->cx++;
         const int len = tb->lines_list[tb->cy]->length();
         if (len >= tb->cx) {
-            do_editor_command(player_ptr, tb, EC_BACKSPACE);
+            do_editor_command(creature, tb, EC_BACKSPACE);
             break;
         }
 
@@ -386,7 +387,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
             break;
         }
 
-        do_editor_command(player_ptr, tb, EC_BACKSPACE);
+        do_editor_command(creature, tb, EC_BACKSPACE);
         break;
     }
     case EC_BACKSPACE: {
@@ -431,7 +432,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
     }
     case EC_SEARCH_STR: {
         tb->dirty_flags |= DIRTY_SCREEN;
-        const auto as_result = get_string_for_search(*player_ptr, { tb->search_o_ptr, tb->search_str });
+        const auto as_result = get_string_for_search(creature, { tb->search_o_ptr, tb->search_str });
         tb->search_o_ptr = as_result.item_ptr;
         tb->search_str = as_result.search_str;
         if (as_result.result == AutopickSearchResult::CANCEL) {
@@ -439,12 +440,12 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         }
 
         const auto command = as_result.result == AutopickSearchResult::FORWARD ? EC_SEARCH_FORW : EC_SEARCH_BACK;
-        do_editor_command(player_ptr, tb, command);
+        do_editor_command(creature, tb, command);
         break;
     }
     case EC_SEARCH_FORW:
         if (tb->search_o_ptr) {
-            search_for_object(*player_ptr, tb, tb->search_o_ptr, true);
+            search_for_object(creature, tb, tb->search_o_ptr, true);
             break;
         }
 
@@ -458,7 +459,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
 
     case EC_SEARCH_BACK: {
         if (tb->search_o_ptr) {
-            search_for_object(*player_ptr, tb, tb->search_o_ptr, false);
+            search_for_object(creature, tb, tb->search_o_ptr, false);
             break;
         }
 
@@ -473,28 +474,28 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
     case EC_SEARCH_OBJ: {
         tb->dirty_flags |= DIRTY_SCREEN;
         AutopickSearch as(tb->search_o_ptr, tb->search_str);
-        if (!get_object_for_search(*player_ptr, as)) {
+        if (!get_object_for_search(creature, as)) {
             break;
         }
 
         tb->search_str = as.search_str;
-        do_editor_command(player_ptr, tb, EC_SEARCH_FORW);
+        do_editor_command(creature, tb, EC_SEARCH_FORW);
         break;
     }
     case EC_SEARCH_DESTROYED: {
         AutopickSearch as(tb->search_o_ptr, tb->search_str);
-        if (!get_destroyed_object_for_search(*player_ptr, as)) {
+        if (!get_destroyed_object_for_search(creature, as)) {
             tb->dirty_flags |= DIRTY_NO_SEARCH;
             break;
         }
 
         tb->search_str = as.search_str;
-        do_editor_command(player_ptr, tb, EC_SEARCH_FORW);
+        do_editor_command(creature, tb, EC_SEARCH_FORW);
         break;
     }
     case EC_INSERT_OBJECT: {
         autopick_type an_entry, *entry = &an_entry;
-        if (!entry_from_choosed_object(*player_ptr, entry)) {
+        if (!entry_from_choosed_object(creature, entry)) {
             tb->dirty_flags |= DIRTY_SCREEN;
             break;
         }
@@ -527,9 +528,10 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         if (!can_insert_line(tb, 2)) {
             break;
         }
+        auto *player_ptr = static_cast<PlayerType *>(&creature);
         const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
             player_ptr->race->title.en_string().data(), (*player_ptr->pclass_ref).title.en_string().data(),
-            player_ptr->level);
+            creature.level);
         tb->cx = 0;
         insert_return_code(tb);
         tb->lines_list[tb->cy] = std::make_unique<std::string>(expression);
@@ -541,7 +543,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         break;
     }
     case EC_INSERT_MACRO: {
-        draw_text_editor(player_ptr, tb);
+        draw_text_editor(creature, tb);
         term_erase(0, tb->cy - tb->upper + 1, tb->wid);
         term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, _("P:<トリガーキー>: ", "P:<Trigger key>: "));
         if (!insert_macro_line(tb)) {
@@ -554,7 +556,7 @@ ape_quittance do_editor_command(PlayerType *player_ptr, text_body_type *tb, int 
         break;
     }
     case EC_INSERT_KEYMAP: {
-        draw_text_editor(player_ptr, tb);
+        draw_text_editor(creature, tb);
         term_erase(0, tb->cy - tb->upper + 1, tb->wid);
         const auto mode = rogue_like_commands ? KeymapMode::ROGUE : KeymapMode::ORIGINAL;
         const auto mes = fmt::format("C:{}:<{}>: ", enum2i(mode), _("コマンドキー", "Keypress"));

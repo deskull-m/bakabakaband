@@ -91,7 +91,7 @@ static void add_outfit(CreatureEntity &creature, ItemEntity &item)
     object_aware(player_ptr, item);
     item.mark_as_known();
     const auto slot = store_item_to_inventory(*player_ptr, &item);
-    autopick_alter_item(player_ptr, slot, false);
+    autopick_alter_item(*player_ptr, slot, false);
     wield_all(creature);
 }
 

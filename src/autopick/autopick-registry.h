@@ -1,5 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
-bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr);
+bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr);

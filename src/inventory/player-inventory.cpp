@@ -255,7 +255,7 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
     auto &picked_slot_item = *player_ptr->inventory[slot];
     if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
         const auto old_known = identify_item(creature, &picked_slot_item);
-        autopick_alter_item(player_ptr, slot, destroy_identify && !old_known);
+        autopick_alter_item(*player_ptr, slot, destroy_identify && !old_known);
         if (picked_slot_item.marked.has(OmType::AUTODESTROY)) {
             return;
         }
@@ -283,7 +283,7 @@ void carry(CreatureEntity &creature, bool pickup)
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(creature);
     const auto &grid = player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x];
-    autopick_pickup_items(player_ptr, grid);
+    autopick_pickup_items(*player_ptr, grid);
 
     if (!grid.o_idx_list.empty()) {
         disturb(creature, false, false);

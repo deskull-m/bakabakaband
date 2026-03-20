@@ -177,7 +177,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             inven_item_increase(creature, i_idx, -amt);
             inven_item_describe(creature, i_idx);
             if (o_ptr->number > 0) {
-                autopick_alter_item(player_ptr, i_idx, false);
+                autopick_alter_item(*player_ptr, i_idx, false);
             }
 
             inven_item_optimize(creature, i_idx);

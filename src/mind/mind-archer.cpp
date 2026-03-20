@@ -130,7 +130,7 @@ bool create_ammo(PlayerType *player_ptr)
         const auto item_name = describe_flavor(*player_ptr, item, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         if (slot >= 0) {
-            autopick_alter_item(player_ptr, slot, false);
+            autopick_alter_item(*player_ptr, slot, false);
         }
 
         cave_alter_feat(*player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_ROCK);
@@ -156,7 +156,7 @@ bool create_ammo(PlayerType *player_ptr)
         vary_item(*player_ptr, i_idx, -1);
         int16_t slot = store_item_to_inventory(*player_ptr, &ammo);
         if (slot >= 0) {
-            autopick_alter_item(player_ptr, slot, false);
+            autopick_alter_item(*player_ptr, slot, false);
         }
 
         return true;
@@ -181,7 +181,7 @@ bool create_ammo(PlayerType *player_ptr)
         vary_item(*player_ptr, i_idx, -1);
         int16_t slot = store_item_to_inventory(*player_ptr, &ammo);
         if (slot >= 0) {
-            autopick_alter_item(player_ptr, slot, false);
+            autopick_alter_item(*player_ptr, slot, false);
         }
 
         return true;

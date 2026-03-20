@@ -2645,7 +2645,7 @@ void update_creature(CreatureEntity &creature)
     auto &floor = *creature.current_floor_ptr;
     if (rfu.has(StatusRecalculatingFlag::AUTO_DESTRUCTION)) {
         rfu.reset_flag(StatusRecalculatingFlag::AUTO_DESTRUCTION);
-        autopick_delayed_alter(player_ptr);
+        autopick_delayed_alter(*player_ptr);
     }
 
     if (rfu.has(StatusRecalculatingFlag::COMBINATION)) {
