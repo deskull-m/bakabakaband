@@ -211,8 +211,9 @@ static void add_history_to_json(nlohmann::json &j, PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @return JSON文字列
  */
-std::string dump_player_status_json(PlayerType *player_ptr)
+std::string dump_player_status_json(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     nlohmann::json j;
 
     // バージョン情報
@@ -251,8 +252,8 @@ std::string dump_player_status_json(PlayerType *player_ptr)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param fff ファイルポインタ
  */
-void dump_player_status_json_to_file(PlayerType *player_ptr, FILE *fff)
+void dump_player_status_json_to_file(CreatureEntity &creature, FILE *fff)
 {
-    auto json_str = dump_player_status_json(player_ptr);
+    auto json_str = dump_player_status_json(creature);
     fprintf(fff, "%s\n", json_str.c_str());
 }
