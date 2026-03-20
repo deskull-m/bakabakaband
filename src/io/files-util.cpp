@@ -223,22 +223,23 @@ tl::optional<std::string> get_random_line_ja_only(concptr file_name, int entry, 
 
 /*!
  * @brief ファイル位置をシーク /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fd ファイルディスクリプタ
  * @param where ファイルバイト位置
  * @param flag FALSEならば現ファイルを超えた位置へシーク時エラー、TRUEなら足りない間を0で埋め尽くす
  * @return エラーコード
  * @details
  */
-static errr counts_seek(PlayerType *player_ptr, int fd, uint32_t where, bool flag)
+static errr counts_seek(CreatureEntity &creature, int fd, uint32_t where, bool flag)
 {
+    auto &player = static_cast<PlayerType &>(creature);
     char temp1[128]{}, temp2[128]{};
-    auto short_pclass = enum2i(player_ptr->pclass);
+    auto short_pclass = enum2i(player.pclass);
 #ifdef SAVEFILE_USE_UID
     const auto user_id = UnixUserIds::get_instance().get_user_id();
-    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, player_ptr->ppersonality, player_ptr->age);
+    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, player.ppersonality, player.age);
 #else
-    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, player_ptr->ppersonality, player_ptr->age);
+    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, player.ppersonality, player.age);
 #endif
     angband_strcpy(temp1, header, sizeof(temp1));
     for (int i = 0; temp1[i]; i++) {
@@ -281,11 +282,10 @@ static errr counts_seek(PlayerType *player_ptr, int fd, uint32_t where, bool fla
  */
 uint32_t counts_read(CreatureEntity &creature, int where)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
     auto fd = fd_open(path, O_RDONLY);
     uint32_t count = 0;
-    if (counts_seek(player_ptr, fd, where, false) || fd_read(fd, (char *)(&count), sizeof(uint32_t))) {
+    if (counts_seek(creature, fd, where, false) || fd_read(fd, (char *)(&count), sizeof(uint32_t))) {
         count = 0;
     }
 
@@ -303,7 +303,6 @@ uint32_t counts_read(CreatureEntity &creature, int where)
  */
 errr counts_write(CreatureEntity &creature, int where, uint32_t count)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto path = path_build(ANGBAND_DIR_DATA, _("z_info_j.raw", "z_info.raw"));
     safe_setuid_grab();
     auto fd = fd_open(path, O_RDWR);
@@ -321,7 +320,7 @@ errr counts_write(CreatureEntity &creature, int where, uint32_t count)
         return 1;
     }
 
-    counts_seek(player_ptr, fd, where, true);
+    counts_seek(creature, fd, where, true);
     fd_write(fd, (char *)(&count), sizeof(uint32_t));
     safe_setuid_grab();
     err = fd_lock(fd, F_UNLCK);
