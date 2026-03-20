@@ -237,7 +237,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
     player_ptr->pet_follow_distance = rd_s16b();
     player_ptr->pet_extra_flags = rd_u16b();
 
-    auto restore_dungeon_result = restore_dungeon(player_ptr);
+    auto restore_dungeon_result = restore_dungeon(*player_ptr);
     if (restore_dungeon_result != 0) {
         return restore_dungeon_result;
     }
