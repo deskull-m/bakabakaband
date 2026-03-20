@@ -185,7 +185,7 @@ static bool stay_inn(CreatureEntity &creature)
     write_diary_stay_inn(creature, prev_hour);
     world.pass_game_turn_by_stay();
     wc_ptr->plus_timed_world_collapsion(&world, player_ptr, 25000);
-    prevent_turn_overflow(player_ptr);
+    prevent_turn_overflow(creature);
     if ((prev_hour >= 18) && (prev_hour <= 23)) {
         determine_daily_bounty(creature);
         exe_write_diary(*creature.current_floor_ptr, DiaryKind::DIALY, 0);
