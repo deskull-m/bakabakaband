@@ -237,17 +237,17 @@ bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, EnumCla
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (auto_more) {
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        window_stuff(creature);
+        window_stuff(*player_ptr);
         num_more = 0;
     }
 
     msg_erase();
 
     prt(buf, 0, 0);
-    if (mode.has_not(UserCheck::NO_HISTORY) && creature.playing) {
+    if (mode.has_not(UserCheck::NO_HISTORY) && player_ptr->playing) {
         message_add(buf);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        window_stuff(creature);
+        window_stuff(*player_ptr);
     }
 
     bool flag = false;

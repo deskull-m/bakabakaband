@@ -16,8 +16,8 @@
 namespace {
 class ItemCompactionChecker {
 public:
-    ItemCompactionChecker(PlayerType *player_ptr, int try_count)
-        : player_ptr(player_ptr)
+    ItemCompactionChecker(CreatureEntity &creature, int try_count)
+        : creature(creature)
         , try_count(try_count)
         , level_threshold(5 * try_count)
         , distance_threshold(5 * (20 - try_count))
@@ -34,10 +34,10 @@ public:
             return false;
         }
 
-        const auto &floor = *player_ptr->current_floor_ptr;
+        const auto &floor = *creature.current_floor_ptr;
         const auto pos = item.is_held_by_monster() ? floor.m_list[item.held_m_idx].get_position() : item.get_position();
 
-        if (Grid::calc_distance(player_ptr->get_position(), pos) < this->distance_threshold) {
+        if (Grid::calc_distance(creature.get_position(), pos) < this->distance_threshold) {
             return false;
         }
 
@@ -49,7 +49,7 @@ public:
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     int try_count;
     int level_threshold;
     int distance_threshold;
@@ -86,7 +86,7 @@ void compact_objects(PlayerType *player_ptr, int size)
 
     auto &floor = *player_ptr->current_floor_ptr;
     for (auto deleted_num = 0, try_count = 1; deleted_num < size; try_count++) {
-        const ItemCompactionChecker icc(player_ptr, try_count);
+        const ItemCompactionChecker icc(*player_ptr, try_count);
         std::vector<OBJECT_IDX> delete_i_idx_list;
         for (const auto &[i_idx, item_ptr] : floor.o_list | ranges::views::enumerate) {
             if (icc.can_delete_for_compaction(*item_ptr)) {
