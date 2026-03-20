@@ -251,7 +251,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             SubWindowRedrawingFlag::FOUND_ITEMS,
         };
         rfu.set_flags(flags_swrf);
-        window_stuff(&player);
+        window_stuff(player);
     }
 
     PlayerEnergy energy(&player);

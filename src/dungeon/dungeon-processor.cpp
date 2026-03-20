@@ -275,7 +275,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
             }
         }
 
-        prevent_turn_overflow(player_ptr);
+        prevent_turn_overflow(creature);
 
         if (player_ptr->leaving) {
             break;

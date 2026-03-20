@@ -481,7 +481,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
         }
         case 'r':
         case 'R':
-            reset_visuals(player_ptr);
+            reset_visuals(*player_ptr);
             msg_print(_("画面上の[色/文字]を初期値にリセットしました。", "Visual attr/char tables reset."));
             need_redraw = true;
             break;

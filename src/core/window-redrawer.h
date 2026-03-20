@@ -2,7 +2,7 @@
 
 #include "system/angband.h"
 
-class PlayerType;
+class CreatureEntity;
 void redraw_window();
-void window_stuff(PlayerType *player_ptr);
-void redraw_stuff(PlayerType *player_ptr);
+void window_stuff(CreatureEntity &creature);
+void redraw_stuff(CreatureEntity &creature);

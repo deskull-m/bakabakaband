@@ -237,7 +237,7 @@ bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, EnumCla
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (auto_more) {
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        window_stuff(player_ptr);
+        window_stuff(*player_ptr);
         num_more = 0;
     }
 
@@ -247,7 +247,7 @@ bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, EnumCla
     if (mode.has_not(UserCheck::NO_HISTORY) && player_ptr->playing) {
         message_add(buf);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        window_stuff(player_ptr);
+        window_stuff(*player_ptr);
     }
 
     bool flag = false;

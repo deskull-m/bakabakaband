@@ -678,7 +678,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             }
 
             rfu.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
-            window_stuff(player_ptr);
+            window_stuff(*player_ptr);
             const auto &floor = *player_ptr->current_floor_ptr;
             fis.floor_item_index = scan_floor_items(floor, player_ptr->get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
             if (command_see) {

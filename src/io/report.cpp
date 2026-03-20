@@ -130,7 +130,7 @@ std::string make_screen_dump(CreatureEntity &creature)
         msg_erase();
 
         use_graphics = false;
-        reset_visuals(player_ptr);
+        reset_visuals(*player_ptr);
 
         static constexpr auto flags = {
             MainWindowRedrawingFlag::WIPE,
@@ -218,7 +218,7 @@ std::string make_screen_dump(CreatureEntity &creature)
     }
 
     use_graphics = true;
-    reset_visuals(player_ptr);
+    reset_visuals(*player_ptr);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,

@@ -13,18 +13,17 @@
  */
 void handle_stuff(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (rfu.any_stats()) {
         update_creature(creature);
     }
 
     if (rfu.any_main()) {
-        redraw_stuff(player_ptr);
+        redraw_stuff(creature);
     }
 
     if (rfu.any_sub()) {
-        window_stuff(player_ptr);
+        window_stuff(creature);
     }
 }
 
