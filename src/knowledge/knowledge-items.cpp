@@ -243,7 +243,6 @@ static void desc_obj_fake(CreatureEntity &creature, short bi_id)
  */
 void do_cmd_knowledge_objects(CreatureEntity &creature, bool *need_redraw, bool visual_only, short direct_k_idx)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
     short object_old, object_top;

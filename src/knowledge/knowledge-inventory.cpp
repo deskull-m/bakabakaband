@@ -114,11 +114,11 @@ static void display_identified_resistances_flag(const ItemEntity &item, FILE *ff
  * @param where アイテムの場所 (手持ち、家等) を示す文字列への参照ポインタ
  * @details 28文字ちょうどになるまで右側をスペースでパディングする
  */
-static void do_cmd_knowledge_inventory_aux(PlayerType *player_ptr, FILE *fff, const ItemEntity &item, std::string_view where)
+static void do_cmd_knowledge_inventory_aux(CreatureEntity &creature, FILE *fff, const ItemEntity &item, std::string_view where)
 {
     constexpr auto max_item_length = 26;
     std::stringstream ss;
-    ss << describe_flavor(*player_ptr, item, OD_NAME_ONLY, max_item_length);
+    ss << describe_flavor(creature, item, OD_NAME_ONLY, max_item_length);
     const int item_length = ss.tellp();
     constexpr auto max_display_length = 28;
     for (auto i = item_length; i < max_display_length; i++) {
@@ -175,8 +175,9 @@ static void pad_and_print_header(int label_number, FILE *fff)
  * @param fff ファイルへの参照ポインタ
  * @return 画面表示後の行数
  */
-static int show_wearing_equipment_resistances(PlayerType *player_ptr, ItemKindType tval, int label_number_initial, FILE *fff)
+static int show_wearing_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto label_number = label_number_initial;
     for (short i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
         const auto &item = *player_ptr->inventory[i];
@@ -184,7 +185,7 @@ static int show_wearing_equipment_resistances(PlayerType *player_ptr, ItemKindTy
             continue;
         }
 
-        do_cmd_knowledge_inventory_aux(player_ptr, fff, item, _("装", "E "));
+        do_cmd_knowledge_inventory_aux(creature, fff, item, _("装", "E "));
         label_number = add_res_label(label_number, fff);
     }
 
@@ -199,8 +200,9 @@ static int show_wearing_equipment_resistances(PlayerType *player_ptr, ItemKindTy
  * @param fff ファイルへの参照ポインタ
  * @return 画面表示後の行数
  */
-static int show_holding_equipment_resistances(PlayerType *player_ptr, ItemKindType tval, int label_number_initial, FILE *fff)
+static int show_holding_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto label_number = label_number_initial;
     for (short i = 0; i < INVEN_PACK; i++) {
         const auto &item = *player_ptr->inventory[i];
@@ -208,7 +210,7 @@ static int show_holding_equipment_resistances(PlayerType *player_ptr, ItemKindTy
             continue;
         }
 
-        do_cmd_knowledge_inventory_aux(player_ptr, fff, item, _("持", "I "));
+        do_cmd_knowledge_inventory_aux(creature, fff, item, _("持", "I "));
         label_number = add_res_label(label_number, fff);
     }
 
@@ -223,7 +225,7 @@ static int show_holding_equipment_resistances(PlayerType *player_ptr, ItemKindTy
  * @param fff ファイルへの参照ポインタ
  * @return 画面表示後の行数
  */
-static int show_home_equipment_resistances(PlayerType *player_ptr, ItemKindType tval, int label_number_initial, FILE *fff)
+static int show_home_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
     auto label_number = label_number_initial;
     const auto &store = towns_info[1].get_store(StoreSaleType::HOME);
@@ -233,7 +235,7 @@ static int show_home_equipment_resistances(PlayerType *player_ptr, ItemKindType 
             continue;
         }
 
-        do_cmd_knowledge_inventory_aux(player_ptr, fff, item, _("家", "H "));
+        do_cmd_knowledge_inventory_aux(creature, fff, item, _("家", "H "));
         label_number = add_res_label(label_number, fff);
     }
 
@@ -246,7 +248,6 @@ static int show_home_equipment_resistances(PlayerType *player_ptr, ItemKindType 
  */
 void do_cmd_knowledge_inventory(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
     if (!open_temporary_file(&fff, file_name)) {
@@ -257,9 +258,9 @@ void do_cmd_knowledge_inventory(CreatureEntity &creature)
     auto label_number = 0;
     for (auto tval : TV_WEARABLE_RANGE) {
         pad_and_print_header(label_number, fff);
-        label_number = show_wearing_equipment_resistances(player_ptr, tval, 0, fff);
-        label_number = show_holding_equipment_resistances(player_ptr, tval, label_number, fff);
-        label_number = show_home_equipment_resistances(player_ptr, tval, label_number, fff);
+        label_number = show_wearing_equipment_resistances(creature, tval, 0, fff);
+        label_number = show_holding_equipment_resistances(creature, tval, label_number, fff);
+        label_number = show_home_equipment_resistances(creature, tval, label_number, fff);
     }
 
     angband_fclose(fff);
