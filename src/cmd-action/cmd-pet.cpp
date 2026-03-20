@@ -305,8 +305,9 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 /*!
  * @brief ペットに名前をつけるコマンドのメインルーチン
  */
-static void do_name_pet(PlayerType *player_ptr)
+static void do_name_pet(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto old_target_pet = target_pet;
     target_pet = true;
     const auto pos = target_set(*player_ptr, TARGET_KILL).get_position();
@@ -803,7 +804,7 @@ void do_cmd_pet(CreatureEntity &creature)
     }
 
     case PET_NAME: {
-        do_name_pet(player_ptr);
+        do_name_pet(creature);
         break;
     }
 

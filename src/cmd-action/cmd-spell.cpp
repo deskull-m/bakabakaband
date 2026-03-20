@@ -264,8 +264,9 @@ std::string info_weight(WEIGHT weight)
  * @param use_realm 魔法領域ID
  * @return 失敗率(%)
  */
-static bool spell_okay(PlayerType *player_ptr, int spell_id, bool learned, bool study_pray, RealmType use_realm)
+static bool spell_okay(CreatureEntity &creature, int spell_id, bool learned, bool study_pray, RealmType use_realm)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Access the spell */
     const auto &spell = PlayerRealm::get_spell_info(use_realm, spell_id);
 
@@ -314,8 +315,9 @@ static bool spell_okay(PlayerType *player_ptr, int spell_id, bool learned, bool 
  * The "known" should be TRUE for cast/pray, false for study
  * </pre>
  */
-static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view prompt_verb, int sval, bool learned, RealmType use_realm)
+static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view prompt_verb, int sval, bool learned, RealmType use_realm)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     int i;
     SPELL_IDX spell = -1;
     int num = 0;
@@ -326,7 +328,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
     if (const auto code = repeat_pull(); code) {
         *sn = *code;
         /* Verify the spell */
-        if (spell_okay(player_ptr, *sn, learned, false, use_realm)) {
+        if (spell_okay(creature, *sn, learned, false, use_realm)) {
             /* Success */
             return true;
         }
@@ -350,7 +352,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
     /* Check for "okay" spells */
     for (i = 0; i < num; i++) {
         /* Look for "okay" spells */
-        if (spell_okay(player_ptr, spells[i], learned, false, use_realm)) {
+        if (spell_okay(creature, spells[i], learned, false, use_realm)) {
             okay = true;
         }
     }
@@ -483,7 +485,7 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
         spell = spells[i];
 
         /* Require "okay" spells */
-        if (!spell_okay(player_ptr, spell, learned, false, use_realm)) {
+        if (!spell_okay(creature, spell, learned, false, use_realm)) {
             bell();
 #ifdef JP
             msg_format("その%sを%sことはできません。", spell_category.data(), prompt_verb.data());
@@ -524,8 +526,9 @@ static int get_spell(PlayerType *player_ptr, SPELL_IDX *sn, std::string_view pro
  * @param browse_only 魔法と技能の閲覧を行うならばTRUE
  * @return 魔道書を一冊も持っていないならTRUEを返す
  */
-static void confirm_use_force(PlayerType *player_ptr, bool browse_only)
+static void confirm_use_force(CreatureEntity &creature, bool browse_only)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (const auto code = repeat_pull(); code == INVEN_FORCE) {
         browse_only ? do_cmd_mind_browse(*player_ptr) : do_cmd_mind(*player_ptr);
         return;
@@ -551,15 +554,17 @@ static void confirm_use_force(PlayerType *player_ptr, bool browse_only)
     }
 }
 
-static FuncItemTester get_castable_spellbook_tester(PlayerType *player_ptr)
+static FuncItemTester get_castable_spellbook_tester(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     return FuncItemTester([](auto p_ptr, auto o_ptr) { return check_book_realm(*p_ptr, o_ptr->bi_key); }, player_ptr);
 }
 
-static FuncItemTester get_learnable_spellbook_tester(PlayerType *player_ptr)
+static FuncItemTester get_learnable_spellbook_tester(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!PlayerRealm(*player_ptr).realm2().is_available()) {
-        return get_castable_spellbook_tester(player_ptr);
+        return get_castable_spellbook_tester(creature);
     } else {
         return FuncItemTester(item_tester_learn_spell, player_ptr);
     }
@@ -592,13 +597,13 @@ void do_cmd_browse(CreatureEntity &creature)
 
     if (pc.equals(PlayerClassType::FORCETRAINER)) {
         if (player_has_no_spellbooks(*player_ptr)) {
-            confirm_use_force(player_ptr, true);
+            confirm_use_force(creature, true);
             return;
         }
     }
 
     /* Restrict choices to "useful" books */
-    auto item_tester = get_learnable_spellbook_tester(player_ptr);
+    auto item_tester = get_learnable_spellbook_tester(creature);
 
     constexpr auto q = _("どの本を読みますか? ", "Browse which book? ");
     constexpr auto s = _("読める本がない。", "You have no books that you can read.");
@@ -638,7 +643,7 @@ void do_cmd_browse(CreatureEntity &creature)
     /* Keep browsing spells.  Exit browsing on cancel. */
     while (true) {
         /* Ask for a spell, allow cancel */
-        if (!get_spell(player_ptr, &spell, _("読む", "browse"), sval, true, use_realm)) {
+        if (!get_spell(creature, &spell, _("読む", "browse"), sval, true, use_realm)) {
             /* If cancelled, leave immediately. */
             if (spell == -1) {
                 break;
@@ -678,8 +683,9 @@ void do_cmd_browse(CreatureEntity &creature)
  * @param pr プレイヤーの魔法領域情報
  * @param next_realm 変更先の魔法領域ID
  */
-static void change_realm2(PlayerType *player_ptr, PlayerRealm &pr, RealmType next_realm)
+static void change_realm2(CreatureEntity &creature, PlayerRealm &pr, RealmType next_realm)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     PlayerSpellStatus(*player_ptr).realm2().initialize();
 
     for (auto i = 32; i < 64; i++) {
@@ -745,7 +751,7 @@ void do_cmd_study(CreatureEntity &creature)
     msg_erase();
 
     /* Restrict choices to "useful" books */
-    auto item_tester = get_learnable_spellbook_tester(player_ptr);
+    auto item_tester = get_learnable_spellbook_tester(creature);
 
     constexpr auto q = _("どの本から学びますか? ", "Study which book? ");
     constexpr auto s = _("読める本がない。", "You have no books that you can read.");
@@ -766,7 +772,7 @@ void do_cmd_study(CreatureEntity &creature)
             return;
         }
 
-        change_realm2(player_ptr, pr, study_realm);
+        change_realm2(creature, pr, study_realm);
         increment = 32;
     }
 
@@ -776,7 +782,7 @@ void do_cmd_study(CreatureEntity &creature)
     /* Mage -- Learn a selected spell */
     if (mp_ptr->spell_book != ItemKindType::LIFE_BOOK) {
         /* Ask for a spell, allow cancel */
-        if (!get_spell(player_ptr, &spell, _("学ぶ", "study"), sval, false, study_realm) && (spell == -1)) {
+        if (!get_spell(creature, &spell, _("学ぶ", "study"), sval, false, study_realm) && (spell == -1)) {
             return;
         }
     }
@@ -792,7 +798,7 @@ void do_cmd_study(CreatureEntity &creature)
             if ((fake_spell_flags[sval] & (1UL << spell))) {
                 /* Skip non "okay" prayers */
                 const auto &realm = increment ? pr.realm2() : pr.realm1();
-                if (!spell_okay(player_ptr, spell, false, true, realm.to_enum())) {
+                if (!spell_okay(creature, spell, false, true, realm.to_enum())) {
                     continue;
                 }
 
@@ -921,7 +927,7 @@ bool do_cmd_cast(CreatureEntity &creature)
 
     if (player_ptr->effects()->blindness().is_blind() || no_lite(*player_ptr)) {
         if (pc.equals(PlayerClassType::FORCETRAINER)) {
-            confirm_use_force(player_ptr, false);
+            confirm_use_force(creature, false);
         } else {
             msg_print(_("目が見えない！", "You cannot see!"));
             flush();
@@ -951,7 +957,7 @@ bool do_cmd_cast(CreatureEntity &creature)
 
     if (pc.equals(PlayerClassType::FORCETRAINER)) {
         if (player_has_no_spellbooks(*player_ptr)) {
-            confirm_use_force(player_ptr, false);
+            confirm_use_force(creature, false);
             return true; //!< 錬気キャンセル時の処理がない
         }
     }
@@ -959,7 +965,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     const auto prayer = spell_category_name(mp_ptr->spell_book);
     constexpr auto q = _("どの呪文書を使いますか? ", "Use which book? ");
     constexpr auto s = _("呪文書がない！", "You have no spell books!");
-    auto item_tester = get_castable_spellbook_tester(player_ptr);
+    auto item_tester = get_castable_spellbook_tester(creature);
     const auto options = USE_INVEN | USE_FLOOR | (pc.equals(PlayerClassType::FORCETRAINER) ? USE_FORCE : 0);
     short i_idx;
     const auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, item_tester);
@@ -985,7 +991,7 @@ bool do_cmd_cast(CreatureEntity &creature)
     /* Ask for a spell */
     SPELL_IDX spell_id;
 #ifdef JP
-    if (!get_spell(player_ptr, &spell_id,
+    if (!get_spell(creature, &spell_id,
             ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK)       ? "詠唱する"
                 : (mp_ptr->spell_book == ItemKindType::MUSIC_BOOK) ? "歌う"
                                                                    : "唱える"),
@@ -996,7 +1002,7 @@ bool do_cmd_cast(CreatureEntity &creature)
         return false;
     }
 #else
-    if (!get_spell(player_ptr, &spell_id, ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"), sval, true, use_realm)) {
+    if (!get_spell(creature, &spell_id, ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"), sval, true, use_realm)) {
         if (spell_id == -2) {
             msg_format("You don't know any %ss in that book.", prayer.data());
         }
