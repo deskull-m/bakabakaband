@@ -35,7 +35,7 @@
 /*!
  * @brief 画面を再描画するコマンドのメインルーチン
  * Hack -- redraw the screen
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This command performs various low level updates, clears all the "extra"
@@ -47,7 +47,7 @@
  * the "TERM_XTRA_REACT" hook before redrawing the windows.
  * </pre>
  */
-void do_cmd_redraw(PlayerType *player_ptr)
+void do_cmd_redraw(CreatureEntity &creature)
 {
     term_xtra(TERM_XTRA_REACT, 0);
 
@@ -89,9 +89,9 @@ void do_cmd_redraw(PlayerType *player_ptr)
     };
     rfu.set_flags(flags_swrf);
     AngbandWorld::get_instance().play_time.update();
-    handle_stuff(*player_ptr);
-    if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        calc_android_exp(*player_ptr);
+    handle_stuff(creature);
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
+        calc_android_exp(creature);
     }
 
     term_type *old = game_term;
@@ -107,15 +107,16 @@ void do_cmd_redraw(PlayerType *player_ptr)
     }
 }
 
-static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
+static tl::optional<int> input_status_command(CreatureEntity &creature, int page)
 {
     auto c = inkey();
     switch (c) {
     case 'c':
-        get_name(*player_ptr);
-        process_player_name(*player_ptr);
+        get_name(creature);
+        process_player_name(creature);
         return page;
     case 'f': {
+        auto *player_ptr = static_cast<PlayerType *>(&creature);
         const auto initial_filename = format("%s.txt", player_ptr->base_name.data());
         const auto input_filename = input_string(_("ファイル名: ", "File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
@@ -125,12 +126,13 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
         const auto &filename = str_ltrim(input_filename.value());
         if (!filename.empty()) {
             AngbandWorld::get_instance().play_time.update();
-            file_character(*player_ptr, filename);
+            file_character(creature, filename);
         }
 
         return page;
     }
     case 'g': {
+        auto *player_ptr = static_cast<PlayerType *>(&creature);
         const auto initial_filename = format("%s.json", player_ptr->base_name.data());
         const auto input_filename = input_string(_("JSON ファイル名: ", "JSON File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
@@ -143,7 +145,7 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
             const auto path = path_build(ANGBAND_DIR_USER, filename);
             FILE *fff = angband_fopen(path, FileOpenMode::WRITE);
             if (fff) {
-                dump_player_status_json_to_file(*player_ptr, fff);
+                dump_player_status_json_to_file(creature, fff);
                 angband_fclose(fff);
                 msg_format(_("ステータスを %s に書き出しました。", "Character status dumped to %s."), filename.data());
             } else {
@@ -267,7 +269,6 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
     auto page = 0;
     screen_save();
     constexpr auto prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
@@ -276,14 +277,14 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
         world.play_time.update();
-        (void)display_player(player_ptr, page);
+        (void)display_player(creature_ptr, page);
         if (page == 5) {
             page = 0;
-            (void)display_player(player_ptr, page);
+            (void)display_player(creature_ptr, page);
         }
 
         term_putstr(2, 23, -1, TERM_WHITE, prompt);
-        auto next_page = input_status_command(player_ptr, page);
+        auto next_page = input_status_command(*creature_ptr, page);
         if (!next_page.has_value()) {
             break;
         }
@@ -302,7 +303,7 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
         MainWindowRedrawingFlag::MAP,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(*player_ptr);
+    handle_stuff(*creature_ptr);
 }
 
 /*!
