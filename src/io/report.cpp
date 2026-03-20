@@ -69,11 +69,11 @@ size_t read_callback(char *buffer, size_t size, size_t nitems, void *userdata)
 
 /*!
  * @brief キャラクタダンプを引数で指定した出力ストリームに書き込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stream 書き込む出力ストリーム
  * @return エラーコード
  */
-static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
+static errr make_dump(CreatureEntity &creature, std::ostream &stream)
 {
     FILE *fff;
     GAME_TEXT file_name[1024];
@@ -91,7 +91,7 @@ static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
     }
 
     /* 一旦一時ファイルを作る。通常のダンプ出力と共通化するため。 */
-    make_character_dump(*player_ptr, fff);
+    make_character_dump(creature, fff);
     angband_fclose(fff);
 
     // 一時ファイルを削除する前に閉じるためブロックにする
@@ -112,7 +112,6 @@ static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
  */
 std::string make_screen_dump(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto html_head =
         "<html>\n<body text=\"#ffffff\" bgcolor=\"#000000\">\n"
         "<pre>\n";
@@ -130,7 +129,7 @@ std::string make_screen_dump(CreatureEntity &creature)
         msg_erase();
 
         use_graphics = false;
-        reset_visuals(*player_ptr);
+        reset_visuals(creature);
 
         static constexpr auto flags = {
             MainWindowRedrawingFlag::WIPE,
@@ -218,7 +217,7 @@ std::string make_screen_dump(CreatureEntity &creature)
     }
 
     use_graphics = true;
-    reset_visuals(*player_ptr);
+    reset_visuals(creature);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,
@@ -243,11 +242,11 @@ bool report_score(CreatureEntity &creature)
     std::string personality_desc = (*player_ptr->personality).title.string();
     personality_desc.append(_((*player_ptr->personality).no ? "の" : "", " "));
 
-    PlayerRealm pr(*player_ptr);
-    const auto &realm1_name = CreatureClass(*player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
+    PlayerRealm pr(creature);
+    const auto &realm1_name = CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
     score_ss << fmt::format("name: {}\n", player_ptr->name)
              << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
-             << fmt::format("score: {}\n", calc_score(*player_ptr))
+             << fmt::format("score: {}\n", calc_score(creature))
              << fmt::format("level: {}\n", player_ptr->level)
              << fmt::format("depth: {}\n", player_ptr->current_floor_ptr->dun_level)
              << fmt::format("maxlv: {}\n", player_ptr->max_plv)
@@ -264,7 +263,7 @@ bool report_score(CreatureEntity &creature)
              << fmt::format("killer: {}\n", player_ptr->died_from)
              << "-----charcter dump-----\n";
 
-    make_dump(player_ptr, score_ss);
+    make_dump(creature, score_ss);
     if (!screen_dump.empty()) {
         score_ss << "-----screen shot-----\n"
                  << screen_dump;
