@@ -590,29 +590,29 @@ static std::string get_check_sum()
  * @param fff ファイルポインタ
  * @return エラーコード
  */
-void make_character_dump(PlayerType *player_ptr, FILE *fff)
+void make_character_dump(CreatureEntity &creature, FILE *fff)
 {
     TermCenteredOffsetSetter tos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
     constexpr auto fmt = _("  [{} キャラクタ情報]\n", "  [{} Character Dump]\n");
     fmt::println(fff, fmt, AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL));
 
-    dump_aux_player_status(player_ptr, fff);
-    dump_aux_last_message(*player_ptr, fff);
+    dump_aux_player_status(creature, fff);
+    dump_aux_last_message(creature, fff);
     dump_aux_options(fff);
     dump_aux_recall(fff);
-    dump_aux_quest(*player_ptr, fff);
+    dump_aux_quest(creature, fff);
     dump_aux_arena(fff);
     dump_aux_monsters(fff);
-    dump_aux_virtues(*player_ptr, fff);
-    dump_aux_race_history(*player_ptr, fff);
-    dump_aux_realm_history(*player_ptr, fff);
-    dump_aux_class_special(player_ptr, fff);
-    dump_aux_mutations(*player_ptr, fff);
-    dump_aux_pet(*player_ptr, fff);
+    dump_aux_virtues(creature, fff);
+    dump_aux_race_history(creature, fff);
+    dump_aux_realm_history(creature, fff);
+    dump_aux_class_special(creature, fff);
+    dump_aux_mutations(creature, fff);
+    dump_aux_pet(creature, fff);
     fputs("\n\n", fff);
-    dump_aux_equipment_inventory(*player_ptr, fff);
-    dump_aux_home_museum(*player_ptr, fff);
+    dump_aux_equipment_inventory(creature, fff);
+    dump_aux_home_museum(creature, fff);
 
     // ダンプの幅をはみ出さないように48文字目以降を切り捨てる
     const std::string checksum = get_check_sum().erase(48);

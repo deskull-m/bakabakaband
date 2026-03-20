@@ -87,7 +87,7 @@ void file_character(CreatureEntity &creature, std::string_view filename)
     }
 
     screen_save();
-    make_character_dump(player_ptr, fff);
+    make_character_dump(*player_ptr, fff);
     screen_load();
 
     if (ferror(fff)) {

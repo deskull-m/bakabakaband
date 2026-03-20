@@ -91,7 +91,7 @@ static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
     }
 
     /* 一旦一時ファイルを作る。通常のダンプ出力と共通化するため。 */
-    make_character_dump(player_ptr, fff);
+    make_character_dump(*player_ptr, fff);
     angband_fclose(fff);
 
     // 一時ファイルを削除する前に閉じるためブロックにする
