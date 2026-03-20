@@ -326,9 +326,9 @@ static void wiz_change_status_max(CreatureEntity &creature)
 void wiz_change_status(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto finalizer = util::make_finalizer([&creature, player_ptr]() {
+    const auto finalizer = util::make_finalizer([&creature]() {
         check_experience(creature);
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     });
 
     constexpr auto msg = _("全てのステータスを最大にしますか？", "Maximize all statuses? ");

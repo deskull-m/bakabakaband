@@ -167,7 +167,6 @@ void do_cmd_knowledge(CreatureEntity &creature)
 
     screen_load();
     if (need_redraw) {
-        auto *player_ptr = static_cast<PlayerType *>(&creature);
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     }
 }

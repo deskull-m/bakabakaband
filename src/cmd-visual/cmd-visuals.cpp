@@ -79,8 +79,9 @@ static void print_visuals_menu(concptr choice_msg)
 /*
  * Interact with "visuals"
  */
-void do_cmd_visuals(PlayerType *player_ptr)
+void do_cmd_visuals(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     FILE *auto_dump_stream;
     bool need_redraw = false;
     concptr empty_symbol = "<< ? >>";
@@ -107,7 +108,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                 continue;
             }
 
-            (void)process_pref_file(*player_ptr, *ask_result, true);
+            (void)process_pref_file(creature, *ask_result, true);
             need_redraw = true;
             break;
         }
@@ -161,7 +162,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                     item_name = baseitem.stripped_name();
                 } else {
                     ItemEntity dummy(baseitem.idx);
-                    item_name = describe_flavor(*player_ptr, dummy, OD_FORCE_FLAVOR);
+                    item_name = describe_flavor(creature, dummy, OD_FORCE_FLAVOR);
                 }
 
                 auto_dump_printf(auto_dump_stream, "# %s\n", item_name.data());
@@ -274,7 +275,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                     break;
                 }
                 case 'v':
-                    do_cmd_knowledge_monsters(*player_ptr, &need_redraw, true, monrace_id);
+                    do_cmd_knowledge_monsters(creature, &need_redraw, true, monrace_id);
                     term_clear();
                     print_visuals_menu(choice_msg);
                     break;
@@ -357,7 +358,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                     break;
                 }
                 case 'v':
-                    do_cmd_knowledge_objects(*player_ptr, &need_redraw, true, bi_id);
+                    do_cmd_knowledge_objects(creature, &need_redraw, true, bi_id);
                     term_clear();
                     print_visuals_menu(choice_msg);
                     break;
@@ -469,10 +470,10 @@ void do_cmd_visuals(PlayerType *player_ptr)
             break;
         }
         case '7':
-            do_cmd_knowledge_monsters(*player_ptr, &need_redraw, true);
+            do_cmd_knowledge_monsters(creature, &need_redraw, true);
             break;
         case '8':
-            do_cmd_knowledge_objects(*player_ptr, &need_redraw, true, -1);
+            do_cmd_knowledge_objects(creature, &need_redraw, true, -1);
             break;
         case '9': {
             short lighting_level = F_LIT_STANDARD;
@@ -481,7 +482,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
         }
         case 'r':
         case 'R':
-            reset_visuals(*player_ptr);
+            reset_visuals(creature);
             msg_print(_("画面上の[色/文字]を初期値にリセットしました。", "Visual attr/char tables reset."));
             need_redraw = true;
             break;
@@ -495,6 +496,6 @@ void do_cmd_visuals(PlayerType *player_ptr)
 
     screen_load();
     if (need_redraw) {
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     }
 }

@@ -108,7 +108,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         break;
     }
     case KTRL('R'): {
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
         display_store(creature, store_num);
         break;
     }
@@ -213,7 +213,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
     }
     case '%': {
         player_ptr->town_num = old_town_num;
-        do_cmd_visuals(player_ptr);
+        do_cmd_visuals(*player_ptr);
         player_ptr->town_num = inner_town_num;
         break;
     }
@@ -226,7 +226,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
     case '=': {
         do_cmd_options(*player_ptr);
         (void)combine_and_reorder_home(creature, StoreSaleType::HOME);
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
         display_store(creature, store_num);
         break;
     }
