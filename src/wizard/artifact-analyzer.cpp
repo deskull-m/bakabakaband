@@ -25,7 +25,7 @@
 static std::string analyze_general(CreatureEntity &creature, const ItemEntity &item)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    return describe_flavor(player_ptr, item, OD_NAME_AND_ENCHANT | OD_STORE | OD_DEBUG);
+    return describe_flavor(*player_ptr, item, OD_NAME_AND_ENCHANT | OD_STORE | OD_DEBUG);
 }
 
 /*!

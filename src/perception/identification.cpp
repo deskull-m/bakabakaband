@@ -16,7 +16,9 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/player-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/screen-processor.h"
@@ -821,9 +823,9 @@ bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mod
     const auto &[wid, hgt] = term_get_size();
     std::string item_name;
     if (!(mode & SCROBJ_FAKE_OBJECT)) {
-        item_name = describe_flavor(player_ptr, item, 0);
+        item_name = describe_flavor(*player_ptr, item, 0);
     } else {
-        item_name = describe_flavor(player_ptr, item, (OD_NAME_ONLY | OD_STORE));
+        item_name = describe_flavor(*player_ptr, item, (OD_NAME_ONLY | OD_STORE));
     }
 
     prt(item_name, 0, 0);

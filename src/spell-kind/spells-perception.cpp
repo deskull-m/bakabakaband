@@ -60,7 +60,7 @@ void identify_pack(CreatureEntity &creature)
 bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    const auto known_item_name = describe_flavor(&player, *o_ptr, 0);
+    const auto known_item_name = describe_flavor(player, *o_ptr, 0);
     const auto old_known = any_bits(o_ptr->ident, IDENT_KNOWN);
     if (!o_ptr->is_fully_known()) {
         if (o_ptr->is_fixed_or_random_artifact() || one_in_(5)) {
@@ -90,7 +90,7 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
     record_item_name = known_item_name;
     record_turn = AngbandWorld::get_instance().game_turn;
 
-    const auto item_name = describe_flavor(&player, *o_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_ONLY);
     const auto &floor = *creature.current_floor_ptr;
     if (record_fix_art && !old_known && o_ptr->is_fixed_artifact()) {
         exe_write_diary(floor, DiaryKind::ART, 0, item_name);
@@ -138,7 +138,7 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
     }
 
     auto old_known = identify_item(creature, o_ptr);
-    const auto item_name = describe_flavor(&player, *o_ptr, 0);
+    const auto item_name = describe_flavor(player, *o_ptr, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
         msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(player, i_idx), item_name.data(), index_to_label(i_idx));
     } else if (i_idx >= 0) {
@@ -188,7 +188,7 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
     auto old_known = identify_item(creature, o_ptr);
     o_ptr->ident |= (IDENT_FULL_KNOWN);
     window_stuff(&player);
-    const auto item_name = describe_flavor(&player, *o_ptr, 0);
+    const auto item_name = describe_flavor(player, *o_ptr, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
         msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(player, i_idx), item_name.data(), index_to_label(i_idx));
     } else if (i_idx >= 0) {

@@ -135,7 +135,7 @@ void auto_destroy_item(CreatureEntity &creature, ItemEntity *o_ptr, int autopick
     disturb(creature, false, false);
     if (!can_player_destroy_object(o_ptr)) {
         auto *player_ptr = static_cast<PlayerType *>(&creature);
-        const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
+        const auto item_name = describe_flavor(*player_ptr, *o_ptr, 0);
         msg_format(_("%sは破壊不能だ。", "You cannot auto-destroy %s."), item_name.data());
         return;
     }

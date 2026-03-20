@@ -31,7 +31,7 @@ void pack_overflow(CreatureEntity &creature)
     disturb(creature, false, true);
     msg_print(_("ザックからアイテムがあふれた！", "Your pack overflows!"));
 
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(*player_ptr, item, 0);
     msg_format(_("%s(%c)を落とした。", "You drop %s (%c)."), item_name.data(), index_to_label(INVEN_PACK));
     (void)drop_near(creature, item, creature.get_position(), false);
 

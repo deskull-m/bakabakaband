@@ -200,7 +200,7 @@ void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *tur
         }
 
         const auto flags = item.get_flags();
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         const auto m_name = monster_desc(creature, monster, MD_INDEF_HIDDEN);
         update_object_flags(flags, flg_monster_kind, flgr);
 

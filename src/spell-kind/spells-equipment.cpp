@@ -49,7 +49,7 @@ bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     if (item.is_fixed_or_random_artifact() && evaluate_percent(71)) {
 #ifdef JP
         msg_format("%s(%c)は劣化を跳ね返した！", item_name.data(), index_to_label(t));

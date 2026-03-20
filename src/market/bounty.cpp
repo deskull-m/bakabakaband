@@ -58,7 +58,7 @@ bool exchange_cash(CreatureEntity &creature)
         }
 
         change = true;
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         if (!input_check(format(fmt_convert, item_name.data()))) {
             continue;
         }
@@ -81,7 +81,7 @@ bool exchange_cash(CreatureEntity &creature)
         }
 
         change = true;
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         if (!input_check(format(fmt_convert, item_name.data()))) {
             continue;
         }
@@ -104,7 +104,7 @@ bool exchange_cash(CreatureEntity &creature)
         }
 
         change = true;
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         if (!input_check(format(fmt_convert, item_name.data()))) {
             continue;
         }
@@ -125,7 +125,7 @@ bool exchange_cash(CreatureEntity &creature)
         }
 
         change = true;
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         if (!input_check(format(fmt_convert, item_name.data()))) {
             continue;
         }
@@ -145,7 +145,7 @@ bool exchange_cash(CreatureEntity &creature)
         }
 
         change = true;
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         if (!input_check(format(fmt_convert, item_name.data()))) {
             continue;
         }
@@ -173,7 +173,7 @@ bool exchange_cash(CreatureEntity &creature)
             }
 
             INVENTORY_IDX inventory_new;
-            const auto item_name = describe_flavor(player_ptr, item, 0);
+            const auto item_name = describe_flavor(*player_ptr, item, 0);
             if (!input_check(format(_("%sを渡しますか？", "Hand %s over? "), item_name.data()))) {
                 continue;
             }
@@ -198,7 +198,7 @@ bool exchange_cash(CreatureEntity &creature)
              * there is at least one empty slot.
              */
             inventory_new = store_item_to_inventory(*player_ptr, &prize_item);
-            const auto got_item_name = describe_flavor(player_ptr, prize_item, 0);
+            const auto got_item_name = describe_flavor(*player_ptr, prize_item, 0);
             msg_format(_("%s(%c)を貰った。", "You get %s (%c). "), got_item_name.data(), index_to_label(inventory_new));
 
             autopick_alter_item(player_ptr, inventory_new, false);

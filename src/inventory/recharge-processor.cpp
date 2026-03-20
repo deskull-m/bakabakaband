@@ -30,7 +30,7 @@ static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
     auto s = angband_strchr(item.inscription->data(), '!');
     while (s) {
         if (s[1] == '!') {
-            const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
             msg_format("%sは再充填された。", item_name.data());
 #else

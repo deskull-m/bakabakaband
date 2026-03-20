@@ -264,7 +264,7 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
     const auto eff_dd = item.damage_dice.num + player_ptr->damage_dice_bonus[0].num;
     const auto eff_ds = item.damage_dice.sides + player_ptr->damage_dice_bonus[0].sides;
     const auto hit_reliability = player_ptr->skill_thn + (player_ptr->to_h[0] + item.to_h) * BTH_PLUS_ADJ;
-    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
     c_put_str(TERM_YELLOW, item_name, row, col);
     put_str(format(_("攻撃回数: %d", "Number of Blows: %d"), player_ptr->num_blow[0]), row + 1, col);
 

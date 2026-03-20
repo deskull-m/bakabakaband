@@ -655,7 +655,7 @@ bool cosmic_cast_off(CreatureEntity &creature, ItemEntity **o_ptr_ptr)
     const auto old_o_idx = drop_near(*player_ptr, item, creature.get_position());
     *o_ptr_ptr = creature.current_floor_ptr->o_list[old_o_idx].get();
 
-    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
     msg_format(_("%sを脱ぎ捨てた。", "You cast off %s."), item_name.data());
     sound(SoundKind::TAKE_OFF);
 

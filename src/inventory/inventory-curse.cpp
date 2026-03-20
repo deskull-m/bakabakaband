@@ -226,7 +226,7 @@ static void curse_teleport(CreatureEntity &creature)
     }
 
     const auto &item = *player_ptr->inventory[i_keep];
-    const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sがテレポートの能力を発動させようとしている。", "Your %s tries to teleport you."), item_name.data());
     if (input_check_strict(player_ptr, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
         disturb(*player_ptr, false, true);
@@ -289,7 +289,7 @@ static void multiply_low_curse(CreatureEntity &creature)
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(new_curse);
     msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
     o_ptr->feeling = FEEL_NONE;
@@ -309,7 +309,7 @@ static void multiply_high_curse(CreatureEntity &creature)
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(new_curse);
     msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
     o_ptr->feeling = FEEL_NONE;
@@ -328,7 +328,7 @@ static void persist_curse(CreatureEntity &creature)
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(CurseTraitType::HEAVY_CURSE);
     msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
     o_ptr->feeling = FEEL_NONE;
@@ -343,7 +343,7 @@ static void curse_call_monster(CreatureEntity &creature)
     const auto &floor = *player_ptr->current_floor_ptr;
     if (player_ptr->cursed.has(CurseTraitType::CALL_ANIMAL) && one_in_(2500)) {
         if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_ANIMAL, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_ANIMAL), obj_desc_type);
+            const auto item_name = describe_flavor(*player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_ANIMAL), obj_desc_type);
             msg_format(_("%sが動物を引き寄せた！", "Your %s has attracted an animal!"), item_name.data());
             disturb(*player_ptr, false, true);
         }
@@ -351,7 +351,7 @@ static void curse_call_monster(CreatureEntity &creature)
 
     if (player_ptr->cursed.has(CurseTraitType::CALL_DEMON) && one_in_(1111)) {
         if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DEMON, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_DEMON), obj_desc_type);
+            const auto item_name = describe_flavor(*player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_DEMON), obj_desc_type);
             msg_format(_("%sが悪魔を引き寄せた！", "Your %s has attracted a demon!"), item_name.data());
             disturb(*player_ptr, false, true);
         }
@@ -359,7 +359,7 @@ static void curse_call_monster(CreatureEntity &creature)
 
     if (player_ptr->cursed.has(CurseTraitType::CALL_DRAGON) && one_in_(800)) {
         if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DRAGON, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_DRAGON), obj_desc_type);
+            const auto item_name = describe_flavor(*player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_DRAGON), obj_desc_type);
             msg_format(_("%sがドラゴンを引き寄せた！", "Your %s has attracted a dragon!"), item_name.data());
             disturb(*player_ptr, false, true);
         }
@@ -367,7 +367,7 @@ static void curse_call_monster(CreatureEntity &creature)
 
     if (player_ptr->cursed.has(CurseTraitType::CALL_UNDEAD) && one_in_(1111)) {
         if (summon_specific(*player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_UNDEAD, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_UNDEAD), obj_desc_type);
+            const auto item_name = describe_flavor(*player_ptr, *choose_cursed_obj_name(*player_ptr, CurseTraitType::CALL_UNDEAD), obj_desc_type);
             msg_format(_("%sが死霊を引き寄せた！", "Your %s has attracted an undead!"), item_name.data());
             disturb(*player_ptr, false, true);
         }
@@ -437,7 +437,7 @@ static void curse_drain_hp(CreatureEntity &creature)
     }
 
     const auto *item_ptr = choose_cursed_obj_name(*player_ptr, CurseTraitType::DRAIN_HP);
-    const auto item_name = describe_flavor(player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの体力を吸収した！", "Your %s drains HP from you!"), item_name.data());
     take_hit(*player_ptr, DAMAGE_LOSELIFE, std::min(player_ptr->level * 2, 100), item_name);
 }
@@ -450,7 +450,7 @@ static void curse_drain_mp(CreatureEntity &creature)
     }
 
     const auto *item_ptr = choose_cursed_obj_name(*player_ptr, CurseTraitType::DRAIN_MANA);
-    const auto item_name = describe_flavor(player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(*player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
     player_ptr->csp -= std::min<short>(player_ptr->level, 50);
     if (player_ptr->csp < 0) {

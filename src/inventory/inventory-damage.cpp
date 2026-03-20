@@ -63,7 +63,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
             continue;
         }
 
-        const auto item_name = describe_flavor(player_ptr, item, OD_OMIT_PREFIX);
+        const auto item_name = describe_flavor(*player_ptr, item, OD_OMIT_PREFIX);
 
         msg_format(_("%s(%c)が%s壊れてしまった！", "%sour %s (%c) %s destroyed!"),
 #ifdef JP

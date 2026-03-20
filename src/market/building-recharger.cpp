@@ -50,7 +50,7 @@ void building_recharge(CreatureEntity &creature)
         if ((player.au >= 50) && input_check(_("＄50で鑑定しますか？ ", "Identify for 50 gold? "))) {
             player.au -= 50;
             identify_item(creature, o_ptr);
-            const auto item_name = describe_flavor(&player, *o_ptr, 0);
+            const auto item_name = describe_flavor(player, *o_ptr, 0);
             msg_format(_("%s です。", "You have: %s."), item_name.data());
             autopick_alter_item(&player, i_idx, false);
             building_prt_gold(player.au);
@@ -103,7 +103,7 @@ void building_recharge(CreatureEntity &creature)
     }
 
     if (player.au < price) {
-        const auto item_name = describe_flavor(&player, *o_ptr, OD_NAME_ONLY);
+        const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_ONLY);
 #ifdef JP
         msg_format("%sを再充填するには＄%d 必要です！", item_name.data(), price);
 #else
@@ -143,7 +143,7 @@ void building_recharge(CreatureEntity &creature)
         o_ptr->ident &= ~(IDENT_EMPTY);
     }
 
-    const auto item_name = describe_flavor(&player, *o_ptr, 0);
+    const auto item_name = describe_flavor(player, *o_ptr, 0);
 #ifdef JP
     msg_format("%sを＄%d で再充填しました。", item_name.data(), price);
 #else

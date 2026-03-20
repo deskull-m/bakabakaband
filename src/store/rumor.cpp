@@ -159,7 +159,7 @@ public:
         ItemEntity item(artifact_rumor.bi_id);
         item.fa_id = artifact_rumor.fa_id;
         item.ident = IDENT_STORE;
-        const auto artifact_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+        const auto artifact_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY);
         this->print_rumor(artifact_name);
     }
 

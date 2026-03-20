@@ -47,7 +47,7 @@ bool alchemy(CreatureEntity &creature)
 
     const auto old_number = o_ptr->number;
     o_ptr->number = amt;
-    const auto item_name = describe_flavor(&player, *o_ptr, 0);
+    const auto item_name = describe_flavor(player, *o_ptr, 0);
     o_ptr->number = old_number;
 
     if (!force) {

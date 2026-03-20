@@ -105,7 +105,7 @@ void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool
     item.set_position(p_pos);
 
     auto &player = static_cast<PlayerType &>(creature);
-    const auto item_name = describe_flavor(&player, item, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(player, item, OD_NAME_ONLY);
     msg_format(_("%s^があなたの足元に飛んできた。", "%s^ flies through the air to your feet."), item_name.data());
     note_spot(player, p_pos);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);

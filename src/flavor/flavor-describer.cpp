@@ -224,14 +224,14 @@ static std::string describe_accuracy_and_damage_bonus(const ItemEntity &item, co
     return "";
 }
 
-static std::string describe_fire_energy(PlayerType *player_ptr, const ItemEntity &ammo, const ItemEntity &bow, const describe_option_type &opt, int avgdam)
+static std::string describe_fire_energy(CreatureEntity &creature, const ItemEntity &ammo, const ItemEntity &bow, const describe_option_type &opt, int avgdam)
 {
     const auto energy_fire = bow.get_bow_energy();
-    if (player_ptr->num_fire == 0) {
+    if (creature.num_fire == 0) {
         return "0";
     }
 
-    const auto avgdam_per_turn = avgdam * player_ptr->num_fire * 100 / energy_fire;
+    const auto avgdam_per_turn = avgdam * creature.num_fire * 100 / energy_fire;
 
     std::stringstream ss;
     ss << avgdam_per_turn
@@ -242,14 +242,14 @@ static std::string describe_fire_energy(PlayerType *player_ptr, const ItemEntity
 
     const auto ammo_bonus = opt.known ? ammo.to_h : 0;
     const auto bow_bonus = bow.is_known() ? bow.to_h : 0;
-    const auto percent = calc_crit_ratio_shot(player_ptr, ammo_bonus, bow_bonus);
+    const auto percent = calc_crit_ratio_shot(static_cast<PlayerType *>(&creature), ammo_bonus, bow_bonus);
 
     ss << format("/%d.%02d%s", percent / 100, percent % 100, show_ammo_detail ? "% crit" : "%");
 
     return ss.str();
 }
 
-static std::string describe_ammo_detail(PlayerType *player_ptr, const ItemEntity &ammo, const ItemEntity &bow, const describe_option_type &opt)
+static std::string describe_ammo_detail(CreatureEntity &creature, const ItemEntity &ammo, const ItemEntity &bow, const describe_option_type &opt)
 {
     auto avgdam = ammo.damage_dice.floored_expected_value_multiplied_by(10);
     auto tmul = bow.get_arrow_magnification();
@@ -261,19 +261,19 @@ static std::string describe_ammo_detail(PlayerType *player_ptr, const ItemEntity
         avgdam += (ammo.to_d * 10);
     }
 
-    if (player_ptr->xtra_might) {
+    if (creature.xtra_might) {
         tmul++;
     }
 
-    tmul = tmul * (100 + static_cast<int>(adj_str_td[player_ptr->stat_index[A_STR]]) - 128);
+    tmul = tmul * (100 + static_cast<int>(adj_str_td[creature.stat_index[A_STR]]) - 128);
     avgdam *= tmul;
     avgdam /= (100 * 10);
-    avgdam = boost_concentration_damage(*player_ptr, avgdam);
+    avgdam = boost_concentration_damage(creature, avgdam);
 
     if (avgdam < 0) {
         avgdam = 0;
     }
-    const auto crit_avgdam = calc_expect_crit_shot(player_ptr, ammo.weight, ammo.to_h, bow.to_h, avgdam);
+    const auto crit_avgdam = calc_expect_crit_shot(static_cast<PlayerType *>(&creature), ammo.weight, ammo.to_h, bow.to_h, avgdam);
 
     std::stringstream ss;
     ss << " (";
@@ -285,17 +285,17 @@ static std::string describe_ammo_detail(PlayerType *player_ptr, const ItemEntity
     ss << crit_avgdam
        << (show_ammo_no_crit ? (show_ammo_detail ? "/crit " : "/")
                              : (show_ammo_detail ? "/shot " : "/"))
-       << describe_fire_energy(player_ptr, ammo, bow, opt, crit_avgdam)
+       << describe_fire_energy(creature, ammo, bow, opt, crit_avgdam)
        << ")";
 
     return ss.str();
 }
 
-static std::string describe_spike_detail(PlayerType *player_ptr)
+static std::string describe_spike_detail(const CreatureEntity &creature)
 {
-    auto avgdam = player_ptr->mighty_throw ? (1 + 3) : 1;
-    avgdam += ((player_ptr->level + 30) * (player_ptr->level + 30) - 900) / 55;
-    const auto energy_fire = 100 - player_ptr->level;
+    auto avgdam = creature.mighty_throw ? (1 + 3) : 1;
+    avgdam += ((creature.level + 30) * (creature.level + 30) - 900) / 55;
+    const auto energy_fire = 100 - creature.level;
     const auto avgdam_per_turn = 100 * avgdam / energy_fire;
 
     return format(" (%d/%d)", avgdam, avgdam_per_turn);
@@ -575,32 +575,32 @@ static describe_option_type decide_describe_option(const ItemEntity &item, BIT_F
 
 /*!
  * @brief オブジェクトの各表記を返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 特性短縮表記を得たいオブジェクト構造体の参照ポインタ
  * @param mode 表記に関するオプション指定
  * @return modeに応じたオブジェクトの表記
  */
-std::string describe_flavor(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mode, const size_t max_length)
+std::string describe_flavor(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS mode, const size_t max_length)
 {
     const auto opt = decide_describe_option(item, mode);
     std::stringstream ss;
-    ss << describe_named_item(player_ptr, item, opt);
+    ss << describe_named_item(static_cast<PlayerType *>(&creature), item, opt);
 
     if (any_bits(mode, OD_NAME_ONLY) || !item.is_valid()) {
         return str_substr(ss.str(), 0, max_length);
     }
 
     ss << describe_chest(item, opt)
-       << describe_weapon_dice_or_bow_power(*player_ptr, item, opt)
+       << describe_weapon_dice_or_bow_power(creature, item, opt)
        << describe_accuracy_and_damage_bonus(item, opt);
 
     if (none_bits(mode, OD_DEBUG)) {
-        const auto &bow = *player_ptr->inventory[INVEN_BOW];
+        const auto &bow = *creature.inventory[INVEN_BOW];
         const auto tval = item.bi_key.tval();
         if (bow.is_valid() && (tval == bow.get_arrow_kind())) {
-            ss << describe_ammo_detail(player_ptr, item, bow, opt);
-        } else if (CreatureClass(*player_ptr).equals(PlayerClassType::NINJA) && (tval == ItemKindType::SPIKE)) {
-            ss << describe_spike_detail(player_ptr);
+            ss << describe_ammo_detail(creature, item, bow, opt);
+        } else if (CreatureClass(creature).equals(PlayerClassType::NINJA) && (tval == ItemKindType::SPIKE)) {
+            ss << describe_spike_detail(creature);
         }
     }
 

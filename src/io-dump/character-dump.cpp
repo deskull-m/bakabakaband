@@ -488,7 +488,7 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
     if (player.equip_cnt) {
         fmt::println(fff, _("  [キャラクタの装備]\n", "  [Character Equipment]\n"));
         for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            auto item_name = describe_flavor(&player, *player.inventory[i], 0);
+            auto item_name = describe_flavor(player, *player.inventory[i], 0);
             auto is_two_handed = ((i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature));
             is_two_handed |= ((i == INVEN_SUB_HAND) && can_attack_with_main_hand(creature));
             if (is_two_handed && has_two_handed_weapons(creature)) {
@@ -507,7 +507,7 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
             break;
         }
 
-        const auto item_name = describe_flavor(&player, *player.inventory[i], 0);
+        const auto item_name = describe_flavor(player, *player.inventory[i], 0);
         fmt::println(fff, "{}) {}", index_to_label(i), item_name);
     }
 
@@ -531,7 +531,7 @@ static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
                 fmt::println(fff, _("\n ( {} ページ )", "\n ( page {} )"), page++);
             }
 
-            const auto item_name = describe_flavor(&player, *home.stock[i], 0);
+            const auto item_name = describe_flavor(player, *home.stock[i], 0);
             fmt::println(fff, "{}) {}", I2A(i % 12), item_name);
         }
 
@@ -550,7 +550,7 @@ static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
             fmt::println(fff, _("\n ( {} ページ )", "\n ( page {} )"), page++);
         }
 
-        const auto item_name = describe_flavor(&player, *museum.stock[i], 0);
+        const auto item_name = describe_flavor(player, *museum.stock[i], 0);
         fmt::println(fff, "{}) {}", I2A(i % 12), item_name);
     }
 

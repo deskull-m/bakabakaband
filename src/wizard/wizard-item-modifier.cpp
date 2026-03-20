@@ -403,7 +403,7 @@ static void wiz_display_item(CreatureEntity &creature, ItemEntity *o_ptr)
     }
 
     prt_alloc(o_ptr->bi_key, 1, 0);
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_STORE);
+    const auto item_name = describe_flavor(*player_ptr, *o_ptr, OD_STORE);
     prt(item_name, 2, j);
 
     auto line = 4;
@@ -825,9 +825,9 @@ static std::vector<FixedArtifactId> find_wishing_fixed_artifact(CreatureEntity &
         ItemEntity item(artifact.bi_key);
         item.fa_id = fa_id;
 #ifdef JP
-        const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
+        const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
 #else
-        const auto item_name = str_tolower(describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
+        const auto item_name = str_tolower(describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
 #endif
         std::string art_description = artifact.name;
 #ifdef JP
@@ -1033,9 +1033,9 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
 
             ItemEntity item(baseitem.idx);
 #ifdef JP
-            const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
+            const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
 #else
-            const auto item_name = str_tolower(describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
+            const auto item_name = str_tolower(describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
 #endif
             if (cheat_xtra) {
                 msg_format("Matching object No.%d %s", baseitem.idx, item_name.data());

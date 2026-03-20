@@ -61,7 +61,7 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
             out_color[k] = TERM_L_DARK;
         }
 
-        out_desc[k] = describe_flavor(player_ptr, item, 0);
+        out_desc[k] = describe_flavor(*player_ptr, item, 0);
         l = out_desc[k].length() + 5;
         if (show_weights) {
             l += 9;
@@ -167,7 +167,7 @@ void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
         int cur_col = 3;
         term_erase(cur_col, i);
         term_putstr(0, i, cur_col, TERM_WHITE, label);
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(*player_ptr, item, 0);
         attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
         if (item.timeout) {
             attr = TERM_L_DARK;

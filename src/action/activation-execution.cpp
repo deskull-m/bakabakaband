@@ -172,7 +172,7 @@ static bool activate_artifact(CreatureEntity &creature, ItemEntity *o_ptr)
         return false;
     }
 
-    const auto item_name = describe_flavor(&player, *o_ptr, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
+    const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
     if (!switch_activation(&player, &o_ptr, it_activation->index, item_name)) {
         return false;
     }
@@ -379,7 +379,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     if (randint1(100) <= ae_ptr->broken) {
-        std::string o_name = describe_flavor(&player, *ae_ptr->o_ptr, OD_OMIT_PREFIX);
+        std::string o_name = describe_flavor(player, *ae_ptr->o_ptr, OD_OMIT_PREFIX);
         msg_format(_("%sは壊れた！", "%s is destroyed!"), o_name.data());
         curse_weapon_object(player, true, ae_ptr->o_ptr);
     }
