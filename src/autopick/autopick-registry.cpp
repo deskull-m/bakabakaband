@@ -17,7 +17,7 @@
 #include "object-enchant/special-object-flags.h"
 #include "perception/object-perception.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 
@@ -106,10 +106,10 @@ static bool clear_auto_register(std::string_view player_base_name)
 /*!
  * @brief Automatically register an auto-destroy preference line
  */
-bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     autopick_type an_entry, *entry = &an_entry;
-    int autopick_registered = find_autopick_list(*player_ptr, o_ptr);
+    int autopick_registered = find_autopick_list(creature, o_ptr);
     if (autopick_registered != -1) {
         concptr what;
         byte act = autopick_list[autopick_registered].action;
@@ -128,30 +128,30 @@ bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr)
     }
 
     if ((o_ptr->is_known() && o_ptr->is_fixed_or_random_artifact()) || ((o_ptr->ident & IDENT_SENSE) && (o_ptr->feeling == FEEL_TERRIBLE || o_ptr->feeling == FEEL_SPECIAL))) {
-        const auto item_name = describe_flavor(*player_ptr, *o_ptr, 0);
+        const auto item_name = describe_flavor(creature, *o_ptr, 0);
         msg_format(_("%sは破壊不能だ。", "You cannot auto-destroy %s."), item_name.data());
         return false;
     }
 
-    if (!player_ptr->autopick_autoregister) {
-        if (!clear_auto_register(player_ptr->base_name)) {
+    if (!creature.autopick_autoregister) {
+        if (!clear_auto_register(creature.base_name)) {
             return false;
         }
     }
 
-    const auto path_pref = search_pickpref_path(player_ptr->base_name);
+    const auto path_pref = search_pickpref_path(creature.base_name);
     auto *pref_fff = !path_pref.empty() ? angband_fopen(path_pref, FileOpenMode::READ) : nullptr;
 
     if (pref_fff) {
         while (true) {
             const auto buf = angband_fgets(pref_fff, MAX_LINELEN);
             if (!buf) {
-                player_ptr->autopick_autoregister = false;
+                creature.autopick_autoregister = false;
                 break;
             }
 
             if (streq(*buf, autoregister_header)) {
-                player_ptr->autopick_autoregister = true;
+                creature.autopick_autoregister = true;
                 break;
             }
         }
@@ -162,7 +162,7 @@ bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr)
          * File could not be opened for reading.  Assume header not
          * present.
          */
-        player_ptr->autopick_autoregister = false;
+        creature.autopick_autoregister = false;
     }
 
     pref_fff = angband_fopen(path_pref, FileOpenMode::APPEND);
@@ -173,17 +173,17 @@ bool autopick_autoregister(PlayerType *player_ptr, const ItemEntity *o_ptr)
         return false;
     }
 
-    if (!player_ptr->autopick_autoregister) {
+    if (!creature.autopick_autoregister) {
         fprintf(pref_fff, "%s\n", autoregister_header);
 
         fprintf(pref_fff, "%s\n", _("# *警告!!* 以降の行は自動登録されたものです。", "# *Warning!* The lines below will be deleted later."));
         fprintf(pref_fff, "%s\n",
             _("# 後で自動的に削除されますので、必要な行は上の方へ移動しておいてください。",
                 "# Keep it by cut & paste if you need these lines for future characters."));
-        player_ptr->autopick_autoregister = true;
+        creature.autopick_autoregister = true;
     }
 
-    autopick_entry_from_object(*player_ptr, entry, o_ptr);
+    autopick_entry_from_object(creature, entry, o_ptr);
     entry->action = DO_AUTODESTROY;
     autopick_list.push_back(*entry);
 

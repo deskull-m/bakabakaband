@@ -74,7 +74,7 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
             continue;
         }
 
-        if (autopick_autoregister(player_ptr, &destroying_item)) {
+        if (autopick_autoregister(*player_ptr, &destroying_item)) {
             autopick_alter_item(player_ptr, i_idx, true);
         }
 
