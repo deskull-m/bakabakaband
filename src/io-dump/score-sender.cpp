@@ -1,6 +1,6 @@
 #include "io-dump/score-sender.h"
 #include "io-dump/player-status-dump-json.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 
@@ -59,10 +59,10 @@ void set_score_server_url(const std::string &url)
  * libcurlを使用してHTTP POSTリクエストでJSONデータをスコアサーバーに送信する。
  * サーバーへの送信に失敗してもゲームは続行される（エラーメッセージのみ表示）。
  */
-bool send_score_json(PlayerType *player_ptr)
+bool send_score_json(CreatureEntity &creature)
 {
     // JSON文字列を生成
-    std::string json_data = dump_player_status_json(player_ptr);
+    std::string json_data = dump_player_status_json(creature);
 
     // curlの初期化
     CURL *curl = curl_easy_init();

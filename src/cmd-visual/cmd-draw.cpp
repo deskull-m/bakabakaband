@@ -143,7 +143,7 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
             const auto path = path_build(ANGBAND_DIR_USER, filename);
             FILE *fff = angband_fopen(path, FileOpenMode::WRITE);
             if (fff) {
-                dump_player_status_json_to_file(player_ptr, fff);
+                dump_player_status_json_to_file(*player_ptr, fff);
                 angband_fclose(fff);
                 msg_format(_("ステータスを %s に書き出しました。", "Character status dumped to %s."), filename.data());
             } else {
