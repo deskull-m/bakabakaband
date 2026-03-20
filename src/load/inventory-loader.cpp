@@ -19,8 +19,9 @@
  *
  * Note that the inventory is "re-sorted" later by "dungeon()".
  */
-static errr rd_inventory(PlayerType *player_ptr)
+static errr rd_inventory(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     player_ptr->inven_cnt = 0;
     player_ptr->equip_cnt = 0;
 
@@ -60,15 +61,16 @@ static errr rd_inventory(PlayerType *player_ptr)
     return 0;
 }
 
-errr load_inventory(PlayerType *player_ptr)
+errr load_inventory(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (auto i = 0; i < 64; i++) {
         if (const auto spell_id = rd_byte(); spell_id < 64) {
             player_ptr->spell_order_learned.push_back(spell_id);
         }
     }
 
-    int errr = rd_inventory(player_ptr);
+    int errr = rd_inventory(creature);
     if (!errr) {
         return 0;
     }

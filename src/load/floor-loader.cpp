@@ -45,8 +45,9 @@
  * The monsters/objects must be loaded in the same order
  * that they were stored, since the actual indexes matter.
  */
-errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *player_ptr->current_floor_ptr;
     clear_cave(player_ptr);
     player_ptr->x = player_ptr->y = 0;
@@ -198,7 +199,7 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
  * @param sf_ptr 保存フロア読み込み先
  * @return 成功したらtrue
  */
-static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+static bool load_floor_aux(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
     load_xor_byte = 0;
     strip_bytes(1);
@@ -214,7 +215,7 @@ static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         return false;
     }
 
-    if (rd_saved_floor(player_ptr, sf_ptr)) {
+    if (rd_saved_floor(creature, sf_ptr)) {
         return false;
     }
     auto n_v_check = v_check;
@@ -234,7 +235,7 @@ static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
  * @param mode オプション
  * @return 成功したらtrue
  */
-bool load_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode)
+bool load_floor(CreatureEntity &creature, saved_floor_type *sf_ptr, BIT_FLAGS mode)
 {
     const auto finalizer = util::make_finalizer([backup = loading_character_encoding]() {
         loading_character_encoding = backup;
@@ -285,7 +286,7 @@ bool load_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode
     }
 
     if (is_save_successful) {
-        is_save_successful = load_floor_aux(player_ptr, sf_ptr);
+        is_save_successful = load_floor_aux(creature, sf_ptr);
         if (ferror(loading_savefile)) {
             is_save_successful = false;
         }

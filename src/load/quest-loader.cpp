@@ -42,8 +42,9 @@ static void load_quest_completion(QuestType *q_ptr)
     q_ptr->comptime = rd_u32b();
 }
 
-static void load_quest_details(PlayerType *player_ptr, QuestType *q_ptr, const QuestId loading_quest_id)
+static void load_quest_details(CreatureEntity &creature, QuestType *q_ptr, const QuestId loading_quest_id)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     q_ptr->cur_num = rd_s16b();
     q_ptr->max_num = rd_s16b();
     q_ptr->type = i2enum<QuestKindType>(rd_s16b());
@@ -88,7 +89,7 @@ static bool is_loadable_quest(const QuestId q_idx, const byte max_rquests_load)
     return false;
 }
 
-void analyze_quests(PlayerType *player_ptr, const uint16_t max_quests_load, const byte max_rquests_load)
+void analyze_quests(CreatureEntity &creature, const uint16_t max_quests_load, const byte max_rquests_load)
 {
     for (auto i = 0; i < max_quests_load; i++) {
         QuestId quest_id;
@@ -112,7 +113,7 @@ void analyze_quests(PlayerType *player_ptr, const uint16_t max_quests_load, cons
             continue;
         }
 
-        load_quest_details(player_ptr, &quest, quest_id);
+        load_quest_details(creature, &quest, quest_id);
 
         quest.dungeon = i2enum<DungeonId>(rd_byte());
 

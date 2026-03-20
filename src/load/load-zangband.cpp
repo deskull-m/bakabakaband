@@ -3,8 +3,9 @@
 #include "player/attack-defense-types.h"
 #include "system/player-type-definition.h"
 
-void set_zangband_action(PlayerType *player_ptr)
+void set_zangband_action(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (rd_byte() != 0) {
         player_ptr->action = ACTION_LEARN;
     }

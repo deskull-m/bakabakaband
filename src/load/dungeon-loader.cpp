@@ -22,8 +22,9 @@
  * The monsters/objects must be loaded in the same order
  * that they were stored, since the actual indexes matter.
  */
-static errr rd_dungeon(PlayerType *player_ptr)
+static errr rd_dungeon(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     init_saved_floors(false);
     errr err = 0;
     auto &floor = *player_ptr->current_floor_ptr;
@@ -33,7 +34,7 @@ static errr rd_dungeon(PlayerType *player_ptr)
     floor.set_dungeon_index(i2enum<DungeonId>(rd_byte())); // @todo セーブデータの方を16ビットにするかdungeon_idxの定義を8ビットにした方が良い.
     auto num = rd_byte();
     if (num == 0) {
-        err = rd_saved_floor(player_ptr, nullptr);
+        err = rd_saved_floor(creature, nullptr);
     } else {
         for (int i = 0; i < num; i++) {
             saved_floor_type *sf_ptr = &saved_floors[i];
@@ -58,7 +59,7 @@ static errr rd_dungeon(PlayerType *player_ptr)
                 continue;
             }
 
-            err = rd_saved_floor(player_ptr, sf_ptr);
+            err = rd_saved_floor(creature, sf_ptr);
             if (err) {
                 break;
             }
@@ -73,7 +74,7 @@ static errr rd_dungeon(PlayerType *player_ptr)
         }
 
         if (err == 0) {
-            if (!load_floor(player_ptr, get_sf_ptr(player_ptr->floor_id), SLF_SECOND)) {
+            if (!load_floor(creature, get_sf_ptr(player_ptr->floor_id), SLF_SECOND)) {
                 err = 183;
             }
         }
@@ -122,8 +123,9 @@ static errr rd_dungeon(PlayerType *player_ptr)
     return err;
 }
 
-errr restore_dungeon(PlayerType *player_ptr)
+errr restore_dungeon(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (player_ptr->is_dead()) {
         auto &quests = QuestList::get_instance();
         for (const auto quest_id : RANDOM_QUEST_ID_RANGE) {
@@ -134,7 +136,7 @@ errr restore_dungeon(PlayerType *player_ptr)
     }
 
     load_note(_("ダンジョン復元中...", "Restoring Dungeon..."));
-    if (rd_dungeon(player_ptr)) {
+    if (rd_dungeon(creature)) {
         load_note(_("ダンジョンデータ読み込み失敗", "Error reading dungeon data"));
         return 34;
     }

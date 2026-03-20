@@ -396,7 +396,7 @@ static void update_floor(PlayerType *player_ptr)
 
     saved_floor_type *sf_ptr;
     sf_ptr = get_sf_ptr(new_floor_id);
-    const bool loaded = is_visited_floor(sf_ptr) && load_floor(player_ptr, sf_ptr, 0);
+    const bool loaded = is_visited_floor(sf_ptr) && load_floor(*player_ptr, sf_ptr, 0);
     update_floor_id(player_ptr, sf_ptr);
     update_new_floor_feature(player_ptr, sf_ptr, loaded);
     cut_off_the_upstair(player_ptr);

@@ -206,7 +206,7 @@ bool wr_dungeon(PlayerType *player_ptr)
         if (!is_saved_floor(sf_ptr)) {
             continue;
         }
-        if (!load_floor(player_ptr, sf_ptr, (SLF_SECOND | SLF_NO_KILL))) {
+        if (!load_floor(*player_ptr, sf_ptr, (SLF_SECOND | SLF_NO_KILL))) {
             wr_byte(1);
             continue;
         }
@@ -215,7 +215,7 @@ bool wr_dungeon(PlayerType *player_ptr)
         wr_saved_floor(player_ptr, sf_ptr);
     }
 
-    return load_floor(player_ptr, cur_sf_ptr, (SLF_SECOND));
+    return load_floor(*player_ptr, cur_sf_ptr, (SLF_SECOND));
 }
 
 /*!

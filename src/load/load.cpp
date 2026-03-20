@@ -68,7 +68,7 @@ static errr load_town_quest(PlayerType *player_ptr)
     }
 
     auto [max_quests_load, max_rquests_load] = load_quest_info();
-    analyze_quests(player_ptr, max_quests_load, max_rquests_load);
+    analyze_quests(*player_ptr, max_quests_load, max_rquests_load);
 
     load_wilderness_info(player_ptr);
     return analyze_wilderness();
@@ -124,7 +124,7 @@ static void load_player_world(PlayerType *player_ptr)
     AngbandSystem::get_instance().set_awaiting_report_score(rd_bool());
     rd_dummy2();
     rd_global_configurations(player_ptr);
-    rd_extra(player_ptr);
+    rd_extra(*player_ptr);
 
     if (player_ptr->energy_need < -999) {
         player_ptr->timewalk = true;
@@ -228,7 +228,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
         player_ptr->add_spells = 0;
     }
 
-    auto load_inventory_result = load_inventory(player_ptr);
+    auto load_inventory_result = load_inventory(*player_ptr);
     if (load_inventory_result != 0) {
         return load_inventory_result;
     }
@@ -237,7 +237,7 @@ static errr exe_reading_savefile(PlayerType *player_ptr)
     player_ptr->pet_follow_distance = rd_s16b();
     player_ptr->pet_extra_flags = rd_u16b();
 
-    auto restore_dungeon_result = restore_dungeon(player_ptr);
+    auto restore_dungeon_result = restore_dungeon(*player_ptr);
     if (restore_dungeon_result != 0) {
         return restore_dungeon_result;
     }

@@ -16,8 +16,9 @@
  * @brief その他の情報を読み込む / Read the "extra" information
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void rd_extra(PlayerType *player_ptr)
+void rd_extra(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     player_ptr->ride_monster(rd_s16b());
     player_ptr->floor_id = rd_s16b();
     rd_dummy_monsters();
