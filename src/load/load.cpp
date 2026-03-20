@@ -124,7 +124,7 @@ static void load_player_world(PlayerType *player_ptr)
     AngbandSystem::get_instance().set_awaiting_report_score(rd_bool());
     rd_dummy2();
     rd_global_configurations(player_ptr);
-    rd_extra(player_ptr);
+    rd_extra(*player_ptr);
 
     if (player_ptr->energy_need < -999) {
         player_ptr->timewalk = true;
