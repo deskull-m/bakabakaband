@@ -584,7 +584,7 @@ std::string describe_flavor(CreatureEntity &creature, const ItemEntity &item, BI
 {
     const auto opt = decide_describe_option(item, mode);
     std::stringstream ss;
-    ss << describe_named_item(static_cast<PlayerType *>(&creature), item, opt);
+    ss << describe_named_item(creature, item, opt);
 
     if (any_bits(mode, OD_NAME_ONLY) || !item.is_valid()) {
         return str_substr(ss.str(), 0, max_length);
