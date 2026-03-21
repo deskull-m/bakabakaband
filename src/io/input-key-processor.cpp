@@ -318,7 +318,7 @@ void process_command(CreatureEntity &creature)
         break;
     }
     case SPECIAL_KEY_BUILDING: {
-        do_cmd_building(player_ptr);
+        do_cmd_building(*player_ptr);
         break;
     }
     case SPECIAL_KEY_QUEST: {
