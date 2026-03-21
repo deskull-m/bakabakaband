@@ -251,7 +251,7 @@ static void generate_wilderness(PlayerType *player_ptr)
     parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
     init_flags = INIT_ONLY_BUILDINGS;
     parse_fixed_map(player_ptr, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
-    select_floor_music(player_ptr);
+    select_floor_music(*player_ptr);
 }
 
 static void change_floor_if_error(PlayerType *player_ptr)
@@ -481,7 +481,7 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
     init_riding_pet(player_ptr, new_game);
     (void)combine_and_reorder_home(*player_ptr, StoreSaleType::HOME);
     (void)combine_and_reorder_home(*player_ptr, StoreSaleType::MUSEUM);
-    select_floor_music(player_ptr);
+    select_floor_music(*player_ptr);
     process_game_turn(player_ptr);
     close_game(player_ptr);
     quit("");

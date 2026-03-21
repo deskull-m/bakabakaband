@@ -438,7 +438,7 @@ void change_floor(PlayerType *player_ptr)
     df.set_feeling(0);
     auto &fcms = FloorChangeModesStore::get_instace();
     fcms->clear();
-    select_floor_music(player_ptr);
+    select_floor_music(*player_ptr);
     fcms->clear();
 
     // 移動後のフロアで階段を消去する処理

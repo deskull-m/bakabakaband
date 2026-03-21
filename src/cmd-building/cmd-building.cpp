@@ -451,7 +451,7 @@ void do_cmd_building(PlayerType *player_ptr)
         }
     }
 
-    select_floor_music(player_ptr);
+    select_floor_music(*player_ptr);
 
     msg_flag = false;
     msg_erase();

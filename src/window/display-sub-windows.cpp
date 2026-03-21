@@ -281,7 +281,7 @@ void fix_monster_list(CreatureEntity &creature)
 
     if (use_music && has_monster_music) {
         std::call_once(once, target_sensing_monsters_prepare, std::ref(*player_ptr), std::ref(monster_list));
-        select_monster_music(player_ptr, monster_list);
+        select_monster_music(*player_ptr, monster_list);
     }
 }
 
