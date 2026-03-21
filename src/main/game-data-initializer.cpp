@@ -50,10 +50,10 @@ static void init_gf_colors()
  * Initialize some other arrays
  * @return エラーコード
  */
-void init_other(PlayerType *player_ptr)
+void init_other(CreatureEntity &creature)
 {
     auto &floor_data = FloorList::get_instance();
-    player_ptr->current_floor_ptr = &floor_data.get_floor(0); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
+    creature.current_floor_ptr = &floor_data.get_floor(0); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
 
     init_gf_colors();
 
