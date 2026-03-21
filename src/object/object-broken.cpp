@@ -205,7 +205,6 @@ bool ObjectBreaker::can_destroy(ItemEntity *o_ptr) const
  */
 bool potion_smash_effect(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION y, POSITION x, short bi_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto radius = 2;
     auto dt = AttributeType::NONE;
     auto dam = 0;
@@ -338,7 +337,7 @@ bool potion_smash_effect(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION
         break;
     }
 
-    (void)project(*player_ptr, src_idx, radius, y, x, dam, dt, (PROJECT_JUMP | PROJECT_ITEM | PROJECT_KILL));
+    (void)project(creature, src_idx, radius, y, x, dam, dt, (PROJECT_JUMP | PROJECT_ITEM | PROJECT_KILL));
     return angry;
 }
 
@@ -352,7 +351,6 @@ bool potion_smash_effect(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION
  */
 PERCENTAGE breakage_chance(CreatureEntity &creature, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     /* Examine the snipe type */
     if (snipe_type) {
         if (snipe_type == SP_KILL_WALL) {
@@ -379,7 +377,7 @@ PERCENTAGE breakage_chance(CreatureEntity &creature, ItemEntity *o_ptr, bool has
     }
 
     /* Examine the item type */
-    PERCENTAGE archer_bonus = (has_archer_bonus ? (PERCENTAGE)(player_ptr->level - 1) / 7 + 4 : 0);
+    PERCENTAGE archer_bonus = (has_archer_bonus ? (PERCENTAGE)(creature.level - 1) / 7 + 4 : 0);
     switch (o_ptr->bi_key.tval()) {
         /* Always break */
     case ItemKindType::FLASK:

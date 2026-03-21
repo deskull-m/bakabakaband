@@ -24,7 +24,7 @@
  * @param o_ptr 判定したいオブジェクトの構造体参照ポインタ
  * @return 食べることが可能ならばTRUEを返す
  */
-bool item_tester_hook_eatable([[maybe_unused]] PlayerType *player_ptr, [[maybe_unused]] const ItemEntity *o_ptr)
+bool item_tester_hook_eatable([[maybe_unused]] CreatureEntity &creature, [[maybe_unused]] const ItemEntity *o_ptr)
 {
     return true;
 }
@@ -35,14 +35,14 @@ bool item_tester_hook_eatable([[maybe_unused]] PlayerType *player_ptr, [[maybe_u
  * @param o_ptr 判定したいオブジェクトの構造体参照ポインタ
  * @return 飲むことが可能ならばTRUEを返す
  */
-bool item_tester_hook_quaff(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool item_tester_hook_quaff(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     const auto &bi_key = o_ptr->bi_key;
     if (bi_key.tval() == ItemKindType::POTION) {
         return true;
     }
 
-    return (CreatureRace(player_ptr).food() == PlayerRaceFoodType::OIL) && (bi_key == BaseitemKey(ItemKindType::FLASK, SV_FLASK_OIL));
+    return (CreatureRace(&creature).food() == PlayerRaceFoodType::OIL) && (bi_key == BaseitemKey(ItemKindType::FLASK, SV_FLASK_OIL));
 }
 
 /*!

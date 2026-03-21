@@ -716,7 +716,7 @@ void do_cmd_eat_food(CreatureEntity &creature)
     constexpr auto q = _("どれを食べますか? ", "Eat which item? ");
     constexpr auto s = _("食べ物がない。", "You have nothing to eat.");
     short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_eatable, player_ptr))) {
+    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_eatable, creature))) {
         return;
     }
 

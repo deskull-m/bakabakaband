@@ -556,8 +556,7 @@ static void confirm_use_force(CreatureEntity &creature, bool browse_only)
 
 static FuncItemTester get_castable_spellbook_tester(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    return FuncItemTester([](auto p_ptr, auto o_ptr) { return check_book_realm(*p_ptr, o_ptr->bi_key); }, player_ptr);
+    return FuncItemTester([](CreatureEntity &c, const ItemEntity *o_ptr) { return check_book_realm(c, o_ptr->bi_key); }, creature);
 }
 
 static FuncItemTester get_learnable_spellbook_tester(CreatureEntity &creature)
@@ -566,7 +565,7 @@ static FuncItemTester get_learnable_spellbook_tester(CreatureEntity &creature)
     if (!PlayerRealm(*player_ptr).realm2().is_available()) {
         return get_castable_spellbook_tester(creature);
     } else {
-        return FuncItemTester(item_tester_learn_spell, player_ptr);
+        return FuncItemTester(item_tester_learn_spell, creature);
     }
 }
 

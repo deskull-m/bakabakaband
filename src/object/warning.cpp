@@ -31,23 +31,23 @@
  */
 ItemEntity *choose_warning_item(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+
     /* Paranoia -- Player has no warning ability */
-    if (!player_ptr->warning) {
+    if (!creature.warning) {
         return nullptr;
     }
 
     /* Search Inventory */
     std::vector<int> candidates;
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto *o_ptr = player_ptr->inventory[i].get();
+        const auto *o_ptr = creature.inventory[i].get();
         if (o_ptr->get_flags().has(TR_WARNING)) {
             candidates.push_back(i);
         }
     }
 
     /* Choice one of them */
-    return candidates.empty() ? nullptr : player_ptr->inventory[rand_choice(candidates)].get();
+    return candidates.empty() ? nullptr : creature.inventory[rand_choice(candidates)].get();
 }
 
 /*!
@@ -58,7 +58,7 @@ ItemEntity *choose_warning_item(CreatureEntity &creature)
  * @param dam 基本ダメージ
  * @param max 算出した最大ダメージを返すポインタ
  */
-static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, AttributeType typ, int dam, int *max)
+static void spell_damcalc(CreatureEntity &creature, const MonsterEntity &monster, AttributeType typ, int dam, int *max)
 {
     const auto &monrace = monster.get_monrace();
     int rlev = monrace.level;
@@ -67,36 +67,36 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
     /* Vulnerability, resistance and immunity */
     switch (typ) {
     case AttributeType::ELEC:
-        if (has_immune_elec(*player_ptr)) {
+        if (has_immune_elec(creature)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_elec_damage_rate(*player_ptr) / 100;
+        dam = dam * calc_elec_damage_rate(creature) / 100;
         break;
 
     case AttributeType::POIS:
-        dam = dam * calc_pois_damage_rate(*player_ptr) / 100;
+        dam = dam * calc_pois_damage_rate(creature) / 100;
         break;
 
     case AttributeType::ACID:
-        if (has_immune_acid(*player_ptr)) {
+        if (has_immune_acid(creature)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_acid_damage_rate(*player_ptr) / 100;
+        dam = dam * calc_acid_damage_rate(creature) / 100;
         break;
 
     case AttributeType::COLD:
     case AttributeType::ICE:
-        if (has_immune_cold(*player_ptr)) {
+        if (has_immune_cold(creature)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_cold_damage_rate(*player_ptr) / 100;
+        dam = dam * calc_cold_damage_rate(creature) / 100;
         break;
 
     case AttributeType::FIRE:
-        if (has_immune_fire(*player_ptr)) {
+        if (has_immune_fire(creature)) {
             ignore_wraith_form = true;
         }
-        dam = dam * calc_fire_damage_rate(*player_ptr) / 100;
+        dam = dam * calc_fire_damage_rate(creature) / 100;
         break;
 
     case AttributeType::PSY_SPEAR:
@@ -104,97 +104,97 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         break;
 
     case AttributeType::MONSTER_SHOOT:
-        if (!player_ptr->effects()->blindness().is_blind() && (has_invuln_arrow(*player_ptr))) {
+        if (!creature.effects()->blindness().is_blind() && (has_invuln_arrow(creature))) {
             dam = 0;
             ignore_wraith_form = true;
         }
         break;
 
     case AttributeType::LITE:
-        dam = dam * calc_lite_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_lite_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::DARK:
-        dam = dam * calc_dark_damage_rate(*player_ptr, CALC_MAX) / 100;
-        if (has_immune_dark(*player_ptr) || player_ptr->wraith_form) {
+        dam = dam * calc_dark_damage_rate(creature, CALC_MAX) / 100;
+        if (has_immune_dark(creature) || creature.wraith_form) {
             ignore_wraith_form = true;
         }
         break;
 
     case AttributeType::SHARDS:
-        dam = dam * calc_shards_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_shards_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::SOUND:
-        dam = dam * calc_sound_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_sound_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::CONFUSION:
-        dam = dam * calc_conf_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_conf_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::CHAOS:
-        dam = dam * calc_chaos_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_chaos_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::NETHER:
-        dam = dam * calc_nether_damage_rate(*player_ptr, CALC_MAX) / 100;
-        if (CreatureRace(player_ptr).equals(PlayerRaceType::SPECTRE)) {
+        dam = dam * calc_nether_damage_rate(creature, CALC_MAX) / 100;
+        if (CreatureRace(&creature).equals(PlayerRaceType::SPECTRE)) {
             ignore_wraith_form = true;
             dam = 0;
         }
         break;
 
     case AttributeType::DISENCHANT:
-        dam = dam * calc_disenchant_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_disenchant_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::NEXUS:
-        dam = dam * calc_nexus_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_nexus_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::TIME:
-        dam = dam * calc_time_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_time_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::GRAVITY:
-        dam = dam * calc_gravity_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_gravity_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::ROCKET:
-        dam = dam * calc_rocket_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_rocket_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::NUKE:
-        dam = dam * calc_nuke_damage_rate(*player_ptr) / 100;
+        dam = dam * calc_nuke_damage_rate(creature) / 100;
         break;
 
     case AttributeType::DEATH_RAY:
-        dam = dam * calc_deathray_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_deathray_damage_rate(creature, CALC_MAX) / 100;
         if (dam == 0) {
             ignore_wraith_form = true;
         }
         break;
 
     case AttributeType::HOLY_FIRE:
-        dam = dam * calc_holy_fire_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_holy_fire_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::HELL_FIRE:
-        dam = dam * calc_hell_fire_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_hell_fire_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::ABYSS:
-        dam = dam * calc_abyss_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_abyss_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::VOID_MAGIC:
-        dam = dam * calc_void_damage_rate(*player_ptr, CALC_MAX) / 100;
+        dam = dam * calc_void_damage_rate(creature, CALC_MAX) / 100;
         break;
 
     case AttributeType::MIND_BLAST:
     case AttributeType::BRAIN_SMASH:
-        if (100 + rlev / 2 <= std::max<short>(5, player_ptr->skill_sav)) {
+        if (100 + rlev / 2 <= std::max<short>(5, creature.skill_sav)) {
             dam = 0;
             ignore_wraith_form = true;
         }
@@ -205,7 +205,7 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
     case AttributeType::CAUSE_2:
     case AttributeType::CAUSE_3:
     case AttributeType::HAND_DOOM:
-        if (100 + rlev / 2 <= player_ptr->skill_sav) {
+        if (100 + rlev / 2 <= creature.skill_sav) {
             dam = 0;
             ignore_wraith_form = true;
         }
@@ -213,7 +213,7 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         break;
 
     case AttributeType::CAUSE_4:
-        if ((100 + rlev / 2 <= player_ptr->skill_sav) && (monster.r_idx != MonraceId::KENSHIROU)) {
+        if ((100 + rlev / 2 <= creature.skill_sav) && (monster.r_idx != MonraceId::KENSHIROU)) {
             dam = 0;
             ignore_wraith_form = true;
         }
@@ -223,7 +223,7 @@ static void spell_damcalc(PlayerType *player_ptr, const MonsterEntity &monster, 
         break;
     }
 
-    if (player_ptr->wraith_form && !ignore_wraith_form) {
+    if (creature.wraith_form && !ignore_wraith_form) {
         dam /= 2;
         if (!dam) {
             dam = 1;
@@ -247,7 +247,7 @@ static void spell_damcalc_by_spellnum(PlayerType *player_ptr, MonsterAbilityType
 {
     const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
     int dam = monspell_damage(*player_ptr, ms_type, m_idx, DAM_MAX);
-    spell_damcalc(player_ptr, monster, typ, dam, max);
+    spell_damcalc(*player_ptr, monster, typ, dam, max);
 }
 
 /*!
@@ -257,19 +257,19 @@ static void spell_damcalc_by_spellnum(PlayerType *player_ptr, MonsterAbilityType
  * @param blow モンスターの打撃能力の構造体参照
  * @return 算出された最大ダメージを返す。
  */
-static int blow_damcalc(const MonsterEntity &monster, PlayerType *player_ptr, const MonsterBlow &blow)
+static int blow_damcalc(const MonsterEntity &monster, CreatureEntity &creature, const MonsterBlow &blow)
 {
     int dam = blow.damage_dice.maxroll();
     int dummy_max = 0;
 
     if (blow.method == RaceBlowMethodType::EXPLODE) {
         dam = (dam + 1) / 2;
-        spell_damcalc(player_ptr, monster, mbe_info[enum2i(blow.effect)].explode_type, dam, &dummy_max);
+        spell_damcalc(creature, monster, mbe_info[enum2i(blow.effect)].explode_type, dam, &dummy_max);
         dam = dummy_max;
         return dam;
     }
 
-    ARMOUR_CLASS ac = player_ptr->ac + player_ptr->to_a;
+    ARMOUR_CLASS ac = creature.ac + creature.to_a;
     bool check_wraith_form = true;
     switch (blow.effect) {
     case RaceBlowEffectType::SUPERHURT: {
@@ -285,25 +285,25 @@ static int blow_damcalc(const MonsterEntity &monster, PlayerType *player_ptr, co
         break;
 
     case RaceBlowEffectType::ACID:
-        spell_damcalc(player_ptr, monster, AttributeType::ACID, dam, &dummy_max);
+        spell_damcalc(creature, monster, AttributeType::ACID, dam, &dummy_max);
         dam = dummy_max;
         check_wraith_form = false;
         break;
 
     case RaceBlowEffectType::ELEC:
-        spell_damcalc(player_ptr, monster, AttributeType::ELEC, dam, &dummy_max);
+        spell_damcalc(creature, monster, AttributeType::ELEC, dam, &dummy_max);
         dam = dummy_max;
         check_wraith_form = false;
         break;
 
     case RaceBlowEffectType::FIRE:
-        spell_damcalc(player_ptr, monster, AttributeType::FIRE, dam, &dummy_max);
+        spell_damcalc(creature, monster, AttributeType::FIRE, dam, &dummy_max);
         dam = dummy_max;
         check_wraith_form = false;
         break;
 
     case RaceBlowEffectType::COLD:
-        spell_damcalc(player_ptr, monster, AttributeType::COLD, dam, &dummy_max);
+        spell_damcalc(creature, monster, AttributeType::COLD, dam, &dummy_max);
         dam = dummy_max;
         check_wraith_form = false;
         break;
@@ -317,7 +317,7 @@ static int blow_damcalc(const MonsterEntity &monster, PlayerType *player_ptr, co
         break;
     }
 
-    if (check_wraith_form && player_ptr->wraith_form) {
+    if (check_wraith_form && creature.wraith_form) {
         dam /= 2;
         if (!dam) {
             dam = 1;
@@ -336,13 +336,14 @@ static int blow_damcalc(const MonsterEntity &monster, PlayerType *player_ptr, co
  */
 bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
+    auto player_ptr = static_cast<PlayerType *>(&creature);
+
     const Pos2D pos(yy, xx);
     constexpr auto warning_aware_range = 12;
     int dam_max = 0;
     static int old_damage = 0;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &dungeon = floor.get_dungeon_definition();
     for (auto mx = xx - warning_aware_range; mx < xx + warning_aware_range + 1; mx++) {
         for (auto my = yy - warning_aware_range; my < yy + warning_aware_range + 1; my++) {
@@ -498,7 +499,7 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
                 }
 
                 /* Extract the attack info */
-                dam_melee += blow_damcalc(monster, player_ptr, blow);
+                dam_melee += blow_damcalc(monster, creature, blow);
                 if (blow.method == RaceBlowMethodType::EXPLODE) {
                     break;
                 }
@@ -519,14 +520,14 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
             auto *o_ptr = choose_warning_item(*player_ptr);
             std::string item_name;
             if (o_ptr != nullptr) {
-                item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+                item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             } else {
                 item_name = _("体", "body");
             }
 
             msg_format(_("%sが鋭く震えた！", "Your %s pulsates sharply!"), item_name.data());
 
-            disturb(*player_ptr, false, true);
+            disturb(creature, false, true);
             return input_check(_("本当にこのまま進むか？", "Really want to go ahead? "));
         }
     } else {
@@ -542,12 +543,12 @@ bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
     auto *o_ptr = choose_warning_item(*player_ptr);
     std::string item_name;
     if (o_ptr != nullptr) {
-        item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+        item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     } else {
         item_name = _("体", "body");
     }
 
     msg_format(_("%sが鋭く震えた！", "Your %s pulsates sharply!"), item_name.data());
-    disturb(*player_ptr, false, true);
+    disturb(creature, false, true);
     return input_check(_("本当にこのまま進むか？", "Really want to go ahead? "));
 }
