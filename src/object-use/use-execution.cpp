@@ -153,7 +153,7 @@ void ObjectUseEntity::execute()
 
 bool ObjectUseEntity::check_can_use()
 {
-    if (cmd_limit_time_walk(this->player_ptr)) {
+    if (cmd_limit_time_walk(*this->player_ptr)) {
         return false;
     }
 

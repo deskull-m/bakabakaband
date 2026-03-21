@@ -208,7 +208,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return import_magic_device(player_ptr);
         }
 
-        return (command != -4) || (!cmd_limit_cast(player_ptr) && do_cmd_magic_eater(*player_ptr, false, true));
+        return (command != -4) || (!cmd_limit_cast(creature) && do_cmd_magic_eater(*player_ptr, false, true));
     case PlayerClassType::BARD:
         if ((get_singing_song_effect(*player_ptr) == 0) && (get_interrupting_song_effect(*player_ptr) == 0)) {
             return false;
@@ -218,7 +218,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         PlayerEnergy(player_ptr).set_player_turn_energy(10);
         return true;
     case PlayerClassType::RED_MAGE:
-        if (cmd_limit_cast(player_ptr)) {
+        if (cmd_limit_cast(creature)) {
             return false;
         }
 
@@ -227,7 +227,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return false;
         }
 
-        if (!player_ptr->effects()->paralysis().is_paralyzed() && !cmd_limit_cast(player_ptr)) {
+        if (!player_ptr->effects()->paralysis().is_paralyzed() && !cmd_limit_cast(creature)) {
             handle_stuff(*player_ptr);
             command_dir = Direction::none();
             (void)do_cmd_cast(*player_ptr);

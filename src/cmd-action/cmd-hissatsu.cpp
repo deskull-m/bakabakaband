@@ -371,7 +371,7 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
-    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_blind(creature) || cmd_limit_confused(*player_ptr)) {
         return;
     }
 

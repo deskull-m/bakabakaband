@@ -91,7 +91,7 @@ static bool select_ammo_creation_type(ammo_creation_type &type, PLAYER_LEVEL ple
  */
 bool create_ammo(PlayerType *player_ptr)
 {
-    if (cmd_limit_confused(*player_ptr) || cmd_limit_blind(player_ptr)) {
+    if (cmd_limit_confused(*player_ptr) || cmd_limit_blind(*player_ptr)) {
         return false;
     }
 

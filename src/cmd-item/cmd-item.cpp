@@ -289,7 +289,7 @@ void do_cmd_use(CreatureEntity &creature)
         ObjectQuaffEntity(player_ptr).execute(i_idx);
         break;
     case ItemKindType::SCROLL:
-        if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
+        if (cmd_limit_blind(creature) || cmd_limit_confused(*player_ptr)) {
             return;
         }
 

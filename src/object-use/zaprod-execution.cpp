@@ -156,7 +156,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
 
 bool ObjectZapRodEntity::check_can_zap()
 {
-    if (cmd_limit_time_walk(this->player_ptr)) {
+    if (cmd_limit_time_walk(*this->player_ptr)) {
         return false;
     }
 
