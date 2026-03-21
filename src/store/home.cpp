@@ -70,9 +70,8 @@ int home_carry(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_
 
     const auto first = st_ptr->stock.begin();
     const auto last = st_ptr->stock.begin() + st_ptr->stock_num;
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto slot_it = std::find_if(first, last,
-        [&](const auto &item) { return object_sort_comp(player_ptr, *o_ptr, *item); });
+        [&](const auto &item) { return object_sort_comp(creature, *o_ptr, *item); });
     const int slot = std::distance(first, slot_it);
 
     std::rotate(first + slot, last, last + 1);
@@ -134,9 +133,8 @@ static void sweep_reorder_store_item(ItemEntity &item, const int i, bool *combin
 
 static bool exe_reorder_store_item(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto comp = [player_ptr](const auto &item1, const auto &item2) {
-        return object_sort_comp(player_ptr, *item1, *item2);
+    const auto comp = [&creature](const auto &item1, const auto &item2) {
+        return object_sort_comp(creature, *item1, *item2);
     };
 
     const auto first = st_ptr->stock.begin();

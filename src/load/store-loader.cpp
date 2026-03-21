@@ -30,7 +30,6 @@
  */
 static void home_carry_load(CreatureEntity &creature, Store *store_ptr, ItemEntity *o_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (auto i = 0; i < store_ptr->stock_num; i++) {
         auto &item = *store_ptr->stock[i];
         if (!item.is_similar(*o_ptr)) {
@@ -48,14 +47,14 @@ static void home_carry_load(CreatureEntity &creature, Store *store_ptr, ItemEnti
     const auto first = store_ptr->stock.begin();
     const auto last = store_ptr->stock.begin() + store_ptr->stock_num;
     const auto slot_it = std::find_if(first, last,
-        [&](const auto &item) { return object_sort_comp(player_ptr, *o_ptr, *item); });
+        [&](const auto &item) { return object_sort_comp(creature, *o_ptr, *item); });
     const int slot = std::distance(first, slot_it);
 
     std::rotate(first + slot, last, last + 1);
 
     store_ptr->stock_num++;
     *store_ptr->stock[slot] = o_ptr->clone();
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
+    chg_virtue(creature, Virtue::SACRIFICE, -1);
 }
 
 /*!
