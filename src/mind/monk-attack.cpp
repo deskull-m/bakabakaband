@@ -265,7 +265,7 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     int stun_effect = 0;
     int special_effect = process_monk_additional_effect(pa_ptr, &stun_effect);
     WEIGHT weight = calc_monk_attack_weight(creature);
-    pa_ptr->attack_damage = critical_norm(&player, creature.level * weight, min_level, pa_ptr->attack_damage, player.to_h[0], HISSATSU_NONE);
+    pa_ptr->attack_damage = critical_norm(creature, creature.level * weight, min_level, pa_ptr->attack_damage, creature.to_h[0], HISSATSU_NONE);
     process_attack_vital_spot(&player, pa_ptr, &stun_effect, &resist_stun, special_effect);
     print_stun_effect(&player, pa_ptr, stun_effect, resist_stun);
 }

@@ -343,7 +343,7 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
 
     auto do_impact = does_weapon_has_flag(player.impact, pa_ptr);
     if ((o_ptr->bi_key != BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) && !(pa_ptr->mode == HISSATSU_KYUSHO)) {
-        pa_ptr->attack_damage = critical_norm(&player, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, player.to_h[pa_ptr->hand], pa_ptr->mode, do_impact);
+        pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.to_h[pa_ptr->hand], pa_ptr->mode, do_impact);
     }
 
     pa_ptr->drain_result = pa_ptr->attack_damage;
@@ -508,7 +508,7 @@ static void apply_actual_attack(
     const auto is_death_scythe = o_ptr->bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE);
     const auto is_berserker = CreatureClass(creature).equals(PlayerClassType::BERSERKER);
     pa_ptr->attack_damage = mon_damage_mod(player, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
-    critical_attack(&player, pa_ptr);
+    critical_attack(creature, pa_ptr);
     msg_format_wizard(player, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"),
         pa_ptr->attack_damage, pa_ptr->m_ptr->hp - pa_ptr->attack_damage, pa_ptr->m_ptr->maxhp, pa_ptr->m_ptr->max_maxhp);
 }
