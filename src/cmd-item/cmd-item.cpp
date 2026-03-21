@@ -298,7 +298,7 @@ void do_cmd_use(CreatureEntity &creature)
     case ItemKindType::SHOT:
     case ItemKindType::ARROW:
     case ItemKindType::BOLT:
-        exe_fire(player_ptr, i_idx, player_ptr->inventory[INVEN_BOW].get(), SP_NONE);
+        exe_fire(*player_ptr, i_idx, player_ptr->inventory[INVEN_BOW].get(), SP_NONE);
         break;
     default:
         exe_activate(creature, i_idx);

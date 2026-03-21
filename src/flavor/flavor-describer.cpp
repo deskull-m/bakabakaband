@@ -242,7 +242,7 @@ static std::string describe_fire_energy(CreatureEntity &creature, const ItemEnti
 
     const auto ammo_bonus = opt.known ? ammo.to_h : 0;
     const auto bow_bonus = bow.is_known() ? bow.to_h : 0;
-    const auto percent = calc_crit_ratio_shot(static_cast<PlayerType *>(&creature), ammo_bonus, bow_bonus);
+    const auto percent = calc_crit_ratio_shot(creature, ammo_bonus, bow_bonus);
 
     ss << format("/%d.%02d%s", percent / 100, percent % 100, show_ammo_detail ? "% crit" : "%");
 
@@ -273,7 +273,7 @@ static std::string describe_ammo_detail(CreatureEntity &creature, const ItemEnti
     if (avgdam < 0) {
         avgdam = 0;
     }
-    const auto crit_avgdam = calc_expect_crit_shot(static_cast<PlayerType *>(&creature), ammo.weight, ammo.to_h, bow.to_h, avgdam);
+    const auto crit_avgdam = calc_expect_crit_shot(creature, ammo.weight, ammo.to_h, bow.to_h, avgdam);
 
     std::stringstream ss;
     ss << " (";

@@ -112,7 +112,7 @@ static bool calc_weapon_damage_limit(CreatureEntity &creature, int hand, int *da
     WEIGHT weight = creature.level * calc_monk_attack_weight(creature);
     int to_h = creature.level * 7 / 10; // 命中計算が煩雑なのでおよその値を使用する
 
-    *basedam = calc_expect_crit(&static_cast<PlayerType &>(creature), weight, to_h, *basedam, creature.to_h[0], false, impact, 100);
+    *basedam = calc_expect_crit(creature, weight, to_h, *basedam, creature.to_h[0], false, impact, 100);
 
     damage[hand] += *basedam;
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
@@ -255,8 +255,8 @@ static void calc_two_hands(CreatureEntity &creature, int *damage, int *to_h)
         const auto mindice = (o_ptr->damage_dice.num + player_ptr.damage_dice_bonus[i].num);
         const auto maxdice = mindice * (o_ptr->damage_dice.sides + player_ptr.damage_dice_bonus[i].sides);
 
-        basedam = calc_expect_dice(&player_ptr, mindice, creature.to_h[i], o_ptr);
-        basedam += calc_expect_dice(&player_ptr, maxdice, creature.to_h[i], o_ptr);
+        basedam = calc_expect_dice(player_ptr, mindice, creature.to_h[i], o_ptr);
+        basedam += calc_expect_dice(player_ptr, maxdice, creature.to_h[i], o_ptr);
         damage[i] += basedam * 50; // x100 for display
 
         if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
