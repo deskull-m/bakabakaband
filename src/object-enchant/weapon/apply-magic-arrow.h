@@ -3,11 +3,11 @@
 #include "object-enchant/weapon/abstract-weapon-enchanter.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class ArrowEnchanter : public AbstractWeaponEnchanter {
 public:
-    ArrowEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power);
+    ArrowEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
     void apply_magic() override;
 
 protected:
@@ -17,5 +17,5 @@ protected:
     void give_cursed() override{};
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 };
