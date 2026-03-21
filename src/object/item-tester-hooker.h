@@ -5,8 +5,8 @@
 #include <memory>
 
 enum class StoreSaleType;
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 
 /*!
  * @brief アイテムの絞り込み条件をテストする基底クラス
@@ -78,12 +78,12 @@ public:
     using TestMemberFunctionPtr = bool (ItemEntity::*)() const;
     explicit FuncItemTester(TestMemberFunctionPtr test_func);
     explicit FuncItemTester(std::function<bool(const ItemEntity *)> test_func);
-    explicit FuncItemTester(std::function<bool(PlayerType *, const ItemEntity *)> test_func, PlayerType *player_ptr);
-    explicit FuncItemTester(std::function<bool(PlayerType *, const ItemEntity *, StoreSaleType)> test_func, PlayerType *player_ptr, StoreSaleType store_num);
+    explicit FuncItemTester(std::function<bool(CreatureEntity *, const ItemEntity *, StoreSaleType)> test_func, CreatureEntity &creature, StoreSaleType store_num);
+    explicit FuncItemTester(std::function<bool(CreatureEntity &, const ItemEntity *)> test_func, CreatureEntity &creature);
 
 private:
     virtual bool okay_impl(const ItemEntity *o_ptr) const;
 
-    std::function<bool(PlayerType *, const ItemEntity *)> test_func;
-    PlayerType *player_ptr = nullptr;
+    std::function<bool(CreatureEntity *, const ItemEntity *)> test_func;
+    CreatureEntity *creature_ptr = nullptr;
 };

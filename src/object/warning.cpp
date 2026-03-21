@@ -18,7 +18,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
-#include "system/creature-entity.h"
 #include "target/projection-path-calculator.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -32,7 +31,7 @@
  */
 ItemEntity *choose_warning_item(CreatureEntity &creature)
 {
-    
+
     /* Paranoia -- Player has no warning ability */
     if (!creature.warning) {
         return nullptr;
@@ -60,7 +59,8 @@ ItemEntity *choose_warning_item(CreatureEntity &creature)
  * @param max 算出した最大ダメージを返すポインタ
  */
 static void spell_damcalc(CreatureEntity &creature, const MonsterEntity &monster, AttributeType typ, int dam, int *max)
-{        const auto &monrace = monster.get_monrace();
+{
+    const auto &monrace = monster.get_monrace();
     int rlev = monrace.level;
     bool ignore_wraith_form = false;
 
@@ -337,7 +337,7 @@ static int blow_damcalc(const MonsterEntity &monster, CreatureEntity &creature, 
 bool process_warning(CreatureEntity &creature, POSITION xx, POSITION yy)
 {
     auto player_ptr = static_cast<PlayerType *>(&creature);
-    
+
     const Pos2D pos(yy, xx);
     constexpr auto warning_aware_range = 12;
     int dam_max = 0;

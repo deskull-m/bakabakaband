@@ -15,6 +15,7 @@
 #include "main/sound-of-music.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/special-object-flags.h"
+#include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "object/object-stack.h"
@@ -26,6 +27,7 @@
 #include "store/service-checker.h"
 #include "store/store-owners.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/player-type-definition.h"
@@ -88,7 +90,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s_none, options, FuncItemTester(store_will_buy, player_ptr, store_num));
+    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(static_cast<PlayerType *>(c), o, st); }, *player_ptr, store_num));
     if (o_ptr == nullptr) {
         return;
     }

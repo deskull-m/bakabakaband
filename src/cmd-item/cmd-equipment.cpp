@@ -141,7 +141,7 @@ void do_cmd_wield(CreatureEntity &creature)
     constexpr auto selection_q = _("どれを装備しますか? ", "Wear/Wield which item? ");
     constexpr auto selection_s = _("装備可能なアイテムがない。", "You have nothing you can wear or wield.");
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, selection_q, selection_s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_wear, player_ptr));
+    auto *o_ptr = choose_object(player_ptr, &i_idx, selection_q, selection_s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_wear, creature));
     if (!o_ptr) {
         return;
     }

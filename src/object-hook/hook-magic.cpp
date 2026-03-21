@@ -37,8 +37,9 @@ bool object_is_activatable(const ItemEntity *o_ptr)
  * @param o_ptr 判定したいオブジェクトの構造体参照ポインタ
  * @return 利用可能ならばTRUEを返す
  */
-bool item_tester_hook_use(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto tval = o_ptr->bi_key.tval();
     if (tval == player_ptr->tval_ammo) {
         return true;
@@ -73,8 +74,9 @@ bool item_tester_hook_use(PlayerType *player_ptr, const ItemEntity *o_ptr)
  * @param o_ptr 判定したいオブ会ジェクトの構造体参照ポインタ
  * @return 学習できる魔道書ならばTRUEを返す
  */
-bool item_tester_learn_spell(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool item_tester_learn_spell(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!o_ptr->is_spell_book()) {
         return false;
     }

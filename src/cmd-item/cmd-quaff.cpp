@@ -48,14 +48,14 @@ void do_cmd_quaff_potion(CreatureEntity &creature)
     constexpr auto s = _("飲める薬がない。", "You have no potions to quaff.");
 
     short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, player_ptr))) {
+    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
         return;
     }
 
     ObjectQuaffEntity(player_ptr).execute(i_idx);
 }
 
-/*!
+/*
  * @brief 薬を直腸吸収するコマンドのメインルーチン /
  * Absorb some potion through rectal route (from the pack or floor)
  */
@@ -72,7 +72,7 @@ void do_cmd_rectal_absorption(CreatureEntity &creature)
     constexpr auto s = _("直腸吸収できる薬がない。", "You have no potions for rectal absorption.");
 
     short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, player_ptr))) {
+    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
         return;
     }
 
