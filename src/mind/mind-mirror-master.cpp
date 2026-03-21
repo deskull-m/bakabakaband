@@ -468,7 +468,7 @@ bool cast_mirror_spell(CreatureEntity &creature, MindMirrorMasterType spell)
         }
 
         if (plev > 39) {
-            set_resist_magic(&player, t, false);
+            set_resist_magic(player, t, false);
         }
 
         break;

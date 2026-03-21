@@ -259,7 +259,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         PlayerEnergy(player_ptr).reset_player_turn();
         return true;
     case PlayerClassType::CAVALRY:
-        return rodeo(player_ptr);
+        return rodeo(creature);
     case PlayerClassType::BERSERKER:
         return recall_player(creature, randint0(21) + 15);
     case PlayerClassType::SMITH:
@@ -333,7 +333,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
         (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::HOBBIT:
-        return create_ration(player_ptr);
+        return create_ration(creature);
     case PlayerRaceType::GNOME:
         msg_print(_("パッ！", "Blink!"));
         teleport_player(creature, 10, TELEPORT_SPONTANEOUS);

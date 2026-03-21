@@ -9,12 +9,14 @@
 
 /*!
  * @brief 連奇術師の耐魔法防御 / 鏡使いの水鏡の盾 の継続時間をセットする / Set "resist_magic", notice observable changes
+ * @param creature クリーチャーへの参照
  * @param v 継続時間
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_resist_magic(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_resist_magic(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
@@ -47,10 +49,10 @@ bool set_resist_magic(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(*player_ptr);
+    handle_stuff(creature);
     return true;
 }

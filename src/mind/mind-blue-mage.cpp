@@ -26,10 +26,12 @@
 /*!
  * @brief 青魔法コマンドのメインルーチン /
  * do_cmd_cast calls this function if the player's class is 'Blue-Mage'.
+ * @param creature クリーチャーへの参照
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
-bool do_cmd_cast_learned(PlayerType *player_ptr)
+bool do_cmd_cast_learned(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (cmd_limit_confused(*player_ptr)) {
         return false;
     }
@@ -79,7 +81,7 @@ bool do_cmd_cast_learned(PlayerType *player_ptr)
         player_ptr->csp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
         (void)BadStatusSetter(*player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, -10);
+        chg_virtue(creature, Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);
             msg_print(_("体を悪くしてしまった！", "You have damaged your health!"));

@@ -483,7 +483,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
             do_cmd_hissatsu(*player_ptr);
         } else if (pc.equals(PlayerClassType::BLUE_MAGE)) {
-            do_cmd_cast_learned(player_ptr);
+            do_cmd_cast_learned(creature);
         } else if (pc.equals(PlayerClassType::SMITH)) {
             do_cmd_kaji(*player_ptr, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
