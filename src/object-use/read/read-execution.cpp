@@ -98,7 +98,7 @@ bool ObjectReadEntity::can_read() const
         return false;
     }
 
-    return ItemUseChecker(this->player_ptr).check_stun(_("朦朧としていて読めなかった！", "You too stunned to read it!"));
+    return ItemUseChecker(*this->player_ptr).check_stun(_("朦朧としていて読めなかった！", "You too stunned to read it!"));
 }
 
 void ObjectReadEntity::change_virtue_as_read(ItemEntity &o_ref)

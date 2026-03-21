@@ -2,14 +2,14 @@
 
 #include <string>
 
-class PlayerType;
+class CreatureEntity;
 class ItemUseChecker {
 public:
-    ItemUseChecker(PlayerType *player_ptr);
+    ItemUseChecker(CreatureEntity &creature);
     virtual ~ItemUseChecker() = default;
 
     bool check_stun(std::string_view mes) const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 };

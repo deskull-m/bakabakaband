@@ -2,16 +2,16 @@
 
 #include "system/angband.h"
 
-class PlayerType;
+class CreatureEntity;
 class ObjectZapWandEntity {
 public:
-    ObjectZapWandEntity(PlayerType *player_ptr);
+    ObjectZapWandEntity(CreatureEntity &creature);
     virtual ~ObjectZapWandEntity() = default;
 
     void execute(INVENTORY_IDX i_idx);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 
     bool check_can_zap() const;
 };

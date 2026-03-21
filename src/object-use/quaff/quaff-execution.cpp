@@ -118,7 +118,7 @@ bool ObjectQuaffEntity::can_quaff()
         return false;
     }
 
-    return ItemUseChecker(this->player_ptr).check_stun(_("朦朧としていて瓶の蓋を開けられなかった！", "You are too stunned to quaff it!"));
+    return ItemUseChecker(*this->player_ptr).check_stun(_("朦朧としていて瓶の蓋を開けられなかった！", "You are too stunned to quaff it!"));
 }
 
 ItemEntity ObjectQuaffEntity::copy_object(const INVENTORY_IDX i_idx)
