@@ -89,7 +89,7 @@ void ObjectReadEntity::execute(bool known)
 
 bool ObjectReadEntity::can_read() const
 {
-    if (cmd_limit_time_walk(this->player_ptr)) {
+    if (cmd_limit_time_walk(*this->player_ptr)) {
         return false;
     }
 

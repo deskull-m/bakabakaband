@@ -555,7 +555,7 @@ void do_cmd_kaji(CreatureEntity &creature, bool only_browse)
             return;
         }
 
-        if (cmd_limit_blind(&player)) {
+        if (cmd_limit_blind(creature)) {
             return;
         }
 

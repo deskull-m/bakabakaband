@@ -336,7 +336,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     PlayerEnergy(&player).set_player_turn_energy(100);
     decide_activation_level(ae_ptr);
     decide_chance_fail(creature, ae_ptr);
-    if (cmd_limit_time_walk(&player)) {
+    if (cmd_limit_time_walk(creature)) {
         return;
     }
 

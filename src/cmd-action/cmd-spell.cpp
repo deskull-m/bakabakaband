@@ -726,7 +726,7 @@ void do_cmd_study(CreatureEntity &creature)
         return;
     }
 
-    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_blind(creature) || cmd_limit_confused(*player_ptr)) {
         return;
     }
 

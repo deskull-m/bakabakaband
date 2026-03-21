@@ -145,7 +145,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 
 bool ObjectZapWandEntity::check_can_zap() const
 {
-    if (cmd_limit_time_walk(static_cast<PlayerType *>(&this->creature))) {
+    if (cmd_limit_time_walk(this->creature)) {
         return false;
     }
 

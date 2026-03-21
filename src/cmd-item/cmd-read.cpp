@@ -36,7 +36,7 @@ void do_cmd_read_scroll(CreatureEntity &creature)
 
     CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
-    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(creature)) {
+    if (cmd_limit_blind(creature) || cmd_limit_confused(creature)) {
         return;
     }
 
