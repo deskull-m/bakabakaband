@@ -65,8 +65,9 @@
 bool load = true;
 bool can_save = false;
 
-static void process_fishing(PlayerType *player_ptr)
+static void process_fishing(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     term_xtra(TERM_XTRA_DELAY, 10);
     if (one_in_(1000)) {
         bool success = false;
@@ -93,8 +94,9 @@ static void process_fishing(PlayerType *player_ptr)
     }
 }
 
-bool continuous_action_running(PlayerType *player_ptr)
+bool continuous_action_running(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     return player_ptr->running || Travel::get_instance().is_ongoing() || command_rep || (player_ptr->action == ACTION_REST) || (player_ptr->action == ACTION_FISH);
 }
 
@@ -105,8 +107,9 @@ bool continuous_action_running(PlayerType *player_ptr)
  * must come first just in case somebody manages to corrupt\n
  * the savefiles by clever use of menu commands or something.\n
  */
-void process_player(PlayerType *player_ptr)
+void process_player(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (player_ptr->hack_mutation) {
         msg_print(_("何か変わった気がする！", "You feel different!"));
         (void)gain_mutation(*player_ptr, 0);
@@ -149,7 +152,7 @@ void process_player(PlayerType *player_ptr)
         WorldTurnProcessor(player_ptr).print_cheat_position();
     }
 
-    if (fresh_once && (continuous_action_running(player_ptr) || !command_rep)) {
+    if (fresh_once && (continuous_action_running(creature) || !command_rep)) {
         stop_term_fresh();
     }
 
@@ -166,11 +169,11 @@ void process_player(PlayerType *player_ptr)
     }
 
     if (player_ptr->action == ACTION_FISH) {
-        process_fishing(player_ptr);
+        process_fishing(creature);
     }
 
     if (check_abort) {
-        if (continuous_action_running(player_ptr)) {
+        if (continuous_action_running(creature)) {
             inkey_scan = true;
             if (inkey()) {
                 flush();
@@ -436,8 +439,9 @@ void process_player(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーの行動エネルギーが充填される（＝プレイヤーのターンが回る）毎に行われる処理  / process the effects per 100 energy at player speed.
  */
-void process_upkeep_with_speed(PlayerType *player_ptr)
+void process_upkeep_with_speed(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!load && player_ptr->enchant_energy_need > 0 && !player_ptr->leaving) {
         player_ptr->enchant_energy_need -= speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
     }
