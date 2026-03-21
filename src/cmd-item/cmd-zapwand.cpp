@@ -349,5 +349,5 @@ void do_cmd_aim_wand(CreatureEntity &creature)
         return;
     }
 
-    ObjectZapWandEntity(player_ptr).execute(i_idx);
+    ObjectZapWandEntity(creature).execute(i_idx);
 }
