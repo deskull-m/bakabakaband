@@ -51,28 +51,28 @@ void interrupt_scene(int type, int val)
 
 /*!
  * @brief 現在のフロアに合ったBGM選曲
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void refresh_scene_table(PlayerType *player_ptr)
+void refresh_scene_table(CreatureEntity &creature)
 {
     // clear interrupt_scene
     interrupt_scene(0, 0);
 
     resize_scene_list();
-    refresh_scene_floor(static_cast<CreatureEntity &>(*player_ptr), scene_list, 0);
+    refresh_scene_floor(creature, scene_list, 0);
 }
 
 /*!
  * @brief 見かけたモンスターを含め、現在のフロアに合ったBGM選曲
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster_list 視界内モンスターリスト
  */
-void refresh_scene_table(PlayerType *player_ptr, const std::vector<MONSTER_IDX> &monster_list)
+void refresh_scene_table(CreatureEntity &creature, const std::vector<MONSTER_IDX> &monster_list)
 {
     resize_scene_list();
     int index = 0;
 
-    refresh_scene_monster(player_ptr, monster_list, scene_list, index);
+    refresh_scene_monster(creature, monster_list, scene_list, index);
     index += get_scene_monster_count();
 
     // interrupt scene
@@ -81,7 +81,7 @@ void refresh_scene_table(PlayerType *player_ptr, const std::vector<MONSTER_IDX> 
     item.val = interrupt_scene_val;
     ++index;
 
-    refresh_scene_floor(static_cast<CreatureEntity &>(*player_ptr), scene_list, index);
+    refresh_scene_floor(creature, scene_list, index);
 }
 
 /*!
