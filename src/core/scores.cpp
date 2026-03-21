@@ -30,6 +30,7 @@
 #include "player/race-info-table.h"
 #include "system/angband-version.h"
 #include "system/inner-game-data.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -144,7 +145,7 @@ static int highscore_add(high_score *score)
  * @param do_send 実際に転送ア処置を行うか否か
  * @return 転送が成功したらTRUEを返す
  */
-bool send_world_score(PlayerType *player_ptr, bool do_send)
+bool send_world_score(CreatureEntity &creature, bool do_send)
 {
 #ifdef WORLD_SCORE
     if (!send_score || !do_send) {
@@ -152,7 +153,7 @@ bool send_world_score(PlayerType *player_ptr, bool do_send)
     }
 
     auto is_registration = input_check_strict(
-        *player_ptr, _("スコアをスコア・サーバに登録しますか? ", "Do you send score to the world score server? "), { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY });
+        creature, _("スコアをスコア・サーバに登録しますか? ", "Do you send score to the world score server? "), { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY });
     if (!is_registration) {
         return true;
     }
@@ -161,7 +162,7 @@ bool send_world_score(PlayerType *player_ptr, bool do_send)
     prt(_("送信中．．", "Sending..."), 0, 0);
     term_fresh();
     screen_save();
-    auto successful_send = report_score(*player_ptr);
+    auto successful_send = report_score(creature);
     screen_load();
     if (!successful_send) {
         return false;
@@ -170,7 +171,7 @@ bool send_world_score(PlayerType *player_ptr, bool do_send)
     prt(_("完了。何かキーを押してください。", "Completed.  Hit any key."), 0, 0);
     (void)inkey();
 #else
-    (void)player_ptr;
+    (void)creature;
     (void)do_send;
 #endif
     return true;
@@ -185,14 +186,14 @@ bool send_world_score(PlayerType *player_ptr, bool do_send)
  * @details
  * Assumes "signals_ignore_tstp()" has been called.
  */
-errr top_twenty(PlayerType *player_ptr)
+errr top_twenty(CreatureEntity &creature)
 {
     high_score the_score = {};
     snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(*player_ptr));
+    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(creature));
     the_score.pts[9] = '\0';
 
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", player_ptr->au);
+    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.au);
     the_score.gold[9] = '\0';
 
     const auto &igd = InnerGameData::get_instance();
@@ -202,17 +203,17 @@ errr top_twenty(PlayerType *player_ptr)
     auto ct = time((time_t *)0);
 
     strftime(the_score.day, 10, "@%Y%m%d", localtime(&ct));
-    the_score.copy_info(*player_ptr);
-    if (player_ptr->died_from.size() >= sizeof(the_score.how)) {
+    the_score.copy_info(static_cast<const PlayerType &>(creature));
+    if (creature.died_from.size() >= sizeof(the_score.how)) {
 #ifdef JP
-        angband_strcpy(the_score.how, player_ptr->died_from, sizeof(the_score.how) - 2);
+        angband_strcpy(the_score.how, creature.died_from, sizeof(the_score.how) - 2);
         angband_strcat(the_score.how, "…", sizeof(the_score.how));
 #else
-        angband_strcpy(the_score.how, player_ptr->died_from, sizeof(the_score.how) - 3);
+        angband_strcpy(the_score.how, creature.died_from, sizeof(the_score.how) - 3);
         angband_strcat(the_score.how, "...", sizeof(the_score.how));
 #endif
     } else {
-        angband_strcpy(the_score.how, player_ptr->died_from, sizeof(the_score.how));
+        angband_strcpy(the_score.how, creature.died_from, sizeof(the_score.how));
     }
 
     safe_setuid_grab();
@@ -245,7 +246,7 @@ errr top_twenty(PlayerType *player_ptr)
  * Predict the players location, and display it.
  * @return エラーコード
  */
-errr predict_score(PlayerType *player_ptr)
+errr predict_score(CreatureEntity &creature)
 {
     high_score the_score;
     if (highscore_fd < 0) {
@@ -256,11 +257,11 @@ errr predict_score(PlayerType *player_ptr)
 
     const auto &igd = InnerGameData::get_instance();
     snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(*player_ptr));
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", player_ptr->au);
+    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(creature));
+    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.au);
     snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
     angband_strcpy(the_score.day, _("今日", "TODAY"), sizeof(the_score.day));
-    the_score.copy_info(*player_ptr);
+    the_score.copy_info(static_cast<const PlayerType &>(creature));
     strcpy(the_score.how, _("yet", "nobody (yet!)"));
     auto j = highscore_where(&the_score);
     if (j < 10) {
@@ -277,7 +278,7 @@ errr predict_score(PlayerType *player_ptr)
  * @brief スコアランキングの簡易表示 /
  * show_highclass - selectively list highscores based on class -KMW-
  */
-void show_highclass(PlayerType *player_ptr)
+void show_highclass(CreatureEntity &creature)
 {
     screen_save();
     const auto path = path_build(ANGBAND_DIR_APEX, "scores.raw");
@@ -326,9 +327,9 @@ void show_highclass(PlayerType *player_ptr)
     }
 
 #ifdef JP
-    snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->name.data(), player_ptr->level);
+    snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.level);
 #else
-    snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %2d)", player_ptr->name.data(), race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->level);
+    snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %2d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.level);
 #endif
 
     prt(out_val, (m + 8), 0);
@@ -350,7 +351,7 @@ void show_highclass(PlayerType *player_ptr)
  * Race Legends -KMW-
  * @param race_num 種族ID
  */
-void race_score(PlayerType *player_ptr, int race_num)
+void race_score(CreatureEntity &creature, int race_num)
 {
     int i = 0, j, m = 0;
     int pr, clev;
@@ -406,12 +407,12 @@ void race_score(PlayerType *player_ptr, int race_num)
     }
 
     /* add player if qualified */
-    if ((enum2i(player_ptr->prace) == race_num) && (player_ptr->level >= lastlev)) {
+    if ((enum2i(creature.prace) == race_num) && (creature.level >= lastlev)) {
         char out_val[256];
 #ifdef JP
-        snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->name.data(), player_ptr->level);
+        snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.level);
 #else
-        snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %3d)", player_ptr->name.data(), race_info[enum2i(player_ptr->prace)].title.data(), player_ptr->level);
+        snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %3d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.level);
 #endif
 
         prt(out_val, (m + 8), 0);
@@ -425,10 +426,10 @@ void race_score(PlayerType *player_ptr, int race_num)
  * @brief スコアランキングの簡易表示(種族毎)メインルーチン /
  * Race Legends -KMW-
  */
-void race_legends(PlayerType *player_ptr)
+void race_legends(CreatureEntity &creature)
 {
     for (int i = 0; i < MAX_RACES; i++) {
-        race_score(player_ptr, i);
+        race_score(creature, i);
         msg_print(_("何かキーを押すとゲームに戻ります", "Hit any key to continue"));
         msg_erase();
         for (int j = 5; j < 19; j++) {
@@ -441,7 +442,7 @@ void race_legends(PlayerType *player_ptr)
  * @brief スコアファイル出力
  * Display some character info
  */
-bool check_score(PlayerType *player_ptr)
+bool check_score(CreatureEntity &creature)
 {
     term_clear();
 
@@ -470,14 +471,14 @@ bool check_score(PlayerType *player_ptr)
 
     /* Interupted */
     const auto is_total_winner = world.total_winner != 0;
-    if (!is_total_winner && streq(player_ptr->died_from, _("強制終了", "Interrupting"))) {
+    if (!is_total_winner && streq(creature.died_from, _("強制終了", "Interrupting"))) {
         msg_print(_("強制終了のためスコアが記録されません。", "Score not registered due to interruption."));
         msg_erase();
         return false;
     }
 
     /* Quitter */
-    if (!is_total_winner && streq(player_ptr->died_from, _("途中終了", "Quitting"))) {
+    if (!is_total_winner && streq(creature.died_from, _("途中終了", "Quitting"))) {
         msg_print(_("途中終了のためスコアが記録されません。", "Score not registered due to quitting."));
         msg_erase();
         return false;
