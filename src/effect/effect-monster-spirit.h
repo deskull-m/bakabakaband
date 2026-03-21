@@ -3,7 +3,7 @@
 #include "system/angband.h"
 
 class EffectMonster;
-class PlayerType;
-ProcessResult effect_monster_drain_mana(PlayerType *player_ptr, EffectMonster *em_ptr);
-ProcessResult effect_monster_mind_blast(PlayerType *player_ptr, EffectMonster *em_ptr);
-ProcessResult effect_monster_brain_smash(PlayerType *player_ptr, EffectMonster *em_ptr);
+class CreatureEntity;
+ProcessResult effect_monster_drain_mana(CreatureEntity &creature, EffectMonster *em_ptr);
+ProcessResult effect_monster_mind_blast(CreatureEntity &creature, EffectMonster *em_ptr);
+ProcessResult effect_monster_brain_smash(CreatureEntity &creature, EffectMonster *em_ptr);
