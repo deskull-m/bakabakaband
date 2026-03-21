@@ -124,7 +124,7 @@ int16_t wield_slot(CreatureEntity &creature, const ItemEntity *o_ptr)
     case ItemKindType::BOW:
         return INVEN_BOW;
     case ItemKindType::RING:
-        if (!player_ptr->inventory[INVEN_MAIN_RING]->bi_id) {
+        if (!creature.inventory[INVEN_MAIN_RING]->bi_id) {
             return INVEN_MAIN_RING;
         }
 
