@@ -2847,13 +2847,13 @@ int WINAPI WinMain(
     term_flush();
     if (movie_in_progress) {
         // selected movie
-        play_game(p_ptr, false, true);
+        play_game(*p_ptr, false, true);
     } else if (savefile.empty()) {
         // new game
-        play_game(p_ptr, true, false);
+        play_game(*p_ptr, true, false);
     } else {
         // selected savefile
-        play_game(p_ptr, false, false);
+        play_game(*p_ptr, false, false);
     }
 
     quit("");
