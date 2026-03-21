@@ -148,5 +148,5 @@ bool ObjectZapWandEntity::check_can_zap() const
         return false;
     }
 
-    return ItemUseChecker(this->player_ptr).check_stun(_("朦朧としていて魔法棒を振れなかった！", "You are too stunned to zap it!"));
+    return ItemUseChecker(*this->player_ptr).check_stun(_("朦朧としていて魔法棒を振れなかった！", "You are too stunned to zap it!"));
 }

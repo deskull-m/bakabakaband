@@ -157,5 +157,5 @@ bool ObjectUseEntity::check_can_use()
         return false;
     }
 
-    return ItemUseChecker(this->player_ptr).check_stun(_("朦朧としていて杖を振れなかった！", "You are too stunned to use it!"));
+    return ItemUseChecker(*this->player_ptr).check_stun(_("朦朧としていて杖を振れなかった！", "You are too stunned to use it!"));
 }
