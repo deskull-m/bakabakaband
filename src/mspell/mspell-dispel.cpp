@@ -70,7 +70,7 @@ static void dispel_player(PlayerType *player_ptr)
     (void)set_tim_sh_holy(*player_ptr, 0, true);
     (void)set_tim_eyeeye(*player_ptr, 0, true);
     (void)set_magicdef(*player_ptr, 0, true);
-    (void)set_resist_magic(player_ptr, 0, true);
+    (void)set_resist_magic(*player_ptr, 0, true);
     (void)set_oppose_acid(*player_ptr, 0, true);
     (void)set_oppose_elec(*player_ptr, 0, true);
     (void)set_oppose_fire(*player_ptr, 0, true);

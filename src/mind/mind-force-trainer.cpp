@@ -302,7 +302,7 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
         break;
     }
     case MindForceTrainerType::MAGIC_RESISTANCE:
-        set_resist_magic(player_ptr, randint1(20) + 20 + boost / 5, false);
+        set_resist_magic(creature, randint1(20) + 20 + boost / 5, false);
         break;
     case MindForceTrainerType::IMPROVE_FORCE:
         msg_print(_("気を練った。", "You improved the Force."));

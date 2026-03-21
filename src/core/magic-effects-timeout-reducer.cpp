@@ -94,7 +94,7 @@ void reduce_magic_effects_timeout(PlayerType *player_ptr)
     }
 
     if (player_ptr->resist_magic) {
-        (void)set_resist_magic(player_ptr, player_ptr->resist_magic - 1, true);
+        (void)set_resist_magic(creature, player_ptr->resist_magic - 1, true);
     }
 
     if (player_ptr->tim_regen) {
