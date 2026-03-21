@@ -13,11 +13,11 @@
 #include "specific-object/torch.h"
 #include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
