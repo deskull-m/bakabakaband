@@ -122,23 +122,20 @@ void wiz_select_chameleon_polymorph(MonsterEntity &monster)
 
 void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monrace_id, BIT_FLAGS mode)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     const auto summon_monrace_id = MonraceList::is_valid(monrace_id) ? monrace_id : wiz_select_summon_monrace_id();
     if (!summon_monrace_id) {
         return;
     }
 
     const auto p_pos = creature.get_position();
-    const auto index_to_monster = [player_ptr](auto index) -> MonsterEntity & {
-        return player_ptr->current_floor_ptr->m_list[index];
+    const auto index_to_monster = [&creature](auto index) -> MonsterEntity & {
+        return creature.current_floor_ptr->m_list[index];
     };
     auto monster =
-        summon_named_creature(*player_ptr, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
+        summon_named_creature(creature, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
             .transform(index_to_monster);
     if (!monster) {
-        msg_print_wizard(*player_ptr, 1, "Monster isn't summoned correctly...");
+        msg_print_wizard(creature, 1, "Monster isn't summoned correctly...");
         return;
     }
 
@@ -217,9 +214,6 @@ void wiz_dimension_door(CreatureEntity &creature)
  */
 void wiz_summon_horde(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     const auto &floor = *creature.current_floor_ptr;
     const auto p_pos = creature.get_position();
     auto pos = p_pos;
@@ -231,7 +225,7 @@ void wiz_summon_horde(CreatureEntity &creature)
         }
     }
 
-    (void)alloc_horde(*player_ptr, pos.y, pos.x, summon_specific);
+    (void)alloc_horde(creature, pos.y, pos.x, summon_specific);
 }
 
 /*!
@@ -239,16 +233,13 @@ void wiz_summon_horde(CreatureEntity &creature)
  */
 void wiz_teleport_back(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     const auto target = Target::get_last_target();
     const auto pos = target.get_position();
     if (!pos || !target.get_m_idx()) {
         return;
     }
 
-    teleport_player_to(*player_ptr, pos->y, pos->x, TELEPORT_NONMAGICAL);
+    teleport_player_to(creature, pos->y, pos->x, TELEPORT_NONMAGICAL);
 }
 
 /*!
@@ -292,13 +283,10 @@ void wiz_fillup_all_smith_essences(CreatureEntity &creature)
  */
 void wiz_generate_random_monster(CreatureEntity &creature, int num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     constexpr auto flags = PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_QUEST;
     for (auto i = 0; i < num; i++) {
-        if (!alloc_monster(*player_ptr, 0, flags, summon_specific, 5)) {
-            msg_print_wizard(*player_ptr, 1, "Monster isn't generated correctly...");
+        if (!alloc_monster(creature, 0, flags, summon_specific, 5)) {
+            msg_print_wizard(creature, 1, "Monster isn't generated correctly...");
             return;
         }
     }
@@ -312,15 +300,12 @@ void wiz_generate_random_monster(CreatureEntity &creature, int num)
  */
 void wiz_summon_random_monster(CreatureEntity &creature, int num)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     const auto level = creature.current_floor_ptr->dun_level;
     constexpr auto flags = PM_ALLOW_GROUP | PM_ALLOW_UNIQUE;
     const auto p_pos = creature.get_position();
     for (auto i = 0; i < num; i++) {
         if (!summon_specific(creature, p_pos.y, p_pos.x, level, SUMMON_NONE, flags)) {
-            msg_print_wizard(*player_ptr, 1, "Monster isn't summoned correctly...");
+            msg_print_wizard(creature, 1, "Monster isn't summoned correctly...");
             return;
         }
     }
