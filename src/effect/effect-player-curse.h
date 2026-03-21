@@ -1,8 +1,8 @@
 #pragma once
 
+class CreatureEntity;
 class EffectPlayerType;
-class PlayerType;
-void effect_player_curse_1(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
-void effect_player_curse_2(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
-void effect_player_curse_3(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
-void effect_player_curse_4(PlayerType *player_ptr, EffectPlayerType *ep_ptr);
+void effect_player_curse_1(CreatureEntity &creature, EffectPlayerType *ep_ptr);
+void effect_player_curse_2(CreatureEntity &creature, EffectPlayerType *ep_ptr);
+void effect_player_curse_3(CreatureEntity &creature, EffectPlayerType *ep_ptr);
+void effect_player_curse_4(CreatureEntity &creature, EffectPlayerType *ep_ptr);

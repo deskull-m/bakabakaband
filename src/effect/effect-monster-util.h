@@ -8,10 +8,10 @@ enum class AttributeType;
 class Grid;
 class MonsterEntity;
 class MonraceDefinition;
-class PlayerType;
+class CreatureEntity;
 class EffectMonster {
 public:
-    EffectMonster(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType attribute, BIT_FLAGS flag, bool see_s_msg);
+    EffectMonster(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType attribute, BIT_FLAGS flag, bool see_s_msg);
 
     char killer[MAX_MONSTER_NAME]{};
     bool obvious = false;

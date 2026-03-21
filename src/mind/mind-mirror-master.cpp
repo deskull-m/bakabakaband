@@ -176,7 +176,7 @@ bool binding_field(CreatureEntity &creature, int dam)
             }
 
             if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
-                (void)affect_feature(&player, 0, 0, y, x, dam, AttributeType::MANA);
+                (void)affect_feature(creature, 0, 0, y, x, dam, AttributeType::MANA);
             }
         }
     }
@@ -197,7 +197,7 @@ bool binding_field(CreatureEntity &creature, int dam)
             }
 
             if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
-                (void)affect_item(&player, 0, 0, y, x, dam, AttributeType::MANA);
+                (void)affect_item(creature, 0, 0, y, x, dam, AttributeType::MANA);
             }
         }
     }
@@ -219,7 +219,7 @@ bool binding_field(CreatureEntity &creature, int dam)
 
             if (floor.has_los_at(pos) && projectable(floor, p_pos, pos)) {
                 constexpr auto flags = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP;
-                (void)affect_monster(&player, 0, 0, y, x, dam, AttributeType::MANA, flags, true);
+                (void)affect_monster(creature, 0, 0, y, x, dam, AttributeType::MANA, flags, true);
             }
         }
     }

@@ -5,16 +5,15 @@
 #include "monster/monster-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 
-static bool effect_monster_away_resist(PlayerType *player_ptr, EffectMonster *em_ptr)
+static bool effect_monster_away_resist(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::RESIST_TELEPORT)) {
         return false;
     }
 
     if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
@@ -22,7 +21,7 @@ static bool effect_monster_away_resist(PlayerType *player_ptr, EffectMonster *em
     }
 
     if (em_ptr->r_ptr->level > randint1(100)) {
-        if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
         em_ptr->note = _("には耐性がある！", " resists!");
@@ -32,7 +31,7 @@ static bool effect_monster_away_resist(PlayerType *player_ptr, EffectMonster *em
     return false;
 }
 
-ProcessResult effect_monster_away_undead(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_away_undead(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (!em_ptr->m_ptr->has_undead_flag()) {
         em_ptr->skipped = true;
@@ -40,12 +39,12 @@ ProcessResult effect_monster_away_undead(PlayerType *player_ptr, EffectMonster *
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    bool resists_tele = effect_monster_away_resist(player_ptr, em_ptr);
+    bool resists_tele = effect_monster_away_resist(creature, em_ptr);
     if (!resists_tele) {
         if (em_ptr->seen) {
             em_ptr->obvious = true;
         }
-        if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
         }
 
@@ -56,7 +55,7 @@ ProcessResult effect_monster_away_undead(PlayerType *player_ptr, EffectMonster *
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_away_evil(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_away_evil(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL)) {
         em_ptr->skipped = true;
@@ -64,12 +63,12 @@ ProcessResult effect_monster_away_evil(PlayerType *player_ptr, EffectMonster *em
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    bool resists_tele = effect_monster_away_resist(player_ptr, em_ptr);
+    bool resists_tele = effect_monster_away_resist(creature, em_ptr);
     if (!resists_tele) {
         if (em_ptr->seen) {
             em_ptr->obvious = true;
         }
-        if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
         }
 
@@ -80,9 +79,9 @@ ProcessResult effect_monster_away_evil(PlayerType *player_ptr, EffectMonster *em
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_away_all(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_away_all(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    bool resists_tele = effect_monster_away_resist(player_ptr, em_ptr);
+    bool resists_tele = effect_monster_away_resist(creature, em_ptr);
     if (!resists_tele) {
         if (em_ptr->seen) {
             em_ptr->obvious = true;
@@ -95,7 +94,7 @@ ProcessResult effect_monster_away_all(PlayerType *player_ptr, EffectMonster *em_
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_turn_undead(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_turn_undead(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (!em_ptr->m_ptr->has_undead_flag()) {
         em_ptr->skipped = true;
@@ -107,7 +106,7 @@ ProcessResult effect_monster_turn_undead(PlayerType *player_ptr, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
     }
 
@@ -123,7 +122,7 @@ ProcessResult effect_monster_turn_undead(PlayerType *player_ptr, EffectMonster *
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_turn_evil(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_turn_evil(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL)) {
         em_ptr->skipped = true;
@@ -135,7 +134,7 @@ ProcessResult effect_monster_turn_evil(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
     }
 
@@ -171,7 +170,7 @@ ProcessResult effect_monster_turn_all(EffectMonster *em_ptr)
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_disp_undead(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_disp_undead(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (!em_ptr->m_ptr->has_undead_flag()) {
         em_ptr->skipped = true;
@@ -183,7 +182,7 @@ ProcessResult effect_monster_disp_undead(PlayerType *player_ptr, EffectMonster *
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::UNDEAD);
     }
 
@@ -192,7 +191,7 @@ ProcessResult effect_monster_disp_undead(PlayerType *player_ptr, EffectMonster *
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_disp_evil(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_disp_evil(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL)) {
         em_ptr->skipped = true;
@@ -204,7 +203,7 @@ ProcessResult effect_monster_disp_evil(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::EVIL);
     }
 
@@ -213,7 +212,7 @@ ProcessResult effect_monster_disp_evil(PlayerType *player_ptr, EffectMonster *em
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_disp_good(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_disp_good(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::GOOD)) {
         em_ptr->skipped = true;
@@ -225,7 +224,7 @@ ProcessResult effect_monster_disp_good(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::GOOD);
     }
 
@@ -251,7 +250,7 @@ ProcessResult effect_monster_disp_living(EffectMonster *em_ptr)
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_disp_demon(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_disp_demon(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::DEMON)) {
         em_ptr->skipped = true;
@@ -263,7 +262,7 @@ ProcessResult effect_monster_disp_demon(PlayerType *player_ptr, EffectMonster *e
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::DEMON);
     }
 

@@ -26,7 +26,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
@@ -196,7 +195,6 @@ static void describe_effect_source(CreatureEntity &creature, EffectPlayerType *e
 bool affect_player(MONSTER_IDX src_idx, CreatureEntity &creature, concptr src_name, int r, POSITION y, POSITION x, int dam, AttributeType attribute,
     BIT_FLAGS flag, FallOffHorseEffect &fall_off_horse_effect, project_func project)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     EffectPlayerType tmp_effect(*creature.current_floor_ptr, src_idx, dam, attribute, flag);
     auto *ep_ptr = &tmp_effect;
     auto check_result = check_continue_player_effect(creature, ep_ptr, { y, x }, project);
@@ -210,7 +208,7 @@ bool affect_player(MONSTER_IDX src_idx, CreatureEntity &creature, concptr src_na
 
     ep_ptr->dam = (ep_ptr->dam + r) / (r + 1);
     describe_effect_source(creature, ep_ptr, src_name);
-    switch_effects_player(player_ptr, ep_ptr);
+    switch_effects_player(creature, ep_ptr);
 
     SpellHex(creature).store_vengeful_damage(ep_ptr->get_damage);
     if ((creature.tim_eyeeye || SpellHex(creature).is_spelling_specific(HEX_EYE_FOR_EYE)) && (ep_ptr->get_damage > 0) && !creature.is_dead() && ep_ptr->is_monster()) {
