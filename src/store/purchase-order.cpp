@@ -51,7 +51,7 @@ static tl::optional<PRICE> prompt_to_buy(CreatureEntity &creature, ItemEntity *o
 
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("買値 ${} で買いますか？", "Do you buy for ${}? "), price_ask);
-    if (input_check_strict(player_ptr, s, UserCheck::DEFAULT_Y)) {
+    if (input_check_strict(*player_ptr, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
     }
 

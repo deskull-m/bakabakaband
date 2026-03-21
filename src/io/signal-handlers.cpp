@@ -74,7 +74,7 @@ static void handle_signal_simple(int sig)
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
-        close_game(p_ptr);
+        close_game(*p_ptr);
         quit(_("強制終了", "interrupt"));
     } else if (signal_count >= 5) {
         p_ptr->died_from = _("強制終了中", "Interrupting");
@@ -86,7 +86,7 @@ static void handle_signal_simple(int sig)
             p_ptr->is_dead_ = true;
         }
         p_ptr->leaving = true;
-        close_game(p_ptr);
+        close_game(*p_ptr);
         quit(_("強制終了", "interrupt"));
     } else if (signal_count >= 4) {
         term_xtra(TERM_XTRA_NOISE, 0);

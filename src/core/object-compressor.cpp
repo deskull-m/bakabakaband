@@ -2,11 +2,11 @@
 #include "core/window-redrawer.h"
 #include "floor/floor-object.h"
 #include "grid/grid.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/z-rand.h"
 #include "view/display-messages.h"
@@ -71,7 +71,7 @@ private:
  * After "compacting" (if needed), we "reorder" the objects into a more\n
  * compact order, and we reset the allocation info, and the "live" array.\n
  */
-void compact_objects(PlayerType *player_ptr, int size)
+void compact_objects(CreatureEntity &creature, int size)
 {
     if (size) {
         msg_print(_("アイテム情報を圧縮しています...", "Compacting objects..."));
@@ -84,9 +84,9 @@ void compact_objects(PlayerType *player_ptr, int size)
         rfu.set_flags(flags_swrf);
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     for (auto deleted_num = 0, try_count = 1; deleted_num < size; try_count++) {
-        const ItemCompactionChecker icc(*player_ptr, try_count);
+        const ItemCompactionChecker icc(creature, try_count);
         std::vector<OBJECT_IDX> delete_i_idx_list;
         for (const auto &[i_idx, item_ptr] : floor.o_list | ranges::views::enumerate) {
             if (icc.can_delete_for_compaction(*item_ptr)) {
@@ -95,6 +95,6 @@ void compact_objects(PlayerType *player_ptr, int size)
         }
 
         deleted_num += delete_i_idx_list.size();
-        delete_items(*player_ptr, std::move(delete_i_idx_list));
+        delete_items(creature, std::move(delete_i_idx_list));
     }
 }

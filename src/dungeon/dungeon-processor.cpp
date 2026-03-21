@@ -225,11 +225,11 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         }
 
         if (floor.o_list.size() + 32 > MAX_FLOOR_ITEMS) {
-            compact_objects(player_ptr, 64);
+            compact_objects(*player_ptr, 64);
         }
 
-        process_player(player_ptr);
-        process_upkeep_with_speed(player_ptr);
+        process_player(*player_ptr);
+        process_upkeep_with_speed(*player_ptr);
         handle_stuff(*player_ptr);
 
         move_cursor_relative(player_ptr->y, player_ptr->x);

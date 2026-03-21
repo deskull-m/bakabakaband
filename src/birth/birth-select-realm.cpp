@@ -233,7 +233,7 @@ static bool check_realm_selection(CreatureEntity &creature, int count)
         (void)inkey();
         prt("", 0, 0);
         return true;
-    } else if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+    } else if (input_check_strict(*player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
         return true;
     }
 

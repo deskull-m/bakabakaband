@@ -553,7 +553,7 @@ void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (!follow) {
         return;
     }
-    if (!input_check_strict(&player, _("ついていきますか？", "Do you follow it? "), UserCheck::OKAY_CANCEL)) {
+    if (!input_check_strict(player, _("ついていきますか？", "Do you follow it? "), UserCheck::OKAY_CANCEL)) {
         return;
     }
 

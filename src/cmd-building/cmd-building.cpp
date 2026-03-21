@@ -122,7 +122,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
         town_history(player_ptr);
         return false;
     case BACT_RACE_LEGENDS:
-        race_legends(player_ptr);
+        race_legends(*player_ptr);
         return false;
     case BACT_QUEST:
         castle_quest(*player_ptr);
@@ -130,7 +130,7 @@ static bool bldg_process_command(PlayerType *player_ptr, const building_type &bl
     case BACT_KING_LEGENDS:
     case BACT_ARENA_LEGENDS:
     case BACT_LEGENDS:
-        show_highclass(player_ptr);
+        show_highclass(*player_ptr);
         return false;
     case BACT_POSTER:
     case BACT_ARENA_RULES:

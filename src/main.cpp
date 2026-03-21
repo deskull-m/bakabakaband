@@ -449,7 +449,7 @@ int main(int argc, char *argv[])
     clear_png_display();
 #endif
 
-    play_game(p_ptr, new_game, browsing_movie);
+    play_game(*p_ptr, new_game, browsing_movie);
     quit("");
     return 0;
 }

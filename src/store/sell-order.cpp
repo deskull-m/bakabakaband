@@ -52,7 +52,7 @@ static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_
     price_ask = std::min(price_ask, ot_ptr->max_cost);
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("売値 ${} で売りますか？", "Do you sell for ${}? "), price_ask);
-    if (input_check_strict(player_ptr, s, UserCheck::DEFAULT_Y)) {
+    if (input_check_strict(*player_ptr, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
     }
 

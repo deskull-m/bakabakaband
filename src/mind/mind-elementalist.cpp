@@ -1288,7 +1288,7 @@ tl::optional<ElementRealmType> select_element_realm(CreatureEntity &creature)
 
         display_wrap_around(element_texts.at(*realm), 74, row, 3);
 
-        if (input_check_strict(&player, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+        if (input_check_strict(player, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
         }
 
