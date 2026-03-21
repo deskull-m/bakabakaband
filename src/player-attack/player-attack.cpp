@@ -334,7 +334,7 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
     auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto num = o_ptr->damage_dice.num + player.damage_dice_bonus[pa_ptr->hand].num + magical_brand_extra_dice(pa_ptr);
     const auto sides = o_ptr->damage_dice.sides + player.damage_dice_bonus[pa_ptr->hand].sides;
-    pa_ptr->attack_damage = calc_attack_damage_with_slay(&player, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
+    pa_ptr->attack_damage = calc_attack_damage_with_slay(creature, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
     calc_surprise_attack_damage(creature, pa_ptr);
 
     if (does_equip_cause_earthquake(creature, pa_ptr) || (pa_ptr->chaos_effect == CE_QUAKE) || (pa_ptr->mode == HISSATSU_QUAKE)) {
@@ -580,7 +580,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
             continue;
         }
 
-        pa_ptr->attribute_flags = melee_attribute(&player, o_ptr, pa_ptr->mode);
+        pa_ptr->attribute_flags = melee_attribute(creature, o_ptr, pa_ptr->mode);
         apply_actual_attack(creature, pa_ptr, &do_quake, is_zantetsu_nullified, is_ej_nullified);
         calc_drain(pa_ptr);
         if (check_fear_death(creature, pa_ptr, num, is_lowlevel)) {

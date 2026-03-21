@@ -17,7 +17,7 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
@@ -29,7 +29,7 @@
  * @param m_ptr 目標モンスターの構造体参照ポインタ
  * @return スレイング加味後の倍率(/10倍)
  */
-MULTIPLY mult_slaying(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster)
+MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster)
 {
     static const struct slay_table_t {
         tr_type slay_flag;
@@ -70,7 +70,7 @@ MULTIPLY mult_slaying(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flag
             continue;
         }
 
-        if (is_original_ap_and_seen(*player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_kind_flags.set(p->affect_race_flag);
         }
 
@@ -88,7 +88,7 @@ MULTIPLY mult_slaying(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flag
  * @param m_ptr 目標モンスターの構造体参照ポインタ
  * @return スレイング加味後の倍率(/10倍)
  */
-MULTIPLY mult_brand(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster)
+MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster)
 {
     static const struct brand_table_t {
         tr_type brand_flag;
@@ -112,7 +112,7 @@ MULTIPLY mult_brand(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags,
 
         /* Notice immunity */
         if (monrace.resistance_flags.has_any_of(p->resist_mask)) {
-            if (is_original_ap_and_seen(*player_ptr, monster)) {
+            if (is_original_ap_and_seen(creature, monster)) {
                 monrace.r_resistance_flags.set(monrace.resistance_flags & p->resist_mask);
             }
 
@@ -121,7 +121,7 @@ MULTIPLY mult_brand(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags,
 
         /* Otherwise, take the damage */
         if (monrace.resistance_flags.has(p->hurt_flag)) {
-            if (is_original_ap_and_seen(*player_ptr, monster)) {
+            if (is_original_ap_and_seen(creature, monster)) {
                 monrace.r_resistance_flags.set(p->hurt_flag);
             }
 
@@ -151,43 +151,43 @@ MULTIPLY mult_brand(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags,
  * Note that most brands and slays are x3, except Slay Animal (x2),\n
  * Slay Evil (x2), and Kill dragon (x5).\n
  */
-int calc_attack_damage_with_slay(PlayerType *player_ptr, ItemEntity *o_ptr, int tdam, const MonsterEntity &monster, combat_options mode, bool thrown)
+int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, int tdam, const MonsterEntity &monster, combat_options mode, bool thrown)
 {
     auto flags = o_ptr->get_flags();
     torch_flags(o_ptr, flags); /* torches has secret flags */
 
     if (!thrown) {
-        if (player_ptr->special_attack & (ATTACK_ACID)) {
+        if (creature.special_attack & (ATTACK_ACID)) {
             flags.set(TR_BRAND_ACID);
         }
-        if (player_ptr->special_attack & (ATTACK_COLD)) {
+        if (creature.special_attack & (ATTACK_COLD)) {
             flags.set(TR_BRAND_COLD);
         }
-        if (player_ptr->special_attack & (ATTACK_ELEC)) {
+        if (creature.special_attack & (ATTACK_ELEC)) {
             flags.set(TR_BRAND_ELEC);
         }
-        if (player_ptr->special_attack & (ATTACK_FIRE)) {
+        if (creature.special_attack & (ATTACK_FIRE)) {
             flags.set(TR_BRAND_FIRE);
         }
-        if (player_ptr->special_attack & (ATTACK_POIS)) {
+        if (creature.special_attack & (ATTACK_POIS)) {
             flags.set(TR_BRAND_POIS);
         }
     }
 
-    if (SpellHex(*player_ptr).is_spelling_specific(HEX_RUNESWORD)) {
+    if (SpellHex(creature).is_spelling_specific(HEX_RUNESWORD)) {
         flags.set(TR_SLAY_GOOD);
     }
 
-    if (has_slay_demon_from_exorcism(*player_ptr)) {
+    if (has_slay_demon_from_exorcism(creature)) {
         flags.set(TR_SLAY_DEMON);
     }
-    if (has_kill_demon_from_exorcism(*player_ptr)) {
+    if (has_kill_demon_from_exorcism(creature)) {
         flags.set(TR_KILL_DEMON);
     }
-    if (has_slay_undead_from_exorcism(*player_ptr)) {
+    if (has_slay_undead_from_exorcism(creature)) {
         flags.set(TR_SLAY_UNDEAD);
     }
-    if (has_kill_undead_from_exorcism(*player_ptr)) {
+    if (has_kill_undead_from_exorcism(creature)) {
         flags.set(TR_KILL_UNDEAD);
     }
 
@@ -202,17 +202,17 @@ int calc_attack_damage_with_slay(PlayerType *player_ptr, ItemEntity *o_ptr, int 
     case ItemKindType::SWORD:
     case ItemKindType::DIGGING:
     case ItemKindType::LITE: {
-        mult = mult_slaying(player_ptr, mult, flags, monster);
+        mult = mult_slaying(creature, mult, flags, monster);
 
-        mult = mult_brand(player_ptr, mult, flags, monster);
+        mult = mult_brand(creature, mult, flags, monster);
 
-        CreatureClass pc(*player_ptr);
+        CreatureClass pc(creature);
         if (pc.equals(PlayerClassType::SAMURAI)) {
-            mult = mult_hissatsu(*player_ptr, mult, flags, monster, mode);
+            mult = mult_hissatsu(creature, mult, flags, monster, mode);
         }
 
-        if (!pc.equals(PlayerClassType::SAMURAI) && (flags.has(TR_FORCE_WEAPON)) && (player_ptr->csp > (o_ptr->damage_dice.maxroll() / 5))) {
-            player_ptr->csp -= (1 + (o_ptr->damage_dice.maxroll() / 5));
+        if (!pc.equals(PlayerClassType::SAMURAI) && (flags.has(TR_FORCE_WEAPON)) && (creature.csp > (o_ptr->damage_dice.maxroll() / 5))) {
+            creature.csp -= (1 + (o_ptr->damage_dice.maxroll() / 5));
             RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 3 / 2 + 20;
         }
@@ -238,12 +238,12 @@ int calc_attack_damage_with_slay(PlayerType *player_ptr, ItemEntity *o_ptr, int 
     return tdam * mult / 10;
 }
 
-AttributeFlags melee_attribute(PlayerType *player_ptr, ItemEntity *o_ptr, combat_options mode)
+AttributeFlags melee_attribute(CreatureEntity &creature, ItemEntity *o_ptr, combat_options mode)
 {
     AttributeFlags attribute_flags{};
     attribute_flags.set(AttributeType::PLAYER_MELEE);
 
-    if (CreatureClass(*player_ptr).equals(PlayerClassType::SAMURAI)) {
+    if (CreatureClass(creature).equals(PlayerClassType::SAMURAI)) {
         static const struct samurai_convert_table_t {
             combat_options hissatsu_type;
             AttributeType attribute;
@@ -266,23 +266,23 @@ AttributeFlags melee_attribute(PlayerType *player_ptr, ItemEntity *o_ptr, combat
 
     auto flags = o_ptr->get_flags();
 
-    if (player_ptr->special_attack & (ATTACK_ACID)) {
+    if (creature.special_attack & (ATTACK_ACID)) {
         flags.set(TR_BRAND_ACID);
     }
-    if (player_ptr->special_attack & (ATTACK_COLD)) {
+    if (creature.special_attack & (ATTACK_COLD)) {
         flags.set(TR_BRAND_COLD);
     }
-    if (player_ptr->special_attack & (ATTACK_ELEC)) {
+    if (creature.special_attack & (ATTACK_ELEC)) {
         flags.set(TR_BRAND_ELEC);
     }
-    if (player_ptr->special_attack & (ATTACK_FIRE)) {
+    if (creature.special_attack & (ATTACK_FIRE)) {
         flags.set(TR_BRAND_FIRE);
     }
-    if (player_ptr->special_attack & (ATTACK_POIS)) {
+    if (creature.special_attack & (ATTACK_POIS)) {
         flags.set(TR_BRAND_POIS);
     }
 
-    if (SpellHex(*player_ptr).is_spelling_specific(HEX_RUNESWORD)) {
+    if (SpellHex(creature).is_spelling_specific(HEX_RUNESWORD)) {
         flags.set(TR_SLAY_GOOD);
     }
 
@@ -309,7 +309,7 @@ AttributeFlags melee_attribute(PlayerType *player_ptr, ItemEntity *o_ptr, combat
         }
     }
 
-    if ((flags.has(TR_FORCE_WEAPON)) && (player_ptr->csp > (o_ptr->damage_dice.maxroll() / 5))) {
+    if ((flags.has(TR_FORCE_WEAPON)) && (creature.csp > (o_ptr->damage_dice.maxroll() / 5))) {
         attribute_flags.set(AttributeType::MANA);
     }
 

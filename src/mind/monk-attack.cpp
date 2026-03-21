@@ -256,7 +256,7 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto num = pa_ptr->ma_ptr->damage_dice.num + player.damage_dice_bonus[pa_ptr->hand].num;
     const auto sides = pa_ptr->ma_ptr->damage_dice.sides + player.damage_dice_bonus[pa_ptr->hand].sides;
-    pa_ptr->attack_damage = calc_attack_damage_with_slay(&player, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
+    pa_ptr->attack_damage = calc_attack_damage_with_slay(creature, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
 
     if (player.special_attack & ATTACK_SUIKEN) {
         pa_ptr->attack_damage *= 2;
