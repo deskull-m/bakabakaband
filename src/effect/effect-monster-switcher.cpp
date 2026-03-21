@@ -32,6 +32,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 
 ProcessResult effect_monster_hypodynamia(CreatureEntity &creature, EffectMonster *em_ptr)
