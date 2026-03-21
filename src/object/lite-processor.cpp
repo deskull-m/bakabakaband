@@ -20,8 +20,7 @@
  */
 void reduce_lite_life(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
+    auto *o_ptr = creature.inventory[INVEN_LITE].get();
     if (o_ptr->bi_key.tval() != ItemKindType::LITE) {
         return;
     }
@@ -38,7 +37,7 @@ void reduce_lite_life(CreatureEntity &creature)
         o_ptr->fuel--;
     }
 
-    notice_lite_change(*player_ptr, o_ptr);
+    notice_lite_change(creature, o_ptr);
 }
 
 /*!
@@ -48,18 +47,17 @@ void reduce_lite_life(CreatureEntity &creature)
  */
 void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if ((o_ptr->fuel < 100) || (!(o_ptr->fuel % 100))) {
         rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
     }
 
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.effects()->blindness().is_blind()) {
         if (o_ptr->fuel == 0) {
             o_ptr->fuel++;
         }
     } else if (o_ptr->fuel == 0) {
-        disturb(*player_ptr, false, true);
+        disturb(creature, false, true);
         msg_print(_("明かりが消えてしまった！", "Your light has gone out!"));
         static constexpr auto flags = {
             StatusRecalculatingFlag::TORCH,
@@ -69,13 +67,13 @@ void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
     } else if (o_ptr->ego_idx == EgoType::LITE_LONG) {
         if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5)) && (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 2))) {
             if (disturb_minor) {
-                disturb(*player_ptr, false, true);
+                disturb(creature, false, true);
             }
             msg_print(_("明かりが微かになってきている。", "Your light is growing faint."));
         }
     } else if ((o_ptr->fuel < 100) && (!(o_ptr->fuel % 10))) {
         if (disturb_minor) {
-            disturb(*player_ptr, false, true);
+            disturb(creature, false, true);
         }
         msg_print(_("明かりが微かになってきている。", "Your light is growing faint."));
     }
