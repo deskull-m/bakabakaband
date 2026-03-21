@@ -3,5 +3,5 @@
 #include "effect/attribute-types.h"
 #include "system/angband.h"
 
-class PlayerType;
-bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType typ);
+class CreatureEntity;
+bool affect_item(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType typ);
