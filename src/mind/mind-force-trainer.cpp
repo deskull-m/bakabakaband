@@ -273,7 +273,6 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
         boost /= 2;
     }
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     switch (spell) {
     case MindForceTrainerType::SMALL_FORCE_BALL: {

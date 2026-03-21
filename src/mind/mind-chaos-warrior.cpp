@@ -10,8 +10,9 @@
 #include "system/player-type-definition.h"
 #include <span>
 
-void acquire_chaos_weapon(PlayerType *player_ptr)
+void acquire_chaos_weapon(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr static auto weapons = {
         SV_DAGGER,
         SV_DAGGER,
@@ -73,10 +74,10 @@ void acquire_chaos_weapon(PlayerType *player_ptr)
     item.to_d = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
     one_resistance(&item);
     item.ego_idx = EgoType::CHAOTIC;
-    (void)drop_near(*player_ptr, item, player_ptr->get_position());
+    (void)drop_near(creature, item, creature.get_position());
 }
 
-void acquire_hafted_weapon(PlayerType *player_ptr)
+void acquire_hafted_weapon(CreatureEntity &creature)
 {
     ItemEntity item(BaseitemKey(ItemKindType::HAFTED, SV_GREAT_HAMMER));
     {
@@ -116,5 +117,5 @@ void acquire_hafted_weapon(PlayerType *player_ptr)
             break;
         }
     }
-    (void)drop_near(*player_ptr, item, player_ptr->get_position());
+    (void)drop_near(creature, item, creature.get_position());
 }

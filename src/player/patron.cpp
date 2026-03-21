@@ -247,7 +247,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         case REW_CHAOS_WP:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「汝の行いは貴き剣に値せり。」", "'Thy deed hath earned thee a worthy blade.'"));
-            acquire_chaos_weapon(this->player_ptr);
+            acquire_chaos_weapon(*this->player_ptr);
             reward = _("(混沌)の武器を手に入れた。", "chaos weapon");
             break;
         case REW_GOOD_OBS:
@@ -489,7 +489,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
         case REW_GOOD_HAFTED:
             msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
             msg_print(_("「殺せ！叩き潰せ！擦り潰せ！」", "'Kill them! Crush them! Grind them into dust!'"));
-            acquire_hafted_weapon(this->player_ptr);
+            acquire_hafted_weapon(*this->player_ptr);
             reward = _("高級品の鈍器を手に入れた。", "a fine hafted weapon");
             break;
         case REW_IGNORE:
