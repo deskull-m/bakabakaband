@@ -576,7 +576,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
 
         player.plus_incident_tree("ATTACK_EXE_COUNT", 1);
 
-        if (!process_attack_hit(&player, pa_ptr, chance)) {
+        if (!process_attack_hit(player, pa_ptr, chance)) {
             continue;
         }
 

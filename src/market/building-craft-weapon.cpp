@@ -270,11 +270,11 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
 
     put_str(_("命中率:  0  50 100 150 200 (敵のAC)", "To Hit:  0  50 100 150 200 (AC)"), row + 2, col);
     put_str(format("        %2d  %2d  %2d  %2d  %2d (%%)",
-                (int)hit_chance(player_ptr, hit_reliability, 0),
-                (int)hit_chance(player_ptr, hit_reliability, 50),
-                (int)hit_chance(player_ptr, hit_reliability, 100),
-                (int)hit_chance(player_ptr, hit_reliability, 150),
-                (int)hit_chance(player_ptr, hit_reliability, 200)),
+                (int)hit_chance(*player_ptr, hit_reliability, 0),
+                (int)hit_chance(*player_ptr, hit_reliability, 50),
+                (int)hit_chance(*player_ptr, hit_reliability, 100),
+                (int)hit_chance(*player_ptr, hit_reliability, 150),
+                (int)hit_chance(*player_ptr, hit_reliability, 200)),
         row + 3, col);
     c_put_str(TERM_YELLOW, _("可能なダメージ:", "Possible Damage:"), row + 5, col);
 
