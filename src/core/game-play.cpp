@@ -143,13 +143,13 @@ static void send_waiting_record(PlayerType *player_ptr)
     /* 町名消失バグ対策(#38205)のためここで世界マップ情報を読み出す */
     const auto &area = WildernessGrids::get_instance().get_area();
     parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
-    bool success = send_world_score(player_ptr, true);
+    bool success = send_world_score(*player_ptr, true);
     if (!success && !input_check_strict(*player_ptr, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
         prt(_("引き続き待機します。", "standing by for future registration..."), 0, 0);
         (void)inkey();
     } else {
         system.set_awaiting_report_score(false);
-        top_twenty(player_ptr);
+        top_twenty(*player_ptr);
         if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
             msg_print(_("セーブ失敗！", "death save failed!"));
         }
@@ -483,6 +483,6 @@ void play_game(PlayerType *player_ptr, bool new_game, bool browsing_movie, std::
     (void)combine_and_reorder_home(*player_ptr, StoreSaleType::MUSEUM);
     select_floor_music(*player_ptr);
     process_game_turn(player_ptr);
-    close_game(player_ptr);
+    close_game(*player_ptr);
     quit("");
 }
