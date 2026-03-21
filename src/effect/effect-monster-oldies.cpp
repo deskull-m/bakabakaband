@@ -11,7 +11,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
@@ -39,13 +38,13 @@ ProcessResult effect_monster_old_poly(EffectMonster *em_ptr)
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_old_clone(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_old_clone(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
-    auto has_resistance = (player_ptr->current_floor_ptr->inside_arena);
+    auto has_resistance = (creature.current_floor_ptr->inside_arena);
     has_resistance |= em_ptr->m_ptr->is_pet();
     has_resistance |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE);
     has_resistance |= em_ptr->r_ptr->misc_flags.has(MonsterMiscType::QUESTOR);
@@ -58,7 +57,7 @@ ProcessResult effect_monster_old_clone(PlayerType *player_ptr, EffectMonster *em
     }
 
     em_ptr->m_ptr->hp = em_ptr->m_ptr->maxhp;
-    if (multiply_monster(*player_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->r_idx, true, 0L)) {
+    if (multiply_monster(creature, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->r_idx, true, 0L)) {
         em_ptr->note = _("が分裂した！", " spawns!");
     }
 
@@ -66,13 +65,13 @@ ProcessResult effect_monster_old_clone(PlayerType *player_ptr, EffectMonster *em
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_star_heal(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_star_heal(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
-    (void)set_monster_csleep(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+    (void)set_monster_csleep(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
 
     if (em_ptr->m_ptr->maxhp < em_ptr->m_ptr->max_maxhp) {
         if (em_ptr->seen_msg) {
@@ -90,45 +89,45 @@ ProcessResult effect_monster_star_heal(PlayerType *player_ptr, EffectMonster *em
         return ProcessResult::PROCESS_FALSE;
     }
 
-    effect_monster_old_heal(player_ptr, em_ptr);
+    effect_monster_old_heal(creature, em_ptr);
     return ProcessResult::PROCESS_TRUE;
 }
 
 // who == 0ならばプレイヤーなので、それの判定.
-static void effect_monster_old_heal_check_player(PlayerType *player_ptr, EffectMonster *em_ptr)
+static void effect_monster_old_heal_check_player(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->is_monster()) {
         return;
     }
 
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
+    chg_virtue(creature, Virtue::VITALITY, 1);
     if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+        chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
     }
 
     if (em_ptr->m_ptr->is_friendly()) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
+        chg_virtue(creature, Virtue::HONOUR, 1);
     } else if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::EVIL)) {
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::GOOD)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, 2);
+            chg_virtue(creature, Virtue::COMPASSION, 2);
         } else {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, 1);
+            chg_virtue(creature, Virtue::COMPASSION, 1);
         }
     }
 
     if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
+        chg_virtue(creature, Virtue::NATURE, 1);
     }
 }
 
-static void effect_monster_old_heal_recovery(PlayerType *player_ptr, EffectMonster *em_ptr)
+static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->m_ptr->get_remaining_stun()) {
         if (em_ptr->seen_msg) {
             msg_format(_("%s^は朦朧状態から立ち直った。", "%s^ is no longer stunned."), em_ptr->m_name);
         }
 
-        (void)set_monster_stunned(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_stunned(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
     }
 
     if (em_ptr->m_ptr->is_confused()) {
@@ -136,7 +135,7 @@ static void effect_monster_old_heal_recovery(PlayerType *player_ptr, EffectMonst
             msg_format(_("%s^は混乱から立ち直った。", "%s^ is no longer confused."), em_ptr->m_name);
         }
 
-        (void)set_monster_confused(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_confused(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
     }
 
     if (em_ptr->m_ptr->is_fearful()) {
@@ -144,19 +143,19 @@ static void effect_monster_old_heal_recovery(PlayerType *player_ptr, EffectMonst
             msg_format(_("%s^は勇気を取り戻した。", "%s^ recovers %s courage."), em_ptr->m_name, em_ptr->m_poss);
         }
 
-        (void)set_monster_monfear(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_monfear(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
     }
 }
 
-ProcessResult effect_monster_old_heal(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_old_heal(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
     /* Wake up */
-    (void)set_monster_csleep(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
-    effect_monster_old_heal_recovery(player_ptr, em_ptr);
+    (void)set_monster_csleep(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, 0);
+    effect_monster_old_heal_recovery(creature, em_ptr);
     if (em_ptr->m_ptr->hp < MONSTER_MAXHP) {
         em_ptr->m_ptr->hp += em_ptr->dam;
     }
@@ -164,11 +163,11 @@ ProcessResult effect_monster_old_heal(PlayerType *player_ptr, EffectMonster *em_
         em_ptr->m_ptr->hp = em_ptr->m_ptr->maxhp;
     }
 
-    effect_monster_old_heal_check_player(player_ptr, em_ptr);
+    effect_monster_old_heal_check_player(creature, em_ptr);
     if (em_ptr->m_ptr->r_idx == MonraceId::LEPER) {
         em_ptr->heal_leper = true;
         if (em_ptr->is_player()) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, 5);
+            chg_virtue(creature, Virtue::COMPASSION, 5);
         }
     }
 
@@ -182,22 +181,22 @@ ProcessResult effect_monster_old_heal(PlayerType *player_ptr, EffectMonster *em_
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_old_speed(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_old_speed(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
-    if (set_monster_fast(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100)) {
+    if (set_monster_fast(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_acceleration() + 100)) {
         em_ptr->note = _("の動きが速くなった。", " starts moving faster.");
     }
 
     if (em_ptr->is_player()) {
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 1);
+            chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
         }
         if (em_ptr->m_ptr->is_friendly()) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
+            chg_virtue(creature, Virtue::HONOUR, 1);
         }
     }
 
@@ -205,7 +204,7 @@ ProcessResult effect_monster_old_speed(PlayerType *player_ptr, EffectMonster *em
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_old_slow(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_old_slow(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
@@ -222,7 +221,7 @@ ProcessResult effect_monster_old_slow(PlayerType *player_ptr, EffectMonster *em_
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (set_monster_slow(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
+    if (set_monster_slow(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
         em_ptr->note = _("の動きが遅くなった。", " starts moving slower.");
     }
 
@@ -234,7 +233,7 @@ ProcessResult effect_monster_old_slow(PlayerType *player_ptr, EffectMonster *em_
  * @todo 「ユニークは (魔法では)常に眠らない」はMonsterRaceDefinitionの趣旨に反すると思われる
  * 眠る確率を半分にするとかしておいた方が良さそう
  */
-ProcessResult effect_monster_old_sleep(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_old_sleep(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
@@ -246,7 +245,7 @@ ProcessResult effect_monster_old_sleep(PlayerType *player_ptr, EffectMonster *em
 
     if (has_resistance) {
         if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
-            if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
                 em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_SLEEP);
             }
         }
@@ -266,7 +265,7 @@ ProcessResult effect_monster_old_sleep(PlayerType *player_ptr, EffectMonster *em
  * @todo 「ユニークは (魔法では)常に混乱しない」はMonsterRaceDefinitionの趣旨に反すると思われる
  * 眠る確率を半分にするとかしておいた方が良さそう
  */
-ProcessResult effect_monster_old_conf(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_old_conf(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
@@ -279,7 +278,7 @@ ProcessResult effect_monster_old_conf(PlayerType *player_ptr, EffectMonster *em_
     has_resistance |= (em_ptr->r_ptr->level > randint1(std::max(1, em_ptr->dam - 10)) + 10);
     if (has_resistance) {
         if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-            if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+            if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
                 em_ptr->r_ptr->resistance_flags.set(MonsterResistanceType::NO_CONF);
             }
         }
