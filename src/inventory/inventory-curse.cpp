@@ -228,7 +228,7 @@ static void curse_teleport(CreatureEntity &creature)
     const auto &item = *player_ptr->inventory[i_keep];
     const auto item_name = describe_flavor(*player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sがテレポートの能力を発動させようとしている。", "Your %s tries to teleport you."), item_name.data());
-    if (input_check_strict(player_ptr, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
+    if (input_check_strict(*player_ptr, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
         disturb(*player_ptr, false, true);
         teleport_player(*player_ptr, 50, TELEPORT_SPONTANEOUS);
     } else {

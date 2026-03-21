@@ -120,7 +120,7 @@ static void send_waiting_record(PlayerType *player_ptr)
         return;
     }
 
-    if (!input_check_strict(player_ptr, _("待機していたスコア登録を今行ないますか？", "Do you register score now? "), UserCheck::NO_HISTORY)) {
+    if (!input_check_strict(*player_ptr, _("待機していたスコア登録を今行ないますか？", "Do you register score now? "), UserCheck::NO_HISTORY)) {
         quit("");
     }
 
@@ -144,7 +144,7 @@ static void send_waiting_record(PlayerType *player_ptr)
     const auto &area = WildernessGrids::get_instance().get_area();
     parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
     bool success = send_world_score(player_ptr, true);
-    if (!success && !input_check_strict(player_ptr, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
+    if (!success && !input_check_strict(*player_ptr, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
         prt(_("引き続き待機します。", "standing by for future registration..."), 0, 0);
         (void)inkey();
     } else {

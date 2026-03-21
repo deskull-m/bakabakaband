@@ -515,7 +515,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
         death_save(&player);
         flush();
-        if (input_check_strict(&player, _("画面を保存しますか？", "Dump the screen? "), UserCheck::NO_HISTORY)) {
+        if (input_check_strict(player, _("画面を保存しますか？", "Dump the screen? "), UserCheck::NO_HISTORY)) {
             do_cmd_save_screen(player);
         }
 
@@ -547,7 +547,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
                 continue;
             }
 
-            if (input_check_strict(&player, _("よろしいですか？", "Are you sure? "), UserCheck::NO_HISTORY)) {
+            if (input_check_strict(player, _("よろしいですか？", "Are you sure? "), UserCheck::NO_HISTORY)) {
                 death_message = *input_last_words;
                 break;
             }

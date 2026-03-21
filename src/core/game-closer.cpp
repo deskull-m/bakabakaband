@@ -50,7 +50,7 @@ static void send_world_score_on_closing(PlayerType *player_ptr, bool do_send)
     }
 
     if (!input_check_strict(
-            player_ptr, _("後でスコアを登録するために待機しますか？", "Stand by for later score registration? "), { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
+            *player_ptr, _("後でスコアを登録するために待機しますか？", "Stand by for later score registration? "), { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
         return;
     }
 

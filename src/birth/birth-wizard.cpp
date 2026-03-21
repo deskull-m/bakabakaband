@@ -184,7 +184,7 @@ static bool let_player_select_race(CreatureEntity &creature)
 
         clear_from(10);
         display_wrap_around(race_explanations[enum2i(creature.prace)], 74, 12, 3);
-        if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+        if (input_check_strict(*player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
         }
 
@@ -208,7 +208,7 @@ static bool let_player_select_class(CreatureEntity &creature)
         clear_from(10);
         display_wrap_around(class_explanations[enum2i(creature.pclass)], 74, 12, 3);
 
-        if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+        if (input_check_strict(*player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
         }
 
@@ -230,7 +230,7 @@ static bool let_player_select_personality(CreatureEntity &creature)
         clear_from(10);
         display_wrap_around(personality_explanations[creature.ppersonality], 74, 12, 3);
 
-        if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+        if (input_check_strict(*player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
         }
 
@@ -258,7 +258,7 @@ static bool let_player_select_patron(CreatureEntity &creature)
         clear_from(10);
         put_str(_("パトロンが選択されました。", "Patron selected."), 12, 3);
 
-        if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
+        if (input_check_strict(*player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
             break;
         }
 

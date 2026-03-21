@@ -332,7 +332,7 @@ void wiz_change_status(CreatureEntity &creature)
     });
 
     constexpr auto msg = _("全てのステータスを最大にしますか？", "Maximize all statuses? ");
-    if (input_check_strict(player_ptr, msg, { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
+    if (input_check_strict(*player_ptr, msg, { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
         wiz_change_status_max(creature);
         return;
     }
