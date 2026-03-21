@@ -225,7 +225,7 @@ static bool parse_long_opt(const char *opt)
     }
 
     init_stuff();
-    init_angband(p_ptr, true);
+    init_angband(*p_ptr, true);
     switch (output_all_spoilers()) {
     case SpoilerOutputResultType::SUCCESSFUL:
         puts("Successfully created a spoiler file.");
@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
 
     {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
-        init_angband(p_ptr, false);
+        init_angband(*p_ptr, false);
         pause_line(MAIN_TERM_MIN_ROWS - 1);
     }
 
