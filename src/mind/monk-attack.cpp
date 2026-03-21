@@ -256,7 +256,7 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto num = pa_ptr->ma_ptr->damage_dice.num + player.damage_dice_bonus[pa_ptr->hand].num;
     const auto sides = pa_ptr->ma_ptr->damage_dice.sides + player.damage_dice_bonus[pa_ptr->hand].sides;
-    pa_ptr->attack_damage = calc_attack_damage_with_slay(&player, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
+    pa_ptr->attack_damage = calc_attack_damage_with_slay(creature, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
 
     if (player.special_attack & ATTACK_SUIKEN) {
         pa_ptr->attack_damage *= 2;
@@ -265,7 +265,7 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     int stun_effect = 0;
     int special_effect = process_monk_additional_effect(pa_ptr, &stun_effect);
     WEIGHT weight = calc_monk_attack_weight(creature);
-    pa_ptr->attack_damage = critical_norm(&player, creature.level * weight, min_level, pa_ptr->attack_damage, player.to_h[0], HISSATSU_NONE);
+    pa_ptr->attack_damage = critical_norm(creature, creature.level * weight, min_level, pa_ptr->attack_damage, creature.to_h[0], HISSATSU_NONE);
     process_attack_vital_spot(&player, pa_ptr, &stun_effect, &resist_stun, special_effect);
     print_stun_effect(&player, pa_ptr, stun_effect, resist_stun);
 }

@@ -112,7 +112,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
     if (!is_hit) {
         sound(SoundKind::MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), m_name.data());
@@ -122,7 +122,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     sound(SoundKind::HIT);
     msg_format(_("%sを%sで攻撃した。", "You hit %s with your %s."), m_name.data(), atk_desc);
 
-    auto k = critical_norm(player_ptr, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
+    auto k = critical_norm(creature, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
     k += creature.to_d_m;
     if (k < 0) {
         k = 0;
@@ -186,7 +186,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     creature.plus_incident_tree("HEADBUTT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -205,7 +205,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     msg_format(_("%sに%sを決めた！", "You deliver a %s to %s!"), m_name.data(), atk_desc);
 
     // クリティカル判定とダメージ計算
-    auto k = critical_norm(player_ptr, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
+    auto k = critical_norm(creature, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
     k += creature.to_d_m;
 
     // 狂戦士状態の場合は追加ダメージ
@@ -278,7 +278,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -297,7 +297,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     msg_format(_("%sに%sを叩き込んだ！", "You deliver a %s to %s!"), m_name.data(), atk_desc);
 
     // クリティカル判定とダメージ計算
-    auto k = critical_norm(player_ptr, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
+    auto k = critical_norm(creature, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
     k += creature.to_d_m + body_weight_bonus;
 
     // 状態による追加ダメージ
@@ -686,7 +686,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
 
     creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
     bool is_hit = (monrace.kind_flags.has_not(MonsterKindType::QUANTUM)) || !randint0(2);
-    is_hit &= test_hit_norm(player_ptr, chance, monster.get_ac(), monster.ml);
+    is_hit &= test_hit_norm(creature, chance, monster.get_ac(), monster.ml);
 
     if (!is_hit) {
         sound(SoundKind::MISS);
@@ -697,7 +697,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
     msg_format(_("%sに%sを叩き込んだ！", "You deliver a %s to %s!"), m_name.data(), atk_desc);
 
     // クリティカル判定とダメージ計算
-    auto k = critical_norm(player_ptr, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
+    auto k = critical_norm(creature, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
     k += creature.to_d_m;
 
     if (k < 0) {

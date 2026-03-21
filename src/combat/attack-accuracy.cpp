@@ -11,10 +11,10 @@
 #include "player/player-status-flags.h"
 #include "specific-object/death-scythe.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -26,12 +26,12 @@
  * @return 命中と判定された場合TRUEを返す
  * @note Always miss 5%, always hit 5%, otherwise random.
  */
-bool test_hit_norm(PlayerType *player_ptr, int chance, ARMOUR_CLASS ac, bool visible)
+bool test_hit_norm(CreatureEntity &creature, int chance, ARMOUR_CLASS ac, bool visible)
 {
     if (!visible) {
         chance = (chance + 1) / 2;
     }
-    return hit_chance(player_ptr, chance, ac) >= randint1(100);
+    return hit_chance(creature, chance, ac) >= randint1(100);
 }
 
 /*!
@@ -41,13 +41,13 @@ bool test_hit_norm(PlayerType *player_ptr, int chance, ARMOUR_CLASS ac, bool vis
  * @param ac 敵AC
  * @return 命中確率
  */
-PERCENTAGE hit_chance(PlayerType *player_ptr, int reli, ARMOUR_CLASS ac)
+PERCENTAGE hit_chance(CreatureEntity &creature, int reli, ARMOUR_CLASS ac)
 {
     PERCENTAGE chance = 5, chance_left = 90;
     if (reli <= 0) {
         return 5;
     }
-    if (player_ptr->ppersonality == PERSONALITY_LAZY) {
+    if (creature.ppersonality == PERSONALITY_LAZY) {
         chance_left = (chance_left * 19 + 9) / 20;
     }
     chance += (100 - ((ac * 75) / reli)) * chance_left / 100;
@@ -68,7 +68,7 @@ PERCENTAGE hit_chance(PlayerType *player_ptr, int reli, ARMOUR_CLASS ac)
  * Always miss 5% of the time, Always hit 5% of the time.
  * Otherwise, match monster power against player armor.
  */
-bool check_hit_from_monster_to_player(PlayerType *player_ptr, int power, DEPTH level, int stun)
+bool check_hit_from_monster_to_player(CreatureEntity &creature, int power, DEPTH level, int stun)
 {
     int k = randint0(100);
     if (stun && one_in_(2)) {
@@ -79,9 +79,9 @@ bool check_hit_from_monster_to_player(PlayerType *player_ptr, int power, DEPTH l
     }
     int i = (power + (level * 3));
 
-    int ac = player_ptr->ac + player_ptr->to_a;
-    if (player_ptr->special_attack & ATTACK_SUIKEN) {
-        ac += (player_ptr->level * 2);
+    int ac = creature.ac + creature.to_a;
+    if (creature.special_attack & ATTACK_SUIKEN) {
+        ac += (creature.level * 2);
     }
 
     if ((i > 0) && (randint1(i) > ((ac * 3) / 4))) {
@@ -121,15 +121,15 @@ bool check_hit_from_monster_to_monster(int power, DEPTH level, ARMOUR_CLASS ac, 
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param chance 基本命中値
  */
-static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr, int chance)
+static bool decide_attack_hit(CreatureEntity &creature, player_attack_type *pa_ptr, int chance)
 {
     bool success_hit = false;
-    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if ((o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) || (pa_ptr->mode == HISSATSU_KYUSHO)) {
         int n = 1;
 
-        if (can_attack_with_main_hand(*player_ptr) && can_attack_with_sub_hand(*player_ptr)) {
+        if (can_attack_with_main_hand(creature) && can_attack_with_sub_hand(creature)) {
             n *= 2;
         }
 
@@ -138,10 +138,10 @@ static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr
         }
 
         success_hit = one_in_(n);
-    } else if (CreatureClass(*player_ptr).equals(PlayerClassType::NINJA) && ((pa_ptr->backstab || pa_ptr->surprise_attack) && !monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL))) {
+    } else if (CreatureClass(creature).equals(PlayerClassType::NINJA) && ((pa_ptr->backstab || pa_ptr->surprise_attack) && !monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL))) {
         success_hit = true;
     } else {
-        success_hit = test_hit_norm(player_ptr, chance, pa_ptr->m_ptr->get_ac(), pa_ptr->m_ptr->ml);
+        success_hit = test_hit_norm(creature, chance, pa_ptr->m_ptr->get_ac(), pa_ptr->m_ptr->ml);
     }
 
     if ((pa_ptr->mode == HISSATSU_MAJIN) && one_in_(2)) {
@@ -158,10 +158,10 @@ static bool decide_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr
  * @param chance 基本命中値
  * @return 当たればTRUE、外れればFALSE
  */
-bool process_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr, int chance)
+bool process_attack_hit(CreatureEntity &creature, player_attack_type *pa_ptr, int chance)
 {
-    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
-    if (decide_attack_hit(player_ptr, pa_ptr, chance)) {
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    if (decide_attack_hit(creature, pa_ptr, chance)) {
         return true;
     }
 
@@ -169,7 +169,7 @@ bool process_attack_hit(PlayerType *player_ptr, player_attack_type *pa_ptr, int 
     pa_ptr->surprise_attack = false; /* Clumsy! */
 
     if ((o_ptr->bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE)) && one_in_(3)) {
-        process_death_scythe_reflection(*player_ptr, pa_ptr);
+        process_death_scythe_reflection(creature, pa_ptr);
     } else {
         sound(SoundKind::MISS);
         msg_format(_("ミス！ %sにかわされた。", "You miss %s."), pa_ptr->m_name);

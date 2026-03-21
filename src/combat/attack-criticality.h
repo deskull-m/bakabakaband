@@ -9,7 +9,7 @@
 constexpr auto CRITICAL_DIE_SIDES = 650; //<! クリティカル時に武器重量に上乗せするダイスの面数
 
 struct player_attack_type;
-class PlayerType;
+class CreatureEntity;
 std::tuple<int, std::string, SoundKind> apply_critical_norm_damage(int k, int base_dam, int mult = 1);
-int critical_norm(PlayerType *player_ptr, WEIGHT weight, int plus, int dam, int16_t meichuu, combat_options mode, bool impact = false);
-void critical_attack(PlayerType *player_ptr, player_attack_type *pa_ptr);
+int critical_norm(CreatureEntity &creature, WEIGHT weight, int plus, int dam, int16_t meichuu, combat_options mode, bool impact = false);
+void critical_attack(CreatureEntity &creature, player_attack_type *pa_ptr);

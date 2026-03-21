@@ -65,7 +65,7 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
         return;
     }
 
-    exe_fire(player_ptr, i_idx, item_ptr, snipe_type);
+    exe_fire(*player_ptr, i_idx, item_ptr, snipe_type);
     if (!player_ptr->is_fired || !CreatureClass(*player_ptr).equals(PlayerClassType::SNIPER)) {
         return;
     }

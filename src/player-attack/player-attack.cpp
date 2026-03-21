@@ -334,7 +334,7 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
     auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto num = o_ptr->damage_dice.num + player.damage_dice_bonus[pa_ptr->hand].num + magical_brand_extra_dice(pa_ptr);
     const auto sides = o_ptr->damage_dice.sides + player.damage_dice_bonus[pa_ptr->hand].sides;
-    pa_ptr->attack_damage = calc_attack_damage_with_slay(&player, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
+    pa_ptr->attack_damage = calc_attack_damage_with_slay(creature, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
     calc_surprise_attack_damage(creature, pa_ptr);
 
     if (does_equip_cause_earthquake(creature, pa_ptr) || (pa_ptr->chaos_effect == CE_QUAKE) || (pa_ptr->mode == HISSATSU_QUAKE)) {
@@ -343,7 +343,7 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
 
     auto do_impact = does_weapon_has_flag(player.impact, pa_ptr);
     if ((o_ptr->bi_key != BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) && !(pa_ptr->mode == HISSATSU_KYUSHO)) {
-        pa_ptr->attack_damage = critical_norm(&player, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, player.to_h[pa_ptr->hand], pa_ptr->mode, do_impact);
+        pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.to_h[pa_ptr->hand], pa_ptr->mode, do_impact);
     }
 
     pa_ptr->drain_result = pa_ptr->attack_damage;
@@ -508,7 +508,7 @@ static void apply_actual_attack(
     const auto is_death_scythe = o_ptr->bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE);
     const auto is_berserker = CreatureClass(creature).equals(PlayerClassType::BERSERKER);
     pa_ptr->attack_damage = mon_damage_mod(player, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
-    critical_attack(&player, pa_ptr);
+    critical_attack(creature, pa_ptr);
     msg_format_wizard(player, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"),
         pa_ptr->attack_damage, pa_ptr->m_ptr->hp - pa_ptr->attack_damage, pa_ptr->m_ptr->maxhp, pa_ptr->m_ptr->max_maxhp);
 }
@@ -576,11 +576,11 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
 
         player.plus_incident_tree("ATTACK_EXE_COUNT", 1);
 
-        if (!process_attack_hit(&player, pa_ptr, chance)) {
+        if (!process_attack_hit(player, pa_ptr, chance)) {
             continue;
         }
 
-        pa_ptr->attribute_flags = melee_attribute(&player, o_ptr, pa_ptr->mode);
+        pa_ptr->attribute_flags = melee_attribute(creature, o_ptr, pa_ptr->mode);
         apply_actual_attack(creature, pa_ptr, &do_quake, is_zantetsu_nullified, is_ej_nullified);
         calc_drain(pa_ptr);
         if (check_fear_death(creature, pa_ptr, num, is_lowlevel)) {

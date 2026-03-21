@@ -172,7 +172,7 @@ bool MonsterAttackPlayer::process_monster_blows()
             hit = true;
         } else {
             const int power = mbe_info[enum2i(this->effect)].power;
-            hit = check_hit_from_monster_to_player(this->player_ptr, power, this->rlev, this->m_ptr->get_remaining_stun());
+            hit = check_hit_from_monster_to_player(*this->player_ptr, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
 
         if (hit) {
@@ -267,7 +267,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     this->process_player_stun();
     this->monster_explode();
     this->process_sadist_reaction();
-    process_aura_counterattack(this->player_ptr, this);
+    process_aura_counterattack(*this->player_ptr, this);
     return true;
 }
 
