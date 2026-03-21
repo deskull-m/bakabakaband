@@ -374,7 +374,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
                 }
             }
 
-            if (affect_monster(&player, src_idx, effective_dist, pos.y, pos.x, dam, typ, flag, see_s_msg, cap_mon_ptr, &fall_off_horse_effect)) {
+            if (affect_monster(creature, src_idx, effective_dist, pos.y, pos.x, dam, typ, flag, see_s_msg, cap_mon_ptr, &fall_off_horse_effect)) {
                 res.notice = true;
             }
         }
