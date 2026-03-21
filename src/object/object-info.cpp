@@ -23,6 +23,7 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/int-char-converter.h"
 
 /*!
@@ -94,17 +95,16 @@ char index_to_label(int i)
  */
 int16_t wield_slot(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (o_ptr->bi_key.tval()) {
     case ItemKindType::DIGGING:
     case ItemKindType::HAFTED:
     case ItemKindType::POLEARM:
     case ItemKindType::SWORD:
-        if (!player_ptr->inventory[INVEN_MAIN_HAND]->bi_id) {
+        if (!creature.inventory[INVEN_MAIN_HAND]->bi_id) {
             return INVEN_MAIN_HAND;
         }
 
-        if (player_ptr->inventory[INVEN_SUB_HAND]->bi_id) {
+        if (creature.inventory[INVEN_SUB_HAND]->bi_id) {
             return INVEN_MAIN_HAND;
         }
 
@@ -112,11 +112,11 @@ int16_t wield_slot(CreatureEntity &creature, const ItemEntity *o_ptr)
     case ItemKindType::CAPTURE:
     case ItemKindType::CARD:
     case ItemKindType::SHIELD:
-        if (!player_ptr->inventory[INVEN_SUB_HAND]->bi_id) {
+        if (!creature.inventory[INVEN_SUB_HAND]->bi_id) {
             return INVEN_SUB_HAND;
         }
 
-        if (player_ptr->inventory[INVEN_MAIN_HAND]->bi_id) {
+        if (creature.inventory[INVEN_MAIN_HAND]->bi_id) {
             return INVEN_SUB_HAND;
         }
 
@@ -162,14 +162,13 @@ int16_t wield_slot(CreatureEntity &creature, const ItemEntity *o_ptr)
  */
 bool check_book_realm(CreatureEntity &creature, const BaseitemKey &bi_key)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!bi_key.is_spell_book()) {
         return false;
     }
 
     const auto tval = bi_key.tval();
     const auto book_realm = PlayerRealm::get_realm_of_book(tval);
-    CreatureClass pc(*player_ptr);
+    CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::SORCERER)) {
         return PlayerRealm::is_magic(book_realm);
     } else if (pc.equals(PlayerClassType::RED_MAGE)) {
@@ -179,7 +178,7 @@ bool check_book_realm(CreatureEntity &creature, const BaseitemKey &bi_key)
         return ((book_realm == RealmType::ARCANE) || (bi_key.sval() < 2));
     }
 
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(creature);
     return pr.realm1().equals(book_realm) || pr.realm2().equals(book_realm);
 }
 
