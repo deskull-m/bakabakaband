@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool create_ration(PlayerType *player_ptr);
+class CreatureEntity;
+bool create_ration(CreatureEntity &creature);
