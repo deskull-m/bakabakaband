@@ -267,7 +267,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     this->process_player_stun();
     this->monster_explode();
     this->process_sadist_reaction();
-    process_aura_counterattack(this->player_ptr, this);
+    process_aura_counterattack(*this->player_ptr, this);
     return true;
 }
 
