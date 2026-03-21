@@ -481,20 +481,21 @@ void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
-static void effect_player_time_addition(PlayerType *player_ptr)
+static void effect_player_time_addition(CreatureEntity &creature)
 {
+    auto *player_ptr = static_cast<PlayerType *>(&creature);
     switch (randint1(10)) {
     case 1:
     case 2:
     case 3:
     case 4:
     case 5: {
-        if (CreatureRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+        if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
             break;
         }
 
         msg_print(_("人生が逆戻りした気がする。", "You feel like a chunk of the past has been ripped away."));
-        lose_exp(static_cast<CreatureEntity &>(*player_ptr), 100 + (player_ptr->exp / 100) * MON_DRAIN_LIFE);
+        lose_exp(creature, 100 + (creature.exp / 100) * MON_DRAIN_LIFE);
         break;
     }
     case 6:
@@ -530,9 +531,8 @@ void effect_player_time(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!has_resist_time(creature) && !evaded) {
-        effect_player_time_addition(player_ptr);
+        effect_player_time_addition(creature);
     }
 }
 
