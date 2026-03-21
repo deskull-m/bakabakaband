@@ -241,9 +241,8 @@ void combine_pack(CreatureEntity &creature)
  */
 void reorder_pack(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    const auto comp = [player_ptr](const auto &item1, const auto &item2) {
-        return object_sort_comp(player_ptr, *item1, *item2);
+    const auto comp = [&creature](const auto &item1, const auto &item2) {
+        return object_sort_comp(creature, *item1, *item2);
     };
 
     const auto sort_count = std::min(enum2i(INVEN_PACK), creature.inven_cnt);
@@ -269,7 +268,6 @@ void reorder_pack(CreatureEntity &creature)
  */
 int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     INVENTORY_IDX i, j;
     INVENTORY_IDX n = -1;
 
@@ -308,7 +306,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
     i = j;
     if (i < INVEN_PACK && n >= 0) {
         for (j = 0; j < INVEN_PACK; j++) {
-            if (object_sort_comp(player_ptr, *o_ptr, *creature.inventory[j])) {
+            if (object_sort_comp(creature, *o_ptr, *creature.inventory[j])) {
                 break;
             }
         }

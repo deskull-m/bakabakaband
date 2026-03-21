@@ -665,7 +665,7 @@ static void display_found_item_list(CreatureEntity &creature)
     std::sort(
         found_item_list.begin(), found_item_list.end(),
         [player_ptr](const ItemEntity *left, const ItemEntity *right) -> bool {
-            return object_sort_comp(player_ptr, *left, *right);
+            return object_sort_comp(*player_ptr, *left, *right);
         });
 
     term_clear();
