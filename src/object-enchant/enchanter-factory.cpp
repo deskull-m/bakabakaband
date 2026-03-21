@@ -35,11 +35,11 @@ std::unique_ptr<EnchanterBase> EnchanterFactory::create_enchanter(PlayerType *pl
     case ItemKindType::SHOT:
     case ItemKindType::ARROW:
     case ItemKindType::BOLT:
-        return std::make_unique<ArrowEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<ArrowEnchanter>(*player_ptr, o_ptr, lev, power);
     case ItemKindType::BOW:
         return std::make_unique<BowEnchanter>(*player_ptr, o_ptr, lev, power);
     case ItemKindType::DIGGING:
-        return std::make_unique<DiggingEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<DiggingEnchanter>(*player_ptr, o_ptr, lev, power);
     case ItemKindType::HAFTED:
         return std::make_unique<HaftedEnchanter>(*player_ptr, o_ptr, lev, power);
     case ItemKindType::POLEARM:
