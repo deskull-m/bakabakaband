@@ -182,7 +182,7 @@ void SpellsMirrorMaster::seal_of_mirror(const int dam)
         }
 
         constexpr BIT_FLAGS flags = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP;
-        if (!affect_monster(this->player_ptr, 0, 0, pos.y, pos.x, dam, AttributeType::GENOCIDE, flags, true)) {
+        if (!affect_monster(*this->player_ptr, 0, 0, pos.y, pos.x, dam, AttributeType::GENOCIDE, flags, true)) {
             continue;
         }
 
@@ -284,13 +284,13 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
                 }
             }
 
-            if (affect_item(this->player_ptr, 0, 0, pos_dst.y, pos_dst.x, dam, typ)) {
+            if (affect_item(*this->player_ptr, 0, 0, pos_dst.y, pos_dst.x, dam, typ)) {
                 res.notice = true;
             }
         }
 
         for (const auto &[py, px] : path_g) {
-            if (affect_monster(this->player_ptr, 0, 0, py, px, dam, typ, flag, true)) {
+            if (affect_monster(*this->player_ptr, 0, 0, py, px, dam, typ, flag, true)) {
                 res.notice = true;
             }
             const auto &grid = floor.grid_array[project_m_y][project_m_x];
@@ -303,7 +303,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
                 health_track(*this->player_ptr, grid.m_idx);
             }
 
-            (void)affect_feature(this->player_ptr, 0, 0, py, px, dam, typ);
+            (void)affect_feature(*this->player_ptr, 0, 0, py, px, dam, typ);
         }
 
         const auto &[y, x] = path_g.back();
@@ -384,13 +384,13 @@ static bool activate_super_ray_effect(PlayerType *player_ptr, int y, int x, int 
     constexpr auto typ = AttributeType::SUPER_RAY;
     auto notice = false;
 
-    (void)affect_feature(player_ptr, 0, 0, y, x, dam, typ);
+    (void)affect_feature(*player_ptr, 0, 0, y, x, dam, typ);
 
-    if (affect_item(player_ptr, 0, 0, y, x, dam, typ)) {
+    if (affect_item(*player_ptr, 0, 0, y, x, dam, typ)) {
         notice = true;
     }
 
-    (void)affect_monster(player_ptr, 0, 0, y, x, dam, typ, flag, true);
+    (void)affect_monster(*player_ptr, 0, 0, y, x, dam, typ, flag, true);
 
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid = floor.grid_array[project_m_y][project_m_x];
