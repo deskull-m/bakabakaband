@@ -259,7 +259,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         PlayerEnergy(player_ptr).reset_player_turn();
         return true;
     case PlayerClassType::CAVALRY:
-        return rodeo(player_ptr);
+        return rodeo(creature);
     case PlayerClassType::BERSERKER:
         return recall_player(creature, randint0(21) + 15);
     case PlayerClassType::SMITH:
