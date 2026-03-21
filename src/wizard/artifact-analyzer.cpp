@@ -8,7 +8,6 @@
 #include "object/object-info.h"
 #include "system/artifact-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/enum-range.h"
@@ -24,8 +23,7 @@
  */
 static std::string analyze_general(CreatureEntity &creature, const ItemEntity &item)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    return describe_flavor(*player_ptr, item, OD_NAME_AND_ENCHANT | OD_STORE | OD_DEBUG);
+    return describe_flavor(creature, item, OD_NAME_AND_ENCHANT | OD_STORE | OD_DEBUG);
 }
 
 /*!

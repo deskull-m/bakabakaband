@@ -91,9 +91,8 @@
  */
 void wiz_cure_all(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    (void)life_stream(*player_ptr, false, false);
-    (void)restore_mana(*player_ptr, true);
+    (void)life_stream(creature, false, false);
+    (void)restore_mana(creature, true);
     (void)set_food(creature, PY_FOOD_MAX - 1);
     BadStatusSetter bss(creature);
     (void)bss.set_fear(0);
@@ -196,11 +195,10 @@ void wiz_create_item(CreatureEntity &creature)
  */
 static std::string wiz_make_named_artifact_desc(CreatureEntity &creature, FixedArtifactId fa_id)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
     ItemEntity item(artifact.bi_key);
     item.fa_id = fa_id;
-    return describe_flavor(*player_ptr, item, OD_NAME_ONLY | OD_STORE);
+    return describe_flavor(creature, item, OD_NAME_ONLY | OD_STORE);
 }
 
 /**
@@ -283,7 +281,6 @@ void wiz_create_named_art(CreatureEntity &creature)
 
 static void wiz_change_status_max(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (auto i = 0; i < A_MAX; ++i) {
         creature.stat_cur[i] = creature.stat_max_max[i];
         creature.stat_max[i] = creature.stat_max_max[i];
@@ -294,7 +291,7 @@ static void wiz_change_status_max(CreatureEntity &creature)
             exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
         }
     }
-    PlayerSkill(*player_ptr).limit_weapon_skills_by_max_value();
+    PlayerSkill(creature).limit_weapon_skills_by_max_value();
 
     for (auto &[type, exp] : creature.skill_exp) {
         exp = class_skills_info[enum2i(creature.pclass)].s_max[type];
@@ -325,14 +322,13 @@ static void wiz_change_status_max(CreatureEntity &creature)
  */
 void wiz_change_status(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto finalizer = util::make_finalizer([&creature]() {
         check_experience(creature);
         do_cmd_redraw(creature);
     });
 
     constexpr auto msg = _("全てのステータスを最大にしますか？", "Maximize all statuses? ");
-    if (input_check_strict(*player_ptr, msg, { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
+    if (input_check_strict(creature, msg, { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
         wiz_change_status_max(creature);
         return;
     }
@@ -362,7 +358,7 @@ void wiz_change_status(CreatureEntity &creature)
         }
     }
 
-    PlayerSkill(*player_ptr).limit_weapon_skills_by_max_value();
+    PlayerSkill(creature).limit_weapon_skills_by_max_value();
     for (auto j : PLAYER_SKILL_KIND_TYPE_RANGE) {
         creature.skill_exp[j] = *proficiency;
         auto short_pclass = enum2i(creature.pclass);
@@ -407,8 +403,7 @@ void wiz_change_status(CreatureEntity &creature)
  */
 void wiz_create_feature(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    const auto pos = point_target(*player_ptr);
+    const auto pos = point_target(creature);
     if (!pos) {
         return;
     }
@@ -499,7 +494,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
 
     msg_format("You jump to dungeon level %d.", *level);
     if (autosave_l) {
-        do_cmd_save_game(*player_ptr, true);
+        do_cmd_save_game(creature, true);
     }
 
     jump_floor(player_ptr, *dungeon_id, *level);
@@ -623,7 +618,6 @@ void wiz_reset_race(CreatureEntity &creature)
  */
 void wiz_reset_class(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     CandidateSelector cs("Which class: ", 15);
     constexpr EnumRange classes(PlayerClassType::WARRIOR, PlayerClassType::MAX);
     auto describe_class = [](auto player_class) { return class_info.at(player_class).title.string(); };
@@ -643,17 +637,17 @@ void wiz_reset_class(CreatureEntity &creature)
     creature.pclass_ref = &class_info.at(creature.pclass);
     mp_ptr = &class_magics_info[enum2i(creature.pclass)];
     CreatureClass(creature).init_specific_data();
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(creature);
     pr.reset();
     const auto &[realm1, realm2, element_realm] = *chosen_realms;
     if (realm1 != RealmType::NONE) {
         pr.set(realm1, realm2);
     }
-    player_ptr->element_realm = element_realm;
+    creature.element_realm = element_realm;
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
-    player_ptr->learned_spells = 0;
+    creature.learned_spells = 0;
     change_birth_flags();
     handle_stuff(creature);
 }
@@ -664,23 +658,22 @@ void wiz_reset_class(CreatureEntity &creature)
  */
 void wiz_reset_realms(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto chosen_realms = wiz_select_realms(creature.pclass);
     if (!chosen_realms) {
         return;
     }
 
-    PlayerRealm pr(*player_ptr);
+    PlayerRealm pr(creature);
     pr.reset();
     const auto &[realm1, realm2, element_realm] = *chosen_realms;
     if (realm1 != RealmType::NONE) {
         pr.set(realm1, realm2);
     }
-    player_ptr->element_realm = element_realm;
+    creature.element_realm = element_realm;
     PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
-    player_ptr->learned_spells = 0;
+    creature.learned_spells = 0;
     change_birth_flags();
     handle_stuff(creature);
 }
@@ -734,7 +727,6 @@ void wiz_dump_options()
  */
 void wiz_zap_surrounding_monsters(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.m_list[i];
@@ -747,7 +739,7 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
-        delete_monster_idx(*player_ptr, i);
+        delete_monster_idx(creature, i);
     }
 }
 
@@ -757,7 +749,6 @@ void wiz_zap_surrounding_monsters(CreatureEntity &creature)
  */
 void wiz_zap_floor_monsters(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &floor = *creature.current_floor_ptr;
     for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
         const auto &monster = floor.m_list[i];
@@ -770,7 +761,7 @@ void wiz_zap_floor_monsters(CreatureEntity &creature)
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
-        delete_monster_idx(*player_ptr, i);
+        delete_monster_idx(creature, i);
     }
 }
 
@@ -828,9 +819,9 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     world.noscore |= 0x0001;
     msg_erase();
 
-    player_ptr->is_dead_ = false;
-    (void)life_stream(*player_ptr, false, false);
-    (void)restore_mana(*player_ptr, true);
+    creature.is_dead_ = false;
+    (void)life_stream(creature, false, false);
+    (void)restore_mana(creature, true);
     (void)recall_player(creature, 0);
     reserve_alter_reality(creature, 0);
 
@@ -844,7 +835,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     leaving_quest = QuestId::NONE;
     floor.quest_number = QuestId::NONE;
     if (floor.is_underground()) {
-        player_ptr->recall_dungeon = floor.dungeon_id;
+        creature.recall_dungeon = floor.dungeon_id;
     }
 
     floor.reset_dungeon_index();
@@ -859,7 +850,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     }
 
     world.set_wild_mode(false);
-    player_ptr->leaving = true;
+    creature.leaving = true;
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);
     leave_floor(player_ptr);
