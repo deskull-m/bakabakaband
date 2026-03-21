@@ -16,7 +16,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief EffectMonster構造体のコンストラクタ
@@ -30,7 +29,7 @@
  * @param flag 効果フラグ
  * @param see_s_msg TRUEならばメッセージを表示する
  */
-EffectMonster::EffectMonster(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType attribute, BIT_FLAGS flag, bool see_s_msg)
+EffectMonster::EffectMonster(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType attribute, BIT_FLAGS flag, bool see_s_msg)
     : src_idx(src_idx)
     , r(r)
     , y(y)
@@ -40,17 +39,17 @@ EffectMonster::EffectMonster(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITI
     , flag(flag)
     , see_s_msg(see_s_msg)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     this->g_ptr = &floor.grid_array[this->y][this->x];
     this->m_ptr = &floor.m_list[this->g_ptr->m_idx];
     this->m_caster_ptr = this->is_monster() ? &floor.m_list[this->src_idx] : nullptr;
     this->r_ptr = &this->m_ptr->get_monrace();
     this->seen = this->m_ptr->ml;
-    this->seen_msg = is_seen(*player_ptr, *this->m_ptr);
+    this->seen_msg = is_seen(creature, *this->m_ptr);
     this->slept = this->m_ptr->is_asleep();
     this->known = (this->m_ptr->cdis <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
     this->note_dies = this->m_ptr->get_died_message();
-    this->caster_lev = (this->is_monster() && (this->m_caster_ptr != nullptr)) ? this->m_caster_ptr->get_monrace().level : (player_ptr->level * 2);
+    this->caster_lev = (this->is_monster() && (this->m_caster_ptr != nullptr)) ? this->m_caster_ptr->get_monrace().level : (creature.level * 2);
 }
 
 bool EffectMonster::is_player() const
