@@ -303,7 +303,7 @@ static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->cast = cast_force_spell(player, i2enum<MindForceTrainerType>(cm_ptr->n));
         return true;
     case MindKindType::BERSERKER:
-        cm_ptr->cast = cast_berserk_spell(&player, i2enum<MindBerserkerType>(cm_ptr->n));
+        cm_ptr->cast = cast_berserk_spell(player, i2enum<MindBerserkerType>(cm_ptr->n));
         return true;
     case MindKindType::MIRROR_MASTER:
         if (player.current_floor_ptr->grid_array[player.y][player.x].is_mirror()) {

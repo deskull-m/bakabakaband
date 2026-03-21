@@ -1,5 +1,5 @@
 #pragma once
 
 enum class MindBerserkerType : int;
-class PlayerType;
-bool cast_berserk_spell(PlayerType *player_ptr, MindBerserkerType spell);
+class CreatureEntity;
+bool cast_berserk_spell(CreatureEntity &creature, MindBerserkerType spell);
