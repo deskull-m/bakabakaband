@@ -249,7 +249,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
     if (flag & (PROJECT_GRID)) {
         for (const auto &[dist, pos] : positions) {
             const auto effective_dist = breath ? dist_to_line(pos, pos_source, pos_impact) : dist;
-            if (affect_feature(&player, src_idx, effective_dist, pos.y, pos.x, dam, typ)) {
+            if (affect_feature(creature, src_idx, effective_dist, pos.y, pos.x, dam, typ)) {
                 res.notice = true;
             }
         }
