@@ -13,6 +13,6 @@
 
 #include <filesystem>
 
-class PlayerType;
-void init_angband(PlayerType *player_ptr, bool no_term);
+class CreatureEntity;
+void init_angband(CreatureEntity &creature, bool no_term);
 void init_file_paths(const std::filesystem::path &libpath);

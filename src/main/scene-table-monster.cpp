@@ -62,16 +62,16 @@ inline static bool can_mute_scene_monster()
 /*!
  * @brief モンスターの優先判定
  * @details ユニーク、あやしい影、未知のモンスター、レベルの高さ、モンスターIDで優先を付ける。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx1 モンスターA（新参）
  * @param m_idx2 モンスターB（現対象）
  * @retval true モンスターAが優先
  * @retval false モンスターBが優先
  */
-static bool is_high_rate(PlayerType *player_ptr, MONSTER_IDX m_idx1, MONSTER_IDX m_idx2)
+static bool is_high_rate(CreatureEntity &creature, MONSTER_IDX m_idx1, MONSTER_IDX m_idx2)
 {
     // FIXME 視界内モンスターリストの比較関数と同じ処理
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto &monster1 = floor.m_list[m_idx1];
     const auto &monster2 = floor.m_list[m_idx2];
     auto ap_r_ptr1 = &monster1.get_appearance_monrace();
@@ -106,10 +106,10 @@ static bool is_high_rate(PlayerType *player_ptr, MONSTER_IDX m_idx1, MONSTER_IDX
  * @details 現在の対象と対象候補が同一モンスターの場合、最後に見たゲームターン情報を更新する。
  * 対象候補が現在の対象よりも上位であれば対象を入れ替える。
  * ユニーク、あやしい影、未知のモンスター、レベルの高さ、モンスターIDで優先を付ける。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx BGM対象候補のモンスター
  */
-static void update_target_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
+static void update_target_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     if (scene_target_monster.ap_r_ptr && (scene_target_monster.m_idx == m_idx)) {
         // 同一モンスター。最後に見たゲームターンを更新。
@@ -119,13 +119,13 @@ static void update_target_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
         if (!scene_target_monster.ap_r_ptr) {
             // 空席
             do_dwap = true;
-        } else if (is_high_rate(player_ptr, m_idx, scene_target_monster.m_idx)) {
+        } else if (is_high_rate(creature, m_idx, scene_target_monster.m_idx)) {
             // 入れ替え
             do_dwap = true;
         }
 
         if (do_dwap) {
-            const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+            const auto &monster = creature.current_floor_ptr->m_list[m_idx];
             auto *ap_r_ptr = &monster.get_appearance_monrace();
             scene_target_monster.m_idx = m_idx;
             scene_target_monster.ap_r_ptr = ap_r_ptr;
@@ -134,11 +134,11 @@ static void update_target_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 }
 
-using scene_monster_func = bool (*)(PlayerType *player_ptr, scene_type *value);
+using scene_monster_func = bool (*)(CreatureEntity &creature, scene_type *value);
 
-static bool scene_monster(PlayerType *player_ptr, scene_type *value)
+static bool scene_monster(CreatureEntity &creature, scene_type *value)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[scene_target_monster.m_idx];
+    const auto &monster = creature.current_floor_ptr->m_list[scene_target_monster.m_idx];
 
     if (monster.mflag2.has(MonsterConstantFlagType::KAGE)) {
         value->type = TERM_XTRA_MUSIC_BASIC;
@@ -151,9 +151,9 @@ static bool scene_monster(PlayerType *player_ptr, scene_type *value)
     }
 }
 
-static bool scene_unique(PlayerType *player_ptr, scene_type *value)
+static bool scene_unique(CreatureEntity &creature, scene_type *value)
 {
-    (void)player_ptr;
+    (void)creature;
 
     if (scene_target_monster.ap_r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
         value->type = TERM_XTRA_MUSIC_BASIC;
@@ -164,9 +164,9 @@ static bool scene_unique(PlayerType *player_ptr, scene_type *value)
     return false;
 }
 
-static bool scene_unknown(PlayerType *player_ptr, scene_type *value)
+static bool scene_unknown(CreatureEntity &creature, scene_type *value)
 {
-    (void)player_ptr;
+    (void)creature;
     if (scene_target_monster.ap_r_ptr->r_tkills == 0) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_UNKNOWN_MONSTER;
@@ -176,9 +176,9 @@ static bool scene_unknown(PlayerType *player_ptr, scene_type *value)
     return false;
 }
 
-static bool scene_high_level(PlayerType *player_ptr, scene_type *value)
+static bool scene_high_level(CreatureEntity &creature, scene_type *value)
 {
-    if (scene_target_monster.ap_r_ptr->r_tkills > 0 && (scene_target_monster.ap_r_ptr->level >= player_ptr->level)) {
+    if (scene_target_monster.ap_r_ptr->r_tkills > 0 && (scene_target_monster.ap_r_ptr->level >= creature.level)) {
         value->type = TERM_XTRA_MUSIC_BASIC;
         value->val = MUSIC_BASIC_HIGHER_LEVEL_MONSTER;
         return true;
@@ -211,12 +211,12 @@ int get_scene_monster_count()
  * @details リストのfrom_indexの位置から、get_scene_monster_count()で得られる個数分設定する。
  * 視界内モンスターリスト先頭のモンスターを記憶し、以前のモンスターと比較してより上位のモンスターをBGM選曲の対象とする。
  * 記憶したモンスターが視界内に存在しない場合、一定のゲームターン経過で忘れる。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster_list 視界内モンスターリスト
  * @param list BGM選曲リスト
  * @param from_index リストの更新開始位置
  */
-void refresh_scene_monster(PlayerType *player_ptr, const std::vector<MONSTER_IDX> &monster_list, scene_type_list &list, int from_index)
+void refresh_scene_monster(CreatureEntity &creature, const std::vector<MONSTER_IDX> &monster_list, scene_type_list &list, int from_index)
 {
     const bool mute = can_mute_scene_monster();
 
@@ -230,7 +230,7 @@ void refresh_scene_monster(PlayerType *player_ptr, const std::vector<MONSTER_IDX
                 // 最後に見かけてから一定のゲームターンが経過した場合、BGM対象から外す
                 clear_scene_target_monster();
             } else {
-                const auto &monster = player_ptr->current_floor_ptr->m_list[scene_target_monster.m_idx];
+                const auto &monster = creature.current_floor_ptr->m_list[scene_target_monster.m_idx];
                 auto *ap_r_ptr = &monster.get_appearance_monrace();
                 if (ap_r_ptr != scene_target_monster.ap_r_ptr) {
                     // 死亡、チェンジモンスター、etc.
@@ -241,7 +241,7 @@ void refresh_scene_monster(PlayerType *player_ptr, const std::vector<MONSTER_IDX
 
         if (!monster_list.empty()) {
             // 現在のBGM対象とモンスターリスト先頭を比較し、上位をBGM対象に設定する
-            update_target_monster(player_ptr, monster_list.front());
+            update_target_monster(creature, monster_list.front());
         }
     }
 
@@ -249,7 +249,7 @@ void refresh_scene_monster(PlayerType *player_ptr, const std::vector<MONSTER_IDX
         // BGM対象の条件で選曲リストを設定する
         for (auto func : scene_monster_def_list) {
             scene_type &item = list[from_index];
-            if (!func(player_ptr, &item)) {
+            if (!func(creature, &item)) {
                 // Note -- 特に定義を設けていないが、type = 0は無効な値とする。
                 item.type = 0;
                 item.val = 0;

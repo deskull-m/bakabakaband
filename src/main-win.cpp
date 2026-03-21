@@ -1896,7 +1896,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
 
         init_music();
         if (game_in_progress) {
-            select_floor_music(player_ptr);
+            select_floor_music(*player_ptr);
         }
 
         break;
@@ -2716,7 +2716,7 @@ static void init_stuff()
 void create_debug_spoiler()
 {
     init_stuff();
-    init_angband(p_ptr, true);
+    init_angband(*p_ptr, true);
 
     switch (output_all_spoilers()) {
     case SpoilerOutputResultType::SUCCESSFUL:
@@ -2820,7 +2820,7 @@ int WINAPI WinMain(
     {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
-        init_angband(p_ptr, false);
+        init_angband(*p_ptr, false);
         initialized = true;
 
         check_for_save_file(command_line.get_savefile_option());

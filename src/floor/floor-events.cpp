@@ -311,7 +311,7 @@ void update_dungeon_feeling(CreatureEntity &creature)
     df.set_feeling(new_feeling);
     auto &player = static_cast<PlayerType &>(creature);
     do_cmd_feeling(player);
-    select_floor_music(&player);
+    select_floor_music(player);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
     if (disturb_minor) {
         disturb(creature, false, false);
