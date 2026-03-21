@@ -31,11 +31,10 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-ProcessResult effect_monster_hypodynamia(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_hypodynamia(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
@@ -46,7 +45,7 @@ ProcessResult effect_monster_hypodynamia(PlayerType *player_ptr, EffectMonster *
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::DEMON)) {
             em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::DEMON);
         }
@@ -67,14 +66,14 @@ ProcessResult effect_monster_hypodynamia(PlayerType *player_ptr, EffectMonster *
 /*!
  * @todo リファクタリング前のコード時点で、単に耐性があるだけでもダメージ0だった.
  */
-ProcessResult effect_monster_death_ray(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_death_ray(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
     if (!em_ptr->m_ptr->has_living_flag()) {
-        if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::DEMON)) {
                 em_ptr->r_ptr->r_kind_flags.set(MonsterKindType::DEMON);
             }
@@ -104,7 +103,7 @@ ProcessResult effect_monster_death_ray(PlayerType *player_ptr, EffectMonster *em
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_kill_wall(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_kill_wall(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_ROCK)) {
         em_ptr->dam = 0;
@@ -115,7 +114,7 @@ ProcessResult effect_monster_kill_wall(PlayerType *player_ptr, EffectMonster *em
         em_ptr->obvious = true;
     }
 
-    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_ROCK);
     }
 
@@ -160,7 +159,7 @@ ProcessResult effect_monster_hand_doom(EffectMonster *em_ptr)
  * 寝た場合は試行終了。
  * 与える効果は減速、朦朧、混乱、睡眠。
  */
-ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_engetsu(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
@@ -170,7 +169,7 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
         em_ptr->note = _("には効果がなかった。", " is unaffected.");
         em_ptr->dam = 0;
         em_ptr->skipped = true;
-        if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
         }
         return ProcessResult::PROCESS_CONTINUE;
@@ -197,7 +196,7 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
         switch (randint0(4)) {
         case 0:
             if (em_ptr->r_ptr->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-                if (set_monster_slow(*player_ptr->current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
+                if (set_monster_slow(*creature.current_floor_ptr, em_ptr->g_ptr->m_idx, em_ptr->m_ptr->get_remaining_deceleration() + 50)) {
                     em_ptr->note = _("の動きが遅くなった。", " starts moving slower.");
                 }
                 done = true;
@@ -207,14 +206,14 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
                 em_ptr->do_stun = 0;
             } else {
-                em_ptr->do_stun = Dice::roll((player_ptr->level / 10) + 3, (em_ptr->dam)) + 1;
+                em_ptr->do_stun = Dice::roll((creature.level / 10) + 3, (em_ptr->dam)) + 1;
                 done = true;
             }
             break;
         case 2:
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
                 if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-                    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+                    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
                         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::NO_CONF);
                     }
                 }
@@ -229,7 +228,7 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
         default:
             if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
                 if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
-                    if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+                    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
                         em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::NO_SLEEP);
                     }
                 }
@@ -257,18 +256,18 @@ ProcessResult effect_monster_engetsu(PlayerType *player_ptr, EffectMonster *em_p
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_genocide(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_genocide(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
     std::string_view spell_name(_("モンスター消滅", "Genocide One"));
-    if (genocide_aux(*player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+    if (genocide_aux(creature, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sは消滅した！", "%s^ disappeared!"), em_ptr->m_name);
         }
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
+        chg_virtue(creature, Virtue::VITALITY, -1);
         return ProcessResult::PROCESS_TRUE;
     }
 
@@ -276,7 +275,7 @@ ProcessResult effect_monster_genocide(PlayerType *player_ptr, EffectMonster *em_
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_social_genocide(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
@@ -288,11 +287,11 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
     if (monrace.kind_flags.has(MonsterKindType::PERVERT)) {
         auto dam = em_ptr->dam * 8;
         std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
-        if (genocide_aux(*player_ptr, em_ptr->g_ptr->m_idx, dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+        if (genocide_aux(creature, em_ptr->g_ptr->m_idx, dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
             if (em_ptr->seen_msg) {
                 msg_format(_("%sは変質者として社会から完全に抹殺された！", "%s^ has been completely eliminated from society as a pervert!"), em_ptr->m_name);
             }
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
+            chg_virtue(creature, Virtue::VITALITY, -1);
             return ProcessResult::PROCESS_TRUE;
         }
     }
@@ -304,11 +303,11 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
     }
 
     std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
-    if (genocide_aux(*player_ptr, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
+    if (genocide_aux(creature, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->r_ptr->level + 1) / 2, spell_name.data())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sは社会から抹殺された！", "%s^ has been socially eliminated!"), em_ptr->m_name);
         }
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
+        chg_virtue(creature, Virtue::VITALITY, -1);
         return ProcessResult::PROCESS_TRUE;
     }
 
@@ -316,7 +315,7 @@ ProcessResult effect_monster_social_genocide(PlayerType *player_ptr, EffectMonst
     return ProcessResult::PROCESS_CONTINUE;
 }
 
-ProcessResult effect_monster_photo(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_photo(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->is_player()) {
         msg_format(_("%sを写真に撮った。", "You take a photograph of %s."), em_ptr->m_name);
@@ -327,7 +326,7 @@ ProcessResult effect_monster_photo(PlayerType *player_ptr, EffectMonster *em_ptr
             em_ptr->obvious = true;
         }
 
-        if (is_original_ap_and_seen(*player_ptr, *em_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
             em_ptr->r_ptr->r_resistance_flags.set(MonsterResistanceType::HURT_LITE);
         }
 
@@ -360,7 +359,7 @@ ProcessResult effect_monster_wounds(EffectMonster *em_ptr)
  * @param em_ptr モンスター効果構造体への参照ポインタ
  * @return ここのスイッチングで終るならTRUEかFALSE、後続処理を実行するならCONTINUE
  */
-ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> cap_mon_ptr)
+ProcessResult switch_effects_monster(CreatureEntity &creature, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> cap_mon_ptr)
 {
     switch (em_ptr->attribute) {
     case AttributeType::PSY_SPEAR:
@@ -374,135 +373,135 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
     case AttributeType::MONSTER_SHOOT:
         return effect_monster_nothing(em_ptr);
     case AttributeType::ACID:
-        return effect_monster_acid(player_ptr, em_ptr);
+        return effect_monster_acid(creature, em_ptr);
     case AttributeType::ELEC:
-        return effect_monster_elec(player_ptr, em_ptr);
+        return effect_monster_elec(creature, em_ptr);
     case AttributeType::FIRE:
-        return effect_monster_fire(player_ptr, em_ptr);
+        return effect_monster_fire(creature, em_ptr);
     case AttributeType::COLD:
-        return effect_monster_cold(player_ptr, em_ptr);
+        return effect_monster_cold(creature, em_ptr);
     case AttributeType::POIS:
-        return effect_monster_pois(player_ptr, em_ptr);
+        return effect_monster_pois(creature, em_ptr);
     case AttributeType::NUKE:
-        return effect_monster_nuke(player_ptr, em_ptr);
+        return effect_monster_nuke(creature, em_ptr);
     case AttributeType::HELL_FIRE:
-        return effect_monster_hell_fire(player_ptr, em_ptr);
+        return effect_monster_hell_fire(creature, em_ptr);
     case AttributeType::HOLY_FIRE:
-        return effect_monster_holy_fire(player_ptr, em_ptr);
+        return effect_monster_holy_fire(creature, em_ptr);
     case AttributeType::PLASMA:
-        return effect_monster_plasma(player_ptr, em_ptr);
+        return effect_monster_plasma(creature, em_ptr);
     case AttributeType::NETHER:
-        return effect_monster_nether(player_ptr, em_ptr);
+        return effect_monster_nether(creature, em_ptr);
     case AttributeType::WATER:
-        return effect_monster_water(player_ptr, em_ptr);
+        return effect_monster_water(creature, em_ptr);
     case AttributeType::CHAOS:
-        return effect_monster_chaos(player_ptr, em_ptr);
+        return effect_monster_chaos(creature, em_ptr);
     case AttributeType::SHARDS:
-        return effect_monster_shards(player_ptr, em_ptr);
+        return effect_monster_shards(creature, em_ptr);
     case AttributeType::ROCKET:
-        return effect_monster_rocket(player_ptr, em_ptr);
+        return effect_monster_rocket(creature, em_ptr);
     case AttributeType::SOUND:
-        return effect_monster_sound(player_ptr, em_ptr);
+        return effect_monster_sound(creature, em_ptr);
     case AttributeType::CONFUSION:
-        return effect_monster_confusion(player_ptr, em_ptr);
+        return effect_monster_confusion(creature, em_ptr);
     case AttributeType::DISENCHANT:
-        return effect_monster_disenchant(player_ptr, em_ptr);
+        return effect_monster_disenchant(creature, em_ptr);
     case AttributeType::NEXUS:
-        return effect_monster_nexus(player_ptr, em_ptr);
+        return effect_monster_nexus(creature, em_ptr);
     case AttributeType::FORCE:
-        return effect_monster_force(player_ptr, em_ptr);
+        return effect_monster_force(creature, em_ptr);
     case AttributeType::INERTIAL:
-        return effect_monster_inertial(player_ptr, em_ptr);
+        return effect_monster_inertial(creature, em_ptr);
     case AttributeType::TIME:
-        return effect_monster_time(player_ptr, em_ptr);
+        return effect_monster_time(creature, em_ptr);
     case AttributeType::GRAVITY:
-        return effect_monster_gravity(player_ptr, em_ptr);
+        return effect_monster_gravity(creature, em_ptr);
     case AttributeType::DISINTEGRATE:
-        return effect_monster_disintegration(player_ptr, em_ptr);
+        return effect_monster_disintegration(creature, em_ptr);
     case AttributeType::PSI:
-        return effect_monster_psi(player_ptr, em_ptr);
+        return effect_monster_psi(creature, em_ptr);
     case AttributeType::PSI_DRAIN:
-        return effect_monster_psi_drain(player_ptr, em_ptr);
+        return effect_monster_psi_drain(creature, em_ptr);
     case AttributeType::TELEKINESIS:
         return effect_monster_telekinesis(em_ptr);
     case AttributeType::DOMINATION:
-        return effect_monster_domination(player_ptr, em_ptr);
+        return effect_monster_domination(creature, em_ptr);
     case AttributeType::ICE:
-        return effect_monster_icee_bolt(player_ptr, em_ptr);
+        return effect_monster_icee_bolt(creature, em_ptr);
     case AttributeType::HYPODYNAMIA:
-        return effect_monster_hypodynamia(player_ptr, em_ptr);
+        return effect_monster_hypodynamia(creature, em_ptr);
     case AttributeType::DEATH_RAY:
-        return effect_monster_death_ray(player_ptr, em_ptr);
+        return effect_monster_death_ray(creature, em_ptr);
     case AttributeType::OLD_POLY:
         return effect_monster_old_poly(em_ptr);
     case AttributeType::OLD_CLONE:
-        return effect_monster_old_clone(player_ptr, em_ptr);
+        return effect_monster_old_clone(creature, em_ptr);
     case AttributeType::STAR_HEAL:
-        return effect_monster_star_heal(player_ptr, em_ptr);
+        return effect_monster_star_heal(creature, em_ptr);
     case AttributeType::OLD_HEAL:
-        return effect_monster_old_heal(player_ptr, em_ptr);
+        return effect_monster_old_heal(creature, em_ptr);
     case AttributeType::OLD_SPEED:
-        return effect_monster_old_speed(player_ptr, em_ptr);
+        return effect_monster_old_speed(creature, em_ptr);
     case AttributeType::OLD_SLOW:
-        return effect_monster_old_slow(player_ptr, em_ptr);
+        return effect_monster_old_slow(creature, em_ptr);
     case AttributeType::OLD_SLEEP:
-        return effect_monster_old_sleep(player_ptr, em_ptr);
+        return effect_monster_old_sleep(creature, em_ptr);
     case AttributeType::STASIS_EVIL:
         return effect_monster_stasis(em_ptr, true);
     case AttributeType::STASIS:
         return effect_monster_stasis(em_ptr, false);
     case AttributeType::CHARM:
-        return effect_monster_charm(player_ptr, em_ptr);
+        return effect_monster_charm(creature, em_ptr);
     case AttributeType::CONTROL_UNDEAD:
-        return effect_monster_control_undead(player_ptr, em_ptr);
+        return effect_monster_control_undead(creature, em_ptr);
     case AttributeType::CONTROL_DEMON:
-        return effect_monster_control_demon(player_ptr, em_ptr);
+        return effect_monster_control_demon(creature, em_ptr);
     case AttributeType::CONTROL_ANIMAL:
-        return effect_monster_control_animal(player_ptr, em_ptr);
+        return effect_monster_control_animal(creature, em_ptr);
     case AttributeType::CHARM_LIVING:
-        return effect_monster_charm_living(player_ptr, em_ptr);
+        return effect_monster_charm_living(creature, em_ptr);
     case AttributeType::OLD_CONF:
-        return effect_monster_old_conf(player_ptr, em_ptr);
+        return effect_monster_old_conf(creature, em_ptr);
     case AttributeType::STUN:
         return effect_monster_stun(em_ptr);
     case AttributeType::LITE_WEAK:
-        return effect_monster_lite_weak(player_ptr, em_ptr);
+        return effect_monster_lite_weak(creature, em_ptr);
     case AttributeType::LITE:
-        return effect_monster_lite(player_ptr, em_ptr);
+        return effect_monster_lite(creature, em_ptr);
     case AttributeType::DARK:
-        return effect_monster_dark(player_ptr, em_ptr);
+        return effect_monster_dark(creature, em_ptr);
     case AttributeType::KILL_WALL:
-        return effect_monster_kill_wall(player_ptr, em_ptr);
+        return effect_monster_kill_wall(creature, em_ptr);
     case AttributeType::AWAY_UNDEAD:
-        return effect_monster_away_undead(player_ptr, em_ptr);
+        return effect_monster_away_undead(creature, em_ptr);
     case AttributeType::AWAY_EVIL:
-        return effect_monster_away_evil(player_ptr, em_ptr);
+        return effect_monster_away_evil(creature, em_ptr);
     case AttributeType::AWAY_ALL:
-        return effect_monster_away_all(player_ptr, em_ptr);
+        return effect_monster_away_all(creature, em_ptr);
     case AttributeType::TURN_UNDEAD:
-        return effect_monster_turn_undead(player_ptr, em_ptr);
+        return effect_monster_turn_undead(creature, em_ptr);
     case AttributeType::TURN_EVIL:
-        return effect_monster_turn_evil(player_ptr, em_ptr);
+        return effect_monster_turn_evil(creature, em_ptr);
     case AttributeType::TURN_ALL:
         return effect_monster_turn_all(em_ptr);
     case AttributeType::DISP_UNDEAD:
-        return effect_monster_disp_undead(player_ptr, em_ptr);
+        return effect_monster_disp_undead(creature, em_ptr);
     case AttributeType::DISP_EVIL:
-        return effect_monster_disp_evil(player_ptr, em_ptr);
+        return effect_monster_disp_evil(creature, em_ptr);
     case AttributeType::DISP_GOOD:
-        return effect_monster_disp_good(player_ptr, em_ptr);
+        return effect_monster_disp_good(creature, em_ptr);
     case AttributeType::DISP_LIVING:
         return effect_monster_disp_living(em_ptr);
     case AttributeType::DISP_DEMON:
-        return effect_monster_disp_demon(player_ptr, em_ptr);
+        return effect_monster_disp_demon(creature, em_ptr);
     case AttributeType::DISP_ALL:
         return effect_monster_disp_all(em_ptr);
     case AttributeType::DRAIN_MANA:
-        return effect_monster_drain_mana(player_ptr, em_ptr);
+        return effect_monster_drain_mana(creature, em_ptr);
     case AttributeType::MIND_BLAST:
-        return effect_monster_mind_blast(player_ptr, em_ptr);
+        return effect_monster_mind_blast(creature, em_ptr);
     case AttributeType::BRAIN_SMASH:
-        return effect_monster_brain_smash(player_ptr, em_ptr);
+        return effect_monster_brain_smash(creature, em_ptr);
     case AttributeType::CAUSE_1:
         return effect_monster_curse_1(em_ptr);
     case AttributeType::CAUSE_2:
@@ -514,35 +513,35 @@ ProcessResult switch_effects_monster(PlayerType *player_ptr, EffectMonster *em_p
     case AttributeType::HAND_DOOM:
         return effect_monster_hand_doom(em_ptr);
     case AttributeType::CAPTURE:
-        return effect_monster_capture(player_ptr, em_ptr, cap_mon_ptr);
+        return effect_monster_capture(creature, em_ptr, cap_mon_ptr);
     case AttributeType::ATTACK:
-        return do_cmd_attack(*player_ptr, em_ptr->y, em_ptr->x, i2enum<combat_options>(em_ptr->dam)) ? ProcessResult::PROCESS_TRUE : ProcessResult::PROCESS_FALSE;
+        return do_cmd_attack(creature, em_ptr->y, em_ptr->x, i2enum<combat_options>(em_ptr->dam)) ? ProcessResult::PROCESS_TRUE : ProcessResult::PROCESS_FALSE;
     case AttributeType::ENGETSU:
-        return effect_monster_engetsu(player_ptr, em_ptr);
+        return effect_monster_engetsu(creature, em_ptr);
     case AttributeType::GENOCIDE:
-        return effect_monster_genocide(player_ptr, em_ptr);
+        return effect_monster_genocide(creature, em_ptr);
     case AttributeType::SOCIAL_GENOCIDE:
-        return effect_monster_social_genocide(player_ptr, em_ptr);
+        return effect_monster_social_genocide(creature, em_ptr);
     case AttributeType::PHOTO:
-        return effect_monster_photo(player_ptr, em_ptr);
+        return effect_monster_photo(creature, em_ptr);
     case AttributeType::CRUSADE:
-        return effect_monster_crusade(player_ptr, em_ptr);
+        return effect_monster_crusade(creature, em_ptr);
     case AttributeType::WOUNDS:
         return effect_monster_wounds(em_ptr);
     case AttributeType::E_GENOCIDE:
-        return effect_monster_elemental_genocide(*player_ptr, em_ptr);
+        return effect_monster_elemental_genocide(creature, em_ptr);
     case AttributeType::VOID_MAGIC:
-        return effect_monster_void(player_ptr, em_ptr);
+        return effect_monster_void(creature, em_ptr);
     case AttributeType::ABYSS:
-        return effect_monster_abyss(player_ptr, em_ptr);
+        return effect_monster_abyss(creature, em_ptr);
     case AttributeType::DIRT:
-        return effect_monster_dirt(player_ptr, em_ptr);
+        return effect_monster_dirt(creature, em_ptr);
     case AttributeType::STUNGUN:
-        return effect_monster_stungun(player_ptr, em_ptr);
+        return effect_monster_stungun(creature, em_ptr);
     case AttributeType::SPIDER_STRING:
-        return effect_monster_spider_string(player_ptr, em_ptr);
+        return effect_monster_spider_string(creature, em_ptr);
     case AttributeType::METEOR:
-        return effect_monster_meteor(player_ptr, em_ptr);
+        return effect_monster_meteor(creature, em_ptr);
     default: {
         em_ptr->skipped = true;
         em_ptr->dam = 0;
