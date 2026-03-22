@@ -434,7 +434,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         regen_amount = regen_amount * 2;
     }
 
-    upkeep_factor = calculate_upkeep(player_ptr);
+    upkeep_factor = calculate_upkeep(*player_ptr);
     if ((player_ptr->action == ACTION_LEARN) || (player_ptr->action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         upkeep_factor += 100;
     }
@@ -450,7 +450,7 @@ void process_player_hp_mp(CreatureEntity &creature)
             msg_erase();
             do_cmd_pet_dismiss(*player_ptr);
 
-            upkeep_factor = calculate_upkeep(player_ptr);
+            upkeep_factor = calculate_upkeep(*player_ptr);
 
             msg_format(_("維持ＭＰは %d%%", "Upkeep: %d%% mana."), upkeep_factor);
             msg_erase();

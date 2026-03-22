@@ -453,7 +453,7 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
     }
 
     delete_monster_idx(creature, em_ptr->g_ptr->m_idx);
-    calculate_upkeep(player_ptr);
+    calculate_upkeep(creature);
 }
 
 /*!

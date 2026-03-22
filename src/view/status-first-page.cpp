@@ -394,7 +394,7 @@ static int calculate_mp_regen_rate(CreatureEntity &creature)
     }
 
     // ペットの維持コスト
-    int upkeep_factor = calculate_upkeep(&static_cast<PlayerType &>(creature));
+    int upkeep_factor = calculate_upkeep(creature);
     if ((creature.action == ACTION_LEARN) || (creature.action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         upkeep_factor += 100;
     }

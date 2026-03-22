@@ -42,7 +42,7 @@ enum pet_permission {
 
 extern int total_friends;
 
+class CreatureEntity;
 class Grid;
-class PlayerType;
-bool can_player_ride_pet(PlayerType *player_ptr, const Grid &grid, bool now_riding);
-PERCENTAGE calculate_upkeep(PlayerType *player_ptr);
+bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_riding);
+PERCENTAGE calculate_upkeep(CreatureEntity &creature);
