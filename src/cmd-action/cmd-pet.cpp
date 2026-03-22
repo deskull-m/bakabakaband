@@ -202,7 +202,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
     if (creature.riding) {
         /* Skip non-empty grids */
-        if (!can_player_ride_pet(player_ptr, grid, false)) {
+        if (!can_player_ride_pet(*player_ptr, grid, false)) {
             msg_print(_("そちらには降りられません。", "You cannot go that direction."));
             return false;
         }
@@ -247,7 +247,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             return false;
         }
 
-        if (!can_player_ride_pet(player_ptr, grid, true)) {
+        if (!can_player_ride_pet(*player_ptr, grid, true)) {
             /* Feature code (applying "mimic" field) */
             const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
             using Tc = TerrainCharacteristics;
@@ -688,7 +688,7 @@ void do_cmd_pet(CreatureEntity &creature)
             break;
         }
         do_cmd_pet_dismiss(*player_ptr);
-        (void)calculate_upkeep(player_ptr);
+        (void)calculate_upkeep(*player_ptr);
         break;
     }
     case PET_TARGET: {

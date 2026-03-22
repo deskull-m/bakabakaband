@@ -60,7 +60,7 @@ bool rodeo(CreatureEntity &creature)
         set_pet(creature, monster);
     } else {
         msg_format(_("%sに振り落とされた！", "You have been thrown off by %s."), m_name.data());
-        process_fall_off_horse(player_ptr, 1, true);
+        process_fall_off_horse(creature, 1, true);
 
         /* 落馬処理に失敗してもとにかく乗馬解除 */
         player_ptr->ride_monster(0);

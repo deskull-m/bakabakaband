@@ -156,7 +156,7 @@ bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
         msg_print(_("おっと、解放に失敗した。", "Oops.  You failed to release your pet."));
     }
 
-    calculate_upkeep(player_ptr);
+    calculate_upkeep(creature);
     calc_android_exp(creature);
     return true;
 }

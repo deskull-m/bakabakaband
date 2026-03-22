@@ -5,7 +5,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include <algorithm>
 
@@ -42,7 +41,6 @@ void FallOffHorseEffect::set_fall_off(int damage)
 
 void FallOffHorseEffect::apply() const
 {
-    auto *player_ptr = static_cast<PlayerType *>(this->creature_ptr);
     if (!this->creature_ptr->riding) {
         return;
     }
@@ -55,14 +53,14 @@ void FallOffHorseEffect::apply() const
     const auto m_name = monster_desc(*this->creature_ptr, floor.m_list[creature_ptr->riding], 0);
 
     if (this->shake_off_damage > 0) {
-        if (process_fall_off_horse(player_ptr, this->shake_off_damage, false)) {
+        if (process_fall_off_horse(*this->creature_ptr, this->shake_off_damage, false)) {
             msg_format(_("%s^に振り落とされた！", "%s^ has thrown you off!"), m_name.data());
             return;
         }
     }
 
     if (this->fall_off_damage > 0) {
-        if (process_fall_off_horse(player_ptr, this->fall_off_damage, false)) {
+        if (process_fall_off_horse(*this->creature_ptr, this->fall_off_damage, false)) {
             msg_format(_("%s^から落ちてしまった！", "You have fallen from %s."), m_name.data());
         }
     }

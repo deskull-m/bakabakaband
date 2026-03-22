@@ -435,7 +435,6 @@ static int calcutate_capturable_hp(CreatureEntity &creature, const MonsterEntity
  */
 static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_ptr, tl::optional<CapturedMonsterType *> tmp_cap_mon_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (em_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON)) {
         em_ptr->m_ptr->reset_chameleon_polymorph();
     }
@@ -448,12 +447,12 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
     cap_mon_ptr->max_hp = static_cast<short>(em_ptr->m_ptr->max_maxhp);
     cap_mon_ptr->name = em_ptr->m_ptr->name;
     cap_mon_ptr->mflag2 = em_ptr->m_ptr->mflag2;
-    if (em_ptr->m_ptr->is_riding() && process_fall_off_horse(player_ptr, -1, false)) {
+    if (em_ptr->m_ptr->is_riding() && process_fall_off_horse(creature, -1, false)) {
         msg_print(_("地面に落とされた。", format("You have fallen from %s.", em_ptr->m_name)));
     }
 
     delete_monster_idx(creature, em_ptr->g_ptr->m_idx);
-    calculate_upkeep(player_ptr);
+    calculate_upkeep(creature);
 }
 
 /*!

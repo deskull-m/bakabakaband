@@ -164,7 +164,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         if (turn_flags_ptr->is_riding_mon) {
             msg_format(_("突然%sが変身した。", "Suddenly, %s transforms!"), old_m_name.data());
             if (new_monrace.misc_flags.has_not(MonsterMiscType::RIDING)) {
-                if (process_fall_off_horse(&player, 0, true)) {
+                if (process_fall_off_horse(player, 0, true)) {
                     const auto m_name = monster_desc(creature, monster, 0);
                     msg_print(_("地面に落とされた。", format("You have fallen from %s.", m_name.data())));
                 }
@@ -353,7 +353,7 @@ void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
         return;
     }
 
-    if (process_fall_off_horse(&player, 0, true)) {
+    if (process_fall_off_horse(player, 0, true)) {
 #ifdef JP
         msg_print("地面に落とされた。");
 #else
@@ -481,7 +481,7 @@ void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
         }
 
         msg_format(_("%s^が突然暴れだした！", "%s^ suddenly begins unruly!"), m_name.data());
-        if (!process_fall_off_horse(&player, 1, true)) {
+        if (!process_fall_off_horse(player, 1, true)) {
             return;
         }
 

@@ -139,7 +139,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         }
     }
 
-    (void)calculate_upkeep(player_ptr);
+    (void)calculate_upkeep(*player_ptr);
     panel_bounds_center();
     verify_panel(*player_ptr);
     msg_erase();

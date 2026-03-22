@@ -174,7 +174,7 @@ void do_cmd_knowledge_pets(CreatureEntity &creature)
         fprintf(fff, "%s (%s)\n", pet_name.data(), monster.build_looking_description(false).data());
     }
 
-    int show_upkeep = calculate_upkeep(player_ptr);
+    int show_upkeep = calculate_upkeep(*player_ptr);
 
     fprintf(fff, "----------------------------------------------\n");
 #ifdef JP
