@@ -246,7 +246,6 @@ static void make_monster_fear(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
  */
 static void fall_off_horse_by_melee(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!mam_pp_ptr->m_ptr->is_riding() || (mam_pp_ptr->dam <= 0)) {
         return;
     }
@@ -256,7 +255,7 @@ static void fall_off_horse_by_melee(CreatureEntity &creature, mam_pp_type *mam_p
         mam_pp_ptr->dam = (mam_pp_ptr->dam + 1) / 2;
     }
 
-    if (process_fall_off_horse(player_ptr, (mam_pp_ptr->dam > 200) ? 200 : mam_pp_ptr->dam, false)) {
+    if (process_fall_off_horse(creature, (mam_pp_ptr->dam > 200) ? 200 : mam_pp_ptr->dam, false)) {
         msg_format(_("%s^に振り落とされた！", "You have been thrown off from %s!"), mam_pp_ptr->m_name.data());
     }
 }

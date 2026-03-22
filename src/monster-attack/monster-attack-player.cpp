@@ -200,7 +200,7 @@ bool MonsterAttackPlayer::process_monster_blows()
             this->player_ptr->plus_incident_tree(effect_key, 1);
 
             // 撃退失敗時は落馬処理、変わり身のテレポート処理を行う。
-            check_fall_off_horse(this->player_ptr, this);
+            check_fall_off_horse(*this->player_ptr, this);
 
             // 変わり身のテレポートが成功したら攻撃を打ち切り、プレイヤーが離脱した旨を返す。
             if (kawarimi(*this->player_ptr, false)) {

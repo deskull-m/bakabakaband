@@ -45,10 +45,9 @@ static bool is_acting_monster(const MonraceId r_idx)
  */
 static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, const MonsterEntity &monster, concptr m_name)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&player);
     if (turn_flags_ptr->is_riding_mon) {
         msg_format(_("%sはあなたの束縛から脱出した。", "%s^ succeeded to escape from your restriction!"), m_name);
-        if (process_fall_off_horse(player_ptr, -1, false)) {
+        if (process_fall_off_horse(player, -1, false)) {
             msg_print(_("地面に落とされた。", "You have fallen from the pet you were riding."));
         }
     }
@@ -75,7 +74,7 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
         msg_format(_("%s^が消え去った。", "%s^ disappears."), m_name);
     }
 
-    if (turn_flags_ptr->is_riding_mon && process_fall_off_horse(player_ptr, -1, false)) {
+    if (turn_flags_ptr->is_riding_mon && process_fall_off_horse(player, -1, false)) {
         msg_print(_("地面に落とされた。", "You have fallen from the pet you were riding."));
     }
 }
