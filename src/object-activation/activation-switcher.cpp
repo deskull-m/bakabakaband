@@ -146,9 +146,9 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BANISH_EVIL:
         return activate_banish_evil(*player_ptr);
     case RandomArtActType::GENOCIDE:
-        return activate_genocide(player_ptr);
+        return activate_genocide(*player_ptr);
     case RandomArtActType::MASS_GENO:
-        return activate_mass_genocide(player_ptr);
+        return activate_mass_genocide(*player_ptr);
     case RandomArtActType::SCARE_AREA:
         return activate_scare(*player_ptr);
     case RandomArtActType::AGGRAVATE:
