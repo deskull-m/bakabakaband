@@ -35,7 +35,7 @@ void building_recharge(CreatureEntity &creature)
     constexpr auto q = _("どのアイテムに魔力を充填しますか? ", "Recharge which item? ");
     constexpr auto s = _("魔力を充填すべきアイテムがない。", "You have nothing to recharge.");
     short i_idx;
-    auto *o_ptr = choose_object(&player, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
     if (o_ptr == nullptr) {
         return;
     }

@@ -434,7 +434,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
             msg_print(_("襲撃だ！", "You are ambushed !"));
             creature.oldpy = randint1(MAX_HGT - 2);
             creature.oldpx = randint1(MAX_WID - 2);
-            change_wild_mode(&player, true);
+            change_wild_mode(player, true);
             PlayerEnergy(&player).set_player_turn_energy(100);
         }
     }

@@ -650,7 +650,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
     }
 
     if (world.is_wild_mode() && !player.leaving && (player.hp < std::max(hp_warning_threshold, player.maxhp / 5))) {
-        change_wild_mode(&player, false);
+        change_wild_mode(player, false);
     }
 
     return damage;

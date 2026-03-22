@@ -31,7 +31,7 @@ bool bless_weapon(CreatureEntity &creature)
 
     short i_idx;
     constexpr BIT_FLAGS options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(&player, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon));
     if (!o_ptr) {
         return false;
     }

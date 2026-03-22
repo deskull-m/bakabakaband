@@ -575,9 +575,9 @@ void generate_floor(PlayerType *player_ptr)
             generate_fixed_floor(player_ptr);
         } else if (!floor.is_underground()) {
             if (is_wild_mode) {
-                wilderness_gen_small(player_ptr);
+                wilderness_gen_small(*player_ptr);
             } else {
-                wilderness_gen(player_ptr);
+                wilderness_gen(*player_ptr);
             }
         } else {
             why = level_gen(player_ptr);

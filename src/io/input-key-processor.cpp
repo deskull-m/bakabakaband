@@ -341,7 +341,7 @@ void process_command(CreatureEntity &creature)
                 break;
             }
 
-            change_wild_mode(player_ptr, false);
+            change_wild_mode(*player_ptr, false);
         } else {
             do_cmd_go_up(*player_ptr);
         }
@@ -350,7 +350,7 @@ void process_command(CreatureEntity &creature)
     }
     case '>': {
         if (is_wild_mode) {
-            change_wild_mode(player_ptr, false);
+            change_wild_mode(*player_ptr, false);
         } else {
             do_cmd_go_down(*player_ptr);
         }

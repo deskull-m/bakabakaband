@@ -127,7 +127,7 @@ static void drain_essence(CreatureEntity &creature)
 
     short i_idx;
     constexpr auto options = USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto o_ptr = choose_object(&player, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon_armour_ammo));
+    auto o_ptr = choose_object(creature, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_weapon_armour_ammo));
     if (!o_ptr) {
         return;
     }
@@ -446,7 +446,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
     constexpr auto q = _("どのアイテムを改良しますか？", "Improve which item? ");
     constexpr auto s = _("改良できるアイテムがありません。", "You have nothing to improve.");
     short i_idx;
-    auto *o_ptr = choose_object(&player, &i_idx, q, s, (USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (!o_ptr) {
         return;
     }
@@ -524,7 +524,7 @@ static void erase_essence(CreatureEntity &creature)
     constexpr auto q = _("どのアイテムのエッセンスを消去しますか？", "Remove from which item? ");
     constexpr auto s = _("エッセンスを付加したアイテムがありません。", "You have nothing with added essence to remove.");
     short i_idx;
-    auto *o_ptr = choose_object(&player, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_smith));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_smith));
     if (!o_ptr) {
         return;
     }

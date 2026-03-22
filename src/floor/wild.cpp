@@ -279,8 +279,10 @@ static void generate_wilderness_area(FloorType &floor, const WildernessGrid &wg,
  * @param is_border 広域マップの辺部分としての生成ならばTRUE
  * @param is_corner 広域マップの角部分としての生成ならばTRUE
  */
-static void generate_area(PlayerType *player_ptr, const Pos2D &pos, bool is_border, bool is_corner)
+static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_border, bool is_corner)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     const auto &wilderness = WildernessGrids::get_instance();
     const auto &wg = wilderness.get_grid(pos);
     player_ptr->town_num = wg.get_town();
@@ -374,8 +376,10 @@ static void generate_area(PlayerType *player_ptr, const Pos2D &pos, bool is_bord
  * また、集団生成や護衛は、最初に生成された1体だけがカウント対象である.
  * よって、実際に生成されるモンスターは、コードの見た目より多くなる.
  */
-static void generate_wild_monsters(PlayerType *player_ptr)
+static void generate_wild_monsters(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     constexpr auto num_ambush_monsters = 100;
     constexpr auto num_normal_monsters = 25;
     const auto lim = generate_encounter ? num_ambush_monsters : num_normal_monsters;
@@ -431,8 +435,10 @@ static void generate_wild_monsters(PlayerType *player_ptr)
  * @todo 広域マップは恒常生成にする予定、PlayerTypeによる処理分岐は最終的に排除する。
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void wilderness_gen(PlayerType *player_ptr)
+void wilderness_gen(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     auto &floor = *player_ptr->current_floor_ptr;
     floor.height = MAX_HGT;
     floor.width = MAX_WID;
@@ -443,42 +449,42 @@ void wilderness_gen(PlayerType *player_ptr)
     parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
 
     const auto &pos_wilderness = wilderness.get_player_position();
-    get_mon_num_prep_enum(*player_ptr, floor.get_monrace_hook());
+    get_mon_num_prep_enum(creature, floor.get_monrace_hook());
 
-    generate_area(player_ptr, pos_wilderness + Direction(8).vec(), true, false);
+    generate_area(creature, pos_wilderness + Direction(8).vec(), true, false);
     for (auto i = 1; i < MAX_WID - 1; i++) {
         border.top[i] = floor.get_grid({ MAX_HGT - 2, i }).feat;
     }
 
-    generate_area(player_ptr, pos_wilderness + Direction(2).vec(), true, false);
+    generate_area(creature, pos_wilderness + Direction(2).vec(), true, false);
     for (auto i = 1; i < MAX_WID - 1; i++) {
         border.bottom[i] = floor.get_grid({ 1, i }).feat;
     }
 
-    generate_area(player_ptr, pos_wilderness + Direction(4).vec(), true, false);
+    generate_area(creature, pos_wilderness + Direction(4).vec(), true, false);
     for (auto i = 1; i < MAX_HGT - 1; i++) {
         border.left[i] = floor.get_grid({ i, MAX_WID - 2 }).feat;
     }
 
-    generate_area(player_ptr, pos_wilderness + Direction(6).vec(), true, false);
+    generate_area(creature, pos_wilderness + Direction(6).vec(), true, false);
     for (auto i = 1; i < MAX_HGT - 1; i++) {
         border.right[i] = floor.get_grid({ i, 1 }).feat;
     }
 
-    generate_area(player_ptr, pos_wilderness + Direction(7).vec(), false, true);
+    generate_area(creature, pos_wilderness + Direction(7).vec(), false, true);
     border.top_left = floor.get_grid({ MAX_HGT - 2, MAX_WID - 2 }).feat;
 
-    generate_area(player_ptr, pos_wilderness + Direction(9).vec(), false, true);
+    generate_area(creature, pos_wilderness + Direction(9).vec(), false, true);
     border.top_right = floor.get_grid({ MAX_HGT - 2, 1 }).feat;
 
-    generate_area(player_ptr, pos_wilderness + Direction(1).vec(), false, true);
+    generate_area(creature, pos_wilderness + Direction(1).vec(), false, true);
     border.bottom_left = floor.get_grid({ 1, MAX_WID - 2 }).feat;
 
-    generate_area(player_ptr, pos_wilderness + Direction(3).vec(), false, true);
+    generate_area(creature, pos_wilderness + Direction(3).vec(), false, true);
     border.bottom_right = floor.get_grid({ 1, 1 }).feat;
 
     /* Create terrain of the current area */
-    generate_area(player_ptr, pos_wilderness, false, false);
+    generate_area(creature, pos_wilderness, false, false);
 
     /* Special boundary walls -- North */
     for (auto i = 0; i < MAX_WID; i++) {
@@ -559,7 +565,7 @@ void wilderness_gen(PlayerType *player_ptr)
             }
 
             if (grid.has_monster()) {
-                delete_monster_idx(*player_ptr, grid.m_idx);
+                delete_monster_idx(creature, grid.m_idx);
             }
 
             player_ptr->oldpy = pos.y;
@@ -575,7 +581,7 @@ void wilderness_gen(PlayerType *player_ptr)
             }
 
             if (grid.has_monster()) {
-                delete_monster_idx(*player_ptr, grid.m_idx);
+                delete_monster_idx(creature, grid.m_idx);
             }
 
             player_ptr->oldpy = pos.y;
@@ -589,9 +595,9 @@ void wilderness_gen(PlayerType *player_ptr)
         return;
     }
 
-    generate_wild_monsters(player_ptr);
+    generate_wild_monsters(creature);
     if (generate_encounter) {
-        static_cast<CreatureEntity &>(*player_ptr).ambush_flag = true;
+        creature.ambush_flag = true;
     }
 
     generate_encounter = false;
@@ -607,8 +613,10 @@ void wilderness_gen(PlayerType *player_ptr)
  * @brief 広域マップの生成(簡易処理版) /
  * Build the wilderness area. -DG-
  */
-void wilderness_gen_small(PlayerType *player_ptr)
+void wilderness_gen_small(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     auto &floor = *player_ptr->current_floor_ptr;
     for (auto x = 0; x < MAX_WID; x++) {
         for (auto y = 0; y < MAX_HGT; y++) {
@@ -833,8 +841,10 @@ void init_wilderness_encounter()
  * @param encount 襲撃時TRUE
  * @return 切り替えが行われた場合はTRUEを返す。
  */
-bool change_wild_mode(PlayerType *player_ptr, bool encount)
+bool change_wild_mode(CreatureEntity &creature, bool encount)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     generate_encounter = encount;
     if (player_ptr->leaving) {
         return false;
@@ -878,7 +888,7 @@ bool change_wild_mode(PlayerType *player_ptr, bool encount)
 
     if (has_pet) {
         concptr msg = _("ペットを置いて広域マップに入りますか？", "Do you leave your pets behind? ");
-        if (!input_check_strict(*player_ptr, msg, UserCheck::OKAY_CANCEL)) {
+        if (!input_check_strict(creature, msg, UserCheck::OKAY_CANCEL)) {
             energy.reset_player_turn();
             return false;
         }
@@ -887,7 +897,7 @@ bool change_wild_mode(PlayerType *player_ptr, bool encount)
     energy.set_player_turn_energy(1000);
     player_ptr->oldpx = player_ptr->x;
     player_ptr->oldpy = player_ptr->y;
-    SpellHex spell_hex(dynamic_cast<CreatureEntity &>(*player_ptr));
+    SpellHex spell_hex(creature);
     if (spell_hex.is_spelling_any()) {
         spell_hex.stop_all_spells();
     }
