@@ -51,7 +51,7 @@ bool ThrowCommand::do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken)
     pc.break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     ItemEntity tmp_object;
-    ObjectThrowEntity ote(this->player_ptr, &tmp_object, delay_factor, mult, boomerang, shuriken);
+    ObjectThrowEntity ote(*this->player_ptr, &tmp_object, delay_factor, mult, boomerang, shuriken);
     if (!ote.check_can_throw()) {
         return false;
     }
