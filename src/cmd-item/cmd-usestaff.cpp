@@ -331,5 +331,5 @@ void do_cmd_use_staff(CreatureEntity &creature)
         return;
     }
 
-    ObjectUseEntity(player_ptr, i_idx).execute();
+    ObjectUseEntity(*player_ptr, i_idx).execute();
 }

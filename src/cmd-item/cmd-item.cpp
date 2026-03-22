@@ -280,7 +280,7 @@ void do_cmd_use(CreatureEntity &creature)
         ObjectZapWandEntity(creature).execute(i_idx);
         break;
     case ItemKindType::STAFF:
-        ObjectUseEntity(player_ptr, i_idx).execute();
+        ObjectUseEntity(*player_ptr, i_idx).execute();
         break;
     case ItemKindType::ROD:
         ObjectZapRodEntity(player_ptr).execute(i_idx);

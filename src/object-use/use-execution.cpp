@@ -34,8 +34,8 @@
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param i_idx 使うオブジェクトの所持品ID
  */
-ObjectUseEntity::ObjectUseEntity(PlayerType *player_ptr, INVENTORY_IDX i_idx)
-    : player_ptr(player_ptr)
+ObjectUseEntity::ObjectUseEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)
+    : player_ptr(static_cast<PlayerType *>(&creature))
     , i_idx(i_idx)
 {
 }
@@ -102,9 +102,9 @@ void ObjectUseEntity::execute()
     sound(SoundKind::ZAP);
     auto ident = staff_effect(*this->player_ptr, *o_ptr->bi_key.sval(), &use_charge, false, false, o_ptr->is_aware());
     if (!(o_ptr->is_aware())) {
-        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
-        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
-        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
+        chg_virtue(*this->player_ptr, Virtue::PATIENCE, -1);
+        chg_virtue(*this->player_ptr, Virtue::CHANCE, 1);
+        chg_virtue(*this->player_ptr, Virtue::KNOWLEDGE, -1);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -118,7 +118,7 @@ void ObjectUseEntity::execute()
     o_ptr->mark_as_tried();
     if (ident && !o_ptr->is_aware()) {
         object_aware(this->player_ptr, *o_ptr);
-        gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
+        gain_exp(*this->player_ptr, (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
     }
 
     static constexpr auto flags_swrf = {
