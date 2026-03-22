@@ -213,7 +213,7 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         }
 
         if (AngbandWorld::get_instance().is_wild_mode() && (new_aux < 2)) {
-            change_wild_mode(player_ptr, false);
+            change_wild_mode(*player_ptr, false);
         }
 
         notice = true;

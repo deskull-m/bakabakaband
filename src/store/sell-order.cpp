@@ -90,7 +90,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(static_cast<PlayerType *>(c), o, st); }, *player_ptr, store_num));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(static_cast<PlayerType *>(c), o, st); }, *player_ptr, store_num));
     if (o_ptr == nullptr) {
         return;
     }

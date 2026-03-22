@@ -154,7 +154,7 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
         constexpr auto q = _("どれを拾いますか？", "Get which item? ");
         constexpr auto s = _("もうザックには床にあるどのアイテムも入らない。", "You no longer have any room for the objects on the floor.");
         short i_idx;
-        if (!choose_object(player_ptr, &i_idx, q, s, (USE_FLOOR), tester)) {
+        if (!choose_object(*player_ptr, &i_idx, q, s, (USE_FLOOR), tester)) {
             break;
         }
         process_player_pickup_item(creature, -i_idx);

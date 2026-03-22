@@ -65,8 +65,11 @@
  * @brief 闘技場用のアリーナ地形を作成する / Builds the on_defeat_arena_monster after it is entered -KMW-
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static Pos2D build_arena(PlayerType *player_ptr)
+static Pos2D build_arena(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto yval = SCREEN_HGT / 2;
     const auto xval = SCREEN_WID / 2;
     const auto y_height = yval - 15;
@@ -138,8 +141,11 @@ static Pos2D build_arena(PlayerType *player_ptr)
  * @details 互換性のため、『森トロル』など地上と闘技場の両方に出現するユニークを撃破した際の不戦勝処理を残している
  * @todo v3.0正式版リリース以降に上記を削除する
  */
-static void generate_challenge_arena(PlayerType *player_ptr)
+static void generate_challenge_arena(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
     floor.height = SCREEN_HGT;
     floor.width = SCREEN_WID;
@@ -156,7 +162,7 @@ static void generate_challenge_arena(PlayerType *player_ptr)
         }
     }
 
-    const auto pos = build_arena(player_ptr);
+    const auto pos = build_arena(creature);
     if (!player_ptr->try_set_position(pos)) {
         return;
     }
@@ -176,8 +182,11 @@ static void generate_challenge_arena(PlayerType *player_ptr)
  * @brief モンスター闘技場のフロア生成 / Builds the on_defeat_arena_monster after it is entered -KMW-
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static Pos2D build_battle(PlayerType *player_ptr)
+static Pos2D build_battle(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto yval = ARENA_WID / 2;
     const auto xval = ARENA_HGT / 2;
     const auto y_height = yval - 15;
@@ -241,8 +250,11 @@ static Pos2D build_battle(PlayerType *player_ptr)
 /*!
  * @brief モンスター闘技場への導入処理 / Town logic flow for generation of on_defeat_arena_monster -KMW-
  */
-static void generate_gambling_arena(PlayerType *player_ptr)
+static void generate_gambling_arena(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
@@ -258,7 +270,7 @@ static void generate_gambling_arena(PlayerType *player_ptr)
         }
     }
 
-    const auto pos = build_battle(player_ptr);
+    const auto pos = build_battle(creature);
     if (!player_ptr->try_set_position(pos)) {
         return;
     }
@@ -289,8 +301,11 @@ static void generate_gambling_arena(PlayerType *player_ptr)
  * @brief 固定マップクエストのフロア生成 / Generate a quest level
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void generate_fixed_floor(PlayerType *player_ptr)
+static void generate_fixed_floor(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
     for (const auto &pos : floor.get_area()) {
         place_bold(*player_ptr, pos.y, pos.x, GB_SOLID_PERM);
@@ -316,8 +331,11 @@ static void generate_fixed_floor(PlayerType *player_ptr)
  * @param seed 乱数の種（オプショナル）。指定された場合は固定ダンジョンを生成
  * @return フロアの生成に成功したらTRUE
  */
-static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<uint32_t> seed = tl::nullopt)
+static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optional<uint32_t> seed = tl::nullopt)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     // 乱数種の保存と復元用
     Xoshiro128StarStar::state_type original_state{};
     bool seed_was_fixed = false;
@@ -428,8 +446,11 @@ void wipe_generate_random_floor_flags(FloorType &floor)
  * @brief フロアの全情報を初期化する / Clear and empty floor.
  * @parama player_ptr プレイヤーへの参照ポインタ
  */
-void clear_cave(PlayerType *player_ptr)
+void clear_cave(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
     floor.o_list.clear();
     floor.o_list.push_back(std::make_shared<ItemEntity>()); // 0番にダミーアイテムを用意
@@ -559,28 +580,31 @@ static bool floor_is_connected(const FloorType &floor, const IsWallFunc is_wall)
  * @parama player_ptr プレイヤーへの参照ポインタ
  * @note Hack -- regenerate any "overflow" levels
  */
-void generate_floor(PlayerType *player_ptr)
+void generate_floor(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
     for (int num = 0; true; num++) {
         tl::optional<std::string> why;
-        clear_cave(player_ptr);
+        clear_cave(creature);
         player_ptr->x = player_ptr->y = 0;
         if (floor.inside_arena) {
-            generate_challenge_arena(player_ptr);
+            generate_challenge_arena(creature);
         } else if (AngbandSystem::get_instance().is_phase_out()) {
-            generate_gambling_arena(player_ptr);
+            generate_gambling_arena(creature);
         } else if (floor.is_in_quest()) {
-            generate_fixed_floor(player_ptr);
+            generate_fixed_floor(creature);
         } else if (!floor.is_underground()) {
             if (is_wild_mode) {
-                wilderness_gen_small(player_ptr);
+                wilderness_gen_small(creature);
             } else {
-                wilderness_gen(player_ptr);
+                wilderness_gen(creature);
             }
         } else {
-            why = level_gen(player_ptr);
+            why = level_gen(creature);
         }
 
         if (is_sushi_eater(*player_ptr)) {

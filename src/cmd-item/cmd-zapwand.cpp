@@ -345,7 +345,7 @@ void do_cmd_aim_wand(CreatureEntity &creature)
     constexpr auto q = _("どの魔法棒で狙いますか? ", "Aim which wand? ");
     constexpr auto s = _("使える魔法棒がない。", "You have no wand to aim.");
     short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::WAND))) {
+    if (!choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::WAND))) {
         return;
     }
 

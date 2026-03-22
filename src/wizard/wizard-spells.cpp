@@ -62,7 +62,7 @@ const std::vector<debug_spell_command> debug_spell_commands_list = {
     // TODO:    { 2, "drop weapons", { .spell2 = { drop_weapons } } },
     { 2, "alchemy", { .spell2 = { alchemy } } },
     { 4, "ty curse", { .spell4 = { activate_ty_curse } } },
-    { 5, "pattern teleport", { .spell5 = { pattern_teleport } } },
+    { 6, "pattern teleport", { .spell6 = { pattern_teleport } } },
 };
 
 std::vector<MonraceId> wiz_collect_monster_candidates(char symbol)
@@ -186,6 +186,9 @@ void wiz_debug_spell(CreatureEntity &creature)
         }
         case 5:
             (d.command_function.spell5.spell_function)(player_ptr);
+            return;
+        case 6:
+            (d.command_function.spell6.spell_function)(creature);
             return;
         default:
             msg_format("Command not found.");

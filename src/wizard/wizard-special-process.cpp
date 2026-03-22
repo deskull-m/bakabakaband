@@ -482,7 +482,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
 
     if (dungeon_id == DungeonId::WILDERNESS) {
         if (floor.is_underground() && input_check("Jump to the ground? ")) {
-            jump_floor(player_ptr, DungeonId::WILDERNESS, 0);
+            jump_floor(*player_ptr, DungeonId::WILDERNESS, 0);
         }
         return;
     }
@@ -497,7 +497,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
         do_cmd_save_game(creature, true);
     }
 
-    jump_floor(player_ptr, *dungeon_id, *level);
+    jump_floor(*player_ptr, *dungeon_id, *level);
 }
 
 /*!
@@ -853,5 +853,5 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
     creature.leaving = true;
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);
-    leave_floor(player_ptr);
+    leave_floor(*player_ptr);
 }

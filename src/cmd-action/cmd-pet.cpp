@@ -207,7 +207,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             return false;
         }
 
-        if (!pattern_seq(player_ptr, pos)) {
+        if (!pattern_seq(*player_ptr, pos)) {
             return false;
         }
 
@@ -243,7 +243,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             return false;
         }
 
-        if (!pattern_seq(player_ptr, pos)) {
+        if (!pattern_seq(*player_ptr, pos)) {
             return false;
         }
 

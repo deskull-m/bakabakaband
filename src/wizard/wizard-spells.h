@@ -29,6 +29,10 @@ typedef union spell_functions {
         void (*spell_function)(PlayerType *);
     } spell5;
 
+    struct debug_spell_type6 {
+        void (*spell_function)(CreatureEntity &);
+    } spell6;
+
 } spell_functions;
 
 struct debug_spell_command {

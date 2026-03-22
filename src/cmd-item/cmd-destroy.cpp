@@ -88,7 +88,7 @@ static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &crea
     short i_idx;
     constexpr auto q = _("どのアイテムを壊しますか? ", "Destroy which item? ");
     constexpr auto s = _("壊せるアイテムを持っていない。", "You have nothing to destroy.");
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR);
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR);
     if (o_ptr == nullptr) {
         return tl::nullopt;
     }

@@ -132,7 +132,7 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
 
     constexpr auto s = _("鑑定するべきアイテムがない。", "You have nothing to identify.");
     short i_idx;
-    auto *o_ptr = choose_object(&player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (!o_ptr) {
         return false;
     }
@@ -180,7 +180,7 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
 
     constexpr auto s = _("*鑑定*するべきアイテムがない。", "You have nothing to *identify*.");
     short i_idx;
-    auto *o_ptr = choose_object(&player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    auto *o_ptr = choose_object(player, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (o_ptr == nullptr) {
         return false;
     }

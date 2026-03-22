@@ -89,8 +89,10 @@ void init_saved_floors(bool force)
  * @details Should be called just before the game quit.
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void clear_saved_floor_files(PlayerType *player_ptr)
+void clear_saved_floor_files(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     for (int i = 0; i < MAX_SAVED_FLOORS; i++) {
         saved_floor_type *sf_ptr = &saved_floors[i];
         if (!is_saved_floor(sf_ptr) || (sf_ptr->floor_id == player_ptr->floor_id)) {
@@ -129,8 +131,10 @@ saved_floor_type *get_sf_ptr(FLOOR_IDX floor_id)
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param sf_ptr 保存フロアの参照ポインタ
  */
-void kill_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+void kill_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     if (!sf_ptr || !is_saved_floor(sf_ptr)) {
         return;
     }
@@ -147,8 +151,10 @@ void kill_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     sf_ptr->floor_id = 0;
 }
 
-static FLOOR_IDX find_oldest_floor_idx(PlayerType *player_ptr)
+static FLOOR_IDX find_oldest_floor_idx(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     FLOOR_IDX oldest_floor_idx = 0;
     uint32_t oldest_visit = 0xffffffffL;
 
@@ -172,8 +178,10 @@ static FLOOR_IDX find_oldest_floor_idx(PlayerType *player_ptr)
  * @details
  * If number of saved floors are already MAX_SAVED_FLOORS, kill the oldest one.
  */
-FLOOR_IDX get_unused_floor_id(PlayerType *player_ptr)
+FLOOR_IDX get_unused_floor_id(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     saved_floor_type *sf_ptr = nullptr;
     FLOOR_IDX fl_idx;
     for (fl_idx = 0; fl_idx < MAX_SAVED_FLOORS; fl_idx++) {
@@ -184,9 +192,9 @@ FLOOR_IDX get_unused_floor_id(PlayerType *player_ptr)
     }
 
     if (fl_idx == MAX_SAVED_FLOORS) {
-        fl_idx = find_oldest_floor_idx(player_ptr);
+        fl_idx = find_oldest_floor_idx(creature);
         sf_ptr = &saved_floors[fl_idx];
-        kill_saved_floor(player_ptr, sf_ptr);
+        kill_saved_floor(creature, sf_ptr);
     }
 
     sf_ptr->savefile_id = fl_idx;

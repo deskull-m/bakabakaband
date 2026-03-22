@@ -48,7 +48,7 @@ void do_cmd_quaff_potion(CreatureEntity &creature)
     constexpr auto s = _("飲める薬がない。", "You have no potions to quaff.");
 
     short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
+    if (!choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
         return;
     }
 
@@ -72,7 +72,7 @@ void do_cmd_rectal_absorption(CreatureEntity &creature)
     constexpr auto s = _("直腸吸収できる薬がない。", "You have no potions for rectal absorption.");
 
     short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
+    if (!choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
         return;
     }
 

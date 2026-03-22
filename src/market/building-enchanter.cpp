@@ -34,7 +34,7 @@ bool enchant_item(CreatureEntity &creature, PRICE cost, HIT_PROB to_hit, int to_
     constexpr auto s = _("改良できるものがありません。", "You have nothing to improve.");
 
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_EQUIP | IGNORE_BOTHHAND_SLOT), item_tester);
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_EQUIP | IGNORE_BOTHHAND_SLOT), item_tester);
     if (!o_ptr) {
         return false;
     }

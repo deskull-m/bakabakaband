@@ -284,7 +284,7 @@ parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, 
         }
 
         qg_ptr->buf = line_str->data();
-        err = generate_fixed_map_floor(player_ptr, qg_ptr, parse_fixed_map);
+        err = generate_fixed_map_floor(*player_ptr, qg_ptr, parse_fixed_map);
         if (err != PARSE_ERROR_NONE) {
             concptr oops = (((err > 0) && (err < PARSE_ERROR_MAX)) ? err_str[err] : "unknown");
             msg_format("Error %d (%s) at line %d of '%s'.", err, oops, num, name.data());

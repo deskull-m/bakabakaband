@@ -31,7 +31,7 @@ bool artifact_scroll(CreatureEntity &creature)
     constexpr auto q = _("どのアイテムを強化しますか? ", "Enchant which item? ");
     constexpr auto s = _("強化できるアイテムがない。", "You have nothing to enchant.");
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), FuncItemTester(object_is_nameless_weapon_armour));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), FuncItemTester(object_is_nameless_weapon_armour));
     if (!o_ptr) {
         return false;
     }
@@ -130,7 +130,7 @@ bool mundane_spell(CreatureEntity &creature, bool only_equip)
     constexpr auto q = _("どのアイテムを凡幸化しますか？", "Mundanify which item? ");
     constexpr auto s = _("凡幸化できるアイテムがない。", "You have nothing to mundanify.");
     short i_idx;
-    auto *item_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
+    auto *item_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT), *item_tester);
     if (!item_ptr) {
         return false;
     }

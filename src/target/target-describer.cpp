@@ -367,7 +367,7 @@ static char describe_footing_many_items(CreatureEntity &creature, GridExaminatio
     while (true) {
         screen_save();
         show_gold_on_floor = true;
-        (void)show_floor_items(static_cast<PlayerType *>(&creature), 0, ge_ptr->y, ge_ptr->x, min_width, AllMatchItemTester());
+        (void)show_floor_items(creature, 0, ge_ptr->y, ge_ptr->x, min_width, AllMatchItemTester());
         show_gold_on_floor = false;
 #ifdef JP
         const auto out_val = fmt::format("{} {}個のアイテム{}{} [Enterで次へ, {}]", ge_ptr->s1, ge_ptr->floor_item_index.size(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info);

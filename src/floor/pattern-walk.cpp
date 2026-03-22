@@ -33,10 +33,12 @@
 
 /*!
  * @brief パターン終点到達時のテレポート処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void pattern_teleport(PlayerType *player_ptr)
+void pattern_teleport(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     auto min_level = 0;
     auto max_level = 99;
     auto &floor = *player_ptr->current_floor_ptr;
@@ -101,8 +103,10 @@ void pattern_teleport(PlayerType *player_ptr)
  * @brief 各種パターン地形上の特別な処理 / Returns TRUE if we are on the Pattern...
  * @return 実際にパターン地形上にプレイヤーが居た場合はTRUEを返す。
  */
-bool pattern_effect(PlayerType *player_ptr)
+bool pattern_effect(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto p_pos = player_ptr->get_position();
     const auto &grid = floor.get_grid(p_pos);
@@ -138,7 +142,7 @@ bool pattern_effect(PlayerType *player_ptr)
         break;
 
     case PATTERN_TILE_TELEPORT:
-        pattern_teleport(player_ptr);
+        pattern_teleport(creature);
         break;
 
     case PATTERN_TILE_WRECKED:
@@ -165,8 +169,10 @@ bool pattern_effect(PlayerType *player_ptr)
  * @param pos プレイヤーの移動先座標
  * @return 移動処理が可能である場合（可能な場合に選択した場合）TRUEを返す。
  */
-bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
+bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     const auto &floor = *player_ptr->current_floor_ptr;
     const auto &grid_current = floor.get_grid(player_ptr->get_position());
     const auto &grid_new = floor.get_grid(pos);

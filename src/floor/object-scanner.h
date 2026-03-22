@@ -16,8 +16,8 @@ enum class ScanFloorMode {
     MAX,
 };
 
+class CreatureEntity;
 class FloorType;
-class PlayerType;
 class ItemTester;
 std::vector<short> scan_floor_items(const FloorType &floor, const Pos2D &pos, const EnumClassFlagGroup<ScanFloorMode> &mode, const ItemTester &item_tester);
-COMMAND_CODE show_floor_items(PlayerType *player_ptr, int target_item, POSITION y, POSITION x, TERM_LEN *min_width, const ItemTester &item_tester);
+COMMAND_CODE show_floor_items(CreatureEntity &creature, int target_item, POSITION y, POSITION x, TERM_LEN *min_width, const ItemTester &item_tester);

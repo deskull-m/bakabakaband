@@ -415,7 +415,7 @@ void process_player_hp_mp(CreatureEntity &creature)
     }
 
     CreatureClass pc(*player_ptr);
-    if (pattern_effect(player_ptr)) {
+    if (pattern_effect(*player_ptr)) {
         cave_no_regen = true;
     } else {
         if (player_ptr->regenerate) {

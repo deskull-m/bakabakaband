@@ -484,7 +484,7 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
     constexpr auto s = _("強化できるアイテムがない。", "You have nothing to enchant.");
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, item_tester);
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, options, item_tester);
     if (o_ptr == nullptr) {
         return false;
     }
@@ -538,7 +538,7 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
     constexpr auto s = _("強化できる武器がない。", "You have nothing to enchant.");
     short i_idx;
     const auto options = USE_EQUIP | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, options, FuncItemTester(&ItemEntity::allow_enchant_melee_weapon));
     if (o_ptr == nullptr) {
         return;
     }

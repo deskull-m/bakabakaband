@@ -141,7 +141,7 @@ bool create_ammo(PlayerType *player_ptr)
         constexpr auto q = _("どのアイテムから作りますか？ ", "Convert which item? ");
         constexpr auto s = _("材料を持っていない。", "You have no item to convert.");
         short i_idx;
-        auto *q_ptr = choose_object(player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_convertible));
+        auto *q_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_convertible));
         if (!q_ptr) {
             return false;
         }
@@ -165,7 +165,7 @@ bool create_ammo(PlayerType *player_ptr)
         constexpr auto q = _("どのアイテムから作りますか？ ", "Convert which item? ");
         constexpr auto s = _("材料を持っていない。", "You have no item to convert.");
         short i_idx;
-        auto *q_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_convertible));
+        auto *q_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_convertible));
         if (!q_ptr) {
             return false;
         }

@@ -320,7 +320,7 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 
     short i_idx_first;
     constexpr auto options = USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT;
-    o_ptr[0] = choose_object(player_ptr, &i_idx_first, first_q, first_s, options, FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
+    o_ptr[0] = choose_object(*player_ptr, &i_idx_first, first_q, first_s, options, FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
     if (!o_ptr[0]) {
         screen_load();
         return 0;
@@ -375,7 +375,7 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
         constexpr auto q = _("第二の武器は？", "What is your second weapon? ");
         constexpr auto s = _("比べるものがありません。", "You have nothing to compare.");
         short i_idx_second;
-        auto *i2_ptr = choose_object(player_ptr, &i_idx_second, q, s, (USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
+        auto *i2_ptr = choose_object(*player_ptr, &i_idx_second, q, s, (USE_EQUIP | USE_INVEN | IGNORE_BOTHHAND_SLOT), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
         if (!i2_ptr) {
             continue;
         }

@@ -86,7 +86,7 @@ void stair_creation(CreatureEntity &creature)
     delete_all_items_from_floor(player, creature.get_position());
     auto *sf_ptr = get_sf_ptr(creature.floor_id);
     if (!sf_ptr) {
-        creature.floor_id = get_unused_floor_id(&player);
+        creature.floor_id = get_unused_floor_id(player);
         sf_ptr = get_sf_ptr(creature.floor_id);
     }
 
@@ -130,7 +130,7 @@ void stair_creation(CreatureEntity &creature)
             set_terrain_id_to_grid(creature, pos, dungeon.select_floor_terrain_id());
         }
     } else {
-        dest_floor_id = get_unused_floor_id(&player);
+        dest_floor_id = get_unused_floor_id(player);
         if (up) {
             sf_ptr->upper_floor_id = dest_floor_id;
         } else {
