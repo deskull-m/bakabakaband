@@ -327,7 +327,7 @@ void ObjectThrowEntity::drop_thrown_item()
     const auto has_terrain_projection = floor.has_terrain_characteristics({ this->y, this->x }, TerrainCharacteristics::PROJECTION);
     const auto drop_y = has_terrain_projection ? this->y : this->prev_y;
     const auto drop_x = has_terrain_projection ? this->x : this->prev_x;
-    drop_ammo_near(this->player_ptr, *this->q_ptr, { drop_y, drop_x }, this->corruption_possibility);
+    drop_ammo_near(*this->player_ptr, *this->q_ptr, { drop_y, drop_x }, this->corruption_possibility);
 }
 
 bool ObjectThrowEntity::has_hit_monster() const
@@ -349,7 +349,7 @@ bool ObjectThrowEntity::check_what_throw()
 
     constexpr auto q = _("どのアイテムを投げますか? ", "Throw which item? ");
     constexpr auto s = _("投げるアイテムがない。", "You have nothing to throw.");
-    this->o_ptr = choose_object(this->player_ptr, &this->i_idx, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    this->o_ptr = choose_object(*this->player_ptr, &this->i_idx, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!this->o_ptr) {
         flush();
         return false;
@@ -364,7 +364,7 @@ bool ObjectThrowEntity::check_throw_boomerang()
         concptr q, s;
         q = _("どの武器を投げますか? ", "Throw which item? ");
         s = _("投げる武器がない。", "You have nothing to throw.");
-        this->o_ptr = choose_object(this->player_ptr, &this->i_idx, q, s, USE_EQUIP, FuncItemTester(&ItemEntity::is_throwable));
+        this->o_ptr = choose_object(*this->player_ptr, &this->i_idx, q, s, USE_EQUIP, FuncItemTester(&ItemEntity::is_throwable));
         if (!this->o_ptr) {
             flush();
             return false;

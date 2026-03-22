@@ -40,8 +40,11 @@
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
 
-static void check_riding_preservation(PlayerType *player_ptr)
+static void check_riding_preservation(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     if (!player_ptr->riding) {
         return;
     }
@@ -53,12 +56,15 @@ static void check_riding_preservation(PlayerType *player_ptr)
         player_ptr->riding_ryoute = player_ptr->old_riding_ryoute = false;
     } else {
         party_mon[0] = monster.clone();
-        delete_monster_idx(*player_ptr, player_ptr->riding);
+        delete_monster_idx(creature, player_ptr->riding);
     }
 }
 
-static bool check_pet_preservation_conditions(PlayerType *player_ptr, const MonsterEntity &monster)
+static bool check_pet_preservation_conditions(CreatureEntity &creature, const MonsterEntity &monster)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     if (reinit_wilderness) {
         return false;
     }
@@ -83,26 +89,32 @@ static bool check_pet_preservation_conditions(PlayerType *player_ptr, const Mons
     return dis > 1;
 }
 
-static void sweep_preserving_pet(PlayerType *player_ptr)
+static void sweep_preserving_pet(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     if (AngbandWorld::get_instance().is_wild_mode() || player_ptr->current_floor_ptr->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
     for (MONSTER_IDX i = player_ptr->current_floor_ptr->m_max - 1, party_monster_num = 1; (i >= 1) && (party_monster_num < MAX_PARTY_MON); i--) {
         const auto &monster = player_ptr->current_floor_ptr->m_list[i];
-        if (!monster.is_valid() || !monster.is_pet() || monster.is_riding() || check_pet_preservation_conditions(player_ptr, monster)) {
+        if (!monster.is_valid() || !monster.is_pet() || monster.is_riding() || check_pet_preservation_conditions(creature, monster)) {
             continue;
         }
 
         party_mon[party_monster_num] = player_ptr->current_floor_ptr->m_list[i].clone();
         party_monster_num++;
-        delete_monster_idx(*player_ptr, i);
+        delete_monster_idx(creature, i);
     }
 }
 
-static void record_pet_diary(PlayerType *player_ptr)
+static void record_pet_diary(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     if (!record_named_pet) {
         return;
     }
@@ -114,7 +126,7 @@ static void record_pet_diary(PlayerType *player_ptr)
             continue;
         }
 
-        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_MOVED, monster_desc(*player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE));
+        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_MOVED, monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE));
     }
 }
 
@@ -122,15 +134,18 @@ static void record_pet_diary(PlayerType *player_ptr)
  * @brief フロア移動時のペット保存処理 / Preserve_pets
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void preserve_pet(PlayerType *player_ptr)
+static void preserve_pet(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     for (auto &mon : party_mon) {
         mon.r_idx = MonraceList::empty_id();
     }
 
-    check_riding_preservation(player_ptr);
-    sweep_preserving_pet(player_ptr);
-    record_pet_diary(player_ptr);
+    check_riding_preservation(creature);
+    sweep_preserving_pet(creature);
+    record_pet_diary(creature);
     for (MONSTER_IDX i = player_ptr->current_floor_ptr->m_max - 1; i >= 1; i--) {
         const auto &monster = player_ptr->current_floor_ptr->m_list[i];
         const auto parent_r_idx = player_ptr->current_floor_ptr->m_list[monster.parent_m_idx].r_idx;
@@ -138,12 +153,12 @@ static void preserve_pet(PlayerType *player_ptr)
             continue;
         }
 
-        if (is_seen(*player_ptr, monster)) {
-            const auto m_name = monster_desc(*player_ptr, monster, 0);
+        if (is_seen(creature, monster)) {
+            const auto m_name = monster_desc(creature, monster, 0);
             msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
         }
 
-        delete_monster_idx(*player_ptr, i);
+        delete_monster_idx(creature, i);
     }
 }
 
@@ -151,8 +166,11 @@ static void preserve_pet(PlayerType *player_ptr)
  * @brief 新フロアに移動元フロアに繋がる階段を配置する / Virtually teleport onto the stairs that is connecting between two floors.
  * @param sf_ptr 移動元の保存フロア構造体参照ポインタ
  */
-static void locate_connected_stairs(PlayerType *player_ptr, FloorType &floor, saved_floor_type *sf_ptr)
+static void locate_connected_stairs(CreatureEntity &creature, FloorType &floor, saved_floor_type *sf_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto sx = 0;
     auto sy = 0;
     int x_table[20]{};
@@ -216,8 +234,11 @@ static void locate_connected_stairs(PlayerType *player_ptr, FloorType &floor, sa
 /*!
  * @brief フロア移動時、プレイヤーの移動先モンスターが既にいた場合ランダムな近隣に移動させる / When a monster is at a place where player will return,
  */
-static void get_out_monster(PlayerType *player_ptr)
+static void get_out_monster(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto tries = 0;
     auto dis = 1;
     const auto p_pos = player_ptr->get_position();
@@ -258,8 +279,11 @@ static void get_out_monster(PlayerType *player_ptr)
  * @brief クエスト・フロア内のモンスター・インベントリ情報を保存する
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void preserve_info(PlayerType *player_ptr)
+static void preserve_info(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto quest_monrace_id = MonraceList::empty_id();
     const auto &quests = QuestList::get_instance();
     const auto &floor = *player_ptr->current_floor_ptr;
@@ -285,7 +309,7 @@ static void preserve_info(PlayerType *player_ptr)
             continue;
         }
 
-        delete_monster_idx(*player_ptr, i);
+        delete_monster_idx(creature, i);
     }
 
     for (short i = 0; i < INVEN_PACK; i++) {
@@ -300,8 +324,11 @@ static void preserve_info(PlayerType *player_ptr)
     }
 }
 
-static Grid *set_grid_by_leaving_floor(PlayerType *player_ptr)
+static Grid *set_grid_by_leaving_floor(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     if (FloorChangeModesStore::get_instace()->has_not(FloorChangeMode::SAVE_FLOORS)) {
         return nullptr;
     }
@@ -319,8 +346,11 @@ static Grid *set_grid_by_leaving_floor(PlayerType *player_ptr)
     return &grid;
 }
 
-static void jump_floors(PlayerType *player_ptr)
+static void jump_floors(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_none_of({ FloorChangeMode::DOWN, FloorChangeMode::UP })) {
         return;
@@ -353,8 +383,11 @@ static void jump_floors(PlayerType *player_ptr)
 }
 
 //!< @details SAVE_FLOORS フラグを抜く箇所に「TODO」のコメントがあった、何をするかは書いておらず詳細不明
-static void exit_to_wilderness(PlayerType *player_ptr)
+static void exit_to_wilderness(CreatureEntity &creature)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
     if (floor.is_underground() || (floor.dungeon_id == DungeonId::WILDERNESS)) {
         return;
@@ -372,29 +405,35 @@ static void exit_to_wilderness(PlayerType *player_ptr)
     FloorChangeModesStore::get_instace()->reset(FloorChangeMode::SAVE_FLOORS);
 }
 
-static void kill_saved_floors(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+static void kill_saved_floors(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_not(FloorChangeMode::SAVE_FLOORS)) {
         for (auto i = 0; i < MAX_SAVED_FLOORS; i++) {
-            kill_saved_floor(*player_ptr, &saved_floors[i]);
+            kill_saved_floor(creature, &saved_floors[i]);
         }
 
         latest_visit_mark = 1;
         return;
     }
     if (fcms->has(FloorChangeMode::NO_RETURN)) {
-        kill_saved_floor(*player_ptr, sf_ptr);
+        kill_saved_floor(creature, sf_ptr);
     }
 }
 
-static void refresh_new_floor_id(PlayerType *player_ptr, Grid *grid_ptr)
+static void refresh_new_floor_id(CreatureEntity &creature, Grid *grid_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     if (new_floor_id != 0) {
         return;
     }
 
-    new_floor_id = get_unused_floor_id(*player_ptr);
+    new_floor_id = get_unused_floor_id(creature);
     if ((grid_ptr != nullptr) && !grid_ptr->has_special_terrain()) {
         grid_ptr->special = new_floor_id;
     }
@@ -414,25 +453,28 @@ static void update_upper_lower_or_floor_id(saved_floor_type *sf_ptr)
     }
 }
 
-static void exe_leave_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+static void exe_leave_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
-    auto *grid_ptr = set_grid_by_leaving_floor(player_ptr);
-    jump_floors(player_ptr);
-    exit_to_wilderness(player_ptr);
-    kill_saved_floors(player_ptr, sf_ptr);
+    auto *grid_ptr = set_grid_by_leaving_floor(creature);
+    jump_floors(creature);
+    exit_to_wilderness(creature);
+    kill_saved_floors(creature, sf_ptr);
     if (!player_ptr->in_saved_floor()) {
         return;
     }
 
-    refresh_new_floor_id(player_ptr, grid_ptr);
+    refresh_new_floor_id(creature, grid_ptr);
     update_upper_lower_or_floor_id(sf_ptr);
     auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_not(FloorChangeMode::SAVE_FLOORS) || fcms->has(FloorChangeMode::NO_RETURN)) {
         return;
     }
 
-    get_out_monster(player_ptr);
+    get_out_monster(creature);
     sf_ptr->last_visit = AngbandWorld::get_instance().game_turn;
     floor.forget_lite();
     floor.forget_view();
@@ -442,7 +484,7 @@ static void exe_leave_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     }
 
     fcms->set(FloorChangeMode::NO_RETURN);
-    kill_saved_floor(*player_ptr, get_sf_ptr(player_ptr->floor_id));
+    kill_saved_floor(creature, get_sf_ptr(player_ptr->floor_id));
 }
 
 /*!
@@ -450,29 +492,35 @@ static void exe_leave_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
  * / Maintain quest monsters, mark next floor_id at stairs, save current floor, and prepare to enter next floor.
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-void leave_floor(PlayerType *player_ptr)
+void leave_floor(CreatureEntity &creature)
 {
-    preserve_pet(player_ptr);
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
+    preserve_pet(creature);
     SpellsMirrorMaster(player_ptr).remove_all_mirrors(false);
-    set_superstealth(*player_ptr, false);
+    set_superstealth(creature, false);
 
     new_floor_id = 0;
 
-    preserve_info(player_ptr);
+    preserve_info(creature);
     saved_floor_type *sf_ptr = get_sf_ptr(player_ptr->floor_id);
     if (FloorChangeModesStore::get_instace()->has(FloorChangeMode::RANDOM_CONNECT)) {
-        locate_connected_stairs(player_ptr, *player_ptr->current_floor_ptr, sf_ptr);
+        locate_connected_stairs(creature, *player_ptr->current_floor_ptr, sf_ptr);
     }
 
-    exe_leave_floor(player_ptr, sf_ptr);
+    exe_leave_floor(creature, sf_ptr);
 }
 
 /*!
  * @brief 任意のダンジョン及び階層に飛ぶ
  * Go to any level
  */
-void jump_floor(PlayerType *player_ptr, DungeonId dun_idx, DEPTH depth)
+void jump_floor(CreatureEntity &creature, DungeonId dun_idx, DEPTH depth)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
+
     auto &floor = *player_ptr->current_floor_ptr;
     floor.set_dungeon_index(dun_idx);
     floor.dun_level = depth;
@@ -483,12 +531,12 @@ void jump_floor(PlayerType *player_ptr, DungeonId dun_idx, DEPTH depth)
     }
 
     floor.inside_arena = false;
-    leave_quest_check(*player_ptr);
+    leave_quest_check(creature);
     auto to = !floor.is_underground()
                   ? _("地上", "the surface")
                   : format(_("%d階(%s)", "level %d of %s"), floor.dun_level, floor.get_dungeon_definition().name.data());
     constexpr auto mes = _("%sへとウィザード・テレポートで移動した。\n", "You wizard-teleported to %s.\n");
-    msg_print_wizard(*player_ptr, 2, format(mes, to.data()));
+    msg_print_wizard(creature, 2, format(mes, to.data()));
     floor.quest_number = QuestId::NONE;
     PlayerEnergy(player_ptr).reset_player_turn();
     player_ptr->energy_need = 0;

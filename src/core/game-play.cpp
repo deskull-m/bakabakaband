@@ -390,7 +390,7 @@ static void decide_arena_death(CreatureEntity &creature)
     world.set_arena(true);
     reset_tim_flags(*player_ptr);
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::RANDOM_CONNECT });
-    leave_floor(player_ptr);
+    leave_floor(*player_ptr);
 }
 
 static void process_game_turn(CreatureEntity &creature)

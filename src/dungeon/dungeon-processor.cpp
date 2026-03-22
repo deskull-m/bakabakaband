@@ -295,7 +295,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
          * Maintain Unique monsters and artifact, save current
          * floor, then prepare next floor
          */
-        leave_floor(player_ptr);
+        leave_floor(*player_ptr);
         reinit_wilderness = false;
     }
 
