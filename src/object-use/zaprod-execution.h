@@ -2,10 +2,11 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class PlayerType;
 class ObjectZapRodEntity {
 public:
-    ObjectZapRodEntity(PlayerType *player_ptr);
+    ObjectZapRodEntity(CreatureEntity &creature);
     virtual ~ObjectZapRodEntity() = default;
 
     void execute(INVENTORY_IDX i_idx);

@@ -57,9 +57,9 @@
 #include "view/object-describer.h"
 #include "wizard/wizard-messages.h"
 
-ObjectThrowHitMonster::ObjectThrowHitMonster(PlayerType *player_ptr, POSITION y, POSITION x)
+ObjectThrowHitMonster::ObjectThrowHitMonster(CreatureEntity &creature, POSITION y, POSITION x)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     const auto &grid = floor.get_grid({ y, x });
     if (!grid.has_monster() || std::cmp_greater_equal(grid.m_idx, floor.m_list.size())) {
         THROW_EXCEPTION(std::logic_error, "Invalid monster index");
@@ -67,12 +67,12 @@ ObjectThrowHitMonster::ObjectThrowHitMonster(PlayerType *player_ptr, POSITION y,
 
     this->m_idx = grid.m_idx;
     this->m_ptr = &floor.m_list[grid.m_idx];
-    this->m_name = monster_name(*player_ptr, grid.m_idx);
+    this->m_name = monster_name(creature, grid.m_idx);
 }
 
-ObjectThrowEntity::ObjectThrowEntity(PlayerType *player_ptr, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken)
+ObjectThrowEntity::ObjectThrowEntity(CreatureEntity &creature, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken)
     : q_ptr(q_ptr)
-    , player_ptr(player_ptr)
+    , player_ptr(static_cast<PlayerType *>(&creature))
     , shuriken(shuriken)
     , mult(mult)
     , msec(delay_factor_val)
@@ -211,7 +211,7 @@ void ObjectThrowEntity::exe_throw()
             continue;
         }
 
-        this->hit_monster = ObjectThrowHitMonster(this->player_ptr, this->y, this->x);
+        this->hit_monster = ObjectThrowHitMonster(*this->player_ptr, this->y, this->x);
         this->attack_racial_power();
         break;
     }

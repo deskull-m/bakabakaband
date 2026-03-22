@@ -310,5 +310,5 @@ void do_cmd_zap_rod(CreatureEntity &creature)
         return;
     }
 
-    ObjectZapRodEntity(player_ptr).execute(i_idx);
+    ObjectZapRodEntity(*player_ptr).execute(i_idx);
 }

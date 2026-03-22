@@ -13,11 +13,12 @@
 class Grid;
 class MonsterEntity;
 class ItemEntity;
+class CreatureEntity;
 class PlayerType;
 
 class ObjectThrowHitMonster {
 public:
-    ObjectThrowHitMonster(PlayerType *player_ptr, POSITION y, POSITION x);
+    ObjectThrowHitMonster(CreatureEntity &creature, POSITION y, POSITION x);
 
     MONSTER_IDX m_idx{};
     MonsterEntity *m_ptr{};
@@ -27,8 +28,7 @@ public:
 class ObjectThrowEntity {
 public:
     ObjectThrowEntity() = default;
-    ObjectThrowEntity(
-        PlayerType *player_ptr, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken);
+    ObjectThrowEntity(CreatureEntity &creature, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken);
     virtual ~ObjectThrowEntity() = default;
 
     ItemEntity *q_ptr;
