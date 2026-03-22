@@ -92,13 +92,12 @@ bool activate_banish_evil(CreatureEntity &creature)
 
 bool activate_scare(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    if (music_singing_any(player)) {
-        stop_singing(player);
+    if (music_singing_any(creature)) {
+        stop_singing(creature);
     }
 
-    if (SpellHex(player).is_spelling_any()) {
-        (void)SpellHex(player).stop_all_spells();
+    if (SpellHex(creature).is_spelling_any()) {
+        (void)SpellHex(creature).stop_all_spells();
     }
 
     msg_print(_("あなたは力強い突風を吹き鳴らした。周囲の敵が震え上っている!", "You wind a mighty blast; your enemies tremble!"));
@@ -126,8 +125,7 @@ bool activate_stone_mud(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
-    wall_to_mud(player, dir, 20 + randint1(30));
+    wall_to_mud(creature, dir, 20 + randint1(30));
     return true;
 }
 
@@ -168,9 +166,8 @@ bool activate_telekinesis(CreatureEntity &creature, std::string_view name)
 bool activate_unique_detection(CreatureEntity &creature)
 {
     msg_print(_("奇妙な場所が頭の中に浮かんだ．．．", "Some strange places show up in your mind. And you see ..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    for (int i = player.current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = player.current_floor_ptr->m_list[i];
+    for (int i = creature.current_floor_ptr->m_max - 1; i >= 1; i--) {
+        const auto &monster = creature.current_floor_ptr->m_list[i];
         if (!monster.is_valid()) {
             continue;
         }
@@ -199,9 +196,8 @@ bool activate_dispel_curse(CreatureEntity &creature, std::string_view name)
 
 bool activate_cure_lw(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)BadStatusSetter(player).set_fear(0);
-    (void)hp_player(player, 30);
+    (void)BadStatusSetter(creature).set_fear(0);
+    (void)hp_player(creature, 30);
     return true;
 }
 
@@ -216,8 +212,7 @@ bool activate_grand_cross(CreatureEntity &creature)
 bool activate_call_chaos(CreatureEntity &creature)
 {
     msg_print(_("様々な色の火花を発している...", "It glows in scintillating colours..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    call_chaos(player);
+    call_chaos(creature);
     return true;
 }
 
@@ -253,18 +248,16 @@ bool activate_all_detection(CreatureEntity &creature)
 bool activate_extra_detection(CreatureEntity &creature)
 {
     msg_print(_("明るく輝いている...", "It glows brightly..."));
-    auto &player = static_cast<PlayerType &>(creature);
     detect_all(creature, DETECT_RAD_DEFAULT);
     probing(creature);
-    identify_fully(player, false);
+    identify_fully(creature, false);
     return true;
 }
 
 bool activate_fully_identification(CreatureEntity &creature)
 {
     msg_print(_("黄色く輝いている...", "It glows yellow..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    identify_fully(player, false);
+    identify_fully(creature, false);
     return true;
 }
 
@@ -281,8 +274,7 @@ bool activate_huge_stinking_storm(CreatureEntity &creature)
  */
 bool activate_identification(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    return ident_spell(player, false);
+    return ident_spell(creature, false);
 }
 
 bool activate_pesticide(CreatureEntity &creature)
@@ -306,8 +298,7 @@ bool activate_whirlwind(CreatureEntity &creature)
 bool activate_blinding_light(CreatureEntity &creature, std::string_view name)
 {
     msg_format(_("%sが眩しい光で輝いた...", "The %s gleams with blinding light..."), name.data());
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)fire_ball(player, AttributeType::LITE, Direction::self(), 300, 6);
+    (void)fire_ball(creature, AttributeType::LITE, Direction::self(), 300, 6);
     confuse_monsters(creature, 3 * creature.level / 2);
     return true;
 }
@@ -347,9 +338,8 @@ bool activate_recharge_extra(CreatureEntity &creature, std::string_view name)
 bool activate_shikofumi(CreatureEntity &creature)
 {
     msg_print(_("力強く四股を踏んだ。", "You stamp. (as if you are in a ring.)"));
-    auto &player = static_cast<PlayerType &>(creature);
-    (void)BadStatusSetter(player).set_fear(0);
-    (void)set_hero(player, randint1(20) + 20, false);
+    (void)BadStatusSetter(creature).set_fear(0);
+    (void)set_hero(creature, randint1(20) + 20, false);
     (void)dispel_evil(creature, creature.level * 3);
     return true;
 }
@@ -371,8 +361,7 @@ bool activate_map_light(CreatureEntity &creature)
 bool activate_exploding_rune(CreatureEntity &creature)
 {
     msg_print(_("明るい赤色に輝いている...", "It glows bright red..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    create_rune_explosion(player, creature.y, creature.x);
+    create_rune_explosion(creature, creature.y, creature.x);
     return true;
 }
 
@@ -385,14 +374,13 @@ bool activate_protection_rune(CreatureEntity &creature)
 
 bool activate_protection_elbereth(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    BadStatusSetter bss(player);
+    BadStatusSetter bss(creature);
     msg_print(_("エルベレスよ、我を護り給え！", "A Elbereth gilthoniel!"));
     create_rune_protection_one(creature);
     (void)bss.set_fear(0);
     (void)bss.set_blindness(0);
     (void)bss.hallucination(0);
-    set_blessed(player, randint0(25) + 25, true);
+    set_blessed(creature, randint0(25) + 25, true);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
     return true;
 }
@@ -443,13 +431,12 @@ bool activate_create_ammo(CreatureEntity &creature)
 bool activate_dispel_magic(CreatureEntity &creature)
 {
     msg_print(_("鈍い色に光った...", "It glowed in a dull color..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    const auto pos = target_set(player, TARGET_KILL).get_position();
+    const auto pos = target_set(creature, TARGET_KILL).get_position();
     if (!pos) {
         return false;
     }
 
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     const auto m_idx = floor.get_grid(*pos).m_idx;
     if (m_idx == 0) {
         return true;
@@ -460,7 +447,7 @@ bool activate_dispel_magic(CreatureEntity &creature)
         return true;
     }
 
-    dispel_monster_status(player, m_idx);
+    dispel_monster_status(creature, m_idx);
     return true;
 }
 
@@ -470,16 +457,15 @@ bool activate_whistle(CreatureEntity &creature, const ItemEntity &item)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
-    if (music_singing_any(player)) {
-        stop_singing(player);
+    if (music_singing_any(creature)) {
+        stop_singing(creature);
     }
 
-    if (SpellHex(player).is_spelling_any()) {
-        (void)SpellHex(player).stop_all_spells();
+    if (SpellHex(creature).is_spelling_any()) {
+        (void)SpellHex(creature).stop_all_spells();
     }
 
-    const auto &floor = *player.current_floor_ptr;
+    const auto &floor = *creature.current_floor_ptr;
     std::vector<short> pet_index;
     for (short pet_indice = floor.m_max - 1; pet_indice >= 1; pet_indice--) {
         const auto &monster = floor.m_list[pet_indice];
@@ -490,7 +476,7 @@ bool activate_whistle(CreatureEntity &creature, const ItemEntity &item)
 
     std::stable_sort(pet_index.begin(), pet_index.end(), [&floor](auto x, auto y) { return floor.order_pet_whistle(x, y); });
     for (auto pet_indice : pet_index) {
-        teleport_monster_to(player, pet_indice, creature.y, creature.x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(creature, pet_indice, creature.y, creature.x, 100, TELEPORT_PASSIVE);
     }
 
     return true;

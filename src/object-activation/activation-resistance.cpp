@@ -9,7 +9,6 @@
 #include "sv-definition/sv-ring-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -196,11 +195,10 @@ bool activate_resistance_pois(CreatureEntity &creature, std::string_view name)
 
 bool activate_ultimate_resistance(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     TIME_EFFECT v = randint1(25) + 25;
     (void)BadStatusSetter(creature).set_fear(0);
     (void)set_hero(creature, v, false);
-    (void)hp_player(*player_ptr, 10);
+    (void)hp_player(creature, 10);
     (void)set_blessed(creature, v, false);
     (void)set_oppose_acid(creature, v, false);
     (void)set_oppose_elec(creature, v, false);

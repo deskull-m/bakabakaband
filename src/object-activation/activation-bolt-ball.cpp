@@ -6,9 +6,9 @@
 #include "hpmp/hp-mp-processor.h"
 #include "spell-kind/spells-launcher.h"
 #include "spell-kind/spells-specific-bolt.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -38,14 +38,13 @@ bool activate_missile_2(CreatureEntity &creature)
 
 bool activate_missile_3(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
     msg_print(_("あなたはエレメントのブレスを吐いた。", "You breathe the elements."));
-    fire_breath(player, AttributeType::MISSILE, dir, 300, 4);
+    fire_breath(creature, AttributeType::MISSILE, dir, 300, 4);
     return true;
 }
 
@@ -128,10 +127,9 @@ bool activate_bolt_drain_1(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
     for (int dummy = 0; dummy < 3; dummy++) {
         if (hypodynamic_bolt(creature, dir, 50)) {
-            hp_player(player, 50);
+            hp_player(creature, 50);
         }
     }
 
@@ -145,10 +143,9 @@ bool activate_bolt_drain_2(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
     for (int dummy = 0; dummy < 3; dummy++) {
         if (hypodynamic_bolt(creature, dir, 100)) {
-            hp_player(player, 100);
+            hp_player(creature, 100);
         }
     }
 
@@ -318,9 +315,8 @@ bool activate_rocket(CreatureEntity &creature)
         return false;
     }
 
-    auto &player = static_cast<PlayerType &>(creature);
     msg_print(_("ロケットを発射した！", "You launch a rocket!"));
-    (void)fire_ball(creature, AttributeType::ROCKET, dir, 250 + player.level * 3, 2);
+    (void)fire_ball(creature, AttributeType::ROCKET, dir, 250 + creature.level * 3, 2);
     return true;
 }
 
@@ -338,11 +334,10 @@ bool activate_ball_water(CreatureEntity &creature, std::string_view name)
 
 bool activate_ball_lite(CreatureEntity &creature, std::string_view name)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto num = Dice::roll(5, 3);
     msg_format(_("% sが稲妻で覆われた...", "The %s is surrounded by lightning..."), name.data());
-    const auto p_pos = player.get_position();
-    const auto &floor = *player.current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    const auto &floor = *creature.current_floor_ptr;
     for (auto k = 0; k < num; k++) {
         auto attempts = 1000;
         Pos2D pos(0, 0);
@@ -358,7 +353,7 @@ bool activate_ball_lite(CreatureEntity &creature, std::string_view name)
         }
 
         constexpr uint32_t flags = PROJECT_THRU | PROJECT_STOP | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
-        project(player, 0, 3, pos.y, pos.x, 150, AttributeType::ELEC, flags);
+        project(creature, 0, 3, pos.y, pos.x, 150, AttributeType::ELEC, flags);
     }
 
     return true;

@@ -149,8 +149,7 @@ static bool check_activation_conditions(CreatureEntity &creature, ae_type *ae_pt
 
     if (ae_ptr->o_ptr->is_fuel() && (ae_ptr->o_ptr->fuel == 0)) {
         msg_print(_("燃料がない。", "It has no fuel."));
-        auto &player = static_cast<PlayerType &>(creature);
-        PlayerEnergy(player).reset_player_turn();
+        PlayerEnergy(creature).reset_player_turn();
         return false;
     }
 
@@ -165,15 +164,14 @@ static bool check_activation_conditions(CreatureEntity &creature, ae_type *ae_pt
  */
 static bool activate_artifact(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto it_activation = o_ptr->find_activation_info();
     if (it_activation == activation_info.end()) {
         msg_print("Activation information is not found.");
         return false;
     }
 
-    const auto item_name = describe_flavor(player, *o_ptr, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
-    if (!switch_activation(&player, &o_ptr, it_activation->index, item_name)) {
+    const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_BASE_NAME);
+    if (!switch_activation(creature, &o_ptr, it_activation->index, item_name)) {
         return false;
     }
 
@@ -194,7 +192,7 @@ static bool activate_artifact(CreatureEntity &creature, ItemEntity *o_ptr)
         o_ptr->timeout = o_ptr->bi_key == BaseitemKey(ItemKindType::RING, SV_RING_ICE) ? 200 : 250;
         return true;
     case RandomArtActType::TERROR:
-        o_ptr->timeout = 3 * (player.level + 10);
+        o_ptr->timeout = 3 * (creature.level + 10);
         return true;
     case RandomArtActType::MURAMASA:
         return true;
