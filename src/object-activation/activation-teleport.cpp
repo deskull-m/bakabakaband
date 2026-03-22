@@ -8,7 +8,6 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell-kind/spells-world.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -25,7 +24,6 @@ bool activate_teleport_away(CreatureEntity &creature)
 
 bool activate_escape(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     switch (randint1(13)) {
     case 1:
     case 2:
@@ -51,10 +49,10 @@ bool activate_escape(CreatureEntity &creature)
         }
 
         if (autosave_l) {
-            do_cmd_save_game(player, true);
+            do_cmd_save_game(creature, true);
         }
 
-        player.leaving = true;
+        creature.leaving = true;
         return true;
     }
 }
