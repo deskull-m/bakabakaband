@@ -407,9 +407,6 @@ static void exit_to_wilderness(CreatureEntity &creature)
 
 static void kill_saved_floors(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_not(FloorChangeMode::SAVE_FLOORS)) {
         for (auto i = 0; i < MAX_SAVED_FLOORS; i++) {
@@ -426,9 +423,6 @@ static void kill_saved_floors(CreatureEntity &creature, saved_floor_type *sf_ptr
 
 static void refresh_new_floor_id(CreatureEntity &creature, Grid *grid_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     if (new_floor_id != 0) {
         return;
     }

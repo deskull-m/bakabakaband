@@ -12,6 +12,7 @@
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include <array>
+#include <fmt/format.h>
 
 /*!
  * @brief 床に落ちているオブジェクトのインデックス群を返す

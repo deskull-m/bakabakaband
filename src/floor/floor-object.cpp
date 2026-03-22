@@ -133,7 +133,6 @@ static void handle_item_disappearance(CreatureEntity &creature, ItemEntity &disa
  */
 tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, BaseitemRestrict restrict, tl::optional<int> rq_mon_level)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&subject);
     const auto apply_magic_to = [&subject, mode](ItemEntity &item) {
         ItemMagicApplier(subject, &item, subject.current_floor_ptr->object_level, mode).execute();
         set_ammo_quantity(&item);

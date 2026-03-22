@@ -413,9 +413,6 @@ static void cut_off_the_upstair(CreatureEntity &creature)
 
 static void update_floor(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_none_of({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::FIRST_FLOOR })) {
         generate_floor(creature);
