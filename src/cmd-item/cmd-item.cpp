@@ -283,7 +283,7 @@ void do_cmd_use(CreatureEntity &creature)
         ObjectUseEntity(*player_ptr, i_idx).execute();
         break;
     case ItemKindType::ROD:
-        ObjectZapRodEntity(player_ptr).execute(i_idx);
+        ObjectZapRodEntity(*player_ptr).execute(i_idx);
         break;
     case ItemKindType::POTION:
         ObjectQuaffEntity(player_ptr).execute(i_idx);
