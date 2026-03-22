@@ -311,7 +311,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
     case PlayerMutationType::LAUNCHER:
         return ThrowCommand(creature).do_cmd_throw(2 + lvl / 40, false, -1);
     default:
-        PlayerEnergy(player_ptr).reset_player_turn();
+        PlayerEnergy(*player_ptr).reset_player_turn();
         msg_format(_("能力 %s は実装されていません。", "Power %s not implemented. Oops."), power);
         return true;
     }

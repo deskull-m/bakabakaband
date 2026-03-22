@@ -469,7 +469,7 @@ void do_cmd_racial_power(CreatureEntity &creature)
     }
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     if (cmd_limit_confused(creature)) {
         energy.reset_player_turn();
         return;

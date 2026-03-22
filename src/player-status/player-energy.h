@@ -2,10 +2,10 @@
 
 #include "system/angband.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerEnergy {
 public:
-    PlayerEnergy(PlayerType *player_ptr);
+    PlayerEnergy(CreatureEntity &creature);
     virtual ~PlayerEnergy() = default;
     void set_player_turn_energy(ENERGY need_cost); // 代入.
     void add_player_turn_energy(ENERGY need_cost); // 加算.
@@ -15,5 +15,5 @@ public:
     void reset_player_turn();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };

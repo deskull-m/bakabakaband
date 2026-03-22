@@ -89,7 +89,7 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
         }
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags = {

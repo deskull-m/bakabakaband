@@ -86,7 +86,7 @@ void pattern_teleport(CreatureEntity &creature)
     }
 
     player_ptr->current_floor_ptr->quest_number = QuestId::NONE;
-    PlayerEnergy(player_ptr).reset_player_turn();
+    PlayerEnergy(*player_ptr).reset_player_turn();
 
     /*
      * Clear all saved floors

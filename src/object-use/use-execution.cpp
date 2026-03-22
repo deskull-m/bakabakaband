@@ -52,7 +52,7 @@ void ObjectUseEntity::execute()
         return;
     }
 
-    PlayerEnergy(this->player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*this->player_ptr).set_player_turn_energy(100);
     if (!this->check_can_use()) {
         return;
     }

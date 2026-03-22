@@ -254,7 +254,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         window_stuff(player);
     }
 
-    PlayerEnergy energy(&player);
+    PlayerEnergy energy(player);
     if (terrain_new.flags.has(TerrainCharacteristics::STORE)) {
         disturb(creature, false, true);
         energy.reset_player_turn();

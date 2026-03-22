@@ -55,7 +55,7 @@ void do_cmd_search(CreatureEntity &creature)
         command_arg = 0;
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     search(*player_ptr);
 
     if (player_ptr->action == ACTION_SEARCH) {
@@ -74,7 +74,7 @@ static bool exe_alter(CreatureEntity &creature)
     const auto pos = player_ptr->get_neighbor(dir);
     const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     if (grid.has_monster()) {
         do_cmd_attack(*player_ptr, pos.y, pos.x, HISSATSU_NONE);
         return false;

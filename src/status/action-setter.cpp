@@ -68,7 +68,7 @@ void set_action(PlayerType *player_ptr, uint8_t typ)
         break;
     case ACTION_HAYAGAKE:
         msg_print(_("足が重くなった。", "You are no longer walking extremely fast."));
-        PlayerEnergy(player_ptr).set_player_turn_energy(100);
+        PlayerEnergy(*player_ptr).set_player_turn_energy(100);
         break;
     case ACTION_SPELL:
         msg_print(_("呪文の詠唱を中断した。", "You stopped casting."));

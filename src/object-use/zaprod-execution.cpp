@@ -58,7 +58,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         }
     }
 
-    PlayerEnergy(this->player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*this->player_ptr).set_player_turn_energy(100);
     if (!this->check_can_zap()) {
         return;
     }

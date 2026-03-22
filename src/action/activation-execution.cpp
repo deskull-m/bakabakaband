@@ -150,7 +150,7 @@ static bool check_activation_conditions(CreatureEntity &creature, ae_type *ae_pt
     if (ae_ptr->o_ptr->is_fuel() && (ae_ptr->o_ptr->fuel == 0)) {
         msg_print(_("燃料がない。", "It has no fuel."));
         auto &player = static_cast<PlayerType &>(creature);
-        PlayerEnergy(&player).reset_player_turn();
+        PlayerEnergy(player).reset_player_turn();
         return false;
     }
 
@@ -333,7 +333,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
         return;
     }
 
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     decide_activation_level(ae_ptr);
     decide_chance_fail(creature, ae_ptr);
     if (cmd_limit_time_walk(creature)) {

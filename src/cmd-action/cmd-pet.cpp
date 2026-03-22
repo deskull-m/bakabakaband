@@ -212,7 +212,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         }
 
         if (grid.has_monster()) {
-            PlayerEnergy(player_ptr).set_player_turn_energy(100);
+            PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
 
@@ -263,7 +263,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         }
         if (monster.get_monrace().level > randint1((player_ptr->skill_exp[PlayerSkillKindType::RIDING] / 50 + player_ptr->level / 2 + 20))) {
             msg_print(_("うまく乗れなかった。", "You failed to ride."));
-            PlayerEnergy(player_ptr).set_player_turn_energy(100);
+            PlayerEnergy(*player_ptr).set_player_turn_energy(100);
             return false;
         }
 
@@ -283,7 +283,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         }
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -665,7 +665,7 @@ void do_cmd_pet(CreatureEntity &creature)
 
         /* Abort if needed */
         if (!flag) {
-            PlayerEnergy(player_ptr).reset_player_turn();
+            PlayerEnergy(*player_ptr).reset_player_turn();
             return;
         }
 

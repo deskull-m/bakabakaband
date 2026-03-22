@@ -279,7 +279,7 @@ void Travel::step(CreatureEntity &creature)
     }
 
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     exe_movement(creature, this->dir, always_pickup, false);
 
     if (creature.get_position() == this->get_goal()) {

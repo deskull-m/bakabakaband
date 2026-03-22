@@ -361,7 +361,7 @@ void WorldTurnProcessor::ring_nightmare_bell(int prev_min)
         this->player_ptr->oldpy = randint1(MAX_HGT - 2);
         this->player_ptr->oldpx = randint1(MAX_WID - 2);
         change_wild_mode(*this->player_ptr, true);
-        PlayerEnergy(this->player_ptr).set_player_turn_energy(100);
+        PlayerEnergy(*this->player_ptr).set_player_turn_energy(100);
     }
 
     this->player_ptr->invoking_midnight_curse = true;

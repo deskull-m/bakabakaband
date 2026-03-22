@@ -386,7 +386,7 @@ void run_step(CreatureEntity &creature, const Direction &dir)
         return;
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     exe_movement(creature, find_current, false, false);
     if (player_ptr->is_located_at_running_destination()) {
         creature.run_py = 0;

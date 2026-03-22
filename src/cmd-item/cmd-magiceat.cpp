@@ -499,7 +499,7 @@ bool do_cmd_magic_eater(CreatureEntity &creature, bool only_browse, bool powerfu
     }
 
     const auto bi_key = select_magic_eater(creature, only_browse);
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     if (!bi_key) {
         energy.reset_player_turn();
         return false;

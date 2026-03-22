@@ -57,7 +57,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
     }
 
     target_pet = old_target_pet;
-    PlayerEnergy(static_cast<PlayerType *>(&this->creature)).set_player_turn_energy(100);
+    PlayerEnergy(this->creature).set_player_turn_energy(100);
     if (!this->check_can_zap()) {
         return;
     }

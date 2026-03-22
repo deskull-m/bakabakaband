@@ -369,7 +369,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
 
     disturb(creature, false, true);
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
     if (!can_attack_with_main_hand(creature) && !can_attack_with_sub_hand(creature) && creature.muta.has_none_of(mutation_attack_methods)) {
         sound(SoundKind::ATTACK_FAILED);
@@ -526,7 +526,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     const auto m_name = monster_desc(creature, monster, 0);
 
     // エネルギー消費
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
     const auto effects = creature.effects();
@@ -615,7 +615,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
 
     auto m_name = monster_desc(creature, monster, 0);
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
     const auto effects = creature.effects();
@@ -758,7 +758,7 @@ void do_cmd_enema(CreatureEntity &creature)
 
     auto m_name = monster_desc(creature, monster, 0);
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
     // 混乱状態では方向がずれる可能性
     const auto effects = creature.effects();

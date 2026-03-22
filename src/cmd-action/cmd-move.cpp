@@ -132,7 +132,7 @@ void do_cmd_go_up(CreatureEntity &creature)
         player.leaving = true;
         creature.oldpx = 0;
         creature.oldpy = 0;
-        PlayerEnergy(&player).set_player_turn_energy(100);
+        PlayerEnergy(player).set_player_turn_energy(100);
         return;
     }
 
@@ -147,7 +147,7 @@ void do_cmd_go_up(CreatureEntity &creature)
         return;
     }
 
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
 
     if (autosave_l) {
         do_cmd_save_game(player, true);
@@ -279,7 +279,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         player.leaving = true;
         creature.oldpx = 0;
         creature.oldpy = 0;
-        PlayerEnergy(&player).set_player_turn_energy(100);
+        PlayerEnergy(player).set_player_turn_energy(100);
         return;
     }
 
@@ -312,7 +312,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         fcms->set(FloorChangeMode::FIRST_FLOOR);
     }
 
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     if (autosave_l) {
         do_cmd_save_game(player, true);
     }
@@ -390,7 +390,6 @@ void do_cmd_go_down(CreatureEntity &creature)
  */
 void do_cmd_walk(CreatureEntity &creature, bool pickup)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if (command_arg) {
         command_rep = command_arg - 1;
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
@@ -399,11 +398,11 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
 
     auto more = false;
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
-    if (const auto dir = get_rep_dir(player)) {
-        PlayerEnergy energy(&player);
+    if (const auto dir = get_rep_dir(creature)) {
+        PlayerEnergy energy(creature);
         energy.set_player_turn_energy(100);
         if (dir.has_direction()) {
-            CreatureClass(player).break_samurai_stance({ SamuraiStanceType::MUSOU });
+            CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
         }
 
         if (is_wild_mode) {
@@ -411,7 +410,7 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
         }
 
         if (creature.action == ACTION_HAYAGAKE) {
-            auto energy_use = (ENERGY)(player.energy_use * (45 - (creature.level / 2)) / 100);
+            auto energy_use = (ENERGY)(creature.energy_use * (45 - (creature.level / 2)) / 100);
             energy.set_player_turn_energy(energy_use);
         }
 
@@ -434,8 +433,8 @@ void do_cmd_walk(CreatureEntity &creature, bool pickup)
             msg_print(_("襲撃だ！", "You are ambushed !"));
             creature.oldpy = randint1(MAX_HGT - 2);
             creature.oldpx = randint1(MAX_WID - 2);
-            change_wild_mode(player, true);
-            PlayerEnergy(&player).set_player_turn_energy(100);
+            change_wild_mode(creature, true);
+            PlayerEnergy(creature).set_player_turn_energy(100);
         }
     }
 
@@ -481,7 +480,7 @@ void do_cmd_stay(CreatureEntity &creature, bool pickup)
     }
 
     auto &player = static_cast<PlayerType &>(creature);
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     if (pickup) {
         mpe_mode |= MPE_DO_PICKUP;
     }
@@ -548,7 +547,7 @@ void do_cmd_rest(CreatureEntity &creature)
     }
 
     set_superstealth(player, false);
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     if (command_arg > 100) {
         chg_virtue(creature, Virtue::DILIGENCE, -1);
     }
@@ -621,7 +620,7 @@ void do_cmd_go_portal(CreatureEntity &creature)
     const auto target_dungeon = available_dungeons[randint0(available_dungeons.size())];
 
     // エネルギー消費
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
 
     // オートセーブ
     if (autosave_l) {
