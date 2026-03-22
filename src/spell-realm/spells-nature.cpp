@@ -25,7 +25,7 @@ bool rustproof(CreatureEntity &creature)
     short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_protector));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, options, FuncItemTester(&ItemEntity::is_protector));
     if (o_ptr == nullptr) {
         return false;
     }

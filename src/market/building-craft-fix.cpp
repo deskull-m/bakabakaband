@@ -93,7 +93,7 @@ static std::pair<short, ItemEntity *> select_repairing_broken_weapon(CreatureEnt
     constexpr auto q = _("どの折れた武器を修復しますか？", "Repair which broken weapon? ");
     constexpr auto s = _("修復できる折れた武器がありません。", "You have no broken weapon to repair.");
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_broken_weapon));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_broken_weapon));
     if (o_ptr == nullptr) {
         return { i_idx, nullptr };
     }
@@ -150,7 +150,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     constexpr auto q = _("材料となる武器は？", "Which weapon for material? ");
     constexpr auto s = _("材料となる武器がありません。", "You have no material for the repair.");
     short mater;
-    auto *mo_ptr = choose_object(player_ptr, &mater, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
+    auto *mo_ptr = choose_object(*player_ptr, &mater, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_orthodox_melee_weapons));
     if (!mo_ptr) {
         return 0;
     }

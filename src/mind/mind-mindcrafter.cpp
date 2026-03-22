@@ -56,7 +56,7 @@ bool psychometry(PlayerType *player_ptr)
     constexpr auto q = _("どのアイテムを調べますか？", "Meditate on which item? ");
     constexpr auto s = _("調べるアイテムがありません。", "You have nothing appropriate.");
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT));
     if (!o_ptr) {
         return false;
     }

@@ -741,7 +741,7 @@ bool entry_from_choosed_object(CreatureEntity &creature, autopick_type *entry)
     constexpr auto q = _("どのアイテムを登録しますか? ", "Enter which item? ");
     constexpr auto s = _("アイテムを持っていない。", "You have nothing to enter.");
     auto *player_ptr = static_cast<PlayerType *>(&creature);
-    auto *o_ptr = choose_object(player_ptr, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
+    auto *o_ptr = choose_object(*player_ptr, nullptr, q, s, USE_INVEN | USE_FLOOR | USE_EQUIP);
     if (!o_ptr) {
         return false;
     }

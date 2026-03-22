@@ -29,7 +29,7 @@ void vary_item(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
     }
 
     floor_item_increase(creature, 0 - i_idx, num);
-    floor_item_describe(static_cast<PlayerType *>(&creature), 0 - i_idx);
+    floor_item_describe(creature, 0 - i_idx);
     floor_item_optimize(creature, 0 - i_idx);
 }
 

@@ -55,7 +55,7 @@ bool recharge(CreatureEntity &creature, int power)
     constexpr auto s = _("魔力を充填すべきアイテムがない。", "You have nothing to recharge.");
 
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
     if (o_ptr == nullptr) {
         return false;
     }

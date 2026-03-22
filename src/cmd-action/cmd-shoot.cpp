@@ -59,7 +59,7 @@ void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type)
     constexpr auto q = _("どれを撃ちますか? ", "Fire which item? ");
     constexpr auto s = _("発射されるアイテムがありません。", "You have nothing to fire.");
     short i_idx;
-    const auto *ammo_ptr = choose_object(player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, TvalItemTester(player_ptr->tval_ammo));
+    const auto *ammo_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, TvalItemTester(player_ptr->tval_ammo));
     if (!ammo_ptr) {
         flush();
         return;

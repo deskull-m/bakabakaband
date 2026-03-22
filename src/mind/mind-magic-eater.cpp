@@ -24,7 +24,7 @@ bool import_magic_device(PlayerType *player_ptr)
     constexpr auto q = _("どのアイテムの魔力を取り込みますか? ", "Gain power of which item? ");
     constexpr auto s = _("魔力を取り込めるアイテムがない。", "There's nothing with power to absorb.");
     short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_recharge));
+    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::can_recharge));
     if (o_ptr == nullptr) {
         return false;
     }

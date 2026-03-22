@@ -390,7 +390,7 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
     constexpr auto s = _("読める書がない。", "You have no books that you can read.");
     constexpr auto options = USE_INVEN | USE_FLOOR;
     short i_idx;
-    const auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
+    const auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, options, TvalItemTester(ItemKindType::HISSATSU_BOOK));
     if (o_ptr == nullptr) {
         return;
     }

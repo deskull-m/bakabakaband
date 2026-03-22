@@ -327,7 +327,7 @@ void do_cmd_use_staff(CreatureEntity &creature)
     constexpr auto q = _("どの杖を使いますか? ", "Use which staff? ");
     constexpr auto s = _("使える杖がない。", "You have no staff to use.");
     short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::STAFF))) {
+    if (!choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::STAFF))) {
         return;
     }
 
