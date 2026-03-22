@@ -49,7 +49,7 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *player_ptr->current_floor_ptr;
-    clear_cave(player_ptr);
+    clear_cave(creature);
     player_ptr->x = player_ptr->y = 0;
 
     if (!sf_ptr) {

@@ -60,7 +60,7 @@ static void build_dead_end(CreatureEntity &creature, saved_floor_type *sf_ptr)
     auto *player_ptr = &player;
 
     msg_print(_("階段は行き止まりだった。", "The staircases come to a dead end..."));
-    clear_cave(player_ptr);
+    clear_cave(creature);
     player_ptr->x = player_ptr->y = 0;
     player_ptr->current_floor_ptr->height = SCREEN_HGT;
     player_ptr->current_floor_ptr->width = SCREEN_WID;
@@ -371,7 +371,7 @@ static void update_new_floor_feature(CreatureEntity &creature, saved_floor_type 
     }
 
     if (!is_visited_floor(sf_ptr)) {
-        generate_floor(player_ptr);
+        generate_floor(creature);
     } else {
         build_dead_end(creature, sf_ptr);
     }
@@ -418,7 +418,7 @@ static void update_floor(CreatureEntity &creature)
 
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_none_of({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::FIRST_FLOOR })) {
-        generate_floor(player_ptr);
+        generate_floor(creature);
         new_floor_id = 0;
         return;
     }
