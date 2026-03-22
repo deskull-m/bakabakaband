@@ -124,11 +124,11 @@ bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const Ran
     case RandomArtActType::BLADETURNER:
         return activate_bladeturner(*player_ptr);
     case RandomArtActType::BR_FIRE:
-        return activate_breath_fire(player_ptr, o_ptr);
+        return activate_breath_fire(*player_ptr, o_ptr);
     case RandomArtActType::BR_COLD:
-        return activate_breath_cold(player_ptr, o_ptr);
+        return activate_breath_cold(*player_ptr, o_ptr);
     case RandomArtActType::BR_DRAGON:
-        return activate_dragon_breath(player_ptr, o_ptr);
+        return activate_dragon_breath(*player_ptr, o_ptr);
     case RandomArtActType::TREE_CREATION:
         return activate_tree_creation(*player_ptr, o_ptr, name);
     case RandomArtActType::ANIM_DEAD:
