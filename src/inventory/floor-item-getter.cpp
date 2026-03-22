@@ -365,7 +365,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             fis.n1 = I2A(j - fis.floor_top); // TODO: 常に'0'になる。どんな意図でこのようなコードになっているのか不明.
             fis.n2 = I2A(fis.k - fis.floor_top);
             if (command_see) {
-                get_item_label = show_floor_items(player_ptr, fis.menu_line, player_ptr->y, player_ptr->x, &fis.min_width, item_tester);
+                get_item_label = show_floor_items(*player_ptr, fis.menu_line, player_ptr->y, player_ptr->x, &fis.min_width, item_tester);
             }
         }
 

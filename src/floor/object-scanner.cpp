@@ -5,10 +5,10 @@
 #include "io/input-key-requester.h"
 #include "locale/japanese.h"
 #include "object/item-tester-hooker.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include <array>
@@ -82,7 +82,7 @@ static std::string prepare_label_string_floor(const FloorType &floor, const std:
  * @return 選択したアイテムの添え字
  * @details
  */
-COMMAND_CODE show_floor_items(PlayerType *player_ptr, int target_item, POSITION y, POSITION x, TERM_LEN *min_width, const ItemTester &item_tester)
+COMMAND_CODE show_floor_items(CreatureEntity &creature, int target_item, POSITION y, POSITION x, TERM_LEN *min_width, const ItemTester &item_tester)
 {
     const Pos2D pos(y, x);
     constexpr auto max_items = 23; //!< @todo 1マスに落ちているアイテムの最大数. ヘッダに移したい.
@@ -95,12 +95,12 @@ COMMAND_CODE show_floor_items(PlayerType *player_ptr, int target_item, POSITION 
     auto dont_need_to_show_weights = true;
     const auto &[wid, hgt] = term_get_size();
     auto len = std::max((*min_width), 20);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto floor_item_index = scan_floor_items(floor, pos, { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
     auto k = 0;
     for (size_t i = 0; (i < floor_item_index.size()) && (i < max_items); i++) {
         const auto &item = *floor.o_list[floor_item_index[i]];
-        const auto item_name = describe_flavor(*player_ptr, item, 0);
+        const auto item_name = describe_flavor(creature, item, 0);
         out_index[k] = i;
         const auto tval = item.bi_key.tval();
         out_color[k] = tval_to_attr[enum2i(tval) & 0x7F];
