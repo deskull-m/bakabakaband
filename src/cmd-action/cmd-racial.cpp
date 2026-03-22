@@ -28,7 +28,6 @@
 #include "racial/race-racial-command-setter.h"
 #include "racial/racial-util.h"
 #include "status/action-setter.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -468,7 +467,6 @@ void do_cmd_racial_power(CreatureEntity &creature)
         return;
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     PlayerEnergy energy(creature);
     if (cmd_limit_confused(creature)) {
         energy.reset_player_turn();
