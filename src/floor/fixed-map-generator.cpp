@@ -65,8 +65,10 @@ static void drop_here(FloorType &floor, ItemEntity &&item, POSITION y, POSITION 
     grid.o_idx_list.add(floor, item_idx);
 }
 
-static void generate_artifact(PlayerType *player_ptr, qtwg_type *qtwg_ptr, const FixedArtifactId a_idx)
+static void generate_artifact(CreatureEntity &creature, qtwg_type *qtwg_ptr, const FixedArtifactId a_idx)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     if (a_idx == FixedArtifactId::NONE) {
         return;
     }
@@ -83,8 +85,10 @@ static void generate_artifact(PlayerType *player_ptr, qtwg_type *qtwg_ptr, const
 /**
  * @note 馬鹿馬鹿では固定配置モンスターのグループ生成はクビだ！クビだ！クビだ！
  */
-static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
+static void parse_qtw_D(CreatureEntity &creature, qtwg_type *qtwg_ptr, char *s)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     *qtwg_ptr->x = qtwg_ptr->xmin;
     auto &floor = *player_ptr->current_floor_ptr;
     int len = strlen(s);
@@ -181,7 +185,7 @@ static void parse_qtw_D(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char *s)
             drop_here(floor, std::move(item), *qtwg_ptr->y, *qtwg_ptr->x);
         }
 
-        generate_artifact(player_ptr, qtwg_ptr, letter[idx].artifact);
+        generate_artifact(creature, qtwg_ptr, letter[idx].artifact);
         grid.special = letter[idx].special;
     }
 }
@@ -326,8 +330,10 @@ static int parse_qtw_Q(qtwg_type *qtwg_ptr, char **zz)
     return PARSE_ERROR_GENERIC;
 }
 
-static bool parse_qtw_P(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char **zz)
+static bool parse_qtw_P(CreatureEntity &creature, qtwg_type *qtwg_ptr, char **zz)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     if (qtwg_ptr->buf[0] != 'P') {
         return false;
     }
@@ -393,8 +399,10 @@ static bool parse_qtw_P(PlayerType *player_ptr, qtwg_type *qtwg_ptr, char **zz)
  * @return エラーコード
  * @todo クエスト情報のみを読み込む手段と実際にフロアデータまで読み込む処理は分離したい
  */
-parse_error_type generate_fixed_map_floor(PlayerType *player_ptr, qtwg_type *qtwg_ptr, process_dungeon_file_pf parse_fixed_map)
+parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *qtwg_ptr, process_dungeon_file_pf parse_fixed_map)
 {
+    auto &player = static_cast<PlayerType &>(creature);
+    auto *player_ptr = &player;
     char *zz[33];
     if (!qtwg_ptr->buf[0]) {
         return PARSE_ERROR_NONE;
@@ -427,7 +435,7 @@ parse_error_type generate_fixed_map_floor(PlayerType *player_ptr, qtwg_type *qtw
             return PARSE_ERROR_NONE;
         }
 
-        parse_qtw_D(player_ptr, qtwg_ptr, s);
+        parse_qtw_D(creature, qtwg_ptr, s);
         (*qtwg_ptr->y)++;
         return PARSE_ERROR_NONE;
     }
@@ -448,7 +456,7 @@ parse_error_type generate_fixed_map_floor(PlayerType *player_ptr, qtwg_type *qtw
         return pos.error_or(PARSE_ERROR_NONE);
     }
 
-    if (parse_qtw_P(player_ptr, qtwg_ptr, zz)) {
+    if (parse_qtw_P(creature, qtwg_ptr, zz)) {
         return PARSE_ERROR_NONE;
     }
 
