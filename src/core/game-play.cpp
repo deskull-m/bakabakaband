@@ -265,7 +265,7 @@ static void change_floor_if_error(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (!AngbandWorld::get_instance().character_dungeon) {
-        change_floor(player_ptr);
+        change_floor(creature);
         return;
     }
 
@@ -276,7 +276,7 @@ static void change_floor_if_error(CreatureEntity &creature)
 
     if (!player_ptr->y || !player_ptr->x) {
         msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange player location, regenerate the dungeon floor."));
-        change_floor(player_ptr);
+        change_floor(creature);
     }
 
     if (!player_ptr->y || !player_ptr->x) {
@@ -425,7 +425,7 @@ static void process_game_turn(CreatureEntity &creature)
         if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
             break;
         }
-        change_floor(player_ptr);
+        change_floor(creature);
     }
 }
 
