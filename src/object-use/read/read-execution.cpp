@@ -44,7 +44,7 @@ ObjectReadEntity::ObjectReadEntity(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 void ObjectReadEntity::execute(bool known)
 {
     auto *o_ptr = ref_item(*this->player_ptr, this->i_idx);
-    PlayerEnergy(this->player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*this->player_ptr).set_player_turn_energy(100);
     if (!this->can_read()) {
         return;
     }

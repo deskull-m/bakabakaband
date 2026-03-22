@@ -557,7 +557,7 @@ static bool cast_sniper_spell(CreatureEntity &creature, int spell)
         if (!snipe_concentrate(creature)) {
             return false;
         }
-        PlayerEnergy(&player).set_player_turn_energy(100);
+        PlayerEnergy(player).set_player_turn_energy(100);
         return true;
     case 1:
         snipe_type = SP_LITE;

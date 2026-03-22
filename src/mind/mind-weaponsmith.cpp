@@ -139,7 +139,7 @@ static void drain_essence(CreatureEntity &creature)
         }
     }
 
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
 
     auto drain_result = Smith(&player).drain_essence(o_ptr);
 
@@ -502,7 +502,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
         return;
     }
 
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
 
     if (!smith.add_essence(effect, o_ptr, add_essence_count)) {
         msg_print(_("改良に失敗した。", "You failed to enchant."));
@@ -534,7 +534,7 @@ static void erase_essence(CreatureEntity &creature)
         return;
     }
 
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
 
     Smith(&player).erase_essence(o_ptr);
 

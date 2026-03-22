@@ -134,7 +134,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
             }
 
             player_ptr->leaving = true;
-            PlayerEnergy(player_ptr).set_player_turn_energy(100);
+            PlayerEnergy(*player_ptr).set_player_turn_energy(100);
             return;
         }
 
@@ -179,7 +179,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
                 do_past = true;
             } else {
                 msg_format(_("%s^が邪魔だ！", "%s^ is in your way!"), m_name.data());
-                PlayerEnergy(player_ptr).reset_player_turn();
+                PlayerEnergy(*player_ptr).reset_player_turn();
                 can_move = false;
             }
         } else {
@@ -190,7 +190,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
 
     const auto &riding_monster = floor.m_list[player_ptr->riding];
     const auto &riding_monrace = riding_monster.get_monrace();
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     if (can_move && player_ptr->riding) {
         if (riding_monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE)) {
             msg_print(_("動けない！", "Can't move!"));

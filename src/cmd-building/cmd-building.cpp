@@ -370,7 +370,7 @@ void do_cmd_building(CreatureEntity &creature)
         return;
     }
 
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     energy.set_player_turn_energy(100);
     const auto p_pos = player_ptr->get_position();
     auto &floor = *player_ptr->current_floor_ptr;

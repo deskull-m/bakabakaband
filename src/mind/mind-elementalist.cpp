@@ -887,7 +887,7 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
         project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + plev / 10, creature.y, creature.x, plev * 2, element, flags);
         player.csp = std::max(0, player.csp - player.msp * 10 / (20 + randint1(10)));
 
-        PlayerEnergy(&player).set_player_turn_energy(100);
+        PlayerEnergy(player).set_player_turn_energy(100);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
         static constexpr auto flags_swrf = {
@@ -941,7 +941,7 @@ void do_cmd_element(CreatureEntity &creature)
         }
     }
 
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags_swrf = {

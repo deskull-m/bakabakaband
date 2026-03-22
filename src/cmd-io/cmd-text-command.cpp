@@ -142,7 +142,7 @@ static std::vector<TextCommand> get_text_commands()
                 }
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+                PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
                 // 周囲のモンスターが嫌悪感を示す可能性
                 if (one_in_(4)) {
@@ -204,7 +204,7 @@ static std::vector<TextCommand> get_text_commands()
                 }
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(50);
+                PlayerEnergy(*player_ptr).set_player_turn_energy(50);
 
                 // 周囲のモンスターが反応する可能性
                 if (one_in_(3)) {
@@ -276,7 +276,7 @@ static std::vector<TextCommand> get_text_commands()
                 msg_print(_("何ということをしたのだ...", "What have you done..."));
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+                PlayerEnergy(*player_ptr).set_player_turn_energy(100);
             },
             _("ひでぶ", "Hidebu") },
         { { "しゃぶれよ", "shabureyо", "しゃぶれ", "shabare" },
@@ -307,7 +307,7 @@ static std::vector<TextCommand> get_text_commands()
                 }
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+                PlayerEnergy(*player_ptr).set_player_turn_energy(100);
             },
             _("しゃぶれよ", "Suck it") }
     };

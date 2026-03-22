@@ -283,7 +283,7 @@ bool hayagake(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
     auto *player_ptr = &player;
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     if (player_ptr->action == ACTION_HAYAGAKE) {
         set_action(player_ptr, ACTION_NONE);
         energy.reset_player_turn();
@@ -449,7 +449,7 @@ bool cast_ninja_spell(CreatureEntity &creature, MindNinjaType spell)
             }
 
             (void)ThrowCommand(*player_ptr).do_cmd_throw(1, false, slot);
-            PlayerEnergy(player_ptr).set_player_turn_energy(100);
+            PlayerEnergy(*player_ptr).set_player_turn_energy(100);
         }
 
         break;

@@ -866,7 +866,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
     }
 
     bool has_pet = false;
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     for (int i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
         const auto &monster = player_ptr->current_floor_ptr->m_list[i];
         if (!monster.is_valid()) {

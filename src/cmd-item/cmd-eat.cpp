@@ -560,7 +560,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     sound(SoundKind::EAT);
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     const auto level = o_ptr->get_baseitem_level();
 
     /* 基本食い物でないものを喰う判定 */

@@ -278,7 +278,7 @@ void process_player(CreatureEntity &creature)
             command_see = false;
         }
 
-        PlayerEnergy energy(player_ptr);
+        PlayerEnergy energy(creature);
         energy.reset_player_turn();
         const auto is_knocked_out = effects->stun().is_knocked_out();
         const auto is_paralyzed = effects->paralysis().is_paralyzed();

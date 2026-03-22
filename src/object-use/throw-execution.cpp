@@ -169,7 +169,7 @@ void ObjectThrowEntity::reflect_inventory_by_throw()
 
 void ObjectThrowEntity::set_class_specific_throw_params()
 {
-    PlayerEnergy energy(this->player_ptr);
+    PlayerEnergy energy(*this->player_ptr);
     energy.set_player_turn_energy(100);
     CreatureClass pc(*this->player_ptr);
     if (pc.equals(PlayerClassType::ROGUE) || pc.equals(PlayerClassType::NINJA)) {

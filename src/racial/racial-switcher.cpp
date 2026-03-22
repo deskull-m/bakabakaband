@@ -96,7 +96,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         if (PlayerRealm(*player_ptr).is_realm_hex()) {
             const auto retval = SpellHex(*player_ptr).stop_spells_with_selection();
             if (retval) {
-                PlayerEnergy(player_ptr).set_player_turn_energy(10);
+                PlayerEnergy(*player_ptr).set_player_turn_energy(10);
             }
 
             return retval;
@@ -215,7 +215,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         }
 
         stop_singing(*player_ptr);
-        PlayerEnergy(player_ptr).set_player_turn_energy(10);
+        PlayerEnergy(*player_ptr).set_player_turn_energy(10);
         return true;
     case PlayerClassType::RED_MAGE:
         if (cmd_limit_cast(creature)) {
@@ -256,7 +256,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return true;
     case PlayerClassType::BLUE_MAGE:
         set_action(player_ptr, player_ptr->action == ACTION_LEARN ? ACTION_NONE : ACTION_LEARN);
-        PlayerEnergy(player_ptr).reset_player_turn();
+        PlayerEnergy(*player_ptr).reset_player_turn();
         return true;
     case PlayerClassType::CAVALRY:
         return rodeo(creature);
@@ -519,7 +519,7 @@ bool switch_race_racial_execution(CreatureEntity &creature, const int32_t comman
     }
     default:
         msg_print(_("この種族は特殊な能力を持っていません。", "This race has no bonus power."));
-        PlayerEnergy(player_ptr).reset_player_turn();
+        PlayerEnergy(*player_ptr).reset_player_turn();
         return true;
     }
 }

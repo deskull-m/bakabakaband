@@ -443,31 +443,30 @@ static void apply_damage_negative_effect(player_attack_type *pa_ptr, bool is_zan
  */
 static bool check_fear_death(CreatureEntity &creature, player_attack_type *pa_ptr, const int num, const bool is_lowlevel)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     MonsterDamageProcessor mdp(creature, pa_ptr->m_idx, pa_ptr->attack_damage, pa_ptr->fear, pa_ptr->attribute_flags);
     if (!mdp.mon_take_hit("")) {
         return false;
     }
 
     *(pa_ptr->mdeath) = true;
-    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER) && player.energy_use) {
-        PlayerEnergy energy(&player);
-        if (can_attack_with_main_hand(player) && can_attack_with_sub_hand(player)) {
+    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER) && creature.energy_use) {
+        PlayerEnergy energy(creature);
+        if (can_attack_with_main_hand(creature) && can_attack_with_sub_hand(creature)) {
             ENERGY energy_use;
             if (pa_ptr->hand) {
-                energy_use = player.energy_use * 3 / 5 + player.energy_use * num * 2 / (player.num_blow[pa_ptr->hand] * 5);
+                energy_use = creature.energy_use * 3 / 5 + creature.energy_use * num * 2 / (creature.num_blow[pa_ptr->hand] * 5);
             } else {
-                energy_use = player.energy_use * num * 3 / (player.num_blow[pa_ptr->hand] * 5);
+                energy_use = creature.energy_use * num * 3 / (creature.num_blow[pa_ptr->hand] * 5);
             }
 
             energy.set_player_turn_energy(energy_use);
         } else {
-            auto energy_use = (ENERGY)(player.energy_use * num / player.num_blow[pa_ptr->hand]);
+            auto energy_use = (ENERGY)(creature.energy_use * num / creature.num_blow[pa_ptr->hand]);
             energy.set_player_turn_energy(energy_use);
         }
     }
 
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     if ((o_ptr->is_specific_artifact(FixedArtifactId::ZANTETSU)) && is_lowlevel) {
         msg_print(_("またつまらぬものを斬ってしまった．．．", "Sigh... Another trifling thing I've cut...."));
     }

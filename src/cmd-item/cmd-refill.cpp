@@ -38,7 +38,7 @@ static void do_cmd_refill_lamp(CreatureEntity &creature)
 
     const auto flags = o_ptr->get_flags();
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(50);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(50);
     auto *j_ptr = player_ptr->inventory[INVEN_LITE].get();
     const auto flags2 = j_ptr->get_flags();
     j_ptr->fuel += o_ptr->fuel;
@@ -75,7 +75,7 @@ static void do_cmd_refill_torch(CreatureEntity &creature)
 
     const auto flags = o_ptr->get_flags();
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(50);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(50);
     auto *j_ptr = player_ptr->inventory[INVEN_LITE].get();
     const auto flags2 = j_ptr->get_flags();
     j_ptr->fuel += o_ptr->fuel + 5;

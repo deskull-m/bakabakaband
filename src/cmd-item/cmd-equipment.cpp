@@ -286,7 +286,7 @@ void do_cmd_wield(CreatureEntity &creature)
         autopick_alter_item(*player_ptr, i_idx, false);
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     auto item = o_ptr->clone();
     item.number = 1;
     if (i_idx >= 0) {
@@ -389,7 +389,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
         return;
     }
 
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (o_ptr->is_cursed()) {
         if (o_ptr->curse_flags.has(CurseTraitType::PERMA_CURSE) || !pc.equals(PlayerClassType::BERSERKER)) {

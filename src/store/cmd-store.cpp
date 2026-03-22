@@ -212,7 +212,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     player_ptr->town_num = old_town_num;
 
     select_floor_music(*player_ptr);
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     world.character_icky_depth = 0;
     command_new = 0;
     command_see = false;

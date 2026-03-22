@@ -872,7 +872,7 @@ void do_cmd_study(CreatureEntity &creature)
 #endif
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
     switch (mp_ptr->spell_book) {
     case ItemKindType::LIFE_BOOK:
@@ -1274,7 +1274,7 @@ bool do_cmd_cast(CreatureEntity &creature)
         }
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
 
     /* Sufficient mana */
     if (need_mana <= player_ptr->csp) {

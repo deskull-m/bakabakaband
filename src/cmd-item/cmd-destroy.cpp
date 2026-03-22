@@ -228,7 +228,7 @@ void do_cmd_destroy(CreatureEntity &creature)
     }
 
     const auto &[o_ptr, i_idx, amt] = *selection_result;
-    PlayerEnergy energy(player_ptr);
+    PlayerEnergy energy(creature);
     energy.set_player_turn_energy(100);
     if (!can_player_destroy_object(o_ptr)) {
         energy.reset_player_turn();

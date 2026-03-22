@@ -48,7 +48,7 @@ bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
     const Pos2D pos(y, x);
     const auto &grid = creature.current_floor_ptr->get_grid(pos);
     auto &terrain = grid.get_terrain();
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     if (terrain.flags.has_not(TerrainCharacteristics::OPEN)) {
         constexpr auto fmt = _("%sはがっちりと閉じられているようだ。", "The %s appears to be stuck.");
         msg_format(fmt, grid.get_terrain(TerrainKind::MIMIC).name.data());
@@ -114,7 +114,7 @@ bool exe_close(CreatureEntity &creature, const Pos2D &pos)
     const auto &grid = floor.get_grid(pos);
     const auto terrain_id = grid.feat;
     auto more = false;
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     if (grid.get_terrain().flags.has_not(TerrainCharacteristics::CLOSE)) {
         return more;
     }
@@ -222,7 +222,7 @@ bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_I
     auto &player = static_cast<PlayerType &>(creature);
     const Pos2D pos(y, x);
     auto *o_ptr = creature.current_floor_ptr->o_list[o_idx].get();
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     int i = player.skill_dis;
     const auto effects = player.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
@@ -290,7 +290,7 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
     const auto &name = terrain.name;
     int power = terrain.power;
     int i = player.skill_dis;
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     auto effects = player.effects();
     if (effects->blindness().is_blind() || no_lite(creature)) {
         i = i / 10;
@@ -356,7 +356,7 @@ bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction 
     int bash = adj_str_blow[player.stat_index[A_STR]];
     int power = terrain.power;
     const auto &name = grid.get_terrain(TerrainKind::MIMIC).name;
-    PlayerEnergy(&player).set_player_turn_energy(100);
+    PlayerEnergy(player).set_player_turn_energy(100);
     msg_format(_("%sに体当たりをした！", "You smash into the %s!"), name.data());
     power = (bash - (power * 10));
     if (CreatureClass(player).equals(PlayerClassType::BERSERKER)) {

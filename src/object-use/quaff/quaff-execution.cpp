@@ -89,7 +89,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
 
 bool ObjectQuaffEntity::can_influence()
 {
-    PlayerEnergy(this->player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*this->player_ptr).set_player_turn_energy(100);
     if (!this->can_quaff()) {
         return false;
     }

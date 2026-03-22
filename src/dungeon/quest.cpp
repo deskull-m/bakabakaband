@@ -383,7 +383,7 @@ void do_cmd_quest(CreatureEntity &creature)
         return;
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(*player_ptr).set_player_turn_energy(100);
     const auto &floor = *player_ptr->current_floor_ptr;
     if (!floor.has_terrain_characteristics(player_ptr->get_position(), TerrainCharacteristics::QUEST_ENTER)) {
         msg_print(_("ここにはクエストの入口はない。", "You see no quest level here."));

@@ -462,13 +462,13 @@ void process_command(CreatureEntity &creature)
             }
 
             msg_format(_("反魔法バリアが%sを邪魔した！", "An anti-magic shell disrupts your %s!"), which_power);
-            PlayerEnergy(player_ptr).reset_player_turn();
+            PlayerEnergy(*player_ptr).reset_player_turn();
             break;
         }
 
         if (is_shero(*player_ptr) && !pc.equals(PlayerClassType::BERSERKER)) {
             msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
-            PlayerEnergy(player_ptr).reset_player_turn();
+            PlayerEnergy(*player_ptr).reset_player_turn();
             break;
         }
 

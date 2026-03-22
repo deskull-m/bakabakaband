@@ -545,7 +545,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
         }
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(j_ptr->get_bow_energy());
+    PlayerEnergy(*player_ptr).set_player_turn_energy(j_ptr->get_bow_energy());
     auto tmul = j_ptr->get_arrow_magnification();
 
     /* Get extra "power" from "extra might" */
@@ -573,7 +573,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     /* Get a direction (or cancel) */
     const auto dir = get_aim_dir(creature);
     if (!dir) {
-        PlayerEnergy(player_ptr).reset_player_turn();
+        PlayerEnergy(*player_ptr).reset_player_turn();
 
         if (snipe_type == SP_AWAY) {
             snipe_type = SP_NONE;
@@ -600,7 +600,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
     /* Don't shoot at my feet */
     if (pos_target == p_pos) {
-        PlayerEnergy(player_ptr).reset_player_turn();
+        PlayerEnergy(*player_ptr).reset_player_turn();
 
         /* project_length is already reset to 0 */
 
@@ -608,7 +608,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
     }
 
     /* Take a (partial) turn */
-    PlayerEnergy(player_ptr).div_player_turn_energy(thits);
+    PlayerEnergy(*player_ptr).div_player_turn_energy(thits);
     creature.is_fired = true;
 
     creature.plus_incident_tree("SHOOT", 1);
