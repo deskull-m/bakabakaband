@@ -377,14 +377,14 @@ static void kill_saved_floors(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     const auto &fcms = FloorChangeModesStore::get_instace();
     if (fcms->has_not(FloorChangeMode::SAVE_FLOORS)) {
         for (auto i = 0; i < MAX_SAVED_FLOORS; i++) {
-            kill_saved_floor(player_ptr, &saved_floors[i]);
+            kill_saved_floor(*player_ptr, &saved_floors[i]);
         }
 
         latest_visit_mark = 1;
         return;
     }
     if (fcms->has(FloorChangeMode::NO_RETURN)) {
-        kill_saved_floor(player_ptr, sf_ptr);
+        kill_saved_floor(*player_ptr, sf_ptr);
     }
 }
 
@@ -394,7 +394,7 @@ static void refresh_new_floor_id(PlayerType *player_ptr, Grid *grid_ptr)
         return;
     }
 
-    new_floor_id = get_unused_floor_id(player_ptr);
+    new_floor_id = get_unused_floor_id(*player_ptr);
     if ((grid_ptr != nullptr) && !grid_ptr->has_special_terrain()) {
         grid_ptr->special = new_floor_id;
     }
@@ -442,7 +442,7 @@ static void exe_leave_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     }
 
     fcms->set(FloorChangeMode::NO_RETURN);
-    kill_saved_floor(player_ptr, get_sf_ptr(player_ptr->floor_id));
+    kill_saved_floor(*player_ptr, get_sf_ptr(player_ptr->floor_id));
 }
 
 /*!

@@ -41,7 +41,7 @@ static void clear_floor(CreatureEntity &creature)
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     (void)fd_close(highscore_fd);
     highscore_fd = -1;
-    clear_saved_floor_files(player_ptr);
+    clear_saved_floor_files(creature);
     signals_handle_tstp();
 }
 
