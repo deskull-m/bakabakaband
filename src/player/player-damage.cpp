@@ -282,9 +282,9 @@ int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
  * @brief プレイヤーの死亡時強制セーブ処理
  * @param player_ptr プレイヤーへの参照ポインタ
  */
-static void death_save(PlayerType *player_ptr)
+static void death_save(CreatureEntity &creature)
 {
-    if (!cheat_save && !save_player(player_ptr, SaveType::CLOSE_GAME)) {
+    if (!cheat_save && !save_player(creature, SaveType::CLOSE_GAME)) {
         msg_print(_("セーブ失敗！", "death save failed!"));
     }
 }
@@ -409,7 +409,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
                 exe_write_diary(floor, DiaryKind::ARENA, 0, m_name);
             }
 
-            death_save(&player);
+            death_save(player);
             return damage;
         }
 
@@ -513,7 +513,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
 
         exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
-        death_save(&player);
+        death_save(player);
         flush();
         if (input_check_strict(player, _("画面を保存しますか？", "Dump the screen? "), UserCheck::NO_HISTORY)) {
             do_cmd_save_screen(player);

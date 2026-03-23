@@ -13,7 +13,6 @@
 #include "save/save.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -28,7 +27,6 @@
  */
 void exit_game_panic(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &world = AngbandWorld::get_instance();
     if (!world.character_generated || world.character_saved) {
         quit(_("緊急事態", "panic"));
@@ -37,14 +35,14 @@ void exit_game_panic(CreatureEntity &creature)
 
     prt("", 0, 0);
     disturb(creature, true, true);
-    if (player_ptr->hp < 0) {
-        player_ptr->is_dead_ = false;
+    if (creature.hp < 0) {
+        creature.is_dead_ = false;
     }
 
     AngbandSystem::get_instance().set_panic_save(true);
     signals_ignore_tstp();
-    player_ptr->died_from = _("(緊急セーブ)", "(panic save)");
-    if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
+    creature.died_from = _("(緊急セーブ)", "(panic save)");
+    if (!save_player(creature, SaveType::CLOSE_GAME)) {
         quit(_("緊急セーブ失敗！", "panic save failed!"));
     }
     quit(_("緊急セーブ成功！", "panic save succeeded!"));

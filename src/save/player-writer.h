@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void wr_player(PlayerType *player_ptr);
+class CreatureEntity;
+void wr_player(CreatureEntity &creature);

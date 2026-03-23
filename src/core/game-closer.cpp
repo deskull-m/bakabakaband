@@ -25,7 +25,6 @@
 #include "save/save.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
@@ -46,7 +45,6 @@ static void clear_floor(CreatureEntity &creature)
 
 static void send_world_score_on_closing(CreatureEntity &creature, bool do_send)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (send_world_score(creature, do_send)) {
         return;
     }
@@ -58,7 +56,7 @@ static void send_world_score_on_closing(CreatureEntity &creature, bool do_send)
 
     AngbandSystem::get_instance().set_awaiting_report_score(true);
     creature.is_dead_ = false;
-    if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
+    if (!save_player(creature, SaveType::CLOSE_GAME)) {
         msg_print(_("セーブ失敗！", "death save failed!"));
     }
 }
@@ -148,7 +146,6 @@ static void kingly(CreatureEntity &creature)
  */
 void close_game(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     handle_stuff(creature);
     msg_erase();
     flush();
@@ -177,7 +174,7 @@ void close_game(CreatureEntity &creature)
         world.play_time.update();
         world.sf_play_time += world.play_time.elapsed_sec();
 
-        if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
+        if (!save_player(creature, SaveType::CLOSE_GAME)) {
             msg_print(_("セーブ失敗！", "death save failed!"));
         }
     } else {

@@ -152,7 +152,7 @@ static void send_waiting_record(CreatureEntity &creature)
     } else {
         system.set_awaiting_report_score(false);
         top_twenty(*player_ptr);
-        if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
+        if (!save_player(*player_ptr, SaveType::CLOSE_GAME)) {
             msg_print(_("セーブ失敗！", "death save failed!"));
         }
     }

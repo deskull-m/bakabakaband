@@ -5,5 +5,5 @@ enum class SaveType {
     CONTINUE_GAME
 };
 
-class PlayerType;
-bool save_player(PlayerType *player_ptr, SaveType type);
+class CreatureEntity;
+bool save_player(CreatureEntity &creature, SaveType type);
