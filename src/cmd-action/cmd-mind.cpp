@@ -297,7 +297,7 @@ static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
     auto &player = static_cast<PlayerType &>(creature);
     switch (cm_ptr->use_mind) {
     case MindKindType::MINDCRAFTER:
-        cm_ptr->cast = cast_mindcrafter_spell(&player, i2enum<MindMindcrafterType>(cm_ptr->n));
+        cm_ptr->cast = cast_mindcrafter_spell(creature, i2enum<MindMindcrafterType>(cm_ptr->n));
         return true;
     case MindKindType::KI:
         cm_ptr->cast = cast_force_spell(player, i2enum<MindForceTrainerType>(cm_ptr->n));
