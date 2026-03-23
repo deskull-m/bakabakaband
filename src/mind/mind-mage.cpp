@@ -15,8 +15,8 @@
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "player-base/player-class.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -25,13 +25,13 @@
  * @param power 基本効力
  * @return ターンを消費した場合TRUEを返す
  */
-bool eat_magic(PlayerType *player_ptr, int power)
+bool eat_magic(CreatureEntity &creature, int power)
 {
     byte fail_type = 1;
     constexpr auto q = _("どのアイテムから魔力を吸収しますか？", "Drain which item? ");
     constexpr auto s = _("魔力を吸収できるアイテムがありません。", "You have nothing to drain.");
     short i_idx;
-    auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    auto *o_ptr = choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
     if (o_ptr == nullptr) {
         return false;
     }
@@ -49,7 +49,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
             if (o_ptr->timeout > (o_ptr->number - 1) * base_pval) {
                 msg_print(_("充填中のロッドから魔力を吸収することはできません。", "You can't absorb energy from a discharged rod."));
             } else {
-                player_ptr->csp += item_level;
+                creature.csp += item_level;
                 o_ptr->timeout += base_pval;
             }
         }
@@ -63,7 +63,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
             is_eating_successful = false;
         } else {
             if (o_ptr->pval > 0) {
-                player_ptr->csp += item_level / 2;
+                creature.csp += item_level / 2;
                 o_ptr->pval--;
 
                 if ((tval == ItemKindType::STAFF) && (i_idx >= 0) && (o_ptr->number > 1)) {
@@ -72,7 +72,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
                     eat_item.number = 1;
                     o_ptr->pval++;
                     o_ptr->number--;
-                    i_idx = store_item_to_inventory(*player_ptr, &eat_item);
+                    i_idx = store_item_to_inventory(creature, &eat_item);
 
                     msg_print(_("杖をまとめなおした。", "You unstack your staff."));
                 }
@@ -87,11 +87,11 @@ bool eat_magic(PlayerType *player_ptr, int power)
     }
 
     if (is_eating_successful) {
-        return redraw_player(*player_ptr);
+        return redraw_player(creature);
     }
 
     if (o_ptr->is_fixed_artifact()) {
-        const auto item_name = describe_flavor(*player_ptr, *o_ptr, OD_NAME_ONLY);
+        const auto item_name = describe_flavor(creature, *o_ptr, OD_NAME_ONLY);
         msg_format(_("魔力が逆流した！%sは完全に魔力を失った。", "The recharging backfires - %s is completely drained!"), item_name.data());
         if (tval == ItemKindType::ROD) {
             o_ptr->timeout = base_pval * o_ptr->number;
@@ -99,13 +99,13 @@ bool eat_magic(PlayerType *player_ptr, int power)
             o_ptr->pval = 0;
         }
 
-        return redraw_player(*player_ptr);
+        return redraw_player(creature);
     }
 
-    const auto item_name = describe_flavor(*player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 
     /* Mages recharge objects more safely. */
-    if (CreatureClass(*player_ptr).is_wizard()) {
+    if (CreatureClass(creature).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */
         if (tval == ItemKindType::ROD) {
             if (one_in_(10)) {
@@ -180,7 +180,7 @@ bool eat_magic(PlayerType *player_ptr, int power)
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(*player_ptr, i_idx, -1);
+        vary_item(creature, i_idx, -1);
     }
 
     if (fail_type == 3) {
@@ -190,8 +190,8 @@ bool eat_magic(PlayerType *player_ptr, int power)
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(*player_ptr, i_idx, -999);
+        vary_item(creature, i_idx, -999);
     }
 
-    return redraw_player(*player_ptr);
+    return redraw_player(creature);
 }

@@ -105,7 +105,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         [[fallthrough]];
     case PlayerClassType::MAGE:
     case PlayerClassType::SORCERER:
-        return eat_magic(player_ptr, player_ptr->level * 2);
+        return eat_magic(creature, creature.level * 2);
     case PlayerClassType::PRIEST:
         if (!PlayerRealm(*player_ptr).realm1().is_good_attribute()) {
             (void)dispel_monsters(creature, creature.level * 4);
