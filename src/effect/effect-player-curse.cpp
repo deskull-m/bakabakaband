@@ -7,7 +7,6 @@
 #include "status/bad-status-setter.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -17,7 +16,7 @@ void effect_player_curse_1(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {
-            curse_equipment(static_cast<PlayerType *>(&creature), 15, 0);
+            curse_equipment(creature, 15, 0);
         }
         ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     }
@@ -29,7 +28,7 @@ void effect_player_curse_2(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {
-            curse_equipment(static_cast<PlayerType *>(&creature), 25, std::min(ep_ptr->rlev / 2 - 15, 5));
+            curse_equipment(creature, 25, std::min(ep_ptr->rlev / 2 - 15, 5));
         }
         ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     }
@@ -41,7 +40,7 @@ void effect_player_curse_3(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {
-            curse_equipment(static_cast<PlayerType *>(&creature), 33, std::min(ep_ptr->rlev / 2 - 15, 15));
+            curse_equipment(creature, 33, std::min(ep_ptr->rlev / 2 - 15, 15));
         }
         ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     }

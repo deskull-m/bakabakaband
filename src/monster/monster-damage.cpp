@@ -268,8 +268,7 @@ void MonsterDamageProcessor::increase_kill_numbers()
 
 void MonsterDamageProcessor::death_amberites(std::string_view m_name)
 {
-    auto &player = static_cast<PlayerType &>(this->creature);
-    const auto &monster = player.current_floor_ptr->m_list[this->m_idx];
+    const auto &monster = this->creature.current_floor_ptr->m_list[this->m_idx];
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.kind_flags.has_not(MonsterKindType::AMBERITE) || one_in_(2)) {
         return;
@@ -279,16 +278,15 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
     auto stop_ty = false;
     auto count = 0;
     msg_format(_("％s^は恐ろしい血の呪いをあなたにかけた！", "％s^ puts a terrible blood curse on you!"), m_name.data());
-    curse_equipment(&player, 100, 50);
+    curse_equipment(this->creature, 100, 50);
     do {
-        stop_ty = activate_ty_curse(player, stop_ty, &count);
+        stop_ty = activate_ty_curse(this->creature, stop_ty, &count);
     } while (--curses);
 }
 
 void MonsterDamageProcessor::death_choasians(std::string_view m_name)
 {
-    auto &player = static_cast<PlayerType &>(this->creature);
-    const auto &monster = player.current_floor_ptr->m_list[this->m_idx];
+    const auto &monster = this->creature.current_floor_ptr->m_list[this->m_idx];
     const auto &r_ref = monster.get_real_monrace();
     if (r_ref.kind_flags.has_not(MonsterKindType::CHOASIAN) || one_in_(3)) {
         return;
@@ -302,7 +300,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
         switch (randint1(5)) {
         case 1:
             // 装備品のランダムな変化
-            curse_equipment(&player, 50, 25);
+            curse_equipment(this->creature, 50, 25);
             break;
         case 2:
             // テレポート
@@ -310,12 +308,12 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
             break;
         case 3:
             // 一時的な混乱
-            sanity_blast(player, m_idx);
+            sanity_blast(this->creature, m_idx);
             break;
         case 4:
             // 突然変異のチャンス
             if (one_in_(3)) {
-                gain_mutation(player, 0);
+                gain_mutation(this->creature, 0);
             }
             break;
         case 5:

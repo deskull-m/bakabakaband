@@ -648,19 +648,18 @@ void effect_player_icee(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_hand_doom(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if ((randint0(100 + ep_ptr->rlev / 2) < player_ptr->skill_sav) && !check_multishadow(creature)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < creature.skill_sav) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
     } else {
         if (!check_multishadow(creature)) {
             msg_print(_("あなたは命が薄まっていくように感じた！", "You feel your life fade away!"));
-            curse_equipment(player_ptr, 40, 20);
+            curse_equipment(creature, 40, 20);
         }
 
         ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->m_name);
 
-        if (player_ptr->hp < 1) {
-            player_ptr->hp = 1;
+        if (creature.hp < 1) {
+            creature.hp = 1;
         }
     }
 }
