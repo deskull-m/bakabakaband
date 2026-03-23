@@ -1,15 +1,15 @@
 #pragma once
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class QuaffEffects {
 public:
-    QuaffEffects(PlayerType *player_ptr);
+    QuaffEffects(CreatureEntity &creature);
 
     bool influence(const ItemEntity &item, const bool is_rectal);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 
     bool salt_water();
     bool poison();
