@@ -2,11 +2,11 @@
 
 #include "object-enchant/enchanter-base.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class OtherItemsEnchanter : public EnchanterBase {
 public:
-    OtherItemsEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr);
+    OtherItemsEnchanter(CreatureEntity &creature, ItemEntity *o_ptr);
     void apply_magic() override;
 
     void sval_enchant() override{};
@@ -15,7 +15,7 @@ public:
     void give_cursed() override{};
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     ItemEntity *o_ptr;
 
     void enchant_wand_staff();
