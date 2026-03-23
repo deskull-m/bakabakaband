@@ -6,10 +6,11 @@
 #include "main/sound-of-music.h"
 #include "monster-race/race-flags-resistance.h"
 #include "player-attack/player-attack.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 
 /*!
@@ -74,13 +75,13 @@ static void print_chainsword_noise(ItemEntity *o_ptr)
  * @param vorpal_cut メッタ斬りにできるかどうか
  * @param vorpal_chance ヴォーパル倍率上昇の機会値
  */
-void process_vorpal_attack(PlayerType *player_ptr, player_attack_type *pa_ptr, const bool vorpal_cut, const int vorpal_chance)
+void process_vorpal_attack(CreatureEntity &creature, player_attack_type *pa_ptr, const bool vorpal_cut, const int vorpal_chance)
 {
     if (!vorpal_cut) {
         return;
     }
 
-    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     int vorpal_magnification = 2;
     print_chainsword_noise(o_ptr);
     if (o_ptr->is_specific_artifact(FixedArtifactId::VORPAL_BLADE)) {
