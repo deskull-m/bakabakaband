@@ -12,8 +12,8 @@
 #include "object-enchant/trc-types.h"
 #include "sv-definition/sv-amulet-types.h"
 #include "system/baseitem/baseitem-definition.h"
-#include "system/item-entity.h"
 #include "system/creature-entity.h"
+#include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
 
 /*

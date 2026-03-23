@@ -3,8 +3,8 @@
 #include "inventory/inventory-slot-types.h"
 #include "object-enchant/object-ego.h"
 #include "sv-definition/sv-lite-types.h"
-#include "system/item-entity.h"
 #include "system/creature-entity.h"
+#include "system/item-entity.h"
 
 LiteEnchanter::LiteEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, int power)
     : creature(creature)
