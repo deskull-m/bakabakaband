@@ -205,7 +205,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         return create_ammo(player_ptr);
     case PlayerClassType::MAGIC_EATER:
         if (command == -3) {
-            return import_magic_device(player_ptr);
+            return import_magic_device(creature);
         }
 
         return (command != -4) || (!cmd_limit_cast(creature) && do_cmd_magic_eater(*player_ptr, false, true));
