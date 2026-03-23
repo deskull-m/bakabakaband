@@ -262,7 +262,7 @@ void MindPowerGetter::display_each_mind_chance()
         }
 
         calculate_mind_chance(has_weapon_main, has_weapon_sub);
-        const auto comment = mindcraft_info(this->player_ptr, this->use_mind, this->index);
+        const auto comment = mindcraft_info(*this->player_ptr, this->use_mind, this->index);
         std::string psi_desc;
         if (use_menu) {
             if (this->index == (this->menu_line - 1)) {
