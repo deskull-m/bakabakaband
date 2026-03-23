@@ -153,7 +153,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         }
 
         if (command == -3) {
-            if (!choose_monk_stance(player_ptr)) {
+            if (!choose_monk_stance(creature)) {
                 return false;
             }
 
