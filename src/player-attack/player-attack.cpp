@@ -50,7 +50,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -88,8 +87,7 @@ player_attack_type::player_attack_type(FloorType &floor, POSITION y, POSITION x,
  */
 static void attack_classify(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    switch (player.pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::ROGUE:
     case PlayerClassType::NINJA:
         process_surprise_attack(creature, pa_ptr);
@@ -97,7 +95,7 @@ static void attack_classify(CreatureEntity &creature, player_attack_type *pa_ptr
     case PlayerClassType::MONK:
     case PlayerClassType::FORCETRAINER:
     case PlayerClassType::BERSERKER:
-        if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !player.riding) {
+        if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !creature.riding) {
             pa_ptr->monk_attack = true;
         }
         return;
@@ -140,9 +138,8 @@ static void get_weapon_exp(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 static void get_attack_exp(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     if (!o_ptr->is_valid()) {
         get_bare_knuckle_exp(creature, pa_ptr);
         return;
@@ -163,16 +160,15 @@ static void get_attack_exp(CreatureEntity &creature, player_attack_type *pa_ptr)
  */
 static void calc_num_blow(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     if ((pa_ptr->mode == HISSATSU_KYUSHO) || (pa_ptr->mode == HISSATSU_MINEUCHI) || (pa_ptr->mode == HISSATSU_3DAN) || (pa_ptr->mode == HISSATSU_IAI)) {
         pa_ptr->num_blow = 1;
     } else if (pa_ptr->mode == HISSATSU_COLD) {
-        pa_ptr->num_blow = player.num_blow[pa_ptr->hand] + 2;
+        pa_ptr->num_blow = creature.num_blow[pa_ptr->hand] + 2;
     } else {
-        pa_ptr->num_blow = player.num_blow[pa_ptr->hand];
+        pa_ptr->num_blow = creature.num_blow[pa_ptr->hand];
     }
 
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     if (o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
         pa_ptr->num_blow = 1;
     }
@@ -275,18 +271,17 @@ static int magical_brand_extra_dice(player_attack_type *pa_ptr)
  */
 static bool does_equip_cause_earthquake(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    if (!player.earthquake) {
+    if (!creature.earthquake) {
         return false;
     }
 
     auto do_quake = false;
 
     auto hand = (pa_ptr->hand == 0) ? FLAG_CAUSE_INVEN_MAIN_HAND : FLAG_CAUSE_INVEN_SUB_HAND;
-    if (any_bits(player.earthquake, hand)) {
+    if (any_bits(creature.earthquake, hand)) {
         do_quake = true;
     } else {
-        auto flags = player.earthquake;
+        auto flags = creature.earthquake;
         reset_bits(flags, FLAG_CAUSE_INVEN_MAIN_HAND | FLAG_CAUSE_INVEN_SUB_HAND);
         do_quake = flags != 0;
     }
@@ -362,8 +357,7 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
  */
 static void calc_attack_damage(CreatureEntity &creature, player_attack_type *pa_ptr, bool *do_quake, const bool vorpal_cut, const int vorpal_chance)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     pa_ptr->attack_damage = 1;
     if (pa_ptr->monk_attack) {
         process_monk_attack(creature, pa_ptr);
@@ -382,9 +376,8 @@ static void calc_attack_damage(CreatureEntity &creature, player_attack_type *pa_
  */
 static void apply_damage_bonus(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    pa_ptr->attack_damage += player.to_d[pa_ptr->hand];
-    pa_ptr->drain_result += player.to_d[pa_ptr->hand];
+    pa_ptr->attack_damage += creature.to_d[pa_ptr->hand];
+    pa_ptr->drain_result += creature.to_d[pa_ptr->hand];
 
     if ((pa_ptr->mode == HISSATSU_SUTEMI) || (pa_ptr->mode == HISSATSU_3DAN)) {
         pa_ptr->attack_damage *= 2;
@@ -394,7 +387,7 @@ static void apply_damage_bonus(CreatureEntity &creature, player_attack_type *pa_
         pa_ptr->attack_damage = 0;
     }
 
-    auto is_cut = player.effects()->cut().is_cut();
+    auto is_cut = creature.effects()->cut().is_cut();
     if ((pa_ptr->mode == HISSATSU_SEKIRYUKA) && !is_cut) {
         pa_ptr->attack_damage /= 2;
     }
@@ -484,8 +477,7 @@ static bool check_fear_death(CreatureEntity &creature, player_attack_type *pa_pt
 static void apply_actual_attack(
     CreatureEntity &creature, player_attack_type *pa_ptr, bool *do_quake, const bool is_zantetsu_nullified, const bool is_ej_nullified)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     int vorpal_chance = (o_ptr->is_specific_artifact(FixedArtifactId::VORPAL_BLADE) || o_ptr->is_specific_artifact(FixedArtifactId::CHAINSWORD)) ? 2 : 4;
 
     sound(SoundKind::HIT);
@@ -494,10 +486,10 @@ static void apply_actual_attack(
     pa_ptr->flags = o_ptr->get_flags();
     pa_ptr->chaos_effect = select_chaotic_effect(creature, pa_ptr);
     pa_ptr->magical_effect = select_magical_brand_effect(creature, pa_ptr);
-    decide_blood_sucking(&player, pa_ptr);
-    decide_exorcism(&player, pa_ptr);
+    decide_blood_sucking(creature, pa_ptr);
+    decide_exorcism(creature, pa_ptr);
 
-    bool vorpal_cut = (pa_ptr->flags.has(TR_VORPAL) || SpellHex(player).is_spelling_specific(HEX_RUNESWORD)) && (randint1(vorpal_chance * 3 / 2) == 1) && !is_zantetsu_nullified;
+    bool vorpal_cut = (pa_ptr->flags.has(TR_VORPAL) || SpellHex(creature).is_spelling_specific(HEX_RUNESWORD)) && (randint1(vorpal_chance * 3 / 2) == 1) && !is_zantetsu_nullified;
     calc_attack_damage(creature, pa_ptr, do_quake, vorpal_cut, vorpal_chance);
     apply_damage_bonus(creature, pa_ptr);
     apply_damage_negative_effect(pa_ptr, is_zantetsu_nullified, is_ej_nullified);
@@ -505,9 +497,9 @@ static void apply_actual_attack(
 
     const auto is_death_scythe = o_ptr->bi_key == BaseitemKey(ItemKindType::POLEARM, SV_DEATH_SCYTHE);
     const auto is_berserker = CreatureClass(creature).equals(PlayerClassType::BERSERKER);
-    pa_ptr->attack_damage = mon_damage_mod(player, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
+    pa_ptr->attack_damage = mon_damage_mod(creature, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
     critical_attack(creature, pa_ptr);
-    msg_format_wizard(player, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"),
+    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残hp %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"),
         pa_ptr->attack_damage, pa_ptr->m_ptr->hp - pa_ptr->attack_damage, pa_ptr->m_ptr->maxhp, pa_ptr->m_ptr->max_maxhp);
 }
 
@@ -545,7 +537,6 @@ static void cause_earthquake(CreatureEntity &creature, player_attack_type *pa_pt
  */
 void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION x, bool *fear, bool *mdeath, int16_t hand, combat_options mode)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     bool do_quake = false;
     bool drain_msg = true;
 
@@ -563,18 +554,18 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
     angband_strcpy(pa_ptr->m_name, monster_desc(creature, *pa_ptr->m_ptr, 0), sizeof(pa_ptr->m_name));
 
     int chance = calc_attack_quality(creature, pa_ptr);
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     const auto is_zantetsu_nullified = o_ptr->is_specific_artifact(FixedArtifactId::ZANTETSU) && pa_ptr->r_ptr->symbol_char_is_any_of("j");
     const auto is_ej_nullified = o_ptr->is_specific_artifact(FixedArtifactId::EXCALIBUR_J) && pa_ptr->r_ptr->symbol_char_is_any_of("S");
     calc_num_blow(creature, pa_ptr);
 
     /* Attack once for each legal blow */
     int num = 0;
-    while ((num++ < pa_ptr->num_blow) && !player.is_dead()) {
+    while ((num++ < pa_ptr->num_blow) && !creature.is_dead()) {
 
-        player.plus_incident_tree("ATTACK_EXE_COUNT", 1);
+        creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
 
-        if (!process_attack_hit(player, pa_ptr, chance)) {
+        if (!process_attack_hit(creature, pa_ptr, chance)) {
             continue;
         }
 
@@ -587,11 +578,11 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
 
         /* Anger the monster */
         if (pa_ptr->attack_damage > 0) {
-            anger_monster(player, *pa_ptr->m_ptr);
+            anger_monster(creature, *pa_ptr->m_ptr);
         }
 
-        touch_zap_player(*pa_ptr->m_ptr, player);
-        process_drain(&player, pa_ptr, is_human, &drain_msg);
+        touch_zap_player(*pa_ptr->m_ptr, creature);
+        process_drain(creature, pa_ptr, is_human, &drain_msg);
         pa_ptr->can_drain = false;
         pa_ptr->drain_result = 0;
         change_monster_stat(creature, pa_ptr, y, x, &num);
@@ -616,14 +607,13 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
  */
 void massacre(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     const auto &floor = *creature.current_floor_ptr;
     for (const auto &d : Direction::directions_8()) {
         const auto pos = creature.get_neighbor(d);
         const auto &grid = floor.get_grid(pos);
         const auto &monster = floor.m_list[grid.m_idx];
         if (grid.has_monster() && (monster.ml || floor.has_terrain_characteristics(pos, TerrainCharacteristics::PROJECTION))) {
-            do_cmd_attack(player, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         }
     }
 }
