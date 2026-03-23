@@ -4,10 +4,10 @@
 #include "object-enchant/object-ego.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-LiteEnchanter::LiteEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, int power)
-    : player_ptr(player_ptr)
+LiteEnchanter::LiteEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, int power)
+    : creature(creature)
     , o_ptr(o_ptr)
     , power(power)
 {
@@ -31,7 +31,7 @@ LiteEnchanter::LiteEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, int powe
 void LiteEnchanter::apply_magic()
 {
     if (this->power > 2) {
-        become_random_artifact(*this->player_ptr, this->o_ptr, false);
+        become_random_artifact(this->creature, this->o_ptr, false);
         return;
     }
 
