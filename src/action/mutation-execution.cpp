@@ -141,7 +141,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         return true;
     case PlayerMutationType::EAT_ROCK:
-        return eat_rock(player_ptr);
+        return eat_rock(creature);
     case PlayerMutationType::SWAP_POS: {
         project_length = -1;
         const auto dir = get_aim_dir(creature);
