@@ -330,10 +330,9 @@ static bool does_weapon_has_flag(BIT_FLAGS &attacker_flags, player_attack_type *
  */
 static void process_weapon_attack(CreatureEntity &creature, player_attack_type *pa_ptr, bool *do_quake, const bool vorpal_cut, const int vorpal_chance)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
-    const auto num = o_ptr->damage_dice.num + player.damage_dice_bonus[pa_ptr->hand].num + magical_brand_extra_dice(pa_ptr);
-    const auto sides = o_ptr->damage_dice.sides + player.damage_dice_bonus[pa_ptr->hand].sides;
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    const auto num = o_ptr->damage_dice.num + creature.damage_dice_bonus[pa_ptr->hand].num + magical_brand_extra_dice(pa_ptr);
+    const auto sides = o_ptr->damage_dice.sides + creature.damage_dice_bonus[pa_ptr->hand].sides;
     pa_ptr->attack_damage = calc_attack_damage_with_slay(creature, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
     calc_surprise_attack_damage(creature, pa_ptr);
 
@@ -341,13 +340,13 @@ static void process_weapon_attack(CreatureEntity &creature, player_attack_type *
         *do_quake = true;
     }
 
-    auto do_impact = does_weapon_has_flag(player.impact, pa_ptr);
+    auto do_impact = does_weapon_has_flag(creature.impact, pa_ptr);
     if ((o_ptr->bi_key != BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) && !(pa_ptr->mode == HISSATSU_KYUSHO)) {
         pa_ptr->attack_damage = critical_norm(creature, o_ptr->weight, o_ptr->to_h, pa_ptr->attack_damage, creature.to_h[pa_ptr->hand], pa_ptr->mode, do_impact);
     }
 
     pa_ptr->drain_result = pa_ptr->attack_damage;
-    process_vorpal_attack(&player, pa_ptr, vorpal_cut, vorpal_chance);
+    process_vorpal_attack(creature, pa_ptr, vorpal_cut, vorpal_chance);
     pa_ptr->attack_damage += o_ptr->to_d;
     pa_ptr->drain_result += o_ptr->to_d;
 }

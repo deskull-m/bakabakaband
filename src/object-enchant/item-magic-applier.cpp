@@ -62,7 +62,7 @@ void ItemMagicApplier::execute()
         return;
     }
 
-    auto enchanter = EnchanterFactory::create_enchanter(&static_cast<PlayerType &>(this->creature), this->o_ptr, this->lev, power);
+    auto enchanter = EnchanterFactory::create_enchanter(this->creature, this->o_ptr, this->lev, power);
     enchanter->apply_magic();
     if (this->o_ptr->is_ego()) {
         apply_ego(this->o_ptr, this->lev);
