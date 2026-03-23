@@ -286,7 +286,7 @@ void do_cmd_use(CreatureEntity &creature)
         ObjectZapRodEntity(*player_ptr).execute(i_idx);
         break;
     case ItemKindType::POTION:
-        ObjectQuaffEntity(player_ptr).execute(i_idx);
+        ObjectQuaffEntity(creature).execute(i_idx);
         break;
     case ItemKindType::SCROLL:
         if (cmd_limit_blind(creature) || cmd_limit_confused(*player_ptr)) {

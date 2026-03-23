@@ -52,7 +52,7 @@ void do_cmd_quaff_potion(CreatureEntity &creature)
         return;
     }
 
-    ObjectQuaffEntity(player_ptr).execute(i_idx);
+    ObjectQuaffEntity(creature).execute(i_idx);
 }
 
 /*
@@ -86,7 +86,7 @@ void do_cmd_rectal_absorption(CreatureEntity &creature)
     }
 
     // 通常の薬効果を発動（ただし効果は若干異なる可能性）
-    ObjectQuaffEntity(player_ptr).execute(i_idx, true);
+    ObjectQuaffEntity(creature).execute(i_idx, true);
 
     // 変態行為による追加効果
     msg_print(_("あなたは異常な快感を感じている...", "You feel abnormal pleasure..."));
