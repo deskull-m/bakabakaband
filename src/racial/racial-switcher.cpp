@@ -105,7 +105,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         [[fallthrough]];
     case PlayerClassType::MAGE:
     case PlayerClassType::SORCERER:
-        return eat_magic(player_ptr, player_ptr->level * 2);
+        return eat_magic(creature, creature.level * 2);
     case PlayerClassType::PRIEST:
         if (!PlayerRealm(*player_ptr).realm1().is_good_attribute()) {
             (void)dispel_monsters(creature, creature.level * 4);
@@ -153,7 +153,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         }
 
         if (command == -3) {
-            if (!choose_monk_stance(player_ptr)) {
+            if (!choose_monk_stance(creature)) {
                 return false;
             }
 
@@ -202,10 +202,10 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
 
         return true;
     case PlayerClassType::ARCHER:
-        return create_ammo(player_ptr);
+        return create_ammo(creature);
     case PlayerClassType::MAGIC_EATER:
         if (command == -3) {
-            return import_magic_device(player_ptr);
+            return import_magic_device(creature);
         }
 
         return (command != -4) || (!cmd_limit_cast(creature) && do_cmd_magic_eater(*player_ptr, false, true));

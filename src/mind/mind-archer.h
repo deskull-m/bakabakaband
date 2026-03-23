@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool create_ammo(PlayerType *player_ptr);
+class CreatureEntity;
+bool create_ammo(CreatureEntity &creature);

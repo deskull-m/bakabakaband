@@ -225,7 +225,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         (void)earthquake(creature, creature.get_position(), 10);
         return true;
     case PlayerMutationType::EAT_MAGIC:
-        return eat_magic(player_ptr, player_ptr->level * 2);
+        return eat_magic(creature, creature.level * 2);
     case PlayerMutationType::WEIGH_MAG:
         report_magics(creature);
         return true;

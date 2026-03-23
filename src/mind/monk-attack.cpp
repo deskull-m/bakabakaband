@@ -28,7 +28,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "timed-effect/timed-effects.h"
 #include "util/string-processor.h"
@@ -99,7 +98,6 @@ static int calc_max_blow_selection_times(CreatureEntity &creature)
  */
 static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int max_blow_selection_times)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     int min_level = 1;
     const martial_arts *old_ptr = &ma_blows[0];
     const auto is_wizard = AngbandWorld::get_instance().wizard;
@@ -113,7 +111,7 @@ static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int
             }
         } while ((min_level > creature.level) || (randint1(creature.level) < pa_ptr->ma_ptr->chance));
 
-        const auto effects = player.effects();
+        const auto effects = creature.effects();
         const auto is_stunned = effects->stun().is_stunned();
         const auto is_confused = effects->confusion().is_confused();
         if ((pa_ptr->ma_ptr->min_level <= old_ptr->min_level) || is_stunned || is_confused) {
@@ -199,19 +197,19 @@ WEIGHT calc_monk_attack_weight(CreatureEntity &creature)
  * @param resist_stun 朦朧への抵抗値
  * @param special_effect 技を繰り出した時の追加効果
  */
-static void process_attack_vital_spot(PlayerType *player_ptr, player_attack_type *pa_ptr, int *stun_effect, int *resist_stun, const int special_effect)
+static void process_attack_vital_spot(CreatureEntity &creature, player_attack_type *pa_ptr, int *stun_effect, int *resist_stun, const int special_effect)
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if ((special_effect == MA_KNEE) && ((pa_ptr->attack_damage + player_ptr->to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
+    if ((special_effect == MA_KNEE) && ((pa_ptr->attack_damage + creature.to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
         msg_format(_("%s^は苦痛にうめいている！", "%s^ moans in agony!"), pa_ptr->m_name);
         *stun_effect = 7 + randint1(13);
         *resist_stun /= 3;
         return;
     }
 
-    if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + player_ptr->to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
+    if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + creature.to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
         const auto is_unique = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
-        if (is_unique && (randint1(player_ptr->level) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
+        if (is_unique && (randint1(creature.level) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
             msg_format(_("%s^は足をひきずり始めた。", "You've hobbled %s."), pa_ptr->m_name);
             pa_ptr->m_ptr->speed -= 10;
         }
@@ -226,12 +224,12 @@ static void process_attack_vital_spot(PlayerType *player_ptr, player_attack_type
  * @param stun_effect 朦朧の残りターン
  * @param resist_stun 朦朧への抵抗値
  */
-static void print_stun_effect(PlayerType *player_ptr, player_attack_type *pa_ptr, const int stun_effect, const int resist_stun)
+static void print_stun_effect(CreatureEntity &creature, player_attack_type *pa_ptr, const int stun_effect, const int resist_stun)
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
-    if (stun_effect && ((pa_ptr->attack_damage + player_ptr->to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
-        if (player_ptr->level > randint1(monrace.level + resist_stun + 10)) {
-            if (set_monster_stunned(*player_ptr->current_floor_ptr, pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
+    if (stun_effect && ((pa_ptr->attack_damage + creature.to_d[pa_ptr->hand]) < pa_ptr->m_ptr->hp)) {
+        if (creature.level > randint1(monrace.level + resist_stun + 10)) {
+            if (set_monster_stunned(*creature.current_floor_ptr, pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
                 msg_format(_("%s^はフラフラになった。", "%s^ is stunned."), pa_ptr->m_name);
             } else {
                 msg_format(_("%s^はさらにフラフラになった。", "%s^ is more stunned."), pa_ptr->m_name);
@@ -248,17 +246,16 @@ static void print_stun_effect(PlayerType *player_ptr, player_attack_type *pa_ptr
  */
 void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
     int resist_stun = calc_stun_resistance(pa_ptr);
     int max_blow_selection_times = calc_max_blow_selection_times(creature);
     int min_level = select_blow(creature, pa_ptr, max_blow_selection_times);
 
-    auto *o_ptr = player.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
-    const auto num = pa_ptr->ma_ptr->damage_dice.num + player.damage_dice_bonus[pa_ptr->hand].num;
-    const auto sides = pa_ptr->ma_ptr->damage_dice.sides + player.damage_dice_bonus[pa_ptr->hand].sides;
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    const auto num = pa_ptr->ma_ptr->damage_dice.num + creature.damage_dice_bonus[pa_ptr->hand].num;
+    const auto sides = pa_ptr->ma_ptr->damage_dice.sides + creature.damage_dice_bonus[pa_ptr->hand].sides;
     pa_ptr->attack_damage = calc_attack_damage_with_slay(creature, o_ptr, Dice::roll(num, sides), *pa_ptr->m_ptr, pa_ptr->mode, false);
 
-    if (player.special_attack & ATTACK_SUIKEN) {
+    if (creature.special_attack & ATTACK_SUIKEN) {
         pa_ptr->attack_damage *= 2;
     }
 
@@ -266,14 +263,13 @@ void process_monk_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
     int special_effect = process_monk_additional_effect(pa_ptr, &stun_effect);
     WEIGHT weight = calc_monk_attack_weight(creature);
     pa_ptr->attack_damage = critical_norm(creature, creature.level * weight, min_level, pa_ptr->attack_damage, creature.to_h[0], HISSATSU_NONE);
-    process_attack_vital_spot(&player, pa_ptr, &stun_effect, &resist_stun, special_effect);
-    print_stun_effect(&player, pa_ptr, stun_effect, resist_stun);
+    process_attack_vital_spot(creature, pa_ptr, &stun_effect, &resist_stun, special_effect);
+    print_stun_effect(creature, pa_ptr, stun_effect, resist_stun);
 }
 
 bool double_attack(CreatureEntity &creature)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    const auto dir = get_rep_dir(player);
+    const auto dir = get_rep_dir(creature);
     if (!dir) {
         return false;
     }
@@ -297,7 +293,7 @@ bool double_attack(CreatureEntity &creature)
 
     do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
     if (has_monster) {
-        handle_stuff(player);
+        handle_stuff(creature);
         do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
     }
 

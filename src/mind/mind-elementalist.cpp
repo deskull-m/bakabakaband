@@ -465,7 +465,7 @@ static bool cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx)
         (void)detect_monsters_invis(creature, DETECT_RAD_DEFAULT);
         return true;
     case ElementSpells::PERCEPT:
-        return psychometry(&player);
+        return psychometry(player);
     case ElementSpells::CURE:
         (void)hp_player(player, Dice::roll(2, 8));
         (void)BadStatusSetter(creature).mod_cut(-10);

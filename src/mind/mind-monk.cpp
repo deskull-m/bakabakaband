@@ -14,10 +14,10 @@
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 
-static void set_stance(PlayerType *player_ptr, const MonkStanceType new_stance)
+static void set_stance(CreatureEntity &creature, const MonkStanceType new_stance)
 {
-    set_action(player_ptr, ACTION_MONK_STANCE);
-    CreatureClass pc(*player_ptr);
+    set_action(&static_cast<PlayerType &>(creature), ACTION_MONK_STANCE);
+    CreatureClass pc(creature);
     if (pc.monk_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));
         return;
@@ -34,16 +34,16 @@ static void set_stance(PlayerType *player_ptr, const MonkStanceType new_stance)
  * @brief 修行僧の構え設定処理
  * @return 構えを変化させたらTRUE、構え不能かキャンセルしたらFALSEを返す。
  */
-bool choose_monk_stance(PlayerType *player_ptr)
+bool choose_monk_stance(CreatureEntity &creature)
 {
-    if (cmd_limit_confused(*player_ptr)) {
+    if (cmd_limit_confused(creature)) {
         return false;
     }
 
     screen_save();
     prt(_(" a) 構えをとく", " a) No form"), 2, 20);
     for (auto i = 0U; i < monk_stances.size(); i++) {
-        if (player_ptr->level >= monk_stances[i].min_level) {
+        if (creature.level >= monk_stances[i].min_level) {
             const auto buf = format(" %c) %-12s  %s", I2A(i + 1), monk_stances[i].desc, monk_stances[i].info);
             prt(buf, 3 + i, 20);
         }
@@ -61,8 +61,8 @@ bool choose_monk_stance(PlayerType *player_ptr)
         }
 
         if ((choice == 'a') || (choice == 'A')) {
-            if (player_ptr->action == ACTION_MONK_STANCE) {
-                set_action(player_ptr, ACTION_NONE);
+            if (creature.action == ACTION_MONK_STANCE) {
+                set_action(&static_cast<PlayerType &>(creature), ACTION_NONE);
             } else {
                 msg_print(_("もともと構えていない。", "You are not in a special stance."));
             }
@@ -73,19 +73,19 @@ bool choose_monk_stance(PlayerType *player_ptr)
         if ((choice == 'b') || (choice == 'B')) {
             new_stance = MonkStanceType::GENBU;
             break;
-        } else if (((choice == 'c') || (choice == 'C')) && (player_ptr->level > 29)) {
+        } else if (((choice == 'c') || (choice == 'C')) && (creature.level > 29)) {
             new_stance = MonkStanceType::BYAKKO;
             break;
-        } else if (((choice == 'd') || (choice == 'D')) && (player_ptr->level > 34)) {
+        } else if (((choice == 'd') || (choice == 'D')) && (creature.level > 34)) {
             new_stance = MonkStanceType::SEIRYU;
             break;
-        } else if (((choice == 'e') || (choice == 'E')) && (player_ptr->level > 39)) {
+        } else if (((choice == 'e') || (choice == 'E')) && (creature.level > 39)) {
             new_stance = MonkStanceType::SUZAKU;
             break;
         }
     }
 
-    set_stance(player_ptr, new_stance);
+    set_stance(creature, new_stance);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     screen_load();
     return true;

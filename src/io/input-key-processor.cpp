@@ -384,7 +384,7 @@ void process_command(CreatureEntity &creature)
         } else if (pc.equals(PlayerClassType::SAMURAI)) {
             do_cmd_gain_hissatsu(*player_ptr);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-            import_magic_device(player_ptr);
+            import_magic_device(creature);
         } else {
             do_cmd_study(*player_ptr);
         }

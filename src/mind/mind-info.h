@@ -2,7 +2,7 @@
 
 #include <string>
 
-class PlayerType;
+class CreatureEntity;
 enum class MindKindType;
 
-std::string mindcraft_info(PlayerType *player_ptr, MindKindType use_mind, int power);
+std::string mindcraft_info(CreatureEntity &creature, MindKindType use_mind, int power);
