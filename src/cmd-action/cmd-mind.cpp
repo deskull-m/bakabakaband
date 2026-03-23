@@ -402,7 +402,7 @@ void do_cmd_mind(CreatureEntity &creature)
     cm_type tmp_cm;
     auto &player = static_cast<PlayerType &>(creature);
     cm_type *cm_ptr = initialize_cm_type(creature, &tmp_cm);
-    if (cmd_limit_confused(player) || !MindPowerGetter(&player).get_mind_power(&cm_ptr->n, false)) {
+    if (cmd_limit_confused(player) || !MindPowerGetter(player).get_mind_power(&cm_ptr->n, false)) {
         return;
     }
 
@@ -464,7 +464,7 @@ void do_cmd_mind_browse(CreatureEntity &creature)
     MindKindType use_mind = decide_use_mind_browse(creature);
     screen_save();
     while (true) {
-        if (!MindPowerGetter(&player).get_mind_power(&n, true)) {
+        if (!MindPowerGetter(player).get_mind_power(&n, true)) {
             screen_load();
             return;
         }
