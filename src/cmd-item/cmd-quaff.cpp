@@ -20,7 +20,6 @@
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "timed-effect/player-confusion.h"
 #include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
@@ -33,7 +32,6 @@
  */
 void do_cmd_quaff_potion(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -48,7 +46,7 @@ void do_cmd_quaff_potion(CreatureEntity &creature)
     constexpr auto s = _("飲める薬がない。", "You have no potions to quaff.");
 
     short i_idx;
-    if (!choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
+    if (!choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
         return;
     }
 
@@ -61,7 +59,6 @@ void do_cmd_quaff_potion(CreatureEntity &creature)
  */
 void do_cmd_rectal_absorption(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
@@ -72,7 +69,7 @@ void do_cmd_rectal_absorption(CreatureEntity &creature)
     constexpr auto s = _("直腸吸収できる薬がない。", "You have no potions for rectal absorption.");
 
     short i_idx;
-    if (!choose_object(*player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
+    if (!choose_object(creature, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature))) {
         return;
     }
 
@@ -94,6 +91,6 @@ void do_cmd_rectal_absorption(CreatureEntity &creature)
     // 混乱状態になる可能性
     if (one_in_(3)) {
         msg_print(_("変態行為により精神が混乱した！", "Your mind is confused by the perverted act!"));
-        (void)BadStatusSetter(*player_ptr).set_confusion(randint1(30) + 30);
+        (void)BadStatusSetter(creature).set_confusion(randint1(30) + 30);
     }
 }
