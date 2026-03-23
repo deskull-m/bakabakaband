@@ -424,8 +424,7 @@ bool activate_detect_treasure(CreatureEntity &creature)
 bool activate_create_ammo(CreatureEntity &creature)
 {
     msg_print(_("ダイアナの祝福を感じた...", "You feel Diana's breath..."));
-    auto &player = static_cast<PlayerType &>(creature);
-    return create_ammo(&player);
+    return create_ammo(creature);
 }
 
 bool activate_dispel_magic(CreatureEntity &creature)

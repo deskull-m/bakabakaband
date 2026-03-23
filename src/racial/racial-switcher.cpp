@@ -202,7 +202,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
 
         return true;
     case PlayerClassType::ARCHER:
-        return create_ammo(player_ptr);
+        return create_ammo(creature);
     case PlayerClassType::MAGIC_EATER:
         if (command == -3) {
             return import_magic_device(creature);
