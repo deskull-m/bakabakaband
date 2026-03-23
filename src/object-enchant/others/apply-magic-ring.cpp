@@ -13,7 +13,7 @@
 #include "sv-definition/sv-ring-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
 /*
@@ -23,8 +23,8 @@
  * @param level 生成基準階
  * @param power 生成ランク
  */
-RingEnchanter::RingEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power)
-    : player_ptr(player_ptr)
+RingEnchanter::RingEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)
+    : creature(creature)
     , o_ptr(o_ptr)
     , level(level)
     , power(power)
@@ -50,7 +50,7 @@ void RingEnchanter::apply_magic()
     this->sval_enchant();
     if ((this->power > 2) || (one_in_(400) && (this->power > 0) && !this->o_ptr->is_cursed() && (this->level > 79))) {
         this->o_ptr->pval = std::min<short>(this->o_ptr->pval, 4);
-        become_random_artifact(*this->player_ptr, this->o_ptr, false);
+        become_random_artifact(this->creature, this->o_ptr, false);
         return;
     }
 
