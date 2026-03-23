@@ -64,7 +64,7 @@ static errr rd_dungeon(CreatureEntity &creature)
                 break;
             }
 
-            if (!save_floor(player_ptr, sf_ptr, SLF_SECOND)) {
+            if (!save_floor(creature, sf_ptr, SLF_SECOND)) {
                 err = 182;
             }
 
@@ -74,7 +74,7 @@ static errr rd_dungeon(CreatureEntity &creature)
         }
 
         if (err == 0) {
-            if (!load_floor(creature, get_sf_ptr(player_ptr->floor_id), SLF_SECOND)) {
+            if (!load_floor(creature, get_sf_ptr(creature.floor_id), SLF_SECOND)) {
                 err = 183;
             }
         }

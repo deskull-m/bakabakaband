@@ -449,15 +449,12 @@ static void update_upper_lower_or_floor_id(saved_floor_type *sf_ptr)
 
 static void exe_leave_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &player = static_cast<PlayerType &>(creature);
-    auto *player_ptr = &player;
-
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.current_floor_ptr;
     auto *grid_ptr = set_grid_by_leaving_floor(creature);
     jump_floors(creature);
     exit_to_wilderness(creature);
     kill_saved_floors(creature, sf_ptr);
-    if (!player_ptr->in_saved_floor()) {
+    if (!creature.floor_id) {
         return;
     }
 
@@ -473,12 +470,12 @@ static void exe_leave_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     floor.forget_lite();
     floor.forget_view();
     floor.forget_mon_lite();
-    if (save_floor(player_ptr, sf_ptr, 0)) {
+    if (save_floor(creature, sf_ptr, 0)) {
         return;
     }
 
     fcms->set(FloorChangeMode::NO_RETURN);
-    kill_saved_floor(creature, get_sf_ptr(player_ptr->floor_id));
+    kill_saved_floor(creature, get_sf_ptr(creature.floor_id));
 }
 
 /*!
