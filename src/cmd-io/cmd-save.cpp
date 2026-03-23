@@ -7,7 +7,6 @@
 #include "monster/monster-status.h" // 違和感。要調査.
 #include "save/save.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -33,8 +32,7 @@ void do_cmd_save_game(CreatureEntity &creature, int is_autosave)
     term_fresh();
     creature.died_from = _("(セーブ)", "(saved)");
     signals_ignore_tstp();
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
-    if (save_player(player_ptr, SaveType::CONTINUE_GAME)) {
+    if (save_player(creature, SaveType::CONTINUE_GAME)) {
         prt(_("ゲームをセーブしています... 終了", "Saving game... done."), 0, 0);
     } else {
         prt(_("ゲームをセーブしています... 失敗！", "Saving game... failed!"), 0, 0);
