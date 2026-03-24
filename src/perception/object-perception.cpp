@@ -4,15 +4,15 @@
 #include "game-option/play-record-options.h"
 #include "io/write-diary.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief オブジェクトを＊鑑定＊済にする
  * @param player_ptr プレイヤーへの参照ポインタ
  * @param item ＊鑑定＊済にするアイテムへの参照
  */
-void object_aware(PlayerType *player_ptr, const ItemEntity &item)
+void object_aware(CreatureEntity &creature, const ItemEntity &item)
 {
     const bool is_already_awared = item.is_aware();
     auto &baseitem = item.get_baseitem();
@@ -23,7 +23,7 @@ void object_aware(PlayerType *player_ptr, const ItemEntity &item)
         return;
     }
 
-    if (is_already_awared || player_ptr->is_dead()) {
+    if (is_already_awared || creature.is_dead()) {
         return;
     }
 
@@ -37,6 +37,6 @@ void object_aware(PlayerType *player_ptr, const ItemEntity &item)
     }
 
     // playrecordに識別したアイテムを記録
-    const auto item_name = describe_flavor(*player_ptr, item, OD_NAME_ONLY | OD_OMIT_PREFIX);
-    exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::FOUND, 0, item_name);
+    const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY | OD_OMIT_PREFIX);
+    exe_write_diary(*creature.current_floor_ptr, DiaryKind::FOUND, 0, item_name);
 }
