@@ -322,7 +322,7 @@ static void generate_fixed_floor(CreatureEntity &creature)
 
     get_mon_num_prep_enum(*player_ptr, floor.get_monrace_hook());
     init_flags = INIT_CREATE_DUNGEON;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
 }
 
 /*!

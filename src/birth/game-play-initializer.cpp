@@ -158,7 +158,7 @@ void init_dungeon_quests(CreatureEntity &creature)
     auto &floor = *player_ptr->current_floor_ptr;
     auto &quests = QuestList::get_instance();
     floor.quest_number = QuestId::RANDOM_QUEST1;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     floor.quest_number = QuestId::NONE;
     for (auto quest_id : RANDOM_QUEST_ID_RANGE) {
         auto &quest = quests.get_quest(quest_id);
@@ -171,7 +171,7 @@ void init_dungeon_quests(CreatureEntity &creature)
 
     init_flags = INIT_ASSIGN;
     floor.quest_number = QuestId::MELKO;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     quests.get_quest(QuestId::MELKO).status = QuestStatusType::TAKEN;
 
     floor.quest_number = QuestId::NONE;

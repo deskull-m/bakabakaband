@@ -249,7 +249,6 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
  */
 parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name, int ymin, int xmin, int ymax, int xmax)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto path = path_build(ANGBAND_DIR_EDIT, name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (fp == nullptr) {

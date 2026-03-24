@@ -118,7 +118,7 @@ void do_cmd_go_up(CreatureEntity &creature)
         if (quest.status == QuestStatusType::UNTAKEN) {
             if (quest.type != QuestKindType::RANDOM) {
                 init_flags = INIT_ASSIGN;
-                parse_fixed_map(&player, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+                parse_fixed_map(player, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
             }
 
             quest.status = QuestStatusType::TAKEN;
@@ -265,7 +265,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         if (quest.status == QuestStatusType::UNTAKEN) {
             if (quest.type != QuestKindType::RANDOM) {
                 init_flags = INIT_ASSIGN;
-                parse_fixed_map(&player, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+                parse_fixed_map(player, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
             }
 
             quest.status = QuestStatusType::TAKEN;

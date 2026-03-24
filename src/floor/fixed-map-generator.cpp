@@ -421,7 +421,7 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
     }
 
     if (qtwg_ptr->buf[0] == '%') {
-        return (*parse_fixed_map)(player_ptr, qtwg_ptr->buf + 2, qtwg_ptr->ymin, qtwg_ptr->xmin, qtwg_ptr->ymax, qtwg_ptr->xmax);
+        return (*parse_fixed_map)(creature, qtwg_ptr->buf + 2, qtwg_ptr->ymin, qtwg_ptr->xmin, qtwg_ptr->ymax, qtwg_ptr->xmax);
     }
 
     /* Process "F:<letter>:<terrain>:<cave_info>:<monster>:<object>:<ego>:<artifact>:<trap>:<special>" -- info for dungeon grid */

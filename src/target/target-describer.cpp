@@ -464,7 +464,6 @@ static int16_t sweep_footing_items(CreatureEntity &creature, GridExamination *ge
 
 static std::string decide_target_floor(CreatureEntity &creature, GridExamination *ge_ptr)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &floor = *creature.current_floor_ptr;
     if (ge_ptr->terrain_ptr->flags.has(TerrainCharacteristics::QUEST_ENTER)) {
         const auto old_quest = floor.quest_number;
@@ -477,7 +476,7 @@ static std::string decide_target_floor(CreatureEntity &creature, GridExamination
 
         floor.quest_number = quest_id;
         init_flags = INIT_NAME_ONLY;
-        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
         floor.quest_number = old_quest;
         return format(fmt, quest.name.data(), quest.level);
     }
