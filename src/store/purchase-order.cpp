@@ -265,7 +265,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
     sound(SoundKind::BUY);
     player_ptr->au -= res.value();
     store_prt_gold(player_ptr->au);
-    object_aware(player_ptr, item);
+    object_aware(*player_ptr, item);
     player_ptr->plus_incident_tree("STORE_BUY", 1);
 
     msg_print(_("{}を ${}で購入しました。", "You bought {} for {} gold."), purchased_item_name, res.value());

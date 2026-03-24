@@ -118,7 +118,7 @@ void ObjectReadEntity::gain_exp_from_item_use(ItemEntity *o_ptr, bool is_identif
         return;
     }
 
-    object_aware(static_cast<PlayerType *>(&this->creature), *o_ptr);
+    object_aware(this->creature, *o_ptr);
     const auto item_level = o_ptr->get_baseitem_level();
     gain_exp(this->creature, (item_level + (this->creature.level >> 1)) / this->creature.level);
 }

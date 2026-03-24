@@ -71,7 +71,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
     this->change_virtue_as_quaff(item);
     item.mark_as_tried();
     if (ident && !item.is_aware()) {
-        object_aware(static_cast<PlayerType *>(&this->creature), item);
+        object_aware(this->creature, item);
         gain_exp(this->creature, (item.get_baseitem_level() + (this->creature.level >> 1)) / this->creature.level);
     }
 

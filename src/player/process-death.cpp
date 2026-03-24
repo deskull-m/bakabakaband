@@ -304,7 +304,7 @@ static void inventory_aware(CreatureEntity &creature)
             continue;
         }
 
-        object_aware(static_cast<PlayerType *>(&creature), *o_ptr);
+        object_aware(creature, *o_ptr);
         o_ptr->mark_as_known();
     }
 }
@@ -323,7 +323,7 @@ static void home_aware(CreatureEntity &creature)
                 continue;
             }
 
-            object_aware(static_cast<PlayerType *>(&creature), item);
+            object_aware(creature, item);
             item.mark_as_known();
         }
     }

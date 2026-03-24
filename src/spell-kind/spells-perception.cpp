@@ -68,7 +68,7 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
         }
     }
 
-    object_aware(&player, *o_ptr);
+    object_aware(creature, *o_ptr);
     o_ptr->mark_as_known();
     o_ptr->marked.set(OmType::TOUCHED);
 
@@ -197,7 +197,7 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
         msg_format(_("床上: %s。", "On the ground: %s."), item_name.data());
     }
 
-    (void)screen_object(&player, *o_ptr, 0L);
+    (void)screen_object(creature, *o_ptr, 0L);
     autopick_alter_item(player, i_idx, (bool)(destroy_identify && !old_known));
     return true;
 }

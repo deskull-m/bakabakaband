@@ -163,7 +163,7 @@ void generate_amusement(CreatureEntity &creature, int num, bool known)
 
         if (known) {
             auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-            object_aware(player_ptr, *item);
+            object_aware(creature, *item);
             item->mark_as_known();
         }
 
