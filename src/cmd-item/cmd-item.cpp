@@ -293,7 +293,7 @@ void do_cmd_use(CreatureEntity &creature)
             return;
         }
 
-        ObjectReadEntity(player_ptr, i_idx).execute(true);
+        ObjectReadEntity(creature, i_idx).execute(true);
         break;
     case ItemKindType::SHOT:
     case ItemKindType::ARROW:

@@ -29,12 +29,11 @@
  */
 void do_cmd_read_scroll(CreatureEntity &creature)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
 
-    CreatureClass(*player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     if (cmd_limit_blind(creature) || cmd_limit_confused(creature)) {
         return;
@@ -43,10 +42,10 @@ void do_cmd_read_scroll(CreatureEntity &creature)
     constexpr auto q = _("どの巻物を読みますか? ", "Read which scroll? ");
     constexpr auto s = _("読める巻物がない。", "You have no scrolls to read.");
     short i_idx;
-    const auto *o_ptr = choose_object(*player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_readable));
+    const auto *o_ptr = choose_object(creature, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_readable));
     if (!o_ptr) {
         return;
     }
 
-    ObjectReadEntity(player_ptr, i_idx).execute(o_ptr->is_aware());
+    ObjectReadEntity(creature, i_idx).execute(o_ptr->is_aware());
 }
