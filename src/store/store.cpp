@@ -223,7 +223,6 @@ tl::optional<short> input_stock(std::string_view fmt, int min, int max, [[maybe_
  */
 void store_examine(CreatureEntity &creature, StoreSaleType store_num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (st_ptr->stock_num <= 0) {
         if (store_num == StoreSaleType::HOME) {
             msg_print(_("我が家には何も置いてありません。", "Your home is empty."));
@@ -253,9 +252,9 @@ void store_examine(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    const auto item_name = describe_flavor(*player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     msg_format(_("%sを調べている...", "Examining %s..."), item_name.data());
-    if (!screen_object(player_ptr, item, SCROBJ_FORCE_DETAIL)) {
+    if (!screen_object(creature, item, SCROBJ_FORCE_DETAIL)) {
         msg_print(_("特に変わったところはないようだ。", "You see nothing special."));
     }
 }

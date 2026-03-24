@@ -88,7 +88,7 @@ void wield_all(CreatureEntity &creature)
 static void add_outfit(CreatureEntity &creature, ItemEntity &item)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    object_aware(player_ptr, item);
+    object_aware(creature, item);
     item.mark_as_known();
     const auto slot = store_item_to_inventory(*player_ptr, &item);
     autopick_alter_item(*player_ptr, slot, false);

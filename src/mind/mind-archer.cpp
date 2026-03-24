@@ -91,7 +91,6 @@ static bool select_ammo_creation_type(ammo_creation_type &type, PLAYER_LEVEL ple
  */
 bool create_ammo(CreatureEntity &creature)
 {
-    auto *player_ptr = &static_cast<PlayerType &>(creature);
     if (cmd_limit_confused(creature) || cmd_limit_blind(creature)) {
         return false;
     }
@@ -123,7 +122,7 @@ bool create_ammo(CreatureEntity &creature)
 
         ItemEntity item({ ItemKindType::SHOT, m_bonus(1, creature.level) + 1 });
         item.number = rand_range(15, 30);
-        object_aware(player_ptr, item);
+        object_aware(creature, item);
         item.mark_as_known();
         ItemMagicApplier(creature, &item, creature.level, AM_NO_FIXED_ART).execute();
         item.discount = 99;
@@ -148,7 +147,7 @@ bool create_ammo(CreatureEntity &creature)
         }
         ItemEntity ammo({ ItemKindType::ARROW, m_bonus(1, creature.level) + 1 });
         ammo.number = rand_range(5, 10);
-        object_aware(player_ptr, ammo);
+        object_aware(creature, ammo);
         ammo.mark_as_known();
         ItemMagicApplier(creature, &ammo, creature.level, AM_NO_FIXED_ART).execute();
         ammo.discount = 99;
@@ -173,7 +172,7 @@ bool create_ammo(CreatureEntity &creature)
 
         ItemEntity ammo({ ItemKindType::BOLT, m_bonus(1, creature.level) + 1 });
         ammo.number = rand_range(4, 8);
-        object_aware(player_ptr, ammo);
+        object_aware(creature, ammo);
         ammo.mark_as_known();
         ItemMagicApplier(creature, &ammo, creature.level, AM_NO_FIXED_ART).execute();
         ammo.discount = 99;

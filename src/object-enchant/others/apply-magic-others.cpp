@@ -66,7 +66,7 @@ void OtherItemsEnchanter::apply_magic()
         break;
     case ItemKindType::CAPTURE:
         this->o_ptr->pval = 0;
-        object_aware(static_cast<PlayerType *>(&this->creature), *this->o_ptr);
+        object_aware(this->creature, *this->o_ptr);
         this->o_ptr->mark_as_known();
         break;
     case ItemKindType::FIGURINE:
@@ -155,7 +155,7 @@ void OtherItemsEnchanter::generate_corpse()
     }
 
     this->o_ptr->pval = enum2i(monrace_id);
-    object_aware(static_cast<PlayerType *>(&this->creature), *this->o_ptr);
+    object_aware(this->creature, *this->o_ptr);
     this->o_ptr->mark_as_known();
 }
 
@@ -178,7 +178,7 @@ void OtherItemsEnchanter::generate_statue()
         msg_format(_("%sの像", "Statue of %s"), monrace.name.data());
     }
 
-    object_aware(static_cast<PlayerType *>(&this->creature), *this->o_ptr);
+    object_aware(this->creature, *this->o_ptr);
     this->o_ptr->mark_as_known();
 }
 
