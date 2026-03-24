@@ -371,7 +371,7 @@ static std::string name_unnatural_random_artifact(CreatureEntity &creature, Item
 
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto prompt = _("このアーティファクトを何と名付けますか？", "What do you want to call the artifact? ");
-    object_aware(player_ptr, *o_ptr);
+    object_aware(creature, *o_ptr);
     o_ptr->mark_as_known();
     o_ptr->ident |= IDENT_FULL_KNOWN;
     o_ptr->randart_name.reset();

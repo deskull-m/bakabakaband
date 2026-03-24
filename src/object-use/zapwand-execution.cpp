@@ -121,7 +121,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 
     o_ptr->mark_as_tried();
     if (ident && !o_ptr->is_aware()) {
-        object_aware(static_cast<PlayerType *>(&this->creature), *o_ptr);
+        object_aware(this->creature, *o_ptr);
         gain_exp(this->creature, (item_level + (this->creature.level >> 1)) / this->creature.level);
     }
 

@@ -55,7 +55,7 @@ static void object_mention(CreatureEntity &creature, ItemEntity &item)
         return;
     }
 
-    object_aware(player_ptr, item);
+    object_aware(creature, item);
     item.mark_as_known();
     item.ident |= (IDENT_FULL_KNOWN);
     const auto item_name = describe_flavor(creature, item, 0);
