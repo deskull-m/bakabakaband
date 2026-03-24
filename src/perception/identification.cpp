@@ -20,7 +20,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/buffer-shaper.h"
@@ -37,7 +36,7 @@
  * @param mode 表示オプション
  * @return 特筆すべき情報が一つでもあった場合TRUE、一つもなく表示がキャンセルされた場合FALSEを返す。
  */
-bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mode)
+bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS mode)
 {
     std::array<std::string, 128> info{};
     int trivial_info = 0;
@@ -823,9 +822,9 @@ bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mod
     const auto &[wid, hgt] = term_get_size();
     std::string item_name;
     if (!(mode & SCROBJ_FAKE_OBJECT)) {
-        item_name = describe_flavor(*player_ptr, item, 0);
+        item_name = describe_flavor(creature, item, 0);
     } else {
-        item_name = describe_flavor(*player_ptr, item, (OD_NAME_ONLY | OD_STORE));
+        item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE));
     }
 
     prt(item_name, 0, 0);

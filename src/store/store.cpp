@@ -223,7 +223,6 @@ tl::optional<short> input_stock(std::string_view fmt, int min, int max, [[maybe_
  */
 void store_examine(CreatureEntity &creature, StoreSaleType store_num)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     if (st_ptr->stock_num <= 0) {
         if (store_num == StoreSaleType::HOME) {
             msg_print(_("我が家には何も置いてありません。", "Your home is empty."));

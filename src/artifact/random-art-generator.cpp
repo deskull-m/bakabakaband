@@ -369,7 +369,6 @@ static std::string name_unnatural_random_artifact(CreatureEntity &creature, Item
         return get_random_name(*o_ptr, o_ptr->is_protector(), power_level);
     }
 
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     constexpr auto prompt = _("このアーティファクトを何と名付けますか？", "What do you want to call the artifact? ");
     object_aware(creature, *o_ptr);
     o_ptr->mark_as_known();

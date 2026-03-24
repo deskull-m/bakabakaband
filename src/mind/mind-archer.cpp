@@ -91,7 +91,6 @@ static bool select_ammo_creation_type(ammo_creation_type &type, PLAYER_LEVEL ple
  */
 bool create_ammo(CreatureEntity &creature)
 {
-    auto *player_ptr = &static_cast<PlayerType &>(creature);
     if (cmd_limit_confused(creature) || cmd_limit_blind(creature)) {
         return false;
     }

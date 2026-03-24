@@ -506,7 +506,6 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
  */
 void wiz_learn_items_all(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     for (const auto &baseitem : BaseitemList::get_instance()) {
         if (baseitem.is_valid() && baseitem.level <= command_arg) {
             ItemEntity item(baseitem.idx);
