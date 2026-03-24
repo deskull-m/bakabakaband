@@ -3,11 +3,11 @@
 #include "object-enchant/enchanter-base.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class LiteEnchanter : public EnchanterBase {
 public:
-    LiteEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, int power);
+    LiteEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, int power);
     void apply_magic() override;
 
 protected:
@@ -17,7 +17,7 @@ protected:
     void give_cursed() override;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     ItemEntity *o_ptr;
     int power;
 
