@@ -230,7 +230,7 @@ static void desc_obj_fake(CreatureEntity &creature, short bi_id)
     o_ptr->ident |= IDENT_KNOWN;
     handle_stuff(creature);
 
-    if (screen_object(player_ptr, *o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {
+    if (screen_object(creature, *o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {
         return;
     }
 

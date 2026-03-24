@@ -253,9 +253,9 @@ void store_examine(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    const auto item_name = describe_flavor(*player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     msg_format(_("%sを調べている...", "Examining %s..."), item_name.data());
-    if (!screen_object(player_ptr, item, SCROBJ_FORCE_DETAIL)) {
+    if (!screen_object(creature, item, SCROBJ_FORCE_DETAIL)) {
         msg_print(_("特に変わったところはないようだ。", "You see nothing special."));
     }
 }
