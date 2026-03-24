@@ -180,7 +180,6 @@ static void display_player_stats(CreatureEntity &creature)
  */
 static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature); // parse_fixed_map用
     const auto &floor = *creature.current_floor_ptr;
     if (!creature.is_dead()) {
         return tl::nullopt;
@@ -206,7 +205,7 @@ static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
         /* Get the quest text */
         /* Bewere that INIT_ASSIGN resets the cur_num. */
         init_flags = INIT_NAME_ONLY;
-        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
 
         const auto &quest = quests.get_quest(floor.quest_number);
         constexpr auto killed_quest = _("…あなたは、クエスト「%s」で%sに殺されて飽きた。", "...You were killed by %s in the quest '%s' and god tired..");
@@ -233,7 +232,6 @@ static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
  */
 static tl::optional<std::string> decide_death_in_quest(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &floor = *creature.current_floor_ptr;
     if (!floor.is_in_quest() || !QuestType::is_fixed(floor.quest_number)) {
         return tl::nullopt;
@@ -243,7 +241,7 @@ static tl::optional<std::string> decide_death_in_quest(CreatureEntity &creature)
 
     const auto &quests = QuestList::get_instance();
     init_flags = INIT_NAME_ONLY;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     return format(_("…あなたは現在、 クエスト「%s」を遂行中だ。", "...Now, you are in the quest '%s'."), quests.get_quest(floor.quest_number).name.data());
 }
 

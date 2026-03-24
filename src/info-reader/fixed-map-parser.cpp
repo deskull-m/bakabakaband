@@ -40,8 +40,9 @@ static concptr variant = "ZANGBAND";
  * @param fp
  * @return エラーコード
  */
-static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp, char *fp)
+static std::string parse_fixed_map_expression(CreatureEntity &creature, char **sp, char *fp)
 {
+    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     constexpr char b1 = '[';
     constexpr char b2 = ']';
 
@@ -58,13 +59,13 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
     if (*s == b1) {
         std::string t;
         s++;
-        t = parse_fixed_map_expression(player_ptr, &s, &f);
+        t = parse_fixed_map_expression(creature, &s, &f);
         if (t.empty()) {
             /* Nothing */
         } else if (t == "IOR") {
             v = "0";
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
                 if (!t.empty() && t != "0") {
                     v = "1";
                 }
@@ -72,7 +73,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "AND") {
             v = "1";
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
                 if (!t.empty() && t == "0") {
                     v = "0";
                 }
@@ -80,7 +81,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "NOT") {
             v = "1";
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
                 if (!t.empty() && t == "1") {
                     v = "0";
                 }
@@ -88,11 +89,11 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "EQU") {
             v = "0";
             if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                auto p = parse_fixed_map_expression(creature, &s, &f);
                 if (t == p) {
                     v = "1";
                 }
@@ -100,11 +101,11 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "LEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                auto p = parse_fixed_map_expression(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
                     v = "0";
                 }
@@ -112,18 +113,18 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "GEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                auto p = parse_fixed_map_expression(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
                     v = "0";
                 }
             }
         } else {
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
         }
 
@@ -246,7 +247,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
  * @param xmax 詳細不明
  * @return エラーコード
  */
-parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, int ymin, int xmin, int ymax, int xmax)
+parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name, int ymin, int xmin, int ymax, int xmax)
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
@@ -274,7 +275,7 @@ parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, 
         if (line_str->starts_with("?:")) {
             char f;
             auto *s = line_str->data() + 2;
-            auto v = parse_fixed_map_expression(player_ptr, &s, &f);
+            auto v = parse_fixed_map_expression(creature, &s, &f);
             bypass = v == "0";
             continue;
         }
@@ -284,7 +285,7 @@ parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, 
         }
 
         qg_ptr->buf = line_str->data();
-        err = generate_fixed_map_floor(*player_ptr, qg_ptr, parse_fixed_map);
+        err = generate_fixed_map_floor(creature, qg_ptr, parse_fixed_map);
         if (err != PARSE_ERROR_NONE) {
             concptr oops = (((err > 0) && (err < PARSE_ERROR_MAX)) ? err_str[err] : "unknown");
             msg_format("Error %d (%s) at line %d of '%s'.", err, oops, num, name.data());

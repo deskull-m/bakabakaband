@@ -144,7 +144,7 @@ static void send_waiting_record(CreatureEntity &creature)
 
     /* 町名消失バグ対策(#38205)のためここで世界マップ情報を読み出す */
     const auto &area = WildernessGrids::get_instance().get_area();
-    parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
     bool success = send_world_score(*player_ptr, true);
     if (!success && !input_check_strict(*player_ptr, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
         prt(_("引き続き待機します。", "standing by for future registration..."), 0, 0);
@@ -255,9 +255,9 @@ static void generate_wilderness(CreatureEntity &creature)
 {
     auto *player_ptr = static_cast<PlayerType *>(&creature);
     const auto &area = WildernessGrids::get_instance().get_area();
-    parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
     init_flags = INIT_ONLY_BUILDINGS;
-    parse_fixed_map(player_ptr, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
+    parse_fixed_map(creature, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
     select_floor_music(*player_ptr);
 }
 
@@ -467,7 +467,7 @@ void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std
     auto &floor = *player_ptr->current_floor_ptr;
     if (new_game && floor.is_in_quest()) {
         init_flags = INIT_GET_SIZE;
-        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
         // サイズが取得できなかった場合はデフォルト値を設定
         if (floor.height == 0 || floor.width == 0) {
             floor.height = MAX_HGT;

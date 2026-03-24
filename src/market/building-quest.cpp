@@ -36,7 +36,7 @@ static void get_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_in
         init_flags = i2enum<init_flags_type>(init_flags | INIT_ASSIGN);
     }
 
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     floor.quest_number = old_quest;
 }
 

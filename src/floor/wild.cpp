@@ -300,7 +300,7 @@ static void generate_area(CreatureEntity &creature, const Pos2D &pos, bool is_bo
         }
 
         floor.vault_list.clear();
-        parse_fixed_map(player_ptr, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
+        parse_fixed_map(creature, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
         floor.width = MAX_WID;
         floor.height = MAX_HGT;
 
@@ -446,7 +446,7 @@ void wilderness_gen(CreatureEntity &creature)
     panel_col_min = floor.width;
     const auto &wilderness = WildernessGrids::get_instance();
     const auto &area = wilderness.get_area();
-    parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
 
     const auto &pos_wilderness = wilderness.get_player_position();
     get_mon_num_prep_enum(creature, floor.get_monrace_hook());
@@ -628,7 +628,7 @@ void wilderness_gen_small(CreatureEntity &creature)
     const auto &world = AngbandWorld::get_instance();
     const auto &wilderness = WildernessGrids::get_instance();
     const auto &area = wilderness.get_area();
-    parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
     for (const auto &pos : area) {
         auto &grid = floor.get_grid(pos);
         const auto &wg = wilderness.get_grid(pos);

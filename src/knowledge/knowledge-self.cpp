@@ -194,7 +194,7 @@ void do_cmd_knowledge_home(CreatureEntity &creature)
 {
     auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
     const auto &area = WildernessGrids::get_instance().get_area();
-    parse_fixed_map(player_ptr, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
 
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];

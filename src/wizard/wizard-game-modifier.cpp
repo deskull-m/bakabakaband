@@ -107,7 +107,6 @@ void wizard_game_modifier(CreatureEntity &creature)
  */
 void wiz_enter_quest(CreatureEntity &creature)
 {
-    auto *player_ptr = static_cast<PlayerType *>(&creature);
     auto &quests = QuestList::get_instance();
     const auto quest_max = enum2i(quests.rbegin()->first);
     const auto quest_id = input_numerics("QuestID", 0, quest_max - 1, QuestId::NONE);
@@ -117,7 +116,7 @@ void wiz_enter_quest(CreatureEntity &creature)
 
     init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
     creature.current_floor_ptr->quest_number = *quest_id;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     auto &quest = quests.get_quest(*quest_id);
     quest.status = QuestStatusType::TAKEN;
     if (quest.dungeon == DungeonId::WILDERNESS) {
