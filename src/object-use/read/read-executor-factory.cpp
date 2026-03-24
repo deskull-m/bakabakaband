@@ -5,13 +5,14 @@
 #include "object-use/read/ring-power-read-executor.h"
 #include "object-use/read/scroll-read-executor.h"
 #include "object/tval-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 
-std::unique_ptr<ReadExecutorBase> ReadExecutorFactory::create(PlayerType *player_ptr, ItemEntity *o_ptr, bool known)
+std::unique_ptr<ReadExecutorBase> ReadExecutorFactory::create(CreatureEntity &creature, ItemEntity *o_ptr, bool known)
 {
     const auto tval = o_ptr->bi_key.tval();
     if (tval == ItemKindType::SCROLL) {
-        return std::make_unique<ScrollReadExecutor>(player_ptr, o_ptr, known);
+        return std::make_unique<ScrollReadExecutor>(creature, o_ptr, known);
     }
 
     if (o_ptr->is_specific_artifact(FixedArtifactId::GHB)) {
@@ -23,7 +24,7 @@ std::unique_ptr<ReadExecutorBase> ReadExecutorFactory::create(PlayerType *player
     }
 
     if (tval == ItemKindType::READING_MATTER) {
-        return std::make_unique<ParchmentReadExecutor>(player_ptr, o_ptr);
+        return std::make_unique<ParchmentReadExecutor>(creature, o_ptr);
     }
 
     THROW_EXCEPTION(std::logic_error, "Invalid item is specified; this can't be read!");
