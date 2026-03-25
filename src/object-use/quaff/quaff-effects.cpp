@@ -176,7 +176,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_INC_CHR:
         return do_inc_stat(this->creature, A_CHR);
     case SV_POTION_POLY_SELF:
-        do_poly_self(static_cast<PlayerType *>(&this->creature));
+        do_poly_self(this->creature);
         return true;
     case SV_POTION_AUGMENTATION:
         return this->augmentation();

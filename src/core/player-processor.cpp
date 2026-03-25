@@ -159,11 +159,11 @@ void process_player(CreatureEntity &creature)
     if (player_ptr->resting < 0) {
         if (player_ptr->resting == COMMAND_ARG_REST_FULL_HEALING) {
             if ((player_ptr->hp == player_ptr->maxhp) && (player_ptr->csp >= player_ptr->msp)) {
-                set_action(player_ptr, ACTION_NONE);
+                set_action(creature, ACTION_NONE);
             }
         } else if (player_ptr->resting == COMMAND_ARG_REST_UNTIL_DONE) {
             if (player_ptr->is_fully_healthy()) {
-                set_action(player_ptr, ACTION_NONE);
+                set_action(creature, ACTION_NONE);
             }
         }
     }
@@ -242,7 +242,7 @@ void process_player(CreatureEntity &creature)
         if (s64b_cmp(player_ptr->csp, player_ptr->csp_frac, cost, cost_frac) < 0) {
             player_ptr->csp = 0;
             player_ptr->csp_frac = 0;
-            set_action(player_ptr, ACTION_NONE);
+            set_action(creature, ACTION_NONE);
         } else {
             s64b_sub(&(player_ptr->csp), &(player_ptr->csp_frac), cost, cost_frac);
         }
@@ -252,7 +252,7 @@ void process_player(CreatureEntity &creature)
 
     if (CreatureClass(*player_ptr).samurai_stance_is(SamuraiStanceType::MUSOU)) {
         if (player_ptr->csp < 3) {
-            set_action(player_ptr, ACTION_NONE);
+            set_action(creature, ACTION_NONE);
         } else {
             player_ptr->csp -= 2;
             rfu.set_flag(MainWindowRedrawingFlag::MP);
@@ -292,7 +292,7 @@ void process_player(CreatureEntity &creature)
             if (player_ptr->resting > 0) {
                 player_ptr->resting--;
                 if (!player_ptr->resting) {
-                    set_action(player_ptr, ACTION_NONE);
+                    set_action(creature, ACTION_NONE);
                 }
 
                 rfu.set_flag(MainWindowRedrawingFlag::ACTION);

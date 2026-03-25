@@ -413,7 +413,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
             return false;
         } else if ((choice == 'a') || (choice == 'A')) {
             if (player.action == ACTION_SAMURAI_STANCE) {
-                set_action(&player, ACTION_NONE);
+                set_action(player, ACTION_NONE);
             } else {
                 msg_print(_("もともと構えていない。", "You are not in a special stance."));
             }
@@ -434,7 +434,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
         }
     }
 
-    set_action(&player, ACTION_SAMURAI_STANCE);
+    set_action(player, ACTION_SAMURAI_STANCE);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (CreatureClass(creature).samurai_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));

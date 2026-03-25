@@ -488,7 +488,7 @@ void MonsterDamageProcessor::get_exp_from_mon(const MonsterEntity &monster, int 
     }
 
     s64b_mul(&new_exp, &new_exp_frac, 0, monrace.mexp);
-    gain_exp_64(&player, new_exp, new_exp_frac);
+    gain_exp_64(player, new_exp, new_exp_frac);
 }
 
 void MonsterDamageProcessor::set_redraw()

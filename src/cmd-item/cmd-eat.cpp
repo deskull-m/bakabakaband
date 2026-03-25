@@ -154,7 +154,7 @@ static bool exe_eat_corpse_type_object(CreatureEntity &creature, ItemEntity *o_p
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::NEXUS)) {
-        do_poly_self(player_ptr);
+        do_poly_self(*player_ptr);
     }
 
     if (monrace.meat_feed_flags.has(MonsterFeedType::SLEEP)) {

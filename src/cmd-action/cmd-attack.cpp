@@ -492,7 +492,7 @@ bool do_cmd_attack(CreatureEntity &creature, POSITION y, POSITION x, combat_opti
     }
 
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::IAI) && ((mode != HISSATSU_IAI) || mdeath)) {
-        set_action(player_ptr, ACTION_NONE);
+        set_action(creature, ACTION_NONE);
     }
 
     return mdeath;

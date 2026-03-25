@@ -51,14 +51,13 @@ SpellHex::SpellHex(CreatureEntity &player)
  */
 void SpellHex::stop_all_spells()
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&this->player);
     for (auto spell : this->casting_spells) {
         exe_spell(this->player, RealmType::HEX, spell, SpellProcessType::STOP);
     }
 
     this->spell_hex_data->casting_spells.clear();
     if (this->player.action == ACTION_SPELL) {
-        set_action(player_ptr, ACTION_NONE);
+        set_action(this->player, ACTION_NONE);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();

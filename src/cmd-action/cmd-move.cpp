@@ -528,7 +528,7 @@ static bool input_rest_turns()
 void do_cmd_rest(CreatureEntity &creature)
 {
     auto &player = static_cast<PlayerType &>(creature);
-    set_action(&player, ACTION_NONE);
+    set_action(creature, ACTION_NONE);
     if (CreatureClass(player).equals(PlayerClassType::BARD)) {
         auto is_singing = get_singing_song_effect(player) != 0;
         is_singing |= get_interrupting_song_effect(player) != 0;

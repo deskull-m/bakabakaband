@@ -153,7 +153,7 @@ void stop_singing(CreatureEntity &creature)
     }
 
     if (player.action == ACTION_SING) {
-        set_action(&player, ACTION_NONE);
+        set_action(creature, ACTION_NONE);
     }
 
     (void)exe_spell(creature, RealmType::MUSIC, get_singing_song_id(creature), SpellProcessType::STOP);

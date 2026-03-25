@@ -32,7 +32,7 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
     }
 
     if ((creature.action == ACTION_REST) || (creature.action == ACTION_FISH) || (stop_search && (creature.action == ACTION_SEARCH))) {
-        set_action(player_ptr, ACTION_NONE);
+        set_action(creature, ACTION_NONE);
     }
 
     if (creature.running) {

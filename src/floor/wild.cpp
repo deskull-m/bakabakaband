@@ -902,7 +902,7 @@ bool change_wild_mode(CreatureEntity &creature, bool encount)
         spell_hex.stop_all_spells();
     }
 
-    set_action(player_ptr, ACTION_NONE);
+    set_action(creature, ACTION_NONE);
     world.set_wild_mode(true);
     player_ptr->leaving = true;
     return true;

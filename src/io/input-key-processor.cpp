@@ -306,9 +306,9 @@ void process_command(CreatureEntity &creature)
     }
     case 'S': {
         if (player_ptr->action == ACTION_SEARCH) {
-            set_action(player_ptr, ACTION_NONE);
+            set_action(*player_ptr, ACTION_NONE);
         } else {
-            set_action(player_ptr, ACTION_SEARCH);
+            set_action(*player_ptr, ACTION_SEARCH);
         }
 
         break;

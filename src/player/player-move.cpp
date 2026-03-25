@@ -206,7 +206,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         using Tc = TerrainCharacteristics;
         if ((player.action == ACTION_HAYAGAKE) && (terrain_new.flags.has_not(Tc::PROJECTION) || (!player.levitation && terrain_new.flags.has(Tc::DEEP)))) {
             msg_print(_("ここでは素早く動けない。", "You cannot run in here."));
-            set_action(&player, ACTION_NONE);
+            set_action(creature, ACTION_NONE);
         }
 
         if (CreatureRace(&player).equals(PlayerRaceType::MERFOLK)) {

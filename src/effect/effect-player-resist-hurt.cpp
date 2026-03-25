@@ -85,7 +85,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (one_in_(5)) { /* 6 */
         msg_print(_("奇形的な変身を遂げた！", "You undergo a freakish metamorphosis!"));
         if (one_in_(4)) { /* 4 */
-            do_poly_self(player_ptr);
+            do_poly_self(creature);
         } else {
             status_shuffle(*player_ptr);
         }
@@ -197,7 +197,7 @@ void effect_player_nether(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     ep_ptr->dam = ep_ptr->dam * calc_nether_damage_rate(creature, CALC_RAND) / 100;
 
     if (!has_resist_neth(creature) && !evaded) {
-        drain_exp(player_ptr, 200 + (creature.exp / 100), 200 + (creature.exp / 1000), 75);
+        drain_exp(creature, 200 + (creature.exp / 100), 200 + (creature.exp / 1000), 75);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
@@ -269,7 +269,7 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         }
     }
     if (!has_resist_neth(creature) && !has_resist_chaos(creature)) {
-        drain_exp(player_ptr, 5000 + (player_ptr->exp / 100), 500 + (player_ptr->exp / 1000), 75);
+        drain_exp(creature, 5000 + (creature.exp / 100), 500 + (creature.exp / 1000), 75);
     }
 
     if (!has_resist_chaos(creature) || one_in_(9)) {
