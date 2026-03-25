@@ -60,8 +60,7 @@ static void display_essence(CreatureEntity &creature)
     const auto &essences = Smith::get_essence_list();
     const int page_max = (essences.size() - 1) / (row_count * 3) + 1;
 
-    auto &player = static_cast<PlayerType &>(creature);
-    Smith smith(&player);
+    Smith smith(creature);
 
     screen_save();
     while (true) {
@@ -141,7 +140,7 @@ static void drain_essence(CreatureEntity &creature)
 
     PlayerEnergy(player).set_player_turn_energy(100);
 
-    auto drain_result = Smith(&player).drain_essence(o_ptr);
+    auto drain_result = Smith(creature).drain_essence(o_ptr);
 
     if (drain_result.empty()) {
         msg_print(_("エッセンスは抽出できませんでした。", "You were not able to extract any essence."));
@@ -318,7 +317,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
     int menu_line = (use_menu ? 1 : 0);
 
     auto &player = static_cast<PlayerType &>(creature);
-    Smith smith(&player);
+    Smith smith(creature);
 
     auto smith_effect_list = Smith::get_effect_list(mode);
     const auto smith_effect_list_max = static_cast<int>(smith_effect_list.size());
@@ -536,7 +535,7 @@ static void erase_essence(CreatureEntity &creature)
 
     PlayerEnergy(player).set_player_turn_energy(100);
 
-    Smith(&player).erase_essence(o_ptr);
+    Smith(creature).erase_essence(o_ptr);
 
     msg_print(_("エッセンスを取り去った。", "You removed all essence you have added."));
     set_smith_redrawing_flags();
